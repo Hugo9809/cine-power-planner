@@ -1,0 +1,264 @@
+/* General styles */
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 300;
+  margin: 20px;
+  background-color: #ffffff;
+  color: #000000;
+  font-size: 0.9em;
+}
+h1, h2, h3 {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 500;
+  color: #001589;
+}
+h1 {
+  font-size: 1.8em;
+  margin-bottom: 0.2em;
+}
+h2 {
+  font-size: 1.4em;
+  margin-top: 1.3em;
+  border-bottom: 2px solid #001589;
+}
+h3 {
+  font-size: 1.1em;
+  margin-top: 1em;
+}
+
+/* Paragraph text */
+p {
+  line-height: 1.4em;
+}
+
+/* Form layout */
+.form-row {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+.form-row label {
+  width: 150px;
+  min-width: 120px;
+  font-weight: 300;
+}
+.form-row select,
+.form-row input {
+  flex: 1;
+  padding: 4px;
+  font-size: 1em;
+  background-color: #e8e8e8; /* Grey background */
+  color: #333; /* Darker text color */
+  border: 0px solid #ccc; /* Light grey border */
+  border-radius: 5px;
+  margin: 5px 5px 0 0;
+}
+
+/* Specific style for the setupSelect dropdown */
+#setupSelect {
+  flex: 1; /* Allow it to grow */
+  padding: 4px;
+  font-size: 1em;
+  background-color: #e8e8e8; /* Grey background */
+  color: #333; /* Darker text color */
+  border: 0px solid #ccc; /* Light grey border */
+  border-radius: 5px;
+}
+
+/* Specific style for the setupName input */
+#setupName {
+  flex: 1; /* Allow it to grow */
+  padding: 4px;
+  font-size: 1em;
+  background-color: #e8e8e8; /* Grey background */
+  color: #333; /* Darker text color */
+  border: 0px solid #ccc; /* Light grey border */
+  border-radius: 5px;
+}
+
+/* FIZ group fieldset */
+fieldset {
+  border: 1px solid #001589;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 1em;
+}
+legend {
+  font-weight: 500;
+  color: #001589;
+  padding: 0 5px;
+}
+
+/* Sections */
+section {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-top: 1.5em;
+}
+
+/* All Buttons (default grey) */
+button {
+  background-color: #e8e8e8; /* Grey background */
+  color: #333; /* Darker text color */
+  border: 0px solid #ccc; /* Light grey border */
+  border-radius: 5px;
+  padding: 5px 10px; /* Adjusted padding to make buttons smaller */
+  margin: 5px 5px 5px 5px;
+  cursor: pointer;
+  font-size: 0.85em; /* Adjusted font size to make buttons smaller */
+  transition: background-color 0.2s;
+}
+button:hover {
+  background-color: #d0d0d0; /* Slightly darker grey on hover */
+}
+button:active {
+  background-color: #c0c0c0; /* Even darker grey on active */
+}
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+
+/* Device Manager specific styles */
+.device-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.device-category {
+  flex: 1 1 calc(33% - 15px); /* Three columns, adjust as needed */
+  min-width: 250px; /* Minimum width for each column */
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.device-category h4 {
+  color: #001589;
+  margin-top: 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.device-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.device-ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 0.9em;
+}
+
+.device-ul li:last-child {
+  border-bottom: none;
+}
+
+.device-ul li span {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+
+/* Language Selector */
+#langSelector {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px;
+  
+}
+#langSelector select {
+  font-size: 1em;
+  padding: 2px 4px;
+  background-color: #e8e8e8; /* Grey background */
+  color: #333; /* Darker text color */
+  border: 0px solid #ccc; /* Light grey border */
+  border-radius: 5px;
+}
+
+/* Breakdown list */
+#breakdownList {
+  list-style: none;
+  margin: 5px 0;
+  padding-left: 0;
+}
+#breakdownList li {
+  margin: 3px 0;
+}
+
+/* Battery comparison section */
+#batteryComparison {
+  background: #f9f9f9; /* Match section background */
+  padding: 15px; /* Match section padding */
+  margin-top: 1em; /* Match section margin */
+  border: 1px solid #ddd; /* Match section border */
+  border-radius: 5px; /* Match section border-radius */
+}
+#batteryComparison table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5px;
+}
+#batteryComparison th, #batteryComparison td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  font-size: 0.9em;
+}
+#batteryComparison th:nth-child(1),
+#batteryComparison td:nth-child(1) {
+  width: 30%; /* Battery Name */
+}
+
+#batteryComparison th:nth-child(2),
+#batteryComparison td:nth-child(2) {
+  width: 25%; /* Estimated Runtime */
+}
+
+#batteryComparison th:nth-child(3),
+#batteryComparison td:nth-child(3) {
+  width: 45%; /* Bar column, takes remaining space */
+}
+
+#batteryComparison th {
+  background-color: #ffffff;
+}
+
+/* Battery comparison bars */
+.barContainer {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 3px;
+  overflow: hidden;
+  height: 15px; /* Height of the bar */
+}
+
+.bar {
+  height: 100%;
+  background-color: #4CAF50; /* Green color for the bar (both) */
+  width: 0%; /* Will be set by JS */
+  border-radius: 3px;
+  transition: width 0.5s ease-out; /* Smooth transition for bar growth */
+}
+
+.bar-pins-only {
+  background-color: #FF9800; /* Orange color for pins only */
+}
+
+.selectedBatteryRow {
+    background-color: #e6f7ff; /* Light blue background for selected row */
+    font-weight: bold;
+}
