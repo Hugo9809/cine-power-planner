@@ -77,6 +77,19 @@ const texts = {
     cameraPlatesLabel: "Battery Plates:",
     cameraMediaLabel: "Recording Media:",
     cameraLensMountLabel: "Lens Mount:",
+    powerInputsHeading: "Power Inputs",
+    powerDistributionHeading: "Power Distribution",
+    videoOutputsHeading: "Video Outputs",
+    fizConnectorHeading: "FIZ Connector",
+    mediaHeading: "Media",
+    viewfinderHeading: "Viewfinder",
+    lensMountHeading: "Lens Mount",
+    timecodeHeading: "Timecode",
+    powerDistributionLabel: "Outputs (JSON):",
+    videoOutputsLabel: "Outputs (JSON):",
+    fizConnectorLabel: "Connectors (JSON):",
+    viewfinderLabel: "Viewfinders (JSON):",
+    timecodeLabel: "Timecode (JSON):",
     addDeviceBtn: "Add",
     updateDeviceBtn: "Update", // New key for update button
     editBtn: "Edit", // New key for Edit button in list
@@ -98,6 +111,11 @@ const texts = {
     placeholder_plates: "V-Mount,B-Mount",
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
+    placeholder_powerdist: "[{}]",
+    placeholder_videooutputs: "[{}]",
+    placeholder_fizconnector: "[{}]",
+    placeholder_viewfinder: "[{}]",
+    placeholder_timecode: "[{}]",
 
     toggleDeviceManager: "Edit Device Data…",
     hideDeviceManager: "Hide Device Data",
@@ -195,6 +213,19 @@ const texts = {
     cameraPlatesLabel: "Akkuschächte:",
     cameraMediaLabel: "Aufnahmemedien:",
     cameraLensMountLabel: "Objektivanschluss:",
+    powerInputsHeading: "Stromversorgung",
+    powerDistributionHeading: "Stromverteilung",
+    videoOutputsHeading: "Videoausgänge",
+    fizConnectorHeading: "FIZ-Anschluss",
+    mediaHeading: "Medien",
+    viewfinderHeading: "Sucher",
+    lensMountHeading: "Objektivanschluss",
+    timecodeHeading: "Timecode",
+    powerDistributionLabel: "Ausgänge (JSON):",
+    videoOutputsLabel: "Ausgänge (JSON):",
+    fizConnectorLabel: "Anschlüsse (JSON):",
+    viewfinderLabel: "Sucher (JSON):",
+    timecodeLabel: "Timecode (JSON):",
     addDeviceBtn: "Hinzufügen",
     updateDeviceBtn: "Aktualisieren",
     editBtn: "Bearbeiten",
@@ -216,6 +247,11 @@ const texts = {
     placeholder_plates: "V-Mount,B-Mount",
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
+    placeholder_powerdist: "[{}]",
+    placeholder_videooutputs: "[{}]",
+    placeholder_fizconnector: "[{}]",
+    placeholder_viewfinder: "[{}]",
+    placeholder_timecode: "[{}]",
 
     toggleDeviceManager: "Gerätedaten bearbeiten…",
     hideDeviceManager: "Gerätedaten ausblenden",
@@ -353,6 +389,19 @@ function setLanguage(lang) {
   document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
   document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
   document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
+  document.getElementById("cameraPowerDistLabel").textContent = texts[lang].powerDistributionLabel;
+  document.getElementById("cameraVideoOutputsLabel").textContent = texts[lang].videoOutputsLabel;
+  document.getElementById("cameraFIZConnectorLabel").textContent = texts[lang].fizConnectorLabel;
+  document.getElementById("cameraViewfinderLabel").textContent = texts[lang].viewfinderLabel;
+  document.getElementById("cameraTimecodeLabel").textContent = texts[lang].timecodeLabel;
+  document.getElementById("powerInputsHeading").textContent = texts[lang].powerInputsHeading;
+  document.getElementById("powerDistributionHeading").textContent = texts[lang].powerDistributionHeading;
+  document.getElementById("videoOutputsHeading").textContent = texts[lang].videoOutputsHeading;
+  document.getElementById("fizConnectorHeading").textContent = texts[lang].fizConnectorHeading;
+  document.getElementById("mediaHeading").textContent = texts[lang].mediaHeading;
+  document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
+  document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
+  document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
   // Determine text for Add/Update button
   if (addDeviceBtn.dataset.mode === "edit") {
     addDeviceBtn.textContent = texts[lang].updateDeviceBtn;
@@ -373,6 +422,11 @@ function setLanguage(lang) {
   cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
   cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
+  cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
+  cameraVideoOutputsInput.placeholder = texts[lang].placeholder_videooutputs;
+  cameraFIZConnectorInput.placeholder = texts[lang].placeholder_fizconnector;
+  cameraViewfinderInput.placeholder = texts[lang].placeholder_viewfinder;
+  cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -461,6 +515,11 @@ const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
 const cameraPlatesInput = document.getElementById("cameraPlates");
 const cameraMediaInput = document.getElementById("cameraMedia");
 const cameraLensMountInput = document.getElementById("cameraLensMount");
+const cameraPowerDistInput = document.getElementById("cameraPowerDist");
+const cameraVideoOutputsInput = document.getElementById("cameraVideoOutputs");
+const cameraFIZConnectorInput = document.getElementById("cameraFIZConnector");
+const cameraViewfinderInput = document.getElementById("cameraViewfinder");
+const cameraTimecodeInput = document.getElementById("cameraTimecode");
 const batteryFieldsDiv = document.getElementById("batteryFields");
 const newCapacityInput = document.getElementById("newCapacity");
 const newPinAInput    = document.getElementById("newPinA");
@@ -1148,6 +1207,11 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraPlatesInput.value = (deviceData.power?.batteryPlateSupport || []).join(',');
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
+      cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
+      cameraVideoOutputsInput.value = JSON.stringify(deviceData.videoOutputs || [], null, 2);
+      cameraFIZConnectorInput.value = JSON.stringify(deviceData.fizConnectors || [], null, 2);
+      cameraViewfinderInput.value = JSON.stringify(deviceData.viewfinder || [], null, 2);
+      cameraTimecodeInput.value = JSON.stringify(deviceData.timecode || [], null, 2);
     } else {
       wattFieldDiv.style.display = "block";
       batteryFieldsDiv.style.display = "none";
@@ -1213,6 +1277,11 @@ newCategorySelect.addEventListener("change", () => {
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
+  cameraPowerDistInput.value = "";
+  cameraVideoOutputsInput.value = "";
+  cameraFIZConnectorInput.value = "";
+  cameraViewfinderInput.value = "";
+  cameraTimecodeInput.value = "";
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
   addDeviceBtn.dataset.mode = "add";
@@ -1272,6 +1341,17 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
+    let powerDist, videoOut, fizCon, viewfinder, timecode;
+    try {
+      powerDist = cameraPowerDistInput.value ? JSON.parse(cameraPowerDistInput.value) : [];
+      videoOut = cameraVideoOutputsInput.value ? JSON.parse(cameraVideoOutputsInput.value) : [];
+      fizCon = cameraFIZConnectorInput.value ? JSON.parse(cameraFIZConnectorInput.value) : [];
+      viewfinder = cameraViewfinderInput.value ? JSON.parse(cameraViewfinderInput.value) : [];
+      timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
+    } catch (e) {
+      alert(texts[currentLang].alertInvalidCameraJSON);
+      return;
+    }
     targetCategory[name] = {
       powerDrawWatts: watt,
       power: {
@@ -1284,10 +1364,15 @@ addDeviceBtn.addEventListener("click", () => {
           type: cameraBatteryTypeInput.value,
           batteryLifeMinutes: cameraBatteryLifeInput.value ? parseFloat(cameraBatteryLifeInput.value) : null
         },
-        batteryPlateSupport: cameraPlatesInput.value ? cameraPlatesInput.value.split(',').map(s => s.trim()).filter(s => s) : []
+        batteryPlateSupport: cameraPlatesInput.value ? cameraPlatesInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+        powerDistributionOutputs: powerDist
       },
+      videoOutputs: videoOut,
+      fizConnectors: fizCon,
       recordingMedia: cameraMediaInput.value ? cameraMediaInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
-      lensMount: cameraLensMountInput.value ? cameraLensMountInput.value.split(',').map(s => s.trim()).filter(s => s) : []
+      viewfinder: viewfinder,
+      lensMount: cameraLensMountInput.value ? cameraLensMountInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+      timecode: timecode
     };
   } else {
     const watt = parseFloat(newWattInput.value);
@@ -1315,6 +1400,11 @@ addDeviceBtn.addEventListener("click", () => {
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
+  cameraPowerDistInput.value = "";
+  cameraVideoOutputsInput.value = "";
+  cameraFIZConnectorInput.value = "";
+  cameraViewfinderInput.value = "";
+  cameraTimecodeInput.value = "";
   newCategorySelect.disabled = false; // Re-enable category select
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn; // Reset button text
   addDeviceBtn.dataset.mode = "add"; // Reset mode
