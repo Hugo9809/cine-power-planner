@@ -278,7 +278,11 @@ body.dark-mode {
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3 {
-  color: #80b3ff;
+  color: #ffffff;
+}
+
+body.dark-mode h2 {
+  border-bottom: 2px solid #ffffff;
 }
 
 body.dark-mode section,
@@ -306,6 +310,13 @@ body.dark-mode textarea {
   border-color: #555;
 }
 
+body.dark-mode #setupSelect,
+body.dark-mode #setupName {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
 body.dark-mode button:hover {
   background-color: #444;
 }
@@ -324,4 +335,12 @@ body.dark-mode .barContainer {
 
 body.dark-mode .selectedBatteryRow {
   background-color: #003366;
+}
+
+body.dark-mode .device-category h4 {
+  border-bottom: 1px solid #ffffff;
+}
+
+body.dark-mode .device-ul li {
+  border-bottom: 1px dashed #ffffff;
 }
