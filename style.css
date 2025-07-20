@@ -160,6 +160,12 @@ button:disabled {
   padding-bottom: 5px;
 }
 
+.list-search {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 4px;
+  font-size: 0.9em;
+}
 .device-ul {
   list-style: none;
   padding: 0;

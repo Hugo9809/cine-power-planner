@@ -357,6 +357,7 @@ function setLanguage(lang) {
   }
   // Recalculate and update dynamic content (results, breakdown, battery comparison)
   refreshDeviceLists(); // Call refreshDeviceLists to update Edit/Delete buttons in the list
+
   updateCalculations();
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
@@ -426,6 +427,23 @@ const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 
+const choicesMap = new Map();
+
+const listFilters = document.querySelectorAll('.list-search');
+
+function applyListFilters() {
+  listFilters.forEach(input => {
+    const ul = document.getElementById(input.dataset.target);
+    if (!ul) return;
+    const query = input.value.toLowerCase();
+    ul.querySelectorAll('li').forEach(li => {
+      li.style.display = li.textContent.toLowerCase().includes(query) ? '' : 'none';
+    });
+  });
+}
+
+listFilters.forEach(input => input.addEventListener('input', applyListFilters));
+
 // NEW SETUP MANAGEMENT DOM ELEMENTS
 const exportSetupsBtn = document.getElementById('exportSetupsBtn');
 const importSetupsBtn = document.getElementById('importSetupsBtn');
@@ -434,20 +452,29 @@ const generateOverviewBtn = document.getElementById('generateOverviewBtn');
 
 
 // Populate dropdowns with device options
-function populateSelect(selectElem, optionsObj, includeNone=true) {
-  selectElem.innerHTML = "";
+function populateSelect(selectElem, optionsObj, includeNone = true) {
+  const choices = [];
   if (includeNone) {
-    const noneOpt = document.createElement("option");
-    noneOpt.value = "None";
-    noneOpt.textContent = (currentLang === "de") ? "Keine Auswahl" : "None";
-    selectElem.appendChild(noneOpt);
+    choices.push({ value: "None", label: currentLang === "de" ? "Keine Auswahl" : "None" });
   }
   for (let name in optionsObj) {
-    if (name === "None") continue; // "None" is added separately
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    selectElem.appendChild(opt);
+    if (name === "None") continue;
+    choices.push({ value: name, label: name });
+  }
+
+  const instance = choicesMap.get(selectElem);
+  if (instance) {
+    instance.setChoices(choices, "value", "label", true);
+  } else {
+    selectElem.innerHTML = "";
+    choices.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c.value;
+      opt.textContent = c.label;
+      selectElem.appendChild(opt);
+    });
+    const newInst = new Choices(selectElem, { searchEnabled: true, shouldSort: false, itemSelectText: "" });
+    choicesMap.set(selectElem, newInst);
   }
 }
 
@@ -765,6 +792,7 @@ function refreshDeviceLists() {
   renderDeviceList("fiz.controllers", controllerListElem);
   renderDeviceList("fiz.distance", distanceListElem);
   renderDeviceList("batteries", batteryListElem);
+  applyListFilters();
 }
 
 // Initial render of device lists
