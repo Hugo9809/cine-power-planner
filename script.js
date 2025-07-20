@@ -89,7 +89,7 @@ const texts = {
     toggleDeviceManager: "Edit Device Data…",
     hideDeviceManager: "Hide Device Data",
 
-    batteryLabel: "Battery",
+    batteryTableLabel: "Battery",
     runtimeLabel: "Estimated Runtime (h)",
     batteryLifeUnit: "hrs",
 
@@ -193,7 +193,7 @@ const texts = {
     toggleDeviceManager: "Gerätedaten bearbeiten…",
     hideDeviceManager: "Gerätedaten ausblenden",
 
-    batteryLabel: "Akku",
+    batteryTableLabel: "Akku",
     runtimeLabel: "Geschätzte Laufzeit (h)",
     batteryLifeUnit: "Std.",
 
@@ -656,7 +656,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     dtapCandidates.sort((a, b) => b.hours - a.hours);
 
     // Prepare table HTML
-    let tableHtml = `<tr><th>${texts[currentLang].batteryLabel}</th><th>${texts[currentLang].runtimeLabel}</th><th></th></tr>`;
+    let tableHtml = `<tr><th>${texts[currentLang].batteryTableLabel}</th><th>${texts[currentLang].runtimeLabel}</th><th></th></tr>`;
 
     if ((selectedCandidate ? 1 : 0) + pinsCandidates.length + dtapCandidates.length === 0) {
       // No battery can supply via either output
@@ -1357,7 +1357,7 @@ function generatePrintableOverview() {
         pinsCandidates.sort((a, b) => b.hours - a.hours);
         dtapCandidates.sort((a, b) => b.hours - a.hours);
 
-        batteryTableHtml = `<h2>${t.batteryComparisonHeading}</h2><table border="1"><tr><th>${t.batteryLabel}</th><th>${t.runtimeLabel}</th><th></th></tr>`;
+        batteryTableHtml = `<h2>${t.batteryComparisonHeading}</h2><table border="1"><tr><th>${t.batteryTableLabel}</th><th>${t.runtimeLabel}</th><th></th></tr>`;
 
         const allCandidatesForMax = (selectedCandidate ? [selectedCandidate] : []).concat(pinsCandidates, dtapCandidates);
         const maxHours = Math.max(...allCandidatesForMax.map(c => c.hours).filter(h => h !== Infinity)) || 1; // Max of finite hours, or 1 if all are infinite or no candidates
