@@ -860,8 +860,6 @@ setupSelect.addEventListener("change", (event) => {
   updateCalculations();
 });
 
-// Global variable for setups, loaded from localStorage
-let setups = loadSetups();
 
 function populateSetupSelect() {
   const setups = loadSetups();
@@ -1131,12 +1129,12 @@ importFileInput.addEventListener("change", (event) => {
       const importedData = JSON.parse(e.target.result);
       // Basic validation: check if it has expected top-level keys
       const expectedKeys = ["cameras", "monitors", "video", "fiz", "batteries"];
-      const hasAllKeys = expectedKeys.every(key => importedData.hasOwnProperty(key));
+      const hasAllKeys = expectedKeys.every(key => Object.prototype.hasOwnProperty.call(importedData, key));
 
       if (hasAllKeys && typeof importedData.fiz === 'object' &&
-          importedData.fiz.hasOwnProperty('motors') &&
-          importedData.fiz.hasOwnProperty('controllers') &&
-          importedData.fiz.hasOwnProperty('distance')) {
+          Object.prototype.hasOwnProperty.call(importedData.fiz,'motors') &&
+          Object.prototype.hasOwnProperty.call(importedData.fiz,'controllers') &&
+          Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
         devices = importedData; // Overwrite current devices with imported data
         saveDeviceData(devices); // Persist to local storage
         refreshDeviceLists(); // Update device manager lists
@@ -1215,7 +1213,6 @@ importSetupsInput.addEventListener('change', (event) => {
             // Basic validation: must be a non-null object
             if (importedSetups && typeof importedSetups === 'object' && !Array.isArray(importedSetups)) {
                 saveSetups(importedSetups); // Save to localStorage (assuming saveSetups is from storage.js)
-                setups = importedSetups; // Update runtime variable
                 populateSetupSelect(); // Refresh dropdown
                 alert(texts[currentLang].alertImportSetupsSuccess.replace("{num_setups}", Object.keys(importedSetups).length));
                 // Reset form to "-- New Setup --" by clearing selection and
