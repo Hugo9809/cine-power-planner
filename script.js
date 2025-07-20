@@ -262,6 +262,10 @@ try {
 // Helper to apply translations to all UI text
 function setLanguage(lang) {
   currentLang = lang;
+  // ensure dropdown reflects the active language
+  if (languageSelect) {
+    languageSelect.value = lang;
+  }
   // Document title and main heading
   document.title = texts[lang].appTitle;
   document.getElementById("mainTitle").textContent = texts[lang].appHeading;
