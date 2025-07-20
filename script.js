@@ -777,11 +777,24 @@ function renderDeviceList(categoryKey, ulElement) {
     }
 
     const li = document.createElement("li");
-    li.innerHTML = `
-      <span>${name} ${displayData}</span>
-      <button class="edit-btn" data-name="${name}" data-category="${categoryKey}">${texts[currentLang].editBtn}</button>
-      <button class="delete-btn" data-name="${name}" data-category="${categoryKey}">${texts[currentLang].deleteDeviceBtn}</button>
-    `;
+    const span = document.createElement("span");
+    span.textContent = `${name} ${displayData}`;
+    li.appendChild(span);
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn";
+    editBtn.dataset.name = name;
+    editBtn.dataset.category = categoryKey;
+    editBtn.textContent = texts[currentLang].editBtn;
+    li.appendChild(editBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.dataset.name = name;
+    deleteBtn.dataset.category = categoryKey;
+    deleteBtn.textContent = texts[currentLang].deleteDeviceBtn;
+    li.appendChild(deleteBtn);
+
     ulElement.appendChild(li);
   }
 }
@@ -1304,6 +1317,12 @@ generateOverviewBtn.addEventListener('click', () => {
     generatePrintableOverview();
 });
 
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 function generatePrintableOverview() {
     const setupName = setupNameInput.value;
     const now = new Date();
@@ -1324,11 +1343,12 @@ function generatePrintableOverview() {
                 consumption = devices[category] && devices[category][deviceKey];
             }
             const power = typeof consumption === 'object' ? consumption.power : consumption;
+            const safeName = escapeHtml(deviceName);
             if (power !== undefined && power !== null) {
-                 deviceListHtml += `<li>${deviceName} (${power}W)</li>`;
+                 deviceListHtml += `<li>${safeName} (${power}W)</li>`;
             } else if (category === 'batteries') { // For batteries, just list name and capacity
                 const capacity = devices.batteries[deviceKey].capacity;
-                deviceListHtml += `<li>${deviceName} (${capacity}Wh)</li>`;
+                deviceListHtml += `<li>${safeName} (${capacity}Wh)</li>`;
             }
         }
     };
@@ -1489,12 +1509,13 @@ function generatePrintableOverview() {
         batteryTableHtml = ''; // No table if no battery selected
     }
     
+    const safeSetupName = escapeHtml(setupName);
     const overviewHtml = `
         <!DOCTYPE html>
         <html lang="${currentLang}">
         <head>
             <meta charset="UTF-8">
-            <title>${t.overviewTitle} - ${setupName}</title>
+            <title>${t.overviewTitle} - ${safeSetupName}</title>
             <style>
                 body { font-family: 'Open Sans', sans-serif; margin: 25px; color: #333; font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                 h1, h2, h3 { font-family: 'Open Sans', sans-serif; font-weight: 500; color: #001589; }
@@ -1615,7 +1636,7 @@ function generatePrintableOverview() {
         <body>
             <button onclick="window.print()" class="print-btn">Print</button>
             <h1>${t.overviewTitle}</h1>
-            <p><strong>${t.setupNameLabel}</strong> ${setupName}</p>
+            <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
             <p><em>Generated on: ${dateTimeString}</em></p>
             
             <h2>${t.deviceSelectionHeading}</h2>
