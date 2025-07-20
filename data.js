@@ -1,3 +1,4 @@
+/* exported devices */
 // data.js – Definiert die initiale Gerätedatenbank
 let devices = {
   cameras: {
