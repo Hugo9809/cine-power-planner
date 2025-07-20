@@ -313,6 +313,8 @@ body.dark-mode textarea {
 /* Remove Safari's gradient on selects in dark mode */
 body.dark-mode select {
   background-image: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 body.dark-mode #setupSelect,
