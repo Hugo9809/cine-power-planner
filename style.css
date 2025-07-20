@@ -317,6 +317,15 @@ body.dark-mode select {
   appearance: none;
 }
 
+/* Remove Safari's gradient on selects in light mode */
+@supports (-webkit-touch-callout: none) {
+  body:not(.dark-mode) select {
+    background-image: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+
 body.dark-mode #setupSelect,
 body.dark-mode #setupName {
   background-color: #333;
