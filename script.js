@@ -91,6 +91,7 @@ const texts = {
 
     batteryLabel: "Battery",
     runtimeLabel: "Estimated Runtime (h)",
+    batteryLifeUnit: "hrs",
 
     noBatterySupports: "No battery can supply this load.",
 
@@ -117,6 +118,7 @@ const texts = {
     alertImportSetupsError: "Error: Could not import setups. The file may be invalid or corrupted.",
     alertSelectSetupForOverview: "Please select a saved setup to generate an overview.",
     overviewTitle: "Setup Overview",
+    exportAndRevertBtn: "Export and Revert to default Database",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   de: {
@@ -193,6 +195,7 @@ const texts = {
 
     batteryLabel: "Akku",
     runtimeLabel: "Geschätzte Laufzeit (h)",
+    batteryLifeUnit: "Std.",
 
     noBatterySupports: "Kein Akku kann diese Last liefern.",
 
@@ -209,15 +212,16 @@ const texts = {
     alertDeviceName: "Der Gerätename darf nicht leer sein.",
 
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
-    setupActionsHeading: "Setup Actions",
-    exportSetupsBtn: "Export All Setups",
-    importSetupsBtn: "Import Setups",
-    generateOverviewBtn: "Generate Overview",
-    alertNoSetupsToExport: "There are no saved setups to export.",
+    setupActionsHeading: "Setup-Aktionen",
+    exportSetupsBtn: "Alle Setups exportieren",
+    importSetupsBtn: "Setups importieren",
+    generateOverviewBtn: "Übersicht erstellen",
+    alertNoSetupsToExport: "Es gibt keine gespeicherten Setups zum Exportieren.",
     alertImportSetupsSuccess: "{num_setups} Setups erfolgreich importiert.",
-    alertImportSetupsError: "Error: Could not import setups. The file may be invalid or corrupted.",
-    alertSelectSetupForOverview: "Please select a saved setup to generate an overview.",
-    overviewTitle: "Setup Overview",
+    alertImportSetupsError: "Fehler: Setups konnten nicht importiert werden. Die Datei ist möglicherweise ungültig oder beschädigt.",
+    alertSelectSetupForOverview: "Bitte wählen Sie ein gespeichertes Setup, um eine Übersicht zu erstellen.",
+    overviewTitle: "Setup-Übersicht",
+    exportAndRevertBtn: "Exportieren und auf Standarddatenbank zurücksetzen",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   }
 };
@@ -290,6 +294,8 @@ function setLanguage(lang) {
   document.getElementById("totalCurrent144Label").textContent = texts[lang].totalCurrent144Label;
   document.getElementById("totalCurrent12Label").textContent = texts[lang].totalCurrent12Label;
   document.getElementById("batteryLifeLabel").textContent = texts[lang].batteryLifeLabel;
+  const unitElem = document.getElementById("batteryLifeUnit");
+  if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   // Device manager category headings
   document.getElementById("category_cameras").textContent = texts[lang].category_cameras;
   document.getElementById("category_monitors").textContent = texts[lang].category_monitors;
@@ -352,6 +358,8 @@ function setLanguage(lang) {
   document.getElementById("exportSetupsBtn").textContent = texts[lang].exportSetupsBtn;
   document.getElementById("importSetupsBtn").textContent = texts[lang].importSetupsBtn;
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
+  const exportRevert = document.getElementById("exportAndRevertBtn");
+  if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
 }
 
 // Reference elements (DOM Elements)
