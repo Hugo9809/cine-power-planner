@@ -1,7 +1,6 @@
 # 🎥 Camera Power Consumption Planner / Kamera-Stromverbrauchs-Planer
 
-This is a browser-based tool for planning professional camera setups powered by V-Mount batteries.  
-It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V), and **estimated battery runtime**, while checking whether the battery can safely deliver the required power.
+This is a browser-based tool for planning professional camera setups powered by V-Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V), and **estimated battery runtime**, while checking whether the battery can safely deliver the required power.
 
 Dies ist ein browserbasiertes Tool zur Planung professioneller Kamera-Setups mit V-Mount-Akkus.  
 Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowie die **geschätzte Akkulaufzeit** und prüft, ob der Akku ausreichend Leistung liefern kann.
