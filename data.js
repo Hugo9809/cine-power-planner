@@ -1552,6 +1552,430 @@ let devices = {
         { type: "BNC", notes: "Timecode In/Out" } // Source: RED Weapon Product Page
       ]
     },
+    // RED Epic Dragon (6K)
+    "RED Epic Dragon (6K)": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED Epic Dragon Product Page
+          portType: "2-pin DC-IN", // Source: RED Epic Dragon Product Page
+          powerDrawWatts: 60 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT", // Source: RED Epic Dragon Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)", // Source: Third-party accessories
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED Epic Dragon Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "3G-SDI", count: 2 } // Source: RED Epic Dragon Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" } // Source: RED Epic Dragon Product Page
+      ],
+      recordingMedia: [
+        "REDMAG 1.8\" SSD" // Source: RED Epic Dragon Product Page
+      ],
+      viewfinder: [
+        { type: "RED Touch 7.0\" LCD (Optional)" } // Source: RED Epic Dragon Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED Epic Dragon Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED Epic Dragon Product Page
+      ]
+    },
+    // RED Scarlet Dragon (5K)
+    "RED Scarlet Dragon (5K)": {
+      powerDrawWatts: 50, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED Scarlet Dragon Product Page
+          portType: "2-pin DC-IN", // Source: RED Scarlet Dragon Product Page
+          powerDrawWatts: 50 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT", // Source: RED Scarlet Dragon Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)", // Source: Third-party accessories
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED Scarlet Dragon Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "3G-SDI", count: 2 } // Source: RED Scarlet Dragon Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" } // Source: RED Scarlet Dragon Product Page
+      ],
+      recordingMedia: [
+        "REDMAG 1.8\" SSD" // Source: RED Scarlet Dragon Product Page
+      ],
+      viewfinder: [
+        { type: "RED Touch 7.0\" LCD (Optional)" } // Source: RED Scarlet Dragon Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED Scarlet Dragon Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED Scarlet Dragon Product Page
+      ]
+    },
+    // RED Epic (Mysterium-X Sensor)
+    "RED Epic (Mysterium-X Sensor)": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED Epic-X Product Page
+          portType: "2-pin DC-IN", // Source: RED Epic-X Product Page
+          powerDrawWatts: 60 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT", // Source: RED Epic-X Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)", // Source: Third-party accessories
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED Epic-X Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "3G-SDI", count: 2 } // Source: RED Epic-X Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" } // Source: RED Epic-X Product Page
+      ],
+      recordingMedia: [
+        "REDMAG 1.8\" SSD" // Source: RED Epic-X Product Page
+      ],
+      viewfinder: [
+        { type: "RED Touch 7.0\" LCD (Optional)" } // Source: RED Epic-X Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED Epic-X Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED Epic-X Product Page
+      ]
+    },
+    // RED Scarlet (Mysterium-X Sensor)
+    "RED Scarlet (Mysterium-X Sensor)": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED Scarlet Product Page
+          portType: "2-pin DC-IN", // Source: RED Scarlet Product Page
+          powerDrawWatts: 60 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT", // Source: RED Scarlet Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)", // Source: Third-party accessories
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED Scarlet Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "3G-SDI", count: 2 } // Source: RED Scarlet Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" } // Source: RED Scarlet Product Page
+      ],
+      recordingMedia: [
+        "REDMAG 1.8\" SSD" // Source: RED Scarlet Product Page
+      ],
+      viewfinder: [
+        { type: "RED Touch 7.0\" LCD (Optional)" } // Source: RED Scarlet Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED Scarlet Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED Scarlet Product Page
+      ]
+    },
+    // Panasonic Lumix S5 II
+    "Panasonic Lumix S5 II": {
+      powerDrawWatts: 12, // Estimated typical power draw for recording 4K [P1.3, P1.4]
+      power: {
+        input: {
+          voltageRange: "8.4V DC (battery) / 9V DC (USB-C PD)", // Source: Panasonic S5II Specs [P1.1, P1.2]
+          portType: "Battery Slot / USB-C PD", // Source: Panasonic S5II Specs [P1.1, P1.2]
+          powerDrawWatts: 27 // Recommended PD input for continuous power [P1.3, P1.4]
+        },
+        internalBattery: {
+          type: "Panasonic DMW-BLK22", // Source: Panasonic S5II Specs [P1.2]
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "DMW-BLK22 (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", voltage: "5V", current: "3A", wattage: 15, notes: "For charging or powering small accessories" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" } // Source: Panasonic S5II Specs [P1.2]
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" }
+      ],
+      recordingMedia: [
+        "SD UHS-II" // Source: Panasonic S5II Specs [P1.2]
+      ],
+      viewfinder: [
+        { type: "OLED LVF (Live View Finder)", resolution: "3,680k-dot" }, // Source: Panasonic S5II Specs [P1.1]
+        { type: "Free-angle LCD", size: "3.0-inch", resolution: "1,840k-dot" } // Source: Panasonic S5II Specs [P1.1]
+      ],
+      lensMount: [
+        "L-Mount (Native)" // Source: Panasonic S5II Specs [P1.1]
+      ],
+      timecode: [
+        { type: "No dedicated BNC", notes: "Timecode sync via HDMI or software" }
+      ]
+    },
+    // Panasonic Lumix GH6
+    "Panasonic Lumix GH6": {
+      powerDrawWatts: 5, // Typical power draw when recording with monitor [P2.1]
+      power: {
+        input: {
+          voltageRange: "9.0V DC (battery) / 9V DC (USB-C PD)", // Source: Panasonic GH6 Specs [P2.1]
+          portType: "Battery Slot / USB-C PD", // Source: Panasonic GH6 Specs [P2.1]
+          powerDrawWatts: 27 // Recommended PD input for trickle charging [P2.3]
+        },
+        internalBattery: {
+          type: "Panasonic DMW-BLK22", // Source: Panasonic GH6 Specs [P2.1]
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "DMW-BLK22 (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", voltage: "5V", current: "3A", wattage: 15, notes: "For charging or powering small accessories" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" } // Source: Panasonic GH6 Specs [P2.2]
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B", // Source: Panasonic GH6 Specs [P2.2]
+        "SD UHS-II" // Source: Panasonic GH6 Specs [P2.2]
+      ],
+      viewfinder: [
+        { type: "OLED LVF (Live View Finder)", resolution: "3,680k-dot" }, // Source: Panasonic GH6 Specs [P2.1]
+        { type: "Free-angle LCD", size: "3.0-inch", resolution: "1,840k-dot" } // Source: Panasonic GH6 Specs [P2.1]
+      ],
+      lensMount: [
+        "Micro Four Thirds (Native)" // Source: Panasonic GH6 Specs [P2.2]
+      ],
+      timecode: [
+        { type: "No dedicated BNC", notes: "Timecode sync via HDMI or software" }
+      ]
+    },
+    // Sony A7S III
+    "Sony A7S III": {
+      powerDrawWatts: 5, // Typical power draw for movies [P3.1]
+      power: {
+        input: {
+          voltageRange: "7.2V DC (battery) / 9V DC (USB-C PD)", // Source: Sony A7S III Specs [P3.1, P3.2, P3.4]
+          portType: "Battery Slot / USB-C PD", // Source: Sony A7S III Specs [P3.1, P3.2, P3.4]
+          powerDrawWatts: 27 // Recommended PD input for continuous power [P3.4]
+        },
+        internalBattery: {
+          type: "Sony NP-FZ100", // Source: Sony A7S III Specs [P3.3]
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "NP-FZ100 (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", voltage: "5V", current: "3A", wattage: 15, notes: "For charging or powering small accessories" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" } // Source: Sony A7S III Specs [P3.1]
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type A", // Source: Sony A7S III Specs [P3.1]
+        "SD (UHS-II/UHS-I)" // Source: Sony A7S III Specs [P3.1]
+      ],
+      viewfinder: [
+        { type: "OLED EVF", resolution: "9.44M dots" }, // Source: Sony A7S III Specs [P3.1]
+        { type: "Vari-angle LCD", size: "3.0-inch", resolution: "1.44M dots" } // Source: Sony A7S III Specs [P3.1]
+      ],
+      lensMount: [
+        "Sony E-mount (Native)" // Source: Sony A7S III Specs [P3.1]
+      ],
+      timecode: [
+        { type: "Multi-interface shoe", notes: "Via XLR Handle Unit for timecode input" } // Source: Sony A7S III Specs [P3.1]
+      ]
+    },
+    // Fujifilm X-H2S
+    "Fujifilm X-H2S": {
+      powerDrawWatts: 15, // Rated output of AC adapter [P4.1]
+      power: {
+        input: {
+          voltageRange: "7.2V (battery) / 5V DC (USB-C PD)", // Source: Fujifilm X-H2S Specs [P4.1]
+          portType: "Battery Slot / USB-C PD", // Source: Fujifilm X-H2S Specs [P4.1]
+          powerDrawWatts: 15 // Rated output of AC adapter [P4.1]
+        },
+        internalBattery: {
+          type: "NP-W235", // Source: Fujifilm X-H2S Specs [P4.1]
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "NP-W235 (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", voltage: "5V", current: "3A", wattage: 15, notes: "For charging or powering small accessories" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" } // Source: Fujifilm X-H2S Specs [P4.1]
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B", // Source: Fujifilm X-H2S Specs [P4.1]
+        "SD UHS-II" // Source: Fujifilm X-H2S Specs [P4.1]
+      ],
+      viewfinder: [
+        { type: "EVF with eye sensor", resolution: "5.76M dots OLED" }, // Source: Fujifilm X-H2S Specs [P4.1]
+        { type: "Vari-angle LCD", size: "3.0-inch", resolution: "1.62M dots" } // Source: Fujifilm X-H2S Specs [P4.1]
+      ],
+      lensMount: [
+        "Fujifilm X-mount (Native)" // Source: Fujifilm X-H2S Specs [P4.1]
+      ],
+      timecode: [
+        { type: "No dedicated BNC", notes: "Timecode sync via HDMI or software" }
+      ]
+    },
+    // DJI Ronin 4D 6K
+    "DJI Ronin 4D 6K": {
+      powerDrawWatts: 40, // Estimated based on battery capacity and runtime [P5.1, P5.3]
+      power: {
+        input: {
+          voltageRange: "DC 12-30V", // Source: DJI Ronin 4D Specs [P5.1]
+          portType: "6-pin 1B DC-IN / TB50 Battery Mount", // Source: DJI Ronin 4D Specs [P5.1]
+          powerDrawWatts: 40 // Estimated typical power draw
+        },
+        internalBattery: {
+          type: "DJI TB50 Intelligent Battery", // Source: DJI Ronin 4D Specs [P5.1]
+          batteryLifeMinutes: 150 // Approx. 150 minutes [P5.1]
+        },
+        batteryPlateSupport: [
+          "TB50 (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "2-pin LEMO", count: 2, voltage: "12V", current: "3A", wattage: 36, notes: "Regulated" }, // Source: DJI Ronin 4D Specs [P5.1]
+          { type: "3-pin Fischer", count: 1, voltage: "24V", current: "3A", wattage: 72, notes: "Regulated, with run/stop" }, // Source: DJI Ronin 4D Specs [P5.1]
+          { type: "D-Tap", count: 2, voltage: "Battery Voltage", wattage: null, notes: "Unregulated" }, // Source: DJI Ronin 4D Specs [P5.1]
+          { type: "USB-C", count: 1, voltage: "5V", current: "1.5A", wattage: 7.5, notes: "For accessories" } // Source: DJI Ronin 4D Specs [P5.1]
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" }, // Source: DJI Ronin 4D Specs [P5.1]
+        { type: "SDI", count: 1, notes: "Via expansion plate" } // Source: DJI Ronin 4D Specs [P5.1]
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For Focus Motor" }, // Source: DJI Ronin 4D Specs [P5.2]
+        { type: "LiDAR Range Finder Port", notes: "Integrated LiDAR" } // Source: DJI Ronin 4D Specs [P5.3]
+      ],
+      recordingMedia: [
+        "DJI PROSSD", // Source: DJI Ronin 4D Specs [P5.4]
+        "CFexpress Type B (via adapter)" // Source: DJI Ronin 4D Specs [P5.3]
+      ],
+      viewfinder: [
+        { type: "Integrated Main Monitor", size: "5.5-inch", resolution: "1920x1080" }, // Source: DJI Ronin 4D Specs [P5.1]
+        { type: "High-Bright Remote Monitor (Optional)" } // Source: DJI Ronin 4D Specs [P5.4]
+      ],
+      lensMount: [
+        "DJI DL Mount (Native)",
+        "PL (adapted)",
+        "E-mount (adapted)"
+      ],
+      timecode: [
+        { type: "No dedicated BNC", notes: "Timecode sync via software/accessories" }
+      ]
+    },
+    // Sony FX30
+    "Sony FX30": {
+      powerDrawWatts: 5.6, // From Sony ILME-FX30 Specifications [S1.1]
+      power: {
+        input: {
+          voltageRange: "7.2V DC (battery) / 9V DC (USB-C PD)", // From Sony ILME-FX30 Specifications [S1.1, S1.3]
+          portType: "Battery Slot / USB Type-C®", // From Sony ILME-FX30 Specifications [S1.1]
+          powerDrawWatts: 5.6 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "NP-FZ100", // From Sony ILME-FX30 Specifications [S1.1]
+          batteryLifeMinutes: 175 // Continuous recording, CIPA standard [S1.1]
+        },
+        batteryPlateSupport: [
+          "NP-FZ100 (Native)",
+          "V-Mount (adapted)", // Common third-party accessory
+          "Gold Mount (adapted)" // Common third-party accessory
+        ],
+        powerDistributionOutputs: [
+          { type: "USB Type-C®", voltage: "9V", current: "3A", wattage: 27, notes: "Power Delivery for continuous power/charging [S1.2, S1.3]" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type-A", notes: "Supports 4672 x 2628 (59.94p/50p/29.97p/25p/23.98p), 16 bit RAW output [S1.1]" }
+      ],
+      fizConnectors: [
+        { type: "Multi/Micro USB", notes: "For specific accessories/control" }, // From Sony ILME-FX30 Specifications [S1.1]
+        { type: "USB Type-C®", notes: "For specific accessories/control" } // From Sony ILME-FX30 Specifications [S1.1]
+      ],
+      recordingMedia: [
+        "CFexpress Type A", // From Sony ILME-FX30 Specifications [S1.1]
+        "SD (UHS-II/UHS-I)" // From Sony ILME-FX30 Specifications [S1.1]
+      ],
+      viewfinder: [
+        { type: "LCD Monitor (Native)", size: "3.0-type (7.5 cm)", resolution: "Approx. 2.36M dots", notes: "Vari-angle touch panel [S1.1]" }
+      ],
+      lensMount: [
+        "Sony E-mount (Native)" // From Sony ILME-FX30 Specifications [S1.1]
+      ],
+      timecode: [
+        { type: "Multi/Micro USB (TC IN)", notes: "Timecode Input [S1.1]" }
+      ]
+    },
     "None": { powerDrawWatts: 0 }
   },
   monitors: {
