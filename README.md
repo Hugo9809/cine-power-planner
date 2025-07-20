@@ -20,11 +20,15 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 ## 🔧 Features / Funktionen
 
 ### ✅ Setup Management / Setup-Verwaltung
-- Save, load, and delete multiple camera setups  
-- All data is stored locally in the browser via `localStorage`  
+- Save, load, and delete multiple camera setups
+- All data is stored locally in the browser via `localStorage`
+- Import and export setups as JSON files
+- Generate a printable overview for any saved setup
 
-- Mehrere Kamera-Setups unter Namen speichern, laden oder löschen  
-- Alle Daten werden lokal im Browser gespeichert (`localStorage`)  
+- Mehrere Kamera-Setups unter Namen speichern, laden oder löschen
+- Alle Daten werden lokal im Browser gespeichert (`localStorage`)
+- Setups als JSON-Dateien importieren und exportieren
+- Druckbare Übersicht für gespeicherte Setups erzeugen
 
 ### 📦 Device Categories / Gerätekategorien
 - **Camera** (1)
@@ -82,13 +86,17 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 
 4.  **Check Output Limits** - Status indicators show if the battery's output current limit is exceeded  
 
-5.  **Save & Load Setups** - Name and save your current setup  
-    - Load existing setups from the dropdown  
+5.  **Save & Load Setups** - Name and save your current setup
+    - Load existing setups from the dropdown
+    - Export all setups as JSON
+    - Import setups from a JSON file
+    - Generate a printable overview of a saved setup
 
-6.  **Manage Device List** - Click “Edit Device Data…” to open the database editor  
-    - Add new devices or edit/delete existing ones  
-    - Export full list as JSON  
+6.  **Manage Device List** - Click “Edit Device Data…” to open the database editor
+    - Add new devices or edit/delete existing ones
+    - Export full list as JSON
     - **Import Database**: Use the "Import Database" button and select a previously exported JSON file to load device data into the application. This will overwrite existing device data.
+    - **Export & Revert**: "Export and Revert to default Database" saves the current data and resets the database to its default state.
 
 ---
 
