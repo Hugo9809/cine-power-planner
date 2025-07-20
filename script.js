@@ -407,6 +407,7 @@ const exportOutput    = document.getElementById("exportOutput");
 const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const languageSelect  = document.getElementById("languageSelect");
+const darkModeToggle  = document.getElementById("darkModeToggle");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
@@ -1563,6 +1564,37 @@ function generatePrintableOverview() {
 
 motorSelects.forEach(sel => sel?.addEventListener("change", updateCalculations));
 controllerSelects.forEach(sel => sel?.addEventListener("change", updateCalculations));
+
+// Dark mode handling
+function applyDarkMode(enabled) {
+  if (enabled) {
+    document.body.classList.add("dark-mode");
+    if (darkModeToggle) darkModeToggle.textContent = "☀";
+  } else {
+    document.body.classList.remove("dark-mode");
+    if (darkModeToggle) darkModeToggle.textContent = "🌙";
+  }
+}
+
+let darkModeEnabled = false;
+try {
+  darkModeEnabled = localStorage.getItem("darkMode") === "true";
+} catch (e) {
+  console.warn("Could not load dark mode preference", e);
+}
+applyDarkMode(darkModeEnabled);
+
+if (darkModeToggle) {
+  darkModeToggle.addEventListener("click", () => {
+    darkModeEnabled = !document.body.classList.contains("dark-mode");
+    applyDarkMode(darkModeEnabled);
+    try {
+      localStorage.setItem("darkMode", darkModeEnabled);
+    } catch (e) {
+      console.warn("Could not save dark mode preference", e);
+    }
+  });
+}
 
 // Initial calculation and language set
 setLanguage(currentLang);
