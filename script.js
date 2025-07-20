@@ -429,14 +429,14 @@ const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 
-// Filter inputs
-const cameraFilterInput = document.getElementById("cameraFilter");
-const monitorFilterInput = document.getElementById("monitorFilter");
-const videoFilterInput = document.getElementById("videoFilter");
-const motorFilterInput = document.getElementById("motorFilter");
-const controllerFilterInput = document.getElementById("controllerFilter");
-const distanceFilterInput = document.getElementById("distanceFilter");
-const batteryFilterInput = document.getElementById("batteryFilter");
+// List filters for existing device categories
+const cameraListFilterInput = document.getElementById("cameraListFilter");
+const monitorListFilterInput = document.getElementById("monitorListFilter");
+const videoListFilterInput = document.getElementById("videoListFilter");
+const motorListFilterInput = document.getElementById("motorListFilter");
+const controllerListFilterInput = document.getElementById("controllerListFilter");
+const distanceListFilterInput = document.getElementById("distanceListFilter");
+const batteryListFilterInput = document.getElementById("batteryListFilter");
 
 // NEW SETUP MANAGEMENT DOM ELEMENTS
 const exportSetupsBtn = document.getElementById('exportSetupsBtn');
@@ -467,21 +467,70 @@ function filterSelect(selectElem, filterValue) {
   const text = filterValue.toLowerCase();
   Array.from(selectElem.options).forEach(opt => {
     if (opt.value === "None" || text === "" || opt.textContent.toLowerCase().includes(text)) {
-      opt.style.display = "";
+      opt.hidden = false;
     } else {
-      opt.style.display = "none";
+      opt.hidden = true;
+    }
+  });
+}
+
+function attachSelectFilter(selectElem) {
+  selectElem._filterText = "";
+  let timer;
+  selectElem.addEventListener("keydown", (e) => {
+    const ignore = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown", "Enter", "Tab"];
+    if (ignore.includes(e.key)) return;
+    if (e.key === "Escape") {
+      selectElem._filterText = "";
+      filterSelect(selectElem, "");
+      return;
+    }
+    if (e.key === "Backspace") {
+      selectElem._filterText = selectElem._filterText.slice(0, -1);
+    } else if (e.key.length === 1) {
+      selectElem._filterText += e.key.toLowerCase();
+    } else {
+      return;
+    }
+    filterSelect(selectElem, selectElem._filterText);
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      selectElem._filterText = "";
+    }, 800);
+    e.preventDefault();
+  });
+  selectElem.addEventListener("blur", () => {
+    selectElem._filterText = "";
+  });
+}
+
+function filterDeviceList(listElem, filterValue) {
+  const text = filterValue.toLowerCase();
+  Array.from(listElem.querySelectorAll('li')).forEach(li => {
+    if (text === '' || li.textContent.toLowerCase().includes(text)) {
+      li.style.display = '';
+    } else {
+      li.style.display = 'none';
     }
   });
 }
 
 function applyFilters() {
-  filterSelect(cameraSelect, cameraFilterInput.value);
-  filterSelect(monitorSelect, monitorFilterInput.value);
-  filterSelect(videoSelect, videoFilterInput.value);
-  motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value));
-  controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value));
-  filterSelect(distanceSelect, distanceFilterInput.value);
-  filterSelect(batterySelect, batteryFilterInput.value);
+  filterSelect(cameraSelect, cameraSelect._filterText || "");
+  filterSelect(monitorSelect, monitorSelect._filterText || "");
+  filterSelect(videoSelect, videoSelect._filterText || "");
+  motorSelects.forEach(sel => filterSelect(sel, sel._filterText || ""));
+  controllerSelects.forEach(sel => filterSelect(sel, sel._filterText || ""));
+  filterSelect(distanceSelect, distanceSelect._filterText || "");
+  filterSelect(batterySelect, batterySelect._filterText || "");
+
+  filterDeviceList(cameraListElem, cameraListFilterInput.value);
+  filterDeviceList(monitorListElem, monitorListFilterInput.value);
+  filterDeviceList(videoListElem, videoListFilterInput.value);
+  filterDeviceList(motorListElem, motorListFilterInput.value);
+  filterDeviceList(controllerListElem, controllerListFilterInput.value);
+  filterDeviceList(distanceListElem, distanceListFilterInput.value);
+  filterDeviceList(batteryListElem, batteryListFilterInput.value);
 }
 
 // Initialize device selection dropdowns
@@ -492,6 +541,13 @@ motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
 populateSelect(batterySelect, devices.batteries, true);
+attachSelectFilter(cameraSelect);
+attachSelectFilter(monitorSelect);
+attachSelectFilter(videoSelect);
+motorSelects.forEach(sel => attachSelectFilter(sel));
+controllerSelects.forEach(sel => attachSelectFilter(sel));
+attachSelectFilter(distanceSelect);
+attachSelectFilter(batterySelect);
 applyFilters();
 
 // Set default selections for dropdowns
@@ -839,6 +895,14 @@ function refreshDeviceLists() {
   renderDeviceList("fiz.controllers", controllerListElem);
   renderDeviceList("fiz.distance", distanceListElem);
   renderDeviceList("batteries", batteryListElem);
+
+  filterDeviceList(cameraListElem, cameraListFilterInput.value);
+  filterDeviceList(monitorListElem, monitorListFilterInput.value);
+  filterDeviceList(videoListElem, videoListFilterInput.value);
+  filterDeviceList(motorListElem, motorListFilterInput.value);
+  filterDeviceList(controllerListElem, controllerListFilterInput.value);
+  filterDeviceList(distanceListElem, distanceListFilterInput.value);
+  filterDeviceList(batteryListElem, batteryListFilterInput.value);
 }
 
 // Initial render of device lists
@@ -851,14 +915,14 @@ languageSelect.addEventListener("change", (event) => {
   setLanguage(event.target.value);
 });
 
-// Filtering inputs
-cameraFilterInput.addEventListener("input", () => filterSelect(cameraSelect, cameraFilterInput.value));
-monitorFilterInput.addEventListener("input", () => filterSelect(monitorSelect, monitorFilterInput.value));
-videoFilterInput.addEventListener("input", () => filterSelect(videoSelect, videoFilterInput.value));
-motorFilterInput.addEventListener("input", () => motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value)));
-controllerFilterInput.addEventListener("input", () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
-distanceFilterInput.addEventListener("input", () => filterSelect(distanceSelect, distanceFilterInput.value));
-batteryFilterInput.addEventListener("input", () => filterSelect(batterySelect, batteryFilterInput.value));
+
+cameraListFilterInput.addEventListener("input", () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
+monitorListFilterInput.addEventListener("input", () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
+videoListFilterInput.addEventListener("input", () => filterDeviceList(videoListElem, videoListFilterInput.value));
+motorListFilterInput.addEventListener("input", () => filterDeviceList(motorListElem, motorListFilterInput.value));
+controllerListFilterInput.addEventListener("input", () => filterDeviceList(controllerListElem, controllerListFilterInput.value));
+distanceListFilterInput.addEventListener("input", () => filterDeviceList(distanceListElem, distanceListFilterInput.value));
+batteryListFilterInput.addEventListener("input", () => filterDeviceList(batteryListElem, batteryListFilterInput.value));
 
 // Setup management
 saveSetupBtn.addEventListener("click", () => {

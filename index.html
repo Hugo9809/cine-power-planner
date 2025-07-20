@@ -43,17 +43,14 @@
     <h2 id="deviceSelectionHeading">Device Selection</h2>
       <div class="form-row">
         <label for="cameraSelect" id="cameraLabel">Camera:</label>
-        <input type="text" id="cameraFilter" class="filter-input" placeholder="Filter..." />
         <select id="cameraSelect"></select>
       </div>
       <div class="form-row">
         <label for="monitorSelect" id="monitorLabel">Monitor:</label>
-        <input type="text" id="monitorFilter" class="filter-input" placeholder="Filter..." />
         <select id="monitorSelect"></select>
       </div>
       <div class="form-row">
         <label for="videoSelect" id="videoLabel">Wireless Video:</label>
-        <input type="text" id="videoFilter" class="filter-input" placeholder="Filter..." />
         <select id="videoSelect"></select>
       </div>
 
@@ -61,7 +58,6 @@
       <legend id="fizLegend">FIZ (Follow Focus) Systems</legend>
       <div class="form-row">
         <label for="motor1Select" id="fizMotorsLabel">FIZ Motors:</label>
-        <input type="text" id="motorFilter" class="filter-input" placeholder="Filter..." />
         <select id="motor1Select"></select>
       </div>
       <div class="form-row">
@@ -78,7 +74,6 @@
       </div>
       <div class="form-row">
         <label for="controller1Select" id="fizControllersLabel">FIZ Controllers:</label>
-        <input type="text" id="controllerFilter" class="filter-input" placeholder="Filter..." />
         <select id="controller1Select"></select>
       </div>
       <div class="form-row">
@@ -95,14 +90,12 @@
       </div>
       <div class="form-row">
         <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
-        <input type="text" id="distanceFilter" class="filter-input" placeholder="Filter..." />
         <select id="distanceSelect"></select>
       </div>
     </fieldset>
 
     <div class="form-row">
       <label for="batterySelect" id="batteryLabel">V-Mount Battery:</label>
-      <input type="text" id="batteryFilter" class="filter-input" placeholder="Filter..." />
       <select id="batterySelect"></select>
     </div>
   </section>
@@ -183,30 +176,37 @@
     <div class="device-list-container">
       <div class="device-category">
         <h4 id="category_cameras">Cameras</h4>
+        <input type="text" id="cameraListFilter" class="list-filter" placeholder="Filter..." />
         <ul id="cameraList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_monitors">Monitors</h4>
+        <input type="text" id="monitorListFilter" class="list-filter" placeholder="Filter..." />
         <ul id="monitorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_video">Wireless Video</h4>
+        <input type="text" id="videoListFilter" class="list-filter" placeholder="Filter..." />
         <ul id="videoList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_motors">FIZ Motors</h4>
+        <input type="text" id="motorListFilter" class="list-filter" placeholder="Filter..." />
         <ul id="motorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_controllers">FIZ Controllers</h4>
+        <input type="text" id="controllerListFilter" class="list-filter" placeholder="Filter..." />
         <ul id="controllerList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_distance">FIZ Distance</h4>
+        <input type="text" id="distanceListFilter" class="list-filter" placeholder="Filter..." />
         <ul id="distanceList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_batteries">V-Mount Batteries</h4>
+        <input type="text" id="batteryListFilter" class="list-filter" placeholder="Filter..." />
         <ul id="batteryList" class="device-ul"></ul>
       </div>
     </div>
