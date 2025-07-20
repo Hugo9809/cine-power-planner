@@ -167,37 +167,81 @@
       <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" />
     </div>
     <div id="cameraFields" style="display:none;">
-      <div class="form-row">
-        <label for="cameraWatt" id="cameraWattLabel">Power Draw (W):</label>
-        <input type="number" id="cameraWatt" step="0.1" />
+      <div class="camera-subsection">
+        <h4 id="powerInputsHeading">Power Inputs</h4>
+        <div class="form-row">
+          <label for="cameraWatt" id="cameraWattLabel">Power Draw (W):</label>
+          <input type="number" id="cameraWatt" step="0.1" />
+        </div>
+        <div class="form-row">
+          <label for="cameraVoltage" id="cameraVoltageLabel">Voltage Range:</label>
+          <input type="text" id="cameraVoltage" />
+        </div>
+        <div class="form-row">
+          <label for="cameraPortType" id="cameraPortTypeLabel">Port Type:</label>
+          <input type="text" id="cameraPortType" />
+        </div>
+        <div class="form-row">
+          <label for="cameraBatteryType" id="cameraBatteryTypeLabel">Internal Battery Type:</label>
+          <input type="text" id="cameraBatteryType" />
+        </div>
+        <div class="form-row">
+          <label for="cameraBatteryLife" id="cameraBatteryLifeLabel">Internal Battery Life (min):</label>
+          <input type="number" id="cameraBatteryLife" step="0.1" />
+        </div>
+        <div class="form-row">
+          <label for="cameraPlates" id="cameraPlatesLabel">Battery Plates:</label>
+          <input type="text" id="cameraPlates" placeholder="V-Mount,B-Mount" />
+        </div>
       </div>
-      <div class="form-row">
-        <label for="cameraVoltage" id="cameraVoltageLabel">Voltage Range:</label>
-        <input type="text" id="cameraVoltage" />
+      <div class="camera-subsection">
+        <h4 id="powerDistributionHeading">Power Distribution</h4>
+        <div class="form-row">
+          <label for="cameraPowerDist" id="cameraPowerDistLabel">Outputs (JSON):</label>
+          <textarea id="cameraPowerDist" rows="3"></textarea>
+        </div>
       </div>
-      <div class="form-row">
-        <label for="cameraPortType" id="cameraPortTypeLabel">Port Type:</label>
-        <input type="text" id="cameraPortType" />
+      <div class="camera-subsection">
+        <h4 id="videoOutputsHeading">Video Outputs</h4>
+        <div class="form-row">
+          <label for="cameraVideoOutputs" id="cameraVideoOutputsLabel">Outputs (JSON):</label>
+          <textarea id="cameraVideoOutputs" rows="3"></textarea>
+        </div>
       </div>
-      <div class="form-row">
-        <label for="cameraBatteryType" id="cameraBatteryTypeLabel">Internal Battery Type:</label>
-        <input type="text" id="cameraBatteryType" />
+      <div class="camera-subsection">
+        <h4 id="fizConnectorHeading">FIZ Connector</h4>
+        <div class="form-row">
+          <label for="cameraFIZConnector" id="cameraFIZConnectorLabel">Connectors (JSON):</label>
+          <textarea id="cameraFIZConnector" rows="3"></textarea>
+        </div>
       </div>
-      <div class="form-row">
-        <label for="cameraBatteryLife" id="cameraBatteryLifeLabel">Internal Battery Life (min):</label>
-        <input type="number" id="cameraBatteryLife" step="0.1" />
+      <div class="camera-subsection">
+        <h4 id="mediaHeading">Media</h4>
+        <div class="form-row">
+          <label for="cameraMedia" id="cameraMediaLabel">Recording Media:</label>
+          <input type="text" id="cameraMedia" placeholder="CFast 2.0" />
+        </div>
       </div>
-      <div class="form-row">
-        <label for="cameraPlates" id="cameraPlatesLabel">Battery Plates:</label>
-        <input type="text" id="cameraPlates" placeholder="V-Mount,B-Mount" />
+      <div class="camera-subsection">
+        <h4 id="viewfinderHeading">Viewfinder</h4>
+        <div class="form-row">
+          <label for="cameraViewfinder" id="cameraViewfinderLabel">Viewfinders (JSON):</label>
+          <textarea id="cameraViewfinder" rows="3"></textarea>
+        </div>
       </div>
-      <div class="form-row">
-        <label for="cameraMedia" id="cameraMediaLabel">Recording Media:</label>
-        <input type="text" id="cameraMedia" placeholder="CFast 2.0" />
+      <div class="camera-subsection">
+        <h4 id="lensMountHeading">Lens Mount</h4>
+        <div class="form-row">
+          <label for="cameraLensMount" id="cameraLensMountLabel">Lens Mount:</label>
+          <input type="text" id="cameraLensMount" placeholder="ARRI PL" />
+        </div>
       </div>
-      <div class="form-row">
-        <label for="cameraLensMount" id="cameraLensMountLabel">Lens Mount:</label>
-        <input type="text" id="cameraLensMount" placeholder="ARRI PL" />
+      <div class="camera-subsection">
+        <h4 id="timecodeHeading">Timecode</h4>
+        <div class="form-row">
+          <label for="cameraTimecode" id="cameraTimecodeLabel">Timecode (JSON):</label>
+          <textarea id="cameraTimecode" rows="3"></textarea>
+        </div>
       </div>
     </div>
     <div id="batteryFields" style="display:none;">
