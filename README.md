@@ -74,7 +74,7 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 
 ## ▶️ How to Use / Nutzung
 
-1.  **Launch App** Open `index.html` in any modern browser (Chrome, Firefox)  
+1.  **Launch App:** Open `index.html` in any modern browser (Chrome, Firefox)
     ➤ Kein Server erforderlich – die App läuft komplett lokal  
 
 2.  **Select Devices** Choose devices from each category using dropdowns  
