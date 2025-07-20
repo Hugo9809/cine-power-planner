@@ -107,6 +107,7 @@ const texts = {
     alertDeviceFields: "Please provide valid values for capacity, Pin A and D-Tap A.",
     alertDeviceWatt: "Please enter a valid watt value.",
     alertDeviceName: "Device name cannot be empty.",
+    alertInvalidCameraJSON: "Invalid JSON for camera details",
 
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
     setupActionsHeading: "Setup Actions",
@@ -210,7 +211,7 @@ const texts = {
     alertDeviceFields: "Bitte geben Sie gültige Werte für Kapazität, Pin A und D-Tap A ein.",
     alertDeviceWatt: "Bitte geben Sie einen gültigen Watt-Wert ein.",
     alertDeviceName: "Der Gerätename darf nicht leer sein.",
-
+    alertInvalidCameraJSON: "Ungültiges JSON für Kameradetails",
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
     setupActionsHeading: "Setup-Aktionen",
     exportSetupsBtn: "Alle Setups exportieren",
@@ -616,7 +617,9 @@ totalCurrent12Elem.textContent = totalCurrent12.toFixed(2);
 if (!battery || battery === "None" || !devices.batteries[battery]) {
   batteryLifeElem.textContent = "–";
   pinWarnElem.textContent = "";
+  pinWarnElem.style.color = "";
   dtapWarnElem.textContent = "";
+  dtapWarnElem.style.color = "";
 } else {
     const battData = devices.batteries[battery];
     const capacityWh = battData.capacity;
@@ -1117,8 +1120,9 @@ addDeviceBtn.addEventListener("click", () => {
     let obj;
     try {
       obj = JSON.parse(newCameraJSONInput.value);
-    } catch (e) {
-      alert("Invalid JSON for camera details");
+    } catch (err) {
+      console.error("Invalid camera JSON", err);
+      alert(texts[currentLang].alertInvalidCameraJSON || "Invalid JSON for camera details");
       return;
     }
     if (isEditing && name !== originalName) {
