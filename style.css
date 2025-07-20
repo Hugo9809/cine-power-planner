@@ -59,6 +59,21 @@ p {
   flex: 0 0 120px;
 }
 
+.select-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.select-wrapper .filter-input {
+  flex: none;
+  margin-bottom: 2px;
+}
+
+.device-category .list-filter {
+  width: 100%;
+  margin-bottom: 5px;
+}
+
 /* Ensure dropdowns use a solid background across browsers */
 select {
   padding: 4px;

@@ -438,6 +438,15 @@ const controllerFilterInput = document.getElementById("controllerFilter");
 const distanceFilterInput = document.getElementById("distanceFilter");
 const batteryFilterInput = document.getElementById("batteryFilter");
 
+// List filters for existing device categories
+const cameraListFilterInput = document.getElementById("cameraListFilter");
+const monitorListFilterInput = document.getElementById("monitorListFilter");
+const videoListFilterInput = document.getElementById("videoListFilter");
+const motorListFilterInput = document.getElementById("motorListFilter");
+const controllerListFilterInput = document.getElementById("controllerListFilter");
+const distanceListFilterInput = document.getElementById("distanceListFilter");
+const batteryListFilterInput = document.getElementById("batteryListFilter");
+
 // NEW SETUP MANAGEMENT DOM ELEMENTS
 const exportSetupsBtn = document.getElementById('exportSetupsBtn');
 const importSetupsBtn = document.getElementById('importSetupsBtn');
@@ -467,9 +476,20 @@ function filterSelect(selectElem, filterValue) {
   const text = filterValue.toLowerCase();
   Array.from(selectElem.options).forEach(opt => {
     if (opt.value === "None" || text === "" || opt.textContent.toLowerCase().includes(text)) {
-      opt.style.display = "";
+      opt.hidden = false;
     } else {
-      opt.style.display = "none";
+      opt.hidden = true;
+    }
+  });
+}
+
+function filterDeviceList(listElem, filterValue) {
+  const text = filterValue.toLowerCase();
+  Array.from(listElem.querySelectorAll('li')).forEach(li => {
+    if (text === '' || li.textContent.toLowerCase().includes(text)) {
+      li.style.display = '';
+    } else {
+      li.style.display = 'none';
     }
   });
 }
@@ -482,6 +502,14 @@ function applyFilters() {
   controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value));
   filterSelect(distanceSelect, distanceFilterInput.value);
   filterSelect(batterySelect, batteryFilterInput.value);
+
+  filterDeviceList(cameraListElem, cameraListFilterInput.value);
+  filterDeviceList(monitorListElem, monitorListFilterInput.value);
+  filterDeviceList(videoListElem, videoListFilterInput.value);
+  filterDeviceList(motorListElem, motorListFilterInput.value);
+  filterDeviceList(controllerListElem, controllerListFilterInput.value);
+  filterDeviceList(distanceListElem, distanceListFilterInput.value);
+  filterDeviceList(batteryListElem, batteryListFilterInput.value);
 }
 
 // Initialize device selection dropdowns
@@ -839,6 +867,14 @@ function refreshDeviceLists() {
   renderDeviceList("fiz.controllers", controllerListElem);
   renderDeviceList("fiz.distance", distanceListElem);
   renderDeviceList("batteries", batteryListElem);
+
+  filterDeviceList(cameraListElem, cameraListFilterInput.value);
+  filterDeviceList(monitorListElem, monitorListFilterInput.value);
+  filterDeviceList(videoListElem, videoListFilterInput.value);
+  filterDeviceList(motorListElem, motorListFilterInput.value);
+  filterDeviceList(controllerListElem, controllerListFilterInput.value);
+  filterDeviceList(distanceListElem, distanceListFilterInput.value);
+  filterDeviceList(batteryListElem, batteryListFilterInput.value);
 }
 
 // Initial render of device lists
@@ -859,6 +895,14 @@ motorFilterInput.addEventListener("input", () => motorSelects.forEach(sel => fil
 controllerFilterInput.addEventListener("input", () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
 distanceFilterInput.addEventListener("input", () => filterSelect(distanceSelect, distanceFilterInput.value));
 batteryFilterInput.addEventListener("input", () => filterSelect(batterySelect, batteryFilterInput.value));
+
+cameraListFilterInput.addEventListener("input", () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
+monitorListFilterInput.addEventListener("input", () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
+videoListFilterInput.addEventListener("input", () => filterDeviceList(videoListElem, videoListFilterInput.value));
+motorListFilterInput.addEventListener("input", () => filterDeviceList(motorListElem, motorListFilterInput.value));
+controllerListFilterInput.addEventListener("input", () => filterDeviceList(controllerListElem, controllerListFilterInput.value));
+distanceListFilterInput.addEventListener("input", () => filterDeviceList(distanceListElem, distanceListFilterInput.value));
+batteryListFilterInput.addEventListener("input", () => filterDeviceList(batteryListElem, batteryListFilterInput.value));
 
 // Setup management
 saveSetupBtn.addEventListener("click", () => {
