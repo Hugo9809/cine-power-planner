@@ -166,9 +166,39 @@
       <label for="newWatt" id="consumptionLabel">Consumption (W):</label>
       <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" />
     </div>
-    <div class="form-row" id="cameraJSONField" style="display:none;">
-      <label for="newCameraJSON" id="cameraJSONLabel">Camera Details (JSON):</label>
-      <textarea id="newCameraJSON" style="width:100%;height:120px;"></textarea>
+    <div id="cameraFields" style="display:none;">
+      <div class="form-row">
+        <label for="cameraWatt" id="cameraWattLabel">Power Draw (W):</label>
+        <input type="number" id="cameraWatt" step="0.1" />
+      </div>
+      <div class="form-row">
+        <label for="cameraVoltage" id="cameraVoltageLabel">Voltage Range:</label>
+        <input type="text" id="cameraVoltage" />
+      </div>
+      <div class="form-row">
+        <label for="cameraPortType" id="cameraPortTypeLabel">Port Type:</label>
+        <input type="text" id="cameraPortType" />
+      </div>
+      <div class="form-row">
+        <label for="cameraBatteryType" id="cameraBatteryTypeLabel">Internal Battery Type:</label>
+        <input type="text" id="cameraBatteryType" />
+      </div>
+      <div class="form-row">
+        <label for="cameraBatteryLife" id="cameraBatteryLifeLabel">Internal Battery Life (min):</label>
+        <input type="number" id="cameraBatteryLife" step="0.1" />
+      </div>
+      <div class="form-row">
+        <label for="cameraPlates" id="cameraPlatesLabel">Battery Plates:</label>
+        <input type="text" id="cameraPlates" placeholder="V-Mount,B-Mount" />
+      </div>
+      <div class="form-row">
+        <label for="cameraMedia" id="cameraMediaLabel">Recording Media:</label>
+        <input type="text" id="cameraMedia" placeholder="CFast 2.0" />
+      </div>
+      <div class="form-row">
+        <label for="cameraLensMount" id="cameraLensMountLabel">Lens Mount:</label>
+        <input type="text" id="cameraLensMount" placeholder="ARRI PL" />
+      </div>
     </div>
     <div id="batteryFields" style="display:none;">
       <div class="form-row">
