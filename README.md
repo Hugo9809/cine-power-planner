@@ -10,9 +10,11 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 ## 🌍 Languages / Sprachen
 
 - 🇬🇧 English (default)
-- 🇩🇪 Deutsch  
-➡️ Language can be changed in the top-right dropdown.  
+- 🇩🇪 Deutsch
+➡️ Language can be changed in the top-right dropdown.
 ➡️ Sprache oben rechts umschaltbar.
+➡️ The selected language is remembered for your next visit.
+➡️ Die ausgewählte Sprache bleibt für den nächsten Besuch gespeichert.
 
 ---
 
@@ -28,6 +30,9 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 - Alle Daten werden lokal im Browser gespeichert (`localStorage`)
 - Setups als JSON-Dateien importieren und exportieren
 - Druckbare Übersicht für gespeicherte Setups erzeugen
+
+- Works fully offline – language, dark mode, setups and device data persist between sessions
+- Funktioniert vollständig offline – Sprache, Dark Mode, Setups und Gerätedaten bleiben erhalten
 
 ### 📦 Device Categories / Gerätekategorien
 - **Camera** (1)
@@ -67,7 +72,14 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 - Visual bar graph for quick reference  
 
 - Akkulaufzeiten verschiedener Akkus vergleichen  
-- Visuelle Balkendarstellung  
+- Visuelle Balkendarstellung
+
+### 🌓 Dark Mode
+- Toggleable via the moon button next to the language selector
+- Preference is stored in your browser
+
+- Per Klick auf die Mond-Schaltfläche neben der Sprachwahl aktivierbar
+- Einstellung wird im Browser gespeichert
 
 ---
 
@@ -109,3 +121,25 @@ data.js          # Default device list / Start-Datenbank
 storage.js       # LocalStorage functions / Funktionen für LocalStorage
 README.md        # This file / Diese Datei
 ```
+
+## 🛠️ Development / Entwicklung
+
+### English
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Run tests:
+   ```bash
+   npm test
+   ```
+
+### Deutsch
+1. Abhängigkeiten installieren:
+   ```bash
+   npm install
+   ```
+2. Tests ausführen:
+   ```bash
+   npm test
+   ```
