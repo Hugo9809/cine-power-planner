@@ -766,12 +766,16 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       const getBarClass = (method) => {
           return method === "pins" ? "bar bar-pins-only" : "bar";
       };
+      // Helper to display method label
+      const getMethodLabel = (method) => {
+          return method === "pins" ? "pins only!" : method;
+      };
 
       // Add selected battery first, if it's a valid candidate
       if (selectedCandidate) {
         tableHtml += `<tr class="selectedBatteryRow">
                         <td>${selectedCandidate.name}</td>
-                        <td>${selectedCandidate.hours.toFixed(2)}h (${selectedCandidate.method})</td>
+                        <td>${selectedCandidate.hours.toFixed(2)}h (${getMethodLabel(selectedCandidate.method)})</td>
                         <td>
                           <div class="barContainer">
                             <div class="${getBarClass(selectedCandidate.method)}" style="width: ${(selectedCandidate.hours / maxHours) * 100}%;"></div>
@@ -784,7 +788,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         if (selectedCandidate && candidate.name === selectedCandidate.name) return; // Already added if selected
         tableHtml += `<tr>
                         <td>${candidate.name}</td>
-                        <td>${candidate.hours.toFixed(2)}h (${candidate.method})</td>
+                        <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
                         <td>
                           <div class="barContainer">
                             <div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div>
@@ -799,7 +803,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         if (!alreadyInPins) {
             tableHtml += `<tr>
                             <td>${candidate.name}</td>
-                            <td>${candidate.hours.toFixed(2)}h (${candidate.method})</td>
+                            <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
                             <td>
                               <div class="barContainer">
                                 <div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div>
@@ -1546,6 +1550,10 @@ function generatePrintableOverview() {
             return "bar";
         };
 
+        const getMethodLabel = (method) => {
+            return method === "pins" ? "pins only!" : method;
+        };
+
         const getRuntimeDisplay = (hours) => {
             return hours === Infinity ? "∞" : hours.toFixed(2) + "h";
         };
@@ -1559,7 +1567,7 @@ function generatePrintableOverview() {
         if (selectedCandidate) {
             batteryTableHtml += `<tr class="selectedBatteryRow">
                                     <td>${selectedCandidate.name}</td>
-                                    <td>${getRuntimeDisplay(selectedCandidate.hours)} (${selectedCandidate.method})</td>
+                                    <td>${getRuntimeDisplay(selectedCandidate.hours)} (${getMethodLabel(selectedCandidate.method)})</td>
                                     <td>
                                       <div class="barContainer">
                                         <div class="${getBarClass(selectedCandidate.method)}" style="width: ${getBarWidth(selectedCandidate.hours)};"></div>
@@ -1572,7 +1580,7 @@ function generatePrintableOverview() {
             if (selectedCandidate && candidate.name === selectedCandidate.name) return; // Already added if selected
             batteryTableHtml += `<tr>
                                     <td>${candidate.name}</td>
-                                    <td>${getRuntimeDisplay(candidate.hours)} (${candidate.method})</td>
+                                    <td>${getRuntimeDisplay(candidate.hours)} (${getMethodLabel(candidate.method)})</td>
                                     <td>
                                       <div class="barContainer">
                                         <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours)};"></div>
@@ -1586,7 +1594,7 @@ function generatePrintableOverview() {
             if (!alreadyInPins) {
                 batteryTableHtml += `<tr>
                                         <td>${candidate.name}</td>
-                                        <td>${getRuntimeDisplay(candidate.hours)} (${candidate.method})</td>
+                                        <td>${getRuntimeDisplay(candidate.hours)} (${getMethodLabel(candidate.method)})</td>
                                         <td>
                                           <div class="barContainer">
                                             <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours)};"></div>
