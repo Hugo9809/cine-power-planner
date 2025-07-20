@@ -675,6 +675,467 @@ let devices = {
       ]
     },
 
+    // Blackmagic BMPCC 6K G2
+    "Blackmagic BMPCC 6K G2": {
+      powerDrawWatts: 26,
+      power: {
+        input: {
+          voltageRange: "12V - 20V DC",
+          portType: "2-pin locking connector",
+          powerDrawWatts: 26
+        },
+        internalBattery: {
+          type: "NP-F570",
+          batteryLifeMinutes: 45
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C", notes: "For external hard drive recording and software updates" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" }
+      ],
+      fizConnectors: [
+        { type: "Active EF mount", notes: "Iris, focus and zoom on supported lenses" },
+        { type: "Bluetooth", notes: "Wireless control" }
+      ],
+      recordingMedia: [
+        "CFast 2.0 card slot",
+        "SD UHS-II card slot",
+        "USB-C 3.1 Gen 1 expansion port for external media"
+      ],
+      viewfinder: [
+        { type: "LCD capacitive touchscreen", size: "5 inch", resolution: "1920 x 1080", notes: "Adjustable HDR touchscreen" },
+        { type: "Optional OLED viewfinder" }
+      ],
+      lensMount: [
+        "Active EF mount"
+      ],
+      timecode: [
+        { type: "3.5 mm TRS / mini jack", notes: "Also for LTC timecode" },
+        { type: "Internal Clock", notes: "Less than 1 frame drift every 8 hours" }
+      ]
+    },
+
+    // Blackmagic BMPCC 6K
+    "Blackmagic BMPCC 6K": {
+      powerDrawWatts: 26,
+      power: {
+        input: {
+          voltageRange: "12V-20V",
+          portType: "2-pin locking connector",
+          powerDrawWatts: 26
+        },
+        internalBattery: {
+          type: "Canon LP-E6",
+          batteryLifeMinutes: 45
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C 3.1 Gen 1", notes: "For external drive recording, PTP camera control, software updates, can trickle charge battery" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" }
+      ],
+      fizConnectors: [
+        { type: "Active EF mount", notes: "Iris, focus and zoom on supported lenses" },
+        { type: "USB Type-C", notes: "PTP camera control" },
+        { type: "Bluetooth", notes: "Wireless control" }
+      ],
+      recordingMedia: [
+        "CFast card slot",
+        "SD UHS-II card slot",
+        "USB-C 3.1 Gen 1 expansion port for external media"
+      ],
+      viewfinder: [
+        { type: "LCD capacitive touchscreen", size: "5 inch", resolution: "1920 x 1080" }
+      ],
+      lensMount: [
+        "Active EF mount"
+      ],
+      timecode: [
+        { type: "3.5mm Stereo Input", notes: "Can also be used for Timecode input" },
+        { type: "Internal Clock", notes: "Less than 1 frame drift every 8 hours" }
+      ]
+    },
+
+    // Blackmagic Pocket Cinema Camera 6K Pro
+    "Blackmagic Pocket Cinema Camera 6K Pro": {
+      powerDrawWatts: 26,
+      power: {
+        input: {
+          voltageRange: "12V-20V",
+          portType: "2-pin locking connector / 2-pin LEMO",
+          powerDrawWatts: 26
+        },
+        internalBattery: {
+          type: "NP-F570",
+          batteryLifeMinutes: 60
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", voltage: "5V", current: "3A", wattage: 15, notes: "Power Delivery for accessories/charging" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", resolution: "1080p60" }
+      ],
+      fizConnectors: [
+        { type: "Active EF Mount", notes: "For electronic EF lenses (iris, focus, zoom)" },
+        { type: "USB-C", notes: "For Blackmagic Zoom/Focus Demand, PTP camera control" },
+        { type: "Bluetooth", notes: "Wireless control" }
+      ],
+      recordingMedia: [
+        "CFast",
+        "SD UHS-II",
+        "USB-C to external SSD/HDD"
+      ],
+      viewfinder: [
+        { type: "Native LCD Capacitive Touchscreen", size: "5-inch", resolution: "1920x1080" },
+        { type: "Blackmagic Pocket Cinema Camera Pro EVF (Optional)", resolution: "1280x960", notes: "Micro OLED display" }
+      ],
+      lensMount: [
+        "Active EF Mount (Native)"
+      ],
+      timecode: [
+        { type: "Internal Clock", notes: "Less than 1 frame drift every 8 hours" },
+        { type: "Analog Audio Inputs", notes: "2x mini XLR, 1x 3.5mm Stereo Input can be used for Timecode input" }
+      ]
+    },
+
+    // Blackmagic URSA 12K
+    "Blackmagic URSA 12K": {
+      powerDrawWatts: 55,
+      power: {
+        input: {
+          voltageRange: "12V DC",
+          portType: "12-pin Molex connector (at battery plate rear) / 4-pin XLR (external power)",
+          powerDrawWatts: 55
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)",
+          "Gold Mount (Native)"
+        ],
+        powerDistributionOutputs: [
+          { type: "D-Tap", count: "multiple", voltage: "12V", wattage: null, notes: "Regulated, via individualized V-Mount battery plate" },
+          { type: "USB Type-C 3.1 Gen 2", count: 1, voltage: null, wattage: null, notes: "With power delivery for external drive recording" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 1 },
+        { type: "3G-SDI Monitoring", count: 1 }
+      ],
+      fizConnectors: [
+        { type: "LANC", count: 1, notes: "2.5mm input for Rec Start/Stop, Iris and Focus control" },
+        { type: "12pin broadcast connector", notes: "For compatible lenses and electronic control via EF mount pins on optional EF lens mount" }
+      ],
+      recordingMedia: [
+        "CFast 2.0 card slots",
+        "SD UHS-II card slots",
+        "USB-C 3.1 Gen 2 expansion port for external media"
+      ],
+      viewfinder: [
+        { type: "LCD capacitive touchscreen", size: "4 inch", notes: "Fold out touchscreen" },
+        { type: "External backlit LCD status display" }
+      ],
+      lensMount: [
+        "PL mount (Included)",
+        "EF (optional)",
+        "F (optional)"
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode Input (Reference Inputs: Tri-Sync/Black Burst/Timecode)" },
+        { type: "Internal Clock", notes: "Highly accurate, less than 1 frame drift every 8 hours" }
+      ]
+    },
+
+    // Blackmagic URSA Cine
+    "Blackmagic URSA Cine": {
+      powerDrawWatts: 100,
+      power: {
+        input: {
+          voltageRange: "20V-30V DC",
+          portType: "2-pin XLR",
+          powerDrawWatts: 100
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)",
+          "Gold Mount (Native)"
+        ],
+        powerDistributionOutputs: [
+          { type: "2-pin LEMO", count: 2, voltage: "12V", current: "3A", wattage: 36, notes: "Regulated" },
+          { type: "3-pin Fischer", count: 1, voltage: "24V", current: "3A", wattage: 72, notes: "Regulated, with run/stop" },
+          { type: "D-Tap", count: 2, voltage: "Battery Voltage", wattage: null, notes: "Unregulated" },
+          { type: "USB-C", count: 1, voltage: "5V", current: "1.5A", wattage: 7.5, notes: "For accessories" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 2 },
+        { type: "HDMI", count: 1 }
+      ],
+      fizConnectors: [
+        { type: "LANC", notes: "2.5mm" },
+        { type: "12-pin Hirose", notes: "For broadcast lenses" }
+      ],
+      recordingMedia: [
+        "Blackmagic Media Module (8TB)",
+        "CFexpress Type B (via adapter)"
+      ],
+      viewfinder: [
+        { type: "Built-in Fold-out LCD", size: "5-inch", resolution: "1920x1080" },
+        { type: "Blackmagic URSA Cine EVF (Optional)" }
+      ],
+      lensMount: [
+        "User-interchangeable PL, LPL, EF, Hasselblad"
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" }
+      ]
+    },
+
+    // Blackmagic PYXIS 6K
+    "Blackmagic PYXIS 6K": {
+      powerDrawWatts: 60,
+      power: {
+        input: {
+          voltageRange: "12V-20V DC",
+          portType: "2-pin locking connector",
+          powerDrawWatts: 60
+        },
+        internalBattery: {
+          type: "NP-F570",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C", notes: "For external drive recording, power delivery" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" }
+      ],
+      fizConnectors: [
+        { type: "Active L-Mount", notes: "Iris, focus and zoom on supported lenses" },
+        { type: "USB-C", notes: "PTP camera control" },
+        { type: "Bluetooth", notes: "Wireless control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B",
+        "USB-C to external SSD/HDD"
+      ],
+      viewfinder: [
+        { type: "LCD capacitive touchscreen", size: "4 inch", resolution: "1280x720" }
+      ],
+      lensMount: [
+        "Active L-Mount"
+      ],
+      timecode: [
+        { type: "3.5mm Stereo Input", notes: "Can be used for Timecode input" }
+      ]
+    },
+
+    // Blackmagic PYXIS 12K
+    "Blackmagic PYXIS 12K": {
+      powerDrawWatts: 90,
+      power: {
+        input: {
+          voltageRange: "12V-20V DC",
+          portType: "2-pin locking connector",
+          powerDrawWatts: 90
+        },
+        internalBattery: {
+          type: "NP-F570",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C", notes: "For external drive recording, power delivery" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" }
+      ],
+      fizConnectors: [
+        { type: "Active L-Mount", notes: "Iris, focus and zoom on supported lenses" },
+        { type: "USB-C", notes: "PTP camera control" },
+        { type: "Bluetooth", notes: "Wireless control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B",
+        "USB-C to external SSD/HDD"
+      ],
+      viewfinder: [
+        { type: "LCD capacitive touchscreen", size: "4 inch", resolution: "1280x720" }
+      ],
+      lensMount: [
+        "Active L-Mount"
+      ],
+      timecode: [
+        { type: "3.5mm Stereo Input", notes: "Can be used for Timecode input" }
+      ]
+    },
+
+    // RED Komodo 6k
+    "RED Komodo 6k": {
+      powerDrawWatts: 37,
+      power: {
+        input: {
+          voltageRange: "+7 to +17 V DC",
+          portType: "2-pin DC-Input",
+          powerDrawWatts: 37
+        },
+        internalBattery: {
+          type: "Canon BP-900 Series",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)",
+          "Micro Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "D-Tap / P-Tap", count: "1-2", voltage: "12-14.8V", wattage: 50, notes: "Via optional third-party plates, typical per port" },
+          { type: "USB-A", count: 1, voltage: "5V", current: "1-2A", wattage: null, notes: "Via optional third-party plates" },
+          { type: "LEMO 2-pin", count: "1-2", voltage: "12-14.8V", wattage: 24, notes: "Via optional third-party plates, typical per port (est. 2A)" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 1, notes: "Also supports 6G-SDI, 3G-SDI, and 1.5G-SDI modes" }
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Supports Genlock, Timecode In, GPIO, and Ctrl (RS-232)" },
+        { type: "USB-C / Gigabit Ethernet (via adapter)", notes: "Via KOMODO Link Adaptor for camera control" }
+      ],
+      recordingMedia: [
+        "CFast 2.0"
+      ],
+      viewfinder: [
+        { type: "Integrated Touchscreen LCD", size: "2.9-inch", resolution: "1440x1440" },
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" }
+      ],
+      lensMount: [
+        "Canon RF Lens Mount (Native, locking)",
+        "Canon EF (adapted)",
+        "ARRI PL (adapted)"
+      ],
+      timecode: [
+        { type: "EXT Port (9-pin)", notes: "Timecode In" }
+      ]
+    },
+
+    // RED Komodo X
+    "RED Komodo X": {
+      powerDrawWatts: 45,
+      power: {
+        input: {
+          voltageRange: "+7 to +17 V DC",
+          portType: "2-pin DC-Input",
+          powerDrawWatts: 45
+        },
+        internalBattery: {
+          type: "REDVOLT NANO",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C", notes: "Power Delivery" },
+          { type: "P-Tap", notes: "Via optional expander" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 1 }
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" },
+        { type: "USB-C", notes: "Camera control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B"
+      ],
+      viewfinder: [
+        { type: "Integrated Touchscreen LCD", size: "2.9-inch" },
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" }
+      ],
+      lensMount: [
+        "Canon RF Lens Mount (Native)"
+      ],
+      timecode: [
+        { type: "EXT Port (9-pin)", notes: "Timecode In" }
+      ]
+    },
+
+    // V-Raptor XL 8K VV
+    "V-Raptor XL 8K VV": {
+      powerDrawWatts: 75,
+      power: {
+        input: {
+          voltageRange: "24V DC",
+          portType: "4-pin XLR / V-Lock",
+          powerDrawWatts: 75
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 2, voltage: "12V", wattage: null },
+          { type: "2-pin LEMO", count: 2, voltage: "12V", wattage: null },
+          { type: "3-pin Fischer", count: 1, voltage: "24V", wattage: null, notes: "R/S" },
+          { type: "USB-C", count: 1, voltage: "5V", wattage: null }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 4 }
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" },
+        { type: "LANC", notes: "2.5mm" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B"
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" }
+      ],
+      lensMount: [
+        "Interchangeable PL, EF"
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" }
+      ]
+    },
     "None": { powerDrawWatts: 0 }
   },
   monitors: {
