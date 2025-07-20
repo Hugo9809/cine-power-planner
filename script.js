@@ -69,6 +69,14 @@ const texts = {
     capacityLabel: "Capacity (Wh):",
     pinLabel: "Max Pin A:",
     dtapLabel: "Max D-Tap A:",
+    cameraWattLabel: "Power Draw (W):",
+    cameraVoltageLabel: "Voltage Range:",
+    cameraPortTypeLabel: "Port Type:",
+    cameraBatteryTypeLabel: "Internal Battery Type:",
+    cameraBatteryLifeLabel: "Battery Life (min):",
+    cameraPlatesLabel: "Battery Plates:",
+    cameraMediaLabel: "Recording Media:",
+    cameraLensMountLabel: "Lens Mount:",
     addDeviceBtn: "Add",
     updateDeviceBtn: "Update", // New key for update button
     editBtn: "Edit", // New key for Edit button in list
@@ -85,6 +93,11 @@ const texts = {
     placeholder_capacity: "e.g. 98",
     placeholder_pin: "e.g. 10",
     placeholder_dtap: "e.g. 5",
+    placeholder_voltage: "11V-34V DC",
+    placeholder_port: "LEMO 8-pin",
+    placeholder_plates: "V-Mount,B-Mount",
+    placeholder_media: "CFast 2.0",
+    placeholder_lensmount: "ARRI PL",
 
     toggleDeviceManager: "Edit Device Data…",
     hideDeviceManager: "Hide Device Data",
@@ -174,6 +187,14 @@ const texts = {
     capacityLabel: "Kapazität (Wh):",
     pinLabel: "Max Pin A:",
     dtapLabel: "Max D-Tap A:",
+    cameraWattLabel: "Leistungsaufnahme (W):",
+    cameraVoltageLabel: "Spannungsbereich:",
+    cameraPortTypeLabel: "Anschlussart:",
+    cameraBatteryTypeLabel: "Interner Akkutyp:",
+    cameraBatteryLifeLabel: "Akkulaufzeit (Min.):",
+    cameraPlatesLabel: "Akkuschächte:",
+    cameraMediaLabel: "Aufnahmemedien:",
+    cameraLensMountLabel: "Objektivanschluss:",
     addDeviceBtn: "Hinzufügen",
     updateDeviceBtn: "Aktualisieren",
     editBtn: "Bearbeiten",
@@ -190,6 +211,11 @@ const texts = {
     placeholder_capacity: "z.B. 98",
     placeholder_pin: "z.B. 10",
     placeholder_dtap: "z.B. 5",
+    placeholder_voltage: "11V-34V DC",
+    placeholder_port: "LEMO 8-Pin",
+    placeholder_plates: "V-Mount,B-Mount",
+    placeholder_media: "CFast 2.0",
+    placeholder_lensmount: "ARRI PL",
 
     toggleDeviceManager: "Gerätedaten bearbeiten…",
     hideDeviceManager: "Gerätedaten ausblenden",
@@ -319,6 +345,14 @@ function setLanguage(lang) {
   document.getElementById("capacityLabel").textContent = texts[lang].capacityLabel;
   document.getElementById("pinLabel").textContent = texts[lang].pinLabel;
   document.getElementById("dtapLabel").textContent = texts[lang].dtapLabel;
+  document.getElementById("cameraWattLabel").textContent = texts[lang].cameraWattLabel;
+  document.getElementById("cameraVoltageLabel").textContent = texts[lang].cameraVoltageLabel;
+  document.getElementById("cameraPortTypeLabel").textContent = texts[lang].cameraPortTypeLabel;
+  document.getElementById("cameraBatteryTypeLabel").textContent = texts[lang].cameraBatteryTypeLabel;
+  document.getElementById("cameraBatteryLifeLabel").textContent = texts[lang].cameraBatteryLifeLabel;
+  document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
+  document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
+  document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
   // Determine text for Add/Update button
   if (addDeviceBtn.dataset.mode === "edit") {
     addDeviceBtn.textContent = texts[lang].updateDeviceBtn;
@@ -334,6 +368,11 @@ function setLanguage(lang) {
   newCapacityInput.placeholder = texts[lang].placeholder_capacity;
   newPinAInput.placeholder = texts[lang].placeholder_pin;
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
+  cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
+  cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
+  cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
+  cameraMediaInput.placeholder = texts[lang].placeholder_media;
+  cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -413,8 +452,15 @@ const newCategorySelect  = document.getElementById("newCategory");
 const newNameInput    = document.getElementById("newName");
 const newWattInput    = document.getElementById("newWatt");
 const wattFieldDiv    = document.getElementById("wattField");
-const cameraJSONFieldDiv = document.getElementById("cameraJSONField");
-const newCameraJSONInput = document.getElementById("newCameraJSON");
+const cameraFieldsDiv = document.getElementById("cameraFields");
+const cameraWattInput = document.getElementById("cameraWatt");
+const cameraVoltageInput = document.getElementById("cameraVoltage");
+const cameraPortTypeInput = document.getElementById("cameraPortType");
+const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
+const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
+const cameraPlatesInput = document.getElementById("cameraPlates");
+const cameraMediaInput = document.getElementById("cameraMedia");
+const cameraLensMountInput = document.getElementById("cameraLensMount");
 const batteryFieldsDiv = document.getElementById("batteryFields");
 const newCapacityInput = document.getElementById("newCapacity");
 const newPinAInput    = document.getElementById("newPinA");
@@ -1085,7 +1131,7 @@ deviceManagerSection.addEventListener("click", (event) => {
 
     if (categoryKey === "batteries") {
       wattFieldDiv.style.display = "none";
-      cameraJSONFieldDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
       batteryFieldsDiv.style.display = "block";
       newCapacityInput.value = deviceData.capacity;
       newPinAInput.value = deviceData.pinA;
@@ -1093,12 +1139,19 @@ deviceManagerSection.addEventListener("click", (event) => {
     } else if (categoryKey === "cameras") {
       wattFieldDiv.style.display = "none";
       batteryFieldsDiv.style.display = "none";
-      cameraJSONFieldDiv.style.display = "block";
-      newCameraJSONInput.value = JSON.stringify(deviceData, null, 2);
+      cameraFieldsDiv.style.display = "block";
+      cameraWattInput.value = deviceData.powerDrawWatts || '';
+      cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
+      cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
+      cameraBatteryTypeInput.value = deviceData.power?.internalBattery?.type || '';
+      cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
+      cameraPlatesInput.value = (deviceData.power?.batteryPlateSupport || []).join(',');
+      cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
+      cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
     } else {
       wattFieldDiv.style.display = "block";
       batteryFieldsDiv.style.display = "none";
-      cameraJSONFieldDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
       const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
       newWattInput.value = watt;
     }
@@ -1137,22 +1190,29 @@ newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
   if (val === "batteries") {
     wattFieldDiv.style.display = "none";
-    cameraJSONFieldDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
     batteryFieldsDiv.style.display = "block";
   } else if (val === "cameras") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
-    cameraJSONFieldDiv.style.display = "block";
+    cameraFieldsDiv.style.display = "block";
   } else {
     wattFieldDiv.style.display = "block";
     batteryFieldsDiv.style.display = "none";
-    cameraJSONFieldDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
   }
   newWattInput.value = "";
   newCapacityInput.value = "";
   newPinAInput.value = "";
   newDtapAInput.value = "";
-  newCameraJSONInput.value = "";
+  cameraWattInput.value = "";
+  cameraVoltageInput.value = "";
+  cameraPortTypeInput.value = "";
+  cameraBatteryTypeInput.value = "";
+  cameraBatteryLifeInput.value = "";
+  cameraPlatesInput.value = "";
+  cameraMediaInput.value = "";
+  cameraLensMountInput.value = "";
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
   addDeviceBtn.dataset.mode = "add";
@@ -1204,18 +1264,31 @@ addDeviceBtn.addEventListener("click", () => {
     }
     targetCategory[name] = { capacity: capacity, pinA: pinA, dtapA: dtapA };
   } else if (category === "cameras") {
-    let obj;
-    try {
-      obj = JSON.parse(newCameraJSONInput.value);
-    } catch (err) {
-      console.error("Invalid camera JSON", err);
-      alert(texts[currentLang].alertInvalidCameraJSON || "Invalid JSON for camera details");
+    const watt = parseFloat(cameraWattInput.value);
+    if (isNaN(watt) || watt <= 0) {
+      alert(texts[currentLang].alertDeviceWatt);
       return;
     }
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
-    targetCategory[name] = obj;
+    targetCategory[name] = {
+      powerDrawWatts: watt,
+      power: {
+        input: {
+          voltageRange: cameraVoltageInput.value,
+          portType: cameraPortTypeInput.value,
+          powerDrawWatts: watt
+        },
+        internalBattery: {
+          type: cameraBatteryTypeInput.value,
+          batteryLifeMinutes: cameraBatteryLifeInput.value ? parseFloat(cameraBatteryLifeInput.value) : null
+        },
+        batteryPlateSupport: cameraPlatesInput.value ? cameraPlatesInput.value.split(',').map(s => s.trim()).filter(s => s) : []
+      },
+      recordingMedia: cameraMediaInput.value ? cameraMediaInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+      lensMount: cameraLensMountInput.value ? cameraLensMountInput.value.split(',').map(s => s.trim()).filter(s => s) : []
+    };
   } else {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1234,7 +1307,14 @@ addDeviceBtn.addEventListener("click", () => {
   newCapacityInput.value = "";
   newPinAInput.value = "";
   newDtapAInput.value = "";
-  newCameraJSONInput.value = "";
+  cameraWattInput.value = "";
+  cameraVoltageInput.value = "";
+  cameraPortTypeInput.value = "";
+  cameraBatteryTypeInput.value = "";
+  cameraBatteryLifeInput.value = "";
+  cameraPlatesInput.value = "";
+  cameraMediaInput.value = "";
+  cameraLensMountInput.value = "";
   newCategorySelect.disabled = false; // Re-enable category select
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn; // Reset button text
   addDeviceBtn.dataset.mode = "add"; // Reset mode
