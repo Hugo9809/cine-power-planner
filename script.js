@@ -1203,7 +1203,10 @@ importSetupsInput.addEventListener('change', (event) => {
                 setups = importedSetups; // Update runtime variable
                 populateSetupSelect(); // Refresh dropdown
                 alert(texts[currentLang].alertImportSetupsSuccess.replace("{num_setups}", Object.keys(importedSetups).length));
-                loadSetup(""); // Reset form to "-- New Setup --"
+                // Reset form to "-- New Setup --" by clearing selection and
+                // triggering the change handler that initializes a new setup
+                setupSelect.value = "";
+                setupSelect.dispatchEvent(new Event('change'));
             } else {
                 throw new Error("Invalid format: not a valid setup object.");
             }
