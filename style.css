@@ -293,11 +293,11 @@ body.dark-mode #batteryComparison {
 }
 
 body.dark-mode fieldset {
-  border-color: #80b3ff;
+  border-color: #ffffff;
 }
 
 body.dark-mode legend {
-  color: #80b3ff;
+  color: #ffffff;
 }
 
 body.dark-mode button,
