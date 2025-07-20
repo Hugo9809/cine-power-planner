@@ -266,6 +266,8 @@ function setLanguage(lang) {
   if (languageSelect) {
     languageSelect.value = lang;
   }
+  // update html lang attribute for better persistence
+  document.documentElement.lang = lang;
   // Document title and main heading
   document.title = texts[lang].appTitle;
   document.getElementById("mainTitle").textContent = texts[lang].appHeading;
@@ -1613,6 +1615,8 @@ if (darkModeToggle) {
   });
 }
 
-// Initial calculation and language set
-setLanguage(currentLang);
-updateCalculations();
+// Initial calculation and language set after DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  setLanguage(currentLang);
+  updateCalculations();
+});
