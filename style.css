@@ -54,6 +54,13 @@ p {
   margin: 5px 5px 0 0;
 }
 
+/* Ensure dropdowns use a solid background across browsers */
+select {
+  background-image: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 /* Specific style for the setupSelect dropdown */
 #setupSelect {
   flex: 1; /* Allow it to grow */
