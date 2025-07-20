@@ -721,7 +721,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       if (pinOK_sel || dtapOK_sel) {
         const selHours = selData.capacity / totalWatt;
         let selMethod;
-        if (pinOK_sel && dtapOK_sel) selMethod = "both";
+        if (pinOK_sel && dtapOK_sel) selMethod = "both pins and D-Tap";
         else if (pinOK_sel) selMethod = "pins";
         else selMethod = "dtap";
         selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
@@ -740,7 +740,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
 
       if (canPin) {
         const hours = data.capacity / totalWatt;
-        const method = (canDTap ? "both" : "pins");
+        const method = (canDTap ? "both pins and D-Tap" : "pins");
         pinsCandidates.push({ name: battName, hours: hours, method: method });
       } else if (canDTap) {
         const hours = data.capacity / totalWatt;
@@ -1500,7 +1500,7 @@ function generatePrintableOverview() {
             if (pinOK_sel || dtapOK_sel || totalWatt === 0) { // If totalWatt is 0, it's always "OK"
                 let selMethod;
                 if (totalWatt === 0) selMethod = "infinite"; // Custom method for infinite
-                else if (pinOK_sel && dtapOK_sel) selMethod = "both";
+                else if (pinOK_sel && dtapOK_sel) selMethod = "both pins and D-Tap";
                 else if (pinOK_sel) selMethod = "pins";
                 else selMethod = "dtap";
                 selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
@@ -1522,7 +1522,7 @@ function generatePrintableOverview() {
                 pinsCandidates.push({ name: battName, hours: Infinity, method: "infinite" });
             } else if (canPin) {
                 const hours = data.capacity / totalWatt;
-                const method = (canDTap ? "both" : "pins");
+                const method = (canDTap ? "both pins and D-Tap" : "pins");
                 pinsCandidates.push({ name: battName, hours: hours, method: method });
             } else if (canDTap) {
                 const hours = data.capacity / totalWatt;
