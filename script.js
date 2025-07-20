@@ -1366,7 +1366,8 @@ function generatePrintableOverview() {
         batteryTableHtml = `<h2>${t.batteryComparisonHeading}</h2><table border="1"><tr><th>${t.batteryTableLabel}</th><th>${t.runtimeLabel}</th><th></th></tr>`;
 
         const allCandidatesForMax = (selectedCandidate ? [selectedCandidate] : []).concat(pinsCandidates, dtapCandidates);
-        const maxHours = Math.max(...allCandidatesForMax.map(c => c.hours).filter(h => h !== Infinity)) || 1; // Max of finite hours, or 1 if all are infinite or no candidates
+        const finiteHours = allCandidatesForMax.map(c => c.hours).filter(h => h !== Infinity);
+        const maxHours = finiteHours.length ? Math.max(...finiteHours) : 1;
 
         const getBarClass = (method) => {
             if (method === "pins") return "bar bar-pins-only";
@@ -1378,9 +1379,9 @@ function generatePrintableOverview() {
             return hours === Infinity ? "∞" : hours.toFixed(2) + "h";
         };
 
-        const getBarWidth = (hours, max) => {
+        const getBarWidth = (hours) => {
             if (hours === Infinity) return "100%"; // Infinite runtime always 100% bar
-            return ((hours / max) * 100) + "%";
+            return ((hours / maxHours) * 100) + "%";
         };
 
         // Add selected battery first, if it's a valid candidate
@@ -1390,7 +1391,7 @@ function generatePrintableOverview() {
                                     <td>${getRuntimeDisplay(selectedCandidate.hours)} (${selectedCandidate.method})</td>
                                     <td>
                                       <div class="barContainer">
-                                        <div class="${getBarClass(selectedCandidate.method)}" style="width: ${getBarWidth(selectedCandidate.hours, maxHours)};"></div>
+                                        <div class="${getBarClass(selectedCandidate.method)}" style="width: ${getBarWidth(selectedCandidate.hours)};"></div>
                                       </div>
                                     </td>
                                   </tr>`;
@@ -1403,7 +1404,7 @@ function generatePrintableOverview() {
                                     <td>${getRuntimeDisplay(candidate.hours)} (${candidate.method})</td>
                                     <td>
                                       <div class="barContainer">
-                                        <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours, maxHours)};"></div>
+                                        <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours)};"></div>
                                       </div>
                                     </td>
                                   </tr>`;
@@ -1417,7 +1418,7 @@ function generatePrintableOverview() {
                                         <td>${getRuntimeDisplay(candidate.hours)} (${candidate.method})</td>
                                         <td>
                                           <div class="barContainer">
-                                            <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours, maxHours)};"></div>
+                                            <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours)};"></div>
                                           </div>
                                         </td>
                                       </tr>`;
