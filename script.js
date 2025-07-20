@@ -1585,7 +1585,7 @@ function applyDarkMode(enabled) {
     if (darkModeToggle) darkModeToggle.textContent = "☀";
   } else {
     document.body.classList.remove("dark-mode");
-    if (darkModeToggle) darkModeToggle.textContent = "🌙";
+    if (darkModeToggle) darkModeToggle.textContent = "☾";
   }
 }
 
