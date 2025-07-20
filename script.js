@@ -357,6 +357,7 @@ function setLanguage(lang) {
   }
   // Recalculate and update dynamic content (results, breakdown, battery comparison)
   refreshDeviceLists(); // Call refreshDeviceLists to update Edit/Delete buttons in the list
+  applyFilters();
   updateCalculations();
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
@@ -428,6 +429,15 @@ const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 
+// Filter inputs
+const cameraFilterInput = document.getElementById("cameraFilter");
+const monitorFilterInput = document.getElementById("monitorFilter");
+const videoFilterInput = document.getElementById("videoFilter");
+const motorFilterInput = document.getElementById("motorFilter");
+const controllerFilterInput = document.getElementById("controllerFilter");
+const distanceFilterInput = document.getElementById("distanceFilter");
+const batteryFilterInput = document.getElementById("batteryFilter");
+
 // NEW SETUP MANAGEMENT DOM ELEMENTS
 const exportSetupsBtn = document.getElementById('exportSetupsBtn');
 const importSetupsBtn = document.getElementById('importSetupsBtn');
@@ -453,6 +463,27 @@ function populateSelect(selectElem, optionsObj, includeNone=true) {
   }
 }
 
+function filterSelect(selectElem, filterValue) {
+  const text = filterValue.toLowerCase();
+  Array.from(selectElem.options).forEach(opt => {
+    if (opt.value === "None" || text === "" || opt.textContent.toLowerCase().includes(text)) {
+      opt.style.display = "";
+    } else {
+      opt.style.display = "none";
+    }
+  });
+}
+
+function applyFilters() {
+  filterSelect(cameraSelect, cameraFilterInput.value);
+  filterSelect(monitorSelect, monitorFilterInput.value);
+  filterSelect(videoSelect, videoFilterInput.value);
+  motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value));
+  controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value));
+  filterSelect(distanceSelect, distanceFilterInput.value);
+  filterSelect(batterySelect, batteryFilterInput.value);
+}
+
 // Initialize device selection dropdowns
 populateSelect(cameraSelect, devices.cameras, true);
 populateSelect(monitorSelect, devices.monitors, true);
@@ -461,6 +492,7 @@ motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
 populateSelect(batterySelect, devices.batteries, true);
+applyFilters();
 
 // Set default selections for dropdowns
 
@@ -819,6 +851,15 @@ languageSelect.addEventListener("change", (event) => {
   setLanguage(event.target.value);
 });
 
+// Filtering inputs
+cameraFilterInput.addEventListener("input", () => filterSelect(cameraSelect, cameraFilterInput.value));
+monitorFilterInput.addEventListener("input", () => filterSelect(monitorSelect, monitorFilterInput.value));
+videoFilterInput.addEventListener("input", () => filterSelect(videoSelect, videoFilterInput.value));
+motorFilterInput.addEventListener("input", () => motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value)));
+controllerFilterInput.addEventListener("input", () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
+distanceFilterInput.addEventListener("input", () => filterSelect(distanceSelect, distanceFilterInput.value));
+batteryFilterInput.addEventListener("input", () => filterSelect(batterySelect, batteryFilterInput.value));
+
 // Setup management
 saveSetupBtn.addEventListener("click", () => {
   const setupName = setupNameInput.value.trim();
@@ -995,6 +1036,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
+      applyFilters();
       updateCalculations();
     }
   }
@@ -1117,6 +1159,7 @@ addDeviceBtn.addEventListener("click", () => {
   controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
   populateSelect(distanceSelect, devices.fiz.distance, true);
   populateSelect(batterySelect, devices.batteries, true);
+  applyFilters();
   updateCalculations(); // Update calculations after device data changes
 
   let categoryKey = category.replace(".", "_");
@@ -1177,6 +1220,7 @@ if (exportAndRevertBtn) {
         controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
+        applyFilters();
         refreshDeviceLists(); // Refresh device manager lists
         updateCalculations();
 
@@ -1220,6 +1264,7 @@ importFileInput.addEventListener("change", (event) => {
         controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
+        applyFilters();
         updateCalculations();
 
         // Count total devices imported for the alert message

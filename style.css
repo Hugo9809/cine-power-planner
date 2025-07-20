@@ -54,6 +54,11 @@ p {
   margin: 5px 5px 0 0;
 }
 
+/* smaller width for search inputs */
+.form-row .filter-input {
+  flex: 0 0 120px;
+}
+
 /* Ensure dropdowns use a solid background across browsers */
 select {
   padding: 4px;
