@@ -54,11 +54,6 @@ p {
   margin: 5px 5px 0 0;
 }
 
-/* smaller width for search inputs */
-.form-row .filter-input {
-  flex: 0 0 120px;
-}
-
 /* Ensure dropdowns use a solid background across browsers */
 select {
   padding: 4px;
@@ -165,6 +160,12 @@ button:disabled {
   padding-bottom: 5px;
 }
 
+.list-search {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 4px;
+  font-size: 0.9em;
+}
 .device-ul {
   list-style: none;
   padding: 0;

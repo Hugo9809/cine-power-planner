@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Camera Power Planner</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -43,17 +44,14 @@
     <h2 id="deviceSelectionHeading">Device Selection</h2>
       <div class="form-row">
         <label for="cameraSelect" id="cameraLabel">Camera:</label>
-        <input type="text" id="cameraFilter" class="filter-input" placeholder="Filter..." />
         <select id="cameraSelect"></select>
       </div>
       <div class="form-row">
         <label for="monitorSelect" id="monitorLabel">Monitor:</label>
-        <input type="text" id="monitorFilter" class="filter-input" placeholder="Filter..." />
         <select id="monitorSelect"></select>
       </div>
       <div class="form-row">
         <label for="videoSelect" id="videoLabel">Wireless Video:</label>
-        <input type="text" id="videoFilter" class="filter-input" placeholder="Filter..." />
         <select id="videoSelect"></select>
       </div>
 
@@ -61,7 +59,6 @@
       <legend id="fizLegend">FIZ (Follow Focus) Systems</legend>
       <div class="form-row">
         <label for="motor1Select" id="fizMotorsLabel">FIZ Motors:</label>
-        <input type="text" id="motorFilter" class="filter-input" placeholder="Filter..." />
         <select id="motor1Select"></select>
       </div>
       <div class="form-row">
@@ -78,7 +75,6 @@
       </div>
       <div class="form-row">
         <label for="controller1Select" id="fizControllersLabel">FIZ Controllers:</label>
-        <input type="text" id="controllerFilter" class="filter-input" placeholder="Filter..." />
         <select id="controller1Select"></select>
       </div>
       <div class="form-row">
@@ -95,14 +91,12 @@
       </div>
       <div class="form-row">
         <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
-        <input type="text" id="distanceFilter" class="filter-input" placeholder="Filter..." />
         <select id="distanceSelect"></select>
       </div>
     </fieldset>
 
     <div class="form-row">
       <label for="batterySelect" id="batteryLabel">V-Mount Battery:</label>
-      <input type="text" id="batteryFilter" class="filter-input" placeholder="Filter..." />
       <select id="batterySelect"></select>
     </div>
   </section>
@@ -179,30 +173,37 @@
     <div class="device-list-container">
       <div class="device-category">
         <h4 id="category_cameras">Cameras</h4>
+        <input type="text" class="list-search" data-target="cameraList" placeholder="Search..." />
         <ul id="cameraList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_monitors">Monitors</h4>
+        <input type="text" class="list-search" data-target="monitorList" placeholder="Search..." />
         <ul id="monitorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_video">Wireless Video</h4>
+        <input type="text" class="list-search" data-target="videoList" placeholder="Search..." />
         <ul id="videoList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_motors">FIZ Motors</h4>
+        <input type="text" class="list-search" data-target="motorList" placeholder="Search..." />
         <ul id="motorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_controllers">FIZ Controllers</h4>
+        <input type="text" class="list-search" data-target="controllerList" placeholder="Search..." />
         <ul id="controllerList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_distance">FIZ Distance</h4>
+        <input type="text" class="list-search" data-target="distanceList" placeholder="Search..." />
         <ul id="distanceList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_batteries">V-Mount Batteries</h4>
+        <input type="text" class="list-search" data-target="batteryList" placeholder="Search..." />
         <ul id="batteryList" class="device-ul"></ul>
       </div>
     </div>
@@ -210,6 +211,7 @@
 
   <script src="data.js"></script>
   <script src="storage.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
