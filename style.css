@@ -358,6 +358,7 @@ body.dark-mode .selectedBatteryRow {
 }
 
 body.dark-mode .device-category h4 {
+  color: #ffffff;
   border-bottom: 1px solid #ffffff;
 }
 
