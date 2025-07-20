@@ -80,8 +80,7 @@ p {
 }
 
 .select-wrapper .filter-input {
-  flex: none;
-  margin-bottom: 2px;
+  display: none;
 }
 
 .device-category .list-filter {

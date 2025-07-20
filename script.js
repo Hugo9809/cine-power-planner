@@ -495,6 +495,39 @@ function filterDeviceList(listElem, filterValue) {
   });
 }
 
+// Attach in-select search filtering for a dropdown
+function attachSelectSearch(selectElem) {
+  let searchStr = "";
+  let timer;
+
+  selectElem.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace') {
+      searchStr = searchStr.slice(0, -1);
+      filterSelect(selectElem, searchStr);
+      e.preventDefault();
+    } else if (e.key === 'Escape') {
+      searchStr = "";
+      filterSelect(selectElem, searchStr);
+    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      searchStr += e.key.toLowerCase();
+      filterSelect(selectElem, searchStr);
+      e.preventDefault();
+    } else {
+      return;
+    }
+
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      searchStr = "";
+    }, 1000);
+  });
+
+  selectElem.addEventListener('blur', () => {
+    searchStr = "";
+    filterSelect(selectElem, "");
+  });
+}
+
 function applyFilters() {
   filterSelect(cameraSelect, cameraFilterInput.value);
   filterSelect(monitorSelect, monitorFilterInput.value);
@@ -521,6 +554,12 @@ motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
 populateSelect(batterySelect, devices.batteries, true);
+
+// Enable search inside dropdowns
+[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
+  .forEach(sel => attachSelectSearch(sel));
+motorSelects.forEach(sel => attachSelectSearch(sel));
+controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 
 // Set default selections for dropdowns
