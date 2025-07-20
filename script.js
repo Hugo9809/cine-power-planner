@@ -726,7 +726,7 @@ function renderDeviceList(categoryKey, ulElement) {
   // Handle nested FIZ categories
   if (categoryKey.includes('.')) {
     const [mainCat, subCat] = categoryKey.split('.');
-    categoryDevices = devices[mainCat]?.[subCat];
+    categoryDevices = devices[mainCat] && devices[mainCat][subCat];
   }
   if (!categoryDevices) return;
 
@@ -1250,9 +1250,11 @@ function generatePrintableOverview() {
             const deviceName = selectElement.options[selectElement.selectedIndex].text;
             let consumption;
             if (subcategory) {
-                consumption = devices[category]?.[subcategory]?.[deviceKey];
+                consumption = devices[category] &&
+                              devices[category][subcategory] &&
+                              devices[category][subcategory][deviceKey];
             } else {
-                consumption = devices[category]?.[deviceKey];
+                consumption = devices[category] && devices[category][deviceKey];
             }
             const power = typeof consumption === 'object' ? consumption.power : consumption;
             if (power !== undefined && power !== null) {
@@ -1571,10 +1573,10 @@ function generatePrintableOverview() {
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
 [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
-  .forEach(sel => sel?.addEventListener("change", updateCalculations));
+  .forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 
-motorSelects.forEach(sel => sel?.addEventListener("change", updateCalculations));
-controllerSelects.forEach(sel => sel?.addEventListener("change", updateCalculations));
+motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
+controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 
 // Dark mode handling
 function applyDarkMode(enabled) {
