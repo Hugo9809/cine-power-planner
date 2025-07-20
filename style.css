@@ -310,16 +310,20 @@ body.dark-mode textarea {
   border-color: #555;
 }
 
-/* Remove Safari's gradient on selects in dark mode */
-body.dark-mode select {
+/* Remove Safari's gradient on selects and inputs in dark mode */
+body.dark-mode select,
+body.dark-mode input,
+body.dark-mode textarea {
   background-image: none;
   -webkit-appearance: none;
   appearance: none;
 }
 
-/* Remove Safari's gradient on selects in light mode */
+/* Remove Safari's gradient on selects and inputs in light mode */
 @supports (-webkit-touch-callout: none) {
-  body:not(.dark-mode) select {
+  body:not(.dark-mode) select,
+  body:not(.dark-mode) input,
+  body:not(.dark-mode) textarea {
     background-image: none;
     -webkit-appearance: none;
     appearance: none;
