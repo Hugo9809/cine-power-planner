@@ -1136,6 +1136,422 @@ let devices = {
         { type: "BNC", notes: "Timecode In/Out" }
       ]
     },
+    // V-RAPTOR® X XL 8K VV
+    "V-RAPTOR® X XL 8K VV": {
+      powerDrawWatts: 75, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "24V DC", // Source: RED V-RAPTOR X XL 8K VV Product Page
+          portType: "4-pin XLR / V-Lock", // Source: RED V-RAPTOR X XL 8K VV Product Page
+          powerDrawWatts: 75 // Consistent with the top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED V-RAPTOR X XL 8K VV Product Page
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 2, voltage: "12V", wattage: null }, // Source: RED V-RAPTOR X XL 8K VV Product Page
+          { type: "2-pin LEMO", count: 2, voltage: "12V", wattage: null }, // Source: RED V-RAPTOR X XL 8K VV Product Page
+          { type: "3-pin Fischer", count: 1, voltage: "24V", wattage: null, notes: "R/S" }, // Source: RED V-RAPTOR X XL 8K VV Product Page
+          { type: "USB-C", count: 1, voltage: "5V", wattage: null } // Source: RED V-RAPTOR X XL 8K VV Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 4 } // Source: RED V-RAPTOR X XL 8K VV Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" }, // Source: RED V-RAPTOR X XL 8K VV Product Page
+        { type: "LANC", notes: "2.5mm" } // Source: RED V-RAPTOR X XL 8K VV Product Page
+      ],
+      recordingMedia: [
+        "CFexpress Type B" // Source: RED V-RAPTOR X XL 8K VV Product Page
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" } // Source: RED V-RAPTOR X XL 8K VV Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED V-RAPTOR X XL 8K VV Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED V-RAPTOR X XL 8K VV Product Page
+      ]
+    },
+    // V-RAPTOR® XL 8K S35
+    "V-RAPTOR® XL 8K S35": {
+      powerDrawWatts: 75, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "24V DC", // Source: RED V-RAPTOR XL 8K S35 Product Page
+          portType: "4-pin XLR / V-Lock", // Source: RED V-RAPTOR XL 8K S35 Product Page
+          powerDrawWatts: 75 // Consistent with the top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED V-RAPTOR XL 8K S35 Product Page
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 2, voltage: "12V", wattage: null }, // Source: RED V-RAPTOR XL 8K S35 Product Page
+          { type: "2-pin LEMO", count: 2, voltage: "12V", wattage: null }, // Source: RED V-RAPTOR XL 8K S35 Product Page
+          { type: "3-pin Fischer", count: 1, voltage: "24V", wattage: null, notes: "R/S" }, // Source: RED V-RAPTOR XL 8K S35 Product Page
+          { type: "USB-C", count: 1, voltage: "5V", wattage: null } // Source: RED V-RAPTOR XL 8K S35 Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 4 } // Source: RED V-RAPTOR XL 8K S35 Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" }, // Source: RED V-RAPTOR XL 8K S35 Product Page
+        { type: "LANC", notes: "2.5mm" } // Source: RED V-RAPTOR XL 8K S35 Product Page
+      ],
+      recordingMedia: [
+        "CFexpress Type B" // Source: RED V-RAPTOR XL 8K S35 Product Page
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" } // Source: RED V-RAPTOR XL 8K S35 Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED V-RAPTOR XL 8K S35 Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED V-RAPTOR XL 8K S35 Product Page
+      ]
+    },
+    // V-RAPTOR® X XL 8K S35
+    "V-RAPTOR® X XL 8K S35": {
+      powerDrawWatts: 75, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "24V DC", // Source: RED V-RAPTOR X XL 8K S35 Product Page
+          portType: "4-pin XLR / V-Lock", // Source: RED V-RAPTOR X XL 8K S35 Product Page
+          powerDrawWatts: 75 // Consistent with the top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED V-RAPTOR X XL 8K S35 Product Page
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 2, voltage: "12V", wattage: null }, // Source: RED V-RAPTOR X XL 8K S35 Product Page
+          { type: "2-pin LEMO", count: 2, voltage: "12V", wattage: null }, // Source: RED V-RAPTOR X XL 8K S35 Product Page
+          { type: "3-pin Fischer", count: 1, voltage: "24V", wattage: null, notes: "R/S" }, // Source: RED V-RAPTOR X XL 8K S35 Product Page
+          { type: "USB-C", count: 1, voltage: "5V", wattage: null } // Source: RED V-RAPTOR X XL 8K S35 Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 4 } // Source: RED V-RAPTOR X XL 8K S35 Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" }, // Source: RED V-RAPTOR X XL 8K S35 Product Page
+        { type: "LANC", notes: "2.5mm" } // Source: RED V-RAPTOR X XL 8K S35 Product Page
+      ],
+      recordingMedia: [
+        "CFexpress Type B" // Source: RED V-RAPTOR X XL 8K S35 Product Page
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" } // Source: RED V-RAPTOR X XL 8K S35 Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED V-RAPTOR X XL 8K S35 Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED V-RAPTOR X XL 8K S35 Product Page
+      ]
+    },
+    // V-Raptor 8k S35
+    "V-Raptor 8k S35": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED V-RAPTOR 8K S35 Product Page
+          portType: "2-pin DC-IN", // Source: RED V-RAPTOR 8K S35 Product Page
+          powerDrawWatts: 60 // Consistent with the top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT Micro-V", // Source: RED V-RAPTOR 8K S35 Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED V-RAPTOR 8K S35 Product Page
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED V-RAPTOR 8K S35 Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 2 } // Source: RED V-RAPTOR 8K S35 Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" }, // Source: RED V-RAPTOR 8K S35 Product Page
+        { type: "USB-C", notes: "Camera control" } // Source: RED V-RAPTOR 8K S35 Product Page
+      ],
+      recordingMedia: [
+        "CFexpress Type B" // Source: RED V-RAPTOR 8K S35 Product Page
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" } // Source: RED V-RAPTOR 8K S35 Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED V-RAPTOR 8K S35 Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED V-RAPTOR 8K S35 Product Page
+      ]
+    },
+    // V-Raptor X 8k S35
+    "V-Raptor X 8k S35": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED V-RAPTOR X 8K S35 Product Page
+          portType: "2-pin DC-IN", // Source: RED V-RAPTOR X 8K S35 Product Page
+          powerDrawWatts: 60 // Consistent with the top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT Micro-V", // Source: RED V-RAPTOR X 8K S35 Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED V-RAPTOR X 8K S35 Product Page
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED V-RAPTOR X 8K S35 Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 2 } // Source: RED V-RAPTOR X 8K S35 Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" }, // Source: RED V-RAPTOR X 8K S35 Product Page
+        { type: "USB-C", notes: "Camera control" } // Source: RED V-RAPTOR X 8K S35 Product Page
+      ],
+      recordingMedia: [
+        "CFexpress Type B" // Source: RED V-RAPTOR X 8K S35 Product Page
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" } // Source: RED V-RAPTOR X 8K S35 Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED V-RAPTOR X 8K S35 Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED V-RAPTOR X 8K S35 Product Page
+      ]
+    },
+    // V-Raptor 8k VV
+    "V-Raptor 8k VV": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED V-RAPTOR 8K VV Product Page
+          portType: "2-pin DC-IN", // Source: RED V-RAPTOR 8K VV Product Page
+          powerDrawWatts: 60 // Consistent with the top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT Micro-V", // Source: RED V-RAPTOR 8K VV Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED V-RAPTOR 8K VV Product Page
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED V-RAPTOR 8K VV Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 2 } // Source: RED V-RAPTOR 8K VV Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" }, // Source: RED V-RAPTOR 8K VV Product Page
+        { type: "USB-C", notes: "Camera control" } // Source: RED V-RAPTOR 8K VV Product Page
+      ],
+      recordingMedia: [
+        "CFexpress Type B" // Source: RED V-RAPTOR 8K VV Product Page
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" } // Source: RED V-RAPTOR 8K VV Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED V-RAPTOR 8K VV Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED V-RAPTOR 8K VV Product Page
+      ]
+    },
+    // V-Raptor X 8k VV
+    "V-Raptor X 8k VV": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED V-RAPTOR X 8K VV Product Page
+          portType: "2-pin DC-IN", // Source: RED V-RAPTOR X 8K VV Product Page
+          powerDrawWatts: 60 // Consistent with the top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT Micro-V", // Source: RED V-RAPTOR X 8K VV Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED V-RAPTOR X 8K VV Product Page
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED V-RAPTOR X 8K VV Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 2 } // Source: RED V-RAPTOR X 8K VV Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" }, // Source: RED V-RAPTOR X 8K VV Product Page
+        { type: "USB-C", notes: "Camera control" } // Source: RED V-RAPTOR X 8K VV Product Page
+      ],
+      recordingMedia: [
+        "CFexpress Type B" // Source: RED V-RAPTOR X 8K VV Product Page
+      ],
+      viewfinder: [
+        { type: "DSMC3 RED Touch 7\" LCD (Optional)" } // Source: RED V-RAPTOR X 8K VV Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED V-RAPTOR X 8K VV Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED V-RAPTOR X 8K VV Product Page
+      ]
+    },
+    // RED Scarlet-W (Dragon Sensor)
+    "RED Scarlet-W (Dragon Sensor)": {
+      powerDrawWatts: 60, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED Scarlet-W Product Page
+          portType: "2-pin DC-IN", // Source: RED Scarlet-W Product Page
+          powerDrawWatts: 60 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT", // Source: RED Scarlet-W Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)", // Source: Third-party accessories
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED Scarlet-W Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "3G-SDI", count: 2 } // Source: RED Scarlet-W Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" } // Source: RED Scarlet-W Product Page
+      ],
+      recordingMedia: [
+        "RED MINI-MAG" // Source: RED Scarlet-W Product Page
+      ],
+      viewfinder: [
+        { type: "RED Touch 7.0\" LCD (Optional)" } // Source: RED Scarlet-W Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED Scarlet-W Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED Scarlet-W Product Page
+      ]
+    },
+    // RED Epic-W (Helium 8K S35)
+    "RED Epic-W (Helium 8K S35)": {
+      powerDrawWatts: 37, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED Epic-W Product Page
+          portType: "2-pin DC-IN", // Source: RED Epic-W Product Page
+          powerDrawWatts: 37 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT", // Source: RED Epic-W Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)", // Source: Third-party accessories
+          "Gold Mount (adapted)" // Source: Third-party accessories
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED Epic-W Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "3G-SDI", count: 2 } // Source: RED Epic-W Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" } // Source: RED Epic-W Product Page
+      ],
+      recordingMedia: [
+        "RED MINI-MAG" // Source: RED Epic-W Product Page
+      ],
+      viewfinder: [
+        { type: "RED Touch 7.0\" LCD (Optional)" } // Source: RED Epic-W Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED Epic-W Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED Epic-W Product Page
+      ]
+    },
+    // RED Weapon (Helium 8K S35/VV)
+    "RED Weapon (Helium 8K S35/VV)": {
+      powerDrawWatts: 75, // This value is taken directly from the initial data.js file.
+      power: {
+        input: {
+          voltageRange: "11.5V-17V DC", // Source: RED Weapon Product Page
+          portType: "2-pin DC-IN", // Source: RED Weapon Product Page
+          powerDrawWatts: 75 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "REDVOLT", // Source: RED Weapon Product Page
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)", // Source: RED Weapon Product Page
+          "Gold Mount (Native)" // Source: RED Weapon Product Page
+        ],
+        powerDistributionOutputs: [
+          { type: "P-Tap", count: 1, voltage: "12V", wattage: null } // Source: RED Weapon Product Page
+        ]
+      },
+      videoOutputs: [
+        { type: "3G-SDI", count: 2 } // Source: RED Weapon Product Page
+      ],
+      fizConnectors: [
+        { type: "EXT Port (9-pin)", notes: "Genlock, Timecode, GPIO, Ctrl" } // Source: RED Weapon Product Page
+      ],
+      recordingMedia: [
+        "RED MINI-MAG" // Source: RED Weapon Product Page
+      ],
+      viewfinder: [
+        { type: "RED Touch 7.0\" LCD (Optional)" } // Source: RED Weapon Product Page
+      ],
+      lensMount: [
+        "Interchangeable PL, EF" // Source: RED Weapon Product Page
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" } // Source: RED Weapon Product Page
+      ]
+    },
     "None": { powerDrawWatts: 0 }
   },
   monitors: {
