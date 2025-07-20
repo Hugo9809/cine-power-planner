@@ -1,0 +1,18 @@
+{
+  "name": "camera-power-planner",
+  "version": "1.0.0",
+  "description": "This is a browser-based tool for planning professional camera setups powered by V-Mount batteries.   It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V), and **estimated battery runtime**, while checking whether the battery can safely deliver the required power.",
+  "main": "data.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.4",
+    "jest-localstorage-mock": "^2.4.26"
+  }
+}
