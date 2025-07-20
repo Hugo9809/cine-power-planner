@@ -109,3 +109,4 @@ script.js        # Application logic / Logik & Interaktion
 data.js          # Default device list / Start-Datenbank
 storage.js       # LocalStorage functions / Funktionen für LocalStorage
 README.md        # This file / Diese Datei
+```
