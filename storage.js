@@ -86,3 +86,15 @@ function deleteSetup(name) {
   delete setups[name];
   saveSetups(setups);
 }
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    loadDeviceData,
+    saveDeviceData,
+    loadSetups,
+    saveSetups,
+    saveSetup,
+    loadSetup,
+    deleteSetup
+  };
+}
