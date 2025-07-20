@@ -217,6 +217,464 @@ let devices = {
     "Sony Venice": {
       powerDrawWatts: 60
     },
+
+    "Sony Burano": {
+      powerDrawWatts: 66,
+      power: {
+        input: {
+          voltageRange: "19.5V DC",
+          portType: "DC IN (Barrel)",
+          powerDrawWatts: 66
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (Native)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "D-Tap", count: 2, voltage: "14.4V", wattage: 50, notes: "Typical, via battery plate" },
+          { type: "USB-C PD", voltage: "5V", current: "3A", wattage: 15, notes: "On camera body" }
+        ]
+      },
+      videoOutputs: [
+        { type: "SDI", notes: "12G-SDI, 3G-SDI" },
+        { type: "HDMI" }
+      ],
+      fizConnectors: [
+        { type: "LANC (2.5mm stereo mini jack)", notes: "Remote control" },
+        { type: "USB-C", notes: "For specific accessories/control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B"
+      ],
+      viewfinder: [
+        { type: "Sony Burano EVF Port (Proprietary)", notes: "For Sony EVF" },
+        { type: "LCD Monitor (Native)", size: "3.5-inch", resolution: "1280x720" }
+      ],
+      lensMount: [
+        "Sony E-mount (Native)",
+        "PL (adapted)"
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" },
+        { type: "USB-C", notes: "For timecode sync via adapter" }
+      ]
+    },
+    "Sony FX3": {
+      powerDrawWatts: 7.3,
+      power: {
+        input: {
+          voltageRange: "7.2V DC (via NP-FZ100) / 5V DC (via USB-C)",
+          portType: "USB-C (Power Delivery) / Battery Slot",
+          powerDrawWatts: 7.3
+        },
+        internalBattery: {
+          type: "Sony NP-FZ100",
+          batteryLifeMinutes: 135
+        },
+        batteryPlateSupport: [
+          "NP-FZ100 (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", voltage: "5V", current: "1.5A", wattage: 7.5, notes: "For charging or powering small accessories" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI (Type A)", notes: "Supports 4K 60p, 16-bit RAW output" }
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For specific accessories/control" },
+        { type: "Micro USB", notes: "For specific accessories/control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type A",
+        "SD (UHS-II/UHS-I)"
+      ],
+      viewfinder: [
+        { type: "LCD Monitor (Native)", size: "3.0-inch", resolution: "1.44M dots", notes: "Vari-angle touchscreen" }
+      ],
+      lensMount: [
+        "Sony E-mount (Native)"
+      ],
+      timecode: [
+        { type: "Multi-function shoe", notes: "Via XLR Handle Unit for timecode input" }
+      ]
+    },
+    "Sony FX6": {
+      powerDrawWatts: 18,
+      power: {
+        input: {
+          voltageRange: "19.5V DC",
+          portType: "DC IN (Barrel)",
+          powerDrawWatts: 18
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "Sony L-Series InfoLithium (Native)",
+          "Gold Mount (adapted)",
+          "V-Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "D-Tap", count: 2, voltage: "14.4V", wattage: 50, notes: "Via optional MID49 DB-11, per port (typical)" },
+          { type: "Fischer 3-pin", count: 2, voltage: "24V", current: "2.5A", wattage: 60, notes: "Via optional MID49 DB-11, per port, with R/S" },
+          { type: "Lemo 2-pin", count: 2, voltage: "14.4V", wattage: 24, notes: "Via optional MID49 DB-11, per port (est. 2A)" },
+          { type: "USB-C PD", voltage: "5V", current: "3A", wattage: 15, notes: "Via optional MID49 DB-11, with thread lock" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", notes: "Supports 16-bit RAW" },
+        { type: "HDMI", version: "2.0" }
+      ],
+      fizConnectors: [
+        { type: "LANC (2.5mm stereo mini jack)", notes: "REMOTE connector" },
+        { type: "Proprietary Side Grip Connection", notes: "Simulates Hand Grip for remote control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type A",
+        "SD (UHS-II/UHS-I)"
+      ],
+      viewfinder: [
+        { type: "Native LCD Viewfinder", size: "3.5-inch", notes: "Touch operation, flexible attachment" }
+      ],
+      lensMount: [
+        "Sony E-mount (Native)",
+        "PL (adapted)"
+      ],
+      timecode: [
+        { type: "Analog Audio Inputs", notes: "2x mini XLR, 1x 3.5mm stereo input can be used for Timecode input" }
+      ]
+    },
+    "Sony FX9": {
+      powerDrawWatts: 35.2,
+      power: {
+        input: {
+          voltageRange: "19.5V DC",
+          portType: "DC IN (Barrel)",
+          powerDrawWatts: 35.2
+        },
+        internalBattery: {
+          type: "BP-U (e.g., BP-U35, BP-U70, BP-U100)",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "BP-U (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "D-Tap", count: 2, voltage: "14.4V", wattage: 50, notes: "Via optional XDCA-FX9 extension unit, per port" },
+          { type: "Hirose 4-pin", voltage: "12V", current: "2A", wattage: 24, notes: "Via optional XDCA-FX9 extension unit" },
+          { type: "USB-C", voltage: "5V", wattage: 7.5, notes: "Via optional XDCA-FX9 extension unit (USB 2.0)" }
+        ]
+      },
+      videoOutputs: [
+        { type: "SDI", notes: "12G-SDI, 3G-SDI" },
+        { type: "HDMI" }
+      ],
+      fizConnectors: [
+        { type: "LANC (2.5mm stereo mini jack)", notes: "Remote control" },
+        { type: "USB-C", notes: "For specific accessories/control" }
+      ],
+      recordingMedia: [
+        "XQD Card",
+        "SD Card (for proxy/backup)"
+      ],
+      viewfinder: [
+        { type: "Sony FX9 EVF Port (Proprietary)", notes: "For Sony EVF" },
+        { type: "LCD Monitor (Native)", size: "3.5-inch", resolution: "1280x720" }
+      ],
+      lensMount: [
+        "Sony E-mount (Native)",
+        "PL (adapted)"
+      ],
+      timecode: [
+        { type: "BNC", notes: "Timecode In/Out" }
+      ]
+    },
+    "Canon C70": {
+      powerDrawWatts: 14.6,
+      power: {
+        input: {
+          voltageRange: "24V DC",
+          portType: "DC Input",
+          powerDrawWatts: 14.6
+        },
+        internalBattery: {
+          type: "BP-A30 (Supplied) / BP-A60 (Optional)",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C", notes: "USB 3.2 Gen1, for optional GPS Unit, Wi-Fi, Ethernet adapters" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", notes: "Type A" }
+      ],
+      fizConnectors: [
+        { type: "Canon RF mount", notes: "For electronic lens control (iris, focus, zoom) on compatible lenses" },
+        { type: "REMOTE A connector", notes: "2.5 mm stereo mini-mini jack (input only)" }
+      ],
+      recordingMedia: [
+        "SD CARD X2"
+      ],
+      viewfinder: [
+        { type: "LCD Touch Panel", size: "3.5 inch", resolution: "1280 x 720" }
+      ],
+      lensMount: [
+        "Canon RF mount"
+      ],
+      timecode: [
+        { type: "BNC / HDMI" }
+      ]
+    },
+    "Canon C80": {
+      powerDrawWatts: 19.6,
+      power: {
+        input: {
+          voltageRange: "19.5V DC",
+          portType: "DC IN 24V Terminal",
+          powerDrawWatts: 19.6
+        },
+        internalBattery: {
+          type: "Canon BP-A30N (supplied) / BP-A60N / BP-A30 / BP-A60 (optional)",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "D-Tap", count: "multiple", voltage: "Battery Voltage", wattage: 50, notes: "Via optional MID49 DB-4, typical per port" },
+          { type: "USB-C PD", count: 1, voltage: "5V", wattage: null, notes: "Via optional MID49 DB-4" },
+          { type: "Fischer 3-pin", count: "multiple", voltage: "24V", current: "2.5A", wattage: 60, notes: "Via optional MID49 DB-4, per port, with R/S" },
+          { type: "LEMO 2-pin", count: "multiple", voltage: "Battery Voltage", wattage: 24, notes: "Via optional MID49 DB-4, typical per port (est. 2A)" }
+        ]
+      },
+      videoOutputs: [
+        { type: "SDI OUT", count: 1, resolution: "12G/6G/3G/HD-SDI", notes: "BNC terminal" },
+        { type: "HDMI", count: 1, version: "Type-A" }
+      ],
+      fizConnectors: [
+        { type: "REMOTE A (2.5mm)", notes: "LANC" },
+        { type: "Multi-function shoe", notes: "21 pin with electrical contacts" }
+      ],
+      recordingMedia: [
+        "SD Card (SD / SDHC / SDXC)",
+        "Dual SD card slots for simultaneous recording"
+      ],
+      viewfinder: [
+        { type: "None", notes: "No built-in viewfinder. External LCD monitor." }
+      ],
+      lensMount: [
+        "Canon RF mount (Native)",
+        "PL (adapted)",
+        "EF (adapted)"
+      ],
+      timecode: [
+        { type: "BNC terminal", notes: "Time Code In/Out" }
+      ]
+    },
+    "Canon C300 Mk III": {
+      powerDrawWatts: 31,
+      power: {
+        input: {
+          voltageRange: "11.5V - 20V DC",
+          portType: "XLR 4-pin jack",
+          powerDrawWatts: 31
+        },
+        internalBattery: {
+          type: "BP-A60 (Supplied)",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "DC Output", notes: "Via optional Expansion Unit EU-V2 / EU-V3" },
+          { type: "Lens terminal 12-pin", notes: "Via optional Expansion Unit EU-V2" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 1, notes: "BNC terminal, 4K to 2K/FHD conversion available" },
+        { type: "HDMI", count: 1 }
+      ],
+      fizConnectors: [
+        { type: "REMOTE A connector", notes: "2.5 mm stereo jack (input only)" },
+        { type: "REMOTE B connector", notes: "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3" },
+        { type: "Lens terminal 12-pin jack", notes: "Requires optional EU-V2 / EU-V3" }
+      ],
+      recordingMedia: [
+        "Dual CFexpress slots",
+        "SD card slot (for proxy/backup)"
+      ],
+      viewfinder: [
+        { type: "LCD Monitor LM-V2 (Supplied)", notes: "4.3” rotating touchscreen LCD unit" },
+        { type: "Optional EVF-V70 viewfinder" }
+      ],
+      lensMount: [
+        "Canon EF mount (Native)",
+        "PL Mount (Cooke/I Technology) (User changeable option)"
+      ],
+      timecode: [
+        { type: "Time code", notes: "Yes (via BNC)" },
+        { type: "Genlock", notes: "Yes, with optional Expansion Unit EU-V1 and EU-V2 (BNC jack, input only/also serves as SYNC OUT connector)" }
+      ]
+    },
+    "Canon C400": {
+      powerDrawWatts: 32.5,
+      power: {
+        input: {
+          voltageRange: "11.5V-20V DC",
+          portType: "4-pin XLR / DC IN 12V",
+          powerDrawWatts: 32.5
+        },
+        internalBattery: {
+          type: "BP-A60N (Supplied) / BP-A30N / BP-A30 / BP-A60 (Optional)",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "Multi-Accessory Shoe", notes: "Via camera body or top handle" },
+          { type: "USB-C Data Terminal", notes: "USB 3.2 Gen1" },
+          { type: "USB-C Terminal (Grip)", notes: "For supplied Hand Grip only" },
+          { type: "USB-C Terminal (LCD Monitor)", notes: "For supplied LCD Monitor only" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 1, notes: "BNC" },
+        { type: "3G-SDI Monitoring", count: 1, notes: "Monitor Output BNC" },
+        { type: "HDMI", count: 1, version: "Type-A" }
+      ],
+      fizConnectors: [
+        { type: "Remote Control Terminal", notes: "2.5 mm stereo mini jack" },
+        { type: "Lens Terminal", notes: "12-pin jack" },
+        { type: "Cooke /i Technology\u2122 Support", notes: "Only when equipped with Mount Adapter PL-RF" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B",
+        "SD UHS-II"
+      ],
+      viewfinder: [
+        { type: "LCD Touchscreen", size: "3.5 inch", resolution: "1280 x 720" }
+      ],
+      lensMount: [
+        "Canon RF mount (Native)",
+        "PL mount (via PL-RF Mount Adapter)",
+        "EF mount (via EF-EOS R Mount Adapter)"
+      ],
+      timecode: [
+        { type: "DIN1.0 / 2.3", notes: "Input / Output" },
+        { type: "Genlock", notes: "DIN1.0 / 2.3 (shared with Sync & Return)" }
+      ]
+    },
+    "Canon C500 Mk II": {
+      powerDrawWatts: 63,
+      power: {
+        input: {
+          voltageRange: "11.5V - 20V DC",
+          portType: "XLR 4-pin jack",
+          powerDrawWatts: 63
+        },
+        internalBattery: {
+          type: "BP-A60 (Supplied)",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "DC Output", notes: "Via optional Expansion Unit EU-V2 / EU-V3" },
+          { type: "Lens terminal 12-pin", notes: "Via optional Expansion Unit EU-V2 / EU-V3" }
+        ]
+      },
+      videoOutputs: [
+        { type: "12G-SDI", count: 1, notes: "BNC terminal, 4K to 2K/FHD conversion available" },
+        { type: "HDMI", count: 1 }
+      ],
+      fizConnectors: [
+        { type: "REMOTE A connector", notes: "2.5 mm stereo jack (input only)" },
+        { type: "REMOTE B connector", notes: "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3" },
+        { type: "Lens terminal 12-pin jack", notes: "Requires optional EU-V2 / EU-V3" }
+      ],
+      recordingMedia: [
+        "Dual CFexpress slots"
+      ],
+      viewfinder: [
+        { type: "LCD Monitor LM-V2 (Supplied)", notes: "Canon's proprietary specification (special 13-pin jack)" },
+        { type: "Optional EVF-V70 viewfinder" },
+        { type: "Optional EVF-V50" }
+      ],
+      lensMount: [
+        "Canon EF mount (Native)",
+        "PL mount (User changeable option)"
+      ],
+      timecode: [
+        { type: "Time code", notes: "Yes (via BNC)" },
+        { type: "Genlock", notes: "Yes, with optional Expansion Unit EU-V1 and EU-V2 (BNC jack, input only/also serves as SYNC OUT connector)" }
+      ]
+    },
+    "Blackmagic BMPCC 4K": {
+      powerDrawWatts: 22,
+      power: {
+        input: {
+          voltageRange: "12V-20V",
+          portType: "2-pin locking connector",
+          powerDrawWatts: 22
+        },
+        internalBattery: {
+          type: "Canon LP-E6",
+          batteryLifeMinutes: 60
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C 3.1 Gen 1", notes: "For external drive recording, PTP camera control, software updates, can trickle charge battery" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type A" }
+      ],
+      fizConnectors: [
+        { type: "Active MFT mount", notes: "Iris, focus and zoom on supported lenses" },
+        { type: "USB Type-C", notes: "PTP camera control" },
+        { type: "Bluetooth", notes: "Wireless control" }
+      ],
+      recordingMedia: [
+        "CFast card slot",
+        "SD UHS-II card slot",
+        "USB-C 3.1 Gen 1 expansion port for external media"
+      ],
+      viewfinder: [
+        { type: "LCD capacitive touchscreen", size: "5 inch", resolution: "1920 x 1080" }
+      ],
+      lensMount: [
+        "Active MFT mount"
+      ],
+      timecode: [
+        { type: "3.5mm Stereo Input", notes: "Can also be used for Timecode input" },
+        { type: "Internal Clock", notes: "Less than 1 frame drift every 8 hours" }
+      ]
+    },
+
     "None": { powerDrawWatts: 0 }
   },
   monitors: {
