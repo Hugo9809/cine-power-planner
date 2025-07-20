@@ -1,157 +1,332 @@
 // data.js – Definiert die initiale Gerätedatenbank
 let devices = {
   cameras: {
-    "Arri Alexa Mini LF": 89, // 89W typical power draw. Proof: ARRI official specifications often list ~89W for Mini LF (e.g., https://www.arri.com/resource/blob/321894/c005b81b2c454e95495b2fc453eb5a48/alexa-mini-lf-technical-data-data.pdf page 3, although newer documentation might exist)
-    "Arri Alexa Mini": 84, // 84W typical power draw. Proof: ARRI official specifications (e.g., https://www.arri.com/resource/blob/321880/01737e61e01d6706037a8b4382570c94/alexa-mini-technical-data-data.pdf page 3)
-    "Arri Alexa 35": 110, // 110W typical power draw. Proof: ARRI official specifications often list ~110W for Alexa 35. (e.g. from ARRI literature, though specific public link is hard to pin down quickly, rental house specs like https://www.vahire.com/wp-content/uploads/ARRI-Alexa-35-Specifications.docx.pdf show 90W, but 110W is more commonly cited for typical operation including accessories). Let's adjust to 90W as per direct search result.
-    "Arri Amira": 50, // 50W typical power draw. Proof: ARRI official specifications (e.g., https://www.arri.com/resource/blob/321856/e3e0ff48a73138b1f8ef279ee1ee52c2/amira-brochure-data.pdf page 10)
-    "Sony Venice 2": 76, // 76W typical power consumption for 8K. Proof: Sony official specifications (e.g., https://pro.sony/s3/cms-static-content/common/products/brochure/CINEALTA_VENICE2_Technical_Spec_JP_2022.pdf page 3 shows 76W for 8K and 60W for 6K mode)
-    "Sony Venice": 60, // 60W typical power consumption. Proof: Sony official specifications (e.g., https://pro.sony/s3/cms-static-content/common/products/brochure/VENICE_Technical_Spec_JP_2017.pdf page 3)
-    "Sony Burano": 66, // 66W typical power consumption. Proof: Sony official specifications (e.g., https://pro.sony.com/s3/cms-static-content/common/products/brochure/BURANO_Technical_Spec_JP_2023.pdf page 3)
-    "Sony FX3": 7.3, // 7.3W power consumption. Proof: Sony official specifications (e.g., https://pro.sony/s3/cms-static-content/common/products/brochure/ILME-FX3_Technical_Spec_JP.pdf page 3)
-    "Sony FX6": 18, // 18W power consumption. Proof: Sony official specifications (e.g., https://pro.sony/s3/cms-static-content/common/products/brochure/FX6_Technical_Spec_JP.pdf page 3)
-    "Sony FX9": 35.2, // 35.2W power consumption. Proof: Sony official specifications (e.g., https://pro.sony/s3/cms-static-content/common/products/brochure/FX9_Technical_Spec_JP.pdf page 3)
-    "Canon C70": 14.6, // 14.6W power consumption. Proof: Canon official specifications (e.g., https://www.usa.canon.com/content/dam/clc/products/cinema/EOS-C70-Spec-Sheet_v2.pdf page 1)
-    "Canon C80": 19.6, // 19.6W (approx. 15W + 4.6W for accessories). Based on C70 power consumption and typical additions for higher end, though specific C80 data is harder to find directly, this is a reasonable estimate if direct manufacturer spec isn't available. Let's aim to find more precise. Reverting to typical C70 + small monitor for now.
-    "Canon C300 Mk III": 31, // 31W power consumption. Proof: Canon official specifications (e.g., https://www.usa.canon.com/content/dam/clc/products/cinema/EOS-C300-Mark-III-Spec-Sheet.pdf page 1)
-    "Canon C400": 32.5, // 32.5W typical power consumption. Proof: Canon official specifications (e.g., https://www.usa.canon.com/content/dam/clc/products/cinema/EOS-C400-Spec-Sheet.pdf page 1)
-    "Canon C500 Mk II": 63, // 63W typical power consumption. Proof: Canon official specifications (e.g., https://www.usa.canon.com/content/dam/clc/products/cinema/EOS-C500-Mark-II-Spec-Sheet.pdf page 1)
-    "Blackmagic BMPCC 4K": 22, // 22W maximum power consumption. Proof: Blackmagic Design official specifications (e.g., https://www.blackmagicdesign.com/products/blackmagicpocketcinemacamera/techspecs/W-PCC-03/ )
-    "Blackmagic BMPCC 6K G2": 26, // 26W maximum power consumption. Proof: Blackmagic Design official specifications (e.g., https://www.blackmagicdesign.com/products/blackmagicpocketcinemacamera/techspecs/W-PCC-10/ )
-    "Blackmagic BMPCC 6K": 26, // 26W maximum power consumption. Proof: Blackmagic Design official specifications (e.g., https://www.blackmagicdesign.com/products/blackmagicpocketcinemacamera/techspecs/W-PCC-07/ )
-    "Blackmagic BMPCC 6K Pro": 26, // 26W maximum power consumption. Proof: Blackmagic Design official specifications (e.g., https://www.blackmagicdesign.com/products/blackmagicpocketcinemacamera/techspecs/W-PCC-08/ )
-    "Blackmagic URSA 12K": 55, // 55W maximum power consumption. Proof: Blackmagic Design official specifications (e.g., https://www.blackmagicdesign.com/products/blackmagicursamini/techspecs/W-URSA-39/ )
-    "Blackmagic URSA Cine": 100, // 100W typical power consumption. Proof: Blackmagic Design official press materials / tech specs (e.g., https://www.blackmagicdesign.com/media/release/20240409-02)
-    "Blackmagic PYXIS 6K": 60, // 60W typical power consumption. Proof: Blackmagic Design official specifications (e.g., https://www.blackmagicdesign.com/products/blackmagicpyxis/techspecs/W-PYX-01/ )
-    "Blackmagic PYXIS 12K": 90, // 90W typical power consumption. Proof: Blackmagic Design official specifications (e.g., https://www.blackmagicdesign.com/products/blackmagicpyxis/techspecs/W-PYX-02/ )
-    "RED Komodo 6k": 37, // 37W typical power consumption. Proof: RED official specifications (e.g., https://www.red.com/content/downloads/KOMODO_DSMC3-Tech-Specs-v1.pdf page 2)
-    "RED Komodo X": 45, // 45W typical power consumption. Proof: RED official specifications (e.g., https://www.red.com/content/downloads/KOMODO-X-Tech-Specs-v1.pdf page 2)
-    "V-Raptor XL 8K VV": 75, // 75W typical power consumption. Proof: RED official specifications (e.g., https://www.red.com/content/downloads/V-RAPTOR-XL_DSMC3-Tech-Specs-v1.pdf page 2)
-    "V-RAPTOR® X XL 8K VV": 75, // 75W typical power consumption. Assumed similar to V-Raptor XL. Proof: Based on XL series power.
-    "V-RAPTOR® XL 8K S35": 75, // 75W typical power consumption. Assumed similar to V-Raptor XL VV. Proof: Based on XL series power.
-    "V-RAPTOR® X XL 8K S35": 75, // 75W typical power consumption. Assumed similar to V-Raptor XL VV. Proof: Based on XL series power.
-    "V-Raptor 8k S35": 60, // 60W typical power consumption. Proof: RED official specifications for standard V-Raptor (e.g., https://www.red.com/content/downloads/V-RAPTOR_DSMC3-Tech-Specs-v1.pdf page 2)
-    "V-Raptor X 8k S35": 60, // 60W typical power consumption. Assumed similar to V-Raptor. Proof: Based on standard V-Raptor power.
-    "V-Raptor 8k VV": 60, // 60W typical power consumption. Proof: RED official specifications (e.g., https://www.red.com/content/downloads/V-RAPTOR_DSMC3-Tech-Specs-v1.pdf page 2)
-    "V-Raptor X 8k VV": 60, // 60W typical power consumption. Assumed similar to V-Raptor. Proof: Based on standard V-Raptor power.
-    "RED Scarlet-W (Dragon Sensor)": 60, // ~60W typical power consumption for Dragon sensors. Proof: Often cited in rental specs / user forums for Dragon-based cameras. Precise official RED spec for Scarlet-W is hard to pin down, but average for DSMC2 Dragon cameras is around this.
-    "RED Epic-W (Helium 8K S35)": 37, // ~37W typical power consumption. Proof: Shared architecture with Komodo/Komodo X suggests similar efficiency, often cited in rental specs for Epic-W.
-    "RED Weapon (Helium 8K S35/VV)": 75, // ~75W typical power consumption. Proof: Shared architecture with V-Raptor XL suggests similar power draw, often cited in rental specs for Weapon 8K.
-    "RED Epic Dragon (6K)": 60, // ~60W typical power consumption. Proof: Similar to Scarlet-W Dragon.
-    "RED Scarlet Dragon (5K)": 50, // ~50W typical power consumption. Slightly less than 6K Dragon.
-    "RED Epic (Mysterium-X Sensor)": 60, // ~60W typical power consumption. Proof: Older RED cameras with Mysterium-X sensor often cited around this.
-    "RED Scarlet (Mysterium-X Sensor)": 60, // ~60W typical power consumption. Proof: Older RED cameras with Mysterium-X sensor often cited around this.
-    "None": 0 // Option "Kein Kamera" eigentlich nicht vorgesehen, daher None=0 nur als Platzhalter
+    "Arri Alexa Mini LF": {
+      powerDrawWatts: 89,
+      power: {
+        input: {
+          voltageRange: "11V-34V DC",
+          portType: "LEMO 8-pin (DC In / BAT)",
+          powerDrawWatts: 89
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "B-Mount",
+          "V-Mount",
+          "Gold Mount"
+        ],
+        powerDistributionOutputs: [
+          { type: "LEMO 2-pin", voltage: "12V", current: "2A", wattage: 24, notes: "Regulated" },
+          { type: "Fischer 3-pin", voltage: "24V", current: null, notes: "Regulated R/S, primarily control" },
+          { type: "EXT LEMO 7-pin", voltage: "24V", notes: "Control/Power" }
+        ]
+      },
+      videoOutputs: [
+        { type: "SDI", resolution: "HD", notes: "SDI 1: 1.5G/3G HD (processed/clean)" },
+        { type: "SDI", resolution: "UHD", notes: "SDI 2: 1.5G/3G HD, 6G UHD (clean only, cloneable)" }
+      ],
+      fizConnectors: [
+        { type: "LEMO 4-pin (LBUS)", notes: "On lens mount, for lens motors" },
+        { type: "EXT LEMO 7-pin", notes: "For camera control, incl. FIZ with compatible systems" }
+      ],
+      recordingMedia: [
+        "Codex Compact Drive (1TB, 2TB)"
+      ],
+      viewfinder: [
+        { type: "ARRI MVF-2 (Native)", resolution: "1920x1080", notes: "OLED eyepiece + LCD fold-out monitor" }
+      ],
+      lensMount: [
+        "ARRI LPL (Native)",
+        "ARRI PL (adapted)",
+        "ARRI EF (adapted)",
+        "LEITZ M-MOUNT (adapted)",
+        "Panavision PV (adapted)",
+        "Panavision PV70 (adapted)",
+        "Vantage XPL52 (adapted)"
+      ],
+      timecode: [
+        { type: "LEMO 5-pin", notes: "LTC Timecode In/Out" },
+        { type: "SYNC IN", notes: "Black burst/tri-level sync" }
+      ]
+    },
+    "Arri Alexa Mini": {
+      powerDrawWatts: 84,
+      power: {
+        input: {
+          voltageRange: "11V-34V DC",
+          portType: "LEMO 8-pin (BAT)",
+          powerDrawWatts: 84
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount",
+          "Gold Mount",
+          "B-Mount (via adapter)"
+        ],
+        powerDistributionOutputs: [
+          { type: "LEMO 2-pin", voltage: "12V", current: "2A", wattage: 24, notes: "Regulated" },
+          { type: "Fischer 3-pin", voltage: "24V", current: null, notes: "Regulated R/S, primarily control" },
+          { type: "EXT LEMO 7-pin", voltage: "24V", notes: "Control/Power" }
+        ]
+      },
+      videoOutputs: [
+        { type: "SDI", resolution: "HD", notes: "SDI 1: 1.5G/3G HD (processed/clean)" },
+        { type: "SDI", resolution: "HD", notes: "SDI 2: 1.5G/3G HD (clean only, cloneable)" }
+      ],
+      fizConnectors: [
+        { type: "LEMO 4-pin (LBUS)", notes: "On lens mount, for lens motors" },
+        { type: "EXT LEMO 7-pin", notes: "For camera control, incl. FIZ with compatible systems" }
+      ],
+      recordingMedia: [
+        "CFast 2.0"
+      ],
+      viewfinder: [
+        { type: "ARRI MVF-1 (Native)", resolution: "1280x720", notes: "OLED eyepiece" }
+      ],
+      lensMount: [
+        "ARRI PL (Native)",
+        "ARRI EF (adapted)",
+        "ARRI B4 (adapted)",
+        "ARRI LPL (adapted)"
+      ],
+      timecode: [
+        { type: "LEMO 5-pin", notes: "LTC Timecode In/Out" },
+        { type: "SYNC IN", notes: "Black burst/tri-level sync" },
+        { type: "EXT LEMO 7-pin", notes: "For multi-camera sync with ARRI EDB-2 EXT Distribution Box" }
+      ]
+    },
+    "Arri Alexa 35": {
+      powerDrawWatts: 110,
+      power: {
+        input: {
+          voltageRange: "19.5V-34V DC",
+          portType: "BAT (LEMO 8-pin)",
+          powerDrawWatts: 110
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "B-Mount (Native)",
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        powerDistributionOutputs: [
+          { type: "LEMO 2-pin", voltage: "12V", current: "2A", wattage: 24, notes: "Regulated" },
+          { type: "Fischer 3-pin", voltage: "24V", notes: "Regulated R/S, primarily control" },
+          { type: "EXT (LEMO 7-pin)", voltage: "24V", notes: "Control/Power" },
+          { type: "LBUS (LEMO 4-pin)" }
+        ]
+      },
+      videoOutputs: [
+        { type: "SDI", resolution: "HD", notes: "SDI 1: 1.5G/3G HD" },
+        { type: "SDI", resolution: "UHD", notes: "SDI 2: 1.5G/3G HD, 6G UHD" }
+      ],
+      fizConnectors: [
+        { type: "LBUS (LEMO 4-pin)", notes: "On lens mount, for daisy-chainable motors" },
+        { type: "EXT (LEMO 7-pin)", notes: "For camera control, incl. FIZ with compatible systems" }
+      ],
+      recordingMedia: [
+        "Codex Compact Drive (1TB, 2TB)"
+      ],
+      viewfinder: [
+        { type: "ARRI MVF-2 (Native)", resolution: "1920x1080", notes: "OLED eyepiece + LCD fold-out monitor" }
+      ],
+      lensMount: [
+        "ARRI LPL (Native)",
+        "ARRI PL (adapted)",
+        "ARRI EF (adapted)"
+      ],
+      timecode: [
+        { type: "LEMO 5-pin", notes: "LTC Timecode In/Out" },
+        { type: "SYNC IN", notes: "Black burst/tri-level sync" },
+        { type: "EXT (LEMO 7-pin)", notes: "For multi-camera sync" }
+      ]
+    },
+    "Arri Amira": {
+      powerDrawWatts: 50,
+      power: {
+        input: {
+          voltageRange: "10.5V - 34V DC",
+          portType: "XLR 4-pin (main input)",
+          powerDrawWatts: 50
+        },
+        internalBattery: { type: "None", batteryLifeMinutes: null },
+        batteryPlateSupport: [ "V-Mount (adapted)", "Gold Mount (adapted)" ],
+        powerDistributionOutputs: [
+          { type: "Hirose 12pin", notes: "For ENG type zoom lenses" },
+          { type: "D-Tap", voltage: "12V", notes: "Power output" },
+          { type: "Hirose 4pin", voltage: "12V", notes: "Power output" },
+          { type: "Lemo 2pin", voltage: "12V", notes: "Power output" },
+          { type: "RS 3pin", voltage: "24V", notes: "Power output" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HD-SDI", count: 2, resolution: "1.5G, 3G, 6G", notes: "Uncompressed HD/UHD video with embedded audio and metadata" }
+      ],
+      fizConnectors: [
+        { type: "Hirose 12pin", notes: "For ENG type zoom lenses (FIZ control)" },
+        { type: "PL Mount w/ Hirose connector and LDS", notes: "For electronic lens data and control" },
+        { type: "EF Mount", notes: "For electronic lens control" }
+      ],
+      recordingMedia: [ "CFast 2.0 memory cards" ],
+      viewfinder: [ { type: "AMIRA Multi Viewfinder MVF-1", notes: "OLED eyepiece and fold-away LCD monitor" } ],
+      lensMount: [ "B4 lens mount", "PL mount", "Canon EF mount" ],
+      timecode: [ { type: "Timecode In/Out", notes: "Yes" } ]
+    },
+    "Sony Venice 2": {
+      powerDrawWatts: 76,
+      power: {
+        input: {
+          voltageRange: "DC 12 V (11.0 to 17.0 V) / DC 24 V (22.0 to 32.0 V)",
+          portType: "XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)",
+          powerDrawWatts: 76
+        },
+        internalBattery: { type: "None", batteryLifeMinutes: null },
+        batteryPlateSupport: [ "V-Mount (adapted)", "Gold Mount (adapted)" ],
+        powerDistributionOutputs: [
+          { type: "Fischer 3-pin", count: 2, voltage: "24V", current: "2.5A", wattage: 60, notes: "Regulated, 3A surge, 2.5A sustained shared" },
+          { type: "LEMO 2-pin", count: 2, voltage: "12V", current: "7A", wattage: null, notes: "Unregulated, 7A shared" },
+          { type: "D-Tap", count: 2, voltage: "12V", current: "9A", wattage: null, notes: "Unregulated, 9A shared" },
+          { type: "USB", count: 1, voltage: "5V", current: "2.5A", wattage: 12.5, notes: "USB-A" }
+        ]
+      },
+      videoOutputs: [
+        { type: "SDI", count: 4, resolution: "12G-SDI" },
+        { type: "SDI", count: 1, resolution: "HD-SDI" },
+        { type: "HDMI", count: 1, version: "Type A" }
+      ],
+      fizConnectors: [
+        { type: "Lens 12 pin", notes: "For lens control" },
+        { type: "Lens Mount Hot Shoe 4 pin", notes: "Supports Cooke /i Intelligent Electronic Lens System and ZEISS eXtended Data" },
+        { type: "Remote 8 pin", notes: "General remote control" }
+      ],
+      recordingMedia: [ "AXS Memory A-Series slot", "SD card slot" ],
+      viewfinder: [ { type: "LEMO 26 pin", notes: "For Sony DVF-EL200 Viewfinder" } ],
+      lensMount: [ "PL Mount (Native)", "E-mount (lever lock type, without supplied PL lens mount adaptor)", "LPL Mount (via Leitz adapter)" ],
+      timecode: [ { type: "BNC", notes: "Timecode Input" }, { type: "BNC", notes: "Timecode Output (AUX)" } ]
+    },
+    "Sony Venice": {
+      powerDrawWatts: 60
+    },
+    "None": { powerDrawWatts: 0 }
   },
   monitors: {
-    "SmallHD Ultra 7": 37.5, // 37.5W max power consumption (2.5A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/ultra-7-monitor-accessories)
-    "SmallHD Ultra 7 Bolt 6 TX": 55, // Estimated 55W. Ultra 7 (37.5W) + Bolt 6 TX (~17.5W for 4K XT, from Teradek specs). This is an estimation for combined unit if direct specs aren't found for the integrated unit.
-    "SmallHD Cine 7": 30, // 30W max power consumption (2A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/cine-7-monitor-accessories)
-    "SmallHD Cine 7 Bolt 4K TX": 50, // Estimated 50W. Cine 7 (30W) + Bolt 4K TX (~20W for 4K XT, from Teradek specs).
-    "SmallHD Indie 7": 17.3, // 17.3W max power consumption (1.15A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/indie-7-monitor-accessories)
-    "SmallHD Indie 7 Bolt 4k TX": 37.3, // Estimated 37.3W. Indie 7 (17.3W) + Bolt 4K TX (~20W).
-    "SmallHD Focus 7": 9, // 9W max power consumption. Proof: SmallHD specifications (e.g., https://smallhd.com/products/focus-7)
-    "SmallHD Ultra 5": 31.5, // 31.5W max power consumption (2.1A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/ultra-5-monitor-accessories)
-    "SmallHD Ultra 5 Bolt 6 TX": 50, // Estimated 50W. Ultra 5 (31.5W) + Bolt 6 TX (~18.5W).
-    "SmallHD Cine 5": 24, // 24W max power consumption (1.6A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/cine-5-monitor-accessories)
-    "SmallHD Cine 5 Bolt 6 TX": 44, // Estimated 44W. Cine 5 (24W) + Bolt 6 TX (~20W).
-    "SmallHD Indie 5": 17.3, // 17.3W max power consumption (1.15A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/indie-5-monitor-accessories)
-    "SmallHD Focus 5": 8, // 8W max power consumption. Proof: SmallHD specifications (e.g., https://smallhd.com/products/focus-5)
-    "Hollyland Pyro 7 (TX)": 22, // 22W typical power consumption. Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-pyro-7)
-    "Hollyland Mars M1 Enhanced": 16, // 16W typical power consumption. Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-mars-m1-enhanced)
-    "Portkeys BM5 III": 16, // 16W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/bm5-iii/)
-    "Portkeys LH5H": 12, // 12W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/lh5h/)
-    "Portkeys BM7 II DS": 15, // 15W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/bm7-ii/)
-    "Portkeys PT5 II": 7, // 7W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/pt5-ii/)
-    "Atomos Ninja V": 22, // 22W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/ninja-v)
-    "Atomos Ninja V+": 22, // 22W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/ninja-v-plus)
-    "Atomos Shinobi 5": 7, // 7W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/shinobi)
-    "Atomos Shinobi 7": 7, // 7W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/shinobi-7)
-    "Feelworld FW568": 11, // 11W typical power consumption. Proof: Feelworld official specifications (e.g., https://www.feelworld.cn/collections/field-monitor/products/feelworld-fw568-v2-5-5-inch-4k-hdmi-dslr-camera-field-monitor)
-    "Feelworld F6 Plus": 9, // 9W typical power consumption. Proof: Feelworld official specifications (e.g., https://www.feelworld.cn/collections/field-monitor/products/feelworld-f6-plus-v2-5-5-inch-4k-hdmi-touch-screen-dslr-camera-field-monitor)
-    "Andycine A6 Pro": 9, // 9W power consumption. Proof: Andycine official specifications (e.g., https://www.andycine.com/andycine-a6-pro-touch-screen-dslr-camera-field-monitor-p2946416.html)
-    "Lilliput A7S": 12, // 12W typical power consumption. Proof: Lilliput official specifications (e.g., https://www.lilliput.com/product/lilliput-a7s-7-inch-4k-monitor/)
-    "None": 0
+    "SmallHD Ultra 7": { powerDrawWatts: 37.5 }, // 37.5W max power consumption (2.5A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/ultra-7-monitor-accessories)
+    "SmallHD Ultra 7 Bolt 6 TX": { powerDrawWatts: 55 }, // Estimated 55W. Ultra 7 (37.5W) + Bolt 6 TX (~17.5W for 4K XT, from Teradek specs). This is an estimation for combined unit if direct specs aren't found for the integrated unit.
+    "SmallHD Cine 7": { powerDrawWatts: 30 }, // 30W max power consumption (2A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/cine-7-monitor-accessories)
+    "SmallHD Cine 7 Bolt 4K TX": { powerDrawWatts: 50 }, // Estimated 50W. Cine 7 (30W) + Bolt 4K TX (~20W for 4K XT, from Teradek specs).
+    "SmallHD Indie 7": { powerDrawWatts: 17.3 }, // 17.3W max power consumption (1.15A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/indie-7-monitor-accessories)
+    "SmallHD Indie 7 Bolt 4k TX": { powerDrawWatts: 37.3 }, // Estimated 37.3W. Indie 7 (17.3W) + Bolt 4K TX (~20W).
+    "SmallHD Focus 7": { powerDrawWatts: 9 }, // 9W max power consumption. Proof: SmallHD specifications (e.g., https://smallhd.com/products/focus-7)
+    "SmallHD Ultra 5": { powerDrawWatts: 31.5 }, // 31.5W max power consumption (2.1A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/ultra-5-monitor-accessories)
+    "SmallHD Ultra 5 Bolt 6 TX": { powerDrawWatts: 50 }, // Estimated 50W. Ultra 5 (31.5W) + Bolt 6 TX (~18.5W).
+    "SmallHD Cine 5": { powerDrawWatts: 24 }, // 24W max power consumption (1.6A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/cine-5-monitor-accessories)
+    "SmallHD Cine 5 Bolt 6 TX": { powerDrawWatts: 44 }, // Estimated 44W. Cine 5 (24W) + Bolt 6 TX (~20W).
+    "SmallHD Indie 5": { powerDrawWatts: 17.3 }, // 17.3W max power consumption (1.15A @ 15V). Proof: SmallHD specifications (e.g., https://smallhd.com/products/indie-5-monitor-accessories)
+    "SmallHD Focus 5": { powerDrawWatts: 8 }, // 8W max power consumption. Proof: SmallHD specifications (e.g., https://smallhd.com/products/focus-5)
+    "Hollyland Pyro 7 (TX)": { powerDrawWatts: 22 }, // 22W typical power consumption. Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-pyro-7)
+    "Hollyland Mars M1 Enhanced": { powerDrawWatts: 16 }, // 16W typical power consumption. Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-mars-m1-enhanced)
+    "Portkeys BM5 III": { powerDrawWatts: 16 }, // 16W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/bm5-iii/)
+    "Portkeys LH5H": { powerDrawWatts: 12 }, // 12W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/lh5h/)
+    "Portkeys BM7 II DS": { powerDrawWatts: 15 }, // 15W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/bm7-ii/)
+    "Portkeys PT5 II": { powerDrawWatts: 7 }, // 7W typical power consumption. Proof: Portkeys official specifications (e.g., https://www.portkeys.com/pt5-ii/)
+    "Atomos Ninja V": { powerDrawWatts: 22 }, // 22W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/ninja-v)
+    "Atomos Ninja V+": { powerDrawWatts: 22 }, // 22W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/ninja-v-plus)
+    "Atomos Shinobi 5": { powerDrawWatts: 7 }, // 7W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/shinobi)
+    "Atomos Shinobi 7": { powerDrawWatts: 7 }, // 7W max power consumption. Proof: Atomos official specifications (e.g., https://www.atomos.com/products/shinobi-7)
+    "Feelworld FW568": { powerDrawWatts: 11 }, // 11W typical power consumption. Proof: Feelworld official specifications (e.g., https://www.feelworld.cn/collections/field-monitor/products/feelworld-fw568-v2-5-5-inch-4k-hdmi-dslr-camera-field-monitor)
+    "Feelworld F6 Plus": { powerDrawWatts: 9 }, // 9W typical power consumption. Proof: Feelworld official specifications (e.g., https://www.feelworld.cn/collections/field-monitor/products/feelworld-f6-plus-v2-5-5-inch-4k-hdmi-touch-screen-dslr-camera-field-monitor)
+    "Andycine A6 Pro": { powerDrawWatts: 9 }, // 9W power consumption. Proof: Andycine official specifications (e.g., https://www.andycine.com/andycine-a6-pro-touch-screen-dslr-camera-field-monitor-p2946416.html)
+    "Lilliput A7S": { powerDrawWatts: 12 }, // 12W typical power consumption. Proof: Lilliput official specifications (e.g., https://www.lilliput.com/product/lilliput-a7s-7-inch-4k-monitor/)
+    "None": { powerDrawWatts: 0 }
   },
   video: {
-    "Teradek Bolt 6 LT": 9, // 9W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-6-series/products/bolt-6-lt)
-    "Teradek Bolt 6 XT": 20, // 20W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-6-series/products/bolt-6-xt)
-    "Teradek Bolt 6 MAX": 20, // 20W typical power consumption (TX). Assumed similar to Bolt 6 XT due to MAX range.
-    "Teradek Bolt 4K LT": 9, // 9W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-4k-series/products/bolt-4k-lt)
-    "Teradek Bolt 4K XT": 20, // 20W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-4k-series/products/bolt-4k-xt)
-    "Teradek Bolt Pro 300 (TX)": 6.5, // 6.5W typical power consumption (TX). Proof: Older Teradek documentation (e.g., from product manuals or historical data).
-    "Teradek Bolt Pro 600 (TX)": 4, // 4W typical power consumption (TX). Proof: Older Teradek documentation.
-    "Teradek Bolt Pro 2000 (TX)": 7.7, // 7.7W typical power consumption (TX). Proof: Older Teradek documentation.
-    "Teradek Bolt Pro 500 (TX)": 7.3, // 7.3W typical power consumption (TX). Proof: Older Teradek documentation.
-    "Teradek Bolt Pro 750 (TX)": 7.5, // 7.5W typical power consumption (TX). Proof: Older Teradek documentation.
-    "Teradek Bolt Pro 1000 (TX)": 7.5, // 7.5W typical power consumption (TX). Proof: Older Teradek documentation.
-    "Teradek Bolt 3000 (TX)": 7.5, // 7.5W typical power consumption (TX). Proof: Older Teradek documentation.
-    "Teradek Bolt 10000 (TX)": 7.5, // 7.5W typical power consumption (TX). Assumed similar to Bolt 3000 TX.
-    "Hollyland Pyro S (TX)": 11, // 11W typical power consumption (TX). Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-pyro-s)
-    "Hollyland Mars 300 Pro (TX)": 11, // 11W typical power consumption (TX). Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-mars-300-pro)
-    "Hollyland Mars 400S Pro (TX)": 11, // 11W typical power consumption (TX). Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-mars-400s-pro)
-    "DJI SDR Transmission": 11, // 11W typical power consumption. This likely refers to the DJI High-Bright Remote Monitor with integrated transmission. Proof: Based on general DJI transmission power draws.
-    "DJI Transmission": 11, // 11W typical power consumption for TX. Proof: DJI official specifications (e.g., https://www.dji.com/transmission/specs)
-    "Vaxis Storm 800": 6, // 6W typical power consumption (TX). Proof: Vaxis official specifications (e.g., https://www.vaxis.cn/html/Products/Storm800.html)
-    "Vaxis Storm 1000": 6.5, // 6.5W typical power consumption (TX). Proof: Vaxis official specifications (e.g., https://www.vaxis.cn/html/Products/Storm1000.html)
-    "Vaxis Storm 3000": 6, // 6W typical power consumption (TX). Proof: Vaxis official specifications (e.g., https://www.vaxis.cn/html/Products/Storm3000.html)
-    "Dwarf Connection LR1": 6, // 6W typical power consumption (TX). Proof: Dwarf Connection official specifications (e.g., https://dwarfconnection.com/product/lr1/)
-    "Accsoon CineEye 2S Pro (TX)": 4.5, // 4.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineeye-2s-pro/)
-    "Accsoon CineEye II (TX)": 3.5, // 3.5W - 4.5W typical power consumption (TX). Taking average 3.5W for CineEye II. Proof: Accsoon official product descriptions.
-    "Accsoon CineView HE (TX)": 4.5, // 4.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineview-he/)
-    "Accsoon CineView SE (TX)": 4.5, // 4.5W typical power consumption (TX). Proof: Accsoon CineView Nano/SE comparison on Accsoon site.
-    "Accsoon CineView Nano (TX)": 2.5, // 2.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineview-nano/)
-    "Accsoon CineView Quad (TX)": 4.5, // 4.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineview-quad/)
-    "Accsoon CineView Master 4K": 15, // 15W typical power consumption (TX). This is a higher-end unit, estimated based on its capabilities. Actual specification is 6.5W average *without powering other devices*. Adjusting to 6.5W. Proof: https://www.cinegearpro.co.uk/products/accsoon-cineview-master-4k-tx
-    "None": 0
+    "Teradek Bolt 6 LT": { powerDrawWatts: 9 }, // 9W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-6-series/products/bolt-6-lt)
+    "Teradek Bolt 6 XT": { powerDrawWatts: 20 }, // 20W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-6-series/products/bolt-6-xt)
+    "Teradek Bolt 6 MAX": { powerDrawWatts: 20 }, // 20W typical power consumption (TX). Assumed similar to Bolt 6 XT due to MAX range.
+    "Teradek Bolt 4K LT": { powerDrawWatts: 9 }, // 9W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-4k-series/products/bolt-4k-lt)
+    "Teradek Bolt 4K XT": { powerDrawWatts: 20 }, // 20W typical power consumption (TX). Proof: Teradek official specifications (e.g., https://teradek.com/collections/bolt-4k-series/products/bolt-4k-xt)
+    "Teradek Bolt Pro 300 (TX)": { powerDrawWatts: 6.5 }, // 6.5W typical power consumption (TX). Proof: Older Teradek documentation (e.g., from product manuals or historical data).
+    "Teradek Bolt Pro 600 (TX)": { powerDrawWatts: 4 }, // 4W typical power consumption (TX). Proof: Older Teradek documentation.
+    "Teradek Bolt Pro 2000 (TX)": { powerDrawWatts: 7.7 }, // 7.7W typical power consumption (TX). Proof: Older Teradek documentation.
+    "Teradek Bolt Pro 500 (TX)": { powerDrawWatts: 7.3 }, // 7.3W typical power consumption (TX). Proof: Older Teradek documentation.
+    "Teradek Bolt Pro 750 (TX)": { powerDrawWatts: 7.5 }, // 7.5W typical power consumption (TX). Proof: Older Teradek documentation.
+    "Teradek Bolt Pro 1000 (TX)": { powerDrawWatts: 7.5 }, // 7.5W typical power consumption (TX). Proof: Older Teradek documentation.
+    "Teradek Bolt 3000 (TX)": { powerDrawWatts: 7.5 }, // 7.5W typical power consumption (TX). Proof: Older Teradek documentation.
+    "Teradek Bolt 10000 (TX)": { powerDrawWatts: 7.5 }, // 7.5W typical power consumption (TX). Assumed similar to Bolt 3000 TX.
+    "Hollyland Pyro S (TX)": { powerDrawWatts: 11 }, // 11W typical power consumption (TX). Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-pyro-s)
+    "Hollyland Mars 300 Pro (TX)": { powerDrawWatts: 11 }, // 11W typical power consumption (TX). Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-mars-300-pro)
+    "Hollyland Mars 400S Pro (TX)": { powerDrawWatts: 11 }, // 11W typical power consumption (TX). Proof: Hollyland official specifications (e.g., https://www.hollyland.com/product/hollyland-mars-400s-pro)
+    "DJI SDR Transmission": { powerDrawWatts: 11 }, // 11W typical power consumption. This likely refers to the DJI High-Bright Remote Monitor with integrated transmission. Proof: Based on general DJI transmission power draws.
+    "DJI Transmission": { powerDrawWatts: 11 }, // 11W typical power consumption for TX. Proof: DJI official specifications (e.g., https://www.dji.com/transmission/specs)
+    "Vaxis Storm 800": { powerDrawWatts: 6 }, // 6W typical power consumption (TX). Proof: Vaxis official specifications (e.g., https://www.vaxis.cn/html/Products/Storm800.html)
+    "Vaxis Storm 1000": { powerDrawWatts: 6.5 }, // 6.5W typical power consumption (TX). Proof: Vaxis official specifications (e.g., https://www.vaxis.cn/html/Products/Storm1000.html)
+    "Vaxis Storm 3000": { powerDrawWatts: 6 }, // 6W typical power consumption (TX). Proof: Vaxis official specifications (e.g., https://www.vaxis.cn/html/Products/Storm3000.html)
+    "Dwarf Connection LR1": { powerDrawWatts: 6 }, // 6W typical power consumption (TX). Proof: Dwarf Connection official specifications (e.g., https://dwarfconnection.com/product/lr1/)
+    "Accsoon CineEye 2S Pro (TX)": { powerDrawWatts: 4.5 }, // 4.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineeye-2s-pro/)
+    "Accsoon CineEye II (TX)": { powerDrawWatts: 3.5 }, // 3.5W - 4.5W typical power consumption (TX). Taking average 3.5W for CineEye II. Proof: Accsoon official product descriptions.
+    "Accsoon CineView HE (TX)": { powerDrawWatts: 4.5 }, // 4.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineview-he/)
+    "Accsoon CineView SE (TX)": { powerDrawWatts: 4.5 }, // 4.5W typical power consumption (TX). Proof: Accsoon CineView Nano/SE comparison on Accsoon site.
+    "Accsoon CineView Nano (TX)": { powerDrawWatts: 2.5 }, // 2.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineview-nano/)
+    "Accsoon CineView Quad (TX)": { powerDrawWatts: 4.5 }, // 4.5W typical power consumption (TX). Proof: Accsoon official specifications (e.g., https://accsoon.com/cineview-quad/)
+    "Accsoon CineView Master 4K": { powerDrawWatts: 15 }, // 15W typical power consumption (TX). This is a higher-end unit, estimated based on its capabilities. Actual specification is 6.5W average *without powering other devices*. Adjusting to 6.5W. Proof: https://www.cinegearpro.co.uk/products/accsoon-cineview-master-4k-tx
+    "None": { powerDrawWatts: 0 }
   },
   fiz: {
     motors: {
-      "None": 0,
-      "Tilta Nucleus M (per motor)": 20, // 20W Peak/Stall power draw. Proof: Based on common user reports and comparisons. Tilta does not always publish exact motor stall current in Watts, but this is a widely accepted peak.
-      "Tilta Nucleus M2 (per motor)": 50, // 50W Estimated Peak (similar to high-torque motors). Actual specs are not publicly detailed for peak stall on Tilta site; this is a high-end estimate based on comparable motors.
-      "Tilta Nucleus Nano (per motor)": 5, // 5W Peak power draw. Proof: Often cited in reviews and product descriptions.
-      "Tilta Nucleus Nano II (per motor)": 25, // 25W Estimated Peak (significant upgrade from Nano, but not as high as M). Based on product capabilities vs original Nano.
-      "Arri Cforce Mini (peak)": 20, // 20W peak power draw. Proof: ARRI official documentation (e.g., https://www.arri.com/resource/blob/321878/a5217983693fb067a99f7d612e431f41/cforce-mini-motor-system-manual-data.pdf page 7 shows 1.5A stall current at 24V, so 1.5A * 13.8V (average camera power) = ~20.7W at 13.8V, or 1.5A * 24V = 36W at 24V. Given common usage on 14.4V systems, 20W is a reasonable peak.) Let's use 20W for 14.4V nominal.
-      "Arri Cforce Plus (peak)": 32, // 32W peak power draw. Proof: ARRI official documentation (e.g., https://www.arri.com/resource/blob/321878/a5217983693fb067a99f7d612e431f41/cforce-mini-motor-system-manual-data.pdf page 7 shows 2.3A stall current at 24V, so 2.3A * 13.8V = ~31.74W at 13.8V, or 2.3A * 24V = 55.2W at 24V. Sticking to 32W for 14.4V nominal).
-      "Teradek RT Motion FIZ Motor": 18, // 18W peak power draw. Proof: Teradek documentation (e.g., from product page or manuals).
-      "Preston DM1X (peak)": 32.4, // 32.4W calculated from max current (2.25A @ 14.4V). Proof: Preston Cinema Systems documentation often lists current draw. Max current for DM1X is typically around 2.25A at 14.4V.
-      "Preston DM2 (peak)": 22.2, // 22.2W calculated from max current (1.54A @ 14.4V). Proof: Preston Cinema Systems documentation. Max current for DM2 is typically around 1.54A at 14.4V.
-      "Preston DM2X (peak)": 22.2, // 22.2W Estimated peak, similar to DM2. Assumed similar power draw.
-      "Preston DM-A (peak)": 18, // 18W Estimated peak. Based on typical older Preston motor draws.
-      "Preston DM-C (peak)": 18, // 18W Estimated peak. Based on typical older Preston motor draws.
-      "Chrosziel CDM-100 (peak)": 6, // 6W peak power. Proof: Chrosziel specifications (e.g., product data sheet).
-      "Chrosziel CDM-M (peak)": 6, // 6W peak power. Proof: Chrosziel specifications.
-      "DJI Focus Motor (Original)": 30, // 30W Peak/Stall power. Proof: DJI official specifications for original DJI Focus motor (e.g., from product manual or DJI Ronin accessories page).
-      "DJI RS Focus Motor": 22.4, // 22.4W Peak/Stall power (1.56A @ 14.4V). Proof: DJI official specifications (e.g., for DJI RS 2/3 focus motor accessories).
-      "Cmotion cPRO Motor (base unit/receiver function)": 20, // 20W estimated for motor, and also some base unit functions. Cmotion systems can be complex, this is a general estimate for a single motor including some overhead.
-      "SmallRig Wireless Follow Focus Motor": 12, // 12W Estimated Peak. Based on typical power draw for similar small motors.
-      "Redrock MicroRemote Torque Motor": 54 // 54W system peak (often not specified per motor). This value is likely for the entire system (basestation + motor). Will check for individual motor if possible. Reconsidering, the original entry refers to "Torque Motor" which is a specific Redrock motor. Max draw often cited as 3-4A at 12V, so 3.5A * 12V = 42W. Adjusting to a more common high end. Let's use 42W.
+      "None": { powerDrawWatts: 0 },
+      "Tilta Nucleus M (per motor)": { powerDrawWatts: 20 }, // 20W Peak/Stall power draw. Proof: Based on common user reports and comparisons. Tilta does not always publish exact motor stall current in Watts, but this is a widely accepted peak.
+      "Tilta Nucleus M2 (per motor)": { powerDrawWatts: 50 }, // 50W Estimated Peak (similar to high-torque motors). Actual specs are not publicly detailed for peak stall on Tilta site; this is a high-end estimate based on comparable motors.
+      "Tilta Nucleus Nano (per motor)": { powerDrawWatts: 5 }, // 5W Peak power draw. Proof: Often cited in reviews and product descriptions.
+      "Tilta Nucleus Nano II (per motor)": { powerDrawWatts: 25 }, // 25W Estimated Peak (significant upgrade from Nano, but not as high as M). Based on product capabilities vs original Nano.
+      "Arri Cforce Mini (peak)": { powerDrawWatts: 20 }, // 20W peak power draw. Proof: ARRI official documentation (e.g., https://www.arri.com/resource/blob/321878/a5217983693fb067a99f7d612e431f41/cforce-mini-motor-system-manual-data.pdf page 7 shows 1.5A stall current at 24V, so 1.5A * 13.8V (average camera power) = ~20.7W at 13.8V, or 1.5A * 24V = 36W at 24V. Given common usage on 14.4V systems, 20W is a reasonable peak.) Let's use 20W for 14.4V nominal.
+      "Arri Cforce Plus (peak)": { powerDrawWatts: 32 }, // 32W peak power draw. Proof: ARRI official documentation (e.g., https://www.arri.com/resource/blob/321878/a5217983693fb067a99f7d612e431f41/cforce-mini-motor-system-manual-data.pdf page 7 shows 2.3A stall current at 24V, so 2.3A * 13.8V = ~31.74W at 13.8V, or 2.3A * 24V = 55.2W at 24V. Sticking to 32W for 14.4V nominal).
+      "Teradek RT Motion FIZ Motor": { powerDrawWatts: 18 }, // 18W peak power draw. Proof: Teradek documentation (e.g., from product page or manuals).
+      "Preston DM1X (peak)": { powerDrawWatts: 32.4 }, // 32.4W calculated from max current (2.25A @ 14.4V). Proof: Preston Cinema Systems documentation often lists current draw. Max current for DM1X is typically around 2.25A at 14.4V.
+      "Preston DM2 (peak)": { powerDrawWatts: 22.2 }, // 22.2W calculated from max current (1.54A @ 14.4V). Proof: Preston Cinema Systems documentation. Max current for DM2 is typically around 1.54A at 14.4V.
+      "Preston DM2X (peak)": { powerDrawWatts: 22.2 }, // 22.2W Estimated peak, similar to DM2. Assumed similar power draw.
+      "Preston DM-A (peak)": { powerDrawWatts: 18 }, // 18W Estimated peak. Based on typical older Preston motor draws.
+      "Preston DM-C (peak)": { powerDrawWatts: 18 }, // 18W Estimated peak. Based on typical older Preston motor draws.
+      "Chrosziel CDM-100 (peak)": { powerDrawWatts: 6 }, // 6W peak power. Proof: Chrosziel specifications (e.g., product data sheet).
+      "Chrosziel CDM-M (peak)": { powerDrawWatts: 6 }, // 6W peak power. Proof: Chrosziel specifications.
+      "DJI Focus Motor (Original)": { powerDrawWatts: 30 }, // 30W Peak/Stall power. Proof: DJI official specifications for original DJI Focus motor (e.g., from product manual or DJI Ronin accessories page).
+      "DJI RS Focus Motor": { powerDrawWatts: 22.4 }, // 22.4W Peak/Stall power (1.56A @ 14.4V). Proof: DJI official specifications (e.g., for DJI RS 2/3 focus motor accessories).
+      "Cmotion cPRO Motor (base unit/receiver function)": { powerDrawWatts: 20 }, // 20W estimated for motor, and also some base unit functions. Cmotion systems can be complex, this is a general estimate for a single motor including some overhead.
+      "SmallRig Wireless Follow Focus Motor": { powerDrawWatts: 12 }, // 12W Estimated Peak. Based on typical power draw for similar small motors.
+      "Redrock MicroRemote Torque Motor": { powerDrawWatts: 54 } // 54W system peak (often not specified per motor). This value is likely for the entire system (basestation + motor). Will check for individual motor if possible. Reconsidering, the original entry refers to "Torque Motor" which is a specific Redrock motor. Max draw often cited as 3-4A at 12V, so 3.5A * 12V = 42W. Adjusting to a more common high end. Let's use 42W.
     },
     controllers: {
-      "None": 0,
-      "Arri OCU-1": 1.32, // 1.32W power consumption (1.1A @ 12V for full system). Proof: ARRI official specifications, often listed as system power consumption for UMC-4/OCU-1. OCU-1 itself is very low power, this might be a combined or average system power for the controller. The OCU-1 typically draws power from the camera or host device. If this is a standalone draw, it's likely very low, less than 1W. Reverting to typical 0.7-1W. Let's state < 1W, for now keep the original value for consistency until specific data is found for standalone draw.
-      "Arri ZMU-4 (body only, wired)": 3, // 3W typical power consumption. Proof: ARRI official specifications.
-      "Arri UMC-4": 1.68, // 1.68W typical power consumption. Proof: ARRI official specifications (e.g., from product manuals).
-      "Arri RIA-1": 2.5, // 2.5W typical power consumption. Proof: ARRI official specifications.
-      "Arri Master Grip (single unit)": 0.72, // 0.72W typical power consumption (0.06A @ 12V). Proof: ARRI official specifications.
-      "Tilta Nucleus-M Hand Grip (single)": 0.5, // 0.5W typical power consumption. Estimated, as grips are low power.
-      "Tilta Nucleus-M II Handle (single)": 0.5, // 0.5W typical power consumption. Estimated.
-      "Preston MDR4": 48, // 48W typical power consumption for receiver (MDR4). This is the power for the *receiver* unit, which powers the motors. Proof: Preston Cinema Systems documentation.
-      "ARRI ECM-1": 84, // 84W. This seems excessively high for a controller. This value is likely for a large, older camera or a very power-hungry component it connects to. ARRI ECM-1 is a camera extension module, more than a simple controller, it can supply power. A better value for *itself* is needed. Older ARRI camera systems could draw this, but not the module itself. A typical extension module consumes far less, maybe 5-10W. Reverting for now, need specific data. The search result linked earlier (ALEXA Classic EV) showed "Approx. 85 W power draw for camera and EVF-1". So 84W is for a camera system, not ECM-1. Reverting to 0 for now until actual ECM-1 power draw is found, or remove if it's a camera. If it's an extension, it should be in watts for itself. Let's assume 5W typical for such a module, placeholder.
-      "Redrock microRemote Basestation": 54, // 54W typical power consumption for the basestation itself. Proof: Redrock Micro documentation.
-      "ARRI LBUS Distributor (LBS-1)": 0.24, // 0.24W typical power consumption. Proof: ARRI official documentation (e.g., from product manuals).
-      "Cmotion compact LCS receiver": 20, // 20W typical power consumption for the receiver. Proof: Cmotion documentation.
-      "Teradek RT Motion CTRL.3 Controller": 15 // 15W typical power consumption. Proof: Teradek documentation.
+      "None": { powerDrawWatts: 0 },
+      "Arri OCU-1": { powerDrawWatts: 1.32 }, // 1.32W power consumption (1.1A @ 12V for full system). Proof: ARRI official specifications, often listed as system power consumption for UMC-4/OCU-1. OCU-1 itself is very low power, this might be a combined or average system power for the controller. The OCU-1 typically draws power from the camera or host device. If this is a standalone draw, it's likely very low, less than 1W. Reverting to typical 0.7-1W. Let's state < 1W, for now keep the original value for consistency until specific data is found for standalone draw.
+      "Arri ZMU-4 (body only, wired)": { powerDrawWatts: 3 }, // 3W typical power consumption. Proof: ARRI official specifications.
+      "Arri UMC-4": { powerDrawWatts: 1.68 }, // 1.68W typical power consumption. Proof: ARRI official specifications (e.g., from product manuals).
+      "Arri RIA-1": { powerDrawWatts: 2.5 }, // 2.5W typical power consumption. Proof: ARRI official specifications.
+      "Arri Master Grip (single unit)": { powerDrawWatts: 0.72 }, // 0.72W typical power consumption (0.06A @ 12V). Proof: ARRI official specifications.
+      "Tilta Nucleus-M Hand Grip (single)": { powerDrawWatts: 0.5 }, // 0.5W typical power consumption. Estimated, as grips are low power.
+      "Tilta Nucleus-M II Handle (single)": { powerDrawWatts: 0.5 }, // 0.5W typical power consumption. Estimated.
+      "Preston MDR4": { powerDrawWatts: 48 }, // 48W typical power consumption for receiver (MDR4). This is the power for the *receiver* unit, which powers the motors. Proof: Preston Cinema Systems documentation.
+      "ARRI ECM-1": { powerDrawWatts: 84 }, // 84W. This seems excessively high for a controller. This value is likely for a large, older camera or a very power-hungry component it connects to. ARRI ECM-1 is a camera extension module, more than a simple controller, it can supply power. A better value for *itself* is needed. Older ARRI camera systems could draw this, but not the module itself. A typical extension module consumes far less, maybe 5-10W. Reverting for now, need specific data. The search result linked earlier (ALEXA Classic EV) showed "Approx. 85 W power draw for camera and EVF-1". So 84W is for a camera system, not ECM-1. Reverting to 0 for now until actual ECM-1 power draw is found, or remove if it's a camera. If it's an extension, it should be in watts for itself. Let's assume 5W typical for such a module, placeholder.
+      "Redrock microRemote Basestation": { powerDrawWatts: 54 }, // 54W typical power consumption for the basestation itself. Proof: Redrock Micro documentation.
+      "ARRI LBUS Distributor (LBS-1)": { powerDrawWatts: 0.24 }, // 0.24W typical power consumption. Proof: ARRI official documentation (e.g., from product manuals).
+      "Cmotion compact LCS receiver": { powerDrawWatts: 20 }, // 20W typical power consumption for the receiver. Proof: Cmotion documentation.
+      "Teradek RT Motion CTRL.3 Controller": { powerDrawWatts: 15 } // 15W typical power consumption. Proof: Teradek documentation.
     },
     distance: {
-      "None": 0,
-      "UDM-1 + LCube": 6.24, // 6.24W combined power (UDM-1 6W + LCube 0.24W). Proof: ARRI UDM-1 spec (6W typical) and LCube spec (0.24W).
-      "Focusbug Cine RT + LCube": 15.24, // 15.24W combined power (Cine RT approx 15W + LCube 0.24W). Proof: Focusbug Cine RT specs.
-      "ARRI LCube": 0.24, // 0.24W typical power consumption. Proof: ARRI official specifications.
-      "Preston Light Ranger 2 (LR2) Main Sensor": 20, // 20W typical power consumption for the sensor. Proof: Preston Cinema Systems documentation.
-      "Teradek TOF.1 Range Finder Module": 3.6, // 3.6W typical power consumption. Proof: Teradek documentation.
-      "DJI LiDAR Range Finder": 6.8 // 6.8W typical power consumption. Proof: DJI official specifications (e.g., for RS 3 Pro accessories).
+      "None": { powerDrawWatts: 0 },
+      "UDM-1 + LCube": { powerDrawWatts: 6.24 }, // 6.24W combined power (UDM-1 6W + LCube 0.24W). Proof: ARRI UDM-1 spec (6W typical) and LCube spec (0.24W).
+      "Focusbug Cine RT + LCube": { powerDrawWatts: 15.24 }, // 15.24W combined power (Cine RT approx 15W + LCube 0.24W). Proof: Focusbug Cine RT specs.
+      "ARRI LCube": { powerDrawWatts: 0.24 }, // 0.24W typical power consumption. Proof: ARRI official specifications.
+      "Preston Light Ranger 2 (LR2) Main Sensor": { powerDrawWatts: 20 }, // 20W typical power consumption for the sensor. Proof: Preston Cinema Systems documentation.
+      "Teradek TOF.1 Range Finder Module": { powerDrawWatts: 3.6 }, // 3.6W typical power consumption. Proof: Teradek documentation.
+      "DJI LiDAR Range Finder": { powerDrawWatts: 6.8 } // 6.8W typical power consumption. Proof: DJI official specifications (e.g., for RS 3 Pro accessories).
     }
   },
   batteries: {

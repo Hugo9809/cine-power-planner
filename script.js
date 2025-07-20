@@ -411,6 +411,8 @@ const newCategorySelect  = document.getElementById("newCategory");
 const newNameInput    = document.getElementById("newName");
 const newWattInput    = document.getElementById("newWatt");
 const wattFieldDiv    = document.getElementById("wattField");
+const cameraJSONFieldDiv = document.getElementById("cameraJSONField");
+const newCameraJSONInput = document.getElementById("newCameraJSON");
 const batteryFieldsDiv = document.getElementById("batteryFields");
 const newCapacityInput = document.getElementById("newCapacity");
 const newPinAInput    = document.getElementById("newPinA");
@@ -496,14 +498,40 @@ function updateCalculations() {
   const battery     = batterySelect.value;
 
   // Calculate total power consumption (W)
-  let cameraW = (devices.cameras[camera] !== undefined ? devices.cameras[camera] : 0);
-  let monitorW = (devices.monitors[monitor] !== undefined ? devices.monitors[monitor] : 0);
-  let videoW = (devices.video[video] !== undefined ? devices.video[video] : 0);
+  let cameraW = 0;
+  if (devices.cameras[camera] !== undefined) {
+    const camData = devices.cameras[camera];
+    cameraW = typeof camData === 'object' ? camData.powerDrawWatts || 0 : camData;
+  }
+  let monitorW = 0;
+  if (devices.monitors[monitor] !== undefined) {
+    const mData = devices.monitors[monitor];
+    monitorW = typeof mData === 'object' ? mData.powerDrawWatts || 0 : mData;
+  }
+  let videoW = 0;
+  if (devices.video[video] !== undefined) {
+    const vData = devices.video[video];
+    videoW = typeof vData === 'object' ? vData.powerDrawWatts || 0 : vData;
+  }
   let motorsW = 0;
-  motors.forEach(m => { if (devices.fiz.motors[m] !== undefined) motorsW += devices.fiz.motors[m]; });
+  motors.forEach(m => {
+    if (devices.fiz.motors[m] !== undefined) {
+      const d = devices.fiz.motors[m];
+      motorsW += typeof d === 'object' ? d.powerDrawWatts || 0 : d;
+    }
+  });
   let controllersW = 0;
-  controllers.forEach(c => { if (devices.fiz.controllers[c] !== undefined) controllersW += devices.fiz.controllers[c]; });
-  let distanceW = (devices.fiz.distance[distance] !== undefined ? devices.fiz.distance[distance] : 0);
+  controllers.forEach(c => {
+    if (devices.fiz.controllers[c] !== undefined) {
+      const d = devices.fiz.controllers[c];
+      controllersW += typeof d === 'object' ? d.powerDrawWatts || 0 : d;
+    }
+  });
+  let distanceW = 0;
+  if (devices.fiz.distance[distance] !== undefined) {
+    const d = devices.fiz.distance[distance];
+    distanceW = typeof d === 'object' ? d.powerDrawWatts || 0 : d;
+  }
 
   const totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
   totalPowerElem.textContent = totalWatt.toFixed(1);
@@ -744,7 +772,8 @@ function renderDeviceList(categoryKey, ulElement) {
     if (categoryKey === "batteries") {
       displayData = `(${deviceData.capacity} Wh, ${deviceData.pinA}A Pin, ${deviceData.dtapA}A D-Tap)`;
     } else {
-      displayData = `(${deviceData} W)`;
+      const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
+      displayData = `(${watt} W)`;
     }
 
     const li = document.createElement("li");
@@ -914,14 +943,22 @@ deviceManagerSection.addEventListener("click", (event) => {
 
     if (categoryKey === "batteries") {
       wattFieldDiv.style.display = "none";
+      cameraJSONFieldDiv.style.display = "none";
       batteryFieldsDiv.style.display = "block";
       newCapacityInput.value = deviceData.capacity;
       newPinAInput.value = deviceData.pinA;
       newDtapAInput.value = deviceData.dtapA;
+    } else if (categoryKey === "cameras") {
+      wattFieldDiv.style.display = "none";
+      batteryFieldsDiv.style.display = "none";
+      cameraJSONFieldDiv.style.display = "block";
+      newCameraJSONInput.value = JSON.stringify(deviceData, null, 2);
     } else {
       wattFieldDiv.style.display = "block";
       batteryFieldsDiv.style.display = "none";
-      newWattInput.value = deviceData;
+      cameraJSONFieldDiv.style.display = "none";
+      const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
+      newWattInput.value = watt;
     }
     // Change button to "Update"
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
@@ -954,13 +991,25 @@ deviceManagerSection.addEventListener("click", (event) => {
 
 // Category selection in add device form
 newCategorySelect.addEventListener("change", () => {
-  if (newCategorySelect.value === "batteries") {
+  const val = newCategorySelect.value;
+  if (val === "batteries") {
     wattFieldDiv.style.display = "none";
+    cameraJSONFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "block";
+  } else if (val === "cameras") {
+    wattFieldDiv.style.display = "none";
+    batteryFieldsDiv.style.display = "none";
+    cameraJSONFieldDiv.style.display = "block";
   } else {
     wattFieldDiv.style.display = "block";
     batteryFieldsDiv.style.display = "none";
+    cameraJSONFieldDiv.style.display = "none";
   }
+  newWattInput.value = "";
+  newCapacityInput.value = "";
+  newPinAInput.value = "";
+  newDtapAInput.value = "";
+  newCameraJSONInput.value = "";
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
   addDeviceBtn.dataset.mode = "add";
@@ -1011,17 +1060,28 @@ addDeviceBtn.addEventListener("click", () => {
         delete targetCategory[originalName];
     }
     targetCategory[name] = { capacity: capacity, pinA: pinA, dtapA: dtapA };
+  } else if (category === "cameras") {
+    let obj;
+    try {
+      obj = JSON.parse(newCameraJSONInput.value);
+    } catch (e) {
+      alert("Invalid JSON for camera details");
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    targetCategory[name] = obj;
   } else {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    // Delete original name entry if name changed during edit
     if (isEditing && name !== originalName) {
-        delete targetCategory[originalName];
+      delete targetCategory[originalName];
     }
-    targetCategory[name] = watt;
+    targetCategory[name] = { powerDrawWatts: watt };
   }
 
   // After adding/updating, reset form and refresh lists
@@ -1030,6 +1090,7 @@ addDeviceBtn.addEventListener("click", () => {
   newCapacityInput.value = "";
   newPinAInput.value = "";
   newDtapAInput.value = "";
+  newCameraJSONInput.value = "";
   newCategorySelect.disabled = false; // Re-enable category select
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn; // Reset button text
   addDeviceBtn.dataset.mode = "add"; // Reset mode
