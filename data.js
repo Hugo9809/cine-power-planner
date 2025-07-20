@@ -1976,6 +1976,261 @@ let devices = {
         { type: "Multi/Micro USB (TC IN)", notes: "Timecode Input [S1.1]" }
       ]
     },
+    // Panasonic Lumix BS1H
+    "Panasonic Lumix BS1H": {
+      powerDrawWatts: 8.1, // When recording with S-R24105 lens [P2.1, P2.2]
+      power: {
+        input: {
+          voltageRange: "12V DC (11.4V to 12.6V)", // From Panasonic DC-BS1H Specifications [P2.1, P2.2]
+          portType: "Weipu SF610/S2 (12VDC) Input", // From B&H Photo [2.3]
+          powerDrawWatts: 8.1 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "None",
+          batteryLifeMinutes: null
+        },
+        batteryPlateSupport: [
+          "V-Mount (adapted)", // Common third-party accessory [2.3]
+          "Gold Mount (adapted)" // Common third-party accessory
+        ],
+        powerDistributionOutputs: [
+          // No explicit power distribution outputs mentioned on camera body. Relies on external power solutions or accessories.
+        ]
+      },
+      videoOutputs: [
+        { type: "BNC (3G-SDI)", count: 1, notes: "Output [2.3]" },
+        { type: "HDMI 2.0", count: 1, notes: "Output, Raw 12-Bit via HDMI [2.3]" }
+      ],
+      fizConnectors: [
+        { type: "2.5 mm Sub-Mini (LANC)", notes: "Control Input [2.3]" },
+        { type: "USB-C (USB 3.2 / 3.1 Gen 1)", notes: "Control/Data/Video Input [2.3]" },
+        { type: "RJ45 (LAN)", notes: "Control/Monitor/Video Input/Output [2.3]" }
+      ],
+      recordingMedia: [
+        "SD memory card / SDHC memory card / SDXC memory card (UHS-II V90 recommended)",
+        "Dual slot recording function available [P2.1]"
+      ],
+      viewfinder: [
+        { type: "None", notes: "Box camera design, requires external monitor" }
+      ],
+      lensMount: [
+        "Leica Camera AG L-Mount (Native)"
+      ],
+      timecode: [
+        { type: "BNC (Timecode)", notes: "Data Input/Output [2.3]" }
+      ]
+    },
+    // Sony ZV-E1
+    "Sony ZV-E1": {
+      powerDrawWatts: 7.0, // When recording movies with FE 28-60mm F4-5.6 lens [S3.1]
+      power: {
+        input: {
+          voltageRange: "7.2V DC (battery) / 5V DC (USB-C PD)", // From Sony ZV-E1 Specifications [S3.1]
+          portType: "Battery Slot / USB Type-C®", // From Sony ZV-E1 Specifications [S3.1]
+          powerDrawWatts: 7.0 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "NP-FZ100", // From Sony ZV-E1 Specifications [S3.2]
+          batteryLifeMinutes: 175 // Continuous recording, CIPA standard [S3.1]
+        },
+        batteryPlateSupport: [
+          "NP-FZ100 (Native)",
+          "V-Mount (adapted)", // Common third-party accessory
+          "Gold Mount (adapted)" // Common third-party accessory
+        ],
+        powerDistributionOutputs: [
+          // No explicit power distribution outputs mentioned on camera body. Relies on USB-C for charging/powering.
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type-A", notes: "YCbCr 4:2:2 10 bit / RGB 8 bit [S3.1]" }
+      ],
+      fizConnectors: [
+        { type: "USB Type-C®", notes: "For specific accessories/control" } // From Sony ZV-E1 Specifications [S3.1]
+      ],
+      recordingMedia: [
+        "SD (UHS-II/UHS-I)" // From Sony ZV-E1 Specifications [S3.1]
+      ],
+      viewfinder: [
+        { type: "LCD Monitor (Native)", size: "3.0-type (7.5 cm)", resolution: "Approx. 1.03M dots", notes: "Vari-angle touch panel [S3.1]" }
+      ],
+      lensMount: [
+        "Sony E-mount (Native)" // From Sony ZV-E1 Specifications [S3.1]
+      ],
+      timecode: [
+        // No dedicated timecode input/output mentioned, likely via Multi Interface Shoe or HDMI.
+      ]
+    },
+    // Fujifilm X-M5
+    "Fujifilm X-M5": {
+      powerDrawWatts: 5.5, // Estimated from battery life for 4K60 recording [4.3]
+      power: {
+        input: {
+          voltageRange: "7.2V (battery) / USB-C", // From Fujifilm X-M5 Specs [4.2]
+          portType: "Battery Slot / USB-C", // From Fujifilm X-M5 Specs [4.1]
+          powerDrawWatts: 5.5 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "NP-W126S", // From Fujifilm X-M5 Specs [4.1]
+          batteryLifeMinutes: 45 // Approx. 45 minutes for 6.2K/4K60 recording [4.3]
+        },
+        batteryPlateSupport: [
+          "NP-W126S (Native)",
+          "V-Mount (adapted)", // Common third-party accessory
+          "Gold Mount (adapted)" // Common third-party accessory
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C", notes: "For charging or powering small accessories" } // From Fujifilm X-M5 Specs [4.1]
+        ]
+      },
+      videoOutputs: [
+        { type: "Micro HDMI", count: 1, notes: "4:2:2 10-bit output [4.1]" }
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" } // From Fujifilm X-M5 Specs [4.1]
+      ],
+      recordingMedia: [
+        "SDXC (UHS-I)" // From Fujifilm X-M5 Specs [4.1]
+      ],
+      viewfinder: [
+        { type: "None", notes: "No built-in viewfinder, relies on LCD [4.1]" },
+        { type: "LCD Monitor (Native)", size: "3.0-inch", resolution: "1.04 million dots", notes: "Vari-angle touchscreen [4.1]" }
+      ],
+      lensMount: [
+        "Fujifilm X-mount (Native)" // From Fujifilm X-M5 Specs [4.1]
+      ],
+      timecode: [
+        { type: "No dedicated BNC", notes: "Timecode sync via software/accessories" }
+      ]
+    },
+    // Canon EOS R5 Mark II
+    "Canon EOS R5 Mark II": {
+      powerDrawWatts: 15, // Estimated based on R5 power consumption and 45W+ PD input for power [S5.1, S5.2]
+      power: {
+        input: {
+          voltageRange: "7.2V (LP-E6P) / USB-C PD (45W+ recommended)", // From Canon R5 II Battery & Charger Guide [S5.1]
+          portType: "Battery Slot / USB-C PD", // From Canon R5 II Battery & Charger Guide [S5.1]
+          powerDrawWatts: 15 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "LP-E6P", // From Canon R5 II Battery & Charger Guide [S5.1]
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "LP-E6P (Native)",
+          "V-Mount (adapted)", // Common third-party accessory
+          "Gold Mount (adapted)" // Common third-party accessory
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", notes: "For charging or powering camera/accessories [S5.1]" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type-A", notes: "RAW/SRAW Video: 8K DCI (17:9) / 4K DCI (17:9) [S5.3]" }
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B", // From Canon EOS R5 Mark II Technical Data [S5.3]
+        "SD UHS-II" // From Canon EOS R5 Mark II Technical Data [S5.3]
+      ],
+      viewfinder: [
+        { type: "OLED EVF", resolution: "Approx. 5.76 million dots" },
+        { type: "LCD Monitor (Native)", size: "3.2-inch", resolution: "Approx. 2.1 million dots", notes: "Vari-angle touchscreen" }
+      ],
+      lensMount: [
+        "Canon RF mount (Native)" // From Canon EOS R5 Mark II Technical Data [S5.3]
+      ],
+      timecode: [
+        { type: "No dedicated BNC", notes: "Timecode sync via HDMI or software" }
+      ]
+    },
+    // Canon EOS R1
+    "Canon EOS R1": {
+      powerDrawWatts: 18, // Estimated based on high-end mirrorless performance and battery life [S6.3]
+      power: {
+        input: {
+          voltageRange: "7.2V (LP-E19) / USB-C PD", // From Canon EOS R1 Specifications [S6.2]
+          portType: "Battery Slot / USB-C PD", // From Canon EOS R1 Specifications [S6.2]
+          powerDrawWatts: 18 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "LP-E19", // From Canon EOS R1 Specifications [S6.2]
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "LP-E19 (Native)",
+          "V-Mount (adapted)", // Common third-party accessory
+          "Gold Mount (adapted)" // Common third-party accessory
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C PD", notes: "For charging or powering camera/accessories [S6.1]" }
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI", count: 1, version: "Type-A" } // Expected for flagship mirrorless
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" }
+      ],
+      recordingMedia: [
+        "CFexpress Type B (Dual Slots)" // From Canon EOS R1 Specifications [S6.2]
+      ],
+      viewfinder: [
+        { type: "OLED EVF", resolution: "High-resolution" },
+        { type: "LCD Monitor (Native)", size: "Vari-angle touchscreen" }
+      ],
+      lensMount: [
+        "Canon RF mount (Native)" // From Canon EOS R1 Specifications [S6.2]
+      ],
+      timecode: [
+        { type: "No dedicated BNC", notes: "Timecode sync via software/accessories" }
+      ]
+    },
+    // Leica SL3-S
+    "Leica SL3-S": {
+      powerDrawWatts: 10, // Estimated based on typical full-frame mirrorless power draw. Leica SL (older model) was around 7-10W. [S7.3]
+      power: {
+        input: {
+          voltageRange: "7.2V (battery) / USB-C", // From Leica SL3-S Technical Data [S7.1]
+          portType: "Battery Slot / USB-C", // From Leica SL3-S Technical Data [S7.1]
+          powerDrawWatts: 10 // Consistent with top-level powerDrawWatts.
+        },
+        internalBattery: {
+          type: "Leica BP-SCL6", // Expected for SL3-S
+          batteryLifeMinutes: null // Varies by usage
+        },
+        batteryPlateSupport: [
+          "Leica BP-SCL6 (Native)",
+          "V-Mount (adapted)", // Common third-party accessory
+          "Gold Mount (adapted)" // Common third-party accessory
+        ],
+        powerDistributionOutputs: [
+          { type: "USB-C", notes: "For charging or powering accessories" } // From Leica SL3-S Technical Data [S7.1]
+        ]
+      },
+      videoOutputs: [
+        { type: "HDMI 2.1 Type A", count: 1 } // From Leica SL3-S Technical Data [S7.1]
+      ],
+      fizConnectors: [
+        { type: "USB-C", notes: "For camera control" } // From Leica SL3-S Technical Data [S7.1]
+      ],
+      recordingMedia: [
+        "UHS-II SD", // From Leica SL3-S Technical Data [S7.1]
+        "CFexpress Type B" // From Leica SL3-S Technical Data [S7.1]
+      ],
+      viewfinder: [
+        { type: "OLED EVF", resolution: "High-resolution" },
+        { type: "LCD Monitor (Native)", size: "Vari-angle touchscreen" }
+      ],
+      lensMount: [
+        "Leica L bayonet (Native)" // From Leica SL3-S Technical Data [S7.1]
+      ],
+      timecode: [
+        { type: "Timecode interface", notes: "Timecode synchronization of image and sound [S7.1, S7.2]" }
+      ]
+    },
     "None": { powerDrawWatts: 0 }
   },
   monitors: {
