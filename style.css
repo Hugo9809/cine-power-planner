@@ -378,3 +378,35 @@ body.dark-mode .device-category h4 {
 body.dark-mode .device-ul li {
   border-bottom: 1px dashed #ffffff;
 }
+/* Responsive layout adjustments */
+@media (max-width: 600px) {
+  body {
+    margin: 10px;
+    font-size: 0.85em;
+  }
+
+  #langSelector {
+    position: static;
+    margin-bottom: 10px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-row label {
+    width: auto;
+    min-width: auto;
+    margin-bottom: 4px;
+  }
+
+  .device-list-container {
+    flex-direction: column;
+  }
+
+  .device-category {
+    flex: 1 1 100%;
+    min-width: auto;
+  }
+}
