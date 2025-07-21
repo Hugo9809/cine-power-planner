@@ -55,6 +55,11 @@ function unifyDevices(data) {
 }
 
 unifyDevices(devices);
+let deviceLists = buildDeviceLists(devices);
+
+function updateDeviceListsData() {
+  deviceLists = buildDeviceLists(devices);
+}
 
 
 // Translation text for English and German
@@ -611,12 +616,22 @@ function populateSelect(selectElem, optionsObj, includeNone=true) {
     noneOpt.textContent = (currentLang === "de") ? "Keine Auswahl" : "None";
     selectElem.appendChild(noneOpt);
   }
-  for (let name in optionsObj) {
-    if (name === "None") continue; // "None" is added separately
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    selectElem.appendChild(opt);
+  if (Array.isArray(optionsObj)) {
+    optionsObj.forEach(name => {
+      if (name === "None") return;
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      selectElem.appendChild(opt);
+    });
+  } else {
+    for (let name in optionsObj) {
+      if (name === "None") continue; // "None" is added separately
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      selectElem.appendChild(opt);
+    }
   }
 }
 
@@ -694,13 +709,13 @@ function applyFilters() {
 }
 
 // Initialize device selection dropdowns
-populateSelect(cameraSelect, devices.cameras, true);
-populateSelect(monitorSelect, devices.monitors, true);
-populateSelect(videoSelect, devices.video, true);
-motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-populateSelect(distanceSelect, devices.fiz.distance, true);
-populateSelect(batterySelect, devices.batteries, true);
+populateSelect(cameraSelect, deviceLists.cameras, true);
+populateSelect(monitorSelect, deviceLists.monitors, true);
+populateSelect(videoSelect, deviceLists.video, true);
+motorSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.motors, true));
+controllerSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.controllers, true));
+populateSelect(distanceSelect, deviceLists.fiz.distance, true);
+populateSelect(batterySelect, deviceLists.batteries, true);
 
 // Enable search inside dropdowns
 [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
@@ -1276,15 +1291,16 @@ deviceManagerSection.addEventListener("click", (event) => {
         delete devices[categoryKey][name];
       }
       saveDeviceData(devices); // Save changes to localStorage
+      updateDeviceListsData();
       refreshDeviceLists();
       // Re-populate all dropdowns and update calculations
-      populateSelect(cameraSelect, devices.cameras, true);
-      populateSelect(monitorSelect, devices.monitors, true);
-      populateSelect(videoSelect, devices.video, true);
-      motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-      controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-      populateSelect(distanceSelect, devices.fiz.distance, true);
-      populateSelect(batterySelect, devices.batteries, true);
+      populateSelect(cameraSelect, deviceLists.cameras, true);
+      populateSelect(monitorSelect, deviceLists.monitors, true);
+      populateSelect(videoSelect, deviceLists.video, true);
+      motorSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.motors, true));
+      controllerSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.controllers, true));
+      populateSelect(distanceSelect, deviceLists.fiz.distance, true);
+      populateSelect(batterySelect, deviceLists.batteries, true);
       applyFilters();
       updateCalculations();
     }
@@ -1453,15 +1469,16 @@ addDeviceBtn.addEventListener("click", () => {
   delete addDeviceBtn.dataset.originalName; // Clear original name
 
   saveDeviceData(devices); // Save changes to localStorage
+  updateDeviceListsData();
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
-  populateSelect(cameraSelect, devices.cameras, true);
-  populateSelect(monitorSelect, devices.monitors, true);
-  populateSelect(videoSelect, devices.video, true);
-  motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-  controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-  populateSelect(distanceSelect, devices.fiz.distance, true);
-  populateSelect(batterySelect, devices.batteries, true);
+  populateSelect(cameraSelect, deviceLists.cameras, true);
+  populateSelect(monitorSelect, deviceLists.monitors, true);
+  populateSelect(videoSelect, deviceLists.video, true);
+  motorSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.motors, true));
+  controllerSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.controllers, true));
+  populateSelect(distanceSelect, deviceLists.fiz.distance, true);
+  populateSelect(batterySelect, deviceLists.batteries, true);
   applyFilters();
   updateCalculations(); // Update calculations after device data changes
 
@@ -1516,13 +1533,14 @@ if (exportAndRevertBtn) {
         saveDeviceData(devices); // Save the default data back to localStorage
 
         // Update the UI to reflect the reverted database
-        populateSelect(cameraSelect, devices.cameras, true);
-        populateSelect(monitorSelect, devices.monitors, true);
-        populateSelect(videoSelect, devices.video, true);
-        motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-        controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-        populateSelect(distanceSelect, devices.fiz.distance, true);
-        populateSelect(batterySelect, devices.batteries, true);
+        updateDeviceListsData();
+        populateSelect(cameraSelect, deviceLists.cameras, true);
+        populateSelect(monitorSelect, deviceLists.monitors, true);
+        populateSelect(videoSelect, deviceLists.video, true);
+        motorSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.motors, true));
+        controllerSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.controllers, true));
+        populateSelect(distanceSelect, deviceLists.fiz.distance, true);
+        populateSelect(batterySelect, deviceLists.batteries, true);
         applyFilters();
         refreshDeviceLists(); // Refresh device manager lists
         updateCalculations();
@@ -1558,15 +1576,16 @@ importFileInput.addEventListener("change", (event) => {
           Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
         devices = importedData; // Overwrite current devices with imported data
         saveDeviceData(devices); // Persist to local storage
+        updateDeviceListsData();
         refreshDeviceLists(); // Update device manager lists
         // Re-populate all dropdowns and update calculations
-        populateSelect(cameraSelect, devices.cameras, true);
-        populateSelect(monitorSelect, devices.monitors, true);
-        populateSelect(videoSelect, devices.video, true);
-        motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-        controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-        populateSelect(distanceSelect, devices.fiz.distance, true);
-        populateSelect(batterySelect, devices.batteries, true);
+        populateSelect(cameraSelect, deviceLists.cameras, true);
+        populateSelect(monitorSelect, deviceLists.monitors, true);
+        populateSelect(videoSelect, deviceLists.video, true);
+        motorSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.motors, true));
+        controllerSelects.forEach(sel => populateSelect(sel, deviceLists.fiz.controllers, true));
+        populateSelect(distanceSelect, deviceLists.fiz.distance, true);
+        populateSelect(batterySelect, deviceLists.batteries, true);
         applyFilters();
         updateCalculations();
 

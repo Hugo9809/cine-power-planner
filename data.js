@@ -4328,3 +4328,24 @@ let devices = {
     }
   }
 };
+
+function buildDeviceLists(devObj) {
+  return {
+    cameras: Object.keys(devObj.cameras || {}),
+    monitors: Object.keys(devObj.monitors || {}),
+    video: Object.keys(devObj.video || {}),
+    batteries: Object.keys(devObj.batteries || {}),
+    fiz: {
+      motors: Object.keys((devObj.fiz || {}).motors || {}),
+      controllers: Object.keys((devObj.fiz || {}).controllers || {}),
+      distance: Object.keys((devObj.fiz || {}).distance || {})
+    }
+  };
+}
+
+let deviceLists = buildDeviceLists(devices);
+
+if (typeof window !== 'undefined') {
+  window.buildDeviceLists = buildDeviceLists;
+  window.deviceLists = deviceLists;
+}
