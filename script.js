@@ -6,6 +6,7 @@
 // if the script is loaded multiple times (e.g., in some development environments).
 if (window.defaultDevices === undefined) {
   window.defaultDevices = JSON.parse(JSON.stringify(devices));
+  unifyDevices(window.defaultDevices);
 }
 
 // Load any saved device data from localStorage
@@ -13,6 +14,47 @@ const storedDevices = loadDeviceData();
 if (storedDevices) {
   devices = storedDevices;
 }
+
+function unifyDevices(data) {
+  if (!data || typeof data !== 'object') return;
+  const ensureList = (list, defaults) => {
+    if (!Array.isArray(list)) return [];
+    return list.map(item => {
+      if (typeof item === 'string') {
+        return Object.assign({}, defaults, { type: item });
+      }
+      return Object.assign({}, defaults, item || {});
+    });
+  };
+  Object.values(data.cameras || {}).forEach(cam => {
+    if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
+      delete cam.power.input.powerDrawWatts;
+    }
+    if (Array.isArray(cam.power?.batteryPlateSupport)) {
+      cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(it => {
+        if (typeof it === 'string') {
+          const m = it.match(/([^()]+)(?:\((native|adapted)\))?/i);
+          return {
+            type: m ? m[1].trim() : it,
+            mount: m && m[2] ? m[2].toLowerCase() : (/(adapted)/i.test(it) ? 'adapted' : 'native')
+          };
+        }
+        return {
+          type: it.type || '',
+          mount: it.mount ? it.mount.toLowerCase() : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))
+        };
+      });
+    }
+    if (cam.power) {
+      cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, { type: '', voltage: '', current: '', wattage: null, notes: '' });
+    }
+    cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' });
+    cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' });
+    cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', notes: '' });
+  });
+}
+
+unifyDevices(devices);
 
 
 // Translation text for English and German
@@ -108,7 +150,7 @@ const texts = {
     placeholder_dtap: "e.g. 5",
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "LEMO 8-pin",
-    placeholder_plates: "V-Mount,B-Mount",
+    placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
@@ -244,7 +286,7 @@ const texts = {
     placeholder_dtap: "z.B. 5",
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "LEMO 8-Pin",
-    placeholder_plates: "V-Mount,B-Mount",
+    placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
@@ -1204,7 +1246,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
       cameraBatteryTypeInput.value = deviceData.power?.internalBattery?.type || '';
       cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
-      cameraPlatesInput.value = (deviceData.power?.batteryPlateSupport || []).join(',');
+      cameraPlatesInput.value = JSON.stringify(deviceData.power?.batteryPlateSupport || [], null, 2);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
@@ -1341,13 +1383,14 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
-    let powerDist, videoOut, fizCon, viewfinder, timecode;
+    let powerDist, videoOut, fizCon, viewfinder, timecode, plateSupport;
     try {
       powerDist = cameraPowerDistInput.value ? JSON.parse(cameraPowerDistInput.value) : [];
       videoOut = cameraVideoOutputsInput.value ? JSON.parse(cameraVideoOutputsInput.value) : [];
       fizCon = cameraFIZConnectorInput.value ? JSON.parse(cameraFIZConnectorInput.value) : [];
       viewfinder = cameraViewfinderInput.value ? JSON.parse(cameraViewfinderInput.value) : [];
       timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
+      plateSupport = cameraPlatesInput.value ? JSON.parse(cameraPlatesInput.value) : [];
     } catch (e) {
       alert(texts[currentLang].alertInvalidCameraJSON);
       return;
@@ -1357,14 +1400,13 @@ addDeviceBtn.addEventListener("click", () => {
       power: {
         input: {
           voltageRange: cameraVoltageInput.value,
-          portType: cameraPortTypeInput.value,
-          powerDrawWatts: watt
+          portType: cameraPortTypeInput.value
         },
         internalBattery: {
           type: cameraBatteryTypeInput.value,
           batteryLifeMinutes: cameraBatteryLifeInput.value ? parseFloat(cameraBatteryLifeInput.value) : null
         },
-        batteryPlateSupport: cameraPlatesInput.value ? cameraPlatesInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+        batteryPlateSupport: plateSupport,
         powerDistributionOutputs: powerDist
       },
       videoOutputs: videoOut,
