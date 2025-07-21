@@ -129,7 +129,7 @@ const texts = {
     timecodeHeading: "Timecode",
     powerDistributionLabel: "Outputs (JSON):",
     videoOutputsLabel: "Outputs:",
-    fizConnectorLabel: "Connectors (JSON):",
+    fizConnectorLabel: "Connectors:",
     viewfinderLabel: "Viewfinders (JSON):",
     timecodeLabel: "Timecode (JSON):",
     addDeviceBtn: "Add",
@@ -265,7 +265,7 @@ const texts = {
     timecodeHeading: "Timecode",
     powerDistributionLabel: "Ausgänge (JSON):",
     videoOutputsLabel: "Ausgänge:",
-    fizConnectorLabel: "Anschlüsse (JSON):",
+    fizConnectorLabel: "Anschlüsse:",
     viewfinderLabel: "Sucher (JSON):",
     timecodeLabel: "Timecode (JSON):",
     addDeviceBtn: "Hinzufügen",
@@ -465,7 +465,6 @@ function setLanguage(lang) {
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
   cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
-  cameraFIZConnectorInput.placeholder = texts[lang].placeholder_fizconnector;
   cameraViewfinderInput.placeholder = texts[lang].placeholder_viewfinder;
   cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
   // Toggle device manager button text (depends on current visibility)
@@ -558,7 +557,7 @@ const cameraMediaInput = document.getElementById("cameraMedia");
 const cameraLensMountInput = document.getElementById("cameraLensMount");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
-const cameraFIZConnectorInput = document.getElementById("cameraFIZConnector");
+const fizConnectorContainer = document.getElementById("fizConnectorContainer");
 const cameraViewfinderInput = document.getElementById("cameraViewfinder");
 const cameraTimecodeInput = document.getElementById("cameraTimecode");
 const batteryFieldsDiv = document.getElementById("batteryFields");
@@ -610,6 +609,37 @@ const videoOutputOptions = [
   'Micro HDMI'
 ];
 
+function getAllFizConnectorTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    if (Array.isArray(cam.fizConnectors)) {
+      cam.fizConnectors.forEach(fc => {
+        if (fc && fc.type) types.add(fc.type);
+      });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let fizConnectorOptions = getAllFizConnectorTypes();
+
+function updateFizConnectorOptions() {
+  fizConnectorOptions = getAllFizConnectorTypes();
+  // Update all existing selects with new options while preserving values
+  const selects = fizConnectorContainer.querySelectorAll('select');
+  selects.forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    fizConnectorOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (current) sel.value = current;
+  });
+}
+
 function createVideoOutputRow(value = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
@@ -658,6 +688,56 @@ function getVideoOutputs() {
 
 function clearVideoOutputs() {
   setVideoOutputs([]);
+}
+
+function createFizConnectorRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const select = document.createElement('select');
+  select.className = 'fiz-connector-select';
+  fizConnectorOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  if (value) select.value = value;
+  row.appendChild(select);
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createFizConnectorRow());
+  });
+  row.appendChild(addBtn);
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (fizConnectorContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setFizConnectors(list) {
+  fizConnectorContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const t = typeof item === 'string' ? item : item.type;
+      fizConnectorContainer.appendChild(createFizConnectorRow(t));
+    });
+  } else {
+    fizConnectorContainer.appendChild(createFizConnectorRow());
+  }
+}
+
+function getFizConnectors() {
+  return Array.from(fizConnectorContainer.querySelectorAll('select')).map(sel => ({ type: sel.value }));
+}
+
+function clearFizConnectors() {
+  setFizConnectors([]);
 }
 
 
@@ -768,6 +848,8 @@ motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
+setFizConnectors([]);
+updateFizConnectorOptions();
 
 // Set default selections for dropdowns
 
@@ -1311,7 +1393,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
       setVideoOutputs(deviceData.videoOutputs || []);
-      cameraFIZConnectorInput.value = JSON.stringify(deviceData.fizConnectors || [], null, 2);
+      setFizConnectors(deviceData.fizConnectors || []);
       cameraViewfinderInput.value = JSON.stringify(deviceData.viewfinder || [], null, 2);
       cameraTimecodeInput.value = JSON.stringify(deviceData.timecode || [], null, 2);
     } else {
@@ -1345,6 +1427,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
+      updateFizConnectorOptions();
       applyFilters();
       updateCalculations();
     }
@@ -1381,7 +1464,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
-  cameraFIZConnectorInput.value = "";
+  clearFizConnectors();
   cameraViewfinderInput.value = "";
   cameraTimecodeInput.value = "";
   // Reset add/update button to "Add" and clear originalName in dataset
@@ -1447,7 +1530,7 @@ addDeviceBtn.addEventListener("click", () => {
     try {
       powerDist = cameraPowerDistInput.value ? JSON.parse(cameraPowerDistInput.value) : [];
       videoOut = getVideoOutputs();
-      fizCon = cameraFIZConnectorInput.value ? JSON.parse(cameraFIZConnectorInput.value) : [];
+      fizCon = getFizConnectors();
       viewfinder = cameraViewfinderInput.value ? JSON.parse(cameraViewfinderInput.value) : [];
       timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
       plateSupport = cameraPlatesInput.value ? JSON.parse(cameraPlatesInput.value) : [];
@@ -1505,7 +1588,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
-  cameraFIZConnectorInput.value = "";
+  clearFizConnectors();
   cameraViewfinderInput.value = "";
   cameraTimecodeInput.value = "";
   newCategorySelect.disabled = false; // Re-enable category select
@@ -1523,6 +1606,7 @@ addDeviceBtn.addEventListener("click", () => {
   controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
   populateSelect(distanceSelect, devices.fiz.distance, true);
   populateSelect(batterySelect, devices.batteries, true);
+  updateFizConnectorOptions();
   applyFilters();
   updateCalculations(); // Update calculations after device data changes
 
@@ -1584,6 +1668,7 @@ if (exportAndRevertBtn) {
         controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
+        updateFizConnectorOptions();
         applyFilters();
         refreshDeviceLists(); // Refresh device manager lists
         updateCalculations();
@@ -1628,6 +1713,7 @@ importFileInput.addEventListener("change", (event) => {
         controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
+        updateFizConnectorOptions();
         applyFilters();
         updateCalculations();
 
