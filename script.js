@@ -1469,8 +1469,10 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       };
       // Helper to display method label
       const getMethodLabel = (method) => {
-          return method === "pins" ? "pins only!" : method;
-      };
+            if (method === "pins") return "<span style=\"color:#FF9800;\">pins only!</span>";
+            if (method === "both pins and D-Tap") return "<span style=\"color:#4CAF50;\">both pins and D-Tap</span>";
+            return method;
+        };
 
       // Add selected battery first, if it's a valid candidate
       if (selectedCandidate) {
@@ -2335,7 +2337,9 @@ function generatePrintableOverview() {
         };
 
         const getMethodLabel = (method) => {
-            return method === "pins" ? "pins only!" : method;
+            if (method === "pins") return "<span style=\"color:#FF9800;\">pins only!</span>";
+            if (method === "both pins and D-Tap") return "<span style=\"color:#4CAF50;\">both pins and D-Tap</span>";
+            return method;
         };
 
         const getRuntimeDisplay = (hours) => {
