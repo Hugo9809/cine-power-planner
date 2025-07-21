@@ -153,8 +153,6 @@ const texts = {
     cameraWattLabel: "Power Draw (W):",
     cameraVoltageLabel: "Voltage Range:",
     cameraPortTypeLabel: "Port Type:",
-    cameraBatteryTypeLabel: "Internal Battery Type:",
-    cameraBatteryLifeLabel: "Battery Life (min):",
     cameraPlatesLabel: "Battery Plates:",
     cameraMediaLabel: "Recording Media:",
     cameraLensMountLabel: "Lens Mount:",
@@ -288,8 +286,6 @@ const texts = {
     cameraWattLabel: "Leistungsaufnahme (W):",
     cameraVoltageLabel: "Spannungsbereich:",
     cameraPortTypeLabel: "Anschlussart:",
-    cameraBatteryTypeLabel: "Interner Akkutyp:",
-    cameraBatteryLifeLabel: "Akkulaufzeit (Min.):",
     cameraPlatesLabel: "Akkuschächte:",
     cameraMediaLabel: "Aufnahmemedien:",
     cameraLensMountLabel: "Objektivanschluss:",
@@ -463,8 +459,6 @@ function setLanguage(lang) {
   document.getElementById("cameraWattLabel").textContent = texts[lang].cameraWattLabel;
   document.getElementById("cameraVoltageLabel").textContent = texts[lang].cameraVoltageLabel;
   document.getElementById("cameraPortTypeLabel").textContent = texts[lang].cameraPortTypeLabel;
-  document.getElementById("cameraBatteryTypeLabel").textContent = texts[lang].cameraBatteryTypeLabel;
-  document.getElementById("cameraBatteryLifeLabel").textContent = texts[lang].cameraBatteryLifeLabel;
   document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
   document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
   document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
@@ -582,8 +576,6 @@ const cameraFieldsDiv = document.getElementById("cameraFields");
 const cameraWattInput = document.getElementById("cameraWatt");
 const cameraVoltageInput = document.getElementById("cameraVoltage");
 const cameraPortTypeInput = document.getElementById("cameraPortType");
-const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
-const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaInput = document.getElementById("cameraMedia");
 const lensMountContainer = document.getElementById("lensMountContainer");
@@ -1991,8 +1983,6 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraWattInput.value = deviceData.powerDrawWatts || '';
       cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
       cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
-      cameraBatteryTypeInput.value = deviceData.power?.internalBattery?.type || '';
-      cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
       setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       setLensMounts(deviceData.lensMount || []);
@@ -2066,8 +2056,6 @@ newCategorySelect.addEventListener("change", () => {
   cameraWattInput.value = "";
   cameraVoltageInput.value = "";
   cameraPortTypeInput.value = "";
-  cameraBatteryTypeInput.value = "";
-  cameraBatteryLifeInput.value = "";
   clearBatteryPlates();
   cameraMediaInput.value = "";
   clearLensMounts();
@@ -2155,10 +2143,6 @@ addDeviceBtn.addEventListener("click", () => {
           voltageRange: cameraVoltageInput.value,
           portType: cameraPortTypeInput.value
         },
-        internalBattery: {
-          type: cameraBatteryTypeInput.value,
-          batteryLifeMinutes: cameraBatteryLifeInput.value ? parseFloat(cameraBatteryLifeInput.value) : null
-        },
         batteryPlateSupport: plateSupport,
         powerDistributionOutputs: powerDist
       },
@@ -2190,8 +2174,6 @@ addDeviceBtn.addEventListener("click", () => {
   cameraWattInput.value = "";
   cameraVoltageInput.value = "";
   cameraPortTypeInput.value = "";
-  cameraBatteryTypeInput.value = "";
-  cameraBatteryLifeInput.value = "";
   clearBatteryPlates();
   cameraMediaInput.value = "";
   clearLensMounts();
