@@ -67,7 +67,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "Codex Compact Drive (1TB, 2TB)"
+        {
+          "type": "Codex Compact Drive",
+          "notes": "1TB, 2TB"
+        }
       ],
       "viewfinder": [
         {
@@ -201,7 +204,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -321,7 +327,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "Codex Compact Drive (1TB, 2TB)"
+        {
+          "type": "Codex Compact Drive",
+          "notes": "1TB, 2TB"
+        }
       ],
       "viewfinder": [
         {
@@ -435,7 +444,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -579,8 +591,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "AXS Memory A-Series slot",
-        "SD Card"
+        {
+          "type": "AXS Memory A-Series slot",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -733,8 +751,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "AXS Memory A-Series slot",
-        "SD Card"
+        {
+          "type": "AXS Memory A-Series slot",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -842,7 +866,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -934,8 +961,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type A",
-        "SD (UHS-II/UHS-I)"
+        {
+          "type": "CFexpress Type A",
+          "notes": ""
+        },
+        {
+          "type": "SD",
+          "notes": "UHS-II/UHS-I"
+        }
       ],
       "viewfinder": [
         {
@@ -1044,8 +1077,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type A",
-        "SD (UHS-II/UHS-I)"
+        {
+          "type": "CFexpress Type A",
+          "notes": ""
+        },
+        {
+          "type": "SD",
+          "notes": "UHS-II/UHS-I"
+        }
       ],
       "viewfinder": [
         {
@@ -1146,8 +1185,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "XQD Card",
-        "SD Card (for proxy/backup)"
+        {
+          "type": "XQD Card",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "for proxy/backup"
+        }
       ],
       "viewfinder": [
         {
@@ -1219,7 +1264,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD Card (Dual Slots)"
+        {
+          "type": "SD Card",
+          "notes": "Dual Slots"
+        }
       ],
       "viewfinder": [
         {
@@ -1334,8 +1382,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD Card",
-        "SD Card (Dual Slots)"
+        {
+          "type": "SD Card",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "Dual Slots"
+        }
       ],
       "viewfinder": [
         {
@@ -1427,8 +1481,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B (Dual Slots)",
-        "SD Card (for proxy/backup)"
+        {
+          "type": "CFexpress Type B",
+          "notes": "Dual Slots"
+        },
+        {
+          "type": "SD Card",
+          "notes": "for proxy/backup"
+        }
       ],
       "viewfinder": [
         {
@@ -1531,8 +1591,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B",
-        "SD UHS-II"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        }
       ],
       "viewfinder": [
         {
@@ -1644,7 +1710,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B (Dual Slots)"
+        {
+          "type": "CFexpress Type B",
+          "notes": "Dual Slots"
+        }
       ],
       "viewfinder": [
         {
@@ -1730,9 +1799,18 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0",
-        "SD UHS-II",
-        "USB-C 3.1 Gen 1 expansion port for external media"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        },
+        {
+          "type": "USB-C 3.1 Gen 1 expansion port for external media",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -1795,9 +1873,18 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0",
-        "SD UHS-II",
-        "USB-C 3.1 Gen 1 expansion port for external media"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        },
+        {
+          "type": "USB-C 3.1 Gen 1 expansion port for external media",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -1873,9 +1960,18 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0",
-        "SD UHS-II",
-        "USB-C 3.1 Gen 1 expansion port for external media"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        },
+        {
+          "type": "USB-C 3.1 Gen 1 expansion port for external media",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -1949,9 +2045,18 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0",
-        "SD UHS-II",
-        "USB-C to external SSD/HDD"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        },
+        {
+          "type": "USB-C to external SSD/HDD",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2049,9 +2154,18 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0",
-        "SD UHS-II (Dual Slots)",
-        "USB-C 3.1 Gen 2 expansion port for external media"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "Dual Slots; UHS-II"
+        },
+        {
+          "type": "USB-C 3.1 Gen 2 expansion port for external media",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2172,8 +2286,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "Blackmagic Media Module (8TB)",
-        "CFexpress Type B (via adapter)"
+        {
+          "type": "Blackmagic Media Module",
+          "notes": "8TB"
+        },
+        {
+          "type": "CFexpress Type B",
+          "notes": "via adapter"
+        }
       ],
       "viewfinder": [
         {
@@ -2258,8 +2378,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B",
-        "USB-C to external SSD/HDD"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        },
+        {
+          "type": "USB-C to external SSD/HDD",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2326,8 +2452,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B",
-        "USB-C to external SSD/HDD"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        },
+        {
+          "type": "USB-C to external SSD/HDD",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2414,7 +2546,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0"
+        {
+          "type": "CFast 2.0",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2497,7 +2632,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2601,7 +2739,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2706,7 +2847,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2811,7 +2955,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2916,7 +3063,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -2989,7 +3139,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3062,7 +3215,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3135,7 +3291,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3208,7 +3367,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3277,7 +3439,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "RED MINI-MAG"
+        {
+          "type": "RED MINI-MAG",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3346,7 +3511,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "RED MINI-MAG"
+        {
+          "type": "RED MINI-MAG",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3415,7 +3583,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "RED MINI-MAG"
+        {
+          "type": "RED MINI-MAG",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3484,7 +3655,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "REDMAG 1.8\" SSD"
+        {
+          "type": "REDMAG 1.8\" SSD",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3553,7 +3727,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "REDMAG 1.8\" SSD"
+        {
+          "type": "REDMAG 1.8\" SSD",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3622,7 +3799,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "REDMAG 1.8\" SSD"
+        {
+          "type": "REDMAG 1.8\" SSD",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3691,7 +3871,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "REDMAG 1.8\" SSD"
+        {
+          "type": "REDMAG 1.8\" SSD",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {
@@ -3768,7 +3951,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD UHS-II"
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        }
       ],
       "viewfinder": [
         {
@@ -3841,8 +4027,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B",
-        "SD UHS-II"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        }
       ],
       "viewfinder": [
         {
@@ -3915,8 +4107,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type A",
-        "SD (UHS-II/UHS-I)"
+        {
+          "type": "CFexpress Type A",
+          "notes": ""
+        },
+        {
+          "type": "SD",
+          "notes": "UHS-II/UHS-I"
+        }
       ],
       "viewfinder": [
         {
@@ -3989,8 +4187,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B",
-        "SD UHS-II"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        }
       ],
       "viewfinder": [
         {
@@ -4104,8 +4308,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "DJI PROSSD",
-        "CFexpress Type B (via adapter)"
+        {
+          "type": "DJI PROSSD",
+          "notes": ""
+        },
+        {
+          "type": "CFexpress Type B",
+          "notes": "via adapter"
+        }
       ],
       "viewfinder": [
         {
@@ -4192,8 +4402,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type A",
-        "SD (UHS-II/UHS-I)"
+        {
+          "type": "CFexpress Type A",
+          "notes": ""
+        },
+        {
+          "type": "SD",
+          "notes": "UHS-II/UHS-I"
+        }
       ],
       "viewfinder": [
         {
@@ -4267,8 +4483,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD UHS-II",
-        "SD UHS-II (Dual Slots)"
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        },
+        {
+          "type": "SD Card",
+          "notes": "Dual Slots; UHS-II"
+        }
       ],
       "viewfinder": [
         {
@@ -4334,7 +4556,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD (UHS-II/UHS-I)"
+        {
+          "type": "SD",
+          "notes": "UHS-II/UHS-I"
+        }
       ],
       "viewfinder": [
         {
@@ -4401,7 +4626,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SDXC (UHS-I)"
+        {
+          "type": "SDXC",
+          "notes": "UHS-I"
+        }
       ],
       "viewfinder": [
         {
@@ -4473,8 +4701,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B",
-        "SD UHS-II"
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        },
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        }
       ],
       "viewfinder": [
         {
@@ -4550,7 +4784,10 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFexpress Type B (Dual Slots)"
+        {
+          "type": "CFexpress Type B",
+          "notes": "Dual Slots"
+        }
       ],
       "viewfinder": [
         {
@@ -4624,8 +4861,14 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD UHS-II",
-        "CFexpress Type B"
+        {
+          "type": "SD Card",
+          "notes": "UHS-II"
+        },
+        {
+          "type": "CFexpress Type B",
+          "notes": ""
+        }
       ],
       "viewfinder": [
         {

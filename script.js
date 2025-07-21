@@ -188,6 +188,40 @@ function unifyDevices(data) {
       connector: vf.connector,
       notes: vf.notes
     }));
+    cam.recordingMedia = ensureList(cam.recordingMedia, { type: '', notes: '' }).map(m => {
+      let { type = '', notes = '' } = m || {};
+      const match = type.match(/^(.*?)(?:\((.*)\))?$/);
+      if (match) {
+        type = match[1].trim();
+        notes = notes || (match[2] ? match[2].trim() : '');
+      }
+      if (/^SD UHS-II$/i.test(type)) {
+        type = 'SD Card';
+        notes = notes ? `${notes}; UHS-II` : 'UHS-II';
+      } else if (/^SD \(UHS-II\/UHS-I\)$/i.test(type)) {
+        type = 'SD Card';
+        notes = 'UHS-II/UHS-I';
+      } else if (type === 'CFast 2.0 card slots') {
+        type = 'CFast 2.0';
+        notes = notes || 'Dual Slots';
+      } else if (type === 'CFexpress Type B (Dual Slots)') {
+        type = 'CFexpress Type B';
+        notes = notes || 'Dual Slots';
+      } else if (type === 'CFexpress Type B (via adapter)') {
+        type = 'CFexpress Type B';
+        notes = notes || 'via adapter';
+      } else if (/^SD UHS-II \(Dual Slots\)$/i.test(type)) {
+        type = 'SD Card';
+        notes = notes ? `${notes}; UHS-II (Dual Slots)` : 'UHS-II (Dual Slots)';
+      } else if (type === 'SD Card (Dual Slots)') {
+        type = 'SD Card';
+        notes = notes || 'Dual Slots';
+      } else if (type === 'SD card slot (for proxy/backup)') {
+        type = 'SD Card';
+        notes = notes || 'for proxy/backup';
+      }
+      return { type, notes };
+    });
     cam.timecode = ensureList(cam.timecode, { type: '', notes: '' });
   });
 }
@@ -288,7 +322,7 @@ const texts = {
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "Bat LEMO 8-pin",
     placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
-    placeholder_media: "CFast 2.0",
+    placeholder_media: '[{"type":"CFast 2.0"}]',
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
     placeholder_videooutputs: "[{}]",
@@ -422,7 +456,7 @@ const texts = {
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "LEMO 8-pin",
     placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
-    placeholder_media: "CFast 2.0",
+    placeholder_media: '[{"type":"CFast 2.0"}]',
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
     placeholder_videooutputs: "[{}]",
@@ -554,7 +588,7 @@ const texts = {
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "LEMO 8-pin",
     placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
-    placeholder_media: "CFast 2.0",
+    placeholder_media: '[{"type":"CFast 2.0"}]',
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
     placeholder_videooutputs: "[{}]",
@@ -686,7 +720,7 @@ const texts = {
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "Bat LEMO 8-Pin",
     placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
-    placeholder_media: "CFast 2.0",
+    placeholder_media: '[{"type":"CFast 2.0"}]',
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
     placeholder_videooutputs: "[{}]",
@@ -1162,7 +1196,7 @@ function getAllRecordingMedia() {
   const media = new Set();
   Object.values(devices.cameras).forEach(cam => {
     if (Array.isArray(cam.recordingMedia)) {
-      cam.recordingMedia.forEach(m => { if (m) media.add(m); });
+      cam.recordingMedia.forEach(m => { if (m && m.type) media.add(m.type); });
     }
   });
   return Array.from(media).sort();
@@ -1185,7 +1219,7 @@ function updateRecordingMediaOptions() {
   });
 }
 
-function createRecordingMediaRow(value = '') {
+function createRecordingMediaRow(type = '', notes = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
 
@@ -1197,16 +1231,22 @@ function createRecordingMediaRow(value = '') {
     opt.textContent = optVal;
     select.appendChild(opt);
   });
-  if (value) {
-    if (!recordingMediaOptions.includes(value)) {
+  if (type) {
+    if (!recordingMediaOptions.includes(type)) {
       const opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = value;
+      opt.value = type;
+      opt.textContent = type;
       select.appendChild(opt);
     }
-    select.value = value;
+    select.value = type;
   }
   row.appendChild(createFieldWithLabel(select, 'Type'));
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -1230,8 +1270,9 @@ function createRecordingMediaRow(value = '') {
 function setRecordingMedia(list) {
   cameraMediaContainer.innerHTML = '';
   if (Array.isArray(list) && list.length) {
-    list.forEach(m => {
-      cameraMediaContainer.appendChild(createRecordingMediaRow(m));
+    list.forEach(item => {
+      const { type = '', notes = '' } = item || {};
+      cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
     });
   } else {
     cameraMediaContainer.appendChild(createRecordingMediaRow());
@@ -1239,7 +1280,10 @@ function setRecordingMedia(list) {
 }
 
 function getRecordingMedia() {
-  return Array.from(cameraMediaContainer.querySelectorAll('select')).map(sel => sel.value).filter(Boolean);
+  return Array.from(cameraMediaContainer.querySelectorAll('.form-row')).map(row => {
+    const [sel, notesInput] = row.querySelectorAll('select, input');
+    return { type: sel.value, notes: notesInput.value };
+  });
 }
 
 function clearRecordingMedia() {
@@ -3389,6 +3433,8 @@ if (typeof module !== "undefined" && module.exports) {
     updateCalculations,
     setBatteryPlates,
     getBatteryPlates,
+    setRecordingMedia,
+    getRecordingMedia,
     applyDarkMode,
     generatePrintableOverview,
   };

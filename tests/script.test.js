@@ -152,6 +152,42 @@ describe('script.js functions', () => {
     ]);
   });
 
+  test('unifyDevices normalizes recordingMedia', () => {
+    jest.resetModules();
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+
+    global.devices = {
+      cameras: {
+        CamD: {
+          powerDrawWatts: 5,
+          recordingMedia: ['SD UHS-II', 'CFexpress Type B (Dual Slots)']
+        }
+      },
+      monitors: {},
+      video: {},
+      fiz: { motors: {}, controllers: {}, distance: {} },
+      batteries: {}
+    };
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+
+    script = require('../script.js');
+
+    expect(global.devices.cameras.CamD.recordingMedia).toEqual([
+      { type: 'SD Card', notes: 'UHS-II' },
+      { type: 'CFexpress Type B', notes: 'Dual Slots' }
+    ]);
+  });
+
   test('setBatteryPlates and getBatteryPlates roundtrip', () => {
     const { setBatteryPlates, getBatteryPlates } = script;
     setBatteryPlates([
@@ -164,6 +200,21 @@ describe('script.js functions', () => {
     expect(list).toEqual([
       { type: 'V-Mount', mount: 'native', notes: 'Main' },
       { type: 'Gold', mount: 'adapted', notes: '' }
+    ]);
+  });
+
+  test('setRecordingMedia and getRecordingMedia roundtrip', () => {
+    const { setRecordingMedia, getRecordingMedia } = script;
+    setRecordingMedia([
+      { type: 'SD Card', notes: 'UHS-II' },
+      { type: 'CFexpress Type B', notes: 'Dual Slots' }
+    ]);
+    const rows = document.querySelectorAll('#cameraMediaContainer .form-row');
+    expect(rows.length).toBe(2);
+    const list = getRecordingMedia();
+    expect(list).toEqual([
+      { type: 'SD Card', notes: 'UHS-II' },
+      { type: 'CFexpress Type B', notes: 'Dual Slots' }
     ]);
   });
 
