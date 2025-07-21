@@ -5745,237 +5745,570 @@ let devices={
     }
   },
   "video": {
-    "Teradek Bolt 6 LT": {
+    "Teradek Bolt 6 LT TX": {
       "powerDrawWatts": 9,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "6 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin DC (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI 2.0"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt 6 XT": {
+    "Teradek Bolt 6 XT TX": {
       "powerDrawWatts": 20,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "6 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
+      "videoInputs": [
+        {
+          "portType": "HDMI 2.0"
+        },
+        {
+          "portType": "12G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI 2.0 Loopout"
+        },
+        {
+          "portType": "12G SDI Loopout"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt 6 MAX": {
+    "Teradek Bolt 6 MAX TX": {
       "powerDrawWatts": 20,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "6 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
+      "videoInputs": [
+        {
+          "portType": "HDMI 2.0"
+        },
+        {
+          "portType": "12G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI 2.0 Loopout"
+        },
+        {
+          "portType": "12G SDI Loopout"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt 4K LT": {
+    "Teradek Bolt 4K LT TX": {
       "powerDrawWatts": 9,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin DC (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI 2.0"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS) (with Bluetooth 2.4 GHz for app control)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt 4K XT": {
+    "Teradek Bolt 4K XT TX": {
       "powerDrawWatts": 20,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
+      "videoInputs": [
+        {
+          "portType": "HDMI 2.0"
+        },
+        {
+          "portType": "12G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI 2.0 Loopout"
+        },
+        {
+          "portType": "12G SDI Loopout"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS) (with Bluetooth 2.4 GHz for app control)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt Pro 300 (TX)": {
+    "Teradek Bolt Pro 300 TX": {
       "powerDrawWatts": 6.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt Pro 600 (TX)": {
-      "powerDrawWatts": 4,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "6 GHz",
-      "latencyMs": null
+    "Teradek Bolt Pro 600 TX": {
+      "powerDrawWatts": 8,
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt Pro 2000 (TX)": {
+    "Teradek Bolt Pro 2000 TX": {
       "powerDrawWatts": 7.7,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt Pro 500 (TX)": {
+    "Teradek Bolt Pro 500 TX": {
       "powerDrawWatts": 7.3,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt Pro 750 (TX)": {
+    "Teradek Bolt Pro 750 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt Pro 1000 (TX)": {
+    "Teradek Bolt Pro 1000 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt 3000 (TX)": {
+    "Teradek Bolt 3000 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Teradek Bolt 10000 (TX)": {
+    "Teradek Bolt 10000 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-28V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms"
     },
-    "Hollyland Pyro S (TX)": {
+    "Hollyland Pyro S TX": {
       "powerDrawWatts": 11,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "USB-C (5V-12V) / NP-F / DC Barrel (6-16V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "2.412-2.484 GHz / 5.15-5.85 GHz (Dual-Band Wi-Fi 4)",
+      "latencyMs": "50ms"
     },
-    "Hollyland Mars 300 Pro (TX)": {
+    "Hollyland Mars 300 Pro TX": {
       "powerDrawWatts": 11,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
+      "powerInput": "USB-C (5-12V) / NP-F",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        }
+      ],
       "frequency": "5 GHz",
-      "latencyMs": null
+      "latencyMs": "< 80ms"
     },
-    "Hollyland Mars 400S Pro (TX)": {
+    "Hollyland Mars 400S Pro TX": {
       "powerDrawWatts": 11,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
+      "powerInput": "USB-C (5-12V) / NP-F / DC Barrel (6-16V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "SDI Loopout"
+        }
+      ],
       "frequency": "5 GHz",
-      "latencyMs": null
+      "latencyMs": "< 80ms"
     },
-    "DJI SDR Transmission": {
+    "DJI Transmission (TX)": {
       "powerDrawWatts": 11,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "DC-In (6-18V) / NP-F / WB37",
+      "videoInputs": [
+        {
+          "portType": "HDMI 1.4"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI 1.4 Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "2.4000-2.4835 GHz (Non-DFS), 5.470-5.725 GHz (DFS), 5.725-5.850 GHz (Non-DFS)",
+      "latencyMs": "< 60ms"
     },
-    "DJI Transmission": {
-      "powerDrawWatts": 11,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
-    },
-    "Vaxis Storm 800": {
+    "Vaxis Storm 800 TX": {
       "powerDrawWatts": 6,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-18V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms"
     },
-    "Vaxis Storm 1000": {
+    "Vaxis Storm 1000 TX": {
       "powerDrawWatts": 6.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-18V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms"
     },
-    "Vaxis Storm 3000": {
+    "Vaxis Storm 3000 TX": {
       "powerDrawWatts": 6,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-18V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.1-5.9 GHz",
+      "latencyMs": "< 1ms"
     },
-    "Dwarf Connection LR1": {
+    "Dwarf Connection LR1 TX": {
       "powerDrawWatts": 6,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (6-18V)",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "5.1-5.9 GHz (ISM Band, Indoor use often specified due to DFS omission)",
+      "latencyMs": "< 1ms"
     },
-    "Accsoon CineEye 2S Pro (TX)": {
+    "Accsoon CineEye 2S Pro TX": {
       "powerDrawWatts": 4.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "USB-C (5V) / NP-F battery",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        }
+      ],
+      "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
+      "latencyMs": "< 60ms"
     },
-    "Accsoon CineEye II (TX)": {
+    "Accsoon CineEye II TX": {
       "powerDrawWatts": 3.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "USB-C (5V) / NP-F battery",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        }
+      ],
+      "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
+      "latencyMs": "< 60ms"
     },
-    "Accsoon CineView HE (TX)": {
+    "Accsoon CineView HE TX": {
       "powerDrawWatts": 4.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "USB-C (5V) / NP-F battery",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "2.412-2.472 GHz / 5.180-5.580 GHz / 5.660-5.825 MHz (Dual-Band Wi-Fi 5 with MU-MIMO)",
+      "latencyMs": "< 60ms"
     },
-    "Accsoon CineView SE (TX)": {
+    "Accsoon CineView SE TX": {
       "powerDrawWatts": 4.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "USB-C (5V) / NP-F battery",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
+      "latencyMs": "< 60ms"
     },
-    "Accsoon CineView Nano (TX)": {
+    "Accsoon CineView Nano TX": {
       "powerDrawWatts": 2.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "USB-C (5V) / NP-F battery",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        }
+      ],
+      "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
+      "latencyMs": "< 60ms"
     },
-    "Accsoon CineView Quad (TX)": {
+    "Accsoon CineView Quad TX": {
       "powerDrawWatts": 4.5,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "USB-C (5V) / NP-F battery",
+      "videoInputs": [
+        {
+          "portType": "HDMI"
+        },
+        {
+          "portType": "3G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI Loopout"
+        },
+        {
+          "portType": "3G SDI Loopout"
+        }
+      ],
+      "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
+      "latencyMs": "< 60ms"
     },
     "Accsoon CineView Master 4K": {
       "powerDrawWatts": 15,
-      "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
-      "frequency": "5 GHz",
-      "latencyMs": null
+      "powerInput": "2-pin Lemo (7.4-16.8V) / NP-F battery",
+      "videoInputs": [
+        {
+          "portType": "HDMI 2.0"
+        },
+        {
+          "portType": "12G SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "portType": "HDMI 2.0"
+        },
+        {
+          "portType": "12G SDI"
+        }
+      ],
+      "frequency": "2.4 GHz / 5 GHz / 6 GHz (Tri-Band Wi-Fi 6E)",
+      "latencyMs": "< 60ms"
     },
     "None": {
       "powerDrawWatts": 0,
