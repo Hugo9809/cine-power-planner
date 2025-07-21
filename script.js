@@ -26,6 +26,13 @@ function unifyDevices(data) {
       return Object.assign({}, defaults, item || {});
     });
   };
+  const normalizeType = (t) => {
+    t = t.trim();
+    if (/^v[ -]?mount$/i.test(t)) return 'V-Mount';
+    if (/^b[ -]?mount$/i.test(t)) return 'B-Mount';
+    if (/^gold[ -]?mount$/i.test(t)) return 'Gold-Mount';
+    return t;
+  };
   Object.values(data.cameras || {}).forEach(cam => {
     if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
       delete cam.power.input.powerDrawWatts;
@@ -33,15 +40,19 @@ function unifyDevices(data) {
     if (Array.isArray(cam.power?.batteryPlateSupport)) {
       cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(it => {
         if (typeof it === 'string') {
-          const m = it.match(/([^()]+)(?:\((native|adapted)\))?/i);
-          return {
-            type: m ? m[1].trim() : it,
-            mount: m && m[2] ? m[2].toLowerCase() : (/(adapted)/i.test(it) ? 'adapted' : 'native')
-          };
+          const m = it.match(/([^()]+)(?:\(([^)]+)\))?/);
+          let type = m ? m[1].trim() : it;
+          type = normalizeType(type);
+          const spec = m && m[2] ? m[2] : '';
+          const mount = /adapted|adapter/i.test(spec) ? 'adapted' : 'native';
+          let notes = '';
+          if (spec && !/(adapted|adapter|native)/i.test(spec)) notes = spec.trim();
+          return { type, mount, notes };
         }
         return {
-          type: it.type || '',
-          mount: it.mount ? it.mount.toLowerCase() : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))
+          type: normalizeType(it.type || ''),
+          mount: it.mount ? it.mount.toLowerCase() : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native')),
+          notes: it.notes || ''
         };
       });
     }
@@ -55,6 +66,8 @@ function unifyDevices(data) {
 }
 
 unifyDevices(devices);
+
+const plateTypes = ["V-Mount", "B-Mount", "Gold-Mount"];
 
 
 // Translation text for English and German
@@ -150,7 +163,7 @@ const texts = {
     placeholder_dtap: "e.g. 5",
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "LEMO 8-pin",
-    placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
+    placeholder_plates: "",
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
@@ -286,7 +299,7 @@ const texts = {
     placeholder_dtap: "z.B. 5",
     placeholder_voltage: "11V-34V DC",
     placeholder_port: "LEMO 8-Pin",
-    placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
+    placeholder_plates: "",
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
     placeholder_powerdist: "[{}]",
@@ -461,7 +474,6 @@ function setLanguage(lang) {
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
-  cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
   cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
@@ -553,7 +565,7 @@ const cameraVoltageInput = document.getElementById("cameraVoltage");
 const cameraPortTypeInput = document.getElementById("cameraPortType");
 const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
 const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
-const cameraPlatesInput = document.getElementById("cameraPlates");
+const cameraPlatesContainer = document.getElementById("cameraPlatesContainer");
 const cameraMediaInput = document.getElementById("cameraMedia");
 const cameraLensMountInput = document.getElementById("cameraLensMount");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
@@ -658,6 +670,103 @@ function getVideoOutputs() {
 
 function clearVideoOutputs() {
   setVideoOutputs([]);
+}
+
+// List of supported battery plate types
+
+function createPlateRow(data = {}) {
+  const row = document.createElement('div');
+  row.className = 'form-row plate-row';
+  const typeSel = document.createElement('select');
+  typeSel.className = 'plate-type';
+  const blank = document.createElement('option');
+  blank.value = '';
+  blank.textContent = '--';
+  typeSel.appendChild(blank);
+  plateTypes.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = t;
+    typeSel.appendChild(opt);
+  });
+  if (data.type) typeSel.value = data.type;
+  const mountSel = document.createElement('select');
+  mountSel.className = 'plate-mount';
+  ['native','adapted'].forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    mountSel.appendChild(opt);
+  });
+  mountSel.value = data.mount || 'native';
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.className = 'plate-notes';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = data.notes || '';
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    updatePlateOptions();
+    maybeAddPlateRow();
+  });
+  typeSel.addEventListener('change', () => {
+    updatePlateOptions();
+    maybeAddPlateRow();
+  });
+  row.appendChild(typeSel);
+  row.appendChild(mountSel);
+  row.appendChild(notesInput);
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function updatePlateOptions() {
+  const selects = cameraPlatesContainer.querySelectorAll('.plate-type');
+  const selected = Array.from(selects).map(s => s.value);
+  selects.forEach(sel => {
+    const cur = sel.value;
+    Array.from(sel.options).forEach(opt => {
+      if (!opt.value) return;
+      opt.disabled = selected.includes(opt.value) && opt.value !== cur;
+    });
+  });
+}
+
+function maybeAddPlateRow() {
+  const selects = cameraPlatesContainer.querySelectorAll('.plate-type');
+  const filled = Array.from(selects).every(s => s.value);
+  if (selects.length < plateTypes.length && filled) {
+    cameraPlatesContainer.appendChild(createPlateRow());
+    updatePlateOptions();
+  }
+}
+
+function setBatteryPlates(list) {
+  cameraPlatesContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => cameraPlatesContainer.appendChild(createPlateRow(item)));
+    maybeAddPlateRow();
+    updatePlateOptions();
+  } else {
+    cameraPlatesContainer.appendChild(createPlateRow());
+  }
+}
+
+function getBatteryPlates() {
+  return Array.from(cameraPlatesContainer.querySelectorAll('.plate-row')).map(row => {
+    const type = row.querySelector('.plate-type').value;
+    if (!type) return null;
+    const mount = row.querySelector('.plate-mount').value;
+    const notes = row.querySelector('.plate-notes').value.trim();
+    return { type, mount, notes };
+  }).filter(Boolean);
+}
+
+function clearBatteryPlates() {
+  setBatteryPlates([]);
 }
 
 
@@ -768,6 +877,7 @@ motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
+setBatteryPlates([]);
 
 // Set default selections for dropdowns
 
@@ -1306,7 +1416,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
       cameraBatteryTypeInput.value = deviceData.power?.internalBattery?.type || '';
       cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
-      cameraPlatesInput.value = JSON.stringify(deviceData.power?.batteryPlateSupport || [], null, 2);
+      setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
@@ -1376,7 +1486,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraPortTypeInput.value = "";
   cameraBatteryTypeInput.value = "";
   cameraBatteryLifeInput.value = "";
-  cameraPlatesInput.value = "";
+  clearBatteryPlates();
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
@@ -1450,7 +1560,7 @@ addDeviceBtn.addEventListener("click", () => {
       fizCon = cameraFIZConnectorInput.value ? JSON.parse(cameraFIZConnectorInput.value) : [];
       viewfinder = cameraViewfinderInput.value ? JSON.parse(cameraViewfinderInput.value) : [];
       timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
-      plateSupport = cameraPlatesInput.value ? JSON.parse(cameraPlatesInput.value) : [];
+      plateSupport = getBatteryPlates();
     } catch (e) {
       console.error("Invalid camera JSON input:", e);
       alert(texts[currentLang].alertInvalidCameraJSON);
@@ -1500,7 +1610,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraPortTypeInput.value = "";
   cameraBatteryTypeInput.value = "";
   cameraBatteryLifeInput.value = "";
-  cameraPlatesInput.value = "";
+  clearBatteryPlates();
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
