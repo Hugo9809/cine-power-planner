@@ -4585,12 +4585,7 @@ let devices={
           "mount": "native"
         }
       ],
-      "timecode": [
-        {
-          "type": "Timecode Interface",
-          "notes": "Timecode synchronization of image and sound [S7.1, S7.2]"
-        }
-      ]
+      "timecode": []
     },
     "None": {
       "powerDrawWatts": 0,
