@@ -4910,409 +4910,823 @@ let devices={
   },
   "monitors": {
     "SmallHD Ultra 7": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2300,
       "powerDrawWatts": 37.5,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "12G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "12G SDI"
+          }
+        ]
       },
       "wirelessTx": false
     },
     "SmallHD Ultra 7 Bolt 6 TX": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2300,
       "powerDrawWatts": 55,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "12G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "12G SDI"
+          }
+        ]
       },
       "wirelessTx": true
     },
     "SmallHD Cine 7": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1800,
       "powerDrawWatts": 30,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI",
+            "details": "2x inputs, one selectable as input/output"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI",
+            "details": "One input can double as loop out"
+          }
+        ]
       },
       "wirelessTx": false
     },
     "SmallHD Cine 7 Bolt 4K TX": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1800,
       "powerDrawWatts": 50,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": true
     },
     "SmallHD Indie 7": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1000,
       "powerDrawWatts": 17.3,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": false
     },
-    "SmallHD Indie 7 Bolt 4k TX": {
+    "SmallHD Indie 7 Bolt 4K TX": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1000,
       "powerDrawWatts": 37.3,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": true
     },
     "SmallHD Focus 7": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1000,
       "powerDrawWatts": 9,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
+        "inputs": [
+          {
+            "portType": "HDMI"
+          }
+        ],
         "outputs": []
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      }
     },
     "SmallHD Ultra 5": {
+      "screenSizeInches": 5,
+      "brightnessNits": 3000,
       "powerDrawWatts": 31.5,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": false
     },
     "SmallHD Ultra 5 Bolt 6 TX": {
+      "screenSizeInches": 5,
+      "brightnessNits": 3000,
       "powerDrawWatts": 50,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": true
     },
     "SmallHD Cine 5": {
+      "screenSizeInches": 5,
+      "brightnessNits": 2000,
       "powerDrawWatts": 24,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI 2.0 (4Kp30)"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI 2.0 (4Kp30)"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": false
     },
     "SmallHD Cine 5 Bolt 6 TX": {
+      "screenSizeInches": 5,
+      "brightnessNits": 2000,
       "powerDrawWatts": 44,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": true
     },
     "SmallHD Indie 5": {
+      "screenSizeInches": 5,
+      "brightnessNits": 1000,
       "powerDrawWatts": 17.3,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": false
     },
     "SmallHD Focus 5": {
+      "screenSizeInches": 5,
+      "brightnessNits": 800,
       "powerDrawWatts": 8,
       "power": {
         "input": {
           "portType": "LEMO 2-pin",
           "voltageRange": "10-34V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
+        "inputs": [
+          {
+            "portType": "3G SDI"
+          }
+        ],
         "outputs": []
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      }
     },
     "Hollyland Pyro 7 (TX)": {
+      "screenSizeInches": 7,
+      "brightnessNits": 1200,
       "powerDrawWatts": 22,
       "power": {
         "input": {
           "portType": "NP-F / USB-C",
           "voltageRange": "7-16V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI 1.4b"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI 1.4b"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
       "wirelessTx": true
     },
     "Hollyland Mars M1 Enhanced": {
+      "screenSizeInches": 5.5,
+      "brightnessNits": 1000,
       "powerDrawWatts": 16,
       "power": {
         "input": {
           "portType": "NP-F / USB-C",
           "voltageRange": "7-16V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI 1.4b"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI 1.4b Loopout"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      }
     },
     "Portkeys BM5 III": {
+      "screenSizeInches": 5.5,
+      "brightnessNits": 2200,
       "powerDrawWatts": 16,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "7-24V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "HD SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "HD SDI"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "bluetooth": {
+        "portType": "Camera Control"
+      }
     },
     "Portkeys LH5H": {
+      "screenSizeInches": 5.2,
+      "brightnessNits": 1700,
       "powerDrawWatts": 12,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "7-24V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      },
+      "wireless": {
+        "portType": "Bluetooth Camera Control"
+      }
     },
     "Portkeys BM7 II DS": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2200,
       "powerDrawWatts": 15,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "7-24V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "SDI",
+            "details": "2x SDI inputs"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "SDI"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "wireless": {
+        "portType": "Camera Control"
+      }
     },
     "Portkeys PT5 II": {
+      "screenSizeInches": 5,
+      "brightnessNits": 500,
       "powerDrawWatts": 7,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "7-24V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      }
     },
     "Atomos Ninja V": {
+      "screenSizeInches": 5,
+      "brightnessNits": 1000,
       "powerDrawWatts": 22,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "6-16V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI 2.0"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI 2.0"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      },
+      "audioIo": {
+        "portType": "10-pin LEMO (analog audio)"
+      }
     },
     "Atomos Ninja V+": {
+      "screenSizeInches": 5,
+      "brightnessNits": 1000,
       "powerDrawWatts": 22,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "6-16V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI 2.0"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI 2.0"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone"
+      },
+      "audioInput": {
+        "portType": "3.5mm Mic/Line"
+      }
     },
     "Atomos Shinobi 5": {
+      "screenSizeInches": 5.2,
+      "brightnessNits": 1000,
       "powerDrawWatts": 7,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "6-16V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
+        "inputs": [
+          {
+            "portType": "HDMI 2.0"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
         "outputs": []
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      }
     },
     "Atomos Shinobi 7": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2200,
       "powerDrawWatts": 7,
       "power": {
         "input": {
           "portType": "Barrel 2.1mm / NP-F",
           "voltageRange": "6-16V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI"
+          },
+          {
+            "portType": "SDI"
+          }
+        ]
       },
       "wirelessTx": false
     },
     "Feelworld FW568": {
+      "screenSizeInches": 6,
+      "brightnessNits": 450,
       "powerDrawWatts": 11,
       "power": {
         "input": {
           "portType": "NP-F",
           "voltageRange": "7-18V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "4K HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "4K HDMI"
+          },
+          {
+            "portType": "3G SDI"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      }
     },
     "Feelworld F6 Plus": {
+      "screenSizeInches": 6,
+      "brightnessNits": 450,
       "powerDrawWatts": 9,
       "power": {
         "input": {
           "portType": "NP-F",
           "voltageRange": "7-18V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone"
+      }
     },
     "Andycine A6 Pro": {
+      "screenSizeInches": 5.5,
+      "brightnessNits": 500,
       "powerDrawWatts": 9,
       "power": {
         "input": {
           "portType": "NP-F",
           "voltageRange": "7-18V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "4K HDMI"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone"
+      }
     },
     "Lilliput A7S": {
+      "screenSizeInches": 7,
+      "brightnessNits": 500,
       "powerDrawWatts": 12,
       "power": {
         "input": {
           "portType": "NP-F",
           "voltageRange": "7-18V"
         },
-        "output": []
+        "output": null
       },
       "video": {
-        "inputs": [],
-        "outputs": []
+        "inputs": [
+          {
+            "portType": "HDMI 1.4"
+          }
+        ],
+        "outputs": [
+          {
+            "portType": "HDMI 1.4"
+          }
+        ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "audioOutput": {
+        "portType": "3.5mm Headphone Jack"
+      }
     },
     "None": {
       "powerDrawWatts": 0,
@@ -5321,7 +5735,7 @@ let devices={
           "portType": "",
           "voltageRange": ""
         },
-        "output": []
+        "output": null
       },
       "video": {
         "inputs": [],
