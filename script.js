@@ -15,6 +15,15 @@ if (storedDevices) {
   devices = storedDevices;
 }
 
+function normalizePlateType(type) {
+  if (!type) return '';
+  const t = type.toLowerCase().replace(/\s*-\s*/, '-').trim();
+  if (t.startsWith('v') && t.includes('mount')) return 'V-Mount';
+  if (t.startsWith('b') && t.includes('mount')) return 'B-Mount';
+  if (t.startsWith('gold')) return 'Gold-Mount';
+  return type.trim();
+}
+
 function unifyDevices(data) {
   if (!data || typeof data !== 'object') return;
   const ensureList = (list, defaults) => {
@@ -33,15 +42,23 @@ function unifyDevices(data) {
     if (Array.isArray(cam.power?.batteryPlateSupport)) {
       cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(it => {
         if (typeof it === 'string') {
-          const m = it.match(/([^()]+)(?:\((native|adapted)\))?/i);
+          const m = it.match(/([^()]+)(?:\(([^)]+)\))?(?:\s*-\s*(.+))?/);
+          const typeRaw = m ? m[1].trim() : it;
+          const extra = m && m[2] ? m[2].toLowerCase() : '';
+          const notes = m && m[3] ? m[3].trim() : '';
+          let mountStyle = 'native';
+          if (extra.includes('adapt')) mountStyle = 'adapted';
+          else if (extra.includes('native')) mountStyle = 'native';
           return {
-            type: m ? m[1].trim() : it,
-            mount: m && m[2] ? m[2].toLowerCase() : (/(adapted)/i.test(it) ? 'adapted' : 'native')
+            type: normalizePlateType(typeRaw),
+            mount: mountStyle,
+            notes: notes
           };
         }
         return {
-          type: it.type || '',
-          mount: it.mount ? it.mount.toLowerCase() : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))
+          type: normalizePlateType(it.type || ''),
+          mount: (it.mount ? it.mount.toLowerCase() : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))),
+          notes: it.notes || ''
         };
       });
     }
@@ -461,7 +478,6 @@ function setLanguage(lang) {
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
-  cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
   cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
@@ -552,7 +568,7 @@ const cameraVoltageInput = document.getElementById("cameraVoltage");
 const cameraPortTypeInput = document.getElementById("cameraPortType");
 const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
 const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
-const cameraPlatesInput = document.getElementById("cameraPlates");
+const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaInput = document.getElementById("cameraMedia");
 const cameraLensMountInput = document.getElementById("cameraLensMount");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
@@ -608,6 +624,21 @@ const videoOutputOptions = [
   'Mini HDMI',
   'Micro HDMI'
 ];
+
+function getAllBatteryPlateTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    if (Array.isArray(cam.power?.batteryPlateSupport)) {
+      cam.power.batteryPlateSupport.forEach(bp => {
+        const t = typeof bp === 'string' ? bp.split('(')[0] : bp.type;
+        if (t) types.add(normalizePlateType(t.trim()));
+      });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let plateTypes = getAllBatteryPlateTypes();
 
 function getAllFizConnectorTypes() {
   const types = new Set();
@@ -723,6 +754,75 @@ function clearFizConnectors() {
   setFizConnectors([]);
 }
 
+function createBatteryPlateRow(data = {}) {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const typeSelect = document.createElement('select');
+  plateTypes.forEach(pt => {
+    const opt = document.createElement('option');
+    opt.value = pt;
+    opt.textContent = pt;
+    typeSelect.appendChild(opt);
+  });
+  if (data.type) typeSelect.value = normalizePlateType(data.type);
+  row.appendChild(typeSelect);
+
+  const mountSelect = document.createElement('select');
+  ['native', 'adapted'].forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    mountSelect.appendChild(opt);
+  });
+  if (data.mount) mountSelect.value = data.mount.toLowerCase();
+  row.appendChild(mountSelect);
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'notes';
+  if (data.notes) notesInput.value = data.notes;
+  row.appendChild(notesInput);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createBatteryPlateRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (batteryPlatesContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setBatteryPlates(list) {
+  batteryPlatesContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(bp => batteryPlatesContainer.appendChild(createBatteryPlateRow(bp)));
+  } else {
+    batteryPlatesContainer.appendChild(createBatteryPlateRow());
+  }
+}
+
+function getBatteryPlates() {
+  return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(row => {
+    const selects = row.querySelectorAll('select');
+    const input = row.querySelector('input');
+    return { type: selects[0].value, mount: selects[1].value, notes: input.value.trim() };
+  });
+}
+
+function clearBatteryPlates() {
+  setBatteryPlates([]);
+}
+
 
 // Populate dropdowns with device options
 function populateSelect(selectElem, optionsObj, includeNone=true) {
@@ -832,6 +932,7 @@ controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
 setFizConnectors([]);
+setBatteryPlates([]);
 
 // Set default selections for dropdowns
 
@@ -1370,7 +1471,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
       cameraBatteryTypeInput.value = deviceData.power?.internalBattery?.type || '';
       cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
-      cameraPlatesInput.value = JSON.stringify(deviceData.power?.batteryPlateSupport || [], null, 2);
+      setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
@@ -1440,7 +1541,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraPortTypeInput.value = "";
   cameraBatteryTypeInput.value = "";
   cameraBatteryLifeInput.value = "";
-  cameraPlatesInput.value = "";
+  clearBatteryPlates();
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
@@ -1514,7 +1615,7 @@ addDeviceBtn.addEventListener("click", () => {
       fizCon = getFizConnectors();
       viewfinder = cameraViewfinderInput.value ? JSON.parse(cameraViewfinderInput.value) : [];
       timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
-      plateSupport = cameraPlatesInput.value ? JSON.parse(cameraPlatesInput.value) : [];
+      plateSupport = getBatteryPlates();
     } catch (e) {
       console.error("Invalid camera JSON input:", e);
       alert(texts[currentLang].alertInvalidCameraJSON);
@@ -1564,7 +1665,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraPortTypeInput.value = "";
   cameraBatteryTypeInput.value = "";
   cameraBatteryLifeInput.value = "";
-  cameraPlatesInput.value = "";
+  clearBatteryPlates();
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
@@ -1578,6 +1679,7 @@ addDeviceBtn.addEventListener("click", () => {
   delete addDeviceBtn.dataset.originalName; // Clear original name
 
   saveDeviceData(devices); // Save changes to localStorage
+  plateTypes = getAllBatteryPlateTypes();
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
   populateSelect(cameraSelect, devices.cameras, true);
@@ -1639,6 +1741,7 @@ if (exportAndRevertBtn) {
         // Step 2: Revert to the default database
         devices = JSON.parse(JSON.stringify(window.defaultDevices)); // Use window.defaultDevices here
         saveDeviceData(devices); // Save the default data back to localStorage
+        plateTypes = getAllBatteryPlateTypes();
 
         // Update the UI to reflect the reverted database
         populateSelect(cameraSelect, devices.cameras, true);
@@ -1683,6 +1786,7 @@ importFileInput.addEventListener("change", (event) => {
           Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
         devices = importedData; // Overwrite current devices with imported data
         saveDeviceData(devices); // Persist to local storage
+        plateTypes = getAllBatteryPlateTypes();
         refreshDeviceLists(); // Update device manager lists
         // Re-populate all dropdowns and update calculations
         populateSelect(cameraSelect, devices.cameras, true);
