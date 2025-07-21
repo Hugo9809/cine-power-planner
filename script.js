@@ -272,6 +272,7 @@ const texts = {
     updateDeviceBtn: "Update", // New key for update button
     editBtn: "Edit", // New key for Edit button in list
     deleteDeviceBtn: "Delete", // New key for Delete button in list
+    cancelEditBtn: "Cancel",
     exportDataBtn: "Export Database",
     importDataBtn: "Import Database",
     alertImportSuccess: "Database imported successfully! {num_devices} devices loaded.",
@@ -667,6 +668,7 @@ const texts = {
     updateDeviceBtn: "Aktualisieren",
     editBtn: "Bearbeiten",
     deleteDeviceBtn: "Löschen",
+    cancelEditBtn: "Abbrechen",
     exportDataBtn: "Datenbank exportieren",
     importDataBtn: "Datenbank importieren",
     alertImportSuccess: "Datenbank erfolgreich importiert! {num_devices} Geräte geladen.",
@@ -858,8 +860,10 @@ function setLanguage(lang) {
   // Determine text for Add/Update button
   if (addDeviceBtn.dataset.mode === "edit") {
     addDeviceBtn.textContent = texts[lang].updateDeviceBtn;
+    cancelEditBtn.textContent = texts[lang].cancelEditBtn;
   } else {
     addDeviceBtn.textContent = texts[lang].addDeviceBtn;
+    cancelEditBtn.textContent = texts[lang].cancelEditBtn;
   }
   exportBtn.textContent = texts[lang].exportDataBtn;
   importDataBtn.textContent = texts[lang].importDataBtn; // New translation for import button
@@ -968,6 +972,7 @@ const newCapacityInput = document.getElementById("newCapacity");
 const newPinAInput    = document.getElementById("newPinA");
 const newDtapAInput   = document.getElementById("newDtapA");
 const addDeviceBtn    = document.getElementById("addDeviceBtn");
+const cancelEditBtn  = document.getElementById("cancelEditBtn");
 const exportBtn       = document.getElementById("exportDataBtn");
 const exportOutput    = document.getElementById("exportOutput");
 const importFileInput = document.getElementById("importFileInput");
@@ -2502,6 +2507,8 @@ deviceManagerSection.addEventListener("click", (event) => {
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
     addDeviceBtn.dataset.mode = "edit";
     addDeviceBtn.dataset.originalName = name; // Store original name for update
+    cancelEditBtn.textContent = texts[currentLang].cancelEditBtn;
+    cancelEditBtn.style.display = "inline";
   } else if (event.target.classList.contains("delete-btn")) {
     const name = event.target.dataset.name;
     const categoryKey = event.target.dataset.category;
@@ -2569,7 +2576,15 @@ newCategorySelect.addEventListener("change", () => {
   addDeviceBtn.dataset.mode = "add";
   delete addDeviceBtn.dataset.originalName;
   newNameInput.value = ""; // Clear name to avoid accidental update
+  cancelEditBtn.style.display = "none";
 });
+
+function resetDeviceForm() {
+  newCategorySelect.disabled = false;
+  cancelEditBtn.style.display = "none";
+  // Trigger change handler to reset fields and button text
+  newCategorySelect.dispatchEvent(new Event('change'));
+}
 
 
 // Add/Update device logic
@@ -2666,26 +2681,7 @@ addDeviceBtn.addEventListener("click", () => {
   }
 
   // After adding/updating, reset form and refresh lists
-  newNameInput.value = "";
-  newWattInput.value = "";
-  newCapacityInput.value = "";
-  newPinAInput.value = "";
-  newDtapAInput.value = "";
-  cameraWattInput.value = "";
-  cameraVoltageInput.value = "";
-  cameraPortTypeInput.value = "";
-  clearBatteryPlates();
-  clearRecordingMedia();
-  clearLensMounts();
-  clearPowerDistribution();
-  clearVideoOutputs();
-  clearFizConnectors();
-  clearViewfinders();
-  clearTimecodes();
-  newCategorySelect.disabled = false; // Re-enable category select
-  addDeviceBtn.textContent = texts[currentLang].addDeviceBtn; // Reset button text
-  addDeviceBtn.dataset.mode = "add"; // Reset mode
-  delete addDeviceBtn.dataset.originalName; // Clear original name
+  resetDeviceForm();
 
   saveDeviceData(devices); // Save changes to localStorage
   viewfinderTypeOptions = getAllViewfinderTypes();
@@ -2715,6 +2711,11 @@ addDeviceBtn.addEventListener("click", () => {
   } else {
       alert(texts[currentLang].alertDeviceAdded.replace("{name}", name).replace("{category}", categoryDisplay));
   }
+});
+
+// Cancel editing and revert form to add mode
+cancelEditBtn.addEventListener("click", () => {
+  resetDeviceForm();
 });
 
 // Export device data
