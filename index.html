@@ -21,15 +21,18 @@
 
   <section id="setup-manager">
     <h2 id="setupManageHeading">Manage Setup</h2>
-    <label for="setupSelect" id="savedSetupsLabel">Saved Setups:</label>
-    <select id="setupSelect">
-      <option value="">-- New Setup --</option>
+    <div class="form-row">
+      <label for="setupSelect" id="savedSetupsLabel">Saved Setups:</label>
+      <select id="setupSelect">
+        <option value="">-- New Setup --</option>
       </select>
-    <button id="deleteSetupBtn" title="Delete selected setup">Delete</button>
-    <br/>
-    <label for="setupName" id="setupNameLabel">Setup Name:</label>
-    <input type="text" id="setupName" placeholder="Setup name" />
-    <button id="saveSetupBtn">Save</button>
+      <button id="deleteSetupBtn" title="Delete selected setup">Delete</button>
+    </div>
+    <div class="form-row">
+      <label for="setupName" id="setupNameLabel">Setup Name:</label>
+      <input type="text" id="setupName" placeholder="Setup name" />
+      <button id="saveSetupBtn">Save</button>
+    </div>
 
     <!-- Moved Setup Actions here -->
     <h3 id="setupActionsHeading" style="margin-top: 1em;">Setup Actions</h3>
