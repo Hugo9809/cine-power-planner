@@ -13,9 +13,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "B-Mount",
-          "V-Mount",
-          "Gold Mount"
+          {
+            "type": "B-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "native",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -101,9 +113,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount",
-          "Gold Mount",
-          "B-Mount (via adapter)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "B-Mount",
+            "mount": "adapted",
+            "notes": "via adapter"
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -190,9 +214,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "B-Mount (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "B-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -280,8 +316,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -365,8 +409,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -471,8 +523,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -577,8 +637,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -658,9 +726,21 @@ let devices = {
           "batteryLifeMinutes": 135
         },
         "batteryPlateSupport": [
-          "NP-FZ100 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "NP-FZ100",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -724,9 +804,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "Sony L-Series InfoLithium (Native)",
-          "Gold Mount (adapted)",
-          "V-Mount (adapted)"
+          {
+            "type": "Sony L-Series InfoLithium",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -815,9 +907,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "BP-U (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "BP-U",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -900,8 +1004,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -958,8 +1070,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1050,8 +1170,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1130,8 +1258,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1223,8 +1359,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1305,8 +1449,16 @@ let devices = {
           "batteryLifeMinutes": 60
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1375,8 +1527,16 @@ let devices = {
           "batteryLifeMinutes": 45
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1445,8 +1605,16 @@ let devices = {
           "batteryLifeMinutes": 45
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1515,8 +1683,16 @@ let devices = {
           "batteryLifeMinutes": 60
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1591,8 +1767,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (Native)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "native",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1677,8 +1861,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (Native)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "native",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1771,8 +1963,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1836,8 +2036,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1901,9 +2109,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)",
-          "Micro Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Micro Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -1985,8 +2205,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2050,8 +2278,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2128,8 +2364,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2206,8 +2450,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2284,8 +2536,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2362,8 +2622,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2421,8 +2689,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2480,8 +2756,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2539,8 +2823,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2598,8 +2890,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2653,8 +2953,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2708,8 +3016,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (Native)",
-          "Gold Mount (Native)"
+          {
+            "type": "V-Mount",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "native",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2763,8 +3079,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2818,8 +3142,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2873,8 +3205,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2928,8 +3268,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -2983,9 +3331,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "DMW-BLK22 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "DMW-BLK22",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3047,9 +3407,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "DMW-BLK22 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "DMW-BLK22",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3112,9 +3484,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "NP-FZ100 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "NP-FZ100",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3177,9 +3561,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "NP-W235 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "NP-W235",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3242,9 +3638,21 @@ let devices = {
           "batteryLifeMinutes": 150
         },
         "batteryPlateSupport": [
-          "TB50 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "TB50",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3341,9 +3749,21 @@ let devices = {
           "batteryLifeMinutes": 175
         },
         "batteryPlateSupport": [
-          "NP-FZ100 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "NP-FZ100",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3408,8 +3828,16 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": []
       },
@@ -3472,9 +3900,21 @@ let devices = {
           "batteryLifeMinutes": 175
         },
         "batteryPlateSupport": [
-          "NP-FZ100 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "NP-FZ100",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": []
       },
@@ -3521,9 +3961,21 @@ let devices = {
           "batteryLifeMinutes": 45
         },
         "batteryPlateSupport": [
-          "NP-W126S (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "NP-W126S",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3583,9 +4035,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "LP-E6P (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "LP-E6P",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3647,9 +4111,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "LP-E19 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "LP-E19",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
@@ -3707,9 +4183,21 @@ let devices = {
           "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
-          "Leica BP-SCL6 (Native)",
-          "V-Mount (adapted)",
-          "Gold Mount (adapted)"
+          {
+            "type": "Leica BP-SCL6",
+            "mount": "native",
+            "notes": ""
+          },
+          {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": ""
+          },
+          {
+            "type": "Gold-Mount",
+            "mount": "adapted",
+            "notes": ""
+          }
         ],
         "powerDistributionOutputs": [
           {
