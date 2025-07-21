@@ -4910,243 +4910,849 @@ let devices={
   },
   "monitors": {
     "SmallHD Ultra 7": {
-      "powerDrawWatts": 37.5
+      "powerDrawWatts": 37.5,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "SmallHD Ultra 7 Bolt 6 TX": {
-      "powerDrawWatts": 55
+      "powerDrawWatts": 55,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": true
     },
     "SmallHD Cine 7": {
-      "powerDrawWatts": 30
+      "powerDrawWatts": 30,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "SmallHD Cine 7 Bolt 4K TX": {
-      "powerDrawWatts": 50
+      "powerDrawWatts": 50,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": true
     },
     "SmallHD Indie 7": {
-      "powerDrawWatts": 17.3
+      "powerDrawWatts": 17.3,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "SmallHD Indie 7 Bolt 4k TX": {
-      "powerDrawWatts": 37.3
+      "powerDrawWatts": 37.3,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": true
     },
     "SmallHD Focus 7": {
-      "powerDrawWatts": 9
+      "powerDrawWatts": 9,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "SmallHD Ultra 5": {
-      "powerDrawWatts": 31.5
+      "powerDrawWatts": 31.5,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "SmallHD Ultra 5 Bolt 6 TX": {
-      "powerDrawWatts": 50
+      "powerDrawWatts": 50,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": true
     },
     "SmallHD Cine 5": {
-      "powerDrawWatts": 24
+      "powerDrawWatts": 24,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "SmallHD Cine 5 Bolt 6 TX": {
-      "powerDrawWatts": 44
+      "powerDrawWatts": 44,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": true
     },
     "SmallHD Indie 5": {
-      "powerDrawWatts": 17.3
+      "powerDrawWatts": 17.3,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "SmallHD Focus 5": {
-      "powerDrawWatts": 8
+      "powerDrawWatts": 8,
+      "power": {
+        "input": {
+          "portType": "LEMO 2-pin",
+          "voltageRange": "10-34V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Hollyland Pyro 7 (TX)": {
-      "powerDrawWatts": 22
+      "powerDrawWatts": 22,
+      "power": {
+        "input": {
+          "portType": "NP-F / USB-C",
+          "voltageRange": "7-16V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": true
     },
     "Hollyland Mars M1 Enhanced": {
-      "powerDrawWatts": 16
+      "powerDrawWatts": 16,
+      "power": {
+        "input": {
+          "portType": "NP-F / USB-C",
+          "voltageRange": "7-16V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Portkeys BM5 III": {
-      "powerDrawWatts": 16
+      "powerDrawWatts": 16,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "7-24V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Portkeys LH5H": {
-      "powerDrawWatts": 12
+      "powerDrawWatts": 12,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "7-24V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Portkeys BM7 II DS": {
-      "powerDrawWatts": 15
+      "powerDrawWatts": 15,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "7-24V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Portkeys PT5 II": {
-      "powerDrawWatts": 7
+      "powerDrawWatts": 7,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "7-24V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Atomos Ninja V": {
-      "powerDrawWatts": 22
+      "powerDrawWatts": 22,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "6-16V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Atomos Ninja V+": {
-      "powerDrawWatts": 22
+      "powerDrawWatts": 22,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "6-16V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Atomos Shinobi 5": {
-      "powerDrawWatts": 7
+      "powerDrawWatts": 7,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "6-16V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Atomos Shinobi 7": {
-      "powerDrawWatts": 7
+      "powerDrawWatts": 7,
+      "power": {
+        "input": {
+          "portType": "Barrel 2.1mm / NP-F",
+          "voltageRange": "6-16V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Feelworld FW568": {
-      "powerDrawWatts": 11
+      "powerDrawWatts": 11,
+      "power": {
+        "input": {
+          "portType": "NP-F",
+          "voltageRange": "7-18V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Feelworld F6 Plus": {
-      "powerDrawWatts": 9
+      "powerDrawWatts": 9,
+      "power": {
+        "input": {
+          "portType": "NP-F",
+          "voltageRange": "7-18V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Andycine A6 Pro": {
-      "powerDrawWatts": 9
+      "powerDrawWatts": 9,
+      "power": {
+        "input": {
+          "portType": "NP-F",
+          "voltageRange": "7-18V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "Lilliput A7S": {
-      "powerDrawWatts": 12
+      "powerDrawWatts": 12,
+      "power": {
+        "input": {
+          "portType": "NP-F",
+          "voltageRange": "7-18V"
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     },
     "None": {
-      "powerDrawWatts": 0
+      "powerDrawWatts": 0,
+      "power": {
+        "input": {
+          "portType": "",
+          "voltageRange": ""
+        },
+        "output": []
+      },
+      "video": {
+        "inputs": [],
+        "outputs": []
+      },
+      "wirelessTx": false
     }
   },
   "video": {
     "Teradek Bolt 6 LT": {
-      "powerDrawWatts": 9
+      "powerDrawWatts": 9,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "6 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt 6 XT": {
-      "powerDrawWatts": 20
+      "powerDrawWatts": 20,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "6 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt 6 MAX": {
-      "powerDrawWatts": 20
+      "powerDrawWatts": 20,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "6 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt 4K LT": {
-      "powerDrawWatts": 9
+      "powerDrawWatts": 9,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt 4K XT": {
-      "powerDrawWatts": 20
+      "powerDrawWatts": 20,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt Pro 300 (TX)": {
-      "powerDrawWatts": 6.5
+      "powerDrawWatts": 6.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt Pro 600 (TX)": {
-      "powerDrawWatts": 4
+      "powerDrawWatts": 4,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "6 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt Pro 2000 (TX)": {
-      "powerDrawWatts": 7.7
+      "powerDrawWatts": 7.7,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt Pro 500 (TX)": {
-      "powerDrawWatts": 7.3
+      "powerDrawWatts": 7.3,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt Pro 750 (TX)": {
-      "powerDrawWatts": 7.5
+      "powerDrawWatts": 7.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt Pro 1000 (TX)": {
-      "powerDrawWatts": 7.5
+      "powerDrawWatts": 7.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt 3000 (TX)": {
-      "powerDrawWatts": 7.5
+      "powerDrawWatts": 7.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Teradek Bolt 10000 (TX)": {
-      "powerDrawWatts": 7.5
+      "powerDrawWatts": 7.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Hollyland Pyro S (TX)": {
-      "powerDrawWatts": 11
+      "powerDrawWatts": 11,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Hollyland Mars 300 Pro (TX)": {
-      "powerDrawWatts": 11
+      "powerDrawWatts": 11,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Hollyland Mars 400S Pro (TX)": {
-      "powerDrawWatts": 11
+      "powerDrawWatts": 11,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "DJI SDR Transmission": {
-      "powerDrawWatts": 11
+      "powerDrawWatts": 11,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "DJI Transmission": {
-      "powerDrawWatts": 11
+      "powerDrawWatts": 11,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Vaxis Storm 800": {
-      "powerDrawWatts": 6
+      "powerDrawWatts": 6,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Vaxis Storm 1000": {
-      "powerDrawWatts": 6.5
+      "powerDrawWatts": 6.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Vaxis Storm 3000": {
-      "powerDrawWatts": 6
+      "powerDrawWatts": 6,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Dwarf Connection LR1": {
-      "powerDrawWatts": 6
+      "powerDrawWatts": 6,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Accsoon CineEye 2S Pro (TX)": {
-      "powerDrawWatts": 4.5
+      "powerDrawWatts": 4.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Accsoon CineEye II (TX)": {
-      "powerDrawWatts": 3.5
+      "powerDrawWatts": 3.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Accsoon CineView HE (TX)": {
-      "powerDrawWatts": 4.5
+      "powerDrawWatts": 4.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Accsoon CineView SE (TX)": {
-      "powerDrawWatts": 4.5
+      "powerDrawWatts": 4.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Accsoon CineView Nano (TX)": {
-      "powerDrawWatts": 2.5
+      "powerDrawWatts": 2.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Accsoon CineView Quad (TX)": {
-      "powerDrawWatts": 4.5
+      "powerDrawWatts": 4.5,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "Accsoon CineView Master 4K": {
-      "powerDrawWatts": 15
+      "powerDrawWatts": 15,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     },
     "None": {
-      "powerDrawWatts": 0
+      "powerDrawWatts": 0,
+      "powerInput": "",
+      "videoInput": "SDI",
+      "videoOutput": "SDI",
+      "frequency": "5 GHz",
+      "latencyMs": null
     }
   },
   "fiz": {
     "motors": {
       "None": {
-        "powerDrawWatts": 0
+        "powerDrawWatts": 0,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Tilta Nucleus M (per motor)": {
-        "powerDrawWatts": 20
+        "powerDrawWatts": 20,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Tilta Nucleus M2 (per motor)": {
-        "powerDrawWatts": 50
+        "powerDrawWatts": 50,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Tilta Nucleus Nano (per motor)": {
-        "powerDrawWatts": 5
+        "powerDrawWatts": 5,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Tilta Nucleus Nano II (per motor)": {
-        "powerDrawWatts": 25
+        "powerDrawWatts": 25,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Arri Cforce Mini (peak)": {
-        "powerDrawWatts": 20
+        "powerDrawWatts": 20,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Arri Cforce Plus (peak)": {
-        "powerDrawWatts": 32
+        "powerDrawWatts": 32,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Teradek RT Motion FIZ Motor": {
-        "powerDrawWatts": 18
+        "powerDrawWatts": 18,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Preston DM1X (peak)": {
-        "powerDrawWatts": 32.4
+        "powerDrawWatts": 32.4,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Preston DM2 (peak)": {
-        "powerDrawWatts": 22.2
+        "powerDrawWatts": 22.2,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Preston DM2X (peak)": {
-        "powerDrawWatts": 22.2
+        "powerDrawWatts": 22.2,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Preston DM-A (peak)": {
-        "powerDrawWatts": 18
+        "powerDrawWatts": 18,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Preston DM-C (peak)": {
-        "powerDrawWatts": 18
+        "powerDrawWatts": 18,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Chrosziel CDM-100 (peak)": {
-        "powerDrawWatts": 6
+        "powerDrawWatts": 6,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Chrosziel CDM-M (peak)": {
-        "powerDrawWatts": 6
+        "powerDrawWatts": 6,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "DJI Focus Motor (Original)": {
-        "powerDrawWatts": 30
+        "powerDrawWatts": 30,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "DJI RS Focus Motor": {
-        "powerDrawWatts": 22.4
+        "powerDrawWatts": 22.4,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Cmotion cPRO Motor (base unit/receiver function)": {
-        "powerDrawWatts": 20
+        "powerDrawWatts": 20,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "SmallRig Wireless Follow Focus Motor": {
-        "powerDrawWatts": 12
+        "powerDrawWatts": 12,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       },
       "Redrock MicroRemote Torque Motor": {
-        "powerDrawWatts": 54
+        "powerDrawWatts": 54,
+        "connector": "",
+        "internalController": false,
+        "torqueNm": null,
+        "gearTypes": [
+          "0.8 mod"
+        ]
       }
     },
     "controllers": {
@@ -5580,4 +6186,4 @@ let devices={
     }
   }
 };
-if (typeof module !== "undefined" && module.exports) { module.exports = devices; }
+if (typeof module!=="undefined" && module.exports){module.exports=devices;}
