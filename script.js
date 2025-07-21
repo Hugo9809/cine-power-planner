@@ -1619,6 +1619,60 @@ function getAllPowerDistTypes() {
 }
 
 let powerDistTypeOptions = getAllPowerDistTypes();
+function getAllPowerDistVoltages() {
+  const volts = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    const list = cam.power?.powerDistributionOutputs;
+    if (Array.isArray(list)) {
+      list.forEach(pd => { if (pd && pd.voltage) volts.add(pd.voltage); });
+    }
+  });
+  return Array.from(volts).filter(v => v).sort();
+}
+
+function getAllPowerDistCurrents() {
+  const currents = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    const list = cam.power?.powerDistributionOutputs;
+    if (Array.isArray(list)) {
+      list.forEach(pd => { if (pd && pd.current) currents.add(pd.current); });
+    }
+  });
+  return Array.from(currents).filter(c => c).sort();
+}
+
+let powerDistVoltageOptions = getAllPowerDistVoltages();
+let powerDistCurrentOptions = getAllPowerDistCurrents();
+
+function updatePowerDistVoltageOptions() {
+  powerDistVoltageOptions = getAllPowerDistVoltages();
+  document.querySelectorAll('.power-dist-voltage-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    powerDistVoltageOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (powerDistVoltageOptions.includes(cur)) sel.value = cur;
+  });
+}
+
+function updatePowerDistCurrentOptions() {
+  powerDistCurrentOptions = getAllPowerDistCurrents();
+  document.querySelectorAll('.power-dist-current-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    powerDistCurrentOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (powerDistCurrentOptions.includes(cur)) sel.value = cur;
+  });
+}
 
 function updatePowerDistTypeOptions() {
   powerDistTypeOptions = getAllPowerDistTypes();
@@ -1656,17 +1710,39 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
   typeSelect.value = type;
   row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
-  const voltInput = document.createElement('input');
-  voltInput.type = 'text';
-  voltInput.placeholder = 'Voltage';
-  voltInput.value = voltage;
-  row.appendChild(createFieldWithLabel(voltInput, 'Voltage'));
+  const voltSelect = document.createElement('select');
+  voltSelect.className = 'power-dist-voltage-select';
+  powerDistVoltageOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    voltSelect.appendChild(opt);
+  });
+  if (voltage && !powerDistVoltageOptions.includes(voltage)) {
+    const opt = document.createElement('option');
+    opt.value = voltage;
+    opt.textContent = voltage;
+    voltSelect.appendChild(opt);
+  }
+  voltSelect.value = voltage;
+  row.appendChild(createFieldWithLabel(voltSelect, 'Voltage'));
 
-  const currInput = document.createElement('input');
-  currInput.type = 'text';
-  currInput.placeholder = 'Current';
-  currInput.value = current;
-  row.appendChild(createFieldWithLabel(currInput, 'Current'));
+  const currSelect = document.createElement('select');
+  currSelect.className = 'power-dist-current-select';
+  powerDistCurrentOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    currSelect.appendChild(opt);
+  });
+  if (current && !powerDistCurrentOptions.includes(current)) {
+    const opt = document.createElement('option');
+    opt.value = current;
+    opt.textContent = current;
+    currSelect.appendChild(opt);
+  }
+  currSelect.value = current;
+  row.appendChild(createFieldWithLabel(currSelect, 'Current'));
 
   const wattInput = document.createElement('input');
   wattInput.type = 'number';
@@ -1714,11 +1790,11 @@ function setPowerDistribution(list) {
 
 function getPowerDistribution() {
   return Array.from(powerDistContainer.querySelectorAll('.form-row')).map(row => {
-    const [typeSel, voltInput, currInput, wattInput, notesInput] = row.querySelectorAll('select, input');
+    const [typeSel, voltSel, currSel, wattInput, notesInput] = row.querySelectorAll('select, input');
     return {
       type: typeSel.value,
-      voltage: voltInput.value,
-      current: currInput.value,
+      voltage: voltSel.value,
+      current: currSel.value,
       wattage: wattInput.value ? parseFloat(wattInput.value) : null,
       notes: notesInput.value
     };
@@ -1947,6 +2023,8 @@ updateMountTypeOptions();
 updatePowerPortOptions();
 setPowerDistribution([]);
 updatePowerDistTypeOptions();
+updatePowerDistVoltageOptions();
+updatePowerDistCurrentOptions();
 setTimecodes([]);
 updateTimecodeTypeOptions();
 
@@ -2533,6 +2611,8 @@ deviceManagerSection.addEventListener("click", (event) => {
       populateSelect(batterySelect, devices.batteries, true);
       updateFizConnectorOptions();
       updatePowerDistTypeOptions();
+      updatePowerDistVoltageOptions();
+      updatePowerDistCurrentOptions();
       updateTimecodeTypeOptions();
       applyFilters();
       updateCalculations();
@@ -2689,6 +2769,8 @@ addDeviceBtn.addEventListener("click", () => {
   updatePlateTypeOptions();
   updatePowerPortOptions();
   updatePowerDistTypeOptions();
+  updatePowerDistVoltageOptions();
+  updatePowerDistCurrentOptions();
   updateRecordingMediaOptions();
   updateTimecodeTypeOptions();
   refreshDeviceLists();
