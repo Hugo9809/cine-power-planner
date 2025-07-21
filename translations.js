@@ -23,6 +23,7 @@ const texts = {
     videoLabel: "Wireless Video:",
     distanceLabel: "Distance Sensor:",
     batteryLabel: "V-Mount Battery:",
+    batteryPlateLabel: "Battery Plate:",
 
     fizLegend: "FIZ (Follow Focus) Systems",
     fizMotorsLabel: "FIZ Motors:",
@@ -187,6 +188,7 @@ const texts = {
     videoLabel: "Video Inalámbrico:",
     distanceLabel: "Sensor de Distancia:",
     batteryLabel: "Batería V-Mount:",
+    batteryPlateLabel: "Placa de Batería:",
 
     fizLegend: "Sistemas FIZ (Follow Focus)",
     fizMotorsLabel: "Motores FIZ:",
@@ -349,6 +351,7 @@ const texts = {
     videoLabel: "Vidéo Sans Fil:",
     distanceLabel: "Capteur de Distance:",
     batteryLabel: "Batterie V-Mount:",
+    batteryPlateLabel: "Plaque Batterie:",
 
     fizLegend: "Systèmes FIZ",
     fizMotorsLabel: "Moteurs FIZ:",
@@ -511,6 +514,7 @@ const texts = {
     videoLabel: "Videofunk:",
     distanceLabel: "Distanzmesser:",
     batteryLabel: "V-Mount Akku:",
+    batteryPlateLabel: "Akkuschacht:",
 
     fizLegend: "FIZ (Follow Focus) Systeme",
     fizMotorsLabel: "FIZ Motoren:",
