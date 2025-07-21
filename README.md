@@ -107,7 +107,7 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
     - Add new devices or edit/delete existing ones
     - Export full list as JSON
     - **Import Database**: Use the "Import Database" button and select a previously exported JSON file to load device data into the application. This will overwrite existing device data.
-    - **Export & Revert**: "Export and Revert to default Database" saves the current data and resets the database to its default state.
+    - **Export & Revert**: "Export and Revert to default Database" downloads the current data, clears the saved database and reloads the page so the defaults from `data.js` are used.
 
 ---
 
