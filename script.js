@@ -466,7 +466,6 @@ function setLanguage(lang) {
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
-  cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
   cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
   // Toggle device manager button text (depends on current visibility)
@@ -556,7 +555,7 @@ const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
 const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaInput = document.getElementById("cameraMedia");
-const cameraLensMountInput = document.getElementById("cameraLensMount");
+const lensMountContainer = document.getElementById("lensMountContainer");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
@@ -975,6 +974,108 @@ function clearViewfinders() {
   setViewfinders([]);
 }
 
+function getAllMountTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    if (Array.isArray(cam.lensMount)) {
+      cam.lensMount.forEach(lm => {
+        if (lm && lm.type) types.add(lm.type);
+      });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let mountTypeOptions = getAllMountTypes();
+
+function updateMountTypeOptions() {
+  mountTypeOptions = getAllMountTypes();
+  document.querySelectorAll('.lens-mount-type-select').forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    mountTypeOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (mountTypeOptions.includes(current)) sel.value = current;
+  });
+}
+
+function createLensMountRow(type = '', mount = 'native') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const typeSelect = document.createElement('select');
+  typeSelect.className = 'lens-mount-type-select';
+  mountTypeOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !mountTypeOptions.includes(type)) {
+    const opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(typeSelect);
+
+  const mountSelect = document.createElement('select');
+  ['native', 'adapted'].forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    mountSelect.appendChild(opt);
+  });
+  mountSelect.value = mount || 'native';
+  row.appendChild(mountSelect);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createLensMountRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (lensMountContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setLensMounts(list) {
+  lensMountContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const { type = '', mount = 'native' } = item || {};
+      lensMountContainer.appendChild(createLensMountRow(type, mount));
+    });
+  } else {
+    lensMountContainer.appendChild(createLensMountRow());
+  }
+}
+
+function getLensMounts() {
+  return Array.from(lensMountContainer.querySelectorAll('.form-row')).map(row => {
+    const [typeSel, mountSel] = row.querySelectorAll('select');
+    return { type: typeSel.value, mount: mountSel.value };
+  });
+}
+
+function clearLensMounts() {
+  setLensMounts([]);
+}
+
 
 // Populate dropdowns with device options
 function populateSelect(selectElem, optionsObj, includeNone=true) {
@@ -1088,6 +1189,8 @@ updateFizConnectorOptions();
 setViewfinders([]);
 setBatteryPlates([]);
 updatePlateTypeOptions();
+setLensMounts([]);
+updateMountTypeOptions();
 
 // Set default selections for dropdowns
 
@@ -1628,7 +1731,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
       setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
-      cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
+      setLensMounts(deviceData.lensMount || []);
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
       setVideoOutputs(deviceData.videoOutputs || []);
       setFizConnectors(deviceData.fizConnectors || []);
@@ -1702,7 +1805,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraBatteryLifeInput.value = "";
   clearBatteryPlates();
   cameraMediaInput.value = "";
-  cameraLensMountInput.value = "";
+  clearLensMounts();
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   clearFizConnectors();
@@ -1798,7 +1901,7 @@ addDeviceBtn.addEventListener("click", () => {
       fizConnectors: fizCon,
       recordingMedia: cameraMediaInput.value ? cameraMediaInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
       viewfinder: viewfinder,
-      lensMount: cameraLensMountInput.value ? cameraLensMountInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+      lensMount: getLensMounts(),
       timecode: timecode
     };
   } else {
@@ -1826,7 +1929,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraBatteryLifeInput.value = "";
   clearBatteryPlates();
   cameraMediaInput.value = "";
-  cameraLensMountInput.value = "";
+  clearLensMounts();
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   clearFizConnectors();

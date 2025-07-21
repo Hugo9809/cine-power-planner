@@ -1,4 +1,4 @@
-let devices = {
+let devices={
   "cameras": {
     "Arri Alexa Mini LF": {
       "powerDrawWatts": 89,
@@ -81,13 +81,42 @@ let devices = {
         }
       ],
       "lensMount": [
-        "ARRI LPL (Native)",
-        "ARRI PL (adapted)",
-        "ARRI EF (adapted)",
-        "LEITZ M-MOUNT (adapted)",
-        "Panavision PV (adapted)",
-        "Panavision PV70 (adapted)",
-        "Vantage XPL52 (adapted)"
+        {
+          "type": "LPL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        },
+        {
+          "type": "EF",
+          "mount": "adapted"
+        },
+        {
+          "type": "M",
+          "mount": "adapted"
+        },
+        {
+          "type": "PV",
+          "mount": "adapted"
+        },
+        {
+          "type": "PV70",
+          "mount": "adapted"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        },
+        {
+          "type": "XPL52",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -181,10 +210,26 @@ let devices = {
         }
       ],
       "lensMount": [
-        "ARRI PL (Native)",
-        "ARRI EF (adapted)",
-        "ARRI B4 (adapted)",
-        "ARRI LPL (adapted)"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "adapted"
+        },
+        {
+          "type": "B4",
+          "mount": "adapted"
+        },
+        {
+          "type": "LPL",
+          "mount": "adapted"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -284,9 +329,22 @@ let devices = {
         }
       ],
       "lensMount": [
-        "ARRI LPL (Native)",
-        "ARRI PL (adapted)",
-        "ARRI EF (adapted)"
+        {
+          "type": "LPL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        },
+        {
+          "type": "EF",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -385,9 +443,22 @@ let devices = {
         }
       ],
       "lensMount": [
-        "B4 lens mount",
-        "PL mount",
-        "Canon EF mount"
+        {
+          "type": "B4",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -495,9 +566,26 @@ let devices = {
         }
       ],
       "lensMount": [
-        "PL Mount (Native)",
-        "E-mount (lever lock type, without supplied PL lens mount adaptor)",
-        "LPL Mount (via Leitz adapter)"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "E-mount",
+          "mount": "native"
+        },
+        {
+          "type": "LPL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -609,9 +697,26 @@ let devices = {
         }
       ],
       "lensMount": [
-        "PL Mount (Native)",
-        "E-mount (lever lock type, without supplied PL lens mount adaptor)",
-        "LPL Mount (via Leitz adapter)"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "E-mount",
+          "mount": "native"
+        },
+        {
+          "type": "LPL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -699,8 +804,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Sony E-mount (Native)",
-        "PL (adapted)"
+        {
+          "type": "E-mount",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -782,7 +893,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Sony E-mount (Native)"
+        {
+          "type": "E-mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -884,8 +998,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Sony E-mount (Native)",
-        "PL (adapted)"
+        {
+          "type": "E-mount",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -981,8 +1101,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Sony E-mount (Native)",
-        "PL (adapted)"
+        {
+          "type": "E-mount",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -1049,7 +1175,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon RF mount"
+        {
+          "type": "RF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1146,9 +1279,22 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon RF mount (Native)",
-        "PL (adapted)",
-        "EF (adapted)"
+        {
+          "type": "RF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        },
+        {
+          "type": "EF",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -1231,8 +1377,18 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon EF mount (Native)",
-        "PL Mount (Cooke/I Technology) (User changeable option)"
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1331,9 +1487,34 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon RF mount (Native)",
-        "PL mount (via PL-RF Mount Adapter)",
-        "EF mount (via EF-EOS R Mount Adapter)"
+        {
+          "type": "RF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "RF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1422,8 +1603,18 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon EF mount (Native)",
-        "PL mount (User changeable option)"
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1501,7 +1692,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Active MFT mount"
+        {
+          "type": "MFT",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1579,7 +1773,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Active EF mount"
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1657,7 +1858,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Active EF mount"
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1741,7 +1949,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Active EF Mount (Native)"
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1833,9 +2048,18 @@ let devices = {
         }
       ],
       "lensMount": [
-        "PL mount (Included)",
-        "EF (optional)",
-        "F (optional)"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -1941,7 +2165,22 @@ let devices = {
         }
       ],
       "lensMount": [
-        "User-interchangeable PL, LPL, EF, Hasselblad"
+        {
+          "type": "LPL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        },
+        {
+          "type": "Hasselblad",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2014,7 +2253,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Active L-Mount"
+        {
+          "type": "L-Mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2087,7 +2329,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Active L-Mount"
+        {
+          "type": "L-Mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2181,9 +2426,18 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon RF Lens Mount (Native, locking)",
-        "Canon EF (adapted)",
-        "ARRI PL (adapted)"
+        {
+          "type": "RF",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "adapted"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -2256,7 +2510,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon RF Lens Mount (Native)"
+        {
+          "type": "RF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2342,7 +2599,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2428,7 +2692,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2514,7 +2785,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2600,7 +2878,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2667,7 +2952,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2734,7 +3026,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2801,7 +3100,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2868,7 +3174,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2931,7 +3244,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -2994,7 +3314,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3057,7 +3384,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3120,7 +3454,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3183,7 +3524,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3246,7 +3594,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3309,7 +3664,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Interchangeable PL, EF"
+        {
+          "type": "PL",
+          "mount": "native"
+        },
+        {
+          "type": "EF",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3385,7 +3747,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "L-Mount (Native)"
+        {
+          "type": "L-Mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3462,7 +3827,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Micro Four Thirds (Native)"
+        {
+          "type": "MFT",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3539,7 +3907,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Sony E-mount (Native)"
+        {
+          "type": "E-mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3616,7 +3987,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Fujifilm X-mount (Native)"
+        {
+          "type": "X-mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3725,9 +4099,18 @@ let devices = {
         }
       ],
       "lensMount": [
-        "DJI DL Mount (Native)",
-        "PL (adapted)",
-        "E-mount (adapted)"
+        {
+          "type": "DL",
+          "mount": "native"
+        },
+        {
+          "type": "PL",
+          "mount": "adapted"
+        },
+        {
+          "type": "E-mount",
+          "mount": "adapted"
+        }
       ],
       "timecode": [
         {
@@ -3806,7 +4189,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Sony E-mount (Native)"
+        {
+          "type": "E-mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3878,7 +4264,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Leica Camera AG L-Mount (Native)"
+        {
+          "type": "L-Mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -3944,7 +4333,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Sony E-mount (Native)"
+        {
+          "type": "E-mount",
+          "mount": "native"
+        }
       ],
       "timecode": []
     },
@@ -4013,7 +4405,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Fujifilm X-mount (Native)"
+        {
+          "type": "X-mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -4089,7 +4484,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon RF mount (Native)"
+        {
+          "type": "RF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -4161,7 +4563,14 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Canon RF mount (Native)"
+        {
+          "type": "RF",
+          "mount": "native"
+        },
+        {
+          "type": "F",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -4234,7 +4643,10 @@ let devices = {
         }
       ],
       "lensMount": [
-        "Leica L bayonet (Native)"
+        {
+          "type": "L-Mount",
+          "mount": "native"
+        }
       ],
       "timecode": [
         {
@@ -4938,6 +5350,4 @@ let devices = {
     }
   }
 };
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = devices;
-}
+if (typeof module !== "undefined" && module.exports) { module.exports = devices; }
