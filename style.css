@@ -55,6 +55,20 @@ p {
   margin: 5px 5px 0 0;
 }
 
+/* Small wrapper to show labels even when a value is present */
+.field-with-label {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-right: 5px;
+}
+.field-with-label::before {
+  content: attr(data-label);
+  font-size: 0.75em;
+  color: #555;
+  margin-bottom: 2px;
+}
+
 /* smaller width for search inputs */
 .form-row .filter-input {
   flex: 0 0 120px;
@@ -401,6 +415,9 @@ body.dark-mode .device-category h4 {
 
 body.dark-mode .device-ul li {
   border-bottom: 1px dashed #ffffff;
+}
+body.dark-mode .field-with-label::before {
+  color: #ccc;
 }
 /* Responsive layout adjustments */
 @media (max-width: 600px) {
