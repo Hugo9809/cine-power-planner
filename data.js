@@ -344,7 +344,7 @@ let devices={
           "notes": "Black burst/tri-level sync"
         },
         {
-          "type": "EXT (LEMO 7-pin)",
+          "type": "EXT LEMO 7-pin",
           "notes": "For multi-camera sync"
         }
       ]
@@ -449,7 +449,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "Timecode In/Out",
+          "type": "BNC",
           "notes": "Yes"
         }
       ]
@@ -922,7 +922,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "Multi-function shoe",
+          "type": "Multi-interface shoe",
           "notes": "Via XLR Handle Unit for timecode input"
         }
       ]
@@ -1217,7 +1217,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "BNC / HDMI"
+          "type": "BNC"
         }
       ]
     },
@@ -1338,7 +1338,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "BNC terminal",
+          "type": "BNC",
           "notes": "Time Code In/Out"
         }
       ]
@@ -1426,7 +1426,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "Time code",
+          "type": "BNC",
           "notes": "Yes (via BNC)"
         },
         {
@@ -1545,7 +1545,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "DIN1.0 / 2.3",
+          "type": "DIN 1.0/2.3",
           "notes": "Input / Output"
         },
         {
@@ -1639,7 +1639,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "Time code",
+          "type": "BNC",
           "notes": "Yes (via BNC)"
         },
         {
@@ -1795,7 +1795,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "3.5 mm TRS / mini jack",
+          "type": "3.5mm Stereo Input",
           "notes": "Also for LTC timecode"
         },
         {
@@ -4233,7 +4233,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "BNC (Timecode)",
+          "type": "BNC",
           "notes": "Data Input/Output [2.3]"
         }
       ]
@@ -4587,7 +4587,7 @@ let devices={
       ],
       "timecode": [
         {
-          "type": "Timecode interface",
+          "type": "Timecode Interface",
           "notes": "Timecode synchronization of image and sound [S7.1, S7.2]"
         }
       ]
