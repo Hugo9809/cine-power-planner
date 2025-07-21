@@ -9,6 +9,29 @@ if (window.defaultDevices === undefined) {
   unifyDevices(window.defaultDevices);
 }
 
+const VIDEO_OUTPUT_TYPES = [
+  '3G-SDI',
+  '6G-SDI',
+  '12G-SDI',
+  'Mini BNC',
+  'HDMI',
+  'Mini HDMI',
+  'Micro HDMI'
+];
+
+function normalizeVideoType(type) {
+  if (!type) return '';
+  const t = String(type).toLowerCase();
+  if (t.includes('12g')) return '12G-SDI';
+  if (t.includes('6g')) return '6G-SDI';
+  if (t.includes('3g') || t.includes('hd-sdi')) return '3G-SDI';
+  if (t.includes('mini') && t.includes('bnc')) return 'Mini BNC';
+  if (t.includes('micro') && t.includes('hdmi')) return 'Micro HDMI';
+  if (t.includes('mini') && t.includes('hdmi')) return 'Mini HDMI';
+  if (t.includes('hdmi')) return 'HDMI';
+  return '';
+}
+
 // Load any saved device data from localStorage
 const storedDevices = loadDeviceData();
 if (storedDevices) {
@@ -54,7 +77,16 @@ function unifyDevices(data) {
     if (cam.power) {
       cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, { type: '', voltage: '', current: '', wattage: null, notes: '' });
     }
-    cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' });
+    cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' }).flatMap(vo => {
+      const norm = normalizeVideoType(vo.type);
+      if (!VIDEO_OUTPUT_TYPES.includes(norm)) return [];
+      const count = parseInt(vo.count, 10);
+      const num = Number.isFinite(count) && count > 0 ? count : 1;
+      const notes = vo.notes || '';
+      const arr = [];
+      for (let i = 0; i < num; i++) arr.push({ type: norm, notes });
+      return arr;
+    });
     cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' });
     cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', connector: '', notes: '' });
   });
