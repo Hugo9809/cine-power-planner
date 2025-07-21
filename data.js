@@ -943,12 +943,7 @@ let devices={
           "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
-      "timecode": [
-        {
-          "type": "Multi-interface shoe",
-          "notes": "Via XLR Handle Unit for timecode input"
-        }
-      ]
+      "timecode": []
     },
     "Sony FX6": {
       "powerDrawWatts": 18,
@@ -1752,10 +1747,6 @@ let devices={
         {
           "type": "3.5mm Stereo Input",
           "notes": "Can also be used for Timecode input"
-        },
-        {
-          "type": "Internal Clock",
-          "notes": "Less than 1 frame drift every 8 hours"
         }
       ]
     },
@@ -1830,10 +1821,6 @@ let devices={
         {
           "type": "3.5mm Stereo Input",
           "notes": "Also for LTC timecode"
-        },
-        {
-          "type": "Internal Clock",
-          "notes": "Less than 1 frame drift every 8 hours"
         }
       ]
     },
@@ -1908,10 +1895,6 @@ let devices={
         {
           "type": "3.5mm Stereo Input",
           "notes": "Can also be used for Timecode input"
-        },
-        {
-          "type": "Internal Clock",
-          "notes": "Less than 1 frame drift every 8 hours"
         }
       ]
     },
@@ -1990,10 +1973,6 @@ let devices={
         }
       ],
       "timecode": [
-        {
-          "type": "Internal Clock",
-          "notes": "Less than 1 frame drift every 8 hours"
-        },
         {
           "type": "Analog Audio Inputs",
           "notes": "2x mini XLR, 1x 3.5mm Stereo Input can be used for Timecode input"
@@ -2097,10 +2076,6 @@ let devices={
         {
           "type": "BNC",
           "notes": "Timecode Input (Reference Inputs: Tri-Sync/Black Burst/Timecode)"
-        },
-        {
-          "type": "Internal Clock",
-          "notes": "Highly accurate, less than 1 frame drift every 8 hours"
         }
       ]
     },
@@ -3944,12 +3919,7 @@ let devices={
           "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
-      "timecode": [
-        {
-          "type": "Multi-interface shoe",
-          "notes": "Via XLR Handle Unit for timecode input"
-        }
-      ]
+      "timecode": []
     },
     "Fujifilm X-H2S": {
       "powerDrawWatts": 15,
