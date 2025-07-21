@@ -79,39 +79,48 @@ let devices={
       "lensMount": [
         {
           "type": "LPL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "M",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "No electronic lens communication"
         },
         {
           "type": "PV",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Panavision lens data"
         },
         {
           "type": "PV70",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Panavision lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "XPL52",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -204,23 +213,28 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "B4",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Analog servo connectors, limited lens data"
         },
         {
           "type": "LPL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -319,19 +333,23 @@ let devices={
       "lensMount": [
         {
           "type": "LPL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -428,19 +446,23 @@ let devices={
       "lensMount": [
         {
           "type": "B4",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Analog servo connectors, limited lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -566,23 +588,28 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         },
         {
           "type": "LPL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -712,23 +739,28 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         },
         {
           "type": "LPL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -820,11 +852,13 @@ let devices={
       "lensMount": [
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -905,7 +939,8 @@ let devices={
       "lensMount": [
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
       "timecode": [
@@ -1018,11 +1053,13 @@ let devices={
       "lensMount": [
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -1122,11 +1159,13 @@ let devices={
       "lensMount": [
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -1192,11 +1231,13 @@ let devices={
       "lensMount": [
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -1305,19 +1346,23 @@ let devices={
       "lensMount": [
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -1397,15 +1442,18 @@ let devices={
       "lensMount": [
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -1496,31 +1544,38 @@ let devices={
       "lensMount": [
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -1606,15 +1661,18 @@ let devices={
       "lensMount": [
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -1686,7 +1744,8 @@ let devices={
       "lensMount": [
         {
           "type": "MFT",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Micro Four Thirds electronic lens data"
         }
       ],
       "timecode": [
@@ -1758,11 +1817,13 @@ let devices={
       "lensMount": [
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -1834,11 +1895,13 @@ let devices={
       "lensMount": [
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -1917,11 +1980,13 @@ let devices={
       "lensMount": [
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -2014,15 +2079,18 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -2137,19 +2205,23 @@ let devices={
       "lensMount": [
         {
           "type": "LPL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
         },
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "Hasselblad",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Hasselblad electronic lens data"
         }
       ],
       "timecode": [
@@ -2216,7 +2288,8 @@ let devices={
       "lensMount": [
         {
           "type": "L-Mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports L-Mount electronic lens data"
         }
       ],
       "timecode": [
@@ -2283,7 +2356,8 @@ let devices={
       "lensMount": [
         {
           "type": "L-Mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports L-Mount electronic lens data"
         }
       ],
       "timecode": [
@@ -2372,15 +2446,18 @@ let devices={
       "lensMount": [
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         },
         {
           "type": "EF",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Canon EF electronic lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -2451,7 +2528,8 @@ let devices={
       "lensMount": [
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         }
       ],
       "timecode": [
@@ -2550,11 +2628,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -2653,11 +2733,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -2756,11 +2838,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -2859,11 +2943,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -2930,11 +3016,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3001,11 +3089,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3072,11 +3162,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3143,11 +3235,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3210,11 +3304,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3277,11 +3373,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3344,11 +3442,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3411,11 +3511,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3478,11 +3580,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3545,11 +3649,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3612,11 +3718,13 @@ let devices={
       "lensMount": [
         {
           "type": "PL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "EF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon EF electronic lens data"
         }
       ],
       "timecode": [
@@ -3690,7 +3798,8 @@ let devices={
       "lensMount": [
         {
           "type": "L-Mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports L-Mount electronic lens data"
         }
       ],
       "timecode": []
@@ -3760,7 +3869,8 @@ let devices={
       "lensMount": [
         {
           "type": "MFT",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Micro Four Thirds electronic lens data"
         }
       ],
       "timecode": []
@@ -3830,7 +3940,8 @@ let devices={
       "lensMount": [
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
       "timecode": [
@@ -3905,7 +4016,8 @@ let devices={
       "lensMount": [
         {
           "type": "X-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Fujifilm X electronic lens data"
         }
       ],
       "timecode": []
@@ -4015,15 +4127,18 @@ let devices={
       "lensMount": [
         {
           "type": "DL",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports DJI electronic lens data"
         },
         {
           "type": "PL",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
           "type": "E-mount",
-          "mount": "adapted"
+          "mount": "adapted",
+          "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
       "timecode": []
@@ -4095,7 +4210,8 @@ let devices={
       "lensMount": [
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
       "timecode": [
@@ -4164,7 +4280,8 @@ let devices={
       "lensMount": [
         {
           "type": "L-Mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports L-Mount electronic lens data"
         }
       ],
       "timecode": [
@@ -4228,7 +4345,8 @@ let devices={
       "lensMount": [
         {
           "type": "E-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
       "timecode": []
@@ -4295,7 +4413,8 @@ let devices={
       "lensMount": [
         {
           "type": "X-mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Fujifilm X electronic lens data"
         }
       ],
       "timecode": []
@@ -4364,11 +4483,13 @@ let devices={
       "lensMount": [
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": []
@@ -4433,11 +4554,13 @@ let devices={
       "lensMount": [
         {
           "type": "RF",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Canon RF electronic lens data"
         },
         {
           "type": "F",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": []
@@ -4503,7 +4626,8 @@ let devices={
       "lensMount": [
         {
           "type": "L-Mount",
-          "mount": "native"
+          "mount": "native",
+          "notes": "Supports L-Mount electronic lens data"
         }
       ],
       "timecode": []
