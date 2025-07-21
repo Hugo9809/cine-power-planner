@@ -31,6 +31,7 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
+    require('../translations.js');
     script = require('../script.js');
   });
 
