@@ -685,6 +685,209 @@ function updateFizConnectorOptions() {
   });
 }
 
+function getAllMotorConnectorTypes() {
+  const types = new Set();
+  Object.values(devices.fiz?.motors || {}).forEach(m => {
+    if (m && m.connector) types.add(m.connector);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+let motorConnectorOptions = getAllMotorConnectorTypes();
+
+function updateMotorConnectorOptions() {
+  motorConnectorOptions = getAllMotorConnectorTypes();
+  if (motorConnectorInput) {
+    const cur = motorConnectorInput.value;
+    motorConnectorInput.innerHTML = '';
+    addEmptyOption(motorConnectorInput);
+    motorConnectorOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      motorConnectorInput.appendChild(opt);
+    });
+    if (motorConnectorOptions.includes(cur)) motorConnectorInput.value = cur;
+  }
+}
+
+function getAllControllerConnectors() {
+  const types = new Set();
+  Object.values(devices.fiz?.controllers || {}).forEach(c => {
+    if (c && c.FIZ_connector) types.add(c.FIZ_connector);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+function getAllControllerPowerSources() {
+  const types = new Set();
+  Object.values(devices.fiz?.controllers || {}).forEach(c => {
+    if (c && c.power_source) types.add(c.power_source);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+function getAllControllerBatteryTypes() {
+  const types = new Set();
+  Object.values(devices.fiz?.controllers || {}).forEach(c => {
+    if (c && c.battery_type) types.add(c.battery_type);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+function getAllControllerConnectivity() {
+  const types = new Set();
+  Object.values(devices.fiz?.controllers || {}).forEach(c => {
+    if (c && c.connectivity) types.add(c.connectivity);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+let controllerConnectorOptions = getAllControllerConnectors();
+let controllerPowerOptions = getAllControllerPowerSources();
+let controllerBatteryOptions = getAllControllerBatteryTypes();
+let controllerConnectivityOptions = getAllControllerConnectivity();
+
+function updateControllerConnectorOptions() {
+  controllerConnectorOptions = getAllControllerConnectors();
+  if (controllerConnectorInput) {
+    const cur = controllerConnectorInput.value;
+    controllerConnectorInput.innerHTML = '';
+    addEmptyOption(controllerConnectorInput);
+    controllerConnectorOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerConnectorInput.appendChild(opt);
+    });
+    if (controllerConnectorOptions.includes(cur)) controllerConnectorInput.value = cur;
+  }
+}
+
+function updateControllerPowerOptions() {
+  controllerPowerOptions = getAllControllerPowerSources();
+  if (controllerPowerInput) {
+    const cur = controllerPowerInput.value;
+    controllerPowerInput.innerHTML = '';
+    addEmptyOption(controllerPowerInput);
+    controllerPowerOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerPowerInput.appendChild(opt);
+    });
+    if (controllerPowerOptions.includes(cur)) controllerPowerInput.value = cur;
+  }
+}
+
+function updateControllerBatteryOptions() {
+  controllerBatteryOptions = getAllControllerBatteryTypes();
+  if (controllerBatteryInput) {
+    const cur = controllerBatteryInput.value;
+    controllerBatteryInput.innerHTML = '';
+    addEmptyOption(controllerBatteryInput);
+    controllerBatteryOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerBatteryInput.appendChild(opt);
+    });
+    if (controllerBatteryOptions.includes(cur)) controllerBatteryInput.value = cur;
+  }
+}
+
+function updateControllerConnectivityOptions() {
+  controllerConnectivityOptions = getAllControllerConnectivity();
+  if (controllerConnectivityInput) {
+    const cur = controllerConnectivityInput.value;
+    controllerConnectivityInput.innerHTML = '';
+    addEmptyOption(controllerConnectivityInput);
+    controllerConnectivityOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerConnectivityInput.appendChild(opt);
+    });
+    if (controllerConnectivityOptions.includes(cur)) controllerConnectivityInput.value = cur;
+  }
+}
+
+function getAllDistanceConnections() {
+  const types = new Set();
+  Object.values(devices.fiz?.distance || {}).forEach(d => {
+    if (d && d.connection_compatibility) types.add(d.connection_compatibility);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+function getAllDistanceMethods() {
+  const types = new Set();
+  Object.values(devices.fiz?.distance || {}).forEach(d => {
+    if (d && d.measurement_method) types.add(d.measurement_method);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+function getAllDistanceDisplays() {
+  const types = new Set();
+  Object.values(devices.fiz?.distance || {}).forEach(d => {
+    if (d && d.output_display) types.add(d.output_display);
+  });
+  return Array.from(types).filter(Boolean).sort();
+}
+
+let distanceConnectionOptions = getAllDistanceConnections();
+let distanceMethodOptions = getAllDistanceMethods();
+let distanceDisplayOptions = getAllDistanceDisplays();
+
+function updateDistanceConnectionOptions() {
+  distanceConnectionOptions = getAllDistanceConnections();
+  if (distanceConnectionInput) {
+    const cur = distanceConnectionInput.value;
+    distanceConnectionInput.innerHTML = '';
+    addEmptyOption(distanceConnectionInput);
+    distanceConnectionOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      distanceConnectionInput.appendChild(opt);
+    });
+    if (distanceConnectionOptions.includes(cur)) distanceConnectionInput.value = cur;
+  }
+}
+
+function updateDistanceMethodOptions() {
+  distanceMethodOptions = getAllDistanceMethods();
+  if (distanceMethodInput) {
+    const cur = distanceMethodInput.value;
+    distanceMethodInput.innerHTML = '';
+    addEmptyOption(distanceMethodInput);
+    distanceMethodOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      distanceMethodInput.appendChild(opt);
+    });
+    if (distanceMethodOptions.includes(cur)) distanceMethodInput.value = cur;
+  }
+}
+
+function updateDistanceDisplayOptions() {
+  distanceDisplayOptions = getAllDistanceDisplays();
+  if (distanceOutputInput) {
+    const cur = distanceOutputInput.value;
+    distanceOutputInput.innerHTML = '';
+    addEmptyOption(distanceOutputInput);
+    distanceDisplayOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      distanceOutputInput.appendChild(opt);
+    });
+    if (distanceDisplayOptions.includes(cur)) distanceOutputInput.value = cur;
+  }
+}
+
 // Wrap a form field with a div containing a data-label attribute for styling.
 function createFieldWithLabel(el, label) {
   const wrapper = document.createElement('div');
@@ -1974,6 +2177,14 @@ setMonitorVideoInputs([]);
 setMonitorVideoOutputs([]);
 setFizConnectors([]);
 updateFizConnectorOptions();
+updateMotorConnectorOptions();
+updateControllerConnectorOptions();
+updateControllerPowerOptions();
+updateControllerBatteryOptions();
+updateControllerConnectivityOptions();
+updateDistanceConnectionOptions();
+updateDistanceMethodOptions();
+updateDistanceDisplayOptions();
 setViewfinders([]);
 setBatteryPlates([]);
 setRecordingMedia([]);
@@ -1988,6 +2199,9 @@ updatePowerDistVoltageOptions();
 updatePowerDistCurrentOptions();
 setTimecodes([]);
 updateTimecodeTypeOptions();
+updateDistanceConnectionOptions();
+updateDistanceMethodOptions();
+updateDistanceDisplayOptions();
 
 // Set default selections for dropdowns
 
@@ -2672,11 +2886,19 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
-      updateFizConnectorOptions();
-      updatePowerDistTypeOptions();
-      updatePowerDistVoltageOptions();
-      updatePowerDistCurrentOptions();
-      updateTimecodeTypeOptions();
+        updateFizConnectorOptions();
+        updateMotorConnectorOptions();
+        updateControllerConnectorOptions();
+        updateControllerPowerOptions();
+        updateControllerBatteryOptions();
+        updateControllerConnectivityOptions();
+        updatePowerDistTypeOptions();
+        updatePowerDistVoltageOptions();
+        updatePowerDistCurrentOptions();
+        updateTimecodeTypeOptions();
+        updateDistanceConnectionOptions();
+        updateDistanceMethodOptions();
+        updateDistanceDisplayOptions();
       applyFilters();
       updateCalculations();
     }
@@ -3134,6 +3356,14 @@ importFileInput.addEventListener("change", (event) => {
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
         updateFizConnectorOptions();
+        updateMotorConnectorOptions();
+        updateControllerConnectorOptions();
+        updateControllerPowerOptions();
+        updateControllerBatteryOptions();
+        updateControllerConnectivityOptions();
+        updateDistanceConnectionOptions();
+        updateDistanceMethodOptions();
+        updateDistanceDisplayOptions();
         applyFilters();
         updateCalculations();
 
