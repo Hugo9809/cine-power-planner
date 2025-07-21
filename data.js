@@ -8,10 +8,6 @@ let devices={
           "portType": "LEMO 8-pin (DC In / BAT)",
           "powerDrawWatts": 89
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "B-Mount",
@@ -137,10 +133,6 @@ let devices={
           "portType": "LEMO 8-pin (BAT)",
           "powerDrawWatts": 84
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -254,10 +246,6 @@ let devices={
           "portType": "BAT (LEMO 8-pin)",
           "powerDrawWatts": 110
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "B-Mount",
@@ -369,10 +357,6 @@ let devices={
           "portType": "XLR 4-pin (main input)",
           "powerDrawWatts": 50
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -477,10 +461,6 @@ let devices={
           "voltageRange": "DC 12 V (11.0 to 17.0 V) / DC 24 V (22.0 to 32.0 V)",
           "portType": "XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)",
           "powerDrawWatts": 76
-        },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -632,10 +612,6 @@ let devices={
           "portType": "XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)",
           "powerDrawWatts": 60
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -786,10 +762,6 @@ let devices={
           "portType": "DC IN (Barrel)",
           "powerDrawWatts": 66
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -886,10 +858,6 @@ let devices={
           "portType": "USB-C (Power Delivery) / Battery Slot",
           "powerDrawWatts": 7.3
         },
-        "internalBattery": {
-          "type": "Sony NP-FZ100",
-          "batteryLifeMinutes": 135
-        },
         "batteryPlateSupport": [
           {
             "type": "NP-FZ100",
@@ -966,10 +934,6 @@ let devices={
           "voltageRange": "19.5V DC",
           "portType": "DC IN (Barrel)",
           "powerDrawWatts": 18
-        },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -1092,10 +1056,6 @@ let devices={
           "portType": "DC IN (Barrel)",
           "powerDrawWatts": 35.2
         },
-        "internalBattery": {
-          "type": "BP-U (e.g., BP-U35, BP-U70, BP-U100)",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "BP-U",
@@ -1200,10 +1160,6 @@ let devices={
           "portType": "DC Input",
           "powerDrawWatts": 14.6
         },
-        "internalBattery": {
-          "type": "BP-A30 (Supplied) / BP-A60 (Optional)",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -1272,10 +1228,6 @@ let devices={
           "voltageRange": "19.5V DC",
           "portType": "DC IN 24V Terminal",
           "powerDrawWatts": 19.6
-        },
-        "internalBattery": {
-          "type": "Canon BP-A30N (supplied) / BP-A60N / BP-A30 / BP-A60 (optional)",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -1399,10 +1351,6 @@ let devices={
           "portType": "XLR 4-pin jack",
           "powerDrawWatts": 31
         },
-        "internalBattery": {
-          "type": "BP-A60 (Supplied)",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -1494,10 +1442,6 @@ let devices={
           "voltageRange": "11.5V-20V DC",
           "portType": "4-pin XLR / DC IN 12V",
           "powerDrawWatts": 32.5
-        },
-        "internalBattery": {
-          "type": "BP-A60N (Supplied) / BP-A30N / BP-A30 / BP-A60 (Optional)",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -1618,10 +1562,6 @@ let devices={
           "portType": "XLR 4-pin jack",
           "powerDrawWatts": 63
         },
-        "internalBattery": {
-          "type": "BP-A60 (Supplied)",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -1716,10 +1656,6 @@ let devices={
           "portType": "2-pin locking connector",
           "powerDrawWatts": 22
         },
-        "internalBattery": {
-          "type": "Canon LP-E6",
-          "batteryLifeMinutes": 60
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -1795,10 +1731,6 @@ let devices={
           "voltageRange": "12V - 20V DC",
           "portType": "2-pin locking connector",
           "powerDrawWatts": 26
-        },
-        "internalBattery": {
-          "type": "NP-F570",
-          "batteryLifeMinutes": 45
         },
         "batteryPlateSupport": [
           {
@@ -1880,10 +1812,6 @@ let devices={
           "portType": "2-pin locking connector",
           "powerDrawWatts": 26
         },
-        "internalBattery": {
-          "type": "Canon LP-E6",
-          "batteryLifeMinutes": 45
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -1963,10 +1891,6 @@ let devices={
           "voltageRange": "12V-20V",
           "portType": "2-pin locking connector / 2-pin LEMO",
           "powerDrawWatts": 26
-        },
-        "internalBattery": {
-          "type": "NP-F570",
-          "batteryLifeMinutes": 60
         },
         "batteryPlateSupport": [
           {
@@ -2054,10 +1978,6 @@ let devices={
           "voltageRange": "12V DC",
           "portType": "12-pin Molex connector (at battery plate rear) / 4-pin XLR (external power)",
           "powerDrawWatts": 55
-        },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -2159,10 +2079,6 @@ let devices={
           "voltageRange": "20V-30V DC",
           "portType": "2-pin XLR",
           "powerDrawWatts": 100
-        },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -2287,10 +2203,6 @@ let devices={
           "portType": "2-pin locking connector",
           "powerDrawWatts": 60
         },
-        "internalBattery": {
-          "type": "NP-F570",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -2362,10 +2274,6 @@ let devices={
           "portType": "2-pin locking connector",
           "powerDrawWatts": 90
         },
-        "internalBattery": {
-          "type": "NP-F570",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -2436,10 +2344,6 @@ let devices={
           "voltageRange": "+7 to +17 V DC",
           "portType": "2-pin DC-Input",
           "powerDrawWatts": 37
-        },
-        "internalBattery": {
-          "type": "Canon BP-900 Series",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -2538,10 +2442,6 @@ let devices={
           "portType": "2-pin DC-Input",
           "powerDrawWatts": 45
         },
-        "internalBattery": {
-          "type": "REDVOLT NANO",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -2612,10 +2512,6 @@ let devices={
           "voltageRange": "24V DC",
           "portType": "4-pin XLR / V-Lock",
           "powerDrawWatts": 75
-        },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -2720,10 +2616,6 @@ let devices={
           "portType": "4-pin XLR / V-Lock",
           "powerDrawWatts": 75
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -2826,10 +2718,6 @@ let devices={
           "voltageRange": "24V DC",
           "portType": "4-pin XLR / V-Lock",
           "powerDrawWatts": 75
-        },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -2934,10 +2822,6 @@ let devices={
           "portType": "4-pin XLR / V-Lock",
           "powerDrawWatts": 75
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -3041,10 +2925,6 @@ let devices={
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
         },
-        "internalBattery": {
-          "type": "REDVOLT Micro-V",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -3115,10 +2995,6 @@ let devices={
           "voltageRange": "11.5V-17V DC",
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
-        },
-        "internalBattery": {
-          "type": "REDVOLT Micro-V",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -3191,10 +3067,6 @@ let devices={
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
         },
-        "internalBattery": {
-          "type": "REDVOLT Micro-V",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -3265,10 +3137,6 @@ let devices={
           "voltageRange": "11.5V-17V DC",
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
-        },
-        "internalBattery": {
-          "type": "REDVOLT Micro-V",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -3341,10 +3209,6 @@ let devices={
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
         },
-        "internalBattery": {
-          "type": "REDVOLT",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -3411,10 +3275,6 @@ let devices={
           "voltageRange": "11.5V-17V DC",
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 37
-        },
-        "internalBattery": {
-          "type": "REDVOLT",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -3483,10 +3343,6 @@ let devices={
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 75
         },
-        "internalBattery": {
-          "type": "REDVOLT",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -3553,10 +3409,6 @@ let devices={
           "voltageRange": "11.5V-17V DC",
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
-        },
-        "internalBattery": {
-          "type": "REDVOLT",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -3625,10 +3477,6 @@ let devices={
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 50
         },
-        "internalBattery": {
-          "type": "REDVOLT",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -3695,10 +3543,6 @@ let devices={
           "voltageRange": "11.5V-17V DC",
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
-        },
-        "internalBattery": {
-          "type": "REDVOLT",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -3767,10 +3611,6 @@ let devices={
           "portType": "2-pin DC-IN",
           "powerDrawWatts": 60
         },
-        "internalBattery": {
-          "type": "REDVOLT",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -3837,10 +3677,6 @@ let devices={
           "voltageRange": "8.4V DC (battery) / 9V DC (USB-C PD)",
           "portType": "Battery Slot / USB-C PD",
           "powerDrawWatts": 27
-        },
-        "internalBattery": {
-          "type": "Panasonic DMW-BLK22",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -3915,10 +3751,6 @@ let devices={
           "voltageRange": "9.0V DC (battery) / 9V DC (USB-C PD)",
           "portType": "Battery Slot / USB-C PD",
           "powerDrawWatts": 27
-        },
-        "internalBattery": {
-          "type": "Panasonic DMW-BLK22",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -3995,10 +3827,6 @@ let devices={
           "portType": "Battery Slot / USB-C PD",
           "powerDrawWatts": 27
         },
-        "internalBattery": {
-          "type": "Sony NP-FZ100",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "NP-FZ100",
@@ -4074,10 +3902,6 @@ let devices={
           "portType": "Battery Slot / USB-C PD",
           "powerDrawWatts": 15
         },
-        "internalBattery": {
-          "type": "NP-W235",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "NP-W235",
@@ -4152,10 +3976,6 @@ let devices={
           "voltageRange": "DC 12-30V",
           "portType": "6-pin 1B DC-IN / TB50 Battery Mount",
           "powerDrawWatts": 40
-        },
-        "internalBattery": {
-          "type": "DJI TB50 Intelligent Battery",
-          "batteryLifeMinutes": 150
         },
         "batteryPlateSupport": [
           {
@@ -4280,10 +4100,6 @@ let devices={
           "portType": "Battery Slot / USB Type-C®",
           "powerDrawWatts": 5.6
         },
-        "internalBattery": {
-          "type": "NP-FZ100",
-          "batteryLifeMinutes": 175
-        },
         "batteryPlateSupport": [
           {
             "type": "NP-FZ100",
@@ -4361,10 +4177,6 @@ let devices={
           "portType": "Weipu SF610/S2 (12VDC) Input",
           "powerDrawWatts": 8.1
         },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
@@ -4434,10 +4246,6 @@ let devices={
           "portType": "Battery Slot / USB Type-C®",
           "powerDrawWatts": 7
         },
-        "internalBattery": {
-          "type": "NP-FZ100",
-          "batteryLifeMinutes": 175
-        },
         "batteryPlateSupport": [
           {
             "type": "NP-FZ100",
@@ -4496,10 +4304,6 @@ let devices={
           "voltageRange": "7.2V (battery) / USB-C",
           "portType": "Battery Slot / USB-C",
           "powerDrawWatts": 5.5
-        },
-        "internalBattery": {
-          "type": "NP-W126S",
-          "batteryLifeMinutes": 45
         },
         "batteryPlateSupport": [
           {
@@ -4572,10 +4376,6 @@ let devices={
           "voltageRange": "7.2V (LP-E6P) / USB-C PD (45W+ recommended)",
           "portType": "Battery Slot / USB-C PD",
           "powerDrawWatts": 15
-        },
-        "internalBattery": {
-          "type": "LP-E6P",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [
           {
@@ -4655,10 +4455,6 @@ let devices={
           "portType": "Battery Slot / USB-C PD",
           "powerDrawWatts": 18
         },
-        "internalBattery": {
-          "type": "LP-E19",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "LP-E19",
@@ -4733,10 +4529,6 @@ let devices={
           "portType": "Battery Slot / USB-C",
           "powerDrawWatts": 10
         },
-        "internalBattery": {
-          "type": "Leica BP-SCL6",
-          "batteryLifeMinutes": null
-        },
         "batteryPlateSupport": [
           {
             "type": "Leica BP-SCL6",
@@ -4807,10 +4599,6 @@ let devices={
           "voltageRange": null,
           "portType": null,
           "powerDrawWatts": 0
-        },
-        "internalBattery": {
-          "type": "None",
-          "batteryLifeMinutes": null
         },
         "batteryPlateSupport": [],
         "powerDistributionOutputs": []
