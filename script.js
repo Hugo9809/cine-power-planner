@@ -50,11 +50,21 @@ function unifyDevices(data) {
     }
     cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' });
     cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' });
-    cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', notes: '' });
+    cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', connector: '', notes: '' });
   });
 }
 
+let viewfinderOptions = [];
+function updateViewfinderOptions() {
+  const set = new Set();
+  Object.values(devices.cameras || {}).forEach(cam => {
+    (cam.viewfinder || []).forEach(v => { if (v.type) set.add(v.type); });
+  });
+  viewfinderOptions = Array.from(set).sort();
+}
+
 unifyDevices(devices);
+updateViewfinderOptions();
 
 
 // Translation text for English and German
@@ -130,7 +140,7 @@ const texts = {
     powerDistributionLabel: "Outputs (JSON):",
     videoOutputsLabel: "Outputs:",
     fizConnectorLabel: "Connectors (JSON):",
-    viewfinderLabel: "Viewfinders (JSON):",
+    viewfinderLabel: "Viewfinders:",
     timecodeLabel: "Timecode (JSON):",
     addDeviceBtn: "Add",
     updateDeviceBtn: "Update", // New key for update button
@@ -266,7 +276,7 @@ const texts = {
     powerDistributionLabel: "Ausgänge (JSON):",
     videoOutputsLabel: "Ausgänge:",
     fizConnectorLabel: "Anschlüsse (JSON):",
-    viewfinderLabel: "Sucher (JSON):",
+    viewfinderLabel: "Sucher:",
     timecodeLabel: "Timecode (JSON):",
     addDeviceBtn: "Hinzufügen",
     updateDeviceBtn: "Aktualisieren",
@@ -466,7 +476,6 @@ function setLanguage(lang) {
   cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
   cameraFIZConnectorInput.placeholder = texts[lang].placeholder_fizconnector;
-  cameraViewfinderInput.placeholder = texts[lang].placeholder_viewfinder;
   cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
@@ -559,7 +568,7 @@ const cameraLensMountInput = document.getElementById("cameraLensMount");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const cameraFIZConnectorInput = document.getElementById("cameraFIZConnector");
-const cameraViewfinderInput = document.getElementById("cameraViewfinder");
+const viewfinderContainer = document.getElementById("viewfinderContainer");
 const cameraTimecodeInput = document.getElementById("cameraTimecode");
 const batteryFieldsDiv = document.getElementById("batteryFields");
 const newCapacityInput = document.getElementById("newCapacity");
@@ -658,6 +667,101 @@ function getVideoOutputs() {
 
 function clearVideoOutputs() {
   setVideoOutputs([]);
+}
+
+function createViewfinderRow(value = {}) {
+  const row = document.createElement('div');
+  row.className = 'form-row viewfinder-row';
+
+  const typeSel = document.createElement('select');
+  typeSel.className = 'viewfinder-type';
+  viewfinderOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSel.appendChild(opt);
+  });
+  if (value.type) {
+    if (!viewfinderOptions.includes(value.type)) {
+      const opt = document.createElement('option');
+      opt.value = value.type;
+      opt.textContent = value.type;
+      typeSel.appendChild(opt);
+    }
+    typeSel.value = value.type;
+  }
+
+  const resInput = document.createElement('input');
+  resInput.type = 'text';
+  resInput.className = 'viewfinder-resolution';
+  resInput.placeholder = 'Resolution';
+  resInput.value = value.resolution || '';
+
+  const connInput = document.createElement('input');
+  connInput.type = 'text';
+  connInput.className = 'viewfinder-connector';
+  connInput.placeholder = 'Connector';
+  connInput.value = value.connector || '';
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.className = 'viewfinder-notes';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = value.notes || '';
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createViewfinderRow());
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (viewfinderContainer.children.length > 1) row.remove();
+  });
+
+  row.appendChild(typeSel);
+  row.appendChild(resInput);
+  row.appendChild(connInput);
+  row.appendChild(notesInput);
+  row.appendChild(addBtn);
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setViewfinders(list) {
+  viewfinderContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      viewfinderContainer.appendChild(createViewfinderRow(item));
+    });
+  } else {
+    viewfinderContainer.appendChild(createViewfinderRow());
+  }
+}
+
+function getViewfinders() {
+  return Array.from(viewfinderContainer.getElementsByClassName('viewfinder-row'))
+    .map(row => {
+      const typeSel = row.querySelector('.viewfinder-type');
+      const resInput = row.querySelector('.viewfinder-resolution');
+      const connInput = row.querySelector('.viewfinder-connector');
+      const notesInput = row.querySelector('.viewfinder-notes');
+      return {
+        type: typeSel.value,
+        resolution: resInput.value,
+        connector: connInput.value,
+        notes: notesInput.value
+      };
+    });
+}
+
+function clearViewfinders() {
+  setViewfinders([]);
 }
 
 
@@ -1312,7 +1416,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
       setVideoOutputs(deviceData.videoOutputs || []);
       cameraFIZConnectorInput.value = JSON.stringify(deviceData.fizConnectors || [], null, 2);
-      cameraViewfinderInput.value = JSON.stringify(deviceData.viewfinder || [], null, 2);
+      setViewfinders(deviceData.viewfinder || []);
       cameraTimecodeInput.value = JSON.stringify(deviceData.timecode || [], null, 2);
     } else {
       wattFieldDiv.style.display = "block";
@@ -1336,6 +1440,7 @@ deviceManagerSection.addEventListener("click", (event) => {
         delete devices[categoryKey][name];
       }
       saveDeviceData(devices); // Save changes to localStorage
+      updateViewfinderOptions();
       refreshDeviceLists();
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
@@ -1382,7 +1487,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   cameraFIZConnectorInput.value = "";
-  cameraViewfinderInput.value = "";
+  clearViewfinders();
   cameraTimecodeInput.value = "";
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
@@ -1448,7 +1553,7 @@ addDeviceBtn.addEventListener("click", () => {
       powerDist = cameraPowerDistInput.value ? JSON.parse(cameraPowerDistInput.value) : [];
       videoOut = getVideoOutputs();
       fizCon = cameraFIZConnectorInput.value ? JSON.parse(cameraFIZConnectorInput.value) : [];
-      viewfinder = cameraViewfinderInput.value ? JSON.parse(cameraViewfinderInput.value) : [];
+      viewfinder = getViewfinders();
       timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
       plateSupport = cameraPlatesInput.value ? JSON.parse(cameraPlatesInput.value) : [];
     } catch (e) {
@@ -1506,7 +1611,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   cameraFIZConnectorInput.value = "";
-  cameraViewfinderInput.value = "";
+  clearViewfinders();
   cameraTimecodeInput.value = "";
   newCategorySelect.disabled = false; // Re-enable category select
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn; // Reset button text
@@ -1514,6 +1619,7 @@ addDeviceBtn.addEventListener("click", () => {
   delete addDeviceBtn.dataset.originalName; // Clear original name
 
   saveDeviceData(devices); // Save changes to localStorage
+  updateViewfinderOptions();
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
   populateSelect(cameraSelect, devices.cameras, true);
@@ -1576,6 +1682,8 @@ if (exportAndRevertBtn) {
         devices = JSON.parse(JSON.stringify(window.defaultDevices)); // Use window.defaultDevices here
         saveDeviceData(devices); // Save the default data back to localStorage
 
+        updateViewfinderOptions();
+
         // Update the UI to reflect the reverted database
         populateSelect(cameraSelect, devices.cameras, true);
         populateSelect(monitorSelect, devices.monitors, true);
@@ -1618,6 +1726,8 @@ importFileInput.addEventListener("change", (event) => {
           Object.prototype.hasOwnProperty.call(importedData.fiz,'controllers') &&
           Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
         devices = importedData; // Overwrite current devices with imported data
+        unifyDevices(devices);
+        updateViewfinderOptions();
         saveDeviceData(devices); // Persist to local storage
         refreshDeviceLists(); // Update device manager lists
         // Re-populate all dropdowns and update calculations
