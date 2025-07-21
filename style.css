@@ -37,6 +37,7 @@ p {
   display: flex;
   align-items: center;
   margin: 5px 0;
+  flex-wrap: wrap; /* allow inputs to wrap on smaller screens */
 }
 .form-row label {
   width: 150px;
@@ -70,6 +71,7 @@ p {
   flex-direction: column;
   flex: 1;
   margin-right: 5px;
+  min-width: 150px; /* prevent fields from becoming too narrow */
 }
 .field-with-label::before {
   content: attr(data-label);
