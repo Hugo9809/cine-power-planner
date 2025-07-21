@@ -63,4 +63,85 @@ describe('script.js functions', () => {
     expect(localStorage.getItem('language')).toBe('de');
     expect(document.getElementById('mainTitle').textContent).toBe('Kamera-Stromverbrauchs-App');
   });
+
+  test('unifyDevices normalizes videoOutputs', () => {
+    jest.resetModules();
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+
+    global.devices = {
+      cameras: {
+        CamB: {
+          powerDrawWatts: 5,
+          videoOutputs: [
+            { type: '12g-sdi', count: 2 },
+            { type: 'HDMI', notes: 'Main', version: 'Type A' }
+          ]
+        }
+      },
+      monitors: {},
+      video: {},
+      fiz: { motors: {}, controllers: {}, distance: {} },
+      batteries: {}
+    };
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+
+    script = require('../script.js');
+
+    expect(global.devices.cameras.CamB.videoOutputs).toEqual([
+      { type: '12G-SDI', notes: '' },
+      { type: '12G-SDI', notes: '' },
+      { type: 'HDMI', notes: 'Main' }
+    ]);
+  });
+
+  test('unifyDevices filters unsupported videoOutputs', () => {
+    jest.resetModules();
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+
+    global.devices = {
+      cameras: {
+        CamC: {
+          powerDrawWatts: 5,
+          videoOutputs: [
+            { type: 'Composite', notes: 'Analog' },
+            { type: 'Micro HDMI' },
+            { type: 'HD-SDI', notes: 'Legacy', count: '2' }
+          ]
+        }
+      },
+      monitors: {},
+      video: {},
+      fiz: { motors: {}, controllers: {}, distance: {} },
+      batteries: {}
+    };
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+
+    script = require('../script.js');
+
+    expect(global.devices.cameras.CamC.videoOutputs).toEqual([
+      { type: 'Micro HDMI', notes: '' },
+      { type: '3G-SDI', notes: 'Legacy' },
+      { type: '3G-SDI', notes: 'Legacy' }
+    ]);
+  });
 });
