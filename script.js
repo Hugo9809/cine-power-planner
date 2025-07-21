@@ -1850,7 +1850,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       // Add selected battery first, if it's a valid candidate
       if (selectedCandidate) {
         tableHtml += `<tr class="selectedBatteryRow">
-                        <td>${selectedCandidate.name}</td>
+                        <td>${escapeHtml(selectedCandidate.name)}</td>
                         <td>${selectedCandidate.hours.toFixed(2)}h (${getMethodLabel(selectedCandidate.method)})</td>
                         <td>
                           <div class="barContainer">
@@ -1863,7 +1863,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       pinsCandidates.forEach(candidate => {
         if (selectedCandidate && candidate.name === selectedCandidate.name) return; // Already added if selected
         tableHtml += `<tr>
-                        <td>${candidate.name}</td>
+                        <td>${escapeHtml(candidate.name)}</td>
                         <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
                         <td>
                           <div class="barContainer">
@@ -1878,7 +1878,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         const alreadyInPins = pinsCandidates.some(p => p.name === candidate.name);
         if (!alreadyInPins) {
             tableHtml += `<tr>
-                            <td>${candidate.name}</td>
+                            <td>${escapeHtml(candidate.name)}</td>
                             <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
                             <td>
                               <div class="barContainer">
@@ -2702,7 +2702,7 @@ function generatePrintableOverview() {
         // Add selected battery first, if it's a valid candidate
         if (selectedCandidate) {
             batteryTableHtml += `<tr class="selectedBatteryRow">
-                                    <td>${selectedCandidate.name}</td>
+                                    <td>${escapeHtml(selectedCandidate.name)}</td>
                                     <td>${getRuntimeDisplay(selectedCandidate.hours)} (${getMethodLabel(selectedCandidate.method)})</td>
                                     <td>
                                       <div class="barContainer">
@@ -2715,7 +2715,7 @@ function generatePrintableOverview() {
         pinsCandidates.forEach(candidate => {
             if (selectedCandidate && candidate.name === selectedCandidate.name) return; // Already added if selected
             batteryTableHtml += `<tr>
-                                    <td>${candidate.name}</td>
+                                    <td>${escapeHtml(candidate.name)}</td>
                                     <td>${getRuntimeDisplay(candidate.hours)} (${getMethodLabel(candidate.method)})</td>
                                     <td>
                                       <div class="barContainer">
@@ -2729,7 +2729,7 @@ function generatePrintableOverview() {
             const alreadyInPins = pinsCandidates.some(p => p.name === candidate.name);
             if (!alreadyInPins) {
                 batteryTableHtml += `<tr>
-                                        <td>${candidate.name}</td>
+                                        <td>${escapeHtml(candidate.name)}</td>
                                         <td>${getRuntimeDisplay(candidate.hours)} (${getMethodLabel(candidate.method)})</td>
                                         <td>
                                           <div class="barContainer">
