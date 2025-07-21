@@ -2517,6 +2517,58 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   }
 }
 
+// Convert a camelCase or underscore key to a human friendly label
+function humanizeKey(key) {
+  const map = {
+    powerDrawWatts: 'Power (W)',
+    capacity: 'Capacity (Wh)',
+    pinA: 'Pin A',
+    dtapA: 'D-Tap A',
+    mount_type: 'Mount',
+    screenSizeInches: 'Screen Size (in)',
+    brightnessNits: 'Brightness (nits)',
+    torqueNm: 'Torque (Nm)',
+    internalController: 'Internal Controller',
+    power_source: 'Power Source',
+    battery_type: 'Battery Type',
+    connectivity: 'Connectivity'
+  };
+  if (map[key]) return map[key];
+  return key
+    .replace(/_/g, ' ')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (c) => c.toUpperCase());
+}
+
+function formatValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((v) => formatValue(v)).join('; ');
+  }
+  if (value && typeof value === 'object') {
+    const parts = [];
+    for (const k in value) {
+      if (value[k] === '' || value[k] === null || value[k] === undefined) continue;
+      parts.push(`${humanizeKey(k)}: ${formatValue(value[k])}`);
+    }
+    return `{ ${parts.join(', ')} }`;
+  }
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value);
+}
+
+function formatDeviceData(deviceData) {
+  if (typeof deviceData !== 'object') {
+    return `Power (W): ${deviceData}`;
+  }
+  const parts = [];
+  for (const key in deviceData) {
+    const val = deviceData[key];
+    if (val === '' || val === null || val === undefined) continue;
+    parts.push(`${humanizeKey(key)}: ${formatValue(val)}`);
+  }
+  return parts.join(', ');
+}
+
 // Helper to render existing devices in the manager section
 function renderDeviceList(categoryKey, ulElement) {
   ulElement.innerHTML = "";
@@ -2531,18 +2583,11 @@ function renderDeviceList(categoryKey, ulElement) {
   for (let name in categoryDevices) {
     if (name === "None") continue;
     const deviceData = categoryDevices[name];
-    let displayData = "";
-
-    if (categoryKey === "batteries") {
-      displayData = `(${deviceData.capacity} Wh, ${deviceData.pinA}A Pin, ${deviceData.dtapA}A D-Tap)`;
-    } else {
-      const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
-      displayData = `(${watt} W)`;
-    }
+    const displayData = formatDeviceData(deviceData);
 
     const li = document.createElement("li");
     const span = document.createElement("span");
-    span.textContent = `${name} ${displayData}`;
+    span.textContent = `${name} (${displayData})`;
     li.appendChild(span);
 
     const editBtn = document.createElement("button");
