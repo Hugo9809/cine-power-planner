@@ -2566,10 +2566,17 @@ if (darkModeToggle) {
 }
 
 // Initial calculation and language set after DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
+// Initialize immediately if DOM is already loaded (e.g. when scripts are
+// injected after `DOMContentLoaded` fired). Otherwise wait for the event.
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    setLanguage(currentLang);
+    updateCalculations();
+  });
+} else {
   setLanguage(currentLang);
   updateCalculations();
-});
+}
 
 // Export functions for testing in Node environment
 if (typeof module !== "undefined" && module.exports) {
