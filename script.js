@@ -1392,6 +1392,7 @@ addDeviceBtn.addEventListener("click", () => {
       timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
       plateSupport = cameraPlatesInput.value ? JSON.parse(cameraPlatesInput.value) : [];
     } catch (e) {
+      console.error("Invalid camera JSON input:", e);
       alert(texts[currentLang].alertInvalidCameraJSON);
       return;
     }
