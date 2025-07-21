@@ -412,12 +412,8 @@ let devices={
           "notes": "For ENG type zoom lenses (FIZ control)"
         },
         {
-          "type": "PL Mount w/ Hirose connector and LDS",
+          "type": "Hirose 12-pin",
           "notes": "For electronic lens data and control"
-        },
-        {
-          "type": "EF Mount",
-          "notes": "For electronic lens control"
         }
       ],
       "recordingMedia": [
@@ -551,10 +547,6 @@ let devices={
         {
           "type": "Hirose 12-pin",
           "notes": "For lens control"
-        },
-        {
-          "type": "Lens Mount Hot Shoe 4 pin",
-          "notes": "Supports Cooke /i Intelligent Electronic Lens System and ZEISS eXtended Data"
         },
         {
           "type": "REMOTE B connector",
@@ -701,10 +693,6 @@ let devices={
         {
           "type": "Hirose 12-pin",
           "notes": "For lens control"
-        },
-        {
-          "type": "Lens Mount Hot Shoe 4 pin",
-          "notes": "Supports Cooke /i Intelligent Electronic Lens System and ZEISS eXtended Data"
         },
         {
           "type": "REMOTE B connector",
@@ -1014,10 +1002,6 @@ let devices={
         {
           "type": "LANC",
           "notes": "REMOTE connector"
-        },
-        {
-          "type": "Proprietary Side Grip Connection",
-          "notes": "Simulates Hand Grip for remote control"
         }
       ],
       "recordingMedia": [
@@ -1496,10 +1480,6 @@ let devices={
         {
           "type": "Hirose 12-pin",
           "notes": "12-pin jack"
-        },
-        {
-          "type": "Cooke /i Technology™ Support",
-          "notes": "Only when equipped with Mount Adapter PL-RF"
         }
       ],
       "recordingMedia": [
@@ -1683,10 +1663,6 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Active MFT mount",
-          "notes": "Iris, focus and zoom on supported lenses"
-        },
-        {
           "type": "USB-C",
           "notes": "PTP camera control"
         },
@@ -1758,10 +1734,6 @@ let devices={
         }
       ],
       "fizConnectors": [
-        {
-          "type": "Active EF mount",
-          "notes": "Iris, focus and zoom on supported lenses"
-        },
         {
           "type": "Bluetooth",
           "notes": "Wireless control"
@@ -1838,10 +1810,6 @@ let devices={
         }
       ],
       "fizConnectors": [
-        {
-          "type": "Active EF mount",
-          "notes": "Iris, focus and zoom on supported lenses"
-        },
         {
           "type": "USB-C",
           "notes": "PTP camera control"
@@ -1920,10 +1888,6 @@ let devices={
         }
       ],
       "fizConnectors": [
-        {
-          "type": "Active EF mount",
-          "notes": "For electronic EF lenses (iris, focus, zoom)"
-        },
         {
           "type": "USB-C",
           "notes": "For Blackmagic Zoom/Focus Demand, PTP camera control"
@@ -2230,10 +2194,6 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Active L-Mount",
-          "notes": "Iris, focus and zoom on supported lenses"
-        },
-        {
           "type": "USB-C",
           "notes": "PTP camera control"
         },
@@ -2300,10 +2260,6 @@ let devices={
         }
       ],
       "fizConnectors": [
-        {
-          "type": "Active L-Mount",
-          "notes": "Iris, focus and zoom on supported lenses"
-        },
         {
           "type": "USB-C",
           "notes": "PTP camera control"
