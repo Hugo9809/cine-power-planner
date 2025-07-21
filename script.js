@@ -2037,29 +2037,10 @@ if (exportAndRevertBtn) {
 
       // Give a small delay to ensure download prompt appears before next step
       setTimeout(() => {
-        // Step 2: Revert to the default database
-        devices = JSON.parse(JSON.stringify(window.defaultDevices)); // Use window.defaultDevices here
-        saveDeviceData(devices); // Save the default data back to localStorage
-
-        viewfinderTypeOptions = getAllViewfinderTypes();
-        viewfinderConnectorOptions = getAllViewfinderConnectors();
-        updatePlateTypeOptions();
-        updatePlateTypeOptions();
-
-        // Update the UI to reflect the reverted database
-        populateSelect(cameraSelect, devices.cameras, true);
-        populateSelect(monitorSelect, devices.monitors, true);
-        populateSelect(videoSelect, devices.video, true);
-        motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-        controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-        populateSelect(distanceSelect, devices.fiz.distance, true);
-        populateSelect(batterySelect, devices.batteries, true);
-        updateFizConnectorOptions();
-        applyFilters();
-        refreshDeviceLists(); // Refresh device manager lists
-        updateCalculations();
-
-        alert(texts[currentLang].alertExportAndRevertSuccess); // Success message for both actions
+        // Step 2: Remove saved database and reload page so data.js is re-read
+        localStorage.removeItem('cameraPowerPlanner_devices');
+        alert(texts[currentLang].alertExportAndRevertSuccess);
+        location.reload();
       }, 500); // 500ms delay
     }
   });
