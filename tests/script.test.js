@@ -58,6 +58,24 @@ describe('script.js functions', () => {
     expect(document.getElementById('dtapWarning').textContent).toBe('5A max – OK');
   });
 
+  test('B-Mount camera uses high-voltage current labels', () => {
+    global.devices.cameras.BCam = {
+      powerDrawWatts: 20,
+      power: { batteryPlateSupport: [{ type: 'B-Mount', mount: 'native' }] }
+    };
+    global.devices.batteries.BBatt = { capacity: 200, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'BCam');
+    addOpt('batterySelect', 'BBatt');
+    script.updateCalculations();
+    expect(document.getElementById('totalCurrent144Label').textContent).toContain('33.6');
+    expect(document.getElementById('dtapWarning').textContent).toBe('');
+  });
+
   test('setLanguage updates language and saves preference', () => {
     script.setLanguage('de');
     expect(document.documentElement.lang).toBe('de');

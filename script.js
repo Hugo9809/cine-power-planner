@@ -11,6 +11,26 @@ const VIDEO_OUTPUT_TYPES = [
   'Micro HDMI'
 ];
 
+// Labels used when a camera with native B-Mount is selected
+const BMOUNT_CURRENT_HIGH_LABEL = {
+  en: 'Total Current (at 33.6V):',
+  de: 'Gesamtstrom (bei 33,6V):',
+  es: 'Corriente Total (a 33.6V):',
+  fr: 'Courant Total (\u00e0 33,6V):'
+};
+const BMOUNT_CURRENT_LOW_LABEL = {
+  en: 'Total Current (at 21.6V):',
+  de: 'Gesamtstrom (bei 21,6V):',
+  es: 'Corriente Total (a 21.6V):',
+  fr: 'Courant Total (\u00e0 21,6V):'
+};
+const BMOUNT_BATTERY_LABEL = {
+  en: 'B-Mount Battery:',
+  de: 'B-Mount Akku:',
+  es: 'Bater\u00eda B-Mount:',
+  fr: 'Batterie B-Mount:'
+};
+
 // Store a deep copy of the initial 'devices' data as defined in data.js.
 // This 'defaultDevices' will be used when reverting the database.
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
@@ -230,6 +250,45 @@ function unifyDevices(data) {
 
 unifyDevices(devices);
 
+// Determine if a camera has a native B-Mount battery plate
+function isNativeBMountCamera(name) {
+  const cam = devices.cameras[name];
+  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
+  return cam.power.batteryPlateSupport.some(bp => bp.type === 'B-Mount' && bp.mount === 'native');
+}
+
+function getBMountBatteries() {
+  const out = {};
+  for (const [name, data] of Object.entries(devices.batteries)) {
+    if (data && data.mount_type === 'B-Mount') out[name] = data;
+  }
+  return out;
+}
+
+function updateBatteryLabel() {
+  const label = document.getElementById('batteryLabel');
+  if (!label) return;
+  if (isNativeBMountCamera(cameraSelect.value)) {
+    label.textContent = BMOUNT_BATTERY_LABEL[currentLang] || 'B-Mount Battery:';
+  } else {
+    label.textContent = texts[currentLang].batteryLabel;
+  }
+}
+
+function updateBatteryOptions() {
+  const current = batterySelect.value;
+  if (isNativeBMountCamera(cameraSelect.value)) {
+    populateSelect(batterySelect, getBMountBatteries(), true);
+  } else {
+    populateSelect(batterySelect, devices.batteries, true);
+  }
+  if (Array.from(batterySelect.options).some(o => o.value === current)) {
+    batterySelect.value = current;
+  }
+  filterSelect(batterySelect, batteryFilterInput.value);
+  updateBatteryLabel();
+}
+
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
   try {
@@ -288,6 +347,7 @@ function setLanguage(lang) {
   document.getElementById("videoLabel").textContent = texts[lang].videoLabel;
   document.getElementById("distanceLabel").textContent = texts[lang].distanceLabel;
   document.getElementById("batteryLabel").textContent = texts[lang].batteryLabel;
+  updateBatteryLabel();
   // FIZ legend
   document.getElementById("fizLegend").textContent = texts[lang].fizLegend;
   // Results labels
@@ -1674,6 +1734,7 @@ motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
 populateSelect(batterySelect, devices.batteries, true);
+updateBatteryOptions();
 
 // Enable search inside dropdowns
 [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
@@ -1808,16 +1869,20 @@ function updateCalculations() {
     breakdownListElem.appendChild(li);
   }
 
-  // Calculate currents at 14.4V and 12V
-  let totalCurrent144 = 0;
-  let totalCurrent12 = 0;
+  // Calculate currents depending on battery type
+  const bMountCam = isNativeBMountCamera(camera);
+  let highV = bMountCam ? 33.6 : 14.4;
+  let lowV = bMountCam ? 21.6 : 12.0;
+  let totalCurrentHigh = 0;
+  let totalCurrentLow = 0;
   if (totalWatt > 0) {
-    totalCurrent144 = totalWatt / 14.4;
-    totalCurrent12 = totalWatt / 12.0;
+    totalCurrentHigh = totalWatt / highV;
+    totalCurrentLow = totalWatt / lowV;
   }
-  // Zeige Stromverbrauch unabhängig vom Akku
-totalCurrent144Elem.textContent = totalCurrent144.toFixed(2);
-totalCurrent12Elem.textContent = totalCurrent12.toFixed(2);
+  document.getElementById("totalCurrent144Label").textContent = bMountCam ? BMOUNT_CURRENT_HIGH_LABEL[currentLang] : texts[currentLang].totalCurrent144Label;
+  document.getElementById("totalCurrent12Label").textContent = bMountCam ? BMOUNT_CURRENT_LOW_LABEL[currentLang] : texts[currentLang].totalCurrent12Label;
+  totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
+  totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
 
 // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
 if (!battery || battery === "None" || !devices.batteries[battery]) {
@@ -1831,8 +1896,8 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     const capacityWh = battData.capacity;
     const maxPinA = battData.pinA;
     const maxDtapA = battData.dtapA;
-    totalCurrent144Elem.textContent = totalCurrent144.toFixed(2);
-    totalCurrent12Elem.textContent = totalCurrent12.toFixed(2);
+    totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
+    totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
     if (totalWatt === 0) {
       batteryLifeElem.textContent = "∞";
     } else {
@@ -1842,23 +1907,25 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     // Warnings about current draw vs battery limits
     pinWarnElem.textContent = "";
     dtapWarnElem.textContent = "";
-    if (totalCurrent12 > maxPinA) {
+    if (totalCurrentLow > maxPinA) {
       pinWarnElem.textContent = texts[currentLang].warnPinExceeded
-        .replace("{current}", totalCurrent12.toFixed(2))
+        .replace("{current}", totalCurrentLow.toFixed(2))
         .replace("{max}", maxPinA);
-    } else if (totalCurrent12 > maxPinA * 0.8) {
+    } else if (totalCurrentLow > maxPinA * 0.8) {
       pinWarnElem.textContent = texts[currentLang].warnPinNear
-        .replace("{current}", totalCurrent12.toFixed(2))
+        .replace("{current}", totalCurrentLow.toFixed(2))
         .replace("{max}", maxPinA);
     }
-    if (totalCurrent12 > maxDtapA) {
-      dtapWarnElem.textContent = texts[currentLang].warnDTapExceeded
-        .replace("{current}", totalCurrent12.toFixed(2))
-        .replace("{max}", maxDtapA);
-    } else if (totalCurrent12 > maxDtapA * 0.8) {
-      dtapWarnElem.textContent = texts[currentLang].warnDTapNear
-        .replace("{current}", totalCurrent12.toFixed(2))
-        .replace("{max}", maxDtapA);
+    if (!bMountCam) {
+      if (totalCurrentLow > maxDtapA) {
+        dtapWarnElem.textContent = texts[currentLang].warnDTapExceeded
+          .replace("{current}", totalCurrentLow.toFixed(2))
+          .replace("{max}", maxDtapA);
+      } else if (totalCurrentLow > maxDtapA * 0.8) {
+        dtapWarnElem.textContent = texts[currentLang].warnDTapNear
+          .replace("{current}", totalCurrentLow.toFixed(2))
+          .replace("{max}", maxDtapA);
+      }
     }
     // Show max current capability and status (OK/Warning) for Pin and D-Tap
     if (pinWarnElem.textContent === "") {
@@ -1873,17 +1940,22 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         pinWarnElem.style.color = "";
       }
     }
-    if (dtapWarnElem.textContent === "") {
-      dtapWarnElem.textContent = (currentLang === "de") ? `${maxDtapA}A max – OK` : `${maxDtapA}A max – OK`;
-      dtapWarnElem.style.color = "green";
-    } else {
-      if (dtapWarnElem.textContent.startsWith("WARNING") || dtapWarnElem.textContent.startsWith("WARNUNG")) {
-        dtapWarnElem.style.color = "red";
-      } else if (dtapWarnElem.textContent.startsWith("Note") || dtapWarnElem.textContent.startsWith("Hinweis")) {
-        dtapWarnElem.style.color = "orange";
+    if (!bMountCam) {
+      if (dtapWarnElem.textContent === "") {
+        dtapWarnElem.textContent = (currentLang === "de") ? `${maxDtapA}A max – OK` : `${maxDtapA}A max – OK`;
+        dtapWarnElem.style.color = "green";
       } else {
-        dtapWarnElem.style.color = "";
+        if (dtapWarnElem.textContent.startsWith("WARNING") || dtapWarnElem.textContent.startsWith("WARNUNG")) {
+          dtapWarnElem.style.color = "red";
+        } else if (dtapWarnElem.textContent.startsWith("Note") || dtapWarnElem.textContent.startsWith("Hinweis")) {
+          dtapWarnElem.style.color = "orange";
+        } else {
+          dtapWarnElem.style.color = "";
+        }
       }
+    } else {
+      dtapWarnElem.textContent = "";
+      dtapWarnElem.style.color = "";
     }
   }
 
@@ -1894,8 +1966,8 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     let selectedCandidate = null;
     if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
       const selData = devices.batteries[selectedBatteryName];
-      const pinOK_sel = totalCurrent12 <= selData.pinA;
-      const dtapOK_sel = totalCurrent12 <= selData.dtapA;
+      const pinOK_sel = totalCurrentLow <= selData.pinA;
+      const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
       if (pinOK_sel || dtapOK_sel) {
         const selHours = selData.capacity / totalWatt;
         let selMethod;
@@ -1913,8 +1985,8 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       if (selectedCandidate && battName === selectedCandidate.name) continue;
 
       const data = devices.batteries[battName];
-      const canPin = totalCurrent12 <= data.pinA;
-      const canDTap = totalCurrent12 <= data.dtapA;
+      const canPin = totalCurrentLow <= data.pinA;
+      const canDTap = !bMountCam && totalCurrentLow <= data.dtapA;
 
       if (canPin) {
         const hours = data.capacity / totalWatt;
@@ -2792,12 +2864,13 @@ function generatePrintableOverview() {
     if ((batterySelect.value && batterySelect.value !== "None") || hasAnyBattery) {
         const selectedBatteryName = batterySelect.value;
         let selectedCandidate = null;
-        const totalCurrent12 = parseFloat(totalCurrent12Elem.textContent); // Get current totalCurrent12 from display
+        const totalCurrent12 = parseFloat(totalCurrent12Elem.textContent); // Get current displayed current
+        const bMountCam = isNativeBMountCamera(cameraSelect.value);
 
         if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
             const selData = devices.batteries[selectedBatteryName];
             const pinOK_sel = totalCurrent12 <= selData.pinA;
-            const dtapOK_sel = totalCurrent12 <= selData.dtapA;
+            const dtapOK_sel = !bMountCam && totalCurrent12 <= selData.dtapA;
             
             let selHours = 0;
             if (totalWatt === 0) {
@@ -2825,7 +2898,7 @@ function generatePrintableOverview() {
 
             const data = devices.batteries[battName];
             const canPin = totalCurrent12 <= data.pinA;
-            const canDTap = totalCurrent12 <= data.dtapA;
+            const canDTap = !bMountCam && totalCurrent12 <= data.dtapA;
 
             if (totalWatt === 0) { // All batteries have infinite runtime if totalWatt is 0
                 pinsCandidates.push({ name: battName, hours: Infinity, method: "infinite" });
@@ -3068,6 +3141,7 @@ function generatePrintableOverview() {
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
 [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
+if (cameraSelect) cameraSelect.addEventListener('change', updateBatteryOptions);
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
