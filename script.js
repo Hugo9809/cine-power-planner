@@ -621,7 +621,24 @@ function getAllFizConnectorTypes() {
   return Array.from(types).sort();
 }
 
-const fizConnectorOptions = getAllFizConnectorTypes();
+let fizConnectorOptions = getAllFizConnectorTypes();
+
+function updateFizConnectorOptions() {
+  fizConnectorOptions = getAllFizConnectorTypes();
+  document.querySelectorAll('.fiz-connector-select').forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    fizConnectorOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (fizConnectorOptions.includes(current)) {
+      sel.value = current;
+    }
+  });
+}
 
 function createVideoOutputRow(value = '') {
   const row = document.createElement('div');
@@ -832,6 +849,7 @@ controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
 setFizConnectors([]);
+updateFizConnectorOptions();
 
 // Set default selections for dropdowns
 
@@ -1409,6 +1427,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
+      updateFizConnectorOptions();
       applyFilters();
       updateCalculations();
     }
@@ -1587,6 +1606,7 @@ addDeviceBtn.addEventListener("click", () => {
   controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
   populateSelect(distanceSelect, devices.fiz.distance, true);
   populateSelect(batterySelect, devices.batteries, true);
+  updateFizConnectorOptions();
   applyFilters();
   updateCalculations(); // Update calculations after device data changes
 
@@ -1648,6 +1668,7 @@ if (exportAndRevertBtn) {
         controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
+        updateFizConnectorOptions();
         applyFilters();
         refreshDeviceLists(); // Refresh device manager lists
         updateCalculations();
@@ -1692,6 +1713,7 @@ importFileInput.addEventListener("change", (event) => {
         controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
+        updateFizConnectorOptions();
         applyFilters();
         updateCalculations();
 
