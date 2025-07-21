@@ -492,7 +492,6 @@ function setLanguage(lang) {
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
-  cameraMediaInput.placeholder = texts[lang].placeholder_media;
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -577,7 +576,7 @@ const cameraWattInput = document.getElementById("cameraWatt");
 const cameraVoltageInput = document.getElementById("cameraVoltage");
 const cameraPortTypeInput = document.getElementById("cameraPortType");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
-const cameraMediaInput = document.getElementById("cameraMedia");
+const cameraMediaContainer = document.getElementById("cameraMediaContainer");
 const lensMountContainer = document.getElementById("lensMountContainer");
 const powerDistContainer = document.getElementById("powerDistContainer");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
@@ -770,6 +769,94 @@ function getFizConnectors() {
 
 function clearFizConnectors() {
   setFizConnectors([]);
+}
+
+function getAllRecordingMedia() {
+  const media = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    if (Array.isArray(cam.recordingMedia)) {
+      cam.recordingMedia.forEach(m => { if (m) media.add(m); });
+    }
+  });
+  return Array.from(media).sort();
+}
+
+let recordingMediaOptions = getAllRecordingMedia();
+
+function updateRecordingMediaOptions() {
+  recordingMediaOptions = getAllRecordingMedia();
+  document.querySelectorAll('.recording-media-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    recordingMediaOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (recordingMediaOptions.includes(cur)) sel.value = cur;
+  });
+}
+
+function createRecordingMediaRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const select = document.createElement('select');
+  select.className = 'recording-media-select';
+  recordingMediaOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  if (value) {
+    if (!recordingMediaOptions.includes(value)) {
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = value;
+      select.appendChild(opt);
+    }
+    select.value = value;
+  }
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createRecordingMediaRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (cameraMediaContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setRecordingMedia(list) {
+  cameraMediaContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(m => {
+      cameraMediaContainer.appendChild(createRecordingMediaRow(m));
+    });
+  } else {
+    cameraMediaContainer.appendChild(createRecordingMediaRow());
+  }
+}
+
+function getRecordingMedia() {
+  return Array.from(cameraMediaContainer.querySelectorAll('select')).map(sel => sel.value).filter(Boolean);
+}
+
+function clearRecordingMedia() {
+  setRecordingMedia([]);
 }
 
 function getAllPlateTypes() {
@@ -1438,6 +1525,8 @@ setFizConnectors([]);
 updateFizConnectorOptions();
 setViewfinders([]);
 setBatteryPlates([]);
+setRecordingMedia([]);
+updateRecordingMediaOptions();
 updatePlateTypeOptions();
 setLensMounts([]);
 updateMountTypeOptions();
@@ -1984,7 +2073,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
       cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
       setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
-      cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
+      setRecordingMedia(deviceData.recordingMedia || []);
       setLensMounts(deviceData.lensMount || []);
       setPowerDistribution(deviceData.power?.powerDistributionOutputs || []);
       setVideoOutputs(deviceData.videoOutputs || []);
@@ -2057,7 +2146,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraVoltageInput.value = "";
   cameraPortTypeInput.value = "";
   clearBatteryPlates();
-  cameraMediaInput.value = "";
+  clearRecordingMedia();
   clearLensMounts();
   clearPowerDistribution();
   clearVideoOutputs();
@@ -2148,7 +2237,7 @@ addDeviceBtn.addEventListener("click", () => {
       },
       videoOutputs: videoOut,
       fizConnectors: fizCon,
-      recordingMedia: cameraMediaInput.value ? cameraMediaInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+      recordingMedia: getRecordingMedia(),
       viewfinder: viewfinder,
       lensMount: getLensMounts(),
       timecode: timecode
@@ -2175,7 +2264,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraVoltageInput.value = "";
   cameraPortTypeInput.value = "";
   clearBatteryPlates();
-  cameraMediaInput.value = "";
+  clearRecordingMedia();
   clearLensMounts();
   clearPowerDistribution();
   clearVideoOutputs();
@@ -2192,6 +2281,7 @@ addDeviceBtn.addEventListener("click", () => {
   viewfinderConnectorOptions = getAllViewfinderConnectors();
   updatePlateTypeOptions();
   updatePowerDistTypeOptions();
+  updateRecordingMediaOptions();
   updateTimecodeTypeOptions();
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
