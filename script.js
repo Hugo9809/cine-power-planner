@@ -2017,7 +2017,6 @@ deviceManagerSection.addEventListener("click", (event) => {
       saveDeviceData(devices); // Save changes to localStorage
       viewfinderTypeOptions = getAllViewfinderTypes();
       viewfinderConnectorOptions = getAllViewfinderConnectors();
-      updatePlateTypeOptions();
       refreshDeviceLists();
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
@@ -2397,7 +2396,7 @@ importSetupsInput.addEventListener('change', (event) => {
 
 // Generate a printable overview of the current selected setup in a new tab
 generateOverviewBtn.addEventListener('click', () => {
-    if (!setupSelect.value || setupSelect.value === "None") { // Ensure a setup is selected
+    if (!setupSelect.value) { // Ensure a setup is selected
         alert(texts[currentLang].alertSelectSetupForOverview);
         return;
     }
@@ -2806,5 +2805,12 @@ if (document.readyState === "loading") {
 
 // Export functions for testing in Node environment
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { setLanguage, updateCalculations };
+  module.exports = {
+    setLanguage,
+    updateCalculations,
+    setBatteryPlates,
+    getBatteryPlates,
+    applyDarkMode,
+    generatePrintableOverview,
+  };
 }

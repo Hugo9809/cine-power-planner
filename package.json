@@ -5,7 +5,8 @@
   "main": "data.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint && jest"
+    "check-consistency": "node checkConsistency.js",
+    "test": "npm run lint && npm run check-consistency && jest"
   },
   "keywords": [],
   "author": "",
