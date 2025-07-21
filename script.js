@@ -2053,3 +2053,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setLanguage(currentLang);
   updateCalculations();
 });
+
+// Export functions for testing in Node environment
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { setLanguage, updateCalculations };
+}

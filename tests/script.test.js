@@ -1,0 +1,66 @@
+const fs = require('fs');
+const path = require('path');
+
+describe('script.js functions', () => {
+  let script;
+
+  beforeEach(() => {
+    jest.resetModules();
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+
+    global.devices = {
+      cameras: { CamA: { powerDrawWatts: 10 } },
+      monitors: { MonA: { powerDrawWatts: 5 } },
+      video: { VidA: { powerDrawWatts: 3 } },
+      fiz: {
+        motors: { MotorA: { powerDrawWatts: 2 } },
+        controllers: { ControllerA: { powerDrawWatts: 2 } },
+        distance: { DistA: { powerDrawWatts: 1 } }
+      },
+      batteries: { BattA: { capacity: 100, pinA: 10, dtapA: 5 } }
+    };
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+
+    script = require('../script.js');
+  });
+
+  test('updateCalculations computes totals and runtime', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+
+    script.updateCalculations();
+
+    expect(document.getElementById('totalPower').textContent).toBe('23.0');
+    expect(document.getElementById('totalCurrent12').textContent).toBe('1.92');
+    expect(document.getElementById('batteryLife').textContent).toBe('4.35');
+    expect(document.getElementById('pinWarning').textContent).toBe('10A max – OK');
+    expect(document.getElementById('dtapWarning').textContent).toBe('5A max – OK');
+  });
+
+  test('setLanguage updates language and saves preference', () => {
+    script.setLanguage('de');
+    expect(document.documentElement.lang).toBe('de');
+    expect(localStorage.getItem('language')).toBe('de');
+    expect(document.getElementById('mainTitle').textContent).toBe('Kamera-Stromverbrauchs-App');
+  });
+});
