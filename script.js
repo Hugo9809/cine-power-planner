@@ -86,6 +86,40 @@ function normalizeViewfinderType(type) {
   return map[type] || type;
 }
 
+function normalizePowerPortType(type) {
+  if (!type) return '';
+  const map = {
+    'LEMO 8-pin (DC In / BAT)': 'Bat LEMO 8-pin',
+    'LEMO 8-pin (BAT)': 'Bat LEMO 8-pin',
+    'BAT (LEMO 8-pin)': 'Bat LEMO 8-pin',
+    'LEMO 8-pin': 'Bat LEMO 8-pin',
+    '2-pin DC-Input': '2-pin DC-IN',
+    '2-pin XLR': 'XLR 2-pin',
+    '2-pin locking connector': 'LEMO 2-pin',
+    '2-pin locking connector / 2-pin LEMO': 'LEMO 2-pin',
+    '4-pin XLR / DC IN 12V': 'XLR 4-pin',
+    '4-pin XLR / V-Lock': 'XLR 4-pin',
+    'XLR 4-pin jack': 'XLR 4-pin',
+    'XLR 4-pin (main input)': 'XLR 4-pin',
+    'XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)': 'XLR 4-pin / Square 5-pin',
+    '12-pin Molex connector (at battery plate rear) / 4-pin XLR (external power)': 'Molex 12-pin / XLR 4-pin',
+    'USB-C (Power Delivery) / Battery Slot': 'Battery Slot / USB-C PD',
+    'Battery Slot / USB Type-C®': 'Battery Slot / USB-C',
+    'Battery Slot / USB-C': 'Battery Slot / USB-C',
+    'Battery Slot / USB-C PD': 'Battery Slot / USB-C PD',
+    'DC Input': 'DC IN',
+    'Weipu SF610/S2 (12VDC) Input': 'Weipu SF610/S2',
+    '6-pin 1B DC-IN / TB50 Battery Mount': '6-pin 1B DC-IN / TB50'
+  };
+  const mapOne = val => map[val] || val;
+  if (Array.isArray(type)) {
+    return type.flatMap(t => mapOne(t).split('/').map(p => mapOne(p.trim())));
+  }
+  const parts = mapOne(type).split('/').map(p => mapOne(p.trim()));
+  return parts.length > 1 ? parts : parts[0];
+}
+
+
 // Load any saved device data from localStorage
 const storedDevices = loadDeviceData();
 if (storedDevices) {
@@ -106,6 +140,9 @@ function unifyDevices(data) {
   Object.values(data.cameras || {}).forEach(cam => {
     if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
       delete cam.power.input.powerDrawWatts;
+    }
+    if (cam.power?.input && cam.power.input.portType) {
+      cam.power.input.portType = normalizePowerPortType(cam.power.input.portType);
     }
     if (Array.isArray(cam.power?.batteryPlateSupport)) {
       cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(it => {
@@ -248,7 +285,7 @@ const texts = {
     placeholder_pin: "e.g. 10",
     placeholder_dtap: "e.g. 5",
     placeholder_voltage: "11V-34V DC",
-    placeholder_port: "LEMO 8-pin",
+    placeholder_port: "Bat LEMO 8-pin",
     placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
@@ -381,7 +418,7 @@ const texts = {
     placeholder_pin: "z.B. 10",
     placeholder_dtap: "z.B. 5",
     placeholder_voltage: "11V-34V DC",
-    placeholder_port: "LEMO 8-Pin",
+    placeholder_port: "Bat LEMO 8-Pin",
     placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
     placeholder_media: "CFast 2.0",
     placeholder_lensmount: "ARRI PL",
@@ -553,7 +590,6 @@ function setLanguage(lang) {
   newPinAInput.placeholder = texts[lang].placeholder_pin;
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
-  cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -919,6 +955,34 @@ function getRecordingMedia() {
 
 function clearRecordingMedia() {
   setRecordingMedia([]);
+}
+
+function getAllPowerPortTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    const pt = cam.power?.input?.portType;
+    if (Array.isArray(pt)) {
+      pt.forEach(t => { if (t) types.add(t); });
+    } else if (pt) {
+      types.add(pt);
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let powerPortOptions = getAllPowerPortTypes();
+
+function updatePowerPortOptions() {
+  powerPortOptions = getAllPowerPortTypes();
+  const current = cameraPortTypeInput.value;
+  cameraPortTypeInput.innerHTML = '';
+  powerPortOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    cameraPortTypeInput.appendChild(opt);
+  });
+  if (powerPortOptions.includes(current)) cameraPortTypeInput.value = current;
 }
 
 function getAllPlateTypes() {
@@ -1592,6 +1656,7 @@ updateRecordingMediaOptions();
 updatePlateTypeOptions();
 setLensMounts([]);
 updateMountTypeOptions();
+updatePowerPortOptions();
 setPowerDistribution([]);
 updatePowerDistTypeOptions();
 setTimecodes([]);
@@ -2133,7 +2198,8 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraFieldsDiv.style.display = "block";
       cameraWattInput.value = deviceData.powerDrawWatts || '';
       cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-      cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
+      const tmp = deviceData.power?.input?.portType;
+      cameraPortTypeInput.value = Array.isArray(tmp) ? tmp[0] : (tmp || "");
       setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       setRecordingMedia(deviceData.recordingMedia || []);
       setLensMounts(deviceData.lensMount || []);
@@ -2342,6 +2408,7 @@ addDeviceBtn.addEventListener("click", () => {
   viewfinderTypeOptions = getAllViewfinderTypes();
   viewfinderConnectorOptions = getAllViewfinderConnectors();
   updatePlateTypeOptions();
+  updatePowerPortOptions();
   updatePowerDistTypeOptions();
   updateRecordingMediaOptions();
   updateTimecodeTypeOptions();
