@@ -435,7 +435,7 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0 memory cards"
+        "CFast 2.0"
       ],
       "viewfinder": [
         {
@@ -577,7 +577,7 @@ let devices={
       ],
       "recordingMedia": [
         "AXS Memory A-Series slot",
-        "SD card slot"
+        "SD Card"
       ],
       "viewfinder": [
         {
@@ -728,7 +728,7 @@ let devices={
       ],
       "recordingMedia": [
         "AXS Memory A-Series slot",
-        "SD card slot"
+        "SD Card"
       ],
       "viewfinder": [
         {
@@ -1219,7 +1219,7 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD CARD X2"
+        "SD Card (Dual Slots)"
       ],
       "viewfinder": [
         {
@@ -1334,8 +1334,8 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD Card (SD / SDHC / SDXC)",
-        "Dual SD card slots for simultaneous recording"
+        "SD Card",
+        "SD Card (Dual Slots)"
       ],
       "viewfinder": [
         {
@@ -1427,8 +1427,8 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "Dual CFexpress slots",
-        "SD card slot (for proxy/backup)"
+        "CFexpress Type B (Dual Slots)",
+        "SD Card (for proxy/backup)"
       ],
       "viewfinder": [
         {
@@ -1644,7 +1644,7 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "Dual CFexpress slots"
+        "CFexpress Type B (Dual Slots)"
       ],
       "viewfinder": [
         {
@@ -1730,8 +1730,8 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast card slot",
-        "SD UHS-II card slot",
+        "CFast 2.0",
+        "SD UHS-II",
         "USB-C 3.1 Gen 1 expansion port for external media"
       ],
       "viewfinder": [
@@ -1799,8 +1799,8 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0 card slot",
-        "SD UHS-II card slot",
+        "CFast 2.0",
+        "SD UHS-II",
         "USB-C 3.1 Gen 1 expansion port for external media"
       ],
       "viewfinder": [
@@ -1881,8 +1881,8 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast card slot",
-        "SD UHS-II card slot",
+        "CFast 2.0",
+        "SD UHS-II",
         "USB-C 3.1 Gen 1 expansion port for external media"
       ],
       "viewfinder": [
@@ -1961,7 +1961,7 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast",
+        "CFast 2.0",
         "SD UHS-II",
         "USB-C to external SSD/HDD"
       ],
@@ -2062,8 +2062,8 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "CFast 2.0 card slots",
-        "SD UHS-II card slots",
+        "CFast 2.0",
+        "SD UHS-II (Dual Slots)",
         "USB-C 3.1 Gen 2 expansion port for external media"
       ],
       "viewfinder": [
@@ -4268,8 +4268,8 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "SD memory card / SDHC memory card / SDXC memory card (UHS-II V90 recommended)",
-        "Dual slot recording function available [P2.1]"
+        "SD UHS-II",
+        "SD UHS-II (Dual Slots)"
       ],
       "viewfinder": [
         {
@@ -4610,7 +4610,7 @@ let devices={
         }
       ],
       "recordingMedia": [
-        "UHS-II SD",
+        "SD UHS-II",
         "CFexpress Type B"
       ],
       "viewfinder": [
