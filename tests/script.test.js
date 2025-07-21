@@ -144,4 +144,38 @@ describe('script.js functions', () => {
       { type: '3G-SDI', notes: 'Legacy' }
     ]);
   });
+
+  test('setBatteryPlates and getBatteryPlates roundtrip', () => {
+    const { setBatteryPlates, getBatteryPlates } = script;
+    setBatteryPlates([
+      { type: 'V-Mount', mount: 'native', notes: 'Main' },
+      { type: 'Gold', mount: 'adapted', notes: '' }
+    ]);
+    const rows = document.querySelectorAll('#batteryPlatesContainer .form-row');
+    expect(rows.length).toBe(2);
+    const list = getBatteryPlates();
+    expect(list).toEqual([
+      { type: 'V-Mount', mount: 'native', notes: 'Main' },
+      { type: 'Gold', mount: 'adapted', notes: '' }
+    ]);
+  });
+
+  test('applyDarkMode toggles class', () => {
+    const { applyDarkMode } = script;
+    const toggle = document.getElementById('darkModeToggle');
+    applyDarkMode(true);
+    expect(document.body.classList.contains('dark-mode')).toBe(true);
+    expect(toggle.textContent).toBe('☀');
+    applyDarkMode(false);
+    expect(document.body.classList.contains('dark-mode')).toBe(false);
+    expect(toggle.textContent).toBe('☾');
+  });
+
+  test('generatePrintableOverview opens window with content', () => {
+    const { generatePrintableOverview } = script;
+    window.open = jest.fn(() => ({ document: { write: jest.fn(), close: jest.fn() } }));
+    document.getElementById('setupName').value = 'Test';
+    generatePrintableOverview();
+    expect(window.open).toHaveBeenCalled();
+  });
 });
