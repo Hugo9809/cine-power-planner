@@ -80,6 +80,19 @@ p {
   margin-bottom: 2px;
 }
 
+/* Ensure selects and inputs inside wrappers match normal form fields */
+.field-with-label select,
+.field-with-label input {
+  flex: 1;
+  padding: 4px;
+  font-size: 1em;
+  background-color: #e8e8e8; /* Grey background */
+  color: #333; /* Darker text color */
+  border: 0px solid #ccc; /* Light grey border */
+  border-radius: 5px;
+  margin: 5px 5px 0 0;
+}
+
 /* smaller width for search inputs */
 .form-row .filter-input {
   flex: 0 0 120px;
