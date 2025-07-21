@@ -6330,176 +6330,238 @@ let devices={
           "0.8 mod"
         ]
       },
-      "Tilta Nucleus M (per motor)": {
+      "Tilta Nucleus M Motor": {
         "powerDrawWatts": 20,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+        "connector": "7-pin Lemo",
+        "internalController": true,
+        "torqueNm": 2.5,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod",
+          "0.8 mod 29mm wide"
+        ],
+        "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Tilta Nucleus M2 (per motor)": {
+      "Tilta Nucleus M II Motor": {
         "powerDrawWatts": 50,
-        "connector": "",
-        "internalController": false,
+        "connector": "7-pin Lemo",
+        "internalController": true,
         "torqueNm": null,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Higher torque than Nucleus M, designed for improved performance. The 50W rating is likely a max stall power. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Tilta Nucleus Nano (per motor)": {
+      "Tilta Nucleus Nano (Original) Motor": {
         "powerDrawWatts": 5,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+        "connector": "Micro-USB",
+        "internalController": true,
+        "torqueNm": 1,
         "gearTypes": [
           "0.8 mod"
-        ]
+        ],
+        "notes": "Compact motor for lighter lenses. Torque rated at 0.65 N·m at 5.5V and 1 N·m at 14.8V. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Tilta Nucleus Nano II (per motor)": {
-        "powerDrawWatts": 25,
-        "connector": "",
-        "internalController": false,
+      "Tilta Nucleus Nano II Motor": {
+        "powerDrawWatts": 37,
+        "connector": "USB-C",
+        "internalController": true,
         "torqueNm": null,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Arri Cforce Mini (peak)": {
+      "Arri Cforce Mini (CLM-4) Motor": {
         "powerDrawWatts": 20,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+        "connector": "Lemo 4-pin (LBUS)",
+        "internalController": true,
+        "torqueNm": 0.5,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod",
+          "0.8 mod 25mm wide",
+          "0.8 mod large diameter (e.g., 80T)"
+        ],
+        "notes": "Constant 0.3 Nm, maximum peak torque 0.5 Nm. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width, suitable for lenses with longer focus throws or telescoping barrels. Also compatible with large diameter 0.8 mod gears up to 80 teeth."
       },
-      "Arri Cforce Plus (peak)": {
+      "Arri Cforce Plus (CLM-5) Motor": {
         "powerDrawWatts": 32,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+        "connector": "Lemo 4-pin (LBUS)",
+        "internalController": true,
+        "torqueNm": 1,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod",
+          "0.8 mod 25mm wide",
+          "0.8 mod large diameter (e.g., 80T)"
+        ],
+        "notes": "Constant 0.7 Nm, maximum peak torque 1.0 Nm. More powerful than the Cforce Mini. Connects via ARRI LBUS. Also supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth."
       },
-      "Teradek RT Motion FIZ Motor": {
-        "powerDrawWatts": 18,
-        "connector": "",
+      "Teradek RT Motion FIZ Motor (MOTR.S)": {
+        "powerDrawWatts": 24,
+        "connector": "4-pin 0B Lemo",
         "internalController": false,
-        "torqueNm": null,
+        "torqueNm": 0.95,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod",
+          "0.8 mod 12mm wide"
+        ],
+        "notes": "Max peak torque of 0.95 Nm. Requires a Teradek MDR for control. Max operating current 2A at up to 12V. Teradek offers a 12mm wide 0.8 mod gear. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Preston DM1X (peak)": {
+      "Preston DM1X Motor": {
         "powerDrawWatts": 32.4,
-        "connector": "",
+        "connector": "4-pin Lemo",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Very high torque, often used for focus. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones."
       },
-      "Preston DM2 (peak)": {
+      "Preston DM2 Motor": {
         "powerDrawWatts": 22.2,
-        "connector": "",
+        "connector": "4-pin Lemo",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "High torque, general purpose motor. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones."
       },
-      "Preston DM2X (peak)": {
+      "Preston DM2X Motor": {
         "powerDrawWatts": 22.2,
-        "connector": "",
+        "connector": "4-pin Lemo",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Improved DM2 with higher torque capabilities and durability in the same physical size. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones."
       },
-      "Preston DM-A (peak)": {
+      "Preston DM-A Motor": {
         "powerDrawWatts": 18,
-        "connector": "",
+        "connector": "4-pin Lemo",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
           "0.8 mod"
-        ]
+        ],
+        "notes": "Compact motor for iris/zoom or lighter focus. No internal controller. Peak power draw from source. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Preston DM-C (peak)": {
+      "Preston DM-C Motor": {
         "powerDrawWatts": 18,
-        "connector": "",
+        "connector": "4-pin Lemo",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
           "0.8 mod"
-        ]
+        ],
+        "notes": "Designed for compact and lighter setups. No internal controller. Peak power draw from source. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Chrosziel CDM-100 (peak)": {
-        "powerDrawWatts": 6,
-        "connector": "",
+      "Chrosziel CDM-100 Digital Motor": {
+        "powerDrawWatts": 12,
+        "connector": "Lemo 7-pin 1B",
         "internalController": false,
-        "torqueNm": null,
+        "torqueNm": 0.5,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod",
+          "0.8 mod 16mm wide"
+        ],
+        "notes": "Max torque 0.5 Nm. Max 24V input. Power draw adjusted to typical max. No internal controller. Also supports 0.8 mod with 16mm width. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Chrosziel CDM-M (peak)": {
-        "powerDrawWatts": 6,
-        "connector": "",
+      "Chrosziel CDM-M (Universal Zoom Servo Drive)": {
+        "powerDrawWatts": 4.2,
+        "connector": "Lemo 5-pin 0B",
         "internalController": false,
-        "torqueNm": null,
+        "torqueNm": 0.5,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Designed primarily as a zoom servo. Torque 0.5 Nm. Max consumption approx. 350mAh at 12V. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters."
       },
       "DJI Focus Motor (Original)": {
-        "powerDrawWatts": 30,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+        "powerDrawWatts": 21.6,
+        "connector": "USB-C",
+        "internalController": true,
+        "torqueNm": 0.35,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Max torque 0.35 Nm. Max speed 192 rpm. Power draw estimated at 1.5A from 14.4V. Designed to work with standard 0.8 mod lens gears, including those with larger diameters for longer focus throws."
       },
-      "DJI RS Focus Motor": {
-        "powerDrawWatts": 22.4,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+      "DJI RS Focus Motor (2022)": {
+        "powerDrawWatts": 22.5,
+        "connector": "USB-C",
+        "internalController": true,
+        "torqueNm": 1,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Max torque 1.0 Nm at 8V. Stall current 2.8A at 8V. Quick-release structure. Designed to work with standard 0.8 mod lens gears, including those with larger diameters for longer focus throws."
       },
-      "Cmotion cPRO Motor (base unit/receiver function)": {
-        "powerDrawWatts": 20,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+      "Cmotion cPRO Motor": {
+        "powerDrawWatts": 24,
+        "connector": "Lemo 4-pin",
+        "internalController": true,
+        "torqueNm": 1.2,
         "gearTypes": [
-          "0.8 mod"
-        ]
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod"
+        ],
+        "notes": "Compact and lightweight with integrated RF module and camera interface. Rated 1.2 Nm. Max speed 240 teeth/sec. Compatible with standard 0.8 mod lens gears of various diameters."
       },
       "SmallRig Wireless Follow Focus Motor": {
         "powerDrawWatts": 12,
-        "connector": "",
-        "internalController": false,
-        "torqueNm": null,
+        "connector": "USB-C",
+        "internalController": true,
+        "torqueNm": 0.43,
         "gearTypes": [
           "0.8 mod"
-        ]
+        ],
+        "notes": "Peak torque of 4.3 kgf·cm (approx. 0.43 Nm). Supports PD and QC fast charging. Has built-in battery. Compatible with standard 0.8 mod lens gears of various diameters."
       },
       "Redrock MicroRemote Torque Motor": {
-        "powerDrawWatts": 54,
-        "connector": "",
+        "powerDrawWatts": 60,
+        "connector": "4-pin proprietary",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
           "0.8 mod"
-        ]
+        ],
+        "notes": "High torque motor. Max current draw can be up to 5A at 12V. Requires a MicroRemote Basestation. Compatible with standard 0.8 mod lens gears of various diameters."
       }
     },
     "controllers": {
