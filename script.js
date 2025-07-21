@@ -293,6 +293,268 @@ const texts = {
     exportAndRevertBtn: "Export and Revert to default Database",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
+  es: {
+    appTitle: "Planificador de Consumo de Cámara",
+    appHeading: "Aplicación de Consumo de Energía de Cámara",
+    tagline: "Planifica tu equipo y calcula consumo y autonomía de la batería.",
+
+    setupManageHeading: "Gestionar Configuración",
+    deviceSelectionHeading: "Selección de Dispositivos",
+    resultsHeading: "Resultados",
+    deviceManagerHeading: "Gestionar Base de Datos",
+    batteryComparisonHeading: "Comparación de Baterías",
+
+    savedSetupsLabel: "Configuraciones Guardadas:",
+    newSetupOption: "-- Nueva Configuración --",
+    setupNameLabel: "Nombre de Configuración:",
+    deleteSetupBtn: "Eliminar",
+    saveSetupBtn: "Guardar",
+
+    cameraLabel: "Cámara:",
+    monitorLabel: "Monitor:",
+    videoLabel: "Video Inalámbrico:",
+    distanceLabel: "Sensor de Distancia:",
+    batteryLabel: "Batería V-Mount:",
+
+    fizLegend: "Sistemas FIZ (Follow Focus)",
+    fizMotorsLabel: "Motores FIZ:",
+    fizControllersLabel: "Controles FIZ:",
+
+    totalPowerLabel: "Consumo Total:",
+    totalCurrent144Label: "Corriente Total (a 14.4V):",
+    totalCurrent12Label: "Corriente Total (a 12V):",
+    batteryLifeLabel: "Autonomía (estimada):",
+
+    warnPinExceeded: "ADVERTENCIA: la corriente ({current}A a ~12V) supera el límite principal ({max}A)!",
+    warnPinNear: "Nota: la corriente está cerca del límite ({current}A de {max}A).",
+    warnDTapExceeded: "ADVERTENCIA: la corriente ({current}A) supera la salida D-Tap ({max}A)!",
+    warnDTapNear: "Nota: la corriente usa más del 80% de la capacidad D-Tap ({current}A de {max}A).",
+
+    category_cameras: "Cámaras",
+    category_monitors: "Monitores",
+    category_video: "Video Inalámbrico",
+    category_fiz_motors: "Motores FIZ",
+    category_fiz_controllers: "Controles FIZ",
+    category_fiz_distance: "Distancia FIZ",
+    category_batteries: "Baterías V-Mount",
+
+    addDeviceHeading: "Añadir Nuevo Dispositivo",
+    categoryLabel: "Categoría:",
+    deviceNameLabel: "Nombre:",
+    consumptionLabel: "Consumo (W):",
+    capacityLabel: "Capacidad (Wh):",
+    pinLabel: "Máx Pin A:",
+    dtapLabel: "Máx D-Tap A:",
+    cameraWattLabel: "Consumo (W):",
+    cameraVoltageLabel: "Rango de Voltaje:",
+    cameraPortTypeLabel: "Tipo de Puerto:",
+    cameraPlatesLabel: "Placas de Batería:",
+    cameraMediaLabel: "Medios de Grabación:",
+    cameraLensMountLabel: "Montura de Lente:",
+    powerInputsHeading: "Entradas de Energía",
+    powerDistributionHeading: "Distribución de Energía",
+    videoOutputsHeading: "Salidas de Video",
+    fizConnectorHeading: "Conector FIZ",
+    mediaHeading: "Medios",
+    viewfinderHeading: "Visor",
+    lensMountHeading: "Montura",
+    timecodeHeading: "Timecode",
+    powerDistributionLabel: "Salidas:",
+    videoOutputsLabel: "Salidas:",
+    fizConnectorLabel: "Conectores:",
+    viewfinderLabel: "Visores:",
+    timecodeLabel: "Timecode:",
+    addDeviceBtn: "Añadir",
+    updateDeviceBtn: "Actualizar",
+    editBtn: "Editar",
+    deleteDeviceBtn: "Eliminar",
+    exportDataBtn: "Exportar Base de Datos",
+    importDataBtn: "Importar Base de Datos",
+    alertImportSuccess: "¡Base de datos importada! {num_devices} dispositivos cargados.",
+    alertImportError: "Error al importar la base de datos.",
+    confirmExportAndRevert: "¿Seguro que deseas exportar y restaurar la base de datos por defecto?",
+    alertExportAndRevertSuccess: "Base de datos exportada y restablecida.",
+
+    placeholder_deviceName: "Nombre del dispositivo",
+    placeholder_watt: "ej. 12.5",
+    placeholder_capacity: "ej. 98",
+    placeholder_pin: "ej. 10",
+    placeholder_dtap: "ej. 5",
+    placeholder_voltage: "11V-34V DC",
+    placeholder_port: "LEMO 8-pin",
+    placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
+    placeholder_media: "CFast 2.0",
+    placeholder_lensmount: "ARRI PL",
+    placeholder_powerdist: "[{}]",
+    placeholder_videooutputs: "[{}]",
+    placeholder_fizconnector: "[{}]",
+    placeholder_timecode: "[{}]",
+
+    toggleDeviceManager: "Editar Datos de Dispositivos…",
+    hideDeviceManager: "Ocultar Datos de Dispositivos",
+
+    batteryTableLabel: "Batería",
+    runtimeLabel: "Autonomía Estimada (h)",
+    batteryLifeUnit: "h",
+
+    noBatterySupports: "Ninguna batería puede suministrar esta carga.",
+
+    alertSetupName: "Ingresa un nombre para la configuración.",
+    alertSetupSaved: 'Configuración "{name}" guardada.',
+    alertNoSetupSelected: "Selecciona una configuración para eliminar.",
+    confirmDeleteSetup: '¿Eliminar configuración "{name}"?',
+    confirmDeleteDevice: '¿Eliminar dispositivo "{name}"?',
+    alertDeviceExists: "Ya existe un dispositivo con ese nombre en esta categoría.",
+    alertDeviceAdded: 'Dispositivo "{name}" agregado a "{category}".',
+    alertDeviceUpdated: 'Dispositivo "{name}" actualizado en "{category}".',
+    alertDeviceFields: "Introduce valores válidos para capacidad, Pin A y D-Tap A.",
+    alertDeviceWatt: "Introduce un valor de vatios válido.",
+    alertDeviceName: "El nombre no puede estar vacío.",
+    alertInvalidCameraJSON: "JSON de cámara no válido",
+
+    setupActionsHeading: "Acciones de Configuración",
+    exportSetupsBtn: "Exportar Todas",
+    importSetupsBtn: "Importar Configuraciones",
+    generateOverviewBtn: "Generar Resumen",
+    alertNoSetupsToExport: "No hay configuraciones para exportar.",
+    alertImportSetupsSuccess: "{num_setups} configuraciones importadas.",
+    alertImportSetupsError: "Error: no se pudieron importar las configuraciones.",
+    alertSelectSetupForOverview: "Selecciona una configuración para generar un resumen.",
+    overviewTitle: "Resumen de Configuración",
+    exportAndRevertBtn: "Exportar y Restaurar por Defecto",
+    // NEW TEXTS FOR SETUP MANAGEMENT END HERE
+  },
+  fr: {
+    appTitle: "Planificateur de Consommation Caméra",
+    appHeading: "Application de Consommation Caméra",
+    tagline: "Planifiez votre configuration et calculez la consommation et l'autonomie.",
+
+    setupManageHeading: "Gérer la Configuration",
+    deviceSelectionHeading: "Sélection des Appareils",
+    resultsHeading: "Résultats",
+    deviceManagerHeading: "Gérer la Base de Données",
+    batteryComparisonHeading: "Comparaison des Batteries",
+
+    savedSetupsLabel: "Configurations Enregistrées:",
+    newSetupOption: "-- Nouvelle Configuration --",
+    setupNameLabel: "Nom de la Configuration:",
+    deleteSetupBtn: "Supprimer",
+    saveSetupBtn: "Enregistrer",
+
+    cameraLabel: "Caméra:",
+    monitorLabel: "Moniteur:",
+    videoLabel: "Vidéo Sans Fil:",
+    distanceLabel: "Capteur de Distance:",
+    batteryLabel: "Batterie V-Mount:",
+
+    fizLegend: "Systèmes FIZ",
+    fizMotorsLabel: "Moteurs FIZ:",
+    fizControllersLabel: "Contrôleurs FIZ:",
+
+    totalPowerLabel: "Consommation Totale:",
+    totalCurrent144Label: "Courant Total (à 14,4V):",
+    totalCurrent12Label: "Courant Total (à 12V):",
+    batteryLifeLabel: "Autonomie (estimée):",
+
+    warnPinExceeded: "ATTENTION: le courant ({current}A à ~12V) dépasse la limite principale ({max}A)!",
+    warnPinNear: "Remarque : le courant est proche de la limite ({current}A sur {max}A).",
+    warnDTapExceeded: "ATTENTION: le courant ({current}A) dépasse la sortie D-Tap ({max}A)!",
+    warnDTapNear: "Remarque : le courant utilise plus de 80% de la capacité D-Tap ({current}A sur {max}A).",
+
+    category_cameras: "Caméras",
+    category_monitors: "Moniteurs",
+    category_video: "Vidéo Sans Fil",
+    category_fiz_motors: "Moteurs FIZ",
+    category_fiz_controllers: "Contrôleurs FIZ",
+    category_fiz_distance: "Distance FIZ",
+    category_batteries: "Batteries V-Mount",
+
+    addDeviceHeading: "Ajouter un Nouvel Appareil",
+    categoryLabel: "Catégorie:",
+    deviceNameLabel: "Nom:",
+    consumptionLabel: "Consommation (W):",
+    capacityLabel: "Capacité (Wh):",
+    pinLabel: "Max Pin A:",
+    dtapLabel: "Max D-Tap A:",
+    cameraWattLabel: "Puissance (W):",
+    cameraVoltageLabel: "Plage de Tension:",
+    cameraPortTypeLabel: "Type de Port:",
+    cameraPlatesLabel: "Plates Batterie:",
+    cameraMediaLabel: "Supports d'Enregistrement:",
+    cameraLensMountLabel: "Monture d'Objectif:",
+    powerInputsHeading: "Entrées d'Alimentation",
+    powerDistributionHeading: "Distribution d'Alimentation",
+    videoOutputsHeading: "Sorties Vidéo",
+    fizConnectorHeading: "Connecteur FIZ",
+    mediaHeading: "Médias",
+    viewfinderHeading: "Viseur",
+    lensMountHeading: "Monture",
+    timecodeHeading: "Timecode",
+    powerDistributionLabel: "Sorties:",
+    videoOutputsLabel: "Sorties:",
+    fizConnectorLabel: "Connecteurs:",
+    viewfinderLabel: "Viseurs:",
+    timecodeLabel: "Timecode:",
+    addDeviceBtn: "Ajouter",
+    updateDeviceBtn: "Mettre à Jour",
+    editBtn: "Modifier",
+    deleteDeviceBtn: "Supprimer",
+    exportDataBtn: "Exporter la Base",
+    importDataBtn: "Importer la Base",
+    alertImportSuccess: "Base importée ! {num_devices} appareils chargés.",
+    alertImportError: "Échec de l'importation de la base.",
+    confirmExportAndRevert: "Exporter puis rétablir la base par défaut ?",
+    alertExportAndRevertSuccess: "Base exportée et réinitialisée.",
+
+    placeholder_deviceName: "Nom de l'appareil",
+    placeholder_watt: "ex. 12.5",
+    placeholder_capacity: "ex. 98",
+    placeholder_pin: "ex. 10",
+    placeholder_dtap: "ex. 5",
+    placeholder_voltage: "11V-34V DC",
+    placeholder_port: "LEMO 8-pin",
+    placeholder_plates: '[{"type":"V-Mount","mount":"native"}]',
+    placeholder_media: "CFast 2.0",
+    placeholder_lensmount: "ARRI PL",
+    placeholder_powerdist: "[{}]",
+    placeholder_videooutputs: "[{}]",
+    placeholder_fizconnector: "[{}]",
+    placeholder_timecode: "[{}]",
+
+    toggleDeviceManager: "Éditer les Données…",
+    hideDeviceManager: "Masquer les Données",
+
+    batteryTableLabel: "Batterie",
+    runtimeLabel: "Autonomie Estimée (h)",
+    batteryLifeUnit: "h",
+
+    noBatterySupports: "Aucune batterie ne peut fournir cette charge.",
+
+    alertSetupName: "Veuillez saisir un nom pour la configuration.",
+    alertSetupSaved: 'Configuration "{name}" enregistrée.',
+    alertNoSetupSelected: "Sélectionnez une configuration à supprimer.",
+    confirmDeleteSetup: 'Supprimer la configuration "{name}" ?',
+    confirmDeleteDevice: "Supprimer l'appareil \"{name}\" ?",
+    alertDeviceExists: "Un appareil porte déjà ce nom dans cette catégorie.",
+    alertDeviceAdded: 'Appareil "{name}" ajouté à "{category}".',
+    alertDeviceUpdated: 'Appareil "{name}" mis à jour dans "{category}".',
+    alertDeviceFields: "Indiquez des valeurs valides pour capacité, Pin A et D-Tap A.",
+    alertDeviceWatt: "Veuillez entrer une valeur en watts valide.",
+    alertDeviceName: "Le nom de l'appareil ne peut être vide.",
+    alertInvalidCameraJSON: "JSON caméra invalide",
+
+    setupActionsHeading: "Actions de Configuration",
+    exportSetupsBtn: "Exporter Toutes",
+    importSetupsBtn: "Importer Configurations",
+    generateOverviewBtn: "Générer un Résumé",
+    alertNoSetupsToExport: "Aucune configuration à exporter.",
+    alertImportSetupsSuccess: "{num_setups} configurations importées.",
+    alertImportSetupsError: "Erreur : import impossible.",
+    alertSelectSetupForOverview: "Sélectionnez une configuration pour générer un résumé.",
+    overviewTitle: "Aperçu de Configuration",
+    exportAndRevertBtn: "Exporter et Réinitialiser",
+    // NEW TEXTS FOR SETUP MANAGEMENT END HERE
+  },
   de: {
     appTitle: "Kamera Stromverbrauchs Planer",
     appHeading: "Kamera-Stromverbrauchs-App",
@@ -445,6 +707,24 @@ const categoryNames = {
     "fiz.controllers": "FIZ Controller",
     "fiz.distance": "FIZ Distanz",
     "batteries": "V-Mount Akku"
+  },
+  es: {
+    "cameras": "Cámara",
+    "monitors": "Monitor",
+    "video": "Video inalámbrico",
+    "fiz.motors": "Motor FIZ",
+    "fiz.controllers": "Control FIZ",
+    "fiz.distance": "Distancia FIZ",
+    "batteries": "Batería V-Mount"
+  },
+  fr: {
+    "cameras": "Caméra",
+    "monitors": "Moniteur",
+    "video": "Vidéo sans fil",
+    "fiz.motors": "Moteur FIZ",
+    "fiz.controllers": "Contrôleur FIZ",
+    "fiz.distance": "Distance FIZ",
+    "batteries": "Batterie V-Mount"
   }
 };
 
@@ -452,7 +732,8 @@ const categoryNames = {
 let currentLang = "en";
 try {
   const savedLang = localStorage.getItem("language");
-  if (savedLang && (savedLang === "en" || savedLang === "de")) {
+  const supported = ["en", "de", "es", "fr"];
+  if (savedLang && supported.includes(savedLang)) {
     currentLang = savedLang;
   }
 } catch (e) {
@@ -567,8 +848,9 @@ function setLanguage(lang) {
     }
   });
   // Update "None" option text in all dropdowns
+  const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
   document.querySelectorAll('select option[value="None"]').forEach(opt => {
-    opt.textContent = (lang === "de") ? "Keine Auswahl" : "None";
+    opt.textContent = noneMap[lang] || "None";
   });
   // Save language preference
   try {
@@ -1482,7 +1764,8 @@ function populateSelect(selectElem, optionsObj, includeNone=true) {
   if (includeNone) {
     const noneOpt = document.createElement("option");
     noneOpt.value = "None";
-    noneOpt.textContent = (currentLang === "de") ? "Keine Auswahl" : "None";
+    const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
+    noneOpt.textContent = noneMap[currentLang] || "None";
     selectElem.appendChild(noneOpt);
   }
   for (let name in optionsObj) {
@@ -2554,7 +2837,9 @@ function escapeHtml(str) {
 function generatePrintableOverview() {
     const setupName = setupNameInput.value;
     const now = new Date();
-    const dateTimeString = now.toLocaleDateString(currentLang.startsWith('de') ? 'de-DE' : 'en-US') + ' ' + now.toLocaleTimeString();
+    const localeMap = { de: 'de-DE', es: 'es-ES', fr: 'fr-FR', en: 'en-US' };
+    const locale = localeMap[currentLang] || 'en-US';
+    const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const t = texts[currentLang];
 
     let deviceListHtml = '<ul>';

@@ -64,6 +64,13 @@ describe('script.js functions', () => {
     expect(document.getElementById('mainTitle').textContent).toBe('Kamera-Stromverbrauchs-App');
   });
 
+  test('setLanguage supports Spanish', () => {
+    script.setLanguage('es');
+    expect(document.documentElement.lang).toBe('es');
+    expect(localStorage.getItem('language')).toBe('es');
+    expect(document.getElementById('mainTitle').textContent).toBe('Aplicación de Consumo de Energía de Cámara');
+  });
+
   test('unifyDevices normalizes videoOutputs', () => {
     jest.resetModules();
 
