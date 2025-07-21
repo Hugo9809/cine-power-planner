@@ -116,12 +116,12 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 ```bash
 index.html       # Main HTML layout / Hauptseite
 style.css        # Styles and layout / Design
-fonts.css       # Embedded fonts
 script.js        # Application logic / Logik & Interaktion
 data.js          # Default device list / Start-Datenbank
 storage.js       # LocalStorage functions / Funktionen für LocalStorage
 README.md        # This file / Diese Datei
 ```
+Fonts are loaded via Google Fonts links in `index.html`.
 
 ## 🛠️ Development / Entwicklung
 
