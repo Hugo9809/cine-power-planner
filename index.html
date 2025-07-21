@@ -244,6 +244,56 @@
         </div>
       </div>
     </div>
+    <div id="monitorFields" style="display:none;">
+      <div class="monitor-subsection">
+        <h4 id="monitorDetailsHeading">Monitor Details</h4>
+        <div class="form-row">
+          <label for="monitorScreenSize" id="monitorScreenSizeLabel">Screen Size (in):</label>
+          <input type="number" id="monitorScreenSize" step="0.1" />
+        </div>
+        <div class="form-row">
+          <label for="monitorBrightness" id="monitorBrightnessLabel">Brightness (nits):</label>
+          <input type="number" id="monitorBrightness" step="1" />
+        </div>
+      </div>
+      <div class="monitor-subsection">
+        <h4 id="monitorPowerHeading">Power Input</h4>
+        <div class="form-row">
+          <label for="monitorWatt" id="monitorWattLabel">Power Draw (W):</label>
+          <input type="number" id="monitorWatt" step="0.1" />
+        </div>
+        <div class="form-row">
+          <label for="monitorVoltage" id="monitorVoltageLabel">Voltage Range:</label>
+          <input type="text" id="monitorVoltage" />
+        </div>
+        <div class="form-row">
+          <label for="monitorPortType" id="monitorPortTypeLabel">Port Type:</label>
+          <select id="monitorPortType"></select>
+        </div>
+      </div>
+      <div class="monitor-subsection">
+        <h4 id="monitorVideoInputsHeading">Video Inputs</h4>
+        <div class="form-row">
+          <label id="monitorVideoInputsLabel">Inputs:</label>
+          <div id="monitorVideoInputsContainer" style="flex:1;"></div>
+        </div>
+      </div>
+      <div class="monitor-subsection">
+        <h4 id="monitorVideoOutputsHeading">Video Outputs</h4>
+        <div class="form-row">
+          <label id="monitorVideoOutputsLabel">Outputs:</label>
+          <div id="monitorVideoOutputsContainer" style="flex:1;"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="monitorWirelessTx" id="monitorWirelessTxLabel">Wireless TX:</label>
+        <input type="checkbox" id="monitorWirelessTx" />
+      </div>
+      <div class="form-row">
+        <label for="monitorAudioOutput" id="monitorAudioOutputLabel">Audio Output:</label>
+        <input type="text" id="monitorAudioOutput" />
+      </div>
+    </div>
     <div id="batteryFields" style="display:none;">
       <div class="form-row">
         <label for="newCapacity" id="capacityLabel">Capacity (Wh):</label>

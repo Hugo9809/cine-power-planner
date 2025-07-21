@@ -332,6 +332,19 @@ function setLanguage(lang) {
   document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
   document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
   document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
+  document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
+  document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
+  document.getElementById("monitorWattLabel").textContent = texts[lang].monitorWattLabel;
+  document.getElementById("monitorVoltageLabel").textContent = texts[lang].monitorVoltageLabel;
+  document.getElementById("monitorPortTypeLabel").textContent = texts[lang].monitorPortTypeLabel;
+  document.getElementById("monitorVideoInputsHeading").textContent = texts[lang].monitorVideoInputsHeading;
+  document.getElementById("monitorVideoOutputsHeading").textContent = texts[lang].monitorVideoOutputsHeading;
+  document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
+  document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
+  document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
+  document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
+  document.getElementById("monitorDetailsHeading").textContent = texts[lang].monitorDetailsHeading;
+  document.getElementById("monitorPowerHeading").textContent = texts[lang].monitorPowerHeading;
   // Determine text for Add/Update button
   if (addDeviceBtn.dataset.mode === "edit") {
     addDeviceBtn.textContent = texts[lang].updateDeviceBtn;
@@ -350,6 +363,7 @@ function setLanguage(lang) {
   newPinAInput.placeholder = texts[lang].placeholder_pin;
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
+  monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -434,6 +448,16 @@ const cameraFieldsDiv = document.getElementById("cameraFields");
 const cameraWattInput = document.getElementById("cameraWatt");
 const cameraVoltageInput = document.getElementById("cameraVoltage");
 const cameraPortTypeInput = document.getElementById("cameraPortType");
+const monitorFieldsDiv = document.getElementById("monitorFields");
+const monitorScreenSizeInput = document.getElementById("monitorScreenSize");
+const monitorBrightnessInput = document.getElementById("monitorBrightness");
+const monitorWattInput = document.getElementById("monitorWatt");
+const monitorVoltageInput = document.getElementById("monitorVoltage");
+const monitorPortTypeInput = document.getElementById("monitorPortType");
+const monitorVideoInputsContainer = document.getElementById("monitorVideoInputsContainer");
+const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
+const monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
+const monitorAudioOutputInput = document.getElementById("monitorAudioOutput");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaContainer = document.getElementById("cameraMediaContainer");
 const lensMountContainer = document.getElementById("lensMountContainer");
@@ -591,6 +615,108 @@ function getVideoOutputs() {
 
 function clearVideoOutputs() {
   setVideoOutputs([]);
+}
+
+function createMonitorVideoInputRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const select = document.createElement('select');
+  select.className = 'monitor-video-input-select';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createMonitorVideoInputRow());
+  });
+  row.appendChild(addBtn);
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (monitorVideoInputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setMonitorVideoInputs(list) {
+  monitorVideoInputsContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const t = typeof item === 'string' ? item : item.portType || item.type;
+      monitorVideoInputsContainer.appendChild(createMonitorVideoInputRow(t));
+    });
+  } else {
+    monitorVideoInputsContainer.appendChild(createMonitorVideoInputRow());
+  }
+}
+
+function getMonitorVideoInputs() {
+  return Array.from(monitorVideoInputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+}
+
+function clearMonitorVideoInputs() {
+  setMonitorVideoInputs([]);
+}
+
+function createMonitorVideoOutputRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const select = document.createElement('select');
+  select.className = 'monitor-video-output-select';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createMonitorVideoOutputRow());
+  });
+  row.appendChild(addBtn);
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (monitorVideoOutputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setMonitorVideoOutputs(list) {
+  monitorVideoOutputsContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const t = typeof item === 'string' ? item : item.portType || item.type;
+      monitorVideoOutputsContainer.appendChild(createMonitorVideoOutputRow(t));
+    });
+  } else {
+    monitorVideoOutputsContainer.appendChild(createMonitorVideoOutputRow());
+  }
+}
+
+function getMonitorVideoOutputs() {
+  return Array.from(monitorVideoOutputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+}
+
+function clearMonitorVideoOutputs() {
+  setMonitorVideoOutputs([]);
 }
 
 // Build a row for editing a FIZ connector entry.
@@ -756,6 +882,14 @@ function getAllPowerPortTypes() {
       types.add(pt);
     }
   });
+  Object.values(devices.monitors || {}).forEach(mon => {
+    const pt = mon.power?.input?.portType;
+    if (Array.isArray(pt)) {
+      pt.forEach(t => { if (t) types.add(t); });
+    } else if (pt) {
+      types.add(pt);
+    }
+  });
   return Array.from(types).sort();
 }
 
@@ -773,6 +907,19 @@ function updatePowerPortOptions() {
     cameraPortTypeInput.appendChild(opt);
   });
   if (powerPortOptions.includes(current)) cameraPortTypeInput.value = current;
+
+  if (monitorPortTypeInput) {
+    const curMon = monitorPortTypeInput.value;
+    monitorPortTypeInput.innerHTML = '';
+    addEmptyOption(monitorPortTypeInput);
+    powerPortOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      monitorPortTypeInput.appendChild(opt);
+    });
+    if (powerPortOptions.includes(curMon)) monitorPortTypeInput.value = curMon;
+  }
 }
 
 function getAllPlateTypes() {
@@ -1535,6 +1682,8 @@ motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
+setMonitorVideoInputs([]);
+setMonitorVideoOutputs([]);
 setFizConnectors([]);
 updateFizConnectorOptions();
 setViewfinders([]);
@@ -2086,6 +2235,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       wattFieldDiv.style.display = "none";
       batteryFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "block";
+      monitorFieldsDiv.style.display = "none";
       cameraWattInput.value = deviceData.powerDrawWatts || '';
       cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
       const tmp = deviceData.power?.input?.portType;
@@ -2098,10 +2248,26 @@ deviceManagerSection.addEventListener("click", (event) => {
       setFizConnectors(deviceData.fizConnectors || []);
       setViewfinders(deviceData.viewfinder || []);
       setTimecodes(deviceData.timecode || []);
+    } else if (categoryKey === "monitors") {
+      wattFieldDiv.style.display = "none";
+      batteryFieldsDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "block";
+      monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
+      monitorBrightnessInput.value = deviceData.brightnessNits || '';
+      monitorWattInput.value = deviceData.powerDrawWatts || '';
+      monitorVoltageInput.value = deviceData.power?.input?.voltageRange || '';
+      const mpt = deviceData.power?.input?.portType;
+      monitorPortTypeInput.value = Array.isArray(mpt) ? mpt[0] : (mpt || "");
+      setMonitorVideoInputs(deviceData.video?.inputs || []);
+      setMonitorVideoOutputs(deviceData.video?.outputs || []);
+      monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
+      monitorAudioOutputInput.value = deviceData.audioOutput?.portType || '';
     } else {
       wattFieldDiv.style.display = "block";
       batteryFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
       const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
       newWattInput.value = watt;
     }
@@ -2150,15 +2316,23 @@ newCategorySelect.addEventListener("change", () => {
   if (val === "batteries") {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
     batteryFieldsDiv.style.display = "block";
   } else if (val === "cameras") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "block";
+    monitorFieldsDiv.style.display = "none";
+  } else if (val === "monitors") {
+    wattFieldDiv.style.display = "none";
+    batteryFieldsDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "block";
   } else {
     wattFieldDiv.style.display = "block";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
   }
   newWattInput.value = "";
   newCapacityInput.value = "";
@@ -2167,6 +2341,15 @@ newCategorySelect.addEventListener("change", () => {
   cameraWattInput.value = "";
   cameraVoltageInput.value = "";
   cameraPortTypeInput.value = "";
+  monitorScreenSizeInput.value = "";
+  monitorBrightnessInput.value = "";
+  monitorWattInput.value = "";
+  monitorVoltageInput.value = "";
+  monitorPortTypeInput.value = "";
+  monitorWirelessTxInput.checked = false;
+  monitorAudioOutputInput.value = "";
+  clearMonitorVideoInputs();
+  clearMonitorVideoOutputs();
   clearBatteryPlates();
   clearRecordingMedia();
   clearLensMounts();
@@ -2271,6 +2454,35 @@ addDeviceBtn.addEventListener("click", () => {
       viewfinder: viewfinder,
       lensMount: getLensMounts(),
       timecode: timecode
+    };
+  } else if (category === "monitors") {
+    const watt = parseFloat(monitorWattInput.value);
+    if (isNaN(watt) || watt <= 0) {
+      alert(texts[currentLang].alertDeviceWatt);
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    const screenSize = parseFloat(monitorScreenSizeInput.value);
+    const brightness = parseFloat(monitorBrightnessInput.value);
+    targetCategory[name] = {
+      screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
+      brightnessNits: isNaN(brightness) ? undefined : brightness,
+      powerDrawWatts: watt,
+      power: {
+        input: {
+          voltageRange: monitorVoltageInput.value,
+          portType: monitorPortTypeInput.value
+        },
+        output: null
+      },
+      video: {
+        inputs: getMonitorVideoInputs(),
+        outputs: getMonitorVideoOutputs()
+      },
+      wirelessTx: monitorWirelessTxInput.checked,
+      audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
   } else {
     const watt = parseFloat(newWattInput.value);
