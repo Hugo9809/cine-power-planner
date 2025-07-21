@@ -5,7 +5,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11V-34V DC",
-          "portType": "LEMO 8-pin (DC In / BAT)",
+          "portType": "Bat LEMO 8-pin",
           "powerDrawWatts": 89
         },
         "batteryPlateSupport": [
@@ -139,7 +139,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11V-34V DC",
-          "portType": "LEMO 8-pin (BAT)",
+          "portType": "Bat LEMO 8-pin",
           "powerDrawWatts": 84
         },
         "batteryPlateSupport": [
@@ -257,7 +257,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "19.5V-34V DC",
-          "portType": "BAT (LEMO 8-pin)",
+          "portType": "Bat LEMO 8-pin",
           "powerDrawWatts": 110
         },
         "batteryPlateSupport": [
@@ -372,7 +372,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "10.5V - 34V DC",
-          "portType": "XLR 4-pin (main input)",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 50
         },
         "batteryPlateSupport": [
@@ -477,7 +477,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "DC 12 V (11.0 to 17.0 V) / DC 24 V (22.0 to 32.0 V)",
-          "portType": "XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)",
+          "portType": [
+            "XLR 4-pin",
+            "Square 5-pin"
+          ],
           "powerDrawWatts": 76
         },
         "batteryPlateSupport": [
@@ -628,7 +631,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "DC 12 V (11.0 to 17.0 V) / DC 24 V (22.0 to 32.0 V)",
-          "portType": "XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)",
+          "portType": [
+            "XLR 4-pin",
+            "Square 5-pin"
+          ],
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -877,7 +883,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V DC (via NP-FZ100) / 5V DC (via USB-C)",
-          "portType": "USB-C (Power Delivery) / Battery Slot",
+          "portType": [
+            "Battery Slot",
+            "USB-C PD"
+          ],
           "powerDrawWatts": 7.3
         },
         "batteryPlateSupport": [
@@ -1175,7 +1184,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "24V DC",
-          "portType": "DC Input",
+          "portType": "DC IN",
           "powerDrawWatts": 14.6
         },
         "batteryPlateSupport": [
@@ -1372,7 +1381,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V - 20V DC",
-          "portType": "XLR 4-pin jack",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 31
         },
         "batteryPlateSupport": [
@@ -1467,7 +1476,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-20V DC",
-          "portType": "4-pin XLR / DC IN 12V",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 32.5
         },
         "batteryPlateSupport": [
@@ -1589,7 +1598,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V - 20V DC",
-          "portType": "XLR 4-pin jack",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 63
         },
         "batteryPlateSupport": [
@@ -1686,7 +1695,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V-20V",
-          "portType": "2-pin locking connector",
+          "portType": "LEMO 2-pin",
           "powerDrawWatts": 22
         },
         "batteryPlateSupport": [
@@ -1755,7 +1764,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V - 20V DC",
-          "portType": "2-pin locking connector",
+          "portType": "LEMO 2-pin",
           "powerDrawWatts": 26
         },
         "batteryPlateSupport": [
@@ -1829,7 +1838,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V-20V",
-          "portType": "2-pin locking connector",
+          "portType": "LEMO 2-pin",
           "powerDrawWatts": 26
         },
         "batteryPlateSupport": [
@@ -1903,7 +1912,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V-20V",
-          "portType": "2-pin locking connector / 2-pin LEMO",
+          "portType": "LEMO 2-pin",
           "powerDrawWatts": 26
         },
         "batteryPlateSupport": [
@@ -1984,7 +1993,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V DC",
-          "portType": "12-pin Molex connector (at battery plate rear) / 4-pin XLR (external power)",
+          "portType": [
+            "Molex 12-pin",
+            "XLR 4-pin"
+          ],
           "powerDrawWatts": 55
         },
         "batteryPlateSupport": [
@@ -2084,7 +2096,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "20V-30V DC",
-          "portType": "2-pin XLR",
+          "portType": "XLR 2-pin",
           "powerDrawWatts": 100
         },
         "batteryPlateSupport": [
@@ -2211,7 +2223,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V-20V DC",
-          "portType": "2-pin locking connector",
+          "portType": "LEMO 2-pin",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -2279,7 +2291,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V-20V DC",
-          "portType": "2-pin locking connector",
+          "portType": "LEMO 2-pin",
           "powerDrawWatts": 90
         },
         "batteryPlateSupport": [
@@ -2347,7 +2359,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "+7 to +17 V DC",
-          "portType": "2-pin DC-Input",
+          "portType": "2-pin DC-IN",
           "powerDrawWatts": 37
         },
         "batteryPlateSupport": [
@@ -2447,7 +2459,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "+7 to +17 V DC",
-          "portType": "2-pin DC-Input",
+          "portType": "2-pin DC-IN",
           "powerDrawWatts": 45
         },
         "batteryPlateSupport": [
@@ -2519,7 +2531,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "24V DC",
-          "portType": "4-pin XLR / V-Lock",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 75
         },
         "batteryPlateSupport": [
@@ -2624,7 +2636,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "24V DC",
-          "portType": "4-pin XLR / V-Lock",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 75
         },
         "batteryPlateSupport": [
@@ -2729,7 +2741,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "24V DC",
-          "portType": "4-pin XLR / V-Lock",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 75
         },
         "batteryPlateSupport": [
@@ -2834,7 +2846,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "24V DC",
-          "portType": "4-pin XLR / V-Lock",
+          "portType": "XLR 4-pin",
           "powerDrawWatts": 75
         },
         "batteryPlateSupport": [
@@ -3714,7 +3726,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "8.4V DC (battery) / 9V DC (USB-C PD)",
-          "portType": "Battery Slot / USB-C PD",
+          "portType": [
+            "Battery Slot",
+            "USB-C PD"
+          ],
           "powerDrawWatts": 27
         },
         "batteryPlateSupport": [
@@ -3784,7 +3799,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "9.0V DC (battery) / 9V DC (USB-C PD)",
-          "portType": "Battery Slot / USB-C PD",
+          "portType": [
+            "Battery Slot",
+            "USB-C PD"
+          ],
           "powerDrawWatts": 27
         },
         "batteryPlateSupport": [
@@ -3855,7 +3873,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V DC (battery) / 9V DC (USB-C PD)",
-          "portType": "Battery Slot / USB-C PD",
+          "portType": [
+            "Battery Slot",
+            "USB-C PD"
+          ],
           "powerDrawWatts": 27
         },
         "batteryPlateSupport": [
@@ -3926,7 +3947,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V (battery) / 5V DC (USB-C PD)",
-          "portType": "Battery Slot / USB-C PD",
+          "portType": [
+            "Battery Slot",
+            "USB-C PD"
+          ],
           "powerDrawWatts": 15
         },
         "batteryPlateSupport": [
@@ -3997,7 +4021,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "DC 12-30V",
-          "portType": "6-pin 1B DC-IN / TB50 Battery Mount",
+          "portType": [
+            "6-pin 1B DC-IN",
+            "TB50"
+          ],
           "powerDrawWatts": 40
         },
         "batteryPlateSupport": [
@@ -4118,7 +4145,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V DC (battery) / 9V DC (USB-C PD)",
-          "portType": "Battery Slot / USB Type-C®",
+          "portType": [
+            "Battery Slot",
+            "USB-C"
+          ],
           "powerDrawWatts": 5.6
         },
         "batteryPlateSupport": [
@@ -4196,7 +4226,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "12V DC (11.4V to 12.6V)",
-          "portType": "Weipu SF610/S2 (12VDC) Input",
+          "portType": [
+            "Weipu SF610",
+            "S2"
+          ],
           "powerDrawWatts": 8.1
         },
         "batteryPlateSupport": [
@@ -4266,7 +4299,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V DC (battery) / 5V DC (USB-C PD)",
-          "portType": "Battery Slot / USB Type-C®",
+          "portType": [
+            "Battery Slot",
+            "USB-C"
+          ],
           "powerDrawWatts": 7
         },
         "batteryPlateSupport": [
@@ -4326,7 +4362,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V (battery) / USB-C",
-          "portType": "Battery Slot / USB-C",
+          "portType": [
+            "Battery Slot",
+            "USB-C"
+          ],
           "powerDrawWatts": 5.5
         },
         "batteryPlateSupport": [
@@ -4394,7 +4433,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V (LP-E6P) / USB-C PD (45W+ recommended)",
-          "portType": "Battery Slot / USB-C PD",
+          "portType": [
+            "Battery Slot",
+            "USB-C PD"
+          ],
           "powerDrawWatts": 15
         },
         "batteryPlateSupport": [
@@ -4469,7 +4511,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V (LP-E19) / USB-C PD",
-          "portType": "Battery Slot / USB-C PD",
+          "portType": [
+            "Battery Slot",
+            "USB-C PD"
+          ],
           "powerDrawWatts": 18
         },
         "batteryPlateSupport": [
@@ -4540,7 +4585,10 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "7.2V (battery) / USB-C",
-          "portType": "Battery Slot / USB-C",
+          "portType": [
+            "Battery Slot",
+            "USB-C"
+          ],
           "powerDrawWatts": 10
         },
         "batteryPlateSupport": [
