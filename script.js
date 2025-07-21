@@ -650,6 +650,21 @@ function addEmptyOption(select) {
   select.appendChild(opt);
 }
 
+// Utility to remove entries with value "None" or empty string
+function filterNoneEntries(list, prop = 'type') {
+  if (!Array.isArray(list)) return [];
+  return list.filter(item => {
+    if (typeof item === 'string') {
+      return item && item !== 'None';
+    }
+    if (item && Object.prototype.hasOwnProperty.call(item, prop)) {
+      const val = item[prop];
+      return val !== undefined && val !== null && val !== '' && val !== 'None';
+    }
+    return true;
+  });
+}
+
 // Build a single row of the video output editor UI.
 function createVideoOutputRow(value = '') {
   const row = document.createElement('div');
@@ -684,8 +699,9 @@ function createVideoOutputRow(value = '') {
 
 function setVideoOutputs(list) {
   videoOutputsContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const t = typeof item === 'string' ? item : item.type;
       videoOutputsContainer.appendChild(createVideoOutputRow(t));
     });
@@ -695,7 +711,9 @@ function setVideoOutputs(list) {
 }
 
 function getVideoOutputs() {
-  return Array.from(videoOutputsContainer.querySelectorAll('select')).map(sel => ({ type: sel.value }));
+  return Array.from(videoOutputsContainer.querySelectorAll('select'))
+    .map(sel => ({ type: sel.value }))
+    .filter(vo => vo.type && vo.type !== 'None');
 }
 
 function clearVideoOutputs() {
@@ -735,8 +753,9 @@ function createMonitorVideoInputRow(value = '') {
 
 function setMonitorVideoInputs(list) {
   monitorVideoInputsContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list, 'portType');
+  if (filtered.length) {
+    filtered.forEach(item => {
       const t = typeof item === 'string' ? item : item.portType || item.type;
       monitorVideoInputsContainer.appendChild(createMonitorVideoInputRow(t));
     });
@@ -746,7 +765,9 @@ function setMonitorVideoInputs(list) {
 }
 
 function getMonitorVideoInputs() {
-  return Array.from(monitorVideoInputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+  return Array.from(monitorVideoInputsContainer.querySelectorAll('select'))
+    .map(sel => ({ portType: sel.value }))
+    .filter(v => v.portType && v.portType !== 'None');
 }
 
 function clearMonitorVideoInputs() {
@@ -786,8 +807,9 @@ function createMonitorVideoOutputRow(value = '') {
 
 function setMonitorVideoOutputs(list) {
   monitorVideoOutputsContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list, 'portType');
+  if (filtered.length) {
+    filtered.forEach(item => {
       const t = typeof item === 'string' ? item : item.portType || item.type;
       monitorVideoOutputsContainer.appendChild(createMonitorVideoOutputRow(t));
     });
@@ -797,7 +819,9 @@ function setMonitorVideoOutputs(list) {
 }
 
 function getMonitorVideoOutputs() {
-  return Array.from(monitorVideoOutputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+  return Array.from(monitorVideoOutputsContainer.querySelectorAll('select'))
+    .map(sel => ({ portType: sel.value }))
+    .filter(v => v.portType && v.portType !== 'None');
 }
 
 function clearMonitorVideoOutputs() {
@@ -837,8 +861,9 @@ function createVideoInputRow(value = '') {
 
 function setVideoInputs(list) {
   videoVideoInputsContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list, 'portType');
+  if (filtered.length) {
+    filtered.forEach(item => {
       const t = typeof item === 'string' ? item : item.portType || item.type;
       videoVideoInputsContainer.appendChild(createVideoInputRow(t));
     });
@@ -848,7 +873,9 @@ function setVideoInputs(list) {
 }
 
 function getVideoInputs() {
-  return Array.from(videoVideoInputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+  return Array.from(videoVideoInputsContainer.querySelectorAll('select'))
+    .map(sel => ({ portType: sel.value }))
+    .filter(v => v.portType && v.portType !== 'None');
 }
 
 function clearVideoInputs() { setVideoInputs([]); }
@@ -886,8 +913,9 @@ function createVideoIOOutputRow(value = '') {
 
 function setVideoOutputsIO(list) {
   videoVideoOutputsContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list, 'portType');
+  if (filtered.length) {
+    filtered.forEach(item => {
       const t = typeof item === 'string' ? item : item.portType || item.type;
       videoVideoOutputsContainer.appendChild(createVideoIOOutputRow(t));
     });
@@ -897,7 +925,9 @@ function setVideoOutputsIO(list) {
 }
 
 function getVideoOutputsIO() {
-  return Array.from(videoVideoOutputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+  return Array.from(videoVideoOutputsContainer.querySelectorAll('select'))
+    .map(sel => ({ portType: sel.value }))
+    .filter(v => v.portType && v.portType !== 'None');
 }
 
 function clearVideoOutputsIO() { setVideoOutputsIO([]); }
@@ -936,8 +966,9 @@ function createFizConnectorRow(value = '') {
 
 function setFizConnectors(list) {
   fizConnectorContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const t = typeof item === 'string' ? item : item.type;
       fizConnectorContainer.appendChild(createFizConnectorRow(t));
     });
@@ -947,7 +978,9 @@ function setFizConnectors(list) {
 }
 
 function getFizConnectors() {
-  return Array.from(fizConnectorContainer.querySelectorAll('select')).map(sel => ({ type: sel.value }));
+  return Array.from(fizConnectorContainer.querySelectorAll('select'))
+    .map(sel => ({ type: sel.value }))
+    .filter(fc => fc.type && fc.type !== 'None');
 }
 
 function clearFizConnectors() {
@@ -1034,8 +1067,9 @@ function createRecordingMediaRow(type = '', notes = '') {
 
 function setRecordingMedia(list) {
   cameraMediaContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const { type = '', notes = '' } = item || {};
       cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
     });
@@ -1045,10 +1079,12 @@ function setRecordingMedia(list) {
 }
 
 function getRecordingMedia() {
-  return Array.from(cameraMediaContainer.querySelectorAll('.form-row')).map(row => {
-    const [sel, notesInput] = row.querySelectorAll('select, input');
-    return { type: sel.value, notes: notesInput.value };
-  });
+  return Array.from(cameraMediaContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const [sel, notesInput] = row.querySelectorAll('select, input');
+      return { type: sel.value, notes: notesInput.value };
+    })
+    .filter(m => m.type && m.type !== 'None');
 }
 
 function clearRecordingMedia() {
@@ -1197,8 +1233,9 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
 
 function setBatteryPlates(list) {
   batteryPlatesContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const { type = '', mount = 'native', notes = '' } = item || {};
       batteryPlatesContainer.appendChild(createBatteryPlateRow(type, mount, notes));
     });
@@ -1208,10 +1245,12 @@ function setBatteryPlates(list) {
 }
 
 function getBatteryPlates() {
-  return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(row => {
-    const [typeSel, mountSel, notesInput] = row.querySelectorAll('select, input');
-    return { type: typeSel.value, mount: mountSel.value, notes: notesInput.value };
-  });
+  return Array.from(batteryPlatesContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const [typeSel, mountSel, notesInput] = row.querySelectorAll('select, input');
+      return { type: typeSel.value, mount: mountSel.value, notes: notesInput.value };
+    })
+    .filter(bp => bp.type && bp.type !== 'None');
 }
 
 function clearBatteryPlates() {
@@ -1319,8 +1358,9 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
 
 function setViewfinders(list) {
   viewfinderContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const { type = '', resolution = '', connector = '', notes = '' } = item || {};
       viewfinderContainer.appendChild(createViewfinderRow(type, resolution, connector, notes));
     });
@@ -1330,15 +1370,17 @@ function setViewfinders(list) {
 }
 
 function getViewfinders() {
-  return Array.from(viewfinderContainer.querySelectorAll('.form-row')).map(row => {
-    const [typeSelect, resInput, connSelect, notesInput] = row.querySelectorAll('select, input');
-    return {
-      type: typeSelect.value,
-      resolution: resInput.value,
-      connector: connSelect.value,
-      notes: notesInput.value
-    };
-  });
+  return Array.from(viewfinderContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const [typeSelect, resInput, connSelect, notesInput] = row.querySelectorAll('select, input');
+      return {
+        type: typeSelect.value,
+        resolution: resInput.value,
+        connector: connSelect.value,
+        notes: notesInput.value
+      };
+    })
+    .filter(vf => vf.type && vf.type !== 'None');
 }
 
 function clearViewfinders() {
@@ -1430,8 +1472,9 @@ function createLensMountRow(type = '', mount = 'native') {
 
 function setLensMounts(list) {
   lensMountContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const { type = '', mount = 'native' } = item || {};
       lensMountContainer.appendChild(createLensMountRow(type, mount));
     });
@@ -1441,10 +1484,12 @@ function setLensMounts(list) {
 }
 
 function getLensMounts() {
-  return Array.from(lensMountContainer.querySelectorAll('.form-row')).map(row => {
-    const [typeSel, mountSel] = row.querySelectorAll('select');
-    return { type: typeSel.value, mount: mountSel.value };
-  });
+  return Array.from(lensMountContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const [typeSel, mountSel] = row.querySelectorAll('select');
+      return { type: typeSel.value, mount: mountSel.value };
+    })
+    .filter(lm => lm.type && lm.type !== 'None');
 }
 
 function clearLensMounts() {
@@ -1629,8 +1674,9 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 
 function setPowerDistribution(list) {
   powerDistContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const { type = '', voltage = '', current = '', wattage = '', notes = '' } = item || {};
       powerDistContainer.appendChild(createPowerDistRow(type, voltage, current, wattage, notes));
     });
@@ -1640,16 +1686,18 @@ function setPowerDistribution(list) {
 }
 
 function getPowerDistribution() {
-  return Array.from(powerDistContainer.querySelectorAll('.form-row')).map(row => {
-    const [typeSel, voltSel, currSel, wattInput, notesInput] = row.querySelectorAll('select, input');
-    return {
-      type: typeSel.value,
-      voltage: voltSel.value,
-      current: currSel.value,
-      wattage: wattInput.value ? parseFloat(wattInput.value) : null,
-      notes: notesInput.value
-    };
-  });
+  return Array.from(powerDistContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const [typeSel, voltSel, currSel, wattInput, notesInput] = row.querySelectorAll('select, input');
+      return {
+        type: typeSel.value,
+        voltage: voltSel.value,
+        current: currSel.value,
+        wattage: wattInput.value ? parseFloat(wattInput.value) : null,
+        notes: notesInput.value
+      };
+    })
+    .filter(pd => pd.type && pd.type !== 'None');
 }
 
 function clearPowerDistribution() {
@@ -1735,8 +1783,9 @@ function createTimecodeRow(type = '', notes = '') {
 
 function setTimecodes(list) {
   timecodeContainer.innerHTML = '';
-  if (Array.isArray(list) && list.length) {
-    list.forEach(item => {
+  const filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(item => {
       const { type = '', notes = '' } = item || {};
       timecodeContainer.appendChild(createTimecodeRow(type, notes));
     });
@@ -1746,10 +1795,12 @@ function setTimecodes(list) {
 }
 
 function getTimecodes() {
-  return Array.from(timecodeContainer.querySelectorAll('.form-row')).map(row => {
-    const [typeSel, notesInput] = row.querySelectorAll('select, input');
-    return { type: typeSel.value, notes: notesInput.value };
-  });
+  return Array.from(timecodeContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const [typeSel, notesInput] = row.querySelectorAll('select, input');
+      return { type: typeSel.value, notes: notesInput.value };
+    })
+    .filter(tc => tc.type && tc.type !== 'None');
 }
 
 function clearTimecodes() {
