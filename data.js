@@ -289,7 +289,7 @@ let devices={
             "notes": "Regulated R/S, primarily control"
           },
           {
-            "type": "EXT (LEMO 7-pin)",
+            "type": "EXT LEMO 7-pin",
             "voltage": "24V",
             "notes": "Control/Power"
           },
@@ -387,7 +387,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "Hirose 12pin",
+            "type": "Hirose 12-pin",
             "notes": "For ENG type zoom lenses"
           },
           {
@@ -396,17 +396,17 @@ let devices={
             "notes": "Power output"
           },
           {
-            "type": "Hirose 4pin",
+            "type": "Hirose 4-pin",
             "voltage": "12V",
             "notes": "Power output"
           },
           {
-            "type": "Lemo 2pin",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "notes": "Power output"
           },
           {
-            "type": "RS 3pin",
+            "type": "Fischer 3-pin",
             "voltage": "24V",
             "notes": "Power output"
           }
@@ -538,7 +538,7 @@ let devices={
             "notes": "Unregulated, 9A shared"
           },
           {
-            "type": "USB",
+            "type": "USB-A",
             "voltage": "5V",
             "current": "2.5A",
             "wattage": 12.5,
@@ -692,7 +692,7 @@ let devices={
             "notes": "Unregulated, 9A shared"
           },
           {
-            "type": "USB",
+            "type": "USB-A",
             "voltage": "5V",
             "current": "2.5A",
             "wattage": 12.5,
@@ -1016,13 +1016,13 @@ let devices={
             "notes": "Via optional MID49 DB-11, per port, with R/S"
           },
           {
-            "type": "Lemo 2-pin",
+            "type": "LEMO 2-pin",
             "voltage": "14.4V",
             "wattage": 24,
             "notes": "Via optional MID49 DB-11, per port (est. 2A)"
           },
           {
-            "type": "Lemo 2-pin",
+            "type": "LEMO 2-pin",
             "voltage": "14.4V",
             "wattage": 24,
             "notes": "Via optional MID49 DB-11, per port (est. 2A)"
@@ -1517,15 +1517,15 @@ let devices={
             "notes": "Via camera body or top handle"
           },
           {
-            "type": "USB-C Data Terminal",
+            "type": "USB-C",
             "notes": "USB 3.2 Gen1"
           },
           {
-            "type": "USB-C Terminal (Grip)",
+            "type": "USB-C",
             "notes": "For supplied Hand Grip only"
           },
           {
-            "type": "USB-C Terminal (LCD Monitor)",
+            "type": "USB-C",
             "notes": "For supplied LCD Monitor only"
           }
         ]
@@ -1734,7 +1734,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "USB-C 3.1 Gen 1",
+            "type": "USB-C",
             "notes": "For external drive recording, PTP camera control, software updates, can trickle charge battery"
           }
         ]
@@ -1898,7 +1898,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "USB-C 3.1 Gen 1",
+            "type": "USB-C",
             "notes": "For external drive recording, PTP camera control, software updates, can trickle charge battery"
           }
         ]
@@ -2085,7 +2085,7 @@ let devices={
             "notes": "Regulated, via individualized V-Mount battery plate"
           },
           {
-            "type": "USB Type-C 3.1 Gen 2",
+            "type": "USB-C",
             "voltage": null,
             "wattage": null,
             "notes": "With power delivery for external drive recording"
@@ -2178,21 +2178,21 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "current": "3A",
             "wattage": 36,
             "notes": "Regulated"
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "current": "3A",
             "wattage": 36,
             "notes": "Regulated"
           },
           {
-            "type": "3-pin Fischer",
+            "type": "Fischer 3-pin",
             "voltage": "24V",
             "current": "3A",
             "wattage": 72,
@@ -2460,7 +2460,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "D-Tap / P-Tap",
+            "type": "D-Tap",
             "voltage": "12-14.8V",
             "wattage": 50,
             "notes": "Via optional third-party plates, typical per port"
@@ -2560,7 +2560,7 @@ let devices={
             "notes": "Power Delivery"
           },
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "notes": "Via optional expander"
           }
         ]
@@ -2631,27 +2631,27 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "3-pin Fischer",
+            "type": "Fischer 3-pin",
             "voltage": "24V",
             "wattage": null,
             "notes": "R/S"
@@ -2738,27 +2738,27 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "3-pin Fischer",
+            "type": "Fischer 3-pin",
             "voltage": "24V",
             "wattage": null,
             "notes": "R/S"
@@ -2845,27 +2845,27 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "3-pin Fischer",
+            "type": "Fischer 3-pin",
             "voltage": "24V",
             "wattage": null,
             "notes": "R/S"
@@ -2952,27 +2952,27 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "wattage": null
           },
           {
-            "type": "3-pin Fischer",
+            "type": "Fischer 3-pin",
             "voltage": "24V",
             "wattage": null,
             "notes": "R/S"
@@ -3059,7 +3059,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3134,7 +3134,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3209,7 +3209,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3284,7 +3284,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3359,7 +3359,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3430,7 +3430,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3501,7 +3501,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3572,7 +3572,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3643,7 +3643,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3714,7 +3714,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -3785,7 +3785,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "P-Tap",
+            "type": "D-Tap",
             "voltage": "12V",
             "wattage": null
           }
@@ -4176,21 +4176,21 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "current": "3A",
             "wattage": 36,
             "notes": "Regulated"
           },
           {
-            "type": "2-pin LEMO",
+            "type": "LEMO 2-pin",
             "voltage": "12V",
             "current": "3A",
             "wattage": 36,
             "notes": "Regulated"
           },
           {
-            "type": "3-pin Fischer",
+            "type": "Fischer 3-pin",
             "voltage": "24V",
             "current": "3A",
             "wattage": 72,
@@ -4303,7 +4303,7 @@ let devices={
         ],
         "powerDistributionOutputs": [
           {
-            "type": "USB Type-C®",
+            "type": "USB-C",
             "voltage": "9V",
             "current": "3A",
             "wattage": 27,
