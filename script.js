@@ -764,6 +764,45 @@ function getAllViewfinderConnectors() {
 let viewfinderTypeOptions = getAllViewfinderTypes();
 let viewfinderConnectorOptions = getAllViewfinderConnectors();
 
+function updateViewfinderOptions() {
+  viewfinderTypeOptions = getAllViewfinderTypes();
+  viewfinderConnectorOptions = getAllViewfinderConnectors();
+  document.querySelectorAll('.viewfinder-type-select').forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    viewfinderTypeOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (current && !viewfinderTypeOptions.includes(current)) {
+      const opt = document.createElement('option');
+      opt.value = current;
+      opt.textContent = current;
+      sel.appendChild(opt);
+    }
+    sel.value = current;
+  });
+  document.querySelectorAll('.viewfinder-connector-select').forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    viewfinderConnectorOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (current && !viewfinderConnectorOptions.includes(current)) {
+      const opt = document.createElement('option');
+      opt.value = current;
+      opt.textContent = current;
+      sel.appendChild(opt);
+    }
+    sel.value = current;
+  });
+}
+
 function createViewfinderRow(type = '', resolution = '', connector = '', notes = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
@@ -1541,6 +1580,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       saveDeviceData(devices); // Save changes to localStorage
       viewfinderTypeOptions = getAllViewfinderTypes();
       viewfinderConnectorOptions = getAllViewfinderConnectors();
+      updateViewfinderOptions();
       refreshDeviceLists();
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
@@ -1551,6 +1591,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
       updateFizConnectorOptions();
+      updateViewfinderOptions();
       applyFilters();
       updateCalculations();
     }
@@ -1732,6 +1773,7 @@ addDeviceBtn.addEventListener("click", () => {
   populateSelect(distanceSelect, devices.fiz.distance, true);
   populateSelect(batterySelect, devices.batteries, true);
   updateFizConnectorOptions();
+  updateViewfinderOptions();
   applyFilters();
   updateCalculations(); // Update calculations after device data changes
 
@@ -1787,6 +1829,7 @@ if (exportAndRevertBtn) {
 
         viewfinderTypeOptions = getAllViewfinderTypes();
         viewfinderConnectorOptions = getAllViewfinderConnectors();
+        updateViewfinderOptions();
 
         // Update the UI to reflect the reverted database
         populateSelect(cameraSelect, devices.cameras, true);
@@ -1834,6 +1877,7 @@ importFileInput.addEventListener("change", (event) => {
         saveDeviceData(devices); // Persist to local storage
         viewfinderTypeOptions = getAllViewfinderTypes();
         viewfinderConnectorOptions = getAllViewfinderConnectors();
+        updateViewfinderOptions();
         refreshDeviceLists(); // Update device manager lists
         // Re-populate all dropdowns and update calculations
         populateSelect(cameraSelect, devices.cameras, true);
