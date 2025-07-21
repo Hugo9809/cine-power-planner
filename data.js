@@ -2211,14 +2211,19 @@ let devices={
         },
         "batteryPlateSupport": [
           {
-            "type": "V-Mount",
+            "type": "B-Mount",
             "mount": "native",
             "notes": ""
           },
           {
+            "type": "V-Mount",
+            "mount": "adapted",
+            "notes": "Limited functionality"
+          },
+          {
             "type": "Gold-Mount",
-            "mount": "native",
-            "notes": ""
+            "mount": "adapted",
+            "notes": "Limited functionality"
           }
         ],
         "powerDistributionOutputs": [
