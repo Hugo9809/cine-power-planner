@@ -257,18 +257,64 @@ function isNativeBMountCamera(name) {
   return cam.power.batteryPlateSupport.some(bp => bp.type === 'B-Mount' && bp.mount === 'native');
 }
 
-function getBMountBatteries() {
+function isNativeVMountCamera(name) {
+  const cam = devices.cameras[name];
+  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
+  return cam.power.batteryPlateSupport.some(bp => bp.type === 'V-Mount' && bp.mount === 'native');
+}
+
+function getBatteriesByMount(mountType) {
   const out = {};
   for (const [name, data] of Object.entries(devices.batteries)) {
-    if (data && data.mount_type === 'B-Mount') out[name] = data;
+    if (data && data.mount_type === mountType) out[name] = data;
   }
   return out;
 }
 
+function getSelectedPlate() {
+  const camName = cameraSelect.value;
+  const hasB = isNativeBMountCamera(camName);
+  const hasV = isNativeVMountCamera(camName);
+  if (hasB && hasV) {
+    return batteryPlateSelect.value;
+  } else if (hasB) {
+    return 'B-Mount';
+  } else if (hasV) {
+    return 'V-Mount';
+  }
+  return null;
+}
+
+function updateBatteryPlateVisibility() {
+  const camName = cameraSelect.value;
+  const hasB = isNativeBMountCamera(camName);
+  const hasV = isNativeVMountCamera(camName);
+  if (hasB && hasV) {
+    batteryPlateRow.style.display = '';
+    if (batteryPlateSelect.options.length === 0) {
+      ['V-Mount', 'B-Mount'].forEach(pt => {
+        const opt = document.createElement('option');
+        opt.value = pt;
+        opt.textContent = pt;
+        batteryPlateSelect.appendChild(opt);
+      });
+    }
+    if (!['V-Mount', 'B-Mount'].includes(batteryPlateSelect.value)) {
+      batteryPlateSelect.value = 'V-Mount';
+    }
+  } else {
+    batteryPlateRow.style.display = 'none';
+    if (hasB) batteryPlateSelect.value = 'B-Mount';
+    else if (hasV) batteryPlateSelect.value = 'V-Mount';
+    else batteryPlateSelect.value = '';
+  }
+}
+
+
 function updateBatteryLabel() {
   const label = document.getElementById('batteryLabel');
   if (!label) return;
-  if (isNativeBMountCamera(cameraSelect.value)) {
+  if (getSelectedPlate() === 'B-Mount') {
     label.textContent = BMOUNT_BATTERY_LABEL[currentLang] || 'B-Mount Battery:';
   } else {
     label.textContent = texts[currentLang].batteryLabel;
@@ -277,8 +323,11 @@ function updateBatteryLabel() {
 
 function updateBatteryOptions() {
   const current = batterySelect.value;
-  if (isNativeBMountCamera(cameraSelect.value)) {
-    populateSelect(batterySelect, getBMountBatteries(), true);
+  const plate = getSelectedPlate();
+  if (plate === 'B-Mount') {
+    populateSelect(batterySelect, getBatteriesByMount('B-Mount'), true);
+  } else if (plate === 'V-Mount') {
+    populateSelect(batterySelect, getBatteriesByMount('V-Mount'), true);
   } else {
     populateSelect(batterySelect, devices.batteries, true);
   }
@@ -347,6 +396,7 @@ function setLanguage(lang) {
   document.getElementById("videoLabel").textContent = texts[lang].videoLabel;
   document.getElementById("distanceLabel").textContent = texts[lang].distanceLabel;
   document.getElementById("batteryLabel").textContent = texts[lang].batteryLabel;
+  document.getElementById("batteryPlateLabel").textContent = texts[lang].batteryPlateLabel;
   updateBatteryLabel();
   // FIZ legend
   document.getElementById("fizLegend").textContent = texts[lang].fizLegend;
@@ -552,6 +602,8 @@ const fizConnectorContainer = document.getElementById("fizConnectorContainer");
 const viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
 const batteryFieldsDiv = document.getElementById("batteryFields");
+const batteryPlateRow = document.getElementById("batteryPlateRow");
+const batteryPlateSelect = document.getElementById("batteryPlateSelect");
 const newCapacityInput = document.getElementById("newCapacity");
 const newPinAInput    = document.getElementById("newPinA");
 const newDtapAInput   = document.getElementById("newDtapA");
@@ -1857,6 +1909,7 @@ motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
 populateSelect(batterySelect, devices.batteries, true);
+updateBatteryPlateVisibility();
 updateBatteryOptions();
 
 // Enable search inside dropdowns
@@ -1993,7 +2046,7 @@ function updateCalculations() {
   }
 
   // Calculate currents depending on battery type
-  const bMountCam = isNativeBMountCamera(camera);
+  const bMountCam = getSelectedPlate() === 'B-Mount';
   let highV = bMountCam ? 33.6 : 14.4;
   let lowV = bMountCam ? 21.6 : 12.0;
   let totalCurrentHigh = 0;
@@ -2086,18 +2139,21 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   if (totalWatt > 0) {
     // Build lists of batteries that can supply this current (via Pin or D-Tap)
     const selectedBatteryName = batterySelect.value;
+    const plateFilter = getSelectedPlate();
     let selectedCandidate = null;
     if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
       const selData = devices.batteries[selectedBatteryName];
-      const pinOK_sel = totalCurrentLow <= selData.pinA;
-      const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
-      if (pinOK_sel || dtapOK_sel) {
-        const selHours = selData.capacity / totalWatt;
-        let selMethod;
-        if (pinOK_sel && dtapOK_sel) selMethod = "both pins and D-Tap";
-        else if (pinOK_sel) selMethod = "pins";
-        else selMethod = "dtap";
-        selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
+      if (!plateFilter || selData.mount_type === plateFilter) {
+        const pinOK_sel = totalCurrentLow <= selData.pinA;
+        const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
+        if (pinOK_sel || dtapOK_sel) {
+          const selHours = selData.capacity / totalWatt;
+          let selMethod;
+          if (pinOK_sel && dtapOK_sel) selMethod = "both pins and D-Tap";
+          else if (pinOK_sel) selMethod = "pins";
+          else selMethod = "dtap";
+          selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
+        }
       }
     }
 
@@ -2108,6 +2164,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       if (selectedCandidate && battName === selectedCandidate.name) continue;
 
       const data = devices.batteries[battName];
+      if (plateFilter && data.mount_type !== plateFilter) continue;
       const canPin = totalCurrentLow <= data.pinA;
       const canDTap = !bMountCam && totalCurrentLow <= data.dtapA;
 
@@ -3200,7 +3257,8 @@ function generatePrintableOverview() {
         const selectedBatteryName = batterySelect.value;
         let selectedCandidate = null;
         const totalCurrent12 = parseFloat(totalCurrent12Elem.textContent); // Get current displayed current
-        const bMountCam = isNativeBMountCamera(cameraSelect.value);
+        const plateFilter = getSelectedPlate();
+        const bMountCam = plateFilter === 'B-Mount';
 
         if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
             const selData = devices.batteries[selectedBatteryName];
@@ -3232,6 +3290,7 @@ function generatePrintableOverview() {
             if (selectedCandidate && battName === selectedCandidate.name) continue;
 
             const data = devices.batteries[battName];
+            if (plateFilter && data.mount_type !== plateFilter) continue;
             const canPin = totalCurrent12 <= data.pinA;
             const canDTap = !bMountCam && totalCurrent12 <= data.dtapA;
 
@@ -3474,9 +3533,15 @@ function generatePrintableOverview() {
 // --- EVENT LISTENERS FÜR NEUBERECHNUNG ---
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
-[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
+[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
-if (cameraSelect) cameraSelect.addEventListener('change', updateBatteryOptions);
+if (cameraSelect) {
+  cameraSelect.addEventListener('change', () => {
+    updateBatteryPlateVisibility();
+    updateBatteryOptions();
+  });
+}
+if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
@@ -3538,5 +3603,7 @@ if (typeof module !== "undefined" && module.exports) {
     getRecordingMedia,
     applyDarkMode,
     generatePrintableOverview,
+    updateBatteryPlateVisibility,
+    updateBatteryOptions,
   };
 }

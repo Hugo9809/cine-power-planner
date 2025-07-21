@@ -76,6 +76,43 @@ describe('script.js functions', () => {
     expect(document.getElementById('dtapWarning').textContent).toBe('');
   });
 
+  test('battery dropdown filters by mount type', () => {
+    global.devices.cameras.VCam = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] }
+    };
+    global.devices.cameras.BothCam = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [
+        { type: 'V-Mount', mount: 'native' },
+        { type: 'B-Mount', mount: 'native' }
+      ] }
+    };
+    global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
+    global.devices.batteries.BBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
+
+    const camSel = document.getElementById('cameraSelect');
+    const battSel = document.getElementById('batterySelect');
+    const plateSel = document.getElementById('batteryPlateSelect');
+
+    camSel.innerHTML = `<option value="VCam">VCam</option>`;
+    camSel.value = 'VCam';
+    script.updateBatteryPlateVisibility();
+    script.updateBatteryOptions();
+    const optionsV = Array.from(battSel.options).map(o => o.value);
+    expect(optionsV).toContain('VBatt');
+    expect(optionsV).not.toContain('BBatt');
+
+    camSel.innerHTML = `<option value="BothCam">BothCam</option>`;
+    camSel.value = 'BothCam';
+    script.updateBatteryPlateVisibility();
+    plateSel.value = 'B-Mount';
+    script.updateBatteryOptions();
+    const optionsB = Array.from(battSel.options).map(o => o.value);
+    expect(optionsB).toContain('BBatt');
+    expect(optionsB).not.toContain('VBatt');
+  });
+
   test('setLanguage updates language and saves preference', () => {
     script.setLanguage('de');
     expect(document.documentElement.lang).toBe('de');
