@@ -2777,6 +2777,8 @@ deviceManagerSection.addEventListener("click", (event) => {
     newNameInput.value = name;
     newCategorySelect.value = categoryKey;
     newCategorySelect.disabled = true; // Prevent changing category during edit
+    // Trigger change handler so correct fields are shown and others cleared
+    newCategorySelect.dispatchEvent(new Event('change'));
 
     let deviceData;
     if (categoryKey.includes('.')) {
