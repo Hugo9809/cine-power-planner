@@ -3419,10 +3419,12 @@ if (darkModeToggle) {
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     setLanguage(currentLang);
+    resetDeviceForm();
     updateCalculations();
   });
 } else {
   setLanguage(currentLang);
+  resetDeviceForm();
   updateCalculations();
 }
 
