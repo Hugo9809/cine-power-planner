@@ -9,8 +9,10 @@ Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowi
 
 ## 🌍 Languages / Sprachen
 
-- 🇬🇧 English (default)
-- 🇩🇪 Deutsch
+ - 🇬🇧 English (default)
+ - 🇩🇪 Deutsch
+ - 🇪🇸 Español
+ - 🇫🇷 Français
 ➡️ Language can be changed in the top-right dropdown.
 ➡️ Sprache oben rechts umschaltbar.
 ➡️ The selected language is remembered for your next visit.
