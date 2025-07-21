@@ -89,6 +89,7 @@ function unifyDevices(data) {
     });
     cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' });
     cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', connector: '', notes: '' });
+    cam.timecode = ensureList(cam.timecode, { type: '', notes: '' });
   });
 }
 
@@ -165,11 +166,11 @@ const texts = {
     viewfinderHeading: "Viewfinder",
     lensMountHeading: "Lens Mount",
     timecodeHeading: "Timecode",
-    powerDistributionLabel: "Outputs (JSON):",
+    powerDistributionLabel: "Outputs:",
     videoOutputsLabel: "Outputs:",
     fizConnectorLabel: "Connectors:",
     viewfinderLabel: "Viewfinders:",
-    timecodeLabel: "Timecode (JSON):",
+    timecodeLabel: "Timecode:",
     addDeviceBtn: "Add",
     updateDeviceBtn: "Update", // New key for update button
     editBtn: "Edit", // New key for Edit button in list
@@ -300,11 +301,11 @@ const texts = {
     viewfinderHeading: "Sucher",
     lensMountHeading: "Objektivanschluss",
     timecodeHeading: "Timecode",
-    powerDistributionLabel: "Ausgänge (JSON):",
+    powerDistributionLabel: "Ausgänge:",
     videoOutputsLabel: "Ausgänge:",
     fizConnectorLabel: "Anschlüsse:",
     viewfinderLabel: "Sucher:",
-    timecodeLabel: "Timecode (JSON):",
+    timecodeLabel: "Timecode:",
     addDeviceBtn: "Hinzufügen",
     updateDeviceBtn: "Aktualisieren",
     editBtn: "Bearbeiten",
@@ -498,8 +499,6 @@ function setLanguage(lang) {
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
-  cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
-  cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -588,11 +587,11 @@ const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaInput = document.getElementById("cameraMedia");
 const lensMountContainer = document.getElementById("lensMountContainer");
-const cameraPowerDistInput = document.getElementById("cameraPowerDist");
+const powerDistContainer = document.getElementById("powerDistContainer");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
 const viewfinderContainer = document.getElementById("viewfinderContainer");
-const cameraTimecodeInput = document.getElementById("cameraTimecode");
+const timecodeContainer = document.getElementById("timecodeContainer");
 const batteryFieldsDiv = document.getElementById("batteryFields");
 const newCapacityInput = document.getElementById("newCapacity");
 const newPinAInput    = document.getElementById("newPinA");
@@ -1108,6 +1107,225 @@ function clearLensMounts() {
   setLensMounts([]);
 }
 
+function getAllPowerDistTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    const list = cam.power?.powerDistributionOutputs;
+    if (Array.isArray(list)) {
+      list.forEach(pd => { if (pd && pd.type) types.add(pd.type); });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let powerDistTypeOptions = getAllPowerDistTypes();
+
+function updatePowerDistTypeOptions() {
+  powerDistTypeOptions = getAllPowerDistTypes();
+  document.querySelectorAll('.power-dist-type-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    powerDistTypeOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (powerDistTypeOptions.includes(cur)) sel.value = cur;
+  });
+}
+
+function createPowerDistRow(type = '', voltage = '', current = '', wattage = '', notes = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const typeSelect = document.createElement('select');
+  typeSelect.className = 'power-dist-type-select';
+  powerDistTypeOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !powerDistTypeOptions.includes(type)) {
+    const opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(typeSelect);
+
+  const voltInput = document.createElement('input');
+  voltInput.type = 'text';
+  voltInput.placeholder = 'Voltage';
+  voltInput.value = voltage;
+  row.appendChild(voltInput);
+
+  const currInput = document.createElement('input');
+  currInput.type = 'text';
+  currInput.placeholder = 'Current';
+  currInput.value = current;
+  row.appendChild(currInput);
+
+  const wattInput = document.createElement('input');
+  wattInput.type = 'number';
+  wattInput.step = '0.1';
+  wattInput.placeholder = 'W';
+  wattInput.value = wattage === null || wattage === undefined ? '' : wattage;
+  row.appendChild(wattInput);
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  row.appendChild(notesInput);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createPowerDistRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (powerDistContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setPowerDistribution(list) {
+  powerDistContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const { type = '', voltage = '', current = '', wattage = '', notes = '' } = item || {};
+      powerDistContainer.appendChild(createPowerDistRow(type, voltage, current, wattage, notes));
+    });
+  } else {
+    powerDistContainer.appendChild(createPowerDistRow());
+  }
+}
+
+function getPowerDistribution() {
+  return Array.from(powerDistContainer.querySelectorAll('.form-row')).map(row => {
+    const [typeSel, voltInput, currInput, wattInput, notesInput] = row.querySelectorAll('select, input');
+    return {
+      type: typeSel.value,
+      voltage: voltInput.value,
+      current: currInput.value,
+      wattage: wattInput.value ? parseFloat(wattInput.value) : null,
+      notes: notesInput.value
+    };
+  });
+}
+
+function clearPowerDistribution() {
+  setPowerDistribution([]);
+}
+
+function getAllTimecodeTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    const list = cam.timecode;
+    if (Array.isArray(list)) {
+      list.forEach(tc => { if (tc && tc.type) types.add(tc.type); });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let timecodeTypeOptions = getAllTimecodeTypes();
+
+function updateTimecodeTypeOptions() {
+  timecodeTypeOptions = getAllTimecodeTypes();
+  document.querySelectorAll('.timecode-type-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    timecodeTypeOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (timecodeTypeOptions.includes(cur)) sel.value = cur;
+  });
+}
+
+function createTimecodeRow(type = '', notes = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const typeSelect = document.createElement('select');
+  typeSelect.className = 'timecode-type-select';
+  timecodeTypeOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !timecodeTypeOptions.includes(type)) {
+    const opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(typeSelect);
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  row.appendChild(notesInput);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createTimecodeRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (timecodeContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setTimecodes(list) {
+  timecodeContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const { type = '', notes = '' } = item || {};
+      timecodeContainer.appendChild(createTimecodeRow(type, notes));
+    });
+  } else {
+    timecodeContainer.appendChild(createTimecodeRow());
+  }
+}
+
+function getTimecodes() {
+  return Array.from(timecodeContainer.querySelectorAll('.form-row')).map(row => {
+    const [typeSel, notesInput] = row.querySelectorAll('select, input');
+    return { type: typeSel.value, notes: notesInput.value };
+  });
+}
+
+function clearTimecodes() {
+  setTimecodes([]);
+}
+
 
 // Populate dropdowns with device options
 function populateSelect(selectElem, optionsObj, includeNone=true) {
@@ -1223,6 +1441,10 @@ setBatteryPlates([]);
 updatePlateTypeOptions();
 setLensMounts([]);
 updateMountTypeOptions();
+setPowerDistribution([]);
+updatePowerDistTypeOptions();
+setTimecodes([]);
+updateTimecodeTypeOptions();
 
 // Set default selections for dropdowns
 
@@ -1766,11 +1988,11 @@ deviceManagerSection.addEventListener("click", (event) => {
       setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       setLensMounts(deviceData.lensMount || []);
-      cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
+      setPowerDistribution(deviceData.power?.powerDistributionOutputs || []);
       setVideoOutputs(deviceData.videoOutputs || []);
       setFizConnectors(deviceData.fizConnectors || []);
       setViewfinders(deviceData.viewfinder || []);
-      cameraTimecodeInput.value = JSON.stringify(deviceData.timecode || [], null, 2);
+      setTimecodes(deviceData.timecode || []);
     } else {
       wattFieldDiv.style.display = "block";
       batteryFieldsDiv.style.display = "none";
@@ -1806,6 +2028,8 @@ deviceManagerSection.addEventListener("click", (event) => {
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
       updateFizConnectorOptions();
+      updatePowerDistTypeOptions();
+      updateTimecodeTypeOptions();
       applyFilters();
       updateCalculations();
     }
@@ -1840,11 +2064,11 @@ newCategorySelect.addEventListener("change", () => {
   clearBatteryPlates();
   cameraMediaInput.value = "";
   clearLensMounts();
-  cameraPowerDistInput.value = "";
+  clearPowerDistribution();
   clearVideoOutputs();
   clearFizConnectors();
   clearViewfinders();
-  cameraTimecodeInput.value = "";
+  clearTimecodes();
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
   addDeviceBtn.dataset.mode = "add";
@@ -1906,11 +2130,11 @@ addDeviceBtn.addEventListener("click", () => {
     }
     let powerDist, videoOut, fizCon, viewfinder, timecode, plateSupport;
     try {
-      powerDist = cameraPowerDistInput.value ? JSON.parse(cameraPowerDistInput.value) : [];
+      powerDist = getPowerDistribution();
       videoOut = getVideoOutputs();
       fizCon = getFizConnectors();
       viewfinder = getViewfinders();
-      timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
+      timecode = getTimecodes();
       plateSupport = getBatteryPlates();
     } catch (e) {
       console.error("Invalid camera JSON input:", e);
@@ -1964,11 +2188,11 @@ addDeviceBtn.addEventListener("click", () => {
   clearBatteryPlates();
   cameraMediaInput.value = "";
   clearLensMounts();
-  cameraPowerDistInput.value = "";
+  clearPowerDistribution();
   clearVideoOutputs();
   clearFizConnectors();
   clearViewfinders();
-  cameraTimecodeInput.value = "";
+  clearTimecodes();
   newCategorySelect.disabled = false; // Re-enable category select
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn; // Reset button text
   addDeviceBtn.dataset.mode = "add"; // Reset mode
@@ -1978,6 +2202,8 @@ addDeviceBtn.addEventListener("click", () => {
   viewfinderTypeOptions = getAllViewfinderTypes();
   viewfinderConnectorOptions = getAllViewfinderConnectors();
   updatePlateTypeOptions();
+  updatePowerDistTypeOptions();
+  updateTimecodeTypeOptions();
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
   populateSelect(cameraSelect, devices.cameras, true);
