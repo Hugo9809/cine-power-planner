@@ -294,6 +294,104 @@
         <input type="text" id="monitorAudioOutput" />
       </div>
     </div>
+    <div id="videoFields" style="display:none;">
+      <div class="form-row">
+        <label for="videoPower" id="videoPowerInputLabel">Power Input:</label>
+        <input type="text" id="videoPower" />
+      </div>
+      <div class="video-subsection">
+        <h4 id="videoVideoInputsHeading">Video Inputs</h4>
+        <div class="form-row">
+          <label id="videoVideoInputsLabel">Inputs:</label>
+          <div id="videoVideoInputsContainer" style="flex:1;"></div>
+        </div>
+      </div>
+      <div class="video-subsection">
+        <h4 id="videoVideoOutputsHeading">Video Outputs</h4>
+        <div class="form-row">
+          <label id="videoVideoOutputsLabel">Outputs:</label>
+          <div id="videoVideoOutputsContainer" style="flex:1;"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="videoFrequency" id="videoFrequencyLabel">Frequency:</label>
+        <input type="text" id="videoFrequency" />
+      </div>
+      <div class="form-row">
+        <label for="videoLatency" id="videoLatencyLabel">Latency:</label>
+        <input type="text" id="videoLatency" />
+      </div>
+    </div>
+    <div id="motorFields" style="display:none;">
+      <div class="form-row">
+        <label for="motorConnector" id="motorConnectorLabel">Connector:</label>
+        <input type="text" id="motorConnector" />
+      </div>
+      <div class="form-row">
+        <label for="motorInternal" id="motorInternalLabel">Internal Controller:</label>
+        <input type="checkbox" id="motorInternal" />
+      </div>
+      <div class="form-row">
+        <label for="motorTorque" id="motorTorqueLabel">Torque (Nm):</label>
+        <input type="number" id="motorTorque" step="0.1" />
+      </div>
+      <div class="form-row">
+        <label for="motorGearTypes" id="motorGearLabel">Gear Types:</label>
+        <input type="text" id="motorGearTypes" />
+      </div>
+      <div class="form-row">
+        <label for="motorNotes" id="notesLabel">Notes:</label>
+        <input type="text" id="motorNotes" />
+      </div>
+    </div>
+    <div id="controllerFields" style="display:none;">
+      <div class="form-row">
+        <label for="controllerConnector" id="controllerConnectorLabel">Connector:</label>
+        <input type="text" id="controllerConnector" />
+      </div>
+      <div class="form-row">
+        <label for="controllerPower" id="controllerPowerLabel">Power Source:</label>
+        <input type="text" id="controllerPower" />
+      </div>
+      <div class="form-row">
+        <label for="controllerBattery" id="controllerBatteryLabel">Battery Type:</label>
+        <input type="text" id="controllerBattery" />
+      </div>
+      <div class="form-row">
+        <label for="controllerConnectivity" id="controllerConnectivityLabel">Connectivity:</label>
+        <input type="text" id="controllerConnectivity" />
+      </div>
+      <div class="form-row">
+        <label for="controllerNotes" id="notesLabel">Notes:</label>
+        <input type="text" id="controllerNotes" />
+      </div>
+    </div>
+    <div id="distanceFields" style="display:none;">
+      <div class="form-row">
+        <label for="distanceConnection" id="distanceConnectionLabel">Connection:</label>
+        <input type="text" id="distanceConnection" />
+      </div>
+      <div class="form-row">
+        <label for="distanceMethod" id="distanceMethodLabel">Method:</label>
+        <input type="text" id="distanceMethod" />
+      </div>
+      <div class="form-row">
+        <label for="distanceRange" id="distanceRangeLabel">Range:</label>
+        <input type="text" id="distanceRange" />
+      </div>
+      <div class="form-row">
+        <label for="distanceAccuracy" id="distanceAccuracyLabel">Accuracy:</label>
+        <input type="text" id="distanceAccuracy" />
+      </div>
+      <div class="form-row">
+        <label for="distanceOutput" id="distanceOutputLabel">Display:</label>
+        <input type="text" id="distanceOutput" />
+      </div>
+      <div class="form-row">
+        <label for="distanceNotes" id="notesLabel">Notes:</label>
+        <input type="text" id="distanceNotes" />
+      </div>
+    </div>
     <div id="batteryFields" style="display:none;">
       <div class="form-row">
         <label for="newCapacity" id="capacityLabel">Capacity (Wh):</label>

@@ -458,6 +458,31 @@ const monitorVideoInputsContainer = document.getElementById("monitorVideoInputsC
 const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
 const monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
 const monitorAudioOutputInput = document.getElementById("monitorAudioOutput");
+const videoFieldsDiv = document.getElementById("videoFields");
+const videoPowerInput = document.getElementById("videoPower");
+const videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
+const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
+const videoFrequencyInput = document.getElementById("videoFrequency");
+const videoLatencyInput = document.getElementById("videoLatency");
+const motorFieldsDiv = document.getElementById("motorFields");
+const motorConnectorInput = document.getElementById("motorConnector");
+const motorInternalInput = document.getElementById("motorInternal");
+const motorTorqueInput = document.getElementById("motorTorque");
+const motorGearInput = document.getElementById("motorGearTypes");
+const motorNotesInput = document.getElementById("motorNotes");
+const controllerFieldsDiv = document.getElementById("controllerFields");
+const controllerConnectorInput = document.getElementById("controllerConnector");
+const controllerPowerInput = document.getElementById("controllerPower");
+const controllerBatteryInput = document.getElementById("controllerBattery");
+const controllerConnectivityInput = document.getElementById("controllerConnectivity");
+const controllerNotesInput = document.getElementById("controllerNotes");
+const distanceFieldsDiv = document.getElementById("distanceFields");
+const distanceConnectionInput = document.getElementById("distanceConnection");
+const distanceMethodInput = document.getElementById("distanceMethod");
+const distanceRangeInput = document.getElementById("distanceRange");
+const distanceAccuracyInput = document.getElementById("distanceAccuracy");
+const distanceOutputInput = document.getElementById("distanceOutput");
+const distanceNotesInput = document.getElementById("distanceNotes");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaContainer = document.getElementById("cameraMediaContainer");
 const lensMountContainer = document.getElementById("lensMountContainer");
@@ -718,6 +743,104 @@ function getMonitorVideoOutputs() {
 function clearMonitorVideoOutputs() {
   setMonitorVideoOutputs([]);
 }
+
+function createVideoInputRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const select = document.createElement('select');
+  select.className = 'video-input-select';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createVideoInputRow());
+  });
+  row.appendChild(addBtn);
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (videoVideoInputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setVideoInputs(list) {
+  videoVideoInputsContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const t = typeof item === 'string' ? item : item.portType || item.type;
+      videoVideoInputsContainer.appendChild(createVideoInputRow(t));
+    });
+  } else {
+    videoVideoInputsContainer.appendChild(createVideoInputRow());
+  }
+}
+
+function getVideoInputs() {
+  return Array.from(videoVideoInputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+}
+
+function clearVideoInputs() { setVideoInputs([]); }
+
+function createVideoIOOutputRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const select = document.createElement('select');
+  select.className = 'video-output-select-io';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createVideoIOOutputRow());
+  });
+  row.appendChild(addBtn);
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (videoVideoOutputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setVideoOutputsIO(list) {
+  videoVideoOutputsContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const t = typeof item === 'string' ? item : item.portType || item.type;
+      videoVideoOutputsContainer.appendChild(createVideoIOOutputRow(t));
+    });
+  } else {
+    videoVideoOutputsContainer.appendChild(createVideoIOOutputRow());
+  }
+}
+
+function getVideoOutputsIO() {
+  return Array.from(videoVideoOutputsContainer.querySelectorAll('select')).map(sel => ({ portType: sel.value }));
+}
+
+function clearVideoOutputsIO() { setVideoOutputsIO([]); }
 
 // Build a row for editing a FIZ connector entry.
 function createFizConnectorRow(value = '') {
@@ -2253,6 +2376,10 @@ deviceManagerSection.addEventListener("click", (event) => {
       batteryFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "block";
+      videoFieldsDiv.style.display = "none";
+      motorFieldsDiv.style.display = "none";
+      controllerFieldsDiv.style.display = "none";
+      distanceFieldsDiv.style.display = "none";
       monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
       monitorBrightnessInput.value = deviceData.brightnessNits || '';
       monitorWattInput.value = deviceData.powerDrawWatts || '';
@@ -2263,11 +2390,77 @@ deviceManagerSection.addEventListener("click", (event) => {
       setMonitorVideoOutputs(deviceData.video?.outputs || []);
       monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
       monitorAudioOutputInput.value = deviceData.audioOutput?.portType || '';
+    } else if (categoryKey === "video") {
+      wattFieldDiv.style.display = "block";
+      cameraFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
+      batteryFieldsDiv.style.display = "none";
+      videoFieldsDiv.style.display = "block";
+      motorFieldsDiv.style.display = "none";
+      controllerFieldsDiv.style.display = "none";
+      distanceFieldsDiv.style.display = "none";
+      newWattInput.value = deviceData.powerDrawWatts || '';
+      videoPowerInput.value = deviceData.powerInput || '';
+      setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
+      setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
+      videoFrequencyInput.value = deviceData.frequency || '';
+      videoLatencyInput.value = deviceData.latencyMs || '';
+      motorConnectorInput.value = '';
+    } else if (categoryKey === "fiz.motors") {
+      wattFieldDiv.style.display = "block";
+      videoFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
+      batteryFieldsDiv.style.display = "none";
+      motorFieldsDiv.style.display = "block";
+      controllerFieldsDiv.style.display = "none";
+      distanceFieldsDiv.style.display = "none";
+      newWattInput.value = deviceData.powerDrawWatts || '';
+      motorConnectorInput.value = deviceData.connector || '';
+      motorInternalInput.checked = !!deviceData.internalController;
+      motorTorqueInput.value = deviceData.torqueNm || '';
+      motorGearInput.value = Array.isArray(deviceData.gearTypes) ? deviceData.gearTypes.join(', ') : '';
+      motorNotesInput.value = deviceData.notes || '';
+    } else if (categoryKey === "fiz.controllers") {
+      wattFieldDiv.style.display = "block";
+      videoFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
+      batteryFieldsDiv.style.display = "none";
+      motorFieldsDiv.style.display = "none";
+      controllerFieldsDiv.style.display = "block";
+      distanceFieldsDiv.style.display = "none";
+      newWattInput.value = deviceData.powerDrawWatts || '';
+      controllerConnectorInput.value = deviceData.FIZ_connector || '';
+      controllerPowerInput.value = deviceData.power_source || '';
+      controllerBatteryInput.value = deviceData.battery_type || '';
+      controllerConnectivityInput.value = deviceData.connectivity || '';
+      controllerNotesInput.value = deviceData.notes || '';
+    } else if (categoryKey === "fiz.distance") {
+      wattFieldDiv.style.display = "block";
+      videoFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
+      batteryFieldsDiv.style.display = "none";
+      motorFieldsDiv.style.display = "none";
+      controllerFieldsDiv.style.display = "none";
+      distanceFieldsDiv.style.display = "block";
+      newWattInput.value = deviceData.powerDrawWatts || '';
+      distanceConnectionInput.value = deviceData.connection_compatibility || '';
+      distanceMethodInput.value = deviceData.measurement_method || '';
+      distanceRangeInput.value = deviceData.measurement_range || '';
+      distanceAccuracyInput.value = deviceData.accuracy || '';
+      distanceOutputInput.value = deviceData.output_display || '';
+      distanceNotesInput.value = deviceData.notes || '';
     } else {
       wattFieldDiv.style.display = "block";
       batteryFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "none";
+      videoFieldsDiv.style.display = "none";
+      motorFieldsDiv.style.display = "none";
+      controllerFieldsDiv.style.display = "none";
+      distanceFieldsDiv.style.display = "none";
       const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
       newWattInput.value = watt;
     }
@@ -2317,22 +2510,74 @@ newCategorySelect.addEventListener("change", () => {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
     batteryFieldsDiv.style.display = "block";
   } else if (val === "cameras") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "block";
     monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
   } else if (val === "monitors") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "block";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
+  } else if (val === "video") {
+    wattFieldDiv.style.display = "block";
+    batteryFieldsDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "block";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
+  } else if (val === "fiz.motors") {
+    wattFieldDiv.style.display = "block";
+    batteryFieldsDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "block";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
+  } else if (val === "fiz.controllers") {
+    wattFieldDiv.style.display = "block";
+    batteryFieldsDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "block";
+    distanceFieldsDiv.style.display = "none";
+  } else if (val === "fiz.distance") {
+    wattFieldDiv.style.display = "block";
+    batteryFieldsDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "block";
   } else {
     wattFieldDiv.style.display = "block";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
   }
   newWattInput.value = "";
   newCapacityInput.value = "";
@@ -2358,6 +2603,27 @@ newCategorySelect.addEventListener("change", () => {
   clearFizConnectors();
   clearViewfinders();
   clearTimecodes();
+  videoPowerInput.value = "";
+  clearVideoInputs();
+  clearVideoOutputsIO();
+  videoFrequencyInput.value = "";
+  videoLatencyInput.value = "";
+  motorConnectorInput.value = "";
+  motorInternalInput.checked = false;
+  motorTorqueInput.value = "";
+  motorGearInput.value = "";
+  motorNotesInput.value = "";
+  controllerConnectorInput.value = "";
+  controllerPowerInput.value = "";
+  controllerBatteryInput.value = "";
+  controllerConnectivityInput.value = "";
+  controllerNotesInput.value = "";
+  distanceConnectionInput.value = "";
+  distanceMethodInput.value = "";
+  distanceRangeInput.value = "";
+  distanceAccuracyInput.value = "";
+  distanceOutputInput.value = "";
+  distanceNotesInput.value = "";
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
   addDeviceBtn.dataset.mode = "add";
@@ -2483,6 +2749,75 @@ addDeviceBtn.addEventListener("click", () => {
       },
       wirelessTx: monitorWirelessTxInput.checked,
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
+    };
+  } else if (category === "video") {
+    const watt = parseFloat(newWattInput.value);
+    if (isNaN(watt) || watt <= 0) {
+      alert(texts[currentLang].alertDeviceWatt);
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    targetCategory[name] = {
+      powerDrawWatts: watt,
+      powerInput: videoPowerInput.value,
+      videoInputs: getVideoInputs(),
+      videoOutputs: getVideoOutputsIO(),
+      frequency: videoFrequencyInput.value,
+      latencyMs: videoLatencyInput.value
+    };
+  } else if (category === "fiz.motors") {
+    const watt = parseFloat(newWattInput.value);
+    if (isNaN(watt) || watt <= 0) {
+      alert(texts[currentLang].alertDeviceWatt);
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    targetCategory[name] = {
+      powerDrawWatts: watt,
+      connector: motorConnectorInput.value,
+      internalController: motorInternalInput.checked,
+      torqueNm: motorTorqueInput.value ? parseFloat(motorTorqueInput.value) : null,
+      gearTypes: motorGearInput.value ? motorGearInput.value.split(',').map(s => s.trim()).filter(Boolean) : [],
+      notes: motorNotesInput.value
+    };
+  } else if (category === "fiz.controllers") {
+    const watt = parseFloat(newWattInput.value);
+    if (isNaN(watt) || watt <= 0) {
+      alert(texts[currentLang].alertDeviceWatt);
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    targetCategory[name] = {
+      powerDrawWatts: watt,
+      FIZ_connector: controllerConnectorInput.value,
+      power_source: controllerPowerInput.value,
+      battery_type: controllerBatteryInput.value,
+      connectivity: controllerConnectivityInput.value,
+      notes: controllerNotesInput.value
+    };
+  } else if (category === "fiz.distance") {
+    const watt = parseFloat(newWattInput.value);
+    if (isNaN(watt) || watt <= 0) {
+      alert(texts[currentLang].alertDeviceWatt);
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    targetCategory[name] = {
+      powerDrawWatts: watt,
+      connection_compatibility: distanceConnectionInput.value,
+      measurement_method: distanceMethodInput.value,
+      measurement_range: distanceRangeInput.value,
+      accuracy: distanceAccuracyInput.value,
+      output_display: distanceOutputInput.value,
+      notes: distanceNotesInput.value
     };
   } else {
     const watt = parseFloat(newWattInput.value);
