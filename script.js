@@ -463,7 +463,6 @@ function setLanguage(lang) {
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
   cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
-  cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
   cameraViewfinderInput.placeholder = texts[lang].placeholder_viewfinder;
   cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
@@ -554,7 +553,7 @@ const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
 const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
 const cameraPlatesInput = document.getElementById("cameraPlates");
 const cameraMediaInput = document.getElementById("cameraMedia");
-const cameraLensMountInput = document.getElementById("cameraLensMount");
+const lensMountContainer = document.getElementById("lensMountContainer");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
@@ -622,6 +621,20 @@ function getAllFizConnectorTypes() {
 }
 
 const fizConnectorOptions = getAllFizConnectorTypes();
+
+function getAllLensMountTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    if (Array.isArray(cam.lensMount)) {
+      cam.lensMount.forEach(lm => {
+        if (lm && lm.type) types.add(lm.type);
+      });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+const lensMountOptions = getAllLensMountTypes();
 
 function createVideoOutputRow(value = '') {
   const row = document.createElement('div');
@@ -721,6 +734,69 @@ function getFizConnectors() {
 
 function clearFizConnectors() {
   setFizConnectors([]);
+}
+
+function createLensMountRow(value = {type: '', status: 'native'}) {
+  const row = document.createElement('div');
+  row.className = 'form-row lens-mount-row';
+  const typeSelect = document.createElement('select');
+  typeSelect.className = 'lens-mount-type-select';
+  lensMountOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (value.type) typeSelect.value = value.type;
+  row.appendChild(typeSelect);
+
+  const statusSelect = document.createElement('select');
+  statusSelect.className = 'lens-mount-status-select';
+  ['native','adapted'].forEach(st => {
+    const opt = document.createElement('option');
+    opt.value = st;
+    opt.textContent = st;
+    statusSelect.appendChild(opt);
+  });
+  if (value.status) statusSelect.value = value.status;
+  row.appendChild(statusSelect);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createLensMountRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (lensMountContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setLensMounts(list) {
+  lensMountContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => lensMountContainer.appendChild(createLensMountRow(item)));
+  } else {
+    lensMountContainer.appendChild(createLensMountRow());
+  }
+}
+
+function getLensMounts() {
+  return Array.from(lensMountContainer.querySelectorAll('.lens-mount-row')).map(r => {
+    const selects = r.querySelectorAll('select');
+    return { type: selects[0].value, status: selects[1].value };
+  });
+}
+
+function clearLensMounts() {
+  setLensMounts([]);
 }
 
 
@@ -832,6 +908,7 @@ controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
 setFizConnectors([]);
+setLensMounts([]);
 
 // Set default selections for dropdowns
 
@@ -1372,7 +1449,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
       cameraPlatesInput.value = JSON.stringify(deviceData.power?.batteryPlateSupport || [], null, 2);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
-      cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
+      setLensMounts(deviceData.lensMount || []);
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
       setVideoOutputs(deviceData.videoOutputs || []);
       setFizConnectors(deviceData.fizConnectors || []);
@@ -1442,7 +1519,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraBatteryLifeInput.value = "";
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
-  cameraLensMountInput.value = "";
+  clearLensMounts();
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   clearFizConnectors();
@@ -1538,7 +1615,7 @@ addDeviceBtn.addEventListener("click", () => {
       fizConnectors: fizCon,
       recordingMedia: cameraMediaInput.value ? cameraMediaInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
       viewfinder: viewfinder,
-      lensMount: cameraLensMountInput.value ? cameraLensMountInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+      lensMount: getLensMounts(),
       timecode: timecode
     };
   } else {
@@ -1566,7 +1643,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraBatteryLifeInput.value = "";
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
-  cameraLensMountInput.value = "";
+  clearLensMounts();
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   clearFizConnectors();
