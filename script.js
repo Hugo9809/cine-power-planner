@@ -56,6 +56,18 @@ function unifyDevices(data) {
 
 unifyDevices(devices);
 
+const powerDistTypeOptions = (() => {
+  const set = new Set();
+  Object.values(devices.cameras || {}).forEach(cam => {
+    (cam.power?.powerDistributionOutputs || []).forEach(o => {
+      if (o.type) set.add(o.type);
+    });
+  });
+  const arr = Array.from(set).sort();
+  arr.unshift('None');
+  return arr;
+})();
+
 
 // Translation text for English and German
 const texts = {
@@ -127,7 +139,7 @@ const texts = {
     viewfinderHeading: "Viewfinder",
     lensMountHeading: "Lens Mount",
     timecodeHeading: "Timecode",
-    powerDistributionLabel: "Outputs (JSON):",
+    powerDistributionLabel: "Outputs:",
     videoOutputsLabel: "Outputs:",
     fizConnectorLabel: "Connectors (JSON):",
     viewfinderLabel: "Viewfinders (JSON):",
@@ -263,7 +275,7 @@ const texts = {
     viewfinderHeading: "Sucher",
     lensMountHeading: "Objektivanschluss",
     timecodeHeading: "Timecode",
-    powerDistributionLabel: "Ausgänge (JSON):",
+    powerDistributionLabel: "Ausgänge:",
     videoOutputsLabel: "Ausgänge:",
     fizConnectorLabel: "Anschlüsse (JSON):",
     viewfinderLabel: "Sucher (JSON):",
@@ -464,7 +476,6 @@ function setLanguage(lang) {
   cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
   cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
-  cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
   cameraFIZConnectorInput.placeholder = texts[lang].placeholder_fizconnector;
   cameraViewfinderInput.placeholder = texts[lang].placeholder_viewfinder;
   cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
@@ -556,7 +567,7 @@ const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
 const cameraPlatesInput = document.getElementById("cameraPlates");
 const cameraMediaInput = document.getElementById("cameraMedia");
 const cameraLensMountInput = document.getElementById("cameraLensMount");
-const cameraPowerDistInput = document.getElementById("cameraPowerDist");
+const cameraPowerDistContainer = document.getElementById("cameraPowerDistContainer");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const cameraFIZConnectorInput = document.getElementById("cameraFIZConnector");
 const cameraViewfinderInput = document.getElementById("cameraViewfinder");
@@ -658,6 +669,92 @@ function getVideoOutputs() {
 
 function clearVideoOutputs() {
   setVideoOutputs([]);
+}
+
+function createPowerDistRow(data = {}) {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const typeSelect = document.createElement('select');
+  powerDistTypeOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (data.type) typeSelect.value = data.type;
+  row.appendChild(typeSelect);
+
+  const voltageInput = document.createElement('input');
+  voltageInput.type = 'text';
+  voltageInput.placeholder = 'Voltage';
+  if (data.voltage) voltageInput.value = data.voltage;
+  row.appendChild(voltageInput);
+
+  const currentInput = document.createElement('input');
+  currentInput.type = 'text';
+  currentInput.placeholder = 'Current';
+  if (data.current) currentInput.value = data.current;
+  row.appendChild(currentInput);
+
+  const wattInput = document.createElement('input');
+  wattInput.type = 'number';
+  wattInput.step = '0.1';
+  wattInput.placeholder = 'W';
+  if (data.wattage !== undefined && data.wattage !== null) wattInput.value = data.wattage;
+  row.appendChild(wattInput);
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  if (data.notes) notesInput.value = data.notes;
+  row.appendChild(notesInput);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createPowerDistRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (cameraPowerDistContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setPowerDistribution(list) {
+  cameraPowerDistContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      cameraPowerDistContainer.appendChild(createPowerDistRow(item));
+    });
+  } else {
+    cameraPowerDistContainer.appendChild(createPowerDistRow());
+  }
+}
+
+function getPowerDistribution() {
+  return Array.from(cameraPowerDistContainer.children).map(row => {
+    const [typeSel, voltIn, currIn, wattIn, notesIn] = row.querySelectorAll('select, input');
+    return {
+      type: typeSel.value,
+      voltage: voltIn.value,
+      current: currIn.value,
+      wattage: wattIn.value ? parseFloat(wattIn.value) : null,
+      notes: notesIn.value
+    };
+  });
+}
+
+function clearPowerDistribution() {
+  setPowerDistribution([]);
 }
 
 
@@ -768,6 +865,7 @@ motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
+setPowerDistribution([]);
 
 // Set default selections for dropdowns
 
@@ -1309,7 +1407,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraPlatesInput.value = JSON.stringify(deviceData.power?.batteryPlateSupport || [], null, 2);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
-      cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
+      setPowerDistribution(deviceData.power?.powerDistributionOutputs || []);
       setVideoOutputs(deviceData.videoOutputs || []);
       cameraFIZConnectorInput.value = JSON.stringify(deviceData.fizConnectors || [], null, 2);
       cameraViewfinderInput.value = JSON.stringify(deviceData.viewfinder || [], null, 2);
@@ -1379,7 +1477,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
-  cameraPowerDistInput.value = "";
+  clearPowerDistribution();
   clearVideoOutputs();
   cameraFIZConnectorInput.value = "";
   cameraViewfinderInput.value = "";
@@ -1445,7 +1543,7 @@ addDeviceBtn.addEventListener("click", () => {
     }
     let powerDist, videoOut, fizCon, viewfinder, timecode, plateSupport;
     try {
-      powerDist = cameraPowerDistInput.value ? JSON.parse(cameraPowerDistInput.value) : [];
+      powerDist = getPowerDistribution();
       videoOut = getVideoOutputs();
       fizCon = cameraFIZConnectorInput.value ? JSON.parse(cameraFIZConnectorInput.value) : [];
       viewfinder = cameraViewfinderInput.value ? JSON.parse(cameraViewfinderInput.value) : [];
@@ -1503,7 +1601,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
-  cameraPowerDistInput.value = "";
+  clearPowerDistribution();
   clearVideoOutputs();
   cameraFIZConnectorInput.value = "";
   cameraViewfinderInput.value = "";
