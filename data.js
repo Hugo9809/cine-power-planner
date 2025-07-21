@@ -1,3 +1,5 @@
+// List of default devices used by the application
+/* exported devices */
 let devices = {
   "cameras": {
     "Arri Alexa Mini LF": {
