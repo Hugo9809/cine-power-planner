@@ -4926,7 +4926,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "12G SDI"
+            "portType": "12G-SDI"
           }
         ],
         "outputs": [
@@ -4934,7 +4934,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "12G SDI"
+            "portType": "12G-SDI"
           }
         ]
       },
@@ -4957,7 +4957,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "12G SDI"
+            "portType": "12G-SDI"
           }
         ],
         "outputs": [
@@ -4965,7 +4965,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "12G SDI"
+            "portType": "12G-SDI"
           }
         ]
       },
@@ -4988,7 +4988,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI",
+            "portType": "3G-SDI",
             "details": "2x inputs, one selectable as input/output"
           }
         ],
@@ -4997,7 +4997,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI",
+            "portType": "3G-SDI",
             "details": "One input can double as loop out"
           }
         ]
@@ -5021,7 +5021,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5029,7 +5029,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5052,7 +5052,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5060,7 +5060,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5083,7 +5083,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5091,7 +5091,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5138,7 +5138,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5146,7 +5146,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5169,7 +5169,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5177,7 +5177,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5197,18 +5197,18 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "HDMI 2.0 (4Kp30)"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
           {
-            "portType": "HDMI 2.0 (4Kp30)"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5231,7 +5231,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5239,7 +5239,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5262,7 +5262,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5270,7 +5270,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5290,7 +5290,7 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": []
@@ -5314,18 +5314,18 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "HDMI 1.4b"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
           {
-            "portType": "HDMI 1.4b"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5345,15 +5345,15 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "HDMI 1.4b"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
           {
-            "portType": "HDMI 1.4b Loopout"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5379,7 +5379,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "HD SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5387,7 +5387,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "HD SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5410,12 +5410,12 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ],
         "outputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5444,7 +5444,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "SDI",
+            "portType": "3G-SDI",
             "details": "2x SDI inputs"
           }
         ],
@@ -5453,7 +5453,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5476,12 +5476,12 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ],
         "outputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5504,12 +5504,12 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "HDMI 2.0"
+            "portType": "HDMI"
           }
         ],
         "outputs": [
           {
-            "portType": "HDMI 2.0"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5535,12 +5535,12 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "HDMI 2.0"
+            "portType": "HDMI"
           }
         ],
         "outputs": [
           {
-            "portType": "HDMI 2.0"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5566,10 +5566,10 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "HDMI 2.0"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": []
@@ -5596,7 +5596,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
@@ -5604,7 +5604,7 @@ let devices={
             "portType": "HDMI"
           },
           {
-            "portType": "SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5624,18 +5624,18 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ],
         "outputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           },
           {
-            "portType": "3G SDI"
+            "portType": "3G-SDI"
           }
         ]
       },
@@ -5658,12 +5658,12 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ],
         "outputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5686,12 +5686,12 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ],
         "outputs": [
           {
-            "portType": "4K HDMI"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5714,12 +5714,12 @@ let devices={
       "video": {
         "inputs": [
           {
-            "portType": "HDMI 1.4"
+            "portType": "HDMI"
           }
         ],
         "outputs": [
           {
-            "portType": "HDMI 1.4"
+            "portType": "HDMI"
           }
         ]
       },
@@ -5750,15 +5750,15 @@ let devices={
       "powerInput": "2-pin DC (6-28V)",
       "videoInputs": [
         {
-          "portType": "HDMI 2.0"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
@@ -5769,18 +5769,18 @@ let devices={
       "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
       "videoInputs": [
         {
-          "portType": "HDMI 2.0"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI"
+          "portType": "12G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI 2.0 Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI Loopout"
+          "portType": "12G-SDI"
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
@@ -5791,18 +5791,18 @@ let devices={
       "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
       "videoInputs": [
         {
-          "portType": "HDMI 2.0"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI"
+          "portType": "12G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI 2.0 Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI Loopout"
+          "portType": "12G-SDI"
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
@@ -5813,15 +5813,15 @@ let devices={
       "powerInput": "2-pin DC (6-28V)",
       "videoInputs": [
         {
-          "portType": "HDMI 2.0"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS) (with Bluetooth 2.4 GHz for app control)",
@@ -5832,18 +5832,18 @@ let devices={
       "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
       "videoInputs": [
         {
-          "portType": "HDMI 2.0"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI"
+          "portType": "12G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI 2.0 Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI Loopout"
+          "portType": "12G-SDI"
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS) (with Bluetooth 2.4 GHz for app control)",
@@ -5857,12 +5857,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -5876,12 +5876,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -5895,12 +5895,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -5914,12 +5914,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -5933,12 +5933,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -5952,12 +5952,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -5971,12 +5971,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -5990,12 +5990,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
@@ -6009,15 +6009,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "2.412-2.484 GHz / 5.15-5.85 GHz (Dual-Band Wi-Fi 4)",
@@ -6033,7 +6033,7 @@ let devices={
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         }
       ],
       "frequency": "5 GHz",
@@ -6047,15 +6047,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5 GHz",
@@ -6066,18 +6066,18 @@ let devices={
       "powerInput": "DC-In (6-18V) / NP-F / WB37",
       "videoInputs": [
         {
-          "portType": "HDMI 1.4"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI 1.4 Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "2.4000-2.4835 GHz (Non-DFS), 5.470-5.725 GHz (DFS), 5.725-5.850 GHz (Non-DFS)",
@@ -6091,15 +6091,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.1-5.9 GHz",
@@ -6113,15 +6113,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.1-5.9 GHz",
@@ -6135,15 +6135,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.1-5.9 GHz",
@@ -6157,15 +6157,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "5.1-5.9 GHz (ISM Band, Indoor use often specified due to DFS omission)",
@@ -6179,12 +6179,12 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
@@ -6200,7 +6200,7 @@ let devices={
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
@@ -6214,15 +6214,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "2.412-2.472 GHz / 5.180-5.580 GHz / 5.660-5.825 MHz (Dual-Band Wi-Fi 5 with MU-MIMO)",
@@ -6236,15 +6236,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
@@ -6260,7 +6260,7 @@ let devices={
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
@@ -6274,15 +6274,15 @@ let devices={
           "portType": "HDMI"
         },
         {
-          "portType": "3G SDI"
+          "portType": "3G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI Loopout"
+          "portType": "HDMI"
         },
         {
-          "portType": "3G SDI Loopout"
+          "portType": "3G-SDI"
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
@@ -6293,18 +6293,18 @@ let devices={
       "powerInput": "2-pin Lemo (7.4-16.8V) / NP-F battery",
       "videoInputs": [
         {
-          "portType": "HDMI 2.0"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI"
+          "portType": "12G-SDI"
         }
       ],
       "videoOutputs": [
         {
-          "portType": "HDMI 2.0"
+          "portType": "HDMI"
         },
         {
-          "portType": "12G SDI"
+          "portType": "12G-SDI"
         }
       ],
       "frequency": "2.4 GHz / 5 GHz / 6 GHz (Tri-Band Wi-Fi 6E)",
@@ -6313,8 +6313,8 @@ let devices={
     "None": {
       "powerDrawWatts": 0,
       "powerInput": "",
-      "videoInput": "SDI",
-      "videoOutput": "SDI",
+      "videoInput": "3G-SDI",
+      "videoOutput": "3G-SDI",
       "frequency": "5 GHz",
       "latencyMs": null
     }
