@@ -58,7 +58,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "LEMO 4-pin (LBUS)",
+          "type": "LBUS (LEMO 4-pin)",
           "notes": "On lens mount, for lens motors"
         },
         {
@@ -183,7 +183,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "LEMO 4-pin (LBUS)",
+          "type": "LBUS (LEMO 4-pin)",
           "notes": "On lens mount, for lens motors"
         },
         {
@@ -302,7 +302,7 @@ let devices={
           "notes": "On lens mount, for daisy-chainable motors"
         },
         {
-          "type": "EXT (LEMO 7-pin)",
+          "type": "EXT LEMO 7-pin",
           "notes": "For camera control, incl. FIZ with compatible systems"
         }
       ],
@@ -408,7 +408,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Hirose 12pin",
+          "type": "Hirose 12-pin",
           "notes": "For ENG type zoom lenses (FIZ control)"
         },
         {
@@ -549,7 +549,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Lens 12 pin",
+          "type": "Hirose 12-pin",
           "notes": "For lens control"
         },
         {
@@ -557,7 +557,7 @@ let devices={
           "notes": "Supports Cooke /i Intelligent Electronic Lens System and ZEISS eXtended Data"
         },
         {
-          "type": "Remote 8 pin",
+          "type": "REMOTE B connector",
           "notes": "General remote control"
         }
       ],
@@ -699,7 +699,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Lens 12 pin",
+          "type": "Hirose 12-pin",
           "notes": "For lens control"
         },
         {
@@ -707,7 +707,7 @@ let devices={
           "notes": "Supports Cooke /i Intelligent Electronic Lens System and ZEISS eXtended Data"
         },
         {
-          "type": "Remote 8 pin",
+          "type": "REMOTE B connector",
           "notes": "General remote control"
         }
       ],
@@ -807,7 +807,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "LANC (2.5mm stereo mini jack)",
+          "type": "LANC",
           "notes": "Remote control"
         },
         {
@@ -1012,7 +1012,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "LANC (2.5mm stereo mini jack)",
+          "type": "LANC",
           "notes": "REMOTE connector"
         },
         {
@@ -1112,7 +1112,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "LANC (2.5mm stereo mini jack)",
+          "type": "LANC",
           "notes": "Remote control"
         },
         {
@@ -1300,7 +1300,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "REMOTE A (2.5mm)",
+          "type": "REMOTE A connector",
           "notes": "LANC"
         },
         {
@@ -1393,7 +1393,7 @@ let devices={
           "notes": "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3"
         },
         {
-          "type": "Lens terminal 12-pin jack",
+          "type": "Hirose 12-pin",
           "notes": "Requires optional EU-V2 / EU-V3"
         }
       ],
@@ -1490,11 +1490,11 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Remote Control Terminal",
+          "type": "REMOTE A connector",
           "notes": "2.5 mm stereo mini jack"
         },
         {
-          "type": "Lens Terminal",
+          "type": "Hirose 12-pin",
           "notes": "12-pin jack"
         },
         {
@@ -1604,7 +1604,7 @@ let devices={
           "notes": "Round 8-pin jack (for RS-422) with optional EU-V1 / EU-V2 / EU-V3"
         },
         {
-          "type": "Lens terminal 12-pin jack",
+          "type": "Hirose 12-pin",
           "notes": "Requires optional EU-V2 / EU-V3"
         }
       ],
@@ -1687,7 +1687,7 @@ let devices={
           "notes": "Iris, focus and zoom on supported lenses"
         },
         {
-          "type": "USB Type-C",
+          "type": "USB-C",
           "notes": "PTP camera control"
         },
         {
@@ -1843,7 +1843,7 @@ let devices={
           "notes": "Iris, focus and zoom on supported lenses"
         },
         {
-          "type": "USB Type-C",
+          "type": "USB-C",
           "notes": "PTP camera control"
         },
         {
@@ -1921,7 +1921,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Active EF Mount",
+          "type": "Active EF mount",
           "notes": "For electronic EF lenses (iris, focus, zoom)"
         },
         {
@@ -2028,7 +2028,7 @@ let devices={
           "notes": "2.5mm input for Rec Start/Stop, Iris and Focus control"
         },
         {
-          "type": "12pin broadcast connector",
+          "type": "Hirose 12-pin",
           "notes": "For compatible lenses and electronic control via EF mount pins on optional EF lens mount"
         }
       ],
@@ -2152,7 +2152,7 @@ let devices={
           "notes": "2.5mm"
         },
         {
-          "type": "12-pin Hirose",
+          "type": "Hirose 12-pin",
           "notes": "For broadcast lenses"
         }
       ],
@@ -2396,7 +2396,7 @@ let devices={
           "notes": "Supports Genlock, Timecode In, GPIO, and Ctrl (RS-232)"
         },
         {
-          "type": "USB-C / Gigabit Ethernet (via adapter)",
+          "type": "USB-C",
           "notes": "Via KOMODO Link Adaptor for camera control"
         }
       ],
@@ -4140,7 +4140,7 @@ let devices={
           "notes": "For specific accessories/control"
         },
         {
-          "type": "USB Type-C®",
+          "type": "USB-C",
           "notes": "For specific accessories/control"
         }
       ],
@@ -4203,11 +4203,11 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "2.5 mm Sub-Mini (LANC)",
+          "type": "LANC",
           "notes": "Control Input [2.3]"
         },
         {
-          "type": "USB-C (USB 3.2 / 3.1 Gen 1)",
+          "type": "USB-C",
           "notes": "Control/Data/Video Input [2.3]"
         },
         {
@@ -4274,7 +4274,7 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "USB Type-C®",
+          "type": "USB-C",
           "notes": "For specific accessories/control"
         }
       ],
