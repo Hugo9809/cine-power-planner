@@ -415,7 +415,10 @@ let devices={
       "videoOutputs": [
         {
           "type": "3G-SDI",
-          "count": 2,
+          "notes": "Uncompressed HD/UHD video with embedded audio and metadata"
+        },
+        {
+          "type": "3G-SDI",
           "notes": "Uncompressed HD/UHD video with embedded audio and metadata"
         }
       ],
@@ -528,16 +531,22 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 4
+          "type": "12G-SDI"
         },
         {
-          "type": "3G-SDI",
-          "count": 1
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         },
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -659,16 +668,22 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 4
+          "type": "12G-SDI"
         },
         {
-          "type": "3G-SDI",
-          "count": 1
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         },
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -1249,12 +1264,10 @@ let devices={
       "videoOutputs": [
         {
           "type": "12G-SDI",
-          "count": 1,
           "notes": "BNC terminal"
         },
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type-A"
         }
       ],
@@ -1341,12 +1354,10 @@ let devices={
       "videoOutputs": [
         {
           "type": "12G-SDI",
-          "count": 1,
           "notes": "BNC terminal, 4K to 2K/FHD conversion available"
         },
         {
-          "type": "HDMI",
-          "count": 1
+          "type": "HDMI"
         }
       ],
       "fizConnectors": [
@@ -1447,17 +1458,14 @@ let devices={
       "videoOutputs": [
         {
           "type": "12G-SDI",
-          "count": 1,
           "notes": "BNC"
         },
         {
           "type": "3G-SDI",
-          "count": 1,
           "notes": "Monitor Output BNC; Monitoring"
         },
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type-A"
         }
       ],
@@ -1565,12 +1573,10 @@ let devices={
       "videoOutputs": [
         {
           "type": "12G-SDI",
-          "count": 1,
           "notes": "BNC terminal, 4K to 2K/FHD conversion available"
         },
         {
-          "type": "HDMI",
-          "count": 1
+          "type": "HDMI"
         }
       ],
       "fizConnectors": [
@@ -1661,7 +1667,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -1742,7 +1747,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -1827,7 +1831,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -2012,12 +2015,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 1
+          "type": "12G-SDI"
         },
         {
           "type": "3G-SDI",
-          "count": 1,
           "notes": "Monitoring"
         }
       ],
@@ -2132,12 +2133,13 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 2
+          "type": "12G-SDI"
         },
         {
-          "type": "HDMI",
-          "count": 1
+          "type": "12G-SDI"
+        },
+        {
+          "type": "HDMI"
         }
       ],
       "fizConnectors": [
@@ -2223,7 +2225,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -2299,7 +2300,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -2398,7 +2398,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "12G-SDI",
-          "count": 1,
           "notes": "Also supports 6G-SDI, 3G-SDI, and 1.5G-SDI modes"
         }
       ],
@@ -2483,8 +2482,7 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 1
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -2576,8 +2574,16 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 4
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -2669,8 +2675,16 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 4
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -2762,8 +2776,16 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 4
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -2855,8 +2877,16 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 4
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -2929,8 +2959,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 2
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3003,8 +3035,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 2
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3077,8 +3111,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 2
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3151,8 +3187,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "12G-SDI",
-          "count": 2
+          "type": "12G-SDI"
+        },
+        {
+          "type": "12G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3225,8 +3263,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "3G-SDI",
-          "count": 2
+          "type": "3G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3295,8 +3335,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "3G-SDI",
-          "count": 2
+          "type": "3G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3365,8 +3407,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "3G-SDI",
-          "count": 2
+          "type": "3G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3435,8 +3479,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "3G-SDI",
-          "count": 2
+          "type": "3G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3505,8 +3551,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "3G-SDI",
-          "count": 2
+          "type": "3G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3575,8 +3623,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "3G-SDI",
-          "count": 2
+          "type": "3G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3645,8 +3695,10 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "3G-SDI",
-          "count": 2
+          "type": "3G-SDI"
+        },
+        {
+          "type": "3G-SDI"
         }
       ],
       "fizConnectors": [
@@ -3722,7 +3774,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -3801,7 +3852,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -3881,7 +3931,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -3961,7 +4010,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         }
       ],
@@ -4065,12 +4113,10 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type A"
         },
         {
           "type": "3G-SDI",
-          "count": 1,
           "notes": "Via expansion plate"
         }
       ],
@@ -4161,7 +4207,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type-A",
           "notes": "Supports 4672 x 2628 (59.94p/50p/29.97p/25p/23.98p), 16 bit RAW output [S1.1]"
         }
@@ -4230,12 +4275,10 @@ let devices={
       "videoOutputs": [
         {
           "type": "3G-SDI",
-          "count": 1,
           "notes": "Output [2.3]"
         },
         {
           "type": "HDMI",
-          "count": 1,
           "notes": "Output, Raw 12-Bit via HDMI [2.3]"
         }
       ],
@@ -4310,7 +4353,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type-A",
           "notes": "YCbCr 4:2:2 10 bit / RGB 8 bit [S3.1]"
         }
@@ -4379,7 +4421,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "Micro HDMI",
-          "count": 1,
           "notes": "4:2:2 10-bit output [4.1]"
         }
       ],
@@ -4456,7 +4497,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type-A",
           "notes": "RAW/SRAW Video: 8K DCI (17:9) / 4K DCI (17:9) [S5.3]"
         }
@@ -4539,7 +4579,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "Type-A"
         }
       ],
@@ -4618,7 +4657,6 @@ let devices={
       "videoOutputs": [
         {
           "type": "HDMI",
-          "count": 1,
           "version": "2.1 Type A"
         }
       ],
