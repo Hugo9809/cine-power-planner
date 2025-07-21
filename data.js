@@ -559,7 +559,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LEMO 26 pin",
+          "type": "LEMO 26-pin port",
           "notes": "For Sony DVF-EL200 Viewfinder"
         }
       ],
@@ -705,7 +705,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LEMO 26 pin",
+          "type": "LEMO 26-pin port",
           "notes": "For Sony DVF-EL200 Viewfinder"
         }
       ],
@@ -812,7 +812,7 @@ let devices={
           "notes": "For Sony EVF"
         },
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "3.5-inch",
           "resolution": "1280x720"
         }
@@ -896,7 +896,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "3.0-inch",
           "resolution": "1.44M dots",
           "notes": "Vari-angle touchscreen"
@@ -1010,7 +1010,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "Native LCD Viewfinder",
+          "type": "Integrated LCD monitor",
           "size": "3.5-inch",
           "notes": "Touch operation, flexible attachment"
         }
@@ -1114,7 +1114,7 @@ let devices={
           "notes": "For Sony EVF"
         },
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "3.5-inch",
           "resolution": "1280x720"
         }
@@ -1184,7 +1184,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD Touch Panel",
+          "type": "LCD touchscreen",
           "size": "3.5 inch",
           "resolution": "1280 x 720"
         }
@@ -1387,11 +1387,11 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD Monitor LM-V2 (Supplied)",
+          "type": "LCD Monitor LM-V2",
           "notes": "4.3” rotating touchscreen LCD unit"
         },
         {
-          "type": "Optional EVF-V70 viewfinder"
+          "type": "EVF-V70 (Optional)"
         }
       ],
       "lensMount": [
@@ -1488,7 +1488,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD Touchscreen",
+          "type": "LCD touchscreen",
           "size": "3.5 inch",
           "resolution": "1280 x 720"
         }
@@ -1593,14 +1593,14 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD Monitor LM-V2 (Supplied)",
+          "type": "LCD Monitor LM-V2",
           "notes": "Canon's proprietary specification (special 13-pin jack)"
         },
         {
-          "type": "Optional EVF-V70 viewfinder"
+          "type": "EVF-V70 (Optional)"
         },
         {
-          "type": "Optional EVF-V50"
+          "type": "EVF-V50 (Optional)"
         }
       ],
       "lensMount": [
@@ -1678,7 +1678,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD capacitive touchscreen",
+          "type": "LCD touchscreen",
           "size": "5 inch",
           "resolution": "1920 x 1080"
         }
@@ -1746,13 +1746,13 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD capacitive touchscreen",
+          "type": "LCD touchscreen",
           "size": "5 inch",
           "resolution": "1920 x 1080",
           "notes": "Adjustable HDR touchscreen"
         },
         {
-          "type": "Optional OLED viewfinder"
+          "type": "OLED EVF (Optional)"
         }
       ],
       "lensMount": [
@@ -1826,7 +1826,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD capacitive touchscreen",
+          "type": "LCD touchscreen",
           "size": "5 inch",
           "resolution": "1920 x 1080"
         }
@@ -1904,12 +1904,12 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "Native LCD Capacitive Touchscreen",
+          "type": "LCD touchscreen",
           "size": "5-inch",
           "resolution": "1920x1080"
         },
         {
-          "type": "Blackmagic Pocket Cinema Camera Pro EVF (Optional)",
+          "type": "Blackmagic Pro EVF (Optional)",
           "resolution": "1280x960",
           "notes": "Micro OLED display"
         }
@@ -2003,12 +2003,12 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD capacitive touchscreen",
+          "type": "LCD touchscreen",
           "size": "4 inch",
           "notes": "Fold out touchscreen"
         },
         {
-          "type": "External backlit LCD status display"
+          "type": "LCD status display"
         }
       ],
       "lensMount": [
@@ -2126,7 +2126,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "Built-in Fold-out LCD",
+          "type": "Fold-out LCD",
           "size": "5-inch",
           "resolution": "1920x1080"
         },
@@ -2208,7 +2208,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD capacitive touchscreen",
+          "type": "LCD touchscreen",
           "size": "4 inch",
           "resolution": "1280x720"
         }
@@ -2275,7 +2275,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD capacitive touchscreen",
+          "type": "LCD touchscreen",
           "size": "4 inch",
           "resolution": "1280x720"
         }
@@ -2361,12 +2361,12 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "Integrated Touchscreen LCD",
+          "type": "LCD touchscreen",
           "size": "2.9-inch",
           "resolution": "1440x1440"
         },
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -2441,11 +2441,11 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "Integrated Touchscreen LCD",
+          "type": "LCD touchscreen",
           "size": "2.9-inch"
         },
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -2544,7 +2544,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -2647,7 +2647,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -2750,7 +2750,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -2853,7 +2853,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -2924,7 +2924,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -2995,7 +2995,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3066,7 +3066,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3137,7 +3137,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "DSMC3 RED Touch 7\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3204,7 +3204,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "RED Touch 7.0\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3271,7 +3271,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "RED Touch 7.0\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3338,7 +3338,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "RED Touch 7.0\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3405,7 +3405,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "RED Touch 7.0\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3472,7 +3472,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "RED Touch 7.0\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3539,7 +3539,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "RED Touch 7.0\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3606,7 +3606,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "RED Touch 7.0\" LCD (Optional)"
+          "type": "RED Touch 7\" LCD (Optional)"
         }
       ],
       "lensMount": [
@@ -3678,11 +3678,11 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "OLED LVF (Live View Finder)",
+          "type": "OLED EVF",
           "resolution": "3,680k-dot"
         },
         {
-          "type": "Free-angle LCD",
+          "type": "Vari-angle LCD",
           "size": "3.0-inch",
           "resolution": "1,840k-dot"
         }
@@ -3748,11 +3748,11 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "OLED LVF (Live View Finder)",
+          "type": "OLED EVF",
           "resolution": "3,680k-dot"
         },
         {
-          "type": "Free-angle LCD",
+          "type": "Vari-angle LCD",
           "size": "3.0-inch",
           "resolution": "1,840k-dot"
         }
@@ -4004,7 +4004,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "Integrated Main Monitor",
+          "type": "Integrated LCD monitor",
           "size": "5.5-inch",
           "resolution": "1920x1080"
         },
@@ -4086,7 +4086,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "3.0-type (7.5 cm)",
           "resolution": "Approx. 2.36M dots",
           "notes": "Vari-angle touch panel [S1.1]"
@@ -4219,7 +4219,7 @@ let devices={
       ],
       "viewfinder": [
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "3.0-type (7.5 cm)",
           "resolution": "Approx. 1.03M dots",
           "notes": "Vari-angle touch panel [S3.1]"
@@ -4286,7 +4286,7 @@ let devices={
           "notes": "No built-in viewfinder, relies on LCD [4.1]"
         },
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "3.0-inch",
           "resolution": "1.04 million dots",
           "notes": "Vari-angle touchscreen [4.1]"
@@ -4355,7 +4355,7 @@ let devices={
           "resolution": "Approx. 5.76 million dots"
         },
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "3.2-inch",
           "resolution": "Approx. 2.1 million dots",
           "notes": "Vari-angle touchscreen"
@@ -4426,7 +4426,7 @@ let devices={
           "resolution": "High-resolution"
         },
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "Vari-angle touchscreen"
         }
       ],
@@ -4496,7 +4496,7 @@ let devices={
           "resolution": "High-resolution"
         },
         {
-          "type": "LCD Monitor (Native)",
+          "type": "Integrated LCD monitor",
           "size": "Vari-angle touchscreen"
         }
       ],
