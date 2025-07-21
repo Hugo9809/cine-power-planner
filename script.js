@@ -1072,6 +1072,7 @@ function updateFizConnectorOptions() {
   document.querySelectorAll('.fiz-connector-select').forEach(sel => {
     const current = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     fizConnectorOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
@@ -1092,18 +1093,26 @@ function createFieldWithLabel(el, label) {
   return wrapper;
 }
 
+function addEmptyOption(select) {
+  const opt = document.createElement("option");
+  opt.value = "";
+  opt.textContent = "";
+  select.appendChild(opt);
+}
+
 function createVideoOutputRow(value = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'video-output-select';
+  addEmptyOption(select);
   videoOutputOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
     opt.textContent = optVal;
     select.appendChild(opt);
   });
-  if (value) select.value = value;
+  select.value = value;
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -1147,13 +1156,14 @@ function createFizConnectorRow(value = '') {
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'fiz-connector-select';
+  addEmptyOption(select);
   fizConnectorOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
     opt.textContent = optVal;
     select.appendChild(opt);
   });
-  if (value) select.value = value;
+  select.value = value;
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -1209,6 +1219,7 @@ function updateRecordingMediaOptions() {
   document.querySelectorAll('.recording-media-select').forEach(sel => {
     const cur = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     recordingMediaOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
@@ -1225,6 +1236,7 @@ function createRecordingMediaRow(type = '', notes = '') {
 
   const select = document.createElement('select');
   select.className = 'recording-media-select';
+  addEmptyOption(select);
   recordingMediaOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1309,6 +1321,7 @@ function updatePowerPortOptions() {
   powerPortOptions = getAllPowerPortTypes();
   const current = cameraPortTypeInput.value;
   cameraPortTypeInput.innerHTML = '';
+  addEmptyOption(cameraPortTypeInput);
   powerPortOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1338,6 +1351,7 @@ function updatePlateTypeOptions() {
   document.querySelectorAll('.battery-plate-type-select').forEach(sel => {
     const current = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     plateTypeOptions.forEach(pt => {
       const opt = document.createElement('option');
       opt.value = pt;
@@ -1354,6 +1368,7 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'battery-plate-type-select';
+  addEmptyOption(typeSelect);
   plateTypeOptions.forEach(pt => {
     const opt = document.createElement('option');
     opt.value = pt;
@@ -1370,13 +1385,14 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
   row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
   const mountSelect = document.createElement('select');
+  addEmptyOption(mountSelect);
   ['native','adapted'].forEach(m => {
     const opt = document.createElement('option');
     opt.value = m;
     opt.textContent = m;
     mountSelect.appendChild(opt);
   });
-  mountSelect.value = mount || 'native';
+  mountSelect.value = mount || '';
   row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
 
   const notesInput = document.createElement('input');
@@ -1460,6 +1476,7 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'viewfinder-type-select';
+  addEmptyOption(typeSelect);
   viewfinderTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1483,6 +1500,7 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
 
   const connSelect = document.createElement('select');
   connSelect.className = 'viewfinder-connector-select';
+  addEmptyOption(connSelect);
   viewfinderConnectorOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1570,6 +1588,7 @@ function updateMountTypeOptions() {
   document.querySelectorAll('.lens-mount-type-select').forEach(sel => {
     const current = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     mountTypeOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
@@ -1586,6 +1605,7 @@ function createLensMountRow(type = '', mount = 'native') {
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'lens-mount-type-select';
+  addEmptyOption(typeSelect);
   mountTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1602,13 +1622,14 @@ function createLensMountRow(type = '', mount = 'native') {
   row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
   const mountSelect = document.createElement('select');
+  addEmptyOption(mountSelect);
   ['native', 'adapted'].forEach(m => {
     const opt = document.createElement('option');
     opt.value = m;
     opt.textContent = m;
     mountSelect.appendChild(opt);
   });
-  mountSelect.value = mount || 'native';
+  mountSelect.value = mount || '';
   row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
 
   const addBtn = document.createElement('button');
@@ -1695,6 +1716,7 @@ function updatePowerDistVoltageOptions() {
   document.querySelectorAll('.power-dist-voltage-select').forEach(sel => {
     const cur = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     powerDistVoltageOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
@@ -1710,6 +1732,7 @@ function updatePowerDistCurrentOptions() {
   document.querySelectorAll('.power-dist-current-select').forEach(sel => {
     const cur = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     powerDistCurrentOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
@@ -1725,6 +1748,7 @@ function updatePowerDistTypeOptions() {
   document.querySelectorAll('.power-dist-type-select').forEach(sel => {
     const cur = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     powerDistTypeOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
@@ -1741,6 +1765,7 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'power-dist-type-select';
+  addEmptyOption(typeSelect);
   powerDistTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1758,6 +1783,7 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 
   const voltSelect = document.createElement('select');
   voltSelect.className = 'power-dist-voltage-select';
+  addEmptyOption(voltSelect);
   powerDistVoltageOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1775,6 +1801,7 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 
   const currSelect = document.createElement('select');
   currSelect.className = 'power-dist-current-select';
+  addEmptyOption(currSelect);
   powerDistCurrentOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -1869,6 +1896,7 @@ function updateTimecodeTypeOptions() {
   document.querySelectorAll('.timecode-type-select').forEach(sel => {
     const cur = sel.value;
     sel.innerHTML = '';
+    addEmptyOption(sel);
     timecodeTypeOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
@@ -1885,6 +1913,7 @@ function createTimecodeRow(type = '', notes = '') {
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'timecode-type-select';
+  addEmptyOption(typeSelect);
   timecodeTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
