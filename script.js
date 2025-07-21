@@ -672,6 +672,14 @@ function updateFizConnectorOptions() {
   });
 }
 
+function createFieldWithLabel(el, label) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'field-with-label';
+  wrapper.dataset.label = label;
+  wrapper.appendChild(el);
+  return wrapper;
+}
+
 function createVideoOutputRow(value = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
@@ -684,7 +692,7 @@ function createVideoOutputRow(value = '') {
     select.appendChild(opt);
   });
   if (value) select.value = value;
-  row.appendChild(select);
+  row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.textContent = '+';
@@ -734,7 +742,7 @@ function createFizConnectorRow(value = '') {
     select.appendChild(opt);
   });
   if (value) select.value = value;
-  row.appendChild(select);
+  row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.textContent = '+';
@@ -821,7 +829,7 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
     typeSelect.appendChild(opt);
   }
   typeSelect.value = type;
-  row.appendChild(typeSelect);
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
   const mountSelect = document.createElement('select');
   ['native','adapted'].forEach(m => {
@@ -831,13 +839,13 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
     mountSelect.appendChild(opt);
   });
   mountSelect.value = mount || 'native';
-  row.appendChild(mountSelect);
+  row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
 
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
-  row.appendChild(notesInput);
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -927,13 +935,13 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
     typeSelect.appendChild(opt);
   }
   typeSelect.value = type;
-  row.appendChild(typeSelect);
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
   const resInput = document.createElement('input');
   resInput.type = 'text';
   resInput.placeholder = 'Resolution';
   resInput.value = resolution;
-  row.appendChild(resInput);
+  row.appendChild(createFieldWithLabel(resInput, 'Resolution'));
 
   const connSelect = document.createElement('select');
   connSelect.className = 'viewfinder-connector-select';
@@ -950,13 +958,13 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
     connSelect.appendChild(opt);
   }
   connSelect.value = connector;
-  row.appendChild(connSelect);
+  row.appendChild(createFieldWithLabel(connSelect, 'Connector'));
 
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
-  row.appendChild(notesInput);
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -1053,7 +1061,7 @@ function createLensMountRow(type = '', mount = 'native') {
     typeSelect.appendChild(opt);
   }
   typeSelect.value = type;
-  row.appendChild(typeSelect);
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
   const mountSelect = document.createElement('select');
   ['native', 'adapted'].forEach(m => {
@@ -1063,7 +1071,7 @@ function createLensMountRow(type = '', mount = 'native') {
     mountSelect.appendChild(opt);
   });
   mountSelect.value = mount || 'native';
-  row.appendChild(mountSelect);
+  row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -1154,32 +1162,32 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
     typeSelect.appendChild(opt);
   }
   typeSelect.value = type;
-  row.appendChild(typeSelect);
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
   const voltInput = document.createElement('input');
   voltInput.type = 'text';
   voltInput.placeholder = 'Voltage';
   voltInput.value = voltage;
-  row.appendChild(voltInput);
+  row.appendChild(createFieldWithLabel(voltInput, 'Voltage'));
 
   const currInput = document.createElement('input');
   currInput.type = 'text';
   currInput.placeholder = 'Current';
   currInput.value = current;
-  row.appendChild(currInput);
+  row.appendChild(createFieldWithLabel(currInput, 'Current'));
 
   const wattInput = document.createElement('input');
   wattInput.type = 'number';
   wattInput.step = '0.1';
   wattInput.placeholder = 'W';
   wattInput.value = wattage === null || wattage === undefined ? '' : wattage;
-  row.appendChild(wattInput);
+  row.appendChild(createFieldWithLabel(wattInput, 'W')); 
 
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
-  row.appendChild(notesInput);
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
@@ -1276,13 +1284,13 @@ function createTimecodeRow(type = '', notes = '') {
     typeSelect.appendChild(opt);
   }
   typeSelect.value = type;
-  row.appendChild(typeSelect);
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
 
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
-  row.appendChild(notesInput);
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
