@@ -1,14 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
 
-// Store a deep copy of the initial 'devices' data as defined in data.js.
-// This 'defaultDevices' will be used when reverting the database.
-// Initialize defaultDevices only if it hasn't been declared yet, to prevent "already declared" errors
-// if the script is loaded multiple times (e.g., in some development environments).
-if (window.defaultDevices === undefined) {
-  window.defaultDevices = JSON.parse(JSON.stringify(devices));
-  unifyDevices(window.defaultDevices);
-}
-
 const VIDEO_OUTPUT_TYPES = [
   '3G-SDI',
   '6G-SDI',
@@ -18,6 +9,15 @@ const VIDEO_OUTPUT_TYPES = [
   'Mini HDMI',
   'Micro HDMI'
 ];
+
+// Store a deep copy of the initial 'devices' data as defined in data.js.
+// This 'defaultDevices' will be used when reverting the database.
+// Initialize defaultDevices only if it hasn't been declared yet, to prevent
+// "already declared" errors if the script is loaded multiple times.
+if (window.defaultDevices === undefined) {
+  window.defaultDevices = JSON.parse(JSON.stringify(devices));
+  unifyDevices(window.defaultDevices);
+}
 
 function normalizeVideoType(type) {
   if (!type) return '';
