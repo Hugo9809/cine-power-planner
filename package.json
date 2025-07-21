@@ -4,7 +4,8 @@
   "description": "This is a browser-based tool for planning professional camera setups powered by V-Mount batteries.   It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V), and **estimated battery runtime**, while checking whether the battery can safely deliver the required power.",
   "main": "data.js",
   "scripts": {
-    "test": "jest"
+    "lint": "eslint .",
+    "test": "npm run lint && jest"
   },
   "keywords": [],
   "author": "",

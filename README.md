@@ -130,7 +130,11 @@ README.md        # This file / Diese Datei
    ```bash
    npm install
    ```
-2. Run tests:
+2. Lint the code:
+   ```bash
+   npm run lint
+   ```
+3. Run tests (includes linting):
    ```bash
    npm test
    ```
@@ -140,7 +144,11 @@ README.md        # This file / Diese Datei
    ```bash
    npm install
    ```
-2. Tests ausführen:
+2. Lint-Prüfung ausführen:
+   ```bash
+   npm run lint
+   ```
+3. Tests ausführen (inklusive Linting):
    ```bash
    npm test
    ```
