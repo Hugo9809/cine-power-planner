@@ -6566,46 +6566,116 @@ let devices={
     },
     "controllers": {
       "None": {
-        "powerDrawWatts": 0
+        "powerDrawWatts": 0,
+        "FIZ_connector": null,
+        "power_source": "N/A",
+        "battery_type": "N/A",
+        "connectivity": "N/A",
+        "notes": "Placeholder for no controller."
       },
       "Arri OCU-1": {
-        "powerDrawWatts": 1.32
+        "powerDrawWatts": 1.32,
+        "FIZ_connector": "LBUS (4-pin Lemo)",
+        "power_source": "External (via LBUS)",
+        "battery_type": "N/A",
+        "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
+        "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis."
       },
       "Arri ZMU-4 (body only, wired)": {
-        "powerDrawWatts": 3
+        "powerDrawWatts": 1,
+        "FIZ_connector": "LBUS (4-pin Lemo for motors), CAM (7-pin Lemo for camera control)",
+        "power_source": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
+        "battery_type": "Sony NP-F550/750 compatible, ARRI LBP-3500",
+        "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
+        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control."
       },
       "Arri UMC-4": {
-        "powerDrawWatts": 1.68
+        "powerDrawWatts": 1.68,
+        "FIZ_connector": "2x LBUS (4-pin Lemo for motors), 2x SERIAL (4-pin Lemo), CAM (7-pin Lemo), EXT (6-pin/16-pin depending on camera)",
+        "power_source": "External DC (via CAM or LBUS chain)",
+        "battery_type": "N/A (no internal battery)",
+        "connectivity": "Wireless (proprietary ARRI radio system, works with WCU-4, SXU-1, Master Grips, cmotion pan-bar zoom), Wired (LBUS, CAM, SERIAL)",
+        "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support."
       },
       "Arri RIA-1": {
-        "powerDrawWatts": 2.5
+        "powerDrawWatts": 2.5,
+        "FIZ_connector": "2x LBUS (4-pin Lemo), 1x CAM (7-pin Lemo), 1x SERIAL (4-pin Lemo)",
+        "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
+        "battery_type": "N/A (no internal battery, draws power from camera or external source)",
+        "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
+        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust."
       },
       "Arri Master Grip (single unit)": {
-        "powerDrawWatts": 0.72
+        "powerDrawWatts": 0.72,
+        "FIZ_connector": "2x LBUS (4-pin Lemo)",
+        "power_source": "External (12-34VDC via LBUS)",
+        "battery_type": "N/A (no internal battery)",
+        "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
+        "notes": "Ergonomic cine-style handgrip with integrated lens and camera controls. Available in rocker (zoom) or thumbwheel (focus/iris) versions. Can control EF/ENG and cine lenses. Advanced camera control via LCUBE CUB-1 (for third-party cameras). Override function for WCU-4 and Hi-5. Assignable user buttons, multilingual display, focus tracking, adjustable speed control."
       },
       "Tilta Nucleus-M Hand Grip (single)": {
-        "powerDrawWatts": 0.5
+        "powerDrawWatts": 0.5,
+        "FIZ_connector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
+        "power_source": "Internal Battery",
+        "battery_type": "2x 18650 Li-ion (per grip, not included)",
+        "connectivity": "Wireless (proprietary 2.4GHz RF, 1000ft/300m range)",
+        "notes": "Wireless handgrip for Nucleus-M system. Left grip (focus) and Right grip (iris/zoom toggle). Can be mounted to ARRI rosettes or 25/30mm gimbal rods. Allows splitting FIZ control with the FIZ hand unit. Up to 48 hours battery life (idle)."
       },
       "Tilta Nucleus-M II Handle (single)": {
-        "powerDrawWatts": 0.5
+        "powerDrawWatts": 0.5,
+        "FIZ_connector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
+        "power_source": "Internal Battery",
+        "battery_type": "NP-F550 (single per handle)",
+        "connectivity": "Wireless (proprietary 2.4GHz RF)",
+        "notes": "Improved wireless handgrip for Nucleus-M II system. Supports up to 4 channels (FIZ + ND). Compatible with Nucleus M and Nano II systems. Adjustable damping on hand wheel. Left/Right hand switch for hand wheel. Camera control via Bluetooth or cable."
       },
       "Preston MDR4": {
-        "powerDrawWatts": 48
+        "powerDrawWatts": 48,
+        "FIZ_connector": "2x Motor Ports (proprietary 7-pin Lemo), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)",
+        "power_source": "External DC (4-pin XLR or D-Tap)",
+        "battery_type": "N/A (no internal battery)",
+        "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
+        "notes": "2-channel digital motor driver (Focus and Iris or Zoom). Compatible with all Preston hand units (e.g., HU4) and motors. Automatic lens calibration. Each channel has adjustable torque and direction. Supports camera run/stop for various film/video cameras. Compact and suitable for handheld/Steadicam/gimbal. Does not output lens metadata."
       },
       "ARRI ECM-1": {
-        "powerDrawWatts": 84
+        "powerDrawWatts": 84,
+        "FIZ_connector": "6x Motor ports (proprietary Lemo), 1x Camera (7-pin Lemo), 1x Accessory (4-pin Lemo), 1x Ethernet, 1x USB",
+        "power_source": "External DC (2-pin Lemo or 4-pin XLR)",
+        "battery_type": "N/A (no internal battery)",
+        "connectivity": "Wired (Ethernet, Camera cable to ALEXA 65/LF/Mini LF/35, USB) or Wireless (integrated Wi-Fi and ARRI White Radio)",
+        "notes": "Extended Control Module for ALEXA 65/LF/Mini LF/35. Highly advanced and powerful lens and camera control. Provides 6 motor ports for advanced FIZ and iris/zoom control. Allows connection of multiple accessories and expands camera functionality. Enables advanced lens data functions and is often used for virtual production or complex setups."
       },
       "Redrock microRemote Basestation": {
-        "powerDrawWatts": 54
+        "powerDrawWatts": 54,
+        "FIZ_connector": "3x Motor ports (proprietary 4-pin), 1x USB, 1x AUX, 1x Power (2-pin Lemo)",
+        "power_source": "External DC (6-18V via 2-pin Lemo)",
+        "battery_type": "N/A (no internal battery)",
+        "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
+        "notes": "Central receiver and motor driver for Redrock MicroRemote systems. Supports up to 3 motors (Focus, Iris, Zoom). Automatic or manual calibration. Compatible with various Redrock hand units (e.g., fingerwheel, handheld controller). Provides a single channel for focus, with optional expansion for iris/zoom. Compact and lightweight."
       },
       "ARRI LBUS Distributor (LBS-1)": {
-        "powerDrawWatts": 0.24
+        "powerDrawWatts": 0.24,
+        "FIZ_connector": "Multiple LBUS ports (4-pin Lemo)",
+        "power_source": "External (via any LBUS connection)",
+        "battery_type": "N/A (passive device)",
+        "connectivity": "Wired (LBUS)",
+        "notes": "A simple hub for LBUS devices, allowing multiple LBUS accessories (motors, hand units, rangefinders) to be connected to a single LBUS chain from a camera or power source. Facilitates power and data distribution within the LBUS network. Passive device, requires power from connected LBUS source."
       },
       "Cmotion compact LCS receiver": {
-        "powerDrawWatts": 20
+        "powerDrawWatts": 20,
+        "FIZ_connector": "3x Motor ports (4-pin Lemo), 1x Camera (7-pin Lemo), 1x EXT (4-pin Lemo)",
+        "power_source": "External DC (10-34V via Camera port or EXT port)",
+        "battery_type": "N/A (no internal battery)",
+        "connectivity": "Wireless (proprietary cmotion RF, 2.4 GHz FHSS, up to 150m/500ft range) or Wired (CAM, EXT)",
+        "notes": "Compact 3-axis lens control receiver. Compatible with cmotion hand units (e.g., cPRO hand unit, cvolution hand unit). Features an integrated camera run/stop control for various camera systems. Supports lens data communication. Suitable for gimbal, Steadicam, and drone applications due to its small size and lightweight design."
       },
       "Teradek RT Motion CTRL.3 Controller": {
-        "powerDrawWatts": 15
+        "powerDrawWatts": 15,
+        "FIZ_connector": "USB-C, 2-pin Lemo (power out), 4-pin Lemo (data to MDR)",
+        "power_source": "Internal Battery (rechargeable) or External (USB-C)",
+        "battery_type": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
+        "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
+        "notes": "3-axis wireless FIZ controller. Features a customizable focus knob with adjustable damping, iris slider, and zoom rocker. Integrated OLED display for lens data and settings. Supports lens mapping and virtual stops. Compatible with Teradek RT MDRs (e.g., MDR.S, MDR.M, MDR.X). USB-C for charging, firmware updates, and camera control."
       }
     },
     "distance": {
