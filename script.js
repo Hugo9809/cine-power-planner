@@ -45,6 +45,22 @@ function unifyDevices(data) {
         };
       });
     }
+    if (Array.isArray(cam.lensMount)) {
+      cam.lensMount = cam.lensMount.map(it => {
+        if (typeof it === 'string') {
+          const m = it.match(/([^()]+)(?:\(([^)]+)\))?/);
+          let type = m ? m[1].trim() : it;
+          type = type.replace(/\b(mount|lens mount|bayonet)\b/gi, '').trim();
+          let mount = m && m[2] ? m[2].toLowerCase() : (/(adapt|via|optional)/i.test(it) ? 'adapted' : 'native');
+          mount = /native/i.test(mount) ? 'native' : (/adapt/i.test(mount) || /via|optional/i.test(mount) ? 'adapted' : mount);
+          return { type, mount };
+        }
+        return {
+          type: it.type || '',
+          mount: it.mount ? it.mount.toLowerCase() : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))
+        };
+      });
+    }
     if (cam.power) {
       cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, { type: '', voltage: '', current: '', wattage: null, notes: '' });
     }
@@ -461,7 +477,6 @@ function setLanguage(lang) {
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
   cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
-  cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
   cameraTimecodeInput.placeholder = texts[lang].placeholder_timecode;
   // Toggle device manager button text (depends on current visibility)
@@ -551,7 +566,7 @@ const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
 const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
 const cameraPlatesInput = document.getElementById("cameraPlates");
 const cameraMediaInput = document.getElementById("cameraMedia");
-const cameraLensMountInput = document.getElementById("cameraLensMount");
+const lensMountContainer = document.getElementById("lensMountContainer");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
 const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
@@ -861,6 +876,102 @@ function clearViewfinders() {
   setViewfinders([]);
 }
 
+function getAllLensMountTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    if (Array.isArray(cam.lensMount)) {
+      cam.lensMount.forEach(lm => { if (lm && lm.type) types.add(lm.type); });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let lensMountOptions = getAllLensMountTypes();
+
+function updateLensMountOptions() {
+  lensMountOptions = getAllLensMountTypes();
+  document.querySelectorAll('.lens-mount-type-select').forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    lensMountOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (lensMountOptions.includes(current)) sel.value = current;
+  });
+}
+
+function createLensMountRow(type = '', mount = 'native') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const typeSelect = document.createElement('select');
+  typeSelect.className = 'lens-mount-type-select';
+  lensMountOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !lensMountOptions.includes(type)) {
+    const opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(typeSelect);
+
+  const mountSelect = document.createElement('select');
+  mountSelect.className = 'lens-mount-status-select';
+  ['native','adapted'].forEach(st => {
+    const opt = document.createElement('option');
+    opt.value = st;
+    opt.textContent = st;
+    mountSelect.appendChild(opt);
+  });
+  mountSelect.value = mount;
+  row.appendChild(mountSelect);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => { row.after(createLensMountRow()); });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (lensMountContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setLensMounts(list) {
+  lensMountContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(({type='', mount='native'}) => {
+      lensMountContainer.appendChild(createLensMountRow(type, mount));
+    });
+  } else {
+    lensMountContainer.appendChild(createLensMountRow());
+  }
+}
+
+function getLensMounts() {
+  return Array.from(lensMountContainer.querySelectorAll('.form-row')).map(row => {
+    const [typeSelect, mountSelect] = row.querySelectorAll('select');
+    return { type: typeSelect.value, mount: mountSelect.value };
+  });
+}
+
+function clearLensMounts() {
+  setLensMounts([]);
+}
+
 
 // Populate dropdowns with device options
 function populateSelect(selectElem, optionsObj, includeNone=true) {
@@ -970,7 +1081,9 @@ controllerSelects.forEach(sel => attachSelectSearch(sel));
 applyFilters();
 setVideoOutputs([]);
 setFizConnectors([]);
+setLensMounts([]);
 updateFizConnectorOptions();
+updateLensMountOptions();
 
 // Set default selections for dropdowns
 
@@ -1511,7 +1624,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
       cameraPlatesInput.value = JSON.stringify(deviceData.power?.batteryPlateSupport || [], null, 2);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
-      cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
+      setLensMounts(deviceData.lensMount || []);
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
       setVideoOutputs(deviceData.videoOutputs || []);
       setFizConnectors(deviceData.fizConnectors || []);
@@ -1551,6 +1664,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       populateSelect(distanceSelect, devices.fiz.distance, true);
       populateSelect(batterySelect, devices.batteries, true);
       updateFizConnectorOptions();
+      updateLensMountOptions();
       applyFilters();
       updateCalculations();
     }
@@ -1584,7 +1698,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraBatteryLifeInput.value = "";
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
-  cameraLensMountInput.value = "";
+  clearLensMounts();
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   clearFizConnectors();
@@ -1680,7 +1794,7 @@ addDeviceBtn.addEventListener("click", () => {
       fizConnectors: fizCon,
       recordingMedia: cameraMediaInput.value ? cameraMediaInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
       viewfinder: viewfinder,
-      lensMount: cameraLensMountInput.value ? cameraLensMountInput.value.split(',').map(s => s.trim()).filter(s => s) : [],
+      lensMount: getLensMounts(),
       timecode: timecode
     };
   } else {
@@ -1708,7 +1822,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraBatteryLifeInput.value = "";
   cameraPlatesInput.value = "";
   cameraMediaInput.value = "";
-  cameraLensMountInput.value = "";
+  clearLensMounts();
   cameraPowerDistInput.value = "";
   clearVideoOutputs();
   clearFizConnectors();
@@ -1732,6 +1846,7 @@ addDeviceBtn.addEventListener("click", () => {
   populateSelect(distanceSelect, devices.fiz.distance, true);
   populateSelect(batterySelect, devices.batteries, true);
   updateFizConnectorOptions();
+  updateLensMountOptions();
   applyFilters();
   updateCalculations(); // Update calculations after device data changes
 
@@ -1797,6 +1912,7 @@ if (exportAndRevertBtn) {
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
         updateFizConnectorOptions();
+        updateLensMountOptions();
         applyFilters();
         refreshDeviceLists(); // Refresh device manager lists
         updateCalculations();
@@ -1844,6 +1960,7 @@ importFileInput.addEventListener("change", (event) => {
         populateSelect(distanceSelect, devices.fiz.distance, true);
         populateSelect(batterySelect, devices.batteries, true);
         updateFizConnectorOptions();
+        updateLensMountOptions();
         applyFilters();
         updateCalculations();
 
