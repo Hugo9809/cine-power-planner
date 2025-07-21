@@ -1214,10 +1214,6 @@ let devices={
       ],
       "fizConnectors": [
         {
-          "type": "Canon RF mount",
-          "notes": "For electronic lens control (iris, focus, zoom) on compatible lenses"
-        },
-        {
           "type": "REMOTE A connector",
           "notes": "2.5 mm stereo mini-mini jack (input only)"
         }
