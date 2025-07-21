@@ -414,7 +414,7 @@ let devices={
       },
       "videoOutputs": [
         {
-          "type": "HD-SDI",
+          "type": "3G-SDI",
           "count": 2,
           "notes": "Uncompressed HD/UHD video with embedded audio and metadata"
         }
@@ -532,7 +532,7 @@ let devices={
           "count": 4
         },
         {
-          "type": "HD-SDI",
+          "type": "3G-SDI",
           "count": 1
         },
         {
@@ -663,7 +663,7 @@ let devices={
           "count": 4
         },
         {
-          "type": "HD-SDI",
+          "type": "3G-SDI",
           "count": 1
         },
         {
@@ -4069,7 +4069,7 @@ let devices={
           "version": "Type A"
         },
         {
-          "type": "SDI",
+          "type": "3G-SDI",
           "count": 1,
           "notes": "Via expansion plate"
         }
@@ -4234,7 +4234,7 @@ let devices={
           "notes": "Output [2.3]"
         },
         {
-          "type": "HDMI 2.0",
+          "type": "HDMI",
           "count": 1,
           "notes": "Output, Raw 12-Bit via HDMI [2.3]"
         }
