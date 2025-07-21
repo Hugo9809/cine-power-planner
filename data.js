@@ -3737,12 +3737,7 @@ let devices={
           "mount": "native"
         }
       ],
-      "timecode": [
-        {
-          "type": "No dedicated BNC",
-          "notes": "Timecode sync via HDMI or software"
-        }
-      ]
+      "timecode": []
     },
     "Panasonic Lumix GH6": {
       "powerDrawWatts": 5,
@@ -3812,12 +3807,7 @@ let devices={
           "mount": "native"
         }
       ],
-      "timecode": [
-        {
-          "type": "No dedicated BNC",
-          "notes": "Timecode sync via HDMI or software"
-        }
-      ]
+      "timecode": []
     },
     "Sony A7S III": {
       "powerDrawWatts": 5,
@@ -3962,12 +3952,7 @@ let devices={
           "mount": "native"
         }
       ],
-      "timecode": [
-        {
-          "type": "No dedicated BNC",
-          "notes": "Timecode sync via HDMI or software"
-        }
-      ]
+      "timecode": []
     },
     "DJI Ronin 4D 6K": {
       "powerDrawWatts": 40,
@@ -4085,12 +4070,7 @@ let devices={
           "mount": "adapted"
         }
       ],
-      "timecode": [
-        {
-          "type": "No dedicated BNC",
-          "notes": "Timecode sync via software/accessories"
-        }
-      ]
+      "timecode": []
     },
     "Sony FX30": {
       "powerDrawWatts": 5.6,
@@ -4362,12 +4342,7 @@ let devices={
           "mount": "native"
         }
       ],
-      "timecode": [
-        {
-          "type": "No dedicated BNC",
-          "notes": "Timecode sync via software/accessories"
-        }
-      ]
+      "timecode": []
     },
     "Canon EOS R5 Mark II": {
       "powerDrawWatts": 15,
@@ -4440,12 +4415,7 @@ let devices={
           "mount": "native"
         }
       ],
-      "timecode": [
-        {
-          "type": "No dedicated BNC",
-          "notes": "Timecode sync via HDMI or software"
-        }
-      ]
+      "timecode": []
     },
     "Canon EOS R1": {
       "powerDrawWatts": 18,
@@ -4514,12 +4484,7 @@ let devices={
           "mount": "native"
         }
       ],
-      "timecode": [
-        {
-          "type": "No dedicated BNC",
-          "notes": "Timecode sync via software/accessories"
-        }
-      ]
+      "timecode": []
     },
     "Leica SL3-S": {
       "powerDrawWatts": 10,
