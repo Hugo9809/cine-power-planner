@@ -33,15 +33,21 @@ function unifyDevices(data) {
     if (Array.isArray(cam.power?.batteryPlateSupport)) {
       cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(it => {
         if (typeof it === 'string') {
-          const m = it.match(/([^()]+)(?:\((native|adapted)\))?/i);
-          return {
-            type: m ? m[1].trim() : it,
-            mount: m && m[2] ? m[2].toLowerCase() : (/(adapted)/i.test(it) ? 'adapted' : 'native')
-          };
+          const m = it.match(/([^()]+)(?:\(([^)]+)\))?(?:\s*-\s*(.*))?/);
+          const type = m ? m[1].trim() : it;
+          let mount = m && m[2] ? m[2].trim().toLowerCase() : '';
+          if (!mount) {
+            mount = /adapted|via adapter/i.test(it) ? 'adapted' : 'native';
+          } else if (/via adapter/i.test(mount)) {
+            mount = 'adapted';
+          }
+          const notes = m && m[3] ? m[3].trim() : (/via adapter/i.test(it) ? 'via adapter' : '');
+          return { type, mount, notes };
         }
         return {
           type: it.type || '',
-          mount: it.mount ? it.mount.toLowerCase() : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))
+          mount: (it.mount ? it.mount : (it.native ? 'native' : (it.adapted ? 'adapted' : 'native'))).toLowerCase(),
+          notes: it.notes || ''
         };
       });
     }
@@ -459,7 +465,6 @@ function setLanguage(lang) {
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   cameraPortTypeInput.placeholder = texts[lang].placeholder_port;
-  cameraPlatesInput.placeholder = texts[lang].placeholder_plates;
   cameraMediaInput.placeholder = texts[lang].placeholder_media;
   cameraLensMountInput.placeholder = texts[lang].placeholder_lensmount;
   cameraPowerDistInput.placeholder = texts[lang].placeholder_powerdist;
@@ -549,7 +554,7 @@ const cameraVoltageInput = document.getElementById("cameraVoltage");
 const cameraPortTypeInput = document.getElementById("cameraPortType");
 const cameraBatteryTypeInput = document.getElementById("cameraBatteryType");
 const cameraBatteryLifeInput = document.getElementById("cameraBatteryLife");
-const cameraPlatesInput = document.getElementById("cameraPlates");
+const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaInput = document.getElementById("cameraMedia");
 const cameraLensMountInput = document.getElementById("cameraLensMount");
 const cameraPowerDistInput = document.getElementById("cameraPowerDist");
@@ -735,6 +740,115 @@ function getFizConnectors() {
 
 function clearFizConnectors() {
   setFizConnectors([]);
+}
+
+function getAllPlateTypes() {
+  const types = new Set();
+  Object.values(devices.cameras).forEach(cam => {
+    const list = cam.power?.batteryPlateSupport;
+    if (Array.isArray(list)) {
+      list.forEach(bp => {
+        if (bp && bp.type) types.add(bp.type);
+      });
+    }
+  });
+  return Array.from(types).sort();
+}
+
+let plateTypeOptions = getAllPlateTypes();
+
+function updatePlateTypeOptions() {
+  plateTypeOptions = getAllPlateTypes();
+  document.querySelectorAll('.battery-plate-type-select').forEach(sel => {
+    const current = sel.value;
+    sel.innerHTML = '';
+    plateTypeOptions.forEach(pt => {
+      const opt = document.createElement('option');
+      opt.value = pt;
+      opt.textContent = pt;
+      sel.appendChild(opt);
+    });
+    if (plateTypeOptions.includes(current)) sel.value = current;
+  });
+}
+
+function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const typeSelect = document.createElement('select');
+  typeSelect.className = 'battery-plate-type-select';
+  plateTypeOptions.forEach(pt => {
+    const opt = document.createElement('option');
+    opt.value = pt;
+    opt.textContent = pt;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !plateTypeOptions.includes(type)) {
+    const opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(typeSelect);
+
+  const mountSelect = document.createElement('select');
+  ['native','adapted'].forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    mountSelect.appendChild(opt);
+  });
+  mountSelect.value = mount || 'native';
+  row.appendChild(mountSelect);
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  row.appendChild(notesInput);
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createBatteryPlateRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (batteryPlatesContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setBatteryPlates(list) {
+  batteryPlatesContainer.innerHTML = '';
+  if (Array.isArray(list) && list.length) {
+    list.forEach(item => {
+      const { type = '', mount = 'native', notes = '' } = item || {};
+      batteryPlatesContainer.appendChild(createBatteryPlateRow(type, mount, notes));
+    });
+  } else {
+    batteryPlatesContainer.appendChild(createBatteryPlateRow());
+  }
+}
+
+function getBatteryPlates() {
+  return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(row => {
+    const [typeSel, mountSel, notesInput] = row.querySelectorAll('select, input');
+    return { type: typeSel.value, mount: mountSel.value, notes: notesInput.value };
+  });
+}
+
+function clearBatteryPlates() {
+  setBatteryPlates([]);
 }
 
 function getAllViewfinderTypes() {
@@ -971,6 +1085,9 @@ applyFilters();
 setVideoOutputs([]);
 setFizConnectors([]);
 updateFizConnectorOptions();
+setViewfinders([]);
+setBatteryPlates([]);
+updatePlateTypeOptions();
 
 // Set default selections for dropdowns
 
@@ -1509,7 +1626,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       cameraPortTypeInput.value = deviceData.power?.input?.portType || '';
       cameraBatteryTypeInput.value = deviceData.power?.internalBattery?.type || '';
       cameraBatteryLifeInput.value = deviceData.power?.internalBattery?.batteryLifeMinutes || '';
-      cameraPlatesInput.value = JSON.stringify(deviceData.power?.batteryPlateSupport || [], null, 2);
+      setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       cameraMediaInput.value = (deviceData.recordingMedia || []).join(',');
       cameraLensMountInput.value = (deviceData.lensMount || []).join(',');
       cameraPowerDistInput.value = JSON.stringify(deviceData.power?.powerDistributionOutputs || [] , null, 2);
@@ -1541,6 +1658,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       saveDeviceData(devices); // Save changes to localStorage
       viewfinderTypeOptions = getAllViewfinderTypes();
       viewfinderConnectorOptions = getAllViewfinderConnectors();
+      updatePlateTypeOptions();
       refreshDeviceLists();
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
@@ -1582,7 +1700,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraPortTypeInput.value = "";
   cameraBatteryTypeInput.value = "";
   cameraBatteryLifeInput.value = "";
-  cameraPlatesInput.value = "";
+  clearBatteryPlates();
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
@@ -1656,7 +1774,7 @@ addDeviceBtn.addEventListener("click", () => {
       fizCon = getFizConnectors();
       viewfinder = getViewfinders();
       timecode = cameraTimecodeInput.value ? JSON.parse(cameraTimecodeInput.value) : [];
-      plateSupport = cameraPlatesInput.value ? JSON.parse(cameraPlatesInput.value) : [];
+      plateSupport = getBatteryPlates();
     } catch (e) {
       console.error("Invalid camera JSON input:", e);
       alert(texts[currentLang].alertInvalidCameraJSON);
@@ -1706,7 +1824,7 @@ addDeviceBtn.addEventListener("click", () => {
   cameraPortTypeInput.value = "";
   cameraBatteryTypeInput.value = "";
   cameraBatteryLifeInput.value = "";
-  cameraPlatesInput.value = "";
+  clearBatteryPlates();
   cameraMediaInput.value = "";
   cameraLensMountInput.value = "";
   cameraPowerDistInput.value = "";
@@ -1722,6 +1840,7 @@ addDeviceBtn.addEventListener("click", () => {
   saveDeviceData(devices); // Save changes to localStorage
   viewfinderTypeOptions = getAllViewfinderTypes();
   viewfinderConnectorOptions = getAllViewfinderConnectors();
+  updatePlateTypeOptions();
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
   populateSelect(cameraSelect, devices.cameras, true);
@@ -1787,6 +1906,8 @@ if (exportAndRevertBtn) {
 
         viewfinderTypeOptions = getAllViewfinderTypes();
         viewfinderConnectorOptions = getAllViewfinderConnectors();
+        updatePlateTypeOptions();
+        updatePlateTypeOptions();
 
         // Update the UI to reflect the reverted database
         populateSelect(cameraSelect, devices.cameras, true);
