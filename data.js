@@ -459,7 +459,110 @@ let devices = {
       ]
     },
     "Sony Venice": {
-      "powerDrawWatts": 60
+      "powerDrawWatts": 60,
+      "power": {
+        "input": {
+          "voltageRange": "DC 12 V (11.0 to 17.0 V) / DC 24 V (22.0 to 32.0 V)",
+          "portType": "XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)",
+          "powerDrawWatts": 60
+        },
+        "internalBattery": {
+          "type": "None",
+          "batteryLifeMinutes": null
+        },
+        "batteryPlateSupport": [
+          "V-Mount (adapted)",
+          "Gold Mount (adapted)"
+        ],
+        "powerDistributionOutputs": [
+          {
+            "type": "Fischer 3-pin",
+            "count": 2,
+            "voltage": "24V",
+            "current": "2.5A",
+            "wattage": 60,
+            "notes": "Regulated, 3A surge, 2.5A sustained shared"
+          },
+          {
+            "type": "LEMO 2-pin",
+            "count": 2,
+            "voltage": "12V",
+            "current": "7A",
+            "wattage": null,
+            "notes": "Unregulated, 7A shared"
+          },
+          {
+            "type": "D-Tap",
+            "count": 2,
+            "voltage": "12V",
+            "current": "9A",
+            "wattage": null,
+            "notes": "Unregulated, 9A shared"
+          },
+          {
+            "type": "USB",
+            "count": 1,
+            "voltage": "5V",
+            "current": "2.5A",
+            "wattage": 12.5,
+            "notes": "USB-A"
+          }
+        ]
+      },
+      "videoOutputs": [
+        {
+          "type": "12G-SDI",
+          "count": 4
+        },
+        {
+          "type": "HD-SDI",
+          "count": 1
+        },
+        {
+          "type": "HDMI",
+          "count": 1,
+          "version": "Type A"
+        }
+      ],
+      "fizConnectors": [
+        {
+          "type": "Lens 12 pin",
+          "notes": "For lens control"
+        },
+        {
+          "type": "Lens Mount Hot Shoe 4 pin",
+          "notes": "Supports Cooke /i Intelligent Electronic Lens System and ZEISS eXtended Data"
+        },
+        {
+          "type": "Remote 8 pin",
+          "notes": "General remote control"
+        }
+      ],
+      "recordingMedia": [
+        "AXS Memory A-Series slot",
+        "SD card slot"
+      ],
+      "viewfinder": [
+        {
+          "type": "LEMO 26 pin",
+          "notes": "For Sony DVF-EL200 Viewfinder"
+        }
+      ],
+      "lensMount": [
+        "PL Mount (Native)",
+        "E-mount (lever lock type, without supplied PL lens mount adaptor)",
+        "LPL Mount (via Leitz adapter)"
+      ],
+      "timecode": [
+        {
+          "type": "BNC",
+          "notes": "Timecode Input"
+        },
+        {
+          "type": "BNC",
+          "notes": "Timecode Output (AUX)"
+        }
+      ]
     },
     "Sony Burano": {
       "powerDrawWatts": 66,
@@ -3653,7 +3756,26 @@ let devices = {
       ]
     },
     "None": {
-      "powerDrawWatts": 0
+      "powerDrawWatts": 0,
+      "power": {
+        "input": {
+          "voltageRange": null,
+          "portType": null,
+          "powerDrawWatts": 0
+        },
+        "internalBattery": {
+          "type": "None",
+          "batteryLifeMinutes": null
+        },
+        "batteryPlateSupport": [],
+        "powerDistributionOutputs": []
+      },
+      "videoOutputs": [],
+      "fizConnectors": [],
+      "recordingMedia": [],
+      "viewfinder": [],
+      "lensMount": [],
+      "timecode": []
     }
   },
   "monitors": {
