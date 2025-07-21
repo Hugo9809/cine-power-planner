@@ -228,6 +228,8 @@ button:disabled {
 }
 #darkModeToggle {
   min-width: 32px;
+  padding: 2px 4px;
+  font-size: 1em;
 }
 
 /* Breakdown list */
