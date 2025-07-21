@@ -6680,25 +6680,61 @@ let devices={
     },
     "distance": {
       "None": {
-        "powerDrawWatts": 0
+        "powerDrawWatts": 0,
+        "connection_compatibility": "N/A",
+        "measurement_method": "N/A",
+        "measurement_range": "N/A",
+        "accuracy": "N/A",
+        "output_display": "N/A",
+        "notes": "Placeholder for no distance measuring device."
       },
       "UDM-1 + LCube": {
-        "powerDrawWatts": 6.24
+        "powerDrawWatts": 6.24,
+        "connection_compatibility": "LBUS (via LCube CUB-1), Serial (via LCube CUB-1)",
+        "measurement_method": "Ultrasonic (Sonar)",
+        "measurement_range": "0.4m - 10m (1ft 4in - 33ft)",
+        "accuracy": "High accuracy up close, decreases with distance.",
+        "output_display": "Dedicated UDM-1 Display Unit, ARRI WCU-4/Hi-5, compatible ARRI cameras (via LDD/LBUS)",
+        "notes": "The UDM-1 is the Ultrasonic Distance Measure. The LCube CUB-1 acts as a protocol converter, enabling the UDM-1 to connect to ARRI LBUS systems (like ALEXA Mini) or output serial data for other systems. It can be calibrated for film plane offset. Provides focus tracking with ARRI LDS equipment. Power draw: UDM-1 is ~6W, LCube CUB-1 is ~0.24W. Total combined power is listed as 6.24W."
       },
       "Focusbug Cine RT + LCube": {
-        "powerDrawWatts": 15.24
+        "powerDrawWatts": 15.24,
+        "connection_compatibility": "Serial (via Lemo to various MDRs/controllers), LBUS (via LCube CUB-1 for ARRI systems), Wireless (RF to Handset/Display)",
+        "measurement_method": "Ultrasonic (with optional 'Bug' transmitters)",
+        "measurement_range": "1ft - 35ft+ (0.3 - 10.6+m) in Ranger mode; 1ft - 120ft (0.3 - 36.5m) with 'Bugs' or Handset Tape Mode",
+        "accuracy": "Precision clocking and high sampling rates; high accuracy. Adjustable sensitivity and limits.",
+        "output_display": "Handset Control Unit (touchscreen), High-Bright LED Display, ARRI WCU-4/Hi-5, Preston HU3, cmotion, Teradek, Heden LCS",
+        "notes": "The Focusbug Cine RT is a comprehensive ultrasonic distance measuring system. The listed power draw is for the main system (Base Sensor + Handset/Display + Bug), with the LCube adding its own small draw. It offers advanced features like tracking multiple 'Bugs' (miniature transmitters), limits, lockout, and a 'Tape Mode' on the handset for quick measurements. The LCube CUB-1 is used for integrating the Cine RT's serial output into ARRI's LBUS ecosystem for seamless data flow."
       },
       "ARRI LCube": {
         "powerDrawWatts": 0.24
       },
       "Preston Light Ranger 2 (LR2) Main Sensor": {
-        "powerDrawWatts": 20
+        "powerDrawWatts": 20,
+        "connection_compatibility": "Preston MDR4 (via proprietary cable)",
+        "measurement_method": "LADAR (Laser Detection and Ranging)",
+        "measurement_range": "2ft - 60ft (0.6m - 18.3m) with standard sensor; up to 200ft+ with optional long-range sensors.",
+        "accuracy": "High precision, measures distance to multiple objects simultaneously.",
+        "output_display": "Preston Hand Unit (HU3, HU4, etc.) graphic overlay (multi-point display), configurable display on monitor (via MDR), camera metadata",
+        "notes": "The Light Ranger 2 is a multi-point LADAR system that provides real-time distance measurements to multiple objects in the frame. It's known for its robust performance, particularly in challenging environments. Designed to work seamlessly with Preston FIZ systems, displaying focus information directly on the hand unit and allowing for advanced focus pulling techniques."
       },
       "Teradek TOF.1 Range Finder Module": {
-        "powerDrawWatts": 3.6
+        "powerDrawWatts": 3.6,
+        "connection_compatibility": "Teradek RT MDR.X/MDR.S/MDR.M (via micro USB or 4-pin Lemo to MDR)",
+        "measurement_method": "LiDAR (Time-of-Flight Laser)",
+        "measurement_range": "0.3m - 20m (1ft - 65ft)",
+        "accuracy": "High accuracy, particularly for single-point measurement.",
+        "output_display": "Teradek RT CTRL.3 hand unit, compatible Teradek RT MDRs, Bolt monitor overlays (via MDR)",
+        "notes": "Compact and lightweight single-point LiDAR rangefinder. Designed to integrate seamlessly with the Teradek RT lens control ecosystem. Provides precise real-time distance data for automated or assisted focus. It offers strong performance even in low-light conditions and is suitable for various camera setups."
       },
       "DJI LiDAR Range Finder": {
-        "powerDrawWatts": 6.8
+        "powerDrawWatts": 6.8,
+        "connection_compatibility": "DJI RS 2/RS 3 Pro/RS 4 Pro gimbal (via USB-C or NATO rail)",
+        "measurement_method": "LiDAR (Light Detection and Ranging)",
+        "measurement_range": "0.5m - 14m (1.6ft - 46ft)",
+        "accuracy": "43,200 ranging points, up to 30Hz refresh rate, high accuracy.",
+        "output_display": "DJI RS gimbal screen, DJI Focus Motor (visual focus assist), DJI RS Focus Motor, Ronin App",
+        "notes": "Integrated LiDAR sensor designed for DJI RS series gimbals. It provides accurate and fast distance measurements, enabling autofocus for manual lenses (when paired with a DJI Focus Motor). Features a built-in camera that can recognize the subject and track focus. Ideal for solo operators seeking precise autofocus capabilities with cinema lenses."
       }
     }
   },
