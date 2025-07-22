@@ -19,6 +19,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### ✅ Setup Management
 - Save, load and delete multiple camera setups
 - Data is stored locally via `localStorage`
+- Optional login with GitHub to sync setups online
 - Import and export setups as JSON
 - Generate a printable overview for any saved setup
 - Works fully offline – language, dark mode, setups and device data persist
@@ -75,6 +76,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 4. **Check Output Limits:** Status indicators show if the battery output is exceeded
 5. **Save & Load Setups:** Name and save your setup, export/import them and generate a printable overview
 6. **Manage Device List:** Click “Edit Device Data…” to open the editor, modify devices or revert to the defaults
+7. **Sync Online (optional):** Start the Node.js server with `npm start` and log in with GitHub to store setups online
 
 ---
 
@@ -101,4 +103,8 @@ Fonts are loaded via Google Fonts links in `index.html`.
 3. Run tests:
    ```bash
    npm test
+   ```
+4. Start the backend server for GitHub login:
+   ```bash
+   npm start
    ```
