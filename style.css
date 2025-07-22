@@ -324,7 +324,7 @@ button:disabled {
 #setupDiagram {
   text-align: center;
   min-height: 440px;
-  padding-top: 0.5em; /* prevent heading overlap */
+  padding-top: 1em; /* prevent heading overlap */
 }
 
 #diagramArea {
@@ -333,7 +333,6 @@ button:disabled {
 
 #setupDiagram svg {
   width: 100%;
-  max-width: 900px;
   height: auto;
 }
 
@@ -372,12 +371,20 @@ body.dark-mode #setupDiagram .node-box {
   stroke: #ddd;
 }
 
+body.dark-mode #setupDiagram text {
+  fill: #fff;
+}
+
 body.dark-mode #setupDiagram line {
-  stroke: #ddd;
+  stroke: #fff;
 }
 
 body.dark-mode #setupDiagram path.edge-path {
-  stroke: #ddd;
+  stroke: #fff;
+}
+
+body.dark-mode #setupDiagram marker polygon {
+  fill: #fff;
 }
 
 body.dark-mode #setupDiagram .diagram-placeholder {
