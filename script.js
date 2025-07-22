@@ -282,6 +282,32 @@ function getSelectedPlate() {
   return null;
 }
 
+function isSelectedPlateNative(camName) {
+  const plate = getSelectedPlate();
+  const cam = devices.cameras[camName];
+  if (!plate || !cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
+  return cam.power.batteryPlateSupport.some(bp => bp.type === plate && bp.mount === 'native');
+}
+
+function shortConnLabel(type) {
+  if (!type) return '';
+  return String(type).replace(/\(.*?\)/, '').trim();
+}
+
+function formatConnLabel(from, to) {
+  const a = shortConnLabel(from);
+  const b = shortConnLabel(to);
+  if (!a) return b || '';
+  if (!b || a.toLowerCase() === b.toLowerCase()) return a;
+  return `${a} to ${b}`;
+}
+
+function controllerCamPort(name) {
+  const c = devices.fiz?.controllers?.[name];
+  if (!c || !c.FIZ_connector) return 'LBUS';
+  return /CAM/i.test(c.FIZ_connector) ? 'Cam' : 'LBUS';
+}
+
 function updateBatteryPlateVisibility() {
   const camName = cameraSelect.value;
   const hasB = isNativeBMountCamera(camName);
@@ -2612,7 +2638,7 @@ function renderSetupDiagram() {
 
   const nodes = [];
   const pos = {};
-  const step = 200;
+  const step = 240;
   const baseY = 200;
   let x = 80;
 
@@ -2682,44 +2708,49 @@ function renderSetupDiagram() {
 
   const edges = [];
   if (cam && cam.power?.input?.portType && plateType && batteryName && batteryName !== 'None') {
-    edges.push({ from: 'battery', to: 'plate', label: '' });
-    edges.push({ from: 'plate', to: 'camera', label: cam.power.input.portType });
+    const battMount = devices.batteries[batteryName]?.mount_type;
+    edges.push({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType) });
+    const native = isSelectedPlateNative(camName) && !/^Arri Alexa Mini( LF)?$/i.test(camName);
+    const label = native ? plateType : formatConnLabel(plateType, cam.power.input.portType);
+    edges.push({ from: 'plate', to: 'camera', label });
   }
   if (monitor && monitor.power?.input?.portType && batteryName && batteryName !== 'None') {
-    edges.push({ from: 'battery', to: 'monitor', label: monitor.power.input.portType });
+    const battMount = devices.batteries[batteryName]?.mount_type;
+    edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, monitor.power.input.portType) });
   }
   if (video && video.powerInput && batteryName && batteryName !== 'None') {
-    edges.push({ from: 'battery', to: 'video', label: video.powerInput });
+    const battMount = devices.batteries[batteryName]?.mount_type;
+    edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, video.powerInput) });
   }
   if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
     const vi = (monitor.video?.inputs || monitor.videoInputs)[0];
-    const label = cam.videoOutputs[0].type + ' → ' + (vi.portType || vi.type || vi);
+    const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
     edges.push({ from: 'camera', to: 'monitor', label });
   }
   if (cam && video && cam.videoOutputs?.length && (video.videoInputs?.length || video.video?.inputs?.length)) {
     const vi = (video.videoInputs || (video.video ? video.video.inputs : []))[0];
-    const label = cam.videoOutputs[0].type + ' → ' + (vi.portType || vi.type || vi);
+    const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
     edges.push({ from: 'camera', to: 'video', label });
   }
 
   if (inlineControllers.length && motorIds.length) {
     const firstCtrl = controllerIds[0];
-    edges.push({ from: 'camera', to: firstCtrl, label: 'LBUS' });
+    edges.push({ from: 'camera', to: firstCtrl, label: formatConnLabel('LBUS', controllerCamPort(inlineControllers[0])) });
     for (let i = 0; i < inlineControllers.length - 1; i++) {
-      edges.push({ from: controllerIds[i], to: controllerIds[i + 1], label: 'LBUS' });
+      edges.push({ from: controllerIds[i], to: controllerIds[i + 1], label: formatConnLabel(controllerCamPort(inlineControllers[i]), controllerCamPort(inlineControllers[i + 1])) });
     }
-    edges.push({ from: controllerIds[inlineControllers.length - 1], to: motorIds[0], label: 'LBUS' });
+    edges.push({ from: controllerIds[inlineControllers.length - 1], to: motorIds[0], label: formatConnLabel('LBUS', 'LBUS') });
   } else if (motorIds.length && cam) {
-    edges.push({ from: 'camera', to: motorIds[0], label: 'LBUS' });
+    edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel('LBUS', 'LBUS') });
   }
 
   for (let i = 0; i < motorIds.length - 1; i++) {
-    edges.push({ from: motorIds[i], to: motorIds[i + 1], label: 'LBUS' });
+    edges.push({ from: motorIds[i], to: motorIds[i + 1], label: formatConnLabel('LBUS', 'LBUS') });
   }
 
   if (distanceName && distanceName !== 'None') {
     const attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
-    if (attach) edges.push({ from: 'distance', to: attach, label: 'LBUS' });
+    if (attach) edges.push({ from: 'distance', to: attach, label: formatConnLabel('LBUS', 'LBUS') });
   }
 
   directControllers.forEach((name, idx) => {
