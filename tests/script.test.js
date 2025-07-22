@@ -292,4 +292,45 @@ describe('script.js functions', () => {
     generatePrintableOverview();
     expect(window.open).toHaveBeenCalled();
   });
+
+  test('battery plate selection is saved and loaded with setups', () => {
+    // Add camera supporting both plates and matching batteries
+    global.devices.cameras.BothCam = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [ { type: 'V-Mount', mount: 'native' }, { type: 'B-Mount', mount: 'native' } ] }
+    };
+    global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
+    global.devices.batteries.BBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'BothCam');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    const plateSel = document.getElementById('batteryPlateSelect');
+    plateSel.innerHTML = '<option value="V-Mount">V-Mount</option><option value="B-Mount">B-Mount</option>';
+    plateSel.value = 'B-Mount';
+    addOpt('batterySelect', 'BBatt');
+
+    document.getElementById('setupName').value = 'TestSetup';
+    document.getElementById('saveSetupBtn').click();
+
+    const saved = global.saveSetups.mock.calls[0][0];
+    expect(saved.TestSetup.batteryPlate).toBe('B-Mount');
+
+    // Simulate loading
+    global.loadSetups.mockReturnValue(saved);
+    const sel = document.getElementById('setupSelect');
+    sel.innerHTML = '<option value="">-- New Setup --</option><option value="TestSetup">TestSetup</option>';
+    sel.value = 'TestSetup';
+    sel.dispatchEvent(new Event('change'));
+
+    expect(document.getElementById('batteryPlateSelect').value).toBe('B-Mount');
+  });
 });
