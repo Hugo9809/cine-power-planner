@@ -1,5 +1,5 @@
 // translations.js - Translated UI strings and labels
-// Translation text for English and German
+// Translation text for English, Spanish, French and German
 const texts = {
   en: {
     appTitle: "Camera Power Planner",
