@@ -2559,19 +2559,42 @@ function formatValue(value) {
 function createDeviceDetailsList(deviceData) {
   const list = document.createElement('ul');
   list.className = 'device-detail-list';
+
+  const appendItem = (key, value, parent) => {
+    if (value === '' || value === null || value === undefined) return;
+    const li = document.createElement('li');
+    const label = document.createElement('strong');
+    label.textContent = humanizeKey(key) + ':';
+    li.appendChild(label);
+
+    if (Array.isArray(value)) {
+      if (value.length && typeof value[0] === 'object') {
+        const subList = document.createElement('ul');
+        subList.className = 'device-detail-list';
+        value.forEach((v) => {
+          const subLi = document.createElement('li');
+          subLi.appendChild(createDeviceDetailsList(v));
+          subList.appendChild(subLi);
+        });
+        li.appendChild(subList);
+      } else {
+        li.appendChild(document.createTextNode(value.map((v) => formatValue(v)).join(', ')));
+      }
+    } else if (value && typeof value === 'object') {
+      li.appendChild(createDeviceDetailsList(value));
+    } else {
+      li.appendChild(document.createTextNode(formatValue(value)));
+    }
+
+    parent.appendChild(li);
+  };
+
   if (typeof deviceData !== 'object') {
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${humanizeKey('powerDrawWatts')}:</strong> ${formatValue(deviceData)}`;
-    list.appendChild(li);
-    return list;
+    appendItem('powerDrawWatts', deviceData, list);
+  } else {
+    Object.keys(deviceData).forEach((k) => appendItem(k, deviceData[k], list));
   }
-  for (const key in deviceData) {
-    const val = deviceData[key];
-    if (val === '' || val === null || val === undefined) continue;
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${humanizeKey(key)}:</strong> ${formatValue(val)}`;
-    list.appendChild(li);
-  }
+
   return list;
 }
 
@@ -2593,14 +2616,14 @@ function renderDeviceList(categoryKey, ulElement) {
     const header = document.createElement("div");
     header.className = "device-summary";
 
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = name;
+    header.appendChild(nameSpan);
+
     const toggleBtn = document.createElement("button");
     toggleBtn.className = "detail-toggle";
     toggleBtn.textContent = texts[currentLang].showDetails;
     header.appendChild(toggleBtn);
-
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = name;
-    header.appendChild(nameSpan);
 
     const editBtn = document.createElement("button");
     editBtn.className = "edit-btn";
