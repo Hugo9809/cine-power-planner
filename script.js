@@ -2985,6 +2985,7 @@ function renderSetupDiagram() {
 
   const nodes = [];
   const pos = {};
+  const nodeMap = {};
   const step = 250; // extra spacing for edge labels
   const baseY = 220;
   let x = 80;
@@ -2992,6 +2993,7 @@ function renderSetupDiagram() {
   if (batteryName && batteryName !== 'None') {
     pos.battery = { x, y: baseY, label: batteryName };
     nodes.push('battery');
+    nodeMap.battery = { category: 'batteries', name: batteryName };
     x += step;
   }
 
@@ -2999,12 +3001,14 @@ function renderSetupDiagram() {
   if (plateType && batteryName && batteryName !== 'None') {
     pos.plate = { x, y: baseY, label: plateType + ' Plate' };
     nodes.push('plate');
+    nodeMap.plate = { category: 'plates', name: plateType };
     x += step;
   }
 
   if (camName && camName !== 'None') {
     pos.camera = { x, y: baseY, label: camName };
     nodes.push('camera');
+    nodeMap.camera = { category: 'cameras', name: camName };
     x += step;
   }
 
@@ -3014,6 +3018,7 @@ function renderSetupDiagram() {
     pos[id] = { x, y: baseY, label: name };
     controllerIds.push(id);
     nodes.push(id);
+    nodeMap[id] = { category: 'fiz.controllers', name };
     x += step;
   });
 
@@ -3023,16 +3028,19 @@ function renderSetupDiagram() {
     pos[id] = { x, y: baseY, label: name };
     motorIds.push(id);
     nodes.push(id);
+    nodeMap[id] = { category: 'fiz.motors', name };
     x += step;
   });
 
   if (monitorName && monitorName !== 'None') {
     pos.monitor = { x: pos.camera ? pos.camera.x : 60, y: baseY - step, label: monitorName };
     nodes.push('monitor');
+    nodeMap.monitor = { category: 'monitors', name: monitorName };
   }
   if (videoName && videoName !== 'None') {
     pos.video = { x: pos.camera ? pos.camera.x : 60, y: baseY + step, label: videoName };
     nodes.push('video');
+    nodeMap.video = { category: 'video', name: videoName };
   }
 
   let inlineDistance = false;
@@ -3051,6 +3059,7 @@ function renderSetupDiagram() {
         pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
       }
       nodes.push('distance');
+      nodeMap.distance = { category: 'fiz.distance', name: distanceName };
     }
   }
 
@@ -3060,6 +3069,7 @@ function renderSetupDiagram() {
     pos[id] = { x: pos[motorIds[0]].x + idx * step, y: baseY + step, label: name };
     nodes.push(id);
     controllerIds.push(id); // treat as controller for icon
+    nodeMap[id] = { category: 'fiz.controllers', name };
   });
 
   const viewWidth = Math.max(500, x + 80);
@@ -3348,6 +3358,7 @@ function renderSetupDiagram() {
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
+    svg += `<g class="diagram-node" data-node="${id}">`;
     svg += `<rect class="node-box" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
     const imgUrl = nodeImages[id];
     let icon = diagramIcons[id];
@@ -3373,12 +3384,76 @@ function renderSetupDiagram() {
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     }
+    svg += `</g>`;
   });
 
   svg += '</svg>';
   setupDiagramContainer.innerHTML = svg;
 
+  attachDiagramPopups(nodeMap);
+
   Object.entries(nodeImages).forEach(([id, url]) => loadAndSetNodeImage(id, url));
+}
+
+function getDevicePorts(category, name) {
+  if (!category || !name) return null;
+  let dev;
+  if (category === 'fiz.controllers') dev = devices.fiz?.controllers?.[name];
+  else if (category === 'fiz.motors') dev = devices.fiz?.motors?.[name];
+  else if (category === 'fiz.distance') dev = devices.fiz?.distance?.[name];
+  else dev = devices[category]?.[name];
+  if (!dev) return null;
+  const ports = { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
+  const add = (arr, val) => {
+    if (!val) return;
+    if (Array.isArray(val)) val.forEach(v => add(arr, v));
+    else if (typeof val === 'object') add(arr, val.portType || val.type);
+    else if (typeof val === 'string') arr.push(val);
+  };
+
+  add(ports.powerIn, dev.power?.input?.portType);
+  add(ports.powerIn, dev.powerInput);
+  add(ports.powerOut, dev.power?.output?.portType);
+  add(ports.powerOut, dev.power?.powerDistributionOutputs?.map(o => o.type));
+  add(ports.fiz, dev.fizConnectors?.map(c => c.type));
+  add(ports.fiz, dev.fizConnector);
+  add(ports.videoIn, dev.video?.inputs?.map(i => i.portType || i.type));
+  add(ports.videoIn, dev.videoInputs?.map(i => i.portType));
+  add(ports.videoOut, dev.video?.outputs?.map(o => o.portType || o.type));
+  add(ports.videoOut, dev.videoOutputs?.map(o => o.portType || o.type));
+  return ports;
+}
+
+function attachDiagramPopups(map) {
+  if (!setupDiagramContainer) return;
+  const popup = document.getElementById('diagramPopup');
+  if (!popup) return;
+  popup.style.display = 'none';
+
+  setupDiagramContainer.querySelectorAll('.diagram-node').forEach(node => {
+    const id = node.getAttribute('data-node');
+    const info = map[id];
+    if (!info) return;
+    const ports = getDevicePorts(info.category, info.name);
+    const format = list => list && list.length ? list.join(', ') : '-';
+    const html = `<strong>${escapeHtml(info.name)}</strong><br>` +
+      `Power In Ports: ${format(ports.powerIn)}<br>` +
+      `Power Out Ports: ${format(ports.powerOut)}<br>` +
+      `FIZ Ports: ${format(ports.fiz)}<br>` +
+      `Video In Ports: ${format(ports.videoIn)}<br>` +
+      `Video Out Ports: ${format(ports.videoOut)}`;
+
+    const show = e => {
+      popup.innerHTML = html;
+      popup.style.display = 'block';
+      const rect = setupDiagramContainer.getBoundingClientRect();
+      popup.style.left = `${e.clientX - rect.left + 10}px`;
+      popup.style.top = `${e.clientY - rect.top + 10}px`;
+    };
+    const hide = () => { popup.style.display = 'none'; };
+    node.addEventListener('mousemove', show);
+    node.addEventListener('mouseout', hide);
+  });
 }
 
 // Convert a camelCase or underscore key to a human friendly label
