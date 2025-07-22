@@ -265,6 +265,38 @@ function unifyViewfinderTypes() {
   }
 }
 
+function unifyLensMounts() {
+  for (const cam of Object.values(devices.cameras)) {
+    const list = cam.lensMount;
+    if (Array.isArray(list)) {
+      const result = [];
+      const seen = new Set();
+      for (const val of list) {
+        if (!val) continue;
+        let type = '';
+        let mount = 'native';
+        let notes = '';
+        if (typeof val === 'string') {
+          const m = val.match(/([^()]+)(?:\(([^)]+)\))?(?:\s*-\s*(.*))?/);
+          type = m ? m[1].trim() : val;
+          mount = m && m[2] ? m[2].trim().toLowerCase() : /adapted|via adapter/i.test(val) ? 'adapted' : 'native';
+          notes = m && m[3] ? m[3].trim() : (/via adapter/i.test(val) ? 'via adapter' : '');
+        } else {
+          type = val.type || '';
+          mount = val.mount ? val.mount.toLowerCase() : 'native';
+          notes = val.notes || '';
+        }
+        const key = `${type}|${mount}|${notes}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          result.push({ type, mount, notes });
+        }
+      }
+      cam.lensMount = result;
+    }
+  }
+}
+
 // -- Update helper functions --
 function updatePowerDistribution() {
   for (const cam of Object.values(devices.cameras)) {
@@ -331,6 +363,7 @@ function normalizeAll() {
   unifyRecordingMedia();
   unifyTimecodeTypes();
   unifyViewfinderTypes();
+  unifyLensMounts();
   updatePowerDistribution();
   updateVideoOutputs();
 }

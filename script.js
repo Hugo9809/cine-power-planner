@@ -252,6 +252,15 @@ function unifyDevices(data) {
       return { type, notes };
     });
     cam.timecode = ensureList(cam.timecode, { type: '', notes: '' });
+    cam.lensMount = ensureList(cam.lensMount, { type: '', mount: 'native', notes: '' })
+      .map(lm => ({
+        type: lm.type,
+        mount: (lm.mount ? lm.mount.toLowerCase() : 'native'),
+        notes: lm.notes || ''
+      }))
+      .filter((lm, idx, arr) =>
+        idx === arr.findIndex(o => o.type === lm.type && o.mount === lm.mount && o.notes === lm.notes)
+      );
   });
 
   // Normalize FIZ motors
