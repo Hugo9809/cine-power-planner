@@ -94,6 +94,7 @@ storage.js       # Utilidades de LocalStorage
 README.*.md      # Documentación en distintos idiomas
 ```
 Las fuentes se cargan desde Google Fonts en `index.html`.
+Una vez almacenadas las fuentes en caché, la aplicación puede usarse totalmente sin conexión.
 
 ## 🛠️ Desarrollo
 1. Instalar dependencias:
