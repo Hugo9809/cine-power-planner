@@ -1335,11 +1335,11 @@ function createFieldWithLabel(el, label) {
 }
 
 // Helper used by select-row builders to insert an empty option.
-function addEmptyOption(select) {
-  const opt = document.createElement("option");
-  opt.value = "";
-  opt.textContent = "";
-  select.appendChild(opt);
+// Previously this inserted a blank option at the top of each select.
+// The UI no longer requires an empty choice, so this function is now a
+// no-op but kept for backward compatibility with existing calls.
+function addEmptyOption(/* select */) {
+  // Intentionally left blank
 }
 
 // Utility to remove entries with value "None" or empty string
