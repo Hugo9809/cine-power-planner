@@ -377,10 +377,17 @@ function firstConnector(str) {
   return str.split(',')[0].trim();
 }
 
-function cameraFizPort(camName, controllerPort) {
+function cameraFizPort(camName, controllerPort, deviceName = '') {
   const cam = devices.cameras[camName];
   if (!cam || !Array.isArray(cam.fizConnectors) || cam.fizConnectors.length === 0) return 'LBUS';
   if (!controllerPort) return cam.fizConnectors[0].type;
+
+  // If a non-ARRI FIZ device is attached to an ARRI camera, prefer the EXT port
+  if (isArri(camName) && deviceName && !isArri(deviceName)) {
+    const ext = cam.fizConnectors.find(fc => /ext/i.test(fc.type));
+    if (ext) return ext.type;
+  }
+
   const norm = shortConnLabel(firstConnector(controllerPort)).toLowerCase();
   const match = cam.fizConnectors.find(fc => shortConnLabel(fc.type).toLowerCase() === norm);
   return match ? match.type : cam.fizConnectors[0].type;
@@ -3018,10 +3025,10 @@ function renderSetupDiagram() {
       firstName = motors[idx];
     }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
-    const camPort = cameraFizPort(camName, port);
+    const camPort = cameraFizPort(camName, port, firstName);
     pushEdge({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true }, 'fiz');
   } else if (motorIds.length && cam) {
-    const camPort = cameraFizPort(camName, motorFizPort(motors[0]));
+    const camPort = cameraFizPort(camName, motorFizPort(motors[0]), motors[0]);
     pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true }, 'fiz');
   }
 
@@ -4810,5 +4817,6 @@ if (typeof module !== "undefined" && module.exports) {
     updateBatteryPlateVisibility,
     updateBatteryOptions,
     renderSetupDiagram,
+    cameraFizPort,
   };
 }

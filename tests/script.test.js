@@ -445,6 +445,16 @@ describe('script.js functions', () => {
     expect(document.getElementById('compatWarning').textContent).toBe(texts.en.missingFIZControllerWarning);
   });
 
+  test('non-ARRI FIZ controller uses EXT on ARRI cameras', () => {
+    const { cameraFizPort } = script;
+    global.devices.cameras = {
+      'ArriCam': { fizConnectors: [ { type: 'LBUS (LEMO 4-pin)' }, { type: 'EXT LEMO 7-pin' } ] }
+    };
+    global.devices.fiz.controllers = { 'Teradek CTRL': { FIZ_connector: 'LBUS (LEMO 4-pin)' } };
+    const port = cameraFizPort('ArriCam', 'LBUS (LEMO 4-pin)', 'Teradek CTRL');
+    expect(port).toBe('EXT LEMO 7-pin');
+  });
+
   test('renderSetupDiagram runs without errors', () => {
     const { renderSetupDiagram } = script;
     expect(() => renderSetupDiagram()).not.toThrow();
