@@ -1050,6 +1050,10 @@ function loadAndSetNodeImage(id, url, removeBg = true) {
   img.onerror = () => {
     const el = document.getElementById(`img_${id}`);
     if (el) el.remove();
+    const iconEl = document.getElementById(`icon_${id}`);
+    if (iconEl) iconEl.setAttribute('visibility', 'visible');
+    const labelEl = document.getElementById(`label_${id}`);
+    if (labelEl && labelEl.dataset.yIcon) labelEl.setAttribute('y', labelEl.dataset.yIcon);
   };
   img.src = url;
 }
@@ -3358,6 +3362,7 @@ function renderSetupDiagram() {
     const p = pos[id];
     if (!p) return;
     svg += `<rect class="node-box" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
+
     const imgUrl = nodeImages[id];
     let icon = diagramIcons[id];
     if (!icon) {
@@ -3365,11 +3370,16 @@ function renderSetupDiagram() {
       else if (id.startsWith('controller') || id.startsWith('directCtrl')) icon = diagramIcons.controllers;
       else if (id === 'distance') icon = diagramIcons.controllers;
     }
+
     const lines = wrapLabel(p.label || id);
+
     if (imgUrl) {
       const IMG = 40;
+      svg += `<text class="node-icon" id="icon_${id}" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle" visibility="hidden">${icon || ''}</text>`;
       svg += `<image id="img_${id}" x="${p.x - IMG/2}" y="${p.y - IMG/2 - 5}" width="${IMG}" height="${IMG}" href="" />`;
-      svg += `<text x="${p.x}" y="${p.y + IMG/2 + 5}" text-anchor="middle" font-size="10">`;
+      const lyImg = p.y + IMG/2 + 5;
+      const lyIcon = p.y + 14;
+      svg += `<text id="label_${id}" x="${p.x}" y="${lyImg}" text-anchor="middle" font-size="10" data-y-icon="${lyIcon}" data-y-image="${lyImg}">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     } else if (icon) {
