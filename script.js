@@ -55,6 +55,16 @@ function normalizeFizConnectorType(type) {
   const map = {
     'LEMO 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
     'Lemo 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
+    'LBUS (4-pin Lemo)': 'LBUS (LEMO 4-pin)',
+    'LBUS (4-pin Lemo for motors)': 'LBUS (LEMO 4-pin)',
+    '4-pin Lemo (LBUS)': 'LBUS (LEMO 4-pin)',
+    'LEMO 4-pin': 'LEMO 4-pin',
+    '4-pin Lemo': 'LEMO 4-pin',
+    'Lemo 4-pin': 'LEMO 4-pin',
+    '7-pin Lemo': 'LEMO 7-pin',
+    'Lemo 7-pin 1B': 'LEMO 7-pin',
+    '7-pin Lemo (LCS)': 'LEMO 7-pin (LCS)',
+    '7-pin Lemo (CAM)': 'LEMO 7-pin (CAM)',
     'EXT (LEMO 7-pin)': 'EXT LEMO 7-pin',
     'Hirose 12pin': 'Hirose 12-pin',
     '12-pin Hirose': 'Hirose 12-pin',
@@ -345,6 +355,15 @@ function motorPriority(name) {
   if (m && m.internalController && /CAM/i.test(m.connector || '')) return 0;
   return 1;
 }
+function fizNeedsPower(name) {
+  const d = devices.fiz?.controllers?.[name] || devices.fiz?.motors?.[name];
+  if (!d) return false;
+  if (/internal battery/i.test(d.power_source || "")) return false;
+  const conn = d.FIZ_connector || d.connector || "";
+  if (/LBUS/i.test(conn) && /^Arri/i.test(name)) return false;
+  return true;
+}
+
 
 function firstConnector(str) {
   if (!str) return '';
@@ -381,6 +400,22 @@ function sdiRate(type) {
   if (m) return parseFloat(m[1]);
   return /SDI/i.test(type || '') ? 1 : null;
 }
+function connectionLabel(outType, inType) {
+  if (!outType || !inType) return "";
+  if (/HDMI/i.test(outType) && /HDMI/i.test(inType)) return "HDMI";
+  if (/SDI/i.test(outType) && /SDI/i.test(inType)) {
+    const rate = Math.min(sdiRate(outType) || 0, sdiRate(inType) || 0) || sdiRate(outType) || sdiRate(inType) || 0;
+    if (rate >= 12) return "12G-SDI";
+    if (rate >= 6) return "6G-SDI";
+    if (rate >= 3) return "3G-SDI";
+    if (rate >= 1.5) return "1.5G-SDI";
+    return "SDI";
+  }
+  if (/HDMI/i.test(outType)) return "HDMI";
+  if (/SDI/i.test(outType)) return "SDI";
+  return "";
+}
+
 
 function updateBatteryPlateVisibility() {
   const camName = cameraSelect.value;
@@ -2851,75 +2886,69 @@ function renderSetupDiagram() {
 
   const viewWidth = Math.max(500, x + 80);
 
+  let chain = [];
   const edges = [];
-  if (cam && cam.power?.input?.portType && plateType && batteryName && batteryName !== 'None') {
-    const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType) });
-    const native = isSelectedPlateNative(camName) && !/^Arri Alexa Mini( LF)?$/i.test(camName);
-    const label = native ? plateType : formatConnLabel(plateType, cam.power.input.portType);
-    edges.push({ from: 'plate', to: 'camera', label });
-  } else if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None' && !plateType) {
-    const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType) });
+  const nativePlate = plateType && isSelectedPlateNative(camName);
+  const battMount = devices.batteries[batteryName]?.mount_type;
+  if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
+    if (nativePlate) {
+      edges.push({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType) });
+      const lbl = /^Arri Alexa Mini( LF)?$/i.test(camName) ? formatConnLabel(plateType, cam.power.input.portType) : '';
+      edges.push({ from: 'plate', to: 'camera', label: lbl });
+    } else {
+      edges.push({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType) });
+    }
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
-    if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
-      const cOut = getCameraOutputType(camName, mPort);
-      edges.push({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), offset: -60, labelSpacing: 5 });
-    } else if (plateType && isSelectedPlateNative(camName)) {
+    if (nativePlate) {
       edges.push({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), offset: -60, labelSpacing: 5 });
     } else if (batteryName && batteryName !== 'None') {
-      const battMount = devices.batteries[batteryName]?.mount_type;
       edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), offset: -60, labelSpacing: 5 });
+    } else if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
+      const cOut = getCameraOutputType(camName, mPort);
+      edges.push({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), offset: -60, labelSpacing: 5 });
     }
   }
   if (video && video.powerInput) {
     const pPort = video.powerInput;
-    if (cameraCanPower(camName, pPort, video.powerDrawWatts)) {
-      const cOut = getCameraOutputType(camName, pPort);
-      edges.push({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), offset: -60, labelSpacing: 5 });
-    } else if (plateType && isSelectedPlateNative(camName)) {
+    if (nativePlate) {
       edges.push({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), offset: -60, labelSpacing: 5 });
     } else if (batteryName && batteryName !== 'None') {
-      const battMount = devices.batteries[batteryName]?.mount_type;
       edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), offset: -60, labelSpacing: 5 });
+    } else if (cameraCanPower(camName, pPort, video.powerDrawWatts)) {
+      const cOut = getCameraOutputType(camName, pPort);
+      edges.push({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), offset: -60, labelSpacing: 5 });
     }
   }
-  if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
-    const vi = (monitor.video?.inputs || monitor.videoInputs)[0];
+  if (cam && cam.videoOutputs?.length) {
     const camOut = cam.videoOutputs[0].type;
-    const monIn = vi.portType || vi.type || vi;
-    if (/HDMI/i.test(camOut) && /HDMI/i.test(monIn)) {
-      edges.push({ from: 'camera', to: 'monitor', label: 'HDMI', offset: 60, angled: true, labelSpacing: 5 });
-    } else if (/SDI/i.test(camOut) && /SDI/i.test(monIn)) {
-      const rate = Math.min(sdiRate(camOut) || 0, sdiRate(monIn) || 0) || sdiRate(camOut) || sdiRate(monIn) || 0;
-      let lbl = 'SDI';
-      if (rate >= 12) lbl = '12G-SDI';
-      else if (rate >= 6) lbl = '6G-SDI';
-      else if (rate >= 3) lbl = '3G-SDI';
-      else if (rate >= 1.5) lbl = '1.5G-SDI';
-      edges.push({ from: 'camera', to: 'monitor', label: lbl, offset: 60, angled: true, labelSpacing: 5 });
+    const monInObj = monitor && (monitor.video?.inputs?.[0] || monitor.videoInputs?.[0]);
+    const vidInObj = video && (video.videoInputs?.[0] || (video.video ? video.video.inputs[0] : null));
+    const vidOutObj = video && (video.videoOutputs?.[0] || (video.video ? video.video.outputs?.[0] : null));
+    const monOutObj = monitor && (monitor.video?.outputs?.[0] || monitor.videoOutputs?.[0]);
+    const monIn = monInObj && (monInObj.portType || monInObj.type || monInObj);
+    const vidIn = vidInObj && (vidInObj.portType || vidInObj.type || vidInObj);
+    const vidOut = vidOutObj && (vidOutObj.portType || vidOutObj.type || vidOutObj);
+    const monOut = monOutObj && (monOutObj.portType || monOutObj.type || monOutObj);
+    const singleOut = cam.videoOutputs.length === 1 && monitor && video;
+    const labelCamVideo = connectionLabel(camOut, vidIn);
+    const labelCamMonitor = connectionLabel(camOut, monIn);
+    const labelVideoMonitor = connectionLabel(vidOut || camOut, monIn);
+    const labelMonitorVideo = connectionLabel(monOut || camOut, vidIn);
+    if (singleOut) {
+      if (vidOut) {
+        edges.push({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 });
+        if (monIn) edges.push({ from: 'video', to: 'monitor', label: labelVideoMonitor, offset: 60, angled: true, labelSpacing: 5 });
+      } else {
+        if (monIn) edges.push({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 });
+        if (vidIn) edges.push({ from: 'monitor', to: 'video', label: labelMonitorVideo, offset: 60, angled: true, labelSpacing: 5 });
+      }
+    } else {
+      if (monitor && monIn) edges.push({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 });
+      if (video && vidIn) edges.push({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 });
     }
   }
-  if (cam && video && cam.videoOutputs?.length && (video.videoInputs?.length || video.video?.inputs?.length)) {
-    const vi = (video.videoInputs || (video.video ? video.video.inputs : []))[0];
-    const camOut = cam.videoOutputs[0].type;
-    const vidIn = vi.portType || vi.type || vi;
-    if (/HDMI/i.test(camOut) && /HDMI/i.test(vidIn)) {
-      edges.push({ from: 'camera', to: 'video', label: 'HDMI', offset: 60, angled: true, labelSpacing: 5 });
-    } else if (/SDI/i.test(camOut) && /SDI/i.test(vidIn)) {
-      const rate = Math.min(sdiRate(camOut) || 0, sdiRate(vidIn) || 0) || sdiRate(camOut) || sdiRate(vidIn) || 0;
-      let lbl = 'SDI';
-      if (rate >= 12) lbl = '12G-SDI';
-      else if (rate >= 6) lbl = '6G-SDI';
-      else if (rate >= 3) lbl = '3G-SDI';
-      else if (rate >= 1.5) lbl = '1.5G-SDI';
-      edges.push({ from: 'camera', to: 'video', label: lbl, offset: 60, angled: true, labelSpacing: 5 });
-    }
-  }
-
-  let chain = [];
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
   if (controllerIds.length) {
     chain.push(controllerIds[0]);
@@ -2942,10 +2971,6 @@ function renderSetupDiagram() {
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
     const camPort = cameraFizPort(camName, port);
     edges.push({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true });
-    if (/RIA-1/i.test(firstName) || /cforce\s+mini\s+RF/i.test(firstName)) {
-      const powerSrc = plateType ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
-      if (powerSrc) edges.push({ from: powerSrc, to: first, label: 'D-Tap', offset: 40 });
-    }
   } else if (motorIds.length && cam) {
     const camPort = cameraFizPort(camName, motorFizPort(motors[0]));
     edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true });
@@ -2968,6 +2993,21 @@ function renderSetupDiagram() {
     edges.push({ from: id, to: motorIds[0], label: 'ctrl', noArrow: true });
   });
 
+
+  [...controllerIds, ...motorIds].forEach(id => {
+    let name = null;
+    if (id.startsWith('controller')) {
+      const idx = controllerIds.indexOf(id);
+      name = inlineControllers[idx] || controllers[idx];
+    } else if (id.startsWith('motor')) {
+      const idx = motorIds.indexOf(id);
+      name = motors[idx];
+    }
+    if (fizNeedsPower(name)) {
+      const powerSrc = nativePlate ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
+      if (powerSrc) edges.push({ from: powerSrc, to: id, label: 'DC', offset: 80 });
+    }
+  });
   if (nodes.length === 0) {
     setupDiagramContainer.innerHTML = `<p class="diagram-placeholder">${texts[currentLang].setupDiagramPlaceholder}</p>`;
     return;
@@ -2979,7 +3019,7 @@ function renderSetupDiagram() {
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
-  const viewHeight = (maxY - minY) + NODE_H + 40;
+  const viewHeight = (maxY - minY) + NODE_H + 120;
 
   function computePath(fromId, toId, offset = 0, labelSpacing = 0) {
     const from = pos[fromId];

@@ -6574,6 +6574,16 @@ let devices={
         ],
         "notes": "Max torque 1.0 Nm at 8V. Stall current 2.8A at 8V. Quick-release structure. Designed to work with standard 0.8 mod lens gears, including those with larger diameters for longer focus throws."
       },
+      "DJI Focus Pro Motor": {
+        "powerDrawWatts": 24,
+        "connector": "USB-C",
+        "internalController": true,
+        "torqueNm": 1.2,
+        "gearTypes": [
+          "0.8 mod"
+        ],
+        "notes": "Motor for the DJI Focus Pro system. Used with the Focus Pro Handle and DJI LiDAR Range Finder."
+      },
       "Cmotion cPRO": {
         "powerDrawWatts": 24,
         "connector": "Lemo 4-pin",
@@ -6673,6 +6683,14 @@ let devices={
         "connectivity": "Wireless (proprietary 2.4GHz RF)",
         "notes": "Improved wireless handgrip for Nucleus-M II system. Supports up to 4 channels (FIZ + ND). Compatible with Nucleus M and Nano II systems. Adjustable damping on hand wheel. Left/Right hand switch for hand wheel. Camera control via Bluetooth or cable."
       },
+      "DJI Focus Pro Handle": {
+        "powerDrawWatts": 1,
+        "FIZ_connector": "USB-C",
+        "power_source": "Internal Battery",
+        "battery_type": "Built-in rechargeable",
+        "connectivity": "Wireless (DJI proprietary)",
+        "notes": "Handle unit for the DJI Focus Pro kit. Works with Focus Pro Motors and the DJI LiDAR Range Finder."
+      },
       "Preston MDR4": {
         "powerDrawWatts": 48,
         "FIZ_connector": "2x Motor Ports (proprietary 7-pin Lemo), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)",
@@ -6734,7 +6752,7 @@ let devices={
       },
       "UDM-1 + LCube": {
         "powerDrawWatts": 6.24,
-        "connection_compatibility": "LBUS (via LCube CUB-1), Serial (via LCube CUB-1)",
+        "connection_compatibility": "ARRI and cmotion systems (via LBUS through LCube CUB-1)",
         "measurement_method": "Ultrasonic (Sonar)",
         "measurement_range": "0.4m - 10m (1ft 4in - 33ft)",
         "accuracy": "High accuracy up close, decreases with distance.",
@@ -6743,7 +6761,7 @@ let devices={
       },
       "Focusbug Cine RT + LCube": {
         "powerDrawWatts": 15.24,
-        "connection_compatibility": "Serial (via Lemo to various MDRs/controllers), LBUS (via LCube CUB-1 for ARRI systems), Wireless (RF to Handset/Display)",
+        "connection_compatibility": "ARRI, cmotion, Preston and Teradek systems (via appropriate controllers and LCube CUB-1)",
         "measurement_method": "Ultrasonic (with optional 'Bug' transmitters)",
         "measurement_range": "1ft - 35ft+ (0.3 - 10.6+m) in Ranger mode; 1ft - 120ft (0.3 - 36.5m) with 'Bugs' or Handset Tape Mode",
         "accuracy": "Precision clocking and high sampling rates; high accuracy. Adjustable sensitivity and limits.",
@@ -6755,7 +6773,7 @@ let devices={
       },
       "Preston Light Ranger 2 (LR2) Main Sensor": {
         "powerDrawWatts": 20,
-        "connection_compatibility": "Preston MDR4 (via proprietary cable)",
+        "connection_compatibility": "Preston systems only (via MDR4)",
         "measurement_method": "LADAR (Laser Detection and Ranging)",
         "measurement_range": "2ft - 60ft (0.6m - 18.3m) with standard sensor; up to 200ft+ with optional long-range sensors.",
         "accuracy": "High precision, measures distance to multiple objects simultaneously.",
@@ -6764,7 +6782,7 @@ let devices={
       },
       "Teradek TOF.1 Range Finder Module": {
         "powerDrawWatts": 3.6,
-        "connection_compatibility": "Teradek RT MDR.X/MDR.S/MDR.M (via micro USB or 4-pin Lemo to MDR)",
+        "connection_compatibility": "Teradek systems only (MDR.X/MDR.S/MDR.M)",
         "measurement_method": "LiDAR (Time-of-Flight Laser)",
         "measurement_range": "0.3m - 20m (1ft - 65ft)",
         "accuracy": "High accuracy, particularly for single-point measurement.",
@@ -6773,7 +6791,7 @@ let devices={
       },
       "DJI LiDAR Range Finder": {
         "powerDrawWatts": 6.8,
-        "connection_compatibility": "DJI RS 2/RS 3 Pro/RS 4 Pro gimbal (via USB-C or NATO rail)",
+        "connection_compatibility": "DJI Ronin 4D or Focus Pro Handle with Focus Pro Motors",
         "measurement_method": "LiDAR (Light Detection and Ranging)",
         "measurement_range": "0.5m - 14m (1.6ft - 46ft)",
         "accuracy": "43,200 ranging points, up to 30Hz refresh rate, high accuracy.",
