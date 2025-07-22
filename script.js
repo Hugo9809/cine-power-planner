@@ -359,27 +359,6 @@ function formatConnLabel(from, to) {
   return `${a} to ${b}`;
 }
 
-function cameraCanPower(camName, portType, watt) {
-  const cam = devices.cameras[camName];
-  if (!cam || !Array.isArray(cam.power?.powerDistributionOutputs)) return false;
-  const norm = shortConnLabel(portType).toLowerCase();
-  return cam.power.powerDistributionOutputs.some(out => {
-    const outType = shortConnLabel(out.type).toLowerCase();
-    if (outType !== norm) return false;
-    const avail = out.wattage || (parseFloat(out.voltage) && parseFloat(out.current) ?
-      parseFloat(out.voltage) * parseFloat(out.current) : null);
-    if (avail != null && watt != null && avail < watt) return false;
-    return true;
-  });
-}
-
-function getCameraOutputType(camName, portType) {
-  const cam = devices.cameras[camName];
-  if (!cam || !Array.isArray(cam.power?.powerDistributionOutputs)) return portType;
-  const norm = shortConnLabel(portType).toLowerCase();
-  const out = cam.power.powerDistributionOutputs.find(o => shortConnLabel(o.type).toLowerCase() === norm);
-  return out ? out.type : portType;
-}
 
 function controllerCamPort(name) {
   const c = devices.fiz?.controllers?.[name];
@@ -3092,29 +3071,25 @@ function renderSetupDiagram() {
 
   const NODE_W = 160;
   const NODE_H = 80;
-  const ROUTE_Y = baseY + NODE_H;
 
   let chain = [];
   const edges = [];
-  const pairCounts = {};
-  const fromDirCounts = {};
+  const usedConns = {};
+  const markUsed = (id, side) => { usedConns[`${id}|${side}`] = true; };
+  const isUsed = (id, side) => usedConns[`${id}|${side}`];
   const pushEdge = (edge, type) => {
-    const key = [edge.from, edge.to].sort().join('|');
-    const idx = pairCounts[key] || 0;
-    pairCounts[key] = idx + 1;
-    const fromX = pos[edge.from]?.x ?? 0;
-    const toX = pos[edge.to]?.x ?? 0;
-    const dirKey = fromX <= toX ? 'lr' : 'rl';
-    const orderKey = `${edge.from}|${dirKey}`;
-    fromDirCounts[orderKey] = (fromDirCounts[orderKey] || 0) + 1;
     if (!edge.fromSide || !edge.toSide) {
-      const pair = closestConnectorPair(edge.from, edge.to);
+      const pair = closestConnectorPair(edge.from, edge.to, usedConns);
       if (pair) {
         if (!edge.fromSide) edge.fromSide = pair.fromSide;
         if (!edge.toSide) edge.toSide = pair.toSide;
       }
+    } else {
+      if (isUsed(edge.from, edge.fromSide) || isUsed(edge.to, edge.toSide)) return;
     }
-    edges.push({ ...edge, type, dir: dirKey });
+    markUsed(edge.from, edge.fromSide);
+    markUsed(edge.to, edge.toSide);
+    edges.push({ ...edge, type });
   };
   const battMount = devices.batteries[batteryName]?.mount_type;
   if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
@@ -3122,59 +3097,27 @@ function renderSetupDiagram() {
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
-    const baseOpts = { labelSpacing: 5, toSide: 'left' };
     if (batteryName && batteryName !== 'None') {
-      pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top', ...baseOpts }, 'power');
-    } else if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
-      const cOut = getCameraOutputType(camName, mPort);
-      pushEdge({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), fromSide: 'bottom-left', ...baseOpts }, 'power');
+      pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top', toSide: 'left' }, 'power');
     }
   }
   if (video && video.powerInput) {
     const pPort = video.powerInput;
-    const powerEdgeOpts = { labelSpacing: 5, fromSide: 'bottom', toSide: 'left' };
     if (batteryName && batteryName !== 'None') {
-      pushEdge({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), ...powerEdgeOpts }, 'power');
-    } else if (cameraCanPower(camName, pPort, video.powerDrawWatts)) {
-      const cOut = getCameraOutputType(camName, pPort);
-      pushEdge({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), ...powerEdgeOpts }, 'power');
+      pushEdge({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), fromSide: 'bottom', toSide: 'left' }, 'power');
     }
   }
   if (cam && cam.videoOutputs?.length) {
     const camOut = cam.videoOutputs[0].type;
     const monInObj = monitor && (monitor.video?.inputs?.[0] || monitor.videoInputs?.[0]);
     const vidInObj = video && (video.videoInputs?.[0] || (video.video ? video.video.inputs[0] : null));
-    const vidOutObj = video && (video.videoOutputs?.[0] || (video.video ? video.video.outputs?.[0] : null));
-    const monOutObj = monitor && (monitor.video?.outputs?.[0] || monitor.videoOutputs?.[0]);
-    const monIn = monInObj && (monInObj.portType || monInObj.type || monInObj);
-    const vidIn = vidInObj && (vidInObj.portType || vidInObj.type || vidInObj);
-    const vidOut = vidOutObj && (vidOutObj.portType || vidOutObj.type || vidOutObj);
-    const monOut = monOutObj && (monOutObj.portType || monOutObj.type || monOutObj);
-    const singleOut = cam.videoOutputs.length === 1 && monitor && video;
-    const hdmiOnly = cam.videoOutputs.every(v => /HDMI/i.test(v.type)) && cam.videoOutputs.length === 1;
-    const labelCamVideo = connectionLabel(camOut, vidIn);
-    const labelCamMonitor = connectionLabel(camOut, monIn);
-    const labelVideoMonitor = connectionLabel(vidOut || camOut, monIn);
-    const labelMonitorVideo = connectionLabel(monOut || camOut, vidIn);
-    if (singleOut && hdmiOnly) {
-      if (vidOut) {
-        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo + ' (loop to monitor)', routeAround: true, fromSide: 'bottom', toSide: 'top' }, 'video');
-        if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, routeAround: true }, 'video');
-      } else {
-        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor + ' (loop)', routeAround: true, fromSide: 'top', toSide: 'bottom' }, 'video');
-        if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, routeAround: true }, 'video');
-      }
-    } else if (singleOut) {
-      if (vidOut) {
-        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
-        if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, angled: true, labelSpacing: 5 }, 'video');
-      } else {
-        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
-        if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, angled: true, labelSpacing: 5 }, 'video');
-      }
-    } else {
-      if (monitor && monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
-      if (video && vidIn) pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
+    if (monitor && monInObj) {
+      const monIn = monInObj.portType || monInObj.type || monInObj;
+      pushEdge({ from: 'camera', to: 'monitor', label: connectionLabel(camOut, monIn), fromSide: 'top', toSide: 'bottom' }, 'video');
+    }
+    if (video && vidInObj) {
+      const vidIn = vidInObj.portType || vidInObj.type || vidInObj;
+      pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top' }, 'video');
     }
   }
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
@@ -3260,57 +3203,14 @@ function renderSetupDiagram() {
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
-  const xs = Object.values(pos).map(p => p.x);
-  const maxXPos = Math.max(...xs);
   const viewHeight = (maxY - minY) + NODE_H + 120;
 
   function computePath(fromId, toId, labelSpacing = 0, opts = {}) {
-    const from = pos[fromId];
-    const to = pos[toId];
-    if (!from || !to) return {};
-    let sx = from.x;
-    let sy = from.y + NODE_H / 2;
-    let tx = to.x;
-    let ty = to.y - NODE_H / 2;
-    const fromSide = opts.fromSide || null;
-    const toSide = opts.toSide || null;
-
-    if (opts.routeAround) {
-      const topY = minY - NODE_H - 40;
-      const outerX = maxXPos + NODE_W;
-      const startX = from.x + NODE_W / 2;
-      const endX = to.x + NODE_W / 2;
-      const path =
-        `M ${startX} ${from.y} ` +
-        `L ${outerX} ${from.y} ` +
-        `L ${outerX} ${topY} ` +
-        `L ${outerX} ${to.y} ` +
-        `L ${endX} ${to.y}`;
-      const lx = outerX;
-      const ly = topY - 8 - labelSpacing;
-      return { path, labelX: lx, labelY: ly, angle: 0 };
-    }
-
-    if (fromSide === 'bottom-left') {
-      sx = from.x - NODE_W / 2;
-      sy = from.y + NODE_H / 2;
-    } else if (fromSide === 'top-left') {
-      sx = from.x - NODE_W / 2;
-      sy = from.y - NODE_H / 2;
-    } else if (fromSide === 'bottom') {
-      sy = from.y + NODE_H / 2;
-    }
-
-    if (toSide === 'left') {
-      tx = to.x - NODE_W / 2;
-    } else if (toSide === 'bottom') {
-      ty = to.y + NODE_H / 2;
-    }
-
-    const viaY = ROUTE_Y;
-    const path = `M ${sx} ${sy} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${ty}`;
-    const lx = (sx + tx) / 2;
-    const ly = viaY - 8 - labelSpacing;
+    const from = connectorPos(fromId, opts.fromSide);
+    const to = connectorPos(toId, opts.toSide);
+    const path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+    const lx = (from.x + to.x) / 2;
+    const ly = (from.y + to.y) / 2 - 8 - labelSpacing;
     return { path, labelX: lx, labelY: ly, angle: 0 };
   }
 
@@ -3434,15 +3334,17 @@ function renderSetupDiagram() {
     }
   }
 
-  function closestConnectorPair(idA, idB) {
+  function closestConnectorPair(idA, idB, used = {}) {
     const aConns = connectorsFor(idA);
     const bConns = connectorsFor(idB);
     let best = null;
     let bestDist = Infinity;
     aConns.forEach(ac => {
+      if (used[`${idA}|${ac.side}`]) return;
       const ap = connectorPos(idA, ac.side);
       bConns.forEach(bc => {
         if (ac.color !== bc.color) return;
+        if (used[`${idB}|${bc.side}`]) return;
         const bp = connectorPos(idB, bc.side);
         const d = Math.hypot(ap.x - bp.x, ap.y - bp.y);
         if (d < bestDist) {
