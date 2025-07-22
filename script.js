@@ -2638,8 +2638,8 @@ function renderSetupDiagram() {
 
   const nodes = [];
   const pos = {};
-  const step = 240;
-  const baseY = 200;
+  const step = 160;
+  const baseY = 220;
   let x = 80;
 
   if (batteryName && batteryName !== 'None') {
@@ -2716,21 +2716,21 @@ function renderSetupDiagram() {
   }
   if (monitor && monitor.power?.input?.portType && batteryName && batteryName !== 'None') {
     const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, monitor.power.input.portType) });
+    edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, monitor.power.input.portType), offset: -20 });
   }
   if (video && video.powerInput && batteryName && batteryName !== 'None') {
     const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, video.powerInput) });
+    edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, video.powerInput), offset: -20 });
   }
   if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
     const vi = (monitor.video?.inputs || monitor.videoInputs)[0];
     const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'monitor', label });
+    edges.push({ from: 'camera', to: 'monitor', label, offset: 20 });
   }
   if (cam && video && cam.videoOutputs?.length && (video.videoInputs?.length || video.video?.inputs?.length)) {
     const vi = (video.videoInputs || (video.video ? video.video.inputs : []))[0];
     const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'video', label });
+    edges.push({ from: 'camera', to: 'video', label, offset: 20 });
   }
 
   if (inlineControllers.length && motorIds.length) {
@@ -2767,8 +2767,9 @@ function renderSetupDiagram() {
   const NODE_W = 130;
   const NODE_H = 80;
   const ROUTE_Y = baseY + NODE_H;
+  const viewHeight = baseY + step + NODE_H / 2 + 20;
 
-  function computePath(fromId, toId) {
+  function computePath(fromId, toId, offset = 0) {
     const from = pos[fromId];
     const to = pos[toId];
     if (!from || !to) return {};
@@ -2786,19 +2787,19 @@ function renderSetupDiagram() {
       const fromEdgeX = sx + (tx > sx ? NODE_W / 2 : -NODE_W / 2);
       const toEdgeX = tx - (tx > sx ? NODE_W / 2 : -NODE_W / 2);
       if (hasBetween) {
-        const viaY = ROUTE_Y;
+        const viaY = ROUTE_Y + offset;
         path = `M ${fromEdgeX} ${sy} L ${fromEdgeX} ${viaY} L ${toEdgeX} ${viaY} L ${toEdgeX} ${ty}`;
         lx = (fromEdgeX + toEdgeX) / 2;
         ly = viaY - 5;
       } else {
-        path = `M ${fromEdgeX} ${sy} L ${toEdgeX} ${ty}`;
+        path = `M ${fromEdgeX} ${sy + offset} L ${toEdgeX} ${ty + offset}`;
         lx = (fromEdgeX + toEdgeX) / 2;
-        ly = sy - 10;
+        ly = sy + offset - 10;
       }
     } else {
       const fromEdgeY = sy + (ty > sy ? NODE_H / 2 : -NODE_H / 2);
       const toEdgeY = ty - (ty > sy ? NODE_H / 2 : -NODE_H / 2);
-      const viaY = (fromEdgeY + toEdgeY) / 2;
+      const viaY = (fromEdgeY + toEdgeY) / 2 + offset;
       path = `M ${sx} ${fromEdgeY} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${toEdgeY}`;
       lx = (sx + tx) / 2;
       ly = viaY - 5;
@@ -2806,12 +2807,12 @@ function renderSetupDiagram() {
     return { path, labelX: lx, labelY: ly };
   }
 
-  let svg = `<svg viewBox="0 0 ${viewWidth} 420" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg viewBox="0 0 ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
   svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
-    const { path, labelX, labelY } = computePath(e.from, e.to);
+    const { path, labelX, labelY } = computePath(e.from, e.to, e.offset || 0);
     if (!path) return;
     svg += `<path class="edge-path" d="${path}" marker-end="url(#arrow)" />`;
     if (e.label) {
