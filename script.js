@@ -765,6 +765,10 @@ function setLanguage(lang) {
   document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
   document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
   document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
+  document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
+  document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
+  document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
+  document.getElementById("videoVideoOutputsLabel").textContent = texts[lang].videoVideoOutputsLabel;
   document.getElementById("monitorDetailsHeading").textContent = texts[lang].monitorDetailsHeading;
   document.getElementById("monitorPowerHeading").textContent = texts[lang].monitorPowerHeading;
   // Determine text for Add/Update button
@@ -786,6 +790,17 @@ function setLanguage(lang) {
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
+  const filterPlaceholder = texts[lang].placeholder_filter;
+  [cameraFilterInput, monitorFilterInput, videoFilterInput, motorFilterInput,
+   controllerFilterInput, distanceFilterInput, batteryFilterInput,
+   cameraListFilterInput, monitorListFilterInput, videoListFilterInput,
+   motorListFilterInput, controllerListFilterInput, distanceListFilterInput,
+   batteryListFilterInput].forEach(input => {
+    if (input) {
+      input.placeholder = filterPlaceholder;
+      input.setAttribute('aria-label', filterPlaceholder);
+    }
+  });
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.style.display === "none") {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -813,6 +828,14 @@ function setLanguage(lang) {
   refreshDeviceLists(); // Call refreshDeviceLists to update Edit/Delete buttons in the list
   applyFilters();
   updateCalculations();
+
+  if (existingDevicesHeading) {
+    existingDevicesHeading.textContent = texts[lang].existingDevicesHeading;
+  }
+  if (darkModeToggle) {
+    darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
+    darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
+  }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
   document.getElementById("setupActionsHeading").textContent = texts[lang].setupActionsHeading;
@@ -927,6 +950,7 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const languageSelect  = document.getElementById("languageSelect");
 const darkModeToggle  = document.getElementById("darkModeToggle");
+const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");

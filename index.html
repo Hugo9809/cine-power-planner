@@ -17,7 +17,7 @@
       <option value="es">Español</option>
       <option value="fr">Français</option>
     </select>
-    <button id="darkModeToggle" title="Toggle dark mode">☾</button>
+    <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
   </div>
 
   <h1 id="mainTitle">Camera Power Consumption App</h1>
@@ -51,21 +51,21 @@
       <div class="form-row">
         <label for="cameraSelect" id="cameraLabel">Camera:</label>
         <div class="select-wrapper">
-          <input type="text" id="cameraFilter" class="filter-input" placeholder="Filter..." />
+          <input type="text" id="cameraFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
           <select id="cameraSelect"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="monitorSelect" id="monitorLabel">Monitor:</label>
         <div class="select-wrapper">
-          <input type="text" id="monitorFilter" class="filter-input" placeholder="Filter..." />
+          <input type="text" id="monitorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
           <select id="monitorSelect"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="videoSelect" id="videoLabel">Wireless Video:</label>
         <div class="select-wrapper">
-          <input type="text" id="videoFilter" class="filter-input" placeholder="Filter..." />
+          <input type="text" id="videoFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
           <select id="videoSelect"></select>
         </div>
       </div>
@@ -75,7 +75,7 @@
       <div class="form-row">
         <label for="motor1Select" id="fizMotorsLabel">FIZ Motors:</label>
         <div class="select-wrapper">
-          <input type="text" id="motorFilter" class="filter-input" placeholder="Filter..." />
+          <input type="text" id="motorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
           <select id="motor1Select"></select>
         </div>
       </div>
@@ -94,7 +94,7 @@
       <div class="form-row">
         <label for="controller1Select" id="fizControllersLabel">FIZ Controllers:</label>
         <div class="select-wrapper">
-          <input type="text" id="controllerFilter" class="filter-input" placeholder="Filter..." />
+          <input type="text" id="controllerFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
           <select id="controller1Select"></select>
         </div>
       </div>
@@ -113,7 +113,7 @@
     <div class="form-row">
       <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
       <div class="select-wrapper">
-        <input type="text" id="distanceFilter" class="filter-input" placeholder="Filter..." />
+        <input type="text" id="distanceFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
         <select id="distanceSelect"></select>
       </div>
     </div>
@@ -126,7 +126,7 @@
     <div class="form-row">
       <label for="batterySelect" id="batteryLabel">V-Mount Battery:</label>
       <div class="select-wrapper">
-        <input type="text" id="batteryFilter" class="filter-input" placeholder="Filter..." />
+        <input type="text" id="batteryFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
         <select id="batterySelect"></select>
       </div>
     </div>
@@ -141,14 +141,14 @@
     <p><strong><span id="totalCurrent144Label">Total Current (at 14.4V):</span></strong> <span id="totalCurrent144">0.00</span> A</p>
     <p><strong><span id="totalCurrent12Label">Total Current (at 12V):</span></strong> <span id="totalCurrent12">0.00</span> A</p>
     <p><strong><span id="batteryLifeLabel">Runtime (estimated):</span></strong> <span id="batteryLife">0.00</span> <span id="batteryLifeUnit">hrs</span></p>
-    <p id="pinWarning" style="color: red; font-weight: bold;"></p>
-  <p id="dtapWarning" style="color: red; font-weight: bold;"></p>
+    <p id="pinWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite"></p>
+  <p id="dtapWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite"></p>
   </section>
 
   <section id="setupDiagram">
     <h2 id="setupDiagramHeading">Setup Diagram</h2>
-    <p id="compatWarning" style="color: red; font-weight: bold;"></p>
-    <div id="diagramArea"></div>
+    <p id="compatWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite"></p>
+    <div id="diagramArea" role="img" aria-label="Setup diagram"></div>
   </section>
 
   <section id="batteryComparison" style="display:none;">
@@ -425,41 +425,41 @@
     </div>
     <textarea id="exportOutput" readonly style="display:none; width:100%; height:100px; margin-top: 10px;"></textarea>
 
-    <h3 style="margin-top: 1em;">Existing Devices</h3>
+    <h3 id="existingDevicesHeading" style="margin-top: 1em;">Existing Devices</h3>
     <div class="device-list-container">
       <div class="device-category">
         <h4 id="category_cameras">Cameras</h4>
-        <input type="text" id="cameraListFilter" class="list-filter" placeholder="Filter..." />
+        <input type="text" id="cameraListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
         <ul id="cameraList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_monitors">Monitors</h4>
-        <input type="text" id="monitorListFilter" class="list-filter" placeholder="Filter..." />
+        <input type="text" id="monitorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
         <ul id="monitorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_video">Wireless Video</h4>
-        <input type="text" id="videoListFilter" class="list-filter" placeholder="Filter..." />
+        <input type="text" id="videoListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
         <ul id="videoList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_motors">FIZ Motors</h4>
-        <input type="text" id="motorListFilter" class="list-filter" placeholder="Filter..." />
+        <input type="text" id="motorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
         <ul id="motorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_controllers">FIZ Controllers</h4>
-        <input type="text" id="controllerListFilter" class="list-filter" placeholder="Filter..." />
+        <input type="text" id="controllerListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
         <ul id="controllerList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_distance">FIZ Distance</h4>
-        <input type="text" id="distanceListFilter" class="list-filter" placeholder="Filter..." />
+        <input type="text" id="distanceListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
         <ul id="distanceList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_batteries">V-Mount Batteries</h4>
-        <input type="text" id="batteryListFilter" class="list-filter" placeholder="Filter..." />
+        <input type="text" id="batteryListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
         <ul id="batteryList" class="device-ul"></ul>
       </div>
     </div>
