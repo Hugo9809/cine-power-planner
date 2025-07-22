@@ -320,6 +320,36 @@ button:disabled {
   margin: 3px 0;
 }
 
+/* Setup diagram */
+#setupDiagram {
+  text-align: center;
+}
+
+#setupDiagram svg {
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+}
+
+#setupDiagram .node-box {
+  fill: #f9f9f9;
+  stroke: #333;
+}
+
+#setupDiagram line {
+  stroke: #333;
+  stroke-width: 2px;
+}
+
+body.dark-mode #setupDiagram .node-box {
+  fill: #333;
+  stroke: #ddd;
+}
+
+body.dark-mode #setupDiagram line {
+  stroke: #ddd;
+}
+
 /* Battery comparison section */
 #batteryComparison {
   background: #f9f9f9; /* Match section background */

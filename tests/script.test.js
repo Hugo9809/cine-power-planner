@@ -398,4 +398,9 @@ describe('script.js functions', () => {
     expect(document.getElementById('pinWarning').style.color).toBe('orange');
     expect(document.getElementById('dtapWarning').style.color).toBe('orange');
   });
+
+  test('renderSetupDiagram runs without errors', () => {
+    const { renderSetupDiagram } = script;
+    expect(() => renderSetupDiagram()).not.toThrow();
+  });
 });
