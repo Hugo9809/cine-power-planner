@@ -3056,16 +3056,20 @@ function renderSetupDiagram() {
   }
 
 
-  const mainFizId = controllerIds.length ? controllerIds[0] : null;
+  const mainFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
   if (mainFizId) {
     let name = null;
     if (mainFizId.startsWith('controller')) {
       const idx = controllerIds.indexOf(mainFizId);
       name = inlineControllers[idx] || controllers[idx];
+    } else if (mainFizId.startsWith('motor')) {
+      const idx = motorIds.indexOf(mainFizId);
+      name = motors[idx];
     }
     if (fizNeedsPower(name)) {
       const powerSrc = nativePlate ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
-      if (powerSrc) pushEdge({ from: powerSrc, to: mainFizId, label: 'DC', offset: 80, fromSide: 'bottom-left', toSide: 'bottom' }, 'power');
+      const label = formatConnLabel(fizPort(name), 'D-Tap');
+      if (powerSrc) pushEdge({ from: powerSrc, to: mainFizId, label, offset: 80, fromSide: 'bottom-left', toSide: 'bottom' }, 'power');
     }
   }
   if (nodes.length === 0) {
