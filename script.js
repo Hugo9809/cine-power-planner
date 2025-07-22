@@ -2989,7 +2989,7 @@ function renderSetupDiagram() {
   const nodes = [];
   const pos = {};
   const nodeMap = {};
-  const step = 250; // extra spacing for edge labels
+  const step = 300; // extra spacing for edge labels
   const baseY = 220;
   let x = 80;
 
