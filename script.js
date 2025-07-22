@@ -3106,12 +3106,9 @@ function renderSetupDiagram() {
 
     if (fromSide || toSide) {
       if (toSide === 'left') {
-        const midX = (sx + tx) / 2;
-        const destAbove = ty < sy;
-        const offsetDir = destAbove ? -1 : 1;
-        const viaY = sy + offsetDir * (NODE_H + 20) + offset;
-        path = `M ${sx} ${sy} L ${sx} ${viaY} L ${midX} ${viaY} L ${midX} ${ty} L ${tx} ${ty}`;
-        lx = midX;
+        const viaY = ROUTE_Y + offset;
+        path = `M ${sx} ${sy} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${ty}`;
+        lx = (sx + tx) / 2;
         ly = viaY - 8 - labelSpacing;
         ang = 0;
       } else {
