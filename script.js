@@ -3096,27 +3096,16 @@ function renderSetupDiagram() {
   let chain = [];
   const edges = [];
   const pairCounts = {};
-  // Assign offsets based on how many edges already exist between two nodes.
-  // This keeps parallel connections from overlapping each other.
   const fromDirCounts = {};
   const pushEdge = (edge, type) => {
     const key = [edge.from, edge.to].sort().join('|');
     const idx = pairCounts[key] || 0;
     pairCounts[key] = idx + 1;
-    if (!('offset' in edge)) {
-      if (idx === 0) edge.offset = 0;
-      else {
-        const dir = idx % 2 === 1 ? 1 : -1;
-        const mult = Math.ceil(idx / 2);
-        edge.offset = mult * 20 * dir;
-      }
-    }
     const fromX = pos[edge.from]?.x ?? 0;
     const toX = pos[edge.to]?.x ?? 0;
     const dirKey = fromX <= toX ? 'lr' : 'rl';
     const orderKey = `${edge.from}|${dirKey}`;
-    const order = fromDirCounts[orderKey] || 0;
-    fromDirCounts[orderKey] = order + 1;
+    fromDirCounts[orderKey] = (fromDirCounts[orderKey] || 0) + 1;
     if (!edge.fromSide || !edge.toSide) {
       const pair = closestConnectorPair(edge.from, edge.to);
       if (pair) {
@@ -3124,7 +3113,7 @@ function renderSetupDiagram() {
         if (!edge.toSide) edge.toSide = pair.toSide;
       }
     }
-    edges.push({ ...edge, type, dir: dirKey, order, pairIndex: idx });
+    edges.push({ ...edge, type, dir: dirKey });
   };
   const nativePlate = plateType && isSelectedPlateNative(camName);
   const battMount = devices.batteries[batteryName]?.mount_type;
@@ -3139,7 +3128,7 @@ function renderSetupDiagram() {
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
-    const baseOpts = { offset: -60, labelSpacing: 5, toSide: 'left' };
+    const baseOpts = { labelSpacing: 5, toSide: 'left' };
     if (nativePlate) {
       pushEdge({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), fromSide: 'top', ...baseOpts }, 'power');
     } else if (batteryName && batteryName !== 'None') {
@@ -3151,7 +3140,7 @@ function renderSetupDiagram() {
   }
   if (video && video.powerInput) {
     const pPort = video.powerInput;
-    const powerEdgeOpts = { offset: -60, labelSpacing: 5, fromSide: 'bottom', toSide: 'left' };
+    const powerEdgeOpts = { labelSpacing: 5, fromSide: 'bottom', toSide: 'left' };
     if (nativePlate) {
       pushEdge({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), ...powerEdgeOpts }, 'power');
     } else if (batteryName && batteryName !== 'None') {
@@ -3187,15 +3176,15 @@ function renderSetupDiagram() {
       }
     } else if (singleOut) {
       if (vidOut) {
-        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
-        if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
+        if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, angled: true, labelSpacing: 5 }, 'video');
       } else {
-        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
-        if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
+        if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, angled: true, labelSpacing: 5 }, 'video');
       }
     } else {
-      if (monitor && monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
-      if (video && vidIn) pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
+      if (monitor && monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
+      if (video && vidIn) pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
     }
   }
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
@@ -3270,7 +3259,7 @@ function renderSetupDiagram() {
     if (fizNeedsPower(name)) {
       const powerSrc = nativePlate ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
       const label = formatConnLabel(fizPort(name), 'D-Tap');
-      if (powerSrc) pushEdge({ from: powerSrc, to: mainFizId, label, offset: 80, fromSide: 'bottom-left', toSide: 'bottom' }, 'power');
+      if (powerSrc) pushEdge({ from: powerSrc, to: mainFizId, label, fromSide: 'bottom-left', toSide: 'bottom' }, 'power');
     }
   }
   if (nodes.length === 0) {
@@ -3285,7 +3274,7 @@ function renderSetupDiagram() {
   const maxXPos = Math.max(...xs);
   const viewHeight = (maxY - minY) + NODE_H + 120;
 
-  function computePath(fromId, toId, offset = 0, labelSpacing = 0, opts = {}) {
+  function computePath(fromId, toId, labelSpacing = 0, opts = {}) {
     const from = pos[fromId];
     const to = pos[toId];
     if (!from || !to) return {};
@@ -3328,19 +3317,7 @@ function renderSetupDiagram() {
       ty = to.y + NODE_H / 2;
     }
 
-    const direction = opts.dir || (sx <= tx ? 'lr' : 'rl');
-    const order = opts.order || 0;
-    const pairExtra = (opts.pairIndex || 0) * 10;
-    const extra = 40 * order;
-    const baseY = ROUTE_Y + offset;
-    const viaY = direction === 'lr' ? baseY - extra : baseY + extra;
-    if (direction === 'lr') {
-      sx += pairExtra;
-      tx -= pairExtra;
-    } else {
-      sx -= pairExtra;
-      tx += pairExtra;
-    }
+    const viaY = ROUTE_Y;
     const path = `M ${sx} ${sy} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${ty}`;
     const lx = (sx + tx) / 2;
     const ly = viaY - 8 - labelSpacing;
@@ -3367,7 +3344,7 @@ function renderSetupDiagram() {
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
-    const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.offset || 0, e.labelSpacing || 0, e);
+    const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.labelSpacing || 0, e);
     if (!path) return;
     const cls = e.type ? `edge-path ${e.type}` : 'edge-path';
     svg += `<path class="${cls}" d="${path}" />`;
