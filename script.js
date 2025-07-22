@@ -2909,14 +2909,14 @@ function renderSetupDiagram() {
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
-    const powerEdgeOpts = { offset: -60, labelSpacing: 5, fromSide: 'bottom-left', toSide: 'left' };
+    const baseOpts = { offset: -60, labelSpacing: 5, toSide: 'left' };
     if (nativePlate) {
-      pushEdge({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), ...powerEdgeOpts }, 'power');
+      pushEdge({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), fromSide: 'top-left', ...baseOpts }, 'power');
     } else if (batteryName && batteryName !== 'None') {
-      pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), ...powerEdgeOpts }, 'power');
+      pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top-left', ...baseOpts }, 'power');
     } else if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, mPort);
-      pushEdge({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), ...powerEdgeOpts }, 'power');
+      pushEdge({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), fromSide: 'bottom-left', ...baseOpts }, 'power');
     }
   }
   if (video && video.powerInput) {
@@ -3045,6 +3045,9 @@ function renderSetupDiagram() {
     if (fromSide === 'bottom-left') {
       sx = from.x - NODE_W / 2;
       sy = from.y + NODE_H / 2;
+    } else if (fromSide === 'top-left') {
+      sx = from.x - NODE_W / 2;
+      sy = from.y - NODE_H / 2;
     } else if (fromSide === 'bottom') {
       sy = from.y + NODE_H / 2;
     }
