@@ -3085,7 +3085,13 @@ function renderSetupDiagram() {
     nodeMap[id] = { category: 'fiz.controllers', name };
   });
 
+  const firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
+
   const viewWidth = Math.max(500, x + 80);
+
+  const NODE_W = 160;
+  const NODE_H = 80;
+  const ROUTE_Y = baseY + NODE_H;
 
   let chain = [];
   const edges = [];
@@ -3111,6 +3117,13 @@ function renderSetupDiagram() {
     const orderKey = `${edge.from}|${dirKey}`;
     const order = fromDirCounts[orderKey] || 0;
     fromDirCounts[orderKey] = order + 1;
+    if (!edge.fromSide || !edge.toSide) {
+      const pair = closestConnectorPair(edge.from, edge.to);
+      if (pair) {
+        if (!edge.fromSide) edge.fromSide = pair.fromSide;
+        if (!edge.toSide) edge.toSide = pair.toSide;
+      }
+    }
     edges.push({ ...edge, type, dir: dirKey, order, pairIndex: idx });
   };
   const nativePlate = plateType && isSelectedPlateNative(camName);
@@ -3265,9 +3278,6 @@ function renderSetupDiagram() {
     return;
   }
 
-  const NODE_W = 160;
-  const NODE_H = 80;
-  const ROUTE_Y = baseY + NODE_H;
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
@@ -3387,8 +3397,6 @@ function renderSetupDiagram() {
   if (batteryName && devices.batteries?.[batteryName]?.image) nodeImages.battery = devices.batteries[batteryName].image;
   if (plateType && devices.plates?.[plateType]?.image) nodeImages.plate = devices.plates[plateType].image;
 
-  const firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
-
   function connectorsFor(id) {
     switch (id) {
       case 'battery':
@@ -3440,6 +3448,43 @@ function renderSetupDiagram() {
         }
     }
     return [];
+  }
+
+  function connectorPos(nodeId, side) {
+    const p = pos[nodeId];
+    if (!p) return { x: 0, y: 0 };
+    switch (side) {
+      case 'top':
+        return { x: p.x, y: p.y - NODE_H / 2 };
+      case 'bottom':
+        return { x: p.x, y: p.y + NODE_H / 2 };
+      case 'left':
+        return { x: p.x - NODE_W / 2, y: p.y };
+      case 'right':
+        return { x: p.x + NODE_W / 2, y: p.y };
+      default:
+        return { x: p.x, y: p.y };
+    }
+  }
+
+  function closestConnectorPair(idA, idB) {
+    const aConns = connectorsFor(idA);
+    const bConns = connectorsFor(idB);
+    let best = null;
+    let bestDist = Infinity;
+    aConns.forEach(ac => {
+      const ap = connectorPos(idA, ac.side);
+      bConns.forEach(bc => {
+        if (ac.color !== bc.color) return;
+        const bp = connectorPos(idB, bc.side);
+        const d = Math.hypot(ap.x - bp.x, ap.y - bp.y);
+        if (d < bestDist) {
+          bestDist = d;
+          best = { fromSide: ac.side, toSide: bc.side };
+        }
+      });
+    });
+    return best;
   }
 
   nodes.forEach(id => {
