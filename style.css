@@ -323,12 +323,13 @@ button:disabled {
 /* Setup diagram */
 #setupDiagram {
   text-align: center;
+  min-height: 440px;
 }
 
 #setupDiagram svg {
   width: 100%;
   max-width: 900px;
-  height: 420px;
+  height: 100%;
 }
 
 #setupDiagram .node-box {
