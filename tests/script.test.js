@@ -416,7 +416,7 @@ describe('script.js functions', () => {
       video: {},
       fiz: {
         motors: { MotorA: { powerDrawWatts: 2, internalController: false } },
-        controllers: { 'Arri OCU-1': { powerDrawWatts: 1, fizConnector: 'LBUS (4-pin Lemo)' } },
+        controllers: { 'Arri OCU-1': { powerDrawWatts: 1, fizConnectors: [{ type: 'LBUS (4-pin Lemo)' }] } },
         distance: {}
       },
       batteries: {}
@@ -450,7 +450,7 @@ describe('script.js functions', () => {
     global.devices.cameras = {
       'ArriCam': { fizConnectors: [ { type: 'LBUS (LEMO 4-pin)' }, { type: 'EXT LEMO 7-pin' } ] }
     };
-    global.devices.fiz.controllers = { 'Teradek CTRL': { fizConnector: 'LBUS (LEMO 4-pin)' } };
+    global.devices.fiz.controllers = { 'Teradek CTRL': { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] } };
     const port = cameraFizPort('ArriCam', 'LBUS (LEMO 4-pin)', 'Teradek CTRL');
     expect(port).toBe('EXT LEMO 7-pin');
   });

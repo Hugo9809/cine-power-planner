@@ -6621,7 +6621,7 @@ let devices={
     "controllers": {
       "None": {
         "powerDrawWatts": 0,
-        "fizConnector": null,
+        "fizConnectors": [],
         "power_source": "N/A",
         "battery_type": "N/A",
         "connectivity": "N/A",
@@ -6629,7 +6629,9 @@ let devices={
       },
       "Arri OCU-1": {
         "powerDrawWatts": 1.32,
-        "fizConnector": "LBUS (LEMO 4-pin)",
+        "fizConnectors": [
+          { "type": "LBUS (LEMO 4-pin)" }
+        ],
         "power_source": "External (via LBUS)",
         "battery_type": "N/A",
         "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
@@ -6637,7 +6639,10 @@ let devices={
       },
       "Arri ZMU-4 (body only, wired)": {
         "powerDrawWatts": 1,
-        "fizConnector": "LBUS (LEMO 4-pin for motors), CAM (LEMO 7-pin for camera control)",
+        "fizConnectors": [
+          { "type": "LBUS (LEMO 4-pin)", "notes": "for motors" },
+          { "type": "CAM (LEMO 7-pin)", "notes": "for camera control" }
+        ],
         "power_source": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
         "battery_type": "Sony NP-F550/750 compatible, ARRI LBP-3500",
         "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
@@ -6645,15 +6650,24 @@ let devices={
       },
       "Arri UMC-4": {
         "powerDrawWatts": 1.68,
-        "fizConnector": "2x LBUS (LEMO 4-pin for motors), 2x SERIAL (LEMO 4-pin), CAM (LEMO 7-pin), EXT (6-pin/16-pin depending on camera)",
+        "fizConnectors": [
+          { "type": "LBUS (LEMO 4-pin)", "notes": "for motors" },
+          { "type": "SERIAL (LEMO 4-pin)" },
+          { "type": "CAM (LEMO 7-pin)" },
+          { "type": "EXT", "notes": "6-pin/16-pin depending on camera" }
+        ],
         "power_source": "External DC (via CAM or LBUS chain)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary ARRI radio system, works with WCU-4, SXU-1, Master Grips, cmotion pan-bar zoom), Wired (LBUS, CAM, SERIAL)",
         "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support. Only compatible with ARRI CLM-4 and CLM-5 motors, which require a UMC-4 for operation."
       },
       "Arri RIA-1": {
-        "powerDrawWatts": 2.5,
-        "fizConnector": "2x LBUS (LEMO 4-pin), 1x CAM (LEMO 7-pin), 1x SERIAL (LEMO 4-pin)",
+          "powerDrawWatts": 2.5,
+        "fizConnectors": [
+          { "type": "LBUS (LEMO 4-pin)" },
+          { "type": "CAM (LEMO 7-pin)" },
+          { "type": "SERIAL (LEMO 4-pin)" }
+        ],
         "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
         "battery_type": "N/A (no internal battery, draws power from camera or external source)",
         "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
@@ -6661,7 +6675,9 @@ let devices={
       },
       "Arri Master Grip (single unit)": {
         "powerDrawWatts": 0.72,
-        "fizConnector": "2x LBUS (LEMO 4-pin)",
+        "fizConnectors": [
+          { "type": "LBUS (LEMO 4-pin)" }
+        ],
         "power_source": "External (12-34VDC via LBUS)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
@@ -6669,7 +6685,10 @@ let devices={
       },
       "Tilta Nucleus-M Hand Grip (single)": {
         "powerDrawWatts": 0.5,
-        "fizConnector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
+        "fizConnectors": [
+          { "type": "Proprietary 7-pin (to motor)" },
+          { "type": "ARRI rosette or gimbal bar adapter" }
+        ],
         "power_source": "Internal Battery",
         "battery_type": "2x 18650 Li-ion (per grip, not included)",
         "connectivity": "Wireless (proprietary 2.4GHz RF, 1000ft/300m range)",
@@ -6677,7 +6696,10 @@ let devices={
       },
       "Tilta Nucleus-M II Handle (single)": {
         "powerDrawWatts": 0.5,
-        "fizConnector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
+        "fizConnectors": [
+          { "type": "Proprietary 7-pin (to motor)" },
+          { "type": "ARRI rosette or gimbal bar adapter" }
+        ],
         "power_source": "Internal Battery",
         "battery_type": "NP-F550 (single per handle)",
         "connectivity": "Wireless (proprietary 2.4GHz RF)",
@@ -6685,7 +6707,9 @@ let devices={
       },
       "DJI Focus Pro Handle": {
         "powerDrawWatts": 1,
-        "fizConnector": "USB-C",
+        "fizConnectors": [
+          { "type": "USB-C" }
+        ],
         "power_source": "Internal Battery",
         "battery_type": "Built-in rechargeable",
         "connectivity": "Wireless (DJI proprietary)",
@@ -6693,7 +6717,12 @@ let devices={
       },
       "Preston MDR4": {
         "powerDrawWatts": 48,
-        "fizConnector": "2x Motor Ports (proprietary LEMO 7-pin), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)",
+        "fizConnectors": [
+          { "type": "Motor Port (proprietary LEMO 7-pin)" },
+          { "type": "Serial (for Light Ranger 2)" },
+          { "type": "Analog (for Micro Force)" },
+          { "type": "USB (firmware)" }
+        ],
         "power_source": "External DC (XLR 4-pin or D-Tap)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
@@ -6701,7 +6730,13 @@ let devices={
       },
       "ARRI ECM-1": {
         "powerDrawWatts": 84,
-        "fizConnector": "6x Motor ports (proprietary LEMO), 1x Camera (LEMO 7-pin), 1x Accessory (LEMO 4-pin), 1x Ethernet, 1x USB",
+        "fizConnectors": [
+          { "type": "Motor port (proprietary LEMO)" },
+          { "type": "Camera (LEMO 7-pin)" },
+          { "type": "Accessory (LEMO 4-pin)" },
+          { "type": "Ethernet" },
+          { "type": "USB" }
+        ],
         "power_source": "External DC (LEMO 2-pin or XLR 4-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (Ethernet, Camera cable to ALEXA 65/LF/Mini LF/35, USB) or Wireless (integrated Wi-Fi and ARRI White Radio)",
@@ -6709,7 +6744,12 @@ let devices={
       },
       "Redrock microRemote Basestation": {
         "powerDrawWatts": 54,
-        "fizConnector": "3x Motor ports (proprietary 4-pin), 1x USB, 1x AUX, 1x Power (LEMO 2-pin)",
+        "fizConnectors": [
+          { "type": "Motor port (proprietary 4-pin)" },
+          { "type": "USB" },
+          { "type": "AUX" },
+          { "type": "Power (LEMO 2-pin)" }
+        ],
         "power_source": "External DC (6-18V via LEMO 2-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
@@ -6717,7 +6757,9 @@ let devices={
       },
       "ARRI LBUS Distributor (LBS-1)": {
         "powerDrawWatts": 0.24,
-        "fizConnector": "Multiple LBUS ports (LEMO 4-pin)",
+        "fizConnectors": [
+          { "type": "Multiple LBUS ports (LEMO 4-pin)" }
+        ],
         "power_source": "External (via any LBUS connection)",
         "battery_type": "N/A (passive device)",
         "connectivity": "Wired (LBUS)",
@@ -6725,7 +6767,11 @@ let devices={
       },
       "Cmotion compact LCS receiver": {
         "powerDrawWatts": 20,
-        "fizConnector": "3x Motor ports (LEMO 4-pin), 1x Camera (LEMO 7-pin), 1x EXT (LEMO 4-pin)",
+        "fizConnectors": [
+          { "type": "Motor port (LEMO 4-pin)" },
+          { "type": "Camera (LEMO 7-pin)" },
+          { "type": "EXT (LEMO 4-pin)" }
+        ],
         "power_source": "External DC (10-34V via Camera port or EXT port)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary cmotion RF, 2.4 GHz FHSS, up to 150m/500ft range) or Wired (CAM, EXT)",
@@ -6733,7 +6779,11 @@ let devices={
       },
       "Teradek RT Motion CTRL.3 Controller": {
         "powerDrawWatts": 15,
-        "fizConnector": "USB-C, LEMO 2-pin (power out), LEMO 4-pin (data to MDR)",
+        "fizConnectors": [
+          { "type": "USB-C" },
+          { "type": "LEMO 2-pin", "notes": "power out" },
+          { "type": "LEMO 4-pin", "notes": "data to MDR" }
+        ],
         "power_source": "Internal Battery (rechargeable) or External (USB-C)",
         "battery_type": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
         "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
