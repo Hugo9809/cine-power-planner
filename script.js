@@ -253,6 +253,30 @@ function unifyDevices(data) {
     });
     cam.timecode = ensureList(cam.timecode, { type: '', notes: '' });
   });
+
+  // Normalize FIZ motors
+  Object.values(data.fiz?.motors || {}).forEach(m => {
+    if (!m) return;
+    if (m.connector && !m.fizConnector) {
+      m.fizConnector = m.connector;
+      delete m.connector;
+    }
+    if (m.fizConnector) {
+      m.fizConnector = normalizeFizConnectorType(m.fizConnector);
+    }
+  });
+
+  // Normalize FIZ controllers
+  Object.values(data.fiz?.controllers || {}).forEach(c => {
+    if (!c) return;
+    if (c.FIZ_connector && !c.fizConnector) {
+      c.fizConnector = c.FIZ_connector;
+      delete c.FIZ_connector;
+    }
+    if (c.fizConnector) {
+      c.fizConnector = normalizeFizConnectorType(c.fizConnector);
+    }
+  });
 }
 
 unifyDevices(devices);
@@ -338,16 +362,16 @@ function controllerCamPort(name) {
   const c = devices.fiz?.controllers?.[name];
   if (c) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
-    if (/CAM/i.test(c.FIZ_connector || '')) return 'Cam';
+    if (/CAM/i.test(c.fizConnector || '')) return 'Cam';
   }
   const m = devices.fiz?.motors?.[name];
-  if (m && /CAM/i.test(m.connector || '')) return 'Cam';
+  if (m && /CAM/i.test(m.fizConnector || '')) return 'Cam';
   return 'LBUS';
 }
 
 function controllerDistancePort(name) {
   const c = devices.fiz?.controllers?.[name];
-  if (c && /SERIAL/i.test(c.FIZ_connector || '')) return 'Serial';
+  if (c && /SERIAL/i.test(c.fizConnector || '')) return 'Serial';
   return 'LBUS';
 }
 
@@ -358,7 +382,7 @@ function controllerPriority(name) {
 
 function motorPriority(name) {
   const m = devices.fiz?.motors?.[name];
-  if (m && m.internalController && /CAM/i.test(m.connector || '')) return 0;
+  if (m && m.internalController && /CAM/i.test(m.fizConnector || '')) return 0;
   return 1;
 }
 function isArriOrCmotion(name) {
@@ -372,7 +396,7 @@ function fizNeedsPower(name) {
   const d = devices.fiz?.controllers?.[name] || devices.fiz?.motors?.[name];
   if (!d) return false;
   if (/internal battery/i.test(d.power_source || "")) return false;
-  const conn = d.FIZ_connector || d.connector || "";
+  const conn = d.fizConnector || "";
   if (/LBUS/i.test(conn) && /^Arri/i.test(name)) return false;
   return true;
 }
@@ -401,14 +425,14 @@ function cameraFizPort(camName, controllerPort, deviceName = '') {
 
 function controllerFizPort(name) {
   const c = devices.fiz?.controllers?.[name];
-  const port = firstConnector(c?.FIZ_connector);
+  const port = firstConnector(c?.fizConnector);
   if (port) return port;
   return isArriOrCmotion(name) ? 'LBUS' : 'Proprietary';
 }
 
 function motorFizPort(name) {
   const m = devices.fiz?.motors?.[name];
-  const port = firstConnector(m?.connector);
+  const port = firstConnector(m?.fizConnector);
   if (port) return port;
   return isArriOrCmotion(name) ? 'LBUS' : 'Proprietary';
 }
@@ -563,7 +587,7 @@ function checkFizController() {
   controllers.forEach(name => {
     const c = devices.fiz.controllers[name];
     if (!c) return;
-    if (/CAM|SERIAL|Motor/i.test(c.FIZ_connector || '')) hasController = true;
+    if (/CAM|SERIAL|Motor/i.test(c.fizConnector || '')) hasController = true;
     if (c.internalController) hasController = true;
   });
 
@@ -985,7 +1009,7 @@ function updateFizConnectorOptions() {
 function getAllMotorConnectorTypes() {
   const types = new Set();
   Object.values(devices.fiz?.motors || {}).forEach(m => {
-    if (m && m.connector) types.add(m.connector);
+    if (m && m.fizConnector) types.add(m.fizConnector);
   });
   return Array.from(types).filter(Boolean).sort();
 }
@@ -1011,7 +1035,7 @@ function updateMotorConnectorOptions() {
 function getAllControllerConnectors() {
   const types = new Set();
   Object.values(devices.fiz?.controllers || {}).forEach(c => {
-    if (c && c.FIZ_connector) types.add(c.FIZ_connector);
+    if (c && c.fizConnector) types.add(c.fizConnector);
   });
   return Array.from(types).filter(Boolean).sort();
 }
@@ -3621,7 +3645,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerFieldsDiv.style.display = "none";
       distanceFieldsDiv.style.display = "none";
       newWattInput.value = deviceData.powerDrawWatts || '';
-      motorConnectorInput.value = deviceData.connector || '';
+      motorConnectorInput.value = deviceData.fizConnector || '';
       motorInternalInput.checked = !!deviceData.internalController;
       motorTorqueInput.value = deviceData.torqueNm || '';
       motorGearInput.value = Array.isArray(deviceData.gearTypes) ? deviceData.gearTypes.join(', ') : '';
@@ -3636,7 +3660,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerFieldsDiv.style.display = "block";
       distanceFieldsDiv.style.display = "none";
       newWattInput.value = deviceData.powerDrawWatts || '';
-      controllerConnectorInput.value = deviceData.FIZ_connector || '';
+      controllerConnectorInput.value = deviceData.fizConnector || '';
       controllerPowerInput.value = deviceData.power_source || '';
       controllerBatteryInput.value = deviceData.battery_type || '';
       controllerConnectivityInput.value = deviceData.connectivity || '';
@@ -3991,7 +4015,7 @@ addDeviceBtn.addEventListener("click", () => {
     }
     targetCategory[name] = {
       powerDrawWatts: watt,
-      connector: motorConnectorInput.value,
+      fizConnector: motorConnectorInput.value,
       internalController: motorInternalInput.checked,
       torqueNm: motorTorqueInput.value ? parseFloat(motorTorqueInput.value) : null,
       gearTypes: motorGearInput.value ? motorGearInput.value.split(',').map(s => s.trim()).filter(Boolean) : [],
@@ -4008,7 +4032,7 @@ addDeviceBtn.addEventListener("click", () => {
     }
     targetCategory[name] = {
       powerDrawWatts: watt,
-      FIZ_connector: controllerConnectorInput.value,
+      fizConnector: controllerConnectorInput.value,
       power_source: controllerPowerInput.value,
       battery_type: controllerBatteryInput.value,
       connectivity: controllerConnectivityInput.value,
