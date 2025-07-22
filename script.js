@@ -593,6 +593,12 @@ function checkArriCompatibility() {
   controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
   const distance = distanceSelect.value;
 
+  const camName = cameraSelect.value;
+  const cam = devices.cameras[camName];
+  const cameraHasLBUS = Array.isArray(cam?.fizConnectors) &&
+    cam.fizConnectors.some(fc => /LBUS/i.test(fc.type));
+  const builtInController = cameraHasLBUS && /arri/i.test(camName);
+
   const usesUMC4 = controllers.some(n => /UMC-4/i.test(n));
   const usesRIA1 = controllers.some(n => /RIA-1/i.test(n));
   const usesRF = controllers.some(n => /cforce.*rf/i.test(n)) || motors.some(m => /cforce.*rf/i.test(m));
@@ -602,7 +608,11 @@ function checkArriCompatibility() {
     msg = texts[currentLang].arriUMC4Warning;
   } else if ((usesRIA1 || usesRF) && motors.some(m => /CLM-4|CLM-5/i.test(m))) {
     msg = texts[currentLang].arriRIA1Warning;
-  } else if (distance && distance !== 'None' && !(usesUMC4 || usesRIA1 || usesRF)) {
+  } else if (
+    distance &&
+    distance !== 'None' &&
+    !(usesUMC4 || usesRIA1 || usesRF || builtInController)
+  ) {
     msg = texts[currentLang].distanceControllerWarning;
   }
 
