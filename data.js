@@ -1272,7 +1272,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "3.5 inch",
+          "size": "3.5-inch",
           "resolution": "1280 x 720"
         }
       ],
@@ -1603,7 +1603,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "3.5 inch",
+          "size": "3.5-inch",
           "resolution": "1280 x 720"
         }
       ],
@@ -1815,7 +1815,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "5 inch",
+          "size": "5-inch",
           "resolution": "1920 x 1080"
         }
       ],
@@ -1889,7 +1889,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "5 inch",
+          "size": "5-inch",
           "resolution": "1920 x 1080",
           "notes": "Adjustable HDR touchscreen"
         },
@@ -1976,7 +1976,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "5 inch",
+          "size": "5-inch",
           "resolution": "1920 x 1080"
         }
       ],
@@ -2170,7 +2170,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "4 inch",
+          "size": "4-inch",
           "notes": "Fold out touchscreen"
         },
         {
@@ -2395,7 +2395,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "4 inch",
+          "size": "4-inch",
           "resolution": "1280x720"
         }
       ],
@@ -2469,7 +2469,7 @@ let devices={
       "viewfinder": [
         {
           "type": "LCD touchscreen",
-          "size": "4 inch",
+          "size": "4-inch",
           "resolution": "1280x720"
         }
       ],
@@ -6416,7 +6416,7 @@ let devices={
       },
       "Arri CLM-4 (K2.72114.0)": {
         "powerDrawWatts": 12,
-        "fizConnector": "LEMO 7-pin (LCS)",
+        "fizConnector": "LEMO 7-pin",
         "internalController": false,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6428,7 +6428,7 @@ let devices={
       },
       "Arri CLM-5 (K2.0006361)": {
         "powerDrawWatts": 24,
-        "fizConnector": "LEMO 7-pin (LCS)",
+        "fizConnector": "LEMO 7-pin",
         "internalController": false,
         "torqueNm": 1.2,
         "gearTypes": [
@@ -6455,7 +6455,7 @@ let devices={
       },
       "Teradek RT Motion FIZ (MOTR.S)": {
         "powerDrawWatts": 24,
-        "fizConnector": "LEMO 4-pin 0B",
+        "fizConnector": "LEMO 4-pin",
         "internalController": false,
         "torqueNm": 0.95,
         "gearTypes": [
@@ -6525,7 +6525,7 @@ let devices={
       },
       "Chrosziel CDM-100 Digital": {
         "powerDrawWatts": 12,
-        "fizConnector": "LEMO 7-pin 1B",
+        "fizConnector": "LEMO 7-pin",
         "internalController": false,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6539,7 +6539,7 @@ let devices={
       },
       "Chrosziel CDM-M (Universal Zoom Servo Drive)": {
         "powerDrawWatts": 4.2,
-        "fizConnector": "LEMO 5-pin 0B",
+        "fizConnector": "LEMO 5-pin",
         "internalController": false,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6694,15 +6694,15 @@ let devices={
       "Preston MDR4": {
         "powerDrawWatts": 48,
         "fizConnector": "2x Motor Ports (proprietary LEMO 7-pin), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)",
-        "power_source": "External DC (4-pin XLR or D-Tap)",
+        "power_source": "External DC (XLR 4-pin or D-Tap)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
         "notes": "2-channel digital motor driver (Focus and Iris or Zoom). Compatible with all Preston hand units (e.g., HU4) and motors. Automatic lens calibration. Each channel has adjustable torque and direction. Supports camera run/stop for various film/video cameras. Compact and suitable for handheld/Steadicam/gimbal. Does not output lens metadata."
       },
       "ARRI ECM-1": {
         "powerDrawWatts": 84,
-        "fizConnector": "6x Motor ports (proprietary Lemo), 1x Camera (LEMO 7-pin), 1x Accessory (LEMO 4-pin), 1x Ethernet, 1x USB",
-        "power_source": "External DC (LEMO 2-pin or 4-pin XLR)",
+        "fizConnector": "6x Motor ports (proprietary LEMO), 1x Camera (LEMO 7-pin), 1x Accessory (LEMO 4-pin), 1x Ethernet, 1x USB",
+        "power_source": "External DC (LEMO 2-pin or XLR 4-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (Ethernet, Camera cable to ALEXA 65/LF/Mini LF/35, USB) or Wireless (integrated Wi-Fi and ARRI White Radio)",
         "notes": "Extended Control Module for ALEXA 65/LF/Mini LF/35. Highly advanced and powerful lens and camera control. Provides 6 motor ports for advanced FIZ and iris/zoom control. Allows connection of multiple accessories and expands camera functionality. Enables advanced lens data functions and is often used for virtual production or complex setups."
