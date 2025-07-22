@@ -350,6 +350,21 @@ button:disabled {
   background-color: #ffffff;
 }
 
+/* Setup Diagram */
+#setupDiagram {
+  overflow-x: auto;
+}
+
+#setupDiagram .diagram-svg {
+  width: 100%;
+  height: 160px;
+}
+
+.device-box {
+  fill: #f0f0f0;
+  stroke: #333;
+}
+
 /* Battery comparison bars */
 .barContainer {
   width: 100%;

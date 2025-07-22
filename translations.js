@@ -9,6 +9,7 @@ const texts = {
     setupManageHeading: "Manage Setup",
     deviceSelectionHeading: "Device Selection",
     resultsHeading: "Results",
+    setupDiagramHeading: "Setup Diagram",
     deviceManagerHeading: "Manage Device Database",
     batteryComparisonHeading: "Battery Comparison",
 
@@ -176,6 +177,7 @@ const texts = {
     setupManageHeading: "Gestionar Configuración",
     deviceSelectionHeading: "Selección de Dispositivos",
     resultsHeading: "Resultados",
+    setupDiagramHeading: "Diagrama de Conexión",
     deviceManagerHeading: "Gestionar Base de Datos",
     batteryComparisonHeading: "Comparación de Baterías",
 
@@ -341,6 +343,7 @@ const texts = {
     setupManageHeading: "Gérer la Configuration",
     deviceSelectionHeading: "Sélection des Appareils",
     resultsHeading: "Résultats",
+    setupDiagramHeading: "Diagramme de Connexion",
     deviceManagerHeading: "Gérer la Base de Données",
     batteryComparisonHeading: "Comparaison des Batteries",
 
@@ -506,6 +509,7 @@ const texts = {
     setupManageHeading: "Setup verwalten",
     deviceSelectionHeading: "Geräte-Auswahl",
     resultsHeading: "Ergebnisse",
+    setupDiagramHeading: "Verbindungsdiagramm",
     deviceManagerHeading: "Geräte-Datenbank verwalten",
     batteryComparisonHeading: "Akkuvergleich",
 

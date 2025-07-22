@@ -379,6 +379,8 @@ function setLanguage(lang) {
   document.getElementById("setupManageHeading").textContent = texts[lang].setupManageHeading;
   document.getElementById("deviceSelectionHeading").textContent = texts[lang].deviceSelectionHeading;
   document.getElementById("resultsHeading").textContent = texts[lang].resultsHeading; // Fixed typo here
+  const diagHead = document.getElementById("setupDiagramHeading");
+  if (diagHead) diagHead.textContent = texts[lang].setupDiagramHeading;
   document.getElementById("deviceManagerHeading").textContent = texts[lang].deviceManagerHeading;
   document.getElementById("batteryComparisonHeading").textContent = texts[lang].batteryComparisonHeading;
   // Setup manager labels and buttons
@@ -2517,6 +2519,98 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   } else {
     batteryComparisonSection.style.display = "none";
   }
+
+  renderSetupDiagram();
+}
+
+function renderSetupDiagram() {
+  const container = document.getElementById('diagramContainer');
+  const heading = document.getElementById('setupDiagramHeading');
+  if (!container) return;
+  container.innerHTML = '';
+  if (heading) heading.textContent = texts[currentLang].setupDiagramHeading;
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.classList.add('diagram-svg');
+  container.appendChild(svg);
+
+  const boxes = [];
+  function addBox(label) {
+    const index = boxes.length;
+    const width = 120;
+    const x = 20 + index * 150;
+    const y = 40;
+    boxes.push({ label, x, width, y });
+    const rect = document.createElementNS(svgNS, 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', width);
+    rect.setAttribute('height', 30);
+    rect.setAttribute('class', 'device-box');
+    svg.appendChild(rect);
+    const text = document.createElementNS(svgNS, 'text');
+    text.setAttribute('x', x + width / 2);
+    text.setAttribute('y', y + 20);
+    text.setAttribute('text-anchor', 'middle');
+    text.textContent = label;
+    svg.appendChild(text);
+    return index;
+  }
+
+  const idx = {};
+  const batteryKey = batterySelect.value;
+  if (batteryKey && batteryKey !== 'None') idx.battery = addBox(batteryKey);
+  const cameraKey = cameraSelect.value;
+  if (cameraKey && cameraKey !== 'None') idx.camera = addBox(cameraKey);
+  const videoKey = videoSelect.value;
+  if (videoKey && videoKey !== 'None') idx.video = addBox(videoKey);
+  const monitorKey = monitorSelect.value;
+  if (monitorKey && monitorKey !== 'None') idx.monitor = addBox(monitorKey);
+
+  function drawConnection(fromI, toI, label) {
+    if (fromI === undefined || toI === undefined) return;
+    const from = boxes[fromI];
+    const to = boxes[toI];
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', from.x + from.width);
+    line.setAttribute('y1', from.y + 15);
+    line.setAttribute('x2', to.x);
+    line.setAttribute('y2', to.y + 15);
+    line.setAttribute('stroke', '#000');
+    svg.appendChild(line);
+    if (label) {
+      const t = document.createElementNS(svgNS, 'text');
+      t.setAttribute('x', (from.x + from.width + to.x) / 2);
+      t.setAttribute('y', from.y + 10);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('font-size', '10');
+      t.textContent = label;
+      svg.appendChild(t);
+    }
+  }
+
+  if (idx.battery !== undefined && idx.camera !== undefined) {
+    const camData = devices.cameras[cameraKey] || {};
+    const powerLabel = camData.power && camData.power.input ? camData.power.input.portType || '' : '';
+    drawConnection(idx.battery, idx.camera, powerLabel);
+  }
+
+  if (idx.camera !== undefined && idx.video !== undefined) {
+    const camData = devices.cameras[cameraKey] || {};
+    const label = (camData.videoOutputs && camData.videoOutputs[0]) ? (camData.videoOutputs[0].type || camData.videoOutputs[0].portType || '') : '';
+    drawConnection(idx.camera, idx.video, label);
+  }
+
+  if (idx.video !== undefined && idx.monitor !== undefined) {
+    const vidData = devices.video[videoKey] || {};
+    const label = (vidData.videoOutputs && vidData.videoOutputs[0]) ? (vidData.videoOutputs[0].portType || '') : '';
+    drawConnection(idx.video, idx.monitor, label);
+  } else if (idx.camera !== undefined && idx.monitor !== undefined) {
+    const camData = devices.cameras[cameraKey] || {};
+    const label = (camData.videoOutputs && camData.videoOutputs[0]) ? (camData.videoOutputs[0].type || '') : '';
+    drawConnection(idx.camera, idx.monitor, label);
+  }
 }
 
 // Convert a camelCase or underscore key to a human friendly label
@@ -3611,6 +3705,7 @@ function formatDeviceDataHtml(data) {
 }
 
 function generatePrintableOverview() {
+    renderSetupDiagram();
     const setupName = setupNameInput.value;
     const now = new Date();
     const localeMap = { de: 'de-DE', es: 'es-ES', fr: 'fr-FR', en: 'en-US' };
@@ -3655,6 +3750,8 @@ function generatePrintableOverview() {
         <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent}</p>
         <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeElem.textContent}</p>
     `;
+
+    const diagramHtml = document.getElementById('setupDiagram').innerHTML;
 
     // Get current warning messages
     let warningHtml = '';
@@ -3836,6 +3933,8 @@ function generatePrintableOverview() {
                 .device-item { margin: 5px 0; }
                 .device-data { margin-left: 15px; }
                 .device-data ul { list-style: disc; margin-left: 20px; }
+                .diagram-svg { width: 100%; height: 160px; }
+                .device-box { fill: #f0f0f0; stroke: #333; }
                 /* Styles for Battery Comparison Bars in Overview */
                 .barContainer {
                   width: 100%;
@@ -3950,7 +4049,8 @@ function generatePrintableOverview() {
             <h2>${t.resultsHeading}</h2>
             ${resultsHtml}
             ${warningHtml}
-            
+            ${diagramHtml}
+
             ${batteryTableHtml}
         </body>
         </html>
@@ -4034,8 +4134,9 @@ if (typeof module !== "undefined" && module.exports) {
     setRecordingMedia,
     getRecordingMedia,
     applyDarkMode,
-    generatePrintableOverview,
-    updateBatteryPlateVisibility,
-    updateBatteryOptions,
+  generatePrintableOverview,
+  updateBatteryPlateVisibility,
+  updateBatteryOptions,
+  renderSetupDiagram,
   };
 }

@@ -333,4 +333,19 @@ describe('script.js functions', () => {
 
     expect(document.getElementById('batteryPlateSelect').value).toBe('B-Mount');
   });
+
+  test('renderSetupDiagram runs without errors', () => {
+    const { renderSetupDiagram } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('batterySelect', 'BattA');
+    expect(() => renderSetupDiagram()).not.toThrow();
+    const diag = document.getElementById('diagramContainer');
+    expect(diag.innerHTML).toContain('svg');
+  });
 });
