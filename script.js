@@ -3011,7 +3011,8 @@ function renderSetupDiagram() {
   }
 
   const plateType = getSelectedPlate();
-  if (plateType && batteryName && batteryName !== 'None') {
+  const nativePlate = plateType && isSelectedPlateNative(camName);
+  if (plateType && batteryName && batteryName !== 'None' && !nativePlate) {
     pos.plate = { x, y: baseY, label: plateType + ' Plate' };
     nodes.push('plate');
     nodeMap.plate = { category: 'plates', name: plateType };
@@ -3115,23 +3116,14 @@ function renderSetupDiagram() {
     }
     edges.push({ ...edge, type, dir: dirKey });
   };
-  const nativePlate = plateType && isSelectedPlateNative(camName);
   const battMount = devices.batteries[batteryName]?.mount_type;
   if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
-    if (nativePlate) {
-      pushEdge({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType), fromSide: 'right', toSide: 'left' }, 'power');
-      const lbl = /^Arri Alexa Mini( LF)?$/i.test(camName) ? formatConnLabel(plateType, cam.power.input.portType) : '';
-      pushEdge({ from: 'plate', to: 'camera', label: lbl, fromSide: 'right', toSide: 'left' }, 'power');
-    } else {
-      pushEdge({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType), fromSide: 'right', toSide: 'left' }, 'power');
-    }
+    pushEdge({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType), fromSide: 'right', toSide: 'left' }, 'power');
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
     const baseOpts = { labelSpacing: 5, toSide: 'left' };
-    if (nativePlate) {
-      pushEdge({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), fromSide: 'top', ...baseOpts }, 'power');
-    } else if (batteryName && batteryName !== 'None') {
+    if (batteryName && batteryName !== 'None') {
       pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top', ...baseOpts }, 'power');
     } else if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, mPort);
@@ -3141,9 +3133,7 @@ function renderSetupDiagram() {
   if (video && video.powerInput) {
     const pPort = video.powerInput;
     const powerEdgeOpts = { labelSpacing: 5, fromSide: 'bottom', toSide: 'left' };
-    if (nativePlate) {
-      pushEdge({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), ...powerEdgeOpts }, 'power');
-    } else if (batteryName && batteryName !== 'None') {
+    if (batteryName && batteryName !== 'None') {
       pushEdge({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), ...powerEdgeOpts }, 'power');
     } else if (cameraCanPower(camName, pPort, video.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, pPort);
@@ -3257,7 +3247,7 @@ function renderSetupDiagram() {
       name = motors[idx];
     }
     if (fizNeedsPower(name)) {
-      const powerSrc = nativePlate ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
+      const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
       const label = formatConnLabel(fizPort(name), 'D-Tap');
       if (powerSrc) pushEdge({ from: powerSrc, to: mainFizId, label, fromSide: 'bottom-left', toSide: 'bottom' }, 'power');
     }
