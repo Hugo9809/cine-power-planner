@@ -302,6 +302,28 @@ function formatConnLabel(from, to) {
   return `${a} to ${b}`;
 }
 
+function cameraCanPower(camName, portType, watt) {
+  const cam = devices.cameras[camName];
+  if (!cam || !Array.isArray(cam.power?.powerDistributionOutputs)) return false;
+  const norm = shortConnLabel(portType).toLowerCase();
+  return cam.power.powerDistributionOutputs.some(out => {
+    const outType = shortConnLabel(out.type).toLowerCase();
+    if (outType !== norm) return false;
+    const avail = out.wattage || (parseFloat(out.voltage) && parseFloat(out.current) ?
+      parseFloat(out.voltage) * parseFloat(out.current) : null);
+    if (avail != null && watt != null && avail < watt) return false;
+    return true;
+  });
+}
+
+function getCameraOutputType(camName, portType) {
+  const cam = devices.cameras[camName];
+  if (!cam || !Array.isArray(cam.power?.powerDistributionOutputs)) return portType;
+  const norm = shortConnLabel(portType).toLowerCase();
+  const out = cam.power.powerDistributionOutputs.find(o => shortConnLabel(o.type).toLowerCase() === norm);
+  return out ? out.type : portType;
+}
+
 function controllerCamPort(name) {
   const c = devices.fiz?.controllers?.[name];
   if (!c || !c.FIZ_connector) return 'LBUS';
@@ -446,6 +468,33 @@ function checkFizController() {
 
   if (needController && !hasController) {
     compatElem.textContent = texts[currentLang].missingFIZControllerWarning;
+    compatElem.style.color = 'red';
+  }
+}
+
+function checkArriCompatibility() {
+  const compatElem = document.getElementById('compatWarning');
+  if (!compatElem || compatElem.textContent) return;
+
+  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  const distance = distanceSelect.value;
+
+  const usesUMC4 = controllers.some(n => /UMC-4/i.test(n));
+  const usesRIA1 = controllers.some(n => /RIA-1/i.test(n));
+  const usesRF = controllers.some(n => /cforce\s*rf/i.test(n)) || motors.some(m => /cforce\s*rf/i.test(m));
+
+  let msg = '';
+  if (usesUMC4 && motors.some(m => !/CLM-4|CLM-5/i.test(m))) {
+    msg = texts[currentLang].arriUMC4Warning;
+  } else if ((usesRIA1 || usesRF) && motors.some(m => /CLM-4|CLM-5/i.test(m))) {
+    msg = texts[currentLang].arriRIA1Warning;
+  } else if (distance && distance !== 'None' && !(usesUMC4 || usesRIA1 || usesRF)) {
+    msg = texts[currentLang].distanceControllerWarning;
+  }
+
+  if (msg) {
+    compatElem.textContent = msg;
     compatElem.style.color = 'red';
   }
 }
@@ -2653,6 +2702,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   }
   checkFizCompatibility();
   checkFizController();
+  checkArriCompatibility();
   if (setupDiagramContainer) renderSetupDiagram();
 }
 
@@ -2677,7 +2727,7 @@ function renderSetupDiagram() {
 
   const nodes = [];
   const pos = {};
-  const step = 200;
+  const step = 250; // extra spacing for edge labels
   const baseY = 220;
   let x = 80;
 
@@ -2753,23 +2803,39 @@ function renderSetupDiagram() {
     const label = native ? plateType : formatConnLabel(plateType, cam.power.input.portType);
     edges.push({ from: 'plate', to: 'camera', label });
   }
-  if (monitor && monitor.power?.input?.portType && batteryName && batteryName !== 'None') {
-    const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, monitor.power.input.portType), offset: -40 });
+  if (monitor && monitor.power?.input?.portType) {
+    const mPort = monitor.power.input.portType;
+    if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
+      const cOut = getCameraOutputType(camName, mPort);
+      edges.push({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), offset: -60 });
+    } else if (plateType && isSelectedPlateNative(camName)) {
+      edges.push({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), offset: -60 });
+    } else if (batteryName && batteryName !== 'None') {
+      const battMount = devices.batteries[batteryName]?.mount_type;
+      edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), offset: -60 });
+    }
   }
-  if (video && video.powerInput && batteryName && batteryName !== 'None') {
-    const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, video.powerInput), offset: -40 });
+  if (video && video.powerInput) {
+    const pPort = video.powerInput;
+    if (cameraCanPower(camName, pPort, video.powerDrawWatts)) {
+      const cOut = getCameraOutputType(camName, pPort);
+      edges.push({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), offset: -60 });
+    } else if (plateType && isSelectedPlateNative(camName)) {
+      edges.push({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), offset: -60 });
+    } else if (batteryName && batteryName !== 'None') {
+      const battMount = devices.batteries[batteryName]?.mount_type;
+      edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), offset: -60 });
+    }
   }
   if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
     const vi = (monitor.video?.inputs || monitor.videoInputs)[0];
     const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'monitor', label, offset: 40, angled: true });
+    edges.push({ from: 'camera', to: 'monitor', label, offset: 60, angled: true, labelSpacing: 5 });
   }
   if (cam && video && cam.videoOutputs?.length && (video.videoInputs?.length || video.video?.inputs?.length)) {
     const vi = (video.videoInputs || (video.video ? video.video.inputs : []))[0];
     const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'video', label, offset: 40, angled: true });
+    edges.push({ from: 'camera', to: 'video', label, offset: 60, angled: true, labelSpacing: 5 });
   }
 
   let chain = [];
@@ -2807,7 +2873,7 @@ function renderSetupDiagram() {
   const ROUTE_Y = baseY + NODE_H;
   const viewHeight = baseY + step + NODE_H / 2 + 20;
 
-  function computePath(fromId, toId, offset = 0) {
+  function computePath(fromId, toId, offset = 0, labelSpacing = 0) {
     const from = pos[fromId];
     const to = pos[toId];
     if (!from || !to) return {};
@@ -2829,12 +2895,12 @@ function renderSetupDiagram() {
         const viaY = ROUTE_Y + offset;
         path = `M ${fromEdgeX} ${sy} L ${fromEdgeX} ${viaY} L ${toEdgeX} ${viaY} L ${toEdgeX} ${ty}`;
         lx = (fromEdgeX + toEdgeX) / 2;
-        ly = viaY - 5;
+        ly = viaY - 5 - labelSpacing;
         ang = angleBetween;
       } else {
         path = `M ${fromEdgeX} ${sy + offset} L ${toEdgeX} ${ty + offset}`;
         lx = (fromEdgeX + toEdgeX) / 2;
-        ly = sy + offset - 10;
+        ly = sy + offset - 10 - labelSpacing;
         ang = angleBetween;
       }
     } else {
@@ -2843,7 +2909,7 @@ function renderSetupDiagram() {
       const viaY = (fromEdgeY + toEdgeY) / 2 + offset;
       path = `M ${sx} ${fromEdgeY} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${toEdgeY}`;
       lx = (sx + tx) / 2;
-      ly = viaY - 5;
+      ly = viaY - 5 - labelSpacing;
       ang = angleBetween;
     }
     return { path, labelX: lx, labelY: ly, angle: ang };
@@ -2854,7 +2920,7 @@ function renderSetupDiagram() {
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
-    const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.offset || 0);
+    const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.offset || 0, e.labelSpacing || 0);
     if (!path) return;
     svg += `<path class="edge-path" d="${path}" marker-end="url(#arrow)" />`;
     if (e.label) {

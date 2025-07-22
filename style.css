@@ -324,6 +324,11 @@ button:disabled {
 #setupDiagram {
   text-align: center;
   min-height: 440px;
+  padding-top: 0.5em; /* prevent heading overlap */
+}
+
+#diagramArea {
+  margin-top: 0.5em;
 }
 
 #setupDiagram svg {
