@@ -2687,6 +2687,7 @@ saveSetupBtn.addEventListener("click", () => {
     motors: motorSelects.map(sel => sel.value),
     controllers: controllerSelects.map(sel => sel.value),
     distance: distanceSelect.value,
+    batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value
   };
   let setups = loadSetups();
@@ -2739,18 +2740,23 @@ setupSelect.addEventListener("change", (event) => {
     });
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+    updateBatteryPlateVisibility();
+    updateBatteryOptions();
   } else {
     let setups = loadSetups();
     const setup = setups[setupName];
     if (setup) {
       setupNameInput.value = setupName;
       cameraSelect.value = setup.camera;
+      updateBatteryPlateVisibility();
+      batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
       setup.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
       setup.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
+      updateBatteryOptions();
     }
   }
   updateCalculations();
