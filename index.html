@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <a href="#mainContent" class="skip-link">Skip to content</a>
   <div id="langSelector">
     <select id="languageSelect">
       <option value="en">English</option>
@@ -18,7 +19,10 @@
       <option value="fr">Français</option>
     </select>
     <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
+    <button id="helpButton" aria-haspopup="dialog" aria-controls="helpDialog" title="Help">?</button>
   </div>
+
+  <main id="mainContent">
 
   <h1 id="mainTitle">Camera Power Consumption App</h1>
   <p id="tagline">Plan your camera setup and calculate power consumption &amp; battery life.</p>
@@ -141,14 +145,15 @@
     <p><strong><span id="totalCurrent144Label">Total Current (at 14.4V):</span></strong> <span id="totalCurrent144">0.00</span> A</p>
     <p><strong><span id="totalCurrent12Label">Total Current (at 12V):</span></strong> <span id="totalCurrent12">0.00</span> A</p>
     <p><strong><span id="batteryLifeLabel">Runtime (estimated):</span></strong> <span id="batteryLife">0.00</span> <span id="batteryLifeUnit">hrs</span></p>
-    <p id="pinWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite"></p>
-  <p id="dtapWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite"></p>
+    <p id="pinWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
+  <p id="dtapWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
   </section>
 
   <section id="setupDiagram">
     <h2 id="setupDiagramHeading">Setup Diagram</h2>
     <p id="compatWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite"></p>
-    <div id="diagramArea" role="img" aria-label="Setup diagram">
+    <p id="diagramDesc" class="visually-hidden">Visual representation of connected devices.</p>
+    <div id="diagramArea" role="img" aria-label="Setup diagram" aria-describedby="diagramDesc">
       <div id="diagramPopup" class="diagram-popup"></div>
     </div>
   </section>
@@ -466,6 +471,15 @@
       </div>
     </div>
   </section>
+  </main>
+
+  <div id="helpDialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1" hidden>
+    <div class="help-content">
+      <h2 id="helpTitle">How to use</h2>
+      <p>Choose devices, save your setup and review power warnings. Use the dark mode button for a darker theme.</p>
+      <button id="closeHelp">Close</button>
+    </div>
+  </div>
 
   <script src="data.js"></script>
   <script src="storage.js"></script>
