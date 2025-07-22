@@ -249,10 +249,10 @@ button:disabled {
 
 /* Arrange top-level device details in two columns */
 .device-details > .device-detail-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  column-count: 2;
   column-gap: 20px;
 }
+
 
 .device-detail-list {
   list-style: none;
@@ -268,6 +268,7 @@ button:disabled {
 
 .device-detail-list li {
   margin: 2px 0;
+  break-inside: avoid;
 }
 
 .device-detail-list strong {
