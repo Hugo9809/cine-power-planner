@@ -669,6 +669,16 @@ const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 const setupDiagramContainer = document.getElementById("diagramArea");
 
+// Icons for setup diagram nodes
+const diagramIcons = {
+  battery: "\uD83D\uDD0B", // 🔋
+  camera: "\uD83D\uDCF7", // 📷
+  monitor: "\uD83D\uDCBB", // 💻
+  video: "\uD83D\uDCE1", // 📡
+  motors: "\u2699\uFE0F", // ⚙️
+  controllers: "\uD83C\uDFAE" // 🎮
+};
+
 // Filter inputs
 const cameraFilterInput = document.getElementById("cameraFilter");
 const monitorFilterInput = document.getElementById("monitorFilter");
@@ -2652,16 +2662,22 @@ function renderSetupDiagram() {
     svg += `<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" marker-end="url(#arrow)" />`;
     if (e.label) {
       const tx = (from.x + to.x) / 2;
-      const ty = (from.y + to.y) / 2 - 5;
-      svg += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="10">${escapeHtml(e.label)}</text>`;
+      const ty = (from.y + to.y) / 2 - 10;
+      svg += `<text class="edge-label" x="${tx}" y="${ty}" text-anchor="middle">${escapeHtml(e.label)}</text>`;
     }
   });
 
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
-    svg += `<rect class="node-box" x="${p.x - 40}" y="${p.y - 15}" width="80" height="30" rx="4" ry="4" />`;
-    svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">${escapeHtml(p.label || id)}</text>`;
+    const h = 44;
+    svg += `<rect class="node-box" x="${p.x - 40}" y="${p.y - h / 2}" width="80" height="${h}" rx="4" ry="4" />`;
+    if (diagramIcons[id]) {
+      svg += `<text class="node-icon" x="${p.x}" y="${p.y - 6}" text-anchor="middle" dominant-baseline="middle">${diagramIcons[id]}</text>`;
+      svg += `<text x="${p.x}" y="${p.y + 10}" text-anchor="middle" font-size="10">${escapeHtml(p.label || id)}</text>`;
+    } else {
+      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">${escapeHtml(p.label || id)}</text>`;
+    }
   });
 
   svg += '</svg>';
