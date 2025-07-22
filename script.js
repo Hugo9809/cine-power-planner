@@ -3081,7 +3081,14 @@ function renderSetupDiagram() {
     if (opts.routeAround) {
       const topY = minY - NODE_H - 40;
       const outerX = maxXPos + NODE_W;
-      const path = `M ${sx} ${sy} L ${sx} ${topY} L ${outerX} ${topY} L ${outerX} ${ty} L ${tx} ${ty}`;
+      const startX = from.x + NODE_W / 2;
+      const endX = to.x + NODE_W / 2;
+      const path =
+        `M ${startX} ${sy} ` +
+        `L ${outerX} ${sy} ` +
+        `L ${outerX} ${topY} ` +
+        `L ${outerX} ${ty} ` +
+        `L ${endX} ${ty}`;
       const lx = outerX;
       const ly = topY - 8 - labelSpacing;
       return { path, labelX: lx, labelY: ly, angle: 0 };
