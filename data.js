@@ -387,7 +387,7 @@ let devices={
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
-            "mount": "adapted",
+            "mount": "native",
             "notes": ""
           },
           {
@@ -498,7 +498,7 @@ let devices={
         "batteryPlateSupport": [
           {
             "type": "V-Mount",
-            "mount": "adapted",
+            "mount": "native",
             "notes": ""
           },
           {
