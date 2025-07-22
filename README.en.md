@@ -94,6 +94,7 @@ storage.js       # LocalStorage helpers
 README.*.md      # Documentation in different languages
 ```
 Fonts are loaded via Google Fonts links in `index.html`.
+After the fonts are cached on first load, the application works entirely offline.
 
 ## 🛠️ Development
 1. Install dependencies:

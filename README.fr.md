@@ -94,6 +94,7 @@ storage.js       # Fonctions LocalStorage
 README.*.md      # Documentation en plusieurs langues
 ```
 Les polices sont chargées via Google Fonts dans `index.html`.
+Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
 
 ## 🛠️ Développement
 1. Installer les dépendances :
