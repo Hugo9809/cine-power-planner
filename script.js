@@ -3092,8 +3092,13 @@ function renderSetupDiagram() {
     edges.push({ ...edge, type });
   };
   const battMount = devices.batteries[batteryName]?.mount_type;
-  if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
-    pushEdge({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType), fromSide: 'right', toSide: 'left' }, 'power');
+  if (cam && batteryName && batteryName !== 'None') {
+    const plateType = getSelectedPlate();
+    const nativePlate = plateType && isSelectedPlateNative(camName);
+    const inLabel = nativePlate ? plateType : cam.power?.input?.portType;
+    if (inLabel) {
+      pushEdge({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, inLabel), fromSide: 'right', toSide: 'left' }, 'power');
+    }
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
