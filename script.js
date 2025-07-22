@@ -3618,8 +3618,17 @@ function generatePrintableOverview() {
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const t = texts[currentLang];
 
-    let deviceListHtml = '<ul class="device-overview">';
-    const processSelectForOverview = (selectElement, category, subcategory = null) => {
+    let deviceListHtml = '';
+    const sections = {};
+    const sectionOrder = [];
+    const addToSection = (key, itemHtml) => {
+        if (!sections[key]) {
+            sections[key] = [];
+            sectionOrder.push(key);
+        }
+        sections[key].push(itemHtml);
+    };
+    const processSelectForOverview = (selectElement, headingKey, category, subcategory = null) => {
         if (selectElement.value && selectElement.value !== "None") {
             const deviceKey = selectElement.value;
             const deviceName = selectElement.options[selectElement.selectedIndex].text;
@@ -3636,18 +3645,22 @@ function generatePrintableOverview() {
             if (data !== undefined && data !== null) {
                 details = formatDeviceDataHtml(data);
             }
-            deviceListHtml += `<li class="device-item"><strong>${safeName}</strong>${details}</li>`;
+            addToSection(headingKey, `<li class="device-item"><strong>${safeName}</strong>${details}</li>`);
         }
     };
 
-    processSelectForOverview(cameraSelect, 'cameras');
-    processSelectForOverview(monitorSelect, 'monitors');
-    processSelectForOverview(videoSelect, 'video'); // Original data.js uses 'video', not 'wirelessVideo'
-    processSelectForOverview(distanceSelect, 'fiz', 'distance');
-    motorSelects.forEach(sel => processSelectForOverview(sel, 'fiz', 'motors'));
-    controllerSelects.forEach(sel => processSelectForOverview(sel, 'fiz', 'controllers'));
-    processSelectForOverview(batterySelect, 'batteries'); // Handle battery separately for capacity
-    deviceListHtml += '</ul>';
+    processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
+    processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
+    processSelectForOverview(videoSelect, 'category_video', 'video'); // Original data.js uses 'video', not 'wirelessVideo'
+    processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');
+    motorSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_motors', 'fiz', 'motors'));
+    controllerSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_controllers', 'fiz', 'controllers'));
+    processSelectForOverview(batterySelect, 'category_batteries', 'batteries'); // Handle battery separately for capacity
+
+    sectionOrder.forEach(key => {
+        const heading = t[key] || key;
+        deviceListHtml += `<div class="device-category"><h3>${heading}</h3><ul class="device-overview">${sections[key].join('')}</ul></div>`;
+    });
 
     const resultsHtml = `
         <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent}</p>
@@ -3836,6 +3849,19 @@ function generatePrintableOverview() {
                 .device-item { margin: 5px 0; }
                 .device-data { margin-left: 15px; }
                 .device-data ul { list-style: disc; margin-left: 20px; }
+                .device-category {
+                  background: #f9f9f9;
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                  padding: 10px;
+                  margin-bottom: 10px;
+                }
+                .device-category h3 {
+                  margin-top: 0;
+                  margin-bottom: 5px;
+                  border-bottom: 1px solid #eee;
+                  padding-bottom: 3px;
+                }
                 /* Styles for Battery Comparison Bars in Overview */
                 .barContainer {
                   width: 100%;
@@ -3889,6 +3915,19 @@ function generatePrintableOverview() {
                     .device-item { margin: 5px 0; }
                     .device-data { margin-left: 15px; }
                     .device-data ul { list-style: disc; margin-left: 20px; }
+                    .device-category {
+                      background: #fff !important;
+                      border: 1px solid #ddd !important;
+                      border-radius: 5px;
+                      padding: 10px;
+                      margin-bottom: 10px;
+                    }
+                    .device-category h3 {
+                      margin-top: 0;
+                      margin-bottom: 5px;
+                      border-bottom: 1px solid #eee;
+                      padding-bottom: 3px;
+                    }
                     /* Styles for Battery Comparison Bars in Overview for Print */
                     .barContainer {
                       width: 100%;
