@@ -22,6 +22,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - Setups als JSON importieren und exportieren
 - Druckbare Übersicht für jedes gespeicherte Setup erstellen
 - Funktioniert komplett offline – Sprache, Dark Mode, Setups und Gerätedaten bleiben erhalten
+- Bei kompatiblen Kameras eine **B‑ oder V‑Mount-Platte** wählen; die Batterieliste passt sich automatisch an
 
 ### 📦 Gerätekategorien
 - **Kamera** (1)
@@ -30,6 +31,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - **FIZ-Motoren** (0–4)
 - **FIZ-Controller** (0–4)
 - **Distanzsensor** (0–1)
+- **Akkuschacht** (nur bei Kameras mit V‑ oder B‑Mount)
 - **V‑Mount Akku** (0–1)
 
 ### ⚙️ Leistungsberechnung
@@ -44,6 +46,10 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 ### 📊 Akkuvergleich (optional)
 - Laufzeiten aller Akkus vergleichen
 - Balkendiagramm zur schnellen Übersicht
+
+### 🖼 Setup-Diagramm
+- Visualisiert Strom- und Videosignale der gewählten Geräte
+- Warnt bei inkompatiblen FIZ-Marken
 
 ### 🔍 Suche & Filter
 - Alle Dropdowns und Listen lassen sich über ein Suchfeld filtern

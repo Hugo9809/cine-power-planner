@@ -22,6 +22,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Import and export setups as JSON
 - Generate a printable overview for any saved setup
 - Works fully offline – language, dark mode, setups and device data persist
+- Choose a **B‑Mount** or **V‑Mount** plate on supported cameras; the battery list adapts automatically
 
 ### 📦 Device Categories
 - **Camera** (1)
@@ -30,6 +31,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - **FIZ Motors** (0–4)
 - **FIZ Controllers** (0–4)
 - **Distance Sensor** (0–1)
+- **Battery Plate** (only on cameras that accept V‑ or B‑Mount)
 - **V‑Mount Battery** (0–1)
 
 ### ⚙️ Power Calculations
@@ -44,6 +46,10 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### 📊 Battery Comparison (optional)
 - Compare runtime estimates across all batteries
 - Visual bar graph for quick reference
+
+### 🖼 Setup Diagram
+- Visualize power and video connections for the selected devices
+- Warns when FIZ brands are incompatible
 
 ### 🔍 Search & Filtering
 - Filter every dropdown and device list with a search box

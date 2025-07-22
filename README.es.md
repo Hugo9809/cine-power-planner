@@ -22,6 +22,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 - Importar y exportar configuraciones en JSON
 - Generar un resumen imprimible de cualquier configuración guardada
 - Funciona totalmente sin conexión: idioma, modo oscuro, configuraciones y datos de dispositivos se conservan
+- En cámaras compatibles, elegir placa **B‑Mount** o **V‑Mount**; la lista de baterías se actualiza automáticamente
 
 ### 📦 Categorías de Dispositivos
 - **Cámara** (1)
@@ -30,6 +31,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 - **Motores FIZ** (0–4)
 - **Controles FIZ** (0–4)
 - **Sensor de distancia** (0–1)
+- **Placa de batería** (solo en cámaras con V‑ o B‑Mount)
 - **Batería V‑Mount** (0–1)
 
 ### ⚙️ Cálculos de Potencia
@@ -44,6 +46,10 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 ### 📊 Comparación de Baterías (opcional)
 - Comparar autonomías entre todas las baterías
 - Gráfico de barras para referencia rápida
+
+### 🖼 Diagrama de Configuración
+- Visualiza las conexiones de energía y video entre los dispositivos seleccionados
+- Avisa si se combinan marcas FIZ incompatibles
 
 ### 🔍 Búsqueda y Filtros
 - Filtrar cualquier lista o menú desplegable con un campo de búsqueda
