@@ -3011,10 +3011,10 @@ function renderSetupDiagram() {
     }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
     const camPort = cameraFizPort(camName, port);
-    pushEdge({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true }, 'fiz');
+    pushEdge({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true, fromSide: 'right', toSide: 'left' }, 'fiz');
   } else if (motorIds.length && cam) {
     const camPort = cameraFizPort(camName, motorFizPort(motors[0]));
-    pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true }, 'fiz');
+    pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true, fromSide: 'right', toSide: 'left' }, 'fiz');
   }
 
   for (let i = 0; i < chain.length - 1; i++) {
@@ -3094,18 +3094,22 @@ function renderSetupDiagram() {
       sy = from.y - NODE_H / 2;
     } else if (fromSide === 'bottom') {
       sy = from.y + NODE_H / 2;
+    } else if (fromSide === 'right') {
+      sx = from.x + NODE_W / 2;
     }
     if (toSide === 'left') {
       tx = to.x - NODE_W / 2;
     } else if (toSide === 'bottom') {
       ty = to.y + NODE_H / 2;
+    } else if (toSide === 'right') {
+      tx = to.x + NODE_W / 2;
     }
     const angleBetween = Math.atan2(ty - sy, tx - sx) * 180 / Math.PI;
     let path = "";
     let lx = 0, ly = 0, ang = angleBetween;
 
     if (fromSide || toSide) {
-      if (toSide === 'left') {
+      if (toSide === 'left' || toSide === 'right') {
         const midX = (sx + tx) / 2;
         const destAbove = ty < sy;
         const offsetDir = destAbove ? -1 : 1;
