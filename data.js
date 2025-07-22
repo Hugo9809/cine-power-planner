@@ -2492,7 +2492,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "+7 to +17 V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 37
         },
         "batteryPlateSupport": [
@@ -2595,7 +2595,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "+7 to +17 V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 45
         },
         "batteryPlateSupport": [
@@ -3102,7 +3102,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -3178,7 +3178,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -3254,7 +3254,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -3330,7 +3330,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -3406,7 +3406,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -3478,7 +3478,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 37
         },
         "batteryPlateSupport": [
@@ -3550,7 +3550,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 75
         },
         "batteryPlateSupport": [
@@ -3622,7 +3622,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -3694,7 +3694,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 50
         },
         "batteryPlateSupport": [
@@ -3766,7 +3766,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -3838,7 +3838,7 @@ let devices={
       "power": {
         "input": {
           "voltageRange": "11.5V-17V DC",
-          "portType": "2-pin DC-IN",
+          "portType": "LEMO 2-pin-IN",
           "powerDrawWatts": 60
         },
         "batteryPlateSupport": [
@@ -5311,7 +5311,7 @@ let devices={
       "powerDrawWatts": 22,
       "power": {
         "input": {
-          "portType": "NP-F / USB-C",
+          "portType": "DC Barrel / NP-F",
           "voltageRange": "7-16V"
         },
         "output": null
@@ -5342,7 +5342,7 @@ let devices={
       "powerDrawWatts": 16,
       "power": {
         "input": {
-          "portType": "NP-F / USB-C",
+          "portType": "DC Barrel / NP-F",
           "voltageRange": "7-16V"
         },
         "output": null
@@ -5373,7 +5373,7 @@ let devices={
       "powerDrawWatts": 16,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "4-pin Aviation / NP-F",
           "voltageRange": "7-24V"
         },
         "output": null
@@ -5407,7 +5407,7 @@ let devices={
       "powerDrawWatts": 12,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "4-pin Aviation / NP-F",
           "voltageRange": "7-24V"
         },
         "output": null
@@ -5438,7 +5438,7 @@ let devices={
       "powerDrawWatts": 15,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "4-pin Aviation / NP-F",
           "voltageRange": "7-24V"
         },
         "output": null
@@ -5473,7 +5473,7 @@ let devices={
       "powerDrawWatts": 7,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "4-pin Aviation / NP-F",
           "voltageRange": "7-24V"
         },
         "output": null
@@ -5501,7 +5501,7 @@ let devices={
       "powerDrawWatts": 22,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "DC Barrel / NP-F",
           "voltageRange": "6-16V"
         },
         "output": null
@@ -5532,7 +5532,7 @@ let devices={
       "powerDrawWatts": 22,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "DC Barrel / NP-F",
           "voltageRange": "6-16V"
         },
         "output": null
@@ -5563,7 +5563,7 @@ let devices={
       "powerDrawWatts": 7,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "DC Barrel / NP-F",
           "voltageRange": "6-16V"
         },
         "output": null
@@ -5590,7 +5590,7 @@ let devices={
       "powerDrawWatts": 7,
       "power": {
         "input": {
-          "portType": "Barrel 2.1mm / NP-F",
+          "portType": "DC Barrel / NP-F",
           "voltageRange": "6-16V"
         },
         "output": null
@@ -5752,7 +5752,7 @@ let devices={
   "video": {
     "Teradek Bolt 6 LT TX": {
       "powerDrawWatts": 9,
-      "powerInput": "2-pin DC (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5771,7 +5771,7 @@ let devices={
     },
     "Teradek Bolt 6 XT TX": {
       "powerDrawWatts": 20,
-      "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
+      "powerInput": "LEMO 2-pin (6-28V) / Gold-mount / V-mount",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5793,7 +5793,7 @@ let devices={
     },
     "Teradek Bolt 6 MAX TX": {
       "powerDrawWatts": 20,
-      "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
+      "powerInput": "LEMO 2-pin (6-28V) / Gold-mount / V-mount",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5815,7 +5815,7 @@ let devices={
     },
     "Teradek Bolt 4K LT TX": {
       "powerDrawWatts": 9,
-      "powerInput": "2-pin DC (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5834,7 +5834,7 @@ let devices={
     },
     "Teradek Bolt 4K XT TX": {
       "powerDrawWatts": 20,
-      "powerInput": "2-pin DC (6-28V) / Gold-mount / V-mount",
+      "powerInput": "LEMO 2-pin (6-28V) / Gold-mount / V-mount",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5856,7 +5856,7 @@ let devices={
     },
     "Teradek Bolt Pro 300 TX": {
       "powerDrawWatts": 6.5,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5875,7 +5875,7 @@ let devices={
     },
     "Teradek Bolt Pro 600 TX": {
       "powerDrawWatts": 8,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5894,7 +5894,7 @@ let devices={
     },
     "Teradek Bolt Pro 2000 TX": {
       "powerDrawWatts": 7.7,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5913,7 +5913,7 @@ let devices={
     },
     "Teradek Bolt Pro 500 TX": {
       "powerDrawWatts": 7.3,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5932,7 +5932,7 @@ let devices={
     },
     "Teradek Bolt Pro 750 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5951,7 +5951,7 @@ let devices={
     },
     "Teradek Bolt Pro 1000 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5970,7 +5970,7 @@ let devices={
     },
     "Teradek Bolt 3000 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -5989,7 +5989,7 @@ let devices={
     },
     "Teradek Bolt 10000 TX": {
       "powerDrawWatts": 7.5,
-      "powerInput": "2-pin Lemo (6-28V)",
+      "powerInput": "LEMO 2-pin (6-28V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -6090,7 +6090,7 @@ let devices={
     },
     "Vaxis Storm 800 TX": {
       "powerDrawWatts": 6,
-      "powerInput": "2-pin Lemo (6-18V)",
+      "powerInput": "LEMO 2-pin (6-18V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -6112,7 +6112,7 @@ let devices={
     },
     "Vaxis Storm 1000 TX": {
       "powerDrawWatts": 6.5,
-      "powerInput": "2-pin Lemo (6-18V)",
+      "powerInput": "LEMO 2-pin (6-18V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -6134,7 +6134,7 @@ let devices={
     },
     "Vaxis Storm 3000 TX": {
       "powerDrawWatts": 6,
-      "powerInput": "2-pin Lemo (6-18V)",
+      "powerInput": "LEMO 2-pin (6-18V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -6156,7 +6156,7 @@ let devices={
     },
     "Dwarf Connection LR1 TX": {
       "powerDrawWatts": 6,
-      "powerInput": "2-pin Lemo (6-18V)",
+      "powerInput": "LEMO 2-pin (6-18V)",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -6295,7 +6295,7 @@ let devices={
     },
     "Accsoon CineView Master 4K": {
       "powerDrawWatts": 15,
-      "powerInput": "2-pin Lemo (7.4-16.8V) / NP-F battery",
+      "powerInput": "LEMO 2-pin (7.4-16.8V) / NP-F battery",
       "videoInputs": [
         {
           "portType": "HDMI"
@@ -6684,15 +6684,15 @@ let devices={
       "ARRI ECM-1": {
         "powerDrawWatts": 84,
         "FIZ_connector": "6x Motor ports (proprietary Lemo), 1x Camera (7-pin Lemo), 1x Accessory (4-pin Lemo), 1x Ethernet, 1x USB",
-        "power_source": "External DC (2-pin Lemo or 4-pin XLR)",
+        "power_source": "External DC (LEMO 2-pin or 4-pin XLR)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (Ethernet, Camera cable to ALEXA 65/LF/Mini LF/35, USB) or Wireless (integrated Wi-Fi and ARRI White Radio)",
         "notes": "Extended Control Module for ALEXA 65/LF/Mini LF/35. Highly advanced and powerful lens and camera control. Provides 6 motor ports for advanced FIZ and iris/zoom control. Allows connection of multiple accessories and expands camera functionality. Enables advanced lens data functions and is often used for virtual production or complex setups."
       },
       "Redrock microRemote Basestation": {
         "powerDrawWatts": 54,
-        "FIZ_connector": "3x Motor ports (proprietary 4-pin), 1x USB, 1x AUX, 1x Power (2-pin Lemo)",
-        "power_source": "External DC (6-18V via 2-pin Lemo)",
+        "FIZ_connector": "3x Motor ports (proprietary 4-pin), 1x USB, 1x AUX, 1x Power (LEMO 2-pin)",
+        "power_source": "External DC (6-18V via LEMO 2-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
         "notes": "Central receiver and motor driver for Redrock MicroRemote systems. Supports up to 3 motors (Focus, Iris, Zoom). Automatic or manual calibration. Compatible with various Redrock hand units (e.g., fingerwheel, handheld controller). Provides a single channel for focus, with optional expansion for iris/zoom. Compact and lightweight."
@@ -6715,7 +6715,7 @@ let devices={
       },
       "Teradek RT Motion CTRL.3 Controller": {
         "powerDrawWatts": 15,
-        "FIZ_connector": "USB-C, 2-pin Lemo (power out), 4-pin Lemo (data to MDR)",
+        "FIZ_connector": "USB-C, LEMO 2-pin (power out), 4-pin Lemo (data to MDR)",
         "power_source": "Internal Battery (rechargeable) or External (USB-C)",
         "battery_type": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
         "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
