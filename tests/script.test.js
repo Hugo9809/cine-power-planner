@@ -1,3 +1,4 @@
+/* global texts */
 const fs = require('fs');
 const path = require('path');
 
@@ -69,11 +70,35 @@ describe('script.js functions', () => {
       sel.innerHTML = `<option value="${value}">${value}</option>`;
       sel.value = value;
     };
+    script.setLanguage('fr');
     addOpt('cameraSelect', 'BCam');
+    script.updateBatteryPlateVisibility();
+    script.updateBatteryOptions();
     addOpt('batterySelect', 'BBatt');
     script.updateCalculations();
-    expect(document.getElementById('totalCurrent144Label').textContent).toContain('33.6');
+    expect(document.getElementById('batteryLabel').textContent).toBe(texts.fr.batteryBMountLabel);
+    expect(document.getElementById('totalCurrent144Label').textContent).toBe(texts.fr.totalCurrent336Label);
+    expect(document.getElementById('totalCurrent12Label').textContent).toBe(texts.fr.totalCurrent216Label);
     expect(document.getElementById('dtapWarning').textContent).toBe('');
+  });
+
+  test('battery comparison method labels use translations', () => {
+    global.devices.batteries.PinsOnly = { capacity: 100, pinA: 5, dtapA: 1, mount_type: 'V-Mount' };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'PinsOnly');
+    script.setLanguage('es');
+    script.updateCalculations();
+    expect(document.getElementById('batteryComparison').innerHTML).toContain(texts.es.methodPinsOnly);
   });
 
   test('battery dropdown filters by mount type', () => {
@@ -332,5 +357,45 @@ describe('script.js functions', () => {
     sel.dispatchEvent(new Event('change'));
 
     expect(document.getElementById('batteryPlateSelect').value).toBe('B-Mount');
+  });
+
+  test('warning colors are applied in Spanish', () => {
+    global.devices.batteries.WarnBatt = { capacity: 50, pinA: 1, dtapA: 1, mount_type: 'V-Mount' };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'WarnBatt');
+    script.setLanguage('es');
+    script.updateCalculations();
+    expect(document.getElementById('pinWarning').style.color).toBe('red');
+    expect(document.getElementById('dtapWarning').style.color).toBe('red');
+  });
+
+  test('warning colors are applied in French', () => {
+    global.devices.batteries.NoteBatt = { capacity: 50, pinA: 2.3, dtapA: 2.3, mount_type: 'V-Mount' };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'NoteBatt');
+    script.setLanguage('fr');
+    script.updateCalculations();
+    expect(document.getElementById('pinWarning').style.color).toBe('orange');
+    expect(document.getElementById('dtapWarning').style.color).toBe('orange');
   });
 });

@@ -23,6 +23,7 @@ const texts = {
     videoLabel: "Wireless Video:",
     distanceLabel: "Distance Sensor:",
     batteryLabel: "V-Mount Battery:",
+    batteryBMountLabel: "B-Mount Battery:",
     batteryPlateLabel: "Battery Plate:",
 
     fizLegend: "FIZ (Follow Focus) Systems",
@@ -32,7 +33,18 @@ const texts = {
     totalPowerLabel: "Total Consumption:",
     totalCurrent144Label: "Total Current (at 14.4V):",
     totalCurrent12Label: "Total Current (at 12V):",
+    totalCurrent336Label: "Total Current (at 33.6V):",
+    totalCurrent216Label: "Total Current (at 21.6V):",
     batteryLifeLabel: "Runtime (estimated):",
+
+    methodPinsOnly: "pins only!",
+    methodPinsAndDTap: "both pins and D-Tap",
+    methodInfinite: "infinite",
+
+    warnPinExceededLevel: "warning",
+    warnPinNearLevel: "note",
+    warnDTapExceededLevel: "warning",
+    warnDTapNearLevel: "note",
 
     warnPinExceeded: "WARNING: current draw ({current}A at ~12V) exceeds the battery's main output rating ({max}A)!",
     warnPinNear: "Note: current draw is close to the main output limit ({current}A of {max}A).",
@@ -190,6 +202,7 @@ const texts = {
     videoLabel: "Video Inalámbrico:",
     distanceLabel: "Sensor de Distancia:",
     batteryLabel: "Batería V-Mount:",
+    batteryBMountLabel: "Batería B-Mount:",
     batteryPlateLabel: "Placa de Batería:",
 
     fizLegend: "Sistemas FIZ (Follow Focus)",
@@ -199,7 +212,18 @@ const texts = {
     totalPowerLabel: "Consumo Total:",
     totalCurrent144Label: "Corriente Total (a 14.4V):",
     totalCurrent12Label: "Corriente Total (a 12V):",
+    totalCurrent336Label: "Corriente Total (a 33.6V):",
+    totalCurrent216Label: "Corriente Total (a 21.6V):",
     batteryLifeLabel: "Autonomía (estimada):",
+
+    methodPinsOnly: "solo pines!",
+    methodPinsAndDTap: "pines y D-Tap",
+    methodInfinite: "infinito",
+
+    warnPinExceededLevel: "warning",
+    warnPinNearLevel: "note",
+    warnDTapExceededLevel: "warning",
+    warnDTapNearLevel: "note",
 
     warnPinExceeded: "ADVERTENCIA: la corriente ({current}A a ~12V) supera el límite principal ({max}A)!",
     warnPinNear: "Nota: la corriente está cerca del límite ({current}A de {max}A).",
@@ -355,6 +379,7 @@ const texts = {
     videoLabel: "Vidéo Sans Fil:",
     distanceLabel: "Capteur de Distance:",
     batteryLabel: "Batterie V-Mount:",
+    batteryBMountLabel: "Batterie B-Mount:",
     batteryPlateLabel: "Plaque Batterie:",
 
     fizLegend: "Systèmes FIZ",
@@ -364,7 +389,18 @@ const texts = {
     totalPowerLabel: "Consommation Totale:",
     totalCurrent144Label: "Courant Total (à 14,4V):",
     totalCurrent12Label: "Courant Total (à 12V):",
+    totalCurrent336Label: "Courant Total (à 33,6V):",
+    totalCurrent216Label: "Courant Total (à 21,6V):",
     batteryLifeLabel: "Autonomie (estimée):",
+
+    methodPinsOnly: "broches seulement!",
+    methodPinsAndDTap: "broches et D-Tap",
+    methodInfinite: "infini",
+
+    warnPinExceededLevel: "warning",
+    warnPinNearLevel: "note",
+    warnDTapExceededLevel: "warning",
+    warnDTapNearLevel: "note",
 
     warnPinExceeded: "ATTENTION: le courant ({current}A à ~12V) dépasse la limite principale ({max}A)!",
     warnPinNear: "Remarque : le courant est proche de la limite ({current}A sur {max}A).",
@@ -520,6 +556,7 @@ const texts = {
     videoLabel: "Videofunk:",
     distanceLabel: "Distanzmesser:",
     batteryLabel: "V-Mount Akku:",
+    batteryBMountLabel: "B-Mount Akku:",
     batteryPlateLabel: "Akkuschacht:",
 
     fizLegend: "FIZ (Follow Focus) Systeme",
@@ -529,7 +566,18 @@ const texts = {
     totalPowerLabel: "Gesamtverbrauch:",
     totalCurrent144Label: "Gesamtstrom (bei 14,4V):",
     totalCurrent12Label: "Gesamtstrom (bei 12V):",
+    totalCurrent336Label: "Gesamtstrom (bei 33,6V):",
+    totalCurrent216Label: "Gesamtstrom (bei 21,6V):",
     batteryLifeLabel: "Akkulaufzeit (geschätzt):",
+
+    methodPinsOnly: "nur Pins!",
+    methodPinsAndDTap: "Pins und D-Tap",
+    methodInfinite: "unendlich",
+
+    warnPinExceededLevel: "warning",
+    warnPinNearLevel: "note",
+    warnDTapExceededLevel: "warning",
+    warnDTapNearLevel: "note",
 
     warnPinExceeded: "WARNUNG: Strombedarf ({current}A bei ~12V) übersteigt die Haupt-Pin-Ausgangsleistung ({max}A) des Akkus!",
     warnPinNear: "Hinweis: Strombedarf kommt nahe an die Pin-Grenze ({current}A von {max}A).",
