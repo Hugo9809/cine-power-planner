@@ -2924,11 +2924,14 @@ function renderSetupDiagram() {
   let chain = [];
   const edges = [];
   const pushEdge = (edge, type) => {
-    const similar = edges.filter(e => e.from === edge.from && e.to === edge.to && e.type === type);
-    if (!('offset' in edge) && similar.length) {
-      const dir = similar.length % 2 === 0 ? 1 : -1;
-      const mult = Math.ceil(similar.length / 2);
-      edge.offset = mult * 20 * dir;
+    if (!('offset' in edge)) {
+      const idx = edges.length;
+      if (idx === 0) edge.offset = 0;
+      else {
+        const dir = idx % 2 === 1 ? 1 : -1;
+        const mult = Math.ceil(idx / 2);
+        edge.offset = mult * 20 * dir;
+      }
     }
     edges.push({ ...edge, type });
   };
@@ -3099,26 +3102,28 @@ function renderSetupDiagram() {
     const to = pos[toId];
     if (!from || !to) return {};
     let sx = from.x;
-    let sy = from.y;
+    let sy = from.y + NODE_H / 2;
     let tx = to.x;
-    let ty = to.y;
+    let ty = to.y - NODE_H / 2;
     const fromSide = opts.fromSide || null;
     const toSide = opts.toSide || null;
+
     if (opts.routeAround) {
       const topY = minY - NODE_H - 40;
       const outerX = maxXPos + NODE_W;
       const startX = from.x + NODE_W / 2;
       const endX = to.x + NODE_W / 2;
       const path =
-        `M ${startX} ${sy} ` +
-        `L ${outerX} ${sy} ` +
+        `M ${startX} ${from.y} ` +
+        `L ${outerX} ${from.y} ` +
         `L ${outerX} ${topY} ` +
-        `L ${outerX} ${ty} ` +
-        `L ${endX} ${ty}`;
+        `L ${outerX} ${to.y} ` +
+        `L ${endX} ${to.y}`;
       const lx = outerX;
       const ly = topY - 8 - labelSpacing;
       return { path, labelX: lx, labelY: ly, angle: 0 };
     }
+
     if (fromSide === 'bottom-left') {
       sx = from.x - NODE_W / 2;
       sy = from.y + NODE_H / 2;
@@ -3128,57 +3133,18 @@ function renderSetupDiagram() {
     } else if (fromSide === 'bottom') {
       sy = from.y + NODE_H / 2;
     }
+
     if (toSide === 'left') {
       tx = to.x - NODE_W / 2;
     } else if (toSide === 'bottom') {
       ty = to.y + NODE_H / 2;
     }
-    const angleBetween = Math.atan2(ty - sy, tx - sx) * 180 / Math.PI;
-    let path = "";
-    let lx = 0, ly = 0, ang = angleBetween;
 
-    if (fromSide || toSide) {
-      if (toSide === 'left') {
-        const viaY = ROUTE_Y + offset;
-        path = `M ${sx} ${sy} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${ty}`;
-        lx = (sx + tx) / 2;
-        ly = viaY - 8 - labelSpacing;
-        ang = 0;
-      } else {
-        const viaY = ROUTE_Y + offset;
-        path = `M ${sx} ${sy} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${ty}`;
-        lx = (sx + tx) / 2;
-        ly = viaY - 8 - labelSpacing;
-        ang = 0;
-      }
-    } else if (Math.abs(sy - ty) < 1) {
-      const minX = Math.min(sx, tx);
-      const maxX = Math.max(sx, tx);
-      const hasBetween = nodes.some(n => pos[n] && pos[n].y === sy && pos[n].x > minX && pos[n].x < maxX);
-      const fromEdgeX = sx + (tx > sx ? NODE_W / 2 : -NODE_W / 2);
-      const toEdgeX = tx - (tx > sx ? NODE_W / 2 : -NODE_W / 2);
-      if (hasBetween) {
-        const viaY = ROUTE_Y + offset;
-        path = `M ${fromEdgeX} ${sy} L ${fromEdgeX} ${viaY} L ${toEdgeX} ${viaY} L ${toEdgeX} ${ty}`;
-        lx = (fromEdgeX + toEdgeX) / 2;
-        ly = viaY - 8 - labelSpacing;
-        ang = angleBetween;
-      } else {
-        path = `M ${fromEdgeX} ${sy + offset} L ${toEdgeX} ${ty + offset}`;
-        lx = (fromEdgeX + toEdgeX) / 2;
-        ly = sy + offset - 8 - labelSpacing;
-        ang = angleBetween;
-      }
-    } else {
-      const fromEdgeY = sy + (ty > sy ? NODE_H / 2 : -NODE_H / 2);
-      const toEdgeY = ty - (ty > sy ? NODE_H / 2 : -NODE_H / 2);
-      const viaY = (fromEdgeY + toEdgeY) / 2 + offset;
-      path = `M ${sx} ${fromEdgeY} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${toEdgeY}`;
-      lx = (sx + tx) / 2;
-      ly = viaY - 8 - labelSpacing;
-      ang = angleBetween;
-    }
-    return { path, labelX: lx, labelY: ly, angle: ang };
+    const viaY = ROUTE_Y + offset;
+    const path = `M ${sx} ${sy} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${ty}`;
+    const lx = (sx + tx) / 2;
+    const ly = viaY - 8 - labelSpacing;
+    return { path, labelX: lx, labelY: ly, angle: 0 };
   }
 
   function wrapLabel(text, maxLen = 16) {
