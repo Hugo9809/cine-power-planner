@@ -416,7 +416,7 @@ describe('script.js functions', () => {
       video: {},
       fiz: {
         motors: { MotorA: { powerDrawWatts: 2, internalController: false } },
-        controllers: { 'Arri OCU-1': { powerDrawWatts: 1, FIZ_connector: 'LBUS (4-pin Lemo)' } },
+        controllers: { 'Arri OCU-1': { powerDrawWatts: 1, fizConnector: 'LBUS (4-pin Lemo)' } },
         distance: {}
       },
       batteries: {}

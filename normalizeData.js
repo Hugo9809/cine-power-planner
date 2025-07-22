@@ -64,14 +64,23 @@ function unifyFizConnectorTypes() {
   }
 
   for (const motor of Object.values(devices.fiz?.motors || {})) {
-    if (motor.connector && map[motor.connector]) {
-      motor.connector = map[motor.connector];
+    if (motor.fizConnector && map[motor.fizConnector]) {
+      motor.fizConnector = map[motor.fizConnector];
+    } else if (motor.connector && map[motor.connector]) {
+      motor.fizConnector = map[motor.connector];
+      delete motor.connector;
     }
   }
 
   for (const controller of Object.values(devices.fiz?.controllers || {})) {
-    if (controller.FIZ_connector && map[controller.FIZ_connector]) {
-      controller.FIZ_connector = map[controller.FIZ_connector];
+    if (controller.fizConnector && map[controller.fizConnector]) {
+      controller.fizConnector = map[controller.fizConnector];
+    } else if (controller.connector && map[controller.connector]) {
+      controller.fizConnector = map[controller.connector];
+      delete controller.connector;
+    } else if (controller.FIZ_connector && map[controller.FIZ_connector]) {
+      controller.fizConnector = map[controller.FIZ_connector];
+      delete controller.FIZ_connector;
     }
   }
 }
