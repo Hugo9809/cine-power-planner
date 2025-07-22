@@ -8,6 +8,8 @@ describe('script.js functions', () => {
   beforeEach(() => {
     jest.resetModules();
 
+    global.alert = jest.fn();
+
     const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
     const body = html.split('<body>')[1].split('</body>')[0];
     document.body.innerHTML = body;
@@ -34,6 +36,8 @@ describe('script.js functions', () => {
 
     require('../translations.js');
     script = require('../script.js');
+    script.setLanguage('en');
+    script.setLanguage('en');
   });
 
   test('updateCalculations computes totals and runtime', () => {
@@ -397,6 +401,48 @@ describe('script.js functions', () => {
     script.updateCalculations();
     expect(document.getElementById('pinWarning').style.color).toBe('orange');
     expect(document.getElementById('dtapWarning').style.color).toBe('orange');
+  });
+
+  test('missing FIZ controller shows error', () => {
+    jest.resetModules();
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+
+    global.devices = {
+      cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'Hirose 12-pin' }] } },
+      monitors: {},
+      video: {},
+      fiz: {
+        motors: { MotorA: { powerDrawWatts: 2, internalController: false } },
+        controllers: { 'Arri OCU-1': { powerDrawWatts: 1, FIZ_connector: 'LBUS (4-pin Lemo)' } },
+        distance: {}
+      },
+      batteries: {}
+    };
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+
+    require('../translations.js');
+    script = require('../script.js');
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamX');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'Arri OCU-1');
+    script.updateCalculations();
+    expect(document.getElementById('compatWarning').textContent).toBe(texts.en.missingFIZControllerWarning);
   });
 
   test('renderSetupDiagram runs without errors', () => {

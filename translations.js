@@ -54,6 +54,7 @@ const texts = {
     warnDTapNear: "Note: current draw uses over 80% of the D-Tap capacity ({current}A of {max}A).",
 
     incompatibleFIZWarning: "WARNING: incompatible FIZ brands selected.",
+    missingFIZControllerWarning: "ERROR: FIZ motors require a controller with LBUS/CAM connection.",
 
     category_cameras: "Cameras",
     category_monitors: "Monitors",
@@ -237,6 +238,7 @@ const texts = {
     warnDTapNear: "Nota: la corriente usa más del 80% de la capacidad D-Tap ({current}A de {max}A).",
 
     incompatibleFIZWarning: "ADVERTENCIA: se seleccionaron marcas FIZ incompatibles.",
+    missingFIZControllerWarning: "ERROR: los motores FIZ requieren un controlador con LBUS/CAM.",
 
     category_cameras: "Cámaras",
     category_monitors: "Monitores",
@@ -418,6 +420,7 @@ const texts = {
     warnDTapNear: "Remarque : le courant utilise plus de 80% de la capacité D-Tap ({current}A sur {max}A).",
 
     incompatibleFIZWarning: "ATTENTION : des marques FIZ incompatibles sont sélectionnées.",
+    missingFIZControllerWarning: "ERREUR : les moteurs FIZ nécessitent un contrôleur LBUS/CAM.",
 
     category_cameras: "Caméras",
     category_monitors: "Moniteurs",
@@ -599,6 +602,7 @@ const texts = {
     warnDTapNear: "Hinweis: Strombedarf nutzt über 80% der D-Tap Kapazität ({current}A von {max}A).",
 
     incompatibleFIZWarning: "WARNUNG: Inkompatible FIZ-Marken ausgewählt.",
+    missingFIZControllerWarning: "FEHLER: FIZ-Motoren benötigen einen Controller mit LBUS/CAM.",
 
     category_cameras: "Kameras",
     category_monitors: "Monitore",
