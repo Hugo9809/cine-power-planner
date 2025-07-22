@@ -6328,7 +6328,7 @@ let devices={
     "motors": {
       "None": {
         "powerDrawWatts": 0,
-        "connector": "",
+        "fizConnector": "",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
@@ -6337,7 +6337,7 @@ let devices={
       },
       "Tilta Nucleus M": {
         "powerDrawWatts": 20,
-        "connector": "LEMO 7-pin",
+        "fizConnector": "LEMO 7-pin",
         "internalController": true,
         "torqueNm": 2.5,
         "gearTypes": [
@@ -6351,7 +6351,7 @@ let devices={
       },
       "Tilta Nucleus M II": {
         "powerDrawWatts": 50,
-        "connector": "LEMO 7-pin",
+        "fizConnector": "LEMO 7-pin",
         "internalController": true,
         "torqueNm": null,
         "gearTypes": [
@@ -6364,7 +6364,7 @@ let devices={
       },
       "Tilta Nucleus Nano (Original)": {
         "powerDrawWatts": 5,
-        "connector": "Micro-USB",
+        "fizConnector": "Micro-USB",
         "internalController": true,
         "torqueNm": 1,
         "gearTypes": [
@@ -6374,7 +6374,7 @@ let devices={
       },
       "Tilta Nucleus Nano II": {
         "powerDrawWatts": 37,
-        "connector": "USB-C",
+        "fizConnector": "USB-C",
         "internalController": true,
         "torqueNm": null,
         "gearTypes": [
@@ -6386,7 +6386,7 @@ let devices={
       },
       "Arri Cforce Mini": {
         "powerDrawWatts": 20,
-        "connector": "LBUS (LEMO 4-pin)",
+        "fizConnector": "LBUS (LEMO 4-pin)",
         "internalController": false,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6401,7 +6401,7 @@ let devices={
       },
       "Arri Cforce Plus": {
         "powerDrawWatts": 32,
-        "connector": "LBUS (LEMO 4-pin)",
+        "fizConnector": "LBUS (LEMO 4-pin)",
         "internalController": false,
         "torqueNm": 1,
         "gearTypes": [
@@ -6416,7 +6416,7 @@ let devices={
       },
       "Arri CLM-4 (K2.72114.0)": {
         "powerDrawWatts": 12,
-        "connector": "LEMO 7-pin (LCS)",
+        "fizConnector": "LEMO 7-pin (LCS)",
         "internalController": false,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6428,7 +6428,7 @@ let devices={
       },
       "Arri CLM-5 (K2.0006361)": {
         "powerDrawWatts": 24,
-        "connector": "LEMO 7-pin (LCS)",
+        "fizConnector": "LEMO 7-pin (LCS)",
         "internalController": false,
         "torqueNm": 1.2,
         "gearTypes": [
@@ -6440,7 +6440,7 @@ let devices={
       },
       "Arri cforce mini RF (KK.0040345)": {
         "powerDrawWatts": 20,
-        "connector": "LBUS (LEMO 4-pin), CAM (LEMO 7-pin)",
+        "fizConnector": "LBUS (LEMO 4-pin), CAM (LEMO 7-pin)",
         "internalController": true,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6455,7 +6455,7 @@ let devices={
       },
       "Teradek RT Motion FIZ (MOTR.S)": {
         "powerDrawWatts": 24,
-        "connector": "LEMO 4-pin 0B",
+        "fizConnector": "LEMO 4-pin 0B",
         "internalController": false,
         "torqueNm": 0.95,
         "gearTypes": [
@@ -6469,7 +6469,7 @@ let devices={
       },
       "Preston DM1X": {
         "powerDrawWatts": 32.4,
-        "connector": "LEMO 4-pin",
+        "fizConnector": "LEMO 4-pin",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
@@ -6481,7 +6481,7 @@ let devices={
       },
       "Preston DM2": {
         "powerDrawWatts": 22.2,
-        "connector": "LEMO 4-pin",
+        "fizConnector": "LEMO 4-pin",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
@@ -6493,7 +6493,7 @@ let devices={
       },
       "Preston DM2X": {
         "powerDrawWatts": 22.2,
-        "connector": "LEMO 4-pin",
+        "fizConnector": "LEMO 4-pin",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
@@ -6505,7 +6505,7 @@ let devices={
       },
       "Preston DM-A": {
         "powerDrawWatts": 18,
-        "connector": "LEMO 4-pin",
+        "fizConnector": "LEMO 4-pin",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
@@ -6515,7 +6515,7 @@ let devices={
       },
       "Preston DM-C": {
         "powerDrawWatts": 18,
-        "connector": "LEMO 4-pin",
+        "fizConnector": "LEMO 4-pin",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
@@ -6525,7 +6525,7 @@ let devices={
       },
       "Chrosziel CDM-100 Digital": {
         "powerDrawWatts": 12,
-        "connector": "LEMO 7-pin 1B",
+        "fizConnector": "LEMO 7-pin 1B",
         "internalController": false,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6539,7 +6539,7 @@ let devices={
       },
       "Chrosziel CDM-M (Universal Zoom Servo Drive)": {
         "powerDrawWatts": 4.2,
-        "connector": "LEMO 5-pin 0B",
+        "fizConnector": "LEMO 5-pin 0B",
         "internalController": false,
         "torqueNm": 0.5,
         "gearTypes": [
@@ -6552,7 +6552,7 @@ let devices={
       },
       "DJI Focus (Original)": {
         "powerDrawWatts": 21.6,
-        "connector": "USB-C",
+        "fizConnector": "USB-C",
         "internalController": true,
         "torqueNm": 0.35,
         "gearTypes": [
@@ -6564,7 +6564,7 @@ let devices={
       },
       "DJI RS Focus (2022)": {
         "powerDrawWatts": 22.5,
-        "connector": "USB-C",
+        "fizConnector": "USB-C",
         "internalController": true,
         "torqueNm": 1,
         "gearTypes": [
@@ -6576,7 +6576,7 @@ let devices={
       },
       "DJI Focus Pro Motor": {
         "powerDrawWatts": 24,
-        "connector": "USB-C",
+        "fizConnector": "USB-C",
         "internalController": true,
         "torqueNm": 1.2,
         "gearTypes": [
@@ -6586,7 +6586,7 @@ let devices={
       },
       "Cmotion cPRO": {
         "powerDrawWatts": 24,
-        "connector": "LEMO 4-pin",
+        "fizConnector": "LEMO 4-pin",
         "internalController": true,
         "torqueNm": 1.2,
         "gearTypes": [
@@ -6599,7 +6599,7 @@ let devices={
       },
       "SmallRig Wireless Follow Focus": {
         "powerDrawWatts": 12,
-        "connector": "USB-C",
+        "fizConnector": "USB-C",
         "internalController": true,
         "torqueNm": 0.43,
         "gearTypes": [
@@ -6609,7 +6609,7 @@ let devices={
       },
       "Redrock MicroRemote Torque": {
         "powerDrawWatts": 60,
-        "connector": "4-pin proprietary",
+        "fizConnector": "4-pin proprietary",
         "internalController": false,
         "torqueNm": null,
         "gearTypes": [
@@ -6621,7 +6621,7 @@ let devices={
     "controllers": {
       "None": {
         "powerDrawWatts": 0,
-        "FIZ_connector": null,
+        "fizConnector": null,
         "power_source": "N/A",
         "battery_type": "N/A",
         "connectivity": "N/A",
@@ -6629,7 +6629,7 @@ let devices={
       },
       "Arri OCU-1": {
         "powerDrawWatts": 1.32,
-        "FIZ_connector": "LBUS (LEMO 4-pin)",
+        "fizConnector": "LBUS (LEMO 4-pin)",
         "power_source": "External (via LBUS)",
         "battery_type": "N/A",
         "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
@@ -6637,7 +6637,7 @@ let devices={
       },
       "Arri ZMU-4 (body only, wired)": {
         "powerDrawWatts": 1,
-        "FIZ_connector": "LBUS (LEMO 4-pin for motors), CAM (LEMO 7-pin for camera control)",
+        "fizConnector": "LBUS (LEMO 4-pin for motors), CAM (LEMO 7-pin for camera control)",
         "power_source": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
         "battery_type": "Sony NP-F550/750 compatible, ARRI LBP-3500",
         "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
@@ -6645,7 +6645,7 @@ let devices={
       },
       "Arri UMC-4": {
         "powerDrawWatts": 1.68,
-        "FIZ_connector": "2x LBUS (LEMO 4-pin for motors), 2x SERIAL (LEMO 4-pin), CAM (LEMO 7-pin), EXT (6-pin/16-pin depending on camera)",
+        "fizConnector": "2x LBUS (LEMO 4-pin for motors), 2x SERIAL (LEMO 4-pin), CAM (LEMO 7-pin), EXT (6-pin/16-pin depending on camera)",
         "power_source": "External DC (via CAM or LBUS chain)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary ARRI radio system, works with WCU-4, SXU-1, Master Grips, cmotion pan-bar zoom), Wired (LBUS, CAM, SERIAL)",
@@ -6653,7 +6653,7 @@ let devices={
       },
       "Arri RIA-1": {
         "powerDrawWatts": 2.5,
-        "FIZ_connector": "2x LBUS (LEMO 4-pin), 1x CAM (LEMO 7-pin), 1x SERIAL (LEMO 4-pin)",
+        "fizConnector": "2x LBUS (LEMO 4-pin), 1x CAM (LEMO 7-pin), 1x SERIAL (LEMO 4-pin)",
         "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
         "battery_type": "N/A (no internal battery, draws power from camera or external source)",
         "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
@@ -6661,7 +6661,7 @@ let devices={
       },
       "Arri Master Grip (single unit)": {
         "powerDrawWatts": 0.72,
-        "FIZ_connector": "2x LBUS (LEMO 4-pin)",
+        "fizConnector": "2x LBUS (LEMO 4-pin)",
         "power_source": "External (12-34VDC via LBUS)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
@@ -6669,7 +6669,7 @@ let devices={
       },
       "Tilta Nucleus-M Hand Grip (single)": {
         "powerDrawWatts": 0.5,
-        "FIZ_connector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
+        "fizConnector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
         "power_source": "Internal Battery",
         "battery_type": "2x 18650 Li-ion (per grip, not included)",
         "connectivity": "Wireless (proprietary 2.4GHz RF, 1000ft/300m range)",
@@ -6677,7 +6677,7 @@ let devices={
       },
       "Tilta Nucleus-M II Handle (single)": {
         "powerDrawWatts": 0.5,
-        "FIZ_connector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
+        "fizConnector": "Proprietary 7-pin (to motor) / ARRI rosette or gimbal bar adapter",
         "power_source": "Internal Battery",
         "battery_type": "NP-F550 (single per handle)",
         "connectivity": "Wireless (proprietary 2.4GHz RF)",
@@ -6685,7 +6685,7 @@ let devices={
       },
       "DJI Focus Pro Handle": {
         "powerDrawWatts": 1,
-        "FIZ_connector": "USB-C",
+        "fizConnector": "USB-C",
         "power_source": "Internal Battery",
         "battery_type": "Built-in rechargeable",
         "connectivity": "Wireless (DJI proprietary)",
@@ -6693,7 +6693,7 @@ let devices={
       },
       "Preston MDR4": {
         "powerDrawWatts": 48,
-        "FIZ_connector": "2x Motor Ports (proprietary LEMO 7-pin), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)",
+        "fizConnector": "2x Motor Ports (proprietary LEMO 7-pin), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)",
         "power_source": "External DC (4-pin XLR or D-Tap)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
@@ -6701,7 +6701,7 @@ let devices={
       },
       "ARRI ECM-1": {
         "powerDrawWatts": 84,
-        "FIZ_connector": "6x Motor ports (proprietary Lemo), 1x Camera (LEMO 7-pin), 1x Accessory (LEMO 4-pin), 1x Ethernet, 1x USB",
+        "fizConnector": "6x Motor ports (proprietary Lemo), 1x Camera (LEMO 7-pin), 1x Accessory (LEMO 4-pin), 1x Ethernet, 1x USB",
         "power_source": "External DC (LEMO 2-pin or 4-pin XLR)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (Ethernet, Camera cable to ALEXA 65/LF/Mini LF/35, USB) or Wireless (integrated Wi-Fi and ARRI White Radio)",
@@ -6709,7 +6709,7 @@ let devices={
       },
       "Redrock microRemote Basestation": {
         "powerDrawWatts": 54,
-        "FIZ_connector": "3x Motor ports (proprietary 4-pin), 1x USB, 1x AUX, 1x Power (LEMO 2-pin)",
+        "fizConnector": "3x Motor ports (proprietary 4-pin), 1x USB, 1x AUX, 1x Power (LEMO 2-pin)",
         "power_source": "External DC (6-18V via LEMO 2-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
@@ -6717,7 +6717,7 @@ let devices={
       },
       "ARRI LBUS Distributor (LBS-1)": {
         "powerDrawWatts": 0.24,
-        "FIZ_connector": "Multiple LBUS ports (LEMO 4-pin)",
+        "fizConnector": "Multiple LBUS ports (LEMO 4-pin)",
         "power_source": "External (via any LBUS connection)",
         "battery_type": "N/A (passive device)",
         "connectivity": "Wired (LBUS)",
@@ -6725,7 +6725,7 @@ let devices={
       },
       "Cmotion compact LCS receiver": {
         "powerDrawWatts": 20,
-        "FIZ_connector": "3x Motor ports (LEMO 4-pin), 1x Camera (LEMO 7-pin), 1x EXT (LEMO 4-pin)",
+        "fizConnector": "3x Motor ports (LEMO 4-pin), 1x Camera (LEMO 7-pin), 1x EXT (LEMO 4-pin)",
         "power_source": "External DC (10-34V via Camera port or EXT port)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary cmotion RF, 2.4 GHz FHSS, up to 150m/500ft range) or Wired (CAM, EXT)",
@@ -6733,7 +6733,7 @@ let devices={
       },
       "Teradek RT Motion CTRL.3 Controller": {
         "powerDrawWatts": 15,
-        "FIZ_connector": "USB-C, LEMO 2-pin (power out), LEMO 4-pin (data to MDR)",
+        "fizConnector": "USB-C, LEMO 2-pin (power out), LEMO 4-pin (data to MDR)",
         "power_source": "Internal Battery (rechargeable) or External (USB-C)",
         "battery_type": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
         "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
