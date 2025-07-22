@@ -3208,7 +3208,17 @@ function renderSetupDiagram() {
     if (fizNeedsPower(name)) {
       const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
       const label = formatConnLabel(fizPort(name), 'D-Tap');
-      if (powerSrc) pushEdge({ from: powerSrc, to: mainFizId, label, fromSide: 'bottom-left', toSide: 'bottom' }, 'power');
+      const skipBatt = isArri(camName) && isArriOrCmotion(name);
+      if (powerSrc && !skipBatt) {
+        pushEdge({
+          from: powerSrc,
+          to: mainFizId,
+          label,
+          fromSide: 'bottom-left',
+          toSide: 'bottom',
+          route: 'down-right-up'
+        }, 'power');
+      }
     }
   }
   if (nodes.length === 0) {
@@ -3232,15 +3242,22 @@ function renderSetupDiagram() {
   function computePath(fromId, toId, labelSpacing = 0, opts = {}) {
     const from = connectorPos(fromId, opts.fromSide);
     const to = connectorPos(toId, opts.toSide);
-    const path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
-    const lx = (from.x + to.x) / 2;
-    const ly = (from.y + to.y) / 2 - 8 - labelSpacing;
-    const dx = to.x - from.x;
-    const dy = to.y - from.y;
-    // Rotate labels so they run parallel to the connection line
-    // without forcing them to stay upright. This keeps the text
-    // aligned with the line direction regardless of orientation.
-    let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    let path, lx, ly, angle = 0;
+
+    if (opts.route === 'down-right-up') {
+      const bottomY = maxY + NODE_H;
+      path = `M ${from.x} ${from.y} V ${bottomY} H ${to.x} V ${to.y}`;
+      lx = (from.x + to.x) / 2;
+      ly = bottomY - 8 - labelSpacing;
+    } else {
+      path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+      lx = (from.x + to.x) / 2;
+      ly = (from.y + to.y) / 2 - 8 - labelSpacing;
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    }
+
     return { path, labelX: lx, labelY: ly, angle };
   }
 
