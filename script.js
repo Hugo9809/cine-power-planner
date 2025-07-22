@@ -25,6 +25,67 @@ if (window.defaultDevices === undefined) {
   unifyDevices(window.defaultDevices);
 }
 
+let useRemoteStorage = false;
+let remoteData = {};
+
+async function fetchRemote() {
+  const res = await fetch('/api/data', { credentials: 'include' });
+  if (!res.ok) throw new Error('not logged in');
+  return await res.json();
+}
+
+async function pushRemote(data) {
+  await fetch('/api/data', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data)
+  });
+}
+
+async function checkLogin() {
+  try {
+    remoteData = await fetchRemote();
+    useRemoteStorage = true;
+    if (remoteData.devices) {
+      devices = remoteData.devices;
+      unifyDevices(devices);
+      storeDevices(devices);
+    }
+    if (remoteData.setups) {
+      saveSetups(remoteData.setups);
+    }
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = '';
+  } catch (e) {
+    console.warn('Login check failed', e);
+    useRemoteStorage = false;
+    if (loginBtn) loginBtn.style.display = '';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+  }
+}
+
+function getSetups() {
+  return useRemoteStorage ? (remoteData.setups || {}) : loadSetups();
+}
+
+function storeSetups(setups) {
+  if (useRemoteStorage) {
+    remoteData.setups = setups;
+    pushRemote(remoteData);
+  } else {
+    saveSetups(setups);
+  }
+}
+
+function storeDevices(data) {
+  if (useRemoteStorage) {
+    remoteData.devices = data;
+    pushRemote(remoteData);
+  }
+  saveDeviceData(data);
+}
+
 function normalizeVideoType(type) {
   if (!type) return '';
   const t = String(type).toLowerCase();
@@ -127,7 +188,7 @@ function normalizePowerPortType(type) {
 
 
 // Load any saved device data from localStorage
-const storedDevices = loadDeviceData();
+let storedDevices = loadDeviceData();
 if (storedDevices) {
   devices = storedDevices;
 }
@@ -601,6 +662,8 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const languageSelect  = document.getElementById("languageSelect");
 const darkModeToggle  = document.getElementById("darkModeToggle");
+const loginBtn        = document.getElementById("loginBtn");
+const logoutBtn       = document.getElementById("logoutBtn");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
@@ -2796,9 +2859,9 @@ saveSetupBtn.addEventListener("click", () => {
     batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value
   };
-  let setups = loadSetups();
+  let setups = getSetups();
   setups[setupName] = currentSetup;
-  saveSetups(setups);
+  storeSetups(setups);
   populateSetupSelect();
   setupSelect.value = setupName; // Select the newly saved setup
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
@@ -2811,9 +2874,9 @@ deleteSetupBtn.addEventListener("click", () => {
     return;
   }
   if (confirm(texts[currentLang].confirmDeleteSetup.replace("{name}", setupName))) {
-    let setups = loadSetups();
+    let setups = getSetups();
     delete setups[setupName];
-    saveSetups(setups);
+    storeSetups(setups);
     populateSetupSelect();
     setupNameInput.value = ""; // Clear setup name input
     // Reset dropdowns to "None" or first option after deleting current setup
@@ -2849,7 +2912,7 @@ setupSelect.addEventListener("change", (event) => {
     updateBatteryPlateVisibility();
     updateBatteryOptions();
   } else {
-    let setups = loadSetups();
+    let setups = getSetups();
     const setup = setups[setupName];
     if (setup) {
       setupNameInput.value = setupName;
@@ -2870,7 +2933,7 @@ setupSelect.addEventListener("change", (event) => {
 
 
 function populateSetupSelect() {
-  const setups = loadSetups();
+  const setups = getSetups();
   setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
   for (const name in setups) {
     const opt = document.createElement("option");
@@ -3065,7 +3128,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       } else {
         delete devices[categoryKey][name];
       }
-      saveDeviceData(devices); // Save changes to localStorage
+      storeDevices(devices);
       viewfinderTypeOptions = getAllViewfinderTypes();
       viewfinderConnectorOptions = getAllViewfinderConnectors();
       refreshDeviceLists();
@@ -3427,7 +3490,7 @@ addDeviceBtn.addEventListener("click", () => {
   // After adding/updating, reset form and refresh lists
   resetDeviceForm();
 
-  saveDeviceData(devices); // Save changes to localStorage
+  storeDevices(devices);
   viewfinderTypeOptions = getAllViewfinderTypes();
   viewfinderConnectorOptions = getAllViewfinderConnectors();
   updatePlateTypeOptions();
@@ -3534,7 +3597,7 @@ importFileInput.addEventListener("change", (event) => {
           Object.prototype.hasOwnProperty.call(importedData.fiz,'controllers') &&
           Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
         devices = importedData; // Overwrite current devices with imported data
-        saveDeviceData(devices); // Persist to local storage
+        storeDevices(devices);
         viewfinderTypeOptions = getAllViewfinderTypes();
         viewfinderConnectorOptions = getAllViewfinderConnectors();
         refreshDeviceLists(); // Update device manager lists
@@ -3589,7 +3652,7 @@ importFileInput.addEventListener("change", (event) => {
 
 // Export all saved setups to a JSON file
 exportSetupsBtn.addEventListener('click', () => {
-    const setupsToExport = loadSetups(); // Assuming loadSetups is from storage.js
+    const setupsToExport = getSetups();
     if (Object.keys(setupsToExport).length === 0) {
         alert(texts[currentLang].alertNoSetupsToExport);
         return;
@@ -3622,7 +3685,7 @@ importSetupsInput.addEventListener('change', (event) => {
             const importedSetups = JSON.parse(e.target.result);
             // Basic validation: must be a non-null object
             if (importedSetups && typeof importedSetups === 'object' && !Array.isArray(importedSetups)) {
-                saveSetups(importedSetups); // Save to localStorage (assuming saveSetups is from storage.js)
+                storeSetups(importedSetups);
                 populateSetupSelect(); // Refresh dropdown
                 alert(texts[currentLang].alertImportSetupsSuccess.replace("{num_setups}", Object.keys(importedSetups).length));
                 // Reset form to "-- New Setup --" by clearing selection and
@@ -4146,16 +4209,21 @@ if (darkModeToggle) {
 // Initial calculation and language set after DOM is ready
 // Initialize immediately if DOM is already loaded (e.g. when scripts are
 // injected after `DOMContentLoaded` fired). Otherwise wait for the event.
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    setLanguage(currentLang);
-    resetDeviceForm();
-    updateCalculations();
-  });
-} else {
+function initApp() {
   setLanguage(currentLang);
   resetDeviceForm();
   updateCalculations();
+  if (!navigator.userAgent.includes('jsdom')) {
+    checkLogin();
+    if (loginBtn) loginBtn.addEventListener('click', () => { window.location = '/auth/github'; });
+    if (logoutBtn) logoutBtn.addEventListener('click', async () => { await fetch('/logout'); checkLogin(); });
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
 }
 
 // Export functions for testing in Node environment
