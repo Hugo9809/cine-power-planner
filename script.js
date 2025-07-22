@@ -384,6 +384,57 @@ function updateBatteryOptions() {
   updateBatteryLabel();
 }
 
+function detectBrand(name) {
+  if (!name || name === 'None') return null;
+  const n = name.toLowerCase();
+  if (n.includes('arri')) return 'arri';
+  if (n.includes('cmotion')) return 'cmotion';
+  if (n.includes('focusbug')) return 'focusbug';
+  if (n.includes('tilta')) return 'tilta';
+  if (n.includes('preston')) return 'preston';
+  if (n.includes('chrosziel')) return 'chrosziel';
+  if (n.includes('smallrig')) return 'smallrig';
+  if (n.includes('dji')) return 'dji';
+  if (n.includes('redrock')) return 'redrock';
+  if (n.includes('teradek')) return 'teradek';
+  return 'other';
+}
+
+function checkFizCompatibility() {
+  const brands = new Set();
+  motorSelects.forEach(sel => { const b = detectBrand(sel.value); if (b) brands.add(b); });
+  controllerSelects.forEach(sel => { const b = detectBrand(sel.value); if (b) brands.add(b); });
+  const distB = detectBrand(distanceSelect.value);
+  if (distB) brands.add(distB);
+  const cameraBrand = detectBrand(cameraSelect.value);
+
+  const compatElem = document.getElementById('compatWarning');
+  if (!compatElem) return;
+
+  let incompatible = false;
+  const arr = Array.from(brands);
+
+  if (cameraBrand === 'dji' && arr.some(b => b && b !== 'dji')) {
+    incompatible = true;
+  } else if (arr.length > 1) {
+    const allowed = ['arri', 'cmotion', 'focusbug'];
+    if (arr.every(b => allowed.includes(b))) {
+      incompatible = false;
+    } else {
+      const filtered = arr.filter(b => b !== 'other');
+      const distinct = new Set(filtered);
+      if (distinct.size > 1) incompatible = true;
+    }
+  }
+
+  if (incompatible) {
+    compatElem.textContent = texts[currentLang].incompatibleFIZWarning;
+    compatElem.style.color = 'red';
+  } else {
+    compatElem.textContent = '';
+  }
+}
+
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
   try {
@@ -2586,6 +2637,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   } else {
     batteryComparisonSection.style.display = "none";
   }
+  checkFizCompatibility();
   if (setupDiagramContainer) renderSetupDiagram();
 }
 
@@ -2600,25 +2652,76 @@ function renderSetupDiagram() {
   const video = devices.video[videoName];
   const batteryName = batterySelect.value;
 
+  const distanceName = distanceSelect.value;
+
   const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
   const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
 
-  const nodes = [];
-  if (batteryName && batteryName !== 'None') nodes.push('battery');
-  if (camName && camName !== 'None') nodes.push('camera');
-  if (monitorName && monitorName !== 'None') nodes.push('monitor');
-  if (videoName && videoName !== 'None') nodes.push('video');
-  if (motors.length) nodes.push('motors');
-  if (controllers.length) nodes.push('controllers');
+  const inlineControllers = controllers.filter(c => !/Nucleus-M Hand Grip|Nucleus-M II Handle|Master Grip|OCU-1/i.test(c));
+  const directControllers = controllers.filter(c => /Nucleus-M Hand Grip|Nucleus-M II Handle|Master Grip|OCU-1/i.test(c));
 
-  const pos = {
-    battery: { x: 40,  y: 140, label: batteryName },
-    camera:  { x: 180, y: 140, label: camName },
-    monitor: { x: 320, y: 80,  label: monitorName },
-    video:   { x: 320, y: 200, label: videoName },
-    motors:  { x: 180, y: 220, label: texts[currentLang].fizMotorsLabel },
-    controllers: { x: 320, y: 260, label: texts[currentLang].fizControllersLabel }
-  };
+  const nodes = [];
+  const pos = {};
+  const step = 120;
+  const baseY = 180;
+  let x = 60;
+
+  if (batteryName && batteryName !== 'None') {
+    pos.battery = { x, y: baseY, label: batteryName };
+    nodes.push('battery');
+    x += step;
+  }
+
+  if (camName && camName !== 'None') {
+    pos.camera = { x, y: baseY, label: camName };
+    nodes.push('camera');
+    x += step;
+  }
+
+  const controllerIds = [];
+  inlineControllers.forEach((name, idx) => {
+    const id = `controller${idx}`;
+    pos[id] = { x, y: baseY, label: name };
+    controllerIds.push(id);
+    nodes.push(id);
+    x += step;
+  });
+
+  const motorIds = [];
+  motors.forEach((name, idx) => {
+    const id = `motor${idx}`;
+    pos[id] = { x, y: baseY, label: name };
+    motorIds.push(id);
+    nodes.push(id);
+    x += step;
+  });
+
+  if (monitorName && monitorName !== 'None') {
+    pos.monitor = { x: pos.camera ? pos.camera.x : 60, y: baseY - step, label: monitorName };
+    nodes.push('monitor');
+  }
+  if (videoName && videoName !== 'None') {
+    pos.video = { x: pos.camera ? pos.camera.x : 60, y: baseY + step, label: videoName };
+    nodes.push('video');
+  }
+
+  if (distanceName && distanceName !== 'None') {
+    const attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
+    if (attach) {
+      pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
+      nodes.push('distance');
+    }
+  }
+
+  directControllers.forEach((name, idx) => {
+    if (!motorIds.length) return;
+    const id = `directCtrl${idx}`;
+    pos[id] = { x: pos[motorIds[0]].x + idx * step, y: baseY + step, label: name };
+    nodes.push(id);
+    controllerIds.push(id); // treat as controller for icon
+  });
+
+  const viewWidth = Math.max(360, x + 60);
 
   const edges = [];
   if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
@@ -2640,19 +2743,43 @@ function renderSetupDiagram() {
     const label = cam.videoOutputs[0].type + ' → ' + (vi.portType || vi.type || vi);
     edges.push({ from: 'camera', to: 'video', label });
   }
-  if (cam && cam.fizConnectors?.length && motors.length) {
-    edges.push({ from: 'camera', to: 'motors', label: cam.fizConnectors[0].type });
+
+  if (inlineControllers.length && motorIds.length) {
+    const firstCtrl = controllerIds[0];
+    edges.push({ from: 'camera', to: firstCtrl, label: cam && cam.fizConnectors && cam.fizConnectors[0] ? cam.fizConnectors[0].type : '' });
+    if (batteryName && batteryName !== 'None') edges.push({ from: 'battery', to: firstCtrl, label: '' });
+    for (let i = 0; i < inlineControllers.length - 1; i++) {
+      edges.push({ from: controllerIds[i], to: controllerIds[i + 1], label: 'ctrl' });
+    }
+    edges.push({ from: controllerIds[inlineControllers.length - 1], to: motorIds[0], label: 'ctrl' });
+  } else if (motorIds.length && cam) {
+    edges.push({ from: 'camera', to: motorIds[0], label: cam.fizConnectors && cam.fizConnectors[0] ? cam.fizConnectors[0].type : '' });
+    if (batteryName && batteryName !== 'None' && !(camName && camName.toLowerCase().includes('arri'))) {
+      edges.push({ from: 'battery', to: motorIds[0], label: '' });
+    }
   }
-  if (controllers.length && motors.length) {
-    edges.push({ from: 'controllers', to: 'motors', label: 'ctrl' });
+
+  for (let i = 0; i < motorIds.length - 1; i++) {
+    edges.push({ from: motorIds[i], to: motorIds[i + 1], label: 'ctrl' });
   }
+
+  if (distanceName && distanceName !== 'None') {
+    const attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
+    if (attach) edges.push({ from: 'distance', to: attach, label: 'LBUS' });
+  }
+
+  directControllers.forEach((name, idx) => {
+    if (!motorIds.length) return;
+    const id = `directCtrl${idx}`;
+    edges.push({ from: id, to: motorIds[0], label: 'ctrl' });
+  });
 
   if (nodes.length === 0) {
     setupDiagramContainer.innerHTML = `<p class="diagram-placeholder">${texts[currentLang].setupDiagramPlaceholder}</p>`;
     return;
   }
 
-  let svg = '<svg viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg">';
+  let svg = `<svg viewBox="0 0 ${viewWidth} 360" xmlns="http://www.w3.org/2000/svg">`;
   svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
 
   edges.forEach(e => {
@@ -2662,19 +2789,34 @@ function renderSetupDiagram() {
     svg += `<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" marker-end="url(#arrow)" />`;
     if (e.label) {
       const tx = (from.x + to.x) / 2;
-      const ty = (from.y + to.y) / 2 - 10;
-      svg += `<text class="edge-label" x="${tx}" y="${ty}" text-anchor="middle">${escapeHtml(e.label)}</text>`;
+      const ty = (from.y + to.y) / 2;
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const ox = -dy / len * 10;
+      const oy = dx / len * 10;
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      const px = tx + ox;
+      const py = ty + oy;
+      svg += `<text class="edge-label" x="${px}" y="${py}" transform="rotate(${angle} ${px} ${py})" text-anchor="middle">${escapeHtml(e.label)}</text>`;
     }
   });
 
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
-    const h = 44;
-    svg += `<rect class="node-box" x="${p.x - 40}" y="${p.y - h / 2}" width="80" height="${h}" rx="4" ry="4" />`;
-    if (diagramIcons[id]) {
-      svg += `<text class="node-icon" x="${p.x}" y="${p.y - 6}" text-anchor="middle" dominant-baseline="middle">${diagramIcons[id]}</text>`;
-      svg += `<text x="${p.x}" y="${p.y + 10}" text-anchor="middle" font-size="10">${escapeHtml(p.label || id)}</text>`;
+    const h = 60;
+    const w = 100;
+    svg += `<rect class="node-box" x="${p.x - w/2}" y="${p.y - h / 2}" width="${w}" height="${h}" rx="4" ry="4" />`;
+    let icon = diagramIcons[id];
+    if (!icon) {
+      if (id.startsWith('motor')) icon = diagramIcons.motors;
+      else if (id.startsWith('controller') || id.startsWith('directCtrl')) icon = diagramIcons.controllers;
+      else if (id === 'distance') icon = diagramIcons.controllers;
+    }
+    if (icon) {
+      svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
+      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">${escapeHtml(p.label || id)}</text>`;
     } else {
       svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">${escapeHtml(p.label || id)}</text>`;
     }
@@ -4040,7 +4182,7 @@ function generatePrintableOverview() {
                   padding-bottom: 3px;
                 }
                 /* Setup diagram styles */
-                #setupDiagram svg { width: 100%; max-width: 600px; height: 300px; }
+                #setupDiagram svg { width: 100%; max-width: 800px; height: 360px; }
                 #setupDiagram .node-box { fill: #f9f9f9; stroke: #333; }
                 #setupDiagram line { stroke: #333; stroke-width: 2px; }
                 /* Styles for Battery Comparison Bars in Overview */
@@ -4125,7 +4267,7 @@ function generatePrintableOverview() {
                       height: 15px; /* Height of the bar */
                     }
 
-                    #setupDiagram svg { width: 100%; max-width: 600px; height: 300px; }
+                    #setupDiagram svg { width: 100%; max-width: 800px; height: 360px; }
                     #setupDiagram .node-box { fill: #fff !important; stroke: #000 !important; }
                     #setupDiagram line { stroke: #000 !important; stroke-width: 2px; }
 

@@ -53,6 +53,8 @@ const texts = {
     warnDTapExceeded: "WARNING: current draw ({current}A) exceeds the battery's D-Tap output ({max}A)!",
     warnDTapNear: "Note: current draw uses over 80% of the D-Tap capacity ({current}A of {max}A).",
 
+    incompatibleFIZWarning: "WARNING: incompatible FIZ brands selected.",
+
     category_cameras: "Cameras",
     category_monitors: "Monitors",
     category_video: "Wireless Video",
@@ -234,6 +236,8 @@ const texts = {
     warnDTapExceeded: "ADVERTENCIA: la corriente ({current}A) supera la salida D-Tap ({max}A)!",
     warnDTapNear: "Nota: la corriente usa más del 80% de la capacidad D-Tap ({current}A de {max}A).",
 
+    incompatibleFIZWarning: "ADVERTENCIA: se seleccionaron marcas FIZ incompatibles.",
+
     category_cameras: "Cámaras",
     category_monitors: "Monitores",
     category_video: "Video Inalámbrico",
@@ -413,6 +417,8 @@ const texts = {
     warnDTapExceeded: "ATTENTION: le courant ({current}A) dépasse la sortie D-Tap ({max}A)!",
     warnDTapNear: "Remarque : le courant utilise plus de 80% de la capacité D-Tap ({current}A sur {max}A).",
 
+    incompatibleFIZWarning: "ATTENTION : des marques FIZ incompatibles sont sélectionnées.",
+
     category_cameras: "Caméras",
     category_monitors: "Moniteurs",
     category_video: "Vidéo Sans Fil",
@@ -591,6 +597,8 @@ const texts = {
     warnPinNear: "Hinweis: Strombedarf kommt nahe an die Pin-Grenze ({current}A von {max}A).",
     warnDTapExceeded: "WARNUNG: Strombedarf ({current}A) übersteigt die D-Tap-Leistung ({max}A) des Akkus!",
     warnDTapNear: "Hinweis: Strombedarf nutzt über 80% der D-Tap Kapazität ({current}A von {max}A).",
+
+    incompatibleFIZWarning: "WARNUNG: Inkompatible FIZ-Marken ausgewählt.",
 
     category_cameras: "Kameras",
     category_monitors: "Monitore",
