@@ -116,11 +116,6 @@ let devices={
           "notes": "Supports Panavision lens data"
         },
         {
-          "type": "PL",
-          "mount": "adapted",
-          "notes": "Supports ARRI LDS and Cooke /i lens data"
-        },
-        {
           "type": "XPL52",
           "mount": "adapted",
           "notes": "Supports ARRI LDS and Cooke /i lens data"
@@ -613,11 +608,6 @@ let devices={
           "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
-          "type": "PL",
-          "mount": "native",
-          "notes": "Supports ARRI LDS and Cooke /i lens data"
-        },
-        {
           "type": "E-mount",
           "mount": "native",
           "notes": "Supports Sony E-mount electronic lens data"
@@ -626,11 +616,6 @@ let devices={
           "type": "LPL",
           "mount": "native",
           "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
-        },
-        {
-          "type": "PL",
-          "mount": "native",
-          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -773,11 +758,6 @@ let devices={
           "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
-          "type": "PL",
-          "mount": "native",
-          "notes": "Supports ARRI LDS and Cooke /i lens data"
-        },
-        {
           "type": "E-mount",
           "mount": "native",
           "notes": "Supports Sony E-mount electronic lens data"
@@ -786,11 +766,6 @@ let devices={
           "type": "LPL",
           "mount": "native",
           "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
-        },
-        {
-          "type": "PL",
-          "mount": "native",
-          "notes": "Supports ARRI LDS and Cooke /i lens data"
         }
       ],
       "timecode": [
@@ -1624,24 +1599,9 @@ let devices={
           "notes": "Supports ARRI LDS and Cooke /i lens data"
         },
         {
-          "type": "RF",
-          "mount": "native",
-          "notes": "Supports Canon RF electronic lens data"
-        },
-        {
-          "type": "F",
-          "mount": "native",
-          "notes": "Supports Nikon F electronic lens data when available"
-        },
-        {
           "type": "EF",
           "mount": "native",
           "notes": "Supports Canon EF electronic lens data"
-        },
-        {
-          "type": "F",
-          "mount": "native",
-          "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
       "timecode": [
@@ -6630,7 +6590,9 @@ let devices={
       "Arri OCU-1": {
         "powerDrawWatts": 1.32,
         "fizConnectors": [
-          { "type": "LBUS (LEMO 4-pin)" }
+          {
+            "type": "LBUS (LEMO 4-pin)"
+          }
         ],
         "power_source": "External (via LBUS)",
         "battery_type": "N/A",
@@ -6640,8 +6602,14 @@ let devices={
       "Arri ZMU-4 (body only, wired)": {
         "powerDrawWatts": 1,
         "fizConnectors": [
-          { "type": "LBUS (LEMO 4-pin)", "notes": "for motors" },
-          { "type": "CAM (LEMO 7-pin)", "notes": "for camera control" }
+          {
+            "type": "LBUS (LEMO 4-pin)",
+            "notes": "for motors"
+          },
+          {
+            "type": "CAM (LEMO 7-pin)",
+            "notes": "for camera control"
+          }
         ],
         "power_source": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
         "battery_type": "Sony NP-F550/750 compatible, ARRI LBP-3500",
@@ -6651,10 +6619,20 @@ let devices={
       "Arri UMC-4": {
         "powerDrawWatts": 1.68,
         "fizConnectors": [
-          { "type": "LBUS (LEMO 4-pin)", "notes": "for motors" },
-          { "type": "SERIAL (LEMO 4-pin)" },
-          { "type": "CAM (LEMO 7-pin)" },
-          { "type": "EXT", "notes": "6-pin/16-pin depending on camera" }
+          {
+            "type": "LBUS (LEMO 4-pin)",
+            "notes": "for motors"
+          },
+          {
+            "type": "SERIAL (LEMO 4-pin)"
+          },
+          {
+            "type": "CAM (LEMO 7-pin)"
+          },
+          {
+            "type": "EXT",
+            "notes": "6-pin/16-pin depending on camera"
+          }
         ],
         "power_source": "External DC (via CAM or LBUS chain)",
         "battery_type": "N/A (no internal battery)",
@@ -6662,11 +6640,17 @@ let devices={
         "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support. Only compatible with ARRI CLM-4 and CLM-5 motors, which require a UMC-4 for operation."
       },
       "Arri RIA-1": {
-          "powerDrawWatts": 2.5,
+        "powerDrawWatts": 2.5,
         "fizConnectors": [
-          { "type": "LBUS (LEMO 4-pin)" },
-          { "type": "CAM (LEMO 7-pin)" },
-          { "type": "SERIAL (LEMO 4-pin)" }
+          {
+            "type": "LBUS (LEMO 4-pin)"
+          },
+          {
+            "type": "CAM (LEMO 7-pin)"
+          },
+          {
+            "type": "SERIAL (LEMO 4-pin)"
+          }
         ],
         "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
         "battery_type": "N/A (no internal battery, draws power from camera or external source)",
@@ -6676,7 +6660,9 @@ let devices={
       "Arri Master Grip (single unit)": {
         "powerDrawWatts": 0.72,
         "fizConnectors": [
-          { "type": "LBUS (LEMO 4-pin)" }
+          {
+            "type": "LBUS (LEMO 4-pin)"
+          }
         ],
         "power_source": "External (12-34VDC via LBUS)",
         "battery_type": "N/A (no internal battery)",
@@ -6686,8 +6672,12 @@ let devices={
       "Tilta Nucleus-M Hand Grip (single)": {
         "powerDrawWatts": 0.5,
         "fizConnectors": [
-          { "type": "Proprietary 7-pin (to motor)" },
-          { "type": "ARRI rosette or gimbal bar adapter" }
+          {
+            "type": "Proprietary 7-pin (to motor)"
+          },
+          {
+            "type": "ARRI rosette or gimbal bar adapter"
+          }
         ],
         "power_source": "Internal Battery",
         "battery_type": "2x 18650 Li-ion (per grip, not included)",
@@ -6697,8 +6687,12 @@ let devices={
       "Tilta Nucleus-M II Handle (single)": {
         "powerDrawWatts": 0.5,
         "fizConnectors": [
-          { "type": "Proprietary 7-pin (to motor)" },
-          { "type": "ARRI rosette or gimbal bar adapter" }
+          {
+            "type": "Proprietary 7-pin (to motor)"
+          },
+          {
+            "type": "ARRI rosette or gimbal bar adapter"
+          }
         ],
         "power_source": "Internal Battery",
         "battery_type": "NP-F550 (single per handle)",
@@ -6708,7 +6702,9 @@ let devices={
       "DJI Focus Pro Handle": {
         "powerDrawWatts": 1,
         "fizConnectors": [
-          { "type": "USB-C" }
+          {
+            "type": "USB-C"
+          }
         ],
         "power_source": "Internal Battery",
         "battery_type": "Built-in rechargeable",
@@ -6718,10 +6714,18 @@ let devices={
       "Preston MDR4": {
         "powerDrawWatts": 48,
         "fizConnectors": [
-          { "type": "Motor Port (proprietary LEMO 7-pin)" },
-          { "type": "Serial (for Light Ranger 2)" },
-          { "type": "Analog (for Micro Force)" },
-          { "type": "USB (firmware)" }
+          {
+            "type": "Motor Port (proprietary LEMO 7-pin)"
+          },
+          {
+            "type": "Serial (for Light Ranger 2)"
+          },
+          {
+            "type": "Analog (for Micro Force)"
+          },
+          {
+            "type": "USB (firmware)"
+          }
         ],
         "power_source": "External DC (XLR 4-pin or D-Tap)",
         "battery_type": "N/A (no internal battery)",
@@ -6731,11 +6735,21 @@ let devices={
       "ARRI ECM-1": {
         "powerDrawWatts": 84,
         "fizConnectors": [
-          { "type": "Motor port (proprietary LEMO)" },
-          { "type": "Camera (LEMO 7-pin)" },
-          { "type": "Accessory (LEMO 4-pin)" },
-          { "type": "Ethernet" },
-          { "type": "USB" }
+          {
+            "type": "Motor port (proprietary LEMO)"
+          },
+          {
+            "type": "Camera (LEMO 7-pin)"
+          },
+          {
+            "type": "Accessory (LEMO 4-pin)"
+          },
+          {
+            "type": "Ethernet"
+          },
+          {
+            "type": "USB"
+          }
         ],
         "power_source": "External DC (LEMO 2-pin or XLR 4-pin)",
         "battery_type": "N/A (no internal battery)",
@@ -6745,10 +6759,18 @@ let devices={
       "Redrock microRemote Basestation": {
         "powerDrawWatts": 54,
         "fizConnectors": [
-          { "type": "Motor port (proprietary 4-pin)" },
-          { "type": "USB" },
-          { "type": "AUX" },
-          { "type": "Power (LEMO 2-pin)" }
+          {
+            "type": "Motor port (proprietary 4-pin)"
+          },
+          {
+            "type": "USB"
+          },
+          {
+            "type": "AUX"
+          },
+          {
+            "type": "Power (LEMO 2-pin)"
+          }
         ],
         "power_source": "External DC (6-18V via LEMO 2-pin)",
         "battery_type": "N/A (no internal battery)",
@@ -6758,7 +6780,9 @@ let devices={
       "ARRI LBUS Distributor (LBS-1)": {
         "powerDrawWatts": 0.24,
         "fizConnectors": [
-          { "type": "Multiple LBUS ports (LEMO 4-pin)" }
+          {
+            "type": "Multiple LBUS ports (LEMO 4-pin)"
+          }
         ],
         "power_source": "External (via any LBUS connection)",
         "battery_type": "N/A (passive device)",
@@ -6768,9 +6792,15 @@ let devices={
       "Cmotion compact LCS receiver": {
         "powerDrawWatts": 20,
         "fizConnectors": [
-          { "type": "Motor port (LEMO 4-pin)" },
-          { "type": "Camera (LEMO 7-pin)" },
-          { "type": "EXT (LEMO 4-pin)" }
+          {
+            "type": "Motor port (LEMO 4-pin)"
+          },
+          {
+            "type": "Camera (LEMO 7-pin)"
+          },
+          {
+            "type": "EXT (LEMO 4-pin)"
+          }
         ],
         "power_source": "External DC (10-34V via Camera port or EXT port)",
         "battery_type": "N/A (no internal battery)",
@@ -6780,9 +6810,17 @@ let devices={
       "Teradek RT Motion CTRL.3 Controller": {
         "powerDrawWatts": 15,
         "fizConnectors": [
-          { "type": "USB-C" },
-          { "type": "LEMO 2-pin", "notes": "power out" },
-          { "type": "LEMO 4-pin", "notes": "data to MDR" }
+          {
+            "type": "USB-C"
+          },
+          {
+            "type": "LEMO 2-pin",
+            "notes": "power out"
+          },
+          {
+            "type": "LEMO 4-pin",
+            "notes": "data to MDR"
+          }
         ],
         "power_source": "Internal Battery (rechargeable) or External (USB-C)",
         "battery_type": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
