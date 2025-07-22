@@ -709,6 +709,9 @@ function setLanguage(lang) {
   updateBatteryLabel();
   // FIZ legend
   document.getElementById("fizLegend").textContent = texts[lang].fizLegend;
+  document.querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel').forEach(el => {
+    el.textContent = texts[lang].notesLabel;
+  });
   // Results labels
   document.getElementById("totalPowerLabel").textContent = texts[lang].totalPowerLabel;
   document.getElementById("totalCurrent144Label").textContent = texts[lang].totalCurrent144Label;
@@ -2408,8 +2411,10 @@ function filterSelect(selectElem, filterValue) {
   Array.from(selectElem.options).forEach(opt => {
     if (opt.value === "None" || text === "" || opt.textContent.toLowerCase().includes(text)) {
       opt.hidden = false;
+      opt.disabled = false;
     } else {
       opt.hidden = true;
+      opt.disabled = true;
     }
   });
 }
