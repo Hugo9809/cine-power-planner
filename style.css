@@ -1,5 +1,10 @@
 
 /* General styles */
+/* Ensure predictable sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Open Sans', sans-serif;
   font-weight: 300;
@@ -417,6 +422,9 @@ body.dark-mode #setupDiagram .diagram-placeholder {
   border: 1px solid #ddd; /* Match section border */
   border-radius: 5px; /* Match section border-radius */
 }
+#batteryTableContainer {
+  overflow-x: auto;
+}
 #batteryComparison table {
   width: 100%;
   border-collapse: collapse;
@@ -615,5 +623,14 @@ body.dark-mode .field-with-label::before {
   .device-category {
     flex: 1 1 100%;
     min-width: auto;
+  }
+
+  /* Stack device details vertically on small screens */
+  .device-details > .device-detail-list {
+    column-count: 1;
+  }
+
+  #setupDiagram {
+    min-height: 300px;
   }
 }
