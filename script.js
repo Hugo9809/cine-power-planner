@@ -412,6 +412,44 @@ function checkFizCompatibility() {
   }
 }
 
+function checkFizController() {
+  const compatElem = document.getElementById('compatWarning');
+  if (!compatElem) return;
+
+  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  if (!motors.length) return;
+
+  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  const camName = cameraSelect.value;
+  const cam = devices.cameras[camName];
+
+  const cameraHasLBUS = Array.isArray(cam?.fizConnectors) &&
+    cam.fizConnectors.some(fc => /LBUS/i.test(fc.type));
+  let hasController = cameraHasLBUS && /arri/i.test(camName);
+
+  controllers.forEach(name => {
+    const c = devices.fiz.controllers[name];
+    if (!c) return;
+    if (/CAM|SERIAL|Motor/i.test(c.FIZ_connector || '')) hasController = true;
+    if (c.internalController) hasController = true;
+  });
+
+  motors.forEach(name => {
+    const m = devices.fiz.motors[name];
+    if (m && m.internalController) hasController = true;
+  });
+
+  const needController = motors.some(name => {
+    const m = devices.fiz.motors[name];
+    return m && m.internalController === false;
+  });
+
+  if (needController && !hasController) {
+    compatElem.textContent = texts[currentLang].missingFIZControllerWarning;
+    compatElem.style.color = 'red';
+  }
+}
+
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
   try {
@@ -2614,6 +2652,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     batteryComparisonSection.style.display = "none";
   }
   checkFizCompatibility();
+  checkFizController();
   if (setupDiagramContainer) renderSetupDiagram();
 }
 
