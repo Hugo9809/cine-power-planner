@@ -3229,8 +3229,10 @@ function renderSetupDiagram() {
     const ly = (from.y + to.y) / 2 - 8 - labelSpacing;
     const dx = to.x - from.x;
     const dy = to.y - from.y;
+    // Rotate labels so they run parallel to the connection line
+    // without forcing them to stay upright. This keeps the text
+    // aligned with the line direction regardless of orientation.
     let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-    if (angle > 90 || angle < -90) angle += 180; // keep text upright
     return { path, labelX: lx, labelY: ly, angle };
   }
 
