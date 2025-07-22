@@ -2957,11 +2957,20 @@ function renderSetupDiagram() {
     const vidOut = vidOutObj && (vidOutObj.portType || vidOutObj.type || vidOutObj);
     const monOut = monOutObj && (monOutObj.portType || monOutObj.type || monOutObj);
     const singleOut = cam.videoOutputs.length === 1 && monitor && video;
+    const hdmiOnly = cam.videoOutputs.every(v => /HDMI/i.test(v.type)) && cam.videoOutputs.length === 1;
     const labelCamVideo = connectionLabel(camOut, vidIn);
     const labelCamMonitor = connectionLabel(camOut, monIn);
     const labelVideoMonitor = connectionLabel(vidOut || camOut, monIn);
     const labelMonitorVideo = connectionLabel(monOut || camOut, vidIn);
-    if (singleOut) {
+    if (singleOut && hdmiOnly) {
+      if (vidOut) {
+        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo + ' (loop to monitor)', routeAround: true }, 'video');
+        if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, routeAround: true }, 'video');
+      } else {
+        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor + ' (loop)', routeAround: true }, 'video');
+        if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, routeAround: true }, 'video');
+      }
+    } else if (singleOut) {
       if (vidOut) {
         pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
         if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
@@ -3055,6 +3064,8 @@ function renderSetupDiagram() {
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
+  const xs = Object.values(pos).map(p => p.x);
+  const maxXPos = Math.max(...xs);
   const viewHeight = (maxY - minY) + NODE_H + 120;
 
   function computePath(fromId, toId, offset = 0, labelSpacing = 0, opts = {}) {
@@ -3067,6 +3078,14 @@ function renderSetupDiagram() {
     let ty = to.y;
     const fromSide = opts.fromSide || null;
     const toSide = opts.toSide || null;
+    if (opts.routeAround) {
+      const topY = minY - NODE_H - 40;
+      const outerX = maxXPos + NODE_W;
+      const path = `M ${sx} ${sy} L ${sx} ${topY} L ${outerX} ${topY} L ${outerX} ${ty} L ${tx} ${ty}`;
+      const lx = outerX;
+      const ly = topY - 8 - labelSpacing;
+      return { path, labelX: lx, labelY: ly, angle: 0 };
+    }
     if (fromSide === 'bottom-left') {
       sx = from.x - NODE_W / 2;
       sy = from.y + NODE_H / 2;
