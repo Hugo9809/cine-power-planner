@@ -3078,7 +3078,7 @@ function renderSetupDiagram() {
 
   const firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
 
-  const viewWidth = Math.max(500, x + 80);
+  let viewWidth;
 
   const NODE_W = 160;
   const NODE_H = 80;
@@ -3215,6 +3215,14 @@ function renderSetupDiagram() {
     setupDiagramContainer.innerHTML = `<p class="diagram-placeholder">${texts[currentLang].setupDiagramPlaceholder}</p>`;
     return;
   }
+
+  const xs = Object.values(pos).map(p => p.x);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const contentWidth = maxX - minX;
+  viewWidth = Math.max(500, contentWidth + 160);
+  const shiftX = viewWidth / 2 - (minX + maxX) / 2;
+  Object.values(pos).forEach(p => { p.x += shiftX; });
 
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
