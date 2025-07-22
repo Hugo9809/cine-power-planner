@@ -1,0 +1,52 @@
+const fs = require('fs');
+const path = require('path');
+
+let utils;
+
+beforeAll(() => {
+  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+  const body = html.split('<body>')[1].split('</body>')[0];
+  document.body.innerHTML = body;
+
+  global.devices = { cameras: {}, monitors: {}, video: {}, fiz: { motors: {}, controllers: {}, distance: {} }, batteries: {} };
+  global.loadDeviceData = jest.fn(() => null);
+  global.saveDeviceData = jest.fn();
+  global.loadSetups = jest.fn(() => ({}));
+  global.saveSetups = jest.fn();
+  global.saveSetup = jest.fn();
+  global.loadSetup = jest.fn();
+  global.deleteSetup = jest.fn();
+
+  require('../translations.js');
+  utils = require('../script.js');
+});
+
+describe('utility function tests', () => {
+  test('detectBrand categorizes known brands', () => {
+    const { detectBrand } = utils;
+    expect(detectBrand('ARRI Alexa')).toBe('arri');
+    expect(detectBrand('cmotion cPRO')).toBe('cmotion');
+    expect(detectBrand('Focusbug CineRT')).toBe('focusbug');
+    expect(detectBrand('Tilta Nucleus')).toBe('tilta');
+    expect(detectBrand('Preston MDR')).toBe('preston');
+    expect(detectBrand('Chrosziel lens control')).toBe('chrosziel');
+    expect(detectBrand('SmallRig cage')).toBe('smallrig');
+    expect(detectBrand('DJI Ronin')).toBe('dji');
+    expect(detectBrand('Redrock follow focus')).toBe('redrock');
+    expect(detectBrand('Teradek Bolt')).toBe('teradek');
+    expect(detectBrand('Unknown')).toBe('other');
+    expect(detectBrand('None')).toBeNull();
+    expect(detectBrand('')).toBeNull();
+  });
+
+  test('connectionLabel chooses correct label', () => {
+    const { connectionLabel } = utils;
+    expect(connectionLabel('HDMI', 'HDMI')).toBe('HDMI');
+    expect(connectionLabel('12G-SDI', '3G-SDI')).toBe('3G-SDI');
+    expect(connectionLabel('6G-SDI', '12G-SDI')).toBe('6G-SDI');
+    expect(connectionLabel('HDMI', '12G-SDI')).toBe('HDMI');
+    expect(connectionLabel('3G-SDI', 'HDMI')).toBe('SDI');
+    expect(connectionLabel('SDI', 'SDI')).toBe('SDI');
+    expect(connectionLabel('', '')).toBe('');
+  });
+});

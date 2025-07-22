@@ -5082,5 +5082,7 @@ if (typeof module !== "undefined" && module.exports) {
     updateBatteryOptions,
     renderSetupDiagram,
     cameraFizPort,
+    detectBrand,
+    connectionLabel,
   };
 }
