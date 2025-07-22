@@ -327,8 +327,8 @@ button:disabled {
 
 #setupDiagram svg {
   width: 100%;
-  max-width: 800px;
-  height: 360px;
+  max-width: 900px;
+  height: 420px;
 }
 
 #setupDiagram .node-box {

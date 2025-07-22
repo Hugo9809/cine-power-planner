@@ -727,7 +727,8 @@ const diagramIcons = {
   monitor: "\uD83D\uDCBB", // 💻
   video: "\uD83D\uDCE1", // 📡
   motors: "\u2699\uFE0F", // ⚙️
-  controllers: "\uD83C\uDFAE" // 🎮
+  controllers: "\uD83C\uDFAE", // 🎮
+  plate: "\uD83D\uDD0C" // 🔌
 };
 
 // Filter inputs
@@ -2657,18 +2658,25 @@ function renderSetupDiagram() {
   const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
   const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
 
-  const inlineControllers = controllers.filter(c => !/Nucleus-M Hand Grip|Nucleus-M II Handle|Master Grip|OCU-1/i.test(c));
-  const directControllers = controllers.filter(c => /Nucleus-M Hand Grip|Nucleus-M II Handle|Master Grip|OCU-1/i.test(c));
+  const inlineControllers = controllers.filter(c => !/Nucleus-M Hand Grip|Nucleus-M II Handle/i.test(c));
+  const directControllers = controllers.filter(c => /Nucleus-M Hand Grip|Nucleus-M II Handle/i.test(c));
 
   const nodes = [];
   const pos = {};
-  const step = 160;
-  const baseY = 180;
-  let x = 60;
+  const step = 200;
+  const baseY = 200;
+  let x = 80;
 
   if (batteryName && batteryName !== 'None') {
     pos.battery = { x, y: baseY, label: batteryName };
     nodes.push('battery');
+    x += step;
+  }
+
+  const plateType = getSelectedPlate();
+  if (plateType && batteryName && batteryName !== 'None') {
+    pos.plate = { x, y: baseY, label: plateType + ' Plate' };
+    nodes.push('plate');
     x += step;
   }
 
@@ -2721,11 +2729,12 @@ function renderSetupDiagram() {
     controllerIds.push(id); // treat as controller for icon
   });
 
-  const viewWidth = Math.max(360, x + 60);
+  const viewWidth = Math.max(500, x + 80);
 
   const edges = [];
-  if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
-    edges.push({ from: 'battery', to: 'camera', label: cam.power.input.portType });
+  if (cam && cam.power?.input?.portType && plateType && batteryName && batteryName !== 'None') {
+    edges.push({ from: 'battery', to: 'plate', label: '' });
+    edges.push({ from: 'plate', to: 'camera', label: cam.power.input.portType });
   }
   if (monitor && monitor.power?.input?.portType && batteryName && batteryName !== 'None') {
     edges.push({ from: 'battery', to: 'monitor', label: monitor.power.input.portType });
@@ -2746,21 +2755,17 @@ function renderSetupDiagram() {
 
   if (inlineControllers.length && motorIds.length) {
     const firstCtrl = controllerIds[0];
-    edges.push({ from: 'camera', to: firstCtrl, label: cam && cam.fizConnectors && cam.fizConnectors[0] ? cam.fizConnectors[0].type : '' });
-    if (batteryName && batteryName !== 'None') edges.push({ from: 'battery', to: firstCtrl, label: '' });
+    edges.push({ from: 'camera', to: firstCtrl, label: 'LBUS' });
     for (let i = 0; i < inlineControllers.length - 1; i++) {
-      edges.push({ from: controllerIds[i], to: controllerIds[i + 1], label: 'ctrl' });
+      edges.push({ from: controllerIds[i], to: controllerIds[i + 1], label: 'LBUS' });
     }
-    edges.push({ from: controllerIds[inlineControllers.length - 1], to: motorIds[0], label: 'ctrl' });
+    edges.push({ from: controllerIds[inlineControllers.length - 1], to: motorIds[0], label: 'LBUS' });
   } else if (motorIds.length && cam) {
-    edges.push({ from: 'camera', to: motorIds[0], label: cam.fizConnectors && cam.fizConnectors[0] ? cam.fizConnectors[0].type : '' });
-    if (batteryName && batteryName !== 'None' && !(camName && camName.toLowerCase().includes('arri'))) {
-      edges.push({ from: 'battery', to: motorIds[0], label: '' });
-    }
+    edges.push({ from: 'camera', to: motorIds[0], label: 'LBUS' });
   }
 
   for (let i = 0; i < motorIds.length - 1; i++) {
-    edges.push({ from: motorIds[i], to: motorIds[i + 1], label: 'ctrl' });
+    edges.push({ from: motorIds[i], to: motorIds[i + 1], label: 'LBUS' });
   }
 
   if (distanceName && distanceName !== 'None') {
@@ -2779,8 +2784,8 @@ function renderSetupDiagram() {
     return;
   }
 
-  const NODE_W = 100;
-  const NODE_H = 60;
+  const NODE_W = 130;
+  const NODE_H = 80;
   const ROUTE_Y = baseY + NODE_H;
 
   function computePath(fromId, toId) {
@@ -2821,7 +2826,7 @@ function renderSetupDiagram() {
     return { path, labelX: lx, labelY: ly };
   }
 
-  let svg = `<svg viewBox="0 0 ${viewWidth} 360" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg viewBox="0 0 ${viewWidth} 420" xmlns="http://www.w3.org/2000/svg">`;
   svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
 
   edges.forEach(e => {
@@ -4212,7 +4217,7 @@ function generatePrintableOverview() {
                   padding-bottom: 3px;
                 }
                 /* Setup diagram styles */
-                #setupDiagram svg { width: 100%; max-width: 800px; height: 360px; }
+                #setupDiagram svg { width: 100%; max-width: 900px; height: 420px; }
                 #setupDiagram .node-box { fill: #f9f9f9; stroke: #333; }
                 #setupDiagram line { stroke: #333; stroke-width: 2px; }
                 /* Styles for Battery Comparison Bars in Overview */
@@ -4297,7 +4302,7 @@ function generatePrintableOverview() {
                       height: 15px; /* Height of the bar */
                     }
 
-                    #setupDiagram svg { width: 100%; max-width: 800px; height: 360px; }
+                    #setupDiagram svg { width: 100%; max-width: 900px; height: 420px; }
                     #setupDiagram .node-box { fill: #fff !important; stroke: #000 !important; }
                     #setupDiagram line { stroke: #000 !important; stroke-width: 2px; }
 
