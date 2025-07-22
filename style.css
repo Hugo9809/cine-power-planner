@@ -329,6 +329,26 @@ button:disabled {
 
 #diagramArea {
   margin-top: 0.5em;
+  position: relative;
+}
+
+.node-popup {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  pointer-events: none;
+  display: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+body.dark-mode .node-popup {
+  background: #333;
+  color: #fff;
+  border-color: #999;
 }
 
 #setupDiagram svg {

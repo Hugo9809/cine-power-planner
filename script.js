@@ -2910,20 +2910,20 @@ function renderSetupDiagram() {
   let x = 80;
 
   if (batteryName && batteryName !== 'None') {
-    pos.battery = { x, y: baseY, label: batteryName };
+    pos.battery = { x, y: baseY, label: batteryName, cat: 'battery' };
     nodes.push('battery');
     x += step;
   }
 
   const plateType = getSelectedPlate();
   if (plateType && batteryName && batteryName !== 'None') {
-    pos.plate = { x, y: baseY, label: plateType + ' Plate' };
+    pos.plate = { x, y: baseY, label: plateType + ' Plate', cat: 'plate' };
     nodes.push('plate');
     x += step;
   }
 
   if (camName && camName !== 'None') {
-    pos.camera = { x, y: baseY, label: camName };
+    pos.camera = { x, y: baseY, label: camName, cat: 'camera' };
     nodes.push('camera');
     x += step;
   }
@@ -2931,7 +2931,7 @@ function renderSetupDiagram() {
   const controllerIds = [];
   inlineControllers.forEach((name, idx) => {
     const id = `controller${idx}`;
-    pos[id] = { x, y: baseY, label: name };
+    pos[id] = { x, y: baseY, label: name, cat: 'controller' };
     controllerIds.push(id);
     nodes.push(id);
     x += step;
@@ -2940,18 +2940,18 @@ function renderSetupDiagram() {
   const motorIds = [];
   motors.forEach((name, idx) => {
     const id = `motor${idx}`;
-    pos[id] = { x, y: baseY, label: name };
+    pos[id] = { x, y: baseY, label: name, cat: 'motor' };
     motorIds.push(id);
     nodes.push(id);
     x += step;
   });
 
   if (monitorName && monitorName !== 'None') {
-    pos.monitor = { x: pos.camera ? pos.camera.x : 60, y: baseY - step, label: monitorName };
+    pos.monitor = { x: pos.camera ? pos.camera.x : 60, y: baseY - step, label: monitorName, cat: 'monitor' };
     nodes.push('monitor');
   }
   if (videoName && videoName !== 'None') {
-    pos.video = { x: pos.camera ? pos.camera.x : 60, y: baseY + step, label: videoName };
+    pos.video = { x: pos.camera ? pos.camera.x : 60, y: baseY + step, label: videoName, cat: 'video' };
     nodes.push('video');
   }
 
@@ -2966,9 +2966,9 @@ function renderSetupDiagram() {
       inlineDistance = arriDevices && !hasDedicatedPort && inlineControllers.length;
       if (inlineDistance && motorIds.length) {
         const nextId = motorIds[0];
-        pos.distance = { x: (pos[attach].x + pos[nextId].x) / 2, y: baseY - step, label: distanceName };
+        pos.distance = { x: (pos[attach].x + pos[nextId].x) / 2, y: baseY - step, label: distanceName, cat: 'distance' };
       } else {
-        pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
+        pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName, cat: 'distance' };
       }
       nodes.push('distance');
     }
@@ -2977,7 +2977,7 @@ function renderSetupDiagram() {
   directControllers.forEach((name, idx) => {
     if (!motorIds.length) return;
     const id = `directCtrl${idx}`;
-    pos[id] = { x: pos[motorIds[0]].x + idx * step, y: baseY + step, label: name };
+    pos[id] = { x: pos[motorIds[0]].x + idx * step, y: baseY + step, label: name, cat: 'controller' };
     nodes.push(id);
     controllerIds.push(id); // treat as controller for icon
   });
@@ -3248,6 +3248,9 @@ function renderSetupDiagram() {
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
+    const tooltip = buildPortTooltip(p.cat, p.label || id);
+    svg += `<g class="diagram-node" data-cat="${p.cat || ''}" data-name="${escapeHtml(p.label || id)}">`;
+    svg += `<title>${escapeHtml(tooltip).replace(/\n/g, '&#10;')}</title>`;
     svg += `<rect class="node-box" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
     let icon = diagramIcons[id];
     if (!icon) {
@@ -3267,10 +3270,30 @@ function renderSetupDiagram() {
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     }
+    svg += `</g>`;
   });
 
   svg += '</svg>';
   setupDiagramContainer.innerHTML = svg;
+
+  const popup = document.getElementById('nodePopup');
+  if (popup) {
+    const nodesEls = setupDiagramContainer.querySelectorAll('g.diagram-node');
+    nodesEls.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        const cat = el.getAttribute('data-cat');
+        const name = el.getAttribute('data-name');
+        const html = buildPortTooltip(cat, name).split('\n').map(escapeHtml).join('<br>');
+        popup.innerHTML = html;
+        popup.style.display = 'block';
+        const rect = el.getBoundingClientRect();
+        const containerRect = setupDiagramContainer.getBoundingClientRect();
+        popup.style.left = (rect.left - containerRect.left + rect.width / 2) + 'px';
+        popup.style.top = (rect.top - containerRect.top - popup.offsetHeight - 6) + 'px';
+      });
+      el.addEventListener('mouseleave', () => { popup.style.display = 'none'; });
+    });
+  }
 }
 
 // Convert a camelCase or underscore key to a human friendly label
@@ -4327,6 +4350,65 @@ function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+}
+
+function collectPorts(dev) {
+    const add = (arr, val) => {
+        if (!val) return;
+        if (Array.isArray(val)) val.forEach(v => add(arr, v));
+        else if (typeof val === 'object') {
+            const port = val.portType || val.type;
+            if (port) arr.push(port);
+        } else arr.push(String(val));
+    };
+    const res = { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
+    if (!dev) return res;
+    if (dev.power) {
+        add(res.powerIn, dev.power.input);
+        add(res.powerOut, dev.power.output);
+        add(res.powerOut, dev.power.outputs);
+        add(res.powerOut, dev.power.powerDistributionOutputs);
+    }
+    add(res.powerIn, dev.powerInput);
+    add(res.powerOut, dev.powerOutput);
+    add(res.videoIn, dev.video?.inputs || dev.videoInputs);
+    add(res.videoOut, dev.video?.outputs || dev.videoOutputs);
+    add(res.fiz, dev.fizConnectors || dev.fizConnector);
+    if (dev.pinA || dev.dtapA) {
+        if (dev.pinA) res.powerOut.push('Pin');
+        if (dev.dtapA) res.powerOut.push('D-Tap');
+    }
+    const uniq = arr => Array.from(new Set(arr.filter(Boolean)));
+    return {
+        powerIn: uniq(res.powerIn),
+        powerOut: uniq(res.powerOut),
+        fiz: uniq(res.fiz),
+        videoIn: uniq(res.videoIn),
+        videoOut: uniq(res.videoOut)
+    };
+}
+
+function buildPortTooltip(cat, name) {
+    let dev = null;
+    if (cat === 'camera') dev = devices.cameras[name];
+    else if (cat === 'monitor') dev = devices.monitors[name];
+    else if (cat === 'video') dev = devices.video[name];
+    else if (cat === 'battery') dev = devices.batteries[name];
+    else if (cat === 'plate') dev = devices.plates && devices.plates[name];
+    else if (cat === 'distance') dev = devices.distance && devices.distance[name];
+    else if (cat === 'motor') dev = devices.fiz?.motors?.[name];
+    else if (cat === 'controller') dev = devices.fiz?.controllers?.[name];
+
+    const ports = collectPorts(dev);
+    const line = (label, arr) => `${label}: ${arr.length ? arr.join(', ') : 'None'}`;
+    const lines = [
+        line('Power in Ports', ports.powerIn),
+        line('Power out Ports', ports.powerOut),
+        line('FIZ Ports', ports.fiz),
+        line('Video in Ports', ports.videoIn),
+        line('Video out Ports', ports.videoOut)
+    ];
+    return lines.join('\n');
 }
 
 // Recursively format a device data object into nested HTML lists
