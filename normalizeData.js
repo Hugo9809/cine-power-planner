@@ -8,6 +8,22 @@ function unifyFizConnectorTypes() {
   const map = {
     'LEMO 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
     'Lemo 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
+    'LBUS (4-pin Lemo)': 'LBUS (LEMO 4-pin)',
+    'LBUS (4-pin Lemo for motors), CAM (7-pin Lemo for camera control)':
+      'LBUS (LEMO 4-pin for motors), CAM (LEMO 7-pin for camera control)',
+    '2x LBUS (4-pin Lemo for motors), 2x SERIAL (4-pin Lemo), CAM (7-pin Lemo), EXT (6-pin/16-pin depending on camera)':
+      '2x LBUS (LEMO 4-pin for motors), 2x SERIAL (LEMO 4-pin), CAM (LEMO 7-pin), EXT (6-pin/16-pin depending on camera)',
+    '2x LBUS (4-pin Lemo), 1x CAM (7-pin Lemo), 1x SERIAL (4-pin Lemo)':
+      '2x LBUS (LEMO 4-pin), 1x CAM (LEMO 7-pin), 1x SERIAL (LEMO 4-pin)',
+    '2x LBUS (4-pin Lemo)': '2x LBUS (LEMO 4-pin)',
+    '3x Motor ports (4-pin Lemo), 1x Camera (7-pin Lemo), 1x EXT (4-pin Lemo)':
+      '3x Motor ports (LEMO 4-pin), 1x Camera (LEMO 7-pin), 1x EXT (LEMO 4-pin)',
+    'Multiple LBUS ports (4-pin Lemo)': 'Multiple LBUS ports (LEMO 4-pin)',
+    '6x Motor ports (proprietary Lemo), 1x Camera (7-pin Lemo), 1x Accessory (4-pin Lemo), 1x Ethernet, 1x USB':
+      '6x Motor ports (proprietary Lemo), 1x Camera (LEMO 7-pin), 1x Accessory (LEMO 4-pin), 1x Ethernet, 1x USB',
+    'USB-C, LEMO 2-pin (power out), 4-pin Lemo (data to MDR)':
+      'USB-C, LEMO 2-pin (power out), LEMO 4-pin (data to MDR)',
+    'Lemo 4-pin (LBUS), 7-pin Lemo (CAM)': 'LBUS (LEMO 4-pin), CAM (LEMO 7-pin)',
     'EXT (LEMO 7-pin)': 'EXT LEMO 7-pin',
     'Hirose 12pin': 'Hirose 12-pin',
     '12-pin Hirose': 'Hirose 12-pin',
@@ -25,7 +41,16 @@ function unifyFizConnectorTypes() {
     '2.5 mm Sub-Mini (LANC)': 'LANC',
     'REMOTE A (2.5mm)': 'REMOTE A connector',
     'Remote Control Terminal': 'REMOTE A connector',
-    'Remote 8 pin': 'REMOTE B connector'
+    'Remote 8 pin': 'REMOTE B connector',
+    'Lemo 4-pin': 'LEMO 4-pin',
+    '4-pin Lemo': 'LEMO 4-pin',
+    '4-pin 0B Lemo': 'LEMO 4-pin 0B',
+    'Lemo 5-pin 0B': 'LEMO 5-pin 0B',
+    '7-pin Lemo': 'LEMO 7-pin',
+    '7-pin Lemo (LCS)': 'LEMO 7-pin (LCS)',
+    'Lemo 7-pin 1B': 'LEMO 7-pin 1B',
+    '2x Motor Ports (proprietary 7-pin Lemo), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)':
+      '2x Motor Ports (proprietary LEMO 7-pin), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)'
   };
   for (const cam of Object.values(devices.cameras)) {
     const list = cam.fizConnectors;
@@ -35,6 +60,18 @@ function unifyFizConnectorTypes() {
           conn.type = map[conn.type];
         }
       });
+    }
+  }
+
+  for (const motor of Object.values(devices.fiz?.motors || {})) {
+    if (motor.connector && map[motor.connector]) {
+      motor.connector = map[motor.connector];
+    }
+  }
+
+  for (const controller of Object.values(devices.fiz?.controllers || {})) {
+    if (controller.FIZ_connector && map[controller.FIZ_connector]) {
+      controller.FIZ_connector = map[controller.FIZ_connector];
     }
   }
 }
