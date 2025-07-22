@@ -341,6 +341,12 @@ button:disabled {
   stroke-width: 2px;
 }
 
+#setupDiagram .diagram-placeholder {
+  font-style: italic;
+  color: #666;
+  margin: 0;
+}
+
 body.dark-mode #setupDiagram .node-box {
   fill: #333;
   stroke: #ddd;
@@ -348,6 +354,10 @@ body.dark-mode #setupDiagram .node-box {
 
 body.dark-mode #setupDiagram line {
   stroke: #ddd;
+}
+
+body.dark-mode #setupDiagram .diagram-placeholder {
+  color: #bbb;
 }
 
 /* Battery comparison section */
