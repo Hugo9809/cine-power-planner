@@ -326,8 +326,24 @@ function getCameraOutputType(camName, portType) {
 
 function controllerCamPort(name) {
   const c = devices.fiz?.controllers?.[name];
-  if (!c || !c.FIZ_connector) return 'LBUS';
-  return /CAM/i.test(c.FIZ_connector) ? 'Cam' : 'LBUS';
+  if (c) {
+    if (/UMC-4/i.test(name)) return '3-Pin R/S';
+    if (/CAM/i.test(c.FIZ_connector || '')) return 'Cam';
+  }
+  const m = devices.fiz?.motors?.[name];
+  if (m && /CAM/i.test(m.connector || '')) return 'Cam';
+  return 'LBUS';
+}
+
+function controllerPriority(name) {
+  if (/RIA-1/i.test(name) || /UMC-4/i.test(name)) return 0;
+  return 1;
+}
+
+function motorPriority(name) {
+  const m = devices.fiz?.motors?.[name];
+  if (m && m.internalController && /CAM/i.test(m.connector || '')) return 0;
+  return 1;
 }
 
 function updateBatteryPlateVisibility() {
@@ -476,8 +492,10 @@ function checkArriCompatibility() {
   const compatElem = document.getElementById('compatWarning');
   if (!compatElem || compatElem.textContent) return;
 
-  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  let motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  motors.sort((a, b) => motorPriority(a) - motorPriority(b));
+  let controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
   const distance = distanceSelect.value;
 
   const usesUMC4 = controllers.some(n => /UMC-4/i.test(n));
@@ -2719,8 +2737,10 @@ function renderSetupDiagram() {
 
   const distanceName = distanceSelect.value;
 
-  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  let motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  motors.sort((a, b) => motorPriority(a) - motorPriority(b));
+  let controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
 
   const inlineControllers = controllers.filter(c => !/Nucleus-M Hand Grip|Nucleus-M II Handle/i.test(c));
   const directControllers = controllers.filter(c => /Nucleus-M Hand Grip|Nucleus-M II Handle/i.test(c));
@@ -2839,12 +2859,25 @@ function renderSetupDiagram() {
   }
 
   let chain = [];
+  const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
+  if (controllerIds.length) {
+    chain.push(controllerIds[0]);
+  } else if (useMotorFirst) {
+    chain.push(motorIds[0]);
+  }
   if (distanceName && distanceName !== 'None') chain.push('distance');
-  chain = chain.concat(controllerIds, motorIds);
+  chain = chain.concat(controllerIds.slice(1), useMotorFirst ? motorIds.slice(1) : motorIds);
 
   if (cam && chain.length) {
     const first = chain[0];
-    const firstName = inlineControllers.length ? inlineControllers[0] : null;
+    let firstName = null;
+    if (first.startsWith('controller')) {
+      const idx = controllerIds.indexOf(first);
+      firstName = inlineControllers[idx] || controllers[idx];
+    } else if (first.startsWith('motor')) {
+      const idx = motorIds.indexOf(first);
+      firstName = motors[idx];
+    }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
     edges.push({ from: 'camera', to: first, label: formatConnLabel('LBUS', port) });
   } else if (motorIds.length && cam) {
