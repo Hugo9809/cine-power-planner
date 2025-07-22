@@ -55,6 +55,9 @@ const texts = {
 
     incompatibleFIZWarning: "WARNING: incompatible FIZ brands selected.",
     missingFIZControllerWarning: "ERROR: FIZ motors require a controller with LBUS/CAM connection.",
+    arriUMC4Warning: "WARNING: UMC-4 only works with CLM-4 and CLM-5 motors.",
+    arriRIA1Warning: "WARNING: RIA-1 or cforce RF controllers are not compatible with CLM-4/5.",
+    distanceControllerWarning: "WARNING: Distance units require UMC-4, RIA-1 or cforce RF.",
 
     category_cameras: "Cameras",
     category_monitors: "Monitors",
@@ -239,6 +242,9 @@ const texts = {
 
     incompatibleFIZWarning: "ADVERTENCIA: se seleccionaron marcas FIZ incompatibles.",
     missingFIZControllerWarning: "ERROR: los motores FIZ requieren un controlador con LBUS/CAM.",
+    arriUMC4Warning: "ADVERTENCIA: UMC-4 solo funciona con los motores CLM-4 y CLM-5.",
+    arriRIA1Warning: "ADVERTENCIA: los controladores RIA-1 y cforce RF no son compatibles con CLM-4/5.",
+    distanceControllerWarning: "ADVERTENCIA: las unidades de distancia requieren UMC-4, RIA-1 o cforce RF.",
 
     category_cameras: "Cámaras",
     category_monitors: "Monitores",
@@ -421,6 +427,9 @@ const texts = {
 
     incompatibleFIZWarning: "ATTENTION : des marques FIZ incompatibles sont sélectionnées.",
     missingFIZControllerWarning: "ERREUR : les moteurs FIZ nécessitent un contrôleur LBUS/CAM.",
+    arriUMC4Warning: "ATTENTION : le UMC-4 fonctionne uniquement avec les moteurs CLM-4 et CLM-5.",
+    arriRIA1Warning: "ATTENTION : les contrôleurs RIA-1 et cforce RF ne sont pas compatibles avec les CLM-4/5.",
+    distanceControllerWarning: "ATTENTION : les unités de distance requièrent un UMC-4, un RIA-1 ou un cforce RF.",
 
     category_cameras: "Caméras",
     category_monitors: "Moniteurs",
@@ -603,6 +612,9 @@ const texts = {
 
     incompatibleFIZWarning: "WARNUNG: Inkompatible FIZ-Marken ausgewählt.",
     missingFIZControllerWarning: "FEHLER: FIZ-Motoren benötigen einen Controller mit LBUS/CAM.",
+    arriUMC4Warning: "WARNUNG: UMC-4 funktioniert nur mit den Motoren CLM-4 und CLM-5.",
+    arriRIA1Warning: "WARNUNG: RIA-1 und cforce RF sind nicht mit CLM-4/5 kompatibel.",
+    distanceControllerWarning: "WARNUNG: Distanzgeräte werden nur von UMC-4, RIA-1 oder cforce RF unterstützt.",
 
     category_cameras: "Kameras",
     category_monitors: "Monitore",
