@@ -7,8 +7,7 @@
     "lint": "eslint .",
     "check-consistency": "node checkConsistency.js",
     "normalize": "node normalizeData.js",
-    "test": "npm run lint && npm run check-consistency && jest",
-    "start": "node server.js"
+    "test": "npm run lint && npm run check-consistency && jest"
   },
   "keywords": [],
   "author": "",
@@ -22,11 +21,5 @@
     "jest-environment-jsdom": "^30.0.4",
     "jest-localstorage-mock": "^2.4.26"
   },
-  "dependencies": {
-    "express": "^4.19.2",
-    "express-session": "^1.17.4",
-    "passport": "^0.7.0",
-    "passport-github2": "^0.1.12",
-    "node-fetch": "^2.6.7"
-  }
+  "dependencies": {}
 }
