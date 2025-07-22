@@ -3544,6 +3544,41 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
+// Recursively format a device data object into nested HTML lists
+function formatDeviceDataHtml(data) {
+    if (!data || typeof data !== 'object') {
+        return escapeHtml(String(data));
+    }
+    const buildList = (obj) => {
+        let html = '<ul class="device-data">';
+        for (const [key, value] of Object.entries(obj)) {
+            if (value === undefined || value === null || value === '') continue;
+            html += '<li><strong>' + escapeHtml(key) + '</strong>: ';
+            if (typeof value === 'object') {
+                if (Array.isArray(value)) {
+                    if (value.length === 0) {
+                        html += '[]';
+                    } else {
+                        html += '<ul class="device-data">';
+                        for (const val of value) {
+                            html += '<li>' + (typeof val === 'object' ? buildList(val) : escapeHtml(String(val))) + '</li>';
+                        }
+                        html += '</ul>';
+                    }
+                } else {
+                    html += buildList(value);
+                }
+            } else {
+                html += escapeHtml(String(value));
+            }
+            html += '</li>';
+        }
+        html += '</ul>';
+        return html;
+    };
+    return buildList(data);
+}
+
 function generatePrintableOverview() {
     const setupName = setupNameInput.value;
     const now = new Date();
@@ -3552,27 +3587,25 @@ function generatePrintableOverview() {
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const t = texts[currentLang];
 
-    let deviceListHtml = '<ul>';
+    let deviceListHtml = '<ul class="device-overview">';
     const processSelectForOverview = (selectElement, category, subcategory = null) => {
         if (selectElement.value && selectElement.value !== "None") {
             const deviceKey = selectElement.value;
             const deviceName = selectElement.options[selectElement.selectedIndex].text;
-            let consumption;
+            let data;
             if (subcategory) {
-                consumption = devices[category] &&
-                              devices[category][subcategory] &&
-                              devices[category][subcategory][deviceKey];
+                data = devices[category] &&
+                       devices[category][subcategory] &&
+                       devices[category][subcategory][deviceKey];
             } else {
-                consumption = devices[category] && devices[category][deviceKey];
+                data = devices[category] && devices[category][deviceKey];
             }
-            const power = typeof consumption === 'object' ? consumption.power : consumption;
             const safeName = escapeHtml(deviceName);
-            if (power !== undefined && power !== null) {
-                 deviceListHtml += `<li>${safeName} (${power}W)</li>`;
-            } else if (category === 'batteries') { // For batteries, just list name and capacity
-                const capacity = devices.batteries[deviceKey].capacity;
-                deviceListHtml += `<li>${safeName} (${capacity}Wh)</li>`;
+            let details = '';
+            if (data !== undefined && data !== null) {
+                details = formatDeviceDataHtml(data);
             }
+            deviceListHtml += `<li class="device-item"><strong>${safeName}</strong>${details}</li>`;
         }
     };
 
@@ -3768,6 +3801,10 @@ function generatePrintableOverview() {
                 th { background-color: #f2f2f2; }
                 .warning { color: red; font-weight: bold; margin-top: 10px; }
                 .print-btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; background: #f0f0f0; margin-bottom: 20px; }
+                .device-overview { list-style: none; margin-left: 0; padding-left: 0; }
+                .device-item { margin: 5px 0; }
+                .device-data { margin-left: 15px; }
+                .device-data ul { list-style: disc; margin-left: 20px; }
                 /* Styles for Battery Comparison Bars in Overview */
                 .barContainer {
                   width: 100%;
@@ -3817,6 +3854,10 @@ function generatePrintableOverview() {
                 @media print {
                     .print-btn { display: none; }
                     body { margin: 1cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    .device-overview { list-style: none; margin-left: 0; padding-left: 0; }
+                    .device-item { margin: 5px 0; }
+                    .device-data { margin-left: 15px; }
+                    .device-data ul { list-style: disc; margin-left: 20px; }
                     /* Styles for Battery Comparison Bars in Overview for Print */
                     .barContainer {
                       width: 100%;
