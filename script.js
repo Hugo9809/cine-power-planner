@@ -3211,7 +3211,11 @@ function renderSetupDiagram() {
     const path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
     const lx = (from.x + to.x) / 2;
     const ly = (from.y + to.y) / 2 - 8 - labelSpacing;
-    return { path, labelX: lx, labelY: ly, angle: 0 };
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    if (angle > 90 || angle < -90) angle += 180; // keep text upright
+    return { path, labelX: lx, labelY: ly, angle };
   }
 
   function wrapLabel(text, maxLen = 16) {
@@ -3239,7 +3243,7 @@ function renderSetupDiagram() {
     const cls = e.type ? `edge-path ${e.type}` : 'edge-path';
     svg += `<path class="${cls}" d="${path}" />`;
     if (e.label) {
-      const rot = e.angled ? ` transform="rotate(${angle} ${labelX} ${labelY})"` : '';
+      const rot = ` transform="rotate(${angle} ${labelX} ${labelY})"`;
       svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle"${rot}>${escapeHtml(e.label)}</text>`;
     }
   });
