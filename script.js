@@ -11,25 +11,10 @@ const VIDEO_OUTPUT_TYPES = [
   'Micro HDMI'
 ];
 
-// Labels used when a camera with native B-Mount is selected
-const BMOUNT_CURRENT_HIGH_LABEL = {
-  en: 'Total Current (at 33.6V):',
-  de: 'Gesamtstrom (bei 33,6V):',
-  es: 'Corriente Total (a 33.6V):',
-  fr: 'Courant Total (\u00e0 33,6V):'
-};
-const BMOUNT_CURRENT_LOW_LABEL = {
-  en: 'Total Current (at 21.6V):',
-  de: 'Gesamtstrom (bei 21,6V):',
-  es: 'Corriente Total (a 21.6V):',
-  fr: 'Courant Total (\u00e0 21,6V):'
-};
-const BMOUNT_BATTERY_LABEL = {
-  en: 'B-Mount Battery:',
-  de: 'B-Mount Akku:',
-  es: 'Bater\u00eda B-Mount:',
-  fr: 'Batterie B-Mount:'
-};
+// Labels used when a camera with native B-Mount is selected were
+// previously defined here. They are now part of the translations in
+// translations.js under the keys batteryBMountLabel, totalCurrent336Label
+// and totalCurrent216Label.
 
 // Store a deep copy of the initial 'devices' data as defined in data.js.
 // This 'defaultDevices' will be used when reverting the database.
@@ -315,7 +300,7 @@ function updateBatteryLabel() {
   const label = document.getElementById('batteryLabel');
   if (!label) return;
   if (getSelectedPlate() === 'B-Mount') {
-    label.textContent = BMOUNT_BATTERY_LABEL[currentLang] || 'B-Mount Battery:';
+    label.textContent = texts[currentLang].batteryBMountLabel || 'B-Mount Battery:';
   } else {
     label.textContent = texts[currentLang].batteryLabel;
   }
@@ -2322,8 +2307,10 @@ function updateCalculations() {
     totalCurrentHigh = totalWatt / highV;
     totalCurrentLow = totalWatt / lowV;
   }
-  document.getElementById("totalCurrent144Label").textContent = bMountCam ? BMOUNT_CURRENT_HIGH_LABEL[currentLang] : texts[currentLang].totalCurrent144Label;
-  document.getElementById("totalCurrent12Label").textContent = bMountCam ? BMOUNT_CURRENT_LOW_LABEL[currentLang] : texts[currentLang].totalCurrent12Label;
+  document.getElementById("totalCurrent144Label").textContent = bMountCam ?
+    texts[currentLang].totalCurrent336Label : texts[currentLang].totalCurrent144Label;
+  document.getElementById("totalCurrent12Label").textContent = bMountCam ?
+    texts[currentLang].totalCurrent216Label : texts[currentLang].totalCurrent12Label;
   totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
 
@@ -2350,24 +2337,30 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     // Warnings about current draw vs battery limits
     pinWarnElem.textContent = "";
     dtapWarnElem.textContent = "";
+    let pinSeverity = "";
+    let dtapSeverity = "";
     if (totalCurrentLow > maxPinA) {
       pinWarnElem.textContent = texts[currentLang].warnPinExceeded
         .replace("{current}", totalCurrentLow.toFixed(2))
         .replace("{max}", maxPinA);
+      pinSeverity = texts[currentLang].warnPinExceededLevel;
     } else if (totalCurrentLow > maxPinA * 0.8) {
       pinWarnElem.textContent = texts[currentLang].warnPinNear
         .replace("{current}", totalCurrentLow.toFixed(2))
         .replace("{max}", maxPinA);
+      pinSeverity = texts[currentLang].warnPinNearLevel;
     }
     if (!bMountCam) {
       if (totalCurrentLow > maxDtapA) {
         dtapWarnElem.textContent = texts[currentLang].warnDTapExceeded
           .replace("{current}", totalCurrentLow.toFixed(2))
           .replace("{max}", maxDtapA);
+        dtapSeverity = texts[currentLang].warnDTapExceededLevel;
       } else if (totalCurrentLow > maxDtapA * 0.8) {
         dtapWarnElem.textContent = texts[currentLang].warnDTapNear
           .replace("{current}", totalCurrentLow.toFixed(2))
           .replace("{max}", maxDtapA);
+        dtapSeverity = texts[currentLang].warnDTapNearLevel;
       }
     }
     // Show max current capability and status (OK/Warning) for Pin and D-Tap
@@ -2375,9 +2368,9 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       pinWarnElem.textContent = (currentLang === "de") ? `${maxPinA}A max – OK` : `${maxPinA}A max – OK`;
       pinWarnElem.style.color = "green";
     } else {
-      if (pinWarnElem.textContent.startsWith("WARNING") || pinWarnElem.textContent.startsWith("WARNUNG")) {
+      if (pinSeverity === "warning") {
         pinWarnElem.style.color = "red";
-      } else if (pinWarnElem.textContent.startsWith("Note") || pinWarnElem.textContent.startsWith("Hinweis")) {
+      } else if (pinSeverity === "note") {
         pinWarnElem.style.color = "orange";
       } else {
         pinWarnElem.style.color = "";
@@ -2388,9 +2381,9 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         dtapWarnElem.textContent = (currentLang === "de") ? `${maxDtapA}A max – OK` : `${maxDtapA}A max – OK`;
         dtapWarnElem.style.color = "green";
       } else {
-        if (dtapWarnElem.textContent.startsWith("WARNING") || dtapWarnElem.textContent.startsWith("WARNUNG")) {
+        if (dtapSeverity === "warning") {
           dtapWarnElem.style.color = "red";
-        } else if (dtapWarnElem.textContent.startsWith("Note") || dtapWarnElem.textContent.startsWith("Hinweis")) {
+        } else if (dtapSeverity === "note") {
           dtapWarnElem.style.color = "orange";
         } else {
           dtapWarnElem.style.color = "";
@@ -2465,8 +2458,9 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       };
       // Helper to display method label
       const getMethodLabel = (method) => {
-            if (method === "pins") return "<span style=\"color:#FF9800;\">pins only!</span>";
-            if (method === "both pins and D-Tap") return "<span style=\"color:#4CAF50;\">both pins and D-Tap</span>";
+            if (method === "pins") return `<span style="color:#FF9800;">${texts[currentLang].methodPinsOnly}</span>`;
+            if (method === "both pins and D-Tap") return `<span style="color:#4CAF50;">${texts[currentLang].methodPinsAndDTap}</span>`;
+            if (method === "infinite") return `<span style="color:#007bff;">${texts[currentLang].methodInfinite}</span>`;
             return method;
         };
 
@@ -3760,8 +3754,9 @@ function generatePrintableOverview() {
         };
 
         const getMethodLabel = (method) => {
-            if (method === "pins") return "<span style=\"color:#FF9800;\">pins only!</span>";
-            if (method === "both pins and D-Tap") return "<span style=\"color:#4CAF50;\">both pins and D-Tap</span>";
+            if (method === "pins") return `<span style="color:#FF9800;">${texts[currentLang].methodPinsOnly}</span>`;
+            if (method === "both pins and D-Tap") return `<span style="color:#4CAF50;">${texts[currentLang].methodPinsAndDTap}</span>`;
+            if (method === "infinite") return `<span style="color:#007bff;">${texts[currentLang].methodInfinite}</span>`;
             return method;
         };
 
