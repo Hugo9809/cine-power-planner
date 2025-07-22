@@ -2638,7 +2638,7 @@ function renderSetupDiagram() {
 
   const nodes = [];
   const pos = {};
-  const step = 160;
+  const step = 200;
   const baseY = 220;
   let x = 80;
 
@@ -2716,41 +2716,40 @@ function renderSetupDiagram() {
   }
   if (monitor && monitor.power?.input?.portType && batteryName && batteryName !== 'None') {
     const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, monitor.power.input.portType), offset: -20 });
+    edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, monitor.power.input.portType), offset: -40 });
   }
   if (video && video.powerInput && batteryName && batteryName !== 'None') {
     const battMount = devices.batteries[batteryName]?.mount_type;
-    edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, video.powerInput), offset: -20 });
+    edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, video.powerInput), offset: -40 });
   }
   if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
     const vi = (monitor.video?.inputs || monitor.videoInputs)[0];
     const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'monitor', label, offset: 20 });
+    edges.push({ from: 'camera', to: 'monitor', label, offset: 40, angled: true });
   }
   if (cam && video && cam.videoOutputs?.length && (video.videoInputs?.length || video.video?.inputs?.length)) {
     const vi = (video.videoInputs || (video.video ? video.video.inputs : []))[0];
     const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'video', label, offset: 20 });
+    edges.push({ from: 'camera', to: 'video', label, offset: 40, angled: true });
   }
 
-  if (inlineControllers.length && motorIds.length) {
-    const firstCtrl = controllerIds[0];
-    edges.push({ from: 'camera', to: firstCtrl, label: formatConnLabel('LBUS', controllerCamPort(inlineControllers[0])) });
-    for (let i = 0; i < inlineControllers.length - 1; i++) {
-      edges.push({ from: controllerIds[i], to: controllerIds[i + 1], label: formatConnLabel(controllerCamPort(inlineControllers[i]), controllerCamPort(inlineControllers[i + 1])) });
-    }
-    edges.push({ from: controllerIds[inlineControllers.length - 1], to: motorIds[0], label: formatConnLabel('LBUS', 'LBUS') });
+  let chain = [];
+  if (distanceName && distanceName !== 'None') chain.push('distance');
+  chain = chain.concat(controllerIds, motorIds);
+
+  if (cam && chain.length) {
+    const first = chain[0];
+    const firstName = inlineControllers.length ? inlineControllers[0] : null;
+    const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
+    edges.push({ from: 'camera', to: first, label: formatConnLabel('LBUS', port) });
   } else if (motorIds.length && cam) {
     edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel('LBUS', 'LBUS') });
   }
 
-  for (let i = 0; i < motorIds.length - 1; i++) {
-    edges.push({ from: motorIds[i], to: motorIds[i + 1], label: formatConnLabel('LBUS', 'LBUS') });
-  }
-
-  if (distanceName && distanceName !== 'None') {
-    const attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
-    if (attach) edges.push({ from: 'distance', to: attach, label: formatConnLabel('LBUS', 'LBUS') });
+  for (let i = 0; i < chain.length - 1; i++) {
+    const a = chain[i];
+    const b = chain[i + 1];
+    edges.push({ from: a, to: b, label: formatConnLabel('LBUS', 'LBUS') });
   }
 
   directControllers.forEach((name, idx) => {
@@ -2777,8 +2776,9 @@ function renderSetupDiagram() {
     const sy = from.y;
     const tx = to.x;
     const ty = to.y;
+    const angleBetween = Math.atan2(ty - sy, tx - sx) * 180 / Math.PI;
     let path = "";
-    let lx = 0, ly = 0;
+    let lx = 0, ly = 0, ang = angleBetween;
 
     if (Math.abs(sy - ty) < 1) {
       const minX = Math.min(sx, tx);
@@ -2791,10 +2791,12 @@ function renderSetupDiagram() {
         path = `M ${fromEdgeX} ${sy} L ${fromEdgeX} ${viaY} L ${toEdgeX} ${viaY} L ${toEdgeX} ${ty}`;
         lx = (fromEdgeX + toEdgeX) / 2;
         ly = viaY - 5;
+        ang = angleBetween;
       } else {
         path = `M ${fromEdgeX} ${sy + offset} L ${toEdgeX} ${ty + offset}`;
         lx = (fromEdgeX + toEdgeX) / 2;
         ly = sy + offset - 10;
+        ang = angleBetween;
       }
     } else {
       const fromEdgeY = sy + (ty > sy ? NODE_H / 2 : -NODE_H / 2);
@@ -2803,8 +2805,9 @@ function renderSetupDiagram() {
       path = `M ${sx} ${fromEdgeY} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${toEdgeY}`;
       lx = (sx + tx) / 2;
       ly = viaY - 5;
+      ang = angleBetween;
     }
-    return { path, labelX: lx, labelY: ly };
+    return { path, labelX: lx, labelY: ly, angle: ang };
   }
 
   let svg = `<svg viewBox="0 0 ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
@@ -2812,11 +2815,12 @@ function renderSetupDiagram() {
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
-    const { path, labelX, labelY } = computePath(e.from, e.to, e.offset || 0);
+    const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.offset || 0);
     if (!path) return;
     svg += `<path class="edge-path" d="${path}" marker-end="url(#arrow)" />`;
     if (e.label) {
-      svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle">${escapeHtml(e.label)}</text>`;
+      const rot = e.angled ? ` transform="rotate(${angle} ${labelX} ${labelY})"` : '';
+      svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle"${rot}>${escapeHtml(e.label)}</text>`;
     }
   });
 
