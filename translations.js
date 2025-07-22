@@ -12,6 +12,7 @@ const texts = {
     deviceManagerHeading: "Manage Device Database",
     batteryComparisonHeading: "Battery Comparison",
     setupDiagramHeading: "Setup Diagram",
+    setupDiagramPlaceholder: "Select devices to visualize the setup.",
 
     savedSetupsLabel: "Saved Setups:",
     newSetupOption: "-- New Setup --",
@@ -192,6 +193,7 @@ const texts = {
     deviceManagerHeading: "Gestionar Base de Datos",
     batteryComparisonHeading: "Comparación de Baterías",
     setupDiagramHeading: "Diagrama de Configuración",
+    setupDiagramPlaceholder: "Elige dispositivos para visualizar el diagrama.",
 
     savedSetupsLabel: "Configuraciones Guardadas:",
     newSetupOption: "-- Nueva Configuración --",
@@ -370,6 +372,7 @@ const texts = {
     deviceManagerHeading: "Gérer la Base de Données",
     batteryComparisonHeading: "Comparaison des Batteries",
     setupDiagramHeading: "Diagramme de Configuration",
+    setupDiagramPlaceholder: "Sélectionnez des appareils pour afficher le schéma.",
 
     savedSetupsLabel: "Configurations Enregistrées:",
     newSetupOption: "-- Nouvelle Configuration --",
@@ -548,6 +551,7 @@ const texts = {
     deviceManagerHeading: "Geräte-Datenbank verwalten",
     batteryComparisonHeading: "Akkuvergleich",
     setupDiagramHeading: "Setup-Diagramm",
+    setupDiagramPlaceholder: "Geräte auswählen, um das Diagramm zu sehen.",
 
     savedSetupsLabel: "Gespeicherte Setups:",
     newSetupOption: "-- Neues Setup --",
