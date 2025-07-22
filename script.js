@@ -345,6 +345,12 @@ function controllerCamPort(name) {
   return 'LBUS';
 }
 
+function controllerDistancePort(name) {
+  const c = devices.fiz?.controllers?.[name];
+  if (c && /SERIAL/i.test(c.FIZ_connector || '')) return 'Serial';
+  return 'LBUS';
+}
+
 function controllerPriority(name) {
   if (/RIA-1/i.test(name) || /UMC-4/i.test(name)) return 0;
   return 1;
@@ -3051,7 +3057,8 @@ function renderSetupDiagram() {
 
   if (dedicatedDistance && controllerIds.length && distanceSelected) {
     const ctrlName = inlineControllers[0] || controllers[0];
-    const portLabel = formatConnLabel(fizPort(ctrlName), 'LBUS');
+    const distPort = controllerDistancePort(ctrlName);
+    const portLabel = formatConnLabel(fizPort(ctrlName), distPort);
     pushEdge({ from: controllerIds[0], to: 'distance', label: portLabel, noArrow: true }, 'fiz');
   }
 
