@@ -2895,39 +2895,40 @@ function renderSetupDiagram() {
 
   let chain = [];
   const edges = [];
+  const pushEdge = (edge, type) => edges.push({ ...edge, type });
   const nativePlate = plateType && isSelectedPlateNative(camName);
   const battMount = devices.batteries[batteryName]?.mount_type;
   if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
     if (nativePlate) {
-      edges.push({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType) });
+      pushEdge({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType) }, 'power');
       const lbl = /^Arri Alexa Mini( LF)?$/i.test(camName) ? formatConnLabel(plateType, cam.power.input.portType) : '';
-      edges.push({ from: 'plate', to: 'camera', label: lbl });
+      pushEdge({ from: 'plate', to: 'camera', label: lbl }, 'power');
     } else {
-      edges.push({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType) });
+      pushEdge({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType) }, 'power');
     }
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
-    const powerEdgeOpts = { offset: -60, labelSpacing: 5, toSide: 'left' };
+    const powerEdgeOpts = { offset: -60, labelSpacing: 5, fromSide: 'bottom-left', toSide: 'left' };
     if (nativePlate) {
-      edges.push({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), ...powerEdgeOpts });
+      pushEdge({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), ...powerEdgeOpts }, 'power');
     } else if (batteryName && batteryName !== 'None') {
-      edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), ...powerEdgeOpts });
+      pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), ...powerEdgeOpts }, 'power');
     } else if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, mPort);
-      edges.push({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), ...powerEdgeOpts });
+      pushEdge({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), ...powerEdgeOpts }, 'power');
     }
   }
   if (video && video.powerInput) {
     const pPort = video.powerInput;
-    const powerEdgeOpts = { offset: -60, labelSpacing: 5, toSide: 'left' };
+    const powerEdgeOpts = { offset: -60, labelSpacing: 5, fromSide: 'bottom-left', toSide: 'left' };
     if (nativePlate) {
-      edges.push({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), ...powerEdgeOpts });
+      pushEdge({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), ...powerEdgeOpts }, 'power');
     } else if (batteryName && batteryName !== 'None') {
-      edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), ...powerEdgeOpts });
+      pushEdge({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), ...powerEdgeOpts }, 'power');
     } else if (cameraCanPower(camName, pPort, video.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, pPort);
-      edges.push({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), ...powerEdgeOpts });
+      pushEdge({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), ...powerEdgeOpts }, 'power');
     }
   }
   if (cam && cam.videoOutputs?.length) {
@@ -2947,15 +2948,15 @@ function renderSetupDiagram() {
     const labelMonitorVideo = connectionLabel(monOut || camOut, vidIn);
     if (singleOut) {
       if (vidOut) {
-        edges.push({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 });
-        if (monIn) edges.push({ from: 'video', to: 'monitor', label: labelVideoMonitor, offset: 60, angled: true, labelSpacing: 5 });
+        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+        if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
       } else {
-        if (monIn) edges.push({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 });
-        if (vidIn) edges.push({ from: 'monitor', to: 'video', label: labelMonitorVideo, offset: 60, angled: true, labelSpacing: 5 });
+        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+        if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
       }
     } else {
-      if (monitor && monIn) edges.push({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 });
-      if (video && vidIn) edges.push({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 });
+      if (monitor && monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+      if (video && vidIn) pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
     }
   }
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
@@ -2979,10 +2980,10 @@ function renderSetupDiagram() {
     }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
     const camPort = cameraFizPort(camName, port);
-    edges.push({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true });
+    pushEdge({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true }, 'fiz');
   } else if (motorIds.length && cam) {
     const camPort = cameraFizPort(camName, motorFizPort(motors[0]));
-    edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true });
+    pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true }, 'fiz');
   }
 
   for (let i = 0; i < chain.length - 1; i++) {
@@ -2993,13 +2994,13 @@ function renderSetupDiagram() {
     else if (a.startsWith('motor')) fromName = motors[motorIds.indexOf(a)];
     if (b.startsWith('controller')) toName = inlineControllers[controllerIds.indexOf(b)] || controllers[controllerIds.indexOf(b)];
     else if (b.startsWith('motor')) toName = motors[motorIds.indexOf(b)];
-    edges.push({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)), noArrow: true });
+    pushEdge({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)), noArrow: true }, 'fiz');
   }
 
   directControllers.forEach((name, idx) => {
     if (!motorIds.length) return;
     const id = `directCtrl${idx}`;
-    edges.push({ from: id, to: motorIds[0], label: 'ctrl', noArrow: true });
+    pushEdge({ from: id, to: motorIds[0], label: 'ctrl', noArrow: true }, 'fiz');
   });
 
 
@@ -3015,7 +3016,7 @@ function renderSetupDiagram() {
     }
     if (fizNeedsPower(name)) {
       const powerSrc = nativePlate ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
-      if (powerSrc) edges.push({ from: powerSrc, to: mainFizId, label: 'DC', offset: 80, fromSide: 'bottom-left', toSide: 'bottom' });
+      if (powerSrc) pushEdge({ from: powerSrc, to: mainFizId, label: 'DC', offset: 80, fromSide: 'bottom-left', toSide: 'bottom' }, 'power');
     }
   }
   if (nodes.length === 0) {
@@ -3092,6 +3093,22 @@ function renderSetupDiagram() {
     return { path, labelX: lx, labelY: ly, angle: ang };
   }
 
+  function wrapLabel(text, maxLen = 16) {
+    const words = text.split(' ');
+    const lines = [];
+    let line = '';
+    words.forEach(w => {
+      if ((line + ' ' + w).trim().length > maxLen && line) {
+        lines.push(line.trim());
+        line = w;
+      } else {
+        line += ` ${w}`;
+      }
+    });
+    if (line.trim()) lines.push(line.trim());
+    return lines;
+  }
+
   let svg = `<svg viewBox="0 ${minY - NODE_H/2 - 20} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
   svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
 
@@ -3100,7 +3117,8 @@ function renderSetupDiagram() {
     const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.offset || 0, e.labelSpacing || 0, e);
     if (!path) return;
     const arrowAttr = e.noArrow ? '' : ' marker-end="url(#arrow)"';
-    svg += `<path class="edge-path" d="${path}"${arrowAttr} />`;
+    const cls = e.type ? `edge-path ${e.type}` : 'edge-path';
+    svg += `<path class="${cls}" d="${path}"${arrowAttr} />`;
     if (e.label) {
       const rot = e.angled ? ` transform="rotate(${angle} ${labelX} ${labelY})"` : '';
       svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle"${rot}>${escapeHtml(e.label)}</text>`;
@@ -3119,9 +3137,15 @@ function renderSetupDiagram() {
     }
     if (icon) {
       svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
-      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">${escapeHtml(p.label || id)}</text>`;
+      const lines = wrapLabel(p.label || id);
+      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
+      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
+      svg += `</text>`;
     } else {
-      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">${escapeHtml(p.label || id)}</text>`;
+      const lines = wrapLabel(p.label || id);
+      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">`;
+      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
+      svg += `</text>`;
     }
   });
 
