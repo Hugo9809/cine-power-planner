@@ -1,9 +1,9 @@
 services:
   - type: web
     name: camera-power-planner
-    env: node
+    runtime: node
     buildCommand: 'npm install'
-    startCommand: 'npm start'
+    startCommand: 'node server.js'
     envVars:
       - key: GITHUB_CLIENT_ID
         sync: false
