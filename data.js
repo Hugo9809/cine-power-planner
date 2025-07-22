@@ -6725,9 +6725,8 @@ let devices={
       "Arri OCU-1": {
         "powerDrawWatts": 1.32,
         "fizConnectors": [
-          {
-            "type": "LBUS (LEMO 4-pin)"
-          }
+          { "type": "LBUS (LEMO 4-pin)", "notes": "built-in cable" },
+          { "type": "LBUS (LEMO 4-pin)", "notes": "daisy chain port" }
         ],
         "power_source": "External (via LBUS)",
         "battery_type": "N/A",
@@ -6754,27 +6753,22 @@ let devices={
         "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+ZMU-4+%28body+only%2C+wired%29"
       },
       "Arri UMC-4": {
-        "powerDrawWatts": 1.68,
+        "powerDrawWatts": 4,
         "fizConnectors": [
-          {
-            "type": "LBUS (LEMO 4-pin)",
-            "notes": "for motors"
-          },
-          {
-            "type": "SERIAL (LEMO 4-pin)"
-          },
-          {
-            "type": "CAM (LEMO 7-pin)"
-          },
-          {
-            "type": "EXT",
-            "notes": "6-pin/16-pin depending on camera"
-          }
+          { "type": "Serial (LEMO 7-pin)" },
+          { "type": "Serial (LEMO 7-pin)" },
+          { "type": "LCS (LEMO 7-pin)", "notes": "adapter available to LBUS" },
+          { "type": "CAM (LEMO 7-pin)" },
+          { "type": "RS (Fischer 3-pin)", "notes": "power via D-Tap" },
+          { "type": "Timecode (LEMO 5-pin)" },
+          { "type": "Motor (LEMO 12-pin)" },
+          { "type": "Motor (LEMO 12-pin)" },
+          { "type": "Motor (LEMO 12-pin)" }
         ],
-        "power_source": "External DC (via CAM or LBUS chain)",
+        "power_source": "External DC (via RS)",
         "battery_type": "N/A (no internal battery)",
-        "connectivity": "Wireless (proprietary ARRI radio system, works with WCU-4, SXU-1, Master Grips, cmotion pan-bar zoom), Wired (LBUS, CAM, SERIAL)",
-        "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support. Only compatible with ARRI CLM-4 and CLM-5 motors, which require a UMC-4 for operation.",
+        "connectivity": "Wireless (2.4\u202fGHz ARRI radio, works with WCU-4/Hi-5) or Wired (LCS, CAM, Serial)",
+        "notes": "3\u2011axis motor controller providing lens data and timecode. Works with CLM-4/5 motors and, via LCS\u2011to\u2011LBUS cable, with cforce motors.",
         "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+UMC-4"
       },
       "Arri RIA-1": {
