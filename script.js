@@ -2096,7 +2096,9 @@ function filterSelect(selectElem, filterValue) {
 function filterDeviceList(listElem, filterValue) {
   const text = filterValue.toLowerCase();
   Array.from(listElem.querySelectorAll('li')).forEach(li => {
-    if (text === '' || li.textContent.toLowerCase().includes(text)) {
+    const nameSpan = li.querySelector('.device-summary span');
+    const name = nameSpan ? nameSpan.textContent.toLowerCase() : '';
+    if (text === '' || name.includes(text)) {
       li.style.display = '';
     } else {
       li.style.display = 'none';
