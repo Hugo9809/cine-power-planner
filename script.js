@@ -358,6 +358,10 @@ function motorPriority(name) {
 function isArriOrCmotion(name) {
   return /^(ARRI|Arri)/i.test(name) || /cmotion/i.test(name);
 }
+
+function isArri(name) {
+  return /arri/i.test(name);
+}
 function fizNeedsPower(name) {
   const d = devices.fiz?.controllers?.[name] || devices.fiz?.motors?.[name];
   if (!d) return false;
@@ -2875,10 +2879,21 @@ function renderSetupDiagram() {
     nodes.push('video');
   }
 
+  let inlineDistance = false;
+  let dedicatedDistance = false;
   if (distanceName && distanceName !== 'None') {
     const attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
     if (attach) {
-      pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
+      const arriDevices = [...inlineControllers, ...motors].some(n => isArri(n));
+      const hasDedicatedPort = inlineControllers.some(n => /RIA-1/i.test(n) || /UMC-4/i.test(n));
+      dedicatedDistance = hasDedicatedPort && arriDevices;
+      inlineDistance = arriDevices && !hasDedicatedPort && inlineControllers.length;
+      if (inlineDistance && motorIds.length) {
+        const nextId = motorIds[0];
+        pos.distance = { x: (pos[attach].x + pos[nextId].x) / 2, y: baseY - step, label: distanceName };
+      } else {
+        pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
+      }
       nodes.push('distance');
     }
   }
@@ -2960,13 +2975,20 @@ function renderSetupDiagram() {
     }
   }
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
+  const distanceSelected = distanceName && distanceName !== 'None';
+  const distanceInChain = distanceSelected && !dedicatedDistance;
   if (controllerIds.length) {
     chain.push(controllerIds[0]);
-  } else if (useMotorFirst) {
-    chain.push(motorIds[0]);
+    if (inlineDistance && distanceInChain) chain.push('distance');
+    else if (distanceInChain && !inlineDistance) chain.push('distance');
+    chain = chain.concat(controllerIds.slice(1));
+    if (!(inlineDistance && distanceInChain)) chain = chain.concat(useMotorFirst ? motorIds.slice(1) : motorIds);
+    else chain = chain.concat(motorIds);
+  } else {
+    if (useMotorFirst) chain.push(motorIds[0]);
+    if (distanceInChain) chain.push('distance');
+    chain = chain.concat(useMotorFirst ? motorIds.slice(1) : motorIds);
   }
-  if (distanceName && distanceName !== 'None') chain.push('distance');
-  chain = chain.concat(controllerIds.slice(1), useMotorFirst ? motorIds.slice(1) : motorIds);
 
   if (cam && chain.length) {
     const first = chain[0];
@@ -3003,16 +3025,19 @@ function renderSetupDiagram() {
     pushEdge({ from: id, to: motorIds[0], label: 'ctrl', noArrow: true }, 'fiz');
   });
 
+  if (dedicatedDistance && controllerIds.length && distanceSelected) {
+    const ctrlName = inlineControllers[0] || controllers[0];
+    const portLabel = formatConnLabel(fizPort(ctrlName), 'LBUS');
+    pushEdge({ from: controllerIds[0], to: 'distance', label: portLabel, noArrow: true }, 'fiz');
+  }
 
-  const mainFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
+
+  const mainFizId = controllerIds.length ? controllerIds[0] : null;
   if (mainFizId) {
     let name = null;
     if (mainFizId.startsWith('controller')) {
       const idx = controllerIds.indexOf(mainFizId);
       name = inlineControllers[idx] || controllers[idx];
-    } else if (mainFizId.startsWith('motor')) {
-      const idx = motorIds.indexOf(mainFizId);
-      name = motors[idx];
     }
     if (fizNeedsPower(name)) {
       const powerSrc = nativePlate ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
