@@ -3699,7 +3699,7 @@ function generatePrintableOverview() {
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const t = texts[currentLang];
 
-    let deviceListHtml = '';
+    let deviceListHtml = '<div class="device-category-container">';
     const sections = {};
     const sectionOrder = [];
     const addToSection = (key, itemHtml) => {
@@ -3738,10 +3738,11 @@ function generatePrintableOverview() {
     controllerSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_controllers', 'fiz', 'controllers'));
     processSelectForOverview(batterySelect, 'category_batteries', 'batteries'); // Handle battery separately for capacity
 
-    sectionOrder.forEach(key => {
-        const heading = t[key] || key;
-        deviceListHtml += `<div class="device-category"><h3>${heading}</h3><ul class="device-overview">${sections[key].join('')}</ul></div>`;
-    });
+      sectionOrder.forEach(key => {
+          const heading = t[key] || key;
+          deviceListHtml += `<div class="device-category"><h3>${heading}</h3><ul class="device-overview">${sections[key].join('')}</ul></div>`;
+      });
+      deviceListHtml += '</div>';
 
     const resultsHtml = `
         <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent}</p>
@@ -3934,12 +3935,19 @@ function generatePrintableOverview() {
                 .device-item { margin: 5px 0; }
                 .device-data { margin-left: 15px; }
                 .device-data ul { list-style: disc; margin-left: 20px; }
+                .device-category-container {
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 10px;
+                }
                 .device-category {
                   background: #f9f9f9;
                   border: 1px solid #ddd;
                   border-radius: 5px;
                   padding: 10px;
                   margin-bottom: 10px;
+                  flex: 1 1 calc((100% - 20px) / 3);
+                  box-sizing: border-box;
                 }
                 .device-category h3 {
                   margin-top: 0;
@@ -4004,12 +4012,19 @@ function generatePrintableOverview() {
                     .device-item { margin: 5px 0; }
                     .device-data { margin-left: 15px; }
                     .device-data ul { list-style: disc; margin-left: 20px; }
+                    .device-category-container {
+                      display: flex;
+                      flex-wrap: wrap;
+                      gap: 10px;
+                    }
                     .device-category {
-                      background: #fff !important;
+                      background: #f9f9f9 !important;
                       border: 1px solid #ddd !important;
                       border-radius: 5px;
                       padding: 10px;
                       margin-bottom: 10px;
+                      flex: 1 1 calc((100% - 20px) / 3);
+                      box-sizing: border-box;
                     }
                     .device-category h3 {
                       margin-top: 0;
