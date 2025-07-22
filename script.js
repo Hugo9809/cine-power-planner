@@ -3198,15 +3198,13 @@ function renderSetupDiagram() {
   }
 
   let svg = `<svg viewBox="0 ${minY - NODE_H/2 - 20} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
-  svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
     const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.offset || 0, e.labelSpacing || 0, e);
     if (!path) return;
-    const arrowAttr = e.noArrow ? '' : ' marker-end="url(#arrow)"';
     const cls = e.type ? `edge-path ${e.type}` : 'edge-path';
-    svg += `<path class="${cls}" d="${path}"${arrowAttr} />`;
+    svg += `<path class="${cls}" d="${path}" />`;
     if (e.label) {
       const rot = e.angled ? ` transform="rotate(${angle} ${labelX} ${labelY})"` : '';
       svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle"${rot}>${escapeHtml(e.label)}</text>`;
