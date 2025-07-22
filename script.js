@@ -3279,7 +3279,8 @@ function renderSetupDiagram() {
         return [
           { side: 'top', color: 'red' },
           { side: 'right', color: 'red' },
-          { side: 'bottom', color: 'red' }
+          { side: 'bottom', color: 'red' },
+          { side: 'bottom-left', color: 'red' }
         ];
       case 'plate':
         return [
@@ -3334,6 +3335,8 @@ function renderSetupDiagram() {
         return { x: p.x, y: p.y - NODE_H / 2 };
       case 'bottom':
         return { x: p.x, y: p.y + NODE_H / 2 };
+      case 'bottom-left':
+        return { x: p.x - NODE_W / 2 + NODE_W / 3, y: p.y + NODE_H / 2 };
       case 'left':
         return { x: p.x - NODE_W / 2, y: p.y };
       case 'right':
@@ -3376,6 +3379,7 @@ function renderSetupDiagram() {
       let cx = p.x, cy = p.y;
       if (c.side === 'top') { cx = p.x; cy = p.y - NODE_H / 2; }
       else if (c.side === 'bottom') { cx = p.x; cy = p.y + NODE_H / 2; }
+      else if (c.side === 'bottom-left') { cx = p.x - NODE_W / 2 + NODE_W / 3; cy = p.y + NODE_H / 2; }
       else if (c.side === 'left') { cx = p.x - NODE_W / 2; cy = p.y; }
       else if (c.side === 'right') { cx = p.x + NODE_W / 2; cy = p.y; }
       svg += `<circle class="conn ${c.color}" cx="${cx}" cy="${cy}" r="4" />`;
