@@ -3130,20 +3130,20 @@ function renderSetupDiagram() {
   const battMount = devices.batteries[batteryName]?.mount_type;
   if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
     if (nativePlate) {
-      pushEdge({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType) }, 'power');
+      pushEdge({ from: 'battery', to: 'plate', label: formatConnLabel(battMount, plateType), fromSide: 'right', toSide: 'left' }, 'power');
       const lbl = /^Arri Alexa Mini( LF)?$/i.test(camName) ? formatConnLabel(plateType, cam.power.input.portType) : '';
-      pushEdge({ from: 'plate', to: 'camera', label: lbl }, 'power');
+      pushEdge({ from: 'plate', to: 'camera', label: lbl, fromSide: 'right', toSide: 'left' }, 'power');
     } else {
-      pushEdge({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType) }, 'power');
+      pushEdge({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType), fromSide: 'right', toSide: 'left' }, 'power');
     }
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
     const baseOpts = { offset: -60, labelSpacing: 5, toSide: 'left' };
     if (nativePlate) {
-      pushEdge({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), fromSide: 'top-left', ...baseOpts }, 'power');
+      pushEdge({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), fromSide: 'top', ...baseOpts }, 'power');
     } else if (batteryName && batteryName !== 'None') {
-      pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top-left', ...baseOpts }, 'power');
+      pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top', ...baseOpts }, 'power');
     } else if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, mPort);
       pushEdge({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), fromSide: 'bottom-left', ...baseOpts }, 'power');
@@ -3151,7 +3151,7 @@ function renderSetupDiagram() {
   }
   if (video && video.powerInput) {
     const pPort = video.powerInput;
-    const powerEdgeOpts = { offset: -60, labelSpacing: 5, fromSide: 'bottom-left', toSide: 'left' };
+    const powerEdgeOpts = { offset: -60, labelSpacing: 5, fromSide: 'bottom', toSide: 'left' };
     if (nativePlate) {
       pushEdge({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), ...powerEdgeOpts }, 'power');
     } else if (batteryName && batteryName !== 'None') {
@@ -3179,23 +3179,23 @@ function renderSetupDiagram() {
     const labelMonitorVideo = connectionLabel(monOut || camOut, vidIn);
     if (singleOut && hdmiOnly) {
       if (vidOut) {
-        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo + ' (loop to monitor)', routeAround: true }, 'video');
+        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo + ' (loop to monitor)', routeAround: true, fromSide: 'bottom', toSide: 'top' }, 'video');
         if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, routeAround: true }, 'video');
       } else {
-        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor + ' (loop)', routeAround: true }, 'video');
+        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor + ' (loop)', routeAround: true, fromSide: 'top', toSide: 'bottom' }, 'video');
         if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, routeAround: true }, 'video');
       }
     } else if (singleOut) {
       if (vidOut) {
-        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+        pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
         if (monIn) pushEdge({ from: 'video', to: 'monitor', label: labelVideoMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
       } else {
-        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+        if (monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
         if (vidIn) pushEdge({ from: 'monitor', to: 'video', label: labelMonitorVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
       }
     } else {
-      if (monitor && monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5 }, 'video');
-      if (video && vidIn) pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5 }, 'video');
+      if (monitor && monIn) pushEdge({ from: 'camera', to: 'monitor', label: labelCamMonitor, offset: 60, angled: true, labelSpacing: 5, fromSide: 'top', toSide: 'bottom' }, 'video');
+      if (video && vidIn) pushEdge({ from: 'camera', to: 'video', label: labelCamVideo, offset: 60, angled: true, labelSpacing: 5, fromSide: 'bottom', toSide: 'top' }, 'video');
     }
   }
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
