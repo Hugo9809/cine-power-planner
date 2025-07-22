@@ -1,6 +1,7 @@
 let devices={
   "cameras": {
     "Arri Alexa Mini LF": {
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Arri_Alexa_camera.jpg/330px-Arri_Alexa_camera.jpg",
       "powerDrawWatts": 89,
       "power": {
         "input": {
@@ -256,9 +257,11 @@ let devices={
           "type": "EXT LEMO 7-pin",
           "notes": "For multi-camera sync with ARRI EDB-2 EXT Distribution Box"
         }
-      ]
+      ],
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Arri_Alexa_camera.jpg/330px-Arri_Alexa_camera.jpg"
     },
     "Arri Alexa 35": {
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Arri_Alexa_camera.jpg/330px-Arri_Alexa_camera.jpg",
       "powerDrawWatts": 110,
       "power": {
         "input": {
@@ -482,7 +485,8 @@ let devices={
           "type": "BNC",
           "notes": "Yes"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri%2BAmira"
     },
     "Sony Venice 2": {
       "powerDrawWatts": 76,
@@ -642,7 +646,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode Output (AUX)"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Sony%2BVenice%2B2"
     },
     "Sony Venice": {
       "powerDrawWatts": 60,
@@ -802,7 +807,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode Output (AUX)"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Sony%2BVenice"
     },
     "Sony Burano": {
       "powerDrawWatts": 66,
@@ -903,9 +909,11 @@ let devices={
           "type": "USB-C",
           "notes": "For timecode sync via adapter"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Sony%2BBurano"
     },
     "Sony FX3": {
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Sony_FX3_with_Sony_FE_24mm_F1.4_GM_-_by_Henry_S%C3%B6derlund_%2851061907312%2C_cropped%29.jpg/330px-Sony_FX3_with_Sony_FE_24mm_F1.4_GM_-_by_Henry_S%C3%B6derlund_%2851061907312%2C_cropped%29.jpg",
       "powerDrawWatts": 7.3,
       "power": {
         "input": {
@@ -1110,7 +1118,8 @@ let devices={
           "type": "Analog Audio Inputs",
           "notes": "2x mini XLR, 1x 3.5mm stereo input can be used for Timecode input"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Sony%2BFX6"
     },
     "Sony FX9": {
       "powerDrawWatts": 35.2,
@@ -1222,7 +1231,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Sony%2BFX9"
     },
     "Canon C70": {
       "powerDrawWatts": 14.6,
@@ -1292,7 +1302,8 @@ let devices={
         {
           "type": "BNC"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Canon%2BC70"
     },
     "Canon C80": {
       "powerDrawWatts": 19.6,
@@ -1424,7 +1435,8 @@ let devices={
           "type": "BNC",
           "notes": "Time Code In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Canon%2BC80"
     },
     "Canon C300 Mk III": {
       "powerDrawWatts": 31,
@@ -1525,7 +1537,8 @@ let devices={
           "type": "Genlock",
           "notes": "Yes, with optional Expansion Unit EU-V1 and EU-V2 (BNC jack, input only/also serves as SYNC OUT connector)"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Canon%2BC300%2BMk%2BIII"
     },
     "Canon C400": {
       "powerDrawWatts": 32.5,
@@ -1653,7 +1666,8 @@ let devices={
           "type": "Genlock",
           "notes": "DIN1.0 / 2.3 (shared with Sync & Return)"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Canon%2BC400"
     },
     "Canon C500 Mk II": {
       "powerDrawWatts": 63,
@@ -1753,7 +1767,8 @@ let devices={
           "type": "Genlock",
           "notes": "Yes, with optional Expansion Unit EU-V1 and EU-V2 (BNC jack, input only/also serves as SYNC OUT connector)"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Canon%2BC500%2BMk%2BII"
     },
     "Blackmagic BMPCC 4K": {
       "powerDrawWatts": 22,
@@ -1831,7 +1846,8 @@ let devices={
           "type": "3.5mm Stereo Input",
           "notes": "Can also be used for Timecode input"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BBMPCC%2B4K"
     },
     "Blackmagic BMPCC 6K G2": {
       "powerDrawWatts": 26,
@@ -1914,7 +1930,8 @@ let devices={
           "type": "3.5mm Stereo Input",
           "notes": "Also for LTC timecode"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BBMPCC%2B6K%2BG2"
     },
     "Blackmagic BMPCC 6K": {
       "powerDrawWatts": 26,
@@ -1997,7 +2014,8 @@ let devices={
           "type": "3.5mm Stereo Input",
           "notes": "Can also be used for Timecode input"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BBMPCC%2B6K"
     },
     "Blackmagic Pocket Cinema Camera 6K Pro": {
       "powerDrawWatts": 26,
@@ -2087,7 +2105,8 @@ let devices={
           "type": "Analog Audio Inputs",
           "notes": "2x mini XLR, 1x 3.5mm Stereo Input can be used for Timecode input"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BPocket%2BCinema%2BCamera%2B6K%2BPro"
     },
     "Blackmagic URSA 12K": {
       "powerDrawWatts": 55,
@@ -2199,7 +2218,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode Input (Reference Inputs: Tri-Sync/Black Burst/Timecode)"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BURSA%2B12K"
     },
     "Blackmagic URSA Cine": {
       "powerDrawWatts": 100,
@@ -2337,7 +2357,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BURSA%2BCine"
     },
     "Blackmagic PYXIS 6K": {
       "powerDrawWatts": 60,
@@ -2411,7 +2432,8 @@ let devices={
           "type": "3.5mm Stereo Input",
           "notes": "Can be used for Timecode input"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BPYXIS%2B6K"
     },
     "Blackmagic PYXIS 12K": {
       "powerDrawWatts": 90,
@@ -2485,7 +2507,8 @@ let devices={
           "type": "3.5mm Stereo Input",
           "notes": "Can be used for Timecode input"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Blackmagic%2BPYXIS%2B12K"
     },
     "RED Komodo 6k": {
       "powerDrawWatts": 37,
@@ -2588,7 +2611,8 @@ let devices={
           "type": "EXT Port (9-pin)",
           "notes": "Timecode In"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BKomodo%2B6k"
     },
     "RED Komodo X": {
       "powerDrawWatts": 45,
@@ -2663,7 +2687,8 @@ let devices={
           "type": "EXT Port (9-pin)",
           "notes": "Timecode In"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BKomodo%2BX"
     },
     "V-Raptor XL 8K VV": {
       "powerDrawWatts": 75,
@@ -2771,7 +2796,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-Raptor%2BXL%2B8K%2BVV"
     },
     "V-RAPTOR® X XL 8K VV": {
       "powerDrawWatts": 75,
@@ -2879,7 +2905,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-RAPTOR%C2%AE%2BX%2BXL%2B8K%2BVV"
     },
     "V-RAPTOR® XL 8K S35": {
       "powerDrawWatts": 75,
@@ -2987,7 +3014,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-RAPTOR%C2%AE%2BXL%2B8K%2BS35"
     },
     "V-RAPTOR® X XL 8K S35": {
       "powerDrawWatts": 75,
@@ -3095,7 +3123,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-RAPTOR%C2%AE%2BX%2BXL%2B8K%2BS35"
     },
     "V-Raptor 8k S35": {
       "powerDrawWatts": 60,
@@ -3171,7 +3200,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-Raptor%2B8k%2BS35"
     },
     "V-Raptor X 8k S35": {
       "powerDrawWatts": 60,
@@ -3247,7 +3277,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-Raptor%2BX%2B8k%2BS35"
     },
     "V-Raptor 8k VV": {
       "powerDrawWatts": 60,
@@ -3323,7 +3354,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-Raptor%2B8k%2BVV"
     },
     "V-Raptor X 8k VV": {
       "powerDrawWatts": 60,
@@ -3399,7 +3431,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=V-Raptor%2BX%2B8k%2BVV"
     },
     "RED Scarlet-W (Dragon Sensor)": {
       "powerDrawWatts": 60,
@@ -3471,7 +3504,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BScarlet-W%2B(Dragon%2BSensor)"
     },
     "RED Epic-W (Helium 8K S35)": {
       "powerDrawWatts": 37,
@@ -3543,7 +3577,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BEpic-W%2B(Helium%2B8K%2BS35)"
     },
     "RED Weapon (Helium 8K S35/VV)": {
       "powerDrawWatts": 75,
@@ -3615,7 +3650,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BWeapon%2B(Helium%2B8K%2BS35%2FVV)"
     },
     "RED Epic Dragon (6K)": {
       "powerDrawWatts": 60,
@@ -3687,7 +3723,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BEpic%2BDragon%2B(6K)"
     },
     "RED Scarlet Dragon (5K)": {
       "powerDrawWatts": 50,
@@ -3759,7 +3796,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BScarlet%2BDragon%2B(5K)"
     },
     "RED Epic (Mysterium-X Sensor)": {
       "powerDrawWatts": 60,
@@ -3831,7 +3869,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BEpic%2B(Mysterium-X%2BSensor)"
     },
     "RED Scarlet (Mysterium-X Sensor)": {
       "powerDrawWatts": 60,
@@ -3903,7 +3942,8 @@ let devices={
           "type": "BNC",
           "notes": "Timecode In/Out"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=RED%2BScarlet%2B(Mysterium-X%2BSensor)"
     },
     "Panasonic Lumix S5 II": {
       "powerDrawWatts": 12,
@@ -3979,7 +4019,8 @@ let devices={
           "notes": "Supports L-Mount electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Panasonic%2BLumix%2BS5%2BII"
     },
     "Panasonic Lumix GH6": {
       "powerDrawWatts": 5,
@@ -4059,7 +4100,8 @@ let devices={
           "notes": "Supports Micro Four Thirds electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Panasonic%2BLumix%2BGH6"
     },
     "Sony A7S III": {
       "powerDrawWatts": 5,
@@ -4139,7 +4181,8 @@ let devices={
           "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Sony%2BA7S%2BIII"
     },
     "Fujifilm X-H2S": {
       "powerDrawWatts": 15,
@@ -4219,7 +4262,8 @@ let devices={
           "notes": "Supports Fujifilm X electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Fujifilm_X-H2S_17_Jul_2022b.jpg/330px-Fujifilm_X-H2S_17_Jul_2022b.jpg"
     },
     "DJI Ronin 4D 6K": {
       "powerDrawWatts": 40,
@@ -4349,7 +4393,8 @@ let devices={
           "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=DJI%2BRonin%2B4D%2B6K"
     },
     "Sony FX30": {
       "powerDrawWatts": 5.6,
@@ -4436,7 +4481,8 @@ let devices={
           "type": "Multi/Micro USB (TC IN)",
           "notes": "Timecode Input [S1.1]"
         }
-      ]
+      ],
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/The_rear_side_of_the_ILME-FX30.jpg/330px-The_rear_side_of_the_ILME-FX30.jpg"
     },
     "Panasonic Lumix BS1H": {
       "powerDrawWatts": 8.1,
@@ -4515,7 +4561,8 @@ let devices={
           "type": "BNC",
           "notes": "Data Input/Output [2.3]"
         }
-      ]
+      ],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Panasonic%2BLumix%2BBS1H"
     },
     "Sony ZV-E1": {
       "powerDrawWatts": 7,
@@ -4581,7 +4628,8 @@ let devices={
           "notes": "Supports Sony E-mount electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Sony%2BZV-E1"
     },
     "Fujifilm X-M5": {
       "powerDrawWatts": 5.5,
@@ -4655,7 +4703,8 @@ let devices={
           "notes": "Supports Fujifilm X electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Fujifilm_X-M5_18_oct_2024a.jpg/330px-Fujifilm_X-M5_18_oct_2024a.jpg"
     },
     "Canon EOS R5 Mark II": {
       "powerDrawWatts": 15,
@@ -4739,7 +4788,8 @@ let devices={
           "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Canon_EOS_R5_Mark_II_%28front%2C_no_body_cap%29.jpg/330px-Canon_EOS_R5_Mark_II_%28front%2C_no_body_cap%29.jpg"
     },
     "Canon EOS R1": {
       "powerDrawWatts": 18,
@@ -4816,7 +4866,8 @@ let devices={
           "notes": "Supports Nikon F electronic lens data when available"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Canon_EOS_R1_12_apr_2025c.jpg/330px-Canon_EOS_R1_12_apr_2025c.jpg"
     },
     "Leica SL3-S": {
       "powerDrawWatts": 10,
@@ -4892,7 +4943,8 @@ let devices={
           "notes": "Supports L-Mount electronic lens data"
         }
       ],
-      "timecode": []
+      "timecode": [],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Leica%2BSL3-S"
     },
     "None": {
       "powerDrawWatts": 0,
@@ -4910,7 +4962,8 @@ let devices={
       "recordingMedia": [],
       "viewfinder": [],
       "lensMount": [],
-      "timecode": []
+      "timecode": [],
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=None"
     }
   },
   "monitors": {
@@ -4943,7 +4996,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Ultra+7"
     },
     "SmallHD Ultra 7 Bolt 6 TX": {
       "screenSizeInches": 7,
@@ -4974,7 +5028,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": true
+      "wirelessTx": true,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Ultra+7+Bolt+6+TX"
     },
     "SmallHD Cine 7": {
       "screenSizeInches": 7,
@@ -5007,7 +5062,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Cine+7"
     },
     "SmallHD Cine 7 Bolt 4K TX": {
       "screenSizeInches": 7,
@@ -5038,7 +5094,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": true
+      "wirelessTx": true,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Cine+7+Bolt+4K+TX"
     },
     "SmallHD Indie 7": {
       "screenSizeInches": 7,
@@ -5069,7 +5126,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Indie+7"
     },
     "SmallHD Indie 7 Bolt 4K TX": {
       "screenSizeInches": 7,
@@ -5100,7 +5158,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": true
+      "wirelessTx": true,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Indie+7+Bolt+4K+TX"
     },
     "SmallHD Focus 7": {
       "screenSizeInches": 7,
@@ -5124,7 +5183,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Focus+7"
     },
     "SmallHD Ultra 5": {
       "screenSizeInches": 5,
@@ -5155,7 +5215,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Ultra+5"
     },
     "SmallHD Ultra 5 Bolt 6 TX": {
       "screenSizeInches": 5,
@@ -5186,7 +5247,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": true
+      "wirelessTx": true,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Ultra+5+Bolt+6+TX"
     },
     "SmallHD Cine 5": {
       "screenSizeInches": 5,
@@ -5217,7 +5279,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Cine+5"
     },
     "SmallHD Cine 5 Bolt 6 TX": {
       "screenSizeInches": 5,
@@ -5248,7 +5311,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": true
+      "wirelessTx": true,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Cine+5+Bolt+6+TX"
     },
     "SmallHD Indie 5": {
       "screenSizeInches": 5,
@@ -5279,7 +5343,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Indie+5"
     },
     "SmallHD Focus 5": {
       "screenSizeInches": 5,
@@ -5303,7 +5368,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallHD+Focus+5"
     },
     "Hollyland Pyro 7 (TX)": {
       "screenSizeInches": 7,
@@ -5334,7 +5400,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": true
+      "wirelessTx": true,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hollyland+Pyro+7+%28TX%29"
     },
     "Hollyland Mars M1 Enhanced": {
       "screenSizeInches": 5.5,
@@ -5365,7 +5432,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hollyland+Mars+M1+Enhanced"
     },
     "Portkeys BM5 III": {
       "screenSizeInches": 5.5,
@@ -5399,7 +5467,8 @@ let devices={
       "wirelessTx": false,
       "bluetooth": {
         "portType": "Camera Control"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Portkeys+BM5+III"
     },
     "Portkeys LH5H": {
       "screenSizeInches": 5.2,
@@ -5430,7 +5499,8 @@ let devices={
       },
       "wireless": {
         "portType": "Bluetooth Camera Control"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Portkeys+LH5H"
     },
     "Portkeys BM7 II DS": {
       "screenSizeInches": 7,
@@ -5465,7 +5535,8 @@ let devices={
       "wirelessTx": false,
       "wireless": {
         "portType": "Camera Control"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Portkeys+BM7+II+DS"
     },
     "Portkeys PT5 II": {
       "screenSizeInches": 5,
@@ -5493,7 +5564,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Portkeys+PT5+II"
     },
     "Atomos Ninja V": {
       "screenSizeInches": 5,
@@ -5524,7 +5596,8 @@ let devices={
       },
       "audioIo": {
         "portType": "10-pin LEMO (analog audio)"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Atomos+Ninja+V"
     },
     "Atomos Ninja V+": {
       "screenSizeInches": 5,
@@ -5555,7 +5628,8 @@ let devices={
       },
       "audioInput": {
         "portType": "3.5mm Mic/Line"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Atomos+Ninja+V%2B"
     },
     "Atomos Shinobi 5": {
       "screenSizeInches": 5.2,
@@ -5582,7 +5656,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Atomos+Shinobi+5"
     },
     "Atomos Shinobi 7": {
       "screenSizeInches": 7,
@@ -5613,7 +5688,8 @@ let devices={
           }
         ]
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Atomos+Shinobi+7"
     },
     "Feelworld FW568": {
       "screenSizeInches": 6,
@@ -5647,7 +5723,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Feelworld+FW568"
     },
     "Feelworld F6 Plus": {
       "screenSizeInches": 6,
@@ -5675,7 +5752,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Feelworld+F6+Plus"
     },
     "Andycine A6 Pro": {
       "screenSizeInches": 5.5,
@@ -5703,7 +5781,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Andycine+A6+Pro"
     },
     "Lilliput A7S": {
       "screenSizeInches": 7,
@@ -5731,7 +5810,8 @@ let devices={
       "wirelessTx": false,
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
-      }
+      },
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Lilliput+A7S"
     },
     "None": {
       "powerDrawWatts": 0,
@@ -5746,7 +5826,8 @@ let devices={
         "inputs": [],
         "outputs": []
       },
-      "wirelessTx": false
+      "wirelessTx": false,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=None"
     }
   },
   "video": {
@@ -5767,7 +5848,8 @@ let devices={
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+6+LT+TX"
     },
     "Teradek Bolt 6 XT TX": {
       "powerDrawWatts": 20,
@@ -5789,7 +5871,8 @@ let devices={
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+6+XT+TX"
     },
     "Teradek Bolt 6 MAX TX": {
       "powerDrawWatts": 20,
@@ -5811,7 +5894,8 @@ let devices={
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+6+MAX+TX"
     },
     "Teradek Bolt 4K LT TX": {
       "powerDrawWatts": 9,
@@ -5830,7 +5914,8 @@ let devices={
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS) (with Bluetooth 2.4 GHz for app control)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+4K+LT+TX"
     },
     "Teradek Bolt 4K XT TX": {
       "powerDrawWatts": 20,
@@ -5852,7 +5937,8 @@ let devices={
         }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS) (with Bluetooth 2.4 GHz for app control)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+4K+XT+TX"
     },
     "Teradek Bolt Pro 300 TX": {
       "powerDrawWatts": 6.5,
@@ -5871,7 +5957,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+Pro+300+TX"
     },
     "Teradek Bolt Pro 600 TX": {
       "powerDrawWatts": 8,
@@ -5890,7 +5977,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+Pro+600+TX"
     },
     "Teradek Bolt Pro 2000 TX": {
       "powerDrawWatts": 7.7,
@@ -5909,7 +5997,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+Pro+2000+TX"
     },
     "Teradek Bolt Pro 500 TX": {
       "powerDrawWatts": 7.3,
@@ -5928,7 +6017,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+Pro+500+TX"
     },
     "Teradek Bolt Pro 750 TX": {
       "powerDrawWatts": 7.5,
@@ -5947,7 +6037,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+Pro+750+TX"
     },
     "Teradek Bolt Pro 1000 TX": {
       "powerDrawWatts": 7.5,
@@ -5966,7 +6057,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+Pro+1000+TX"
     },
     "Teradek Bolt 3000 TX": {
       "powerDrawWatts": 7.5,
@@ -5985,7 +6077,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+3000+TX"
     },
     "Teradek Bolt 10000 TX": {
       "powerDrawWatts": 7.5,
@@ -6004,7 +6097,8 @@ let devices={
         }
       ],
       "frequency": "5.19-5.23 GHz (Non-DFS), 5.27-5.55 GHz (DFS), 5.67 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+Bolt+10000+TX"
     },
     "Hollyland Pyro S TX": {
       "powerDrawWatts": 11,
@@ -6026,7 +6120,8 @@ let devices={
         }
       ],
       "frequency": "2.412-2.484 GHz / 5.15-5.85 GHz (Dual-Band Wi-Fi 4)",
-      "latencyMs": "50ms"
+      "latencyMs": "50ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hollyland+Pyro+S+TX"
     },
     "Hollyland Mars 300 Pro TX": {
       "powerDrawWatts": 11,
@@ -6042,7 +6137,8 @@ let devices={
         }
       ],
       "frequency": "5 GHz",
-      "latencyMs": "< 80ms"
+      "latencyMs": "< 80ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hollyland+Mars+300+Pro+TX"
     },
     "Hollyland Mars 400S Pro TX": {
       "powerDrawWatts": 11,
@@ -6064,7 +6160,8 @@ let devices={
         }
       ],
       "frequency": "5 GHz",
-      "latencyMs": "< 80ms"
+      "latencyMs": "< 80ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hollyland+Mars+400S+Pro+TX"
     },
     "DJI Transmission (TX)": {
       "powerDrawWatts": 11,
@@ -6086,7 +6183,8 @@ let devices={
         }
       ],
       "frequency": "2.4000-2.4835 GHz (Non-DFS), 5.470-5.725 GHz (DFS), 5.725-5.850 GHz (Non-DFS)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=DJI+Transmission+%28TX%29"
     },
     "Vaxis Storm 800 TX": {
       "powerDrawWatts": 6,
@@ -6108,7 +6206,8 @@ let devices={
         }
       ],
       "frequency": "5.1-5.9 GHz",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Vaxis+Storm+800+TX"
     },
     "Vaxis Storm 1000 TX": {
       "powerDrawWatts": 6.5,
@@ -6130,7 +6229,8 @@ let devices={
         }
       ],
       "frequency": "5.1-5.9 GHz",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Vaxis+Storm+1000+TX"
     },
     "Vaxis Storm 3000 TX": {
       "powerDrawWatts": 6,
@@ -6152,7 +6252,8 @@ let devices={
         }
       ],
       "frequency": "5.1-5.9 GHz",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Vaxis+Storm+3000+TX"
     },
     "Dwarf Connection LR1 TX": {
       "powerDrawWatts": 6,
@@ -6174,7 +6275,8 @@ let devices={
         }
       ],
       "frequency": "5.1-5.9 GHz (ISM Band, Indoor use often specified due to DFS omission)",
-      "latencyMs": "< 1ms"
+      "latencyMs": "< 1ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Dwarf+Connection+LR1+TX"
     },
     "Accsoon CineEye 2S Pro TX": {
       "powerDrawWatts": 4.5,
@@ -6193,7 +6295,8 @@ let devices={
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Accsoon+CineEye+2S+Pro+TX"
     },
     "Accsoon CineEye II TX": {
       "powerDrawWatts": 3.5,
@@ -6209,7 +6312,8 @@ let devices={
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Accsoon+CineEye+II+TX"
     },
     "Accsoon CineView HE TX": {
       "powerDrawWatts": 4.5,
@@ -6231,7 +6335,8 @@ let devices={
         }
       ],
       "frequency": "2.412-2.472 GHz / 5.180-5.580 GHz / 5.660-5.825 MHz (Dual-Band Wi-Fi 5 with MU-MIMO)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Accsoon+CineView+HE+TX"
     },
     "Accsoon CineView SE TX": {
       "powerDrawWatts": 4.5,
@@ -6253,7 +6358,8 @@ let devices={
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Accsoon+CineView+SE+TX"
     },
     "Accsoon CineView Nano TX": {
       "powerDrawWatts": 2.5,
@@ -6269,7 +6375,8 @@ let devices={
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Accsoon+CineView+Nano+TX"
     },
     "Accsoon CineView Quad TX": {
       "powerDrawWatts": 4.5,
@@ -6291,7 +6398,8 @@ let devices={
         }
       ],
       "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Accsoon+CineView+Quad+TX"
     },
     "Accsoon CineView Master 4K": {
       "powerDrawWatts": 15,
@@ -6313,7 +6421,8 @@ let devices={
         }
       ],
       "frequency": "2.4 GHz / 5 GHz / 6 GHz (Tri-Band Wi-Fi 6E)",
-      "latencyMs": "< 60ms"
+      "latencyMs": "< 60ms",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Accsoon+CineView+Master+4K"
     },
     "None": {
       "powerDrawWatts": 0,
@@ -6321,7 +6430,8 @@ let devices={
       "videoInput": "3G-SDI",
       "videoOutput": "3G-SDI",
       "frequency": "5 GHz",
-      "latencyMs": null
+      "latencyMs": null,
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=None"
     }
   },
   "fiz": {
@@ -6333,7 +6443,8 @@ let devices={
         "torqueNm": null,
         "gearTypes": [
           "0.8 mod"
-        ]
+        ],
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=None"
       },
       "Tilta Nucleus M": {
         "powerDrawWatts": 20,
@@ -6347,7 +6458,8 @@ let devices={
           "0.6 mod",
           "0.8 mod 29mm wide"
         ],
-        "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Tilta+Nucleus+M"
       },
       "Tilta Nucleus M II": {
         "powerDrawWatts": 50,
@@ -6360,7 +6472,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Higher torque than Nucleus M, designed for improved performance. The 50W rating is likely a max stall power. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Higher torque than Nucleus M, designed for improved performance. The 50W rating is likely a max stall power. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Tilta+Nucleus+M+II"
       },
       "Tilta Nucleus Nano (Original)": {
         "powerDrawWatts": 5,
@@ -6370,7 +6483,8 @@ let devices={
         "gearTypes": [
           "0.8 mod"
         ],
-        "notes": "Compact motor for lighter lenses. Torque rated at 0.65 N·m at 5.5V and 1 N·m at 14.8V. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Compact motor for lighter lenses. Torque rated at 0.65 N·m at 5.5V and 1 N·m at 14.8V. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Tilta+Nucleus+Nano+%28Original%29"
       },
       "Tilta Nucleus Nano II": {
         "powerDrawWatts": 37,
@@ -6382,7 +6496,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Tilta+Nucleus+Nano+II"
       },
       "Arri Cforce Mini": {
         "powerDrawWatts": 20,
@@ -6397,7 +6512,8 @@ let devices={
           "0.8 mod 25mm wide",
           "0.8 mod large diameter (e.g., 80T)"
         ],
-        "notes": "Constant 0.3 Nm, maximum peak torque 0.5 Nm. Requires a motor controller such as RIA-1, Master Grips or a camera with built-in controller (ALEXA Mini/Mini LF/Alexa 35) or a cforce mini RF motor. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth."
+        "notes": "Constant 0.3 Nm, maximum peak torque 0.5 Nm. Requires a motor controller such as RIA-1, Master Grips or a camera with built-in controller (ALEXA Mini/Mini LF/Alexa 35) or a cforce mini RF motor. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+Cforce+Mini"
       },
       "Arri Cforce Plus": {
         "powerDrawWatts": 32,
@@ -6412,7 +6528,8 @@ let devices={
           "0.8 mod 25mm wide",
           "0.8 mod large diameter (e.g., 80T)"
         ],
-        "notes": "Constant 0.7 Nm, maximum peak torque 1.0 Nm. Requires a motor controller such as RIA-1, Master Grips or a camera with built-in controller (ALEXA Mini/Mini LF/Alexa 35) or a cforce mini RF motor. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth."
+        "notes": "Constant 0.7 Nm, maximum peak torque 1.0 Nm. Requires a motor controller such as RIA-1, Master Grips or a camera with built-in controller (ALEXA Mini/Mini LF/Alexa 35) or a cforce mini RF motor. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+Cforce+Plus"
       },
       "Arri CLM-4 (K2.72114.0)": {
         "powerDrawWatts": 12,
@@ -6424,7 +6541,8 @@ let devices={
           "0.6 mod",
           "0.5 mod"
         ],
-        "notes": "Standard digital lens motor for ARRI LCS. Requires a UMC-4 for control. The UMC-4 works only with the CLM-4 and CLM-5. Part no. K2.72114.0."
+        "notes": "Standard digital lens motor for ARRI LCS. Requires a UMC-4 for control. The UMC-4 works only with the CLM-4 and CLM-5. Part no. K2.72114.0.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+CLM-4+%28K2.72114.0%29"
       },
       "Arri CLM-5 (K2.0006361)": {
         "powerDrawWatts": 24,
@@ -6436,7 +6554,8 @@ let devices={
           "0.6 mod",
           "0.5 mod"
         ],
-        "notes": "High-torque lens motor for ARRI LCS. Requires a UMC-4 for control. The UMC-4 works only with the CLM-4 and CLM-5. Part no. K2.0006361."
+        "notes": "High-torque lens motor for ARRI LCS. Requires a UMC-4 for control. The UMC-4 works only with the CLM-4 and CLM-5. Part no. K2.0006361.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+CLM-5+%28K2.0006361%29"
       },
       "Arri cforce mini RF (KK.0040345)": {
         "powerDrawWatts": 20,
@@ -6451,7 +6570,8 @@ let devices={
           "0.8 mod 25mm wide",
           "0.8 mod large diameter (e.g., 80T)"
         ],
-        "notes": "Lens motor with integrated RF receiver and controller. Provides one LBUS port and one CAM port similar to the RIA-1, allowing daisy-chaining of additional motors."
+        "notes": "Lens motor with integrated RF receiver and controller. Provides one LBUS port and one CAM port similar to the RIA-1, allowing daisy-chaining of additional motors.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+cforce+mini+RF+%28KK.0040345%29"
       },
       "Teradek RT Motion FIZ (MOTR.S)": {
         "powerDrawWatts": 24,
@@ -6465,7 +6585,8 @@ let devices={
           "0.6 mod",
           "0.8 mod 12mm wide"
         ],
-        "notes": "Max peak torque of 0.95 Nm. Requires a Teradek MDR for control. Max operating current 2A at up to 12V. Teradek offers a 12mm wide 0.8 mod gear. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Max peak torque of 0.95 Nm. Requires a Teradek MDR for control. Max operating current 2A at up to 12V. Teradek offers a 12mm wide 0.8 mod gear. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+RT+Motion+FIZ+%28MOTR.S%29"
       },
       "Preston DM1X": {
         "powerDrawWatts": 32.4,
@@ -6477,7 +6598,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Very high torque, often used for focus. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones."
+        "notes": "Very high torque, often used for focus. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+DM1X"
       },
       "Preston DM2": {
         "powerDrawWatts": 22.2,
@@ -6489,7 +6611,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "High torque, general purpose motor. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones."
+        "notes": "High torque, general purpose motor. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+DM2"
       },
       "Preston DM2X": {
         "powerDrawWatts": 22.2,
@@ -6501,7 +6624,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Improved DM2 with higher torque capabilities and durability in the same physical size. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones."
+        "notes": "Improved DM2 with higher torque capabilities and durability in the same physical size. Max current 2.7A, typically 12V system. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters, including large ones.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+DM2X"
       },
       "Preston DM-A": {
         "powerDrawWatts": 18,
@@ -6511,7 +6635,8 @@ let devices={
         "gearTypes": [
           "0.8 mod"
         ],
-        "notes": "Compact motor for iris/zoom or lighter focus. No internal controller. Peak power draw from source. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Compact motor for iris/zoom or lighter focus. No internal controller. Peak power draw from source. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+DM-A"
       },
       "Preston DM-C": {
         "powerDrawWatts": 18,
@@ -6521,7 +6646,8 @@ let devices={
         "gearTypes": [
           "0.8 mod"
         ],
-        "notes": "Designed for compact and lighter setups. No internal controller. Peak power draw from source. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Designed for compact and lighter setups. No internal controller. Peak power draw from source. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+DM-C"
       },
       "Chrosziel CDM-100 Digital": {
         "powerDrawWatts": 12,
@@ -6535,7 +6661,8 @@ let devices={
           "0.6 mod",
           "0.8 mod 16mm wide"
         ],
-        "notes": "Max torque 0.5 Nm. Max 24V input. Power draw adjusted to typical max. No internal controller. Also supports 0.8 mod with 16mm width. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Max torque 0.5 Nm. Max 24V input. Power draw adjusted to typical max. No internal controller. Also supports 0.8 mod with 16mm width. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Chrosziel+CDM-100+Digital"
       },
       "Chrosziel CDM-M (Universal Zoom Servo Drive)": {
         "powerDrawWatts": 4.2,
@@ -6548,7 +6675,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Designed primarily as a zoom servo. Torque 0.5 Nm. Max consumption approx. 350mAh at 12V. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Designed primarily as a zoom servo. Torque 0.5 Nm. Max consumption approx. 350mAh at 12V. No internal controller. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Chrosziel+CDM-M+%28Universal+Zoom+Servo+Drive%29"
       },
       "DJI Focus (Original)": {
         "powerDrawWatts": 21.6,
@@ -6560,7 +6688,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Max torque 0.35 Nm. Max speed 192 rpm. Power draw estimated at 1.5A from 14.4V. Designed to work with standard 0.8 mod lens gears, including those with larger diameters for longer focus throws."
+        "notes": "Max torque 0.35 Nm. Max speed 192 rpm. Power draw estimated at 1.5A from 14.4V. Designed to work with standard 0.8 mod lens gears, including those with larger diameters for longer focus throws.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=DJI+Focus+%28Original%29"
       },
       "DJI RS Focus (2022)": {
         "powerDrawWatts": 22.5,
@@ -6572,7 +6701,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Max torque 1.0 Nm at 8V. Stall current 2.8A at 8V. Quick-release structure. Designed to work with standard 0.8 mod lens gears, including those with larger diameters for longer focus throws."
+        "notes": "Max torque 1.0 Nm at 8V. Stall current 2.8A at 8V. Quick-release structure. Designed to work with standard 0.8 mod lens gears, including those with larger diameters for longer focus throws.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=DJI+RS+Focus+%282022%29"
       },
       "DJI Focus Pro Motor": {
         "powerDrawWatts": 24,
@@ -6582,7 +6712,8 @@ let devices={
         "gearTypes": [
           "0.8 mod"
         ],
-        "notes": "Motor for the DJI Focus Pro system. Used with the Focus Pro Handle and DJI LiDAR Range Finder."
+        "notes": "Motor for the DJI Focus Pro system. Used with the Focus Pro Handle and DJI LiDAR Range Finder.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=DJI+Focus+Pro+Motor"
       },
       "Cmotion cPRO": {
         "powerDrawWatts": 24,
@@ -6595,7 +6726,8 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Compact and lightweight with integrated RF module and camera interface. Rated 1.2 Nm. Max speed 240 teeth/sec. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Compact and lightweight with integrated RF module and camera interface. Rated 1.2 Nm. Max speed 240 teeth/sec. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Cmotion+cPRO"
       },
       "SmallRig Wireless Follow Focus": {
         "powerDrawWatts": 12,
@@ -6605,7 +6737,8 @@ let devices={
         "gearTypes": [
           "0.8 mod"
         ],
-        "notes": "Peak torque of 4.3 kgf·cm (approx. 0.43 Nm). Supports PD and QC fast charging. Has built-in battery. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "Peak torque of 4.3 kgf·cm (approx. 0.43 Nm). Supports PD and QC fast charging. Has built-in battery. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallRig+Wireless+Follow+Focus"
       },
       "Redrock MicroRemote Torque": {
         "powerDrawWatts": 60,
@@ -6615,7 +6748,8 @@ let devices={
         "gearTypes": [
           "0.8 mod"
         ],
-        "notes": "High torque motor. Max current draw can be up to 5A at 12V. Requires a MicroRemote Basestation. Compatible with standard 0.8 mod lens gears of various diameters."
+        "notes": "High torque motor. Max current draw can be up to 5A at 12V. Requires a MicroRemote Basestation. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Redrock+MicroRemote+Torque"
       }
     },
     "controllers": {
@@ -6625,7 +6759,8 @@ let devices={
         "power_source": "N/A",
         "battery_type": "N/A",
         "connectivity": "N/A",
-        "notes": "Placeholder for no controller."
+        "notes": "Placeholder for no controller.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=None"
       },
       "Arri OCU-1": {
         "powerDrawWatts": 1.32,
@@ -6635,7 +6770,8 @@ let devices={
         "power_source": "External (via LBUS)",
         "battery_type": "N/A",
         "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
-        "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis."
+        "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+OCU-1"
       },
       "Arri ZMU-4 (body only, wired)": {
         "powerDrawWatts": 1,
@@ -6646,7 +6782,8 @@ let devices={
         "power_source": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
         "battery_type": "Sony NP-F550/750 compatible, ARRI LBP-3500",
         "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
-        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control."
+        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+ZMU-4+%28body+only%2C+wired%29"
       },
       "Arri UMC-4": {
         "powerDrawWatts": 1.68,
@@ -6659,7 +6796,8 @@ let devices={
         "power_source": "External DC (via CAM or LBUS chain)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary ARRI radio system, works with WCU-4, SXU-1, Master Grips, cmotion pan-bar zoom), Wired (LBUS, CAM, SERIAL)",
-        "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support. Only compatible with ARRI CLM-4 and CLM-5 motors, which require a UMC-4 for operation."
+        "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support. Only compatible with ARRI CLM-4 and CLM-5 motors, which require a UMC-4 for operation.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+UMC-4"
       },
       "Arri RIA-1": {
           "powerDrawWatts": 2.5,
@@ -6671,7 +6809,8 @@ let devices={
         "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
         "battery_type": "N/A (no internal battery, draws power from camera or external source)",
         "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
-        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque."
+        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+RIA-1"
       },
       "Arri Master Grip (single unit)": {
         "powerDrawWatts": 0.72,
@@ -6681,7 +6820,8 @@ let devices={
         "power_source": "External (12-34VDC via LBUS)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
-        "notes": "Ergonomic cine-style handgrip with integrated lens and camera controls. Available in rocker (zoom) or thumbwheel (focus/iris) versions. Can control EF/ENG and cine lenses. Advanced camera control via LCUBE CUB-1 (for third-party cameras). Override function for WCU-4 and Hi-5. Assignable user buttons, multilingual display, focus tracking, adjustable speed control."
+        "notes": "Ergonomic cine-style handgrip with integrated lens and camera controls. Available in rocker (zoom) or thumbwheel (focus/iris) versions. Can control EF/ENG and cine lenses. Advanced camera control via LCUBE CUB-1 (for third-party cameras). Override function for WCU-4 and Hi-5. Assignable user buttons, multilingual display, focus tracking, adjustable speed control.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Arri+Master+Grip+%28single+unit%29"
       },
       "Tilta Nucleus-M Hand Grip (single)": {
         "powerDrawWatts": 0.5,
@@ -6692,7 +6832,8 @@ let devices={
         "power_source": "Internal Battery",
         "battery_type": "2x 18650 Li-ion (per grip, not included)",
         "connectivity": "Wireless (proprietary 2.4GHz RF, 1000ft/300m range)",
-        "notes": "Wireless handgrip for Nucleus-M system. Left grip (focus) and Right grip (iris/zoom toggle). Can be mounted to ARRI rosettes or 25/30mm gimbal rods. Allows splitting FIZ control with the FIZ hand unit. Up to 48 hours battery life (idle)."
+        "notes": "Wireless handgrip for Nucleus-M system. Left grip (focus) and Right grip (iris/zoom toggle). Can be mounted to ARRI rosettes or 25/30mm gimbal rods. Allows splitting FIZ control with the FIZ hand unit. Up to 48 hours battery life (idle).",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Tilta+Nucleus-M+Hand+Grip+%28single%29"
       },
       "Tilta Nucleus-M II Handle (single)": {
         "powerDrawWatts": 0.5,
@@ -6703,7 +6844,8 @@ let devices={
         "power_source": "Internal Battery",
         "battery_type": "NP-F550 (single per handle)",
         "connectivity": "Wireless (proprietary 2.4GHz RF)",
-        "notes": "Improved wireless handgrip for Nucleus-M II system. Supports up to 4 channels (FIZ + ND). Compatible with Nucleus M and Nano II systems. Adjustable damping on hand wheel. Left/Right hand switch for hand wheel. Camera control via Bluetooth or cable."
+        "notes": "Improved wireless handgrip for Nucleus-M II system. Supports up to 4 channels (FIZ + ND). Compatible with Nucleus M and Nano II systems. Adjustable damping on hand wheel. Left/Right hand switch for hand wheel. Camera control via Bluetooth or cable.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Tilta+Nucleus-M+II+Handle+%28single%29"
       },
       "DJI Focus Pro Handle": {
         "powerDrawWatts": 1,
@@ -6713,7 +6855,8 @@ let devices={
         "power_source": "Internal Battery",
         "battery_type": "Built-in rechargeable",
         "connectivity": "Wireless (DJI proprietary)",
-        "notes": "Handle unit for the DJI Focus Pro kit. Works with Focus Pro Motors and the DJI LiDAR Range Finder."
+        "notes": "Handle unit for the DJI Focus Pro kit. Works with Focus Pro Motors and the DJI LiDAR Range Finder.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=DJI+Focus+Pro+Handle"
       },
       "Preston MDR4": {
         "powerDrawWatts": 48,
@@ -6726,7 +6869,8 @@ let devices={
         "power_source": "External DC (XLR 4-pin or D-Tap)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
-        "notes": "2-channel digital motor driver (Focus and Iris or Zoom). Compatible with all Preston hand units (e.g., HU4) and motors. Automatic lens calibration. Each channel has adjustable torque and direction. Supports camera run/stop for various film/video cameras. Compact and suitable for handheld/Steadicam/gimbal. Does not output lens metadata."
+        "notes": "2-channel digital motor driver (Focus and Iris or Zoom). Compatible with all Preston hand units (e.g., HU4) and motors. Automatic lens calibration. Each channel has adjustable torque and direction. Supports camera run/stop for various film/video cameras. Compact and suitable for handheld/Steadicam/gimbal. Does not output lens metadata.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+MDR4"
       },
       "ARRI ECM-1": {
         "powerDrawWatts": 84,
@@ -6740,7 +6884,8 @@ let devices={
         "power_source": "External DC (LEMO 2-pin or XLR 4-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (Ethernet, Camera cable to ALEXA 65/LF/Mini LF/35, USB) or Wireless (integrated Wi-Fi and ARRI White Radio)",
-        "notes": "Extended Control Module for ALEXA 65/LF/Mini LF/35. Highly advanced and powerful lens and camera control. Provides 6 motor ports for advanced FIZ and iris/zoom control. Allows connection of multiple accessories and expands camera functionality. Enables advanced lens data functions and is often used for virtual production or complex setups."
+        "notes": "Extended Control Module for ALEXA 65/LF/Mini LF/35. Highly advanced and powerful lens and camera control. Provides 6 motor ports for advanced FIZ and iris/zoom control. Allows connection of multiple accessories and expands camera functionality. Enables advanced lens data functions and is often used for virtual production or complex setups.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=ARRI+ECM-1"
       },
       "Redrock microRemote Basestation": {
         "powerDrawWatts": 54,
@@ -6753,7 +6898,8 @@ let devices={
         "power_source": "External DC (6-18V via LEMO 2-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
-        "notes": "Central receiver and motor driver for Redrock MicroRemote systems. Supports up to 3 motors (Focus, Iris, Zoom). Automatic or manual calibration. Compatible with various Redrock hand units (e.g., fingerwheel, handheld controller). Provides a single channel for focus, with optional expansion for iris/zoom. Compact and lightweight."
+        "notes": "Central receiver and motor driver for Redrock MicroRemote systems. Supports up to 3 motors (Focus, Iris, Zoom). Automatic or manual calibration. Compatible with various Redrock hand units (e.g., fingerwheel, handheld controller). Provides a single channel for focus, with optional expansion for iris/zoom. Compact and lightweight.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Redrock+microRemote+Basestation"
       },
       "ARRI LBUS Distributor (LBS-1)": {
         "powerDrawWatts": 0.24,
@@ -6763,7 +6909,8 @@ let devices={
         "power_source": "External (via any LBUS connection)",
         "battery_type": "N/A (passive device)",
         "connectivity": "Wired (LBUS)",
-        "notes": "A simple hub for LBUS devices, allowing multiple LBUS accessories (motors, hand units, rangefinders) to be connected to a single LBUS chain from a camera or power source. Facilitates power and data distribution within the LBUS network. Passive device, requires power from connected LBUS source."
+        "notes": "A simple hub for LBUS devices, allowing multiple LBUS accessories (motors, hand units, rangefinders) to be connected to a single LBUS chain from a camera or power source. Facilitates power and data distribution within the LBUS network. Passive device, requires power from connected LBUS source.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=ARRI+LBUS+Distributor+%28LBS-1%29"
       },
       "Cmotion compact LCS receiver": {
         "powerDrawWatts": 20,
@@ -6775,7 +6922,8 @@ let devices={
         "power_source": "External DC (10-34V via Camera port or EXT port)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary cmotion RF, 2.4 GHz FHSS, up to 150m/500ft range) or Wired (CAM, EXT)",
-        "notes": "Compact 3-axis lens control receiver. Compatible with cmotion hand units (e.g., cPRO hand unit, cvolution hand unit). Features an integrated camera run/stop control for various camera systems. Supports lens data communication. Suitable for gimbal, Steadicam, and drone applications due to its small size and lightweight design."
+        "notes": "Compact 3-axis lens control receiver. Compatible with cmotion hand units (e.g., cPRO hand unit, cvolution hand unit). Features an integrated camera run/stop control for various camera systems. Supports lens data communication. Suitable for gimbal, Steadicam, and drone applications due to its small size and lightweight design.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Cmotion+compact+LCS+receiver"
       },
       "Teradek RT Motion CTRL.3 Controller": {
         "powerDrawWatts": 15,
@@ -6787,7 +6935,8 @@ let devices={
         "power_source": "Internal Battery (rechargeable) or External (USB-C)",
         "battery_type": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
         "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
-        "notes": "3-axis wireless FIZ controller. Features a customizable focus knob with adjustable damping, iris slider, and zoom rocker. Integrated OLED display for lens data and settings. Supports lens mapping and virtual stops. Compatible with Teradek RT MDRs (e.g., MDR.S, MDR.M, MDR.X). USB-C for charging, firmware updates, and camera control."
+        "notes": "3-axis wireless FIZ controller. Features a customizable focus knob with adjustable damping, iris slider, and zoom rocker. Integrated OLED display for lens data and settings. Supports lens mapping and virtual stops. Compatible with Teradek RT MDRs (e.g., MDR.S, MDR.M, MDR.X). USB-C for charging, firmware updates, and camera control.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+RT+Motion+CTRL.3+Controller"
       }
     },
     "distance": {
@@ -6798,7 +6947,8 @@ let devices={
         "measurement_range": "N/A",
         "accuracy": "N/A",
         "output_display": "N/A",
-        "notes": "Placeholder for no distance measuring device."
+        "notes": "Placeholder for no distance measuring device.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=None"
       },
       "UDM-1 + LCube": {
         "powerDrawWatts": 6.24,
@@ -6807,7 +6957,8 @@ let devices={
         "measurement_range": "0.4m - 10m (1ft 4in - 33ft)",
         "accuracy": "High accuracy up close, decreases with distance.",
         "output_display": "Dedicated UDM-1 Display Unit, ARRI WCU-4/Hi-5, compatible ARRI cameras (via LDD/LBUS)",
-        "notes": "The UDM-1 is the Ultrasonic Distance Measure. The LCube CUB-1 acts as a protocol converter, enabling the UDM-1 to connect to ARRI LBUS systems (like ALEXA Mini) or output serial data for other systems. It can be calibrated for film plane offset. Provides focus tracking with ARRI LDS equipment. Power draw: UDM-1 is ~6W, LCube CUB-1 is ~0.24W. Total combined power is listed as 6.24W."
+        "notes": "The UDM-1 is the Ultrasonic Distance Measure. The LCube CUB-1 acts as a protocol converter, enabling the UDM-1 to connect to ARRI LBUS systems (like ALEXA Mini) or output serial data for other systems. It can be calibrated for film plane offset. Provides focus tracking with ARRI LDS equipment. Power draw: UDM-1 is ~6W, LCube CUB-1 is ~0.24W. Total combined power is listed as 6.24W.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=UDM-1+%2B+LCube"
       },
       "Focusbug Cine RT + LCube": {
         "powerDrawWatts": 15.24,
@@ -6816,10 +6967,12 @@ let devices={
         "measurement_range": "1ft - 35ft+ (0.3 - 10.6+m) in Ranger mode; 1ft - 120ft (0.3 - 36.5m) with 'Bugs' or Handset Tape Mode",
         "accuracy": "Precision clocking and high sampling rates; high accuracy. Adjustable sensitivity and limits.",
         "output_display": "Handset Control Unit (touchscreen), High-Bright LED Display, ARRI WCU-4/Hi-5, Preston HU3, cmotion, Teradek, Heden LCS",
-        "notes": "The Focusbug Cine RT is a comprehensive ultrasonic distance measuring system. The listed power draw is for the main system (Base Sensor + Handset/Display + Bug), with the LCube adding its own small draw. It offers advanced features like tracking multiple 'Bugs' (miniature transmitters), limits, lockout, and a 'Tape Mode' on the handset for quick measurements. The LCube CUB-1 is used for integrating the Cine RT's serial output into ARRI's LBUS ecosystem for seamless data flow."
+        "notes": "The Focusbug Cine RT is a comprehensive ultrasonic distance measuring system. The listed power draw is for the main system (Base Sensor + Handset/Display + Bug), with the LCube adding its own small draw. It offers advanced features like tracking multiple 'Bugs' (miniature transmitters), limits, lockout, and a 'Tape Mode' on the handset for quick measurements. The LCube CUB-1 is used for integrating the Cine RT's serial output into ARRI's LBUS ecosystem for seamless data flow.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Focusbug+Cine+RT+%2B+LCube"
       },
       "ARRI LCube": {
-        "powerDrawWatts": 0.24
+        "powerDrawWatts": 0.24,
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=ARRI+LCube"
       },
       "Preston Light Ranger 2 (LR2) Main Sensor": {
         "powerDrawWatts": 20,
@@ -6828,7 +6981,8 @@ let devices={
         "measurement_range": "2ft - 60ft (0.6m - 18.3m) with standard sensor; up to 200ft+ with optional long-range sensors.",
         "accuracy": "High precision, measures distance to multiple objects simultaneously.",
         "output_display": "Preston Hand Unit (HU3, HU4, etc.) graphic overlay (multi-point display), configurable display on monitor (via MDR), camera metadata",
-        "notes": "The Light Ranger 2 is a multi-point LADAR system that provides real-time distance measurements to multiple objects in the frame. It's known for its robust performance, particularly in challenging environments. Designed to work seamlessly with Preston FIZ systems, displaying focus information directly on the hand unit and allowing for advanced focus pulling techniques."
+        "notes": "The Light Ranger 2 is a multi-point LADAR system that provides real-time distance measurements to multiple objects in the frame. It's known for its robust performance, particularly in challenging environments. Designed to work seamlessly with Preston FIZ systems, displaying focus information directly on the hand unit and allowing for advanced focus pulling techniques.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+Light+Ranger+2+%28LR2%29+Main+Sensor"
       },
       "Teradek TOF.1 Range Finder Module": {
         "powerDrawWatts": 3.6,
@@ -6837,7 +6991,8 @@ let devices={
         "measurement_range": "0.3m - 20m (1ft - 65ft)",
         "accuracy": "High accuracy, particularly for single-point measurement.",
         "output_display": "Teradek RT CTRL.3 hand unit, compatible Teradek RT MDRs, Bolt monitor overlays (via MDR)",
-        "notes": "Compact and lightweight single-point LiDAR rangefinder. Designed to integrate seamlessly with the Teradek RT lens control ecosystem. Provides precise real-time distance data for automated or assisted focus. It offers strong performance even in low-light conditions and is suitable for various camera setups."
+        "notes": "Compact and lightweight single-point LiDAR rangefinder. Designed to integrate seamlessly with the Teradek RT lens control ecosystem. Provides precise real-time distance data for automated or assisted focus. It offers strong performance even in low-light conditions and is suitable for various camera setups.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=Teradek+TOF.1+Range+Finder+Module"
       },
       "DJI LiDAR Range Finder": {
         "powerDrawWatts": 6.8,
@@ -6846,7 +7001,8 @@ let devices={
         "measurement_range": "0.5m - 14m (1.6ft - 46ft)",
         "accuracy": "43,200 ranging points, up to 30Hz refresh rate, high accuracy.",
         "output_display": "DJI RS gimbal screen, DJI Focus Motor (visual focus assist), DJI RS Focus Motor, Ronin App",
-        "notes": "Integrated LiDAR sensor designed for DJI RS series gimbals. It provides accurate and fast distance measurements, enabling autofocus for manual lenses (when paired with a DJI Focus Motor). Features a built-in camera that can recognize the subject and track focus. Ideal for solo operators seeking precise autofocus capabilities with cinema lenses."
+        "notes": "Integrated LiDAR sensor designed for DJI RS series gimbals. It provides accurate and fast distance measurements, enabling autofocus for manual lenses (when paired with a DJI Focus Motor). Features a built-in camera that can recognize the subject and track focus. Ideal for solo operators seeking precise autofocus capabilities with cinema lenses.",
+        "image": "https://dummyimage.com/100x60/000/fff.png&text=DJI+LiDAR+Range+Finder"
       }
     }
   },
@@ -6855,433 +7011,505 @@ let devices={
       "capacity": 0,
       "pinA": 0,
       "dtapA": 0,
-      "mount_type": "N/A"
+      "mount_type": "N/A",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=None"
     },
     "Bebob V45micro": {
       "capacity": 43,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V45micro"
     },
     "Bebob V98micro": {
       "capacity": 95,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V98micro"
     },
     "Bebob V150micro": {
       "capacity": 143,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V150micro"
     },
     "Bebob V200micro": {
       "capacity": 190,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V200micro"
     },
     "Bebob V240micro": {
       "capacity": 238,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V240micro"
     },
     "Bebob V90RM-Cine": {
       "capacity": 85,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V90RM-Cine"
     },
     "Bebob V155RM-Cine": {
       "capacity": 156,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V155RM-Cine"
     },
     "Bebob V290RM-Cine": {
       "capacity": 285,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+V290RM-Cine"
     },
     "Bebob B90cine": {
       "capacity": 86,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+B90cine"
     },
     "Bebob B155cine": {
       "capacity": 155,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+B155cine"
     },
     "Bebob B290cine": {
       "capacity": 294,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+B290cine"
     },
     "Bebob B480cine": {
       "capacity": 475,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+B480cine"
     },
     "Bebob B90cineML": {
       "capacity": 86,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+B90cineML"
     },
     "Bebob B155cineML": {
       "capacity": 156,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Bebob+B155cineML"
     },
     "Swit MINO-S70 (V-Mount)": {
       "capacity": 70,
       "pinA": 8.3,
       "dtapA": 6,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+MINO-S70+%28V-Mount%29"
     },
     "Swit MINO-S140 (V-Mount)": {
       "capacity": 140,
       "pinA": 12.5,
       "dtapA": 8,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+MINO-S140+%28V-Mount%29"
     },
     "Swit MINO-S210 (V-Mount)": {
       "capacity": 210,
       "pinA": 16,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+MINO-S210+%28V-Mount%29"
     },
     "Swit PB-M98S (Mini V-Mount)": {
       "capacity": 98,
       "pinA": 10,
       "dtapA": 6,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+PB-M98S+%28Mini+V-Mount%29"
     },
     "Swit PB-R290S (V-Mount)": {
       "capacity": 290,
       "pinA": 18,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+PB-R290S+%28V-Mount%29"
     },
     "Swit PB-H260S (V-Mount)": {
       "capacity": 260,
       "pinA": 18,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+PB-H260S+%28V-Mount%29"
     },
     "Swit HB-A290B (B-Mount)": {
       "capacity": 290,
       "pinA": 10,
       "dtapA": 3.75,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+HB-A290B+%28B-Mount%29"
     },
     "Swit PB-H290B (B-Mount)": {
       "capacity": 290,
       "pinA": 10,
       "dtapA": 3.75,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+PB-H290B+%28B-Mount%29"
     },
     "Swit BIVO-98 (B-Mount)": {
       "capacity": 98,
       "pinA": 10,
       "dtapA": 10.4,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+BIVO-98+%28B-Mount%29"
     },
     "Swit BIVO-160 (B-Mount)": {
       "capacity": 160,
       "pinA": 10,
       "dtapA": 10.4,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+BIVO-160+%28B-Mount%29"
     },
     "Swit BIVO-200 (B-Mount)": {
       "capacity": 196,
       "pinA": 10,
       "dtapA": 10.4,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+BIVO-200+%28B-Mount%29"
     },
     "Swit CIMO-98S (V-Mount)": {
       "capacity": 98,
       "pinA": 12,
       "dtapA": 12,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+CIMO-98S+%28V-Mount%29"
     },
     "Swit CIMO-160S (V-Mount)": {
       "capacity": 160,
       "pinA": 16,
       "dtapA": 16,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+CIMO-160S+%28V-Mount%29"
     },
     "Swit CIMO-200S (V-Mount)": {
       "capacity": 196,
       "pinA": 16,
       "dtapA": 16,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+CIMO-200S+%28V-Mount%29"
     },
     "Swit CIMO-290S (V-Mount)": {
       "capacity": 290,
       "pinA": 20,
       "dtapA": 20,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Swit+CIMO-290S+%28V-Mount%29"
     },
     "Anton/Bauer Titon 90 (V-Mount)": {
       "capacity": 92,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Titon+90+%28V-Mount%29"
     },
     "Anton/Bauer Titon 150 (V-Mount)": {
       "capacity": 144,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Titon+150+%28V-Mount%29"
     },
     "Anton/Bauer Titon 240 (V-Mount)": {
       "capacity": 240,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Titon+240+%28V-Mount%29"
     },
     "Anton/Bauer Dionic XT90 (V-Mount)": {
       "capacity": 99,
       "pinA": 12,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Dionic+XT90+%28V-Mount%29"
     },
     "Anton/Bauer Dionic XT150 (V-Mount)": {
       "capacity": 156,
       "pinA": 12,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Dionic+XT150+%28V-Mount%29"
     },
     "Anton/Bauer Dionic 240Wh (V-Mount)": {
       "capacity": 240,
       "pinA": 12,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Dionic+240Wh+%28V-Mount%29"
     },
     "Anton/Bauer Dionic 26V 98Wh (B-Mount)": {
       "capacity": 98,
       "pinA": 12,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Dionic+26V+98Wh+%28B-Mount%29"
     },
     "Anton/Bauer Dionic 26V 240Wh (B-Mount)": {
       "capacity": 240,
       "pinA": 12,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Anton%2FBauer+Dionic+26V+240Wh+%28B-Mount%29"
     },
     "Core SWX NANO Micro 98Wh (V-Mount)": {
       "capacity": 98,
       "pinA": 10,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+NANO+Micro+98Wh+%28V-Mount%29"
     },
     "Core SWX NANO Micro 150Wh (V-Mount)": {
       "capacity": 150,
       "pinA": 10,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+NANO+Micro+150Wh+%28V-Mount%29"
     },
     "Core SWX Helix Max 98Wh (V-Mount)": {
       "capacity": 98,
       "pinA": 20,
       "dtapA": 7.14,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+Helix+Max+98Wh+%28V-Mount%29"
     },
     "Core SWX Helix Max 150Wh (V-Mount)": {
       "capacity": 147,
       "pinA": 20,
       "dtapA": 7.14,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+Helix+Max+150Wh+%28V-Mount%29"
     },
     "Core SWX Helix Max 360Wh (V-Mount)": {
       "capacity": 360,
       "pinA": 20,
       "dtapA": 7.14,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+Helix+Max+360Wh+%28V-Mount%29"
     },
     "Core SWX Helix Max 98Wh (B-Mount)": {
       "capacity": 98,
       "pinA": 10,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+Helix+Max+98Wh+%28B-Mount%29"
     },
     "Core SWX Helix Max 150Wh (B-Mount)": {
       "capacity": 147,
       "pinA": 10,
       "dtapA": 0,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+Helix+Max+150Wh+%28B-Mount%29"
     },
     "Core SWX Apex 150 (V-Mount)": {
       "capacity": 150,
       "pinA": 16,
       "dtapA": 12,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+Apex+150+%28V-Mount%29"
     },
     "Core SWX Apex 360 (V-Mount)": {
       "capacity": 360,
       "pinA": 16,
       "dtapA": 12,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Core+SWX+Apex+360+%28V-Mount%29"
     },
     "IDX Imicro-98 (V-Mount)": {
       "capacity": 97,
       "pinA": 10,
       "dtapA": 5.56,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+Imicro-98+%28V-Mount%29"
     },
     "IDX Imicro-150 (V-Mount)": {
       "capacity": 145,
       "pinA": 10,
       "dtapA": 5.56,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+Imicro-150+%28V-Mount%29"
     },
     "IDX DUO-C98 (V-Mount)": {
       "capacity": 97,
       "pinA": 10,
       "dtapA": 5.56,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+DUO-C98+%28V-Mount%29"
     },
     "IDX DUO-C150 (V-Mount)": {
       "capacity": 143,
       "pinA": 14,
       "dtapA": 5.56,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+DUO-C150+%28V-Mount%29"
     },
     "IDX DUO-C198 (V-Mount)": {
       "capacity": 196,
       "pinA": 14,
       "dtapA": 5.56,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+DUO-C198+%28V-Mount%29"
     },
     "IDX CUE-D95 (V-Mount)": {
       "capacity": 91,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+CUE-D95+%28V-Mount%29"
     },
     "IDX CUE-D150 (V-Mount)": {
       "capacity": 146,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+CUE-D150+%28V-Mount%29"
     },
     "IDX HV-160B (B-Mount)": {
       "capacity": 160,
       "pinA": 15,
       "dtapA": 10,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+HV-160B+%28B-Mount%29"
     },
     "IDX HV-320B (B-Mount)": {
       "capacity": 320,
       "pinA": 15,
       "dtapA": 10,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=IDX+HV-320B+%28B-Mount%29"
     },
     "SmallRig VB50 mini (V-Mount)": {
       "capacity": 50,
       "pinA": 8,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallRig+VB50+mini+%28V-Mount%29"
     },
     "SmallRig VB99 mini (V-Mount)": {
       "capacity": 99,
       "pinA": 10,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallRig+VB99+mini+%28V-Mount%29"
     },
     "SmallRig VB155 mini (V-Mount)": {
       "capacity": 155,
       "pinA": 12,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallRig+VB155+mini+%28V-Mount%29"
     },
     "SmallRig VB210 mini (V-Mount)": {
       "capacity": 210,
       "pinA": 14,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallRig+VB210+mini+%28V-Mount%29"
     },
     "SmallRig VB99 Pro mini (V-Mount)": {
       "capacity": 99,
       "pinA": 10,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallRig+VB99+Pro+mini+%28V-Mount%29"
     },
     "SmallRig VB212 mini (V-Mount)": {
       "capacity": 212,
       "pinA": 14.7,
       "dtapA": 10,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=SmallRig+VB212+mini+%28V-Mount%29"
     },
     "Hawk-Woods Mini V-Lok 50Wh": {
       "capacity": 50,
       "pinA": 6,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+Mini+V-Lok+50Wh"
     },
     "Hawk-Woods Mini V-Lok 98Wh": {
       "capacity": 98,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+Mini+V-Lok+98Wh"
     },
     "Hawk-Woods Mini V-Lok 150Wh": {
       "capacity": 150,
       "pinA": 12,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+Mini+V-Lok+150Wh"
     },
     "Hawk-Woods Mini V-Lok 200Wh": {
       "capacity": 200,
       "pinA": 16,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+Mini+V-Lok+200Wh"
     },
     "Hawk-Woods Mini V-Lok 250Wh": {
       "capacity": 250,
       "pinA": 16,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+Mini+V-Lok+250Wh"
     },
     "Hawk-Woods V-Lok 95Wh (VL-95S)": {
       "capacity": 95,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+V-Lok+95Wh+%28VL-95S%29"
     },
     "Hawk-Woods V-Lok 200Wh (VL-200S)": {
       "capacity": 200,
       "pinA": 16,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+V-Lok+200Wh+%28VL-200S%29"
     },
     "Hawk-Woods V-Lok 350Wh (VL-350N High Performance)": {
       "capacity": 350,
       "pinA": 15,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+V-Lok+350Wh+%28VL-350N+High+Performance%29"
     },
     "Hawk-Woods X-Lok 98Wh (XL-98)": {
       "capacity": 98,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+X-Lok+98Wh+%28XL-98%29"
     },
     "Hawk-Woods X-Lok 150Wh (XL-150)": {
       "capacity": 150,
       "pinA": 12,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
+      "image": "https://dummyimage.com/100x60/000/fff.png&text=Hawk-Woods+X-Lok+150Wh+%28XL-150%29"
     }
   }
 };

@@ -991,6 +991,60 @@ const diagramIcons = {
   plate: "\uD83D\uDD0C" // 🔌
 };
 
+// Load an image and optionally strip a solid background using Canvas
+function loadAndSetNodeImage(id, url, removeBg = true) {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = () => {
+    let finalUrl = url;
+    if (removeBg) {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // average the four corners to estimate the background color
+        const corners = [0, 0, w - 1, 0, 0, h - 1, w - 1, h - 1];
+        let br = 0, bg = 0, bb = 0;
+        for (let i = 0; i < corners.length; i += 2) {
+          const idx = (corners[i + 1] * w + corners[i]) * 4;
+          br += data[idx];
+          bg += data[idx + 1];
+          bb += data[idx + 2];
+        }
+        br /= 4; bg /= 4; bb /= 4;
+
+        const thr = 40;
+        for (let i = 0; i < data.length; i += 4) {
+          const dr = data[i] - br;
+          const dg = data[i + 1] - bg;
+          const db = data[i + 2] - bb;
+          if (Math.sqrt(dr * dr + dg * dg + db * db) < thr) {
+            data[i + 3] = 0;
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        finalUrl = canvas.toDataURL();
+      } catch {
+        finalUrl = url;
+      }
+    }
+    const el = document.getElementById(`img_${id}`);
+    if (el) el.setAttribute("href", finalUrl);
+  };
+  img.onerror = () => {
+    const el = document.getElementById(`img_${id}`);
+    if (el) el.remove();
+  };
+  img.src = url;
+}
+
 // Filter inputs
 const cameraFilterInput = document.getElementById("cameraFilter");
 const monitorFilterInput = document.getElementById("monitorFilter");
@@ -3271,24 +3325,50 @@ function renderSetupDiagram() {
     }
   });
 
+  const nodeImages = {};
+  if (cam && cam.image) nodeImages.camera = cam.image;
+  if (monitor && monitor.image) nodeImages.monitor = monitor.image;
+  if (video && video.image) nodeImages.video = video.image;
+  if (distanceName && devices.distance?.[distanceName]?.image) nodeImages.distance = devices.distance[distanceName].image;
+  motors.forEach((name, idx) => {
+    const img = devices.motors?.[name]?.image;
+    if (img) nodeImages[`motor${idx}`] = img;
+  });
+  inlineControllers.forEach((name, idx) => {
+    const img = devices.controllers?.[name]?.image;
+    if (img) nodeImages[`controller${idx}`] = img;
+  });
+  directControllers.forEach((name, idx) => {
+    const img = devices.controllers?.[name]?.image;
+    if (img) nodeImages[`directCtrl${idx}`] = img;
+  });
+  if (batteryName && devices.batteries?.[batteryName]?.image) nodeImages.battery = devices.batteries[batteryName].image;
+  if (plateType && devices.plates?.[plateType]?.image) nodeImages.plate = devices.plates[plateType].image;
+
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
     svg += `<rect class="node-box" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
+    const imgUrl = nodeImages[id];
     let icon = diagramIcons[id];
     if (!icon) {
       if (id.startsWith('motor')) icon = diagramIcons.motors;
       else if (id.startsWith('controller') || id.startsWith('directCtrl')) icon = diagramIcons.controllers;
       else if (id === 'distance') icon = diagramIcons.controllers;
     }
-    if (icon) {
+    const lines = wrapLabel(p.label || id);
+    if (imgUrl) {
+      const IMG = 40;
+      svg += `<image id="img_${id}" x="${p.x - IMG/2}" y="${p.y - IMG/2 - 5}" width="${IMG}" height="${IMG}" href="" />`;
+      svg += `<text x="${p.x}" y="${p.y + IMG/2 + 5}" text-anchor="middle" font-size="10">`;
+      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
+      svg += `</text>`;
+    } else if (icon) {
       svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
-      const lines = wrapLabel(p.label || id);
       svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     } else {
-      const lines = wrapLabel(p.label || id);
       svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
@@ -3297,6 +3377,8 @@ function renderSetupDiagram() {
 
   svg += '</svg>';
   setupDiagramContainer.innerHTML = svg;
+
+  Object.entries(nodeImages).forEach(([id, url]) => loadAndSetNodeImage(id, url));
 }
 
 // Convert a camelCase or underscore key to a human friendly label
