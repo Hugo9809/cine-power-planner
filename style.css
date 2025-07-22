@@ -368,6 +368,13 @@ body.dark-mode .diagram-popup {
 #setupDiagram .node-icon {
   font-size: 20px;
 }
+#setupDiagram .conn {
+  stroke: #333;
+  stroke-width: 1px;
+}
+#setupDiagram .conn.red { fill: #d33; }
+#setupDiagram .conn.blue { fill: #369; }
+#setupDiagram .conn.green { fill: #090; }
 
 #setupDiagram .edge-label {
   font-size: 10px;
@@ -424,6 +431,9 @@ body.dark-mode #setupDiagram path.video {
 body.dark-mode #setupDiagram path.fiz {
   stroke: #6f6;
 }
+body.dark-mode #setupDiagram .conn.red { fill: #ff6666; }
+body.dark-mode #setupDiagram .conn.blue { fill: #7ec8ff; }
+body.dark-mode #setupDiagram .conn.green { fill: #6f6; }
 
 body.dark-mode #setupDiagram marker polygon {
   fill: #fff;

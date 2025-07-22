@@ -3387,11 +3387,76 @@ function renderSetupDiagram() {
   if (batteryName && devices.batteries?.[batteryName]?.image) nodeImages.battery = devices.batteries[batteryName].image;
   if (plateType && devices.plates?.[plateType]?.image) nodeImages.plate = devices.plates[plateType].image;
 
+  const firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
+
+  function connectorsFor(id) {
+    switch (id) {
+      case 'battery':
+        return [
+          { side: 'top', color: 'red' },
+          { side: 'right', color: 'red' },
+          { side: 'bottom', color: 'red' }
+        ];
+      case 'plate':
+        return [
+          { side: 'top', color: 'red' },
+          { side: 'right', color: 'red' },
+          { side: 'bottom', color: 'red' },
+          { side: 'left', color: 'red' }
+        ];
+      case 'monitor':
+        return [
+          { side: 'left', color: 'red' },
+          { side: 'bottom', color: 'blue' }
+        ];
+      case 'video':
+        return [
+          { side: 'left', color: 'red' },
+          { side: 'top', color: 'blue' }
+        ];
+      case 'camera':
+        return [
+          { side: 'left', color: 'red' },
+          { side: 'top', color: 'blue' },
+          { side: 'bottom', color: 'blue' },
+          { side: 'right', color: 'green' }
+        ];
+      case 'distance':
+        return [{ side: 'bottom', color: 'green' }];
+      default:
+        if (id.startsWith('controller') || id.startsWith('motor') || id.startsWith('directCtrl')) {
+          if (firstFizId && id === firstFizId) {
+            return [
+              { side: 'top', color: 'green' },
+              { side: 'left', color: 'green' },
+              { side: 'right', color: 'green' },
+              { side: 'bottom', color: 'red' }
+            ];
+          }
+          return [
+            { side: 'left', color: 'green' },
+            { side: 'right', color: 'green' }
+          ];
+        }
+    }
+    return [];
+  }
+
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
     svg += `<g class="diagram-node" data-node="${id}">`;
     svg += `<rect class="node-box" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
+
+    const conns = connectorsFor(id);
+    conns.forEach(c => {
+      let cx = p.x, cy = p.y;
+      if (c.side === 'top') { cx = p.x; cy = p.y - NODE_H / 2; }
+      else if (c.side === 'bottom') { cx = p.x; cy = p.y + NODE_H / 2; }
+      else if (c.side === 'left') { cx = p.x - NODE_W / 2; cy = p.y; }
+      else if (c.side === 'right') { cx = p.x + NODE_W / 2; cy = p.y; }
+      svg += `<circle class="conn ${c.color}" cx="${cx}" cy="${cy}" r="4" />`;
+    });
 
     const imgUrl = nodeImages[id];
     let icon = diagramIcons[id];
