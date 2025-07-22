@@ -132,6 +132,8 @@ const texts = {
 
     toggleDeviceManager: "Edit Device Data…",
     hideDeviceManager: "Hide Device Data",
+    showDetails: "Show Details",
+    hideDetails: "Hide Details",
 
     batteryTableLabel: "Battery",
     runtimeLabel: "Estimated Runtime (h)",
@@ -297,6 +299,8 @@ const texts = {
 
     toggleDeviceManager: "Editar Datos de Dispositivos…",
     hideDeviceManager: "Ocultar Datos de Dispositivos",
+    showDetails: "Mostrar Detalles",
+    hideDetails: "Ocultar Detalles",
 
     batteryTableLabel: "Batería",
     runtimeLabel: "Autonomía Estimada (h)",
@@ -460,6 +464,8 @@ const texts = {
 
     toggleDeviceManager: "Éditer les Données…",
     hideDeviceManager: "Masquer les Données",
+    showDetails: "Afficher les Détails",
+    hideDetails: "Masquer les Détails",
 
     batteryTableLabel: "Batterie",
     runtimeLabel: "Autonomie Estimée (h)",
@@ -623,6 +629,8 @@ const texts = {
 
     toggleDeviceManager: "Gerätedaten bearbeiten…",
     hideDeviceManager: "Gerätedaten ausblenden",
+    showDetails: "Details anzeigen",
+    hideDetails: "Details verbergen",
 
     batteryTableLabel: "Akku",
     runtimeLabel: "Geschätzte Laufzeit (h)",
