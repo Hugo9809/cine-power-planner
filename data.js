@@ -6384,7 +6384,7 @@ let devices={
         ],
         "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Compatible with standard 0.8 mod lens gears of various diameters."
       },
-      "Arri Cforce Mini (CLM-4) Motor": {
+      "Arri Cforce Mini Motor": {
         "powerDrawWatts": 20,
         "connector": "Lemo 4-pin (LBUS)",
         "internalController": true,
@@ -6399,7 +6399,7 @@ let devices={
         ],
         "notes": "Constant 0.3 Nm, maximum peak torque 0.5 Nm. Connects via ARRI LBUS. Supports a 0.8 mod gear with 25mm width, suitable for lenses with longer focus throws or telescoping barrels. Also compatible with large diameter 0.8 mod gears up to 80 teeth."
       },
-      "Arri Cforce Plus (CLM-5) Motor": {
+      "Arri Cforce Plus Motor": {
         "powerDrawWatts": 32,
         "connector": "Lemo 4-pin (LBUS)",
         "internalController": true,
@@ -6413,6 +6413,45 @@ let devices={
           "0.8 mod large diameter (e.g., 80T)"
         ],
         "notes": "Constant 0.7 Nm, maximum peak torque 1.0 Nm. More powerful than the Cforce Mini. Connects via ARRI LBUS. Also supports a 0.8 mod gear with 25mm width and large diameter 0.8 mod gears up to 80 teeth."
+      },
+      "Arri CLM-4 Lens Motor (K2.72114.0)": {
+        "powerDrawWatts": 12,
+        "connector": "7-pin Lemo (LCS)",
+        "internalController": false,
+        "torqueNm": 0.5,
+        "gearTypes": [
+          "0.8 mod",
+          "0.6 mod",
+          "0.5 mod"
+        ],
+        "notes": "Standard digital lens motor for ARRI LCS. Requires a UMC-4 for control. Part no. K2.72114.0."
+      },
+      "Arri CLM-5 Lens Motor (K2.0006361)": {
+        "powerDrawWatts": 24,
+        "connector": "7-pin Lemo (LCS)",
+        "internalController": false,
+        "torqueNm": 1.2,
+        "gearTypes": [
+          "0.8 mod",
+          "0.6 mod",
+          "0.5 mod"
+        ],
+        "notes": "High-torque lens motor for ARRI LCS. Requires a UMC-4 for control. Part no. K2.0006361."
+      },
+      "Arri cforce mini RF (KK.0040345)": {
+        "powerDrawWatts": 20,
+        "connector": "Lemo 4-pin (LBUS), 7-pin Lemo (CAM)",
+        "internalController": true,
+        "torqueNm": 0.5,
+        "gearTypes": [
+          "0.8 mod",
+          "0.4 mod",
+          "0.5 mod",
+          "0.6 mod",
+          "0.8 mod 25mm wide",
+          "0.8 mod large diameter (e.g., 80T)"
+        ],
+        "notes": "Lens motor with integrated RF receiver and controller. Provides one LBUS port and one CAM port similar to the RIA-1, allowing daisy-chaining of additional motors."
       },
       "Teradek RT Motion FIZ Motor (MOTR.S)": {
         "powerDrawWatts": 24,
@@ -6600,7 +6639,7 @@ let devices={
         "power_source": "External DC (via CAM or LBUS chain)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary ARRI radio system, works with WCU-4, SXU-1, Master Grips, cmotion pan-bar zoom), Wired (LBUS, CAM, SERIAL)",
-        "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support."
+        "notes": "3-axis motor controller, LDS Lens Data Archive integration (frame-accurate lens data, mapping, depth-of-field), supports internal/external timecode, multiple interfaces for peripherals (e.g., UDM-1, motion control), override function support. Only compatible with ARRI CLM-4 and CLM-5 motors, which require a UMC-4 for operation."
       },
       "Arri RIA-1": {
         "powerDrawWatts": 2.5,
@@ -6608,7 +6647,7 @@ let devices={
         "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
         "battery_type": "N/A (no internal battery, draws power from camera or external source)",
         "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
-        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust."
+        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque."
       },
       "Arri Master Grip (single unit)": {
         "powerDrawWatts": 0.72,
