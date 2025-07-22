@@ -2910,7 +2910,15 @@ function renderSetupDiagram() {
 
   let chain = [];
   const edges = [];
-  const pushEdge = (edge, type) => edges.push({ ...edge, type });
+  const pushEdge = (edge, type) => {
+    const similar = edges.filter(e => e.from === edge.from && e.to === edge.to && e.type === type);
+    if (!('offset' in edge) && similar.length) {
+      const dir = similar.length % 2 === 0 ? 1 : -1;
+      const mult = Math.ceil(similar.length / 2);
+      edge.offset = mult * 20 * dir;
+    }
+    edges.push({ ...edge, type });
+  };
   const nativePlate = plateType && isSelectedPlateNative(camName);
   const battMount = devices.batteries[batteryName]?.mount_type;
   if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
