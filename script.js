@@ -346,6 +346,42 @@ function motorPriority(name) {
   return 1;
 }
 
+function firstConnector(str) {
+  if (!str) return '';
+  return str.split(',')[0].trim();
+}
+
+function cameraFizPort(camName, controllerPort) {
+  const cam = devices.cameras[camName];
+  if (!cam || !Array.isArray(cam.fizConnectors) || cam.fizConnectors.length === 0) return 'LBUS';
+  if (!controllerPort) return cam.fizConnectors[0].type;
+  const norm = shortConnLabel(firstConnector(controllerPort)).toLowerCase();
+  const match = cam.fizConnectors.find(fc => shortConnLabel(fc.type).toLowerCase() === norm);
+  return match ? match.type : cam.fizConnectors[0].type;
+}
+
+function controllerFizPort(name) {
+  const c = devices.fiz?.controllers?.[name];
+  return firstConnector(c?.FIZ_connector) || 'LBUS';
+}
+
+function motorFizPort(name) {
+  const m = devices.fiz?.motors?.[name];
+  return firstConnector(m?.connector) || 'LBUS';
+}
+
+function fizPort(name) {
+  if (devices.fiz?.controllers?.[name]) return controllerFizPort(name);
+  if (devices.fiz?.motors?.[name]) return motorFizPort(name);
+  return 'LBUS';
+}
+
+function sdiRate(type) {
+  const m = /([\d.]+)G-SDI/i.exec(type || '');
+  if (m) return parseFloat(m[1]);
+  return /SDI/i.test(type || '') ? 1 : null;
+}
+
 function updateBatteryPlateVisibility() {
   const camName = cameraSelect.value;
   const hasB = isNativeBMountCamera(camName);
@@ -2849,13 +2885,35 @@ function renderSetupDiagram() {
   }
   if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
     const vi = (monitor.video?.inputs || monitor.videoInputs)[0];
-    const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'monitor', label, offset: 60, angled: true, labelSpacing: 5 });
+    const camOut = cam.videoOutputs[0].type;
+    const monIn = vi.portType || vi.type || vi;
+    if (/HDMI/i.test(camOut) && /HDMI/i.test(monIn)) {
+      edges.push({ from: 'camera', to: 'monitor', label: 'HDMI', offset: 60, angled: true, labelSpacing: 5 });
+    } else if (/SDI/i.test(camOut) && /SDI/i.test(monIn)) {
+      const rate = Math.min(sdiRate(camOut) || 0, sdiRate(monIn) || 0) || sdiRate(camOut) || sdiRate(monIn) || 0;
+      let lbl = 'SDI';
+      if (rate >= 12) lbl = '12G-SDI';
+      else if (rate >= 6) lbl = '6G-SDI';
+      else if (rate >= 3) lbl = '3G-SDI';
+      else if (rate >= 1.5) lbl = '1.5G-SDI';
+      edges.push({ from: 'camera', to: 'monitor', label: lbl, offset: 60, angled: true, labelSpacing: 5 });
+    }
   }
   if (cam && video && cam.videoOutputs?.length && (video.videoInputs?.length || video.video?.inputs?.length)) {
     const vi = (video.videoInputs || (video.video ? video.video.inputs : []))[0];
-    const label = formatConnLabel(cam.videoOutputs[0].type, (vi.portType || vi.type || vi));
-    edges.push({ from: 'camera', to: 'video', label, offset: 60, angled: true, labelSpacing: 5 });
+    const camOut = cam.videoOutputs[0].type;
+    const vidIn = vi.portType || vi.type || vi;
+    if (/HDMI/i.test(camOut) && /HDMI/i.test(vidIn)) {
+      edges.push({ from: 'camera', to: 'video', label: 'HDMI', offset: 60, angled: true, labelSpacing: 5 });
+    } else if (/SDI/i.test(camOut) && /SDI/i.test(vidIn)) {
+      const rate = Math.min(sdiRate(camOut) || 0, sdiRate(vidIn) || 0) || sdiRate(camOut) || sdiRate(vidIn) || 0;
+      let lbl = 'SDI';
+      if (rate >= 12) lbl = '12G-SDI';
+      else if (rate >= 6) lbl = '6G-SDI';
+      else if (rate >= 3) lbl = '3G-SDI';
+      else if (rate >= 1.5) lbl = '1.5G-SDI';
+      edges.push({ from: 'camera', to: 'video', label: lbl, offset: 60, angled: true, labelSpacing: 5 });
+    }
   }
 
   let chain = [];
@@ -2879,15 +2937,26 @@ function renderSetupDiagram() {
       firstName = motors[idx];
     }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
-    edges.push({ from: 'camera', to: first, label: formatConnLabel('LBUS', port) });
+    const camPort = cameraFizPort(camName, port);
+    edges.push({ from: 'camera', to: first, label: formatConnLabel(camPort, port) });
+    if (/RIA-1/i.test(firstName) || /cforce\s+mini\s+RF/i.test(firstName)) {
+      const powerSrc = plateType ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
+      if (powerSrc) edges.push({ from: powerSrc, to: first, label: 'D-Tap', offset: 40 });
+    }
   } else if (motorIds.length && cam) {
-    edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel('LBUS', 'LBUS') });
+    const camPort = cameraFizPort(camName, motorFizPort(motors[0]));
+    edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])) });
   }
 
   for (let i = 0; i < chain.length - 1; i++) {
     const a = chain[i];
     const b = chain[i + 1];
-    edges.push({ from: a, to: b, label: formatConnLabel('LBUS', 'LBUS') });
+    let fromName = null, toName = null;
+    if (a.startsWith('controller')) fromName = inlineControllers[controllerIds.indexOf(a)] || controllers[controllerIds.indexOf(a)];
+    else if (a.startsWith('motor')) fromName = motors[motorIds.indexOf(a)];
+    if (b.startsWith('controller')) toName = inlineControllers[controllerIds.indexOf(b)] || controllers[controllerIds.indexOf(b)];
+    else if (b.startsWith('motor')) toName = motors[motorIds.indexOf(b)];
+    edges.push({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)) });
   }
 
   directControllers.forEach((name, idx) => {
@@ -2901,10 +2970,13 @@ function renderSetupDiagram() {
     return;
   }
 
-  const NODE_W = 130;
+  const NODE_W = 160;
   const NODE_H = 80;
   const ROUTE_Y = baseY + NODE_H;
-  const viewHeight = baseY + step + NODE_H / 2 + 20;
+  const ys = Object.values(pos).map(p => p.y);
+  const minY = Math.min(...ys);
+  const maxY = Math.max(...ys);
+  const viewHeight = (maxY - minY) + NODE_H + 40;
 
   function computePath(fromId, toId, offset = 0, labelSpacing = 0) {
     const from = pos[fromId];
@@ -2928,12 +3000,12 @@ function renderSetupDiagram() {
         const viaY = ROUTE_Y + offset;
         path = `M ${fromEdgeX} ${sy} L ${fromEdgeX} ${viaY} L ${toEdgeX} ${viaY} L ${toEdgeX} ${ty}`;
         lx = (fromEdgeX + toEdgeX) / 2;
-        ly = viaY - 5 - labelSpacing;
+        ly = viaY - 8 - labelSpacing;
         ang = angleBetween;
       } else {
         path = `M ${fromEdgeX} ${sy + offset} L ${toEdgeX} ${ty + offset}`;
         lx = (fromEdgeX + toEdgeX) / 2;
-        ly = sy + offset - 10 - labelSpacing;
+        ly = sy + offset - 8 - labelSpacing;
         ang = angleBetween;
       }
     } else {
@@ -2942,13 +3014,13 @@ function renderSetupDiagram() {
       const viaY = (fromEdgeY + toEdgeY) / 2 + offset;
       path = `M ${sx} ${fromEdgeY} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${toEdgeY}`;
       lx = (sx + tx) / 2;
-      ly = viaY - 5 - labelSpacing;
+      ly = viaY - 8 - labelSpacing;
       ang = angleBetween;
     }
     return { path, labelX: lx, labelY: ly, angle: ang };
   }
 
-  let svg = `<svg viewBox="0 0 ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg viewBox="0 ${minY - NODE_H/2 - 20} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
   svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
 
   edges.forEach(e => {
