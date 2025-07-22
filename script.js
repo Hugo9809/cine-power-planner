@@ -55,6 +55,16 @@ function normalizeFizConnectorType(type) {
   const map = {
     'LEMO 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
     'Lemo 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
+    'LBUS (4-pin Lemo)': 'LBUS (LEMO 4-pin)',
+    'LBUS (4-pin Lemo for motors)': 'LBUS (LEMO 4-pin)',
+    '4-pin Lemo (LBUS)': 'LBUS (LEMO 4-pin)',
+    'LEMO 4-pin': 'LEMO 4-pin',
+    '4-pin Lemo': 'LEMO 4-pin',
+    'Lemo 4-pin': 'LEMO 4-pin',
+    '7-pin Lemo': 'LEMO 7-pin',
+    'Lemo 7-pin 1B': 'LEMO 7-pin',
+    '7-pin Lemo (LCS)': 'LEMO 7-pin (LCS)',
+    '7-pin Lemo (CAM)': 'LEMO 7-pin (CAM)',
     'EXT (LEMO 7-pin)': 'EXT LEMO 7-pin',
     'Hirose 12pin': 'Hirose 12-pin',
     '12-pin Hirose': 'Hirose 12-pin',
@@ -2979,7 +2989,7 @@ function renderSetupDiagram() {
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
-  const viewHeight = (maxY - minY) + NODE_H + 40;
+  const viewHeight = (maxY - minY) + NODE_H + 80;
 
   function computePath(fromId, toId, offset = 0, labelSpacing = 0) {
     const from = pos[fromId];
