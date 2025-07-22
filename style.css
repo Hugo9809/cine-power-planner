@@ -247,6 +247,13 @@ button:disabled {
   font-size: 0.85em;
 }
 
+/* Arrange top-level device details in two columns */
+.device-details > .device-detail-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+}
+
 .device-detail-list {
   list-style: none;
   padding-left: 0;
