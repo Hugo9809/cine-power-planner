@@ -253,8 +253,18 @@ button:disabled {
   margin: 3px 0;
 }
 
+.device-detail-list ul {
+  margin-left: 15px;
+  list-style: none;
+  padding-left: 0;
+}
+
 .device-detail-list li {
   margin: 2px 0;
+}
+
+.device-detail-list strong {
+  margin-right: 4px;
 }
 
 .device-ul li:last-child {
