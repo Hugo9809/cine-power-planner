@@ -3092,7 +3092,7 @@ function renderSetupDiagram() {
   const pairCounts = {};
   // Assign offsets based on how many edges already exist between two nodes.
   // This keeps parallel connections from overlapping each other.
-  const dirCounts = { lr: 0, rl: 0 };
+  const fromDirCounts = {};
   const pushEdge = (edge, type) => {
     const key = [edge.from, edge.to].sort().join('|');
     const idx = pairCounts[key] || 0;
@@ -3108,8 +3108,10 @@ function renderSetupDiagram() {
     const fromX = pos[edge.from]?.x ?? 0;
     const toX = pos[edge.to]?.x ?? 0;
     const dirKey = fromX <= toX ? 'lr' : 'rl';
-    const order = dirCounts[dirKey]++;
-    edges.push({ ...edge, type, dir: dirKey, order });
+    const orderKey = `${edge.from}|${dirKey}`;
+    const order = fromDirCounts[orderKey] || 0;
+    fromDirCounts[orderKey] = order + 1;
+    edges.push({ ...edge, type, dir: dirKey, order, pairIndex: idx });
   };
   const nativePlate = plateType && isSelectedPlateNative(camName);
   const battMount = devices.batteries[batteryName]?.mount_type;
@@ -3318,9 +3320,17 @@ function renderSetupDiagram() {
 
     const direction = opts.dir || (sx <= tx ? 'lr' : 'rl');
     const order = opts.order || 0;
+    const pairExtra = (opts.pairIndex || 0) * 10;
     const extra = 40 * order;
     const baseY = ROUTE_Y + offset;
     const viaY = direction === 'lr' ? baseY - extra : baseY + extra;
+    if (direction === 'lr') {
+      sx += pairExtra;
+      tx -= pairExtra;
+    } else {
+      sx -= pairExtra;
+      tx += pairExtra;
+    }
     const path = `M ${sx} ${sy} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${ty}`;
     const lx = (sx + tx) / 2;
     const ly = viaY - 8 - labelSpacing;
