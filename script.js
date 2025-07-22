@@ -269,12 +269,26 @@ function unifyDevices(data) {
   // Normalize FIZ controllers
   Object.values(data.fiz?.controllers || {}).forEach(c => {
     if (!c) return;
-    if (c.FIZ_connector && !c.fizConnector) {
+    if (c.FIZ_connector && !c.fizConnector && !c.fizConnectors) {
       c.fizConnector = c.FIZ_connector;
       delete c.FIZ_connector;
     }
-    if (c.fizConnector) {
-      c.fizConnector = normalizeFizConnectorType(c.fizConnector);
+    if (Array.isArray(c.fizConnectors)) {
+      c.fizConnectors = c.fizConnectors.map(fc => {
+        if (!fc) return { type: '' };
+        const type = normalizeFizConnectorType(fc.type || fc);
+        const notes = fc.notes || undefined;
+        return notes ? { type, notes } : { type };
+      });
+    } else if (c.fizConnector) {
+      const parts = String(c.fizConnector)
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+      c.fizConnectors = parts.map(p => ({ type: normalizeFizConnectorType(p) }));
+      delete c.fizConnector;
+    } else {
+      c.fizConnectors = [];
     }
   });
 }
@@ -362,7 +376,8 @@ function controllerCamPort(name) {
   const c = devices.fiz?.controllers?.[name];
   if (c) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
-    if (/CAM/i.test(c.fizConnector || '')) return 'Cam';
+    const connStr = (c.fizConnectors || []).map(fc => fc.type).join(', ');
+    if (/CAM/i.test(connStr)) return 'Cam';
   }
   const m = devices.fiz?.motors?.[name];
   if (m && /CAM/i.test(m.fizConnector || '')) return 'Cam';
@@ -371,7 +386,7 @@ function controllerCamPort(name) {
 
 function controllerDistancePort(name) {
   const c = devices.fiz?.controllers?.[name];
-  if (c && /SERIAL/i.test(c.fizConnector || '')) return 'Serial';
+  if (c && (c.fizConnectors || []).some(fc => /SERIAL/i.test(fc.type))) return 'Serial';
   return 'LBUS';
 }
 
@@ -396,7 +411,9 @@ function fizNeedsPower(name) {
   const d = devices.fiz?.controllers?.[name] || devices.fiz?.motors?.[name];
   if (!d) return false;
   if (/internal battery/i.test(d.power_source || "")) return false;
-  const conn = d.fizConnector || "";
+  const conn = Array.isArray(d.fizConnectors) && d.fizConnectors.length
+    ? d.fizConnectors[0].type
+    : (d.fizConnector || "");
   if (/LBUS/i.test(conn) && /^Arri/i.test(name)) return false;
   return true;
 }
@@ -425,7 +442,13 @@ function cameraFizPort(camName, controllerPort, deviceName = '') {
 
 function controllerFizPort(name) {
   const c = devices.fiz?.controllers?.[name];
-  const port = firstConnector(c?.fizConnector);
+  let portStr = '';
+  if (Array.isArray(c?.fizConnectors) && c.fizConnectors.length) {
+    portStr = c.fizConnectors[0].type;
+  } else if (c?.fizConnector) {
+    portStr = c.fizConnector;
+  }
+  const port = firstConnector(portStr);
   if (port) return port;
   return isArriOrCmotion(name) ? 'LBUS' : 'Proprietary';
 }
@@ -587,7 +610,8 @@ function checkFizController() {
   controllers.forEach(name => {
     const c = devices.fiz.controllers[name];
     if (!c) return;
-    if (/CAM|SERIAL|Motor/i.test(c.fizConnector || '')) hasController = true;
+    const connStr = (c.fizConnectors || []).map(fc => fc.type).join(', ');
+    if (/CAM|SERIAL|Motor/i.test(connStr)) hasController = true;
     if (c.internalController) hasController = true;
   });
 
@@ -1062,7 +1086,9 @@ function updateMotorConnectorOptions() {
 function getAllControllerConnectors() {
   const types = new Set();
   Object.values(devices.fiz?.controllers || {}).forEach(c => {
-    if (c && c.fizConnector) types.add(c.fizConnector);
+    if (c && Array.isArray(c.fizConnectors)) {
+      c.fizConnectors.forEach(fc => { if (fc && fc.type) types.add(fc.type); });
+    }
   });
   return Array.from(types).filter(Boolean).sort();
 }
@@ -3689,7 +3715,10 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerFieldsDiv.style.display = "block";
       distanceFieldsDiv.style.display = "none";
       newWattInput.value = deviceData.powerDrawWatts || '';
-      controllerConnectorInput.value = deviceData.fizConnector || '';
+      const cc = Array.isArray(deviceData.fizConnectors)
+        ? deviceData.fizConnectors.map(fc => fc.type).join(', ')
+        : (deviceData.fizConnector || '');
+      controllerConnectorInput.value = cc;
       controllerPowerInput.value = deviceData.power_source || '';
       controllerBatteryInput.value = deviceData.battery_type || '';
       controllerConnectivityInput.value = deviceData.connectivity || '';
