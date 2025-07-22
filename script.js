@@ -3407,7 +3407,15 @@ function renderSetupDiagram() {
   });
 
   svg += '</svg>';
-  setupDiagramContainer.innerHTML = svg;
+  let popup = document.getElementById('diagramPopup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'diagramPopup';
+    popup.className = 'diagram-popup';
+  }
+  setupDiagramContainer.innerHTML = '';
+  setupDiagramContainer.appendChild(popup);
+  setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
 
   attachDiagramPopups(nodeMap);
 
@@ -3453,7 +3461,8 @@ function attachDiagramPopups(map) {
     const id = node.getAttribute('data-node');
     const info = map[id];
     if (!info) return;
-    const ports = getDevicePorts(info.category, info.name);
+    const ports = getDevicePorts(info.category, info.name) ||
+      { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
     const format = list => list && list.length ? list.join(', ') : '-';
     const html = `<strong>${escapeHtml(info.name)}</strong><br>` +
       `Power In Ports: ${format(ports.powerIn)}<br>` +
