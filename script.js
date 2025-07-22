@@ -536,7 +536,7 @@ function checkArriCompatibility() {
 
   const usesUMC4 = controllers.some(n => /UMC-4/i.test(n));
   const usesRIA1 = controllers.some(n => /RIA-1/i.test(n));
-  const usesRF = controllers.some(n => /cforce\s*rf/i.test(n)) || motors.some(m => /cforce\s*rf/i.test(m));
+  const usesRF = controllers.some(n => /cforce.*rf/i.test(n)) || motors.some(m => /cforce.*rf/i.test(m));
 
   let msg = '';
   if (usesUMC4 && motors.some(m => !/CLM-4|CLM-5/i.test(m))) {
@@ -2858,6 +2858,9 @@ function renderSetupDiagram() {
     const native = isSelectedPlateNative(camName) && !/^Arri Alexa Mini( LF)?$/i.test(camName);
     const label = native ? plateType : formatConnLabel(plateType, cam.power.input.portType);
     edges.push({ from: 'plate', to: 'camera', label });
+  } else if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None' && !plateType) {
+    const battMount = devices.batteries[batteryName]?.mount_type;
+    edges.push({ from: 'battery', to: 'camera', label: formatConnLabel(battMount, cam.power.input.portType) });
   }
   if (monitor && monitor.power?.input?.portType) {
     const mPort = monitor.power.input.portType;
@@ -2938,14 +2941,14 @@ function renderSetupDiagram() {
     }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
     const camPort = cameraFizPort(camName, port);
-    edges.push({ from: 'camera', to: first, label: formatConnLabel(camPort, port) });
+    edges.push({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true });
     if (/RIA-1/i.test(firstName) || /cforce\s+mini\s+RF/i.test(firstName)) {
       const powerSrc = plateType ? 'plate' : (batteryName && batteryName !== 'None' ? 'battery' : null);
       if (powerSrc) edges.push({ from: powerSrc, to: first, label: 'D-Tap', offset: 40 });
     }
   } else if (motorIds.length && cam) {
     const camPort = cameraFizPort(camName, motorFizPort(motors[0]));
-    edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])) });
+    edges.push({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true });
   }
 
   for (let i = 0; i < chain.length - 1; i++) {
@@ -2956,13 +2959,13 @@ function renderSetupDiagram() {
     else if (a.startsWith('motor')) fromName = motors[motorIds.indexOf(a)];
     if (b.startsWith('controller')) toName = inlineControllers[controllerIds.indexOf(b)] || controllers[controllerIds.indexOf(b)];
     else if (b.startsWith('motor')) toName = motors[motorIds.indexOf(b)];
-    edges.push({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)) });
+    edges.push({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)), noArrow: true });
   }
 
   directControllers.forEach((name, idx) => {
     if (!motorIds.length) return;
     const id = `directCtrl${idx}`;
-    edges.push({ from: id, to: motorIds[0], label: 'ctrl' });
+    edges.push({ from: id, to: motorIds[0], label: 'ctrl', noArrow: true });
   });
 
   if (nodes.length === 0) {
@@ -3027,7 +3030,8 @@ function renderSetupDiagram() {
     if (!pos[e.from] || !pos[e.to]) return;
     const { path, labelX, labelY, angle } = computePath(e.from, e.to, e.offset || 0, e.labelSpacing || 0);
     if (!path) return;
-    svg += `<path class="edge-path" d="${path}" marker-end="url(#arrow)" />`;
+    const arrowAttr = e.noArrow ? '' : ' marker-end="url(#arrow)"';
+    svg += `<path class="edge-path" d="${path}"${arrowAttr} />`;
     if (e.label) {
       const rot = e.angled ? ` transform="rotate(${angle} ${labelX} ${labelY})"` : '';
       svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle"${rot}>${escapeHtml(e.label)}</text>`;
