@@ -366,6 +366,7 @@ function setLanguage(lang) {
   document.getElementById("resultsHeading").textContent = texts[lang].resultsHeading; // Fixed typo here
   document.getElementById("deviceManagerHeading").textContent = texts[lang].deviceManagerHeading;
   document.getElementById("batteryComparisonHeading").textContent = texts[lang].batteryComparisonHeading;
+  document.getElementById("setupDiagramHeading").textContent = texts[lang].setupDiagramHeading;
   // Setup manager labels and buttons
   document.getElementById("savedSetupsLabel").textContent = texts[lang].savedSetupsLabel;
   document.getElementById("setupNameLabel").textContent = texts[lang].setupNameLabel;
@@ -603,6 +604,7 @@ const darkModeToggle  = document.getElementById("darkModeToggle");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
+const setupDiagramContainer = document.getElementById("diagramArea");
 
 // Filter inputs
 const cameraFilterInput = document.getElementById("cameraFilter");
@@ -2511,6 +2513,91 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   } else {
     batteryComparisonSection.style.display = "none";
   }
+  if (setupDiagramContainer) renderSetupDiagram();
+}
+
+function renderSetupDiagram() {
+  if (!setupDiagramContainer) return;
+
+  const camName = cameraSelect.value;
+  const cam = devices.cameras[camName];
+  const monitorName = monitorSelect.value;
+  const monitor = devices.monitors[monitorName];
+  const videoName = videoSelect.value;
+  const video = devices.video[videoName];
+  const batteryName = batterySelect.value;
+
+  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+
+  const nodes = [];
+  if (batteryName && batteryName !== 'None') nodes.push('battery');
+  if (camName && camName !== 'None') nodes.push('camera');
+  if (monitorName && monitorName !== 'None') nodes.push('monitor');
+  if (videoName && videoName !== 'None') nodes.push('video');
+  if (motors.length) nodes.push('motors');
+  if (controllers.length) nodes.push('controllers');
+
+  const pos = {
+    battery: { x: 40,  y: 140, label: batteryName },
+    camera:  { x: 180, y: 140, label: camName },
+    monitor: { x: 320, y: 80,  label: monitorName },
+    video:   { x: 320, y: 200, label: videoName },
+    motors:  { x: 180, y: 220, label: texts[currentLang].fizMotorsLabel },
+    controllers: { x: 320, y: 260, label: texts[currentLang].fizControllersLabel }
+  };
+
+  const edges = [];
+  if (cam && cam.power?.input?.portType && batteryName && batteryName !== 'None') {
+    edges.push({ from: 'battery', to: 'camera', label: cam.power.input.portType });
+  }
+  if (monitor && monitor.power?.input?.portType && batteryName && batteryName !== 'None') {
+    edges.push({ from: 'battery', to: 'monitor', label: monitor.power.input.portType });
+  }
+  if (video && video.powerInput && batteryName && batteryName !== 'None') {
+    edges.push({ from: 'battery', to: 'video', label: video.powerInput });
+  }
+  if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
+    const vi = (monitor.video?.inputs || monitor.videoInputs)[0];
+    const label = cam.videoOutputs[0].type + ' → ' + (vi.portType || vi.type || vi);
+    edges.push({ from: 'camera', to: 'monitor', label });
+  }
+  if (cam && video && cam.videoOutputs?.length && (video.videoInputs?.length || video.video?.inputs?.length)) {
+    const vi = (video.videoInputs || (video.video ? video.video.inputs : []))[0];
+    const label = cam.videoOutputs[0].type + ' → ' + (vi.portType || vi.type || vi);
+    edges.push({ from: 'camera', to: 'video', label });
+  }
+  if (cam && cam.fizConnectors?.length && motors.length) {
+    edges.push({ from: 'camera', to: 'motors', label: cam.fizConnectors[0].type });
+  }
+  if (controllers.length && motors.length) {
+    edges.push({ from: 'controllers', to: 'motors', label: 'ctrl' });
+  }
+
+  let svg = '<svg viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg">';
+  svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
+
+  edges.forEach(e => {
+    if (!pos[e.from] || !pos[e.to]) return;
+    const from = pos[e.from];
+    const to = pos[e.to];
+    svg += `<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" marker-end="url(#arrow)" />`;
+    if (e.label) {
+      const tx = (from.x + to.x) / 2;
+      const ty = (from.y + to.y) / 2 - 5;
+      svg += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="10">${escapeHtml(e.label)}</text>`;
+    }
+  });
+
+  nodes.forEach(id => {
+    const p = pos[id];
+    if (!p) return;
+    svg += `<rect class="node-box" x="${p.x - 40}" y="${p.y - 15}" width="80" height="30" rx="4" ry="4" />`;
+    svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">${escapeHtml(p.label || id)}</text>`;
+  });
+
+  svg += '</svg>';
+  setupDiagramContainer.innerHTML = svg;
 }
 
 // Convert a camelCase or underscore key to a human friendly label
@@ -3677,6 +3764,9 @@ function generatePrintableOverview() {
         warningHtml = `<h2>Warnings</h2>${warningHtml}`;
     }
 
+    const diagramInner = setupDiagramContainer ? setupDiagramContainer.innerHTML : '';
+    const diagramHtml = diagramInner ? `<h2>${t.setupDiagramHeading}</h2>${diagramInner}` : '';
+
     // REGENERATE BATTERY TABLE HTML WITH BARS FOR OVERVIEW
     let batteryTableHtml = '';
     const totalWatt = parseFloat(totalPowerElem.textContent); // Get current totalWatt from display
@@ -3857,6 +3947,10 @@ function generatePrintableOverview() {
                   border-bottom: 1px solid #eee;
                   padding-bottom: 3px;
                 }
+                /* Setup diagram styles */
+                #setupDiagram svg { width: 100%; max-width: 600px; height: 300px; }
+                #setupDiagram .node-box { fill: #f9f9f9; stroke: #333; }
+                #setupDiagram line { stroke: #333; stroke-width: 2px; }
                 /* Styles for Battery Comparison Bars in Overview */
                 .barContainer {
                   width: 100%;
@@ -3932,6 +4026,10 @@ function generatePrintableOverview() {
                       height: 15px; /* Height of the bar */
                     }
 
+                    #setupDiagram svg { width: 100%; max-width: 600px; height: 300px; }
+                    #setupDiagram .node-box { fill: #fff !important; stroke: #000 !important; }
+                    #setupDiagram line { stroke: #000 !important; stroke-width: 2px; }
+
                     .bar {
                       height: 100%;
                       background-color: #4CAF50 !important; /* Green color for the bar (both) */
@@ -3984,7 +4082,9 @@ function generatePrintableOverview() {
             <h2>${t.resultsHeading}</h2>
             ${resultsHtml}
             ${warningHtml}
-            
+
+            ${diagramHtml}
+
             ${batteryTableHtml}
         </body>
         </html>
@@ -4071,5 +4171,6 @@ if (typeof module !== "undefined" && module.exports) {
     generatePrintableOverview,
     updateBatteryPlateVisibility,
     updateBatteryOptions,
+    renderSetupDiagram,
   };
 }
