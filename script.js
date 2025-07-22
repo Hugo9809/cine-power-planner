@@ -25,64 +25,15 @@ if (window.defaultDevices === undefined) {
   unifyDevices(window.defaultDevices);
 }
 
-let useRemoteStorage = false;
-let remoteData = {};
-
-async function fetchRemote() {
-  const res = await fetch('/api/data', { credentials: 'include' });
-  if (!res.ok) throw new Error('not logged in');
-  return await res.json();
-}
-
-async function pushRemote(data) {
-  await fetch('/api/data', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(data)
-  });
-}
-
-async function checkLogin() {
-  try {
-    remoteData = await fetchRemote();
-    useRemoteStorage = true;
-    if (remoteData.devices) {
-      devices = remoteData.devices;
-      unifyDevices(devices);
-      storeDevices(devices);
-    }
-    if (remoteData.setups) {
-      saveSetups(remoteData.setups);
-    }
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = '';
-  } catch (e) {
-    console.warn('Login check failed', e);
-    useRemoteStorage = false;
-    if (loginBtn) loginBtn.style.display = '';
-    if (logoutBtn) logoutBtn.style.display = 'none';
-  }
-}
-
 function getSetups() {
-  return useRemoteStorage ? (remoteData.setups || {}) : loadSetups();
+  return loadSetups();
 }
 
 function storeSetups(setups) {
-  if (useRemoteStorage) {
-    remoteData.setups = setups;
-    pushRemote(remoteData);
-  } else {
-    saveSetups(setups);
-  }
+  saveSetups(setups);
 }
 
 function storeDevices(data) {
-  if (useRemoteStorage) {
-    remoteData.devices = data;
-    pushRemote(remoteData);
-  }
   saveDeviceData(data);
 }
 
@@ -713,8 +664,6 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const languageSelect  = document.getElementById("languageSelect");
 const darkModeToggle  = document.getElementById("darkModeToggle");
-const loginBtn        = document.getElementById("loginBtn");
-const logoutBtn       = document.getElementById("logoutBtn");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
@@ -4426,11 +4375,6 @@ function initApp() {
   setLanguage(currentLang);
   resetDeviceForm();
   updateCalculations();
-  if (!navigator.userAgent.includes('jsdom')) {
-    checkLogin();
-    if (loginBtn) loginBtn.addEventListener('click', () => { window.location = '/auth/github'; });
-    if (logoutBtn) logoutBtn.addEventListener('click', async () => { await fetch('/logout'); checkLogin(); });
-  }
 }
 
 if (document.readyState === "loading") {
