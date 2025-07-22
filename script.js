@@ -848,6 +848,14 @@ function setLanguage(lang) {
     darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
     darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
   }
+  if (helpButton) {
+    helpButton.setAttribute("title", texts[lang].helpButtonLabel);
+    helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
+    if (closeHelpBtn) closeHelpBtn.textContent = texts[lang].helpClose;
+    if (document.getElementById("helpTitle")) {
+      document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
+    }
+  }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
   document.getElementById("setupActionsHeading").textContent = texts[lang].setupActionsHeading;
@@ -962,6 +970,9 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const languageSelect  = document.getElementById("languageSelect");
 const darkModeToggle  = document.getElementById("darkModeToggle");
+const helpButton      = document.getElementById("helpButton");
+const helpDialog      = document.getElementById("helpDialog");
+const closeHelpBtn    = document.getElementById("closeHelp");
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -5049,6 +5060,22 @@ if (darkModeToggle) {
     } catch (e) {
       console.warn("Could not save dark mode preference", e);
     }
+  });
+}
+
+if (helpButton && helpDialog) {
+  const openHelp = () => {
+    helpDialog.removeAttribute("hidden");
+    helpDialog.focus();
+  };
+  const closeHelp = () => {
+    helpDialog.setAttribute("hidden", "");
+    helpButton.focus();
+  };
+  helpButton.addEventListener("click", openHelp);
+  if (closeHelpBtn) closeHelpBtn.addEventListener("click", closeHelp);
+  helpDialog.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeHelp();
   });
 }
 

@@ -13,6 +13,28 @@ body {
   color: #000000;
   font-size: 0.9em;
 }
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: -999px;
+  background: #001589;
+  color: #fff;
+  padding: 8px 12px;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 10px;
+  top: 10px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
 h1, h2, h3 {
   font-family: 'Open Sans', sans-serif;
   font-weight: 500;
@@ -83,6 +105,28 @@ p {
   font-size: 0.75em;
   color: #555;
   margin-bottom: 2px;
+}
+
+/* Help dialog */
+#helpDialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 2px solid #001589;
+  padding: 20px;
+  z-index: 200;
+}
+
+#helpDialog[hidden] {
+  display: none;
+}
+
+body.dark-mode #helpDialog {
+  background: #1e1e1e;
+  color: #f0f0f0;
+  border-color: #555;
 }
 
 /* Ensure selects and inputs inside wrappers match normal form fields */
@@ -314,6 +358,11 @@ button:disabled {
   padding: 2px 4px;
   font-size: 1em;
 }
+#helpButton {
+  min-width: 32px;
+  padding: 2px 4px;
+  font-size: 1em;
+}
 
 /* Breakdown list */
 #breakdownList {
@@ -513,7 +562,7 @@ body.dark-mode #setupDiagram .diagram-placeholder {
 /* Dark mode */
 body.dark-mode {
   background-color: #121212;
-  color: #e0e0e0;
+  color: #f0f0f0;
 }
 
 body.dark-mode h1,
@@ -547,7 +596,7 @@ body.dark-mode input,
 body.dark-mode select,
 body.dark-mode textarea {
   background-color: #333;
-  color: #e0e0e0;
+  color: #f0f0f0;
   border-color: #555;
 }
 
@@ -574,7 +623,7 @@ body.dark-mode textarea {
 body.dark-mode #setupSelect,
 body.dark-mode #setupName {
   background-color: #333;
-  color: #e0e0e0;
+  color: #f0f0f0;
   border-color: #555;
 }
 

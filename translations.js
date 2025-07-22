@@ -193,6 +193,9 @@ const texts = {
     alertSelectSetupForOverview: "Please select a saved setup to generate an overview.",
     overviewTitle: "Setup Overview",
     exportAndRevertBtn: "Export and Revert to default Database",
+    helpButtonLabel: "Help",
+    helpClose: "Close",
+    helpTitle: "How to use",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   es: {
@@ -385,6 +388,9 @@ const texts = {
     alertSelectSetupForOverview: "Selecciona una configuración para generar un resumen.",
     overviewTitle: "Resumen de Configuración",
     exportAndRevertBtn: "Exportar y Restaurar por Defecto",
+    helpButtonLabel: "Ayuda",
+    helpClose: "Cerrar",
+    helpTitle: "Cómo usar",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   fr: {
@@ -577,6 +583,9 @@ const texts = {
     alertSelectSetupForOverview: "Sélectionnez une configuration pour générer un résumé.",
     overviewTitle: "Aperçu de Configuration",
     exportAndRevertBtn: "Exporter et Réinitialiser",
+    helpButtonLabel: "Aide",
+    helpClose: "Fermer",
+    helpTitle: "Comment utiliser",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   de: {
@@ -769,6 +778,9 @@ const texts = {
     alertSelectSetupForOverview: "Bitte wählen Sie ein gespeichertes Setup, um eine Übersicht zu erstellen.",
     overviewTitle: "Setup-Übersicht",
     exportAndRevertBtn: "Exportieren und auf Standarddatenbank zurücksetzen",
+    helpButtonLabel: "Hilfe",
+    helpClose: "Schließen",
+    helpTitle: "Bedienung",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   }
 };
