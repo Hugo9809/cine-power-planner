@@ -2807,24 +2807,24 @@ function renderSetupDiagram() {
     const mPort = monitor.power.input.portType;
     if (cameraCanPower(camName, mPort, monitor.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, mPort);
-      edges.push({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), offset: -60 });
+      edges.push({ from: 'camera', to: 'monitor', label: formatConnLabel(cOut, mPort), offset: -60, labelSpacing: 5 });
     } else if (plateType && isSelectedPlateNative(camName)) {
-      edges.push({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), offset: -60 });
+      edges.push({ from: 'plate', to: 'monitor', label: formatConnLabel(plateType, mPort), offset: -60, labelSpacing: 5 });
     } else if (batteryName && batteryName !== 'None') {
       const battMount = devices.batteries[batteryName]?.mount_type;
-      edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), offset: -60 });
+      edges.push({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), offset: -60, labelSpacing: 5 });
     }
   }
   if (video && video.powerInput) {
     const pPort = video.powerInput;
     if (cameraCanPower(camName, pPort, video.powerDrawWatts)) {
       const cOut = getCameraOutputType(camName, pPort);
-      edges.push({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), offset: -60 });
+      edges.push({ from: 'camera', to: 'video', label: formatConnLabel(cOut, pPort), offset: -60, labelSpacing: 5 });
     } else if (plateType && isSelectedPlateNative(camName)) {
-      edges.push({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), offset: -60 });
+      edges.push({ from: 'plate', to: 'video', label: formatConnLabel(plateType, pPort), offset: -60, labelSpacing: 5 });
     } else if (batteryName && batteryName !== 'None') {
       const battMount = devices.batteries[batteryName]?.mount_type;
-      edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), offset: -60 });
+      edges.push({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), offset: -60, labelSpacing: 5 });
     }
   }
   if (cam && monitor && cam.videoOutputs?.length && (monitor.video?.inputs?.length || monitor.videoInputs?.length)) {
