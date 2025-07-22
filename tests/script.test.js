@@ -292,4 +292,27 @@ describe('script.js functions', () => {
     generatePrintableOverview();
     expect(window.open).toHaveBeenCalled();
   });
+
+  test('filterDeviceList only matches device names', () => {
+    global.devices.cameras.CamB = { powerDrawWatts: 5 };
+    script.setLanguage('en');
+
+    const list = document.getElementById('cameraList');
+    expect(list.children.length).toBe(2);
+
+    script.filterDeviceList(list, 'CamA');
+    const items = list.children;
+    expect(items[0].style.display).toBe('');
+    expect(items[1].style.display).toBe('none');
+
+    script.filterDeviceList(list, 'power');
+    Array.from(list.children).forEach(li => {
+      expect(li.style.display).toBe('none');
+    });
+
+    script.filterDeviceList(list, '');
+    Array.from(list.children).forEach(li => {
+      expect(li.style.display).toBe('');
+    });
+  });
 });

@@ -2096,7 +2096,9 @@ function filterSelect(selectElem, filterValue) {
 function filterDeviceList(listElem, filterValue) {
   const text = filterValue.toLowerCase();
   Array.from(listElem.querySelectorAll('li')).forEach(li => {
-    if (text === '' || li.textContent.toLowerCase().includes(text)) {
+    const nameSpan = li.querySelector('.device-summary span');
+    const nameText = nameSpan ? nameSpan.textContent.toLowerCase() : li.textContent.toLowerCase();
+    if (text === '' || nameText.includes(text)) {
       li.style.display = '';
     } else {
       li.style.display = 'none';
@@ -4006,5 +4008,6 @@ if (typeof module !== "undefined" && module.exports) {
     generatePrintableOverview,
     updateBatteryPlateVisibility,
     updateBatteryOptions,
+    filterDeviceList,
   };
 }
