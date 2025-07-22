@@ -2933,9 +2933,14 @@ function renderSetupDiagram() {
 
   let chain = [];
   const edges = [];
+  const pairCounts = {};
+  // Assign offsets based on how many edges already exist between two nodes.
+  // This keeps parallel connections from overlapping each other.
   const pushEdge = (edge, type) => {
+    const key = [edge.from, edge.to].sort().join('|');
+    const idx = pairCounts[key] || 0;
+    pairCounts[key] = idx + 1;
     if (!('offset' in edge)) {
-      const idx = edges.length;
       if (idx === 0) edge.offset = 0;
       else {
         const dir = idx % 2 === 1 ? 1 : -1;
