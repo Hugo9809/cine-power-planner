@@ -227,19 +227,41 @@ button:disabled {
 }
 
 .device-ul li {
+  border-bottom: 1px dashed #eee;
+  padding: 5px 0;
+  font-size: 0.9em;
+}
+
+.device-summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 0;
-  border-bottom: 1px dashed #eee;
-  font-size: 0.9em;
+}
+
+.detail-toggle {
+  margin-right: 5px;
+}
+
+.device-details {
+  margin-left: 20px;
+  font-size: 0.85em;
+}
+
+.device-detail-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 3px 0;
+}
+
+.device-detail-list li {
+  margin: 2px 0;
 }
 
 .device-ul li:last-child {
   border-bottom: none;
 }
 
-.device-ul li span {
+.device-summary span {
   flex-grow: 1;
   margin-right: 10px;
 }
@@ -439,6 +461,9 @@ body.dark-mode .device-category h4 {
 
 body.dark-mode .device-ul li {
   border-bottom: 1px dashed #ffffff;
+}
+body.dark-mode .device-details {
+  color: #ddd;
 }
 body.dark-mode .field-with-label::before {
   color: #ccc;

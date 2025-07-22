@@ -2556,17 +2556,23 @@ function formatValue(value) {
   return String(value);
 }
 
-function formatDeviceData(deviceData) {
+function createDeviceDetailsList(deviceData) {
+  const list = document.createElement('ul');
+  list.className = 'device-detail-list';
   if (typeof deviceData !== 'object') {
-    return `Power (W): ${deviceData}`;
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${humanizeKey('powerDrawWatts')}:</strong> ${formatValue(deviceData)}`;
+    list.appendChild(li);
+    return list;
   }
-  const parts = [];
   for (const key in deviceData) {
     const val = deviceData[key];
     if (val === '' || val === null || val === undefined) continue;
-    parts.push(`${humanizeKey(key)}: ${formatValue(val)}`);
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${humanizeKey(key)}:</strong> ${formatValue(val)}`;
+    list.appendChild(li);
   }
-  return parts.join(', ');
+  return list;
 }
 
 // Helper to render existing devices in the manager section
@@ -2583,26 +2589,40 @@ function renderDeviceList(categoryKey, ulElement) {
   for (let name in categoryDevices) {
     if (name === "None") continue;
     const deviceData = categoryDevices[name];
-    const displayData = formatDeviceData(deviceData);
-
     const li = document.createElement("li");
-    const span = document.createElement("span");
-    span.textContent = `${name} (${displayData})`;
-    li.appendChild(span);
+    const header = document.createElement("div");
+    header.className = "device-summary";
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.className = "detail-toggle";
+    toggleBtn.textContent = texts[currentLang].showDetails;
+    header.appendChild(toggleBtn);
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = name;
+    header.appendChild(nameSpan);
 
     const editBtn = document.createElement("button");
     editBtn.className = "edit-btn";
     editBtn.dataset.name = name;
     editBtn.dataset.category = categoryKey;
     editBtn.textContent = texts[currentLang].editBtn;
-    li.appendChild(editBtn);
+    header.appendChild(editBtn);
 
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
     deleteBtn.dataset.name = name;
     deleteBtn.dataset.category = categoryKey;
     deleteBtn.textContent = texts[currentLang].deleteDeviceBtn;
-    li.appendChild(deleteBtn);
+    header.appendChild(deleteBtn);
+
+    li.appendChild(header);
+
+    const detailsDiv = document.createElement("div");
+    detailsDiv.className = "device-details";
+    detailsDiv.style.display = "none";
+    detailsDiv.appendChild(createDeviceDetailsList(deviceData));
+    li.appendChild(detailsDiv);
 
     ulElement.appendChild(li);
   }
@@ -2769,7 +2789,19 @@ if (toggleDeviceManagerButton) { // Check if element exists before adding listen
 
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
 deviceManagerSection.addEventListener("click", (event) => {
-  if (event.target.classList.contains("edit-btn")) {
+  if (event.target.classList.contains("detail-toggle")) {
+    const details = event.target.closest('li').querySelector('.device-details');
+    const expanded = event.target.dataset.expanded === 'true';
+    if (expanded) {
+      details.style.display = 'none';
+      event.target.textContent = texts[currentLang].showDetails;
+      event.target.dataset.expanded = 'false';
+    } else {
+      details.style.display = 'block';
+      event.target.textContent = texts[currentLang].hideDetails;
+      event.target.dataset.expanded = 'true';
+    }
+  } else if (event.target.classList.contains("edit-btn")) {
     const name = event.target.dataset.name;
     const categoryKey = event.target.dataset.category;
 
