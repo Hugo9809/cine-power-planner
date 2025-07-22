@@ -349,6 +349,12 @@ button:disabled {
   stroke-width: 2px;
 }
 
+#setupDiagram path.edge-path {
+  stroke: #333;
+  stroke-width: 2px;
+  fill: none;
+}
+
 #setupDiagram .diagram-placeholder {
   font-style: italic;
   color: #666;
@@ -361,6 +367,10 @@ body.dark-mode #setupDiagram .node-box {
 }
 
 body.dark-mode #setupDiagram line {
+  stroke: #ddd;
+}
+
+body.dark-mode #setupDiagram path.edge-path {
   stroke: #ddd;
 }
 

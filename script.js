@@ -2662,7 +2662,7 @@ function renderSetupDiagram() {
 
   const nodes = [];
   const pos = {};
-  const step = 120;
+  const step = 160;
   const baseY = 180;
   let x = 60;
 
@@ -2779,35 +2779,65 @@ function renderSetupDiagram() {
     return;
   }
 
+  const NODE_W = 100;
+  const NODE_H = 60;
+  const ROUTE_Y = baseY + NODE_H;
+
+  function computePath(fromId, toId) {
+    const from = pos[fromId];
+    const to = pos[toId];
+    if (!from || !to) return {};
+    const sx = from.x;
+    const sy = from.y;
+    const tx = to.x;
+    const ty = to.y;
+    let path = "";
+    let lx = 0, ly = 0;
+
+    if (Math.abs(sy - ty) < 1) {
+      const minX = Math.min(sx, tx);
+      const maxX = Math.max(sx, tx);
+      const hasBetween = nodes.some(n => pos[n] && pos[n].y === sy && pos[n].x > minX && pos[n].x < maxX);
+      const fromEdgeX = sx + (tx > sx ? NODE_W / 2 : -NODE_W / 2);
+      const toEdgeX = tx - (tx > sx ? NODE_W / 2 : -NODE_W / 2);
+      if (hasBetween) {
+        const viaY = ROUTE_Y;
+        path = `M ${fromEdgeX} ${sy} L ${fromEdgeX} ${viaY} L ${toEdgeX} ${viaY} L ${toEdgeX} ${ty}`;
+        lx = (fromEdgeX + toEdgeX) / 2;
+        ly = viaY - 5;
+      } else {
+        path = `M ${fromEdgeX} ${sy} L ${toEdgeX} ${ty}`;
+        lx = (fromEdgeX + toEdgeX) / 2;
+        ly = sy - 10;
+      }
+    } else {
+      const fromEdgeY = sy + (ty > sy ? NODE_H / 2 : -NODE_H / 2);
+      const toEdgeY = ty - (ty > sy ? NODE_H / 2 : -NODE_H / 2);
+      const viaY = (fromEdgeY + toEdgeY) / 2;
+      path = `M ${sx} ${fromEdgeY} L ${sx} ${viaY} L ${tx} ${viaY} L ${tx} ${toEdgeY}`;
+      lx = (sx + tx) / 2;
+      ly = viaY - 5;
+    }
+    return { path, labelX: lx, labelY: ly };
+  }
+
   let svg = `<svg viewBox="0 0 ${viewWidth} 360" xmlns="http://www.w3.org/2000/svg">`;
   svg += '<defs><marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>';
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
-    const from = pos[e.from];
-    const to = pos[e.to];
-    svg += `<line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" marker-end="url(#arrow)" />`;
+    const { path, labelX, labelY } = computePath(e.from, e.to);
+    if (!path) return;
+    svg += `<path class="edge-path" d="${path}" marker-end="url(#arrow)" />`;
     if (e.label) {
-      const tx = (from.x + to.x) / 2;
-      const ty = (from.y + to.y) / 2;
-      const dx = to.x - from.x;
-      const dy = to.y - from.y;
-      const len = Math.hypot(dx, dy) || 1;
-      const ox = -dy / len * 10;
-      const oy = dx / len * 10;
-      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-      const px = tx + ox;
-      const py = ty + oy;
-      svg += `<text class="edge-label" x="${px}" y="${py}" transform="rotate(${angle} ${px} ${py})" text-anchor="middle">${escapeHtml(e.label)}</text>`;
+      svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle">${escapeHtml(e.label)}</text>`;
     }
   });
 
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
-    const h = 60;
-    const w = 100;
-    svg += `<rect class="node-box" x="${p.x - w/2}" y="${p.y - h / 2}" width="${w}" height="${h}" rx="4" ry="4" />`;
+    svg += `<rect class="node-box" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
     let icon = diagramIcons[id];
     if (!icon) {
       if (id.startsWith('motor')) icon = diagramIcons.motors;
