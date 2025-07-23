@@ -523,4 +523,31 @@ describe('script.js functions', () => {
     const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
     expect(labels.some(l => l.includes('V-Mount'))).toBe(false);
   });
+
+  test('battery connects to FIZ motor when controller is internal power', () => {
+    global.devices.fiz.controllers.InternalCtrl = {
+      powerDrawWatts: 1,
+      fizConnector: 'LEMO 4-pin',
+      power_source: 'Internal Battery'
+    };
+    global.devices.fiz.motors.PowerMotor = {
+      powerDrawWatts: 2,
+      fizConnector: 'LEMO 4-pin'
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'InternalCtrl');
+    addOpt('motor1Select', 'PowerMotor');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels.some(l => l.includes('D-Tap'))).toBe(true);
+  });
 });

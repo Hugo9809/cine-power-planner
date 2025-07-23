@@ -3197,30 +3197,28 @@ function renderSetupDiagram() {
   }
 
 
-  const mainFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
-  if (mainFizId) {
-    let name = null;
-    if (mainFizId.startsWith('controller')) {
-      const idx = controllerIds.indexOf(mainFizId);
-      name = inlineControllers[idx] || controllers[idx];
-    } else if (mainFizId.startsWith('motor')) {
-      const idx = motorIds.indexOf(mainFizId);
-      name = motors[idx];
-    }
-    if (fizNeedsPower(name)) {
-      const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
-      const label = formatConnLabel(fizPort(name), 'D-Tap');
-      const skipBatt = isArri(camName) && isArriOrCmotion(name);
-      if (powerSrc && !skipBatt) {
-        pushEdge({
-          from: powerSrc,
-          to: mainFizId,
-          label,
-          fromSide: 'bottom-left',
-          toSide: 'bottom',
-          route: 'down-right-up'
-        }, 'power');
-      }
+  const fizList = [];
+  controllerIds.forEach((id, idx) => {
+    fizList.push({ id, name: inlineControllers[idx] || controllers[idx] });
+  });
+  motorIds.forEach((id, idx) => {
+    fizList.push({ id, name: motors[idx] });
+  });
+  const needPower = fizList.find(d => fizNeedsPower(d.name));
+  if (needPower) {
+    const { id: fizId, name } = needPower;
+    const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
+    const label = formatConnLabel(fizPort(name), 'D-Tap');
+    const skipBatt = isArri(camName) && isArriOrCmotion(name);
+    if (powerSrc && !skipBatt) {
+      pushEdge({
+        from: powerSrc,
+        to: fizId,
+        label,
+        fromSide: 'bottom-left',
+        toSide: 'bottom',
+        route: 'down-right-up'
+      }, 'power');
     }
   }
   if (nodes.length === 0) {
