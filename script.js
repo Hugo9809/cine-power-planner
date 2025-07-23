@@ -450,6 +450,11 @@ function fizPort(name) {
   return 'Proprietary';
 }
 
+function fizPowerPort(name) {
+  if (/cforce.*rf/i.test(name) || /RIA-1/i.test(name)) return 'Cam';
+  return fizPort(name);
+}
+
 function sdiRate(type) {
   const m = /([\d.]+)G-SDI/i.exec(type || '');
   if (m) return parseFloat(m[1]);
@@ -3231,7 +3236,7 @@ function renderSetupDiagram() {
   if (needPower) {
     const { id: fizId, name } = needPower;
     const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
-    const label = formatConnLabel(fizPort(name), 'D-Tap');
+    const label = formatConnLabel(fizPowerPort(name), 'D-Tap');
     const skipBatt = isArri(camName) && isArriOrCmotion(name);
     if (powerSrc && !skipBatt) {
       pushEdge({
