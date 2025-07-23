@@ -3278,12 +3278,21 @@ function renderSetupDiagram() {
   }
 
   let svg = `<svg viewBox="0 ${minY - NODE_H/2 - 20} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
-  svg += `<defs>
-    <linearGradient id="firstFizGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+  let gradDef = '';
+  if (firstFizId && pos[firstFizId]) {
+    const left = connectorPos(firstFizId, 'left');
+    const bottom = connectorPos(firstFizId, 'bottom');
+    gradDef = `<linearGradient id="firstFizGrad" gradientUnits="userSpaceOnUse" x1="${left.x}" y1="${left.y}" x2="${bottom.x}" y2="${bottom.y}">
       <stop offset="0%" stop-color="#090" />
       <stop offset="100%" stop-color="#d33" />
-    </linearGradient>
-  </defs>`;
+    </linearGradient>`;
+  } else {
+    gradDef = `<linearGradient id="firstFizGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#090" />
+      <stop offset="100%" stop-color="#d33" />
+    </linearGradient>`;
+  }
+  svg += `<defs>${gradDef}</defs>`;
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
@@ -3419,6 +3428,15 @@ function renderSetupDiagram() {
     const rectCls = id === firstFizId ? 'node-box first-fiz' : 'node-box';
     svg += `<g class="${nodeCls}" data-node="${id}">`;
     svg += `<rect class="${rectCls}" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
+    if (id === firstFizId) {
+      const b = connectorPos(id, 'bottom');
+      const l = connectorPos(id, 'left');
+      const r = 4;
+      const cornerX = l.x;
+      const cornerY = b.y;
+      const d = `M ${b.x} ${b.y} H ${cornerX + r} A ${r} ${r} 0 0 1 ${cornerX} ${cornerY - r} V ${l.y}`;
+      svg += `<path class="fiz-border-grad" d="${d}" />`;
+    }
 
     const conns = connectorsFor(id);
     conns.forEach(c => {
