@@ -5038,6 +5038,7 @@ function generatePrintableOverview() {
     }
     
     const safeSetupName = escapeHtml(setupName);
+    const diagramCss = getDiagramCss();
     const overviewHtml = `
         <!DOCTYPE html>
         <html lang="${currentLang}">
@@ -5089,8 +5090,7 @@ function generatePrintableOverview() {
                 }
                 /* Setup diagram styles */
                 #setupDiagram svg { width: 100%; max-width: 900px; height: 420px; }
-                #setupDiagram .node-box { fill: #f9f9f9; stroke: #333; }
-                #setupDiagram line { stroke: #333; stroke-width: 2px; }
+                ${diagramCss}
                 /* Styles for Battery Comparison Bars in Overview */
                 .barContainer {
                   width: 100%;
