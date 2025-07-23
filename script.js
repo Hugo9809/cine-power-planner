@@ -3205,19 +3205,25 @@ function renderSetupDiagram() {
       pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
     }
   }
-  const useMotorFirst = hasInternalMotor || (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
+  const useMotorFirst = !controllerIds.length && (hasInternalMotor || (motorIds.length && motorPriority(motors[0]) === 0));
   const distanceSelected = distanceName && distanceName !== 'None';
   const distanceInChain = distanceSelected && !dedicatedDistance;
-  if (useMotorFirst && motorIds.length) chain.push(motorIds[0]);
-  else if (controllerIds.length) chain.push(controllerIds[0]);
+
+  if (controllerIds.length) chain.push(controllerIds[0]);
+  else if (useMotorFirst && motorIds.length) chain.push(motorIds[0]);
+  else if (motorIds.length) chain.push(motorIds[0]);
+
   if (distanceInChain) chain.push('distance');
-  if (useMotorFirst && controllerIds.length) chain = chain.concat(controllerIds);
-  else if (controllerIds.length) chain = chain.concat(controllerIds.slice(1));
-  if (useMotorFirst) chain = chain.concat(motorIds.slice(1));
-  else chain = chain.concat(motorIds);
+
+  if (controllerIds.length) chain = chain.concat(controllerIds.slice(1));
+  if (controllerIds.length) chain = chain.concat(motorIds);
+  else if (motorIds.length) chain = chain.concat(motorIds.slice(1));
 
   if (cam && chain.length) {
-    const first = chain[0];
+    let first = chain[0];
+    if (first === 'distance' && chain.length > 1 && (controllerIds.length || hasInternalMotor)) {
+      first = chain[1];
+    }
     let firstName = null;
     if (first.startsWith('controller')) {
       const idx = controllerIds.indexOf(first);
