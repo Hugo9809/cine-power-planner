@@ -624,6 +624,12 @@ function checkArriCompatibility() {
 
   let motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
   motors.sort((a, b) => motorPriority(a) - motorPriority(b));
+  const internalIdx = motors.findIndex(name => devices.fiz?.motors?.[name]?.internalController);
+  const hasInternalMotor = internalIdx !== -1;
+  if (hasInternalMotor && internalIdx > 0) {
+    const [m] = motors.splice(internalIdx, 1);
+    motors.unshift(m);
+  }
   let controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
   controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
   const distance = distanceSelect.value;
@@ -2987,6 +2993,12 @@ function renderSetupDiagram() {
 
   let motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
   motors.sort((a, b) => motorPriority(a) - motorPriority(b));
+  const internalIdx = motors.findIndex(name => devices.fiz?.motors?.[name]?.internalController);
+  const hasInternalMotor = internalIdx !== -1;
+  if (hasInternalMotor && internalIdx > 0) {
+    const [m] = motors.splice(internalIdx, 1);
+    motors.unshift(m);
+  }
   let controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
   controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
 
@@ -3083,7 +3095,9 @@ function renderSetupDiagram() {
     }
   });
 
-  const firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
+  let firstFizId;
+  if (hasInternalMotor && motorIds.length) firstFizId = motorIds[0];
+  else firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
 
   let viewWidth;
 
@@ -3143,21 +3157,16 @@ function renderSetupDiagram() {
       pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
     }
   }
-  const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
+  const useMotorFirst = hasInternalMotor || (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
   const distanceSelected = distanceName && distanceName !== 'None';
   const distanceInChain = distanceSelected && !dedicatedDistance;
-  if (controllerIds.length) {
-    chain.push(controllerIds[0]);
-    if (inlineDistance && distanceInChain) chain.push('distance');
-    else if (distanceInChain && !inlineDistance) chain.push('distance');
-    chain = chain.concat(controllerIds.slice(1));
-    if (!(inlineDistance && distanceInChain)) chain = chain.concat(useMotorFirst ? motorIds.slice(1) : motorIds);
-    else chain = chain.concat(motorIds);
-  } else {
-    if (useMotorFirst) chain.push(motorIds[0]);
-    if (distanceInChain) chain.push('distance');
-    chain = chain.concat(useMotorFirst ? motorIds.slice(1) : motorIds);
-  }
+  if (useMotorFirst && motorIds.length) chain.push(motorIds[0]);
+  else if (controllerIds.length) chain.push(controllerIds[0]);
+  if (distanceInChain) chain.push('distance');
+  if (useMotorFirst && controllerIds.length) chain = chain.concat(controllerIds);
+  else if (controllerIds.length) chain = chain.concat(controllerIds.slice(1));
+  if (useMotorFirst) chain = chain.concat(motorIds.slice(1));
+  else chain = chain.concat(motorIds);
 
   if (cam && chain.length) {
     const first = chain[0];

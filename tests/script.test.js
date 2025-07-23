@@ -550,4 +550,31 @@ describe('script.js functions', () => {
     const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
     expect(labels.some(l => l.includes('D-Tap'))).toBe(true);
   });
+
+  test('motor with internal controller is first FIZ device', () => {
+    global.devices.fiz.motors.IntMotor = {
+      powerDrawWatts: 2,
+      fizConnector: 'LEMO 4-pin',
+      internalController: true
+    };
+    global.devices.fiz.controllers.CtrlA = {
+      powerDrawWatts: 1,
+      fizConnector: 'LEMO 4-pin'
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('motor1Select', 'IntMotor');
+    addOpt('controller1Select', 'CtrlA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const firstNode = document.querySelector('#setupDiagram .diagram-node.first-fiz');
+    expect(firstNode.getAttribute('data-node')).toBe('motor0');
+  });
 });
