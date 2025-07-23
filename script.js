@@ -3420,6 +3420,13 @@ function renderSetupDiagram() {
     const rectCls = id === firstFizId ? 'node-box first-fiz' : 'node-box';
     svg += `<g class="${nodeCls}" data-node="${id}">`;
     svg += `<rect class="${rectCls}" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
+    if (id === firstFizId) {
+      const xLeft = p.x - NODE_W / 2;
+      const yBottom = p.y + NODE_H / 2;
+      const r = 4;
+      const highlight = `M ${xLeft} ${p.y} L ${xLeft} ${yBottom - r} A ${r} ${r} 0 0 1 ${xLeft + r} ${yBottom} L ${p.x} ${yBottom}`;
+      svg += `<path class="first-fiz-highlight" d="${highlight}" />`;
+    }
 
     const conns = connectorsFor(id);
     conns.forEach(c => {

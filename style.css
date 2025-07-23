@@ -434,7 +434,13 @@ body.dark-mode .diagram-popup {
   stroke: #3367d6;
 }
 #setupDiagram .node-box.first-fiz {
+  stroke: #3367d6;
+}
+
+#setupDiagram .first-fiz-highlight {
   stroke: url(#firstFizGrad);
+  stroke-width: 1px;
+  fill: none;
 }
 
 #setupDiagram .node-icon {
@@ -483,6 +489,9 @@ body.dark-mode #setupDiagram .node-box {
   stroke: #ddd;
 }
 body.dark-mode #setupDiagram .node-box.first-fiz {
+  stroke: #ddd;
+}
+body.dark-mode #setupDiagram .first-fiz-highlight {
   stroke: url(#firstFizGrad);
 }
 
