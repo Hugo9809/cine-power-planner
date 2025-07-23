@@ -6597,7 +6597,7 @@ let devices={
         "power_source": "External (via LBUS)",
         "battery_type": "N/A",
         "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
-        "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis.",
+        "notes": "Single-axis FIZ control (override for WCU-4/Hi-5), compact, lightweight, three assignable user buttons, controls EF lenses without motors on ALEXA Mini/AMIRA, controls SRH-3 roll axis. Should be connected after the main motor controller for correct priority.",
       },
       "Arri ZMU-4 (body only, wired)": {
         "powerDrawWatts": 1,
@@ -6615,7 +6615,7 @@ let devices={
         "power_source": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
         "battery_type": "Sony NP-F550/750 compatible, ARRI LBP-3500",
         "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
-        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control.",
+        "notes": "Force-sensitive zoom knob, transflective TFT display, user buttons, can act as a radio module host for other LBUS devices (OCU-1, Master Grips), robust, weather-resistant, firmware update via USB-C, configurable camera control. Connect after the main motor controller for correct priority.",
       },
       "Arri UMC-4": {
         "powerDrawWatts": 4,
@@ -6666,7 +6666,7 @@ let devices={
         "power_source": "External (12-34VDC via LBUS)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
-        "notes": "Ergonomic cine-style handgrip with integrated lens and camera controls. Available in rocker (zoom) or thumbwheel (focus/iris) versions. Can control EF/ENG and cine lenses. Advanced camera control via LCUBE CUB-1 (for third-party cameras). Override function for WCU-4 and Hi-5. Assignable user buttons, multilingual display, focus tracking, adjustable speed control.",
+        "notes": "Ergonomic cine-style handgrip with integrated lens and camera controls. Available in rocker (zoom) or thumbwheel (focus/iris) versions. Can control EF/ENG and cine lenses. Advanced camera control via LCUBE CUB-1 (for third-party cameras). Override function for WCU-4 and Hi-5. Assignable user buttons, multilingual display, focus tracking, adjustable speed control. Connect after the main motor controller for correct priority.",
       },
       "Tilta Nucleus-M Hand Grip (single)": {
         "powerDrawWatts": 0.5,

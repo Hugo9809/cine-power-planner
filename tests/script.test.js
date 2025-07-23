@@ -727,6 +727,60 @@ describe('script.js functions', () => {
     expect(firstNode.getAttribute('data-node')).toBe('controller0');
   });
 
+  test('UMC-4 controller is first FIZ device over ZMU-4', () => {
+    global.devices.fiz.controllers['Arri UMC-4'] = {
+      powerDrawWatts: 1,
+      fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }]
+    };
+    global.devices.fiz.controllers['Arri ZMU-4 (body only, wired)'] = {
+      powerDrawWatts: 1,
+      fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }]
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'Arri UMC-4');
+    addOpt('controller2Select', 'Arri ZMU-4 (body only, wired)');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const firstNode = document.querySelector('#setupDiagram .diagram-node.first-fiz');
+    expect(firstNode.getAttribute('data-node')).toBe('controller0');
+  });
+
+  test('UMC-4 controller is first FIZ device over OCU-1', () => {
+    global.devices.fiz.controllers['Arri UMC-4'] = {
+      powerDrawWatts: 1,
+      fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }]
+    };
+    global.devices.fiz.controllers['Arri OCU-1'] = {
+      powerDrawWatts: 1,
+      fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }]
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'Arri UMC-4');
+    addOpt('controller2Select', 'Arri OCU-1');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const firstNode = document.querySelector('#setupDiagram .diagram-node.first-fiz');
+    expect(firstNode.getAttribute('data-node')).toBe('controller0');
+  });
+
   test('ARRI FIZ requires battery on non-ARRI camera', () => {
     global.devices.fiz.controllers['Arri RIA-1'] = {
       powerDrawWatts: 1,
