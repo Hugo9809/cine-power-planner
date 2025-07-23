@@ -378,7 +378,7 @@ function controllerDistancePort(name) {
 
 function controllerPriority(name) {
   if (/cforce.*rf/i.test(name) || /RIA-1/i.test(name) || /UMC-4/i.test(name)) return 0;
-  if (/Master Grip/i.test(name)) return 1;
+  if (/Master Grip/i.test(name) || /ZMU-4/i.test(name) || /OCU-1/i.test(name)) return 1;
   return 2;
 }
 
