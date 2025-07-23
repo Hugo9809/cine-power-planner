@@ -50,7 +50,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### 🖼 Setup Diagram
 - Visualize power and video connections for the selected devices
 - Warns when FIZ brands are incompatible
-- Uses colorful [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji if they can't load:
+- Uses emoji icons for each device:
   🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
   🎛️ controller, 🖐️ handle and 🔌 battery plate
 
