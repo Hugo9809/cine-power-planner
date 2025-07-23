@@ -6728,6 +6728,7 @@ let devices={
           { "type": "LBUS (LEMO 4-pin)", "notes": "built-in cable" },
           { "type": "LBUS (LEMO 4-pin)", "notes": "daisy chain port" }
         ],
+        "internalController": false,
         "power_source": "External (via LBUS)",
         "battery_type": "N/A",
         "connectivity": "Wired (LBUS) or Wireless (via ZMU-4/RIA-1/Master Grips)",
@@ -6746,6 +6747,7 @@ let devices={
             "notes": "for camera control"
           }
         ],
+        "internalController": false,
         "power_source": "External DC (10.5-34V via LBUS/CAM) or Internal Battery",
         "battery_type": "Sony NP-F550/750 compatible, ARRI LBP-3500",
         "connectivity": "Wired (LBUS, CAM) or Wireless (with optional RF module - 2400 MHz DSSS)",
@@ -6765,6 +6767,7 @@ let devices={
           { "type": "Motor (LEMO 12-pin)" },
           { "type": "Motor (LEMO 12-pin)" }
         ],
+        "internalController": true,
         "power_source": "External DC (via RS)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (2.4\u202fGHz ARRI radio, works with WCU-4/Hi-5) or Wired (LCS, CAM, Serial)",
@@ -6784,6 +6787,7 @@ let devices={
             "type": "SERIAL (LEMO 4-pin)"
           }
         ],
+        "internalController": true,
         "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
         "battery_type": "N/A (no internal battery, draws power from camera or external source)",
         "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
@@ -6797,6 +6801,7 @@ let devices={
             "type": "LBUS (LEMO 4-pin)"
           }
         ],
+        "internalController": true,
         "power_source": "External (12-34VDC via LBUS)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wired (LBUS) or Wireless (when connected to ZMU-4 or RIA-1 with radio module)",
@@ -6813,6 +6818,7 @@ let devices={
             "type": "ARRI rosette or gimbal bar adapter"
           }
         ],
+        "internalController": true,
         "power_source": "Internal Battery",
         "battery_type": "2x 18650 Li-ion (per grip, not included)",
         "connectivity": "Wireless (proprietary 2.4GHz RF, 1000ft/300m range)",
@@ -6829,6 +6835,7 @@ let devices={
             "type": "ARRI rosette or gimbal bar adapter"
           }
         ],
+        "internalController": true,
         "power_source": "Internal Battery",
         "battery_type": "NP-F550 (single per handle)",
         "connectivity": "Wireless (proprietary 2.4GHz RF)",
@@ -6842,6 +6849,7 @@ let devices={
             "type": "USB-C"
           }
         ],
+        "internalController": true,
         "power_source": "Internal Battery",
         "battery_type": "Built-in rechargeable",
         "connectivity": "Wireless (DJI proprietary)",
@@ -6864,36 +6872,12 @@ let devices={
             "type": "USB (firmware)"
           }
         ],
+        "internalController": true,
         "power_source": "External DC (XLR 4-pin or D-Tap)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (Preston G4 radio link to hand units), Wired (via specific cables for camera run/stop, Light Ranger 2)",
         "notes": "2-channel digital motor driver (Focus and Iris or Zoom). Compatible with all Preston hand units (e.g., HU4) and motors. Automatic lens calibration. Each channel has adjustable torque and direction. Supports camera run/stop for various film/video cameras. Compact and suitable for handheld/Steadicam/gimbal. Does not output lens metadata.",
         "image": "https://dummyimage.com/100x60/000/fff.png&text=Preston+MDR4"
-      },
-      "ARRI ECM-1": {
-        "powerDrawWatts": 84,
-        "fizConnectors": [
-          {
-            "type": "Motor port (proprietary LEMO)"
-          },
-          {
-            "type": "Camera (LEMO 7-pin)"
-          },
-          {
-            "type": "Accessory (LEMO 4-pin)"
-          },
-          {
-            "type": "Ethernet"
-          },
-          {
-            "type": "USB"
-          }
-        ],
-        "power_source": "External DC (LEMO 2-pin or XLR 4-pin)",
-        "battery_type": "N/A (no internal battery)",
-        "connectivity": "Wired (Ethernet, Camera cable to ALEXA 65/LF/Mini LF/35, USB) or Wireless (integrated Wi-Fi and ARRI White Radio)",
-        "notes": "Extended Control Module for ALEXA 65/LF/Mini LF/35. Highly advanced and powerful lens and camera control. Provides 6 motor ports for advanced FIZ and iris/zoom control. Allows connection of multiple accessories and expands camera functionality. Enables advanced lens data functions and is often used for virtual production or complex setups.",
-        "image": "https://dummyimage.com/100x60/000/fff.png&text=ARRI+ECM-1"
       },
       "Redrock microRemote Basestation": {
         "powerDrawWatts": 54,
@@ -6911,24 +6895,12 @@ let devices={
             "type": "Power (LEMO 2-pin)"
           }
         ],
+        "internalController": true,
         "power_source": "External DC (6-18V via LEMO 2-pin)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary Redrock RF, up to 300ft/90m range) or Wired (USB for firmware/control)",
         "notes": "Central receiver and motor driver for Redrock MicroRemote systems. Supports up to 3 motors (Focus, Iris, Zoom). Automatic or manual calibration. Compatible with various Redrock hand units (e.g., fingerwheel, handheld controller). Provides a single channel for focus, with optional expansion for iris/zoom. Compact and lightweight.",
         "image": "https://dummyimage.com/100x60/000/fff.png&text=Redrock+microRemote+Basestation"
-      },
-      "ARRI LBUS Distributor (LBS-1)": {
-        "powerDrawWatts": 0.24,
-        "fizConnectors": [
-          {
-            "type": "Multiple LBUS ports (LEMO 4-pin)"
-          }
-        ],
-        "power_source": "External (via any LBUS connection)",
-        "battery_type": "N/A (passive device)",
-        "connectivity": "Wired (LBUS)",
-        "notes": "A simple hub for LBUS devices, allowing multiple LBUS accessories (motors, hand units, rangefinders) to be connected to a single LBUS chain from a camera or power source. Facilitates power and data distribution within the LBUS network. Passive device, requires power from connected LBUS source.",
-        "image": "https://dummyimage.com/100x60/000/fff.png&text=ARRI+LBUS+Distributor+%28LBS-1%29"
       },
       "Cmotion compact LCS receiver": {
         "powerDrawWatts": 20,
@@ -6943,6 +6915,7 @@ let devices={
             "type": "EXT (LEMO 4-pin)"
           }
         ],
+        "internalController": true,
         "power_source": "External DC (10-34V via Camera port or EXT port)",
         "battery_type": "N/A (no internal battery)",
         "connectivity": "Wireless (proprietary cmotion RF, 2.4 GHz FHSS, up to 150m/500ft range) or Wired (CAM, EXT)",
@@ -6964,6 +6937,7 @@ let devices={
             "notes": "data to MDR"
           }
         ],
+        "internalController": true,
         "power_source": "Internal Battery (rechargeable) or External (USB-C)",
         "battery_type": "Internal Li-ion (proprietary, typically 1-2 hours runtime), charges via USB-C",
         "connectivity": "Wireless (Teradek RT FHSS, up to 5000ft/1500m range) or Wired (via MDR to camera/motors)",
