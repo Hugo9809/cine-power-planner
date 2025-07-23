@@ -3213,7 +3213,7 @@ function renderSetupDiagram() {
     const ctrlName = inlineControllers[0] || controllers[0];
     const distPort = controllerDistancePort(ctrlName);
     const portLabel = formatConnLabel(fizPort(ctrlName), distPort);
-    pushEdge({ from: controllerIds[0], to: 'distance', label: portLabel, noArrow: true }, 'fiz');
+    pushEdge({ from: controllerIds[0], to: 'distance', label: portLabel, noArrow: true, toSide: 'bottom-right' }, 'fiz');
   }
 
 
