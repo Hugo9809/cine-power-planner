@@ -64,6 +64,7 @@ const texts = {
     missingFIZControllerWarning: "ERROR: FIZ motors require a controller with LBUS/CAM connection.",
     arriUMC4Warning: "WARNING: UMC-4 only works with CLM-4 and CLM-5 motors.",
     arriRIA1Warning: "WARNING: RIA-1 or cforce RF controllers are not compatible with CLM-4/5.",
+    arriCLMNoUMC4Warning: "WARNING: No FIZ controller present. Select a UMC-4 for a complete setup. CLM-4/5 are not compatible with RIA-1, cforce RF or Master Grips.",
     distanceControllerWarning: "WARNING: Distance units require UMC-4, RIA-1 or cforce RF.",
     masterGripWirelessWarning: "WARNING: Master Grip has no wireless capability. Use RIA-1, UMC-4 or cforce RF for wireless control.",
 
@@ -268,6 +269,7 @@ const texts = {
     missingFIZControllerWarning: "ERROR: FIZ motors require a controller with LBUS/CAM connection.",
     arriUMC4Warning: "WARNING: UMC-4 only works with CLM-4 and CLM-5 motors.",
     arriRIA1Warning: "WARNING: RIA-1 or cforce RF controllers are not compatible with CLM-4/5.",
+    arriCLMNoUMC4Warning: "WARNING: No FIZ controller present. Select a UMC-4 for a complete setup. CLM-4/5 are not compatible with RIA-1, cforce RF or Master Grips.",
     distanceControllerWarning: "WARNING: Distance units require UMC-4, RIA-1 or cforce RF.",
     masterGripWirelessWarning: "WARNING: Master Grip has no wireless capability. Use RIA-1, UMC-4 or cforce RF for wireless control.",
 
@@ -473,6 +475,7 @@ const texts = {
     missingFIZControllerWarning: "ERROR: los motores FIZ requieren un controlador con LBUS/CAM.",
     arriUMC4Warning: "ADVERTENCIA: UMC-4 solo funciona con los motores CLM-4 y CLM-5.",
     arriRIA1Warning: "ADVERTENCIA: los controladores RIA-1 y cforce RF no son compatibles con CLM-4/5.",
+    arriCLMNoUMC4Warning: "ADVERTENCIA: no hay un controlador FIZ compatible. Seleccione un UMC-4 para una configuración completa. Los CLM-4 y CLM-5 no son compatibles con RIA-1, cforce RF ni Master Grips.",
     distanceControllerWarning: "ADVERTENCIA: las unidades de distancia requieren UMC-4, RIA-1 o cforce RF.",
     masterGripWirelessWarning: "ADVERTENCIA: Master Grip no tiene capacidad inalámbrica. Se necesita un controlador RIA-1, UMC-4 o cforce RF para usarlo de forma inalámbrica.",
 
@@ -676,6 +679,7 @@ const texts = {
     missingFIZControllerWarning: "ERREUR : les moteurs FIZ nécessitent un contrôleur LBUS/CAM.",
     arriUMC4Warning: "ATTENTION : le UMC-4 fonctionne uniquement avec les moteurs CLM-4 et CLM-5.",
     arriRIA1Warning: "ATTENTION : les contrôleurs RIA-1 et cforce RF ne sont pas compatibles avec les CLM-4/5.",
+    arriCLMNoUMC4Warning: "ATTENTION : aucun contrôleur FIZ compatible n'est sélectionné. Choisissez un UMC-4 pour un ensemble complet. Les CLM-4 et CLM-5 ne sont pas compatibles avec le RIA-1, le cforce RF ou les Master Grips.",
     distanceControllerWarning: "ATTENTION : les unités de distance requièrent un UMC-4, un RIA-1 ou un cforce RF.",
     masterGripWirelessWarning: "ATTENTION : le Master Grip n'a pas de fonction sans fil. Utilisez un RIA-1, un UMC-4 ou un cforce RF pour un fonctionnement sans fil.",
 
@@ -879,6 +883,7 @@ const texts = {
     missingFIZControllerWarning: "FEHLER: FIZ-Motoren benötigen einen Controller mit LBUS/CAM.",
     arriUMC4Warning: "WARNUNG: UMC-4 funktioniert nur mit den Motoren CLM-4 und CLM-5.",
     arriRIA1Warning: "WARNUNG: RIA-1 und cforce RF sind nicht mit CLM-4/5 kompatibel.",
+    arriCLMNoUMC4Warning: "WARNUNG: Kein kompatibler FIZ-Controller vorhanden. Wähle einen UMC-4 für ein vollständiges Setup. CLM-4/5 sind nicht mit RIA-1, cforce RF oder Master Grips kompatibel.",
     distanceControllerWarning: "WARNUNG: Distanzgeräte werden nur von UMC-4, RIA-1 oder cforce RF unterstützt.",
     masterGripWirelessWarning: "WARNUNG: Der Master Grip verfügt über keine Funkfunktion. Verwenden Sie einen RIA-1-, UMC-4- oder cforce-RF-Controller für den drahtlosen Betrieb.",
 
