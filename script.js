@@ -648,7 +648,10 @@ function checkArriCompatibility() {
     !camCounts;
 
   let msg = '';
-  if (usesUMC4 && motors.some(m => !/CLM-4|CLM-5/i.test(m))) {
+  const hasCLM = motors.some(m => /CLM-4|CLM-5/i.test(m));
+  if (hasCLM && !usesUMC4) {
+    msg = texts[currentLang].arriCLMNoUMC4Warning;
+  } else if (usesUMC4 && motors.some(m => !/CLM-4|CLM-5/i.test(m))) {
     msg = texts[currentLang].arriUMC4Warning;
   } else if ((usesRIA1 || usesRF) && motors.some(m => /CLM-4|CLM-5/i.test(m))) {
     msg = texts[currentLang].arriRIA1Warning;
