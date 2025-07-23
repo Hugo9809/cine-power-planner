@@ -1049,14 +1049,27 @@ function getDiagramCss() {
 }
 
 // Icons for setup diagram nodes
+// Online OpenMoji images are used first; these emoji serve as offline fallback
+const diagramIconImages = {
+  battery: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F50B.svg',
+  camera: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F3A5.svg',
+  monitor: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F5A5.svg',
+  video: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F4E1.svg',
+  motors: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/2699.svg',
+  controllers: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F39B.svg',
+  handle: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F590.svg',
+  plate: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F50C.svg'
+};
+
 const diagramIcons = {
-  battery: "\uD83D\uDD0B", // 🔋
-  camera: "\uD83D\uDCF7", // 📷
-  monitor: "\uD83D\uDCBB", // 💻
-  video: "\uD83D\uDCE1", // 📡
-  motors: "\u2699\uFE0F", // ⚙️
-  controllers: "\uD83C\uDFAE", // 🎮
-  plate: "\uD83D\uDD0C" // 🔌
+  battery: "\uD83D\uDD0B", // 🔋 battery
+  camera: "\uD83C\uDFA5", // 🎥 camera
+  monitor: "\uD83D\uDDA5\uFE0F", // 🖥️ monitor
+  video: "\uD83D\uDCE1", // 📡 wireless video
+  motors: "\u2699\uFE0F", // ⚙️ lens motor
+  controllers: "\uD83C\uDF9B\uFE0F", // 🎛️ controller
+  handle: "\uD83D\uDD90\uFE0F", // 🖐️ handle/grip
+  plate: "\uD83D\uDD0C" // 🔌 battery plate
 };
 
 // Load an image and optionally strip a solid background using Canvas
@@ -3389,6 +3402,24 @@ function renderSetupDiagram() {
   if (batteryName && devices.batteries?.[batteryName]?.image) nodeImages.battery = devices.batteries[batteryName].image;
   if (plateType && devices.plates?.[plateType]?.image) nodeImages.plate = devices.plates[plateType].image;
 
+  // Add remote icon images when no specific device image is available
+  Object.keys(pos).forEach(id => {
+    if (nodeImages[id]) return;
+    const name = (nodeMap[id]?.name || '').toLowerCase();
+    let url = diagramIconImages[id];
+    if (!url) {
+      if (id.startsWith('motor')) {
+        url = diagramIconImages.motors;
+      } else if (id.startsWith('controller')) {
+        if (/handle|grip/.test(name)) url = diagramIconImages.handle;
+        else url = diagramIconImages.controllers;
+      } else if (id === 'distance') {
+        url = diagramIconImages.controllers;
+      }
+    }
+    if (url) nodeImages[id] = url;
+  });
+
   function connectorsFor(id) {
     switch (id) {
       case 'battery':
@@ -3518,9 +3549,15 @@ function renderSetupDiagram() {
     const imgUrl = nodeImages[id];
     let icon = diagramIcons[id];
     if (!icon) {
-      if (id.startsWith('motor')) icon = diagramIcons.motors;
-      else if (id.startsWith('controller')) icon = diagramIcons.controllers;
-      else if (id === 'distance') icon = diagramIcons.controllers;
+      if (id.startsWith('motor')) {
+        icon = diagramIcons.motors;
+      } else if (id.startsWith('controller')) {
+        const name = (nodeMap[id]?.name || '').toLowerCase();
+        if (/handle|grip/.test(name)) icon = diagramIcons.handle;
+        else icon = diagramIcons.controllers;
+      } else if (id === 'distance') {
+        icon = diagramIcons.controllers;
+      }
     }
 
     const lines = wrapLabel(p.label || id);
