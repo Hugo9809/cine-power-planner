@@ -1,14 +1,13 @@
-# 🎥 Camera Power Consumption Planner
+# 🎥 Pianificatore del Consumo della Fotocamera
 
-This browser based tool helps plan professional camera setups powered by V‑Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
-
+Questo strumento basato sul browser aiuta a pianificare configurazioni professionali alimentate da batterie V‑Mount. Calcola **consumo totale**, **corrente** (a 14,4 V e 12 V) e **durata stimata della batteria**, verificando che la batteria possa fornire in sicurezza la potenza richiesta.
 ---
 
 ## 🌍 Languages
 - 🇬🇧 English (default)
 - 🇩🇪 Deutsch
 - 🇪🇸 Español
-- 🇮🇹 Italiano
+- 🇮🇹 Italiano (predefinito se il browser è in italiano)
 - 🇫🇷 Français
 
 You can switch the language in the top right corner. The choice is remembered for your next visit.
@@ -51,7 +50,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### 🖼 Setup Diagram
 - Visualize power and video connections for the selected devices
 - Warns when FIZ brands are incompatible
-- Uses emoji icons for each device:
+- Uses colorful [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji if they can't load:
   🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
   🎛️ controller, 🖐️ handle and 🔌 battery plate
 

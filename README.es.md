@@ -8,6 +8,7 @@ Esta herramienta en el navegador ayuda a planificar configuraciones profesionale
 - 🇬🇧 English
 - 🇩🇪 Deutsch
 - 🇪🇸 Español (predeterminado si el navegador está en español)
+- 🇮🇹 Italiano
 - 🇫🇷 Français
 
 El idioma puede cambiarse en la esquina superior derecha y se recuerda para la próxima visita.
