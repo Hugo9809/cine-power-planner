@@ -200,6 +200,8 @@ const texts = {
     helpButtonLabel: "Help",
     helpClose: "Close",
     helpTitle: "How to use",
+    zoomInLabel: "Zoom in",
+    zoomOutLabel: "Zoom out",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   es: {
@@ -399,6 +401,8 @@ const texts = {
     helpButtonLabel: "Ayuda",
     helpClose: "Cerrar",
     helpTitle: "Cómo usar",
+    zoomInLabel: "Acercar",
+    zoomOutLabel: "Alejar",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   fr: {
@@ -598,6 +602,8 @@ const texts = {
     helpButtonLabel: "Aide",
     helpClose: "Fermer",
     helpTitle: "Comment utiliser",
+    zoomInLabel: "Zoom avant",
+    zoomOutLabel: "Zoom arrière",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   de: {
@@ -797,6 +803,8 @@ const texts = {
     helpButtonLabel: "Hilfe",
     helpClose: "Schließen",
     helpTitle: "Bedienung",
+    zoomInLabel: "Hineinzoomen",
+    zoomOutLabel: "Herauszoomen",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   }
 };
