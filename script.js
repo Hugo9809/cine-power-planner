@@ -398,10 +398,11 @@ function isArri(name) {
 function fizNeedsPower(name) {
   const d = devices.fiz?.controllers?.[name] || devices.fiz?.motors?.[name];
   if (!d) return false;
-  if (/internal battery/i.test(d.power_source || "")) return false;
+  const ps = String(d.power_source || '').toLowerCase();
+  if (ps.includes('internal battery') && !ps.includes('external')) return false;
   const conn = Array.isArray(d.fizConnectors) && d.fizConnectors.length
     ? d.fizConnectors[0].type
-    : (d.fizConnector || "");
+    : (d.fizConnector || '');
   if (/LBUS/i.test(conn) && /^Arri/i.test(name)) return false;
   return true;
 }
