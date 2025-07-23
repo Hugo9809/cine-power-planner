@@ -444,9 +444,29 @@ function motorFizPort(name) {
   return isArriOrCmotion(name) ? 'LBUS' : 'Proprietary';
 }
 
+function distanceFizPort(name) {
+  const d = devices.fiz?.distance?.[name];
+  if (!d) return 'Proprietary';
+  let portStr = '';
+  if (Array.isArray(d.fizConnectors) && d.fizConnectors.length) {
+    const lbus = d.fizConnectors.find(fc => /LBUS/i.test(fc.type));
+    const serial = d.fizConnectors.find(fc => /SERIAL/i.test(fc.type));
+    if (lbus) portStr = lbus.type;
+    else if (serial) portStr = serial.type;
+    else portStr = d.fizConnectors[0].type;
+  } else if (d.fizConnector) {
+    portStr = d.fizConnector;
+  }
+  const port = firstConnector(portStr);
+  if (port) return port;
+  if (/preston/i.test(name)) return 'Serial';
+  return 'LBUS';
+}
+
 function fizPort(name) {
   if (devices.fiz?.controllers?.[name]) return controllerFizPort(name);
   if (devices.fiz?.motors?.[name]) return motorFizPort(name);
+  if (devices.fiz?.distance?.[name]) return distanceFizPort(name);
   return 'Proprietary';
 }
 
