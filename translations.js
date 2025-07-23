@@ -13,6 +13,10 @@ const texts = {
     batteryComparisonHeading: "Battery Comparison",
     setupDiagramHeading: "Setup Diagram",
     setupDiagramPlaceholder: "Select devices to visualize the setup.",
+    diagramLegendPower: "Power",
+    diagramLegendVideo: "Video",
+    diagramLegendFIZ: "FIZ",
+    downloadDiagramBtn: "Download Diagram",
     existingDevicesHeading: "Existing Devices",
     darkModeLabel: "Toggle dark mode",
 
@@ -210,6 +214,10 @@ const texts = {
     batteryComparisonHeading: "Comparación de Baterías",
     setupDiagramHeading: "Diagrama de Configuración",
     setupDiagramPlaceholder: "Elige dispositivos para visualizar el diagrama.",
+    diagramLegendPower: "Energía",
+    diagramLegendVideo: "Video",
+    diagramLegendFIZ: "FIZ",
+    downloadDiagramBtn: "Descargar Diagrama",
     existingDevicesHeading: "Dispositivos Existentes",
     darkModeLabel: "Alternar modo oscuro",
 
@@ -405,6 +413,10 @@ const texts = {
     batteryComparisonHeading: "Comparaison des Batteries",
     setupDiagramHeading: "Diagramme de Configuration",
     setupDiagramPlaceholder: "Sélectionnez des appareils pour afficher le schéma.",
+    diagramLegendPower: "Alimentation",
+    diagramLegendVideo: "Vidéo",
+    diagramLegendFIZ: "FIZ",
+    downloadDiagramBtn: "Télécharger le Diagramme",
     existingDevicesHeading: "Appareils Existants",
     darkModeLabel: "Basculer mode sombre",
 
@@ -600,6 +612,10 @@ const texts = {
     batteryComparisonHeading: "Akkuvergleich",
     setupDiagramHeading: "Setup-Diagramm",
     setupDiagramPlaceholder: "Geräte auswählen, um das Diagramm zu sehen.",
+    diagramLegendPower: "Strom",
+    diagramLegendVideo: "Video",
+    diagramLegendFIZ: "FIZ",
+    downloadDiagramBtn: "Diagramm herunterladen",
     existingDevicesHeading: "Vorhandene Geräte",
     darkModeLabel: "Dunkelmodus umschalten",
 
