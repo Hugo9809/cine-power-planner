@@ -994,6 +994,7 @@ const darkModeToggle  = document.getElementById("darkModeToggle");
 const helpButton      = document.getElementById("helpButton");
 const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
+const helpSearch      = document.getElementById("helpSearch");
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -5320,6 +5321,23 @@ if (helpButton && helpDialog) {
 
   helpButton.addEventListener("click", toggleHelp);
   if (closeHelpBtn) closeHelpBtn.addEventListener("click", closeHelp);
+
+  const filterHelp = () => {
+    if (!helpSearch) return;
+    const query = helpSearch.value.toLowerCase();
+    const sections = helpDialog.querySelectorAll('[data-help-section]');
+    const items = helpDialog.querySelectorAll('.faq-item');
+    [...sections, ...items].forEach(el => {
+      const text = el.textContent.toLowerCase();
+      if (!query || text.includes(query)) {
+        el.removeAttribute('hidden');
+      } else {
+        el.setAttribute('hidden', '');
+      }
+    });
+  };
+
+  if (helpSearch) helpSearch.addEventListener('input', filterHelp);
 
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && !helpDialog.hasAttribute("hidden")) {

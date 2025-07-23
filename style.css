@@ -126,12 +126,26 @@ p {
   background: #fff;
   border: 2px solid #001589;
   padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 body.dark-mode .help-content {
   background: #1e1e1e;
   color: #f0f0f0;
   border-color: #555;
+}
+
+#helpSearch {
+  width: 100%;
+  margin: 10px 0;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+#helpSections section[hidden],
+#helpSections details[hidden] {
+  display: none;
 }
 
 /* Ensure selects and inputs inside wrappers match normal form fields */

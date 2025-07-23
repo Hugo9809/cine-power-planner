@@ -481,9 +481,34 @@
 
   <div id="helpDialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1" hidden>
     <div class="help-content">
-      <h2 id="helpTitle">How to use</h2>
-      <p>Choose devices, save your setup and review power warnings. Use the dark mode button for a darker theme.</p>
       <button id="closeHelp">Close</button>
+      <h2 id="helpTitle">How to use</h2>
+      <input type="text" id="helpSearch" placeholder="Search..." aria-label="Search help" />
+      <div id="helpSections">
+        <section data-help-section id="gettingStarted">
+          <h3>Getting Started</h3>
+          <p>Pick your camera, monitor and other devices from the dropdown menus. The app will automatically calculate total power draw.</p>
+        </section>
+        <section data-help-section id="managingSetups">
+          <h3>Managing Setups</h3>
+          <p>Use the save button to store the current configuration. Saved setups can be imported, exported or deleted in the Setup Actions section.</p>
+        </section>
+        <section data-help-section id="powerCalculator">
+          <h3>Power Calculator</h3>
+          <p>Select a battery to see estimated run time. Warnings appear if your configuration exceeds the battery output limits.</p>
+        </section>
+        <section data-help-section id="faq">
+          <h3>FAQ</h3>
+          <details class="faq-item">
+            <summary>How do I save a setup?</summary>
+            <p>Enter a name in the Setup Name field and click Save. It will then appear in the Saved Setups list.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I export my setups?</summary>
+            <p>Yes. Use the Export All Setups button to download a JSON file containing every saved setup.</p>
+          </details>
+        </section>
+      </div>
     </div>
   </div>
 
