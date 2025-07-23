@@ -3130,8 +3130,11 @@ function renderSetupDiagram() {
   });
 
   let firstFizId;
-  if (hasInternalMotor && motorIds.length) firstFizId = motorIds[0];
-  else firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
+  if (hasInternalMotor && motorIds.length) {
+    firstFizId = motorIds[0];
+  } else {
+    firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
+  }
 
   let viewWidth;
 
@@ -3254,9 +3257,18 @@ function renderSetupDiagram() {
   motorIds.forEach((id, idx) => {
     fizList.push({ id, name: motors[idx] });
   });
-  const needPower = fizList.find(d => fizNeedsPower(d.name));
-  if (needPower) {
-    const { id: fizId, name } = needPower;
+
+  const isMainCtrl = name => /RIA-1/i.test(name) || /UMC-4/i.test(name) || /cforce.*rf/i.test(name);
+  let powerTarget = null;
+  const main = fizList.find(d => isMainCtrl(d.name));
+  if (main) {
+    powerTarget = main;
+  } else {
+    powerTarget = fizList.find(d => fizNeedsPower(d.name));
+  }
+
+  if (powerTarget && fizNeedsPower(powerTarget.name)) {
+    const { id: fizId, name } = powerTarget;
     const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
     const label = formatConnLabel(fizPowerPort(name), 'D-Tap');
     const skipBatt = isArri(camName) && isArriOrCmotion(name);
