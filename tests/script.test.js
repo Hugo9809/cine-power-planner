@@ -497,6 +497,49 @@ describe('script.js functions', () => {
     expect(document.getElementById('compatWarning').textContent).toBe('');
   });
 
+  test('Master Grip only controller triggers wireless warning', () => {
+    jest.resetModules();
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+
+    global.devices = {
+      cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (4-pin Lemo)' }] } },
+      monitors: {},
+      video: {},
+      fiz: {
+        motors: { MotorA: { powerDrawWatts: 2, internalController: false } },
+        controllers: { 'Arri Master Grip (single unit)': { powerDrawWatts: 1, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], internalController: true } },
+        distance: {}
+      },
+      batteries: { BattA: { capacity: 100, pinA: 10, dtapA: 5 } }
+    };
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+
+    require('../translations.js');
+    const localScript = require('../script.js');
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamX');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'Arri Master Grip (single unit)');
+    addOpt('batterySelect', 'BattA');
+    localScript.updateCalculations();
+    expect(document.getElementById('compatWarning').textContent).toBe(texts.en.masterGripWirelessWarning);
+  });
+
   test('renderSetupDiagram runs without errors', () => {
     const { renderSetupDiagram } = script;
     expect(() => renderSetupDiagram()).not.toThrow();
