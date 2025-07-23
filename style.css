@@ -1,5 +1,11 @@
 
 /* General styles */
+:root {
+  --accent-color: #001589;
+}
+body.pink-mode {
+  --accent-color: #ff69b4;
+}
 /* Ensure predictable sizing */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -18,7 +24,7 @@ body {
   position: absolute;
   left: -999px;
   top: -999px;
-  background: #001589;
+  background: var(--accent-color);
   color: #fff;
   padding: 8px 12px;
   z-index: 100;
@@ -38,7 +44,7 @@ body {
 h1, h2, h3 {
   font-family: 'Open Sans', sans-serif;
   font-weight: 500;
-  color: #001589;
+  color: var(--accent-color);
 }
 h1 {
   font-size: 1.8em;
@@ -47,7 +53,7 @@ h1 {
 h2 {
   font-size: 1.4em;
   margin-top: 1.3em;
-  border-bottom: 2px solid #001589;
+  border-bottom: 2px solid var(--accent-color);
 }
 h3 {
   font-size: 1.1em;
@@ -124,7 +130,7 @@ p {
 
 .help-content {
   background: #fff;
-  border: 2px solid #001589;
+  border: 2px solid var(--accent-color);
   padding: 20px;
   max-height: 80vh;
   overflow-y: auto;
@@ -219,14 +225,14 @@ select {
 
 /* FIZ group fieldset */
 fieldset {
-  border: 1px solid #001589;
+  border: 1px solid var(--accent-color);
   border-radius: 5px;
   padding: 10px;
   margin-top: 1em;
 }
 legend {
   font-weight: 500;
-  color: #001589;
+  color: var(--accent-color);
   padding: 0 5px;
 }
 
@@ -281,7 +287,7 @@ button:disabled {
 }
 
 .device-category h4 {
-  color: #001589;
+  color: var(--accent-color);
   margin-top: 0;
   margin-bottom: 10px;
   border-bottom: 1px solid #eee;

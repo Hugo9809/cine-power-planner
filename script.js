@@ -858,6 +858,10 @@ function setLanguage(lang) {
     darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
     darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
   }
+  if (pinkModeToggle) {
+    pinkModeToggle.setAttribute("title", texts[lang].pinkModeLabel);
+    pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
+  }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
@@ -991,6 +995,7 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const languageSelect  = document.getElementById("languageSelect");
 const darkModeToggle  = document.getElementById("darkModeToggle");
+const pinkModeToggle  = document.getElementById("pinkModeToggle");
 const helpButton      = document.getElementById("helpButton");
 const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
@@ -5253,6 +5258,37 @@ if (darkModeToggle) {
   });
 }
 
+// Pink mode handling
+function applyPinkMode(enabled) {
+  if (enabled) {
+    document.body.classList.add("pink-mode");
+    if (pinkModeToggle) pinkModeToggle.textContent = "🦄";
+  } else {
+    document.body.classList.remove("pink-mode");
+    if (pinkModeToggle) pinkModeToggle.textContent = "🐴";
+  }
+}
+
+let pinkModeEnabled = false;
+try {
+  pinkModeEnabled = localStorage.getItem("pinkMode") === "true";
+} catch (e) {
+  console.warn("Could not load pink mode preference", e);
+}
+applyPinkMode(pinkModeEnabled);
+
+if (pinkModeToggle) {
+  pinkModeToggle.addEventListener("click", () => {
+    pinkModeEnabled = !document.body.classList.contains("pink-mode");
+    applyPinkMode(pinkModeEnabled);
+    try {
+      localStorage.setItem("pinkMode", pinkModeEnabled);
+    } catch (e) {
+      console.warn("Could not save pink mode preference", e);
+    }
+  });
+}
+
 if (downloadDiagramBtn) {
   downloadDiagramBtn.addEventListener('click', (e) => {
     const svgEl = setupDiagramContainer.querySelector('svg');
@@ -5379,6 +5415,7 @@ if (typeof module !== "undefined" && module.exports) {
     setRecordingMedia,
     getRecordingMedia,
     applyDarkMode,
+    applyPinkMode,
     generatePrintableOverview,
     updateBatteryPlateVisibility,
     updateBatteryOptions,

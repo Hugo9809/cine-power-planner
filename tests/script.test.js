@@ -314,6 +314,17 @@ describe('script.js functions', () => {
     expect(toggle.textContent).toBe('☾');
   });
 
+  test('applyPinkMode toggles class', () => {
+    const { applyPinkMode } = script;
+    const toggle = document.getElementById('pinkModeToggle');
+    applyPinkMode(true);
+    expect(document.body.classList.contains('pink-mode')).toBe(true);
+    expect(toggle.textContent).toBe('🦄');
+    applyPinkMode(false);
+    expect(document.body.classList.contains('pink-mode')).toBe(false);
+    expect(toggle.textContent).toBe('🐴');
+  });
+
   test('generatePrintableOverview opens window with content', () => {
     const { generatePrintableOverview } = script;
     window.open = jest.fn(() => ({ document: { write: jest.fn(), close: jest.fn() } }));
