@@ -1046,17 +1046,6 @@ function getDiagramCss() {
 }
 
 // Icons for setup diagram nodes
-// Online OpenMoji images are used first; these emoji serve as offline fallback
-const diagramIconImages = {
-  battery: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F50B.svg',
-  camera: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F3A5.svg',
-  monitor: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F5A5.svg',
-  video: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F4E1.svg',
-  motors: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/2699.svg',
-  controllers: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F39B.svg',
-  handle: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F590.svg',
-  plate: 'https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji/color/svg/1F50C.svg'
-};
 
 const diagramIcons = {
   battery: "\uD83D\uDD0B", // 🔋 battery
@@ -1070,63 +1059,6 @@ const diagramIcons = {
 };
 
 // Load an image and optionally strip a solid background using Canvas
-function loadAndSetNodeImage(id, url, removeBg = true) {
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-  img.onload = () => {
-    let finalUrl = url;
-    if (removeBg) {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const w = canvas.width;
-        const h = canvas.height;
-
-        // average the four corners to estimate the background color
-        const corners = [0, 0, w - 1, 0, 0, h - 1, w - 1, h - 1];
-        let br = 0, bg = 0, bb = 0;
-        for (let i = 0; i < corners.length; i += 2) {
-          const idx = (corners[i + 1] * w + corners[i]) * 4;
-          br += data[idx];
-          bg += data[idx + 1];
-          bb += data[idx + 2];
-        }
-        br /= 4; bg /= 4; bb /= 4;
-
-        const thr = 40;
-        for (let i = 0; i < data.length; i += 4) {
-          const dr = data[i] - br;
-          const dg = data[i + 1] - bg;
-          const db = data[i + 2] - bb;
-          if (Math.sqrt(dr * dr + dg * dg + db * db) < thr) {
-            data[i + 3] = 0;
-          }
-        }
-        ctx.putImageData(imageData, 0, 0);
-        finalUrl = canvas.toDataURL();
-      } catch {
-        finalUrl = url;
-      }
-    }
-    const el = document.getElementById(`img_${id}`);
-    if (el) el.setAttribute("href", finalUrl);
-  };
-  img.onerror = () => {
-    const el = document.getElementById(`img_${id}`);
-    if (el) el.remove();
-    const iconEl = document.getElementById(`icon_${id}`);
-    if (iconEl) iconEl.setAttribute('visibility', 'visible');
-    const labelEl = document.getElementById(`label_${id}`);
-    if (labelEl && labelEl.dataset.yIcon) labelEl.setAttribute('y', labelEl.dataset.yIcon);
-  };
-  img.src = url;
-}
-
 // Filter inputs
 const cameraFilterInput = document.getElementById("cameraFilter");
 const monitorFilterInput = document.getElementById("monitorFilter");
@@ -3383,39 +3315,6 @@ function renderSetupDiagram() {
     }
   });
 
-  const nodeImages = {};
-  if (cam && cam.image) nodeImages.camera = cam.image;
-  if (monitor && monitor.image) nodeImages.monitor = monitor.image;
-  if (video && video.image) nodeImages.video = video.image;
-  if (distanceName && devices.distance?.[distanceName]?.image) nodeImages.distance = devices.distance[distanceName].image;
-  motors.forEach((name, idx) => {
-    const img = devices.motors?.[name]?.image;
-    if (img) nodeImages[`motor${idx}`] = img;
-  });
-  inlineControllers.forEach((name, idx) => {
-    const img = devices.controllers?.[name]?.image;
-    if (img) nodeImages[`controller${idx}`] = img;
-  });
-  if (batteryName && devices.batteries?.[batteryName]?.image) nodeImages.battery = devices.batteries[batteryName].image;
-  if (plateType && devices.plates?.[plateType]?.image) nodeImages.plate = devices.plates[plateType].image;
-
-  // Add remote icon images when no specific device image is available
-  Object.keys(pos).forEach(id => {
-    if (nodeImages[id]) return;
-    const name = (nodeMap[id]?.name || '').toLowerCase();
-    let url = diagramIconImages[id];
-    if (!url) {
-      if (id.startsWith('motor')) {
-        url = diagramIconImages.motors;
-      } else if (id.startsWith('controller')) {
-        if (/handle|grip/.test(name)) url = diagramIconImages.handle;
-        else url = diagramIconImages.controllers;
-      } else if (id === 'distance') {
-        url = diagramIconImages.controllers;
-      }
-    }
-    if (url) nodeImages[id] = url;
-  });
 
   function connectorsFor(id) {
     switch (id) {
@@ -3543,7 +3442,6 @@ function renderSetupDiagram() {
       svg += `<circle class="conn ${c.color}" cx="${cx}" cy="${cy}" r="4" />`;
     });
 
-    const imgUrl = nodeImages[id];
     let icon = diagramIcons[id];
     if (!icon) {
       if (id.startsWith('motor')) {
@@ -3559,16 +3457,7 @@ function renderSetupDiagram() {
 
     const lines = wrapLabel(p.label || id);
 
-    if (imgUrl) {
-      const IMG = 40;
-      svg += `<text class="node-icon" id="icon_${id}" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle" visibility="hidden">${icon || ''}</text>`;
-      svg += `<image id="img_${id}" x="${p.x - IMG/2}" y="${p.y - IMG/2 - 5}" width="${IMG}" height="${IMG}" href="" />`;
-      const lyImg = p.y + IMG/2 + 5;
-      const lyIcon = p.y + 14;
-      svg += `<text id="label_${id}" x="${p.x}" y="${lyImg}" text-anchor="middle" font-size="10" data-y-icon="${lyIcon}" data-y-image="${lyImg}">`;
-      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
-      svg += `</text>`;
-    } else if (icon) {
+    if (icon) {
       svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
       svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
@@ -3598,7 +3487,6 @@ function renderSetupDiagram() {
 
   enableDiagramInteractions();
 
-  Object.entries(nodeImages).forEach(([id, url]) => loadAndSetNodeImage(id, url));
 }
 
 function getDevicePorts(category, name) {
