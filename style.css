@@ -406,6 +406,17 @@ button:disabled {
 #diagramLegend .video { background: #369; }
 #diagramLegend .fiz { background: #090; }
 
+.diagram-controls {
+  margin-top: 0.5em;
+  display: flex;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+.diagram-controls button {
+  min-width: 32px;
+}
+
 .diagram-popup {
   display: none;
   position: absolute;

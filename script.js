@@ -871,6 +871,14 @@ function setLanguage(lang) {
   if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
 
   if (downloadDiagramBtn) downloadDiagramBtn.textContent = texts[lang].downloadDiagramBtn;
+  if (zoomInBtn) {
+    zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
+    zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
+  }
+  if (zoomOutBtn) {
+    zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
+    zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
+  }
   updateDiagramLegend();
 }
 
@@ -988,6 +996,8 @@ const breakdownListElem = document.getElementById("breakdownList");
 const setupDiagramContainer = document.getElementById("diagramArea");
 const diagramLegend = document.getElementById("diagramLegend");
 const downloadDiagramBtn = document.getElementById("downloadDiagram");
+const zoomInBtn = document.getElementById("zoomIn");
+const zoomOutBtn = document.getElementById("zoomOut");
 
 let manualPositions = {};
 let lastDiagramPositions = {};
@@ -3574,12 +3584,18 @@ function enableDiagramInteractions() {
   const apply = () => {
     root.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
   };
-  svg.addEventListener('wheel', e => {
-    e.preventDefault();
-    const factor = e.deltaY < 0 ? 1.1 : 0.9;
-    scale *= factor;
-    apply();
-  });
+  if (zoomInBtn) {
+    zoomInBtn.onclick = () => {
+      scale *= 1.1;
+      apply();
+    };
+  }
+  if (zoomOutBtn) {
+    zoomOutBtn.onclick = () => {
+      scale *= 0.9;
+      apply();
+    };
+  }
   svg.addEventListener('mousedown', e => {
     if (e.target.closest('.diagram-node')) return;
     panning = true;
