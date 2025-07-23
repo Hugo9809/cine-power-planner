@@ -1002,6 +1002,44 @@ const zoomOutBtn = document.getElementById("zoomOut");
 let manualPositions = {};
 let lastDiagramPositions = {};
 
+// CSS used when exporting the setup diagram
+const diagramCssLight = `
+.node-box{fill:#e8f0fe;stroke:#3367d6;}
+.node-box.first-fiz{stroke:#3367d6;}
+.first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
+.node-icon{font-size:20px;}
+.conn{stroke:#333;stroke-width:1px;}
+.conn.red{fill:#d33;}
+.conn.blue{fill:#369;}
+.conn.green{fill:#090;}
+.edge-label{font-size:10px;}
+line{stroke:#333;stroke-width:2px;}
+path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
+path.power{stroke:#d33;}
+path.video{stroke:#369;}
+path.fiz{stroke:#090;}
+.diagram-placeholder{font-style:italic;color:#666;margin:0;}
+`;
+const diagramCssDark = `
+.node-box{fill:#333;stroke:#ddd;}
+.node-box.first-fiz{stroke:#ddd;}
+.first-fiz-highlight{stroke:url(#firstFizGrad);}
+text{fill:#fff;}
+line{stroke:#fff;}
+path.edge-path{stroke:#fff;}
+path.power{stroke:#ff6666;}
+path.video{stroke:#7ec8ff;}
+path.fiz{stroke:#6f6;}
+.conn.red{fill:#ff6666;}
+.conn.blue{fill:#7ec8ff;}
+.conn.green{fill:#6f6;}
+.diagram-placeholder{color:#bbb;}
+`;
+
+function getDiagramCss() {
+  return diagramCssLight + (document.body.classList.contains('dark-mode') ? diagramCssDark : '');
+}
+
 // Icons for setup diagram nodes
 const diagramIcons = {
   battery: "\uD83D\uDD0B", // 🔋
@@ -5201,18 +5239,51 @@ if (darkModeToggle) {
 }
 
 if (downloadDiagramBtn) {
-  downloadDiagramBtn.addEventListener('click', () => {
-    const svg = setupDiagramContainer.querySelector('svg');
-    if (!svg) return;
+  downloadDiagramBtn.addEventListener('click', (e) => {
+    const svgEl = setupDiagramContainer.querySelector('svg');
+    if (!svgEl) return;
+
+    const clone = svgEl.cloneNode(true);
+    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    style.textContent = getDiagramCss();
+    clone.insertBefore(style, clone.firstChild);
+
     const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(svg);
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'setup-diagram.svg';
-    a.click();
-    URL.revokeObjectURL(url);
+    const source = serializer.serializeToString(clone);
+
+    navigator.clipboard.writeText(source).catch(() => {});
+
+    const saveSvg = () => {
+      const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'setup-diagram.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    if (e.shiftKey) {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'setup-diagram.jpg';
+          a.click();
+          URL.revokeObjectURL(url);
+        }, 'image/jpeg', 0.95);
+      };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+    } else {
+      saveSvg();
+    }
   });
 }
 
