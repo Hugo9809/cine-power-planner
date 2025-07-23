@@ -8,6 +8,7 @@ Cet outil fonctionnant dans le navigateur aide à planifier des configurations p
 - 🇬🇧 English
 - 🇩🇪 Deutsch
 - 🇪🇸 Español
+- 🇮🇹 Italiano
 - 🇫🇷 Français (par défaut si le navigateur est en français)
 
 La langue se change en haut à droite et est mémorisée pour la prochaine visite.

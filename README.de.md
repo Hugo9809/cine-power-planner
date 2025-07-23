@@ -8,6 +8,7 @@ Dieses browserbasierte Tool hilft beim Planen professioneller Kamera-Setups mit 
 - 🇬🇧 English
 - 🇩🇪 Deutsch (Standard)
 - 🇪🇸 Español
+- 🇮🇹 Italiano
 - 🇫🇷 Français
 
 Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Besuch gespeichert.

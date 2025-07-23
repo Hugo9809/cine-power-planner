@@ -684,7 +684,7 @@ if (typeof texts === 'undefined') {
 let currentLang = "en";
 try {
   const savedLang = localStorage.getItem("language");
-  const supported = ["en", "de", "es", "fr"];
+  const supported = ["en", "de", "es", "fr", "it"];
   if (savedLang && supported.includes(savedLang)) {
     currentLang = savedLang;
   }
