@@ -398,10 +398,6 @@ function fizNeedsPower(name) {
   if (!d) return false;
   const ps = String(d.power_source || '').toLowerCase();
   if (ps.includes('internal battery') && !ps.includes('external')) return false;
-  const conn = Array.isArray(d.fizConnectors) && d.fizConnectors.length
-    ? d.fizConnectors[0].type
-    : (d.fizConnector || '');
-  if (/LBUS/i.test(conn) && /^Arri/i.test(name)) return false;
   return true;
 }
 

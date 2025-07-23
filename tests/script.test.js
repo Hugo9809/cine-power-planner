@@ -620,4 +620,46 @@ describe('script.js functions', () => {
     const firstNode = document.querySelector('#setupDiagram .diagram-node.first-fiz');
     expect(firstNode.getAttribute('data-node')).toBe('motor0');
   });
+
+  test('ARRI FIZ requires battery on non-ARRI camera', () => {
+    global.devices.fiz.controllers['Arri RIA-1'] = {
+      powerDrawWatts: 1,
+      fizConnector: 'LBUS (LEMO 4-pin)'
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'Arri RIA-1');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels.some(l => l.includes('D-Tap'))).toBe(true);
+  });
+
+  test('ARRI FIZ uses camera power on ARRI cameras', () => {
+    global.devices.cameras.ArriCam = { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+    global.devices.fiz.controllers['Arri RIA-1'] = { powerDrawWatts: 1, fizConnector: 'LBUS (LEMO 4-pin)' };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'ArriCam');
+    addOpt('controller1Select', 'Arri RIA-1');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels.some(l => l.includes('D-Tap'))).toBe(false);
+  });
 });
