@@ -442,10 +442,10 @@ body.dark-mode .diagram-popup {
 
 #setupDiagram .node-box {
   fill: #e8f0fe;
-  stroke: #3367d6;
+  stroke: none;
 }
 #setupDiagram .node-box.first-fiz {
-  stroke: #3367d6;
+  stroke: none;
 }
 
 #setupDiagram .first-fiz-highlight {
@@ -497,10 +497,10 @@ body.dark-mode .diagram-popup {
 
 body.dark-mode #setupDiagram .node-box {
   fill: #333;
-  stroke: #ddd;
+  stroke: none;
 }
 body.dark-mode #setupDiagram .node-box.first-fiz {
-  stroke: #ddd;
+  stroke: none;
 }
 body.dark-mode #setupDiagram .first-fiz-highlight {
   stroke: url(#firstFizGrad);
