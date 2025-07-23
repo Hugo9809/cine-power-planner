@@ -3409,7 +3409,10 @@ function renderSetupDiagram() {
           { side: 'right', color: 'green' }
         ];
       case 'distance':
-        return [{ side: 'bottom', color: 'green' }];
+        return [
+          { side: 'bottom', color: 'green' },
+          { side: 'bottom-right', color: 'green' }
+        ];
       default:
         if (id.startsWith('controller') || id.startsWith('motor')) {
           if (firstFizId && id === firstFizId) {
@@ -3439,6 +3442,8 @@ function renderSetupDiagram() {
         return { x: p.x, y: p.y + NODE_H / 2 };
       case 'bottom-left':
         return { x: p.x - NODE_W / 2 + NODE_W / 3, y: p.y + NODE_H / 2 };
+      case 'bottom-right':
+        return { x: p.x + NODE_W / 2 - NODE_W / 3, y: p.y + NODE_H / 2 };
       case 'left':
         return { x: p.x - NODE_W / 2, y: p.y };
       case 'right':
