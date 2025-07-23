@@ -644,6 +644,12 @@ function checkArriCompatibility() {
   const usesRIA1 = controllers.some(n => /RIA-1/i.test(n));
   const usesRF = controllers.some(n => /cforce.*rf/i.test(n)) || motors.some(m => /cforce.*rf/i.test(m));
 
+  const camCounts = /(Alexa Mini LF|Alexa Mini|Alexa 35)/i.test(camName);
+  const onlyMasterGrip =
+    controllers.length > 0 &&
+    controllers.every(n => /Master Grip/i.test(n)) &&
+    !camCounts;
+
   let msg = '';
   if (usesUMC4 && motors.some(m => !/CLM-4|CLM-5/i.test(m))) {
     msg = texts[currentLang].arriUMC4Warning;
@@ -655,6 +661,8 @@ function checkArriCompatibility() {
     !(usesUMC4 || usesRIA1 || usesRF || builtInController)
   ) {
     msg = texts[currentLang].distanceControllerWarning;
+  } else if (onlyMasterGrip) {
+    msg = texts[currentLang].masterGripWirelessWarning;
   }
 
   if (msg) {

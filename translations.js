@@ -64,6 +64,7 @@ const texts = {
     arriUMC4Warning: "WARNING: UMC-4 only works with CLM-4 and CLM-5 motors.",
     arriRIA1Warning: "WARNING: RIA-1 or cforce RF controllers are not compatible with CLM-4/5.",
     distanceControllerWarning: "WARNING: Distance units require UMC-4, RIA-1 or cforce RF.",
+    masterGripWirelessWarning: "WARNING: Master Grip has no wireless capability. Use RIA-1, UMC-4 or cforce RF for wireless control.",
 
     category_cameras: "Cameras",
     category_monitors: "Monitors",
@@ -267,6 +268,7 @@ const texts = {
     arriUMC4Warning: "ADVERTENCIA: UMC-4 solo funciona con los motores CLM-4 y CLM-5.",
     arriRIA1Warning: "ADVERTENCIA: los controladores RIA-1 y cforce RF no son compatibles con CLM-4/5.",
     distanceControllerWarning: "ADVERTENCIA: las unidades de distancia requieren UMC-4, RIA-1 o cforce RF.",
+    masterGripWirelessWarning: "ADVERTENCIA: Master Grip no tiene capacidad inalámbrica. Se necesita un controlador RIA-1, UMC-4 o cforce RF para usarlo de forma inalámbrica.",
 
     category_cameras: "Cámaras",
     category_monitors: "Monitores",
@@ -468,6 +470,7 @@ const texts = {
     arriUMC4Warning: "ATTENTION : le UMC-4 fonctionne uniquement avec les moteurs CLM-4 et CLM-5.",
     arriRIA1Warning: "ATTENTION : les contrôleurs RIA-1 et cforce RF ne sont pas compatibles avec les CLM-4/5.",
     distanceControllerWarning: "ATTENTION : les unités de distance requièrent un UMC-4, un RIA-1 ou un cforce RF.",
+    masterGripWirelessWarning: "ATTENTION : le Master Grip n'a pas de fonction sans fil. Utilisez un RIA-1, un UMC-4 ou un cforce RF pour un fonctionnement sans fil.",
 
     category_cameras: "Caméras",
     category_monitors: "Moniteurs",
@@ -669,6 +672,7 @@ const texts = {
     arriUMC4Warning: "WARNUNG: UMC-4 funktioniert nur mit den Motoren CLM-4 und CLM-5.",
     arriRIA1Warning: "WARNUNG: RIA-1 und cforce RF sind nicht mit CLM-4/5 kompatibel.",
     distanceControllerWarning: "WARNUNG: Distanzgeräte werden nur von UMC-4, RIA-1 oder cforce RF unterstützt.",
+    masterGripWirelessWarning: "WARNUNG: Der Master Grip verfügt über keine Funkfunktion. Verwenden Sie einen RIA-1-, UMC-4- oder cforce-RF-Controller für den drahtlosen Betrieb.",
 
     category_cameras: "Kameras",
     category_monitors: "Monitore",
