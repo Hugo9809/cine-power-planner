@@ -3146,21 +3146,27 @@ function renderSetupDiagram() {
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
   const distanceSelected = distanceName && distanceName !== 'None';
   const distanceInChain = distanceSelected && !dedicatedDistance;
+
   if (controllerIds.length) {
+    // Always connect the camera to the first controller
     chain.push(controllerIds[0]);
-    if (inlineDistance && distanceInChain) chain.push('distance');
-    else if (distanceInChain && !inlineDistance) chain.push('distance');
-    chain = chain.concat(controllerIds.slice(1));
-    if (!(inlineDistance && distanceInChain)) chain = chain.concat(useMotorFirst ? motorIds.slice(1) : motorIds);
-    else chain = chain.concat(motorIds);
-  } else {
-    if (useMotorFirst) chain.push(motorIds[0]);
     if (distanceInChain) chain.push('distance');
-    chain = chain.concat(useMotorFirst ? motorIds.slice(1) : motorIds);
+    chain = chain.concat(controllerIds.slice(1));
+    chain = chain.concat(motorIds);
+  } else {
+    if (useMotorFirst) {
+      chain.push(motorIds[0]);
+      if (distanceInChain) chain.push('distance');
+      chain = chain.concat(motorIds.slice(1));
+    } else {
+      if (distanceInChain) chain.push('distance');
+      chain = chain.concat(motorIds);
+    }
   }
 
   if (cam && chain.length) {
-    const first = chain[0];
+    let first = chain[0];
+    if (first === 'distance' && chain.length > 1) first = chain[1];
     let firstName = null;
     if (first.startsWith('controller')) {
       const idx = controllerIds.indexOf(first);

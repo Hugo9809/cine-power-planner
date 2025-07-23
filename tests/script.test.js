@@ -550,4 +550,20 @@ describe('script.js functions', () => {
     const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
     expect(labels.some(l => l.includes('D-Tap'))).toBe(true);
   });
+
+  test('distance connects after controller without direct camera edge', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+
+    script.renderSetupDiagram();
+
+    const fizEdges = document.querySelectorAll('.edge-path.fiz');
+    expect(fizEdges.length).toBe(2);
+  });
 });
