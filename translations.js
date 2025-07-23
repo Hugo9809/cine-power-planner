@@ -19,6 +19,7 @@ const texts = {
     downloadDiagramBtn: "Download Diagram",
     existingDevicesHeading: "Existing Devices",
     darkModeLabel: "Toggle dark mode",
+    pinkModeLabel: "Toggle pink mode",
 
     savedSetupsLabel: "Saved Setups:",
     newSetupOption: "-- New Setup --",
@@ -223,6 +224,7 @@ const texts = {
     downloadDiagramBtn: "Descargar Diagrama",
     existingDevicesHeading: "Dispositivos Existentes",
     darkModeLabel: "Alternar modo oscuro",
+    pinkModeLabel: "Alternar modo rosa",
 
     savedSetupsLabel: "Configuraciones Guardadas:",
     newSetupOption: "-- Nueva Configuración --",
@@ -425,6 +427,7 @@ const texts = {
     downloadDiagramBtn: "Télécharger le Diagramme",
     existingDevicesHeading: "Appareils Existants",
     darkModeLabel: "Basculer mode sombre",
+    pinkModeLabel: "Basculer mode rose",
 
     savedSetupsLabel: "Configurations Enregistrées:",
     newSetupOption: "-- Nouvelle Configuration --",
@@ -627,6 +630,7 @@ const texts = {
     downloadDiagramBtn: "Diagramm herunterladen",
     existingDevicesHeading: "Vorhandene Geräte",
     darkModeLabel: "Dunkelmodus umschalten",
+    pinkModeLabel: "Pinkmodus umschalten",
 
     savedSetupsLabel: "Gespeicherte Setups:",
     newSetupOption: "-- Neues Setup --",
