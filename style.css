@@ -467,6 +467,7 @@ body.dark-mode .diagram-popup {
 
 #setupDiagram .edge-label {
   font-size: 10px;
+  dominant-baseline: middle;
 }
 
 #setupDiagram line {

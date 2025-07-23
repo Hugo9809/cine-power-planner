@@ -3378,7 +3378,7 @@ function renderSetupDiagram() {
     svg += `<path class="${cls}" d="${path}" />`;
     if (e.label) {
       const rot = ` transform="rotate(${angle} ${labelX} ${labelY})"`;
-      svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle"${rot}>${escapeHtml(e.label)}</text>`;
+      svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle"${rot}>${escapeHtml(e.label)}</text>`;
     }
   });
 
