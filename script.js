@@ -5349,10 +5349,29 @@ if (helpButton && helpDialog) {
     helpDialog.setAttribute("hidden", "");
     helpButton.focus();
   };
-  helpButton.addEventListener("click", openHelp);
+  const toggleHelp = () => {
+    if (helpDialog.hasAttribute("hidden")) {
+      openHelp();
+    } else {
+      closeHelp();
+    }
+  };
+
+  helpButton.addEventListener("click", toggleHelp);
   if (closeHelpBtn) closeHelpBtn.addEventListener("click", closeHelp);
-  helpDialog.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeHelp();
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !helpDialog.hasAttribute("hidden")) {
+      closeHelp();
+    } else if ((e.key === "?" || e.key.toLowerCase() === "h") &&
+               document.activeElement.tagName !== "INPUT" &&
+               document.activeElement.tagName !== "TEXTAREA") {
+      toggleHelp();
+    }
+  });
+
+  helpDialog.addEventListener("click", e => {
+    if (e.target === helpDialog) closeHelp();
   });
 }
 

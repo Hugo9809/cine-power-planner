@@ -757,4 +757,16 @@ describe('script.js functions', () => {
     const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
     expect(labels.some(l => l.includes('D-Tap'))).toBe(false);
   });
+
+  test('help dialog toggles with keyboard and overlay click', () => {
+    const helpDialog = document.getElementById('helpDialog');
+
+    // open via question mark key
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+
+    // close by clicking outside
+    helpDialog.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+  });
 });

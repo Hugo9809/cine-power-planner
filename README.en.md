@@ -66,6 +66,8 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### 🌓 Dark Mode
 - Toggleable via the moon button next to the language selector
 - Preference is stored in your browser
+- The help dialog can be opened via the ? button or by pressing `?`/`H`
+  and closed with Escape or by clicking outside the popup
 
 ---
 

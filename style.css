@@ -110,12 +110,11 @@ p {
 /* Help dialog */
 #helpDialog {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border: 2px solid #001589;
-  padding: 20px;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 200;
 }
 
@@ -123,7 +122,13 @@ p {
   display: none;
 }
 
-body.dark-mode #helpDialog {
+.help-content {
+  background: #fff;
+  border: 2px solid #001589;
+  padding: 20px;
+}
+
+body.dark-mode .help-content {
   background: #1e1e1e;
   color: #f0f0f0;
   border-color: #555;
