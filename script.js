@@ -1059,7 +1059,7 @@ const diagramIcons = {
   monitor: "\uD83D\uDDA5\uFE0F", // 🖥️ monitor
   video: "\uD83D\uDCE1", // 📡 wireless video
   motors: "\u2699\uFE0F", // ⚙️ lens motor
-  controllers: "\uD83C\uDF9B\uFE0F", // 🎛️ controller
+  controllers: "\uD83C\uDFAE", // 🎮 game controller
   handle: "\uD83D\uDD90\uFE0F", // 🖐️ handle/grip
   plate: "\uD83D\uDD0C" // 🔌 battery plate
 };
