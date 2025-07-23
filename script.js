@@ -658,7 +658,7 @@ function checkArriCompatibility() {
     !(usesUMC4 || usesRIA1 || usesRF || builtInController)
   ) {
     msg = texts[currentLang].distanceControllerWarning;
-  } else if (onlyMasterGrip) {
+  } else if (onlyMasterGrip && !usesRF) {
     msg = texts[currentLang].masterGripWirelessWarning;
   }
 
