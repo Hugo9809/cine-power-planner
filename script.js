@@ -1012,8 +1012,8 @@ let lastDiagramPositions = {};
 
 // CSS used when exporting the setup diagram
 const diagramCssLight = `
-.node-box{fill:#e8f0fe;stroke:#3367d6;}
-.node-box.first-fiz{stroke:#3367d6;}
+.node-box{fill:#e8f0fe;stroke:none;}
+.node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
 .node-icon{font-size:20px;}
 .conn{stroke:#333;stroke-width:1px;}
@@ -1029,8 +1029,8 @@ path.fiz{stroke:#090;}
 .diagram-placeholder{font-style:italic;color:#666;margin:0;}
 `;
 const diagramCssDark = `
-.node-box{fill:#333;stroke:#ddd;}
-.node-box.first-fiz{stroke:#ddd;}
+.node-box{fill:#333;stroke:none;}
+.node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
 text{fill:#fff;}
 line{stroke:#fff;}
