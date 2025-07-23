@@ -386,6 +386,26 @@ button:disabled {
   position: relative;
 }
 
+#diagramLegend {
+  margin-top: 0.25em;
+  font-size: 12px;
+}
+#diagramLegend span {
+  margin: 0 6px;
+  display: inline-flex;
+  align-items: center;
+}
+#diagramLegend .swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 4px;
+  display: inline-block;
+}
+#diagramLegend .power { background: #d33; }
+#diagramLegend .video { background: #369; }
+#diagramLegend .fiz { background: #090; }
+
 .diagram-popup {
   display: none;
   position: absolute;
@@ -489,6 +509,10 @@ body.dark-mode #setupDiagram path.fiz {
 body.dark-mode #setupDiagram .conn.red { fill: #ff6666; }
 body.dark-mode #setupDiagram .conn.blue { fill: #7ec8ff; }
 body.dark-mode #setupDiagram .conn.green { fill: #6f6; }
+
+body.dark-mode #diagramLegend .power { background: #ff6666; }
+body.dark-mode #diagramLegend .video { background: #7ec8ff; }
+body.dark-mode #diagramLegend .fiz { background: #6f6; }
 
 body.dark-mode #setupDiagram marker polygon {
   fill: #fff;

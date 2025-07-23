@@ -11,10 +11,8 @@ const VIDEO_OUTPUT_TYPES = [
   'Micro HDMI'
 ];
 
-// Labels used when a camera with native B-Mount is selected were
-// previously defined here. They are now part of the translations in
-// translations.js under the keys batteryBMountLabel, totalCurrent336Label
-// and totalCurrent216Label.
+// Labels for B-Mount support are defined in translations.js using the keys
+// batteryBMountLabel, totalCurrent336Label and totalCurrent216Label.
 
 // Store a deep copy of the initial 'devices' data as defined in data.js.
 // This 'defaultDevices' will be used when reverting the database.
@@ -865,6 +863,9 @@ function setLanguage(lang) {
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
+
+  if (downloadDiagramBtn) downloadDiagramBtn.textContent = texts[lang].downloadDiagramBtn;
+  updateDiagramLegend();
 }
 
 // Reference elements (DOM Elements)
@@ -979,6 +980,11 @@ const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 const setupDiagramContainer = document.getElementById("diagramArea");
+const diagramLegend = document.getElementById("diagramLegend");
+const downloadDiagramBtn = document.getElementById("downloadDiagram");
+
+let manualPositions = {};
+let lastDiagramPositions = {};
 
 // Icons for setup diagram nodes
 const diagramIcons = {
@@ -2984,8 +2990,7 @@ function renderSetupDiagram() {
   let controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
   controllers.sort((a, b) => controllerPriority(a) - controllerPriority(b));
 
-  const inlineControllers = controllers.filter(c => !/Nucleus-M Hand Grip|Nucleus-M II Handle/i.test(c));
-  const directControllers = controllers.filter(c => /Nucleus-M Hand Grip|Nucleus-M II Handle/i.test(c));
+  const inlineControllers = controllers;
 
   const nodes = [];
   const pos = {};
@@ -3065,17 +3070,17 @@ function renderSetupDiagram() {
         pos.distance = { x: pos[attach].x, y: baseY - step, label: distanceName };
       }
       nodes.push('distance');
-      nodeMap.distance = { category: 'fiz.distance', name: distanceName };
+    nodeMap.distance = { category: 'fiz.distance', name: distanceName };
     }
   }
 
-  directControllers.forEach((name, idx) => {
-    if (!motorIds.length) return;
-    const id = `directCtrl${idx}`;
-    pos[id] = { x: pos[motorIds[0]].x + idx * step, y: baseY + step, label: name };
-    nodes.push(id);
-    controllerIds.push(id); // treat as controller for icon
-    nodeMap[id] = { category: 'fiz.controllers', name };
+  // Apply any manually moved node positions and cleanup
+  Object.keys(manualPositions).forEach(id => { if (!pos[id]) delete manualPositions[id]; });
+  Object.entries(pos).forEach(([id, p]) => {
+    if (manualPositions[id]) {
+      p.x = manualPositions[id].x;
+      p.y = manualPositions[id].y;
+    }
   });
 
   const firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
@@ -3183,11 +3188,7 @@ function renderSetupDiagram() {
     pushEdge({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)), noArrow: true }, 'fiz');
   }
 
-  directControllers.forEach((name, idx) => {
-    if (!motorIds.length) return;
-    const id = `directCtrl${idx}`;
-    pushEdge({ from: id, to: motorIds[0], label: 'ctrl', noArrow: true }, 'fiz');
-  });
+
 
   if (dedicatedDistance && controllerIds.length && distanceSelected) {
     const ctrlName = inlineControllers[0] || controllers[0];
@@ -3231,8 +3232,11 @@ function renderSetupDiagram() {
   const maxX = Math.max(...xs);
   const contentWidth = maxX - minX;
   viewWidth = Math.max(500, contentWidth + 160);
-  const shiftX = viewWidth / 2 - (minX + maxX) / 2;
-  Object.values(pos).forEach(p => { p.x += shiftX; });
+  let shiftX = 0;
+  if (Object.keys(manualPositions).length === 0) {
+    shiftX = viewWidth / 2 - (minX + maxX) / 2;
+    Object.values(pos).forEach(p => { p.x += shiftX; });
+  }
 
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
@@ -3284,6 +3288,7 @@ function renderSetupDiagram() {
       <stop offset="100%" stop-color="#d33" />
     </linearGradient>
   </defs>`;
+  svg += `<g id="diagramRoot">`;
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
@@ -3309,10 +3314,6 @@ function renderSetupDiagram() {
   inlineControllers.forEach((name, idx) => {
     const img = devices.controllers?.[name]?.image;
     if (img) nodeImages[`controller${idx}`] = img;
-  });
-  directControllers.forEach((name, idx) => {
-    const img = devices.controllers?.[name]?.image;
-    if (img) nodeImages[`directCtrl${idx}`] = img;
   });
   if (batteryName && devices.batteries?.[batteryName]?.image) nodeImages.battery = devices.batteries[batteryName].image;
   if (plateType && devices.plates?.[plateType]?.image) nodeImages.plate = devices.plates[plateType].image;
@@ -3353,7 +3354,7 @@ function renderSetupDiagram() {
       case 'distance':
         return [{ side: 'bottom', color: 'green' }];
       default:
-        if (id.startsWith('controller') || id.startsWith('motor') || id.startsWith('directCtrl')) {
+        if (id.startsWith('controller') || id.startsWith('motor')) {
           if (firstFizId && id === firstFizId) {
             return [
               { side: 'top', color: 'green' },
@@ -3435,7 +3436,7 @@ function renderSetupDiagram() {
     let icon = diagramIcons[id];
     if (!icon) {
       if (id.startsWith('motor')) icon = diagramIcons.motors;
-      else if (id.startsWith('controller') || id.startsWith('directCtrl')) icon = diagramIcons.controllers;
+      else if (id.startsWith('controller')) icon = diagramIcons.controllers;
       else if (id === 'distance') icon = diagramIcons.controllers;
     }
 
@@ -3463,7 +3464,7 @@ function renderSetupDiagram() {
     svg += `</g>`;
   });
 
-  svg += '</svg>';
+  svg += '</g></svg>';
   let popup = document.getElementById('diagramPopup');
   if (!popup) {
     popup = document.createElement('div');
@@ -3474,7 +3475,11 @@ function renderSetupDiagram() {
   setupDiagramContainer.appendChild(popup);
   setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
 
+  lastDiagramPositions = JSON.parse(JSON.stringify(pos));
+
   attachDiagramPopups(nodeMap);
+
+  enableDiagramInteractions();
 
   Object.entries(nodeImages).forEach(([id, url]) => loadAndSetNodeImage(id, url));
 }
@@ -3539,6 +3544,67 @@ function attachDiagramPopups(map) {
     node.addEventListener('mousemove', show);
     node.addEventListener('mouseout', hide);
   });
+}
+
+function enableDiagramInteractions() {
+  if (!setupDiagramContainer) return;
+  const svg = setupDiagramContainer.querySelector('svg');
+  if (!svg) return;
+  const root = svg.querySelector('#diagramRoot') || svg;
+  let pan = { x: 0, y: 0 };
+  let scale = 1;
+  let panning = false;
+  let panStart = { x: 0, y: 0 };
+  const apply = () => {
+    root.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
+  };
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.1 : 0.9;
+    scale *= factor;
+    apply();
+  });
+  svg.addEventListener('mousedown', e => {
+    if (e.target.closest('.diagram-node')) return;
+    panning = true;
+    panStart = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+  });
+  window.addEventListener('mousemove', e => {
+    if (!panning) return;
+    pan.x = e.clientX - panStart.x;
+    pan.y = e.clientY - panStart.y;
+    apply();
+  });
+  window.addEventListener('mouseup', () => { panning = false; });
+
+  let dragId = null;
+  let dragStart = null;
+  svg.addEventListener('mousedown', e => {
+    const node = e.target.closest('.diagram-node');
+    if (!node) return;
+    dragId = node.getAttribute('data-node');
+    dragStart = { x: e.clientX, y: e.clientY };
+    e.stopPropagation();
+  });
+  window.addEventListener('mouseup', e => {
+    if (!dragId) return;
+    const start = lastDiagramPositions[dragId];
+    if (start) {
+      const dx = (e.clientX - dragStart.x) / scale;
+      const dy = (e.clientY - dragStart.y) / scale;
+      manualPositions[dragId] = { x: start.x + dx, y: start.y + dy };
+    }
+    dragId = null;
+    renderSetupDiagram();
+  });
+}
+
+function updateDiagramLegend() {
+  if (!diagramLegend) return;
+  diagramLegend.innerHTML =
+    `<span><span class="swatch power"></span>${texts[currentLang].diagramLegendPower}</span>` +
+    `<span><span class="swatch video"></span>${texts[currentLang].diagramLegendVideo}</span>` +
+    `<span><span class="swatch fiz"></span>${texts[currentLang].diagramLegendFIZ}</span>`;
 }
 
 // Convert a camelCase or underscore key to a human friendly label
@@ -5102,6 +5168,22 @@ if (darkModeToggle) {
   });
 }
 
+if (downloadDiagramBtn) {
+  downloadDiagramBtn.addEventListener('click', () => {
+    const svg = setupDiagramContainer.querySelector('svg');
+    if (!svg) return;
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svg);
+    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'setup-diagram.svg';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
 if (helpButton && helpDialog) {
   const openHelp = () => {
     helpDialog.removeAttribute("hidden");
@@ -5147,6 +5229,8 @@ if (typeof module !== "undefined" && module.exports) {
     updateBatteryPlateVisibility,
     updateBatteryOptions,
     renderSetupDiagram,
+    enableDiagramInteractions,
+    updateDiagramLegend,
     cameraFizPort,
     detectBrand,
     connectionLabel,
