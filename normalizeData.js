@@ -1,6 +1,7 @@
 // normalizeData.js - consolidate data cleanup and expansion utilities
 
 const fs = require('fs');
+const path = require('path');
 let devices = require('./data.js');
 
 // -- Unify helper functions --
@@ -353,7 +354,8 @@ function save() {
     JSON.stringify(devices, null, 2) +
     ';\n' +
     'if (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n';
-  fs.writeFileSync('data.js', content);
+  const filePath = path.join(__dirname, 'data.js');
+  fs.writeFileSync(filePath, content);
 }
 
 function normalizeAll() {
