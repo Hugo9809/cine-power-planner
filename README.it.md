@@ -52,7 +52,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Warns when FIZ brands are incompatible
 - Uses colorful [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji if they can't load:
   🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
-  🎮 controller, 🖐️ handle and 🔌 battery plate
+  🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
 
 ### 🔍 Search & Filtering
 - Filter every dropdown and device list with a search box

@@ -1083,8 +1083,10 @@ const diagramIcons = {
   video: "\uD83D\uDCE1", // 📡 wireless video
   motors: "\u2699\uFE0F", // ⚙️ lens motor
   controllers: "\uD83C\uDFAE", // 🎮 game controller
-  handle: "\uD83D\uDD90\uFE0F", // 🖐️ handle/grip
-  plate: "\uD83D\uDD0C" // 🔌 battery plate
+  handle: "\uD83C\uDFAE", // 🎮 handle/grip (same icon as controller)
+  plate: "\uD83D\uDD0C", // 🔌 battery plate
+  // Using a triangular ruler to represent a distance measuring device.
+  distance: "\uD83D\uDCD0" // 📐 distance sensor
 };
 
 // Load an image and optionally strip a solid background using Canvas
@@ -3480,7 +3482,7 @@ function renderSetupDiagram() {
         if (/handle|grip/.test(name)) icon = diagramIcons.handle;
         else icon = diagramIcons.controllers;
       } else if (id === 'distance') {
-        icon = diagramIcons.controllers;
+        icon = diagramIcons.distance;
       }
     }
 
