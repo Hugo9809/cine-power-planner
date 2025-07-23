@@ -2991,7 +2991,7 @@ function renderSetupDiagram() {
   const pos = {};
   const nodeMap = {};
   const step = 300; // extra spacing for edge labels
-  const VIDEO_LABEL_SPACING = 6;
+  const VIDEO_LABEL_SPACING = 10;
   const baseY = 220;
   let x = 80;
 
