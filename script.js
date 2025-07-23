@@ -4824,6 +4824,49 @@ function formatDeviceDataHtml(data) {
     return buildList(data);
 }
 
+function summarizeByType(list) {
+    const counts = {};
+    (list || []).forEach(it => {
+        if (it && it.type) {
+            counts[it.type] = (counts[it.type] || 0) + 1;
+        }
+    });
+    return counts;
+}
+
+function connectorBlocks(items, icon, cls) {
+    const counts = summarizeByType(items);
+    return Object.entries(counts).map(([type, count]) =>
+        `<span class="connector-block ${cls}">${icon} ${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}</span>`
+    ).join('');
+}
+
+function generateConnectorSummary(data) {
+    if (!data || typeof data !== 'object') return '';
+    let html = '';
+    if (data.power) {
+        const inputs = [];
+        if (Array.isArray(data.power.powerDistributionOutputs)) {
+            html += connectorBlocks(data.power.powerDistributionOutputs, '⚡', 'power-conn');
+        }
+        const pt = data.power.input && data.power.input.portType;
+        if (pt) {
+            if (Array.isArray(pt)) inputs.push(...pt.map(t => ({ type: t })));
+            else inputs.push({ type: pt });
+        }
+        if (inputs.length) {
+            html += connectorBlocks(inputs, '🔌', 'power-conn');
+        }
+    }
+    if (Array.isArray(data.fizConnectors)) {
+        html += connectorBlocks(data.fizConnectors, '🎚️', 'fiz-conn');
+    }
+    if (Array.isArray(data.videoOutputs)) {
+        html += connectorBlocks(data.videoOutputs, '📺', 'video-conn');
+    }
+    return html ? `<div class="connector-summary">${html}</div>` : '';
+}
+
 function generatePrintableOverview() {
     const setupName = setupNameInput.value;
     const now = new Date();
@@ -4856,10 +4899,12 @@ function generatePrintableOverview() {
             }
             const safeName = escapeHtml(deviceName);
             let details = '';
+            let connectors = '';
             if (data !== undefined && data !== null) {
                 details = formatDeviceDataHtml(data);
+                connectors = generateConnectorSummary(data);
             }
-            addToSection(headingKey, `<li class="device-item"><strong>${safeName}</strong>${details}</li>`);
+            addToSection(headingKey, `<li class="device-item"><strong>${safeName}</strong>${connectors}${details}</li>`);
         }
     };
 
@@ -5089,6 +5134,20 @@ function generatePrintableOverview() {
                   border-bottom: 1px solid #eee;
                   padding-bottom: 3px;
                 }
+                .connector-summary {
+                  margin-top: 5px;
+                }
+                .connector-block {
+                  display: inline-block;
+                  padding: 2px 6px;
+                  margin: 2px;
+                  border-radius: 4px;
+                  border: 2px solid;
+                  font-size: 0.85em;
+                }
+                .power-conn { border-color: #f44336; }
+                .fiz-conn { border-color: #4caf50; }
+                .video-conn { border-color: #2196f3; }
                 /* Setup diagram styles */
                 #setupDiagram svg { width: 100%; max-width: 900px; height: 420px; }
                 ${diagramCss}
@@ -5165,6 +5224,20 @@ function generatePrintableOverview() {
                       border-bottom: 1px solid #eee;
                       padding-bottom: 3px;
                     }
+                    .connector-summary {
+                      margin-top: 5px;
+                    }
+                    .connector-block {
+                      display: inline-block;
+                      padding: 2px 6px;
+                      margin: 2px;
+                      border-radius: 4px;
+                      border: 2px solid;
+                      font-size: 0.85em;
+                    }
+                    .power-conn { border-color: #f44336 !important; }
+                    .fiz-conn { border-color: #4caf50 !important; }
+                    .video-conn { border-color: #2196f3 !important; }
                     /* Styles for Battery Comparison Bars in Overview for Print */
                     .barContainer {
                       width: 100%;
