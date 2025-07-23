@@ -6958,6 +6958,11 @@ let devices={
       },
       "UDM-1 + LCube": {
         "powerDrawWatts": 6.24,
+        "fizConnectors": [
+          { "type": "Serial" },
+          { "type": "LBUS (LEMO 4-pin)", "notes": "via LCube-1" },
+          { "type": "LBUS (LEMO 4-pin)", "notes": "via LCube-1" }
+        ],
         "connection_compatibility": "ARRI and cmotion systems (via LBUS through LCube CUB-1)",
         "measurement_method": "Ultrasonic (Sonar)",
         "measurement_range": "0.4m - 10m (1ft 4in - 33ft)",
@@ -6968,6 +6973,11 @@ let devices={
       },
       "Focusbug Cine RT + LCube": {
         "powerDrawWatts": 15.24,
+        "fizConnectors": [
+          { "type": "Serial" },
+          { "type": "LBUS (LEMO 4-pin)", "notes": "via LCube-1" },
+          { "type": "LBUS (LEMO 4-pin)", "notes": "via LCube-1" }
+        ],
         "connection_compatibility": "ARRI, cmotion, Preston and Teradek systems (via appropriate controllers and LCube CUB-1)",
         "measurement_method": "Ultrasonic (with optional 'Bug' transmitters)",
         "measurement_range": "1ft - 35ft+ (0.3 - 10.6+m) in Ranger mode; 1ft - 120ft (0.3 - 36.5m) with 'Bugs' or Handset Tape Mode",
