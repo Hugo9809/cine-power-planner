@@ -313,6 +313,17 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('☾');
   });
+  test("applyPinkyMode toggles class", () => {
+    const { applyPinkyMode } = script;
+    const toggle = document.getElementById("pinkyToggle");
+    applyPinkyMode(true);
+    expect(document.body.classList.contains("pinky-mode")).toBe(true);
+    expect(toggle.textContent).toBe("💗");
+    applyPinkyMode(false);
+    expect(document.body.classList.contains("pinky-mode")).toBe(false);
+    expect(toggle.textContent).toBe("🔵");
+  });
+
 
   test('generatePrintableOverview opens window with content', () => {
     const { generatePrintableOverview } = script;

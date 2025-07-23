@@ -857,6 +857,10 @@ function setLanguage(lang) {
     darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
     darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
   }
+  if (pinkyToggle) {
+    pinkyToggle.setAttribute("title", texts[lang].pinkyModeLabel);
+    pinkyToggle.setAttribute("aria-label", texts[lang].pinkyModeLabel);
+  }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
@@ -990,6 +994,7 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const languageSelect  = document.getElementById("languageSelect");
 const darkModeToggle  = document.getElementById("darkModeToggle");
+const pinkyToggle  = document.getElementById("pinkyToggle");
 const helpButton      = document.getElementById("helpButton");
 const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
@@ -5290,6 +5295,36 @@ if (darkModeToggle) {
   });
 }
 
+// Pinky mode handling
+function applyPinkyMode(enabled) {
+  if (enabled) {
+    document.body.classList.add("pinky-mode");
+    if (pinkyToggle) pinkyToggle.textContent = "💗";
+  } else {
+    document.body.classList.remove("pinky-mode");
+    if (pinkyToggle) pinkyToggle.textContent = "🔵";
+  }
+}
+
+let pinkyModeEnabled = false;
+try {
+  pinkyModeEnabled = localStorage.getItem("pinkyMode") === "true";
+} catch (e) {
+  console.warn("Could not load pinky mode preference", e);
+}
+applyPinkyMode(pinkyModeEnabled);
+
+if (pinkyToggle) {
+  pinkyToggle.addEventListener("click", () => {
+    pinkyModeEnabled = !document.body.classList.contains("pinky-mode");
+    applyPinkyMode(pinkyModeEnabled);
+    try {
+      localStorage.setItem("pinkyMode", pinkyModeEnabled);
+    } catch (e) {
+      console.warn("Could not save pinky mode preference", e);
+    }
+  });
+}
 if (downloadDiagramBtn) {
   downloadDiagramBtn.addEventListener('click', (e) => {
     const svgEl = setupDiagramContainer.querySelector('svg');
@@ -5380,6 +5415,7 @@ if (typeof module !== "undefined" && module.exports) {
     setRecordingMedia,
     getRecordingMedia,
     applyDarkMode,
+    applyPinkyMode,
     generatePrintableOverview,
     updateBatteryPlateVisibility,
     updateBatteryOptions,
