@@ -501,4 +501,26 @@ describe('script.js functions', () => {
     const { renderSetupDiagram } = script;
     expect(() => renderSetupDiagram()).not.toThrow();
   });
+
+  test('native plate connection uses empty label', () => {
+    global.devices.cameras.NativeCam = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] }
+    };
+    global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
+
+    const camSel = document.getElementById('cameraSelect');
+    const battSel = document.getElementById('batterySelect');
+
+    camSel.innerHTML = '<option value="NativeCam">NativeCam</option>';
+    camSel.value = 'NativeCam';
+    battSel.innerHTML = '<option value="VBatt">VBatt</option>';
+    battSel.value = 'VBatt';
+
+    script.updateBatteryPlateVisibility();
+    script.renderSetupDiagram();
+
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels.some(l => l.includes('V-Mount'))).toBe(false);
+  });
 });
