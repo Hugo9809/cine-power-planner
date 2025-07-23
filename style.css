@@ -309,7 +309,7 @@ button:disabled {
 .device-summary {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start; /* keep buttons a constant height */
 }
 
 .detail-toggle {
