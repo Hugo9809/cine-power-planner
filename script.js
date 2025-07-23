@@ -3280,6 +3280,12 @@ function renderSetupDiagram() {
   }
 
   let svg = `<svg viewBox="0 ${minY - NODE_H/2 - 20} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<defs>
+    <linearGradient id="firstFizGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#090" />
+      <stop offset="100%" stop-color="#d33" />
+    </linearGradient>
+  </defs>`;
 
   edges.forEach(e => {
     if (!pos[e.from] || !pos[e.to]) return;
@@ -3411,8 +3417,10 @@ function renderSetupDiagram() {
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
-    svg += `<g class="diagram-node" data-node="${id}">`;
-    svg += `<rect class="node-box" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
+    const nodeCls = id === firstFizId ? 'diagram-node first-fiz' : 'diagram-node';
+    const rectCls = id === firstFizId ? 'node-box first-fiz' : 'node-box';
+    svg += `<g class="${nodeCls}" data-node="${id}">`;
+    svg += `<rect class="${rectCls}" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
 
     const conns = connectorsFor(id);
     conns.forEach(c => {
