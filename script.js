@@ -2990,6 +2990,7 @@ function renderSetupDiagram() {
   const pos = {};
   const nodeMap = {};
   const step = 300; // extra spacing for edge labels
+  const VIDEO_LABEL_SPACING = 6;
   const baseY = 220;
   let x = 80;
 
@@ -3129,11 +3130,11 @@ function renderSetupDiagram() {
     const vidInObj = video && (video.videoInputs?.[0] || (video.video ? video.video.inputs[0] : null));
     if (monitor && monInObj) {
       const monIn = monInObj.portType || monInObj.type || monInObj;
-      pushEdge({ from: 'camera', to: 'monitor', label: connectionLabel(camOut, monIn), fromSide: 'top', toSide: 'bottom' }, 'video');
+      pushEdge({ from: 'camera', to: 'monitor', label: connectionLabel(camOut, monIn), fromSide: 'top', toSide: 'bottom', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
     }
     if (video && vidInObj) {
       const vidIn = vidInObj.portType || vidInObj.type || vidInObj;
-      pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top' }, 'video');
+      pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
     }
   }
   const useMotorFirst = !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
