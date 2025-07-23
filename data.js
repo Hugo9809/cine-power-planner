@@ -6411,7 +6411,7 @@ let devices={
           "0.8 mod 25mm wide",
           "0.8 mod large diameter (e.g., 80T)"
         ],
-        "notes": "Lens motor with integrated RF receiver and controller. Provides one LBUS port and one CAM port similar to the RIA-1, allowing daisy-chaining of additional motors.",
+        "notes": "Lens motor with integrated RF receiver and controller. Provides one LBUS port and one CAM port similar to the RIA-1, allowing daisy-chaining of additional motors. When paired with ALEXA Mini/Mini LF/Alexa 35 it is typically powered via a CAM-to-LBUS connection; otherwise use a Cam to D-Tap cable for power.",
       },
       "Teradek RT Motion FIZ (MOTR.S)": {
         "powerDrawWatts": 24,
@@ -6650,10 +6650,10 @@ let devices={
           }
         ],
         "internalController": true,
-        "power_source": "External DC (10.5-34V, can be powered via camera CAM port)",
+        "power_source": "External DC (10.5-34V via camera CAM port or Cam to D-Tap cable)",
         "battery_type": "N/A (no internal battery, draws power from camera or external source)",
         "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
-        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque.",
+        "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Typically powered via a CAM-to-LBUS connection on ALEXA Mini/Mini LF/Alexa 35 cameras or via a Cam to D-Tap cable when used with other cameras. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque.",
       },
       "Arri Master Grip (single unit)": {
         "powerDrawWatts": 0.72,
