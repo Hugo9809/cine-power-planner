@@ -3,114 +3,113 @@
 Questo strumento basato sul browser aiuta a pianificare configurazioni professionali alimentate da batterie V‑Mount. Calcola **consumo totale**, **corrente** (a 14,4 V e 12 V) e **durata stimata della batteria**, verificando che la batteria possa fornire in sicurezza la potenza richiesta.
 ---
 
-## 🌍 Languages
-- 🇬🇧 English (default)
+## 🌍 Lingue
+- 🇬🇧 English
 - 🇩🇪 Deutsch
 - 🇪🇸 Español
 - 🇮🇹 Italiano (predefinito se il browser è in italiano)
 - 🇫🇷 Français
 
-You can switch the language in the top right corner. The choice is remembered for your next visit.
+Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata per la prossima visita.
 
 ---
 
-## 🔧 Features
+## 🔧 Funzionalità
 
-### ✅ Setup Management
-- Save, load and delete multiple camera setups
-- Data is stored locally via `localStorage`
-- Import and export setups as JSON
-- Generate a printable overview for any saved setup
-- Works fully offline – language, dark mode, setups and device data persist
-- Choose a **B‑Mount** or **V‑Mount** plate on supported cameras; the battery list adapts automatically
+### ✅ Gestione delle configurazioni
+- Salvare, caricare ed eliminare più configurazioni di camera
+- Tutti i dati sono memorizzati localmente tramite `localStorage`
+- Importare ed esportare le configurazioni in formato JSON
+- Generare una panoramica stampabile di qualsiasi configurazione salvata
+- Funziona completamente offline: lingua, modalità scura, configurazioni e dati dei dispositivi vengono conservati
+- Sulle fotocamere compatibili è possibile scegliere una piastra **B‑Mount** o **V‑Mount**; l'elenco delle batterie si adatta automaticamente
 
-### 📦 Device Categories
+### 📦 Categorie di dispositivi
 - **Camera** (1)
-- **Monitor** (optional)
-- **Wireless Video** (optional)
-- **FIZ Motors** (0–4)
-- **FIZ Controllers** (0–4)
-- **Distance Sensor** (0–1)
-- **Battery Plate** (only on cameras that accept V‑ or B‑Mount)
-- **V‑Mount Battery** (0–1)
+- **Monitor** (opzionale)
+- **Video wireless** (opzionale)
+- **Motori FIZ** (0–4)
+- **Controller FIZ** (0–4)
+- **Sensore di distanza** (0–1)
+- **Piastra batteria** (solo su fotocamere che accettano V‑ o B‑Mount)
+- **Batteria V‑Mount** (0–1)
 
-### ⚙️ Power Calculations
-- Total consumption in watts
-- Current draw at 14.4 V and 12 V
-- Estimated battery runtime in hours
+### ⚙️ Calcoli di potenza
+- Consumo totale in watt
+- Corrente a 14,4 V e 12 V
+- Autonomia stimata in ore
 
-### 🔋 Battery Output Check
-- Warns if current draw exceeds the battery output (Pin or D‑Tap)
-- Indicates when draw is close to the limit (80 % usage)
+### 🔋 Controllo uscita batteria
+- Avvisa se l'assorbimento supera l'uscita della batteria (Pin o D‑Tap)
+- Indica quando il carico è vicino al limite (80 % dell'uso)
 
-### 📊 Battery Comparison (optional)
-- Compare runtime estimates across all batteries
-- Visual bar graph for quick reference
+### 📊 Confronto batterie (opzionale)
+- Confronta le stime di autonomia di tutte le batterie
+- Grafico a barre per un rapido riferimento
 
-### 🖼 Setup Diagram
-- Visualize power and video connections for the selected devices
-- Warns when FIZ brands are incompatible
-- Uses colorful [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji if they can't load:
-  🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
-  🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
+### 🖼 Diagramma della configurazione
+- Visualizza le connessioni di alimentazione e video dei dispositivi selezionati
+- Avvisa quando i marchi FIZ sono incompatibili
+- Usa le icone colorate di [OpenMoji](https://openmoji.org/) quando sei online, passando agli emoji se non possono essere caricate:
+  🔋 batteria, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motore,
+  🎮 controller, 📐 distanza, 🎮 impugnatura e 🔌 piastra batteria
 
-### 🔍 Search & Filtering
-- Filter every dropdown and device list with a search box
-- Type inside dropdowns to quickly find entries
+### 🔍 Ricerca e filtri
+- Filtra ogni menu a discesa e lista dispositivi con un campo di ricerca
+- Digita nei menu a discesa per trovare rapidamente le voci
 
-### 🛠 Device Database Editor
-- Add, edit or delete devices in all categories
-- Import or export the full database as JSON
-- Revert to the default database from `data.js`
+### 🛠 Editor del database dei dispositivi
+- Aggiungi, modifica o elimina dispositivi in tutte le categorie
+- Importa o esporta l'intero database in formato JSON
+- Ripristina il database predefinito da `data.js`
 
-### 🌓 Dark Mode
-- Toggleable via the moon button next to the language selector
-- Preference is stored in your browser
-- The help dialog can be opened via the ? button or by pressing `?`/`H`
-  and closed with Escape or by clicking outside the popup
+### 🌓 Modalità scura
+- Attivabile tramite il pulsante con la luna accanto al selettore della lingua
+- La preferenza viene salvata nel browser
+- La finestra di aiuto si apre con il pulsante ? o premendo `?`/`H` e si chiude con Esc o cliccando fuori dal popup
 
 ---
 
 ## 🎨 Design
-- Clean layout with blue headings and grey input fields
-- Uses Google Fonts "Open Sans"
-- Responsive design adapts for small screens
-- Separate light and dark themes
+- Layout pulito con titoli blu e campi di input grigi
+- Utilizza i Google Font "Open Sans"
+- Design responsivo adatto anche agli schermi piccoli
+- Temi chiaro e scuro separati
 
 ---
 
-## ▶️ How to Use
-1. **Launch App:** Open `index.html` in any modern browser – no server required
-2. **Select Devices:** Choose devices from each category using the dropdowns
-3. **View Calculations:** See total draw, current and runtime when a battery is selected
-4. **Check Output Limits:** Status indicators show if the battery output is exceeded
-5. **Save & Load Setups:** Name and save your setup, export/import them and generate a printable overview
-6. **Manage Device List:** Click “Edit Device Data…” to open the editor, modify devices or revert to the defaults
+## ▶️ Come usare
+1. **Avvia l'app:** apri `index.html` in un qualsiasi browser moderno – non serve alcun server
+2. **Seleziona i dispositivi:** scegli i dispositivi in ogni categoria usando i menu a discesa
+3. **Vedi i calcoli:** quando selezioni una batteria compaiono consumo totale, corrente e autonomia
+4. **Verifica i limiti di uscita:** gli indicatori mostrano se l'uscita della batteria viene superata
+5. **Salva e carica le configurazioni:** dai un nome alla configurazione, salvala, esportala/importala e genera una panoramica stampabile
+6. **Gestisci la lista dei dispositivi:** clicca su “Modifica dati dispositivi…” per aprire l'editor, modificare i dispositivi o ripristinare i valori predefiniti
 
 ---
 
-## 🗂️ File Structure
+## 🗂️ Struttura dei file
 ```bash
-index.html       # Main HTML layout
-style.css        # Styles and layout
-script.js        # Application logic
-data.js          # Default device list
-storage.js       # LocalStorage helpers
-README.*.md      # Documentation in different languages
+index.html       # Layout HTML principale
+style.css        # Stili e layout
+script.js        # Logica dell'applicazione
+data.js          # Elenco dispositivi predefinito
+storage.js       # Funzioni di LocalStorage
+README.*.md      # Documentazione in diverse lingue
 ```
-Fonts are loaded via Google Fonts links in `index.html`.
-After the fonts are cached on first load, the application works entirely offline.
+I font vengono caricati tramite Google Fonts in `index.html`.
+Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'applicazione funziona interamente offline.
 
-## 🛠️ Development
-1. Install dependencies:
+## 🛠️ Sviluppo
+1. Installa le dipendenze:
    ```bash
    npm install
    ```
-2. Lint the code:
+2. Esegui il lint:
    ```bash
    npm run lint
    ```
-3. Run tests:
+3. Avvia i test:
    ```bash
    npm test
    ```
