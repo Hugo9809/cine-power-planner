@@ -128,7 +128,7 @@ const texts = {
     controllerPowerLabel: "Power Source:",
     controllerBatteryLabel: "Battery Type:",
     controllerConnectivityLabel: "Connectivity:",
-    distanceConnectionLabel: "Connection:",
+    distanceConnectionLabel: "The connections to the distance unit are still to proprietary not LBUS or Serial:",
     distanceMethodLabel: "Method:",
     distanceRangeLabel: "Range:",
     distanceAccuracyLabel: "Accuracy:",
