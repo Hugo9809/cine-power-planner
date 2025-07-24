@@ -781,6 +781,35 @@ describe('script.js functions', () => {
     expect(firstNode.getAttribute('data-node')).toBe('controller0');
   });
 
+  test('UMC-4 connects to LBUS devices via LCS port', () => {
+    global.devices.fiz.controllers['Arri UMC-4'] = {
+      powerDrawWatts: 1,
+      fizConnectors: [
+        { type: 'Serial (LEMO 7-pin)' },
+        { type: 'LCS (LEMO 7-pin)' }
+      ]
+    };
+    global.devices.fiz.motors.LBUSMotor = {
+      powerDrawWatts: 2,
+      fizConnector: 'LBUS (LEMO 4-pin)'
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'Arri UMC-4');
+    addOpt('motor1Select', 'LBUSMotor');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels.some(l => l.includes('LCS to LBUS'))).toBe(true);
+  });
+
   test('ARRI FIZ requires battery on non-ARRI camera', () => {
     global.devices.fiz.controllers['Arri RIA-1'] = {
       powerDrawWatts: 1,

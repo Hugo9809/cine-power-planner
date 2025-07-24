@@ -431,7 +431,10 @@ function cameraFizPort(camName, controllerPort, deviceName = '') {
 function controllerFizPort(name) {
   const c = devices.fiz?.controllers?.[name];
   let portStr = '';
-  if (Array.isArray(c?.fizConnectors) && c.fizConnectors.length) {
+  if (/UMC-4/i.test(name)) {
+    const lcs = c?.fizConnectors?.find(fc => /LCS/i.test(fc.type));
+    portStr = lcs ? lcs.type : 'LCS (LEMO 7-pin)';
+  } else if (Array.isArray(c?.fizConnectors) && c.fizConnectors.length) {
     portStr = c.fizConnectors[0].type;
   } else if (c?.fizConnector) {
     portStr = c.fizConnector;
