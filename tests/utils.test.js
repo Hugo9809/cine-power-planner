@@ -49,4 +49,42 @@ describe('utility function tests', () => {
     expect(connectionLabel('SDI', 'SDI')).toBe('SDI');
     expect(connectionLabel('', '')).toBe('');
   });
+
+  test('distanceFizPort defaults to LBUS', () => {
+    const { renderSetupDiagram } = utils;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    global.devices.fiz.distance = {};
+    global.devices.fiz.controllers.TestCtrl = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+    global.devices.cameras.CamX = { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+    addOpt('distanceSelect', 'Unknown');
+    addOpt('controller1Select', 'TestCtrl');
+    addOpt('cameraSelect', 'CamX');
+    renderSetupDiagram();
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels.some(l => l.includes('LBUS'))).toBe(true);
+  });
+
+  test('distance connection uses Serial for RIA-1 controller', () => {
+    const { renderSetupDiagram } = utils;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    global.devices.cameras.CamX = { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+    global.devices.fiz.controllers['Arri RIA-1'] = {
+      fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }, { type: 'SERIAL (LEMO 4-pin)' }]
+    };
+    global.devices.fiz.distance.Dist = {};
+    addOpt('cameraSelect', 'CamX');
+    addOpt('controller1Select', 'Arri RIA-1');
+    addOpt('distanceSelect', 'Dist');
+    renderSetupDiagram();
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels.some(l => /Serial/.test(l))).toBe(true);
+  });
 });
