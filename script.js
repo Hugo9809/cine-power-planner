@@ -920,6 +920,9 @@ function setLanguage(lang) {
     zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
   }
+  if (diagramHint) {
+    diagramHint.textContent = texts[lang].diagramMoveHint;
+  }
   updateDiagramLegend();
 }
 
@@ -1041,6 +1044,7 @@ const diagramLegend = document.getElementById("diagramLegend");
 const downloadDiagramBtn = document.getElementById("downloadDiagram");
 const zoomInBtn = document.getElementById("zoomIn");
 const zoomOutBtn = document.getElementById("zoomOut");
+const diagramHint = document.getElementById("diagramHint");
 
 let manualPositions = {};
 let lastDiagramPositions = {};
