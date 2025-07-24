@@ -6307,7 +6307,7 @@ let devices={
           "0.6 mod",
           "0.8 mod 29mm wide"
         ],
-        "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "notes": "Rated 2.5 N·m at 14.8V. Can be daisy-chained for power and control. Uses a proprietary 7-pin LEMO cable to the camera\u2019s FIZ port rather than ARRI LBUS. Supports a 29mm thick 0.8 mod gear for lenses with telescoping focus gears. Compatible with standard 0.8 mod lens gears of various diameters.",
       },
       "Tilta Nucleus M II": {
         "powerDrawWatts": 50,
@@ -6320,7 +6320,7 @@ let devices={
           "0.5 mod",
           "0.6 mod"
         ],
-        "notes": "Higher torque than Nucleus M, designed for improved performance. The 50W rating is likely a max stall power. Compatible with standard 0.8 mod lens gears of various diameters.",
+        "notes": "Higher torque than Nucleus M, designed for improved performance. Uses the same 7-pin LEMO connection to the camera FIZ port (not LBUS). The 50W rating is likely a max stall power. Compatible with standard 0.8 mod lens gears of various diameters.",
       },
       "Tilta Nucleus Nano (Original)": {
         "powerDrawWatts": 5,

@@ -364,9 +364,13 @@ function controllerCamPort(name) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
     const connStr = (c.fizConnectors || []).map(fc => fc.type).join(', ');
     if (/CAM/i.test(connStr)) return 'Cam';
+    if (/7-pin/i.test(connStr)) return 'LEMO 7-pin';
   }
   const m = devices.fiz?.motors?.[name];
-  if (m && /CAM/i.test(m.fizConnector || '')) return 'Cam';
+  if (m) {
+    if (/CAM/i.test(m.fizConnector || '')) return 'Cam';
+    if (/7-pin/i.test(m.fizConnector || '')) return 'LEMO 7-pin';
+  }
   return 'LBUS';
 }
 
