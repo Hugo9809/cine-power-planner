@@ -3328,11 +3328,17 @@ function renderSetupDiagram() {
       ly = bottomY - 8 - labelSpacing;
     } else {
       path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
-      lx = (from.x + to.x) / 2;
-      ly = (from.y + to.y) / 2 - 8 - labelSpacing;
       const dx = to.x - from.x;
       const dy = to.y - from.y;
       angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      const midX = (from.x + to.x) / 2;
+      const midY = (from.y + to.y) / 2;
+      const len = Math.hypot(dx, dy) || 1;
+      const off = 8 + labelSpacing;
+      const perpX = (dy / len) * off;
+      const perpY = (-dx / len) * off;
+      lx = midX + perpX;
+      ly = midY + perpY;
     }
 
     return { path, labelX: lx, labelY: ly, angle };
