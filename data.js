@@ -6672,7 +6672,7 @@ let devices={
         "powerDrawWatts": 0.5,
         "fizConnectors": [
           {
-            "type": "Proprietary 7-pin (to motor)"
+            "type": "LEMO 7-pin"
           },
           {
             "type": "ARRI rosette or gimbal bar adapter"
@@ -6688,7 +6688,7 @@ let devices={
         "powerDrawWatts": 0.5,
         "fizConnectors": [
           {
-            "type": "Proprietary 7-pin (to motor)"
+            "type": "LEMO 7-pin"
           },
           {
             "type": "ARRI rosette or gimbal bar adapter"
