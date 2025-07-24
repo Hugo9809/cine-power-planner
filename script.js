@@ -3138,7 +3138,8 @@ function renderSetupDiagram() {
   });
 
   let firstFizId;
-  if (hasInternalMotor && motorIds.length) {
+  const hasMainCtrl = controllers.some(n => controllerPriority(n) === 0);
+  if (hasInternalMotor && motorIds.length && !hasMainCtrl) {
     firstFizId = motorIds[0];
   } else {
     firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
@@ -3202,7 +3203,8 @@ function renderSetupDiagram() {
       pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
     }
   }
-  const useMotorFirst = !controllerIds.length && (hasInternalMotor || (motorIds.length && motorPriority(motors[0]) === 0));
+  const useMotorFirst = (!hasMainCtrl && hasInternalMotor) ||
+    (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
   const distanceSelected = distanceName && distanceName !== 'None';
   const distanceInChain = distanceSelected && !dedicatedDistance;
 
