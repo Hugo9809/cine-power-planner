@@ -376,6 +376,7 @@ function controllerCamPort(name) {
 
 function controllerDistancePort(name) {
   const c = devices.fiz?.controllers?.[name];
+  if (/RIA-1/i.test(name) || /UMC-4/i.test(name)) return 'Serial';
   if (c && (c.fizConnectors || []).some(fc => /SERIAL/i.test(fc.type))) return 'Serial';
   return 'LBUS';
 }
@@ -453,7 +454,7 @@ function motorFizPort(name) {
 
 function distanceFizPort(name) {
   const d = devices.fiz?.distance?.[name];
-  if (!d) return 'Proprietary';
+  if (!d) return 'LBUS';
   let portStr = '';
   if (Array.isArray(d.fizConnectors) && d.fizConnectors.length) {
     const lbus = d.fizConnectors.find(fc => /LBUS/i.test(fc.type));
@@ -474,7 +475,7 @@ function fizPort(name) {
   if (devices.fiz?.controllers?.[name]) return controllerFizPort(name);
   if (devices.fiz?.motors?.[name]) return motorFizPort(name);
   if (devices.fiz?.distance?.[name]) return distanceFizPort(name);
-  return 'Proprietary';
+  return 'LBUS';
 }
 
 function fizPowerPort(name) {
