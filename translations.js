@@ -62,7 +62,7 @@ const texts = {
 
     incompatibleFIZWarning: "WARNING: incompatible FIZ brands selected.",
     missingFIZControllerWarning: "ERROR: FIZ motors require a controller with LBUS/CAM connection.",
-    arriUMC4Warning: "WARNING: UMC-4 only works with CLM-4 and CLM-5 motors.",
+    arriUMC4Warning: "WARNING: UMC-4 only works with LCS (LEMO 7-pin) to LBUS cable with LBUS devices.",
     arriRIA1Warning: "WARNING: RIA-1 or cforce RF controllers are not compatible with CLM-4/5.",
     arriCLMNoUMC4Warning: "WARNING: No FIZ controller present. Select a UMC-4 for a complete setup. CLM-4/5 are not compatible with RIA-1, cforce RF or Master Grips.",
     distanceControllerWarning: "WARNING: Distance units require UMC-4, RIA-1 or cforce RF.",
@@ -260,7 +260,7 @@ const texts = {
     warnDTapNear: "Nota: l'assorbimento usa oltre l'80% della capacità D-Tap ({current}A di {max}A).",
     incompatibleFIZWarning: "ATTENZIONE: marchi FIZ incompatibili selezionati.",
     missingFIZControllerWarning: "Errore: i motori FIZ richiedono un controller con connessione LBUS/CAM.",
-    arriUMC4Warning: "ATTENZIONE: UMC-4 funziona solo con motori CLM-4 e CLM-5.",
+    arriUMC4Warning: "ATTENZIONE: UMC-4 funziona solo con cavo LCS (LEMO 7-pin) a LBUS con dispositivi LBUS.",
     arriRIA1Warning: "ATTENZIONE: i controller RIA-1 o CFORCE RF non sono compatibili con CLM-4/5.",
     arriCLMNoUMC4Warning: "ATTENZIONE: nessun controller FIZ presente. Seleziona un UMC-4 per una configurazione completa. CLM-4/5 non sono compatibili con RIA-1, CFORCE RF o impugnature principali.",
     distanceControllerWarning: "ATTENZIONE: le unità di distanza richiedono UMC-4, RIA-1 o CFORCE RF.",
@@ -456,7 +456,7 @@ const texts = {
 
     incompatibleFIZWarning: "ADVERTENCIA: se seleccionaron marcas FIZ incompatibles.",
     missingFIZControllerWarning: "ERROR: los motores FIZ requieren un controlador con LBUS/CAM.",
-    arriUMC4Warning: "ADVERTENCIA: UMC-4 solo funciona con los motores CLM-4 y CLM-5.",
+    arriUMC4Warning: "ADVERTENCIA: UMC-4 solo funciona con un cable LCS (LEMO de 7 pines) a LBUS con dispositivos LBUS.",
     arriRIA1Warning: "ADVERTENCIA: los controladores RIA-1 y cforce RF no son compatibles con CLM-4/5.",
     arriCLMNoUMC4Warning: "ADVERTENCIA: no hay un controlador FIZ compatible. Seleccione un UMC-4 para una configuración completa. Los CLM-4 y CLM-5 no son compatibles con RIA-1, cforce RF ni Master Grips.",
     distanceControllerWarning: "ADVERTENCIA: las unidades de distancia requieren UMC-4, RIA-1 o cforce RF.",
@@ -661,7 +661,7 @@ const texts = {
 
     incompatibleFIZWarning: "ATTENTION : des marques FIZ incompatibles sont sélectionnées.",
     missingFIZControllerWarning: "ERREUR : les moteurs FIZ nécessitent un contrôleur LBUS/CAM.",
-    arriUMC4Warning: "ATTENTION : le UMC-4 fonctionne uniquement avec les moteurs CLM-4 et CLM-5.",
+    arriUMC4Warning: "ATTENTION : le UMC-4 fonctionne uniquement avec le câble LCS (LEMO 7 broches) vers LBUS et des appareils LBUS.",
     arriRIA1Warning: "ATTENTION : les contrôleurs RIA-1 et cforce RF ne sont pas compatibles avec les CLM-4/5.",
     arriCLMNoUMC4Warning: "ATTENTION : aucun contrôleur FIZ compatible n'est sélectionné. Choisissez un UMC-4 pour un ensemble complet. Les CLM-4 et CLM-5 ne sont pas compatibles avec le RIA-1, le cforce RF ou les Master Grips.",
     distanceControllerWarning: "ATTENTION : les unités de distance requièrent un UMC-4, un RIA-1 ou un cforce RF.",
@@ -866,7 +866,7 @@ const texts = {
 
     incompatibleFIZWarning: "WARNUNG: Inkompatible FIZ-Marken ausgewählt.",
     missingFIZControllerWarning: "FEHLER: FIZ-Motoren benötigen einen Controller mit LBUS/CAM.",
-    arriUMC4Warning: "WARNUNG: UMC-4 funktioniert nur mit den Motoren CLM-4 und CLM-5.",
+    arriUMC4Warning: "WARNUNG: UMC-4 funktioniert nur mit LCS- (LEMO 7-Pin)-zu-LBUS-Kabel mit LBUS-Geräten.",
     arriRIA1Warning: "WARNUNG: RIA-1 und cforce RF sind nicht mit CLM-4/5 kompatibel.",
     arriCLMNoUMC4Warning: "WARNUNG: Kein kompatibler FIZ-Controller vorhanden. Wähle einen UMC-4 für ein vollständiges Setup. CLM-4/5 sind nicht mit RIA-1, cforce RF oder Master Grips kompatibel.",
     distanceControllerWarning: "WARNUNG: Distanzgeräte werden nur von UMC-4, RIA-1 oder cforce RF unterstützt.",
