@@ -205,6 +205,7 @@ const texts = {
     helpTitle: "How to use",
     zoomInLabel: "Zoom in",
     zoomOutLabel: "Zoom out",
+    diagramMoveHint: "Move nodes with drag and drop.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   it: {
@@ -392,6 +393,7 @@ const texts = {
     helpTitle: "Come usare",
     zoomInLabel: "Zoom in",
     zoomOutLabel: "Zoom out",
+    diagramMoveHint: "Trascina i nodi per spostarli.",
   },
   es: {
     appTitle: "Planificador de Consumo de Cámara",
@@ -595,6 +597,7 @@ const texts = {
     helpTitle: "Cómo usar",
     zoomInLabel: "Acercar",
     zoomOutLabel: "Alejar",
+    diagramMoveHint: "Mueve los nodos arrastrándolos.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   fr: {
@@ -799,6 +802,7 @@ const texts = {
     helpTitle: "Comment utiliser",
     zoomInLabel: "Zoom avant",
     zoomOutLabel: "Zoom arrière",
+    diagramMoveHint: "Déplacez les nœuds par glisser-déposer.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   de: {
@@ -1003,6 +1007,7 @@ const texts = {
     helpTitle: "Bedienung",
     zoomInLabel: "Hineinzoomen",
     zoomOutLabel: "Herauszoomen",
+    diagramMoveHint: "Knoten per Drag & Drop verschieben.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   }
 };
