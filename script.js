@@ -3208,9 +3208,13 @@ function renderSetupDiagram() {
   const distanceSelected = distanceName && distanceName !== 'None';
   const distanceInChain = distanceSelected && !dedicatedDistance;
 
-  if (controllerIds.length) chain.push(controllerIds[0]);
-  else if (useMotorFirst && motorIds.length) chain.push(motorIds[0]);
-  else if (motorIds.length) chain.push(motorIds[0]);
+  if (useMotorFirst && motorIds.length) {
+    chain.push(motorIds[0]);
+  } else if (controllerIds.length) {
+    chain.push(controllerIds[0]);
+  } else if (motorIds.length) {
+    chain.push(motorIds[0]);
+  }
 
   if (distanceInChain) chain.push('distance');
 
