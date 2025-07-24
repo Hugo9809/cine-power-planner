@@ -1104,6 +1104,17 @@ const diagramIcons = {
   distance: "\uD83D\uDCD0" // 📐 distance sensor
 };
 
+// Map overview section keys to diagram icons
+const overviewSectionIcons = {
+  category_batteries: diagramIcons.battery,
+  category_cameras: diagramIcons.camera,
+  category_monitors: diagramIcons.monitor,
+  category_video: diagramIcons.video,
+  category_fiz_motors: diagramIcons.motors,
+  category_fiz_controllers: diagramIcons.controllers,
+  category_fiz_distance: diagramIcons.distance
+};
+
 // Load an image and optionally strip a solid background using Canvas
 // Filter inputs
 const cameraFilterInput = document.getElementById("cameraFilter");
@@ -4898,7 +4909,9 @@ function generatePrintableOverview() {
 
       sectionOrder.forEach(key => {
           const heading = t[key] || key;
-          deviceListHtml += `<div class="device-category"><h3>${heading}</h3><ul class="device-overview">${sections[key].join('')}</ul></div>`;
+          const icon = overviewSectionIcons[key] || '';
+          const iconHtml = icon ? `<span class="category-icon" aria-hidden="true">${icon}</span>` : '';
+          deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><ul class="device-overview">${sections[key].join('')}</ul></div>`;
       });
       deviceListHtml += '</div>';
 
@@ -5114,6 +5127,9 @@ function generatePrintableOverview() {
                   border-bottom: 1px solid #eee;
                   padding-bottom: 3px;
                 }
+                .category-icon {
+                  margin-right: 4px;
+                }
                 .connector-summary {
                   margin-top: 5px;
                   display: flex;
@@ -5206,6 +5222,9 @@ function generatePrintableOverview() {
                       margin-bottom: 5px;
                       border-bottom: 1px solid #eee;
                       padding-bottom: 3px;
+                    }
+                    .category-icon {
+                      margin-right: 4px;
                     }
                     .connector-summary {
                       margin-top: 5px;
