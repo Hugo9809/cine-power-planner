@@ -599,7 +599,7 @@ describe('script.js functions', () => {
     expect(() => renderSetupDiagram()).not.toThrow();
   });
 
-  test('native plate connection uses empty label', () => {
+  test('native plate adds label to battery', () => {
     global.devices.cameras.NativeCam = {
       powerDrawWatts: 10,
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] }
@@ -617,8 +617,9 @@ describe('script.js functions', () => {
     script.updateBatteryPlateVisibility();
     script.renderSetupDiagram();
 
-    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
-    expect(labels.some(l => l.includes('V-Mount'))).toBe(false);
+    const batteryNode = document.querySelector('#diagramArea [data-node="battery"]');
+    const text = batteryNode.textContent.replace(/\s+/g, '');
+    expect(text).toContain('onnativeV-MountplateviaPins');
   });
 
   test('battery connects to FIZ motor when controller is internal power', () => {

@@ -1097,7 +1097,6 @@ const diagramIcons = {
   motors: "\u2699\uFE0F", // ⚙️ lens motor
   controllers: "\uD83C\uDFAE", // 🎮 game controller
   handle: "\uD83C\uDFAE", // 🎮 handle/grip (same icon as controller)
-  plate: "\uD83D\uDD0C", // 🔌 battery plate
   // Using a triangular ruler to represent a distance measuring device.
   distance: "\uD83D\uDCD0" // 📐 distance sensor
 };
@@ -3055,18 +3054,14 @@ function renderSetupDiagram() {
   let x = 80;
 
   if (batteryName && batteryName !== 'None') {
-    pos.battery = { x, y: baseY, label: batteryName };
+    let batteryLabel = batteryName;
+    const battMount = devices.batteries[batteryName]?.mount_type;
+    if (cam && battMount && cam.power?.batteryPlateSupport?.some(bp => bp.type === battMount && bp.mount === 'native')) {
+      batteryLabel += ` on native ${battMount} plate via Pins`;
+    }
+    pos.battery = { x, y: baseY, label: batteryLabel };
     nodes.push('battery');
     nodeMap.battery = { category: 'batteries', name: batteryName };
-    x += step;
-  }
-
-  const plateType = getSelectedPlate();
-  const nativePlate = plateType && isSelectedPlateNative(camName);
-  if (plateType && batteryName && batteryName !== 'None' && !nativePlate) {
-    pos.plate = { x, y: baseY, label: plateType + ' Plate' };
-    nodes.push('plate');
-    nodeMap.plate = { category: 'plates', name: plateType };
     x += step;
   }
 
@@ -3380,13 +3375,6 @@ function renderSetupDiagram() {
           { side: 'right', color: 'red' },
           { side: 'bottom', color: 'red' },
           { side: 'bottom-left', color: 'red' }
-        ];
-      case 'plate':
-        return [
-          { side: 'top', color: 'red' },
-          { side: 'right', color: 'red' },
-          { side: 'bottom', color: 'red' },
-          { side: 'left', color: 'red' }
         ];
       case 'monitor':
         return [
