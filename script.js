@@ -699,7 +699,11 @@ function checkArriCompatibility() {
 
   if (msg) {
     compatElem.textContent = msg;
-    compatElem.style.color = 'red';
+    if (msg === texts[currentLang].arriUMC4Warning) {
+      compatElem.style.color = 'orange';
+    } else {
+      compatElem.style.color = 'red';
+    }
   }
 }
 
