@@ -594,6 +594,52 @@ describe('script.js functions', () => {
     expect(document.getElementById('compatWarning').textContent).toBe('');
   });
 
+  test('cforce RF motor placed before Master Grip', () => {
+    jest.resetModules();
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+
+    global.devices = {
+      cameras: { CamA: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] } },
+      monitors: {},
+      video: {},
+      fiz: {
+        motors: { 'cforce mini RF': { powerDrawWatts: 2, internalController: true, fizConnector: 'LBUS (LEMO 4-pin), CAM (LEMO 7-pin)' } },
+        controllers: { 'Arri Master Grip (single unit)': { powerDrawWatts: 1, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], internalController: true } },
+        distance: {}
+      },
+      batteries: { BattA: { capacity: 100, pinA: 10, dtapA: 5 } }
+    };
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+
+    require('../translations.js');
+    const localScript = require('../script.js');
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('motor1Select', 'cforce mini RF');
+    addOpt('controller1Select', 'Arri Master Grip (single unit)');
+    addOpt('batterySelect', 'BattA');
+
+    localScript.renderSetupDiagram();
+
+    const firstNode = document.querySelector('#setupDiagram .diagram-node.first-fiz');
+    expect(firstNode.getAttribute('data-node')).toBe('motor0');
+  });
+
   test('renderSetupDiagram runs without errors', () => {
     const { renderSetupDiagram } = script;
     expect(() => renderSetupDiagram()).not.toThrow();
