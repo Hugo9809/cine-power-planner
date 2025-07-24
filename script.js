@@ -4732,10 +4732,24 @@ function formatDeviceDataHtml(data) {
     if (!data || typeof data !== 'object') {
         return escapeHtml(String(data));
     }
-    const buildList = (obj) => {
+    const shouldSkip = (path, key) => {
+        const p = path.concat(key).join('.');
+        return p === 'power.powerDistributionOutputs' ||
+               p === 'power.input.portType' ||
+               p === 'fizConnectors' ||
+               p === 'videoOutputs' ||
+               p === 'timecode' ||
+               p === 'video.inputs' ||
+               p === 'video.outputs' ||
+               p === 'audioOutput' ||
+               p === 'audioInput' ||
+               p === 'audioIo';
+    };
+    const buildList = (obj, path = []) => {
         let html = '<ul class="device-data">';
         for (const [key, value] of Object.entries(obj)) {
             if (value === undefined || value === null || value === '') continue;
+            if (shouldSkip(path, key)) continue;
             html += '<li><strong>' + escapeHtml(key) + '</strong>: ';
             if (typeof value === 'object') {
                 if (Array.isArray(value)) {
@@ -4744,12 +4758,12 @@ function formatDeviceDataHtml(data) {
                     } else {
                         html += '<ul class="device-data">';
                         for (const val of value) {
-                            html += '<li>' + (typeof val === 'object' ? buildList(val) : escapeHtml(String(val))) + '</li>';
+                            html += '<li>' + (typeof val === 'object' ? buildList(val, path.concat(key)) : escapeHtml(String(val))) + '</li>';
                         }
                         html += '</ul>';
                     }
                 } else {
-                    html += buildList(value);
+                    html += buildList(value, path.concat(key));
                 }
             } else {
                 html += escapeHtml(String(value));
@@ -4772,7 +4786,7 @@ function summarizeByType(list) {
     return counts;
 }
 
-function connectorBlocks(items, icon, cls) {
+function connectorBlocks(items, icon, cls = 'neutral-conn') {
     const counts = summarizeByType(items);
     return Object.entries(counts).map(([type, count]) =>
         `<span class="connector-block ${cls}">${icon} ${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}</span>`
@@ -4801,6 +4815,24 @@ function generateConnectorSummary(data) {
     }
     if (Array.isArray(data.videoOutputs)) {
         html += connectorBlocks(data.videoOutputs, '📺', 'video-conn');
+    }
+    if (Array.isArray(data.timecode)) {
+        html += connectorBlocks(data.timecode, '⏱️');
+    }
+    if (data.video && Array.isArray(data.video.inputs)) {
+        html += connectorBlocks(data.video.inputs, '🎥');
+    }
+    if (data.video && Array.isArray(data.video.outputs)) {
+        html += connectorBlocks(data.video.outputs, '🎥');
+    }
+    if (data.audioOutput && data.audioOutput.portType) {
+        html += connectorBlocks([{ type: data.audioOutput.portType }], '🔊');
+    }
+    if (data.audioInput && data.audioInput.portType) {
+        html += connectorBlocks([{ type: data.audioInput.portType }], '🎤');
+    }
+    if (data.audioIo && data.audioIo.portType) {
+        html += connectorBlocks([{ type: data.audioIo.portType }], '🎚️');
     }
     return html ? `<div class="connector-summary">${html}</div>` : '';
 }
@@ -5074,6 +5106,8 @@ function generatePrintableOverview() {
                 }
                 .connector-summary {
                   margin-top: 5px;
+                  display: flex;
+                  flex-wrap: wrap;
                 }
                 .connector-block {
                   display: inline-block;
@@ -5086,6 +5120,7 @@ function generatePrintableOverview() {
                 .power-conn { border-color: #f44336; }
                 .fiz-conn { border-color: #4caf50; }
                 .video-conn { border-color: #2196f3; }
+                .neutral-conn { border-color: #9e9e9e; }
                 /* Setup diagram styles */
                 #setupDiagram svg { width: 100%; max-width: 900px; height: 420px; }
                 ${diagramCss}
@@ -5164,6 +5199,8 @@ function generatePrintableOverview() {
                     }
                     .connector-summary {
                       margin-top: 5px;
+                      display: flex;
+                      flex-wrap: wrap;
                     }
                     .connector-block {
                       display: inline-block;
@@ -5176,6 +5213,7 @@ function generatePrintableOverview() {
                     .power-conn { border-color: #f44336 !important; }
                     .fiz-conn { border-color: #4caf50 !important; }
                     .video-conn { border-color: #2196f3 !important; }
+                    .neutral-conn { border-color: #9e9e9e !important; }
                     /* Styles for Battery Comparison Bars in Overview for Print */
                     .barContainer {
                       width: 100%;
