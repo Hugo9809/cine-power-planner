@@ -3604,15 +3604,29 @@ function attachDiagramPopups(map) {
     const id = node.getAttribute('data-node');
     const info = map[id];
     if (!info) return;
+    let data;
+    if (info.category === 'fiz.controllers') {
+      data = devices.fiz?.controllers?.[info.name];
+    } else if (info.category === 'fiz.motors') {
+      data = devices.fiz?.motors?.[info.name];
+    } else if (info.category === 'fiz.distance') {
+      data = devices.fiz?.distance?.[info.name];
+    } else {
+      data = devices[info.category]?.[info.name];
+    }
     const ports = getDevicePorts(info.category, info.name) ||
       { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
     const format = list => list && list.length ? list.join(', ') : '-';
+    const connectors = data ? generateConnectorSummary(data) : '';
+    const details = data ? formatDeviceDataHtml(data) : '';
+    const portHtml =
+      `Power In: ${format(ports.powerIn)}<br>` +
+      `Power Out: ${format(ports.powerOut)}<br>` +
+      `FIZ: ${format(ports.fiz)}<br>` +
+      `Video In: ${format(ports.videoIn)}<br>` +
+      `Video Out: ${format(ports.videoOut)}`;
     const html = `<strong>${escapeHtml(info.name)}</strong><br>` +
-      `Power In Ports: ${format(ports.powerIn)}<br>` +
-      `Power Out Ports: ${format(ports.powerOut)}<br>` +
-      `FIZ Ports: ${format(ports.fiz)}<br>` +
-      `Video In Ports: ${format(ports.videoIn)}<br>` +
-      `Video Out Ports: ${format(ports.videoOut)}`;
+      portHtml + connectors + details;
 
     const show = e => {
       popup.innerHTML = html;
