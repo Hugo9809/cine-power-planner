@@ -5479,7 +5479,11 @@ if (downloadDiagramBtn) {
 if (helpButton && helpDialog) {
   const openHelp = () => {
     helpDialog.removeAttribute("hidden");
-    helpDialog.focus();
+    if (helpSearch) {
+      helpSearch.focus();
+    } else {
+      helpDialog.focus();
+    }
   };
   const closeHelp = () => {
     helpDialog.setAttribute("hidden", "");
@@ -5516,9 +5520,10 @@ if (helpButton && helpDialog) {
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && !helpDialog.hasAttribute("hidden")) {
       closeHelp();
-    } else if ((e.key === "?" || e.key.toLowerCase() === "h") &&
+    } else if ((e.key === "?" || e.key.toLowerCase() === "h" || e.key === "F1") &&
                document.activeElement.tagName !== "INPUT" &&
                document.activeElement.tagName !== "TEXTAREA") {
+      if (e.key === "F1") e.preventDefault();
       toggleHelp();
     }
   });
