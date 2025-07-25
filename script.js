@@ -3355,7 +3355,10 @@ function renderSetupDiagram() {
       const midX = (from.x + to.x) / 2;
       const midY = (from.y + to.y) / 2;
       const len = Math.hypot(dx, dy) || 1;
-      const off = 8 + labelSpacing;
+      let off = 8 + labelSpacing;
+      if (Math.abs(dx) < Math.abs(dy)) {
+        off = 6 + labelSpacing;
+      }
       const perpX = (dy / len) * off;
       const perpY = (-dx / len) * off;
       lx = midX + perpX;
