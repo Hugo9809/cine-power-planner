@@ -3171,17 +3171,24 @@ function renderSetupDiagram() {
     firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
   }
 
-  // Determine node heights based on label length so text fits inside
+  // Determine node heights and widths based on label length so text fits inside
   const DEFAULT_NODE_H = 80;
+  const DEFAULT_NODE_W = 160;
   const nodeHeights = {};
+  const nodeWidths = {};
   nodes.forEach(id => {
     const label = pos[id].label || id;
     const lines = wrapLabel(label);
     // Extra space if an icon is shown
     const hasIcon = diagramIcons[id] || id.startsWith('controller') || id.startsWith('motor');
-    nodeHeights[id] = Math.max(DEFAULT_NODE_H, lines.length * 12 + (hasIcon ? 30 : 20));
+    nodeHeights[id] = Math.max(
+      DEFAULT_NODE_H,
+      lines.length * 12 + (hasIcon ? 30 : 20)
+    );
+    const longest = lines.reduce((m, l) => Math.max(m, l.length), 0);
+    nodeWidths[id] = Math.max(DEFAULT_NODE_W, longest * 9 + 20);
   });
-  const NODE_W = 160;
+  const NODE_W = Math.max(...Object.values(nodeWidths), DEFAULT_NODE_W);
   const NODE_H = Math.max(...Object.values(nodeHeights), DEFAULT_NODE_H);
   const getNodeHeight = id => nodeHeights[id] || NODE_H;
 
@@ -3348,7 +3355,7 @@ function renderSetupDiagram() {
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
   const contentWidth = maxX - minX;
-  viewWidth = Math.max(500, contentWidth + 160);
+  viewWidth = Math.max(500, contentWidth + NODE_W);
   let shiftX = 0;
   if (Object.keys(manualPositions).length === 0) {
     shiftX = viewWidth / 2 - (minX + maxX) / 2;
