@@ -498,7 +498,12 @@
         </section>
         <section data-help-section id="powerCalculator">
           <h3>Power Calculator</h3>
-          <p>Select a battery to see estimated run time. Warnings appear if your configuration exceeds the battery output limits.</p>
+          <p>Select a battery to see estimated run time. Warnings appear if your configuration exceeds the battery output limits. The battery table highlights which models can safely power your setup.</p>
+        </section>
+        <section data-help-section id="calculationDetails">
+          <h3>Calculation Details</h3>
+          <p>Every device has a power draw value in watts. The app sums these to display <em>Total Consumption</em>. Current draw at 14.4&nbsp;V (or 33.6&nbsp;V for B‑Mount) and 12&nbsp;V (21.6&nbsp;V for B‑Mount) is calculated by dividing total watts by those voltages. Runtime is estimated by dividing battery capacity in watt‑hours by the total consumption.</p>
+          <p>Warning messages show when the current draw is close to or above the main or D‑Tap output rating of the selected battery.</p>
         </section>
         <section data-help-section id="shortcuts">
           <h3>Keyboard Shortcuts</h3>
@@ -517,6 +522,14 @@
           <details class="faq-item">
             <summary>Can I export my setups?</summary>
             <p>Yes. Use the Export All Setups button to download a JSON file containing every saved setup.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How is battery runtime calculated?</summary>
+            <p>The app divides the selected battery's capacity (in watt-hours) by the total power consumption of your devices. For example, a 98&nbsp;Wh battery powering a 24&nbsp;W setup is estimated to run for about 4&nbsp;hours.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What do the warning colors mean?</summary>
+            <p>Orange messages indicate the setup is nearing the battery's output limit. Red warnings mean the estimated current exceeds the safe rating and could damage the battery.</p>
           </details>
         </section>
       </div>
