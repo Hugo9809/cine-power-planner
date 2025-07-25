@@ -3628,7 +3628,7 @@ function getDevicePorts(category, name) {
   add(ports.fiz, dev.fizConnectors?.map(c => c.type));
   add(ports.fiz, dev.fizConnector);
   add(ports.videoIn, dev.video?.inputs?.map(i => i.portType || i.type));
-  add(ports.videoIn, dev.videoInputs?.map(i => i.portType));
+  add(ports.videoIn, dev.videoInputs?.map(i => i.portType || i.type));
   add(ports.videoOut, dev.video?.outputs?.map(o => o.portType || o.type));
   add(ports.videoOut, dev.videoOutputs?.map(o => o.portType || o.type));
   return ports;
