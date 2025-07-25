@@ -59,8 +59,10 @@ describe('script.js functions', () => {
     expect(document.getElementById('totalPower').textContent).toBe('23.0');
     expect(document.getElementById('totalCurrent12').textContent).toBe('1.92');
     expect(document.getElementById('batteryLife').textContent).toBe('4.35');
-    expect(document.getElementById('pinWarning').textContent).toBe('10A max – OK');
-    expect(document.getElementById('dtapWarning').textContent).toBe('5A max – OK');
+    expect(document.getElementById('pinWarning').textContent)
+      .toBe(texts.en.pinOk.replace('{max}', '10'));
+    expect(document.getElementById('dtapWarning').textContent)
+      .toBe(texts.en.dtapOk.replace('{max}', '5'));
   });
 
   test('B-Mount camera uses high-voltage current labels', () => {

@@ -2886,7 +2886,8 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     }
     // Show max current capability and status (OK/Warning) for Pin and D-Tap
     if (pinWarnElem.textContent === "") {
-      pinWarnElem.textContent = (currentLang === "de") ? `${maxPinA}A max – OK` : `${maxPinA}A max – OK`;
+      pinWarnElem.textContent = texts[currentLang].pinOk
+        .replace("{max}", maxPinA);
       pinWarnElem.style.color = "green";
     } else {
       if (pinSeverity === "warning") {
@@ -2899,7 +2900,8 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     }
     if (!bMountCam) {
       if (dtapWarnElem.textContent === "") {
-        dtapWarnElem.textContent = (currentLang === "de") ? `${maxDtapA}A max – OK` : `${maxDtapA}A max – OK`;
+        dtapWarnElem.textContent = texts[currentLang].dtapOk
+          .replace("{max}", maxDtapA);
         dtapWarnElem.style.color = "green";
       } else {
         if (dtapSeverity === "warning") {
