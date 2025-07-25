@@ -3222,19 +3222,24 @@ function renderSetupDiagram() {
   const distanceSelected = distanceName && distanceName !== 'None';
   const distanceInChain = distanceSelected && !dedicatedDistance;
 
+  let firstController = false;
+  let firstMotor = false;
+
   if (useMotorFirst && motorIds.length) {
     chain.push(motorIds[0]);
+    firstMotor = true;
   } else if (controllerIds.length) {
     chain.push(controllerIds[0]);
+    firstController = true;
   } else if (motorIds.length) {
     chain.push(motorIds[0]);
+    firstMotor = true;
   }
 
   if (distanceInChain) chain.push('distance');
 
-  if (controllerIds.length) chain = chain.concat(controllerIds.slice(1));
-  if (controllerIds.length) chain = chain.concat(motorIds);
-  else if (motorIds.length) chain = chain.concat(motorIds.slice(1));
+  if (controllerIds.length) chain = chain.concat(controllerIds.slice(firstController ? 1 : 0));
+  if (motorIds.length) chain = chain.concat(motorIds.slice(firstMotor ? 1 : 0));
 
   if (cam && chain.length) {
     let first = chain[0];
