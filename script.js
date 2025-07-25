@@ -3649,19 +3649,20 @@ function attachDiagramPopups(map) {
     }
     const ports = getDevicePorts(info.category, info.name) ||
       { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
-    const format = list => list && list.length ? list.join(', ') : '-';
+    const format = list => list && list.length ? list.join(', ') : '';
     const connectors = data ? generateConnectorSummary(data) : '';
     const details = data ? formatDeviceDataHtml(data) : '';
+    const box = (label, items, cls) => items && items.length ?
+      `<div class="info-box ${cls}"><strong>${label}:</strong> ${format(items)}</div>` : '';
     const portHtml =
-      '<table class="port-table">' +
-      `<tr class="power-row"><th>Power In</th><td>${format(ports.powerIn)}</td></tr>` +
-      `<tr class="power-row"><th>Power Out</th><td>${format(ports.powerOut)}</td></tr>` +
-      `<tr class="fiz-row"><th>FIZ</th><td>${format(ports.fiz)}</td></tr>` +
-      `<tr class="video-row"><th>Video In</th><td>${format(ports.videoIn)}</td></tr>` +
-      `<tr class="video-row"><th>Video Out</th><td>${format(ports.videoOut)}</td></tr>` +
-      '</table>';
-    const html = `<strong>${escapeHtml(info.name)}</strong><br>` +
-      portHtml + connectors + details;
+      box('Power In', ports.powerIn, 'power') +
+      box('Power Out', ports.powerOut, 'power') +
+      box('FIZ', ports.fiz, 'fiz') +
+      box('Video In', ports.videoIn, 'video') +
+      box('Video Out', ports.videoOut, 'video');
+    const tray = details ? `<div class="tray-box">${details}</div>` : '';
+    const html = `<strong>${escapeHtml(info.name)}</strong>` +
+      portHtml + connectors + tray;
 
     const show = e => {
       popup.innerHTML = html;
