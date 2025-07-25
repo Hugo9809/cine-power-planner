@@ -3628,11 +3628,13 @@ function attachDiagramPopups(map) {
     const connectors = data ? generateConnectorSummary(data) : '';
     const details = data ? formatDeviceDataHtml(data) : '';
     const portHtml =
-      `Power In: ${format(ports.powerIn)}<br>` +
-      `Power Out: ${format(ports.powerOut)}<br>` +
-      `FIZ: ${format(ports.fiz)}<br>` +
-      `Video In: ${format(ports.videoIn)}<br>` +
-      `Video Out: ${format(ports.videoOut)}`;
+      '<table class="port-table">' +
+      `<tr><th>Power In</th><td>${format(ports.powerIn)}</td></tr>` +
+      `<tr><th>Power Out</th><td>${format(ports.powerOut)}</td></tr>` +
+      `<tr><th>FIZ</th><td>${format(ports.fiz)}</td></tr>` +
+      `<tr><th>Video In</th><td>${format(ports.videoIn)}</td></tr>` +
+      `<tr><th>Video Out</th><td>${format(ports.videoOut)}</td></tr>` +
+      '</table>';
     const html = `<strong>${escapeHtml(info.name)}</strong><br>` +
       portHtml + connectors + details;
 

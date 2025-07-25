@@ -488,6 +488,21 @@ body.dark-mode .diagram-popup {
   font-size: 0.75em;
 }
 
+.port-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  font-size: 0.8em;
+}
+.port-table th {
+  text-align: left;
+  padding: 2px 6px 2px 0;
+  white-space: nowrap;
+}
+.port-table td {
+  padding: 2px 0;
+}
+
 .power-conn { border-color: #f44336; }
 .fiz-conn { border-color: #4caf50; }
 .video-conn { border-color: #2196f3; }
