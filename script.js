@@ -3652,11 +3652,11 @@ function attachDiagramPopups(map) {
     const details = data ? formatDeviceDataHtml(data) : '';
     const portHtml =
       '<table class="port-table">' +
-      `<tr><th>Power In</th><td>${format(ports.powerIn)}</td></tr>` +
-      `<tr><th>Power Out</th><td>${format(ports.powerOut)}</td></tr>` +
-      `<tr><th>FIZ</th><td>${format(ports.fiz)}</td></tr>` +
-      `<tr><th>Video In</th><td>${format(ports.videoIn)}</td></tr>` +
-      `<tr><th>Video Out</th><td>${format(ports.videoOut)}</td></tr>` +
+      `<tr class="power-row"><th>Power In</th><td>${format(ports.powerIn)}</td></tr>` +
+      `<tr class="power-row"><th>Power Out</th><td>${format(ports.powerOut)}</td></tr>` +
+      `<tr class="fiz-row"><th>FIZ</th><td>${format(ports.fiz)}</td></tr>` +
+      `<tr class="video-row"><th>Video In</th><td>${format(ports.videoIn)}</td></tr>` +
+      `<tr class="video-row"><th>Video Out</th><td>${format(ports.videoOut)}</td></tr>` +
       '</table>';
     const html = `<strong>${escapeHtml(info.name)}</strong><br>` +
       portHtml + connectors + details;
@@ -5172,6 +5172,7 @@ function generatePrintableOverview() {
                   margin-bottom: 10px;
                   flex: 1 1 calc((100% - 20px) / 3);
                   box-sizing: border-box;
+                  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                 }
                 .device-category h3 {
                   margin-top: 0;
@@ -5194,6 +5195,7 @@ function generatePrintableOverview() {
                   border-radius: 4px;
                   border: 2px solid;
                   font-size: 0.85em;
+                  background-color: rgba(0,0,0,0.03);
                 }
                 .power-conn { border-color: #f44336; }
                 .fiz-conn { border-color: #4caf50; }
@@ -5268,6 +5270,7 @@ function generatePrintableOverview() {
                       margin-bottom: 10px;
                       flex: 1 1 calc((100% - 20px) / 3);
                       box-sizing: border-box;
+                      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
                     }
                     .device-category h3 {
                       margin-top: 0;
@@ -5290,6 +5293,7 @@ function generatePrintableOverview() {
                       border-radius: 4px;
                       border: 2px solid;
                       font-size: 0.85em;
+                      background-color: rgba(0,0,0,0.03);
                     }
                     .power-conn { border-color: #f44336 !important; }
                     .fiz-conn { border-color: #4caf50 !important; }
