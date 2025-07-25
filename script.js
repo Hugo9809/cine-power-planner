@@ -3667,9 +3667,14 @@ function attachDiagramPopups(map) {
       box('FIZ', ports.fiz, 'fiz') +
       box('Video In', ports.videoIn, 'video') +
       box('Video Out', ports.videoOut, 'video');
+    const infoHtml =
+      (data && data.latencyMs ?
+        `<div class="info-box"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
+      (data && data.frequency ?
+        `<div class="info-box"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
     const tray = details ? `<div class="tray-box">${details}</div>` : '';
     const html = `<strong>${escapeHtml(info.name)}</strong>` +
-      portHtml + connectors + tray;
+      portHtml + connectors + infoHtml + tray;
 
     const show = e => {
       popup.innerHTML = html;
