@@ -4959,12 +4959,11 @@ function generatePrintableOverview() {
             }
             const safeName = escapeHtml(deviceName);
             let details = '';
-            let connectors = '';
             if (data !== undefined && data !== null) {
                 details = formatDeviceDataHtml(data);
-                connectors = generateConnectorSummary(data);
             }
-            addToSection(headingKey, `<li class="device-item"><strong>${safeName}</strong>${connectors}${details}</li>`);
+            // Removed connector summary from overview list
+            addToSection(headingKey, `<li class="device-item"><strong>${safeName}</strong>${details}</li>`);
         }
     };
 
