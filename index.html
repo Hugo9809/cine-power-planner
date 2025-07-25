@@ -490,20 +490,32 @@
       <div id="helpSections">
         <section data-help-section id="gettingStarted">
           <h3>Getting Started</h3>
-          <p>Pick your camera, monitor and other devices from the dropdown menus. The app will automatically calculate total power draw.</p>
+          <p>Pick your camera, monitor and other devices from the dropdown menus. Use the search boxes inside each dropdown to quickly filter the lists. Once you select a battery, total draw and runtime are updated automatically.</p>
         </section>
         <section data-help-section id="managingSetups">
           <h3>Managing Setups</h3>
-          <p>Use the save button to store the current configuration. Saved setups can be imported, exported or deleted in the Setup Actions section.</p>
+          <p>Use the Save button to store the current configuration in your browser. Saved setups can be imported, exported or deleted in the Setup Actions section. You can also generate a printable overview for any saved setup.</p>
         </section>
         <section data-help-section id="powerCalculator">
           <h3>Power Calculator</h3>
-          <p>Select a battery to see estimated run time. Warnings appear if your configuration exceeds the battery output limits. The battery table highlights which models can safely power your setup.</p>
+          <p>Select a battery to see estimated run time. Warnings appear if your configuration exceeds the battery output limits. Use the optional Battery Comparison panel to view run time estimates for all batteries at once.</p>
         </section>
         <section data-help-section id="calculationDetails">
           <h3>Calculation Details</h3>
           <p>Every device has a power draw value in watts. The app sums these to display <em>Total Consumption</em>. Current draw at 14.4&nbsp;V (or 33.6&nbsp;V for B‑Mount) and 12&nbsp;V (21.6&nbsp;V for B‑Mount) is calculated by dividing total watts by those voltages. Runtime is estimated by dividing battery capacity in watt‑hours by the total consumption.</p>
           <p>Warning messages show when the current draw is close to or above the main or D‑Tap output rating of the selected battery.</p>
+        </section>
+        <section data-help-section id="setupDiagramHelp">
+          <h3>Setup Diagram</h3>
+          <p>The diagram visualizes power and video connections between your selected devices. Icons represent each device type and warnings appear when FIZ brands are incompatible. Drag nodes to rearrange them, zoom with the + and – buttons and download the diagram as an image.</p>
+        </section>
+        <section data-help-section id="deviceEditorHelp">
+          <h3>Device Database Editor</h3>
+          <p>Click <em>Edit Device Data…</em> to add, modify or remove devices in any category. Changes are stored locally. Use <em>Export and Revert</em> to back up your edits or restore the default database from <code>data.js</code>.</p>
+        </section>
+        <section data-help-section id="searchFiltering">
+          <h3>Search & Filtering</h3>
+          <p>Every dropdown and list can be filtered by typing in the accompanying search box. The help dialog itself is searchable via the field at the top.</p>
         </section>
         <section data-help-section id="shortcuts">
           <h3>Keyboard Shortcuts</h3>
@@ -522,6 +534,10 @@
           <details class="faq-item">
             <summary>Can I export my setups?</summary>
             <p>Yes. Use the Export All Setups button to download a JSON file containing every saved setup.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How do I edit device data?</summary>
+            <p>Click the <em>Edit Device Data…</em> button to open the database editor where you can add, change or remove devices.</p>
           </details>
           <details class="faq-item">
             <summary>How is battery runtime calculated?</summary>
