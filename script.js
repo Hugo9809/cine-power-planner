@@ -3091,25 +3091,36 @@ function renderSetupDiagram() {
     x += step;
   }
 
-  const controllerIds = [];
-  inlineControllers.forEach((name, idx) => {
-    const id = `controller${idx}`;
-    pos[id] = { x, y: baseY, label: name };
-    controllerIds.push(id);
-    nodes.push(id);
-    nodeMap[id] = { category: 'fiz.controllers', name };
-    x += step;
-  });
+  const controllerIds = controllers.map((_, idx) => `controller${idx}`);
+  const motorIds = motors.map((_, idx) => `motor${idx}`);
 
-  const motorIds = [];
-  motors.forEach((name, idx) => {
-    const id = `motor${idx}`;
-    pos[id] = { x, y: baseY, label: name };
-    motorIds.push(id);
+  const hasMainCtrl = controllers.some(n => controllerPriority(n) === 0);
+  let useMotorFirst = (!hasMainCtrl && hasInternalMotor) ||
+    (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
+
+  const addNode = (id, category, label) => {
+    pos[id] = { x, y: baseY, label };
     nodes.push(id);
-    nodeMap[id] = { category: 'fiz.motors', name };
+    nodeMap[id] = { category, name: label };
     x += step;
-  });
+  };
+
+  if (useMotorFirst && motorIds.length) {
+    addNode(motorIds[0], 'fiz.motors', motors[0]);
+    controllerIds.forEach((id, idx) => {
+      addNode(id, 'fiz.controllers', inlineControllers[idx]);
+    });
+    motorIds.slice(1).forEach((id, idx) => {
+      addNode(id, 'fiz.motors', motors[idx + 1]);
+    });
+  } else {
+    controllerIds.forEach((id, idx) => {
+      addNode(id, 'fiz.controllers', inlineControllers[idx]);
+    });
+    motorIds.forEach((id, idx) => {
+      addNode(id, 'fiz.motors', motors[idx]);
+    });
+  }
 
   if (monitorName && monitorName !== 'None') {
     pos.monitor = { x: pos.camera ? pos.camera.x : 60, y: baseY - step, label: monitorName };
@@ -3152,7 +3163,6 @@ function renderSetupDiagram() {
   });
 
   let firstFizId;
-  const hasMainCtrl = controllers.some(n => controllerPriority(n) === 0);
   if (hasInternalMotor && motorIds.length && !hasMainCtrl) {
     firstFizId = motorIds[0];
   } else {
@@ -3228,7 +3238,7 @@ function renderSetupDiagram() {
       pushEdge({ from: 'camera', to: 'video', label: connectionLabel(camOut, vidIn), fromSide: 'bottom', toSide: 'top', labelSpacing: VIDEO_LABEL_SPACING }, 'video');
     }
   }
-  const useMotorFirst = (!hasMainCtrl && hasInternalMotor) ||
+  useMotorFirst = (!hasMainCtrl && hasInternalMotor) ||
     (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
   const distanceSelected = distanceName && distanceName !== 'None';
   const distanceInChain = distanceSelected && !dedicatedDistance;
