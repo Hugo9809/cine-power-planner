@@ -901,13 +901,21 @@ describe('script.js functions', () => {
 
   test('help dialog toggles with keyboard and overlay click', () => {
     const helpDialog = document.getElementById('helpDialog');
+    const helpSearch = document.getElementById('helpSearch');
 
-    // open via question mark key
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }));
+    // open via F1 key
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
     expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    expect(document.activeElement).toBe(helpSearch);
 
     // close by clicking outside
     helpDialog.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
+    // reopen with question mark and close with Escape
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
   });
 });
