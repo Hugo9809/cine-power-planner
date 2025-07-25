@@ -3159,10 +3159,21 @@ function renderSetupDiagram() {
     firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
   }
 
-  let viewWidth;
-
+  // Determine node heights based on label length so text fits inside
+  const DEFAULT_NODE_H = 80;
+  const nodeHeights = {};
+  nodes.forEach(id => {
+    const label = pos[id].label || id;
+    const lines = wrapLabel(label);
+    // Extra space if an icon is shown
+    const hasIcon = diagramIcons[id] || id.startsWith('controller') || id.startsWith('motor');
+    nodeHeights[id] = Math.max(DEFAULT_NODE_H, lines.length * 12 + (hasIcon ? 30 : 20));
+  });
   const NODE_W = 160;
-  const NODE_H = 80;
+  const NODE_H = Math.max(...Object.values(nodeHeights), DEFAULT_NODE_H);
+  const getNodeHeight = id => nodeHeights[id] || NODE_H;
+
+  let viewWidth;
 
   let chain = [];
   const edges = [];
@@ -3459,15 +3470,16 @@ function renderSetupDiagram() {
   function connectorPos(nodeId, side) {
     const p = pos[nodeId];
     if (!p) return { x: 0, y: 0 };
+    const h = getNodeHeight(nodeId);
     switch (side) {
       case 'top':
-        return { x: p.x, y: p.y - NODE_H / 2 };
+        return { x: p.x, y: p.y - h / 2 };
       case 'bottom':
-        return { x: p.x, y: p.y + NODE_H / 2 };
+        return { x: p.x, y: p.y + h / 2 };
       case 'bottom-left':
-        return { x: p.x - NODE_W / 2 + NODE_W / 3, y: p.y + NODE_H / 2 };
+        return { x: p.x - NODE_W / 2 + NODE_W / 3, y: p.y + h / 2 };
       case 'bottom-right':
-        return { x: p.x + NODE_W / 2 - NODE_W / 3, y: p.y + NODE_H / 2 };
+        return { x: p.x + NODE_W / 2 - NODE_W / 3, y: p.y + h / 2 };
       case 'left':
         return { x: p.x - NODE_W / 2, y: p.y };
       case 'right':
@@ -3502,13 +3514,14 @@ function renderSetupDiagram() {
   nodes.forEach(id => {
     const p = pos[id];
     if (!p) return;
+    const h = getNodeHeight(id);
     const nodeCls = id === firstFizId ? 'diagram-node first-fiz' : 'diagram-node';
     const rectCls = id === firstFizId ? 'node-box first-fiz' : 'node-box';
     svg += `<g class="${nodeCls}" data-node="${id}">`;
-    svg += `<rect class="${rectCls}" x="${p.x - NODE_W/2}" y="${p.y - NODE_H/2}" width="${NODE_W}" height="${NODE_H}" rx="4" ry="4" />`;
+    svg += `<rect class="${rectCls}" x="${p.x - NODE_W/2}" y="${p.y - h/2}" width="${NODE_W}" height="${h}" rx="4" ry="4" />`;
     if (id === firstFizId) {
       const xLeft = p.x - NODE_W / 2;
-      const yBottom = p.y + NODE_H / 2;
+      const yBottom = p.y + h / 2;
       const r = 4;
       const highlight = `M ${xLeft} ${p.y} L ${xLeft} ${yBottom - r} A ${r} ${r} 0 0 1 ${xLeft + r} ${yBottom} L ${p.x} ${yBottom}`;
       svg += `<path class="first-fiz-highlight" d="${highlight}" />`;
@@ -3517,10 +3530,10 @@ function renderSetupDiagram() {
     const conns = connectorsFor(id);
     conns.forEach(c => {
       let cx = p.x, cy = p.y;
-      if (c.side === 'top') { cx = p.x; cy = p.y - NODE_H / 2; }
-      else if (c.side === 'bottom') { cx = p.x; cy = p.y + NODE_H / 2; }
-      else if (c.side === 'bottom-left') { cx = p.x - NODE_W / 2 + NODE_W / 3; cy = p.y + NODE_H / 2; }
-      else if (c.side === 'bottom-right') { cx = p.x + NODE_W / 2 - NODE_W / 3; cy = p.y + NODE_H / 2; }
+      if (c.side === 'top') { cx = p.x; cy = p.y - h / 2; }
+      else if (c.side === 'bottom') { cx = p.x; cy = p.y + h / 2; }
+      else if (c.side === 'bottom-left') { cx = p.x - NODE_W / 2 + NODE_W / 3; cy = p.y + h / 2; }
+      else if (c.side === 'bottom-right') { cx = p.x + NODE_W / 2 - NODE_W / 3; cy = p.y + h / 2; }
       else if (c.side === 'left') { cx = p.x - NODE_W / 2; cy = p.y; }
       else if (c.side === 'right') { cx = p.x + NODE_W / 2; cy = p.y; }
       svg += `<circle class="conn ${c.color}" cx="${cx}" cy="${cy}" r="4" />`;
