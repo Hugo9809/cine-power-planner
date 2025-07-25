@@ -49,6 +49,8 @@ const texts = {
     methodPinsOnly: "pins only!",
     methodPinsAndDTap: "both pins and D-Tap",
     methodInfinite: "infinite",
+    pinOk: "Battery pins can supply up to {max}A \u2013 current draw is within limits.",
+    dtapOk: "D-Tap can supply up to {max}A \u2013 current draw is within limits.",
 
     warnPinExceededLevel: "warning",
     warnPinNearLevel: "note",
@@ -250,6 +252,8 @@ const texts = {
     methodPinsOnly: "solo pin!",
     methodPinsAndDTap: "sia pin che D-Tap",
     methodInfinite: "infinito",
+    pinOk: "I pin della batteria possono fornire fino a {max}A - assorbimento nei limiti.",
+    dtapOk: "L'uscita D-Tap pu\u00f2 fornire fino a {max}A - assorbimento nei limiti.",
     warnPinExceededLevel: "avvertimento",
     warnPinNearLevel: "nota",
     warnDTapExceededLevel: "avvertimento",
@@ -443,6 +447,8 @@ const texts = {
     methodPinsOnly: "solo pines!",
     methodPinsAndDTap: "pines y D-Tap",
     methodInfinite: "infinito",
+    pinOk: "Los pines de la bater\u00eda pueden suministrar hasta {max}A \u2013 consumo dentro del l\u00edmite.",
+    dtapOk: "La salida D-Tap puede suministrar hasta {max}A \u2013 consumo dentro del l\u00edmite.",
 
     warnPinExceededLevel: "warning",
     warnPinNearLevel: "note",
@@ -648,6 +654,8 @@ const texts = {
     methodPinsOnly: "broches seulement!",
     methodPinsAndDTap: "broches et D-Tap",
     methodInfinite: "infini",
+    pinOk: "Les broches de la batterie peuvent fournir jusqu'\u00e0 {max}A \u2013 consommation dans la limite.",
+    dtapOk: "La sortie D-Tap peut fournir jusqu'\u00e0 {max}A \u2013 consommation dans la limite.",
 
     warnPinExceededLevel: "warning",
     warnPinNearLevel: "note",
@@ -853,6 +861,8 @@ const texts = {
     methodPinsOnly: "nur Pins!",
     methodPinsAndDTap: "Pins und D-Tap",
     methodInfinite: "unendlich",
+    pinOk: "Die Akku-Pins liefern bis zu {max}A \u2013 Strombedarf innerhalb des Limits.",
+    dtapOk: "Die D-Tap-Buchse liefert bis zu {max}A \u2013 Strombedarf innerhalb des Limits.",
 
     warnPinExceededLevel: "warning",
     warnPinNearLevel: "note",
