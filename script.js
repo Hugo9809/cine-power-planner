@@ -4929,6 +4929,31 @@ function generateConnectorSummary(data) {
     if (data.audioIo && data.audioIo.portType) {
         html += connectorBlocks([{ type: data.audioIo.portType }], '🎚️', 'neutral-conn', 'I/O');
     }
+    if (typeof data.powerDrawWatts === 'number') {
+        html += `<span class="info-box neutral-conn">⚡ ${data.powerDrawWatts} W</span>`;
+    }
+    if (Array.isArray(data.power?.batteryPlateSupport)) {
+        const boxes = data.power.batteryPlateSupport.map(p => {
+            const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
+            return `<span class="info-box neutral-conn">${escapeHtml(p.type)}${mount}</span>`;
+        }).join('');
+        if (boxes) html += `<div class="tray-box">${boxes}</div>`;
+    }
+    if (Array.isArray(data.recordingMedia)) {
+        const boxes = data.recordingMedia.map(m => `<span class="info-box neutral-conn">${escapeHtml(m.type)}</span>`).join('');
+        if (boxes) html += `<div class="tray-box">${boxes}</div>`;
+    }
+    if (Array.isArray(data.viewfinder)) {
+        const boxes = data.viewfinder.map(v => `<span class="info-box neutral-conn">${escapeHtml(v.type)}</span>`).join('');
+        if (boxes) html += `<div class="tray-box">${boxes}</div>`;
+    }
+    if (Array.isArray(data.lensMount)) {
+        const boxes = data.lensMount.map(lm => {
+            const mount = lm.mount ? ` (${escapeHtml(lm.mount)})` : '';
+            return `<span class="info-box neutral-conn">${escapeHtml(lm.type)}${mount}</span>`;
+        }).join('');
+        if (boxes) html += `<div class="tray-box lens-mount-box">${boxes}</div>`;
+    }
     return html ? `<div class="connector-summary">${html}</div>` : '';
 }
 
