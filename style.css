@@ -509,6 +509,11 @@ body.dark-mode .diagram-popup {
   font-size: 0.75em;
 }
 
+.lens-mount-box {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .port-table {
   width: 100%;
   border-collapse: collapse;
