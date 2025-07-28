@@ -3376,7 +3376,7 @@ function renderSetupDiagram() {
       const bottomY = maxY + NODE_H;
       path = `M ${from.x} ${from.y} V ${bottomY} H ${to.x} V ${to.y}`;
       lx = (from.x + to.x) / 2;
-      ly = bottomY - 8 - labelSpacing;
+      ly = bottomY - 6 - labelSpacing;
     } else {
       path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
       const dx = to.x - from.x;
@@ -3387,7 +3387,7 @@ function renderSetupDiagram() {
       const len = Math.hypot(dx, dy) || 1;
       let off = 8 + labelSpacing;
       if (Math.abs(dx) < Math.abs(dy)) {
-        off = 6 + labelSpacing;
+        off = 4 + labelSpacing;
       }
       const perpX = (dy / len) * off;
       const perpY = (-dx / len) * off;
