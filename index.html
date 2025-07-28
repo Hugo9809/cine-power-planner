@@ -507,15 +507,23 @@
         </section>
         <section data-help-section id="setupDiagramHelp">
           <h3>Setup Diagram</h3>
-          <p>The diagram visualizes power and video connections between your selected devices. Icons represent each device type and warnings appear when FIZ brands are incompatible. Drag nodes to rearrange them, zoom with the + and – buttons and download the diagram as an image.</p>
+          <p>The diagram visualizes power and video connections between your selected devices. Icons represent each device type and warnings appear when FIZ brands are incompatible. Open the Diagram tab after choosing devices, drag nodes to rearrange them, use the + and – buttons to zoom and click <em>Download</em> to save the image.</p>
         </section>
         <section data-help-section id="deviceEditorHelp">
           <h3>Device Database Editor</h3>
-          <p>Click <em>Edit Device Data…</em> to add, modify or remove devices in any category. Changes are stored locally. Use <em>Export and Revert</em> to back up your edits or restore the default database from <code>data.js</code>.</p>
+          <p>Click <em>Edit Device Data…</em> to add, modify or remove devices in any category. Changes are stored locally. Use <em>Export</em> to save your custom database, <em>Import</em> to load one from another user and <em>Revert</em> to restore the defaults from <code>data.js</code>.</p>
+        </section>
+        <section data-help-section id="deviceCategoriesHelp">
+          <h3>Device Categories</h3>
+          <p>Devices are organised into Camera, Monitor, Wireless Video, FIZ Motors, FIZ Controllers, Distance Sensor, Battery Plate and V‑ or B‑Mount Battery. The number in parentheses after each label shows how many of that type you can select.</p>
         </section>
         <section data-help-section id="searchFiltering">
           <h3>Search & Filtering</h3>
           <p>Every dropdown and list can be filtered by typing in the accompanying search box. The help dialog itself is searchable via the field at the top.</p>
+        </section>
+        <section data-help-section id="darkModeHelp">
+          <h3>Dark Mode</h3>
+          <p>Toggle the moon button next to the language selector to switch between light and dark themes. Your choice is remembered for the next visit.</p>
         </section>
         <section data-help-section id="shortcuts">
           <h3>Keyboard Shortcuts</h3>
@@ -570,6 +578,26 @@
           <details class="faq-item">
             <summary>How do I compare different batteries?</summary>
             <p>The Battery Comparison section shows estimated run time for all batteries once a configuration is calculated.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How do I import or export the device database?</summary>
+            <p>Open the Device Database Editor and use the <em>Export</em> button to download your current database as JSON. Use <em>Import</em> to load a JSON file and replace your local data.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I edit or add devices?</summary>
+            <p>Yes. In the Device Database Editor you can create new devices, change existing ones or delete entries. The changes appear immediately in the dropdown menus.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What does the Setup Diagram show?</summary>
+            <p>The diagram illustrates how power and video cables connect between your chosen devices. Drag the nodes to arrange them and use the buttons to zoom or download an image.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Which device categories are available?</summary>
+            <p>Categories include Camera, Monitor, Wireless Video, FIZ Motors, FIZ Controllers, Distance Sensor, Battery Plate and V‑/B‑Mount Battery.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Where does the device data come from?</summary>
+            <p>The default database is defined in <code>data.js</code> from manufacturer specifications. You can modify or replace it via the Device Database Editor.</p>
           </details>
         </section>
       </div>
