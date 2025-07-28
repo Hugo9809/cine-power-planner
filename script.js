@@ -155,6 +155,26 @@ if (storedDevices) {
 // consistent structures and value formats.
 function unifyDevices(data) {
   if (!data || typeof data !== 'object') return;
+  const fixPowerInput = dev => {
+    if (!dev) return;
+    if (dev.powerInput && !dev.power?.input) {
+      dev.power = Object.assign({}, dev.power, { input: { type: dev.powerInput } });
+      delete dev.powerInput;
+    }
+    const input = dev.power?.input;
+    if (!input) return;
+    if (Array.isArray(input)) {
+      input.forEach(it => fixPowerInput({ power: { input: it } }));
+      return;
+    }
+    if (input.portType && !input.type) {
+      input.type = input.portType;
+    }
+    if (input.type) {
+      input.type = normalizePowerPortType(input.type);
+    }
+    delete input.portType;
+  };
   const ensureList = (list, defaults) => {
     if (!Array.isArray(list)) return [];
     return list.map(item => {
@@ -168,9 +188,7 @@ function unifyDevices(data) {
     if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
       delete cam.power.input.powerDrawWatts;
     }
-    if (cam.power?.input && cam.power.input.portType) {
-      cam.power.input.portType = normalizePowerPortType(cam.power.input.portType);
-    }
+    fixPowerInput(cam);
     if (Array.isArray(cam.power?.batteryPlateSupport)) {
       cam.power.batteryPlateSupport = cam.power.batteryPlateSupport.map(it => {
         if (typeof it === 'string') {
@@ -259,6 +277,26 @@ function unifyDevices(data) {
       .filter((lm, idx, arr) =>
         idx === arr.findIndex(o => o.type === lm.type && o.mount === lm.mount && o.notes === lm.notes)
       );
+  });
+
+  Object.values(data.monitors || {}).forEach(mon => {
+    fixPowerInput(mon);
+  });
+
+  Object.values(data.video || {}).forEach(vd => {
+    fixPowerInput(vd);
+  });
+
+  Object.values(data.fiz?.motors || {}).forEach(fm => {
+    fixPowerInput(fm);
+  });
+
+  Object.values(data.fiz?.controllers || {}).forEach(fc => {
+    fixPowerInput(fc);
+  });
+
+  Object.values(data.fiz?.distance || {}).forEach(fd => {
+    fixPowerInput(fd);
   });
 
   // Normalize FIZ motors
@@ -1512,10 +1550,10 @@ function createMonitorVideoInputRow(value = '') {
 
 function setMonitorVideoInputs(list) {
   monitorVideoInputsContainer.innerHTML = '';
-  const filtered = filterNoneEntries(list, 'portType');
+  const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
     filtered.forEach(item => {
-      const t = typeof item === 'string' ? item : item.portType || item.type;
+      const t = typeof item === 'string' ? item : item.type || item.portType;
       monitorVideoInputsContainer.appendChild(createMonitorVideoInputRow(t));
     });
   } else {
@@ -1525,8 +1563,8 @@ function setMonitorVideoInputs(list) {
 
 function getMonitorVideoInputs() {
   return Array.from(monitorVideoInputsContainer.querySelectorAll('select'))
-    .map(sel => ({ portType: sel.value }))
-    .filter(v => v.portType && v.portType !== 'None');
+    .map(sel => ({ type: sel.value }))
+    .filter(v => v.type && v.type !== 'None');
 }
 
 function clearMonitorVideoInputs() {
@@ -1566,10 +1604,10 @@ function createMonitorVideoOutputRow(value = '') {
 
 function setMonitorVideoOutputs(list) {
   monitorVideoOutputsContainer.innerHTML = '';
-  const filtered = filterNoneEntries(list, 'portType');
+  const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
     filtered.forEach(item => {
-      const t = typeof item === 'string' ? item : item.portType || item.type;
+      const t = typeof item === 'string' ? item : item.type || item.portType;
       monitorVideoOutputsContainer.appendChild(createMonitorVideoOutputRow(t));
     });
   } else {
@@ -1579,8 +1617,8 @@ function setMonitorVideoOutputs(list) {
 
 function getMonitorVideoOutputs() {
   return Array.from(monitorVideoOutputsContainer.querySelectorAll('select'))
-    .map(sel => ({ portType: sel.value }))
-    .filter(v => v.portType && v.portType !== 'None');
+    .map(sel => ({ type: sel.value }))
+    .filter(v => v.type && v.type !== 'None');
 }
 
 function clearMonitorVideoOutputs() {
@@ -1620,10 +1658,10 @@ function createVideoInputRow(value = '') {
 
 function setVideoInputs(list) {
   videoVideoInputsContainer.innerHTML = '';
-  const filtered = filterNoneEntries(list, 'portType');
+  const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
     filtered.forEach(item => {
-      const t = typeof item === 'string' ? item : item.portType || item.type;
+      const t = typeof item === 'string' ? item : item.type || item.portType;
       videoVideoInputsContainer.appendChild(createVideoInputRow(t));
     });
   } else {
@@ -1633,8 +1671,8 @@ function setVideoInputs(list) {
 
 function getVideoInputs() {
   return Array.from(videoVideoInputsContainer.querySelectorAll('select'))
-    .map(sel => ({ portType: sel.value }))
-    .filter(v => v.portType && v.portType !== 'None');
+    .map(sel => ({ type: sel.value }))
+    .filter(v => v.type && v.type !== 'None');
 }
 
 function clearVideoInputs() { setVideoInputs([]); }
@@ -1672,10 +1710,10 @@ function createVideoIOOutputRow(value = '') {
 
 function setVideoOutputsIO(list) {
   videoVideoOutputsContainer.innerHTML = '';
-  const filtered = filterNoneEntries(list, 'portType');
+  const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
     filtered.forEach(item => {
-      const t = typeof item === 'string' ? item : item.portType || item.type;
+      const t = typeof item === 'string' ? item : item.type || item.portType;
       videoVideoOutputsContainer.appendChild(createVideoIOOutputRow(t));
     });
   } else {
@@ -1685,8 +1723,8 @@ function setVideoOutputsIO(list) {
 
 function getVideoOutputsIO() {
   return Array.from(videoVideoOutputsContainer.querySelectorAll('select'))
-    .map(sel => ({ portType: sel.value }))
-    .filter(v => v.portType && v.portType !== 'None');
+    .map(sel => ({ type: sel.value }))
+    .filter(v => v.type && v.type !== 'None');
 }
 
 function clearVideoOutputsIO() { setVideoOutputsIO([]); }
@@ -1850,24 +1888,40 @@ function clearRecordingMedia() {
   setRecordingMedia([]);
 }
 
+function powerInputTypes(dev) {
+  const out = [];
+  if (!dev) return out;
+  if (dev.powerInput) {
+    String(dev.powerInput).split('/').forEach(t => { if (t.trim()) out.push(normalizePowerPortType(t.trim())); });
+  }
+  const inp = dev.power?.input;
+  if (Array.isArray(inp)) {
+    inp.forEach(i => {
+      if (i && (i.type || i.portType)) out.push(normalizePowerPortType(i.type || i.portType));
+    });
+  } else if (inp) {
+    if (Array.isArray(inp.type)) {
+      inp.type.forEach(t => { if (t) out.push(normalizePowerPortType(t)); });
+    } else if (inp.type || inp.portType) {
+      out.push(normalizePowerPortType(inp.type || inp.portType));
+    }
+  }
+  return out;
+}
+
+function firstPowerInputType(dev) {
+  const list = powerInputTypes(dev);
+  return list.length ? list[0] : '';
+}
+
 function getAllPowerPortTypes() {
   const types = new Set();
-  Object.values(devices.cameras).forEach(cam => {
-    const pt = cam.power?.input?.portType;
-    if (Array.isArray(pt)) {
-      pt.forEach(t => { if (t) types.add(t); });
-    } else if (pt) {
-      types.add(pt);
-    }
-  });
-  Object.values(devices.monitors || {}).forEach(mon => {
-    const pt = mon.power?.input?.portType;
-    if (Array.isArray(pt)) {
-      pt.forEach(t => { if (t) types.add(t); });
-    } else if (pt) {
-      types.add(pt);
-    }
-  });
+  Object.values(devices.cameras).forEach(cam => powerInputTypes(cam).forEach(t => types.add(t)));
+  Object.values(devices.monitors || {}).forEach(mon => powerInputTypes(mon).forEach(t => types.add(t)));
+  Object.values(devices.video || {}).forEach(vd => powerInputTypes(vd).forEach(t => types.add(t)));
+  Object.values(devices.fiz?.motors || {}).forEach(m => powerInputTypes(m).forEach(t => types.add(t)));
+  Object.values(devices.fiz?.controllers || {}).forEach(c => powerInputTypes(c).forEach(t => types.add(t)));
+  Object.values(devices.fiz?.distance || {}).forEach(d => powerInputTypes(d).forEach(t => types.add(t)));
   return Array.from(types).sort();
 }
 
@@ -3217,19 +3271,19 @@ function renderSetupDiagram() {
   if (cam && batteryName && batteryName !== 'None') {
     const plateType = getSelectedPlate();
     const nativePlate = plateType && isSelectedPlateNative(camName);
-    const camPort = cam.power?.input?.portType;
+    const camPort = firstPowerInputType(cam);
     const inLabel = camPort || plateType;
     const label = nativePlate ? '' : formatConnLabel(battMount, inLabel);
     pushEdge({ from: 'battery', to: 'camera', label, fromSide: 'right', toSide: 'left' }, 'power');
   }
-  if (monitor && monitor.power?.input?.portType) {
-    const mPort = monitor.power.input.portType;
+  if (monitor && firstPowerInputType(monitor)) {
+    const mPort = firstPowerInputType(monitor);
     if (batteryName && batteryName !== 'None') {
       pushEdge({ from: 'battery', to: 'monitor', label: formatConnLabel(battMount, mPort), fromSide: 'top', toSide: 'left' }, 'power');
     }
   }
-  if (video && video.powerInput) {
-    const pPort = video.powerInput;
+  if (video && firstPowerInputType(video)) {
+    const pPort = firstPowerInputType(video);
     if (batteryName && batteryName !== 'None') {
       pushEdge({ from: 'battery', to: 'video', label: formatConnLabel(battMount, pPort), fromSide: 'bottom', toSide: 'left' }, 'power');
     }
@@ -4060,8 +4114,8 @@ deviceManagerSection.addEventListener("click", (event) => {
       monitorFieldsDiv.style.display = "none";
       cameraWattInput.value = deviceData.powerDrawWatts || '';
       cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-      const tmp = deviceData.power?.input?.portType;
-      cameraPortTypeInput.value = Array.isArray(tmp) ? tmp[0] : (tmp || "");
+      const tmp = firstPowerInputType(deviceData);
+      cameraPortTypeInput.value = tmp || "";
       setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
       setRecordingMedia(deviceData.recordingMedia || []);
       setLensMounts(deviceData.lensMount || []);
@@ -4083,8 +4137,8 @@ deviceManagerSection.addEventListener("click", (event) => {
       monitorBrightnessInput.value = deviceData.brightnessNits || '';
       monitorWattInput.value = deviceData.powerDrawWatts || '';
       monitorVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-      const mpt = deviceData.power?.input?.portType;
-      monitorPortTypeInput.value = Array.isArray(mpt) ? mpt[0] : (mpt || "");
+      const mpt = firstPowerInputType(deviceData);
+      monitorPortTypeInput.value = mpt || "";
       setMonitorVideoInputs(deviceData.video?.inputs || []);
       setMonitorVideoOutputs(deviceData.video?.outputs || []);
       monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
@@ -4099,7 +4153,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       controllerFieldsDiv.style.display = "none";
       distanceFieldsDiv.style.display = "none";
       newWattInput.value = deviceData.powerDrawWatts || '';
-      videoPowerInput.value = deviceData.powerInput || '';
+      videoPowerInput.value = firstPowerInputType(deviceData);
       setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
       setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
       videoFrequencyInput.value = deviceData.frequency || '';
@@ -4419,7 +4473,7 @@ addDeviceBtn.addEventListener("click", () => {
       power: {
         input: {
           voltageRange: cameraVoltageInput.value,
-          portType: cameraPortTypeInput.value
+          type: cameraPortTypeInput.value
         },
         batteryPlateSupport: plateSupport,
         powerDistributionOutputs: powerDist
@@ -4449,7 +4503,7 @@ addDeviceBtn.addEventListener("click", () => {
       power: {
         input: {
           voltageRange: monitorVoltageInput.value,
-          portType: monitorPortTypeInput.value
+          type: monitorPortTypeInput.value
         },
         output: null
       },
@@ -4471,7 +4525,7 @@ addDeviceBtn.addEventListener("click", () => {
     }
     targetCategory[name] = {
       powerDrawWatts: watt,
-      powerInput: videoPowerInput.value,
+      power: { input: { type: videoPowerInput.value } },
       videoInputs: getVideoInputs(),
       videoOutputs: getVideoOutputsIO(),
       frequency: videoFrequencyInput.value,
@@ -4782,6 +4836,7 @@ function formatDeviceDataHtml(data) {
         const p = path.concat(key).join('.');
         return p === 'power.powerDistributionOutputs' ||
                p === 'power.input.portType' ||
+               p === 'power.input.type' ||
                p === 'fizConnectors' ||
                p === 'videoOutputs' ||
                p === 'timecode' ||
@@ -4855,12 +4910,7 @@ function generateConnectorSummary(data) {
         if (Array.isArray(data.power.powerDistributionOutputs)) {
             portHtml += connectorBlocks(data.power.powerDistributionOutputs, '⚡', 'power-conn', 'Out');
         }
-        const pt = data.power.input && data.power.input.portType;
-        const inputs = [];
-        if (pt) {
-            if (Array.isArray(pt)) inputs.push(...pt.map(t => ({ type: t })));
-            else inputs.push({ type: pt });
-        }
+        const inputs = powerInputTypes(data).map(t => ({ type: t }));
         if (inputs.length) {
             portHtml += connectorBlocks(inputs, '🔌', 'power-conn', 'In');
         }
