@@ -4896,6 +4896,18 @@ function generateConnectorSummary(data) {
     if (data.power?.input?.voltageRange) {
         specHtml += `<span class="info-box neutral-conn">🔋 ${escapeHtml(String(data.power.input.voltageRange))}V</span>`;
     }
+    if (typeof data.capacity === 'number') {
+        specHtml += `<span class="info-box neutral-conn">🔋 ${data.capacity} Wh</span>`;
+    }
+    if (typeof data.pinA === 'number') {
+        specHtml += `<span class="info-box power-conn">Pins ${data.pinA}A</span>`;
+    }
+    if (typeof data.dtapA === 'number') {
+        specHtml += `<span class="info-box power-conn">D-Tap ${data.dtapA}A</span>`;
+    }
+    if (data.mount_type) {
+        specHtml += `<span class="info-box neutral-conn">${escapeHtml(String(data.mount_type))}</span>`;
+    }
     if (typeof data.screenSizeInches === 'number') {
         specHtml += `<span class="info-box neutral-conn">📐 ${data.screenSizeInches}"</span>`;
     }
@@ -4910,6 +4922,9 @@ function generateConnectorSummary(data) {
     }
     if (typeof data.torqueNm === 'number') {
         specHtml += `<span class="info-box neutral-conn">⚙️ ${data.torqueNm} Nm</span>`;
+    }
+    if (data.power_source) {
+        specHtml += `<span class="info-box neutral-conn">🔌 ${escapeHtml(String(data.power_source))}</span>`;
     }
 
     let extraHtml = '';
@@ -4927,6 +4942,16 @@ function generateConnectorSummary(data) {
     if (Array.isArray(data.viewfinder)) {
         const boxes = data.viewfinder.map(v => `<span class="info-box neutral-conn">${escapeHtml(v.type)}</span>`).join('');
         extraHtml += boxes;
+    }
+    if (Array.isArray(data.gearTypes)) {
+        const boxes = data.gearTypes.map(g => `<span class="info-box neutral-conn">${escapeHtml(g)}</span>`).join('');
+        extraHtml += boxes;
+    }
+    if (data.connectivity) {
+        extraHtml += `<span class="info-box neutral-conn">${escapeHtml(String(data.connectivity))}</span>`;
+    }
+    if (data.notes) {
+        extraHtml += `<span class="info-box neutral-conn">${escapeHtml(String(data.notes))}</span>`;
     }
 
     let lensHtml = '';
