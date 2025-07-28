@@ -3605,35 +3605,6 @@ function renderSetupDiagram() {
 
 }
 
-function getDevicePorts(category, name) {
-  if (!category || !name) return null;
-  let dev;
-  if (category === 'fiz.controllers') dev = devices.fiz?.controllers?.[name];
-  else if (category === 'fiz.motors') dev = devices.fiz?.motors?.[name];
-  else if (category === 'fiz.distance') dev = devices.fiz?.distance?.[name];
-  else dev = devices[category]?.[name];
-  if (!dev) return null;
-  const ports = { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
-  const add = (arr, val) => {
-    if (!val) return;
-    if (Array.isArray(val)) val.forEach(v => add(arr, v));
-    else if (typeof val === 'object') add(arr, val.portType || val.type);
-    else if (typeof val === 'string') arr.push(val);
-  };
-
-  add(ports.powerIn, dev.power?.input?.portType);
-  add(ports.powerIn, dev.powerInput);
-  add(ports.powerOut, dev.power?.output?.portType);
-  add(ports.powerOut, dev.power?.powerDistributionOutputs?.map(o => o.type));
-  add(ports.fiz, dev.fizConnectors?.map(c => c.type));
-  add(ports.fiz, dev.fizConnector);
-  add(ports.videoIn, dev.video?.inputs?.map(i => i.portType || i.type));
-  add(ports.videoIn, dev.videoInputs?.map(i => i.portType || i.type));
-  add(ports.videoOut, dev.video?.outputs?.map(o => o.portType || o.type));
-  add(ports.videoOut, dev.videoOutputs?.map(o => o.portType || o.type));
-  return ports;
-}
-
 function attachDiagramPopups(map) {
   if (!setupDiagramContainer) return;
   const popup = document.getElementById('diagramPopup');
@@ -3654,25 +3625,14 @@ function attachDiagramPopups(map) {
     } else {
       data = devices[info.category]?.[info.name];
     }
-    const ports = getDevicePorts(info.category, info.name) ||
-      { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
-    const format = list => list && list.length ? list.join(', ') : '';
     const connectors = data ? generateConnectorSummary(data) : '';
-    const box = (label, items, cls) => items && items.length ?
-      `<div class="info-box ${cls}"><strong>${label}:</strong> ${format(items)}</div>` : '';
-    const portHtml =
-      box('Power In', ports.powerIn, 'power') +
-      box('Power Out', ports.powerOut, 'power') +
-      box('FIZ', ports.fiz, 'fiz') +
-      box('Video In', ports.videoIn, 'video') +
-      box('Video Out', ports.videoOut, 'video');
     const infoHtml =
       (data && data.latencyMs ?
         `<div class="info-box"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
       (data && data.frequency ?
         `<div class="info-box"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
     const html = `<strong>${escapeHtml(info.name)}</strong>` +
-      portHtml + connectors + infoHtml;
+      connectors + infoHtml;
 
     const show = e => {
       popup.innerHTML = html;
