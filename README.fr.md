@@ -51,6 +51,11 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 ### 🖼 Diagramme de Configuration
 - Affiche les liaisons d’alimentation et vidéo entre les appareils sélectionnés
 - Avertit en cas de marques FIZ incompatibles
+- Faites glisser les nœuds pour les disposer, utilisez les boutons de zoom et téléchargez le diagramme en SVG ou JPG
+- Des info‑bulles détaillées apparaissent au survol
+- Utilise les icônes [OpenMoji](https://openmoji.org/) en ligne, sinon des emoji :
+  🔋 batterie, 🎥 caméra, 🖥️ moniteur, 📡 vidéo, ⚙️ moteur,
+  🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie
 
 ### 🔍 Recherche et Filtres
 - Champ de recherche pour filtrer toutes les listes et menus déroulants
@@ -64,6 +69,8 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 ### 🌓 Mode Sombre
 - Bouton lune pour activer/désactiver le mode sombre
 - La préférence est enregistrée dans le navigateur
+- Couleur rose optionnelle via le bouton cheval/unicorne
+- La fenêtre d’aide est consultable par recherche et FAQ. Ouvrez‑la avec ? ou les touches `?`/`H`/`F1` puis fermez‑la avec Échap ou en cliquant à l’extérieur.
 
 ---
 

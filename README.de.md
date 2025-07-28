@@ -51,6 +51,11 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 ### 🖼 Setup-Diagramm
 - Visualisiert Strom- und Videosignale der gewählten Geräte
 - Warnt bei inkompatiblen FIZ-Marken
+- Knoten lassen sich frei verschieben, per Buttons zoomen und als SVG oder JPG herunterladen
+- Popup-Boxen zeigen Gerätedetails
+- Verwendet [OpenMoji](https://openmoji.org/)-Symbole, falls online, sonst Emoji:
+  🔋 Akku, 🎥 Kamera, 🖥️ Monitor, 📡 Video, ⚙️ Motor,
+  🎮 Controller, 📐 Distanz, 🎮 Griff und 🔌 Akkuschacht
 
 ### 🔍 Suche & Filter
 - Alle Dropdowns und Listen lassen sich über ein Suchfeld filtern
@@ -64,6 +69,8 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 ### 🌓 Dark Mode
 - Über den Mond-Button neben der Sprachwahl umschaltbar
 - Einstellung wird im Browser gespeichert
+- Optionaler Pinkmodus über den Pferd/Einhorn-Button
+- Der Hilfedialog enthält eine durchsuchbare Anleitung und FAQ. Geöffnet wird er mit ? oder den Tasten `?`/`H`/`F1` und mit Escape oder Klick außerhalb geschlossen.
 
 ---
 

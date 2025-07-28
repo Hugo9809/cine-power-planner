@@ -51,6 +51,11 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 ### 🖼 Diagrama de Configuración
 - Visualiza las conexiones de energía y video entre los dispositivos seleccionados
 - Avisa si se combinan marcas FIZ incompatibles
+- Arrastra los nodos para ordenarlos, usa los botones para acercar/alejar y descarga el diagrama en SVG o JPG
+- Las ventanas emergentes muestran detalles de cada dispositivo
+- Utiliza iconos de [OpenMoji](https://openmoji.org/) cuando hay conexión y pasa a emoji si no están disponibles:
+  🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 video, ⚙️ motor,
+  🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería
 
 ### 🔍 Búsqueda y Filtros
 - Filtrar cualquier lista o menú desplegable con un campo de búsqueda
@@ -64,6 +69,8 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 ### 🌓 Modo Oscuro
 - Conmutable con el botón de la luna junto al selector de idioma
 - La preferencia se guarda en el navegador
+- Color rosa opcional con el botón del caballo/unicornio
+- El diálogo de ayuda incluye búsqueda y preguntas frecuentes. Ábrelo con ? o con las teclas `?`/`H`/`F1` y ciérralo con Escape o al hacer clic fuera.
 
 ---
 

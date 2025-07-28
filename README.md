@@ -10,7 +10,10 @@ This repository provides the documentation in multiple languages:
 
 Choose your preferred language above.
 
-Recent updates include a new setup diagram and support for cameras with both V‑Mount and B‑Mount battery plates. See the language-specific README files for full details.
+Recent updates add an interactive setup diagram with zoom and export options,
+an optional pink accent color and a searchable help dialog. Cameras with both
+V‑Mount and B‑Mount battery plates are fully supported. See the
+language-specific README files for full details.
 
 ## Quick Start
 
