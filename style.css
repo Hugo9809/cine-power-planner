@@ -514,6 +514,13 @@ body.dark-mode .diagram-popup {
   flex-wrap: wrap;
 }
 
+.info-label {
+  width: 100%;
+  font-size: 0.75em;
+  font-weight: bold;
+  margin: 4px 2px 0;
+}
+
 .port-table {
   width: 100%;
   border-collapse: collapse;
