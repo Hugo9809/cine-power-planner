@@ -3605,35 +3605,6 @@ function renderSetupDiagram() {
 
 }
 
-function getDevicePorts(category, name) {
-  if (!category || !name) return null;
-  let dev;
-  if (category === 'fiz.controllers') dev = devices.fiz?.controllers?.[name];
-  else if (category === 'fiz.motors') dev = devices.fiz?.motors?.[name];
-  else if (category === 'fiz.distance') dev = devices.fiz?.distance?.[name];
-  else dev = devices[category]?.[name];
-  if (!dev) return null;
-  const ports = { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
-  const add = (arr, val) => {
-    if (!val) return;
-    if (Array.isArray(val)) val.forEach(v => add(arr, v));
-    else if (typeof val === 'object') add(arr, val.portType || val.type);
-    else if (typeof val === 'string') arr.push(val);
-  };
-
-  add(ports.powerIn, dev.power?.input?.portType);
-  add(ports.powerIn, dev.powerInput);
-  add(ports.powerOut, dev.power?.output?.portType);
-  add(ports.powerOut, dev.power?.powerDistributionOutputs?.map(o => o.type));
-  add(ports.fiz, dev.fizConnectors?.map(c => c.type));
-  add(ports.fiz, dev.fizConnector);
-  add(ports.videoIn, dev.video?.inputs?.map(i => i.portType || i.type));
-  add(ports.videoIn, dev.videoInputs?.map(i => i.portType || i.type));
-  add(ports.videoOut, dev.video?.outputs?.map(o => o.portType || o.type));
-  add(ports.videoOut, dev.videoOutputs?.map(o => o.portType || o.type));
-  return ports;
-}
-
 function attachDiagramPopups(map) {
   if (!setupDiagramContainer) return;
   const popup = document.getElementById('diagramPopup');
@@ -3654,25 +3625,14 @@ function attachDiagramPopups(map) {
     } else {
       data = devices[info.category]?.[info.name];
     }
-    const ports = getDevicePorts(info.category, info.name) ||
-      { powerIn: [], powerOut: [], fiz: [], videoIn: [], videoOut: [] };
-    const format = list => list && list.length ? list.join(', ') : '';
     const connectors = data ? generateConnectorSummary(data) : '';
-    const box = (label, items, cls) => items && items.length ?
-      `<div class="info-box ${cls}"><strong>${label}:</strong> ${format(items)}</div>` : '';
-    const portHtml =
-      box('Power In', ports.powerIn, 'power') +
-      box('Power Out', ports.powerOut, 'power') +
-      box('FIZ', ports.fiz, 'fiz') +
-      box('Video In', ports.videoIn, 'video') +
-      box('Video Out', ports.videoOut, 'video');
     const infoHtml =
       (data && data.latencyMs ?
         `<div class="info-box"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
       (data && data.frequency ?
         `<div class="info-box"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
     const html = `<strong>${escapeHtml(info.name)}</strong>` +
-      portHtml + connectors + infoHtml;
+      connectors + infoHtml;
 
     const show = e => {
       popup.innerHTML = html;
@@ -4889,10 +4849,11 @@ function connectorBlocks(items, icon, cls = 'neutral-conn', dir = '') {
 
 function generateConnectorSummary(data) {
     if (!data || typeof data !== 'object') return '';
-    let html = '';
+
+    let portHtml = '';
     if (data.power) {
         if (Array.isArray(data.power.powerDistributionOutputs)) {
-            html += connectorBlocks(data.power.powerDistributionOutputs, '⚡', 'power-conn', 'Out');
+            portHtml += connectorBlocks(data.power.powerDistributionOutputs, '⚡', 'power-conn', 'Out');
         }
         const pt = data.power.input && data.power.input.portType;
         const inputs = [];
@@ -4901,75 +4862,93 @@ function generateConnectorSummary(data) {
             else inputs.push({ type: pt });
         }
         if (inputs.length) {
-            html += connectorBlocks(inputs, '🔌', 'power-conn', 'In');
+            portHtml += connectorBlocks(inputs, '🔌', 'power-conn', 'In');
         }
     }
     if (Array.isArray(data.fizConnectors)) {
-        html += connectorBlocks(data.fizConnectors, '🎚️', 'fiz-conn');
+        portHtml += connectorBlocks(data.fizConnectors, '🎚️', 'fiz-conn');
     }
     const videoIn = (data.video && data.video.inputs) || data.videoInputs;
     if (Array.isArray(videoIn)) {
-        html += connectorBlocks(videoIn, '📺', 'video-conn', 'In');
+        portHtml += connectorBlocks(videoIn, '📺', 'video-conn', 'In');
     }
     const videoOut = (data.video && data.video.outputs) || data.videoOutputs;
     if (Array.isArray(videoOut)) {
-        html += connectorBlocks(videoOut, '📺', 'video-conn', 'Out');
+        portHtml += connectorBlocks(videoOut, '📺', 'video-conn', 'Out');
     }
     if (Array.isArray(data.timecode)) {
-        html += connectorBlocks(data.timecode, '⏱️');
+        portHtml += connectorBlocks(data.timecode, '⏱️');
     }
     if (data.audioInput && data.audioInput.portType) {
-        html += connectorBlocks([{ type: data.audioInput.portType }], '🎤', 'neutral-conn', 'In');
+        portHtml += connectorBlocks([{ type: data.audioInput.portType }], '🎤', 'neutral-conn', 'In');
     }
     if (data.audioOutput && data.audioOutput.portType) {
-        html += connectorBlocks([{ type: data.audioOutput.portType }], '🔊', 'neutral-conn', 'Out');
+        portHtml += connectorBlocks([{ type: data.audioOutput.portType }], '🔊', 'neutral-conn', 'Out');
     }
     if (data.audioIo && data.audioIo.portType) {
-        html += connectorBlocks([{ type: data.audioIo.portType }], '🎚️', 'neutral-conn', 'I/O');
+        portHtml += connectorBlocks([{ type: data.audioIo.portType }], '🎚️', 'neutral-conn', 'I/O');
     }
+
+    let specHtml = '';
     if (typeof data.powerDrawWatts === 'number') {
-        html += `<span class="info-box neutral-conn">⚡ ${data.powerDrawWatts} W</span>`;
+        specHtml += `<span class="info-box neutral-conn">⚡ ${data.powerDrawWatts} W</span>`;
     }
     if (data.power?.input?.voltageRange) {
-        html += `<span class="info-box neutral-conn">🔋 ${escapeHtml(String(data.power.input.voltageRange))}V</span>`;
+        specHtml += `<span class="info-box neutral-conn">🔋 ${escapeHtml(String(data.power.input.voltageRange))}V</span>`;
     }
     if (typeof data.screenSizeInches === 'number') {
-        html += `<span class="info-box neutral-conn">📐 ${data.screenSizeInches}"</span>`;
+        specHtml += `<span class="info-box neutral-conn">📐 ${data.screenSizeInches}"</span>`;
     }
     if (typeof data.brightnessNits === 'number') {
-        html += `<span class="info-box neutral-conn">💡 ${data.brightnessNits} nits</span>`;
+        specHtml += `<span class="info-box neutral-conn">💡 ${data.brightnessNits} nits</span>`;
     }
     if (data.wirelessTx !== undefined) {
-        html += `<span class="info-box neutral-conn">📡 ${data.wirelessTx ? 'TX' : 'RX'}</span>`;
+        specHtml += `<span class="info-box neutral-conn">📡 ${data.wirelessTx ? 'TX' : 'RX'}</span>`;
     }
     if (data.internalController) {
-        html += `<span class="info-box neutral-conn">🎛️ Internal</span>`;
+        specHtml += `<span class="info-box neutral-conn">🎛️ Internal</span>`;
     }
     if (typeof data.torqueNm === 'number') {
-        html += `<span class="info-box neutral-conn">⚙️ ${data.torqueNm} Nm</span>`;
+        specHtml += `<span class="info-box neutral-conn">⚙️ ${data.torqueNm} Nm</span>`;
     }
+
+    let extraHtml = '';
     if (Array.isArray(data.power?.batteryPlateSupport)) {
         const boxes = data.power.batteryPlateSupport.map(p => {
             const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
             return `<span class="info-box neutral-conn">${escapeHtml(p.type)}${mount}</span>`;
         }).join('');
-        html += boxes;
+        extraHtml += boxes;
     }
     if (Array.isArray(data.recordingMedia)) {
         const boxes = data.recordingMedia.map(m => `<span class="info-box neutral-conn">${escapeHtml(m.type)}</span>`).join('');
-        html += boxes;
+        extraHtml += boxes;
     }
     if (Array.isArray(data.viewfinder)) {
         const boxes = data.viewfinder.map(v => `<span class="info-box neutral-conn">${escapeHtml(v.type)}</span>`).join('');
-        html += boxes;
+        extraHtml += boxes;
     }
+
+    let lensHtml = '';
     if (Array.isArray(data.lensMount)) {
         const boxes = data.lensMount.map(lm => {
             const mount = lm.mount ? ` (${escapeHtml(lm.mount)})` : '';
             return `<span class="info-box neutral-conn">${escapeHtml(lm.type)}${mount}</span>`;
         }).join('');
-        if (boxes) html += `<div class="lens-mount-box">${boxes}</div>`;
+        if (boxes) lensHtml = `<div class="lens-mount-box">${boxes}</div>`;
     }
+
+    let html = '';
+    const section = (label, content) => {
+        if (!content) return '';
+        return `<div class="info-label">${label}</div>${content}`;
+    };
+
+    html += section('Ports', portHtml);
+    html += section('Specs', specHtml);
+    html += section('Extras', extraHtml);
+    if (lensHtml) html += `<div class="info-label">Lens Mount</div>${lensHtml}`;
+
     return html ? `<div class="connector-summary">${html}</div>` : '';
 }
 
