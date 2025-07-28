@@ -51,7 +51,9 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### 🖼 Setup Diagram
 - Visualize power and video connections for the selected devices
 - Warns when FIZ brands are incompatible
-- Uses emoji icons for each device:
+- Drag nodes to rearrange the layout, zoom with the buttons and download the diagram as SVG or JPG
+- Hover or tap devices to see popup details
+- Uses [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji:
   🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
   🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
 
@@ -67,8 +69,9 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### 🌓 Dark Mode
 - Toggleable via the moon button next to the language selector
 - Preference is stored in your browser
-- The help dialog can be opened via the ? button or by pressing `?`/`H`
-  and closed with Escape or by clicking outside the popup
+- Optional pink accent via the horse/unicorn button
+- The help dialog provides searchable instructions and FAQ. Open it with
+  ? or the `?`/`H`/`F1` keys and close with Escape or by clicking outside.
 
 ---
 

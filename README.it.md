@@ -50,6 +50,8 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 ### 🖼 Diagramma della configurazione
 - Visualizza le connessioni di alimentazione e video dei dispositivi selezionati
 - Avvisa quando i marchi FIZ sono incompatibili
+- Trascina i nodi per spostarli, usa i pulsanti di zoom e scarica il diagramma in formato SVG o JPG
+- Le finestre popup mostrano dettagli sui dispositivi
 - Usa le icone colorate di [OpenMoji](https://openmoji.org/) quando sei online, passando agli emoji se non possono essere caricate:
   🔋 batteria, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motore,
   🎮 controller, 📐 distanza, 🎮 impugnatura e 🔌 piastra batteria
@@ -66,7 +68,8 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 ### 🌓 Modalità scura
 - Attivabile tramite il pulsante con la luna accanto al selettore della lingua
 - La preferenza viene salvata nel browser
-- La finestra di aiuto si apre con il pulsante ? o premendo `?`/`H` e si chiude con Esc o cliccando fuori dal popup
+- Modalità rosa opzionale con il pulsante cavallo/unicorno
+- La finestra di aiuto è ricercabile con FAQ. Aprila con ? o con i tasti `?`/`H`/`F1` e chiudila con Esc o clic fuori dal popup
 
 ---
 
