@@ -164,7 +164,15 @@ function unifyDevices(data) {
     const input = dev.power?.input;
     if (!input) return;
     if (Array.isArray(input)) {
-      input.forEach(it => fixPowerInput({ power: { input: it } }));
+      input.forEach((it, idx) => {
+        if (typeof it === 'string') {
+          input[idx] = { type: normalizePowerPortType(it) };
+        } else if (it) {
+          if (it.portType && !it.type) it.type = it.portType;
+          if (it.type) it.type = normalizePowerPortType(it.type);
+          delete it.portType;
+        }
+      });
       return;
     }
     if (input.portType && !input.type) {
