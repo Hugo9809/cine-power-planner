@@ -5081,139 +5081,110 @@ function generatePrintableOverview() {
 
     // REGENERATE BATTERY TABLE HTML WITH BARS FOR OVERVIEW
     let batteryTableHtml = '';
-    const totalWatt = parseFloat(totalPowerElem.textContent); // Get current totalWatt from display
-
-    // Only generate the battery table if a battery is selected, or if there are any batteries to compare
-    const hasAnyBattery = Object.keys(devices.batteries).some(key => key !== "None");
-
-    if ((batterySelect.value && batterySelect.value !== "None") || hasAnyBattery) {
+    const totalWatt = parseFloat(totalPowerElem.textContent);
+    if (totalWatt > 0) {
+        const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
         const selectedBatteryName = batterySelect.value;
-        let selectedCandidate = null;
-        const totalCurrent12 = parseFloat(totalCurrent12Elem.textContent); // Get current displayed current
+        const camName = cameraSelect.value;
         const plateFilter = getSelectedPlate();
+        const supportsB = supportsBMountCamera(camName);
         const bMountCam = plateFilter === 'B-Mount';
-
-        if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
+        let selectedCandidate = null;
+        if (selectedBatteryName && selectedBatteryName !== 'None' && devices.batteries[selectedBatteryName]) {
             const selData = devices.batteries[selectedBatteryName];
-            const pinOK_sel = totalCurrent12 <= selData.pinA;
-            const dtapOK_sel = !bMountCam && totalCurrent12 <= selData.dtapA;
-            
-            let selHours = 0;
-            if (totalWatt === 0) {
-                selHours = Infinity; // Represent infinite runtime
-            } else {
-                selHours = selData.capacity / totalWatt;
-            }
-
-            if (pinOK_sel || dtapOK_sel || totalWatt === 0) { // If totalWatt is 0, it's always "OK"
-                let selMethod;
-                if (totalWatt === 0) selMethod = "infinite"; // Custom method for infinite
-                else if (pinOK_sel && dtapOK_sel) selMethod = "both pins and D-Tap";
-                else if (pinOK_sel) selMethod = "pins";
-                else selMethod = "dtap";
-                selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
+            if ((!plateFilter || selData.mount_type === plateFilter) && (supportsB || selData.mount_type !== 'B-Mount')) {
+                const pinOK_sel = totalCurrentLow <= selData.pinA;
+                const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
+                if (pinOK_sel || dtapOK_sel) {
+                    const selHours = selData.capacity / totalWatt;
+                    let selMethod;
+                    if (pinOK_sel && dtapOK_sel) selMethod = 'both pins and D-Tap';
+                    else if (pinOK_sel) selMethod = 'pins';
+                    else selMethod = 'dtap';
+                    selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
+                }
             }
         }
 
         const pinsCandidates = [];
         const dtapCandidates = [];
         for (let battName in devices.batteries) {
-            if (battName === "None") continue;
-            // Don't add the selected battery again if it's already a candidate
+            if (battName === 'None') continue;
             if (selectedCandidate && battName === selectedCandidate.name) continue;
-
             const data = devices.batteries[battName];
             if (plateFilter && data.mount_type !== plateFilter) continue;
-            const canPin = totalCurrent12 <= data.pinA;
-            const canDTap = !bMountCam && totalCurrent12 <= data.dtapA;
-
-            if (totalWatt === 0) { // All batteries have infinite runtime if totalWatt is 0
-                pinsCandidates.push({ name: battName, hours: Infinity, method: "infinite" });
-            } else if (canPin) {
+            if (!plateFilter && !supportsB && data.mount_type === 'B-Mount') continue;
+            const canPin = totalCurrentLow <= data.pinA;
+            const canDTap = !bMountCam && totalCurrentLow <= data.dtapA;
+            if (canPin) {
                 const hours = data.capacity / totalWatt;
-                const method = (canDTap ? "both pins and D-Tap" : "pins");
-                pinsCandidates.push({ name: battName, hours: hours, method: method });
+                const method = canDTap ? 'both pins and D-Tap' : 'pins';
+                pinsCandidates.push({ name: battName, hours, method });
             } else if (canDTap) {
                 const hours = data.capacity / totalWatt;
-                dtapCandidates.push({ name: battName, hours: hours, method: "dtap" });
+                dtapCandidates.push({ name: battName, hours, method: 'dtap' });
             }
         }
 
-        // Sort by runtime (hours) descending within each group
         pinsCandidates.sort((a, b) => b.hours - a.hours);
         dtapCandidates.sort((a, b) => b.hours - a.hours);
 
-        batteryTableHtml = `<h2>${t.batteryComparisonHeading}</h2><table border="1"><tr><th>${t.batteryTableLabel}</th><th>${t.runtimeLabel}</th><th></th></tr>`;
+        let tableHtml = `<h2>${t.batteryComparisonHeading}</h2><table border="1"><tr><th>${t.batteryTableLabel}</th><th>${t.runtimeLabel}</th><th></th></tr>`;
 
-        const allCandidatesForMax = (selectedCandidate ? [selectedCandidate] : []).concat(pinsCandidates, dtapCandidates);
-        const finiteHours = allCandidatesForMax.map(c => c.hours).filter(h => h !== Infinity);
-        const maxHours = finiteHours.length ? Math.max(...finiteHours) : 1;
-
-        const getBarClass = (method) => {
-            if (method === "pins") return "bar bar-pins-only";
-            if (method === "infinite") return "bar bar-infinite"; // New class for infinite
-            return "bar";
-        };
-
-        const getMethodLabel = (method) => {
-            if (method === "pins") return `<span style="color:#FF9800;">${texts[currentLang].methodPinsOnly}</span>`;
-            if (method === "both pins and D-Tap") return `<span style="color:#4CAF50;">${texts[currentLang].methodPinsAndDTap}</span>`;
-            if (method === "infinite") return `<span style="color:#007bff;">${texts[currentLang].methodInfinite}</span>`;
-            return method;
-        };
-
-        const getRuntimeDisplay = (hours) => {
-            return hours === Infinity ? "∞" : hours.toFixed(2) + "h";
-        };
-
-        const getBarWidth = (hours) => {
-            if (hours === Infinity) return "100%"; // Infinite runtime always 100% bar
-            return ((hours / maxHours) * 100) + "%";
-        };
-
-        // Add selected battery first, if it's a valid candidate
-        if (selectedCandidate) {
-            batteryTableHtml += `<tr class="selectedBatteryRow">
-                                    <td>${escapeHtml(selectedCandidate.name)}</td>
-                                    <td>${getRuntimeDisplay(selectedCandidate.hours)} (${getMethodLabel(selectedCandidate.method)})</td>
-                                    <td>
-                                      <div class="barContainer">
-                                        <div class="${getBarClass(selectedCandidate.method)}" style="width: ${getBarWidth(selectedCandidate.hours)};"></div>
-                                      </div>
-                                    </td>
-                                  </tr>`;
-        }
-        // Add other candidates
-        pinsCandidates.forEach(candidate => {
-            if (selectedCandidate && candidate.name === selectedCandidate.name) return; // Already added if selected
-            batteryTableHtml += `<tr>
-                                    <td>${escapeHtml(candidate.name)}</td>
-                                    <td>${getRuntimeDisplay(candidate.hours)} (${getMethodLabel(candidate.method)})</td>
-                                    <td>
-                                      <div class="barContainer">
-                                        <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours)};"></div>
-                                      </div>
-                                    </td>
-                                  </tr>`;
-        });
-        dtapCandidates.forEach(candidate => {
-            if (selectedCandidate && candidate.name === selectedCandidate.name) return;
-            const alreadyInPins = pinsCandidates.some(p => p.name === candidate.name);
-            if (!alreadyInPins) {
-                batteryTableHtml += `<tr>
-                                        <td>${escapeHtml(candidate.name)}</td>
-                                        <td>${getRuntimeDisplay(candidate.hours)} (${getMethodLabel(candidate.method)})</td>
-                                        <td>
-                                          <div class="barContainer">
-                                            <div class="${getBarClass(candidate.method)}" style="width: ${getBarWidth(candidate.hours)};"></div>
-                                          </div>
-                                        </td>
-                                      </tr>`;
+        if ((selectedCandidate ? 1 : 0) + pinsCandidates.length + dtapCandidates.length === 0) {
+            tableHtml += `<tr><td colspan="3">${t.noBatterySupports}</td></tr>`;
+        } else {
+            const allCandidatesForMax = (selectedCandidate ? [selectedCandidate] : []).concat(pinsCandidates, dtapCandidates);
+            const maxHours = Math.max(...allCandidatesForMax.map(c => c.hours)) || 1;
+            const getBarClass = method => method === 'pins' ? 'bar bar-pins-only' : 'bar';
+            const getMethodLabel = method => {
+                if (method === 'pins') return `<span style="color:#FF9800;">${texts[currentLang].methodPinsOnly}</span>`;
+                if (method === 'both pins and D-Tap') return `<span style="color:#4CAF50;">${texts[currentLang].methodPinsAndDTap}</span>`;
+                return method;
+            };
+            if (selectedCandidate) {
+                tableHtml += `<tr class="selectedBatteryRow">
+                                <td>${escapeHtml(selectedCandidate.name)}</td>
+                                <td>${selectedCandidate.hours.toFixed(2)}h (${getMethodLabel(selectedCandidate.method)})</td>
+                                <td>
+                                  <div class="barContainer">
+                                    <div class="${getBarClass(selectedCandidate.method)}" style="width: ${(selectedCandidate.hours / maxHours) * 100}%;"></div>
+                                  </div>
+                                </td>
+                              </tr>`;
             }
-        });
-        batteryTableHtml += `</table>`;
+            pinsCandidates.forEach(candidate => {
+                if (selectedCandidate && candidate.name === selectedCandidate.name) return;
+                tableHtml += `<tr>
+                                <td>${escapeHtml(candidate.name)}</td>
+                                <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
+                                <td>
+                                  <div class="barContainer">
+                                    <div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div>
+                                  </div>
+                                </td>
+                              </tr>`;
+            });
+            dtapCandidates.forEach(candidate => {
+                if (selectedCandidate && candidate.name === selectedCandidate.name) return;
+                const alreadyInPins = pinsCandidates.some(p => p.name === candidate.name);
+                if (!alreadyInPins) {
+                    tableHtml += `<tr>
+                                    <td>${escapeHtml(candidate.name)}</td>
+                                    <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
+                                    <td>
+                                      <div class="barContainer">
+                                        <div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div>
+                                      </div>
+                                    </td>
+                                  </tr>`;
+                }
+            });
+        }
+        tableHtml += `</table>`;
+        batteryTableHtml = tableHtml;
     } else {
-        batteryTableHtml = ''; // No table if no battery selected
+        batteryTableHtml = '';
     }
     
     const safeSetupName = escapeHtml(setupName);
@@ -5373,10 +5344,6 @@ function generatePrintableOverview() {
                   background-color: #FF9800; /* Orange color for pins only */
                 }
 
-                .bar-infinite {
-                  background-color: #007bff; /* A distinct color for infinite runtime */
-                }
-
                 .selectedBatteryRow {
                     background-color: #e6f7ff; /* Light blue background for selected row */
                     font-weight: bold;
@@ -5496,10 +5463,6 @@ function generatePrintableOverview() {
 
                     .bar-pins-only {
                       background-color: #FF9800 !important; /* Orange color for pins only */
-                    }
-
-                    .bar-infinite {
-                      background-color: #007bff !important; /* A distinct color for infinite runtime */
                     }
 
                     .selectedBatteryRow {
