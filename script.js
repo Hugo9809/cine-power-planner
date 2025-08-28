@@ -4110,11 +4110,12 @@ deviceManagerSection.addEventListener("click", (event) => {
     const categoryKey = event.target.dataset.category;
 
     // Set form for editing
-    newNameInput.value = name;
     newCategorySelect.value = categoryKey;
     newCategorySelect.disabled = true; // Prevent changing category during edit
     // Trigger change handler so correct fields are shown and others cleared
     newCategorySelect.dispatchEvent(new Event('change'));
+    // After the change handler runs, restore the device name for editing
+    newNameInput.value = name;
 
     let deviceData;
     if (categoryKey.includes('.')) {
