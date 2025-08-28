@@ -4937,7 +4937,7 @@ function generateConnectorSummary(data) {
         specHtml += `<span class="info-box neutral-conn">💡 Brightness: ${data.brightnessNits} nits</span>`;
     }
     if (typeof data.wirelessTx === 'boolean') {
-        specHtml += `<span class="info-box neutral-conn">📡 Wireless: true</span>`;
+        specHtml += `<span class="info-box neutral-conn">📡 Wireless: ${data.wirelessTx}</span>`;
     }
     if (data.internalController) {
         specHtml += `<span class="info-box neutral-conn">🎛️ Controller: Internal</span>`;
