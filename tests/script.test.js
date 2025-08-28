@@ -987,4 +987,22 @@ describe('script.js functions', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
   });
+
+  test('generateConnectorSummary labels extras', () => {
+    const data = {
+      power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },
+      recordingMedia: [{ type: 'CFast 2.0' }],
+      viewfinder: [{ type: 'EVF' }],
+      gearTypes: ['Focus'],
+      connectivity: 'Wi-Fi',
+      notes: 'Note'
+    };
+    const html = script.generateConnectorSummary(data);
+    expect(html).toContain('Battery Plate: V-Mount');
+    expect(html).toContain('Media: CFast 2.0');
+    expect(html).toContain('Viewfinder: EVF');
+    expect(html).toContain('Gear: Focus');
+    expect(html).toContain('Connectivity: Wi-Fi');
+    expect(html).toContain('Notes: Note');
+  });
 });
