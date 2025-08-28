@@ -5070,8 +5070,7 @@ function generatePrintableOverview() {
             if (data !== undefined && data !== null) {
                 details = formatDeviceDataHtml(data);
             }
-            // Removed connector summary from overview list
-            addToSection(headingKey, `<li class="device-item"><strong>${safeName}</strong>${details}</li>`);
+            addToSection(headingKey, `<div class="device-block"><strong>${safeName}</strong>${details}</div>`);
         }
     };
 
@@ -5087,7 +5086,7 @@ function generatePrintableOverview() {
           const heading = t[key] || key;
           const icon = overviewSectionIcons[key] || '';
           const iconHtml = icon ? `<span class="category-icon" aria-hidden="true">${icon}</span>` : '';
-          deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><ul class="device-overview">${sections[key].join('')}</ul></div>`;
+          deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="device-block-grid">${sections[key].join('')}</div></div>`;
       });
       deviceListHtml += '</div>';
 
@@ -5112,8 +5111,8 @@ function generatePrintableOverview() {
         warningHtml = `<h2>Warnings</h2>${warningHtml}`;
     }
 
-    const diagramInner = setupDiagramContainer ? setupDiagramContainer.innerHTML : '';
-    const diagramHtml = diagramInner ? `<h2>${t.setupDiagramHeading}</h2>${diagramInner}` : '';
+    const setupDiagramSection = document.getElementById('setupDiagram');
+    const diagramHtml = setupDiagramSection ? setupDiagramSection.outerHTML : '';
 
     // REGENERATE BATTERY TABLE HTML WITH BARS FOR OVERVIEW
     let batteryTableHtml = '';
@@ -5279,10 +5278,24 @@ function generatePrintableOverview() {
                 th { background-color: #f2f2f2; }
                 .warning { color: red; font-weight: bold; margin-top: 10px; }
                 .print-btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; background: #f0f0f0; margin-bottom: 20px; }
-                .device-overview { list-style: none; margin-left: 0; padding-left: 0; }
-                .device-item { margin: 5px 0; }
                 .device-data { margin-left: 15px; }
                 .device-data ul { list-style: disc; margin-left: 20px; }
+                .device-block-grid {
+                  display: grid;
+                  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                  gap: 8px;
+                }
+                .device-block {
+                  background: #fff;
+                  border: 1px solid #ddd;
+                  border-radius: 4px;
+                  padding: 8px;
+                  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+                .device-block strong {
+                  display: block;
+                  margin-bottom: 4px;
+                }
                 .device-category-container {
                   display: flex;
                   flex-wrap: wrap;
@@ -5320,6 +5333,23 @@ function generatePrintableOverview() {
                   border: 2px solid;
                   font-size: 0.85em;
                   background-color: rgba(0,0,0,0.03);
+                }
+                .info-box {
+                  display: inline-block;
+                  padding: 2px 6px;
+                  margin: 2px;
+                  border-radius: 3px;
+                  background: rgba(0,0,0,0.03);
+                  font-size: 0.75em;
+                }
+                .lens-mount-box {
+                  display: flex;
+                  flex-wrap: wrap;
+                }
+                .info-label {
+                  width: 100%;
+                  font-size: 0.75em;
+                  font-weight: bold;
                 }
                 .power-conn { border-color: #f44336; }
                 .fiz-conn { border-color: #4caf50; }
@@ -5377,10 +5407,24 @@ function generatePrintableOverview() {
                 @media print {
                     .print-btn { display: none; }
                     body { margin: 1cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                    .device-overview { list-style: none; margin-left: 0; padding-left: 0; }
-                    .device-item { margin: 5px 0; }
                     .device-data { margin-left: 15px; }
                     .device-data ul { list-style: disc; margin-left: 20px; }
+                    .device-block-grid {
+                      display: grid !important;
+                      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                      gap: 8px;
+                    }
+                    .device-block {
+                      background: #fff !important;
+                      border: 1px solid #ddd !important;
+                      border-radius: 4px;
+                      padding: 8px;
+                      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    }
+                    .device-block strong {
+                      display: block;
+                      margin-bottom: 4px;
+                    }
                     .device-category-container {
                       display: flex;
                       flex-wrap: wrap;
@@ -5418,6 +5462,23 @@ function generatePrintableOverview() {
                       border: 2px solid;
                       font-size: 0.85em;
                       background-color: rgba(0,0,0,0.03);
+                    }
+                    .info-box {
+                      display: inline-block;
+                      padding: 2px 6px;
+                      margin: 2px;
+                      border-radius: 3px;
+                      background: rgba(0,0,0,0.03) !important;
+                      font-size: 0.75em;
+                    }
+                    .lens-mount-box {
+                      display: flex;
+                      flex-wrap: wrap;
+                    }
+                    .info-label {
+                      width: 100%;
+                      font-size: 0.75em;
+                      font-weight: bold;
                     }
                     .power-conn { border-color: #f44336 !important; }
                     .fiz-conn { border-color: #4caf50 !important; }

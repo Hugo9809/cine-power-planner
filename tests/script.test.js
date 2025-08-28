@@ -327,12 +327,22 @@ describe('script.js functions', () => {
     expect(toggle.textContent).toBe('🐴');
   });
 
-  test('generatePrintableOverview opens window with content', () => {
+  test('generatePrintableOverview includes device blocks and diagram', () => {
     const { generatePrintableOverview } = script;
-    window.open = jest.fn(() => ({ document: { write: jest.fn(), close: jest.fn() } }));
+    const writeMock = jest.fn();
+    window.open = jest.fn(() => ({ document: { write: writeMock, close: jest.fn() } }));
     document.getElementById('setupName').value = 'Test';
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
     generatePrintableOverview();
     expect(window.open).toHaveBeenCalled();
+    const html = writeMock.mock.calls[0][0];
+    expect(html).toContain('class="device-block"');
+    expect(html).toContain('id="setupDiagram"');
   });
 
   test('battery plate selection is saved and loaded with setups', () => {
