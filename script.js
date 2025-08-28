@@ -4868,10 +4868,12 @@ function summarizeByType(list) {
 
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
     const counts = summarizeByType(items);
-    return Object.entries(counts).map(([type, count]) => {
-        const prefix = label ? `${label}${dir ? ` ${dir}` : ''}: ` : '';
-        return `<span class="connector-block ${cls}">${icon} ${prefix}${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}</span>`;
-    }).join('');
+    const entries = Object.entries(counts).map(([type, count]) => {
+        return `${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}`;
+    });
+    if (!entries.length) return '';
+    const prefix = label ? `${label}${dir ? ` ${dir}` : ''}: ` : '';
+    return `<span class="connector-block ${cls}">${icon} ${prefix}${entries.join(', ')}</span>`;
 }
 
 function generateConnectorSummary(data) {
@@ -4950,24 +4952,24 @@ function generateConnectorSummary(data) {
     }
 
     let extraHtml = '';
-    if (Array.isArray(data.power?.batteryPlateSupport)) {
-        const boxes = data.power.batteryPlateSupport.map(p => {
+    if (Array.isArray(data.power?.batteryPlateSupport) && data.power.batteryPlateSupport.length) {
+        const types = data.power.batteryPlateSupport.map(p => {
             const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
-            return `<span class="info-box neutral-conn">Battery Plate: ${escapeHtml(p.type)}${mount}</span>`;
-        }).join('');
-        extraHtml += boxes;
+            return `${escapeHtml(p.type)}${mount}`;
+        });
+        extraHtml += `<span class="info-box neutral-conn">Battery Plate: ${types.join(', ')}</span>`;
     }
-    if (Array.isArray(data.recordingMedia)) {
-        const boxes = data.recordingMedia.map(m => `<span class="info-box neutral-conn">Media: ${escapeHtml(m.type)}</span>`).join('');
-        extraHtml += boxes;
+    if (Array.isArray(data.recordingMedia) && data.recordingMedia.length) {
+        const types = data.recordingMedia.map(m => escapeHtml(m.type));
+        extraHtml += `<span class="info-box neutral-conn">Media: ${types.join(', ')}</span>`;
     }
-    if (Array.isArray(data.viewfinder)) {
-        const boxes = data.viewfinder.map(v => `<span class="info-box neutral-conn">Viewfinder: ${escapeHtml(v.type)}</span>`).join('');
-        extraHtml += boxes;
+    if (Array.isArray(data.viewfinder) && data.viewfinder.length) {
+        const types = data.viewfinder.map(v => escapeHtml(v.type));
+        extraHtml += `<span class="info-box neutral-conn">Viewfinder: ${types.join(', ')}</span>`;
     }
-    if (Array.isArray(data.gearTypes)) {
-        const boxes = data.gearTypes.map(g => `<span class="info-box neutral-conn">Gear: ${escapeHtml(g)}</span>`).join('');
-        extraHtml += boxes;
+    if (Array.isArray(data.gearTypes) && data.gearTypes.length) {
+        const types = data.gearTypes.map(g => escapeHtml(g));
+        extraHtml += `<span class="info-box neutral-conn">Gear: ${types.join(', ')}</span>`;
     }
     if (data.connectivity) {
         extraHtml += `<span class="info-box neutral-conn">Connectivity: ${escapeHtml(String(data.connectivity))}</span>`;
