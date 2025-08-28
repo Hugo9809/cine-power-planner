@@ -5530,7 +5530,6 @@ function generatePrintableOverview() {
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
             <p><em>Generated on: ${dateTimeString}</em></p>
 
-            ${diagramSectionHtml}
             <h2>${t.deviceSelectionHeading}</h2>
             ${deviceListHtml}
 
@@ -5538,6 +5537,7 @@ function generatePrintableOverview() {
             ${resultsHtml}
             ${warningHtml}
 
+            ${diagramSectionHtml}
             ${batteryTableHtml}
         </body>
         </html>
