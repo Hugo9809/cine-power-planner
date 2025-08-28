@@ -158,6 +158,10 @@ body.dark-mode.pink-mode .help-content {
   display: none;
 }
 
+.help-icon {
+  margin-right: 0.3em;
+}
+
 /* Ensure selects and inputs inside wrappers match normal form fields */
 .field-with-label select,
 .field-with-label input {
