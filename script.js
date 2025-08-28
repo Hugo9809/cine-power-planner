@@ -968,6 +968,7 @@ function setLanguage(lang) {
     if (document.getElementById("helpTitle")) {
       document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
     }
+    if (helpNoResults) helpNoResults.textContent = texts[lang].helpNoResults;
   }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
@@ -1102,6 +1103,7 @@ const helpButton      = document.getElementById("helpButton");
 const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
 const helpSearch      = document.getElementById("helpSearch");
+const helpNoResults   = document.getElementById("helpNoResults");
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -5768,58 +5770,70 @@ if (downloadDiagramBtn) {
 }
 
 if (helpButton && helpDialog) {
+  const filterHelp = () => {
+    if (!helpSearch) return;
+    const query = helpSearch.value.toLowerCase();
+    const sections = helpDialog.querySelectorAll('[data-help-section]');
+    const items = helpDialog.querySelectorAll('.faq-item');
+    let anyVisible = false;
+    [...sections, ...items].forEach(el => {
+      const text = el.textContent.toLowerCase();
+      if (!query || text.includes(query)) {
+        el.removeAttribute('hidden');
+        anyVisible = true;
+      } else {
+        el.setAttribute('hidden', '');
+      }
+    });
+    if (helpNoResults) {
+      if (anyVisible) {
+        helpNoResults.setAttribute('hidden', '');
+      } else {
+        helpNoResults.removeAttribute('hidden');
+      }
+    }
+  };
+
   const openHelp = () => {
-    helpDialog.removeAttribute("hidden");
+    helpDialog.removeAttribute('hidden');
     if (helpSearch) {
+      helpSearch.value = '';
+      filterHelp();
       helpSearch.focus();
     } else {
       helpDialog.focus();
     }
   };
+
   const closeHelp = () => {
-    helpDialog.setAttribute("hidden", "");
+    helpDialog.setAttribute('hidden', '');
     helpButton.focus();
   };
+
   const toggleHelp = () => {
-    if (helpDialog.hasAttribute("hidden")) {
+    if (helpDialog.hasAttribute('hidden')) {
       openHelp();
     } else {
       closeHelp();
     }
   };
 
-  helpButton.addEventListener("click", toggleHelp);
-  if (closeHelpBtn) closeHelpBtn.addEventListener("click", closeHelp);
-
-  const filterHelp = () => {
-    if (!helpSearch) return;
-    const query = helpSearch.value.toLowerCase();
-    const sections = helpDialog.querySelectorAll('[data-help-section]');
-    const items = helpDialog.querySelectorAll('.faq-item');
-    [...sections, ...items].forEach(el => {
-      const text = el.textContent.toLowerCase();
-      if (!query || text.includes(query)) {
-        el.removeAttribute('hidden');
-      } else {
-        el.setAttribute('hidden', '');
-      }
-    });
-  };
-
+  helpButton.addEventListener('click', toggleHelp);
+  if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
   if (helpSearch) helpSearch.addEventListener('input', filterHelp);
 
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && !helpDialog.hasAttribute("hidden")) {
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {
       closeHelp();
-    } else if ((e.key === "?" || e.key.toLowerCase() === "h" || e.key === "F1") &&
-               document.activeElement.tagName !== "INPUT" &&
-               document.activeElement.tagName !== "TEXTAREA") {
-      if (e.key === "F1") e.preventDefault();
+    } else if ((e.key === '?' || e.key.toLowerCase() === 'h' || e.key === 'F1') &&
+               document.activeElement.tagName !== 'INPUT' &&
+               document.activeElement.tagName !== 'TEXTAREA') {
+      if (e.key === 'F1') e.preventDefault();
       toggleHelp();
     }
   });
 
-  helpDialog.addEventListener("click", e => {
+  helpDialog.addEventListener('click', e => {
     if (e.target === helpDialog) closeHelp();
   });
 }
