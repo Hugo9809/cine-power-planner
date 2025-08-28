@@ -3348,10 +3348,10 @@ function renderSetupDiagram() {
     }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
     const camPort = cameraFizPort(camName, port, firstName);
-    pushEdge({ from: 'camera', to: first, label: formatConnLabel(camPort, port), noArrow: true }, 'fiz');
+    pushEdge({ from: 'camera', to: first, label: formatConnLabel(port, camPort), noArrow: true }, 'fiz');
   } else if (motorIds.length && cam) {
     const camPort = cameraFizPort(camName, motorFizPort(motors[0]), motors[0]);
-    pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(camPort, motorFizPort(motors[0])), noArrow: true }, 'fiz');
+    pushEdge({ from: 'camera', to: motorIds[0], label: formatConnLabel(motorFizPort(motors[0]), camPort), noArrow: true }, 'fiz');
   }
 
   for (let i = 0; i < chain.length - 1; i++) {

@@ -734,6 +734,30 @@ describe('script.js functions', () => {
     expect(firstNode.getAttribute('data-node')).toBe('motor0');
   });
 
+  test('camera to cforce RF connection label uses Cam to camera port', () => {
+    global.devices.cameras.CamA.fizConnectors = [{ type: 'LBUS (LEMO 4-pin)' }];
+    global.devices.fiz.motors['cforce mini RF'] = {
+      powerDrawWatts: 2,
+      internalController: true,
+      fizConnector: 'LBUS (LEMO 4-pin), CAM (LEMO 7-pin)'
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('motor1Select', 'cforce mini RF');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent.trim());
+    expect(labels).toContain('Cam to LBUS');
+    expect(labels).not.toContain('LBUS to Cam');
+  });
+
   test('UMC-4 controller is first FIZ device over Master Grip', () => {
     global.devices.fiz.controllers['Arri UMC-4'] = {
       powerDrawWatts: 1,
