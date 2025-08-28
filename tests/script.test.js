@@ -1005,4 +1005,34 @@ describe('script.js functions', () => {
     expect(html).toContain('Connectivity: Wi-Fi');
     expect(html).toContain('Notes: Note');
   });
+
+  test('generateConnectorSummary omits wireless when absent', () => {
+    const data = { powerDrawWatts: 5 };
+    const html = script.generateConnectorSummary(data);
+    expect(html).not.toContain('📡');
+  });
+
+  test('generateConnectorSummary shows wireless when false', () => {
+    const data = { wirelessTx: false };
+    const html = script.generateConnectorSummary(data);
+    expect(html).toContain('📡 Wireless: true');
+  });
+
+  test('generateConnectorSummary shows wireless when true', () => {
+    const data = { wirelessTx: true };
+    const html = script.generateConnectorSummary(data);
+    expect(html).toContain('📡 Wireless: true');
+  });
+});
+
+describe('monitor wireless metadata', () => {
+  test('SmallHD Ultra 7 has wirelessTx set to false', () => {
+    const devices = require('../data.js');
+    expect(devices.monitors['SmallHD Ultra 7'].wirelessTx).toBe(false);
+  });
+
+  test('Hollyland Mars M1 Enhanced retains wirelessTx flag', () => {
+    const devices = require('../data.js');
+    expect(devices.monitors['Hollyland Mars M1 Enhanced'].wirelessTx).toBe(false);
+  });
 });
