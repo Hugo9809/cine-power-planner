@@ -5126,9 +5126,6 @@ function generatePrintableOverview() {
         warningHtml = `<h2>Warnings</h2>${warningHtml}`;
     }
 
-    const setupDiagramSection = document.getElementById('setupDiagram');
-    const diagramHtml = setupDiagramSection ? setupDiagramSection.outerHTML : '';
-
     // REGENERATE BATTERY TABLE HTML WITH BARS FOR OVERVIEW
     let batteryTableHtml = '';
     const totalWatt = parseFloat(totalPowerElem.textContent); // Get current totalWatt from display
@@ -5267,7 +5264,14 @@ function generatePrintableOverview() {
     }
     
     const safeSetupName = escapeHtml(setupName);
+    const diagramAreaHtml = setupDiagramContainer ? setupDiagramContainer.outerHTML : '';
+    const diagramLegendHtml = diagramLegend ? diagramLegend.outerHTML : '';
+    const diagramControlsHtml = document.querySelector('.diagram-controls') ? document.querySelector('.diagram-controls').outerHTML : '';
+    const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
+    const diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
+    const diagramSectionHtml = diagramAreaHtml ? `<h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}` : '';
     const diagramCss = getDiagramCss();
+
     const overviewHtml = `
         <!DOCTYPE html>
         <html lang="${currentLang}">
@@ -5301,11 +5305,12 @@ function generatePrintableOverview() {
                   gap: 8px;
                 }
                 .device-block {
-                  background: #fff;
-                  border: 1px solid #ddd;
-                  border-radius: 4px;
-                  padding: 8px;
-                  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                  background: rgba(255,255,255,0.95);
+                  border: 1px solid #333;
+                  border-radius: 6px;
+                  padding: 6px 10px;
+                  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+                  font-size: 12px;
                 }
                 .device-block strong {
                   display: block;
@@ -5370,9 +5375,18 @@ function generatePrintableOverview() {
                 .fiz-conn { border-color: #4caf50; }
                 .video-conn { border-color: #2196f3; }
                 .neutral-conn { border-color: #9e9e9e; }
-                /* Setup diagram styles */
-                #setupDiagram svg { width: 100%; max-width: 900px; height: 420px; }
                 ${diagramCss}
+                #diagramArea { margin-top: 0.5em; position: relative; }
+                #diagramLegend { margin-top: 0.25em; font-size: 12px; }
+                #diagramLegend span { margin: 0 6px; display: inline-flex; align-items: center; }
+                #diagramLegend .swatch { width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; display: inline-block; }
+                #diagramLegend .power { background: #d33; }
+                #diagramLegend .video { background: #369; }
+                #diagramLegend .fiz { background: #090; }
+                .diagram-controls { margin-top: 0.5em; display: flex; justify-content: center; gap: 0.5em; }
+                .diagram-controls button { min-width: 32px; }
+                #diagramHint { margin-top: 0.25em; font-size: 12px; color: #555; }
+                .diagram-popup { display: none; position: absolute; pointer-events: none; background: rgba(255,255,255,0.95); border: 1px solid #333; font-size: 12px; padding: 6px 10px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.25); z-index: 10; max-width: 320px; overflow: auto; }
                 /* Styles for Battery Comparison Bars in Overview */
                 .barContainer {
                   width: 100%;
@@ -5430,11 +5444,12 @@ function generatePrintableOverview() {
                       gap: 8px;
                     }
                     .device-block {
-                      background: #fff !important;
-                      border: 1px solid #ddd !important;
-                      border-radius: 4px;
-                      padding: 8px;
-                      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                      background: rgba(255,255,255,0.95) !important;
+                      border: 1px solid #333 !important;
+                      border-radius: 6px;
+                      padding: 6px 10px;
+                      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+                      font-size: 12px;
                     }
                     .device-block strong {
                       display: block;
@@ -5508,10 +5523,6 @@ function generatePrintableOverview() {
                       height: 15px; /* Height of the bar */
                     }
 
-                    #setupDiagram svg { width: 100%; max-width: 900px; height: 420px; }
-                    #setupDiagram .node-box { fill: #fff !important; stroke: #000 !important; }
-                    #setupDiagram line { stroke: #000 !important; stroke-width: 2px; }
-
                     .bar {
                       height: 100%;
                       background-color: #4CAF50 !important; /* Green color for the bar (both) */
@@ -5557,15 +5568,14 @@ function generatePrintableOverview() {
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
             <p><em>Generated on: ${dateTimeString}</em></p>
-            
+
+            ${diagramSectionHtml}
             <h2>${t.deviceSelectionHeading}</h2>
             ${deviceListHtml}
-            
+
             <h2>${t.resultsHeading}</h2>
             ${resultsHtml}
             ${warningHtml}
-
-            ${diagramHtml}
 
             ${batteryTableHtml}
         </body>
