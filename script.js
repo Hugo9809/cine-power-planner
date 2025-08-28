@@ -5220,9 +5220,9 @@ function generatePrintableOverview() {
             <link rel="stylesheet" href="style.css">
             <style>
                 body { font-family: 'Open Sans', sans-serif; margin: 25px; color: #333; font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                h1, h2, h3 { font-family: 'Open Sans', sans-serif; font-weight: 500; color: #001589; }
+                h1, h2, h3 { font-family: 'Open Sans', sans-serif; font-weight: 500; color: var(--accent-color); }
                 h1 { font-size: 1.8em; margin-bottom: 0.2em; }
-                h2 { font-size: 1.4em; margin-top: 1.3em; border-bottom: 2px solid #001589; padding-bottom: 5px;}
+                h2 { font-size: 1.4em; margin-top: 1.3em; border-bottom: 2px solid var(--accent-color); padding-bottom: 5px;}
                 h3 { font-size: 1.1em; margin-top: 1em; }
                 p { line-height: 1.4em; }
                 ul { list-style: none; margin: 5px 0; padding-left: 0; }
