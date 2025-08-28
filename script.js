@@ -4911,18 +4911,11 @@ function summarizeByType(list) {
     return counts;
 }
 
-function withDirection(label, dir) {
-    if (!dir) return label;
-    const lower = label.toLowerCase();
-    const d = dir.toLowerCase();
-    return lower.includes(d) ? label : `${label} ${dir}`;
-}
-
-function connectorBlocks(items, icon, cls = 'neutral-conn', dir = '') {
+function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
     const counts = summarizeByType(items);
     return Object.entries(counts).map(([type, count]) => {
-        const text = withDirection(escapeHtml(type), dir);
-        return `<span class="connector-block ${cls}">${icon} ${text}${count > 1 ? ` ×${count}` : ''}</span>`;
+        const prefix = label ? `${label}${dir ? ` ${dir}` : ''}: ` : '';
+        return `<span class="connector-block ${cls}">${icon} ${prefix}${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}</span>`;
     }).join('');
 }
 
@@ -4932,35 +4925,35 @@ function generateConnectorSummary(data) {
     let portHtml = '';
     if (data.power) {
         if (Array.isArray(data.power.powerDistributionOutputs)) {
-            portHtml += connectorBlocks(data.power.powerDistributionOutputs, '⚡', 'power-conn', 'Out');
+            portHtml += connectorBlocks(data.power.powerDistributionOutputs, '⚡', 'power-conn', 'Power', 'Out');
         }
         const inputs = powerInputTypes(data).map(t => ({ type: t }));
         if (inputs.length) {
-            portHtml += connectorBlocks(inputs, '🔌', 'power-conn', 'In');
+            portHtml += connectorBlocks(inputs, '🔌', 'power-conn', 'Power', 'In');
         }
     }
     if (Array.isArray(data.fizConnectors)) {
-        portHtml += connectorBlocks(data.fizConnectors, '🎚️', 'fiz-conn');
+        portHtml += connectorBlocks(data.fizConnectors, '🎚️', 'fiz-conn', 'FIZ Port');
     }
     const videoIn = (data.video && data.video.inputs) || data.videoInputs;
     if (Array.isArray(videoIn)) {
-        portHtml += connectorBlocks(videoIn, '📺', 'video-conn', 'In');
+        portHtml += connectorBlocks(videoIn, '📺', 'video-conn', 'Video', 'In');
     }
     const videoOut = (data.video && data.video.outputs) || data.videoOutputs;
     if (Array.isArray(videoOut)) {
-        portHtml += connectorBlocks(videoOut, '📺', 'video-conn', 'Out');
+        portHtml += connectorBlocks(videoOut, '📺', 'video-conn', 'Video', 'Out');
     }
     if (Array.isArray(data.timecode)) {
-        portHtml += connectorBlocks(data.timecode, '⏱️');
+        portHtml += connectorBlocks(data.timecode, '⏱️', 'neutral-conn', 'Timecode');
     }
     if (data.audioInput && data.audioInput.portType) {
-        portHtml += connectorBlocks([{ type: data.audioInput.portType }], '🎤', 'neutral-conn', 'In');
+        portHtml += connectorBlocks([{ type: data.audioInput.portType }], '🎤', 'neutral-conn', 'Audio', 'In');
     }
     if (data.audioOutput && data.audioOutput.portType) {
-        portHtml += connectorBlocks([{ type: data.audioOutput.portType }], '🔊', 'neutral-conn', 'Out');
+        portHtml += connectorBlocks([{ type: data.audioOutput.portType }], '🔊', 'neutral-conn', 'Audio', 'Out');
     }
     if (data.audioIo && data.audioIo.portType) {
-        portHtml += connectorBlocks([{ type: data.audioIo.portType }], '🎚️', 'neutral-conn', 'I/O');
+        portHtml += connectorBlocks([{ type: data.audioIo.portType }], '🎚️', 'neutral-conn', 'Audio', 'I/O');
     }
 
     let specHtml = '';
