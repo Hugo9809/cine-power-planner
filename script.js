@@ -5058,7 +5058,9 @@ function generatePrintableOverview() {
       });
       deviceListHtml += '</div>';
 
+    const breakdownHtml = breakdownListElem.innerHTML;
     const resultsHtml = `
+        <ul id="breakdownList">${breakdownHtml}</ul>
         <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent}</p>
         <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent}</p>
         <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent}</p>
