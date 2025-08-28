@@ -1045,6 +1045,36 @@ describe('script.js functions', () => {
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
   });
 
+  test('help search filters and resets on reopen', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const helpSearch = document.getElementById('helpSearch');
+    const helpNoResults = document.getElementById('helpNoResults');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    expect(helpSearch.value).toBe('');
+
+    helpSearch.value = 'nonexistent';
+    helpSearch.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const sections = helpDialog.querySelectorAll('[data-help-section]');
+    const visible = [...sections].filter(s => !s.hasAttribute('hidden'));
+    expect(visible.length).toBe(0);
+    expect(helpNoResults.hasAttribute('hidden')).toBe(false);
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    expect(helpSearch.value).toBe('');
+
+    const sectionsAgain = helpDialog.querySelectorAll('[data-help-section]');
+    const visibleAgain = [...sectionsAgain].filter(s => !s.hasAttribute('hidden'));
+    expect(visibleAgain.length).toBe(sectionsAgain.length);
+    expect(helpNoResults.hasAttribute('hidden')).toBe(true);
+  });
+
   test('generateConnectorSummary labels extras', () => {
     const data = {
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },
