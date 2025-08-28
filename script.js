@@ -5061,26 +5061,22 @@ function generatePrintableOverview() {
       deviceListHtml += '</div>';
 
     const breakdownHtml = breakdownListElem.innerHTML;
+    const batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
     const resultsHtml = `
         <ul id="breakdownList">${breakdownHtml}</ul>
-        <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent}</p>
-        <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent}</p>
-        <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent}</p>
-        <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeElem.textContent}</p>
+        <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent} W</p>
+        <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent} A</p>
+        <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent} A</p>
+        <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}</p>
     `;
 
-    // Get current warning messages
+    // Get current warning messages with their colors
     let warningHtml = '';
-    // Check if pinWarnElem has content that is not just "OK"
-    if (pinWarnElem.textContent.trim() !== '' && !pinWarnElem.textContent.includes("OK")) {
-        warningHtml += `<p class="warning">${pinWarnElem.textContent}</p>`;
+    if (pinWarnElem.textContent.trim() !== '') {
+        warningHtml += `<p style="color: ${pinWarnElem.style.color}; font-weight: bold;">${pinWarnElem.textContent}</p>`;
     }
-    // Check if dtapWarnElem has content that is not just "OK"
-    if (dtapWarnElem.textContent.trim() !== '' && !dtapWarnElem.textContent.includes("OK")) {
-        warningHtml += `<p class="warning">${dtapWarnElem.textContent}</p>`;
-    }
-    if (warningHtml !== '') {
-        warningHtml = `<h2>Warnings</h2>${warningHtml}`;
+    if (dtapWarnElem.textContent.trim() !== '') {
+        warningHtml += `<p style="color: ${dtapWarnElem.style.color}; font-weight: bold;">${dtapWarnElem.textContent}</p>`;
     }
 
     // REGENERATE BATTERY TABLE HTML WITH BARS FOR OVERVIEW
