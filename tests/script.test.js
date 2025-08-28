@@ -327,6 +327,16 @@ describe('script.js functions', () => {
     expect(toggle.textContent).toBe('🐴');
   });
 
+  test('pink mode can toggle while dark mode is active', () => {
+    const { applyDarkMode, applyPinkMode } = script;
+    applyDarkMode(true);
+    applyPinkMode(true);
+    expect(document.body.classList.contains('dark-mode')).toBe(true);
+    expect(document.body.classList.contains('pink-mode')).toBe(true);
+    applyPinkMode(false);
+    expect(document.body.classList.contains('pink-mode')).toBe(false);
+  });
+
   test('generatePrintableOverview opens window with content', () => {
     const { generatePrintableOverview } = script;
     window.open = jest.fn(() => ({ document: { write: jest.fn(), close: jest.fn() } }));

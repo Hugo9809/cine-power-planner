@@ -789,6 +789,14 @@ body.dark-mode legend {
   color: #ffffff;
 }
 
+body.dark-mode.pink-mode fieldset {
+  border-color: var(--accent-color);
+}
+
+body.dark-mode.pink-mode legend {
+  color: var(--accent-color);
+}
+
 body.dark-mode button,
 body.dark-mode #langSelector select,
 body.dark-mode input,
@@ -849,6 +857,11 @@ body.dark-mode .selectedBatteryRow {
 body.dark-mode .device-category h4 {
   color: #ffffff;
   border-bottom: 1px solid #ffffff;
+}
+
+body.dark-mode.pink-mode .device-category h4 {
+  color: var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
 }
 
 body.dark-mode .device-ul li {
