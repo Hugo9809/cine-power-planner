@@ -488,46 +488,101 @@
       <h2 id="helpTitle">How to use</h2>
       <input type="text" id="helpSearch" placeholder="Search..." aria-label="Search help" />
       <div id="helpSections">
+        <section data-help-section id="featuresOverview">
+          <h3>Features at a Glance</h3>
+          <ul>
+            <li>Plan complete camera rigs and compute power draw and battery life.</li>
+            <li>Save multiple setups, export or import them and print overviews.</li>
+            <li>Visualize power and video connections with interactive diagrams.</li>
+            <li>Compare battery runtimes and check against safe output limits.</li>
+            <li>Customize the device database with your own gear.</li>
+            <li>Switch languages, toggle dark or playful pink themes and work fully offline.</li>
+          </ul>
+        </section>
         <section data-help-section id="gettingStarted">
           <h3>Getting Started</h3>
-          <p>Pick your camera, monitor and other devices from the dropdown menus. Use the search boxes inside each dropdown to quickly filter the lists. Once you select a battery, total draw and runtime are updated automatically.</p>
+          <ol>
+            <li>Select a camera, monitor and other devices from the dropdown menus.</li>
+            <li>Use the search boxes inside each dropdown to quickly filter the lists.</li>
+            <li>Choose a battery to update total draw and estimated runtime.</li>
+          </ol>
         </section>
         <section data-help-section id="managingSetups">
           <h3>Managing Setups</h3>
-          <p>Use the Save button to store the current configuration in your browser. Saved setups can be imported, exported or deleted in the Setup Actions section. You can also generate a printable overview for any saved setup.</p>
+          <ul>
+            <li>Use <strong>Save</strong> to store the current configuration in your browser.</li>
+            <li>Import, export or delete setups via the <em>Setup Actions</em> section.</li>
+            <li><strong>Generate Overview</strong> produces a printable summary of any saved setup.</li>
+          </ul>
         </section>
         <section data-help-section id="powerCalculator">
           <h3>Power Calculator</h3>
-          <p>Select a battery to see estimated run time. Warnings appear if your configuration exceeds the battery output limits. Use the optional Battery Comparison panel to view run time estimates for all batteries at once.</p>
+          <ul>
+            <li>Select a battery to see estimated runtime and current draw.</li>
+            <li>Warnings appear if the configuration exceeds battery output limits.</li>
+            <li>The optional <strong>Battery Comparison</strong> panel shows runtimes for all batteries at once.</li>
+          </ul>
         </section>
         <section data-help-section id="calculationDetails">
           <h3>Calculation Details</h3>
-          <p>Every device has a power draw value in watts. The app sums these to display <em>Total Consumption</em>. Current draw at 14.4&nbsp;V (or 33.6&nbsp;V for B‑Mount) and 12&nbsp;V (21.6&nbsp;V for B‑Mount) is calculated by dividing total watts by those voltages. Runtime is estimated by dividing battery capacity in watt‑hours by the total consumption.</p>
-          <p>Warning messages show when the current draw is close to or above the main or D‑Tap output rating of the selected battery.</p>
+          <ul>
+            <li>Each device contributes its power draw in watts to <em>Total Consumption</em>.</li>
+            <li>Current at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) equals total watts divided by voltage.</li>
+            <li>Runtime&nbsp;=&nbsp;battery capacity (Wh)&nbsp;÷&nbsp;total consumption.</li>
+            <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
+          </ul>
         </section>
         <section data-help-section id="setupDiagramHelp">
           <h3>Setup Diagram</h3>
-          <p>The diagram visualizes power and video connections between your selected devices. Icons represent each device type and warnings appear when FIZ brands are incompatible. Open the Diagram tab after choosing devices, drag nodes to rearrange them, use the + and – buttons to zoom and click <em>Download</em> to save the image.</p>
+          <ul>
+            <li>Visualizes power and video connections between selected devices.</li>
+            <li>Icons denote device types and warn when FIZ brands are incompatible.</li>
+            <li>Drag nodes to rearrange, use +/– buttons to zoom and click <em>Download</em> to save the image.</li>
+            <li>Hover or tap devices to see popup details.</li>
+          </ul>
         </section>
         <section data-help-section id="deviceEditorHelp">
           <h3>Device Database Editor</h3>
-          <p>Click <em>Edit Device Data…</em> to add, modify or remove devices in any category. Changes are stored locally. Use <em>Export</em> to save your custom database, <em>Import</em> to load one from another user and <em>Revert</em> to restore the defaults from <code>data.js</code>.</p>
+          <ul>
+            <li>Open with <em>Edit Device Data…</em> to add, modify or remove devices.</li>
+            <li>Changes are stored locally; use <em>Export</em> and <em>Import</em> to share databases.</li>
+            <li><em>Revert</em> restores defaults from <code>data.js</code>.</li>
+          </ul>
         </section>
         <section data-help-section id="deviceCategoriesHelp">
           <h3>Device Categories</h3>
-          <p>Devices are organised into Camera, Monitor, Wireless Video, FIZ Motors, FIZ Controllers, Distance Sensor, Battery Plate and V‑ or B‑Mount Battery. The number in parentheses after each label shows how many of that type you can select.</p>
+          <ul>
+            <li><strong>Camera</strong> (1)</li>
+            <li><strong>Monitor</strong> (optional)</li>
+            <li><strong>Wireless Video</strong> (optional)</li>
+            <li><strong>FIZ Motors</strong> (0–4)</li>
+            <li><strong>FIZ Controllers</strong> (0–4)</li>
+            <li><strong>Distance Sensor</strong> (0–1)</li>
+            <li><strong>Battery Plate</strong> (on supported cameras)</li>
+            <li><strong>V‑ or B‑Mount Battery</strong> (0–1)</li>
+          </ul>
+          <p>The number in parentheses shows how many of that type you can select.</p>
         </section>
         <section data-help-section id="searchFiltering">
           <h3>Search & Filtering</h3>
-          <p>Every dropdown and list can be filtered by typing in the accompanying search box. The help dialog itself is searchable via the field at the top.</p>
+          <ul>
+            <li>Every dropdown and list can be filtered via its search box.</li>
+            <li>The help dialog itself is searchable using the field at the top.</li>
+          </ul>
         </section>
         <section data-help-section id="darkModeHelp">
           <h3>Dark Mode</h3>
-          <p>Toggle the moon button next to the language selector to switch between light and dark themes. Your choice is remembered for the next visit.</p>
+          <ul>
+            <li>Toggle the moon button next to the language selector.</li>
+            <li>Your choice is remembered for the next visit.</li>
+          </ul>
         </section>
         <section data-help-section id="pinkModeHelp">
           <h3>Pink Mode</h3>
-          <p>Click the horse button to enable an extra pink theme with unicorn vibes. The setting persists just like dark mode.</p>
+          <ul>
+            <li>Click the horse button for a pink unicorn theme.</li>
+            <li>The setting persists just like dark mode.</li>
+          </ul>
         </section>
         <section data-help-section id="shortcuts">
           <h3>Keyboard Shortcuts</h3>
