@@ -5242,6 +5242,7 @@ function generatePrintableOverview() {
         <head>
             <meta charset="UTF-8">
             <title>${t.overviewTitle} - ${safeSetupName}</title>
+            <link rel="stylesheet" href="style.css">
             <style>
                 body { font-family: 'Open Sans', sans-serif; margin: 25px; color: #333; font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                 h1, h2, h3 { font-family: 'Open Sans', sans-serif; font-weight: 500; color: #001589; }
@@ -5525,6 +5526,17 @@ function generatePrintableOverview() {
             </style>
         </head>
         <body>
+            <div id="langSelector">
+                <select id="languageSelect">
+                    <option value="en" ${currentLang === 'en' ? 'selected' : ''}>English</option>
+                    <option value="de" ${currentLang === 'de' ? 'selected' : ''}>Deutsch</option>
+                    <option value="es" ${currentLang === 'es' ? 'selected' : ''}>Español</option>
+                    <option value="fr" ${currentLang === 'fr' ? 'selected' : ''}>Français</option>
+                    <option value="it" ${currentLang === 'it' ? 'selected' : ''}>Italiano</option>
+                </select>
+                <button id="darkModeToggle" title="${t.darkModeLabel}" aria-label="${t.darkModeLabel}">☾</button>
+                <button id="pinkModeToggle" title="${t.pinkModeLabel}" aria-label="${t.pinkModeLabel}">🐴</button>
+            </div>
             <button onclick="window.print()" class="print-btn">Print</button>
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
@@ -5539,6 +5551,80 @@ function generatePrintableOverview() {
 
             ${diagramSectionHtml}
             ${batteryTableHtml}
+            <script>
+            (function(){
+                const darkToggle = document.getElementById('darkModeToggle');
+                const pinkToggle = document.getElementById('pinkModeToggle');
+                const langSelect = document.getElementById('languageSelect');
+
+                function applyDarkMode(enabled){
+                    if(enabled){
+                        document.body.classList.add('dark-mode');
+                        darkToggle.textContent = '☀';
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        darkToggle.textContent = '☾';
+                    }
+                }
+
+                function applyPinkMode(enabled){
+                    if(enabled){
+                        document.body.classList.add('pink-mode');
+                        pinkToggle.textContent = '🦄';
+                    } else {
+                        document.body.classList.remove('pink-mode');
+                        pinkToggle.textContent = '🐴';
+                    }
+                }
+
+                let darkEnabled = false;
+                try { darkEnabled = localStorage.getItem('darkMode') === 'true'; } catch(e) {}
+                applyDarkMode(darkEnabled);
+                darkToggle.addEventListener('click', () => {
+                    darkEnabled = !document.body.classList.contains('dark-mode');
+                    applyDarkMode(darkEnabled);
+                    try { localStorage.setItem('darkMode', darkEnabled); } catch(e) {}
+                    if(window.opener && typeof window.opener.applyDarkMode === 'function'){
+                        window.opener.applyDarkMode(darkEnabled);
+                    }
+                });
+
+                let pinkEnabled = false;
+                try { pinkEnabled = localStorage.getItem('pinkMode') === 'true'; } catch(e) {}
+                applyPinkMode(pinkEnabled);
+                pinkToggle.addEventListener('click', () => {
+                    pinkEnabled = !document.body.classList.contains('pink-mode');
+                    applyPinkMode(pinkEnabled);
+                    try { localStorage.setItem('pinkMode', pinkEnabled); } catch(e) {}
+                    if(window.opener && typeof window.opener.applyPinkMode === 'function'){
+                        window.opener.applyPinkMode(pinkEnabled);
+                    }
+                });
+
+                langSelect.addEventListener('change', () => {
+                    const newLang = langSelect.value;
+                    try { localStorage.setItem('language', newLang); } catch(e) {}
+                    if(window.opener && typeof window.opener.setLanguage === 'function' && typeof window.opener.generatePrintableOverview === 'function'){
+                        window.opener.setLanguage(newLang);
+                        window.opener.generatePrintableOverview();
+                        window.close();
+                    }
+                });
+
+                let restoreDark = false;
+                window.addEventListener('beforeprint', () => {
+                    if(document.body.classList.contains('dark-mode')){
+                        restoreDark = true;
+                        applyDarkMode(false);
+                    }
+                });
+                window.addEventListener('afterprint', () => {
+                    if(restoreDark){
+                        applyDarkMode(true);
+                    }
+                });
+            })();
+            </script>
         </body>
         </html>
     `;
