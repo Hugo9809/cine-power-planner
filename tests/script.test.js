@@ -965,6 +965,7 @@ describe('script.js functions', () => {
     node.dispatchEvent(new MouseEvent('mousemove', { clientX: 0, clientY: 0 }));
     const popup = document.getElementById('diagramPopup');
     expect(popup.innerHTML).toContain('FIZ Port: LBUS');
+    expect(popup.innerHTML).toContain('Power: 2 W');
   });
 
   test('help dialog toggles with keyboard and overlay click', () => {
