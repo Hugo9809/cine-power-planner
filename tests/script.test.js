@@ -1050,7 +1050,7 @@ describe('script.js functions', () => {
   test('generateConnectorSummary shows wireless when false', () => {
     const data = { wirelessTx: false };
     const html = script.generateConnectorSummary(data);
-    expect(html).toContain('📡 Wireless: true');
+    expect(html).toContain('📡 Wireless: false');
   });
 
   test('generateConnectorSummary shows wireless when true', () => {
