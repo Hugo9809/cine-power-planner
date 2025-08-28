@@ -5265,13 +5265,24 @@ function generatePrintableOverview() {
     }
     
     const safeSetupName = escapeHtml(setupName);
-    const diagramAreaHtml = setupDiagramContainer ? setupDiagramContainer.outerHTML : '';
+    const diagramCss = getDiagramCss();
+
+    let diagramAreaHtml = '';
+    if (setupDiagramContainer) {
+      const areaClone = setupDiagramContainer.cloneNode(true);
+      const svg = areaClone.querySelector('svg');
+      if (svg) {
+        const style = document.createElement('style');
+        style.textContent = diagramCss;
+        svg.insertBefore(style, svg.firstChild);
+      }
+      diagramAreaHtml = areaClone.outerHTML;
+    }
     const diagramLegendHtml = diagramLegend ? diagramLegend.outerHTML : '';
     const diagramControlsHtml = document.querySelector('.diagram-controls') ? document.querySelector('.diagram-controls').outerHTML : '';
     const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
     const diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
     const diagramSectionHtml = diagramAreaHtml ? `<h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}` : '';
-    const diagramCss = getDiagramCss();
 
     const overviewHtml = `
         <!DOCTYPE html>
@@ -5378,6 +5389,7 @@ function generatePrintableOverview() {
                 .neutral-conn { border-color: #9e9e9e; }
                 ${diagramCss}
                 #diagramArea { margin-top: 0.5em; position: relative; }
+                #diagramArea svg { width: 100%; height: auto; }
                 #diagramLegend { margin-top: 0.25em; font-size: 12px; }
                 #diagramLegend span { margin: 0 6px; display: inline-flex; align-items: center; }
                 #diagramLegend .swatch { width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; display: inline-block; }
