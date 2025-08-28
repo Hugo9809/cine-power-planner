@@ -4854,55 +4854,6 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
-// Recursively format a device data object into nested HTML lists
-function formatDeviceDataHtml(data) {
-    if (!data || typeof data !== 'object') {
-        return escapeHtml(String(data));
-    }
-    const shouldSkip = (path, key) => {
-        const p = path.concat(key).join('.');
-        return p === 'power.powerDistributionOutputs' ||
-               p === 'power.input.portType' ||
-               p === 'power.input.type' ||
-               p === 'fizConnectors' ||
-               p === 'videoOutputs' ||
-               p === 'timecode' ||
-               p === 'video.inputs' ||
-               p === 'video.outputs' ||
-               p === 'audioOutput' ||
-               p === 'audioInput' ||
-               p === 'audioIo';
-    };
-    const buildList = (obj, path = []) => {
-        let html = '<ul class="device-data">';
-        for (const [key, value] of Object.entries(obj)) {
-            if (value === undefined || value === null || value === '') continue;
-            if (shouldSkip(path, key)) continue;
-            html += '<li><strong>' + escapeHtml(key) + '</strong>: ';
-            if (typeof value === 'object') {
-                if (Array.isArray(value)) {
-                    if (value.length === 0) {
-                        html += '[]';
-                    } else {
-                        html += '<ul class="device-data">';
-                        for (const val of value) {
-                            html += '<li>' + (typeof val === 'object' ? buildList(val, path.concat(key)) : escapeHtml(String(val))) + '</li>';
-                        }
-                        html += '</ul>';
-                    }
-                } else {
-                    html += buildList(value, path.concat(key));
-                }
-            } else {
-                html += escapeHtml(String(value));
-            }
-            html += '</li>';
-        }
-        html += '</ul>';
-        return html;
-    };
-    return buildList(data);
-}
 
 function summarizeByType(list) {
     const counts = {};
@@ -5080,7 +5031,11 @@ function generatePrintableOverview() {
             const safeName = escapeHtml(deviceName);
             let details = '';
             if (data !== undefined && data !== null) {
-                details = formatDeviceDataHtml(data);
+                const connectors = generateConnectorSummary(data);
+                const infoBoxes =
+                    (data.latencyMs !== undefined ? `<div class="info-box"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
+                    (data.frequency ? `<div class="info-box"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
+                details = connectors + infoBoxes;
             }
             addToSection(headingKey, `<div class="device-block"><strong>${safeName}</strong>${details}</div>`);
         }
@@ -5305,8 +5260,6 @@ function generatePrintableOverview() {
                 th { background-color: #f2f2f2; }
                 .warning { color: red; font-weight: bold; margin-top: 10px; }
                 .print-btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; background: #f0f0f0; margin-bottom: 20px; }
-                .device-data { margin-left: 15px; }
-                .device-data ul { list-style: disc; margin-left: 20px; }
                 .device-block-grid {
                   display: grid;
                   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -5445,8 +5398,6 @@ function generatePrintableOverview() {
                 @media print {
                     .print-btn { display: none; }
                     body { margin: 1cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                    .device-data { margin-left: 15px; }
-                    .device-data ul { list-style: disc; margin-left: 20px; }
                     .device-block-grid {
                       display: grid !important;
                       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
