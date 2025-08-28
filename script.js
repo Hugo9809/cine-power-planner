@@ -361,6 +361,12 @@ function isNativeVMountCamera(name) {
   return cam.power.batteryPlateSupport.some(bp => bp.type === 'V-Mount' && bp.mount === 'native');
 }
 
+function supportsBMountCamera(name) {
+  const cam = devices.cameras[name];
+  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
+  return cam.power.batteryPlateSupport.some(bp => bp.type === 'B-Mount');
+}
+
 function getBatteriesByMount(mountType) {
   const out = {};
   for (const [name, data] of Object.entries(devices.batteries)) {
@@ -590,12 +596,18 @@ function updateBatteryLabel() {
 function updateBatteryOptions() {
   const current = batterySelect.value;
   const plate = getSelectedPlate();
+  const camName = cameraSelect.value;
+  const supportsB = supportsBMountCamera(camName);
   if (plate === 'B-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('B-Mount'), true);
   } else if (plate === 'V-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('V-Mount'), true);
   } else {
-    populateSelect(batterySelect, devices.batteries, true);
+    let bats = devices.batteries;
+    if (!supportsB) {
+      bats = Object.fromEntries(Object.entries(bats).filter(([, b]) => b.mount_type !== 'B-Mount'));
+    }
+    populateSelect(batterySelect, bats, true);
   }
   if (Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
@@ -2984,11 +2996,13 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   if (totalWatt > 0) {
     // Build lists of batteries that can supply this current (via Pin or D-Tap)
     const selectedBatteryName = batterySelect.value;
+    const camName = cameraSelect.value;
     const plateFilter = getSelectedPlate();
+    const supportsB = supportsBMountCamera(camName);
     let selectedCandidate = null;
     if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
       const selData = devices.batteries[selectedBatteryName];
-      if (!plateFilter || selData.mount_type === plateFilter) {
+      if ((!plateFilter || selData.mount_type === plateFilter) && (supportsB || selData.mount_type !== 'B-Mount')) {
         const pinOK_sel = totalCurrentLow <= selData.pinA;
         const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
         if (pinOK_sel || dtapOK_sel) {
@@ -3010,6 +3024,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
 
       const data = devices.batteries[battName];
       if (plateFilter && data.mount_type !== plateFilter) continue;
+      if (!plateFilter && !supportsB && data.mount_type === 'B-Mount') continue;
       const canPin = totalCurrentLow <= data.pinA;
       const canDTap = !bMountCam && totalCurrentLow <= data.dtapA;
 
