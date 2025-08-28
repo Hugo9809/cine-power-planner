@@ -5276,6 +5276,44 @@ function generatePrintableOverview() {
                 .category-icon {
                   margin-right: 4px;
                 }
+                body.dark-mode {
+                  background-color: #121212;
+                  color: #f0f0f0;
+                }
+                body.dark-mode h1,
+                body.dark-mode h2,
+                body.dark-mode h3 {
+                  color: #ffffff;
+                }
+                body.dark-mode h2 {
+                  border-bottom: 2px solid #ffffff;
+                }
+                body.dark-mode th {
+                  background-color: #333;
+                }
+                body.dark-mode .print-btn {
+                  background: #333;
+                  color: #f0f0f0;
+                  border-color: #555;
+                }
+                body.dark-mode .device-category {
+                  background: #1e1e1e;
+                  border-color: #333;
+                  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+                }
+                body.dark-mode .device-category h3 {
+                  border-bottom: 1px solid #fff;
+                  color: #fff;
+                }
+                body.dark-mode .device-block {
+                  background: rgba(255,255,255,0.1);
+                  border-color: #555;
+                  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                }
+                body.dark-mode .connector-block,
+                body.dark-mode .info-box {
+                  background-color: rgba(255,255,255,0.1);
+                }
                 .connector-summary {
                   margin-top: 5px;
                   display: flex;
