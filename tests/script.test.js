@@ -507,6 +507,13 @@ describe('script.js functions', () => {
     expect(port).toBe('EXT LEMO 7-pin');
   });
 
+  test('cforce RF motor and RIA use Cam port to camera', () => {
+    const { controllerCamPort } = script;
+    expect(controllerCamPort('Arri cforce mini RF (KK.0040345)')).toBe('Cam');
+    expect(controllerCamPort('Arri RIA-1')).toBe('Cam');
+    expect(controllerCamPort('Arri Master Grip (single unit)')).toBe('LBUS');
+  });
+
   test('ARRI camera with LBUS avoids distance warning', () => {
     jest.resetModules();
 

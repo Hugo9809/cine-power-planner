@@ -411,6 +411,7 @@ function formatConnLabel(from, to) {
 
 
 function controllerCamPort(name) {
+  if (/cforce.*rf/i.test(name) || /RIA-1/i.test(name)) return 'Cam';
   const c = devices.fiz?.controllers?.[name];
   if (c) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
@@ -5805,6 +5806,7 @@ if (typeof module !== "undefined" && module.exports) {
     enableDiagramInteractions,
     updateDiagramLegend,
     cameraFizPort,
+    controllerCamPort,
     detectBrand,
     connectionLabel,
   };
