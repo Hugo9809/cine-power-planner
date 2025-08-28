@@ -144,6 +144,33 @@ describe('script.js functions', () => {
     expect(optionsB).not.toContain('VBatt');
   });
 
+  test('battery comparison excludes B-Mount when camera lacks support', () => {
+    global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
+    global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
+    global.devices.batteries.BBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+
+    addOpt('cameraSelect', 'NoPlateCam');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    script.updateBatteryPlateVisibility();
+    script.updateBatteryOptions();
+    document.getElementById('batterySelect').value = 'VBatt';
+    script.updateCalculations();
+
+    const html = document.getElementById('batteryComparison').innerHTML;
+    expect(html).toContain('VBatt');
+    expect(html).not.toContain('BBatt');
+  });
+
   test('setLanguage updates language and saves preference', () => {
     script.setLanguage('de');
     expect(document.documentElement.lang).toBe('de');
