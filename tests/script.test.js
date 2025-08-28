@@ -778,6 +778,28 @@ describe('script.js functions', () => {
     expect(labels.some(l => l.includes('D-Tap'))).toBe(true);
   });
 
+  test('Nucleus M battery cable labeled D-Tap to LEMO 7-pin', () => {
+    global.devices.fiz.motors['Tilta Nucleus M'] = {
+      powerDrawWatts: 20,
+      internalController: true,
+      fizConnectors: [{ type: 'LEMO 7-pin' }]
+    };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('motor1Select', 'Tilta Nucleus M');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
+    expect(labels).toContain('D-Tap to LEMO 7-pin');
+  });
+
   test('motor with internal controller is first FIZ device', () => {
     global.devices.fiz.motors.IntMotor = {
       powerDrawWatts: 2,

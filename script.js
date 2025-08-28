@@ -500,7 +500,8 @@ function controllerFizPort(name) {
 
 function motorFizPort(name) {
   const m = devices.fiz?.motors?.[name];
-  const port = firstConnector(m?.fizConnector);
+  const portStr = m?.fizConnector || m?.fizConnectors?.[0]?.type;
+  const port = firstConnector(portStr);
   if (port) return port;
   return isArriOrCmotion(name) ? 'LBUS' : 'Proprietary';
 }
@@ -3411,7 +3412,7 @@ function renderSetupDiagram() {
   if (powerTarget && fizNeedsPower(powerTarget.name)) {
     const { id: fizId, name } = powerTarget;
     const powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
-    const label = formatConnLabel(fizPowerPort(name), 'D-Tap');
+    const label = formatConnLabel('D-Tap', fizPowerPort(name));
     const skipBatt = isArri(camName) && isArriOrCmotion(name);
     if (powerSrc && !skipBatt) {
       pushEdge({
