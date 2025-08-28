@@ -1058,6 +1058,16 @@ describe('script.js functions', () => {
     const html = script.generateConnectorSummary(data);
     expect(html).toContain('📡 Wireless: true');
   });
+
+  test('generateConnectorSummary merges duplicate labels', () => {
+    const data = {
+      gearTypes: ['0.6 mod', '0.8 mod'],
+      fizConnectors: [{ type: 'LBUS' }, { type: 'LEMO 7-pin' }]
+    };
+    const html = script.generateConnectorSummary(data);
+    expect(html).toContain('Gear: 0.6 mod, 0.8 mod');
+    expect(html).toContain('FIZ Port: LBUS, LEMO 7-pin');
+  });
 });
 
 describe('monitor wireless metadata', () => {
