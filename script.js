@@ -5042,6 +5042,7 @@ function generatePrintableOverview() {
     const locale = localeMap[currentLang] || 'en-US';
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const t = texts[currentLang];
+    const langSelectorHtml = document.getElementById("langSelector").innerHTML;
 
     let deviceListHtml = '<div class="device-category-container">';
     const sections = {};
@@ -5102,11 +5103,11 @@ function generatePrintableOverview() {
     let warningHtml = '';
     // Check if pinWarnElem has content that is not just "OK"
     if (pinWarnElem.textContent.trim() !== '' && !pinWarnElem.textContent.includes("OK")) {
-        warningHtml += `<p class="warning">${pinWarnElem.textContent}</p>`;
+        warningHtml += `<p class="warning" style="color: ${pinWarnElem.style.color || 'red'};">${pinWarnElem.textContent}</p>`;
     }
     // Check if dtapWarnElem has content that is not just "OK"
     if (dtapWarnElem.textContent.trim() !== '' && !dtapWarnElem.textContent.includes("OK")) {
-        warningHtml += `<p class="warning">${dtapWarnElem.textContent}</p>`;
+        warningHtml += `<p class="warning" style="color: ${dtapWarnElem.style.color || 'red'};">${dtapWarnElem.textContent}</p>`;
     }
     if (warningHtml !== '') {
         warningHtml = `<h2>Warnings</h2>${warningHtml}`;
@@ -5260,6 +5261,7 @@ function generatePrintableOverview() {
         <head>
             <meta charset="UTF-8">
             <title>${t.overviewTitle} - ${safeSetupName}</title>
+            <link rel="stylesheet" href="style.css">
             <style>
                 body { font-family: 'Open Sans', sans-serif; margin: 25px; color: #333; font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                 h1, h2, h3 { font-family: 'Open Sans', sans-serif; font-weight: 500; color: #001589; }
@@ -5376,7 +5378,7 @@ function generatePrintableOverview() {
                 }
                 @media print {
                     .print-btn { display: none; }
-                    body { margin: 1cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    body, body.dark-mode, body.pink-mode, body.dark-mode.pink-mode { margin: 1cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #fff !important; color: #000 !important; }
                     .device-overview { list-style: none; margin-left: 0; padding-left: 0; }
                     .device-item { margin: 5px 0; }
                     .device-data { margin-left: 15px; }
@@ -5477,6 +5479,7 @@ function generatePrintableOverview() {
             </style>
         </head>
         <body>
+            <div id="langSelector">${langSelectorHtml}</div>
             <button onclick="window.print()" class="print-btn">Print</button>
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
@@ -5492,6 +5495,14 @@ function generatePrintableOverview() {
             ${diagramHtml}
 
             ${batteryTableHtml}
+            <script>
+            document.getElementById('darkModeToggle').addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+            });
+            document.getElementById('pinkModeToggle').addEventListener('click', function() {
+                document.body.classList.toggle('pink-mode');
+            });
+            </script>
         </body>
         </html>
     `;

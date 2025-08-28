@@ -416,6 +416,36 @@ describe('script.js functions', () => {
     expect(document.getElementById('dtapWarning').style.color).toBe('orange');
   });
 
+  test('overview reuses warning colors and shows theme controls', () => {
+    global.devices.batteries.NoteBatt = { capacity: 50, pinA: 2.3, dtapA: 2.3, mount_type: 'V-Mount' };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'NoteBatt');
+    script.setLanguage('fr');
+    script.updateCalculations();
+    const pinColor = document.getElementById('pinWarning').style.color;
+    const dtapColor = document.getElementById('dtapWarning').style.color;
+    let writtenHtml = '';
+    window.open = jest.fn().mockReturnValue({
+      document: { write: html => { writtenHtml = html; }, close: jest.fn() }
+    });
+    script.generatePrintableOverview();
+    expect(writtenHtml).toContain(`<p class="warning" style="color: ${pinColor};">`);
+    expect(writtenHtml).toContain(`<p class="warning" style="color: ${dtapColor};">`);
+    expect(writtenHtml).toContain('id="langSelector"');
+    expect(writtenHtml).toContain('id="darkModeToggle"');
+    expect(writtenHtml).toContain('id="pinkModeToggle"');
+  });
+
   test('missing FIZ controller shows error', () => {
     jest.resetModules();
 
