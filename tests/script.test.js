@@ -375,6 +375,8 @@ describe('script.js functions', () => {
     expect(html).toContain('id="darkModeToggle"');
     expect(html).toContain('id="pinkModeToggle"');
     expect(html).toContain('id="languageSelect"');
+    expect(html).toContain('id="breakdownList"');
+    expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });
 
   test('battery plate selection is saved and loaded with setups', () => {
