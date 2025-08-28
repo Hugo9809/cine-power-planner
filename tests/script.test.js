@@ -372,6 +372,9 @@ describe('script.js functions', () => {
     expect(html).toContain('id="diagramArea"');
     expect(html).toContain('<svg');
     expect(html).toContain('class="device-block"');
+    expect(html).toContain('id="darkModeToggle"');
+    expect(html).toContain('id="pinkModeToggle"');
+    expect(html).toContain('id="languageSelect"');
   });
 
   test('battery plate selection is saved and loaded with setups', () => {
