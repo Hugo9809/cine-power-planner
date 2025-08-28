@@ -5168,6 +5168,32 @@ let devices={
         }
       ]
     },
+    "Hollyland Pyro 5": {
+      "screenSizeInches": 5,
+      "brightnessNits": 1500,
+      "powerDrawWatts": 16.5,
+      "power": {
+        "input": {
+          "voltageRange": "7-16",
+          "type": "DC Barrel"
+        },
+        "output": null
+      },
+      "wirelessTx": true,
+      "videoInputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        }
+      ]
+    },
     "Hollyland Mars M1 Enhanced": {
       "screenSizeInches": 5.5,
       "brightnessNits": 1000,
