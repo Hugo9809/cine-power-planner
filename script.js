@@ -4163,10 +4163,13 @@ deviceManagerSection.addEventListener("click", (event) => {
       monitorVoltageInput.value = deviceData.power?.input?.voltageRange || '';
       const mpt = firstPowerInputType(deviceData);
       monitorPortTypeInput.value = mpt || "";
-      setMonitorVideoInputs(deviceData.video?.inputs || []);
-      setMonitorVideoOutputs(deviceData.video?.outputs || []);
+      setMonitorVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
+      setMonitorVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
       monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
-      monitorAudioOutputInput.value = deviceData.audioOutput?.portType || '';
+      monitorAudioOutputInput.value =
+        deviceData.audioOutput?.portType ||
+        deviceData.audioOutput?.type ||
+        deviceData.audioOutput || '';
     } else if (categoryKey === "video") {
       wattFieldDiv.style.display = "block";
       cameraFieldsDiv.style.display = "none";
