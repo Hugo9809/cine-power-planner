@@ -4953,27 +4953,27 @@ function generateConnectorSummary(data) {
     if (Array.isArray(data.power?.batteryPlateSupport)) {
         const boxes = data.power.batteryPlateSupport.map(p => {
             const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
-            return `<span class="info-box neutral-conn">${escapeHtml(p.type)}${mount}</span>`;
+            return `<span class="info-box neutral-conn">Battery Plate: ${escapeHtml(p.type)}${mount}</span>`;
         }).join('');
         extraHtml += boxes;
     }
     if (Array.isArray(data.recordingMedia)) {
-        const boxes = data.recordingMedia.map(m => `<span class="info-box neutral-conn">${escapeHtml(m.type)}</span>`).join('');
+        const boxes = data.recordingMedia.map(m => `<span class="info-box neutral-conn">Media: ${escapeHtml(m.type)}</span>`).join('');
         extraHtml += boxes;
     }
     if (Array.isArray(data.viewfinder)) {
-        const boxes = data.viewfinder.map(v => `<span class="info-box neutral-conn">${escapeHtml(v.type)}</span>`).join('');
+        const boxes = data.viewfinder.map(v => `<span class="info-box neutral-conn">Viewfinder: ${escapeHtml(v.type)}</span>`).join('');
         extraHtml += boxes;
     }
     if (Array.isArray(data.gearTypes)) {
-        const boxes = data.gearTypes.map(g => `<span class="info-box neutral-conn">${escapeHtml(g)}</span>`).join('');
+        const boxes = data.gearTypes.map(g => `<span class="info-box neutral-conn">Gear: ${escapeHtml(g)}</span>`).join('');
         extraHtml += boxes;
     }
     if (data.connectivity) {
-        extraHtml += `<span class="info-box neutral-conn">${escapeHtml(String(data.connectivity))}</span>`;
+        extraHtml += `<span class="info-box neutral-conn">Connectivity: ${escapeHtml(String(data.connectivity))}</span>`;
     }
     if (data.notes) {
-        extraHtml += `<span class="info-box neutral-conn">${escapeHtml(String(data.notes))}</span>`;
+        extraHtml += `<span class="info-box neutral-conn">Notes: ${escapeHtml(String(data.notes))}</span>`;
     }
 
     let lensHtml = '';
@@ -5769,5 +5769,6 @@ if (typeof module !== "undefined" && module.exports) {
     controllerCamPort,
     detectBrand,
     connectionLabel,
+    generateConnectorSummary,
   };
 }
