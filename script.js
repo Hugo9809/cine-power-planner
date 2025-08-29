@@ -1136,6 +1136,7 @@ const diagramCssLight = `
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
 .conn.green{fill:#090;}
+text{font-family:'Open Sans',sans-serif;}
 .edge-label{font-size:10px;}
 line{stroke:#333;stroke-width:2px;}
 path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
@@ -1148,7 +1149,7 @@ const diagramCssDark = `
 .node-box{fill:#333;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-text{fill:#fff;}
+text{fill:#fff;font-family:'Open Sans',sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
 path.power{stroke:#ff6666;}
