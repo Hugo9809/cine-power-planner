@@ -5067,7 +5067,8 @@ function generatePrintableOverview() {
           const heading = t[key] || key;
           const icon = overviewSectionIcons[key] || '';
           const iconHtml = icon ? `<span class="category-icon" aria-hidden="true">${icon}</span>` : '';
-          deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="device-block-grid">${sections[key].join('')}</div></div>`;
+          const gridClasses = (key === 'category_fiz_motors' || key === 'category_fiz_controllers') ? 'device-block-grid two-column' : 'device-block-grid single-column';
+        deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
       });
       deviceListHtml += '</div>';
 
@@ -5246,8 +5247,13 @@ function generatePrintableOverview() {
                 .print-btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; background: #f0f0f0; margin-bottom: 20px; }
                 .device-block-grid {
                   display: grid;
-                  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                   gap: 8px;
+                }
+                .device-block-grid.single-column {
+                  grid-template-columns: 1fr;
+                }
+                .device-block-grid.two-column {
+                  grid-template-columns: repeat(2, 1fr);
                 }
                 .device-block {
                   background: rgba(255,255,255,0.95);
@@ -5430,8 +5436,13 @@ function generatePrintableOverview() {
                     body { margin: 1cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                     .device-block-grid {
                       display: grid !important;
-                      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                       gap: 8px;
+                    }
+                    .device-block-grid.single-column {
+                      grid-template-columns: 1fr !important;
+                    }
+                    .device-block-grid.two-column {
+                      grid-template-columns: repeat(2, 1fr) !important;
                     }
                     .device-block {
                       background: rgba(255,255,255,0.95) !important;
