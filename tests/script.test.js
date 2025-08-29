@@ -559,6 +559,11 @@ describe('script.js functions', () => {
     expect(controllerCamPort('Tilta Nucleus M')).toBe('LEMO 7-pin');
   });
 
+  test('default motor uses FIZ Port label to camera', () => {
+    const { controllerCamPort } = script;
+    expect(controllerCamPort('Generic FIZ Device')).toBe('FIZ Port');
+  });
+
   test('ARRI camera with LBUS avoids distance warning', () => {
     jest.resetModules();
 

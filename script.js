@@ -431,7 +431,7 @@ function controllerCamPort(name) {
     if (/7-pin/i.test(connStr)) return 'LEMO 7-pin';
   }
   if (isArriOrCmotion(name) && !isRf) return 'LBUS';
-  return 'FIZ';
+  return 'FIZ Port';
 }
 
 function controllerDistancePort(name) {
