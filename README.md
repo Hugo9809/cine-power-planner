@@ -17,9 +17,11 @@ language-specific README files for full details.
 
 ## Quick Start
 
-1. Open `index.html` in a modern browser to run the planner offline.
-2. To lint and test the code, install dependencies then run:
+1. Make sure you have Node.js 18 or later installed if you want to lint or test the project.
+2. Open `index.html` in a modern browser to run the planner offline.
+3. Install dependencies and run the full test suite:
    ```bash
    npm install
    npm test
    ```
+   The `npm test` command runs ESLint, data consistency checks and Jest tests.
