@@ -57,7 +57,7 @@ function normalizeCamera(cam) {
 
 function normalizeMonitor(mon) {
   if (mon.power?.input) cleanPort(mon.power.input);
-  if (mon.power.input.voltageRange) mon.power.input.voltageRange = cleanVoltageRange(mon.power.input.voltageRange);
+  if (mon.power?.input?.voltageRange) mon.power.input.voltageRange = cleanVoltageRange(mon.power.input.voltageRange);
   if (mon.power?.output) cleanPort(mon.power.output);
 
   if (mon.video) {
@@ -120,24 +120,45 @@ function normalizeFiz(dev) {
   if (Array.isArray(dev.fizConnectors)) dev.fizConnectors.forEach(cleanPort);
 }
 
-for (const cam of Object.values(devices.cameras)) {
-  normalizeCamera(cam);
+if (require.main === module) {
+  for (const cam of Object.values(devices.cameras)) {
+    normalizeCamera(cam);
+  }
+  for (const mon of Object.values(devices.monitors)) {
+    normalizeMonitor(mon);
+  }
+  for (const vd of Object.values(devices.video)) {
+    normalizeVideoDevice(vd);
+  }
+  for (const motor of Object.values(devices.fiz.motors)) {
+    normalizeFiz(motor);
+  }
+  for (const ctrl of Object.values(devices.fiz.controllers)) {
+    normalizeFiz(ctrl);
+  }
+  for (const dist of Object.values(devices.fiz.distance)) {
+    normalizeFiz(dist);
+  }
+  deepClean(devices);
+  fs.writeFileSync(
+    'data.js',
+    'let devices=' +
+      JSON.stringify(devices, null, 2) +
+      ';\nif (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n'
+  );
 }
-for (const mon of Object.values(devices.monitors)) {
-  normalizeMonitor(mon);
-}
-for (const vd of Object.values(devices.video)) {
-  normalizeVideoDevice(vd);
-}
-for (const motor of Object.values(devices.fiz.motors)) {
-  normalizeFiz(motor);
-}
-for (const ctrl of Object.values(devices.fiz.controllers)) {
-  normalizeFiz(ctrl);
-}
-for (const dist of Object.values(devices.fiz.distance)) {
-  normalizeFiz(dist);
-}
-deepClean(devices);
 
-fs.writeFileSync('data.js', 'let devices=' + JSON.stringify(devices, null, 2) + ';\nif (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n');
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    cleanTypeName,
+    cleanVoltageRange,
+    deepClean,
+    cleanPort,
+    normalizeCamera,
+    normalizeMonitor,
+    normalizeVideoDevice,
+    normalizeFiz,
+    parsePowerInput,
+    devices,
+  };
+}
