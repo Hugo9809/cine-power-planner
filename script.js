@@ -5655,6 +5655,56 @@ function generatePrintableOverview() {
                         applyDarkMode(true);
                     }
                 });
+
+                const downloadBtn = document.getElementById('downloadDiagram');
+                if (downloadBtn) {
+                    downloadBtn.addEventListener('click', (e) => {
+                        const svgEl = document.querySelector('#diagramArea svg');
+                        if (!svgEl) return;
+                        const clone = svgEl.cloneNode(true);
+                        const labels = svgEl.querySelectorAll('.edge-label');
+                        const cloneLabels = clone.querySelectorAll('.edge-label');
+                        labels.forEach((lbl, idx) => {
+                            if (cloneLabels[idx]) cloneLabels[idx].textContent = lbl.textContent;
+                        });
+                        const serializer = new XMLSerializer();
+                        const source = serializer.serializeToString(clone);
+
+                        navigator.clipboard.writeText(source).catch(() => {});
+
+                        const saveSvg = () => {
+                            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'setup-diagram.svg';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        };
+
+                        if (e.shiftKey) {
+                            const img = new Image();
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+                                canvas.toBlob(blob => {
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = 'setup-diagram.jpg';
+                                    a.click();
+                                    URL.revokeObjectURL(url);
+                                }, 'image/jpeg', 0.95);
+                            };
+                            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
+                        } else {
+                            saveSvg();
+                        }
+                    });
+                }
             })();
             </script>
         </body>
