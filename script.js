@@ -5322,6 +5322,9 @@ function generatePrintableOverview() {
                 body.dark-mode .info-box {
                   background-color: rgba(255,255,255,0.1);
                 }
+                body.dark-mode .power-conn { background-color: rgba(244,67,54,0.3); }
+                body.dark-mode .fiz-conn { background-color: rgba(76,175,80,0.3); }
+                body.dark-mode .video-conn { background-color: rgba(33,150,243,0.3); }
                 .connector-summary {
                   margin-top: 5px;
                   display: flex;
@@ -5353,9 +5356,18 @@ function generatePrintableOverview() {
                   font-size: 0.75em;
                   font-weight: bold;
                 }
-                .power-conn { border-color: #f44336; }
-                .fiz-conn { border-color: #4caf50; }
-                .video-conn { border-color: #2196f3; }
+                .power-conn {
+                  border-color: #f44336;
+                  background-color: rgba(244,67,54,0.15);
+                }
+                .fiz-conn {
+                  border-color: #4caf50;
+                  background-color: rgba(76,175,80,0.15);
+                }
+                .video-conn {
+                  border-color: #2196f3;
+                  background-color: rgba(33,150,243,0.15);
+                }
                 .neutral-conn { border-color: #9e9e9e; }
                 ${diagramCss}
                 #diagramArea { margin-top: 0.5em; position: relative; }
@@ -5487,9 +5499,18 @@ function generatePrintableOverview() {
                       font-size: 0.75em;
                       font-weight: bold;
                     }
-                    .power-conn { border-color: #f44336 !important; }
-                    .fiz-conn { border-color: #4caf50 !important; }
-                    .video-conn { border-color: #2196f3 !important; }
+                    .power-conn {
+                      border-color: #f44336 !important;
+                      background-color: rgba(244,67,54,0.15) !important;
+                    }
+                    .fiz-conn {
+                      border-color: #4caf50 !important;
+                      background-color: rgba(76,175,80,0.15) !important;
+                    }
+                    .video-conn {
+                      border-color: #2196f3 !important;
+                      background-color: rgba(33,150,243,0.15) !important;
+                    }
                     .neutral-conn { border-color: #9e9e9e !important; }
                     /* Styles for Battery Comparison Bars in Overview for Print */
                     .barContainer {
