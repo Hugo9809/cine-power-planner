@@ -411,7 +411,8 @@ function formatConnLabel(from, to) {
 
 
 function controllerCamPort(name) {
-  if (/cforce.*rf/i.test(name) || /RIA-1/i.test(name)) return 'Cam';
+  const isRf = /cforce.*rf/i.test(name) || /RIA-1/i.test(name);
+  if (isRf) return 'Cam';
   const c = devices.fiz?.controllers?.[name];
   if (c) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
@@ -429,7 +430,8 @@ function controllerCamPort(name) {
     if (/CAM/i.test(connStr)) return 'Cam';
     if (/7-pin/i.test(connStr)) return 'LEMO 7-pin';
   }
-  return isArriOrCmotion(name) ? 'LBUS' : 'FIZ';
+  if (isArriOrCmotion(name) && !isRf) return 'LBUS';
+  return 'FIZ';
 }
 
 function controllerDistancePort(name) {

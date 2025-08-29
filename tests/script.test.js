@@ -546,6 +546,7 @@ describe('script.js functions', () => {
     const { controllerCamPort } = script;
     expect(controllerCamPort('Arri cforce mini RF (KK.0040345)')).toBe('Cam');
     expect(controllerCamPort('Arri RIA-1')).toBe('Cam');
+    expect(controllerCamPort('Arri cforceRF')).toBe('Cam');
     expect(controllerCamPort('Arri Master Grip (single unit)')).toBe('LBUS');
   });
 
