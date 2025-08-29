@@ -1095,12 +1095,40 @@ describe('script.js functions', () => {
       notes: 'Note'
     };
     const html = script.generateConnectorSummary(data);
-    expect(html).toContain('Battery Plate: V-Mount');
-    expect(html).toContain('Media: CFast 2.0');
-    expect(html).toContain('Viewfinder: EVF');
-    expect(html).toContain('Gear: Focus');
-    expect(html).toContain('Connectivity: Wi-Fi');
-    expect(html).toContain('Notes: Note');
+    expect(html).toContain('<span class="info-box power-conn">Battery Plate: V-Mount');
+    expect(html).toContain('<span class="info-box video-conn">Media: CFast 2.0');
+    expect(html).toContain('<span class="info-box video-conn">Viewfinder: EVF');
+    expect(html).toContain('<span class="info-box fiz-conn">Gear: Focus');
+    expect(html).toContain('<span class="info-box video-conn">Connectivity: Wi-Fi');
+    expect(html).toContain('<span class="info-box neutral-conn">Notes: Note');
+  });
+
+  test('generateConnectorSummary categorizes specs', () => {
+    const data = {
+      powerDrawWatts: 5,
+      power: { input: { voltageRange: '10-20' } },
+      capacity: 95,
+      pinA: 10,
+      dtapA: 2,
+      screenSizeInches: 7,
+      brightnessNits: 1000,
+      wirelessTx: true,
+      internalController: true,
+      torqueNm: 0.5,
+      power_source: 'battery'
+    };
+    const html = script.generateConnectorSummary(data);
+    expect(html).toContain('<span class="info-box power-conn">⚡ Power: 5 W</span>');
+    expect(html).toContain('<span class="info-box power-conn">🔋 Voltage: 10-20V</span>');
+    expect(html).toContain('<span class="info-box power-conn">🔋 Capacity: 95 Wh</span>');
+    expect(html).toContain('<span class="info-box power-conn">Pins: 10A</span>');
+    expect(html).toContain('<span class="info-box power-conn">D-Tap: 2A</span>');
+    expect(html).toContain('<span class="info-box video-conn">📐 Screen: 7"</span>');
+    expect(html).toContain('<span class="info-box video-conn">💡 Brightness: 1000 nits</span>');
+    expect(html).toContain('<span class="info-box video-conn">📡 Wireless: true</span>');
+    expect(html).toContain('<span class="info-box fiz-conn">🎛️ Controller: Internal</span>');
+    expect(html).toContain('<span class="info-box fiz-conn">⚙️ Torque: 0.5 Nm</span>');
+    expect(html).toContain('<span class="info-box power-conn">🔌 Power Source: battery</span>');
   });
 
   test('generateConnectorSummary omits wireless when absent', () => {

@@ -4925,13 +4925,13 @@ function generateConnectorSummary(data) {
 
     let specHtml = '';
     if (typeof data.powerDrawWatts === 'number') {
-        specHtml += `<span class="info-box neutral-conn">⚡ Power: ${data.powerDrawWatts} W</span>`;
+        specHtml += `<span class="info-box power-conn">⚡ Power: ${data.powerDrawWatts} W</span>`;
     }
     if (data.power?.input?.voltageRange) {
-        specHtml += `<span class="info-box neutral-conn">🔋 Voltage: ${escapeHtml(String(data.power.input.voltageRange))}V</span>`;
+        specHtml += `<span class="info-box power-conn">🔋 Voltage: ${escapeHtml(String(data.power.input.voltageRange))}V</span>`;
     }
     if (typeof data.capacity === 'number') {
-        specHtml += `<span class="info-box neutral-conn">🔋 Capacity: ${data.capacity} Wh</span>`;
+        specHtml += `<span class="info-box power-conn">🔋 Capacity: ${data.capacity} Wh</span>`;
     }
     if (typeof data.pinA === 'number') {
         specHtml += `<span class="info-box power-conn">Pins: ${data.pinA}A</span>`;
@@ -4943,22 +4943,22 @@ function generateConnectorSummary(data) {
         specHtml += `<span class="info-box neutral-conn">Mount: ${escapeHtml(String(data.mount_type))}</span>`;
     }
     if (typeof data.screenSizeInches === 'number') {
-        specHtml += `<span class="info-box neutral-conn">📐 Screen: ${data.screenSizeInches}"</span>`;
+        specHtml += `<span class="info-box video-conn">📐 Screen: ${data.screenSizeInches}"</span>`;
     }
     if (typeof data.brightnessNits === 'number') {
-        specHtml += `<span class="info-box neutral-conn">💡 Brightness: ${data.brightnessNits} nits</span>`;
+        specHtml += `<span class="info-box video-conn">💡 Brightness: ${data.brightnessNits} nits</span>`;
     }
     if (typeof data.wirelessTx === 'boolean') {
-        specHtml += `<span class="info-box neutral-conn">📡 Wireless: ${data.wirelessTx}</span>`;
+        specHtml += `<span class="info-box video-conn">📡 Wireless: ${data.wirelessTx}</span>`;
     }
     if (data.internalController) {
-        specHtml += `<span class="info-box neutral-conn">🎛️ Controller: Internal</span>`;
+        specHtml += `<span class="info-box fiz-conn">🎛️ Controller: Internal</span>`;
     }
     if (typeof data.torqueNm === 'number') {
-        specHtml += `<span class="info-box neutral-conn">⚙️ Torque: ${data.torqueNm} Nm</span>`;
+        specHtml += `<span class="info-box fiz-conn">⚙️ Torque: ${data.torqueNm} Nm</span>`;
     }
     if (data.power_source) {
-        specHtml += `<span class="info-box neutral-conn">🔌 Power Source: ${escapeHtml(String(data.power_source))}</span>`;
+        specHtml += `<span class="info-box power-conn">🔌 Power Source: ${escapeHtml(String(data.power_source))}</span>`;
     }
 
     let extraHtml = '';
@@ -4967,22 +4967,22 @@ function generateConnectorSummary(data) {
             const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
             return `${escapeHtml(p.type)}${mount}`;
         });
-        extraHtml += `<span class="info-box neutral-conn">Battery Plate: ${types.join(', ')}</span>`;
+        extraHtml += `<span class="info-box power-conn">Battery Plate: ${types.join(', ')}</span>`;
     }
     if (Array.isArray(data.recordingMedia) && data.recordingMedia.length) {
         const types = data.recordingMedia.map(m => escapeHtml(m.type));
-        extraHtml += `<span class="info-box neutral-conn">Media: ${types.join(', ')}</span>`;
+        extraHtml += `<span class="info-box video-conn">Media: ${types.join(', ')}</span>`;
     }
     if (Array.isArray(data.viewfinder) && data.viewfinder.length) {
         const types = data.viewfinder.map(v => escapeHtml(v.type));
-        extraHtml += `<span class="info-box neutral-conn">Viewfinder: ${types.join(', ')}</span>`;
+        extraHtml += `<span class="info-box video-conn">Viewfinder: ${types.join(', ')}</span>`;
     }
     if (Array.isArray(data.gearTypes) && data.gearTypes.length) {
         const types = data.gearTypes.map(g => escapeHtml(g));
-        extraHtml += `<span class="info-box neutral-conn">Gear: ${types.join(', ')}</span>`;
+        extraHtml += `<span class="info-box fiz-conn">Gear: ${types.join(', ')}</span>`;
     }
     if (data.connectivity) {
-        extraHtml += `<span class="info-box neutral-conn">Connectivity: ${escapeHtml(String(data.connectivity))}</span>`;
+        extraHtml += `<span class="info-box video-conn">Connectivity: ${escapeHtml(String(data.connectivity))}</span>`;
     }
     if (data.notes) {
         extraHtml += `<span class="info-box neutral-conn">Notes: ${escapeHtml(String(data.notes))}</span>`;
