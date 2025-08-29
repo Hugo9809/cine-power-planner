@@ -2975,9 +2975,9 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         .replace("{max}", maxPinA);
       pinWarnElem.style.color = "green";
     } else {
-      if (pinSeverity === "warning") {
+      if (pinSeverity === texts[currentLang].warnPinExceededLevel) {
         pinWarnElem.style.color = "red";
-      } else if (pinSeverity === "note") {
+      } else if (pinSeverity === texts[currentLang].warnPinNearLevel) {
         pinWarnElem.style.color = "orange";
       } else {
         pinWarnElem.style.color = "";
@@ -2989,9 +2989,9 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
           .replace("{max}", maxDtapA);
         dtapWarnElem.style.color = "green";
       } else {
-        if (dtapSeverity === "warning") {
+        if (dtapSeverity === texts[currentLang].warnDTapExceededLevel) {
           dtapWarnElem.style.color = "red";
-        } else if (dtapSeverity === "note") {
+        } else if (dtapSeverity === texts[currentLang].warnDTapNearLevel) {
           dtapWarnElem.style.color = "orange";
         } else {
           dtapWarnElem.style.color = "";
