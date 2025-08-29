@@ -1130,6 +1130,24 @@ describe('script.js functions', () => {
     expect(html).toContain('Gear: 0.6 mod, 0.8 mod');
     expect(html).toContain('FIZ Port: LBUS, LEMO 7-pin');
   });
+
+  test('exportDiagramSvg includes connection labels', () => {
+    global.devices.cameras.CamA.videoOutputs = [{ type: 'HDMI' }];
+    global.devices.monitors.MonA.videoInputs = [{ type: 'HDMI' }];
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+
+    script.renderSetupDiagram();
+    const svg = script.exportDiagramSvg();
+    expect(svg).toContain('edge-label');
+    expect(svg).toContain('HDMI');
+  });
 });
 
 describe('monitor wireless metadata', () => {

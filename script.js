@@ -5724,18 +5724,28 @@ if (pinkModeToggle) {
   });
 }
 
+function exportDiagramSvg() {
+  if (!setupDiagramContainer) return '';
+  const svgEl = setupDiagramContainer.querySelector('svg');
+  if (!svgEl) return '';
+
+  const clone = svgEl.cloneNode(true);
+  const labels = svgEl.querySelectorAll('.edge-label');
+  const cloneLabels = clone.querySelectorAll('.edge-label');
+  labels.forEach((lbl, idx) => {
+    if (cloneLabels[idx]) cloneLabels[idx].textContent = lbl.textContent;
+  });
+  const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+  style.textContent = getDiagramCss();
+  clone.insertBefore(style, clone.firstChild);
+  const serializer = new XMLSerializer();
+  return serializer.serializeToString(clone);
+}
+
 if (downloadDiagramBtn) {
   downloadDiagramBtn.addEventListener('click', (e) => {
-    const svgEl = setupDiagramContainer.querySelector('svg');
-    if (!svgEl) return;
-
-    const clone = svgEl.cloneNode(true);
-    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-    style.textContent = getDiagramCss();
-    clone.insertBefore(style, clone.firstChild);
-
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(clone);
+    const source = exportDiagramSvg();
+    if (!source) return;
 
     navigator.clipboard.writeText(source).catch(() => {});
 
@@ -5879,5 +5889,6 @@ if (typeof module !== "undefined" && module.exports) {
     detectBrand,
     connectionLabel,
     generateConnectorSummary,
+    exportDiagramSvg,
   };
 }
