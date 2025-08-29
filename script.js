@@ -411,20 +411,27 @@ function formatConnLabel(from, to) {
 
 
 function controllerCamPort(name) {
-  if (/cforce.*rf/i.test(name) || /RIA-1/i.test(name)) return 'Cam';
+  const isRf = /cforce.*rf/i.test(name) || /RIA-1/i.test(name);
+  if (isRf) return 'Cam';
   const c = devices.fiz?.controllers?.[name];
   if (c) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
-    const connStr = (c.fizConnectors || []).map(fc => fc.type).join(', ');
+    const connStr = (
+      c.fizConnectors ? c.fizConnectors.map(fc => fc.type).join(', ') : c.fizConnector || ''
+    );
     if (/CAM/i.test(connStr)) return 'Cam';
     if (/7-pin/i.test(connStr)) return 'LEMO 7-pin';
   }
   const m = devices.fiz?.motors?.[name];
   if (m) {
-    if (/CAM/i.test(m.fizConnector || '')) return 'Cam';
-    if (/7-pin/i.test(m.fizConnector || '')) return 'LEMO 7-pin';
+    const connStr = (
+      m.fizConnector || (m.fizConnectors || []).map(fc => fc.type).join(', ')
+    );
+    if (/CAM/i.test(connStr)) return 'Cam';
+    if (/7-pin/i.test(connStr)) return 'LEMO 7-pin';
   }
-  return 'LBUS';
+  if (isArriOrCmotion(name) && !isRf) return 'LBUS';
+  return 'FIZ';
 }
 
 function controllerDistancePort(name) {
