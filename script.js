@@ -1160,8 +1160,8 @@ path.fiz{stroke:#6f6;}
 .diagram-placeholder{color:#bbb;}
 `;
 
-function getDiagramCss() {
-  return diagramCssLight + (document.body.classList.contains('dark-mode') ? diagramCssDark : '');
+function getDiagramCss(includeDark = true) {
+  return diagramCssLight + (includeDark && document.body.classList.contains('dark-mode') ? diagramCssDark : '');
 }
 
 // Icons for setup diagram nodes
@@ -5198,7 +5198,7 @@ function generatePrintableOverview() {
     }
     
     const safeSetupName = escapeHtml(setupName);
-    const diagramCss = getDiagramCss();
+    const diagramCss = getDiagramCss(false);
 
     let diagramAreaHtml = '';
     if (setupDiagramContainer) {
@@ -5215,7 +5215,7 @@ function generatePrintableOverview() {
     const diagramControlsHtml = document.querySelector('.diagram-controls') ? document.querySelector('.diagram-controls').outerHTML : '';
     const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
     const diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
-    const diagramSectionHtml = diagramAreaHtml ? `<h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}` : '';
+    const diagramSectionHtml = diagramAreaHtml ? `<section id="setupDiagram"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}</section>` : '';
 
     const overviewHtml = `
         <!DOCTYPE html>
