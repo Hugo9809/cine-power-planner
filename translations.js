@@ -452,10 +452,10 @@ const texts = {
     pinOk: "Los pines de la bater\u00eda pueden suministrar hasta {max}A \u2013 consumo dentro del l\u00edmite.",
     dtapOk: "La salida D-Tap puede suministrar hasta {max}A \u2013 consumo dentro del l\u00edmite.",
 
-    warnPinExceededLevel: "warning",
-    warnPinNearLevel: "note",
-    warnDTapExceededLevel: "warning",
-    warnDTapNearLevel: "note",
+    warnPinExceededLevel: "advertencia",
+    warnPinNearLevel: "nota",
+    warnDTapExceededLevel: "advertencia",
+    warnDTapNearLevel: "nota",
 
     warnPinExceeded: "ADVERTENCIA: la corriente ({current}A a ~12V) supera el límite principal ({max}A)!",
     warnPinNear: "Nota: la corriente está cerca del límite ({current}A de {max}A).",
@@ -660,10 +660,10 @@ const texts = {
     pinOk: "Les broches de la batterie peuvent fournir jusqu'\u00e0 {max}A \u2013 consommation dans la limite.",
     dtapOk: "La sortie D-Tap peut fournir jusqu'\u00e0 {max}A \u2013 consommation dans la limite.",
 
-    warnPinExceededLevel: "warning",
-    warnPinNearLevel: "note",
-    warnDTapExceededLevel: "warning",
-    warnDTapNearLevel: "note",
+    warnPinExceededLevel: "attention",
+    warnPinNearLevel: "remarque",
+    warnDTapExceededLevel: "attention",
+    warnDTapNearLevel: "remarque",
 
     warnPinExceeded: "ATTENTION: le courant ({current}A à ~12V) dépasse la limite principale ({max}A)!",
     warnPinNear: "Remarque : le courant est proche de la limite ({current}A sur {max}A).",
@@ -868,10 +868,10 @@ const texts = {
     pinOk: "Die Akku-Pins liefern bis zu {max}A \u2013 Strombedarf innerhalb des Limits.",
     dtapOk: "Die D-Tap-Buchse liefert bis zu {max}A \u2013 Strombedarf innerhalb des Limits.",
 
-    warnPinExceededLevel: "warning",
-    warnPinNearLevel: "note",
-    warnDTapExceededLevel: "warning",
-    warnDTapNearLevel: "note",
+    warnPinExceededLevel: "warnung",
+    warnPinNearLevel: "hinweis",
+    warnDTapExceededLevel: "warnung",
+    warnDTapNearLevel: "hinweis",
 
     warnPinExceeded: "WARNUNG: Strombedarf ({current}A bei ~12V) übersteigt die Haupt-Pin-Ausgangsleistung ({max}A) des Akkus!",
     warnPinNear: "Hinweis: Strombedarf kommt nahe an die Pin-Grenze ({current}A von {max}A).",
