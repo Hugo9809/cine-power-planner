@@ -151,7 +151,13 @@ function normalizeFiz(dev) {
   }
   if (dev.power?.input) {
     cleanPort(dev.power.input);
-    if (dev.power.input.voltageRange) dev.power.input.voltageRange = cleanVoltageRange(dev.power.input.voltageRange);
+    if (Array.isArray(dev.power.input)) {
+      dev.power.input.forEach(i => {
+        if (i.voltageRange) i.voltageRange = cleanVoltageRange(i.voltageRange);
+      });
+    } else if (dev.power.input.voltageRange) {
+      dev.power.input.voltageRange = cleanVoltageRange(dev.power.input.voltageRange);
+    }
   }
   if (Array.isArray(dev.fizConnectors)) dev.fizConnectors.forEach(cleanPort);
 }
