@@ -13,6 +13,7 @@ const ASSETS = [
   './normalizeData.js',
   './unifyPorts.js',
   './icon.svg',
+  './icon.png',
   './manifest.webmanifest'
 ];
 
