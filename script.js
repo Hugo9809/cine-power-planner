@@ -3264,12 +3264,29 @@ function renderFeedbackTable(currentKey) {
     return null;
   }
 
-  const columns = Object.keys(entries[0]);
-  let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '<th></th></tr>';
+  const columns = [
+    { key: 'username', label: 'Username' },
+    { key: 'date', label: 'Date' },
+    { key: 'location', label: 'Location' },
+    { key: 'cameraWifi', label: 'WIFI' },
+    { key: 'lensMount', label: 'Lens Mount' },
+    { key: 'resolution', label: 'Resolution' },
+    { key: 'codec', label: 'Codec' },
+    { key: 'framerate', label: 'Framerate' },
+    { key: 'firmware', label: 'Firmware' },
+    { key: 'batteryAge', label: 'Battery Age' },
+    { key: 'monitorBrightness', label: 'Monitor Brightness' },
+    { key: 'temperature', label: 'temperature' },
+    { key: 'humidity', label: 'humidity' },
+    { key: 'runtime', label: 'runtime' },
+    { key: 'batteriesPerDay', label: 'batteries a day' }
+  ];
+
+  let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '<th></th></tr>';
   entries.forEach((entry, index) => {
     html += '<tr>';
     columns.forEach(c => {
-      html += `<td>${escapeHtml(entry[c] || '')}</td>`;
+      html += `<td>${escapeHtml(entry[c.key] || '')}</td>`;
     });
     html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
     html += '</tr>';
