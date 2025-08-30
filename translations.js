@@ -19,7 +19,6 @@ const texts = {
     diagramLegendFIZ: "FIZ",
     downloadDiagramBtn: "Download Diagram",
     existingDevicesHeading: "Existing Devices",
-    darkModeLabel: "Toggle dark mode",
     pinkModeLabel: "Toggle pink mode",
 
     savedSetupsLabel: "Saved Setups:",
@@ -229,7 +228,6 @@ const texts = {
     diagramLegendFIZ: "FIZ",
     downloadDiagramBtn: "Scarica diagramma",
     existingDevicesHeading: "Dispositivi esistenti",
-    darkModeLabel: "Attiva in modalità scura",
     pinkModeLabel: "Attiva in modalità rosa",
     savedSetupsLabel: "Setup salvati:",
     newSetupOption: "-- Nuova configurazione --",
@@ -421,7 +419,6 @@ const texts = {
     diagramLegendFIZ: "FIZ",
     downloadDiagramBtn: "Descargar Diagrama",
     existingDevicesHeading: "Dispositivos Existentes",
-    darkModeLabel: "Alternar modo oscuro",
     pinkModeLabel: "Alternar modo rosa",
 
     savedSetupsLabel: "Configuraciones Guardadas:",
@@ -630,7 +627,6 @@ const texts = {
     diagramLegendFIZ: "FIZ",
     downloadDiagramBtn: "Télécharger le Diagramme",
     existingDevicesHeading: "Appareils Existants",
-    darkModeLabel: "Basculer mode sombre",
     pinkModeLabel: "Basculer mode rose",
 
     savedSetupsLabel: "Configurations Enregistrées:",
@@ -839,7 +835,6 @@ const texts = {
     diagramLegendFIZ: "FIZ",
     downloadDiagramBtn: "Diagramm herunterladen",
     existingDevicesHeading: "Vorhandene Geräte",
-    darkModeLabel: "Dunkelmodus umschalten",
     pinkModeLabel: "Pinkmodus umschalten",
 
     savedSetupsLabel: "Gespeicherte Setups:",

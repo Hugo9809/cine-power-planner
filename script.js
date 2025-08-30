@@ -962,10 +962,6 @@ function setLanguage(lang) {
   if (existingDevicesHeading) {
     existingDevicesHeading.textContent = texts[lang].existingDevicesHeading;
   }
-  if (darkModeToggle) {
-    darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
-    darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
-  }
   if (pinkModeToggle) {
     pinkModeToggle.setAttribute("title", texts[lang].pinkModeLabel);
     pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
@@ -1107,7 +1103,6 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const skipLink       = document.getElementById("skipLink");
 const languageSelect  = document.getElementById("languageSelect");
-const darkModeToggle  = document.getElementById("darkModeToggle");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
 const helpButton      = document.getElementById("helpButton");
 const helpDialog      = document.getElementById("helpDialog");
@@ -1164,7 +1159,7 @@ path.fiz{stroke:#6f6;}
 `;
 
 function getDiagramCss(includeDark = true) {
-  return diagramCssLight + (includeDark && document.body.classList.contains('dark-mode') ? diagramCssDark : '');
+  return diagramCssLight + (includeDark ? `@media (prefers-color-scheme: dark){${diagramCssDark}}` : '');
 }
 
 // Icons for setup diagram nodes
@@ -5293,47 +5288,49 @@ function generatePrintableOverview() {
                 .category-icon {
                   margin-right: 4px;
                 }
-                body.dark-mode {
-                  background-color: #121212;
-                  color: #f0f0f0;
+                @media (prefers-color-scheme: dark) {
+                  body {
+                    background-color: #121212;
+                    color: #f0f0f0;
+                  }
+                  h1,
+                  h2,
+                  h3 {
+                    color: #ffffff;
+                  }
+                  h2 {
+                    border-bottom: 2px solid #ffffff;
+                  }
+                  th {
+                    background-color: #333;
+                  }
+                  .print-btn {
+                    background: #333;
+                    color: #f0f0f0;
+                    border-color: #555;
+                  }
+                  .device-category {
+                    background: #1e1e1e;
+                    border-color: #333;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+                  }
+                  .device-category h3 {
+                    border-bottom: 1px solid #fff;
+                    color: #fff;
+                  }
+                  .device-block {
+                    background: rgba(255,255,255,0.1);
+                    border-color: #555;
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                  }
+                  .connector-block,
+                  .info-box {
+                    background-color: rgba(255,255,255,0.1);
+                  }
+                  .power-conn { background-color: rgba(244,67,54,0.3); }
+                  .fiz-conn { background-color: rgba(76,175,80,0.3); }
+                  .video-conn { background-color: rgba(33,150,243,0.3); }
                 }
-                body.dark-mode h1,
-                body.dark-mode h2,
-                body.dark-mode h3 {
-                  color: #ffffff;
-                }
-                body.dark-mode h2 {
-                  border-bottom: 2px solid #ffffff;
-                }
-                body.dark-mode th {
-                  background-color: #333;
-                }
-                body.dark-mode .print-btn {
-                  background: #333;
-                  color: #f0f0f0;
-                  border-color: #555;
-                }
-                body.dark-mode .device-category {
-                  background: #1e1e1e;
-                  border-color: #333;
-                  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-                }
-                body.dark-mode .device-category h3 {
-                  border-bottom: 1px solid #fff;
-                  color: #fff;
-                }
-                body.dark-mode .device-block {
-                  background: rgba(255,255,255,0.1);
-                  border-color: #555;
-                  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-                }
-                body.dark-mode .connector-block,
-                body.dark-mode .info-box {
-                  background-color: rgba(255,255,255,0.1);
-                }
-                body.dark-mode .power-conn { background-color: rgba(244,67,54,0.3); }
-                body.dark-mode .fiz-conn { background-color: rgba(76,175,80,0.3); }
-                body.dark-mode .video-conn { background-color: rgba(33,150,243,0.3); }
                 .connector-summary {
                   margin-top: 5px;
                   display: flex;
@@ -5580,7 +5577,6 @@ function generatePrintableOverview() {
                     <option value="fr" ${currentLang === 'fr' ? 'selected' : ''}>Français</option>
                     <option value="it" ${currentLang === 'it' ? 'selected' : ''}>Italiano</option>
                 </select>
-                <button id="darkModeToggle" title="${t.darkModeLabel}" aria-label="${t.darkModeLabel}">☾</button>
                 <button id="pinkModeToggle" title="${t.pinkModeLabel}" aria-label="${t.pinkModeLabel}">🐴</button>
             </div>
             <button onclick="window.print()" class="print-btn">Print</button>
@@ -5599,19 +5595,8 @@ function generatePrintableOverview() {
             ${batteryTableHtml}
             <script>
             (function(){
-                const darkToggle = document.getElementById('darkModeToggle');
                 const pinkToggle = document.getElementById('pinkModeToggle');
                 const langSelect = document.getElementById('languageSelect');
-
-                function applyDarkMode(enabled){
-                    if(enabled){
-                        document.body.classList.add('dark-mode');
-                        darkToggle.textContent = '☀';
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                        darkToggle.textContent = '☾';
-                    }
-                }
 
                 function applyPinkMode(enabled){
                     if(enabled){
@@ -5622,18 +5607,6 @@ function generatePrintableOverview() {
                         pinkToggle.textContent = '🐴';
                     }
                 }
-
-                let darkEnabled = false;
-                try { darkEnabled = localStorage.getItem('darkMode') === 'true'; } catch(e) {}
-                applyDarkMode(darkEnabled);
-                darkToggle.addEventListener('click', () => {
-                    darkEnabled = !document.body.classList.contains('dark-mode');
-                    applyDarkMode(darkEnabled);
-                    try { localStorage.setItem('darkMode', darkEnabled); } catch(e) {}
-                    if(window.opener && typeof window.opener.applyDarkMode === 'function'){
-                        window.opener.applyDarkMode(darkEnabled);
-                    }
-                });
 
                 let pinkEnabled = false;
                 try { pinkEnabled = localStorage.getItem('pinkMode') === 'true'; } catch(e) {}
@@ -5654,19 +5627,6 @@ function generatePrintableOverview() {
                         window.opener.setLanguage(newLang);
                         window.opener.generatePrintableOverview();
                         window.close();
-                    }
-                });
-
-                let restoreDark = false;
-                window.addEventListener('beforeprint', () => {
-                    if(document.body.classList.contains('dark-mode')){
-                        restoreDark = true;
-                        applyDarkMode(false);
-                    }
-                });
-                window.addEventListener('afterprint', () => {
-                    if(restoreDark){
-                        applyDarkMode(true);
                     }
                 });
 
@@ -5746,37 +5706,6 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
-
-// Dark mode handling
-function applyDarkMode(enabled) {
-  if (enabled) {
-    document.body.classList.add("dark-mode");
-    if (darkModeToggle) darkModeToggle.textContent = "☀";
-  } else {
-    document.body.classList.remove("dark-mode");
-    if (darkModeToggle) darkModeToggle.textContent = "☾";
-  }
-}
-
-let darkModeEnabled = false;
-try {
-  darkModeEnabled = localStorage.getItem("darkMode") === "true";
-} catch (e) {
-  console.warn("Could not load dark mode preference", e);
-}
-applyDarkMode(darkModeEnabled);
-
-if (darkModeToggle) {
-  darkModeToggle.addEventListener("click", () => {
-    darkModeEnabled = !document.body.classList.contains("dark-mode");
-    applyDarkMode(darkModeEnabled);
-    try {
-      localStorage.setItem("darkMode", darkModeEnabled);
-    } catch (e) {
-      console.warn("Could not save dark mode preference", e);
-    }
-  });
-}
 
 // Pink mode handling
 function applyPinkMode(enabled) {
@@ -5961,7 +5890,6 @@ if (typeof module !== "undefined" && module.exports) {
     getBatteryPlates,
     setRecordingMedia,
     getRecordingMedia,
-    applyDarkMode,
     applyPinkMode,
     generatePrintableOverview,
     updateBatteryPlateVisibility,
