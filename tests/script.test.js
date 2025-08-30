@@ -89,9 +89,16 @@ describe('script.js functions', () => {
     script.updateCalculations();
 
     expect(document.getElementById('batteryLife').textContent).toBe('2.00');
-    const expectedNote =
-      texts.en.runtimeUserCountNote.replace('{count}', 5) + ' ' + texts.en.runtimeAverageNote;
-    expect(document.getElementById('runtimeAverageNote').textContent).toBe(expectedNote);
+    const expectedLabel = texts.en.batteryLifeLabel.replace(
+      '):',
+      `, ${texts.en.runtimeUserCountNote.replace('{count}', 5)}):`
+    );
+    expect(document.getElementById('batteryLifeLabel').textContent).toBe(
+      expectedLabel
+    );
+    expect(document.getElementById('runtimeAverageNote').textContent).toBe(
+      texts.en.runtimeAverageNote
+    );
   });
 
   test('applies temperature scaling to user runtime', () => {

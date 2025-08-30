@@ -908,20 +908,25 @@ function setLanguage(lang) {
   document.getElementById("totalPowerLabel").textContent = texts[lang].totalPowerLabel;
   document.getElementById("totalCurrent144Label").textContent = texts[lang].totalCurrent144Label;
   document.getElementById("totalCurrent12Label").textContent = texts[lang].totalCurrent12Label;
-  document.getElementById("batteryLifeLabel").textContent = texts[lang].batteryLifeLabel;
   document.getElementById("batteryCountLabel").textContent = texts[lang].batteryCountLabel;
   document.getElementById("runtimeFeedbackBtn").textContent = texts[lang].runtimeFeedbackBtn;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   const fb = renderFeedbackTable(getCurrentSetupKey());
-  if (runtimeAverageNoteElem) {
+  if (batteryLifeLabelElem) {
+    let label = texts[lang].batteryLifeLabel;
     if (fb) {
-      runtimeAverageNoteElem.textContent =
-        texts[lang].runtimeUserCountNote.replace('{count}', fb.count) +
-        (fb.count > 4 ? ' ' + texts[lang].runtimeAverageNote : '');
-    } else {
-      runtimeAverageNoteElem.textContent = '';
+      const userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
+      const idx = label.indexOf(')');
+      if (idx !== -1) {
+        label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)}`;
+      }
     }
+    batteryLifeLabelElem.textContent = label;
+  }
+  if (runtimeAverageNoteElem) {
+    runtimeAverageNoteElem.textContent =
+      fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
   }
   renderTemperatureNote(lastRuntimeHours);
   // Device manager category headings
@@ -1121,6 +1126,7 @@ const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
 const totalCurrent12Elem  = document.getElementById("totalCurrent12");
 const batteryLifeElem     = document.getElementById("batteryLife");
+const batteryLifeLabelElem = document.getElementById("batteryLifeLabel");
 const runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
 const batteryCountElem    = document.getElementById("batteryCount");
 const pinWarnElem         = document.getElementById("pinWarning");
@@ -3294,15 +3300,28 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   if (feedback !== null) {
     batteryLifeElem.textContent = feedback.runtime.toFixed(2);
     lastRuntimeHours = feedback.runtime;
+    if (batteryLifeLabelElem) {
+      let label = texts[currentLang].batteryLifeLabel;
+      const userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
+      const idx = label.indexOf(')');
+      if (idx !== -1) {
+        label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)}`;
+      }
+      batteryLifeLabelElem.textContent = label;
+    }
     if (runtimeAverageNoteElem) {
       runtimeAverageNoteElem.textContent =
-        texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count) +
-        (feedback.count > 4 ? ' ' + texts[currentLang].runtimeAverageNote : '');
+        feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
     }
     const batteriesNeeded = Math.ceil(10 / feedback.runtime + 1);
     batteryCountElem.textContent = batteriesNeeded.toString();
-  } else if (runtimeAverageNoteElem) {
-    runtimeAverageNoteElem.textContent = '';
+  } else {
+    if (batteryLifeLabelElem) {
+      batteryLifeLabelElem.textContent = texts[currentLang].batteryLifeLabel;
+    }
+    if (runtimeAverageNoteElem) {
+      runtimeAverageNoteElem.textContent = '';
+    }
   }
   renderTemperatureNote(lastRuntimeHours);
   checkFizCompatibility();
