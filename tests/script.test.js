@@ -406,7 +406,7 @@ describe('script.js functions', () => {
     script.setLanguage('es');
     expect(document.documentElement.lang).toBe('es');
     expect(localStorage.getItem('language')).toBe('es');
-    expect(document.getElementById('mainTitle').textContent).toBe('Aplicación de Consumo de Energía de Cámara');
+    expect(document.getElementById('mainTitle').textContent).toBe('Aplicación de Consumo de Energía para Cámaras');
   });
 
   test('unifyDevices normalizes videoOutputs', () => {
