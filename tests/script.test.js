@@ -68,7 +68,7 @@ describe('script.js functions', () => {
       .toBe(texts.en.dtapOk.replace('{max}', '5'));
   });
 
-  test('shows runtime average note when more than four user entries', () => {
+  test('shows runtime average note with entry count when user runtime overrides estimate', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
       sel.innerHTML = `<option value="${value}">${value}</option>`;
@@ -82,13 +82,14 @@ describe('script.js functions', () => {
     addOpt('distanceSelect', 'DistA');
     addOpt('batterySelect', 'BattA');
     const key = script.getCurrentSetupKey();
-    const entries = Array.from({ length: 5 }, () => ({ runtime: '2' }));
+    const entries = Array.from({ length: 3 }, () => ({ runtime: '2' }));
     global.loadFeedback.mockReturnValue({ [key]: entries });
 
     script.updateCalculations();
 
     expect(document.getElementById('batteryLife').textContent).toBe('2.00');
-    expect(document.getElementById('runtimeAverageNote').textContent).toBe(texts.en.runtimeAverageNote);
+    expect(document.getElementById('runtimeAverageNote').textContent)
+      .toBe(texts.en.runtimeAverageNote.replace('{count}', '3'));
   });
 
   test('applies temperature scaling to user runtime', () => {
@@ -111,6 +112,8 @@ describe('script.js functions', () => {
     script.updateCalculations();
 
     expect(document.getElementById('batteryLife').textContent).toBe('1.25');
+    const tempCell = document.querySelector('#temperatureNote table tr:nth-child(2) td:nth-child(2)');
+    expect(tempCell.textContent).toBe('1.25');
   });
 
   test('weighs high-resolution entries by camera power share', () => {

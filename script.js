@@ -3006,6 +3006,7 @@ function updateCalculations() {
     texts[currentLang].totalCurrent216Label : texts[currentLang].totalCurrent12Label;
   totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+  let hours = null;
 
 // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
 if (!battery || battery === "None" || !devices.batteries[battery]) {
@@ -3015,28 +3016,16 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   pinWarnElem.style.color = "";
   dtapWarnElem.textContent = "";
   dtapWarnElem.style.color = "";
-  lastRuntimeHours = null;
-  renderTemperatureNote(null);
 } else {
     const battData = devices.batteries[battery];
     const capacityWh = battData.capacity;
     const maxPinA = battData.pinA;
     const maxDtapA = battData.dtapA;
-    totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
-    totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
-    let hours;
     if (totalWatt === 0) {
       hours = Infinity;
-      batteryLifeElem.textContent = "∞";
     } else {
       hours = capacityWh / totalWatt;
-      batteryLifeElem.textContent = hours.toFixed(2);
     }
-    lastRuntimeHours = hours;
-    renderTemperatureNote(hours);
-    // Round up total batteries (including one spare) to the next full number
-    const batteriesNeeded = Math.ceil(10 / hours + 1);
-    batteryCountElem.textContent = batteriesNeeded.toString();
     // Warnings about current draw vs battery limits
     pinWarnElem.textContent = "";
     dtapWarnElem.textContent = "";
@@ -3220,8 +3209,24 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     batteryComparisonSection.style.display = "none";
   }
   const override = renderFeedbackTable(getCurrentSetupKey());
+  let runtimeHours = hours;
   if (override !== null) {
-    batteryLifeElem.textContent = override.toFixed(2);
+    runtimeHours = override;
+  }
+  if (runtimeHours === null) {
+    lastRuntimeHours = null;
+    renderTemperatureNote(null);
+  } else {
+    if (runtimeHours === Infinity) {
+      batteryLifeElem.textContent = "∞";
+      batteryCountElem.textContent = "–";
+    } else {
+      batteryLifeElem.textContent = runtimeHours.toFixed(2);
+      const batteriesNeeded = Math.ceil(10 / runtimeHours + 1);
+      batteryCountElem.textContent = batteriesNeeded.toString();
+    }
+    lastRuntimeHours = runtimeHours;
+    renderTemperatureNote(runtimeHours);
   }
   checkFizCompatibility();
   checkFizController();
@@ -3416,7 +3421,9 @@ function renderFeedbackTable(currentKey) {
     count++;
   });
   if (runtimeAverageNoteElem) {
-    runtimeAverageNoteElem.textContent = count > 4 ? texts[currentLang].runtimeAverageNote : '';
+    runtimeAverageNoteElem.textContent = count >= 3
+      ? texts[currentLang].runtimeAverageNote.replace('{count}', count)
+      : '';
   }
   if (count >= 3 && weightTotal > 0) {
     return weightedSum / weightTotal;
