@@ -29,6 +29,16 @@ h2, h3, table, .device-block, .device-category {
   break-inside: avoid;
 }
 
+.device-category-container,
+.device-block-grid {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.device-category-container {
+  display: block;
+}
+
 h2, h3 { page-break-after: avoid; }
 
 table, th, td {
@@ -70,11 +80,12 @@ table, th, td {
 }
 
 .device-category {
-  flex: 1 1 50%;
+  flex: 1 1 100%;
+  page-break-after: always;
 }
 
-.device-category:nth-of-type(2n) {
-  page-break-after: always;
+.device-category:last-child {
+  page-break-after: auto;
 }
 
 .device-block-grid.two-column {
