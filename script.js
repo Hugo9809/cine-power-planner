@@ -3351,7 +3351,6 @@ function renderFeedbackTable(currentKey) {
     { key: 'batteryAge', label: 'Battery Age' },
     { key: 'monitorBrightness', label: 'Monitor Brightness' },
     { key: 'temperature', label: 'temp' },
-    { key: 'humidity', label: 'humidity' },
     { key: 'charging', label: 'Charging' },
     { key: 'runtime', label: 'runtime' },
     { key: 'batteriesPerDay', label: 'batteries a day' },
@@ -5556,7 +5555,6 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
       motors: document.getElementById('fbMotors').value.trim(),
       distance: document.getElementById('fbDistance').value.trim(),
       temperature: document.getElementById('fbTemperature').value.trim(),
-      humidity: document.getElementById('fbHumidity').value.trim(),
       charging: document.getElementById('fbCharging').value.trim(),
       runtime: document.getElementById('fbRuntime').value.trim(),
       batteriesPerDay: document.getElementById('fbBatteriesPerDay').value.trim()
@@ -6484,18 +6482,6 @@ function populateEnvironmentDropdowns() {
     }
   }
 
-  const humiditySelect = document.getElementById('fbHumidity');
-  if (humiditySelect) {
-    const emptyOpt = document.createElement('option');
-    emptyOpt.value = '';
-    humiditySelect.appendChild(emptyOpt);
-    for (let i = 0; i <= 100; i++) {
-      const opt = document.createElement('option');
-      opt.value = String(i);
-      opt.textContent = `${i}%`;
-      humiditySelect.appendChild(opt);
-    }
-  }
 }
 
 if (document.readyState === "loading") {

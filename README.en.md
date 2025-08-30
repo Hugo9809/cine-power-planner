@@ -20,7 +20,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Playful pink accent theme that persists between visits.
 - Searchable help dialog with step-by-step sections and a FAQ.
 - Support for cameras with both V- and B-Mount battery plates.
-- Submit user runtime feedback with temperature and humidity for better estimates.
+- Submit user runtime feedback with temperature for better estimates.
 - Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
 
 ---
@@ -105,7 +105,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 
 ### 📝 User Runtime Feedback
 - Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.
-- Optionally include temperature and humidity for more accurate weighting.
+- Optionally include temperature for more accurate weighting.
 - Entries are saved in your browser and improve future estimates.
 
 ### ❓ Searchable Help
