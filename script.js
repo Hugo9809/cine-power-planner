@@ -1014,6 +1014,7 @@ function setLanguage(lang) {
   document.getElementById("exportSetupsBtn").textContent = texts[lang].exportSetupsBtn;
   document.getElementById("importSetupsBtn").textContent = texts[lang].importSetupsBtn;
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
+  document.getElementById("shareSetupBtn").textContent = texts[lang].shareSetupBtn;
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
 
@@ -1064,6 +1065,7 @@ const setupNameInput  = document.getElementById("setupName");
 const saveSetupBtn    = document.getElementById("saveSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
 const clearSetupBtn   = document.getElementById("clearSetupBtn");
+const shareSetupBtn   = document.getElementById("shareSetupBtn");
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const cameraListElem  = document.getElementById("cameraList");
@@ -5082,6 +5084,22 @@ generateOverviewBtn.addEventListener('click', () => {
     generatePrintableOverview();
 });
 
+shareSetupBtn.addEventListener('click', () => {
+    const currentSetup = {
+        camera: cameraSelect.value,
+        monitor: monitorSelect.value,
+        video: videoSelect.value,
+        motors: motorSelects.map(sel => sel.value),
+        controllers: controllerSelects.map(sel => sel.value),
+        distance: distanceSelect.value,
+        batteryPlate: batteryPlateSelect.value,
+        battery: batterySelect.value
+    };
+    const encoded = btoa(encodeURIComponent(JSON.stringify(currentSetup)));
+    const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
+    prompt(texts[currentLang].shareSetupPrompt, link);
+});
+
 // Open feedback dialog and handle submission
 if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
   runtimeFeedbackBtn.addEventListener('click', () => {
@@ -6049,6 +6067,36 @@ function restoreSessionState() {
   if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
 }
 
+function applySharedSetupFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const shared = params.get('shared');
+  if (!shared) return;
+  try {
+    const decoded = JSON.parse(decodeURIComponent(atob(shared)));
+    if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
+    updateBatteryPlateVisibility();
+    if (batteryPlateSelect && decoded.batteryPlate) batteryPlateSelect.value = decoded.batteryPlate;
+    updateBatteryOptions();
+    if (monitorSelect && decoded.monitor) monitorSelect.value = decoded.monitor;
+    if (videoSelect && decoded.video) videoSelect.value = decoded.video;
+    if (distanceSelect && decoded.distance) distanceSelect.value = decoded.distance;
+    if (Array.isArray(decoded.motors)) {
+      decoded.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
+    }
+    if (Array.isArray(decoded.controllers)) {
+      decoded.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
+    }
+    if (batterySelect && decoded.battery) batterySelect.value = decoded.battery;
+    saveCurrentSession();
+  } catch (e) {
+    console.error('Failed to apply shared setup', e);
+  } finally {
+    if (window.history && window.history.replaceState) {
+      history.replaceState(null, '', window.location.pathname);
+    }
+  }
+}
+
 // --- EVENT LISTENERS FÜR NEUBERECHNUNG ---
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
@@ -6275,6 +6323,7 @@ function initApp() {
   setLanguage(currentLang);
   resetDeviceForm();
   restoreSessionState();
+  applySharedSetupFromUrl();
   updateCalculations();
 }
 
