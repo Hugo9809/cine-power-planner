@@ -5350,6 +5350,7 @@ function generatePrintableOverview() {
                   padding: 2px 6px;
                   margin: 2px;
                   border-radius: 3px;
+                  border: 1px solid;
                   background: rgba(0,0,0,0.03);
                   font-size: 0.75em;
                 }
@@ -5498,6 +5499,7 @@ function generatePrintableOverview() {
                       padding: 2px 6px;
                       margin: 2px;
                       border-radius: 3px;
+                      border: 1px solid;
                       background: rgba(0,0,0,0.03) !important;
                       font-size: 0.75em;
                     }
