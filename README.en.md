@@ -15,6 +15,14 @@ You can switch the language in the top right corner. The choice is remembered fo
 
 ---
 
+## 🆕 Recent Features
+- Interactive setup diagram that lets you drag devices, zoom and export the layout as SVG or JPG.
+- Playful pink accent theme that persists between visits.
+- Searchable help dialog with step-by-step sections and a FAQ.
+- Support for cameras with both V- and B-Mount battery plates.
+
+---
+
 ## 🔧 Features
 
 ### ✅ Setup Management
@@ -73,11 +81,17 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Revert to the default database from `data.js`
 
 ### 🌓 Dark Mode
-- Toggleable via the moon button next to the language selector
-- Preference is stored in your browser
-- Optional pink accent via the horse/unicorn button
-- The help dialog provides searchable instructions and FAQ. Open it with
-  ? or the `?`/`H`/`F1` keys and close with Escape or by clicking outside.
+- Toggle via the moon button next to the language selector.
+- Preference is stored in your browser.
+
+### 🦄 Pink Mode
+- Click the unicorn button for a playful pink accent.
+- Works in both light and dark themes and persists between visits.
+
+### ❓ Searchable Help
+- Open via the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd> or <kbd>F1</kbd>.
+- Use the search field to filter topics instantly; the query resets when the dialog closes.
+- Close with <kbd>Escape</kbd> or by clicking outside the dialog.
 
 ---
 
