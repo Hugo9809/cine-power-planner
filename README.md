@@ -25,3 +25,7 @@ language-specific README files for full details.
    npm test
    ```
    The `npm test` command runs ESLint, data consistency checks and Jest tests.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request on GitHub.

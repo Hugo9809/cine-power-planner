@@ -118,3 +118,6 @@ Se requiere Node.js 18 o posterior.
    ```bash
    npm test
    ```
+
+## 🤝 Contribuir
+¡Las contribuciones son bienvenidas! Abre un issue o envía un pull request en GitHub.

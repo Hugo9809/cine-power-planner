@@ -117,3 +117,6 @@ Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'appli
    ```bash
    npm test
    ```
+
+## 🤝 Contribuire
+Sono benvenuti i contributi! Apri una issue o invia una pull request su GitHub.
