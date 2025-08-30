@@ -1254,6 +1254,24 @@ describe('script.js functions', () => {
     expect(endY).toBe(snap(startY + 27));
   });
 
+  test('nodes move while dragging', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const node = document.querySelector('#diagramArea .diagram-node[data-node="battery"]');
+    node.dispatchEvent(new MouseEvent('mousedown', { clientX: 0, clientY: 0, bubbles: true }));
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 15, clientY: 25, bubbles: true }));
+    expect(node.getAttribute('transform')).toBe('translate(15,25)');
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 15, clientY: 25, bubbles: true }));
+  });
+
   test('grid snap respects zoom level', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);

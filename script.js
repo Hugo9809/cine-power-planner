@@ -1223,6 +1223,7 @@ const diagramHint = document.getElementById("diagramHint");
 let manualPositions = {};
 let lastDiagramPositions = {};
 let gridSnap = false;
+let cleanupDiagramInteractions = null;
 
 // CSS used when exporting the setup diagram
 const diagramCssLight = `
@@ -4226,6 +4227,9 @@ function enableDiagramInteractions() {
   if (!setupDiagramContainer) return;
   const svg = setupDiagramContainer.querySelector('svg');
   if (!svg) return;
+
+  if (cleanupDiagramInteractions) cleanupDiagramInteractions();
+
   const root = svg.querySelector('#diagramRoot') || svg;
   let pan = { x: 0, y: 0 };
   let scale = 1;
@@ -4246,29 +4250,48 @@ function enableDiagramInteractions() {
       apply();
     };
   }
-  svg.addEventListener('mousedown', e => {
+  const onSvgMouseDown = e => {
     if (e.target.closest('.diagram-node')) return;
     panning = true;
     panStart = { x: e.clientX - pan.x, y: e.clientY - pan.y };
-  });
-  window.addEventListener('mousemove', e => {
+  };
+  const onPanMove = e => {
     if (!panning) return;
     pan.x = e.clientX - panStart.x;
     pan.y = e.clientY - panStart.y;
     apply();
-  });
-  window.addEventListener('mouseup', () => { panning = false; });
+  };
+  const stopPanning = () => { panning = false; };
 
   let dragId = null;
   let dragStart = null;
-  svg.addEventListener('mousedown', e => {
+  let dragNode = null;
+  const onDragStart = e => {
     const node = e.target.closest('.diagram-node');
     if (!node) return;
     dragId = node.getAttribute('data-node');
+    dragNode = node;
     dragStart = { x: e.clientX, y: e.clientY };
     e.stopPropagation();
-  });
-  window.addEventListener('mouseup', e => {
+  };
+  const onDragMove = e => {
+    if (!dragId) return;
+    const start = lastDiagramPositions[dragId];
+    if (!start) return;
+    const dx = (e.clientX - dragStart.x) / scale;
+    const dy = (e.clientY - dragStart.y) / scale;
+    let newX = start.x + dx;
+    let newY = start.y + dy;
+    if (gridSnap) {
+      const g = 20 / scale;
+      newX = Math.round(newX / g) * g;
+      newY = Math.round(newY / g) * g;
+    }
+    const tx = newX - start.x;
+    const ty = newY - start.y;
+    if (dragNode) dragNode.setAttribute('transform', `translate(${tx},${ty})`);
+  };
+  const onDragEnd = e => {
     if (!dragId) return;
     const start = lastDiagramPositions[dragId];
     if (start) {
@@ -4284,8 +4307,25 @@ function enableDiagramInteractions() {
       manualPositions[dragId] = { x: newX, y: newY };
     }
     dragId = null;
+    dragNode = null;
     renderSetupDiagram();
-  });
+  };
+
+  svg.addEventListener('mousedown', onSvgMouseDown);
+  window.addEventListener('mousemove', onPanMove);
+  window.addEventListener('mouseup', stopPanning);
+  svg.addEventListener('mousedown', onDragStart);
+  window.addEventListener('mousemove', onDragMove);
+  window.addEventListener('mouseup', onDragEnd);
+
+  cleanupDiagramInteractions = () => {
+    svg.removeEventListener('mousedown', onSvgMouseDown);
+    window.removeEventListener('mousemove', onPanMove);
+    window.removeEventListener('mouseup', stopPanning);
+    svg.removeEventListener('mousedown', onDragStart);
+    window.removeEventListener('mousemove', onDragMove);
+    window.removeEventListener('mouseup', onDragEnd);
+  };
 }
 
 function updateDiagramLegend() {
