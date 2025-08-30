@@ -1352,6 +1352,11 @@ describe('script.js functions', () => {
     expect(helpSearch.getAttribute('aria-label')).toBe(texts.de.helpSearchLabel);
   });
 
+  test('help no results message is announced politely', () => {
+    const helpNoResults = document.getElementById('helpNoResults');
+    expect(helpNoResults.getAttribute('aria-live')).toBe('polite');
+  });
+
   test('generateConnectorSummary labels extras', () => {
     const data = {
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },
