@@ -1491,6 +1491,24 @@ describe('script.js functions', () => {
     script.applySharedSetupFromUrl();
     expect(nameInput.value).toBe('Shared Setup');
   });
+
+  test('applySharedSetupFromUrl applies device changes and feedback', () => {
+    const payload = {
+      camera: 'CamB',
+      changedDevices: { cameras: { CamB: { powerDrawWatts: 15 } } },
+      feedback: [{ runtime: '2h' }]
+    };
+    const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(payload));
+    window.history.pushState({}, '', `/?shared=${encoded}`);
+    script.applySharedSetupFromUrl();
+    expect(devices.cameras.CamB.powerDrawWatts).toBe(15);
+    const camSelect = document.getElementById('cameraSelect');
+    const hasCamB = Array.from(camSelect.options).some(o => o.value === 'CamB');
+    expect(hasCamB).toBe(true);
+    expect(camSelect.value).toBe('CamB');
+    const key = script.getCurrentSetupKey();
+    expect(global.saveFeedback).toHaveBeenCalledWith({ [key]: [{ runtime: '2h' }] });
+  });
 });
 
 describe('monitor wireless metadata', () => {

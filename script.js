@@ -3556,6 +3556,59 @@ function getDeviceChanges() {
   return diff;
 }
 
+// Apply a set of device changes to the current in-memory database and update
+// all related UI elements and localStorage. `changes` mirrors the structure
+// returned by getDeviceChanges().
+function applyDeviceChanges(changes) {
+  if (!changes || typeof changes !== 'object') return;
+
+  const applyToCategory = (target, delta) => {
+    Object.keys(delta).forEach(name => {
+      const val = delta[name];
+      if (val === null) {
+        delete target[name];
+      } else {
+        target[name] = val;
+      }
+    });
+  };
+
+  Object.keys(changes).forEach(cat => {
+    if (cat === 'fiz') {
+      Object.keys(changes.fiz || {}).forEach(sub => {
+        devices.fiz[sub] = devices.fiz[sub] || {};
+        applyToCategory(devices.fiz[sub], changes.fiz[sub]);
+      });
+    } else {
+      devices[cat] = devices[cat] || {};
+      applyToCategory(devices[cat], changes[cat]);
+    }
+  });
+
+  unifyDevices(devices);
+  storeDevices(devices);
+  refreshDeviceLists();
+
+  // Re-populate dropdowns to include any newly added devices
+  populateSelect(cameraSelect, devices.cameras, true);
+  populateSelect(monitorSelect, devices.monitors, true);
+  populateSelect(videoSelect, devices.video, true);
+  motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
+  controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
+  populateSelect(distanceSelect, devices.fiz.distance, true);
+  populateSelect(batterySelect, devices.batteries, true);
+
+  updateFizConnectorOptions();
+  updateMotorConnectorOptions();
+  updateControllerConnectorOptions();
+  updateControllerPowerOptions();
+  updateControllerBatteryOptions();
+  updateControllerConnectivityOptions();
+  updateDistanceConnectionOptions();
+  updateDistanceMethodOptions();
+  updateDistanceDisplayOptions();
+}
+
 function renderSetupDiagram() {
   if (!setupDiagramContainer) return;
 
@@ -6386,6 +6439,9 @@ function applySharedSetupFromUrl() {
   if (!shared) return;
   try {
     const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
+    if (decoded.changedDevices) {
+      applyDeviceChanges(decoded.changedDevices);
+    }
     if (setupNameInput && decoded.setupName) setupNameInput.value = decoded.setupName;
     if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
     updateBatteryPlateVisibility();
@@ -6402,6 +6458,12 @@ function applySharedSetupFromUrl() {
     }
     if (batterySelect && decoded.battery) batterySelect.value = decoded.battery;
     saveCurrentSession();
+    if (Array.isArray(decoded.feedback) && decoded.feedback.length) {
+      const key = getCurrentSetupKey();
+      const fb = loadFeedbackSafe();
+      fb[key] = (fb[key] || []).concat(decoded.feedback);
+      saveFeedbackSafe(fb);
+    }
   } catch (e) {
     console.error('Failed to apply shared setup', e);
   } finally {
