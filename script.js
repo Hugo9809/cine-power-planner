@@ -962,6 +962,10 @@ function setLanguage(lang) {
   if (existingDevicesHeading) {
     existingDevicesHeading.textContent = texts[lang].existingDevicesHeading;
   }
+  if (darkModeToggle) {
+    darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
+    darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
+  }
   if (pinkModeToggle) {
     pinkModeToggle.setAttribute("title", texts[lang].pinkModeLabel);
     pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
@@ -1104,6 +1108,7 @@ const importDataBtn   = document.getElementById("importDataBtn");
 const skipLink       = document.getElementById("skipLink");
 const languageSelect  = document.getElementById("languageSelect");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
+const darkModeToggle  = document.getElementById("darkModeToggle");
 const helpButton      = document.getElementById("helpButton");
 const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
@@ -5579,6 +5584,7 @@ function generatePrintableOverview() {
                     <option value="fr" ${currentLang === 'fr' ? 'selected' : ''}>Français</option>
                     <option value="it" ${currentLang === 'it' ? 'selected' : ''}>Italiano</option>
                 </select>
+                <button id="darkModeToggle" title="${t.darkModeLabel}" aria-label="${t.darkModeLabel}">🌙</button>
                 <button id="pinkModeToggle" title="${t.pinkModeLabel}" aria-label="${t.pinkModeLabel}">🐴</button>
             </div>
             <button onclick="window.print()" class="print-btn">Print</button>
@@ -5598,6 +5604,7 @@ function generatePrintableOverview() {
             <script>
             (function(){
                 const pinkToggle = document.getElementById('pinkModeToggle');
+                const darkToggle = document.getElementById('darkModeToggle');
                 const langSelect = document.getElementById('languageSelect');
 
                 function applyPinkMode(enabled){
@@ -5609,6 +5616,37 @@ function generatePrintableOverview() {
                         pinkToggle.textContent = '🐴';
                     }
                 }
+
+                function applyDarkMode(enabled){
+                    if(enabled){
+                        document.body.classList.add('dark-mode');
+                        document.body.classList.remove('light-mode');
+                        darkToggle.textContent = '☀️';
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        document.body.classList.add('light-mode');
+                        darkToggle.textContent = '🌙';
+                    }
+                }
+
+                let darkEnabled = false;
+                try {
+                    const stored = localStorage.getItem('darkMode');
+                    if(stored !== null){
+                        darkEnabled = stored === 'true';
+                    } else if (typeof window.matchMedia === 'function') {
+                        darkEnabled = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    }
+                } catch(e) {}
+                applyDarkMode(darkEnabled);
+                darkToggle.addEventListener('click', () => {
+                    darkEnabled = !document.body.classList.contains('dark-mode');
+                    applyDarkMode(darkEnabled);
+                    try { localStorage.setItem('darkMode', darkEnabled); } catch(e) {}
+                    if(window.opener && typeof window.opener.applyDarkMode === 'function'){
+                        window.opener.applyDarkMode(darkEnabled);
+                    }
+                });
 
                 let pinkEnabled = false;
                 try { pinkEnabled = localStorage.getItem('pinkMode') === 'true'; } catch(e) {}
@@ -5708,6 +5746,44 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
+
+// Dark mode handling
+function applyDarkMode(enabled) {
+  if (enabled) {
+    document.body.classList.add("dark-mode");
+    document.body.classList.remove("light-mode");
+    if (darkModeToggle) darkModeToggle.textContent = "☀️";
+  } else {
+    document.body.classList.remove("dark-mode");
+    document.body.classList.add("light-mode");
+    if (darkModeToggle) darkModeToggle.textContent = "🌙";
+  }
+}
+
+let darkModeEnabled = false;
+try {
+  const stored = localStorage.getItem("darkMode");
+  if (stored !== null) {
+    darkModeEnabled = stored === "true";
+  } else if (typeof window.matchMedia === "function") {
+    darkModeEnabled = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+} catch (e) {
+  console.warn("Could not load dark mode preference", e);
+}
+applyDarkMode(darkModeEnabled);
+
+if (darkModeToggle) {
+  darkModeToggle.addEventListener("click", () => {
+    darkModeEnabled = !document.body.classList.contains("dark-mode");
+    applyDarkMode(darkModeEnabled);
+    try {
+      localStorage.setItem("darkMode", darkModeEnabled);
+    } catch (e) {
+      console.warn("Could not save dark mode preference", e);
+    }
+  });
+}
 
 // Pink mode handling
 function applyPinkMode(enabled) {
