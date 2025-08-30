@@ -22,6 +22,12 @@ try {
   }
 }
 
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js');
+  });
+}
+
 const VIDEO_OUTPUT_TYPES = [
   '3G-SDI',
   '6G-SDI',
