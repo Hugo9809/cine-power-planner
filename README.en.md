@@ -27,6 +27,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 
 ### ✅ Setup Management
 - Save, load and delete multiple camera setups
+- Share a setup via link or clear the current configuration
 - Data is stored locally via `localStorage`
 - Import and export setups as JSON
 - Generate a printable overview for any saved setup
