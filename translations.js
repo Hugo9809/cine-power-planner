@@ -245,7 +245,7 @@ const texts = {
     downloadDiagramBtn: "Scarica diagramma",
     existingDevicesHeading: "Dispositivi esistenti",
     darkModeLabel: "Attiva modalità scura",
-    pinkModeLabel: "Attiva in modalità rosa",
+    pinkModeLabel: "Attiva modalità rosa",
     savedSetupsLabel: "Setup salvati:",
     newSetupOption: "-- Nuova configurazione --",
     setupNameLabel: "Nome di configurazione:",
