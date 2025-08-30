@@ -1449,6 +1449,30 @@ describe('script.js functions', () => {
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
   });
 
+  test('hover help falls back to element text when no attributes', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const hoverHelpButton = document.getElementById('hoverHelpButton');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+
+    hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
+    const dummy = document.createElement('button');
+    dummy.textContent = 'Save setup';
+    document.body.appendChild(dummy);
+
+    dummy.dispatchEvent(
+      new MouseEvent('mouseover', { bubbles: true, clientX: 10, clientY: 10 })
+    );
+    const tooltip = document.getElementById('hoverHelpTooltip');
+    expect(tooltip.textContent).toBe('Save setup');
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(document.getElementById('hoverHelpTooltip')).toBeNull();
+  });
+
   test('generateConnectorSummary labels extras', () => {
     const data = {
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },
