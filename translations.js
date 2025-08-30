@@ -1,5 +1,5 @@
 // translations.js - Translated UI strings and labels
-// Translation text for English, Spanish, French, German and Italian
+// Translation text for English, Italian, Spanish, French and German
 const texts = {
   en: {
     appTitle: "Camera Power Planner",
@@ -1118,14 +1118,14 @@ const categoryNames = {
     "fiz.distance": "FIZ Distance",
     "batteries": "V-Mount Battery"
   },
-  de: {
-    "cameras": "Kamera",
+  it: {
+    "cameras": "Camera",
     "monitors": "Monitor",
-    "video": "Videofunk",
-    "fiz.motors": "FIZ Motoren",
-    "fiz.controllers": "FIZ Controller",
-    "fiz.distance": "FIZ Distanz",
-    "batteries": "V-Mount Akku"
+    "video": "Video wireless",
+    "fiz.motors": "Motore FIZ",
+    "fiz.controllers": "Controller FIZ",
+    "fiz.distance": "Distanza FIZ",
+    "batteries": "Batteria V-Mount"
   },
   es: {
     "cameras": "Cámara",
@@ -1145,14 +1145,14 @@ const categoryNames = {
     "fiz.distance": "Distance FIZ",
     "batteries": "Batterie V-Mount"
   },
-  it: {
-    "cameras": "Camera",
+  de: {
+    "cameras": "Kamera",
     "monitors": "Monitor",
-    "video": "Video wireless",
-    "fiz.motors": "Motore FIZ",
-    "fiz.controllers": "Controller FIZ",
-    "fiz.distance": "Distanza FIZ",
-    "batteries": "Batteria V-Mount"
+    "video": "Videofunk",
+    "fiz.motors": "FIZ Motoren",
+    "fiz.controllers": "FIZ Controller",
+    "fiz.distance": "FIZ Distanz",
+    "batteries": "V-Mount Akku"
   },
 };
 
