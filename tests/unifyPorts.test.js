@@ -1,4 +1,15 @@
-const { normalizeMonitor, parsePowerInput, normalizeVideoDevice } = require('../unifyPorts.js');
+const {
+  normalizeMonitor,
+  parsePowerInput,
+  normalizeVideoDevice,
+  cleanVoltageRange
+} = require('../unifyPorts.js');
+
+describe('cleanVoltageRange', () => {
+  it('removes spaces around hyphen', () => {
+    expect(cleanVoltageRange('DC 10 - 20V')).toBe('10-20');
+  });
+});
 
 describe('normalizeMonitor', () => {
   it('does not throw when power is missing', () => {

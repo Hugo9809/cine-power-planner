@@ -9,7 +9,14 @@ function cleanTypeName(name) {
 }
 function cleanVoltageRange(str) {
   if (!str || typeof str !== "string") return str;
-  return str.replace(/DC/gi, "").replace(/V/gi, "").replace(/\s+/g, " ").replace(/\s+\)/g, ")").replace(/\(\s+/g, "(").trim();
+  return str
+    .replace(/DC/gi, "")
+    .replace(/V/gi, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s*-\s*/g, "-")
+    .replace(/\s+\)/g, ")")
+    .replace(/\(\s+/g, "(")
+    .trim();
 }
 
 function deepClean(obj) {
