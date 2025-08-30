@@ -5273,7 +5273,7 @@ shareSetupBtn.addEventListener('click', () => {
   if (feedback.length) {
     currentSetup.feedback = feedback;
   }
-  const encoded = btoa(encodeURIComponent(JSON.stringify(currentSetup)));
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(currentSetup))));
   const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
   prompt(texts[currentLang].shareSetupPrompt, link);
 });
@@ -6308,7 +6308,7 @@ function applySharedSetupFromUrl() {
   const shared = params.get('shared');
   if (!shared) return;
   try {
-    const decoded = JSON.parse(decodeURIComponent(atob(shared)));
+    const decoded = JSON.parse(decodeURIComponent(escape(atob(shared))));
     if (setupNameInput && decoded.setupName) setupNameInput.value = decoded.setupName;
     if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
     updateBatteryPlateVisibility();
