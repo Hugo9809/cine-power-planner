@@ -1,5 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
-/* global texts, categoryNames, loadSessionState, saveSessionState */
+/* global texts, categoryNames, loadSessionState, saveSessionState, clearAllData */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -870,9 +870,11 @@ function setLanguage(lang) {
   // Setup manager labels and buttons
   document.getElementById("savedSetupsLabel").textContent = texts[lang].savedSetupsLabel;
   document.getElementById("setupNameLabel").textContent = texts[lang].setupNameLabel;
+  document.getElementById("setupActionsHeading").textContent = texts[lang].setupActionsHeading;
   saveSetupBtn.textContent = texts[lang].saveSetupBtn;
   deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
+  if (resetAppBtn) resetAppBtn.textContent = texts[lang].resetAppBtn;
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -1111,6 +1113,7 @@ const saveSetupBtn    = document.getElementById("saveSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
 const clearSetupBtn   = document.getElementById("clearSetupBtn");
 const shareSetupBtn   = document.getElementById("shareSetupBtn");
+const resetAppBtn     = document.getElementById("resetAppBtn");
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const cameraListElem  = document.getElementById("cameraList");
@@ -4553,6 +4556,20 @@ clearSetupBtn.addEventListener("click", () => {
     updateCalculations();
   }
 });
+
+if (resetAppBtn) {
+  resetAppBtn.addEventListener("click", () => {
+    if (
+      confirm(texts[currentLang].confirmResetApp) &&
+      confirm(texts[currentLang].confirmResetAppAgain)
+    ) {
+      if (typeof clearAllData === 'function') {
+        clearAllData();
+      }
+      location.reload();
+    }
+  });
+}
 
 setupSelect.addEventListener("change", (event) => {
   const setupName = event.target.value;
