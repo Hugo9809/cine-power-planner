@@ -1368,7 +1368,7 @@ describe('script.js functions', () => {
     expect(global.prompt).toHaveBeenCalled();
     const link = global.prompt.mock.calls[0][1];
     const encoded = new URL(link).searchParams.get('shared');
-    const decoded = JSON.parse(decodeURIComponent(Buffer.from(encoded, 'base64').toString('utf-8')));
+    const decoded = JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
     expect(decoded.setupName).toBe('My Setup');
   });
 
@@ -1397,14 +1397,14 @@ describe('script.js functions', () => {
     btn.click();
     const link = global.prompt.mock.calls[0][1];
     const encoded = new URL(link).searchParams.get('shared');
-    const decoded = JSON.parse(decodeURIComponent(Buffer.from(encoded, 'base64').toString('utf-8')));
+    const decoded = JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
     expect(decoded.changedDevices.cameras.CamA.powerDrawWatts).toBe(20);
     expect(decoded.feedback[0].runtime).toBe('1h');
   });
 
   test('applySharedSetupFromUrl restores setup name', () => {
     const data = { setupName: 'Shared Setup' };
-    const encoded = Buffer.from(encodeURIComponent(JSON.stringify(data))).toString('base64');
+    const encoded = Buffer.from(JSON.stringify(data)).toString('base64');
     window.history.pushState({}, '', `/?shared=${encoded}`);
     const nameInput = document.getElementById('setupName');
     nameInput.value = '';
