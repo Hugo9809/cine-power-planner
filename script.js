@@ -996,7 +996,7 @@ function setLanguage(lang) {
     }
   });
   // Toggle device manager button text (depends on current visibility)
-  if (deviceManagerSection.style.display === "none") {
+  if (deviceManagerSection.classList.contains('hidden')) {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
   } else {
     toggleDeviceBtn.textContent = texts[lang].hideDeviceManager;
@@ -4606,19 +4606,18 @@ populateSetupSelect(); // Initial populate of setups
 
 
 // Toggle device manager visibility
-const toggleDeviceManagerButton = document.getElementById('toggleDeviceManager'); // Corrected ID reference
-if (toggleDeviceManagerButton) { // Check if element exists before adding listener
-    toggleDeviceManagerButton.addEventListener("click", () => {
-        if (deviceManagerSection.style.display === "none") {
-            deviceManagerSection.style.display = "block";
-            toggleDeviceManagerButton.textContent = texts[currentLang].hideDeviceManager;
-            refreshDeviceLists(); // Refresh lists when shown
-            updateCalculations(); // Ensure calculations are up to date
-        } else {
-            deviceManagerSection.style.display = "none";
-            toggleDeviceManagerButton.textContent = texts[currentLang].toggleDeviceManager;
-        }
-    });
+if (toggleDeviceBtn) {
+  toggleDeviceBtn.addEventListener("click", () => {
+    if (deviceManagerSection.classList.contains('hidden')) {
+      deviceManagerSection.classList.remove('hidden');
+      toggleDeviceBtn.textContent = texts[currentLang].hideDeviceManager;
+      refreshDeviceLists(); // Refresh lists when shown
+      updateCalculations(); // Ensure calculations are up to date
+    } else {
+      deviceManagerSection.classList.add('hidden');
+      toggleDeviceBtn.textContent = texts[currentLang].toggleDeviceManager;
+    }
+  });
 }
 
 
