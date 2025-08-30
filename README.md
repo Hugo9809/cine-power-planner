@@ -117,6 +117,17 @@ npm test
 
 The `npm test` command runs ESLint, data consistency checks and Jest tests.
 
+### Update device data
+
+Device definitions live in `data.js`. After modifying this file, run the helper scripts to clean and verify the database:
+
+```bash
+npm run normalize
+npm run check-consistency
+```
+
+`npm run normalize` applies various cleanup routines to unify connector names and expand shorthand entries. `npm run check-consistency` confirms that required fields are present and raises an error if anything is missing.
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request on GitHub.

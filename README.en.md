@@ -171,5 +171,11 @@ Requires Node.js 18 or later.
    npm test
    ```
 
+4. Update device data after edits:
+   ```bash
+   npm run normalize
+   npm run check-consistency
+   ```
+
 ## 🤝 Contributing
 Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
