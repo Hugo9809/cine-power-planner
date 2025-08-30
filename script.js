@@ -1053,6 +1053,10 @@ function setLanguage(lang) {
       helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
       helpSearch.setAttribute("aria-label", texts[lang].helpSearchLabel);
     }
+    if (helpSearchClear) {
+      helpSearchClear.setAttribute("title", texts[lang].helpSearchClear);
+      helpSearchClear.setAttribute("aria-label", texts[lang].helpSearchClear);
+    }
     if (closeHelpBtn) closeHelpBtn.textContent = texts[lang].helpClose;
     if (document.getElementById("helpTitle")) {
       document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
@@ -1216,6 +1220,7 @@ const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
 const helpSearch      = document.getElementById("helpSearch");
 const helpNoResults   = document.getElementById("helpNoResults");
+const helpSearchClear = document.getElementById("helpSearchClear");
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -6407,6 +6412,13 @@ if (helpButton && helpDialog) {
         helpNoResults.removeAttribute('hidden');
       }
     }
+    if (helpSearchClear) {
+      if (query) {
+        helpSearchClear.removeAttribute('hidden');
+      } else {
+        helpSearchClear.setAttribute('hidden', '');
+      }
+    }
   };
 
   const openHelp = () => {
@@ -6436,6 +6448,13 @@ if (helpButton && helpDialog) {
   helpButton.addEventListener('click', toggleHelp);
   if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
   if (helpSearch) helpSearch.addEventListener('input', filterHelp);
+  if (helpSearchClear) helpSearchClear.addEventListener('click', () => {
+    if (helpSearch) {
+      helpSearch.value = '';
+      filterHelp();
+      helpSearch.focus();
+    }
+  });
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {

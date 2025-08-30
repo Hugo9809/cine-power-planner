@@ -1363,11 +1363,34 @@ describe('script.js functions', () => {
     expect(helpNoResults.hasAttribute('hidden')).toBe(true);
   });
 
-  test('help search field is localized', () => {
+  test('help clear button resets search', () => {
+    const helpDialog = document.getElementById('helpDialog');
     const helpSearch = document.getElementById('helpSearch');
+    const helpSearchClear = document.getElementById('helpSearchClear');
+    const helpNoResults = document.getElementById('helpNoResults');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    helpSearch.value = 'nonexistent';
+    helpSearch.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(helpSearchClear.hasAttribute('hidden')).toBe(false);
+    helpSearchClear.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(helpSearch.value).toBe('');
+    const sections = helpDialog.querySelectorAll('[data-help-section]');
+    const visible = [...sections].filter(s => !s.hasAttribute('hidden'));
+    expect(visible.length).toBe(sections.length);
+    expect(helpNoResults.hasAttribute('hidden')).toBe(true);
+    expect(helpSearchClear.hasAttribute('hidden')).toBe(true);
+    expect(document.activeElement).toBe(helpSearch);
+  });
+
+  test('help search controls are localized', () => {
+    const helpSearch = document.getElementById('helpSearch');
+    const helpSearchClear = document.getElementById('helpSearchClear');
     script.setLanguage('de');
     expect(helpSearch.getAttribute('placeholder')).toBe(texts.de.helpSearchPlaceholder);
     expect(helpSearch.getAttribute('aria-label')).toBe(texts.de.helpSearchLabel);
+    expect(helpSearchClear.getAttribute('aria-label')).toBe(texts.de.helpSearchClear);
+    expect(helpSearchClear.getAttribute('title')).toBe(texts.de.helpSearchClear);
   });
 
   test('help no results message is announced politely', () => {
