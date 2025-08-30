@@ -1,17 +1,17 @@
 /* eslint-env serviceworker */
 const CACHE_NAME = 'camera-power-planner-v1';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/data.js',
-  '/translations.js',
-  '/storage.js',
-  '/normalizeData.js',
-  '/unifyPorts.js',
-  '/favicon.ico',
-  '/manifest.webmanifest'
+  './',
+  './index.html',
+  './style.css',
+  './script.js',
+  './data.js',
+  './translations.js',
+  './storage.js',
+  './normalizeData.js',
+  './unifyPorts.js',
+  './icon.svg',
+  './manifest.webmanifest'
 ];
 
 self.addEventListener('install', event => {
