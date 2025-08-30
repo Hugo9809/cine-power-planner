@@ -5965,6 +5965,8 @@ function generatePrintableOverview() {
     const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
     const diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
     const diagramSectionHtml = diagramAreaHtml ? `<section id="setupDiagram"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}</section>` : '';
+    const diagramSectionHtmlWithBreak = diagramSectionHtml ? `<div class="page-break"></div>${diagramSectionHtml}` : '';
+    const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
 
     const overviewHtml = `
         <!DOCTYPE html>
@@ -5997,12 +5999,14 @@ function generatePrintableOverview() {
             <h2>${t.deviceSelectionHeading}</h2>
             ${deviceListHtml}
 
+            <div class="page-break"></div>
+
             <h2>${t.resultsHeading}</h2>
             ${resultsHtml}
             ${warningHtml}
 
-            ${diagramSectionHtml}
-            ${batteryTableHtml}
+            ${diagramSectionHtmlWithBreak}
+            ${batteryTableHtmlWithBreak}
             <script>
             (function(){
                 const pinkToggle = document.getElementById('pinkModeToggle');
