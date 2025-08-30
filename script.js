@@ -904,6 +904,7 @@ function setLanguage(lang) {
   document.getElementById("monitorVideoInputsLabel").textContent = texts[lang].monitorVideoInputsLabel;
   document.getElementById("monitorVideoOutputsLabel").textContent = texts[lang].monitorVideoOutputsLabel;
   document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
+  document.getElementById("monitorLatencyLabel").textContent = texts[lang].monitorLatencyLabel;
   document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
   document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
   document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
@@ -1069,6 +1070,7 @@ const monitorPortTypeInput = document.getElementById("monitorPortType");
 const monitorVideoInputsContainer = document.getElementById("monitorVideoInputsContainer");
 const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
 const monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
+const monitorLatencyInput = document.getElementById("monitorLatency");
 const monitorAudioOutputInput = document.getElementById("monitorAudioOutput");
 const videoFieldsDiv = document.getElementById("videoFields");
 const videoPowerInput = document.getElementById("videoPower");
@@ -4199,6 +4201,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       setMonitorVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
       setMonitorVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
       monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
+      monitorLatencyInput.value = deviceData.latencyMs || '';
       monitorAudioOutputInput.value =
         deviceData.audioOutput?.portType ||
         deviceData.audioOutput?.type ||
@@ -4418,6 +4421,7 @@ newCategorySelect.addEventListener("change", () => {
   monitorVoltageInput.value = "";
   monitorPortTypeInput.value = "";
   monitorWirelessTxInput.checked = false;
+  monitorLatencyInput.value = "";
   monitorAudioOutputInput.value = "";
   clearMonitorVideoInputs();
   clearMonitorVideoOutputs();
@@ -4574,6 +4578,7 @@ addDeviceBtn.addEventListener("click", () => {
         outputs: getMonitorVideoOutputs()
       },
       wirelessTx: monitorWirelessTxInput.checked,
+      latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
   } else if (category === "video") {
