@@ -872,6 +872,16 @@ function setLanguage(lang) {
   document.getElementById("runtimeFeedbackBtn").textContent = texts[lang].runtimeFeedbackBtn;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
+  const fb = renderFeedbackTable(getCurrentSetupKey());
+  if (runtimeAverageNoteElem) {
+    if (fb) {
+      runtimeAverageNoteElem.textContent =
+        texts[lang].runtimeUserCountNote.replace('{count}', fb.count) +
+        (fb.count > 4 ? ' ' + texts[lang].runtimeAverageNote : '');
+    } else {
+      runtimeAverageNoteElem.textContent = '';
+    }
+  }
   renderTemperatureNote(lastRuntimeHours);
   // Device manager category headings
   document.getElementById("category_cameras").textContent = texts[lang].category_cameras;
@@ -3016,7 +3026,6 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   dtapWarnElem.textContent = "";
   dtapWarnElem.style.color = "";
   lastRuntimeHours = null;
-  renderTemperatureNote(null);
 } else {
     const battData = devices.batteries[battery];
     const capacityWh = battData.capacity;
@@ -3033,7 +3042,6 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       batteryLifeElem.textContent = hours.toFixed(2);
     }
     lastRuntimeHours = hours;
-    renderTemperatureNote(hours);
     // Round up total batteries (including one spare) to the next full number
     const batteriesNeeded = Math.ceil(10 / hours + 1);
     batteryCountElem.textContent = batteriesNeeded.toString();
@@ -3219,10 +3227,21 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   } else {
     batteryComparisonSection.style.display = "none";
   }
-  const override = renderFeedbackTable(getCurrentSetupKey());
-  if (override !== null) {
-    batteryLifeElem.textContent = override.toFixed(2);
+  const feedback = renderFeedbackTable(getCurrentSetupKey());
+  if (feedback !== null) {
+    batteryLifeElem.textContent = feedback.runtime.toFixed(2);
+    lastRuntimeHours = feedback.runtime;
+    if (runtimeAverageNoteElem) {
+      runtimeAverageNoteElem.textContent =
+        texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count) +
+        (feedback.count > 4 ? ' ' + texts[currentLang].runtimeAverageNote : '');
+    }
+    const batteriesNeeded = Math.ceil(10 / feedback.runtime + 1);
+    batteryCountElem.textContent = batteriesNeeded.toString();
+  } else if (runtimeAverageNoteElem) {
+    runtimeAverageNoteElem.textContent = '';
   }
+  renderTemperatureNote(lastRuntimeHours);
   checkFizCompatibility();
   checkFizController();
   checkArriCompatibility();
@@ -3258,7 +3277,6 @@ function renderFeedbackTable(currentKey) {
   const table = document.getElementById('userFeedbackTable');
   const data = loadFeedbackSafe();
   const entries = data[currentKey] || [];
-  if (runtimeAverageNoteElem) runtimeAverageNoteElem.textContent = '';
 
   if (!entries.length) {
     if (table) {
@@ -3415,11 +3433,8 @@ function renderFeedbackTable(currentKey) {
     weightTotal += weight;
     count++;
   });
-  if (runtimeAverageNoteElem) {
-    runtimeAverageNoteElem.textContent = count > 4 ? texts[currentLang].runtimeAverageNote : '';
-  }
   if (count >= 3 && weightTotal > 0) {
-    return weightedSum / weightTotal;
+    return { runtime: weightedSum / weightTotal, count };
   }
   return null;
 }

@@ -88,7 +88,9 @@ describe('script.js functions', () => {
     script.updateCalculations();
 
     expect(document.getElementById('batteryLife').textContent).toBe('2.00');
-    expect(document.getElementById('runtimeAverageNote').textContent).toBe(texts.en.runtimeAverageNote);
+    const expectedNote =
+      texts.en.runtimeUserCountNote.replace('{count}', 5) + ' ' + texts.en.runtimeAverageNote;
+    expect(document.getElementById('runtimeAverageNote').textContent).toBe(expectedNote);
   });
 
   test('applies temperature scaling to user runtime', () => {
@@ -111,6 +113,29 @@ describe('script.js functions', () => {
     script.updateCalculations();
 
     expect(document.getElementById('batteryLife').textContent).toBe('1.25');
+  });
+
+  test('uses user runtime for temperature table', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    const key = script.getCurrentSetupKey();
+    const entries = Array.from({ length: 5 }, () => ({ runtime: '2' }));
+    global.loadFeedback.mockReturnValue({ [key]: entries });
+
+    script.updateCalculations();
+
+    const firstRuntime = document.querySelector('#temperatureNote table tr:nth-child(2) td:nth-child(2)').textContent;
+    expect(firstRuntime).toBe('2.00');
   });
 
   test('weighs high-resolution entries by camera power share', () => {
