@@ -6203,6 +6203,13 @@ controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveC
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
 
 // Dark mode handling
+function updateThemeColor(isDark) {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    meta.setAttribute('content', isDark ? '#121212' : '#ffffff');
+  }
+}
+
 function applyDarkMode(enabled) {
   if (enabled) {
     document.body.classList.add("dark-mode");
@@ -6219,6 +6226,7 @@ function applyDarkMode(enabled) {
       darkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
+  updateThemeColor(enabled);
 }
 
 let darkModeEnabled = false;
