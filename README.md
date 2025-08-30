@@ -10,10 +10,14 @@ This repository provides the documentation in multiple languages:
 
 Choose your preferred language above.
 
-Recent updates add an interactive setup diagram with zoom and export options,
-an optional pink accent color and a searchable help dialog. Cameras with both
-V‑Mount and B‑Mount battery plates are fully supported. See the
-language-specific README files for full details.
+Recent updates include:
+
+- **Interactive setup diagram** – drag devices, zoom with dedicated controls and export the layout as SVG or JPG.
+- **Pink accent theme** – toggle a playful pink highlight that persists between visits.
+- **Searchable help dialog** – open with the ? button or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
+- **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
+
+See the language-specific README files for full details.
 
 ## Features at a Glance
 
