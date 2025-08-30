@@ -14,6 +14,7 @@ describe('script.js functions', () => {
     const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
     const body = html.split('<body>')[1].split('</body>')[0];
     document.body.innerHTML = body;
+    document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.devices = {
       cameras: { CamA: { powerDrawWatts: 10 } },
@@ -556,17 +557,20 @@ describe('script.js functions', () => {
     ]);
   });
 
-  test('applyDarkMode toggles class and aria-pressed', () => {
+  test('applyDarkMode toggles class, aria-pressed and theme color', () => {
     const { applyDarkMode } = script;
     const toggle = document.getElementById('darkModeToggle');
+    const meta = document.querySelector('meta[name="theme-color"]');
     applyDarkMode(true);
     expect(document.body.classList.contains('dark-mode')).toBe(true);
     expect(toggle.textContent).toBe('☀️');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(meta.getAttribute('content')).toBe('#121212');
     applyDarkMode(false);
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('🌙');
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    expect(meta.getAttribute('content')).toBe('#ffffff');
   });
 
   test('applyPinkMode toggles class and aria-pressed', () => {
