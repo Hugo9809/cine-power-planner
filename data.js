@@ -6384,9 +6384,14 @@ let devices={
     },
     "None": {
       "powerDrawWatts": 0,
-      "powerInput": "",
-      "videoInput": "3G-SDI",
-      "videoOutput": "3G-SDI",
+      "power": {
+        "input": {
+          "voltageRange": "",
+          "type": ""
+        }
+      },
+      "videoInputs": [],
+      "videoOutputs": [],
       "frequency": "5 GHz",
       "latencyMs": null
     }
