@@ -27,6 +27,7 @@ const texts = {
     setupNameLabel: "Setup Name:",
     deleteSetupBtn: "Delete",
     saveSetupBtn: "Save",
+    clearSetupBtn: "Clear Current Setup",
 
     cameraLabel: "Camera:",
     monitorLabel: "Monitor:",
@@ -236,6 +237,7 @@ const texts = {
     setupNameLabel: "Nome di configurazione:",
     deleteSetupBtn: "Eliminare",
     saveSetupBtn: "Salva",
+    clearSetupBtn: "Cancella configurazione corrente",
     cameraLabel: "Telecamera:",
     monitorLabel: "Monitor:",
     videoLabel: "Video wireless:",
@@ -429,6 +431,7 @@ const texts = {
     setupNameLabel: "Nombre de Configuración:",
     deleteSetupBtn: "Eliminar",
     saveSetupBtn: "Guardar",
+    clearSetupBtn: "Borrar configuración actual",
 
     cameraLabel: "Cámara:",
     monitorLabel: "Monitor:",
@@ -638,6 +641,7 @@ const texts = {
     setupNameLabel: "Nom de la Configuration:",
     deleteSetupBtn: "Supprimer",
     saveSetupBtn: "Enregistrer",
+    clearSetupBtn: "Effacer la configuration actuelle",
 
     cameraLabel: "Caméra:",
     monitorLabel: "Moniteur:",
@@ -847,6 +851,7 @@ const texts = {
     setupNameLabel: "Setup-Name:",
     deleteSetupBtn: "Löschen",
     saveSetupBtn: "Speichern",
+    clearSetupBtn: "Aktuelles Setup zurücksetzen",
 
     cameraLabel: "Kamera:",
     monitorLabel: "Monitor:",
