@@ -33,6 +33,8 @@ describe('script.js functions', () => {
     global.saveSetup = jest.fn();
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
+    global.loadFeedback = jest.fn(() => ({}));
+    global.saveFeedback = jest.fn();
 
     require('../translations.js');
     script = require('../script.js');
@@ -64,6 +66,29 @@ describe('script.js functions', () => {
       .toBe(texts.en.pinOk.replace('{max}', '10'));
     expect(document.getElementById('dtapWarning').textContent)
       .toBe(texts.en.dtapOk.replace('{max}', '5'));
+  });
+
+  test('shows runtime average note when more than four user entries', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    const key = script.getCurrentSetupKey();
+    const entries = Array.from({ length: 5 }, () => ({ runtime: '2' }));
+    global.loadFeedback.mockReturnValue({ [key]: entries });
+
+    script.updateCalculations();
+
+    expect(document.getElementById('batteryLife').textContent).toBe('2.00');
+    expect(document.getElementById('runtimeAverageNote').textContent).toBe(texts.en.runtimeAverageNote);
   });
 
   test('B-Mount camera uses high-voltage current labels', () => {

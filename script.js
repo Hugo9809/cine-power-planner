@@ -1056,6 +1056,7 @@ const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
 const totalCurrent12Elem  = document.getElementById("totalCurrent12");
 const batteryLifeElem     = document.getElementById("batteryLife");
+const runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
 const batteryCountElem    = document.getElementById("batteryCount");
 const pinWarnElem         = document.getElementById("pinWarning");
 const dtapWarnElem        = document.getElementById("dtapWarning");
@@ -3257,6 +3258,7 @@ function renderFeedbackTable(currentKey) {
   const table = document.getElementById('userFeedbackTable');
   const data = loadFeedbackSafe();
   const entries = data[currentKey] || [];
+  if (runtimeAverageNoteElem) runtimeAverageNoteElem.textContent = '';
 
   if (!entries.length) {
     if (table) {
@@ -3315,6 +3317,9 @@ function renderFeedbackTable(currentKey) {
       count++;
     }
   });
+  if (runtimeAverageNoteElem) {
+    runtimeAverageNoteElem.textContent = count > 4 ? texts[currentLang].runtimeAverageNote : '';
+  }
   if (count >= 3) {
     return sum / count;
   }
