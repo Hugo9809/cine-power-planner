@@ -908,8 +908,6 @@ function setLanguage(lang) {
   document.getElementById("batteryLifeLabel").textContent = texts[lang].batteryLifeLabel;
   document.getElementById("batteryCountLabel").textContent = texts[lang].batteryCountLabel;
   document.getElementById("runtimeFeedbackBtn").textContent = texts[lang].runtimeFeedbackBtn;
-  const weightHeadingEl = document.getElementById("weightingHeading");
-  if (weightHeadingEl) weightHeadingEl.textContent = texts[lang].weightingHeading;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   const fb = renderFeedbackTable(getCurrentSetupKey());
@@ -3350,32 +3348,9 @@ function renderFeedbackTable(currentKey) {
     { key: 'humidity', label: 'humidity' },
     { key: 'charging', label: 'Charging' },
     { key: 'runtime', label: 'runtime' },
-    { key: 'batteriesPerDay', label: 'batteries a day' }
+    { key: 'batteriesPerDay', label: 'batteries a day' },
+    { key: 'weighting', label: 'weight' }
   ];
-
-  const colSpan = columns.length + 1;
-  let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '<th></th></tr>';
-  entries.forEach((entry, index) => {
-    html += '<tr>';
-    columns.forEach(c => {
-      html += `<td>${escapeHtml(entry[c.key] || '')}</td>`;
-    });
-    html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
-    html += '</tr>';
-  });
-  html += `<tr id="weightingRow" class="hidden"><td colspan="${colSpan}"><div id="weightingDashboard"><h3 id="weightingHeading">Runtime Weighting Breakdown</h3><div id="weightingBars"></div></div></td></tr>`;
-  table.innerHTML = html;
-  table.classList.remove('hidden');
-  if (container) container.classList.remove('hidden');
-  table.querySelectorAll('.deleteFeedbackBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const key = decodeURIComponent(btn.dataset.key);
-      const idx = parseInt(btn.dataset.index, 10);
-      deleteFeedbackEntry(key, idx);
-    });
-  });
-  const barsContainer = document.getElementById('weightingBars');
-  const weightingRow = document.getElementById('weightingRow');
 
   // Helper functions for weighting factors
   const parseResolution = str => {
@@ -3446,10 +3421,9 @@ function renderFeedbackTable(currentKey) {
   let weightedSum = 0;
   let weightTotal = 0;
   let count = 0;
-  const breakdown = [];
-  entries.forEach(e => {
+  const breakdown = entries.map(e => {
     const rt = parseFloat(e.runtime);
-    if (Number.isNaN(rt)) return;
+    if (Number.isNaN(rt)) return null;
 
     let camFactor = 1;
     let monitorFactor = 1;
@@ -3485,7 +3459,9 @@ function renderFeedbackTable(currentKey) {
 
     weightedSum += adjustedRuntime * weight;
     weightTotal += weight;
-    breakdown.push({
+    count++;
+
+    return {
       temperature: tempMul,
       resolution: res ? resolutionWeight(res) : 1,
       framerate: fps ? fps / 24 : 1,
@@ -3493,34 +3469,50 @@ function renderFeedbackTable(currentKey) {
       codec: codec ? codecWeight(codec) : 1,
       monitor: monitorFactor,
       weight
-    });
-    count++;
+    };
   });
-  if (barsContainer && weightingRow) {
-    // Sort entries by weight so the most significant runtimes appear first
-    breakdown.sort((a, b) => b.weight - a.weight);
-    const maxWeight = breakdown.length ? breakdown[0].weight : 0;
-    let chartHtml = '';
-    breakdown.forEach((b, i) => {
-      const percent = maxWeight ? (b.weight / maxWeight) * 100 : 0;
-      const share = b.weight * 100;
-      const tooltip =
-        `Temp ×${b.temperature.toFixed(2)}\n` +
-        `Res ×${b.resolution.toFixed(2)}\n` +
-        `FPS ×${b.framerate.toFixed(2)}\n` +
-        `Codec ×${b.codec.toFixed(2)}\n` +
-        `Wi-Fi ×${b.wifi.toFixed(2)}\n` +
-        `Monitor ×${b.monitor.toFixed(2)}\n` +
-        `Share ${share.toFixed(1)}%`;
-      chartHtml +=
-        `<div class="weightingRow"><span class="weightingLabel">${i + 1}</span>` +
-        `<div class="barContainer"><div class="weightBar" style="width:${percent}%" title="${escapeHtml(tooltip)}"></div></div>` +
-        `<span class="weightingPercent">${share.toFixed(1)}%</span></div>`;
+
+  const maxWeight = Math.max(...breakdown.filter(Boolean).map(b => b.weight), 0);
+  let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '<th></th></tr>';
+  entries.forEach((entry, index) => {
+    html += '<tr>';
+    columns.forEach(c => {
+      if (c.key === 'weighting') {
+        const b = breakdown[index];
+        if (b) {
+          const percent = maxWeight ? (b.weight / maxWeight) * 100 : 0;
+          const share = b.weight * 100;
+          const tooltip =
+            `Temp ×${b.temperature.toFixed(2)}\n` +
+            `Res ×${b.resolution.toFixed(2)}\n` +
+            `FPS ×${b.framerate.toFixed(2)}\n` +
+            `Codec ×${b.codec.toFixed(2)}\n` +
+            `Wi-Fi ×${b.wifi.toFixed(2)}\n` +
+            `Monitor ×${b.monitor.toFixed(2)}\n` +
+            `Share ${share.toFixed(1)}%`;
+          html +=
+            `<td><div class="weightingRow"><div class="barContainer"><div class="weightBar" style="width:${percent}%" title="${escapeHtml(tooltip)}"></div></div><span class="weightingPercent">${share.toFixed(1)}%</span></div></td>`;
+        } else {
+          html += '<td></td>';
+        }
+      } else {
+        html += `<td>${escapeHtml(entry[c.key] || '')}</td>`;
+      }
     });
-    barsContainer.innerHTML = chartHtml;
-    if (breakdown.length) weightingRow.classList.remove('hidden');
-    else weightingRow.classList.add('hidden');
-  }
+    html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
+    html += '</tr>';
+  });
+  table.innerHTML = html;
+  table.classList.remove('hidden');
+  if (container) container.classList.remove('hidden');
+  table.querySelectorAll('.deleteFeedbackBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = decodeURIComponent(btn.dataset.key);
+      const idx = parseInt(btn.dataset.index, 10);
+      deleteFeedbackEntry(key, idx);
+    });
+  });
+
   if (count >= 3 && weightTotal > 0) {
     return { runtime: weightedSum / weightTotal, count };
   }
