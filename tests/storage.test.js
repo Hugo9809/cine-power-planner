@@ -6,10 +6,13 @@ const {
   saveSetup,
   loadSetup,
   deleteSetup,
+  loadSessionState,
+  saveSessionState,
 } = require('../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_KEY = 'cameraPowerPlanner_setups';
+const SESSION_KEY = 'cameraPowerPlanner_session';
 
 const validDeviceData = {
   cameras: {},
@@ -114,5 +117,27 @@ describe('setup storage', () => {
     localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
     deleteSetup('A');
     expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({B:{bar:2}});
+  });
+});
+
+describe('session state storage', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
+  test('saveSessionState stores JSON in sessionStorage', () => {
+    const state = { camera: 'CamA' };
+    saveSessionState(state);
+    expect(sessionStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(state));
+  });
+
+  test('loadSessionState returns parsed object when present', () => {
+    const state = { camera: 'CamA' };
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    expect(loadSessionState()).toEqual(state);
+  });
+
+  test('loadSessionState returns null when none', () => {
+    expect(loadSessionState()).toBeNull();
   });
 });

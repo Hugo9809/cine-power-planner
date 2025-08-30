@@ -2,6 +2,26 @@
 
 const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
+const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
+
+// --- Session State Storage ---
+function loadSessionState() {
+  try {
+    const data = sessionStorage.getItem(SESSION_STATE_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error("Error loading session state from sessionStorage:", e);
+    return null;
+  }
+}
+
+function saveSessionState(state) {
+  try {
+    sessionStorage.setItem(SESSION_STATE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error("Error saving session state to sessionStorage:", e);
+  }
+}
 
 // --- Device Data Storage ---
 function loadDeviceData() {
@@ -97,6 +117,8 @@ if (typeof module !== "undefined" && module.exports) {
     saveSetups,
     saveSetup,
     loadSetup,
-    deleteSetup
+    deleteSetup,
+    loadSessionState,
+    saveSessionState
   };
 }

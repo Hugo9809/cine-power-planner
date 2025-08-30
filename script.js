@@ -1,5 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
-/* global texts, categoryNames */
+/* global texts, categoryNames, loadSessionState, saveSessionState */
 
 const VIDEO_OUTPUT_TYPES = [
   '3G-SDI',
@@ -33,6 +33,16 @@ function storeSetups(setups) {
 
 function storeDevices(data) {
   saveDeviceData(data);
+}
+
+function loadSession() {
+  return typeof loadSessionState === 'function' ? loadSessionState() : null;
+}
+
+function storeSession(state) {
+  if (typeof saveSessionState === 'function') {
+    saveSessionState(state);
+  }
 }
 
 function normalizeVideoType(type) {
@@ -5722,6 +5732,44 @@ function generatePrintableOverview() {
 }
 
 
+// --- SESSION STATE HANDLING ---
+function saveCurrentSession() {
+  const state = {
+    setupName: setupNameInput ? setupNameInput.value : '',
+    setupSelect: setupSelect ? setupSelect.value : '',
+    camera: cameraSelect ? cameraSelect.value : '',
+    monitor: monitorSelect ? monitorSelect.value : '',
+    video: videoSelect ? videoSelect.value : '',
+    motors: motorSelects.map(sel => sel ? sel.value : ''),
+    controllers: controllerSelects.map(sel => sel ? sel.value : ''),
+    distance: distanceSelect ? distanceSelect.value : '',
+    batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
+    battery: batterySelect ? batterySelect.value : ''
+  };
+  storeSession(state);
+}
+
+function restoreSessionState() {
+  const state = loadSession();
+  if (!state) return;
+  if (setupNameInput) setupNameInput.value = state.setupName || '';
+  if (cameraSelect && state.camera) cameraSelect.value = state.camera;
+  updateBatteryPlateVisibility();
+  if (batteryPlateSelect && state.batteryPlate) batteryPlateSelect.value = state.batteryPlate;
+  updateBatteryOptions();
+  if (monitorSelect && state.monitor) monitorSelect.value = state.monitor;
+  if (videoSelect && state.video) videoSelect.value = state.video;
+  if (distanceSelect && state.distance) distanceSelect.value = state.distance;
+  if (Array.isArray(state.motors)) {
+    state.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
+  }
+  if (Array.isArray(state.controllers)) {
+    state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
+  }
+  if (batterySelect && state.battery) batterySelect.value = state.battery;
+  if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
+}
+
 // --- EVENT LISTENERS FÜR NEUBERECHNUNG ---
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
@@ -5737,6 +5785,12 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
+
+[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect, setupSelect]
+  .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
+motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
+controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
+if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
 
 // Dark mode handling
 function applyDarkMode(enabled) {
@@ -5941,6 +5995,7 @@ if (helpButton && helpDialog) {
 function initApp() {
   setLanguage(currentLang);
   resetDeviceForm();
+  restoreSessionState();
   updateCalculations();
 }
 
