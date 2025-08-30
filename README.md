@@ -15,6 +15,14 @@ an optional pink accent color and a searchable help dialog. Cameras with both
 V‑Mount and B‑Mount battery plates are fully supported. See the
 language-specific README files for full details.
 
+## Features at a Glance
+
+- Calculate total power consumption, current draw at 14.4 V and 12 V, and estimated battery runtime.
+- Check that selected batteries can supply the required output.
+- Save and load setups, import/export them as JSON, and generate a printable overview.
+- Visualize power and video connections with an interactive diagram.
+- Works completely offline and offers a searchable help dialog.
+
 ## Quick Start
 
 1. Make sure you have Node.js 18 or later installed if you want to lint or test the project.
