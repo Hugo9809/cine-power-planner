@@ -6107,6 +6107,7 @@ function generatePrintableOverview() {
                 };
                 window.addEventListener('beforeprint', applyPrintStyles);
                 window.addEventListener('afterprint', restorePrintStyles);
+                window.addEventListener('afterprint', () => { window.close(); });
 
                 const downloadBtn = document.getElementById('downloadDiagram');
                 if (downloadBtn) {
