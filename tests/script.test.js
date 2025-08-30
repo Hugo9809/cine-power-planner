@@ -59,6 +59,7 @@ describe('script.js functions', () => {
     expect(document.getElementById('totalPower').textContent).toBe('23.0');
     expect(document.getElementById('totalCurrent12').textContent).toBe('1.92');
     expect(document.getElementById('batteryLife').textContent).toBe('4.35');
+    expect(document.getElementById('batteryCount').textContent).toBe('4');
     expect(document.getElementById('pinWarning').textContent)
       .toBe(texts.en.pinOk.replace('{max}', '10'));
     expect(document.getElementById('dtapWarning').textContent)

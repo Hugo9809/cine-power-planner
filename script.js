@@ -861,6 +861,7 @@ function setLanguage(lang) {
   document.getElementById("totalCurrent144Label").textContent = texts[lang].totalCurrent144Label;
   document.getElementById("totalCurrent12Label").textContent = texts[lang].totalCurrent12Label;
   document.getElementById("batteryLifeLabel").textContent = texts[lang].batteryLifeLabel;
+  document.getElementById("batteryCountLabel").textContent = texts[lang].batteryCountLabel;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   // Device manager category headings
@@ -1041,6 +1042,7 @@ const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
 const totalCurrent12Elem  = document.getElementById("totalCurrent12");
 const batteryLifeElem     = document.getElementById("batteryLife");
+const batteryCountElem    = document.getElementById("batteryCount");
 const pinWarnElem         = document.getElementById("pinWarning");
 const dtapWarnElem        = document.getElementById("dtapWarning");
 
@@ -2953,6 +2955,7 @@ function updateCalculations() {
 // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
 if (!battery || battery === "None" || !devices.batteries[battery]) {
   batteryLifeElem.textContent = "–";
+  batteryCountElem.textContent = "–";
   pinWarnElem.textContent = "";
   pinWarnElem.style.color = "";
   dtapWarnElem.textContent = "";
@@ -2964,12 +2967,17 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     const maxDtapA = battData.dtapA;
     totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
     totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+    let hours;
     if (totalWatt === 0) {
+      hours = Infinity;
       batteryLifeElem.textContent = "∞";
     } else {
-      const hours = capacityWh / totalWatt;
+      hours = capacityWh / totalWatt;
       batteryLifeElem.textContent = hours.toFixed(2);
     }
+    // Round up total batteries (including one spare) to the next full number
+    const batteriesNeeded = Math.ceil(10 / hours + 1);
+    batteryCountElem.textContent = batteriesNeeded.toString();
     // Warnings about current draw vs battery limits
     pinWarnElem.textContent = "";
     dtapWarnElem.textContent = "";
@@ -5142,6 +5150,7 @@ function generatePrintableOverview() {
         <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent} A</p>
         <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent} A</p>
         <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}</p>
+        <p><strong>${t.batteryCountLabel}</strong> ${batteryCountElem.textContent}</p>
     `;
 
     // Get current warning messages with their colors
