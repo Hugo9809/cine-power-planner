@@ -4479,6 +4479,8 @@ function renderDeviceList(categoryKey, ulElement) {
 
     const toggleBtn = document.createElement("button");
     toggleBtn.className = "detail-toggle";
+    toggleBtn.type = "button";
+    toggleBtn.setAttribute("aria-expanded", "false");
     toggleBtn.textContent = texts[currentLang].showDetails;
     header.appendChild(toggleBtn);
 
@@ -4700,20 +4702,24 @@ if (toggleDeviceBtn) {
 }
 
 
+function toggleDeviceDetails(button) {
+  const details = button.closest('li').querySelector('.device-details');
+  const expanded = button.getAttribute('aria-expanded') === 'true';
+  if (expanded) {
+    details.style.display = 'none';
+    button.textContent = texts[currentLang].showDetails;
+    button.setAttribute('aria-expanded', 'false');
+  } else {
+    details.style.display = 'block';
+    button.textContent = texts[currentLang].hideDetails;
+    button.setAttribute('aria-expanded', 'true');
+  }
+}
+
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
 deviceManagerSection.addEventListener("click", (event) => {
   if (event.target.classList.contains("detail-toggle")) {
-    const details = event.target.closest('li').querySelector('.device-details');
-    const expanded = event.target.dataset.expanded === 'true';
-    if (expanded) {
-      details.style.display = 'none';
-      event.target.textContent = texts[currentLang].showDetails;
-      event.target.dataset.expanded = 'false';
-    } else {
-      details.style.display = 'block';
-      event.target.textContent = texts[currentLang].hideDetails;
-      event.target.dataset.expanded = 'true';
-    }
+    toggleDeviceDetails(event.target);
   } else if (event.target.classList.contains("edit-btn")) {
     const name = event.target.dataset.name;
     const categoryKey = event.target.dataset.category;
@@ -4904,6 +4910,13 @@ deviceManagerSection.addEventListener("click", (event) => {
       applyFilters();
       updateCalculations();
     }
+  }
+});
+
+deviceManagerSection.addEventListener('keydown', (event) => {
+  if (event.target.classList.contains('detail-toggle') && (event.key === 'Enter' || event.key === ' ')) {
+    event.preventDefault();
+    toggleDeviceDetails(event.target);
   }
 });
 

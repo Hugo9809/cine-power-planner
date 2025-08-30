@@ -1733,4 +1733,23 @@ describe('monitor wireless metadata', () => {
     expect(deviceManager.classList.contains('hidden')).toBe(true);
     expect(toggleBtn.textContent).toBe(texts.en.toggleDeviceManager);
   });
+
+  test('detail toggle responds to keyboard events', () => {
+    const detailToggle = document.querySelector('#device-manager .detail-toggle');
+    const details = detailToggle.closest('li').querySelector('.device-details');
+
+    // Initially collapsed
+    expect(detailToggle.getAttribute('aria-expanded')).toBe('false');
+    expect(details.style.display).toBe('none');
+
+    // Activate with Enter key
+    detailToggle.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    expect(detailToggle.getAttribute('aria-expanded')).toBe('true');
+    expect(details.style.display).toBe('block');
+
+    // Collapse with Space key
+    detailToggle.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    expect(detailToggle.getAttribute('aria-expanded')).toBe('false');
+    expect(details.style.display).toBe('none');
+  });
 });

@@ -444,7 +444,17 @@ button:disabled {
 }
 
 .detail-toggle {
-  margin-right: 5px;
+  margin: 0 5px 0 0;
+  background: none;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.detail-toggle:focus,
+.detail-toggle[aria-expanded="true"] {
+  border-color: var(--accent-color);
+  outline: none;
 }
 
 .device-details {
