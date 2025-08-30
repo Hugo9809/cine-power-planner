@@ -869,6 +869,7 @@ function setLanguage(lang) {
   document.getElementById("totalCurrent12Label").textContent = texts[lang].totalCurrent12Label;
   document.getElementById("batteryLifeLabel").textContent = texts[lang].batteryLifeLabel;
   document.getElementById("batteryCountLabel").textContent = texts[lang].batteryCountLabel;
+  document.getElementById("runtimeFeedbackBtn").textContent = texts[lang].runtimeFeedbackBtn;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   renderTemperatureNote(lastRuntimeHours);
@@ -1157,6 +1158,7 @@ const existingDevicesHeading = document.getElementById("existingDevicesHeading")
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
+const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const setupDiagramContainer = document.getElementById("diagramArea");
 const diagramLegend = document.getElementById("diagramLegend");
 const downloadDiagramBtn = document.getElementById("downloadDiagram");
@@ -4977,6 +4979,35 @@ generateOverviewBtn.addEventListener('click', () => {
     }
     generatePrintableOverview();
 });
+
+// Prepare an email with current setup details for runtime feedback
+if (runtimeFeedbackBtn) {
+    runtimeFeedbackBtn.addEventListener('click', () => {
+        const lines = [];
+        lines.push('Camera Power Planner runtime feedback');
+        lines.push('');
+        lines.push(`Camera: ${cameraSelect.value || 'None'}`);
+        lines.push(`Monitor: ${monitorSelect.value || 'None'}`);
+        lines.push(`Wireless Video: ${videoSelect.value || 'None'}`);
+        const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+        lines.push(`FIZ Motors: ${motors.length ? motors.join(', ') : 'None'}`);
+        const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+        lines.push(`FIZ Controllers: ${controllers.length ? controllers.join(', ') : 'None'}`);
+        lines.push(`Distance Sensor: ${distanceSelect.value || 'None'}`);
+        lines.push(`Battery: ${batterySelect.value || 'None'}`);
+        lines.push('');
+        lines.push(`Total Consumption: ${totalPowerElem.textContent} W`);
+        const unit = document.getElementById('batteryLifeUnit')?.textContent || 'hrs';
+        lines.push(`Estimated Runtime: ${batteryLifeElem.textContent} ${unit}`);
+        lines.push('');
+        lines.push('Actual Runtime:');
+        lines.push('');
+        lines.push('Additional Notes:');
+        const subject = encodeURIComponent('Camera Power Planner Runtime Feedback');
+        const body = encodeURIComponent(lines.join('\n'));
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    });
+}
 
 function escapeHtml(str) {
     const div = document.createElement('div');
