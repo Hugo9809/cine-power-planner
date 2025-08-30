@@ -884,6 +884,9 @@ function setLanguage(lang) {
   saveSetupBtn.textContent = texts[lang].saveSetupBtn;
   deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
+  document.getElementById("sharedLinkLabel").textContent = texts[lang].sharedLinkLabel;
+  applySharedLinkBtn.textContent = texts[lang].loadSharedLinkBtn;
+  if (sharedLinkInput) sharedLinkInput.placeholder = texts[lang].sharedLinkPlaceholder;
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -1122,6 +1125,9 @@ const saveSetupBtn    = document.getElementById("saveSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
 const clearSetupBtn   = document.getElementById("clearSetupBtn");
 const shareSetupBtn   = document.getElementById("shareSetupBtn");
+const sharedLinkRow   = document.getElementById("sharedLinkRow");
+const sharedLinkInput = document.getElementById("sharedLinkInput");
+const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const cameraListElem  = document.getElementById("cameraList");
@@ -5465,6 +5471,26 @@ shareSetupBtn.addEventListener('click', () => {
   prompt(texts[currentLang].shareSetupPrompt, link);
 });
 
+if (applySharedLinkBtn && sharedLinkInput) {
+  applySharedLinkBtn.addEventListener('click', () => {
+    const url = sharedLinkInput.value.trim();
+    if (!url) return;
+    let shared;
+    try {
+      const params = new URL(url, window.location.href).searchParams;
+      shared = params.get('shared');
+    } catch {
+      shared = null;
+    }
+    if (!shared) {
+      alert(texts[currentLang].invalidSharedLink);
+      return;
+    }
+    applySharedSetup(shared);
+    updateCalculations();
+  });
+}
+
 // Open feedback dialog and handle submission
 if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
   runtimeFeedbackBtn.addEventListener('click', () => {
@@ -6156,10 +6182,7 @@ function restoreSessionState() {
   if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
 }
 
-function applySharedSetupFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const shared = params.get('shared');
-  if (!shared) return;
+function applySharedSetup(shared) {
   try {
     const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
     if (decoded.changedDevices) {
@@ -6189,10 +6212,17 @@ function applySharedSetupFromUrl() {
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);
-  } finally {
-    if (window.history && window.history.replaceState) {
-      history.replaceState(null, '', window.location.pathname);
-    }
+    alert(texts[currentLang].invalidSharedLink);
+  }
+}
+
+function applySharedSetupFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const shared = params.get('shared');
+  if (!shared) return;
+  applySharedSetup(shared);
+  if (window.history && window.history.replaceState) {
+    history.replaceState(null, '', window.location.pathname);
   }
 }
 
@@ -6435,6 +6465,11 @@ if (helpButton && helpDialog) {
 // Initialize immediately if DOM is already loaded (e.g. when scripts are
 // injected after `DOMContentLoaded` fired). Otherwise wait for the event.
 function initApp() {
+  const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+  const isIOSStandalone = window.navigator.standalone;
+  if (sharedLinkRow && (isStandalone || isIOSStandalone)) {
+    sharedLinkRow.classList.remove('hidden');
+  }
   populateEnvironmentDropdowns();
   setLanguage(currentLang);
   resetDeviceForm();
@@ -6489,6 +6524,7 @@ if (typeof module !== "undefined" && module.exports) {
     applyPinkMode,
     generatePrintableOverview,
     applySharedSetupFromUrl,
+    applySharedSetup,
     updateBatteryPlateVisibility,
     updateBatteryOptions,
     renderSetupDiagram,
