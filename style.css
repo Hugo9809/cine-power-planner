@@ -835,6 +835,17 @@ body:not(.light-mode) #userFeedbackTable td {
   font-size: 0.9em;
 }
 
+#userFeedbackTable .weightingRow {
+  margin-bottom: 2px;
+}
+#userFeedbackTable .weightingLabel,
+#userFeedbackTable .weightingPercent {
+  font-size: 0.8em;
+}
+#userFeedbackTable .barContainer {
+  height: 10px;
+}
+
 .selectedBatteryRow {
     background-color: #e6f7ff; /* Light blue background for selected row */
     font-weight: bold;

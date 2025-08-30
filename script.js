@@ -1,5 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
-/* global texts, categoryNames, loadSessionState, saveSessionState */
+/* global texts, lang, categoryNames, loadSessionState, saveSessionState */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -3311,8 +3311,6 @@ function deleteFeedbackEntry(key, index) {
 function renderFeedbackTable(currentKey) {
   const container = document.getElementById('feedbackTableContainer');
   const table = document.getElementById('userFeedbackTable');
-  const dashboard = document.getElementById('weightingDashboard');
-  const barsContainer = document.getElementById('weightingBars');
   const data = loadFeedbackSafe();
   const entries = data[currentKey] || [];
 
@@ -3322,8 +3320,6 @@ function renderFeedbackTable(currentKey) {
       table.classList.add('hidden');
     }
     if (container) container.classList.add('hidden');
-    if (dashboard) dashboard.classList.add('hidden');
-    if (barsContainer) barsContainer.innerHTML = '';
     return null;
   }
 
@@ -3332,7 +3328,6 @@ function renderFeedbackTable(currentKey) {
     { key: 'date', label: 'Date' },
     { key: 'location', label: 'Location' },
     { key: 'cameraWifi', label: 'WIFI' },
-    { key: 'lensMount', label: 'Lens Mount' },
     { key: 'resolution', label: 'Res' },
     { key: 'codec', label: 'Codec' },
     { key: 'framerate', label: 'FPS' },
@@ -3355,6 +3350,9 @@ function renderFeedbackTable(currentKey) {
     html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
     html += '</tr>';
   });
+  const headingLang = typeof lang === 'string' ? lang : 'en';
+  html += `<tr><th colspan="${columns.length + 1}">${escapeHtml(texts[headingLang].weightingHeading)}</th></tr>`;
+  html += `<tr><td colspan="${columns.length + 1}"><div id="weightingBars"></div></td></tr>`;
   table.innerHTML = html;
   table.classList.remove('hidden');
   if (container) container.classList.remove('hidden');
@@ -3485,7 +3483,8 @@ function renderFeedbackTable(currentKey) {
     });
     count++;
   });
-  if (barsContainer && dashboard) {
+  const barsContainer = document.getElementById('weightingBars');
+  if (barsContainer) {
     // Sort entries by weight so the most significant runtimes appear first
     breakdown.sort((a, b) => b.weight - a.weight);
     const maxWeight = breakdown.length ? breakdown[0].weight : 0;
@@ -3507,7 +3506,6 @@ function renderFeedbackTable(currentKey) {
         `<span class="weightingPercent">${share.toFixed(1)}%</span></div>`;
     });
     barsContainer.innerHTML = chartHtml;
-    dashboard.classList.remove('hidden');
   }
   if (count >= 3 && weightTotal > 0) {
     return { runtime: weightedSum / weightTotal, count };
