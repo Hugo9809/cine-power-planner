@@ -1076,6 +1076,14 @@ const videoVideoInputsContainer = document.getElementById("videoVideoInputsConta
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 const videoFrequencyInput = document.getElementById("videoFrequency");
 const videoLatencyInput = document.getElementById("videoLatency");
+const addDeviceForm = wattFieldDiv.parentNode;
+function placeWattField(category) {
+  if (category === "video") {
+    videoFieldsDiv.insertBefore(wattFieldDiv, videoFieldsDiv.firstChild);
+  } else {
+    addDeviceForm.insertBefore(wattFieldDiv, cameraFieldsDiv);
+  }
+}
 const motorFieldsDiv = document.getElementById("motorFields");
 const motorConnectorInput = document.getElementById("motorConnector");
 const motorInternalInput = document.getElementById("motorInternal");
@@ -4147,6 +4155,7 @@ deviceManagerSection.addEventListener("click", (event) => {
     } else {
       deviceData = devices[categoryKey][name];
     }
+    placeWattField(categoryKey);
 
     if (categoryKey === "batteries") {
       wattFieldDiv.style.display = "none";
@@ -4322,6 +4331,7 @@ deviceManagerSection.addEventListener("click", (event) => {
 // Category selection in add device form
 newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
+  placeWattField(val);
   if (val === "batteries") {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
