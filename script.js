@@ -3308,20 +3308,118 @@ function renderFeedbackTable(currentKey) {
     });
   });
 
-  let sum = 0;
+  // Helper functions for weighting factors
+  const parseResolution = str => {
+    if (!str) return null;
+    const s = String(str).toLowerCase();
+    const kMatch = s.match(/(\d+(?:\.\d+)?)\s*k/);
+    if (kMatch) return parseFloat(kMatch[1]) * 1000;
+    const pMatch = s.match(/(\d{3,4})p/);
+    if (pMatch) return parseInt(pMatch[1], 10);
+    const xMatch = s.match(/x\s*(\d{3,4})/);
+    if (xMatch) return parseInt(xMatch[1], 10);
+    const numMatch = s.match(/(\d{3,4})/);
+    return numMatch ? parseInt(numMatch[1], 10) : null;
+  };
+  const parseFramerate = str => {
+    if (!str) return null;
+    const m = String(str).match(/\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
+  };
+  const tempFactor = temp => {
+    if (Number.isNaN(temp)) return 1;
+    if (temp <= -20) return 2;
+    if (temp <= -10) return 1 / 0.625; // ~1.6
+    if (temp <= 0) return 1 / 0.8; // 1.25
+    return 1;
+  };
+
+  const resolutionWeight = res => {
+    if (res >= 12000) return 3;
+    if (res >= 8000) return 2;
+    if (res >= 4000) return 1.5;
+    if (res >= 1080) return 1;
+    return res / 1080;
+  };
+
+  const codecWeight = codec => {
+    if (!codec) return 1;
+    const c = String(codec).toLowerCase();
+    if (
+      /(prores\s*raw|braw|arriraw|r3d|redcode|cinema\s*dng|cdng|canon\s*raw|x-ocn|raw)/.test(c)
+    )
+      return 1;
+    if (/prores/.test(c)) return 1.1;
+    if (/dnx|avid/.test(c)) return 1.2;
+    if (/\ball[\s-]?i\b|all\s*intra|intra/.test(c)) return 1.3;
+    if (/h265|h\.265|hevc|xavc\s*hs|xhevc/.test(c)) return 1.7;
+    if (/h264|h\.264|avc|xavc|avchd|mpeg-4/.test(c)) return 1.5;
+    return 1;
+  };
+
+  const camPower = devices?.cameras?.[cameraSelect?.value]?.powerDrawWatts || 0;
+  const monitorPower = devices?.monitors?.[monitorSelect?.value]?.powerDrawWatts || 0;
+  const videoPower = devices?.video?.[videoSelect?.value]?.powerDrawWatts || 0;
+  const motorPower = motorSelects.reduce(
+    (sum, sel) => sum + (devices?.fiz?.motors?.[sel.value]?.powerDrawWatts || 0),
+    0
+  );
+  const controllerPower = controllerSelects.reduce(
+    (sum, sel) => sum + (devices?.fiz?.controllers?.[sel.value]?.powerDrawWatts || 0),
+    0
+  );
+  const distancePower = devices?.fiz?.distance?.[distanceSelect?.value]?.powerDrawWatts || 0;
+  const otherPower = videoPower + motorPower + controllerPower + distancePower;
+  const totalPower = camPower + monitorPower + otherPower;
+  const specBrightness = devices?.monitors?.[monitorSelect?.value]?.brightnessNits;
+
+  let weightedSum = 0;
+  let weightTotal = 0;
   let count = 0;
   entries.forEach(e => {
     const rt = parseFloat(e.runtime);
-    if (!Number.isNaN(rt)) {
-      sum += rt;
-      count++;
+    if (Number.isNaN(rt)) return;
+
+    let camFactor = 1;
+    let monitorFactor = 1;
+
+    const res = parseResolution(e.resolution);
+    if (res) camFactor *= resolutionWeight(res);
+
+    const fps = parseFramerate(e.framerate);
+    if (fps) camFactor *= fps / 24;
+
+    const wifi = (e.cameraWifi || '').toLowerCase();
+    if (wifi.includes('on')) camFactor *= 1.1;
+
+    const codec = e.codec;
+    if (codec) camFactor *= codecWeight(codec);
+
+    const entryBrightness = parseFloat(e.monitorBrightness);
+    if (!Number.isNaN(entryBrightness) && specBrightness) {
+      const ratio = entryBrightness / specBrightness;
+      if (ratio < 1) monitorFactor *= ratio;
     }
+
+    let weight = 1;
+    if (totalPower > 0) {
+      weight =
+        (camFactor * camPower + monitorFactor * monitorPower + otherPower) /
+        totalPower;
+    }
+
+    const temp = parseFloat(e.temperature);
+    const adjustedRuntime = rt * tempFactor(temp);
+
+    weightedSum += adjustedRuntime * weight;
+    weightTotal += weight;
+    count++;
   });
   if (runtimeAverageNoteElem) {
     runtimeAverageNoteElem.textContent = count > 4 ? texts[currentLang].runtimeAverageNote : '';
   }
-  if (count >= 3) {
-    return sum / count;
+  if (count >= 3 && weightTotal > 0) {
+    return weightedSum / weightTotal;
   }
   return null;
 }
