@@ -4943,7 +4943,7 @@ function generateConnectorSummary(data) {
         specHtml += `<span class="info-box power-conn">D-Tap: ${data.dtapA}A</span>`;
     }
     if (data.mount_type) {
-        specHtml += `<span class="info-box neutral-conn">Mount: ${escapeHtml(String(data.mount_type))}</span>`;
+        specHtml += `<span class="info-box power-conn">Mount: ${escapeHtml(String(data.mount_type))}</span>`;
     }
     if (typeof data.screenSizeInches === 'number') {
         specHtml += `<span class="info-box video-conn">📐 Screen: ${data.screenSizeInches}"</span>`;
