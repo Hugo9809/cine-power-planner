@@ -105,6 +105,7 @@ Les polices sont chargées via Google Fonts dans `index.html`.
 Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
 
 ## 🛠️ Développement
+Nécessite Node.js 18 ou version ultérieure.
 1. Installer les dépendances :
    ```bash
    npm install

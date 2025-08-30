@@ -105,6 +105,7 @@ Schriftarten werden über Google Fonts in `index.html` geladen.
 Nach dem ersten Laden mit Internetverbindung kann die Anwendung komplett offline genutzt werden.
 
 ## 🛠️ Entwicklung
+Erfordert Node.js 18 oder neuer.
 1. Abhängigkeiten installieren:
    ```bash
    npm install

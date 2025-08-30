@@ -105,6 +105,7 @@ Las fuentes se cargan desde Google Fonts en `index.html`.
 Una vez almacenadas las fuentes en caché, la aplicación puede usarse totalmente sin conexión.
 
 ## 🛠️ Desarrollo
+Se requiere Node.js 18 o posterior.
 1. Instalar dependencias:
    ```bash
    npm install

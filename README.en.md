@@ -106,6 +106,7 @@ Fonts are loaded via Google Fonts links in `index.html`.
 After the fonts are cached on first load, the application works entirely offline.
 
 ## 🛠️ Development
+Requires Node.js 18 or later.
 1. Install dependencies:
    ```bash
    npm install
