@@ -5335,28 +5335,21 @@ function generatePrintableOverview() {
                   .power-conn { background-color: rgba(244,67,54,0.3); }
                   .fiz-conn { background-color: rgba(76,175,80,0.3); }
                   .video-conn { background-color: rgba(33,150,243,0.3); }
+                  .neutral-conn { background-color: rgba(158,158,158,0.3); }
                 }
                 .connector-summary {
                   margin-top: 5px;
                   display: flex;
                   flex-wrap: wrap;
                 }
-                .connector-block {
-                  display: inline-block;
-                  padding: 2px 6px;
-                  margin: 2px;
-                  border-radius: 4px;
-                  border: 2px solid;
-                  font-size: 0.85em;
-                  background-color: rgba(0,0,0,0.03);
-                }
+                .connector-block,
                 .info-box {
                   display: inline-block;
                   padding: 2px 6px;
                   margin: 2px;
                   border-radius: 3px;
                   border: 1px solid;
-                  background: rgba(0,0,0,0.03);
+                  background-color: rgba(0,0,0,0.03);
                   font-size: 0.75em;
                 }
                 .lens-mount-box {
@@ -5380,7 +5373,10 @@ function generatePrintableOverview() {
                   border-color: #2196f3;
                   background-color: rgba(33,150,243,0.15);
                 }
-                .neutral-conn { border-color: #9e9e9e; }
+                .neutral-conn {
+                  border-color: #9e9e9e;
+                  background-color: rgba(158,158,158,0.15);
+                }
                 ${diagramCss}
                 #diagramArea { margin-top: 0.5em; position: relative; }
                 #diagramArea svg { width: 100%; height: auto; }
@@ -5490,22 +5486,14 @@ function generatePrintableOverview() {
                       display: flex;
                       flex-wrap: wrap;
                     }
-                    .connector-block {
-                      display: inline-block;
-                      padding: 2px 6px;
-                      margin: 2px;
-                      border-radius: 4px;
-                      border: 2px solid;
-                      font-size: 0.85em;
-                      background-color: rgba(0,0,0,0.03);
-                    }
+                    .connector-block,
                     .info-box {
                       display: inline-block;
                       padding: 2px 6px;
                       margin: 2px;
                       border-radius: 3px;
                       border: 1px solid;
-                      background: rgba(0,0,0,0.03) !important;
+                      background-color: rgba(0,0,0,0.03) !important;
                       font-size: 0.75em;
                     }
                     .lens-mount-box {
@@ -5529,7 +5517,10 @@ function generatePrintableOverview() {
                       border-color: #2196f3 !important;
                       background-color: rgba(33,150,243,0.15) !important;
                     }
-                    .neutral-conn { border-color: #9e9e9e !important; }
+                    .neutral-conn {
+                      border-color: #9e9e9e !important;
+                      background-color: rgba(158,158,158,0.15) !important;
+                    }
                     /* Styles for Battery Comparison Bars in Overview for Print */
                     .barContainer {
                       width: 100%;
