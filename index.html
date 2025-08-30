@@ -549,7 +549,16 @@
             <li>Each device contributes its power draw in watts to <em>Total Consumption</em>.</li>
             <li>Current at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) equals total watts divided by voltage.</li>
             <li>Runtime&nbsp;=&nbsp;battery capacity (Wh)&nbsp;÷&nbsp;total consumption.</li>
-            <li>User-submitted runtimes are weighted by camera settings, monitor brightness and temperature before averaging.</li>
+              <li>
+                User-submitted runtimes refine the estimate. Each entry is:
+                <ul>
+                  <li>normalized for temperature (0 °C → ×1.25, -10 °C → ×1.6, -20 °C → ×2);</li>
+                  <li>scaled by camera settings: resolution (12K → 3x, 8K → 2x, 4K → 1.5x, below 1080p scales proportionally), frame rate vs 24 fps, Wi-Fi on (+10%), codec weights – RAW 1, ProRes 1.1, DNx 1.2, All-I 1.3, H.264/AVC 1.5, H.265/HEVC 1.7;</li>
+                  <li>adjusted for monitor brightness compared to its specification;</li>
+                  <li>combined into weight = (camera factor × camera watts + monitor factor × monitor watts + other watts) ÷ total watts.</li>
+                </ul>
+                The weighted average applies once at least three entries exist.
+              </li>
             <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
           </ul>
         </section>

@@ -66,9 +66,12 @@ You can switch the language in the top right corner. The choice is remembered fo
   🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
 
 ### 🧮 Runtime data weighting
-- User-submitted battery runtimes refine the runtime estimate.
-- Each entry is adjusted for temperature effects.
-- Camera resolution, frame rate, codec and Wi‑Fi, plus monitor brightness, determine how strongly an entry is weighted.
+User-submitted battery runtimes refine the runtime estimate. For each entry:
+
+- Temperature is normalized (0 °C → ×1.25, −10 °C → ×1.6, −20 °C → ×2).
+- A camera factor multiplies resolution (12K → 3×, 8K → 2×, 4K → 1.5×, below 1080p scales proportionally), frame rate relative to 24 fps, Wi‑Fi on (+10 %) and codec weights (RAW 1, ProRes 1.1, DNx 1.2, All‑I 1.3, H.264/AVC 1.5, H.265/HEVC 1.7).
+- A monitor factor scales with monitor brightness versus its specification.
+- The final weight uses each device's share of total power: (camera factor × camera watts + monitor factor × monitor watts + other watts) ÷ total watts.
 - The weighted average is used once at least three entries are available.
 
 ### 🔍 Search & Filtering
