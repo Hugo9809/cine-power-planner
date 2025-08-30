@@ -4064,25 +4064,30 @@ deleteSetupBtn.addEventListener("click", () => {
 });
 
 clearSetupBtn.addEventListener("click", () => {
-  if (typeof sessionStorage !== 'undefined') {
-    sessionStorage.removeItem('cameraPowerPlanner_session');
-  }
-  setupSelect.value = "";
-  setupNameInput.value = "";
-  [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect].forEach(sel => {
-    if (!sel) return;
-    const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
-    if (noneOption) {
-      sel.value = "None";
-    } else {
-      sel.selectedIndex = 0;
+  if (
+    confirm(texts[currentLang].confirmClearSetup) &&
+    confirm(texts[currentLang].confirmClearSetupAgain)
+  ) {
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('cameraPowerPlanner_session');
     }
-  });
-  motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-  controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-  updateBatteryPlateVisibility();
-  updateBatteryOptions();
-  updateCalculations();
+    setupSelect.value = "";
+    setupNameInput.value = "";
+    [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect].forEach(sel => {
+      if (!sel) return;
+      const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
+      if (noneOption) {
+        sel.value = "None";
+      } else {
+        sel.selectedIndex = 0;
+      }
+    });
+    motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+    controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+    updateBatteryPlateVisibility();
+    updateBatteryOptions();
+    updateCalculations();
+  }
 });
 
 setupSelect.addEventListener("change", (event) => {
