@@ -1215,6 +1215,45 @@ describe('script.js functions', () => {
     expect(popup.innerHTML).toContain('Power: 2 W');
   });
 
+  test('grid snap toggle snaps nodes to grid', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const gridBtn = document.getElementById('gridSnapToggle');
+    gridBtn.click();
+
+    const area = document.getElementById('diagramArea');
+    expect(gridBtn.classList.contains('active')).toBe(true);
+    expect(area.classList.contains('grid-snap')).toBe(true);
+
+    const node = document.querySelector('#diagramArea .diagram-node[data-node="battery"]');
+    const rect = node.querySelector('rect');
+    const w = parseFloat(rect.getAttribute('width'));
+    const h = parseFloat(rect.getAttribute('height'));
+    const startX = parseFloat(rect.getAttribute('x')) + w / 2;
+    const startY = parseFloat(rect.getAttribute('y')) + h / 2;
+
+    node.dispatchEvent(new MouseEvent('mousedown', { clientX: 0, clientY: 0, bubbles: true }));
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 13, clientY: 27, bubbles: true }));
+
+    const node2 = document.querySelector('#diagramArea .diagram-node[data-node="battery"]');
+    const rect2 = node2.querySelector('rect');
+    const w2 = parseFloat(rect2.getAttribute('width'));
+    const h2 = parseFloat(rect2.getAttribute('height'));
+    const endX = parseFloat(rect2.getAttribute('x')) + w2 / 2;
+    const endY = parseFloat(rect2.getAttribute('y')) + h2 / 2;
+    const snap = v => Math.round(v / 20) * 20;
+    expect(endX).toBe(snap(startX + 13));
+    expect(endY).toBe(snap(startY + 27));
+  });
+
   test('help dialog toggles with keyboard and overlay click', () => {
     const helpDialog = document.getElementById('helpDialog');
     const helpSearch = document.getElementById('helpSearch');

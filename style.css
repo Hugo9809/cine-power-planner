@@ -500,6 +500,12 @@ button:disabled {
   position: relative;
 }
 
+#diagramArea.grid-snap {
+  background-size: 20px 20px;
+  background-image: linear-gradient(#eee 1px, transparent 1px),
+                    linear-gradient(90deg, #eee 1px, transparent 1px);
+}
+
 #diagramLegend {
   margin-top: 0.25em;
   font-size: 12px;
@@ -529,6 +535,10 @@ button:disabled {
 
 .diagram-controls button {
   min-width: 32px;
+}
+
+.diagram-controls button.active {
+  background: #ddd;
 }
 
 #diagramHint {
@@ -989,6 +999,10 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   body:not(.light-mode) #diagramLegend .fiz { background: #6f6; }
   body:not(.light-mode) #setupDiagram marker polygon { fill: #fff; }
   body:not(.light-mode) #setupDiagram .diagram-placeholder { color: #bbb; }
+  body:not(.light-mode) #diagramArea.grid-snap {
+    background-image: linear-gradient(#444 1px, transparent 1px),
+                      linear-gradient(90deg, #444 1px, transparent 1px);
+  }
   body:not(.light-mode) .help-content {
     background: #1e1e1e;
     color: #f0f0f0;

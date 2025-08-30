@@ -1045,6 +1045,11 @@ function setLanguage(lang) {
   if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
 
   if (downloadDiagramBtn) downloadDiagramBtn.textContent = texts[lang].downloadDiagramBtn;
+  if (gridSnapToggleBtn) {
+    gridSnapToggleBtn.textContent = texts[lang].gridSnapToggle;
+    gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
+    gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
+  }
   if (zoomInBtn) {
     zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
@@ -1199,10 +1204,12 @@ const diagramLegend = document.getElementById("diagramLegend");
 const downloadDiagramBtn = document.getElementById("downloadDiagram");
 const zoomInBtn = document.getElementById("zoomIn");
 const zoomOutBtn = document.getElementById("zoomOut");
+const gridSnapToggleBtn = document.getElementById("gridSnapToggle");
 const diagramHint = document.getElementById("diagramHint");
 
 let manualPositions = {};
 let lastDiagramPositions = {};
+let gridSnap = false;
 
 // CSS used when exporting the setup diagram
 const diagramCssLight = `
@@ -4162,7 +4169,14 @@ function enableDiagramInteractions() {
     if (start) {
       const dx = (e.clientX - dragStart.x) / scale;
       const dy = (e.clientY - dragStart.y) / scale;
-      manualPositions[dragId] = { x: start.x + dx, y: start.y + dy };
+      let newX = start.x + dx;
+      let newY = start.y + dy;
+      if (gridSnap) {
+        const g = 20;
+        newX = Math.round(newX / g) * g;
+        newY = Math.round(newY / g) * g;
+      }
+      manualPositions[dragId] = { x: newX, y: newY };
     }
     dragId = null;
     renderSetupDiagram();
@@ -6503,6 +6517,16 @@ if (downloadDiagramBtn) {
       img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
     } else {
       saveSvg();
+    }
+  });
+}
+
+if (gridSnapToggleBtn) {
+  gridSnapToggleBtn.addEventListener('click', () => {
+    gridSnap = !gridSnap;
+    gridSnapToggleBtn.classList.toggle('active', gridSnap);
+    if (setupDiagramContainer) {
+      setupDiagramContainer.classList.toggle('grid-snap', gridSnap);
     }
   });
 }

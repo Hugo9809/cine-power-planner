@@ -12,7 +12,7 @@ Choose your preferred language above.
 
 Recent updates include:
 
-- **Interactive setup diagram** – drag devices, zoom with dedicated controls and export the layout as SVG or JPG.
+- **Interactive setup diagram** – drag devices, zoom with dedicated controls, optionally snap nodes to a grid, and export the layout as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits.
 - **Searchable help dialog** – open with the ? button or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
