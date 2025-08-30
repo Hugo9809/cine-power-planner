@@ -1124,6 +1124,12 @@ describe('script.js functions', () => {
     expect(html).toContain('<span class="info-box power-conn">🔌 Power Source: battery</span>');
   });
 
+  test('generateConnectorSummary colors mount as power connection', () => {
+    const data = { mount_type: 'V-Mount' };
+    const html = script.generateConnectorSummary(data);
+    expect(html).toContain('<span class="info-box power-conn">Mount: V-Mount</span>');
+  });
+
   test('generateConnectorSummary omits wireless when absent', () => {
     const data = { powerDrawWatts: 5 };
     const html = script.generateConnectorSummary(data);
