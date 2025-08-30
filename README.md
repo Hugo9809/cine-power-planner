@@ -16,6 +16,7 @@ Recent updates include:
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits.
 - **Searchable help dialog** – open with the ? button or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
+- **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 
 See the language-specific README files for full details.
 

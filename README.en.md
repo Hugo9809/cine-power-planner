@@ -20,6 +20,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Playful pink accent theme that persists between visits.
 - Searchable help dialog with step-by-step sections and a FAQ.
 - Support for cameras with both V- and B-Mount battery plates.
+- Submit user runtime feedback with temperature and humidity for better estimates.
 
 ---
 
@@ -100,6 +101,11 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Click the unicorn button for a playful pink accent.
 - Works in both light and dark themes and persists between visits.
 
+### 📝 User Runtime Feedback
+- Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.
+- Optionally include temperature and humidity for more accurate weighting.
+- Entries are saved in your browser and improve future estimates.
+
 ### ❓ Searchable Help
 - Open via the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd> or <kbd>F1</kbd>.
 - Use the search field to filter topics instantly; the query resets when the dialog closes.
@@ -122,6 +128,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 4. **Check Output Limits:** Status indicators show if the battery output is exceeded
 5. **Save & Load Setups:** Name and save your setup, export/import them and generate a printable overview
 6. **Manage Device List:** Click “Edit Device Data…” to open the editor, modify devices or revert to the defaults
+7. **Submit Runtime Data (optional):** Use “Submit User Runtime Feedback” to share your results and improve estimates
 
 ---
 
