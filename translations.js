@@ -238,6 +238,23 @@ const texts = {
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
       "Activate hover help and move the cursor over items to learn about them.",
+    setupSelectHelp: "Choose a saved setup to load it or start a new one.",
+    setupNameHelp: "Enter a name for the current setup.",
+    deleteSetupHelp: "Delete the selected saved setup.",
+    saveSetupHelp: "Save the current configuration.",
+    exportSetupsHelp: "Download all saved setups as a JSON file.",
+    importSetupsHelp: "Load setups from a JSON file.",
+    generateOverviewHelp: "Create a printable overview of saved setups.",
+    shareSetupHelp: "Copy a link representing the current setup.",
+    applySharedLinkHelp: "Load the setup from the shared link.",
+    clearSetupHelp: "Remove all devices from the current setup.",
+    runtimeFeedbackBtnHelp: "Submit your measured runtime for this setup.",
+    zoomOutHelp: "Zoom out of the setup diagram.",
+    zoomInHelp: "Zoom in on the setup diagram.",
+    downloadDiagramHelp: "Download the setup diagram as an image.",
+    gridSnapToggleHelp: "Toggle snapping diagram nodes to the grid.",
+    toggleDeviceManagerHelp: "Open the device database editor.",
+    hideDeviceManagerHelp: "Hide the device database editor.",
     zoomInLabel: "Zoom in",
     zoomOutLabel: "Zoom out",
     diagramMoveHint: "Move nodes with drag and drop.",
@@ -461,6 +478,31 @@ const texts = {
     hoverHelpButtonLabel: "Passa il mouse per aiuto",
     hoverHelpButtonHelp:
       "Attiva la modalità di aiuto al passaggio e sposta il cursore sugli elementi per saperne di più.",
+    setupSelectHelp:
+      "Scegli una configurazione salvata da caricare o inizia una nuova.",
+    setupNameHelp: "Inserisci un nome per la configurazione corrente.",
+    deleteSetupHelp: "Elimina la configurazione salvata selezionata.",
+    saveSetupHelp: "Salva la configurazione corrente.",
+    exportSetupsHelp:
+      "Scarica tutte le configurazioni salvate come file JSON.",
+    importSetupsHelp: "Carica configurazioni da un file JSON.",
+    generateOverviewHelp:
+      "Crea un riepilogo stampabile delle configurazioni salvate.",
+    shareSetupHelp:
+      "Copia un link che rappresenta la configurazione corrente.",
+    applySharedLinkHelp: "Carica la configurazione dal link condiviso.",
+    clearSetupHelp:
+      "Rimuove tutti i dispositivi dalla configurazione corrente.",
+    runtimeFeedbackBtnHelp:
+      "Invia il runtime misurato per questa configurazione.",
+    zoomOutHelp: "Allontana il diagramma di configurazione.",
+    zoomInHelp: "Avvicina il diagramma di configurazione.",
+    downloadDiagramHelp:
+      "Scarica il diagramma di configurazione come immagine.",
+    gridSnapToggleHelp:
+      "Attiva/disattiva l'allineamento alla griglia dei nodi del diagramma.",
+    toggleDeviceManagerHelp: "Apri l'editor del database dei dispositivi.",
+    hideDeviceManagerHelp: "Nascondi l'editor del database dei dispositivi.",
     zoomInLabel: "Ingrandisci",
     zoomOutLabel: "Rimpicciolisci",
     diagramMoveHint: "Trascina i nodi per spostarli.",
@@ -700,6 +742,31 @@ const texts = {
     hoverHelpButtonLabel: "Pasa el cursor para ayuda",
     hoverHelpButtonHelp:
       "Activa la ayuda al pasar el cursor y muévelo sobre los elementos para saber de ellos.",
+    setupSelectHelp:
+      "Elige una configuración guardada para cargarla o comienza una nueva.",
+    setupNameHelp: "Introduce un nombre para la configuración actual.",
+    deleteSetupHelp: "Elimina la configuración guardada seleccionada.",
+    saveSetupHelp: "Guarda la configuración actual.",
+    exportSetupsHelp:
+      "Descarga todas las configuraciones guardadas como archivo JSON.",
+    importSetupsHelp: "Carga configuraciones desde un archivo JSON.",
+    generateOverviewHelp:
+      "Crea un resumen imprimible de las configuraciones guardadas.",
+    shareSetupHelp:
+      "Copia un enlace que representa la configuración actual.",
+    applySharedLinkHelp: "Carga la configuración desde el enlace compartido.",
+    clearSetupHelp:
+      "Borra todos los dispositivos de la configuración actual.",
+    runtimeFeedbackBtnHelp:
+      "Envía tu tiempo de funcionamiento medido para esta configuración.",
+    zoomOutHelp: "Alejar el diagrama de configuración.",
+    zoomInHelp: "Acercar el diagrama de configuración.",
+    downloadDiagramHelp:
+      "Descarga el diagrama de configuración como imagen.",
+    gridSnapToggleHelp:
+      "Activa o desactiva el ajuste a la cuadrícula de los nodos del diagrama.",
+    toggleDeviceManagerHelp: "Abre el editor de la base de datos de dispositivos.",
+    hideDeviceManagerHelp: "Oculta el editor de la base de datos de dispositivos.",
     zoomInLabel: "Acercar",
     zoomOutLabel: "Alejar",
     diagramMoveHint: "Mueve los nodos arrastrándolos.",
@@ -940,6 +1007,31 @@ const texts = {
     hoverHelpButtonLabel: "Survoler pour obtenir de l'aide",
     hoverHelpButtonHelp:
       "Activez l'aide au survol et déplacez le curseur sur les éléments pour en savoir plus.",
+    setupSelectHelp:
+      "Choisissez une configuration enregistrée à charger ou commencez-en une nouvelle.",
+    setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
+    deleteSetupHelp: "Supprime la configuration enregistrée sélectionnée.",
+    saveSetupHelp: "Enregistre la configuration actuelle.",
+    exportSetupsHelp:
+      "Télécharge toutes les configurations enregistrées au format JSON.",
+    importSetupsHelp: "Charge des configurations depuis un fichier JSON.",
+    generateOverviewHelp:
+      "Crée un aperçu imprimable des configurations enregistrées.",
+    shareSetupHelp:
+      "Copie un lien représentant la configuration actuelle.",
+    applySharedLinkHelp: "Charge la configuration depuis le lien partagé.",
+    clearSetupHelp:
+      "Efface tous les appareils de la configuration actuelle.",
+    runtimeFeedbackBtnHelp:
+      "Soumettez votre durée mesurée pour cette configuration.",
+    zoomOutHelp: "Réduit le diagramme de configuration.",
+    zoomInHelp: "Agrandit le diagramme de configuration.",
+    downloadDiagramHelp:
+      "Télécharge le diagramme de configuration comme image.",
+    gridSnapToggleHelp:
+      "Active/désactive l'alignement des nœuds du diagramme sur la grille.",
+    toggleDeviceManagerHelp: "Ouvre l'éditeur de la base de données des appareils.",
+    hideDeviceManagerHelp: "Masque l'éditeur de la base de données des appareils.",
     zoomInLabel: "Zoom avant",
     zoomOutLabel: "Zoom arrière",
     diagramMoveHint: "Déplacez les nœuds par glisser-déposer.",
@@ -1179,6 +1271,31 @@ const texts = {
     hoverHelpButtonLabel: "Für Hilfe darüberfahren",
     hoverHelpButtonHelp:
       "Aktiviere den Hover-Hilfemodus und fahre mit dem Cursor über Elemente, um mehr zu erfahren.",
+    setupSelectHelp:
+      "Wähle eine gespeicherte Konfiguration zum Laden oder starte eine neue.",
+    setupNameHelp: "Gib einen Namen für die aktuelle Konfiguration ein.",
+    deleteSetupHelp: "Löscht die ausgewählte gespeicherte Konfiguration.",
+    saveSetupHelp: "Speichert die aktuelle Konfiguration.",
+    exportSetupsHelp:
+      "Lade alle gespeicherten Konfigurationen als JSON-Datei herunter.",
+    importSetupsHelp: "Lade Konfigurationen aus einer JSON-Datei.",
+    generateOverviewHelp:
+      "Erstellt eine druckbare Übersicht der gespeicherten Konfigurationen.",
+    shareSetupHelp:
+      "Kopiert einen Link, der die aktuelle Konfiguration repräsentiert.",
+    applySharedLinkHelp: "Lädt die Konfiguration aus dem geteilten Link.",
+    clearSetupHelp:
+      "Entfernt alle Geräte aus der aktuellen Konfiguration.",
+    runtimeFeedbackBtnHelp:
+      "Sende deine gemessene Laufzeit für diese Konfiguration.",
+    zoomOutHelp: "Verkleinert das Setup-Diagramm.",
+    zoomInHelp: "Vergrößert das Setup-Diagramm.",
+    downloadDiagramHelp:
+      "Lädt das Setup-Diagramm als Bild herunter.",
+    gridSnapToggleHelp:
+      "Schaltet das Einrasten der Diagrammknoten am Raster um.",
+    toggleDeviceManagerHelp: "Öffnet den Gerätedatenbank-Editor.",
+    hideDeviceManagerHelp: "Blendet den Gerätedatenbank-Editor aus.",
     zoomInLabel: "Hineinzoomen",
     zoomOutLabel: "Herauszoomen",
     diagramMoveHint: "Knoten per Drag & Drop verschieben.",
