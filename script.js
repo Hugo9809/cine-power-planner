@@ -6445,11 +6445,14 @@ if (gridSnapToggleBtn) {
 if (helpButton && helpDialog) {
   const filterHelp = () => {
     if (!helpSearch) return;
-    const query = helpSearch.value.toLowerCase();
-    const sections = helpDialog.querySelectorAll('[data-help-section]');
-    const items = helpDialog.querySelectorAll('.faq-item');
+    const query = helpSearch.value.trim().toLowerCase();
+    const sections = Array.from(
+      helpDialog.querySelectorAll('[data-help-section]')
+    );
+    const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
+    const elements = sections.concat(items);
     let anyVisible = false;
-    [...sections, ...items].forEach(el => {
+    elements.forEach(el => {
       const text = el.textContent.toLowerCase();
       if (!query || text.includes(query)) {
         el.removeAttribute('hidden');

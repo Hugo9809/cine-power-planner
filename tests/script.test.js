@@ -1405,6 +1405,27 @@ describe('script.js functions', () => {
     expect(document.activeElement).toBe(helpSearch);
   });
 
+  test('help search works when NodeList lacks iterator', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const helpSearch = document.getElementById('helpSearch');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+
+    const originalIterator = NodeList.prototype[Symbol.iterator];
+    NodeList.prototype[Symbol.iterator] = undefined;
+
+    expect(() => {
+      helpSearch.value = 'battery';
+      helpSearch.dispatchEvent(new Event('input', { bubbles: true }));
+    }).not.toThrow();
+
+    const sections = Array.from(helpDialog.querySelectorAll('[data-help-section]'));
+    const visible = sections.filter(s => !s.hasAttribute('hidden'));
+    expect(visible.length).toBeGreaterThan(0);
+
+    NodeList.prototype[Symbol.iterator] = originalIterator;
+  });
+
   test('help search controls are localized', () => {
     const helpSearch = document.getElementById('helpSearch');
     const helpSearchClear = document.getElementById('helpSearchClear');
