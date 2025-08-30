@@ -21,7 +21,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Searchable help dialog with step-by-step sections and a FAQ.
 - Support for cameras with both V- and B-Mount battery plates.
 - Submit user runtime feedback with temperature and humidity for better estimates.
-- Visual runtime weighting dashboard to inspect how settings influence each report.
+- Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
 
 ---
 
@@ -84,6 +84,7 @@ You can switch the language in the top right corner. The choice is remembered fo
   - Monitor entries below the specified brightness are weighted by their brightness ratio
 - The final weight reflects each device's share of the total power draw, so matching setups count more.
 - The weighted average is used once at least three entries are available.
+- A dashboard orders entries by weight and displays each one's share percentage for quick comparison.
 
 ### 🔍 Search & Filtering
 - Filter every dropdown and device list with a search box

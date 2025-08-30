@@ -3486,10 +3486,13 @@ function renderFeedbackTable(currentKey) {
     count++;
   });
   if (barsContainer && dashboard) {
-    const maxWeight = Math.max(...breakdown.map(b => b.weight));
+    // Sort entries by weight so the most significant runtimes appear first
+    breakdown.sort((a, b) => b.weight - a.weight);
+    const maxWeight = breakdown.length ? breakdown[0].weight : 0;
     let chartHtml = '';
     breakdown.forEach((b, i) => {
       const percent = maxWeight ? (b.weight / maxWeight) * 100 : 0;
+      const share = b.weight * 100;
       const tooltip =
         `Temp ×${b.temperature.toFixed(2)}\n` +
         `Res ×${b.resolution.toFixed(2)}\n` +
@@ -3497,8 +3500,11 @@ function renderFeedbackTable(currentKey) {
         `Codec ×${b.codec.toFixed(2)}\n` +
         `Wi-Fi ×${b.wifi.toFixed(2)}\n` +
         `Monitor ×${b.monitor.toFixed(2)}\n` +
-        `Share ${(b.weight * 100).toFixed(1)}%`;
-      chartHtml += `<div class="weightingRow"><span class="weightingLabel">${i + 1}</span><div class="barContainer"><div class="weightBar" style="width:${percent}%" title="${escapeHtml(tooltip)}"></div></div></div>`;
+        `Share ${share.toFixed(1)}%`;
+      chartHtml +=
+        `<div class="weightingRow"><span class="weightingLabel">${i + 1}</span>` +
+        `<div class="barContainer"><div class="weightBar" style="width:${percent}%" title="${escapeHtml(tooltip)}"></div></div>` +
+        `<span class="weightingPercent">${share.toFixed(1)}%</span></div>`;
     });
     barsContainer.innerHTML = chartHtml;
     dashboard.classList.remove('hidden');
