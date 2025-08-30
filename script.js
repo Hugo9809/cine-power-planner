@@ -6434,7 +6434,12 @@ function exportDiagramSvg() {
   const labels = svgEl.querySelectorAll('.edge-label');
   const cloneLabels = clone.querySelectorAll('.edge-label');
   labels.forEach((lbl, idx) => {
-    if (cloneLabels[idx]) cloneLabels[idx].innerHTML = lbl.innerHTML;
+    if (cloneLabels[idx]) {
+      // innerHTML isn't consistently supported for SVG <text> elements in all browsers,
+      // which could result in empty connection labels in the exported SVG. Using
+      // textContent ensures the label text is preserved across environments.
+      cloneLabels[idx].textContent = lbl.textContent;
+    }
   });
   const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
   // Always export using the bright theme regardless of the current mode
