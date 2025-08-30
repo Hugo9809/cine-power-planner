@@ -1049,6 +1049,11 @@ function setLanguage(lang) {
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
+    helpButton.setAttribute("data-help", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
+    if (hoverHelpButton) {
+      hoverHelpButton.textContent = texts[lang].hoverHelpButtonLabel;
+      hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
+    }
     if (helpSearch) {
       helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
       helpSearch.setAttribute("aria-label", texts[lang].helpSearchLabel);
@@ -1221,6 +1226,7 @@ const closeHelpBtn    = document.getElementById("closeHelp");
 const helpSearch      = document.getElementById("helpSearch");
 const helpNoResults   = document.getElementById("helpNoResults");
 const helpSearchClear = document.getElementById("helpSearchClear");
+const hoverHelpButton = document.getElementById("hoverHelpButton");
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -6443,6 +6449,55 @@ if (helpButton && helpDialog) {
     }
   };
 
+  let hoverHelpActive = false;
+  let hoverHelpTooltip;
+
+  const stopHoverHelp = () => {
+    hoverHelpActive = false;
+    if (hoverHelpTooltip) {
+      hoverHelpTooltip.remove();
+      hoverHelpTooltip = null;
+    }
+  };
+
+  const startHoverHelp = () => {
+    hoverHelpActive = true;
+    closeHelp();
+    hoverHelpTooltip = document.createElement('div');
+    hoverHelpTooltip.id = 'hoverHelpTooltip';
+    hoverHelpTooltip.setAttribute('hidden', '');
+    document.body.appendChild(hoverHelpTooltip);
+  };
+
+  document.addEventListener('mouseover', e => {
+    if (!hoverHelpActive || !hoverHelpTooltip) return;
+    const el = e.target.closest('[data-help], [aria-label], [title]');
+    if (!el) {
+      hoverHelpTooltip.setAttribute('hidden', '');
+      return;
+    }
+    const text = el.getAttribute('data-help') || el.getAttribute('aria-label') || el.getAttribute('title');
+    if (!text) {
+      hoverHelpTooltip.setAttribute('hidden', '');
+      return;
+    }
+    hoverHelpTooltip.textContent = text;
+    hoverHelpTooltip.style.top = `${e.clientY + 10}px`;
+    hoverHelpTooltip.style.left = `${e.clientX + 10}px`;
+    hoverHelpTooltip.removeAttribute('hidden');
+  });
+
+  document.addEventListener('click', () => {
+    if (hoverHelpActive) stopHoverHelp();
+  });
+
+  if (hoverHelpButton) {
+    hoverHelpButton.addEventListener('click', e => {
+      e.stopPropagation();
+      startHoverHelp();
+    });
+  }
+
   helpButton.addEventListener('click', toggleHelp);
   if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
   if (helpSearch) helpSearch.addEventListener('input', filterHelp);
@@ -6455,7 +6510,9 @@ if (helpButton && helpDialog) {
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {
+    if (hoverHelpActive && e.key === 'Escape') {
+      stopHoverHelp();
+    } else if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {
       closeHelp();
     } else if ((e.key === '?' || e.key.toLowerCase() === 'h' || e.key === 'F1') &&
                document.activeElement.tagName !== 'INPUT' &&

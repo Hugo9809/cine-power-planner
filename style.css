@@ -266,6 +266,21 @@ body:not(.light-mode) #feedbackDialog {
   margin-right: 0.3em;
 }
 
+#hoverHelpTooltip {
+  position: absolute;
+  z-index: 1000;
+  background: var(--accent-color);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+#hoverHelpTooltip[hidden] {
+  display: none;
+}
+
 /* Ensure selects and inputs inside wrappers match normal form fields */
 .field-with-label select,
 .field-with-label input {
