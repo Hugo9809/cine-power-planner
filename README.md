@@ -34,7 +34,7 @@ See the language-specific README files for full details.
 
 User-submitted battery runtimes are combined using a weighted average to better match your setup:
 
-- Entries are adjusted for temperature: ×2 at ≤−20 °C, ×1.6 at ≤−10 °C, ×1.25 at ≤0 °C.
+- Entries are adjusted for temperature, scaling from ×1 at 25 °C to ×1.25 at 0 °C, ×1.6 at −10 °C and ×2 at −20 °C.
 - Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled relative to 1080p.
 - Frame rate scales linearly from a base of 24 fps (e.g. 48 fps = ×2).
 - Wi‑Fi enabled adds 10 %.

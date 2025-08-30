@@ -3346,10 +3346,11 @@ function renderFeedbackTable(currentKey) {
   };
   const tempFactor = temp => {
     if (Number.isNaN(temp)) return 1;
-    if (temp <= -20) return 2;
-    if (temp <= -10) return 1 / 0.625; // ~1.6
-    if (temp <= 0) return 1 / 0.8; // 1.25
-    return 1;
+    if (temp >= 25) return 1;
+    if (temp >= 0) return 1 + (25 - temp) * 0.01;
+    if (temp >= -10) return 1.25 + (-temp) * 0.035;
+    if (temp >= -20) return 1.6 + (-10 - temp) * 0.04;
+    return 2;
   };
 
   const resolutionWeight = res => {
