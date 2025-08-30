@@ -9,16 +9,18 @@ function loadDeviceData() {
     const data = localStorage.getItem(DEVICE_STORAGE_KEY);
     if (data) {
       const parsedData = JSON.parse(data);
-      // Validate that top-level categories exist and are objects
-      const isValid = parsedData && typeof parsedData === 'object' &&
-                      typeof parsedData.cameras === 'object' &&
-                      typeof parsedData.monitors === 'object' &&
-                      typeof parsedData.video === 'object' &&
-                      typeof parsedData.batteries === 'object' &&
-                      typeof parsedData.fiz === 'object' && // Check fiz is an object
-                      typeof parsedData.fiz.motors === 'object' && // Check nested fiz categories
-                      typeof parsedData.fiz.controllers === 'object' &&
-                      typeof parsedData.fiz.distance === 'object';
+      // Helper to ensure a value is a non-null object
+      const isObject = (val) => val !== null && typeof val === 'object';
+      // Validate that top-level categories exist and are non-null objects
+      const isValid = isObject(parsedData) &&
+                      isObject(parsedData.cameras) &&
+                      isObject(parsedData.monitors) &&
+                      isObject(parsedData.video) &&
+                      isObject(parsedData.batteries) &&
+                      isObject(parsedData.fiz) && // Check fiz is an object
+                      isObject(parsedData.fiz.motors) && // Check nested fiz categories
+                      isObject(parsedData.fiz.controllers) &&
+                      isObject(parsedData.fiz.distance);
 
       if (isValid) {
         console.log("Device data loaded from localStorage.");
@@ -50,8 +52,8 @@ function loadSetups() {
     const data = localStorage.getItem(SETUP_STORAGE_KEY);
     if (data) {
       const parsedData = JSON.parse(data);
-      // Ensure it's an object, not just a primitive or array
-      if (typeof parsedData === 'object' && parsedData !== null) {
+      // Ensure it's a plain object, not an array or primitive
+      if (parsedData && typeof parsedData === 'object' && !Array.isArray(parsedData)) {
         return parsedData;
       }
     }

@@ -38,6 +38,18 @@ describe('device data storage', () => {
     localStorage.setItem(DEVICE_KEY, JSON.stringify({cameras:{}}));
     expect(loadDeviceData()).toBeNull();
   });
+
+  test('loadDeviceData returns null when any category is null', () => {
+    const corrupted = {
+      cameras: null,
+      monitors: {},
+      video: {},
+      batteries: {},
+      fiz: { motors: {}, controllers: {}, distance: {} }
+    };
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(corrupted));
+    expect(loadDeviceData()).toBeNull();
+  });
 });
 
 describe('setup storage', () => {
@@ -59,6 +71,16 @@ describe('setup storage', () => {
     const setups = {A: {foo: 1}};
     localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
     expect(loadSetups()).toEqual(setups);
+  });
+
+  test('loadSetups returns empty object for array data', () => {
+    localStorage.setItem(SETUP_KEY, JSON.stringify([1,2,3]));
+    expect(loadSetups()).toEqual({});
+  });
+
+  test('loadSetups returns empty object for primitive data', () => {
+    localStorage.setItem(SETUP_KEY, JSON.stringify(5));
+    expect(loadSetups()).toEqual({});
   });
 
   test('saveSetup adds and persists single setup', () => {
