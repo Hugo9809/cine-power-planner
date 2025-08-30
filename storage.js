@@ -141,6 +141,19 @@ function saveFeedback(feedback) {
   }
 }
 
+// --- Clear All Stored Data ---
+function clearAllData() {
+  try {
+    localStorage.removeItem(DEVICE_STORAGE_KEY);
+    localStorage.removeItem(SETUP_STORAGE_KEY);
+    localStorage.removeItem(FEEDBACK_STORAGE_KEY);
+    sessionStorage.removeItem(SESSION_STATE_KEY);
+    console.log("All planner data cleared from storage.");
+  } catch (e) {
+    console.error("Error clearing storage:", e);
+  }
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     loadDeviceData,
@@ -153,6 +166,7 @@ if (typeof module !== "undefined" && module.exports) {
     loadSessionState,
     saveSessionState,
     loadFeedback,
-    saveFeedback
+    saveFeedback,
+    clearAllData
   };
 }

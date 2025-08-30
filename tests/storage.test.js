@@ -8,11 +8,14 @@ const {
   deleteSetup,
   loadSessionState,
   saveSessionState,
+  saveFeedback,
+  clearAllData,
 } = require('../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_KEY = 'cameraPowerPlanner_setups';
 const SESSION_KEY = 'cameraPowerPlanner_session';
+const FEEDBACK_KEY = 'cameraPowerPlanner_feedback';
 
 const validDeviceData = {
   cameras: {},
@@ -141,5 +144,24 @@ describe('session state storage', () => {
 
   test('loadSessionState returns null when none', () => {
     expect(loadSessionState()).toBeNull();
+  });
+});
+
+describe('clearAllData', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  test('removes all stored planner data', () => {
+    saveDeviceData(validDeviceData);
+    saveSetups({ A: { foo: 1 } });
+    saveFeedback({ note: 'hi' });
+    saveSessionState({ camera: 'CamA' });
+    clearAllData();
+    expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
+    expect(localStorage.getItem(SETUP_KEY)).toBeNull();
+    expect(localStorage.getItem(FEEDBACK_KEY)).toBeNull();
+    expect(sessionStorage.getItem(SESSION_KEY)).toBeNull();
   });
 });
