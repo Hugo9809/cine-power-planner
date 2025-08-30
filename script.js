@@ -835,6 +835,7 @@ function setLanguage(lang) {
   document.getElementById("setupNameLabel").textContent = texts[lang].setupNameLabel;
   saveSetupBtn.textContent = texts[lang].saveSetupBtn;
   deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
+  clearSetupBtn.textContent = texts[lang].clearSetupBtn;
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -1043,6 +1044,7 @@ const setupSelect     = document.getElementById("setupSelect");
 const setupNameInput  = document.getElementById("setupName");
 const saveSetupBtn    = document.getElementById("saveSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
+const clearSetupBtn   = document.getElementById("clearSetupBtn");
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const cameraListElem  = document.getElementById("cameraList");
@@ -4052,6 +4054,28 @@ deleteSetupBtn.addEventListener("click", () => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateCalculations(); // Recalculate after clearing setup
   }
+});
+
+clearSetupBtn.addEventListener("click", () => {
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.removeItem('cameraPowerPlanner_session');
+  }
+  setupSelect.value = "";
+  setupNameInput.value = "";
+  [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect].forEach(sel => {
+    if (!sel) return;
+    const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
+    if (noneOption) {
+      sel.value = "None";
+    } else {
+      sel.selectedIndex = 0;
+    }
+  });
+  motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+  controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+  updateBatteryPlateVisibility();
+  updateBatteryOptions();
+  updateCalculations();
 });
 
 setupSelect.addEventListener("change", (event) => {
