@@ -1530,4 +1530,23 @@ describe('monitor wireless metadata', () => {
 
     expect(global.devices.monitors.MonA.latencyMs).toBe('10ms');
   });
+
+  test('device manager toggle button reflects visibility', () => {
+    const toggleBtn = document.getElementById('toggleDeviceManager');
+    const deviceManager = document.getElementById('device-manager');
+
+    // Initially hidden with "Edit" label
+    expect(deviceManager.classList.contains('hidden')).toBe(true);
+    expect(toggleBtn.textContent).toBe(texts.en.toggleDeviceManager);
+
+    // Show device manager
+    toggleBtn.click();
+    expect(deviceManager.classList.contains('hidden')).toBe(false);
+    expect(toggleBtn.textContent).toBe(texts.en.hideDeviceManager);
+
+    // Hide device manager again
+    toggleBtn.click();
+    expect(deviceManager.classList.contains('hidden')).toBe(true);
+    expect(toggleBtn.textContent).toBe(texts.en.toggleDeviceManager);
+  });
 });
