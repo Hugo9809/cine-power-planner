@@ -1165,6 +1165,7 @@ const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackCancelBtn = document.getElementById("fbCancel");
 const feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
+const fbHumiditySelect = document.getElementById("fbHumidity");
 const loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
 const saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
 const setupDiagramContainer = document.getElementById("diagramArea");
@@ -1173,6 +1174,19 @@ const downloadDiagramBtn = document.getElementById("downloadDiagram");
 const zoomInBtn = document.getElementById("zoomIn");
 const zoomOutBtn = document.getElementById("zoomOut");
 const diagramHint = document.getElementById("diagramHint");
+
+if (fbHumiditySelect) {
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  emptyOpt.textContent = '--';
+  fbHumiditySelect.appendChild(emptyOpt);
+  for (let i = 0; i <= 100; i++) {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = `${i}%`;
+    fbHumiditySelect.appendChild(opt);
+  }
+}
 
 let manualPositions = {};
 let lastDiagramPositions = {};
