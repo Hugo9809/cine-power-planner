@@ -1164,6 +1164,7 @@ const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackCancelBtn = document.getElementById("fbCancel");
+const feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
 const loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
 const saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
 const setupDiagramContainer = document.getElementById("diagramArea");
@@ -5125,6 +5126,28 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
   feedbackCancelBtn.addEventListener('click', () => {
     feedbackDialog.close();
   });
+
+  if (feedbackUseLocationBtn) {
+    feedbackUseLocationBtn.addEventListener('click', () => {
+      const locationInput = document.getElementById('fbLocation');
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+      feedbackUseLocationBtn.disabled = true;
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const { latitude, longitude } = pos.coords;
+          locationInput.value = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+          feedbackUseLocationBtn.disabled = false;
+        },
+        () => {
+          feedbackUseLocationBtn.disabled = false;
+          alert('Unable to retrieve your location');
+        }
+      );
+    });
+  }
 
   feedbackForm.addEventListener('submit', e => {
     e.preventDefault();
