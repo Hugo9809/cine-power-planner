@@ -182,7 +182,7 @@ const texts = {
     runtimeLabel: "Estimated Runtime (h)",
     batteryLifeUnit: "hrs",
     temperatureNoteHeading: "Temperature impact on runtime:",
-    temperatureLabel: "Temperature",
+    temperatureLabel: "Temperature (°C)",
     batteryCountTempLabel: "Batteries needed",
 
     noBatterySupports: "No battery can supply this load.",
@@ -392,7 +392,7 @@ const texts = {
     runtimeLabel: "Autonomia stimata (h)",
     batteryLifeUnit: "ore",
     temperatureNoteHeading: "Impatto della temperatura sull'autonomia:",
-    temperatureLabel: "Temperatura",
+    temperatureLabel: "Temperatura (°C)",
     batteryCountTempLabel: "Batterie necessarie",
     noBatterySupports: "Nessuna batteria può fornire questo carico.",
     alertSetupName: "Immettere un nome per l'installazione.",
@@ -610,7 +610,7 @@ const texts = {
     runtimeLabel: "Autonomía Estimada (h)",
     batteryLifeUnit: "h",
     temperatureNoteHeading: "Efecto de la temperatura en la autonomía:",
-    temperatureLabel: "Temperatura",
+    temperatureLabel: "Temperatura (°C)",
     batteryCountTempLabel: "Baterías necesarias",
 
     noBatterySupports: "Ninguna batería puede suministrar esta carga.",
@@ -832,7 +832,7 @@ const texts = {
     runtimeLabel: "Autonomie Estimée (h)",
     batteryLifeUnit: "h",
     temperatureNoteHeading: "Impact de la température sur l’autonomie :",
-    temperatureLabel: "Température",
+    temperatureLabel: "Température (°C)",
     batteryCountTempLabel: "Batteries nécessaires",
 
     noBatterySupports: "Aucune batterie ne peut fournir cette charge.",
@@ -1054,7 +1054,7 @@ const texts = {
     runtimeLabel: "Geschätzte Laufzeit (h)",
     batteryLifeUnit: "Std.",
     temperatureNoteHeading: "Temperatureinfluss auf die Laufzeit:",
-    temperatureLabel: "Temperatur",
+    temperatureLabel: "Temperatur (°C)",
     batteryCountTempLabel: "Benötigte Akkus",
 
     noBatterySupports: "Kein Akku kann diese Last liefern.",
