@@ -1,7 +1,21 @@
 // script.js – Main logic for the Camera Power Planner app
 /* global texts, categoryNames, loadSessionState, saveSessionState */
 
-const LZString = (typeof require !== 'undefined') ? require('lz-string') : window.LZString;
+let LZString;
+try {
+  LZString = require('lz-string');
+} catch {
+  if (typeof window !== 'undefined' && window.LZString) {
+    LZString = window.LZString;
+  } else {
+    // Fallback no-op implementation to avoid runtime errors when the
+    // dependency is unavailable (e.g. during tests).
+    LZString = {
+      compressToEncodedURIComponent: s => s,
+      decompressFromEncodedURIComponent: s => s
+    };
+  }
+}
 
 const VIDEO_OUTPUT_TYPES = [
   '3G-SDI',
