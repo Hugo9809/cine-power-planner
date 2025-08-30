@@ -5193,7 +5193,7 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     });
     const subject = encodeURIComponent('Camera Power Planner Runtime Feedback');
     const body = encodeURIComponent(lines.join('\n'));
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:info@lucazanner.de?subject=${subject}&body=${body}`;
     feedbackDialog.close();
     updateCalculations();
   });
