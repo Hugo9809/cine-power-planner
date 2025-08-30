@@ -17,15 +17,6 @@ const localeSort = (a, b) => collator.compare(a, b);
 // Labels for B-Mount support are defined in translations.js using the keys
 // batteryBMountLabel, totalCurrent336Label and totalCurrent216Label.
 
-// Store a deep copy of the initial 'devices' data as defined in data.js.
-// This 'defaultDevices' will be used when reverting the database.
-// Initialize defaultDevices only if it hasn't been declared yet, to prevent
-// "already declared" errors if the script is loaded multiple times.
-if (window.defaultDevices === undefined) {
-  window.defaultDevices = JSON.parse(JSON.stringify(devices));
-  unifyDevices(window.defaultDevices);
-}
-
 function getSetups() {
   return loadSetups();
 }
@@ -197,11 +188,6 @@ function fixPowerInput(dev) {
 }
 
 
-// Load any saved device data from localStorage
-let storedDevices = loadDeviceData();
-if (storedDevices) {
-  devices = storedDevices;
-}
 // Normalize various camera properties so downstream logic works with
 // consistent structures and value formats.
 function unifyDevices(data) {
@@ -364,6 +350,20 @@ function unifyDevices(data) {
   });
 }
 
+// Store a deep copy of the initial 'devices' data as defined in data.js.
+// This 'defaultDevices' will be used when reverting the database.
+// Initialize defaultDevices only if it hasn't been declared yet, to prevent
+// "already declared" errors if the script is loaded multiple times.
+if (window.defaultDevices === undefined) {
+  window.defaultDevices = JSON.parse(JSON.stringify(devices));
+  unifyDevices(window.defaultDevices);
+}
+
+// Load any saved device data from localStorage
+let storedDevices = loadDeviceData();
+if (storedDevices) {
+  devices = storedDevices;
+}
 unifyDevices(devices);
 
 // Determine if a camera has a native B-Mount battery plate
