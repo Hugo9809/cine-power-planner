@@ -1079,6 +1079,13 @@ describe('script.js functions', () => {
     expect(helpNoResults.hasAttribute('hidden')).toBe(true);
   });
 
+  test('help search field is localized', () => {
+    const helpSearch = document.getElementById('helpSearch');
+    script.setLanguage('de');
+    expect(helpSearch.getAttribute('placeholder')).toBe(texts.de.helpSearchPlaceholder);
+    expect(helpSearch.getAttribute('aria-label')).toBe(texts.de.helpSearchLabel);
+  });
+
   test('generateConnectorSummary labels extras', () => {
     const data = {
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },
