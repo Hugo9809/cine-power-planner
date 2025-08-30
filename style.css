@@ -41,6 +41,32 @@ body {
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap;
 }
+
+.hidden {
+  display: none;
+}
+
+.button-group {
+  margin-bottom: 10px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+#pinWarning,
+#dtapWarning,
+#compatWarning {
+  color: red;
+  font-weight: bold;
+}
+
+#exportOutput {
+  display: none;
+  width: 100%;
+  height: 100px;
+  margin-top: 10px;
+}
 h1, h2, h3 {
   font-family: 'Open Sans', sans-serif;
   font-weight: 500;
@@ -73,7 +99,7 @@ p {
   flex-wrap: wrap; /* allow inputs to wrap on smaller screens */
 }
 .form-row label {
-  width: 150px;
+  flex: 0 0 150px;
   min-width: 120px;
   font-weight: 300;
 }
@@ -87,6 +113,28 @@ p {
   border: 0px solid #ccc; /* Light grey border */
   border-radius: 5px;
   margin: 5px 5px 0 0;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-row label {
+    flex: 1 0 100%;
+    min-width: unset;
+    margin-bottom: 5px;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  select,
+  input,
+  textarea {
+    background-image: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
 
 /* Align add/remove buttons in form rows with input fields */
@@ -136,15 +184,6 @@ p {
   overflow-y: auto;
 }
 
-body.dark-mode .help-content {
-  background: #1e1e1e;
-  color: #f0f0f0;
-  border-color: #555;
-}
-
-body.dark-mode.pink-mode .help-content {
-  border-color: var(--accent-color);
-}
 
 #helpSearch {
   width: 100%;
@@ -387,11 +426,6 @@ button:disabled {
   border: 0px solid #ccc; /* Light grey border */
   border-radius: 5px;
 }
-#darkModeToggle {
-  min-width: 32px;
-  padding: 2px 4px;
-  font-size: 1em;
-}
 #helpButton {
   min-width: 32px;
   padding: 2px 4px;
@@ -457,9 +491,6 @@ button:disabled {
   color: #555;
 }
 
-body.dark-mode #diagramHint {
-  color: #ccc;
-}
 
 .diagram-popup {
   display: none;
@@ -476,12 +507,6 @@ body.dark-mode #diagramHint {
   overflow: auto;
 }
 
-body.dark-mode .diagram-popup {
-  background: rgba(51, 51, 51, 0.95);
-  color: #fff;
-  border-color: #888;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
 
 /* Device info lists inside diagram popups */
 .connector-summary {
@@ -573,24 +598,6 @@ body.dark-mode .diagram-popup {
 }
 .neutral-conn { border-color: #9e9e9e; }
 
-body.dark-mode .connector-block {
-  background-color: rgba(255,255,255,0.1);
-}
-
-body.dark-mode .power-conn {
-  background-color: rgba(244, 67, 54, 0.3);
-}
-body.dark-mode .fiz-conn {
-  background-color: rgba(76, 175, 80, 0.3);
-}
-body.dark-mode .video-conn {
-  background-color: rgba(33, 150, 243, 0.3);
-}
-
-body.dark-mode .info-box,
-body.dark-mode .tray-box {
-  background-color: rgba(255,255,255,0.1);
-}
 
 .device-data { margin-left: 10px; }
 .device-data ul { list-style: disc; margin-left: 20px; }
@@ -656,52 +663,6 @@ body.dark-mode .tray-box {
   margin: 0;
 }
 
-body.dark-mode #setupDiagram .node-box {
-  fill: #333;
-  stroke: none;
-}
-body.dark-mode #setupDiagram .node-box.first-fiz {
-  stroke: none;
-}
-body.dark-mode #setupDiagram .first-fiz-highlight {
-  stroke: url(#firstFizGrad);
-}
-
-body.dark-mode #setupDiagram text {
-  fill: #fff;
-}
-
-body.dark-mode #setupDiagram line {
-  stroke: #fff;
-}
-
-body.dark-mode #setupDiagram path.edge-path {
-  stroke: #fff;
-}
-body.dark-mode #setupDiagram path.power {
-  stroke: #ff6666;
-}
-body.dark-mode #setupDiagram path.video {
-  stroke: #7ec8ff;
-}
-body.dark-mode #setupDiagram path.fiz {
-  stroke: #6f6;
-}
-body.dark-mode #setupDiagram .conn.red { fill: #ff6666; }
-body.dark-mode #setupDiagram .conn.blue { fill: #7ec8ff; }
-body.dark-mode #setupDiagram .conn.green { fill: #6f6; }
-
-body.dark-mode #diagramLegend .power { background: #ff6666; }
-body.dark-mode #diagramLegend .video { background: #7ec8ff; }
-body.dark-mode #diagramLegend .fiz { background: #6f6; }
-
-body.dark-mode #setupDiagram marker polygon {
-  fill: #fff;
-}
-
-body.dark-mode #setupDiagram .diagram-placeholder {
-  color: #bbb;
-}
 
 /* Battery comparison section */
 #batteryComparison {
@@ -770,119 +731,102 @@ body.dark-mode #setupDiagram .diagram-placeholder {
     font-weight: bold;
 }
 
-/* Dark mode */
-body.dark-mode {
-  background-color: #121212;
-  color: #f0f0f0;
-}
-
-body.dark-mode h1,
-body.dark-mode h2,
-body.dark-mode h3 {
-  color: #ffffff;
-}
-
-body.dark-mode h2 {
-  border-bottom: 2px solid #ffffff;
-}
-
-body.dark-mode.pink-mode h1,
-body.dark-mode.pink-mode h2,
-body.dark-mode.pink-mode h3 {
-  color: var(--accent-color);
-}
-
-body.dark-mode.pink-mode h2 {
-  border-bottom: 2px solid var(--accent-color);
-}
-
-body.dark-mode section,
-body.dark-mode .device-category,
-body.dark-mode #batteryComparison {
-  background-color: #1e1e1e;
-  border-color: #333;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-}
-
-body.dark-mode fieldset {
-  border-color: #ffffff;
-}
-
-body.dark-mode legend {
-  color: #ffffff;
-}
-
-body.dark-mode button,
-body.dark-mode #langSelector select,
-body.dark-mode input,
-body.dark-mode select,
-body.dark-mode textarea {
-  background-color: #333;
-  color: #f0f0f0;
-  border-color: #555;
-}
-
-/* Remove Safari's gradient on selects and inputs in dark mode */
-body.dark-mode select,
-body.dark-mode input,
-body.dark-mode textarea {
-  background-image: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-/* Remove Safari's gradient on selects and inputs in light mode */
-@supports (-webkit-touch-callout: none) {
-  body:not(.dark-mode) select,
-  body:not(.dark-mode) input,
-  body:not(.dark-mode) textarea {
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #f0f0f0;
+  }
+  h1,
+  h2,
+  h3 {
+    color: #ffffff;
+  }
+  h2 {
+    border-bottom: 2px solid #ffffff;
+  }
+  body.pink-mode h1,
+  body.pink-mode h2,
+  body.pink-mode h3 {
+    color: var(--accent-color);
+  }
+  body.pink-mode h2 {
+    border-bottom: 2px solid var(--accent-color);
+  }
+  section,
+  .device-category,
+  #batteryComparison {
+    background-color: #1e1e1e;
+    border-color: #333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+  fieldset { border-color: #ffffff; }
+  legend { color: #ffffff; }
+  button,
+  #langSelector select,
+  input,
+  select,
+  textarea {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
+  }
+  select,
+  input,
+  textarea {
     background-image: none;
     -webkit-appearance: none;
     appearance: none;
   }
+  #setupSelect,
+  #setupName {
+    background-color: #333;
+    color: #f0f0f0;
+    border-color: #555;
+  }
+  button:hover { background-color: #444; }
+  button:active { background-color: #555; }
+  #batteryComparison th { background-color: #333; }
+  .barContainer { background-color: #333; }
+  .selectedBatteryRow { background-color: #003366; }
+  .device-category h4 { color: #ffffff; border-bottom: 1px solid #ffffff; }
+  #diagramHint { color: #ccc; }
+  .diagram-popup {
+    background: rgba(51, 51, 51, 0.95);
+    color: #fff;
+    border-color: #888;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  }
+  .connector-block { background-color: rgba(255,255,255,0.1); }
+  .power-conn { background-color: rgba(244, 67, 54, 0.3); }
+  .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
+  .video-conn { background-color: rgba(33, 150, 243, 0.3); }
+  .info-box,
+  .tray-box { background-color: rgba(255,255,255,0.1); }
+  #setupDiagram .node-box { fill: #333; stroke: none; }
+  #setupDiagram .node-box.first-fiz { stroke: none; }
+  #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
+  #setupDiagram text { fill: #fff; }
+  #setupDiagram line { stroke: #fff; }
+  #setupDiagram path.edge-path { stroke: #fff; }
+  #setupDiagram path.power { stroke: #ff6666; }
+  #setupDiagram path.video { stroke: #7ec8ff; }
+  #setupDiagram path.fiz { stroke: #6f6; }
+  #setupDiagram .conn.red { fill: #ff6666; }
+  #setupDiagram .conn.blue { fill: #7ec8ff; }
+  #setupDiagram .conn.green { fill: #6f6; }
+  #diagramLegend .power { background: #ff6666; }
+  #diagramLegend .video { background: #7ec8ff; }
+  #diagramLegend .fiz { background: #6f6; }
+  #setupDiagram marker polygon { fill: #fff; }
+  #setupDiagram .diagram-placeholder { color: #bbb; }
+  .help-content {
+    background: #1e1e1e;
+    color: #f0f0f0;
+    border-color: #555;
+  }
+  body.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
-body.dark-mode #setupSelect,
-body.dark-mode #setupName {
-  background-color: #333;
-  color: #f0f0f0;
-  border-color: #555;
-}
-
-body.dark-mode button:hover {
-  background-color: #444;
-}
-
-body.dark-mode button:active {
-  background-color: #555;
-}
-
-body.dark-mode #batteryComparison th {
-  background-color: #333;
-}
-
-body.dark-mode .barContainer {
-  background-color: #333;
-}
-
-body.dark-mode .selectedBatteryRow {
-  background-color: #003366;
-}
-
-body.dark-mode .device-category h4 {
-  color: #ffffff;
-  border-bottom: 1px solid #ffffff;
-}
-
-body.dark-mode .device-ul li {
-  border-bottom: 1px dashed #ffffff;
-}
-body.dark-mode .device-details {
-  color: #ddd;
-}
-body.dark-mode .field-with-label::before {
-  color: #ccc;
-}
 /* Responsive layout adjustments */
 @media (max-width: 600px) {
   body {

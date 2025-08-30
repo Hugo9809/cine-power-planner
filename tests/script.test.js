@@ -362,17 +362,6 @@ describe('script.js functions', () => {
     ]);
   });
 
-  test('applyDarkMode toggles class', () => {
-    const { applyDarkMode } = script;
-    const toggle = document.getElementById('darkModeToggle');
-    applyDarkMode(true);
-    expect(document.body.classList.contains('dark-mode')).toBe(true);
-    expect(toggle.textContent).toBe('☀');
-    applyDarkMode(false);
-    expect(document.body.classList.contains('dark-mode')).toBe(false);
-    expect(toggle.textContent).toBe('☾');
-  });
-
   test('applyPinkMode toggles class', () => {
     const { applyPinkMode } = script;
     const toggle = document.getElementById('pinkModeToggle');
@@ -402,7 +391,6 @@ describe('script.js functions', () => {
     expect(html).toContain('id="diagramArea"');
     expect(html).toContain('<svg');
     expect(html).toContain('class="device-block"');
-    expect(html).toContain('id="darkModeToggle"');
     expect(html).toContain('id="pinkModeToggle"');
     expect(html).toContain('id="languageSelect"');
     expect(html).toContain('id="breakdownList"');

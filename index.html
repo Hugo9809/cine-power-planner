@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Plan your camera setup and calculate power consumption &amp; battery life." />
+  <meta property="og:title" content="Camera Power Planner" />
+  <meta property="og:description" content="Plan your camera setup and calculate power consumption &amp; battery life." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="favicon.ico" />
   <title>Camera Power Planner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +24,6 @@
       <option value="fr">Français</option>
       <option value="it">Italiano</option>
     </select>
-    <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">☾</button>
     <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode">🐴</button>
     <button id="helpButton" aria-haspopup="dialog" aria-controls="helpDialog" title="Help">?</button>
   </div>
@@ -45,10 +49,10 @@
     </div>
 
     <!-- Moved Setup Actions here -->
-    <h3 id="setupActionsHeading" style="margin-top: 1em;">Setup Actions</h3>
+    <h3 id="setupActionsHeading">Setup Actions</h3>
     <button id="exportSetupsBtn">Export All Setups</button>
     <button id="importSetupsBtn">Import Setups</button>
-    <input type="file" id="importSetupsInput" accept=".json" style="display: none;" />
+    <input type="file" id="importSetupsInput" accept=".json" class="hidden" />
     <button id="generateOverviewBtn">Generate Overview</button>
   </section>
 
@@ -123,7 +127,7 @@
         <select id="distanceSelect"></select>
       </div>
     </div>
-    <div class="form-row" id="batteryPlateRow" style="display:none;">
+    <div class="form-row hidden" id="batteryPlateRow">
       <label for="batteryPlateSelect" id="batteryPlateLabel">Battery Plate:</label>
       <select id="batteryPlateSelect"></select>
     </div>
@@ -147,13 +151,13 @@
     <p><strong><span id="totalCurrent144Label">Total Current (at 14.4V):</span></strong> <span id="totalCurrent144">0.00</span> A</p>
     <p><strong><span id="totalCurrent12Label">Total Current (at 12V):</span></strong> <span id="totalCurrent12">0.00</span> A</p>
     <p><strong><span id="batteryLifeLabel">Runtime (estimated):</span></strong> <span id="batteryLife">0.00</span> <span id="batteryLifeUnit">hrs</span></p>
-    <p id="pinWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
-  <p id="dtapWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
+    <p id="pinWarning" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
+  <p id="dtapWarning" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
   </section>
 
   <section id="setupDiagram">
     <h2 id="setupDiagramHeading">Setup Diagram</h2>
-    <p id="compatWarning" style="color: red; font-weight: bold;" role="status" aria-live="polite"></p>
+    <p id="compatWarning" role="status" aria-live="polite"></p>
     <p id="diagramDesc" class="visually-hidden">Visual representation of connected devices.</p>
     <div id="diagramArea" role="img" aria-label="Setup diagram" aria-describedby="diagramDesc">
       <div id="diagramPopup" class="diagram-popup"></div>
@@ -167,7 +171,7 @@
     <p id="diagramHint" class="diagram-hint"></p>
   </section>
 
-  <section id="batteryComparison" style="display:none;">
+  <section id="batteryComparison" class="hidden">
     <h2 id="batteryComparisonHeading">Battery Comparison</h2>
     <div id="batteryTableContainer">
       <table id="batteryTable"></table>
@@ -176,10 +180,10 @@
 
   <button id="toggleDeviceManager">Edit Device Data…</button>
 
-  <section id="device-manager" style="display:none;">
+  <section id="device-manager" class="hidden">
     <h2 id="deviceManagerHeading">Manage Device Database</h2>
-    <div style="margin-bottom: 10px;"> <!-- Changed from form-row to a generic div for button grouping -->
-<h3 id="addDeviceHeading" style="margin-top: 1em;">Add New Device</h3>
+    <div class="button-group"> <!-- Changed from form-row to a generic div for button grouping -->
+<h3 id="addDeviceHeading">Add New Device</h3>
     <div class="form-row">
       <label for="newCategory" id="categoryLabel">Category:</label>
       <select id="newCategory">
@@ -200,7 +204,7 @@
       <label for="newWatt" id="consumptionLabel">Consumption (W):</label>
       <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" />
     </div>
-    <div id="cameraFields" style="display:none;">
+    <div id="cameraFields" class="hidden">
       <div class="camera-subsection">
         <h4 id="powerInputsHeading">Power Inputs</h4>
         <div class="form-row">
@@ -217,60 +221,60 @@
         </div>
         <div class="form-row">
           <label id="cameraPlatesLabel">Battery Plates:</label>
-          <div id="batteryPlatesContainer" style="flex:1;"></div>
+          <div id="batteryPlatesContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="camera-subsection">
         <h4 id="powerDistributionHeading">Power Distribution</h4>
         <div class="form-row">
           <label id="cameraPowerDistLabel">Outputs:</label>
-          <div id="powerDistContainer" style="flex:1;"></div>
+          <div id="powerDistContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="camera-subsection">
         <h4 id="videoOutputsHeading">Video Outputs</h4>
         <div class="form-row">
           <label id="cameraVideoOutputsLabel">Outputs:</label>
-          <div id="videoOutputsContainer" style="flex:1;"></div>
+          <div id="videoOutputsContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="camera-subsection">
         <h4 id="fizConnectorHeading">FIZ Connector</h4>
         <div class="form-row">
           <label id="cameraFIZConnectorLabel">Connectors:</label>
-          <div id="fizConnectorContainer" style="flex:1;"></div>
+          <div id="fizConnectorContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="camera-subsection">
         <h4 id="mediaHeading">Media</h4>
         <div class="form-row">
           <label id="cameraMediaLabel">Recording Media:</label>
-          <div id="cameraMediaContainer" style="flex:1;"></div>
+          <div id="cameraMediaContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="camera-subsection">
         <h4 id="viewfinderHeading">Viewfinder</h4>
         <div class="form-row">
           <label id="cameraViewfinderLabel">Viewfinders:</label>
-          <div id="viewfinderContainer" style="flex:1;"></div>
+          <div id="viewfinderContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="camera-subsection">
         <h4 id="lensMountHeading">Lens Mount</h4>
         <div class="form-row">
           <label id="cameraLensMountLabel">Lens Mount:</label>
-          <div id="lensMountContainer" style="flex:1;"></div>
+          <div id="lensMountContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="camera-subsection">
         <h4 id="timecodeHeading">Timecode</h4>
         <div class="form-row">
           <label id="cameraTimecodeLabel">Timecode:</label>
-          <div id="timecodeContainer" style="flex:1;"></div>
+          <div id="timecodeContainer" class="flex-1"></div>
         </div>
       </div>
     </div>
-    <div id="monitorFields" style="display:none;">
+    <div id="monitorFields" class="hidden">
       <div class="monitor-subsection">
         <h4 id="monitorDetailsHeading">Monitor Details</h4>
         <div class="form-row">
@@ -301,14 +305,14 @@
         <h4 id="monitorVideoInputsHeading">Video Inputs</h4>
         <div class="form-row">
           <label id="monitorVideoInputsLabel">Inputs:</label>
-          <div id="monitorVideoInputsContainer" style="flex:1;"></div>
+          <div id="monitorVideoInputsContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="monitor-subsection">
         <h4 id="monitorVideoOutputsHeading">Video Outputs</h4>
         <div class="form-row">
           <label id="monitorVideoOutputsLabel">Outputs:</label>
-          <div id="monitorVideoOutputsContainer" style="flex:1;"></div>
+          <div id="monitorVideoOutputsContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="form-row">
@@ -320,7 +324,7 @@
         <input type="text" id="monitorAudioOutput" />
       </div>
     </div>
-    <div id="videoFields" style="display:none;">
+    <div id="videoFields" class="hidden">
       <div class="form-row">
         <label for="videoPower" id="videoPowerInputLabel">Power Input:</label>
         <input type="text" id="videoPower" />
@@ -329,14 +333,14 @@
         <h4 id="videoVideoInputsHeading">Video Inputs</h4>
         <div class="form-row">
           <label id="videoVideoInputsLabel">Inputs:</label>
-          <div id="videoVideoInputsContainer" style="flex:1;"></div>
+          <div id="videoVideoInputsContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="video-subsection">
         <h4 id="videoVideoOutputsHeading">Video Outputs</h4>
         <div class="form-row">
           <label id="videoVideoOutputsLabel">Outputs:</label>
-          <div id="videoVideoOutputsContainer" style="flex:1;"></div>
+          <div id="videoVideoOutputsContainer" class="flex-1"></div>
         </div>
       </div>
       <div class="form-row">
@@ -348,7 +352,7 @@
         <input type="text" id="videoLatency" />
       </div>
     </div>
-    <div id="motorFields" style="display:none;">
+    <div id="motorFields" class="hidden">
       <div class="form-row">
         <label for="motorConnector" id="motorConnectorLabel">Connector:</label>
         <select id="motorConnector"></select>
@@ -370,7 +374,7 @@
         <input type="text" id="motorNotes" />
       </div>
     </div>
-    <div id="controllerFields" style="display:none;">
+    <div id="controllerFields" class="hidden">
       <div class="form-row">
         <label for="controllerConnector" id="controllerConnectorLabel">Connector:</label>
         <select id="controllerConnector"></select>
@@ -392,7 +396,7 @@
         <input type="text" id="controllerNotes" />
       </div>
     </div>
-    <div id="distanceFields" style="display:none;">
+    <div id="distanceFields" class="hidden">
       <div class="form-row">
         <label for="distanceConnection" id="distanceConnectionLabel">Connection:</label>
         <select id="distanceConnection"></select>
@@ -418,7 +422,7 @@
         <input type="text" id="distanceNotes" />
       </div>
     </div>
-    <div id="batteryFields" style="display:none;">
+    <div id="batteryFields" class="hidden">
       <div class="form-row">
         <label for="newCapacity" id="capacityLabel">Capacity (Wh):</label>
         <input type="number" id="newCapacity" step="0.1" placeholder="e.g. 98" />
@@ -433,15 +437,15 @@
       </div>
     </div>
     <button id="addDeviceBtn">Add</button>
-    <button id="cancelEditBtn" style="display:none;">Cancel</button>
+    <button id="cancelEditBtn" class="hidden">Cancel</button>
       <button id="exportDataBtn">Export Database</button>
       <button id="importDataBtn">Import Database</button>
-      <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+      <input type="file" id="importFileInput" accept=".json" class="hidden" />
       <button id="exportAndRevertBtn">Export and Revert to default Database</button>
     </div>
-    <textarea id="exportOutput" readonly style="display:none; width:100%; height:100px; margin-top: 10px;"></textarea>
+    <textarea id="exportOutput" class="hidden" readonly></textarea>
 
-    <h3 id="existingDevicesHeading" style="margin-top: 1em;">Existing Devices</h3>
+    <h3 id="existingDevicesHeading">Existing Devices</h3>
     <div class="device-list-container">
       <div class="device-category">
         <h4 id="category_cameras">Cameras</h4>
@@ -497,7 +501,7 @@
             <li>Visualize power and video connections with interactive diagrams.</li>
             <li>Compare battery runtimes and check against safe output limits.</li>
             <li>Customize the device database with your own gear.</li>
-            <li>Switch languages, toggle dark or playful pink themes and work fully offline.</li>
+            <li>Switch languages, enjoy a playful pink theme and work fully offline. Dark mode follows your system preference.</li>
           </ul>
         </section>
         <section data-help-section id="gettingStarted">
@@ -571,18 +575,11 @@
             <li>The help dialog itself is searchable using the field at the top.</li>
           </ul>
         </section>
-        <section data-help-section id="darkModeHelp">
-          <h3><span class="help-icon" aria-hidden="true">🌙</span>Dark Mode</h3>
-          <ul>
-            <li>Toggle the moon button next to the language selector.</li>
-            <li>Your choice is remembered for the next visit.</li>
-          </ul>
-        </section>
         <section data-help-section id="pinkModeHelp">
           <h3><span class="help-icon" aria-hidden="true">🦄</span>Pink Mode</h3>
           <ul>
             <li>Click the horse button for a pink unicorn theme.</li>
-            <li>The setting persists just like dark mode.</li>
+            <li>The setting persists between visits.</li>
           </ul>
         </section>
         <section data-help-section id="shortcuts">
