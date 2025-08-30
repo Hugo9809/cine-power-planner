@@ -4267,6 +4267,7 @@ deviceManagerSection.addEventListener("click", (event) => {
     addDeviceBtn.dataset.originalName = name; // Store original name for update
     cancelEditBtn.textContent = texts[currentLang].cancelEditBtn;
     cancelEditBtn.style.display = "inline";
+    document.getElementById("addDeviceHeading").scrollIntoView({ behavior: "smooth", block: "start" });
   } else if (event.target.classList.contains("delete-btn")) {
     const name = event.target.dataset.name;
     const categoryKey = event.target.dataset.category;
