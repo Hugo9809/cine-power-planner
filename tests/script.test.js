@@ -115,6 +115,35 @@ describe('script.js functions', () => {
     expect(document.getElementById('batteryLife').textContent).toBe('1.25');
   });
 
+  test('interpolates temperature scaling between points', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    const key = script.getCurrentSetupKey();
+
+    const cases = [
+      { temp: '5', expected: '1.20' },
+      { temp: '-5', expected: '1.43' },
+      { temp: '-15', expected: '1.80' }
+    ];
+
+    cases.forEach(({ temp, expected }) => {
+      const entries = Array.from({ length: 5 }, () => ({ runtime: '1', temperature: temp }));
+      global.loadFeedback.mockReturnValue({ [key]: entries });
+      script.updateCalculations();
+      expect(document.getElementById('batteryLife').textContent).toBe(expected);
+    });
+  });
+
   test('uses user runtime for temperature table', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
