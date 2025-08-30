@@ -1393,6 +1393,14 @@ describe('script.js functions', () => {
     expect(helpSearchClear.getAttribute('title')).toBe(texts.de.helpSearchClear);
   });
 
+  test('help button title shows keyboard shortcut and localizes', () => {
+    const helpButton = document.getElementById('helpButton');
+    script.setLanguage('en');
+    expect(helpButton.getAttribute('title')).toBe(texts.en.helpButtonTitle);
+    script.setLanguage('de');
+    expect(helpButton.getAttribute('title')).toBe(texts.de.helpButtonTitle);
+  });
+
   test('help no results message is announced politely', () => {
     const helpNoResults = document.getElementById('helpNoResults');
     expect(helpNoResults.getAttribute('aria-live')).toBe('polite');
