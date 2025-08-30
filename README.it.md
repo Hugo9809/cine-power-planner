@@ -104,6 +104,7 @@ I font vengono caricati tramite Google Fonts in `index.html`.
 Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'applicazione funziona interamente offline.
 
 ## 🛠️ Sviluppo
+È necessario Node.js 18 o successivo.
 1. Installa le dipendenze:
    ```bash
    npm install
