@@ -14,6 +14,14 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 
 ---
 
+## 🆕 Novità
+- Diagramma interattivo della configurazione che consente di trascinare i dispositivi, zoomare ed esportare il layout in SVG o JPG.
+- Tema rosa giocoso che persiste tra una visita e l'altra.
+- Finestra di aiuto ricercabile con sezioni passo passo e FAQ.
+- Supporto per fotocamere con piastre batteria V e B‑Mount.
+
+---
+
 ## 🔧 Funzionalità
 
 ### ✅ Gestione delle configurazioni
