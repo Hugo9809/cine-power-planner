@@ -126,60 +126,66 @@ function normalizeFizConnectorType(type) {
 function normalizeViewfinderType(type) {
   if (!type) return '';
   const map = {
-    'DSMC3 RED Touch 7" LCD (Optional)': 'RED Touch 7" LCD (Optional)',
-    'RED Touch 7.0" LCD (Optional)': 'RED Touch 7" LCD (Optional)',
-    'LCD Touch Panel': 'LCD touchscreen',
-    'LCD Touchscreen': 'LCD touchscreen',
-    'Native LCD Capacitive Touchscreen': 'LCD touchscreen',
-    'Integrated Touchscreen LCD': 'LCD touchscreen',
-    'Free-angle LCD': 'Vari-angle LCD',
-    'LCD Monitor (Native)': 'Integrated LCD monitor',
-    'Native LCD Viewfinder': 'Integrated LCD monitor',
-    'LCD Monitor LM-V2 (Supplied)': 'LCD Monitor LM-V2',
-    'Integrated Main Monitor': 'Integrated LCD monitor',
-    'Optional EVF-V70 viewfinder': 'EVF-V70 (Optional)',
-    'Optional EVF-V50': 'EVF-V50 (Optional)',
-    'Optional OLED viewfinder': 'OLED EVF (Optional)',
-    'Blackmagic Pocket Cinema Camera Pro EVF (Optional)': 'Blackmagic Pro EVF (Optional)',
-    'External backlit LCD status display': 'LCD status display',
-    'Built-in Fold-out LCD': 'Fold-out LCD',
-    'OLED LVF (Live View Finder)': 'OLED EVF',
-    'LCD capacitive touchscreen': 'LCD touchscreen',
-    'LEMO 26 pin': 'LEMO 26-pin port'
+    'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
+    'red touch 7.0" lcd (optional)': 'RED Touch 7" LCD (Optional)',
+    'lcd touch panel': 'LCD touchscreen',
+    'lcd touchscreen': 'LCD touchscreen',
+    'native lcd capacitive touchscreen': 'LCD touchscreen',
+    'integrated touchscreen lcd': 'LCD touchscreen',
+    'free-angle lcd': 'Vari-angle LCD',
+    'lcd monitor (native)': 'Integrated LCD monitor',
+    'native lcd viewfinder': 'Integrated LCD monitor',
+    'lcd monitor lm-v2 (supplied)': 'LCD Monitor LM-V2',
+    'integrated main monitor': 'Integrated LCD monitor',
+    'optional evf-v70 viewfinder': 'EVF-V70 (Optional)',
+    'optional evf-v50': 'EVF-V50 (Optional)',
+    'optional oled viewfinder': 'OLED EVF (Optional)',
+    'blackmagic pocket cinema camera pro evf (optional)': 'Blackmagic Pro EVF (Optional)',
+    'external backlit lcd status display': 'LCD status display',
+    'built-in fold-out lcd': 'Fold-out LCD',
+    'oled lvf (live view finder)': 'OLED EVF',
+    'lcd capacitive touchscreen': 'LCD touchscreen',
+    'lemo 26 pin': 'LEMO 26-pin port'
   };
-  return map[type] || type;
+  const trimmed = String(type).trim();
+  const key = trimmed.toLowerCase();
+  return map[key] || trimmed;
 }
 
 function normalizePowerPortType(type) {
   if (!type) return [];
   const map = {
-    'LEMO 8-pin (DC In / BAT)': 'Bat LEMO 8-pin',
-    'LEMO 8-pin (BAT)': 'Bat LEMO 8-pin',
-    'BAT (LEMO 8-pin)': 'Bat LEMO 8-pin',
-    'LEMO 8-pin': 'Bat LEMO 8-pin',
-    '2-pin DC-Input': '2-pin DC-IN',
-    '2-pin XLR': 'XLR 2-pin',
+    'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
+    'lemo 8-pin (bat)': 'Bat LEMO 8-pin',
+    'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
+    'lemo 8-pin': 'Bat LEMO 8-pin',
+    '2-pin dc-input': '2-pin DC-IN',
+    '2-pin xlr': 'XLR 2-pin',
     '2-pin locking connector': 'LEMO 2-pin',
-    '2-pin locking connector / 2-pin LEMO': 'LEMO 2-pin',
-    '4-pin XLR / DC IN 12V': 'XLR 4-pin',
-    '4-pin XLR / V-Lock': 'XLR 4-pin',
-    'XLR 4-pin jack': 'XLR 4-pin',
-    'XLR 4-pin (main input)': 'XLR 4-pin',
-    'XLR-type 4 pin (male) / Square-shaped 5 pin connector (Battery)': 'XLR 4-pin / Square 5-pin',
-    '12-pin Molex connector (at battery plate rear) / 4-pin XLR (external power)': 'Molex 12-pin / XLR 4-pin',
-    'USB-C (Power Delivery) / Battery Slot': 'Battery Slot / USB-C PD',
-    'Battery Slot / USB Type-C®': 'Battery Slot / USB-C',
-    'Battery Slot / USB-C': 'Battery Slot / USB-C',
-    'Battery Slot / USB-C PD': 'Battery Slot / USB-C PD',
-    'DC Input': 'DC IN',
-    'Weipu SF610/S2 (12VDC) Input': 'Weipu SF610/S2',
-    '6-pin 1B DC-IN / TB50 Battery Mount': '6-pin 1B DC-IN / TB50'
+    '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
+    '4-pin xlr / dc in 12v': 'XLR 4-pin',
+    '4-pin xlr / v-lock': 'XLR 4-pin',
+    'xlr 4-pin jack': 'XLR 4-pin',
+    'xlr 4-pin (main input)': 'XLR 4-pin',
+    'xlr-type 4 pin (male) / square-shaped 5 pin connector (battery)': 'XLR 4-pin / Square 5-pin',
+    '12-pin molex connector (at battery plate rear) / 4-pin xlr (external power)': 'Molex 12-pin / XLR 4-pin',
+    'usb-c (power delivery) / battery slot': 'Battery Slot / USB-C PD',
+    'battery slot / usb type-c®': 'Battery Slot / USB-C',
+    'battery slot / usb-c': 'Battery Slot / USB-C',
+    'battery slot / usb-c pd': 'Battery Slot / USB-C PD',
+    'dc input': 'DC IN',
+    'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
+    '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
   };
-  const mapOne = val => map[val] || val;
+  const mapOne = val => {
+    const trimmed = String(val).trim();
+    const lower = trimmed.toLowerCase();
+    return map[lower] || trimmed;
+  };
   const toArray = val =>
     mapOne(val)
       .split('/')
-      .map(p => mapOne(p.trim()));
+      .map(p => mapOne(p));
   return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
 }
 
@@ -6826,6 +6832,7 @@ if (typeof module !== "undefined" && module.exports) {
     ensureList,
     normalizeVideoType,
     normalizeFizConnectorType,
+    normalizeViewfinderType,
     normalizePowerPortType,
     getCurrentSetupKey,
     renderFeedbackTable,

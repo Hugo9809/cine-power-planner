@@ -87,4 +87,16 @@ describe('utility function tests', () => {
     const labels = Array.from(document.querySelectorAll('.edge-label')).map(el => el.textContent);
     expect(labels.some(l => /Serial/.test(l))).toBe(true);
   });
+
+  test('normalizePowerPortType handles case-insensitive mappings', () => {
+    const { normalizePowerPortType } = utils;
+    expect(normalizePowerPortType('dc input')).toEqual(['DC IN']);
+    expect(normalizePowerPortType('LEMO 8-PIN (BAT)')).toEqual(['Bat LEMO 8-pin']);
+    expect(normalizePowerPortType('battery slot / usb type-c®')).toEqual(['Battery Slot', 'USB-C']);
+  });
+
+  test('normalizeViewfinderType handles case-insensitive mappings', () => {
+    const { normalizeViewfinderType } = utils;
+    expect(normalizeViewfinderType('lcd touchscreen')).toBe('LCD touchscreen');
+  });
 });
