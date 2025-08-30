@@ -722,6 +722,39 @@ button:disabled {
   background-color: #ffffff;
 }
 
+/* User runtime feedback table */
+#feedbackTableContainer {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-top: 1em;
+}
+
+#userFeedbackTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#userFeedbackTable th,
+#userFeedbackTable td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  white-space: nowrap;
+  text-align: left;
+}
+
+#userFeedbackTable th {
+  background-color: #ffffff;
+}
+
+body:not(.light-mode) #userFeedbackTable th {
+  background-color: #333;
+}
+
+body:not(.light-mode) #userFeedbackTable th,
+body:not(.light-mode) #userFeedbackTable td {
+  border-color: #555;
+}
+
 /* Battery comparison bars */
 .barContainer {
   width: 100%;

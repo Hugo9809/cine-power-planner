@@ -3250,33 +3250,33 @@ function deleteFeedbackEntry(key, index) {
 }
 
 function renderFeedbackTable(currentKey) {
+  const container = document.getElementById('feedbackTableContainer');
   const table = document.getElementById('userFeedbackTable');
   const data = loadFeedbackSafe();
-  const allEntries = [];
-  Object.entries(data).forEach(([key, arr]) => {
-    (arr || []).forEach((entry, idx) => {
-      allEntries.push({ key, index: idx, entry });
-    });
-  });
-  if (!allEntries.length) {
+  const entries = data[currentKey] || [];
+
+  if (!entries.length) {
     if (table) {
       table.innerHTML = '';
       table.classList.add('hidden');
     }
+    if (container) container.classList.add('hidden');
     return null;
   }
-  const columns = Object.keys(allEntries[0].entry);
+
+  const columns = Object.keys(entries[0]);
   let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c)}</th>`).join('') + '<th></th></tr>';
-  allEntries.forEach(({ key, index, entry }) => {
+  entries.forEach((entry, index) => {
     html += '<tr>';
     columns.forEach(c => {
       html += `<td>${escapeHtml(entry[c] || '')}</td>`;
     });
-    html += `<td><button data-key="${encodeURIComponent(key)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
+    html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
     html += '</tr>';
   });
   table.innerHTML = html;
   table.classList.remove('hidden');
+  if (container) container.classList.remove('hidden');
   table.querySelectorAll('.deleteFeedbackBtn').forEach(btn => {
     btn.addEventListener('click', () => {
       const key = decodeURIComponent(btn.dataset.key);
@@ -3284,9 +3284,10 @@ function renderFeedbackTable(currentKey) {
       deleteFeedbackEntry(key, idx);
     });
   });
+
   let sum = 0;
   let count = 0;
-  (data[currentKey] || []).forEach(e => {
+  entries.forEach(e => {
     const rt = parseFloat(e.runtime);
     if (!Number.isNaN(rt)) {
       sum += rt;
