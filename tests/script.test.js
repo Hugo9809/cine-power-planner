@@ -1199,4 +1199,19 @@ describe('monitor wireless metadata', () => {
     expect(monitors['Hollyland Mars M1 Enhanced (RX/TX)'].wirelessTx).toBe(true);
     expect(monitors['Hollyland Mars M1 Enhanced (RX/TX)'].latencyMs).toBe('< 80ms');
   });
+
+  test('editing monitor retains latency value', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    document.getElementById('newCategory').value = 'monitors';
+    document.getElementById('newName').value = 'MonA';
+    document.getElementById('monitorWatt').value = '5';
+    document.getElementById('monitorWirelessTx').checked = true;
+    document.getElementById('monitorLatency').value = '10ms';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'MonA';
+    addDeviceBtn.click();
+
+    expect(global.devices.monitors.MonA.latencyMs).toBe('10ms');
+  });
 });
