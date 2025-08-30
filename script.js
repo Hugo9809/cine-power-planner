@@ -5527,7 +5527,13 @@ shareSetupBtn.addEventListener('click', () => {
   }
   const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(currentSetup));
   const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
-  prompt(texts[currentLang].shareSetupPrompt, link);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link)
+      .then(() => alert(texts[currentLang].shareLinkCopied))
+      .catch(() => prompt(texts[currentLang].shareSetupPrompt, link));
+  } else {
+    prompt(texts[currentLang].shareSetupPrompt, link);
+  }
 });
 
 if (applySharedLinkBtn && sharedLinkInput) {
