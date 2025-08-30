@@ -13,6 +13,7 @@ offline.
 - [Runtime Data Weighting](#runtime-data-weighting)
 - [Getting Started](#getting-started)
 - [Install as an App](#install-as-an-app)
+- [Development](#development)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -87,8 +88,34 @@ access:
    - **Chrome/Edge (desktop):** Click the install icon in the address bar.
    - **Android:** Open the browser menu and choose *Add to Home screen*.
    - **iOS Safari:** Tap the share icon and select *Add to Home Screen*.
-3. Launch the app from your applications list. The installed version works
-   offline and updates automatically.
+ 3. Launch the app from your applications list. The installed version works
+    offline and updates automatically.
+
+## Development
+
+After cloning the repository, you can inspect or modify the code base.
+
+### File Structure
+
+```
+index.html       # Main HTML layout
+style.css        # Styles and layout
+script.js        # Application logic
+data.js          # Default device list
+storage.js       # LocalStorage helpers
+README.*.md      # Documentation in different languages
+```
+
+### Install dependencies and run tests
+
+Requires Node.js 18 or later.
+
+```bash
+npm install
+npm test
+```
+
+The `npm test` command runs ESLint, data consistency checks and Jest tests.
 
 ## Contributing
 
