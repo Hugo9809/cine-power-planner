@@ -35,7 +35,8 @@ const VIDEO_OUTPUT_TYPES = [
   'Mini BNC',
   'HDMI',
   'Mini HDMI',
-  'Micro HDMI'
+  'Micro HDMI',
+  'DisplayPort'
 ];
 
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
@@ -76,7 +77,10 @@ function normalizeVideoType(type) {
     { needles: ['mini', 'bnc'], value: 'Mini BNC' },
     { needles: ['micro', 'hdmi'], value: 'Micro HDMI' },
     { needles: ['mini', 'hdmi'], value: 'Mini HDMI' },
-    { needles: ['hdmi'], value: 'HDMI' }
+    { needles: ['hdmi'], value: 'HDMI' },
+    { needles: ['displayport'], value: 'DisplayPort' },
+    { needles: ['display', 'port'], value: 'DisplayPort' },
+    { needles: ['dp'], value: 'DisplayPort' }
   ];
   const t = String(type).toLowerCase();
   for (const { needles, value } of patterns) {
