@@ -6475,11 +6475,21 @@ if (helpButton && helpDialog) {
 // Initial calculation and language set after DOM is ready
 // Initialize immediately if DOM is already loaded (e.g. when scripts are
 // injected after `DOMContentLoaded` fired). Otherwise wait for the event.
+
+function isRunningPWA() {
+  return (
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+    window.navigator.standalone === true
+  );
+}
+
 function initApp() {
-  const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-  const isIOSStandalone = window.navigator.standalone;
-  if (sharedLinkRow && (isStandalone || isIOSStandalone)) {
-    sharedLinkRow.classList.remove('hidden');
+  if (sharedLinkRow) {
+    if (isRunningPWA()) {
+      sharedLinkRow.classList.remove('hidden');
+    } else {
+      sharedLinkRow.classList.add('hidden');
+    }
   }
   populateEnvironmentDropdowns();
   setLanguage(currentLang);
