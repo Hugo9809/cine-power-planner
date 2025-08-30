@@ -2,7 +2,8 @@ const fs = require('fs');
 let devices = require('./data.js');
 function cleanTypeName(name) {
   let t = String(name).trim();
-  t = t.replace(/\b(IN|OUT|INPUT|OUTPUT)\b/i, "").trim();
+  // Preserve explicit IN/OUT labels; only remove generic INPUT/OUTPUT words.
+  t = t.replace(/\b(INPUT|OUTPUT)\b/i, "").trim();
   if (/lemo\s*2\s*-?\s*pin/i.test(t)) t = "LEMO 2-pin";
   return t.replace(/\s+/g, " ");
 }
@@ -12,12 +13,21 @@ function cleanVoltageRange(str) {
 }
 
 function deepClean(obj) {
-  if (Array.isArray(obj)) return obj.forEach(deepClean);
+  if (Array.isArray(obj)) {
+    obj.forEach((v, i) => {
+      obj[i] = deepClean(v);
+    });
+    return obj;
+  }
   if (obj && typeof obj === "object") {
     if (obj.voltageRange) obj.voltageRange = cleanVoltageRange(obj.voltageRange);
     if (obj.type) obj.type = cleanTypeName(obj.type);
-    for (const val of Object.values(obj)) deepClean(val);
+    for (const key of Object.keys(obj)) {
+      obj[key] = deepClean(obj[key]);
+    }
+    return obj;
   }
+  return obj;
 }
 
 
@@ -76,10 +86,23 @@ function normalizeMonitor(mon) {
 
 function parsePowerInput(str) {
   if (!str) return null;
-  const parts = str.split('/');
+  const parts = [];
+  let current = '';
+  let depth = 0;
+  for (const ch of str) {
+    if (ch === '(') depth++;
+    if (ch === ')') depth = Math.max(0, depth - 1);
+    if (ch === '/' && depth === 0) {
+      parts.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  if (current) parts.push(current);
   return parts.map(p => {
     const m = p.trim().match(/^(.+?)(\(([^)]+)\))?$/);
-    const type = m ? m[1].trim() : p.trim();
+    const type = String(m ? m[1].trim() : p.trim());
     const notes = m && m[3] ? m[3].trim() : '';
     const obj = { type };
     if (notes) obj.notes = notes;
