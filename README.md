@@ -18,6 +18,7 @@ language-specific README files for full details.
 ## Features at a Glance
 
 - Calculate total power consumption, current draw at 14.4 V and 12 V, and estimated battery runtime.
+- Runtime estimates draw on a weighted average of user-submitted runtimes for greater accuracy.
 - Check that selected batteries can supply the required output.
 - Save and load setups, import/export them as JSON, and generate a printable overview.
 - Visualize power and video connections with an interactive diagram.

@@ -38,7 +38,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 ### ⚙️ Power Calculations
 - Total consumption in watts
 - Current draw at 14.4 V and 12 V
-- Estimated battery runtime in hours
+- Estimated battery runtime in hours using weighted user feedback
 
 ### 🔋 Battery Output Check
 - Warns if current draw exceeds the battery output (Pin or D‑Tap)
@@ -56,6 +56,12 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Uses [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji:
   🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
   🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
+
+### 🧮 Runtime data weighting
+- User-submitted battery runtimes refine the runtime estimate.
+- Each entry is adjusted for temperature effects.
+- Camera resolution, frame rate, codec and Wi‑Fi, plus monitor brightness, determine how strongly an entry is weighted.
+- The weighted average is used once at least three entries are available.
 
 ### 🔍 Search & Filtering
 - Filter every dropdown and device list with a search box
