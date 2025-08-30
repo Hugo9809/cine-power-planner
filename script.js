@@ -6347,11 +6347,40 @@ if (helpButton && helpDialog) {
 // Initialize immediately if DOM is already loaded (e.g. when scripts are
 // injected after `DOMContentLoaded` fired). Otherwise wait for the event.
 function initApp() {
+  populateEnvironmentDropdowns();
   setLanguage(currentLang);
   resetDeviceForm();
   restoreSessionState();
   applySharedSetupFromUrl();
   updateCalculations();
+}
+
+function populateEnvironmentDropdowns() {
+  const tempSelect = document.getElementById('fbTemperature');
+  if (tempSelect) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    tempSelect.appendChild(emptyOpt);
+    for (let i = -20; i <= 50; i++) {
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = i;
+      tempSelect.appendChild(opt);
+    }
+  }
+
+  const humiditySelect = document.getElementById('fbHumidity');
+  if (humiditySelect) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    humiditySelect.appendChild(emptyOpt);
+    for (let i = 0; i <= 100; i++) {
+      const opt = document.createElement('option');
+      opt.value = String(i);
+      opt.textContent = `${i}%`;
+      humiditySelect.appendChild(opt);
+    }
+  }
 }
 
 if (document.readyState === "loading") {
