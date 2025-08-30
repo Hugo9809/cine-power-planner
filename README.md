@@ -6,6 +6,16 @@ checks that batteries can safely deliver the required output and estimates how
 long your setup will run. The tool runs entirely in the browser and even works
 offline.
 
+## Table of Contents
+
+- [Documentation](#documentation)
+- [Features at a Glance](#features-at-a-glance)
+- [Runtime Data Weighting](#runtime-data-weighting)
+- [Getting Started](#getting-started)
+- [Install as an App](#install-as-an-app)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Documentation
 
 This repository provides the documentation in multiple languages:
