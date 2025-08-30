@@ -48,6 +48,8 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Total consumption in watts
 - Current draw at 14.4 V and 12 V
 - Estimated battery runtime in hours using weighted user feedback
+- Required battery count for a 10 h shoot (incl. spare)
+- Temperature note to adjust runtime for hot or cold conditions
 
 ### 🔋 Battery Output Check
 - Warns if current draw exceeds the battery output (Pin or D‑Tap)

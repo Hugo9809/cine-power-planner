@@ -24,6 +24,8 @@ See the language-specific README files for full details.
 - Calculate total power consumption, current draw at 14.4 V and 12 V, and estimated battery runtime.
 - Runtime estimates draw on a weighted average of user-submitted runtimes for greater accuracy.
 - Check that selected batteries can supply the required output.
+- See required battery counts for a 10 h shoot and adjust runtimes for temperature.
+- Compare runtimes across all batteries with an optional battery comparison panel.
 - Save, load, share and clear setups; import/export them as JSON, and generate a printable overview.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
