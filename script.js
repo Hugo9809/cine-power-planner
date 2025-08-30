@@ -2685,13 +2685,15 @@ function populateSelect(selectElem, optionsObj, includeNone=true) {
     noneOpt.textContent = noneMap[currentLang] || "None";
     selectElem.appendChild(noneOpt);
   }
-  for (let name in optionsObj) {
-    if (name === "None") continue; // "None" is added separately
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    selectElem.appendChild(opt);
-  }
+  Object.keys(optionsObj)
+    .filter(name => name !== "None")
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+    .forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      selectElem.appendChild(opt);
+    });
 }
 
 function filterSelect(selectElem, filterValue) {
