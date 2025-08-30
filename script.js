@@ -4224,7 +4224,7 @@ function enableDiagramInteractions() {
       let newX = start.x + dx;
       let newY = start.y + dy;
       if (gridSnap) {
-        const g = 20;
+        const g = 20 / scale;
         newX = Math.round(newX / g) * g;
         newY = Math.round(newY / g) * g;
       }
