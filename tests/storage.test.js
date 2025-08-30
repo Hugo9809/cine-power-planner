@@ -88,9 +88,11 @@ describe('setup storage', () => {
     expect(loadSetups()).toEqual(setups);
   });
 
-  test('loadSetups returns empty object for array data', () => {
-    localStorage.setItem(SETUP_KEY, JSON.stringify([1,2,3]));
-    expect(loadSetups()).toEqual({});
+  test('loadSetups converts array data into an object', () => {
+    const arr = [{ name: 'A', foo: 1 }, { name: 'B', bar: 2 }];
+    localStorage.setItem(SETUP_KEY, JSON.stringify(arr));
+    expect(loadSetups()).toEqual({ A: { name: 'A', foo: 1 }, B: { name: 'B', bar: 2 } });
+    expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({ A: { name: 'A', foo: 1 }, B: { name: 'B', bar: 2 } });
   });
 
   test('loadSetups returns empty object for primitive data', () => {

@@ -72,8 +72,19 @@ function loadSetups() {
     const data = localStorage.getItem(SETUP_STORAGE_KEY);
     if (data) {
       const parsedData = JSON.parse(data);
-      // Ensure it's a plain object, not an array or primitive
-      if (parsedData && typeof parsedData === 'object' && !Array.isArray(parsedData)) {
+      if (Array.isArray(parsedData)) {
+        const obj = {};
+        parsedData.forEach((item, idx) => {
+          if (item && typeof item === 'object') {
+            const key = item.name || item.setupName || `Setup ${idx + 1}`;
+            obj[key] = item;
+          }
+        });
+        localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(obj));
+        return obj;
+      }
+      // Ensure it's a plain object, not a primitive
+      if (parsedData && typeof parsedData === 'object') {
         return parsedData;
       }
     }
