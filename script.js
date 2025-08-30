@@ -3719,7 +3719,7 @@ function attachDiagramPopups(map) {
     const connectors = data ? generateConnectorSummary(data) : '';
     const infoHtml =
       (data && data.latencyMs ?
-        `<div class="info-box"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
+        `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
       (data && data.frequency ?
         `<div class="info-box"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
     const html = `<strong>${escapeHtml(info.name)}</strong>` +
@@ -5049,7 +5049,7 @@ function generatePrintableOverview() {
             if (data !== undefined && data !== null) {
                 const connectors = generateConnectorSummary(data);
                 const infoBoxes =
-                    (data.latencyMs !== undefined ? `<div class="info-box"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
+                    (data.latencyMs !== undefined ? `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
                     (data.frequency ? `<div class="info-box"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
                 details = connectors + infoBoxes;
             }
