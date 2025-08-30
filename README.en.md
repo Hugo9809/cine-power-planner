@@ -16,7 +16,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 ---
 
 ## 🆕 Recent Features
-- Interactive setup diagram that lets you drag devices, zoom and export the layout as SVG or JPG.
+- Interactive setup diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
 - Playful pink accent theme that persists between visits.
 - Searchable help dialog with step-by-step sections and a FAQ.
 - Support for cameras with both V- and B-Mount battery plates.
