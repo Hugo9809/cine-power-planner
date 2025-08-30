@@ -26,7 +26,21 @@ See the language-specific README files for full details.
 - Check that selected batteries can supply the required output.
 - Save and load setups, import/export them as JSON, and generate a printable overview.
 - Visualize power and video connections with an interactive diagram.
+- Customize the device database with your own gear.
+- Switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
 - Works completely offline and offers a searchable help dialog.
+
+## Runtime Data Weighting
+
+User-submitted battery runtimes are combined using a weighted average to better match your setup:
+
+- Entries are adjusted for temperature: ×2 at ≤−20 °C, ×1.6 at ≤−10 °C, ×1.25 at ≤0 °C.
+- Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled relative to 1080p.
+- Frame rate scales linearly from a base of 24 fps (e.g. 48 fps = ×2).
+- Wi‑Fi enabled adds 10 %.
+- Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7.
+- Monitor entries below the specified brightness are weighted by their brightness ratio.
+- The final weight reflects how much of the total power draw comes from the camera, monitor and other devices so that similar rigs count more.
 
 ## Quick Start
 
