@@ -1,4 +1,4 @@
-/* global texts */
+/* global texts devices */
 const fs = require('fs');
 const path = require('path');
 
@@ -1326,6 +1326,36 @@ describe('script.js functions', () => {
     const encoded = new URL(link).searchParams.get('shared');
     const decoded = JSON.parse(decodeURIComponent(Buffer.from(encoded, 'base64').toString('utf-8')));
     expect(decoded.setupName).toBe('My Setup');
+  });
+
+  test('shareSetupBtn includes device changes and feedback', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    addOpt('batteryPlateSelect', 'PlateX');
+    // modify device data
+    devices.cameras.CamA.powerDrawWatts = 20;
+    const key = script.getCurrentSetupKey();
+    global.loadFeedback.mockReturnValue({ [key]: [{ runtime: '1h' }] });
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'ShareAll';
+    global.prompt = jest.fn();
+    const btn = document.getElementById('shareSetupBtn');
+    btn.click();
+    const link = global.prompt.mock.calls[0][1];
+    const encoded = new URL(link).searchParams.get('shared');
+    const decoded = JSON.parse(decodeURIComponent(Buffer.from(encoded, 'base64').toString('utf-8')));
+    expect(decoded.changedDevices.cameras.CamA.powerDrawWatts).toBe(20);
+    expect(decoded.feedback[0].runtime).toBe('1h');
   });
 
   test('applySharedSetupFromUrl restores setup name', () => {
