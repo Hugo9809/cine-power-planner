@@ -1406,6 +1406,27 @@ describe('script.js functions', () => {
     expect(helpNoResults.getAttribute('aria-live')).toBe('polite');
   });
 
+  test('hover for help mode shows tooltip and closes dialog', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const hoverHelpButton = document.getElementById('hoverHelpButton');
+    const helpButton = document.getElementById('helpButton');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+
+    hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
+    helpButton.setAttribute('data-help', 'Open help dialog');
+    helpButton.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, clientX: 10, clientY: 10 }));
+    const tooltip = document.getElementById('hoverHelpTooltip');
+    expect(tooltip.textContent).toBe('Open help dialog');
+    expect(tooltip.hasAttribute('hidden')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(document.getElementById('hoverHelpTooltip')).toBeNull();
+  });
+
   test('generateConnectorSummary labels extras', () => {
     const data = {
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },
