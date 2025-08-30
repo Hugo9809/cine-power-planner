@@ -6345,7 +6345,8 @@ function exportDiagramSvg() {
     if (cloneLabels[idx]) cloneLabels[idx].innerHTML = lbl.innerHTML;
   });
   const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-  style.textContent = getDiagramCss();
+  // Always export using the bright theme regardless of the current mode
+  style.textContent = getDiagramCss(false);
   clone.insertBefore(style, clone.firstChild);
   const serializer = new XMLSerializer();
   return serializer.serializeToString(clone);

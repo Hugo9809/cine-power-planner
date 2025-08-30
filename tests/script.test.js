@@ -1340,6 +1340,25 @@ describe('script.js functions', () => {
     expect(svg).toContain('HDMI');
   });
 
+  test('exportDiagramSvg always uses light theme', () => {
+    global.devices.cameras.CamA.videoOutputs = [{ type: 'HDMI' }];
+    global.devices.monitors.MonA.videoInputs = [{ type: 'HDMI' }];
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+
+    document.body.classList.add('dark-mode');
+    script.renderSetupDiagram();
+    const svg = script.exportDiagramSvg();
+    expect(svg).not.toContain('prefers-color-scheme: dark');
+    expect(svg).toContain('.node-box{fill:#e8f0fe');
+  });
+
   test('shareSetupBtn encodes setup name in link', () => {
     const nameInput = document.getElementById('setupName');
     nameInput.value = 'My Setup';
