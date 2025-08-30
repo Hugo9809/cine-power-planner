@@ -810,21 +810,10 @@ body:not(.light-mode) #userFeedbackTable td {
   background-color: #FF9800; /* Orange color for pins only */
 }
 
-/* Runtime weighting dashboard */
-#weightingDashboard {
-  margin-top: 1em;
-  display: inline-block;
-  transform: scale(0.8);
-  transform-origin: top left;
-}
+/* Runtime weighting */
 .weightingRow {
   display: flex;
   align-items: center;
-  margin-bottom: 4px;
-}
-.weightingLabel {
-  width: 2em;
-  font-size: 0.9em;
 }
 .weightBar {
   height: 100%;
