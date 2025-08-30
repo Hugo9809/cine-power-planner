@@ -887,6 +887,39 @@ function setLanguage(lang) {
   document.getElementById("sharedLinkLabel").textContent = texts[lang].sharedLinkLabel;
   applySharedLinkBtn.textContent = texts[lang].loadSharedLinkBtn;
   if (sharedLinkInput) sharedLinkInput.placeholder = texts[lang].sharedLinkPlaceholder;
+
+  // Descriptive hover help for setup management controls
+  setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
+  setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
+
+  deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
+  deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
+  deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
+
+  saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
+  saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
+  saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+
+  exportSetupsBtn.setAttribute("title", texts[lang].exportSetupsBtn);
+  exportSetupsBtn.setAttribute("data-help", texts[lang].exportSetupsHelp);
+
+  importSetupsBtn.setAttribute("title", texts[lang].importSetupsBtn);
+  importSetupsBtn.setAttribute("data-help", texts[lang].importSetupsHelp);
+
+  generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
+  generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+
+  shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
+  shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
+
+  applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
+  applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
+
+  clearSetupBtn.setAttribute("title", texts[lang].clearSetupBtn);
+  clearSetupBtn.setAttribute("data-help", texts[lang].clearSetupHelp);
+
+  runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
+  runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -1015,8 +1048,12 @@ function setLanguage(lang) {
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.classList.contains('hidden')) {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
+    toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
+    toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
   } else {
     toggleDeviceBtn.textContent = texts[lang].hideDeviceManager;
+    toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
+    toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
   }
   // Update newCategory select option texts
   Array.from(newCategorySelect.options).forEach(opt => {
@@ -1108,19 +1145,27 @@ function setLanguage(lang) {
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
 
-  if (downloadDiagramBtn) downloadDiagramBtn.textContent = texts[lang].downloadDiagramBtn;
+  if (downloadDiagramBtn) {
+    downloadDiagramBtn.textContent = texts[lang].downloadDiagramBtn;
+    downloadDiagramBtn.setAttribute("title", texts[lang].downloadDiagramBtn);
+    downloadDiagramBtn.setAttribute("aria-label", texts[lang].downloadDiagramBtn);
+    downloadDiagramBtn.setAttribute("data-help", texts[lang].downloadDiagramHelp);
+  }
   if (gridSnapToggleBtn) {
     gridSnapToggleBtn.textContent = texts[lang].gridSnapToggle;
     gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
+    gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
   }
   if (zoomInBtn) {
     zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
+    zoomInBtn.setAttribute("data-help", texts[lang].zoomInHelp);
   }
   if (zoomOutBtn) {
     zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
+    zoomOutBtn.setAttribute("data-help", texts[lang].zoomOutHelp);
   }
   if (diagramHint) {
     diagramHint.textContent = texts[lang].diagramMoveHint;
@@ -4717,11 +4762,15 @@ if (toggleDeviceBtn) {
     if (deviceManagerSection.classList.contains('hidden')) {
       deviceManagerSection.classList.remove('hidden');
       toggleDeviceBtn.textContent = texts[currentLang].hideDeviceManager;
+      toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
+      toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
       refreshDeviceLists(); // Refresh lists when shown
       updateCalculations(); // Ensure calculations are up to date
     } else {
       deviceManagerSection.classList.add('hidden');
       toggleDeviceBtn.textContent = texts[currentLang].toggleDeviceManager;
+      toggleDeviceBtn.setAttribute('title', texts[currentLang].toggleDeviceManager);
+      toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
     }
   });
 }
