@@ -5735,16 +5735,11 @@ function generatePrintableOverview() {
                 const downloadBtn = document.getElementById('downloadDiagram');
                 if (downloadBtn) {
                     downloadBtn.addEventListener('click', (e) => {
-                        const svgEl = document.querySelector('#diagramArea svg');
-                        if (!svgEl) return;
-                        const clone = svgEl.cloneNode(true);
-                        const labels = svgEl.querySelectorAll('.edge-label');
-                        const cloneLabels = clone.querySelectorAll('.edge-label');
-                        labels.forEach((lbl, idx) => {
-                            if (cloneLabels[idx]) cloneLabels[idx].textContent = lbl.textContent;
-                        });
-                        const serializer = new XMLSerializer();
-                        const source = serializer.serializeToString(clone);
+                        let source = '';
+                        if (window.opener && typeof window.opener.exportDiagramSvg === 'function') {
+                            source = window.opener.exportDiagramSvg();
+                        }
+                        if (!source) return;
 
                         navigator.clipboard.writeText(source).catch(() => {});
 
@@ -5931,7 +5926,7 @@ function exportDiagramSvg() {
   const labels = svgEl.querySelectorAll('.edge-label');
   const cloneLabels = clone.querySelectorAll('.edge-label');
   labels.forEach((lbl, idx) => {
-    if (cloneLabels[idx]) cloneLabels[idx].textContent = lbl.textContent;
+    if (cloneLabels[idx]) cloneLabels[idx].innerHTML = lbl.innerHTML;
   });
   const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
   style.textContent = getDiagramCss();
