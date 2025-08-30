@@ -5942,6 +5942,7 @@ function generatePrintableOverview() {
                 <button id="darkModeToggle" title="${t.darkModeLabel}" aria-label="${t.darkModeLabel}">🌙</button>
                 <button id="pinkModeToggle" title="${t.pinkModeLabel}" aria-label="${t.pinkModeLabel}">🐴</button>
             </div>
+            <button onclick="window.close()" class="back-btn">${t.backToAppBtn}</button>
             <button onclick="window.print()" class="print-btn">Print</button>
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
