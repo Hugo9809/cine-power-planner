@@ -47,6 +47,7 @@ const texts = {
     totalCurrent336Label: "Total Current (at 33.6V):",
     totalCurrent216Label: "Total Current (at 21.6V):",
     batteryLifeLabel: "Runtime (estimated):",
+    batteryCountLabel: "Batteries for 10h shoot (incl. spare):",
 
     methodPinsOnly: "pins only!",
     methodPinsAndDTap: "both pins and D-Tap",
@@ -255,6 +256,7 @@ const texts = {
     totalCurrent336Label: "Corrente totale (a 33,6 V):",
     totalCurrent216Label: "Corrente totale (a 21,6 V):",
     batteryLifeLabel: "Autonomia (stimata):",
+    batteryCountLabel: "Batterie per ripresa di 10h (incl. scorta):",
     methodPinsOnly: "solo pin!",
     methodPinsAndDTap: "sia pin che D-Tap",
     methodInfinite: "infinito",
@@ -453,6 +455,7 @@ const texts = {
     totalCurrent336Label: "Corriente Total (a 33.6V):",
     totalCurrent216Label: "Corriente Total (a 21.6V):",
     batteryLifeLabel: "Autonomía (estimada):",
+    batteryCountLabel: "Baterías para rodaje de 10h (incl. repuesto):",
 
     methodPinsOnly: "solo pines!",
     methodPinsAndDTap: "pines y D-Tap",
@@ -664,6 +667,7 @@ const texts = {
     totalCurrent336Label: "Courant Total (à 33,6V):",
     totalCurrent216Label: "Courant Total (à 21,6V):",
     batteryLifeLabel: "Autonomie (estimée):",
+    batteryCountLabel: "Batteries pour tournage de 10h (incl. de rechange):",
 
     methodPinsOnly: "broches seulement!",
     methodPinsAndDTap: "broches et D-Tap",
@@ -875,6 +879,7 @@ const texts = {
     totalCurrent336Label: "Gesamtstrom (bei 33,6V):",
     totalCurrent216Label: "Gesamtstrom (bei 21,6V):",
     batteryLifeLabel: "Akkulaufzeit (geschätzt):",
+    batteryCountLabel: "Akkus für 10h Dreh (inkl. Reserve):",
 
     methodPinsOnly: "nur Pins!",
     methodPinsAndDTap: "Pins und D-Tap",
