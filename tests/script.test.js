@@ -1438,6 +1438,7 @@ describe('script.js functions', () => {
 
     hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    expect(document.body.style.cursor).toBe('help');
 
     helpButton.setAttribute('data-help', 'Open help dialog');
     helpButton.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, clientX: 10, clientY: 10 }));
@@ -1447,6 +1448,7 @@ describe('script.js functions', () => {
 
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
+    expect(document.body.style.cursor).toBe('');
   });
 
   test('hover help falls back to element text when no attributes', () => {
@@ -1458,6 +1460,7 @@ describe('script.js functions', () => {
 
     hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    expect(document.body.style.cursor).toBe('help');
 
     const dummy = document.createElement('button');
     dummy.textContent = 'Save setup';
@@ -1471,6 +1474,7 @@ describe('script.js functions', () => {
 
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
+    expect(document.body.style.cursor).toBe('');
   });
 
   test('generateConnectorSummary labels extras', () => {
