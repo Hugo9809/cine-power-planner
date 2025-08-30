@@ -28,6 +28,8 @@ const texts = {
     deleteSetupBtn: "Delete",
     saveSetupBtn: "Save",
     clearSetupBtn: "Clear Current Setup",
+    shareSetupBtn: "Share Setup Link",
+    shareSetupPrompt: "Copy this link to share your setup:",
 
     cameraLabel: "Camera:",
     monitorLabel: "Monitor:",
@@ -248,6 +250,8 @@ const texts = {
     deleteSetupBtn: "Eliminare",
     saveSetupBtn: "Salva",
     clearSetupBtn: "Cancella configurazione corrente",
+    shareSetupBtn: "Condividi link della configurazione",
+    shareSetupPrompt: "Copia questo link per condividere la configurazione:",
     cameraLabel: "Telecamera:",
     monitorLabel: "Monitor:",
     videoLabel: "Video wireless:",
@@ -452,6 +456,8 @@ const texts = {
     deleteSetupBtn: "Eliminar",
     saveSetupBtn: "Guardar",
     clearSetupBtn: "Borrar configuración actual",
+    shareSetupBtn: "Compartir enlace de configuración",
+    shareSetupPrompt: "Copia este enlace para compartir tu configuración:",
 
     cameraLabel: "Cámara:",
     monitorLabel: "Monitor:",
@@ -672,6 +678,8 @@ const texts = {
     deleteSetupBtn: "Supprimer",
     saveSetupBtn: "Enregistrer",
     clearSetupBtn: "Effacer la configuration actuelle",
+    shareSetupBtn: "Partager le lien de configuration",
+    shareSetupPrompt: "Copiez ce lien pour partager votre configuration :",
 
     cameraLabel: "Caméra:",
     monitorLabel: "Moniteur:",
@@ -892,6 +900,8 @@ const texts = {
     deleteSetupBtn: "Löschen",
     saveSetupBtn: "Speichern",
     clearSetupBtn: "Aktuelles Setup zurücksetzen",
+    shareSetupBtn: "Link zum Setup teilen",
+    shareSetupPrompt: "Diesen Link kopieren, um das Setup zu teilen:",
 
     cameraLabel: "Kamera:",
     monitorLabel: "Monitor:",
