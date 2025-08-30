@@ -5085,19 +5085,22 @@ generateOverviewBtn.addEventListener('click', () => {
 });
 
 shareSetupBtn.addEventListener('click', () => {
-    const currentSetup = {
-        camera: cameraSelect.value,
-        monitor: monitorSelect.value,
-        video: videoSelect.value,
-        motors: motorSelects.map(sel => sel.value),
-        controllers: controllerSelects.map(sel => sel.value),
-        distance: distanceSelect.value,
-        batteryPlate: batteryPlateSelect.value,
-        battery: batterySelect.value
-    };
-    const encoded = btoa(encodeURIComponent(JSON.stringify(currentSetup)));
-    const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
-    prompt(texts[currentLang].shareSetupPrompt, link);
+  const setupName = (setupNameInput && setupNameInput.value.trim()) ||
+    (setupSelect && setupSelect.value) || '';
+  const currentSetup = {
+    setupName,
+    camera: cameraSelect.value,
+    monitor: monitorSelect.value,
+    video: videoSelect.value,
+    motors: motorSelects.map(sel => sel.value),
+    controllers: controllerSelects.map(sel => sel.value),
+    distance: distanceSelect.value,
+    batteryPlate: batteryPlateSelect.value,
+    battery: batterySelect.value
+  };
+  const encoded = btoa(encodeURIComponent(JSON.stringify(currentSetup)));
+  const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
+  prompt(texts[currentLang].shareSetupPrompt, link);
 });
 
 // Open feedback dialog and handle submission
@@ -6073,6 +6076,7 @@ function applySharedSetupFromUrl() {
   if (!shared) return;
   try {
     const decoded = JSON.parse(decodeURIComponent(atob(shared)));
+    if (setupNameInput && decoded.setupName) setupNameInput.value = decoded.setupName;
     if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
     updateBatteryPlateVisibility();
     if (batteryPlateSelect && decoded.batteryPlate) batteryPlateSelect.value = decoded.batteryPlate;
@@ -6344,6 +6348,7 @@ if (typeof module !== "undefined" && module.exports) {
     getRecordingMedia,
     applyPinkMode,
     generatePrintableOverview,
+    applySharedSetupFromUrl,
     updateBatteryPlateVisibility,
     updateBatteryOptions,
     renderSetupDiagram,

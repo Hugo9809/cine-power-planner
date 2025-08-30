@@ -1183,6 +1183,29 @@ describe('script.js functions', () => {
     expect(svg).toContain('edge-label');
     expect(svg).toContain('HDMI');
   });
+
+  test('shareSetupBtn encodes setup name in link', () => {
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'My Setup';
+    global.prompt = jest.fn();
+    const btn = document.getElementById('shareSetupBtn');
+    btn.click();
+    expect(global.prompt).toHaveBeenCalled();
+    const link = global.prompt.mock.calls[0][1];
+    const encoded = new URL(link).searchParams.get('shared');
+    const decoded = JSON.parse(decodeURIComponent(Buffer.from(encoded, 'base64').toString('utf-8')));
+    expect(decoded.setupName).toBe('My Setup');
+  });
+
+  test('applySharedSetupFromUrl restores setup name', () => {
+    const data = { setupName: 'Shared Setup' };
+    const encoded = Buffer.from(encodeURIComponent(JSON.stringify(data))).toString('base64');
+    window.history.pushState({}, '', `/?shared=${encoded}`);
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = '';
+    script.applySharedSetupFromUrl();
+    expect(nameInput.value).toBe('Shared Setup');
+  });
 });
 
 describe('monitor wireless metadata', () => {
