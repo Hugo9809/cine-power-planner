@@ -8,6 +8,7 @@ const {
   deleteSetup,
   loadSessionState,
   saveSessionState,
+  loadFeedback,
   saveFeedback,
   clearAllData,
 } = require('../storage');
@@ -144,6 +145,31 @@ describe('session state storage', () => {
 
   test('loadSessionState returns null when none', () => {
     expect(loadSessionState()).toBeNull();
+  });
+});
+
+describe('feedback storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('saveFeedback stores JSON', () => {
+    const fb = { note: 'hi' };
+    saveFeedback(fb);
+    expect(localStorage.getItem(FEEDBACK_KEY)).toBe(JSON.stringify(fb));
+  });
+
+  test('loadFeedback returns parsed object when present', () => {
+    const fb = { note: 'hi' };
+    localStorage.setItem(FEEDBACK_KEY, JSON.stringify(fb));
+    expect(loadFeedback()).toEqual(fb);
+  });
+
+  test('loadFeedback returns empty object for non-object data', () => {
+    localStorage.setItem(FEEDBACK_KEY, JSON.stringify(5));
+    expect(loadFeedback()).toEqual({});
+    localStorage.setItem(FEEDBACK_KEY, JSON.stringify([ { runtime: '1h' } ]));
+    expect(loadFeedback()).toEqual({});
   });
 });
 

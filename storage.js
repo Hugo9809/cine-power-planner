@@ -125,11 +125,16 @@ function deleteSetup(name) {
 function loadFeedback() {
   try {
     const data = localStorage.getItem(FEEDBACK_STORAGE_KEY);
-    return data ? JSON.parse(data) : {};
+    if (data) {
+      const parsed = JSON.parse(data);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
   } catch (e) {
     console.error("Error loading feedback from localStorage:", e);
-    return {};
   }
+  return {};
 }
 
 function saveFeedback(feedback) {
