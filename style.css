@@ -188,10 +188,34 @@ p {
   padding: 20px;
   width: min(90vw, 700px);
   background: #fff;
+  color: #000;
 }
 
 #feedbackDialog::backdrop {
   background: rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode #feedbackDialog,
+body:not(.light-mode) #feedbackDialog {
+  background: #1e1e1e;
+  color: #f0f0f0;
+}
+
+#feedbackForm fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 10px 20px;
+}
+
+#feedbackForm fieldset legend {
+  grid-column: 1 / -1;
+}
+
+#feedbackForm .button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 #helpDialog[hidden] {
