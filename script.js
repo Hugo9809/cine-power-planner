@@ -3265,19 +3265,20 @@ function renderFeedbackTable(currentKey) {
   }
 
   const columns = [
-    { key: 'username', label: 'Username' },
+    { key: 'username', label: 'User' },
     { key: 'date', label: 'Date' },
     { key: 'location', label: 'Location' },
     { key: 'cameraWifi', label: 'WIFI' },
     { key: 'lensMount', label: 'Lens Mount' },
-    { key: 'resolution', label: 'Resolution' },
+    { key: 'resolution', label: 'Res' },
     { key: 'codec', label: 'Codec' },
-    { key: 'framerate', label: 'Framerate' },
+    { key: 'framerate', label: 'FPS' },
     { key: 'firmware', label: 'Firmware' },
     { key: 'batteryAge', label: 'Battery Age' },
     { key: 'monitorBrightness', label: 'Monitor Brightness' },
-    { key: 'temperature', label: 'temperature' },
+    { key: 'temperature', label: 'temp' },
     { key: 'humidity', label: 'humidity' },
+    { key: 'charging', label: 'Charging' },
     { key: 'runtime', label: 'runtime' },
     { key: 'batteriesPerDay', label: 'batteries a day' }
   ];
@@ -5133,6 +5134,7 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
       distance: document.getElementById('fbDistance').value.trim(),
       temperature: document.getElementById('fbTemperature').value.trim(),
       humidity: document.getElementById('fbHumidity').value.trim(),
+      charging: document.getElementById('fbCharging').value.trim(),
       runtime: document.getElementById('fbRuntime').value.trim(),
       batteriesPerDay: document.getElementById('fbBatteriesPerDay').value.trim()
     };
