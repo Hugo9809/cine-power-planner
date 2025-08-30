@@ -556,15 +556,30 @@ describe('script.js functions', () => {
     ]);
   });
 
-  test('applyPinkMode toggles class', () => {
+  test('applyDarkMode toggles class and aria-pressed', () => {
+    const { applyDarkMode } = script;
+    const toggle = document.getElementById('darkModeToggle');
+    applyDarkMode(true);
+    expect(document.body.classList.contains('dark-mode')).toBe(true);
+    expect(toggle.textContent).toBe('☀️');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    applyDarkMode(false);
+    expect(document.body.classList.contains('dark-mode')).toBe(false);
+    expect(toggle.textContent).toBe('🌙');
+    expect(toggle.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  test('applyPinkMode toggles class and aria-pressed', () => {
     const { applyPinkMode } = script;
     const toggle = document.getElementById('pinkModeToggle');
     applyPinkMode(true);
     expect(document.body.classList.contains('pink-mode')).toBe(true);
     expect(toggle.textContent).toBe('🦄');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
     applyPinkMode(false);
     expect(document.body.classList.contains('pink-mode')).toBe(false);
     expect(toggle.textContent).toBe('🐴');
+    expect(toggle.getAttribute('aria-pressed')).toBe('false');
   });
 
   test('generatePrintableOverview includes diagram and device blocks', () => {

@@ -6273,11 +6273,17 @@ function applyDarkMode(enabled) {
   if (enabled) {
     document.body.classList.add("dark-mode");
     document.body.classList.remove("light-mode");
-    if (darkModeToggle) darkModeToggle.textContent = "☀️";
+    if (darkModeToggle) {
+      darkModeToggle.textContent = "☀️";
+      darkModeToggle.setAttribute("aria-pressed", "true");
+    }
   } else {
     document.body.classList.remove("dark-mode");
     document.body.classList.add("light-mode");
-    if (darkModeToggle) darkModeToggle.textContent = "🌙";
+    if (darkModeToggle) {
+      darkModeToggle.textContent = "🌙";
+      darkModeToggle.setAttribute("aria-pressed", "false");
+    }
   }
 }
 
@@ -6310,10 +6316,16 @@ if (darkModeToggle) {
 function applyPinkMode(enabled) {
   if (enabled) {
     document.body.classList.add("pink-mode");
-    if (pinkModeToggle) pinkModeToggle.textContent = "🦄";
+    if (pinkModeToggle) {
+      pinkModeToggle.textContent = "🦄";
+      pinkModeToggle.setAttribute("aria-pressed", "true");
+    }
   } else {
     document.body.classList.remove("pink-mode");
-    if (pinkModeToggle) pinkModeToggle.textContent = "🐴";
+    if (pinkModeToggle) {
+      pinkModeToggle.textContent = "🐴";
+      pinkModeToggle.setAttribute("aria-pressed", "false");
+    }
   }
 }
 
@@ -6604,6 +6616,7 @@ if (typeof module !== "undefined" && module.exports) {
     getBatteryPlates,
     setRecordingMedia,
     getRecordingMedia,
+    applyDarkMode,
     applyPinkMode,
     generatePrintableOverview,
     applySharedSetupFromUrl,
