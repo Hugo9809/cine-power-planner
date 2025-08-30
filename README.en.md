@@ -67,8 +67,17 @@ You can switch the language in the top right corner. The choice is remembered fo
 
 ### 🧮 Runtime data weighting
 - User-submitted battery runtimes refine the runtime estimate.
-- Each entry is adjusted for temperature effects.
-- Camera resolution, frame rate, codec and Wi‑Fi, plus monitor brightness, determine how strongly an entry is weighted.
+- Each entry is adjusted for temperature:
+  - ×2 at ≤−20 °C
+  - ×1.6 at ≤−10 °C
+  - ×1.25 at ≤0 °C
+- Camera settings influence the weight:
+  - Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled to 1080p
+  - Frame rate scales linearly from 24 fps (e.g. 48 fps = ×2)
+  - Wi‑Fi enabled adds 10 %
+  - Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7
+  - Monitor entries below the specified brightness are weighted by their brightness ratio
+- The final weight reflects each device's share of the total power draw, so matching setups count more.
 - The weighted average is used once at least three entries are available.
 
 ### 🔍 Search & Filtering
