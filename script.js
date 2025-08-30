@@ -802,6 +802,7 @@ if (typeof texts === 'undefined') {
 
 // Determine initial language (default English)
 let currentLang = "en";
+let lastRuntimeHours = null;
 try {
   const savedLang = localStorage.getItem("language");
   const supported = ["en", "de", "es", "fr", "it"];
@@ -864,8 +865,7 @@ function setLanguage(lang) {
   document.getElementById("batteryCountLabel").textContent = texts[lang].batteryCountLabel;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
-  const tempNote = document.getElementById("temperatureNote");
-  if (tempNote) tempNote.innerHTML = texts[lang].temperatureNote;
+  renderTemperatureNote(lastRuntimeHours);
   // Device manager category headings
   document.getElementById("category_cameras").textContent = texts[lang].category_cameras;
   document.getElementById("category_monitors").textContent = texts[lang].category_monitors;
@@ -2855,6 +2855,33 @@ motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
 controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
 
 // Calculation function to update results and warnings
+function renderTemperatureNote(baseHours) {
+  const container = document.getElementById("temperatureNote");
+  if (!container) return;
+  const heading = texts[currentLang].temperatureNoteHeading;
+  let html = `<p>${heading}</p>`;
+  if (!baseHours || !isFinite(baseHours)) {
+    container.innerHTML = html;
+    return;
+  }
+  const scenarios = [
+    { t: "+40 \u00B0C", factor: 1.0, color: "#d9534f" },
+    { t: "+25 \u00B0C", factor: 1.0, color: "#5cb85c" },
+    { t: "0 \u00B0C", factor: 0.8, color: "#f0ad4e" },
+    { t: "\u201310 \u00B0C", factor: 0.625, color: "#5bc0de" },
+    { t: "\u201320 \u00B0C", factor: 0.5, color: "#0275d8" }
+  ];
+  html += `<table><tr><th>${texts[currentLang].temperatureLabel}</th><th>${texts[currentLang].runtimeLabel}</th><th>${texts[currentLang].batteryCountTempLabel}</th></tr>`;
+  scenarios.forEach(s => {
+    const runtime = baseHours * s.factor;
+    const batteries = Math.ceil(10 / runtime + 1);
+    html += `<tr><td style="color:${s.color}">${s.t}</td><td>${runtime.toFixed(2)}</td><td>${batteries}</td></tr>`;
+  });
+  html += "</table>";
+  container.innerHTML = html;
+}
+
+// Calculation function to update results and warnings
 function updateCalculations() {
   // Gather selected values
   const camera      = cameraSelect.value;
@@ -2962,6 +2989,8 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   pinWarnElem.style.color = "";
   dtapWarnElem.textContent = "";
   dtapWarnElem.style.color = "";
+  lastRuntimeHours = null;
+  renderTemperatureNote(null);
 } else {
     const battData = devices.batteries[battery];
     const capacityWh = battData.capacity;
@@ -2977,6 +3006,8 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       hours = capacityWh / totalWatt;
       batteryLifeElem.textContent = hours.toFixed(2);
     }
+    lastRuntimeHours = hours;
+    renderTemperatureNote(hours);
     // Round up total batteries (including one spare) to the next full number
     const batteriesNeeded = Math.ceil(10 / hours + 1);
     batteryCountElem.textContent = batteriesNeeded.toString();

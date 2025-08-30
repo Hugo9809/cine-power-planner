@@ -178,7 +178,9 @@ const texts = {
     batteryTableLabel: "Battery",
     runtimeLabel: "Estimated Runtime (h)",
     batteryLifeUnit: "hrs",
-    temperatureNote: "Temperature impact on runtime:<br>+25 °C (room temp): ~2 h runtime (100%)<br>0 °C: ~1.6 h (80%)<br>–10 °C: ~1.2–1.3 h (60–65%)<br>–20 °C: ~1 h or less (50% or lower, plus voltage sag issues)<br>+40 °C: ~2 h runtime, but battery ages much faster (loses total Wh capacity over weeks/months)",
+    temperatureNoteHeading: "Temperature impact on runtime:",
+    temperatureLabel: "Temperature",
+    batteryCountTempLabel: "Batteries needed",
 
     noBatterySupports: "No battery can supply this load.",
 
@@ -381,7 +383,9 @@ const texts = {
     batteryTableLabel: "Batteria",
     runtimeLabel: "Autonomia stimata (h)",
     batteryLifeUnit: "ore",
-    temperatureNote: "Impatto della temperatura sull'autonomia:<br>+25 °C (temperatura ambiente): ~2 h di autonomia (100%)<br>0 °C: ~1,6 h (80%)<br>–10 °C: ~1,2–1,3 h (60–65%)<br>–20 °C: ~1 h o meno (50% o meno, oltre a cadute di tensione)<br>+40 °C: ~2 h di autonomia, ma la batteria invecchia molto più rapidamente (perde capacità in Wh nel giro di settimane/mesi)",
+    temperatureNoteHeading: "Impatto della temperatura sull'autonomia:",
+    temperatureLabel: "Temperatura",
+    batteryCountTempLabel: "Batterie necessarie",
     noBatterySupports: "Nessuna batteria può fornire questo carico.",
     alertSetupName: "Immettere un nome per l'installazione.",
     alertSetupSaved: "Setup \"{name}\" salvato.",
@@ -592,7 +596,9 @@ const texts = {
     batteryTableLabel: "Batería",
     runtimeLabel: "Autonomía Estimada (h)",
     batteryLifeUnit: "h",
-    temperatureNote: "Efecto de la temperatura en la autonomía:<br>+25 °C (temperatura ambiente): ~2 h de autonomía (100%)<br>0 °C: ~1,6 h (80%)<br>–10 °C: ~1,2–1,3 h (60–65%)<br>–20 °C: ~1 h o menos (50 % o menos, además problemas de caída de tensión)<br>+40 °C: ~2 h de autonomía, pero la batería envejece mucho más rápido (pierde capacidad total en Wh en semanas/meses)",
+    temperatureNoteHeading: "Efecto de la temperatura en la autonomía:",
+    temperatureLabel: "Temperatura",
+    batteryCountTempLabel: "Baterías necesarias",
 
     noBatterySupports: "Ninguna batería puede suministrar esta carga.",
 
@@ -807,7 +813,9 @@ const texts = {
     batteryTableLabel: "Batterie",
     runtimeLabel: "Autonomie Estimée (h)",
     batteryLifeUnit: "h",
-    temperatureNote: "Impact de la température sur l’autonomie :<br>+25 °C (température ambiante) : ~2 h d’autonomie (100 %)<br>0 °C : ~1,6 h (80 %)<br>–10 °C : ~1,2–1,3 h (60–65 %)<br>–20 °C : ~1 h ou moins (50 % ou moins, avec chute de tension)<br>+40 °C : ~2 h d’autonomie, mais la batterie vieillit beaucoup plus vite (perd de la capacité totale en Wh en quelques semaines/mois)",
+    temperatureNoteHeading: "Impact de la température sur l’autonomie :",
+    temperatureLabel: "Température",
+    batteryCountTempLabel: "Batteries nécessaires",
 
     noBatterySupports: "Aucune batterie ne peut fournir cette charge.",
 
@@ -1022,7 +1030,9 @@ const texts = {
     batteryTableLabel: "Akku",
     runtimeLabel: "Geschätzte Laufzeit (h)",
     batteryLifeUnit: "Std.",
-    temperatureNote: "Temperatureinfluss auf die Laufzeit:<br>+25 °C (Raumtemperatur): ~2 h Laufzeit (100 %)<br>0 °C: ~1,6 h (80 %)<br>–10 °C: ~1,2–1,3 h (60–65 %)<br>–20 °C: ~1 h oder weniger (50 % oder weniger, dazu Spannungsabfall)<br>+40 °C: ~2 h Laufzeit, aber der Akku altert viel schneller (verliert Wh-Kapazität innerhalb von Wochen/Monaten)",
+    temperatureNoteHeading: "Temperatureinfluss auf die Laufzeit:",
+    temperatureLabel: "Temperatur",
+    batteryCountTempLabel: "Benötigte Akkus",
 
     noBatterySupports: "Kein Akku kann diese Last liefern.",
 
