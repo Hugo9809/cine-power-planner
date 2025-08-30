@@ -95,6 +95,13 @@ describe('utility function tests', () => {
     expect(normalizePowerPortType('battery slot / usb type-c®')).toEqual(['Battery Slot', 'USB-C']);
   });
 
+  test('normalizeVideoType recognizes DisplayPort variants', () => {
+    const { normalizeVideoType } = utils;
+    expect(normalizeVideoType('DisplayPort')).toBe('DisplayPort');
+    expect(normalizeVideoType('display port')).toBe('DisplayPort');
+    expect(normalizeVideoType('DP')).toBe('DisplayPort');
+  });
+
   test('normalizeViewfinderType handles case-insensitive mappings', () => {
     const { normalizeViewfinderType } = utils;
     expect(normalizeViewfinderType('lcd touchscreen')).toBe('LCD touchscreen');
