@@ -1,7 +1,12 @@
 // script.js – Main logic for the Camera Power Planner app
 /* global texts, categoryNames, loadSessionState, saveSessionState */
 
-let LZString;
+// Use `var` here instead of `let` because `index.html` loads the lz-string
+// library from a CDN which defines a global `LZString` variable. Using `let`
+// would attempt to create a new lexical binding and throw a SyntaxError in
+// browsers that already have the global property. `var` simply reuses the
+// existing global variable if present.
+var LZString;
 try {
   LZString = require('lz-string');
 } catch {
