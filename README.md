@@ -67,6 +67,19 @@ User-submitted battery runtimes are combined using a weighted average to better 
    ```
    The `npm test` command runs ESLint, data consistency checks and Jest tests.
 
+## Install as an App
+
+Camera Power Planner is a Progressive Web App and can be installed for quick
+access:
+
+1. Open `index.html` in a supported browser.
+2. Use the browser's **Install** or **Add to Home Screen** option.
+   - **Chrome/Edge (desktop):** Click the install icon in the address bar.
+   - **Android:** Open the browser menu and choose *Add to Home screen*.
+   - **iOS Safari:** Tap the share icon and select *Add to Home Screen*.
+3. Launch the app from your applications list. The installed version works
+   offline and updates automatically.
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request on GitHub.

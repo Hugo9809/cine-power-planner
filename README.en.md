@@ -132,6 +132,16 @@ You can switch the language in the top right corner. The choice is remembered fo
 6. **Manage Device List:** Click “Edit Device Data…” to open the editor, modify devices or revert to the defaults
 7. **Submit Runtime Data (optional):** Use “Submit User Runtime Feedback” to share your results and improve estimates
 
+## 📱 Install as an App
+
+The planner is a Progressive Web App and can be installed directly from your browser:
+
+- **Chrome/Edge (desktop):** Click the install icon in the address bar.
+- **Android:** Open the browser menu and choose *Add to Home Screen*.
+- **iOS/iPadOS Safari:** Tap the *Share* button and select *Add to Home Screen*.
+
+Once installed, the app launches from your home screen, works offline and updates itself automatically.
+
 ---
 
 ## 🗂️ File Structure
