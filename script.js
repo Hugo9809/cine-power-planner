@@ -3321,8 +3321,6 @@ function deleteFeedbackEntry(key, index) {
 function renderFeedbackTable(currentKey) {
   const container = document.getElementById('feedbackTableContainer');
   const table = document.getElementById('userFeedbackTable');
-  const dashboard = document.getElementById('weightingDashboard');
-  const barsContainer = document.getElementById('weightingBars');
   const data = loadFeedbackSafe();
   const entries = data[currentKey] || [];
 
@@ -3332,8 +3330,6 @@ function renderFeedbackTable(currentKey) {
       table.classList.add('hidden');
     }
     if (container) container.classList.add('hidden');
-    if (dashboard) dashboard.classList.add('hidden');
-    if (barsContainer) barsContainer.innerHTML = '';
     return null;
   }
 
@@ -3342,7 +3338,6 @@ function renderFeedbackTable(currentKey) {
     { key: 'date', label: 'Date' },
     { key: 'location', label: 'Location' },
     { key: 'cameraWifi', label: 'WIFI' },
-    { key: 'lensMount', label: 'Lens Mount' },
     { key: 'resolution', label: 'Res' },
     { key: 'codec', label: 'Codec' },
     { key: 'framerate', label: 'FPS' },
@@ -3356,6 +3351,7 @@ function renderFeedbackTable(currentKey) {
     { key: 'batteriesPerDay', label: 'batteries a day' }
   ];
 
+  const colSpan = columns.length + 1;
   let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '<th></th></tr>';
   entries.forEach((entry, index) => {
     html += '<tr>';
@@ -3365,6 +3361,7 @@ function renderFeedbackTable(currentKey) {
     html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
     html += '</tr>';
   });
+  html += `<tr id="weightingRow" class="hidden"><td colspan="${colSpan}"><div id="weightingDashboard"><h3 id="weightingHeading">Runtime Weighting Breakdown</h3><div id="weightingBars"></div></div></td></tr>`;
   table.innerHTML = html;
   table.classList.remove('hidden');
   if (container) container.classList.remove('hidden');
@@ -3375,6 +3372,8 @@ function renderFeedbackTable(currentKey) {
       deleteFeedbackEntry(key, idx);
     });
   });
+  const barsContainer = document.getElementById('weightingBars');
+  const weightingRow = document.getElementById('weightingRow');
 
   // Helper functions for weighting factors
   const parseResolution = str => {
@@ -3495,7 +3494,7 @@ function renderFeedbackTable(currentKey) {
     });
     count++;
   });
-  if (barsContainer && dashboard) {
+  if (barsContainer && weightingRow) {
     // Sort entries by weight so the most significant runtimes appear first
     breakdown.sort((a, b) => b.weight - a.weight);
     const maxWeight = breakdown.length ? breakdown[0].weight : 0;
@@ -3517,7 +3516,8 @@ function renderFeedbackTable(currentKey) {
         `<span class="weightingPercent">${share.toFixed(1)}%</span></div>`;
     });
     barsContainer.innerHTML = chartHtml;
-    dashboard.classList.remove('hidden');
+    if (breakdown.length) weightingRow.classList.remove('hidden');
+    else weightingRow.classList.add('hidden');
   }
   if (count >= 3 && weightTotal > 0) {
     return { runtime: weightedSum / weightTotal, count };
