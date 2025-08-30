@@ -39,20 +39,20 @@ function storeSession(state) {
   }
 }
 
-const VIDEO_TYPE_PATTERNS = [
-  { needles: ['12g'], value: '12G-SDI' },
-  { needles: ['6g'], value: '6G-SDI' },
-  { needles: ['3g'], value: '3G-SDI' },
-  { needles: ['hd-sdi'], value: '3G-SDI' },
-  { needles: ['mini', 'bnc'], value: 'Mini BNC' },
-  { needles: ['micro', 'hdmi'], value: 'Micro HDMI' },
-  { needles: ['mini', 'hdmi'], value: 'Mini HDMI' },
-  { needles: ['hdmi'], value: 'HDMI' }
-];
 function normalizeVideoType(type) {
   if (!type) return '';
+  const patterns = [
+    { needles: ['12g'], value: '12G-SDI' },
+    { needles: ['6g'], value: '6G-SDI' },
+    { needles: ['3g'], value: '3G-SDI' },
+    { needles: ['hd-sdi'], value: '3G-SDI' },
+    { needles: ['mini', 'bnc'], value: 'Mini BNC' },
+    { needles: ['micro', 'hdmi'], value: 'Micro HDMI' },
+    { needles: ['mini', 'hdmi'], value: 'Mini HDMI' },
+    { needles: ['hdmi'], value: 'HDMI' }
+  ];
   const t = String(type).toLowerCase();
-  for (const { needles, value } of VIDEO_TYPE_PATTERNS) {
+  for (const { needles, value } of patterns) {
     if (needles.every(n => t.includes(n))) return value;
   }
   return '';
