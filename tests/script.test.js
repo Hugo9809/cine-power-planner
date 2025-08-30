@@ -1183,8 +1183,10 @@ describe('monitor wireless metadata', () => {
     expect(devices.monitors['SmallHD Ultra 7'].wirelessTx).toBe(false);
   });
 
-  test('Hollyland Mars M1 Enhanced retains wirelessTx flag', () => {
+  test('Hollyland Mars M1 Enhanced (RX/TX) retains wirelessTx flag', () => {
     const devices = require('../data.js');
-    expect(devices.monitors['Hollyland Mars M1 Enhanced'].wirelessTx).toBe(false);
+    expect(
+      devices.monitors['Hollyland Mars M1 Enhanced (RX/TX)'].wirelessTx,
+    ).toBe(false);
   });
 });
