@@ -731,100 +731,194 @@ button:disabled {
     font-weight: bold;
 }
 
+body.dark-mode {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3 {
+  color: #ffffff;
+}
+.dark-mode h2 {
+  border-bottom: 2px solid #ffffff;
+}
+body.dark-mode.pink-mode h1,
+body.dark-mode.pink-mode h2,
+body.dark-mode.pink-mode h3 {
+  color: var(--accent-color);
+}
+body.dark-mode.pink-mode h2 {
+  border-bottom: 2px solid var(--accent-color);
+}
+.dark-mode section,
+.dark-mode .device-category,
+.dark-mode #batteryComparison {
+  background-color: #1e1e1e;
+  border-color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+.dark-mode fieldset { border-color: #ffffff; }
+.dark-mode legend { color: #ffffff; }
+.dark-mode button,
+.dark-mode #langSelector select,
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea {
+  background-color: #333;
+  color: #f0f0f0;
+  border-color: #555;
+}
+.dark-mode select,
+.dark-mode input,
+.dark-mode textarea {
+  background-image: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.dark-mode #setupSelect,
+.dark-mode #setupName {
+  background-color: #333;
+  color: #f0f0f0;
+  border-color: #555;
+}
+.dark-mode button:hover { background-color: #444; }
+.dark-mode button:active { background-color: #555; }
+.dark-mode #batteryComparison th { background-color: #333; }
+.dark-mode .barContainer { background-color: #333; }
+.dark-mode .selectedBatteryRow { background-color: #003366; }
+.dark-mode .device-category h4 { color: #ffffff; border-bottom: 1px solid #ffffff; }
+.dark-mode #diagramHint { color: #ccc; }
+.dark-mode .diagram-popup {
+  background: rgba(51, 51, 51, 0.95);
+  color: #fff;
+  border-color: #888;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.dark-mode .connector-block { background-color: rgba(255,255,255,0.1); }
+.dark-mode .power-conn { background-color: rgba(244, 67, 54, 0.3); }
+.dark-mode .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
+.dark-mode .video-conn { background-color: rgba(33, 150, 243, 0.3); }
+.dark-mode .info-box,
+.dark-mode .tray-box { background-color: rgba(255,255,255,0.1); }
+.dark-mode #setupDiagram .node-box { fill: #333; stroke: none; }
+.dark-mode #setupDiagram .node-box.first-fiz { stroke: none; }
+.dark-mode #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
+.dark-mode #setupDiagram text { fill: #fff; }
+.dark-mode #setupDiagram line { stroke: #fff; }
+.dark-mode #setupDiagram path.edge-path { stroke: #fff; }
+.dark-mode #setupDiagram path.power { stroke: #ff6666; }
+.dark-mode #setupDiagram path.video { stroke: #7ec8ff; }
+.dark-mode #setupDiagram path.fiz { stroke: #6f6; }
+.dark-mode #setupDiagram .conn.red { fill: #ff6666; }
+.dark-mode #setupDiagram .conn.blue { fill: #7ec8ff; }
+.dark-mode #setupDiagram .conn.green { fill: #6f6; }
+.dark-mode #diagramLegend .power { background: #ff6666; }
+.dark-mode #diagramLegend .video { background: #7ec8ff; }
+.dark-mode #diagramLegend .fiz { background: #6f6; }
+.dark-mode #setupDiagram marker polygon { fill: #fff; }
+.dark-mode #setupDiagram .diagram-placeholder { color: #bbb; }
+.dark-mode .help-content {
+  background: #1e1e1e;
+  color: #f0f0f0;
+  border-color: #555;
+}
+body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
+
 @media (prefers-color-scheme: dark) {
-  body {
+  body:not(.light-mode) {
     background-color: #121212;
     color: #f0f0f0;
   }
-  h1,
-  h2,
-  h3 {
+  body:not(.light-mode) h1,
+  body:not(.light-mode) h2,
+  body:not(.light-mode) h3 {
     color: #ffffff;
   }
-  h2 {
+  body:not(.light-mode) h2 {
     border-bottom: 2px solid #ffffff;
   }
-  body.pink-mode h1,
-  body.pink-mode h2,
-  body.pink-mode h3 {
+  body:not(.light-mode).pink-mode h1,
+  body:not(.light-mode).pink-mode h2,
+  body:not(.light-mode).pink-mode h3 {
     color: var(--accent-color);
   }
-  body.pink-mode h2 {
+  body:not(.light-mode).pink-mode h2 {
     border-bottom: 2px solid var(--accent-color);
   }
-  section,
-  .device-category,
-  #batteryComparison {
+  body:not(.light-mode) section,
+  body:not(.light-mode) .device-category,
+  body:not(.light-mode) #batteryComparison {
     background-color: #1e1e1e;
     border-color: #333;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   }
-  fieldset { border-color: #ffffff; }
-  legend { color: #ffffff; }
-  button,
-  #langSelector select,
-  input,
-  select,
-  textarea {
+  body:not(.light-mode) fieldset { border-color: #ffffff; }
+  body:not(.light-mode) legend { color: #ffffff; }
+  body:not(.light-mode) button,
+  body:not(.light-mode) #langSelector select,
+  body:not(.light-mode) input,
+  body:not(.light-mode) select,
+  body:not(.light-mode) textarea {
     background-color: #333;
     color: #f0f0f0;
     border-color: #555;
   }
-  select,
-  input,
-  textarea {
+  body:not(.light-mode) select,
+  body:not(.light-mode) input,
+  body:not(.light-mode) textarea {
     background-image: none;
     -webkit-appearance: none;
     appearance: none;
   }
-  #setupSelect,
-  #setupName {
+  body:not(.light-mode) #setupSelect,
+  body:not(.light-mode) #setupName {
     background-color: #333;
     color: #f0f0f0;
     border-color: #555;
   }
-  button:hover { background-color: #444; }
-  button:active { background-color: #555; }
-  #batteryComparison th { background-color: #333; }
-  .barContainer { background-color: #333; }
-  .selectedBatteryRow { background-color: #003366; }
-  .device-category h4 { color: #ffffff; border-bottom: 1px solid #ffffff; }
-  #diagramHint { color: #ccc; }
-  .diagram-popup {
+  body:not(.light-mode) button:hover { background-color: #444; }
+  body:not(.light-mode) button:active { background-color: #555; }
+  body:not(.light-mode) #batteryComparison th { background-color: #333; }
+  body:not(.light-mode) .barContainer { background-color: #333; }
+  body:not(.light-mode) .selectedBatteryRow { background-color: #003366; }
+  body:not(.light-mode) .device-category h4 { color: #ffffff; border-bottom: 1px solid #ffffff; }
+  body:not(.light-mode) #diagramHint { color: #ccc; }
+  body:not(.light-mode) .diagram-popup {
     background: rgba(51, 51, 51, 0.95);
     color: #fff;
     border-color: #888;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   }
-  .connector-block { background-color: rgba(255,255,255,0.1); }
-  .power-conn { background-color: rgba(244, 67, 54, 0.3); }
-  .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
-  .video-conn { background-color: rgba(33, 150, 243, 0.3); }
-  .info-box,
-  .tray-box { background-color: rgba(255,255,255,0.1); }
-  #setupDiagram .node-box { fill: #333; stroke: none; }
-  #setupDiagram .node-box.first-fiz { stroke: none; }
-  #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
-  #setupDiagram text { fill: #fff; }
-  #setupDiagram line { stroke: #fff; }
-  #setupDiagram path.edge-path { stroke: #fff; }
-  #setupDiagram path.power { stroke: #ff6666; }
-  #setupDiagram path.video { stroke: #7ec8ff; }
-  #setupDiagram path.fiz { stroke: #6f6; }
-  #setupDiagram .conn.red { fill: #ff6666; }
-  #setupDiagram .conn.blue { fill: #7ec8ff; }
-  #setupDiagram .conn.green { fill: #6f6; }
-  #diagramLegend .power { background: #ff6666; }
-  #diagramLegend .video { background: #7ec8ff; }
-  #diagramLegend .fiz { background: #6f6; }
-  #setupDiagram marker polygon { fill: #fff; }
-  #setupDiagram .diagram-placeholder { color: #bbb; }
-  .help-content {
+  body:not(.light-mode) .connector-block { background-color: rgba(255,255,255,0.1); }
+  body:not(.light-mode) .power-conn { background-color: rgba(244, 67, 54, 0.3); }
+  body:not(.light-mode) .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
+  body:not(.light-mode) .video-conn { background-color: rgba(33, 150, 243, 0.3); }
+  body:not(.light-mode) .info-box,
+  body:not(.light-mode) .tray-box { background-color: rgba(255,255,255,0.1); }
+  body:not(.light-mode) #setupDiagram .node-box { fill: #333; stroke: none; }
+  body:not(.light-mode) #setupDiagram .node-box.first-fiz { stroke: none; }
+  body:not(.light-mode) #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
+  body:not(.light-mode) #setupDiagram text { fill: #fff; }
+  body:not(.light-mode) #setupDiagram line { stroke: #fff; }
+  body:not(.light-mode) #setupDiagram path.edge-path { stroke: #fff; }
+  body:not(.light-mode) #setupDiagram path.power { stroke: #ff6666; }
+  body:not(.light-mode) #setupDiagram path.video { stroke: #7ec8ff; }
+  body:not(.light-mode) #setupDiagram path.fiz { stroke: #6f6; }
+  body:not(.light-mode) #setupDiagram .conn.red { fill: #ff6666; }
+  body:not(.light-mode) #setupDiagram .conn.blue { fill: #7ec8ff; }
+  body:not(.light-mode) #setupDiagram .conn.green { fill: #6f6; }
+  body:not(.light-mode) #diagramLegend .power { background: #ff6666; }
+  body:not(.light-mode) #diagramLegend .video { background: #7ec8ff; }
+  body:not(.light-mode) #diagramLegend .fiz { background: #6f6; }
+  body:not(.light-mode) #setupDiagram marker polygon { fill: #fff; }
+  body:not(.light-mode) #setupDiagram .diagram-placeholder { color: #bbb; }
+  body:not(.light-mode) .help-content {
     background: #1e1e1e;
     color: #f0f0f0;
     border-color: #555;
   }
-  body.pink-mode .help-content { border-color: var(--accent-color); }
+  body:not(.light-mode).pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 /* Responsive layout adjustments */

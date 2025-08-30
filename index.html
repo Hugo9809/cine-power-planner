@@ -24,6 +24,7 @@
       <option value="fr">Français</option>
       <option value="it">Italiano</option>
     </select>
+    <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
     <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode">🐴</button>
     <button id="helpButton" aria-haspopup="dialog" aria-controls="helpDialog" title="Help">?</button>
   </div>
@@ -501,7 +502,7 @@
             <li>Visualize power and video connections with interactive diagrams.</li>
             <li>Compare battery runtimes and check against safe output limits.</li>
             <li>Customize the device database with your own gear.</li>
-            <li>Switch languages, enjoy a playful pink theme and work fully offline. Dark mode follows your system preference.</li>
+            <li>Switch languages, toggle dark or playful pink themes and work fully offline. Theme settings persist.</li>
           </ul>
         </section>
         <section data-help-section id="gettingStarted">
@@ -573,6 +574,13 @@
           <ul>
             <li>Every dropdown and list can be filtered via its search box.</li>
             <li>The help dialog itself is searchable using the field at the top.</li>
+          </ul>
+        </section>
+        <section data-help-section id="darkModeHelp">
+          <h3><span class="help-icon" aria-hidden="true">🌓</span>Dark Mode</h3>
+          <ul>
+            <li>Click the moon button to toggle dark mode.</li>
+            <li>The setting persists between visits.</li>
           </ul>
         </section>
         <section data-help-section id="pinkModeHelp">
