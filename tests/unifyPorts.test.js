@@ -2,7 +2,8 @@ const {
   normalizeMonitor,
   parsePowerInput,
   normalizeVideoDevice,
-  cleanVoltageRange
+  cleanVoltageRange,
+  normalizeFiz
 } = require('../unifyPorts.js');
 
 describe('cleanVoltageRange', () => {
@@ -44,5 +45,21 @@ describe('normalizeVideoDevice', () => {
     normalizeVideoDevice(dev);
     expect(dev.power.input[0].voltageRange).toBe('5-16');
     expect(dev.power.input[1].voltageRange).toBe('14');
+  });
+});
+
+describe('normalizeFiz', () => {
+  it('cleans voltageRange for array power inputs', () => {
+    const dev = {
+      power: {
+        input: [
+          { type: 'LEMO', voltageRange: 'DC 5-16V' },
+          { type: 'D-Tap', voltageRange: '11 - 17V DC' }
+        ]
+      }
+    };
+    normalizeFiz(dev);
+    expect(dev.power.input[0].voltageRange).toBe('5-16');
+    expect(dev.power.input[1].voltageRange).toBe('11-17');
   });
 });
