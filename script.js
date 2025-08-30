@@ -5044,7 +5044,11 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     document.getElementById('fbMonitor').value = monitorSelect.value || '';
     document.getElementById('fbControllers').value = ctrlVals.join(', ');
     document.getElementById('fbMotors').value = motVals.join(', ');
-    document.getElementById('fbDistance').value = distanceSelect.value || '';
+    const fbDistance = document.getElementById('fbDistance');
+    if (fbDistance && distanceSelect) {
+      fbDistance.innerHTML = distanceSelect.innerHTML;
+      fbDistance.value = distanceSelect.value || '';
+    }
     feedbackDialog.showModal();
   });
 
