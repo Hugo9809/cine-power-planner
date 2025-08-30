@@ -6007,28 +6007,8 @@ function generatePrintableOverview() {
     const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
 
     const overviewHtml = `
-        <!DOCTYPE html>
-        <html lang="${currentLang}">
-        <head>
-            <meta charset="UTF-8">
-            <title>${t.overviewTitle} - ${safeSetupName}</title>
-            <link rel="stylesheet" href="style.css">
-            <link rel="stylesheet" href="overview.css">
-            <link rel="stylesheet" href="overview-print.css" media="print">
-        </head>
-        <body>
-            <div id="langSelector">
-                <select id="languageSelect">
-                    <option value="en" ${currentLang === 'en' ? 'selected' : ''}>English</option>
-                    <option value="de" ${currentLang === 'de' ? 'selected' : ''}>Deutsch</option>
-                    <option value="es" ${currentLang === 'es' ? 'selected' : ''}>Español</option>
-                    <option value="fr" ${currentLang === 'fr' ? 'selected' : ''}>Français</option>
-                    <option value="it" ${currentLang === 'it' ? 'selected' : ''}>Italiano</option>
-                </select>
-                <button id="darkModeToggle" title="${t.darkModeLabel}" aria-label="${t.darkModeLabel}">🌙</button>
-                <button id="pinkModeToggle" title="${t.pinkModeLabel}" aria-label="${t.pinkModeLabel}">🐴</button>
-            </div>
-            <button onclick="window.close()" class="back-btn">${t.backToAppBtn}</button>
+        <div id="overviewDialogContent">
+            <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
             <button onclick="window.print()" class="print-btn">Print</button>
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
@@ -6045,165 +6025,27 @@ function generatePrintableOverview() {
 
             ${diagramSectionHtmlWithBreak}
             ${batteryTableHtmlWithBreak}
-            <script>
-            (function(){
-                const pinkToggle = document.getElementById('pinkModeToggle');
-                const darkToggle = document.getElementById('darkModeToggle');
-                const langSelect = document.getElementById('languageSelect');
-
-                function applyPinkMode(enabled){
-                    if(enabled){
-                        document.body.classList.add('pink-mode');
-                        pinkToggle.textContent = '🦄';
-                    } else {
-                        document.body.classList.remove('pink-mode');
-                        pinkToggle.textContent = '🐴';
-                    }
-                }
-
-                function applyDarkMode(enabled){
-                    if(enabled){
-                        document.body.classList.add('dark-mode');
-                        document.body.classList.remove('light-mode');
-                        darkToggle.textContent = '☀️';
-                    } else {
-                        document.body.classList.remove('dark-mode');
-                        document.body.classList.add('light-mode');
-                        darkToggle.textContent = '🌙';
-                    }
-                }
-
-                let darkEnabled = false;
-                try {
-                    const stored = localStorage.getItem('darkMode');
-                    if(stored !== null){
-                        darkEnabled = stored === 'true';
-                    } else if (typeof window.matchMedia === 'function') {
-                        darkEnabled = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    }
-                } catch(e) {}
-                applyDarkMode(darkEnabled);
-                darkToggle.addEventListener('click', () => {
-                    darkEnabled = !document.body.classList.contains('dark-mode');
-                    applyDarkMode(darkEnabled);
-                    try { localStorage.setItem('darkMode', darkEnabled); } catch(e) {}
-                    if(window.opener && typeof window.opener.applyDarkMode === 'function'){
-                        window.opener.applyDarkMode(darkEnabled);
-                    }
-                });
-
-                let pinkEnabled = false;
-                try { pinkEnabled = localStorage.getItem('pinkMode') === 'true'; } catch(e) {}
-                applyPinkMode(pinkEnabled);
-                pinkToggle.addEventListener('click', () => {
-                    pinkEnabled = !document.body.classList.contains('pink-mode');
-                    applyPinkMode(pinkEnabled);
-                    try { localStorage.setItem('pinkMode', pinkEnabled); } catch(e) {}
-                    if(window.opener && typeof window.opener.applyPinkMode === 'function'){
-                        window.opener.applyPinkMode(pinkEnabled);
-                    }
-                });
-
-                langSelect.addEventListener('change', () => {
-                    const newLang = langSelect.value;
-                    try { localStorage.setItem('language', newLang); } catch(e) {}
-                    if(window.opener && typeof window.opener.setLanguage === 'function' && typeof window.opener.generatePrintableOverview === 'function'){
-                        window.opener.setLanguage(newLang);
-                        window.opener.generatePrintableOverview();
-                        window.close();
-                    }
-                });
-
-                let printState = null;
-                const applyPrintStyles = () => {
-                    const diagramArea = document.getElementById('diagramArea');
-                    const diagramSvg = diagramArea ? diagramArea.querySelector('svg') : null;
-                    printState = {
-                        dark: document.body.classList.contains('dark-mode'),
-                        pink: document.body.classList.contains('pink-mode'),
-                        light: document.body.classList.contains('light-mode'),
-                        bodyBg: document.body.style.backgroundColor,
-                        bodyColor: document.body.style.color,
-                        diagramBg: diagramArea ? diagramArea.style.backgroundColor : '',
-                        svgBg: diagramSvg ? diagramSvg.style.backgroundColor : ''
-                    };
-                    document.body.classList.add('light-mode');
-                    document.body.classList.remove('dark-mode');
-                    document.body.style.backgroundColor = '#ffffff';
-                    document.body.style.color = '#000000';
-                    if (diagramArea) diagramArea.style.backgroundColor = '#ffffff';
-                    if (diagramSvg) diagramSvg.style.backgroundColor = '#ffffff';
-                };
-                const restorePrintStyles = () => {
-                    if (!printState) return;
-                    const { dark, pink, light, bodyBg, bodyColor, diagramBg, svgBg } = printState;
-                    document.body.style.backgroundColor = bodyBg;
-                    document.body.style.color = bodyColor;
-                    const diagramArea = document.getElementById('diagramArea');
-                    const diagramSvg = diagramArea ? diagramArea.querySelector('svg') : null;
-                    if (diagramArea) diagramArea.style.backgroundColor = diagramBg;
-                    if (diagramSvg) diagramSvg.style.backgroundColor = svgBg;
-                    if (!light) document.body.classList.remove('light-mode');
-                    if (dark) document.body.classList.add('dark-mode');
-                    if (pink) document.body.classList.add('pink-mode');
-                };
-                window.addEventListener('beforeprint', applyPrintStyles);
-                window.addEventListener('afterprint', restorePrintStyles);
-                window.addEventListener('afterprint', () => { window.close(); });
-
-                const downloadBtn = document.getElementById('downloadDiagram');
-                if (downloadBtn) {
-                    downloadBtn.addEventListener('click', (e) => {
-                        let source = '';
-                        if (window.opener && typeof window.opener.exportDiagramSvg === 'function') {
-                            source = window.opener.exportDiagramSvg();
-                        }
-                        if (!source) return;
-
-                        navigator.clipboard.writeText(source).catch(() => {});
-
-                        const saveSvg = () => {
-                            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = 'setup-diagram.svg';
-                            a.click();
-                            URL.revokeObjectURL(url);
-                        };
-
-                        if (e.shiftKey) {
-                            const img = new Image();
-                            img.onload = () => {
-                                const canvas = document.createElement('canvas');
-                                canvas.width = img.width;
-                                canvas.height = img.height;
-                                const ctx = canvas.getContext('2d');
-                                ctx.drawImage(img, 0, 0);
-                                canvas.toBlob(blob => {
-                                    const url = URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = 'setup-diagram.jpg';
-                                    a.click();
-                                    URL.revokeObjectURL(url);
-                                }, 'image/jpeg', 0.95);
-                            };
-                            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);
-                        } else {
-                            saveSvg();
-                        }
-                    });
-                }
-            })();
-            </script>
-        </body>
-        </html>
+        </div>
     `;
 
-    const overviewWindow = window.open('', '_blank');
-    overviewWindow.document.write(overviewHtml);
-    overviewWindow.document.close();
+    const overviewDialog = document.getElementById('overviewDialog');
+    overviewDialog.innerHTML = overviewHtml;
+    const content = overviewDialog.querySelector('#overviewDialogContent');
+    ['dark-mode', 'pink-mode'].forEach(cls => {
+        if (document.body.classList.contains(cls)) {
+            content.classList.add(cls);
+        }
+    });
+    const closeBtn = overviewDialog.querySelector('#closeOverviewBtn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => overviewDialog.close());
+    }
+    if (typeof overviewDialog.showModal === 'function') {
+        overviewDialog.showModal();
+    } else {
+        overviewDialog.setAttribute('open', '');
+    }
+    window.addEventListener('afterprint', () => { overviewDialog.close(); }, { once: true });
 }
 
 
