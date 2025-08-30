@@ -10,6 +10,8 @@ describe('script.js functions', () => {
     jest.resetModules();
 
     global.alert = jest.fn();
+    global.prompt = jest.fn();
+    Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
 
     const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
     const body = html.split('<body>')[1].split('</body>')[0];
@@ -1650,11 +1652,10 @@ describe('script.js functions', () => {
   test('shareSetupBtn encodes setup name in link', () => {
     const nameInput = document.getElementById('setupName');
     nameInput.value = 'My Setup';
-    global.prompt = jest.fn();
     const btn = document.getElementById('shareSetupBtn');
     btn.click();
-    expect(global.prompt).toHaveBeenCalled();
-    const link = global.prompt.mock.calls[0][1];
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
+    const link = navigator.clipboard.writeText.mock.calls[0][0];
     const encoded = new URL(link).searchParams.get('shared');
     const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
     expect(decoded.setupName).toBe('My Setup');
@@ -1680,10 +1681,10 @@ describe('script.js functions', () => {
     global.loadFeedback.mockReturnValue({ [key]: [{ runtime: '1h' }] });
     const nameInput = document.getElementById('setupName');
     nameInput.value = 'ShareAll';
-    global.prompt = jest.fn();
     const btn = document.getElementById('shareSetupBtn');
     btn.click();
-    const link = global.prompt.mock.calls[0][1];
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
+    const link = navigator.clipboard.writeText.mock.calls[0][0];
     const encoded = new URL(link).searchParams.get('shared');
     const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
     expect(decoded.changedDevices.cameras.CamA.powerDrawWatts).toBe(20);
@@ -1691,10 +1692,10 @@ describe('script.js functions', () => {
   });
 
   test('shareSetupBtn generates shorter encoded link than base64', () => {
-    global.prompt = jest.fn();
     const btn = document.getElementById('shareSetupBtn');
     btn.click();
-    const link = global.prompt.mock.calls[0][1];
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
+    const link = navigator.clipboard.writeText.mock.calls[0][0];
     const encoded = new URL(link).searchParams.get('shared');
     const decodedObj = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
     const base64 = Buffer.from(JSON.stringify(decodedObj)).toString('base64');
