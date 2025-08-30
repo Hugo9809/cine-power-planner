@@ -50,6 +50,18 @@ describe('device data storage', () => {
     localStorage.setItem(DEVICE_KEY, JSON.stringify(corrupted));
     expect(loadDeviceData()).toBeNull();
   });
+
+  test('loadDeviceData returns null when any category is an array', () => {
+    const corrupted = {
+      cameras: [],
+      monitors: {},
+      video: {},
+      batteries: {},
+      fiz: { motors: {}, controllers: {}, distance: {} }
+    };
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(corrupted));
+    expect(loadDeviceData()).toBeNull();
+  });
 });
 
 describe('setup storage', () => {

@@ -1,4 +1,4 @@
-const { normalizeMonitor } = require('../unifyPorts.js');
+const { normalizeMonitor, parsePowerInput, normalizeVideoDevice } = require('../unifyPorts.js');
 
 describe('normalizeMonitor', () => {
   it('does not throw when power is missing', () => {
@@ -11,5 +11,27 @@ describe('normalizeMonitor', () => {
     const monitor = { power: { input: { voltageRange: 'DC 12-24V' } } };
     normalizeMonitor(monitor);
     expect(monitor.power.input.voltageRange).toBe('12-24');
+  });
+});
+
+describe('parsePowerInput', () => {
+  it('does not split slashes inside parentheses', () => {
+    const input = 'LEMO (5V/3A) / D-Tap';
+    expect(parsePowerInput(input)).toEqual([
+      { type: 'LEMO', notes: '5V/3A' },
+      { type: 'D-Tap' }
+    ]);
+  });
+});
+
+describe('normalizeVideoDevice', () => {
+  it('cleans voltageRange for each power input entry', () => {
+    const dev = { power: { input: [
+      { type: 'LEMO', voltageRange: 'DC 5-16V' },
+      { type: 'D-Tap', voltageRange: '14V DC' }
+    ] } };
+    normalizeVideoDevice(dev);
+    expect(dev.power.input[0].voltageRange).toBe('5-16');
+    expect(dev.power.input[1].voltageRange).toBe('14');
   });
 });

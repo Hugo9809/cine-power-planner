@@ -87,23 +87,23 @@ function normalizeMonitor(mon) {
 function parsePowerInput(str) {
   if (!str) return null;
   const parts = [];
-  let current = '';
+  let buf = "";
   let depth = 0;
   for (const ch of str) {
-    if (ch === '(') depth++;
-    if (ch === ')') depth = Math.max(0, depth - 1);
-    if (ch === '/' && depth === 0) {
-      parts.push(current);
-      current = '';
-    } else {
-      current += ch;
+    if (ch === "(") depth++;
+    else if (ch === ")") depth = Math.max(0, depth - 1);
+    if (ch === "/" && depth === 0) {
+      parts.push(buf);
+      buf = "";
+      continue;
     }
+    buf += ch;
   }
-  if (current) parts.push(current);
+  if (buf) parts.push(buf);
   return parts.map(p => {
-    const m = p.trim().match(/^(.+?)(\(([^)]+)\))?$/);
-    const type = String(m ? m[1].trim() : p.trim());
-    const notes = m && m[3] ? m[3].trim() : '';
+    const m = p.trim().match(/^(.+?)(?:\(([^)]+)\))?$/);
+    const type = m ? m[1].trim() : p.trim();
+    const notes = m && m[2] ? m[2].trim() : "";
     const obj = { type };
     if (notes) obj.notes = notes;
     return obj;
@@ -127,7 +127,13 @@ function normalizeVideoDevice(dev) {
   if (Array.isArray(dev.videoOutputs)) dev.videoOutputs.forEach(cleanPort);
   if (dev.power?.input) {
     cleanPort(dev.power.input);
-    if (dev.power.input.voltageRange) dev.power.input.voltageRange = cleanVoltageRange(dev.power.input.voltageRange);
+    if (Array.isArray(dev.power.input)) {
+      dev.power.input.forEach(i => {
+        if (i.voltageRange) i.voltageRange = cleanVoltageRange(i.voltageRange);
+      });
+    } else if (dev.power.input.voltageRange) {
+      dev.power.input.voltageRange = cleanVoltageRange(dev.power.input.voltageRange);
+    }
   }
 
 }

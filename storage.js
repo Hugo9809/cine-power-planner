@@ -10,7 +10,7 @@ function loadDeviceData() {
     if (data) {
       const parsedData = JSON.parse(data);
       // Helper to ensure a value is a non-null object
-      const isObject = (val) => val !== null && typeof val === 'object';
+      const isObject = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
       // Validate that top-level categories exist and are non-null objects
       const isValid = isObject(parsedData) &&
                       isObject(parsedData.cameras) &&
