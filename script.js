@@ -3439,6 +3439,53 @@ function renderFeedbackTable(currentKey) {
   return null;
 }
 
+// Determine differences between the default device database and the current
+// in-memory `devices` object. Only changed, added or removed entries are
+// returned so they can be shared in a generated link.
+function getDeviceChanges() {
+  if (!window.defaultDevices) return {};
+  const diff = {};
+  const record = (cat, name, val, sub) => {
+    if (sub) {
+      diff.fiz = diff.fiz || {};
+      diff.fiz[sub] = diff.fiz[sub] || {};
+      diff.fiz[sub][name] = val;
+    } else {
+      diff[cat] = diff[cat] || {};
+      diff[cat][name] = val;
+    }
+  };
+  const compare = (cat, defCat, curCat, sub) => {
+    Object.keys(curCat).forEach(name => {
+      const cur = curCat[name];
+      const def = defCat[name];
+      if (!def || JSON.stringify(cur) !== JSON.stringify(def)) {
+        record(cat, name, cur, sub);
+      }
+    });
+    Object.keys(defCat).forEach(name => {
+      if (!curCat[name]) record(cat, name, null, sub);
+    });
+  };
+  compare('cameras', window.defaultDevices.cameras || {}, devices.cameras || {});
+  compare('monitors', window.defaultDevices.monitors || {}, devices.monitors || {});
+  compare('video', window.defaultDevices.video || {}, devices.video || {});
+  compare('batteries', window.defaultDevices.batteries || {}, devices.batteries || {});
+  ['motors', 'controllers', 'distance'].forEach(sub => {
+    const defCat = window.defaultDevices.fiz ? (window.defaultDevices.fiz[sub] || {}) : {};
+    const curCat = devices.fiz ? (devices.fiz[sub] || {}) : {};
+    compare('fiz', defCat, curCat, sub);
+    if (diff.fiz && diff.fiz[sub] && !Object.keys(diff.fiz[sub]).length) {
+      delete diff.fiz[sub];
+    }
+  });
+  if (diff.fiz && !Object.keys(diff.fiz).length) delete diff.fiz;
+  Object.keys(diff).forEach(cat => {
+    if (cat !== 'fiz' && !Object.keys(diff[cat]).length) delete diff[cat];
+  });
+  return diff;
+}
+
 function renderSetupDiagram() {
   if (!setupDiagramContainer) return;
 
@@ -5217,6 +5264,15 @@ shareSetupBtn.addEventListener('click', () => {
     batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value
   };
+  const deviceChanges = getDeviceChanges();
+  if (Object.keys(deviceChanges).length) {
+    currentSetup.changedDevices = deviceChanges;
+  }
+  const key = getCurrentSetupKey();
+  const feedback = loadFeedbackSafe()[key] || [];
+  if (feedback.length) {
+    currentSetup.feedback = feedback;
+  }
   const encoded = btoa(encodeURIComponent(JSON.stringify(currentSetup)));
   const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
   prompt(texts[currentLang].shareSetupPrompt, link);
