@@ -22,7 +22,7 @@
 <body>
   <a href="#mainContent" class="skip-link" id="skipLink">Skip to content</a>
   <div id="langSelector">
-    <select id="languageSelect">
+    <select id="languageSelect" aria-label="Select language">
       <option value="en">English</option>
       <option value="de">Deutsch</option>
       <option value="es">Español</option>
@@ -43,14 +43,14 @@
     <h2 id="setupManageHeading">Manage Setup</h2>
     <div class="form-row">
       <label for="setupSelect" id="savedSetupsLabel">Saved Setups:</label>
-      <select id="setupSelect">
+      <select id="setupSelect" aria-labelledby="savedSetupsLabel">
         <option value="">-- New Setup --</option>
       </select>
       <button id="deleteSetupBtn" title="Delete selected setup">Delete</button>
     </div>
     <div class="form-row">
       <label for="setupName" id="setupNameLabel">Setup Name:</label>
-      <input type="text" id="setupName" placeholder="Setup name" />
+      <input type="text" id="setupName" placeholder="Setup name" aria-labelledby="setupNameLabel" />
       <button id="saveSetupBtn">Save</button>
     </div>
     <!-- Moved Setup Actions here -->
@@ -62,7 +62,7 @@
     <button id="shareSetupBtn">Share Setup Link</button>
     <div class="form-row hidden" id="sharedLinkRow">
       <label for="sharedLinkInput" id="sharedLinkLabel">Shared Link:</label>
-      <input type="url" id="sharedLinkInput" placeholder="Paste shared link" />
+      <input type="url" id="sharedLinkInput" placeholder="Paste shared link" aria-labelledby="sharedLinkLabel" />
       <button id="applySharedLinkBtn">Load</button>
     </div>
     <button id="clearSetupBtn">Clear Current Setup</button>
@@ -73,22 +73,22 @@
       <div class="form-row">
         <label for="cameraSelect" id="cameraLabel">Camera:</label>
         <div class="select-wrapper">
-          <input type="text" id="cameraFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
-          <select id="cameraSelect"></select>
+          <input type="text" id="cameraFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" data-help="Filter camera options" />
+          <select id="cameraSelect" aria-labelledby="cameraLabel"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="monitorSelect" id="monitorLabel">Monitor:</label>
         <div class="select-wrapper">
-          <input type="text" id="monitorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
-          <select id="monitorSelect"></select>
+          <input type="text" id="monitorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" data-help="Filter monitor options" />
+          <select id="monitorSelect" aria-labelledby="monitorLabel"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="videoSelect" id="videoLabel">Wireless Video:</label>
         <div class="select-wrapper">
-          <input type="text" id="videoFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
-          <select id="videoSelect"></select>
+          <input type="text" id="videoFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" data-help="Filter wireless video options" />
+          <select id="videoSelect" aria-labelledby="videoLabel"></select>
         </div>
       </div>
 
@@ -97,59 +97,59 @@
       <div class="form-row">
         <label for="motor1Select" id="fizMotorsLabel">FIZ Motors:</label>
         <div class="select-wrapper">
-          <input type="text" id="motorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
-          <select id="motor1Select"></select>
+          <input type="text" id="motorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" data-help="Filter FIZ motor options" />
+          <select id="motor1Select" aria-labelledby="fizMotorsLabel"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="motor2Select"></label>
-        <select id="motor2Select"></select>
+        <select id="motor2Select" aria-label="Additional FIZ motor"></select>
       </div>
       <div class="form-row">
         <label for="motor3Select"></label>
-        <select id="motor3Select"></select>
+        <select id="motor3Select" aria-label="Additional FIZ motor"></select>
       </div>
       <div class="form-row">
         <label for="motor4Select"></label>
-        <select id="motor4Select"></select>
+        <select id="motor4Select" aria-label="Additional FIZ motor"></select>
       </div>
       <div class="form-row">
         <label for="controller1Select" id="fizControllersLabel">FIZ Controllers:</label>
         <div class="select-wrapper">
-          <input type="text" id="controllerFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
-          <select id="controller1Select"></select>
+          <input type="text" id="controllerFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" data-help="Filter FIZ controller options" />
+          <select id="controller1Select" aria-labelledby="fizControllersLabel"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="controller2Select"></label>
-        <select id="controller2Select"></select>
+        <select id="controller2Select" aria-label="Additional FIZ controller"></select>
       </div>
       <div class="form-row">
         <label for="controller3Select"></label>
-        <select id="controller3Select"></select>
+        <select id="controller3Select" aria-label="Additional FIZ controller"></select>
       </div>
       <div class="form-row">
         <label for="controller4Select"></label>
-        <select id="controller4Select"></select>
+        <select id="controller4Select" aria-label="Additional FIZ controller"></select>
       </div>
     <div class="form-row">
       <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
       <div class="select-wrapper">
-        <input type="text" id="distanceFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
-        <select id="distanceSelect"></select>
+        <input type="text" id="distanceFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" data-help="Filter distance sensor options" />
+        <select id="distanceSelect" aria-labelledby="distanceLabel"></select>
       </div>
     </div>
     <div class="form-row hidden" id="batteryPlateRow">
       <label for="batteryPlateSelect" id="batteryPlateLabel">Battery Plate:</label>
-      <select id="batteryPlateSelect"></select>
+      <select id="batteryPlateSelect" aria-labelledby="batteryPlateLabel"></select>
     </div>
   </fieldset>
 
     <div class="form-row">
       <label for="batterySelect" id="batteryLabel">V-Mount Battery:</label>
       <div class="select-wrapper">
-        <input type="text" id="batteryFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
-        <select id="batterySelect"></select>
+        <input type="text" id="batteryFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" data-help="Filter battery options" />
+        <select id="batterySelect" aria-labelledby="batteryLabel"></select>
       </div>
     </div>
   </section>
@@ -217,26 +217,26 @@
     </div>
     <div class="form-row">
       <label for="newName" id="deviceNameLabel">Name:</label>
-      <input type="text" id="newName" placeholder="Device name" />
+      <input type="text" id="newName" placeholder="Device name" aria-labelledby="deviceNameLabel" />
     </div>
     <div class="form-row" id="wattField">
       <label for="newWatt" id="consumptionLabel">Consumption (W):</label>
-      <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" />
+      <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" aria-labelledby="consumptionLabel" />
     </div>
     <div id="cameraFields" class="hidden">
       <div class="camera-subsection">
         <h4 id="powerInputsHeading">Power Inputs</h4>
         <div class="form-row">
           <label for="cameraWatt" id="cameraWattLabel">Power Draw (W):</label>
-          <input type="number" id="cameraWatt" step="0.1" />
+          <input type="number" id="cameraWatt" step="0.1" aria-labelledby="cameraWattLabel" />
         </div>
         <div class="form-row">
           <label for="cameraVoltage" id="cameraVoltageLabel">Voltage Range:</label>
-          <input type="text" id="cameraVoltage" />
+          <input type="text" id="cameraVoltage" aria-labelledby="cameraVoltageLabel" />
         </div>
         <div class="form-row">
           <label for="cameraPortType" id="cameraPortTypeLabel">Port Type:</label>
-          <select id="cameraPortType"></select>
+          <select id="cameraPortType" aria-labelledby="cameraPortTypeLabel"></select>
         </div>
         <div class="form-row">
           <label id="cameraPlatesLabel">Battery Plates:</label>
@@ -298,26 +298,26 @@
         <h4 id="monitorDetailsHeading">Monitor Details</h4>
         <div class="form-row">
           <label for="monitorScreenSize" id="monitorScreenSizeLabel">Screen Size (in):</label>
-          <input type="number" id="monitorScreenSize" step="0.1" />
+          <input type="number" id="monitorScreenSize" step="0.1" aria-labelledby="monitorScreenSizeLabel" />
         </div>
         <div class="form-row">
           <label for="monitorBrightness" id="monitorBrightnessLabel">Brightness (nits):</label>
-          <input type="number" id="monitorBrightness" step="1" />
+          <input type="number" id="monitorBrightness" step="1" aria-labelledby="monitorBrightnessLabel" />
         </div>
       </div>
       <div class="monitor-subsection">
         <h4 id="monitorPowerHeading">Power Input</h4>
         <div class="form-row">
           <label for="monitorWatt" id="monitorWattLabel">Power Draw (W):</label>
-          <input type="number" id="monitorWatt" step="0.1" />
+          <input type="number" id="monitorWatt" step="0.1" aria-labelledby="monitorWattLabel" />
         </div>
         <div class="form-row">
           <label for="monitorVoltage" id="monitorVoltageLabel">Voltage Range:</label>
-          <input type="text" id="monitorVoltage" />
+          <input type="text" id="monitorVoltage" aria-labelledby="monitorVoltageLabel" />
         </div>
         <div class="form-row">
           <label for="monitorPortType" id="monitorPortTypeLabel">Port Type:</label>
-          <select id="monitorPortType"></select>
+          <select id="monitorPortType" aria-labelledby="monitorPortTypeLabel"></select>
         </div>
       </div>
       <div class="monitor-subsection">
@@ -336,21 +336,21 @@
       </div>
       <div class="form-row">
         <label for="monitorWirelessTx" id="monitorWirelessTxLabel">Wireless TX:</label>
-        <input type="checkbox" id="monitorWirelessTx" />
+        <input type="checkbox" id="monitorWirelessTx" aria-labelledby="monitorWirelessTxLabel" />
       </div>
       <div class="form-row">
         <label for="monitorLatency" id="monitorLatencyLabel">Latency:</label>
-        <input type="text" id="monitorLatency" />
+        <input type="text" id="monitorLatency" aria-labelledby="monitorLatencyLabel" />
       </div>
       <div class="form-row">
         <label for="monitorAudioOutput" id="monitorAudioOutputLabel">Audio Output:</label>
-        <input type="text" id="monitorAudioOutput" />
+        <input type="text" id="monitorAudioOutput" aria-labelledby="monitorAudioOutputLabel" />
       </div>
     </div>
     <div id="videoFields" class="hidden">
       <div class="form-row">
         <label for="videoPower" id="videoPowerInputLabel">Power Input:</label>
-        <input type="text" id="videoPower" />
+        <input type="text" id="videoPower" aria-labelledby="videoPowerInputLabel" />
       </div>
       <div class="video-subsection">
         <h4 id="videoVideoInputsHeading">Video Inputs</h4>
@@ -368,95 +368,95 @@
       </div>
       <div class="form-row">
         <label for="videoFrequency" id="videoFrequencyLabel">Frequency:</label>
-        <input type="text" id="videoFrequency" />
+        <input type="text" id="videoFrequency" aria-labelledby="videoFrequencyLabel" />
       </div>
       <div class="form-row">
         <label for="videoLatency" id="videoLatencyLabel">Latency:</label>
-        <input type="text" id="videoLatency" />
+        <input type="text" id="videoLatency" aria-labelledby="videoLatencyLabel" />
       </div>
     </div>
     <div id="motorFields" class="hidden">
       <div class="form-row">
         <label for="motorConnector" id="motorConnectorLabel">Connector:</label>
-        <select id="motorConnector"></select>
+        <select id="motorConnector" aria-labelledby="motorConnectorLabel"></select>
       </div>
       <div class="form-row">
         <label for="motorInternal" id="motorInternalLabel">Internal Controller:</label>
-        <input type="checkbox" id="motorInternal" />
+        <input type="checkbox" id="motorInternal" aria-labelledby="motorInternalLabel" />
       </div>
       <div class="form-row">
         <label for="motorTorque" id="motorTorqueLabel">Torque (Nm):</label>
-        <input type="number" id="motorTorque" step="0.1" />
+        <input type="number" id="motorTorque" step="0.1" aria-labelledby="motorTorqueLabel" />
       </div>
       <div class="form-row">
         <label for="motorGearTypes" id="motorGearLabel">Gear Types:</label>
-        <input type="text" id="motorGearTypes" />
+        <input type="text" id="motorGearTypes" aria-labelledby="motorGearLabel" />
       </div>
       <div class="form-row">
         <label for="motorNotes" id="motorNotesLabel">Notes:</label>
-        <input type="text" id="motorNotes" />
+        <input type="text" id="motorNotes" aria-labelledby="motorNotesLabel" />
       </div>
     </div>
     <div id="controllerFields" class="hidden">
       <div class="form-row">
         <label for="controllerConnector" id="controllerConnectorLabel">Connector:</label>
-        <select id="controllerConnector"></select>
+        <select id="controllerConnector" aria-labelledby="controllerConnectorLabel"></select>
       </div>
       <div class="form-row">
         <label for="controllerPower" id="controllerPowerLabel">Power Source:</label>
-        <select id="controllerPower"></select>
+        <select id="controllerPower" aria-labelledby="controllerPowerLabel"></select>
       </div>
       <div class="form-row">
         <label for="controllerBattery" id="controllerBatteryLabel">Battery Type:</label>
-        <select id="controllerBattery"></select>
+        <select id="controllerBattery" aria-labelledby="controllerBatteryLabel"></select>
       </div>
       <div class="form-row">
         <label for="controllerConnectivity" id="controllerConnectivityLabel">Connectivity:</label>
-        <select id="controllerConnectivity"></select>
+        <select id="controllerConnectivity" aria-labelledby="controllerConnectivityLabel"></select>
       </div>
       <div class="form-row">
         <label for="controllerNotes" id="controllerNotesLabel">Notes:</label>
-        <input type="text" id="controllerNotes" />
+        <input type="text" id="controllerNotes" aria-labelledby="controllerNotesLabel" />
       </div>
     </div>
     <div id="distanceFields" class="hidden">
       <div class="form-row">
         <label for="distanceConnection" id="distanceConnectionLabel">Connection:</label>
-        <select id="distanceConnection"></select>
+        <select id="distanceConnection" aria-labelledby="distanceConnectionLabel"></select>
       </div>
       <div class="form-row">
         <label for="distanceMethod" id="distanceMethodLabel">Method:</label>
-        <select id="distanceMethod"></select>
+        <select id="distanceMethod" aria-labelledby="distanceMethodLabel"></select>
       </div>
       <div class="form-row">
         <label for="distanceRange" id="distanceRangeLabel">Range:</label>
-        <input type="text" id="distanceRange" />
+        <input type="text" id="distanceRange" aria-labelledby="distanceRangeLabel" />
       </div>
       <div class="form-row">
         <label for="distanceAccuracy" id="distanceAccuracyLabel">Accuracy:</label>
-        <input type="text" id="distanceAccuracy" />
+        <input type="text" id="distanceAccuracy" aria-labelledby="distanceAccuracyLabel" />
       </div>
       <div class="form-row">
         <label for="distanceOutput" id="distanceOutputLabel">Display:</label>
-        <select id="distanceOutput"></select>
+        <select id="distanceOutput" aria-labelledby="distanceOutputLabel"></select>
       </div>
       <div class="form-row">
         <label for="distanceNotes" id="distanceNotesLabel">Notes:</label>
-        <input type="text" id="distanceNotes" />
+        <input type="text" id="distanceNotes" aria-labelledby="distanceNotesLabel" />
       </div>
     </div>
     <div id="batteryFields" class="hidden">
       <div class="form-row">
         <label for="newCapacity" id="capacityLabel">Capacity (Wh):</label>
-        <input type="number" id="newCapacity" step="0.1" placeholder="e.g. 98" />
+        <input type="number" id="newCapacity" step="0.1" placeholder="e.g. 98" aria-labelledby="capacityLabel" />
       </div>
       <div class="form-row">
         <label for="newPinA" id="pinLabel">Max Pin A:</label>
-        <input type="number" id="newPinA" step="0.1" placeholder="e.g. 10" />
+        <input type="number" id="newPinA" step="0.1" placeholder="e.g. 10" aria-labelledby="pinLabel" />
       </div>
       <div class="form-row">
         <label for="newDtapA" id="dtapLabel">Max D-Tap A:</label>
-        <input type="number" id="newDtapA" step="0.1" placeholder="e.g. 5" />
+        <input type="number" id="newDtapA" step="0.1" placeholder="e.g. 5" aria-labelledby="dtapLabel" />
       </div>
     </div>
     <button id="addDeviceBtn">Add</button>
@@ -472,37 +472,37 @@
     <div class="device-list-container">
       <div class="device-category">
         <h4 id="category_cameras">Cameras</h4>
-        <input type="text" id="cameraListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="text" id="cameraListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" data-help="Filter existing camera devices" />
         <ul id="cameraList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_monitors">Monitors</h4>
-        <input type="text" id="monitorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="text" id="monitorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" data-help="Filter existing monitor devices" />
         <ul id="monitorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_video">Wireless Video</h4>
-        <input type="text" id="videoListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="text" id="videoListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" data-help="Filter existing wireless video devices" />
         <ul id="videoList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_motors">FIZ Motors</h4>
-        <input type="text" id="motorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="text" id="motorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" data-help="Filter existing FIZ motor devices" />
         <ul id="motorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_controllers">FIZ Controllers</h4>
-        <input type="text" id="controllerListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="text" id="controllerListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" data-help="Filter existing FIZ controller devices" />
         <ul id="controllerList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_distance">FIZ Distance</h4>
-        <input type="text" id="distanceListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="text" id="distanceListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" data-help="Filter existing distance sensor devices" />
         <ul id="distanceList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_batteries">V-Mount Batteries</h4>
-        <input type="text" id="batteryListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="text" id="batteryListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" data-help="Filter existing battery devices" />
         <ul id="batteryList" class="device-ul"></ul>
       </div>
     </div>
