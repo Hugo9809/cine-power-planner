@@ -813,6 +813,9 @@ body:not(.light-mode) #userFeedbackTable td {
 /* Runtime weighting dashboard */
 #weightingDashboard {
   margin-top: 1em;
+  display: inline-block;
+  transform: scale(0.8);
+  transform-origin: top left;
 }
 .weightingRow {
   display: flex;
