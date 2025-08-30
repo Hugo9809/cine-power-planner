@@ -52,6 +52,7 @@ const texts = {
     batteryLifeLabel: "Runtime (estimated):",
     batteryCountLabel: "Batteries for 10h shoot (incl. spare):",
     runtimeFeedbackBtn: "Submit User Runtime Feedback",
+    weightingHeading: "Runtime Weighting Breakdown",
 
     methodPinsOnly: "pins only!",
     methodPinsAndDTap: "both pins and D-Tap",
@@ -274,6 +275,7 @@ const texts = {
     batteryLifeLabel: "Autonomia (stimata):",
     batteryCountLabel: "Batterie per ripresa di 10h (incl. scorta):",
     runtimeFeedbackBtn: "Invia feedback runtime utente",
+    weightingHeading: "Suddivisione ponderazione runtime",
     methodPinsOnly: "solo pin!",
     methodPinsAndDTap: "sia pin che D-Tap",
     methodInfinite: "infinito",
@@ -486,7 +488,7 @@ const texts = {
     batteryLifeLabel: "Autonomía (estimada):",
     batteryCountLabel: "Baterías para rodaje de 10h (incl. repuesto):",
     runtimeFeedbackBtn: "Enviar comentarios de tiempo de ejecución del usuario",
-
+    weightingHeading: "Desglose de ponderación del tiempo de ejecución",
     methodPinsOnly: "solo pines!",
     methodPinsAndDTap: "pines y D-Tap",
     methodInfinite: "infinito",
@@ -711,7 +713,7 @@ const texts = {
     batteryLifeLabel: "Autonomie (estimée):",
     batteryCountLabel: "Batteries pour tournage de 10h (incl. de rechange):",
     runtimeFeedbackBtn: "Envoyer des commentaires sur la durée d'utilisation",
-
+    weightingHeading: "Répartition de la pondération de la durée d'utilisation",
     methodPinsOnly: "broches seulement!",
     methodPinsAndDTap: "broches et D-Tap",
     methodInfinite: "infini",
@@ -936,7 +938,7 @@ const texts = {
     batteryLifeLabel: "Akkulaufzeit (geschätzt):",
     batteryCountLabel: "Akkus für 10h Dreh (inkl. Reserve):",
     runtimeFeedbackBtn: "Laufzeit-Feedback senden",
-
+    weightingHeading: "Aufschlüsselung der Laufzeitgewichtung",
     methodPinsOnly: "nur Pins!",
     methodPinsAndDTap: "Pins und D-Tap",
     methodInfinite: "unendlich",

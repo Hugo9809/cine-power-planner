@@ -17,6 +17,7 @@ Recent updates include:
 - **Searchable help dialog** – open with the ? button or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
+- **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report.
 
 See the language-specific README files for full details.
 

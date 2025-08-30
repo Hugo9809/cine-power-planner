@@ -891,6 +891,8 @@ function setLanguage(lang) {
   document.getElementById("batteryLifeLabel").textContent = texts[lang].batteryLifeLabel;
   document.getElementById("batteryCountLabel").textContent = texts[lang].batteryCountLabel;
   document.getElementById("runtimeFeedbackBtn").textContent = texts[lang].runtimeFeedbackBtn;
+  const weightHeadingEl = document.getElementById("weightingHeading");
+  if (weightHeadingEl) weightHeadingEl.textContent = texts[lang].weightingHeading;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   const fb = renderFeedbackTable(getCurrentSetupKey());
@@ -3303,6 +3305,8 @@ function deleteFeedbackEntry(key, index) {
 function renderFeedbackTable(currentKey) {
   const container = document.getElementById('feedbackTableContainer');
   const table = document.getElementById('userFeedbackTable');
+  const dashboard = document.getElementById('weightingDashboard');
+  const barsContainer = document.getElementById('weightingBars');
   const data = loadFeedbackSafe();
   const entries = data[currentKey] || [];
 
@@ -3312,6 +3316,8 @@ function renderFeedbackTable(currentKey) {
       table.classList.add('hidden');
     }
     if (container) container.classList.add('hidden');
+    if (dashboard) dashboard.classList.add('hidden');
+    if (barsContainer) barsContainer.innerHTML = '';
     return null;
   }
 
@@ -3423,6 +3429,7 @@ function renderFeedbackTable(currentKey) {
   let weightedSum = 0;
   let weightTotal = 0;
   let count = 0;
+  const breakdown = [];
   entries.forEach(e => {
     const rt = parseFloat(e.runtime);
     if (Number.isNaN(rt)) return;
@@ -3456,12 +3463,40 @@ function renderFeedbackTable(currentKey) {
     }
 
     const temp = parseFloat(e.temperature);
-    const adjustedRuntime = rt * tempFactor(temp);
+    const tempMul = tempFactor(temp);
+    const adjustedRuntime = rt * tempMul;
 
     weightedSum += adjustedRuntime * weight;
     weightTotal += weight;
+    breakdown.push({
+      temperature: tempMul,
+      resolution: res ? resolutionWeight(res) : 1,
+      framerate: fps ? fps / 24 : 1,
+      wifi: wifi.includes('on') ? 1.1 : 1,
+      codec: codec ? codecWeight(codec) : 1,
+      monitor: monitorFactor,
+      weight
+    });
     count++;
   });
+  if (barsContainer && dashboard) {
+    const maxWeight = Math.max(...breakdown.map(b => b.weight));
+    let chartHtml = '';
+    breakdown.forEach((b, i) => {
+      const percent = maxWeight ? (b.weight / maxWeight) * 100 : 0;
+      const tooltip =
+        `Temp ×${b.temperature.toFixed(2)}\n` +
+        `Res ×${b.resolution.toFixed(2)}\n` +
+        `FPS ×${b.framerate.toFixed(2)}\n` +
+        `Codec ×${b.codec.toFixed(2)}\n` +
+        `Wi-Fi ×${b.wifi.toFixed(2)}\n` +
+        `Monitor ×${b.monitor.toFixed(2)}\n` +
+        `Share ${(b.weight * 100).toFixed(1)}%`;
+      chartHtml += `<div class="weightingRow"><span class="weightingLabel">${i + 1}</span><div class="barContainer"><div class="weightBar" style="width:${percent}%" title="${escapeHtml(tooltip)}"></div></div></div>`;
+    });
+    barsContainer.innerHTML = chartHtml;
+    dashboard.classList.remove('hidden');
+  }
   if (count >= 3 && weightTotal > 0) {
     return { runtime: weightedSum / weightTotal, count };
   }
