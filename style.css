@@ -43,7 +43,8 @@ body {
 }
 
 .hidden {
-  display: none;
+  /* Ensure hidden elements stay hidden even if other classes set display */
+  display: none !important;
 }
 
 /* Improve keyboard accessibility by clearly showing focus on interactive elements */
