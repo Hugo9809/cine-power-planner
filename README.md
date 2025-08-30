@@ -1,5 +1,13 @@
 # Camera Power Planner
 
+Camera Power Planner is a standalone web app for planning professional camera
+rigs powered by V‑Mount or B‑Mount batteries. It calculates total power draw,
+checks that batteries can safely deliver the required output and estimates how
+long your setup will run. The tool runs entirely in the browser and even works
+offline.
+
+## Documentation
+
 This repository provides the documentation in multiple languages:
 
 - [English](README.en.md)
@@ -47,10 +55,11 @@ User-submitted battery runtimes are combined using a weighted average to better 
 - The final weight reflects how much of the total power draw comes from the camera, monitor and other devices so that similar rigs count more.
 - A dedicated dashboard orders entries by weight and shows the share percentage for each runtime entry.
 
-## Quick Start
+## Getting Started
 
-1. Make sure you have Node.js 18 or later installed if you want to lint or test the project.
-2. Open `index.html` in a modern browser to run the planner offline.
+1. Clone the repository and open `index.html` in a modern browser. No build
+   step is required and the planner can be used completely offline.
+2. Install Node.js 18 or later if you plan to develop or run the tests.
 3. Install dependencies and run the full test suite:
    ```bash
    npm install
@@ -61,3 +70,7 @@ User-submitted battery runtimes are combined using a weighted average to better 
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request on GitHub.
+
+## License
+
+Distributed under the ISC license. See `package.json` for details.
