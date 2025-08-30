@@ -411,8 +411,8 @@ const texts = {
     helpClose: "Chiudi",
     helpTitle: "Come usare",
     helpNoResults: "Nessun risultato trovato.",
-    zoomInLabel: "Zoom in",
-    zoomOutLabel: "Zoom out",
+    zoomInLabel: "Ingrandisci",
+    zoomOutLabel: "Rimpicciolisci",
     diagramMoveHint: "Trascina i nodi per spostarli.",
   },
   es: {
