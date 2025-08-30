@@ -1,6 +1,6 @@
-# 🎥 Planificador de Consumo de Cámara
+# 🎥 Planificador de Consumo de Energía de Cámaras
 
-Esta herramienta en el navegador ayuda a planificar configuraciones profesionales con baterías V‑Mount. Calcula **consumo total**, **corriente** (a 14,4 V y 12 V) y **autonomía estimada**, comprobando que la batería pueda entregar la potencia necesaria.
+Esta herramienta en el navegador ayuda a planificar configuraciones profesionales con baterías V‑Mount. Calcula **el consumo total**, **la corriente** (a 14,4 V y 12 V) y **la autonomía estimada**, comprobando que la batería pueda entregar la potencia necesaria.
 
 ---
 
@@ -36,7 +36,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 ### 📦 Categorías de Dispositivos
 - **Cámara** (1)
 - **Monitor** (opcional)
-- **Video inalámbrico** (opcional)
+- **Vídeo inalámbrico** (opcional)
 - **Motores FIZ** (0–4)
 - **Controles FIZ** (0–4)
 - **Sensor de distancia** (0–1)
@@ -57,12 +57,12 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 - Gráfico de barras para referencia rápida
 
 ### 🖼 Diagrama de Configuración
-- Visualiza las conexiones de energía y video entre los dispositivos seleccionados
+- Visualiza las conexiones de energía y vídeo entre los dispositivos seleccionados
 - Avisa si se combinan marcas FIZ incompatibles
 - Arrastra los nodos para ordenarlos, usa los botones para acercar/alejar y descarga el diagrama en SVG o JPG
 - Las ventanas emergentes muestran detalles de cada dispositivo
 - Utiliza iconos de [OpenMoji](https://openmoji.org/) cuando hay conexión y pasa a emoji si no están disponibles:
-  🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 video, ⚙️ motor,
+  🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 vídeo, ⚙️ motor,
   🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería
 
 ### 🔍 Búsqueda y Filtros
