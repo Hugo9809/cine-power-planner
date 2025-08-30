@@ -863,6 +863,8 @@ function setLanguage(lang) {
   document.getElementById("batteryLifeLabel").textContent = texts[lang].batteryLifeLabel;
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
+  const tempNote = document.getElementById("temperatureNote");
+  if (tempNote) tempNote.innerHTML = texts[lang].temperatureNote;
   // Device manager category headings
   document.getElementById("category_cameras").textContent = texts[lang].category_cameras;
   document.getElementById("category_monitors").textContent = texts[lang].category_monitors;
