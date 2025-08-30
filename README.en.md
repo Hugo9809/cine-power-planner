@@ -21,6 +21,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Searchable help dialog with step-by-step sections and a FAQ.
 - Support for cameras with both V- and B-Mount battery plates.
 - Submit user runtime feedback with temperature and humidity for better estimates.
+- Visual runtime weighting dashboard to inspect how settings influence each report.
 
 ---
 
