@@ -48,54 +48,61 @@ function storeSession(state) {
   }
 }
 
+const VIDEO_TYPE_PATTERNS = [
+  { needles: ['12g'], value: '12G-SDI' },
+  { needles: ['6g'], value: '6G-SDI' },
+  { needles: ['3g'], value: '3G-SDI' },
+  { needles: ['hd-sdi'], value: '3G-SDI' },
+  { needles: ['mini', 'bnc'], value: 'Mini BNC' },
+  { needles: ['micro', 'hdmi'], value: 'Micro HDMI' },
+  { needles: ['mini', 'hdmi'], value: 'Mini HDMI' },
+  { needles: ['hdmi'], value: 'HDMI' }
+];
 function normalizeVideoType(type) {
   if (!type) return '';
   const t = String(type).toLowerCase();
-  if (t.includes('12g')) return '12G-SDI';
-  if (t.includes('6g')) return '6G-SDI';
-  if (t.includes('3g') || t.includes('hd-sdi')) return '3G-SDI';
-  if (t.includes('mini') && t.includes('bnc')) return 'Mini BNC';
-  if (t.includes('micro') && t.includes('hdmi')) return 'Micro HDMI';
-  if (t.includes('mini') && t.includes('hdmi')) return 'Mini HDMI';
-  if (t.includes('hdmi')) return 'HDMI';
+  for (const { needles, value } of VIDEO_TYPE_PATTERNS) {
+    if (needles.every(n => t.includes(n))) return value;
+  }
   return '';
 }
 
+const FIZ_CONNECTOR_MAP = {
+  'lemo 4-pin (lbus)': 'LBUS (LEMO 4-pin)',
+  'lbus (lemo 4-pin)': 'LBUS (LEMO 4-pin)',
+  'lbus (4-pin lemo)': 'LBUS (LEMO 4-pin)',
+  'lbus (4-pin lemo for motors)': 'LBUS (LEMO 4-pin)',
+  '4-pin lemo (lbus)': 'LBUS (LEMO 4-pin)',
+  'lemo 4-pin': 'LEMO 4-pin',
+  '4-pin lemo': 'LEMO 4-pin',
+  'lemo 7-pin': 'LEMO 7-pin',
+  'lemo 7-pin 1b': 'LEMO 7-pin',
+  '7-pin lemo': 'LEMO 7-pin',
+  '7-pin lemo (lcs)': 'LEMO 7-pin (LCS)',
+  '7-pin lemo (cam)': 'LEMO 7-pin (CAM)',
+  'ext (lemo 7-pin)': 'EXT LEMO 7-pin',
+  'hirose 12pin': 'Hirose 12-pin',
+  '12-pin hirose': 'Hirose 12-pin',
+  '12pin broadcast connector': 'Hirose 12-pin',
+  'lens 12 pin': 'Hirose 12-pin',
+  'lens terminal 12-pin': 'Hirose 12-pin',
+  'lens terminal 12-pin jack': 'Hirose 12-pin',
+  'lens terminal': 'Hirose 12-pin',
+  'usb type-c': 'USB-C',
+  'usb type-c®': 'USB-C',
+  'usb-c (usb 3.2 / 3.1 gen 1)': 'USB-C',
+  'usb-c / gigabit ethernet (via adapter)': 'USB-C',
+  'active ef mount': 'Active EF mount',
+  'lanc (2.5mm stereo mini jack)': 'LANC',
+  '2.5 mm sub-mini (lanc)': 'LANC',
+  'remote a (2.5mm)': 'REMOTE A connector',
+  'remote control terminal': 'REMOTE A connector',
+  'remote 8 pin': 'REMOTE B connector'
+};
 function normalizeFizConnectorType(type) {
   if (!type) return '';
-  const map = {
-    'LEMO 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
-    'Lemo 4-pin (LBUS)': 'LBUS (LEMO 4-pin)',
-    'LBUS (4-pin Lemo)': 'LBUS (LEMO 4-pin)',
-    'LBUS (4-pin Lemo for motors)': 'LBUS (LEMO 4-pin)',
-    '4-pin Lemo (LBUS)': 'LBUS (LEMO 4-pin)',
-    'LEMO 4-pin': 'LEMO 4-pin',
-    '4-pin Lemo': 'LEMO 4-pin',
-    'Lemo 4-pin': 'LEMO 4-pin',
-    '7-pin Lemo': 'LEMO 7-pin',
-    'Lemo 7-pin 1B': 'LEMO 7-pin',
-    '7-pin Lemo (LCS)': 'LEMO 7-pin (LCS)',
-    '7-pin Lemo (CAM)': 'LEMO 7-pin (CAM)',
-    'EXT (LEMO 7-pin)': 'EXT LEMO 7-pin',
-    'Hirose 12pin': 'Hirose 12-pin',
-    '12-pin Hirose': 'Hirose 12-pin',
-    '12pin broadcast connector': 'Hirose 12-pin',
-    'Lens 12 pin': 'Hirose 12-pin',
-    'Lens terminal 12-pin': 'Hirose 12-pin',
-    'Lens terminal 12-pin jack': 'Hirose 12-pin',
-    'Lens Terminal': 'Hirose 12-pin',
-    'USB Type-C': 'USB-C',
-    'USB Type-C®': 'USB-C',
-    'USB-C (USB 3.2 / 3.1 Gen 1)': 'USB-C',
-    'USB-C / Gigabit Ethernet (via adapter)': 'USB-C',
-    'Active EF Mount': 'Active EF mount',
-    'LANC (2.5mm stereo mini jack)': 'LANC',
-    '2.5 mm Sub-Mini (LANC)': 'LANC',
-    'REMOTE A (2.5mm)': 'REMOTE A connector',
-    'Remote Control Terminal': 'REMOTE A connector',
-    'Remote 8 pin': 'REMOTE B connector'
-  };
-  return map[type] || type;
+  const key = String(type).trim().toLowerCase();
+  return FIZ_CONNECTOR_MAP[key] || type;
 }
 
 function normalizeViewfinderType(type) {
@@ -126,7 +133,7 @@ function normalizeViewfinderType(type) {
 }
 
 function normalizePowerPortType(type) {
-  if (!type) return '';
+  if (!type) return [];
   const map = {
     'LEMO 8-pin (DC In / BAT)': 'Bat LEMO 8-pin',
     'LEMO 8-pin (BAT)': 'Bat LEMO 8-pin',
@@ -151,11 +158,42 @@ function normalizePowerPortType(type) {
     '6-pin 1B DC-IN / TB50 Battery Mount': '6-pin 1B DC-IN / TB50'
   };
   const mapOne = val => map[val] || val;
-  if (Array.isArray(type)) {
-    return type.flatMap(t => mapOne(t).split('/').map(p => mapOne(p.trim())));
+  const toArray = val =>
+    mapOne(val)
+      .split('/')
+      .map(p => mapOne(p.trim()));
+  return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
+}
+
+function ensureList(list, defaults) {
+  if (!Array.isArray(list)) return [];
+  return list.map(item =>
+    typeof item === 'string'
+      ? { ...defaults, type: item }
+      : { ...defaults, ...(item || {}) }
+  );
+}
+
+function fixPowerInput(dev) {
+  if (!dev) return;
+  if (dev.powerInput && !dev.power?.input) {
+    dev.power = { ...(dev.power || {}), input: { type: normalizePowerPortType(dev.powerInput) } };
+    delete dev.powerInput;
   }
-  const parts = mapOne(type).split('/').map(p => mapOne(p.trim()));
-  return parts.length > 1 ? parts : parts[0];
+  const input = dev.power?.input;
+  if (!input) return;
+  const normalizeEntry = it => {
+    if (typeof it === 'string') {
+      return { type: normalizePowerPortType(it) };
+    }
+    if (it) {
+      const { portType: pType, type: tType, ...rest } = it;
+      const typeField = (!tType && pType) ? pType : tType;
+      return { ...rest, type: typeField ? normalizePowerPortType(typeField) : [] };
+    }
+    return { type: [] };
+  };
+  dev.power.input = Array.isArray(input) ? input.map(normalizeEntry) : normalizeEntry(input);
 }
 
 
@@ -168,43 +206,6 @@ if (storedDevices) {
 // consistent structures and value formats.
 function unifyDevices(data) {
   if (!data || typeof data !== 'object') return;
-  const fixPowerInput = dev => {
-    if (!dev) return;
-    if (dev.powerInput && !dev.power?.input) {
-      dev.power = Object.assign({}, dev.power, { input: { type: dev.powerInput } });
-      delete dev.powerInput;
-    }
-    const input = dev.power?.input;
-    if (!input) return;
-    if (Array.isArray(input)) {
-      input.forEach((it, idx) => {
-        if (typeof it === 'string') {
-          input[idx] = { type: normalizePowerPortType(it) };
-        } else if (it) {
-          if (it.portType && !it.type) it.type = it.portType;
-          if (it.type) it.type = normalizePowerPortType(it.type);
-          delete it.portType;
-        }
-      });
-      return;
-    }
-    if (input.portType && !input.type) {
-      input.type = input.portType;
-    }
-    if (input.type) {
-      input.type = normalizePowerPortType(input.type);
-    }
-    delete input.portType;
-  };
-  const ensureList = (list, defaults) => {
-    if (!Array.isArray(list)) return [];
-    return list.map(item => {
-      if (typeof item === 'string') {
-        return Object.assign({}, defaults, { type: item });
-      }
-      return Object.assign({}, defaults, item || {});
-    });
-  };
   Object.values(data.cameras || {}).forEach(cam => {
     if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
       delete cam.power.input.powerDrawWatts;
@@ -232,7 +233,13 @@ function unifyDevices(data) {
       });
     }
     if (cam.power) {
-      cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, { type: '', voltage: '', current: '', wattage: null, notes: '' });
+      cam.power.powerDistributionOutputs = ensureList(cam.power.powerDistributionOutputs, {
+        type: '',
+        voltage: '',
+        current: '',
+        wattage: null,
+        notes: ''
+      });
     }
     cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' }).flatMap(vo => {
       const norm = normalizeVideoType(vo.type);
@@ -240,9 +247,7 @@ function unifyDevices(data) {
       const count = parseInt(vo.count, 10);
       const num = Number.isFinite(count) && count > 0 ? count : 1;
       const notes = vo.notes || '';
-      const arr = [];
-      for (let i = 0; i < num; i++) arr.push({ type: norm, notes });
-      return arr;
+      return Array.from({ length: num }, () => ({ type: norm, notes }));
     });
     cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' }).map(fc => ({
       type: normalizeFizConnectorType(fc.type),
@@ -423,25 +428,26 @@ function formatConnLabel(from, to) {
 }
 
 
+const hasCamConnector = str => /CAM/i.test(str);
+const hasLemo7PinConnector = str => /7-pin/i.test(str);
+
 function controllerCamPort(name) {
   const isRf = /cforce.*rf/i.test(name) || /RIA-1/i.test(name);
   if (isRf) return 'Cam';
   const c = devices.fiz?.controllers?.[name];
   if (c) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
-    const connStr = (
-      c.fizConnectors ? c.fizConnectors.map(fc => fc.type).join(', ') : c.fizConnector || ''
-    );
-    if (/CAM/i.test(connStr)) return 'Cam';
-    if (/7-pin/i.test(connStr)) return 'LEMO 7-pin';
+    const connStr = c.fizConnectors
+      ? c.fizConnectors.map(fc => fc.type).join(', ')
+      : c.fizConnector || '';
+    if (hasCamConnector(connStr)) return 'Cam';
+    if (hasLemo7PinConnector(connStr)) return 'LEMO 7-pin';
   }
   const m = devices.fiz?.motors?.[name];
   if (m) {
-    const connStr = (
-      m.fizConnector || (m.fizConnectors || []).map(fc => fc.type).join(', ')
-    );
-    if (/CAM/i.test(connStr)) return 'Cam';
-    if (/7-pin/i.test(connStr)) return 'LEMO 7-pin';
+    const connStr = m.fizConnector || (m.fizConnectors || []).map(fc => fc.type).join(', ');
+    if (hasCamConnector(connStr)) return 'Cam';
+    if (hasLemo7PinConnector(connStr)) return 'LEMO 7-pin';
   }
   if (isArriOrCmotion(name) && !isRf) return 'LBUS';
   return 'FIZ Port';
@@ -1958,20 +1964,25 @@ function clearRecordingMedia() {
 function powerInputTypes(dev) {
   const out = [];
   if (!dev) return out;
+  const add = t => {
+    normalizePowerPortType(t).forEach(pt => out.push(pt));
+  };
   if (dev.powerInput) {
-    String(dev.powerInput).split('/').forEach(t => { if (t.trim()) out.push(normalizePowerPortType(t.trim())); });
+    String(dev.powerInput)
+      .split('/')
+      .forEach(t => {
+        if (t.trim()) add(t.trim());
+      });
   }
   const inp = dev.power?.input;
   if (Array.isArray(inp)) {
     inp.forEach(i => {
-      if (i && (i.type || i.portType)) out.push(normalizePowerPortType(i.type || i.portType));
+      const typeVal = i && (i.type || i.portType);
+      if (typeVal) add(typeVal);
     });
   } else if (inp) {
-    if (Array.isArray(inp.type)) {
-      inp.type.forEach(t => { if (t) out.push(normalizePowerPortType(t)); });
-    } else if (inp.type || inp.portType) {
-      out.push(normalizePowerPortType(inp.type || inp.portType));
-    }
+    const typeVal = inp.type || inp.portType;
+    if (typeVal) add(typeVal);
   }
   return out;
 }
@@ -6118,5 +6129,10 @@ if (typeof module !== "undefined" && module.exports) {
     connectionLabel,
     generateConnectorSummary,
     exportDiagramSvg,
+    fixPowerInput,
+    ensureList,
+    normalizeVideoType,
+    normalizeFizConnectorType,
+    normalizePowerPortType,
   };
 }
