@@ -5194,7 +5194,7 @@ let devices={
         }
       ]
     },
-    "Hollyland Mars M1 Enhanced": {
+    "Hollyland Mars M1 Enhanced (RX/TX)": {
       "screenSizeInches": 5.5,
       "brightnessNits": 1000,
       "powerDrawWatts": 16,
