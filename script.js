@@ -991,6 +991,10 @@ function setLanguage(lang) {
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
+    if (helpSearch) {
+      helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
+      helpSearch.setAttribute("aria-label", texts[lang].helpSearchLabel);
+    }
     if (closeHelpBtn) closeHelpBtn.textContent = texts[lang].helpClose;
     if (document.getElementById("helpTitle")) {
       document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
