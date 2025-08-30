@@ -387,10 +387,10 @@ describe('script.js functions', () => {
     document.getElementById('batterySelect').value = 'VBatt';
     script.updateCalculations();
 
-    const writeMock = jest.fn();
-    window.open = jest.fn(() => ({ document: { write: writeMock, close: jest.fn() } }));
     script.generatePrintableOverview();
-    const html = writeMock.mock.calls[0][0];
+    const dialog = document.getElementById('overviewDialog');
+    expect(dialog.open).toBe(true);
+    const html = dialog.innerHTML;
     expect(html).toContain('VBatt');
     expect(html).not.toContain('BBatt');
   });
@@ -584,8 +584,6 @@ describe('script.js functions', () => {
 
   test('generatePrintableOverview includes diagram and device blocks', () => {
     const { generatePrintableOverview } = script;
-    const writeMock = jest.fn();
-    window.open = jest.fn(() => ({ document: { write: writeMock, close: jest.fn() } }));
     document.getElementById('setupName').value = 'Test';
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -595,13 +593,12 @@ describe('script.js functions', () => {
     addOpt('cameraSelect', 'CamA');
     script.updateCalculations();
     generatePrintableOverview();
-    expect(window.open).toHaveBeenCalled();
-    const html = writeMock.mock.calls[0][0];
+    const dialog = document.getElementById('overviewDialog');
+    expect(dialog.open).toBe(true);
+    const html = dialog.innerHTML;
     expect(html).toContain('id="diagramArea"');
     expect(html).toContain('<svg');
     expect(html).toContain('class="device-block"');
-    expect(html).toContain('id="pinkModeToggle"');
-    expect(html).toContain('id="languageSelect"');
     expect(html).toContain('id="breakdownList"');
     expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });

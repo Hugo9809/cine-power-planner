@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="overview-print.css" media="print" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="icon" href="icon.png" type="image/png" />
   <link rel="apple-touch-icon" href="icon.png" />
@@ -718,7 +719,7 @@
           </details>
           <details class="faq-item">
             <summary>How can I print a setup overview?</summary>
-            <p>Save the setup, then click <em>Generate Overview</em> in Setup Actions and print from the new tab.</p>
+            <p>Save the setup, then click <em>Generate Overview</em> in Setup Actions and print from the dialog.</p>
           </details>
           <details class="faq-item">
             <summary>How do I compare different batteries?</summary>
@@ -841,7 +842,7 @@
       <option value="HEVC"></option>
       <option value="X-OCN"></option>
     </datalist>
-    <datalist id="framerateOptions">
+  <datalist id="framerateOptions">
       <option value="23.98"></option>
       <option value="24"></option>
       <option value="25"></option>
@@ -851,6 +852,7 @@
       <option value="120"></option>
     </datalist>
   </dialog>
+  <dialog id="overviewDialog"></dialog>
   <script src="data.js"></script>
   <script src="storage.js"></script>
   <script src="translations.js"></script>
