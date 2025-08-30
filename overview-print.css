@@ -9,8 +9,18 @@ body {
   font-size: 12pt;
 }
 
+h1 {
+  text-align: center;
+  margin-bottom: 0.5em;
+}
+
+p {
+  margin: 0.3em 0;
+}
+
 #langSelector,
-.print-btn {
+.print-btn,
+.back-btn {
   display: none;
 }
 
@@ -69,4 +79,9 @@ table, th, td {
 
 .device-block-grid.two-column {
   grid-template-columns: 1fr;
+}
+
+.page-break {
+  break-before: page;
+  page-break-before: always;
 }
