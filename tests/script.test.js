@@ -16,7 +16,7 @@ describe('script.js functions', () => {
 
     global.devices = {
       cameras: { CamA: { powerDrawWatts: 10 } },
-      monitors: { MonA: { powerDrawWatts: 5 } },
+      monitors: { MonA: { powerDrawWatts: 5, brightnessNits: 2300 } },
       video: { VidA: { powerDrawWatts: 3 } },
       fiz: {
         motors: { MotorA: { powerDrawWatts: 2 } },
@@ -89,6 +89,112 @@ describe('script.js functions', () => {
 
     expect(document.getElementById('batteryLife').textContent).toBe('2.00');
     expect(document.getElementById('runtimeAverageNote').textContent).toBe(texts.en.runtimeAverageNote);
+  });
+
+  test('applies temperature scaling to user runtime', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    const key = script.getCurrentSetupKey();
+    const entries = Array.from({ length: 5 }, () => ({ runtime: '1', temperature: '0' }));
+    global.loadFeedback.mockReturnValue({ [key]: entries });
+
+    script.updateCalculations();
+
+    expect(document.getElementById('batteryLife').textContent).toBe('1.25');
+  });
+
+  test('weighs high-resolution entries by camera power share', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    const key = script.getCurrentSetupKey();
+    const entries = [
+      { runtime: '1', resolution: '4k' },
+      { runtime: '2', resolution: '1080p' },
+      { runtime: '2', resolution: '1080p' },
+      { runtime: '2', resolution: '1080p' },
+      { runtime: '2', resolution: '1080p' }
+    ];
+    global.loadFeedback.mockReturnValue({ [key]: entries });
+
+    script.updateCalculations();
+
+    expect(document.getElementById('batteryLife').textContent).toBe('1.77');
+  });
+
+  test('weights codecs by camera power share', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    const key = script.getCurrentSetupKey();
+    const entries = [
+      { runtime: '1', codec: 'XAVC HS' },
+      { runtime: '2', codec: 'BRAW' },
+      { runtime: '2', codec: 'BRAW' },
+      { runtime: '2', codec: 'BRAW' },
+      { runtime: '2', codec: 'BRAW' }
+    ];
+    global.loadFeedback.mockReturnValue({ [key]: entries });
+
+    script.updateCalculations();
+
+    expect(document.getElementById('batteryLife').textContent).toBe('1.75');
+  });
+
+  test('weights monitor brightness by monitor power share', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    const key = script.getCurrentSetupKey();
+    const entries = [
+      { runtime: '1', monitorBrightness: '1150' },
+      { runtime: '2' },
+      { runtime: '2' },
+      { runtime: '2' },
+      { runtime: '2' }
+    ];
+    global.loadFeedback.mockReturnValue({ [key]: entries });
+
+    script.updateCalculations();
+
+    expect(document.getElementById('batteryLife').textContent).toBe('1.82');
   });
 
   test('B-Mount camera uses high-voltage current labels', () => {
