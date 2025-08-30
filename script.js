@@ -6102,6 +6102,42 @@ function generatePrintableOverview() {
                     }
                 });
 
+                let printState = null;
+                const applyPrintStyles = () => {
+                    const diagramArea = document.getElementById('diagramArea');
+                    const diagramSvg = diagramArea ? diagramArea.querySelector('svg') : null;
+                    printState = {
+                        dark: document.body.classList.contains('dark-mode'),
+                        pink: document.body.classList.contains('pink-mode'),
+                        light: document.body.classList.contains('light-mode'),
+                        bodyBg: document.body.style.backgroundColor,
+                        bodyColor: document.body.style.color,
+                        diagramBg: diagramArea ? diagramArea.style.backgroundColor : '',
+                        svgBg: diagramSvg ? diagramSvg.style.backgroundColor : ''
+                    };
+                    document.body.classList.add('light-mode');
+                    document.body.classList.remove('dark-mode');
+                    document.body.style.backgroundColor = '#ffffff';
+                    document.body.style.color = '#000000';
+                    if (diagramArea) diagramArea.style.backgroundColor = '#ffffff';
+                    if (diagramSvg) diagramSvg.style.backgroundColor = '#ffffff';
+                };
+                const restorePrintStyles = () => {
+                    if (!printState) return;
+                    const { dark, pink, light, bodyBg, bodyColor, diagramBg, svgBg } = printState;
+                    document.body.style.backgroundColor = bodyBg;
+                    document.body.style.color = bodyColor;
+                    const diagramArea = document.getElementById('diagramArea');
+                    const diagramSvg = diagramArea ? diagramArea.querySelector('svg') : null;
+                    if (diagramArea) diagramArea.style.backgroundColor = diagramBg;
+                    if (diagramSvg) diagramSvg.style.backgroundColor = svgBg;
+                    if (!light) document.body.classList.remove('light-mode');
+                    if (dark) document.body.classList.add('dark-mode');
+                    if (pink) document.body.classList.add('pink-mode');
+                };
+                window.addEventListener('beforeprint', applyPrintStyles);
+                window.addEventListener('afterprint', restorePrintStyles);
+
                 const downloadBtn = document.getElementById('downloadDiagram');
                 if (downloadBtn) {
                     downloadBtn.addEventListener('click', (e) => {
