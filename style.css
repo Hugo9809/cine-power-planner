@@ -530,7 +530,8 @@ button:disabled {
   padding: 2px 6px;
   margin: 2px;
   border-radius: 3px;
-  background: rgba(0,0,0,0.03);
+  border: 1px solid;
+  background-color: rgba(0,0,0,0.03);
   font-size: 0.75em;
 }
 
@@ -796,12 +797,12 @@ button:disabled {
     border-color: #888;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   }
+  .info-box,
+  .tray-box,
   .connector-block { background-color: rgba(255,255,255,0.1); }
   .power-conn { background-color: rgba(244, 67, 54, 0.3); }
   .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
   .video-conn { background-color: rgba(33, 150, 243, 0.3); }
-  .info-box,
-  .tray-box { background-color: rgba(255,255,255,0.1); }
   #setupDiagram .node-box { fill: #333; stroke: none; }
   #setupDiagram .node-box.first-fiz { stroke: none; }
   #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
