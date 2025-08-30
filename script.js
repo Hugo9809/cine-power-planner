@@ -3306,17 +3306,67 @@ function renderFeedbackTable(currentKey) {
     });
   });
 
+  const parseNumber = str => {
+    if (!str) return NaN;
+    const m = String(str).match(/-?\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : NaN;
+  };
+
+  const resolutionWeight = res => {
+    if (!res) return 1;
+    const lc = String(res).toLowerCase();
+    const xy = lc.match(/(\d+)\s*x\s*(\d+)/);
+    if (xy) {
+      const w = parseInt(xy[1], 10);
+      const h = parseInt(xy[2], 10);
+      return (w * h) / 1e6; // megapixels
+    }
+    const k = lc.match(/(\d+(?:\.\d+)?)\s*k/);
+    if (k) return parseFloat(k[1]);
+    const num = parseNumber(lc);
+    return Number.isNaN(num) ? 1 : num / 1000;
+  };
+
+  const fpsWeight = fps => {
+    const num = parseNumber(fps);
+    return Number.isNaN(num) ? 1 : num;
+  };
+
+  const tempFactor = t => {
+    const temp = parseNumber(t);
+    if (Number.isNaN(temp)) return 1;
+    if (temp <= -20) return 0.5;
+    if (temp <= -10) return 0.625;
+    if (temp <= 0) return 0.8;
+    return 1;
+  };
+
+  const monitor = devices.monitors?.[monitorSelect.value];
+  const savedBrightness = parseFloat(monitor?.brightnessNits);
+
   let sum = 0;
+  let weightSum = 0;
   let count = 0;
   entries.forEach(e => {
-    const rt = parseFloat(e.runtime);
-    if (!Number.isNaN(rt)) {
-      sum += rt;
-      count++;
+    const rt = parseNumber(e.runtime);
+    if (Number.isNaN(rt)) return;
+    count++;
+
+    let w = resolutionWeight(e.resolution) * fpsWeight(e.framerate);
+    w *= e.cameraWifi === 'on' ? 1.1 : 1;
+    if (savedBrightness && e.monitorBrightness) {
+      const mb = parseNumber(e.monitorBrightness);
+      if (!Number.isNaN(mb) && mb < savedBrightness) {
+        w *= mb / savedBrightness;
+      }
     }
+
+    const adjRuntime = rt / tempFactor(e.temperature);
+    sum += adjRuntime * w;
+    weightSum += w;
   });
-  if (count >= 3) {
-    return sum / count;
+  if (count >= 4 && weightSum > 0) {
+    return sum / weightSum;
   }
   return null;
 }

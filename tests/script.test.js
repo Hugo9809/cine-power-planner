@@ -16,7 +16,7 @@ describe('script.js functions', () => {
 
     global.devices = {
       cameras: { CamA: { powerDrawWatts: 10 } },
-      monitors: { MonA: { powerDrawWatts: 5 } },
+      monitors: { MonA: { powerDrawWatts: 5, brightnessNits: 1000 } },
       video: { VidA: { powerDrawWatts: 3 } },
       fiz: {
         motors: { MotorA: { powerDrawWatts: 2 } },
@@ -33,6 +33,8 @@ describe('script.js functions', () => {
     global.saveSetup = jest.fn();
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
+    global.loadFeedback = jest.fn(() => ({}));
+    global.saveFeedback = jest.fn();
 
     require('../translations.js');
     script = require('../script.js');
@@ -1205,6 +1207,33 @@ describe('script.js functions', () => {
     nameInput.value = '';
     script.applySharedSetupFromUrl();
     expect(nameInput.value).toBe('Shared Setup');
+  });
+
+  test('renderFeedbackTable computes weighted runtime average', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+
+    const key = script.getCurrentSetupKey();
+    const entries = [
+      { runtime: '2', resolution: '8K', framerate: '60', cameraWifi: 'on', monitorBrightness: '1000', temperature: '25' },
+      { runtime: '3', resolution: '4K', framerate: '30', cameraWifi: 'off', monitorBrightness: '500', temperature: '25' },
+      { runtime: '1.6', resolution: '8K', framerate: '30', cameraWifi: 'on', monitorBrightness: '1000', temperature: '0' },
+      { runtime: '1', resolution: '4K', framerate: '24', cameraWifi: 'off', monitorBrightness: '1000', temperature: '-10' }
+    ];
+    global.loadFeedback.mockReturnValue({ [key]: entries });
+
+    const avg = script.renderFeedbackTable(key);
+    expect(avg).toBeCloseTo(2.02, 2);
   });
 });
 
