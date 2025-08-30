@@ -778,7 +778,7 @@ const texts = {
     monitorDetailsHeading: "Détails du Moniteur",
     monitorPowerHeading: "Entrée d'Alimentation",
     addDeviceBtn: "Ajouter",
-    updateDeviceBtn: "Mettre à Jour",
+    updateDeviceBtn: "Mettre à jour",
     editBtn: "Modifier",
     deleteDeviceBtn: "Supprimer",
     cancelEditBtn: "Annuler",
