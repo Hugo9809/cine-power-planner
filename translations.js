@@ -699,8 +699,8 @@ const texts = {
     downloadDiagramBtn: "Télécharger le Diagramme",
     gridSnapToggle: "Aligner sur la grille",
     existingDevicesHeading: "Appareils Existants",
-    darkModeLabel: "Basculer mode sombre",
-    pinkModeLabel: "Basculer mode rose",
+    darkModeLabel: "Basculer en mode sombre",
+    pinkModeLabel: "Basculer en mode rose",
 
     savedSetupsLabel: "Configurations enregistrées:",
     newSetupOption: "-- Nouvelle Configuration --",
