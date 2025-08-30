@@ -11,6 +11,9 @@ const VIDEO_OUTPUT_TYPES = [
   'Micro HDMI'
 ];
 
+const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+const localeSort = (a, b) => collator.compare(a, b);
+
 // Labels for B-Mount support are defined in translations.js using the keys
 // batteryBMountLabel, totalCurrent336Label and totalCurrent216Label.
 
@@ -1258,7 +1261,7 @@ function getAllFizConnectorTypes() {
       });
     }
   });
-  return Array.from(types).sort();
+  return Array.from(types).sort(localeSort);
 }
 
 let fizConnectorOptions = getAllFizConnectorTypes();
@@ -1286,7 +1289,7 @@ function getAllMotorConnectorTypes() {
   Object.values(devices.fiz?.motors || {}).forEach(m => {
     if (m && m.fizConnector) types.add(m.fizConnector);
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 let motorConnectorOptions = getAllMotorConnectorTypes();
@@ -1314,7 +1317,7 @@ function getAllControllerConnectors() {
       c.fizConnectors.forEach(fc => { if (fc && fc.type) types.add(fc.type); });
     }
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 function getAllControllerPowerSources() {
@@ -1322,7 +1325,7 @@ function getAllControllerPowerSources() {
   Object.values(devices.fiz?.controllers || {}).forEach(c => {
     if (c && c.power_source) types.add(c.power_source);
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 function getAllControllerBatteryTypes() {
@@ -1330,7 +1333,7 @@ function getAllControllerBatteryTypes() {
   Object.values(devices.fiz?.controllers || {}).forEach(c => {
     if (c && c.battery_type) types.add(c.battery_type);
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 function getAllControllerConnectivity() {
@@ -1338,7 +1341,7 @@ function getAllControllerConnectivity() {
   Object.values(devices.fiz?.controllers || {}).forEach(c => {
     if (c && c.connectivity) types.add(c.connectivity);
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 let controllerConnectorOptions = getAllControllerConnectors();
@@ -1415,7 +1418,7 @@ function getAllDistanceConnections() {
   Object.values(devices.fiz?.distance || {}).forEach(d => {
     if (d && d.connection_compatibility) types.add(d.connection_compatibility);
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 function getAllDistanceMethods() {
@@ -1423,7 +1426,7 @@ function getAllDistanceMethods() {
   Object.values(devices.fiz?.distance || {}).forEach(d => {
     if (d && d.measurement_method) types.add(d.measurement_method);
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 function getAllDistanceDisplays() {
@@ -1431,7 +1434,7 @@ function getAllDistanceDisplays() {
   Object.values(devices.fiz?.distance || {}).forEach(d => {
     if (d && d.output_display) types.add(d.output_display);
   });
-  return Array.from(types).filter(Boolean).sort();
+  return Array.from(types).filter(Boolean).sort(localeSort);
 }
 
 let distanceConnectionOptions = getAllDistanceConnections();
@@ -1847,7 +1850,7 @@ function getAllRecordingMedia() {
       cam.recordingMedia.forEach(m => { if (m && m.type) media.add(m.type); });
     }
   });
-  return Array.from(media).sort();
+  return Array.from(media).sort(localeSort);
 }
 
 let recordingMediaOptions = getAllRecordingMedia();
@@ -1978,7 +1981,7 @@ function getAllPowerPortTypes() {
   Object.values(devices.fiz?.motors || {}).forEach(m => powerInputTypes(m).forEach(t => types.add(t)));
   Object.values(devices.fiz?.controllers || {}).forEach(c => powerInputTypes(c).forEach(t => types.add(t)));
   Object.values(devices.fiz?.distance || {}).forEach(d => powerInputTypes(d).forEach(t => types.add(t)));
-  return Array.from(types).sort();
+  return Array.from(types).sort(localeSort);
 }
 
 let powerPortOptions = getAllPowerPortTypes();
@@ -2020,7 +2023,7 @@ function getAllPlateTypes() {
       });
     }
   });
-  return Array.from(types).sort();
+  return Array.from(types).sort(localeSort);
 }
 
 let plateTypeOptions = getAllPlateTypes();
@@ -2135,7 +2138,7 @@ function getAllViewfinderTypes() {
       });
     }
   });
-  return Array.from(types).sort();
+  return Array.from(types).sort(localeSort);
 }
 
 function getAllViewfinderConnectors() {
@@ -2147,7 +2150,7 @@ function getAllViewfinderConnectors() {
       });
     }
   });
-  return Array.from(conns).filter(c => c).sort();
+  return Array.from(conns).filter(c => c).sort(localeSort);
 }
 
 let viewfinderTypeOptions = getAllViewfinderTypes();
@@ -2265,7 +2268,7 @@ function getAllMountTypes() {
       });
     }
   });
-  return Array.from(types).sort();
+  return Array.from(types).sort(localeSort);
 }
 
 let mountTypeOptions = getAllMountTypes();
@@ -2373,7 +2376,7 @@ function getAllPowerDistTypes() {
       list.forEach(pd => { if (pd && pd.type) types.add(pd.type); });
     }
   });
-  return Array.from(types).sort();
+  return Array.from(types).sort(localeSort);
 }
 
 let powerDistTypeOptions = getAllPowerDistTypes();
@@ -2385,7 +2388,7 @@ function getAllPowerDistVoltages() {
       list.forEach(pd => { if (pd && pd.voltage) volts.add(pd.voltage); });
     }
   });
-  return Array.from(volts).filter(v => v).sort();
+  return Array.from(volts).filter(v => v).sort(localeSort);
 }
 
 function getAllPowerDistCurrents() {
@@ -2396,7 +2399,7 @@ function getAllPowerDistCurrents() {
       list.forEach(pd => { if (pd && pd.current) currents.add(pd.current); });
     }
   });
-  return Array.from(currents).filter(c => c).sort();
+  return Array.from(currents).filter(c => c).sort(localeSort);
 }
 
 let powerDistVoltageOptions = getAllPowerDistVoltages();
@@ -2581,7 +2584,7 @@ function getAllTimecodeTypes() {
       list.forEach(tc => { if (tc && tc.type) types.add(tc.type); });
     }
   });
-  return Array.from(types).sort();
+  return Array.from(types).sort(localeSort);
 }
 
 let timecodeTypeOptions = getAllTimecodeTypes();
@@ -2689,7 +2692,7 @@ function populateSelect(selectElem, optionsObj, includeNone=true) {
   }
   Object.keys(optionsObj)
     .filter(name => name !== "None")
-    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+    .sort(localeSort)
     .forEach(name => {
       const opt = document.createElement("option");
       opt.value = name;
