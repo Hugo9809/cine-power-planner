@@ -276,6 +276,8 @@ body:not(.light-mode) #feedbackDialog {
   border-radius: 4px;
   font-size: 0.8rem;
   pointer-events: none;
+  max-width: 200px;
+  white-space: normal;
 }
 
 #hoverHelpTooltip[hidden] {

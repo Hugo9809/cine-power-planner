@@ -6503,19 +6503,32 @@ if (helpButton && helpDialog) {
 
   document.addEventListener('mouseover', e => {
     if (!hoverHelpActive || !hoverHelpTooltip) return;
-    const el = e.target.closest('[data-help], [aria-label], [title]');
-    if (!el) {
-      hoverHelpTooltip.setAttribute('hidden', '');
-      return;
+    const el =
+      e.target.closest(
+        '[data-help], [aria-label], [title], [aria-labelledby], [alt]' +
+          ', button, a, input, select, textarea, label'
+      ) || e.target;
+    let text =
+      el.getAttribute('data-help') ||
+      el.getAttribute('aria-label') ||
+      el.getAttribute('title');
+    if (!text) {
+      const labelled = el.getAttribute('aria-labelledby');
+      if (labelled) {
+        const labelEl = document.getElementById(labelled);
+        if (labelEl) text = labelEl.textContent.trim();
+      }
     }
-    const text = el.getAttribute('data-help') || el.getAttribute('aria-label') || el.getAttribute('title');
+    if (!text) text = el.getAttribute('alt');
+    if (!text) text = el.textContent.trim();
     if (!text) {
       hoverHelpTooltip.setAttribute('hidden', '');
       return;
     }
-    hoverHelpTooltip.textContent = text;
-    hoverHelpTooltip.style.top = `${e.clientY + 10}px`;
-    hoverHelpTooltip.style.left = `${e.clientX + 10}px`;
+    hoverHelpTooltip.textContent = text.slice(0, 200);
+    const rect = el.getBoundingClientRect();
+    hoverHelpTooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
+    hoverHelpTooltip.style.left = `${rect.left + window.scrollX}px`;
     hoverHelpTooltip.removeAttribute('hidden');
   });
 
