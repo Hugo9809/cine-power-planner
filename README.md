@@ -17,7 +17,7 @@ Recent updates include:
 - **Searchable help dialog** – open with the ? button or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
-- **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report.
+- **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
 
 See the language-specific README files for full details.
 
@@ -45,6 +45,7 @@ User-submitted battery runtimes are combined using a weighted average to better 
 - Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7.
 - Monitor entries below the specified brightness are weighted by their brightness ratio.
 - The final weight reflects how much of the total power draw comes from the camera, monitor and other devices so that similar rigs count more.
+- A dedicated dashboard orders entries by weight and shows the share percentage for each runtime entry.
 
 ## Quick Start
 

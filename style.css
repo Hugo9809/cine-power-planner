@@ -830,6 +830,11 @@ body:not(.light-mode) #userFeedbackTable td {
   transition: width 0.5s ease-out;
 }
 
+.weightingPercent {
+  margin-left: 0.5em;
+  font-size: 0.9em;
+}
+
 .selectedBatteryRow {
     background-color: #e6f7ff; /* Light blue background for selected row */
     font-weight: bold;
