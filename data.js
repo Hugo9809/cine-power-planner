@@ -5139,7 +5139,7 @@ let devices={
       ],
       "videoOutputs": []
     },
-    "Hollyland Pyro 7 (TX)": {
+    "Hollyland Pyro 7 (RX/TX)": {
       "screenSizeInches": 7,
       "brightnessNits": 1200,
       "powerDrawWatts": 22,
@@ -5168,7 +5168,7 @@ let devices={
         }
       ]
     },
-    "Hollyland Pyro 5": {
+    "Hollyland Pyro 5 (RX/TX)": {
       "screenSizeInches": 5,
       "brightnessNits": 1500,
       "powerDrawWatts": 16.5,
