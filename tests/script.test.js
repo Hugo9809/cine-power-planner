@@ -1498,6 +1498,37 @@ describe('script.js functions', () => {
     expect(document.body.style.cursor).toBe('');
   });
 
+  test('help dialog controls expose descriptive hover help', () => {
+    const helpButton = document.getElementById('helpButton');
+    const hoverHelpButton = document.getElementById('hoverHelpButton');
+    const helpSearch = document.getElementById('helpSearch');
+    const helpSearchClear = document.getElementById('helpSearchClear');
+    const closeHelp = document.getElementById('closeHelp');
+
+    expect(helpButton.getAttribute('data-help')).toBe(texts.en.helpButtonHelp);
+    expect(hoverHelpButton.getAttribute('data-help')).toBe(
+      texts.en.hoverHelpButtonHelp
+    );
+    expect(helpSearch.getAttribute('data-help')).toBe(texts.en.helpSearchHelp);
+    expect(helpSearchClear.getAttribute('data-help')).toBe(
+      texts.en.helpSearchClearHelp
+    );
+    expect(closeHelp.getAttribute('data-help')).toBe(texts.en.helpCloseHelp);
+
+    const helpDialog = document.getElementById('helpDialog');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    helpSearch.dispatchEvent(
+      new MouseEvent('mouseover', { bubbles: true, clientX: 10, clientY: 10 })
+    );
+    const tooltip = document.getElementById('hoverHelpTooltip');
+    expect(tooltip.textContent).toBe(texts.en.helpSearchHelp);
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+  });
+
   test('generateConnectorSummary labels extras', () => {
     const data = {
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },

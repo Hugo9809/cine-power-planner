@@ -1046,28 +1046,53 @@ function setLanguage(lang) {
   if (darkModeToggle) {
     darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
     darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
+    darkModeToggle.setAttribute("data-help", texts[lang].darkModeLabel);
   }
   if (pinkModeToggle) {
     pinkModeToggle.setAttribute("title", texts[lang].pinkModeLabel);
     pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
+    pinkModeToggle.setAttribute("data-help", texts[lang].pinkModeLabel);
   }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
-    helpButton.setAttribute("data-help", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
+    helpButton.setAttribute(
+      "data-help",
+      texts[lang].helpButtonHelp ||
+        texts[lang].helpButtonTitle ||
+        texts[lang].helpButtonLabel
+    );
     if (hoverHelpButton) {
       hoverHelpButton.textContent = texts[lang].hoverHelpButtonLabel;
       hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
+      hoverHelpButton.setAttribute(
+        "data-help",
+        texts[lang].hoverHelpButtonHelp || texts[lang].hoverHelpButtonLabel
+      );
     }
     if (helpSearch) {
       helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
       helpSearch.setAttribute("aria-label", texts[lang].helpSearchLabel);
+      helpSearch.setAttribute(
+        "data-help",
+        texts[lang].helpSearchHelp || texts[lang].helpSearchLabel
+      );
     }
     if (helpSearchClear) {
       helpSearchClear.setAttribute("title", texts[lang].helpSearchClear);
       helpSearchClear.setAttribute("aria-label", texts[lang].helpSearchClear);
+      helpSearchClear.setAttribute(
+        "data-help",
+        texts[lang].helpSearchClearHelp || texts[lang].helpSearchClear
+      );
     }
-    if (closeHelpBtn) closeHelpBtn.textContent = texts[lang].helpClose;
+    if (closeHelpBtn) {
+      closeHelpBtn.textContent = texts[lang].helpClose;
+      closeHelpBtn.setAttribute(
+        "data-help",
+        texts[lang].helpCloseHelp || texts[lang].helpClose
+      );
+    }
     if (document.getElementById("helpTitle")) {
       document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
     }
