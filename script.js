@@ -812,6 +812,7 @@ function setLanguage(lang) {
   document.title = texts[lang].appTitle;
   document.getElementById("mainTitle").textContent = texts[lang].appHeading;
   document.getElementById("tagline").textContent = texts[lang].tagline;
+  if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   // Section headings
   document.getElementById("setupManageHeading").textContent = texts[lang].setupManageHeading;
   document.getElementById("deviceSelectionHeading").textContent = texts[lang].deviceSelectionHeading;
@@ -1104,6 +1105,7 @@ const exportBtn       = document.getElementById("exportDataBtn");
 const exportOutput    = document.getElementById("exportOutput");
 const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
+const skipLink       = document.getElementById("skipLink");
 const languageSelect  = document.getElementById("languageSelect");
 const darkModeToggle  = document.getElementById("darkModeToggle");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
