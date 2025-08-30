@@ -1047,7 +1047,7 @@ function setLanguage(lang) {
     pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
   }
   if (helpButton) {
-    helpButton.setAttribute("title", texts[lang].helpButtonLabel);
+    helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
     if (helpSearch) {
       helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
