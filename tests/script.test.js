@@ -1,6 +1,7 @@
 /* global texts devices */
 const fs = require('fs');
 const path = require('path');
+const LZString = require('lz-string');
 
 describe('script.js functions', () => {
   let script;
@@ -1397,7 +1398,7 @@ describe('script.js functions', () => {
     expect(global.prompt).toHaveBeenCalled();
     const link = global.prompt.mock.calls[0][1];
     const encoded = new URL(link).searchParams.get('shared');
-    const decoded = JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
+    const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
     expect(decoded.setupName).toBe('My Setup');
   });
 
@@ -1426,14 +1427,25 @@ describe('script.js functions', () => {
     btn.click();
     const link = global.prompt.mock.calls[0][1];
     const encoded = new URL(link).searchParams.get('shared');
-    const decoded = JSON.parse(Buffer.from(encoded, 'base64').toString('utf-8'));
+    const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
     expect(decoded.changedDevices.cameras.CamA.powerDrawWatts).toBe(20);
     expect(decoded.feedback[0].runtime).toBe('1h');
   });
 
+  test('shareSetupBtn generates shorter encoded link than base64', () => {
+    global.prompt = jest.fn();
+    const btn = document.getElementById('shareSetupBtn');
+    btn.click();
+    const link = global.prompt.mock.calls[0][1];
+    const encoded = new URL(link).searchParams.get('shared');
+    const decodedObj = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
+    const base64 = Buffer.from(JSON.stringify(decodedObj)).toString('base64');
+    expect(encoded.length).toBeLessThan(base64.length);
+  });
+
   test('applySharedSetupFromUrl restores setup name', () => {
     const data = { setupName: 'Shared Setup' };
-    const encoded = Buffer.from(JSON.stringify(data)).toString('base64');
+    const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(data));
     window.history.pushState({}, '', `/?shared=${encoded}`);
     const nameInput = document.getElementById('setupName');
     nameInput.value = '';
