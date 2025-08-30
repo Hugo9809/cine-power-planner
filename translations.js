@@ -5,6 +5,7 @@ const texts = {
     appTitle: "Camera Power Planner",
     appHeading: "Camera Power Consumption App",
     tagline: "Plan your camera setup and calculate power consumption & battery life.",
+    skipToContent: "Skip to content",
 
     setupManageHeading: "Manage Setup",
     deviceSelectionHeading: "Device Selection",
@@ -215,6 +216,7 @@ const texts = {
     appTitle: "Pianificatore di alimentazione della fotocamera",
     appHeading: "App per consumo di energia della fotocamera",
     tagline: "Pianifica la configurazione della fotocamera e calcola il consumo di energia e la durata della batteria.",
+    skipToContent: "Vai al contenuto",
     setupManageHeading: "Gestisci la configurazione",
     deviceSelectionHeading: "Selezione del dispositivo",
     resultsHeading: "Risultati",
@@ -405,6 +407,7 @@ const texts = {
     appTitle: "Planificador de Consumo de Cámara",
     appHeading: "Aplicación de Consumo de Energía de Cámara",
     tagline: "Planifica tu equipo y calcula consumo y autonomía de la batería.",
+    skipToContent: "Saltar al contenido",
 
     setupManageHeading: "Gestionar Configuración",
     deviceSelectionHeading: "Selección de Dispositivos",
@@ -613,6 +616,7 @@ const texts = {
     appTitle: "Planificateur de Consommation Caméra",
     appHeading: "Application de Consommation Caméra",
     tagline: "Planifiez votre configuration et calculez la consommation et l'autonomie.",
+    skipToContent: "Aller au contenu",
 
     setupManageHeading: "Gérer la Configuration",
     deviceSelectionHeading: "Sélection des Appareils",
@@ -821,6 +825,7 @@ const texts = {
     appTitle: "Kamera Stromverbrauchs Planer",
     appHeading: "Kamera-Stromverbrauchs-App",
     tagline: "Plane dein Kamera-Setup und berechne Stromverbrauch und Akkulaufzeit.",
+    skipToContent: "Zum Inhalt springen",
 
     setupManageHeading: "Setup verwalten",
     deviceSelectionHeading: "Geräte-Auswahl",
