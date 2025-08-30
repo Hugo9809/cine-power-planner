@@ -1183,8 +1183,19 @@ describe('monitor wireless metadata', () => {
     expect(devices.monitors['SmallHD Ultra 7'].wirelessTx).toBe(false);
   });
 
-  test('Hollyland Mars M1 Enhanced retains wirelessTx flag', () => {
+  test('SmallHD Cine 7 Bolt 4K TX reports latency', () => {
     const devices = require('../data.js');
-    expect(devices.monitors['Hollyland Mars M1 Enhanced'].wirelessTx).toBe(false);
+    expect(devices.monitors['SmallHD Cine 7 Bolt 4K TX'].latencyMs).toBe('< 1ms');
+  });
+
+  test('Hollyland Pyro 5 reports latency', () => {
+    const devices = require('../data.js');
+    expect(devices.monitors['Hollyland Pyro 5'].latencyMs).toBe('50ms');
+  });
+
+  test('Hollyland Mars M1 Enhanced exposes wirelessTx and latency', () => {
+    const devices = require('../data.js');
+    expect(devices.monitors['Hollyland Mars M1 Enhanced'].wirelessTx).toBe(true);
+    expect(devices.monitors['Hollyland Mars M1 Enhanced'].latencyMs).toBe('< 80ms');
   });
 });

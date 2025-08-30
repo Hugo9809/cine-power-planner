@@ -4817,6 +4817,7 @@ let devices={
         "output": null
       },
       "wirelessTx": true,
+      "latencyMs": "< 1ms",
       "videoInputs": [
         {
           "type": "HDMI"
@@ -4875,6 +4876,7 @@ let devices={
         "output": null
       },
       "wirelessTx": true,
+      "latencyMs": "< 1ms",
       "videoInputs": [
         {
           "type": "HDMI"
@@ -4933,6 +4935,7 @@ let devices={
         "output": null
       },
       "wirelessTx": true,
+      "latencyMs": "< 1ms",
       "videoInputs": [
         {
           "type": "HDMI"
@@ -5013,6 +5016,7 @@ let devices={
         "output": null
       },
       "wirelessTx": true,
+      "latencyMs": "< 1ms",
       "videoInputs": [
         {
           "type": "HDMI"
@@ -5071,6 +5075,7 @@ let devices={
         "output": null
       },
       "wirelessTx": true,
+      "latencyMs": "< 1ms",
       "videoInputs": [
         {
           "type": "HDMI"
@@ -5151,6 +5156,7 @@ let devices={
         "output": null
       },
       "wirelessTx": true,
+      "latencyMs": "50ms",
       "videoInputs": [
         {
           "type": "HDMI"
@@ -5180,6 +5186,7 @@ let devices={
         "output": null
       },
       "wirelessTx": true,
+      "latencyMs": "50ms",
       "videoInputs": [
         {
           "type": "HDMI"
@@ -5205,7 +5212,8 @@ let devices={
         },
         "output": null
       },
-      "wirelessTx": false,
+      "wirelessTx": true,
+      "latencyMs": "< 80ms",
       "audioOutput": {
         "portType": "3.5mm Headphone Jack"
       },
