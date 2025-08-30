@@ -30,6 +30,8 @@ module.exports = [
         saveSetup: 'readonly',
         loadSetup: 'readonly',
         deleteSetup: 'readonly',
+        loadFeedback: 'readonly',
+        saveFeedback: 'readonly',
       },
     },
   },

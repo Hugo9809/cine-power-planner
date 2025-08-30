@@ -1159,6 +1159,11 @@ const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
+const feedbackDialog = document.getElementById("feedbackDialog");
+const feedbackForm = document.getElementById("feedbackForm");
+const feedbackCancelBtn = document.getElementById("fbCancel");
+const loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
+const saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
 const setupDiagramContainer = document.getElementById("diagramArea");
 const diagramLegend = document.getElementById("diagramLegend");
 const downloadDiagramBtn = document.getElementById("downloadDiagram");
@@ -3210,10 +3215,55 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   } else {
     batteryComparisonSection.style.display = "none";
   }
+  const override = renderFeedbackTable(getCurrentSetupKey());
+  if (override !== null) {
+    batteryLifeElem.textContent = override.toFixed(2);
+  }
   checkFizCompatibility();
   checkFizController();
   checkArriCompatibility();
   if (setupDiagramContainer) renderSetupDiagram();
+}
+
+function getCurrentSetupKey() {
+  const camera = cameraSelect.value || '';
+  const monitor = monitorSelect.value || '';
+  const video = videoSelect.value || '';
+  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
+  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
+  const distance = distanceSelect.value || '';
+  const battery = batterySelect.value || '';
+  const plate = getSelectedPlate() || '';
+  return [camera, monitor, video, motors, controllers, distance, battery, plate].join('|');
+}
+
+function renderFeedbackTable(key) {
+  const table = document.getElementById('userFeedbackTable');
+  const data = loadFeedbackSafe();
+  const entries = data[key] || [];
+  if (!entries.length) {
+    if (table) {
+      table.innerHTML = '';
+      table.classList.add('hidden');
+    }
+    return null;
+  }
+  table.classList.remove('hidden');
+  table.innerHTML = '<tr><th>User</th><th>Runtime (h)</th><th>Date</th></tr>';
+  let sum = 0;
+  let count = 0;
+  entries.forEach(e => {
+    const rt = parseFloat(e.runtime);
+    if (!Number.isNaN(rt)) {
+      sum += rt;
+      count++;
+    }
+    table.innerHTML += `<tr><td>${escapeHtml(e.username || '')}</td><td>${e.runtime || ''}</td><td>${e.date || ''}</td></tr>`;
+  });
+  if (count >= 3) {
+    return sum / count;
+  }
+  return null;
 }
 
 function renderSetupDiagram() {
@@ -4980,33 +5030,72 @@ generateOverviewBtn.addEventListener('click', () => {
     generatePrintableOverview();
 });
 
-// Prepare an email with current setup details for runtime feedback
-if (runtimeFeedbackBtn) {
-    runtimeFeedbackBtn.addEventListener('click', () => {
-        const lines = [];
-        lines.push('Camera Power Planner runtime feedback');
-        lines.push('');
-        lines.push(`Camera: ${cameraSelect.value || 'None'}`);
-        lines.push(`Monitor: ${monitorSelect.value || 'None'}`);
-        lines.push(`Wireless Video: ${videoSelect.value || 'None'}`);
-        const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-        lines.push(`FIZ Motors: ${motors.length ? motors.join(', ') : 'None'}`);
-        const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-        lines.push(`FIZ Controllers: ${controllers.length ? controllers.join(', ') : 'None'}`);
-        lines.push(`Distance Sensor: ${distanceSelect.value || 'None'}`);
-        lines.push(`Battery: ${batterySelect.value || 'None'}`);
-        lines.push('');
-        lines.push(`Total Consumption: ${totalPowerElem.textContent} W`);
-        const unit = document.getElementById('batteryLifeUnit')?.textContent || 'hrs';
-        lines.push(`Estimated Runtime: ${batteryLifeElem.textContent} ${unit}`);
-        lines.push('');
-        lines.push('Actual Runtime:');
-        lines.push('');
-        lines.push('Additional Notes:');
-        const subject = encodeURIComponent('Camera Power Planner Runtime Feedback');
-        const body = encodeURIComponent(lines.join('\n'));
-        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+// Open feedback dialog and handle submission
+if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
+  runtimeFeedbackBtn.addEventListener('click', () => {
+    const today = new Date().toISOString().split('T')[0];
+    const motVals = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    const ctrlVals = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    document.getElementById('fbDate').value = today;
+    document.getElementById('fbCamera').value = cameraSelect.value || '';
+    document.getElementById('fbBatteryPlate').value = getSelectedPlate() || '';
+    document.getElementById('fbBattery').value = batterySelect.value || '';
+    document.getElementById('fbWirelessVideo').value = videoSelect.value || '';
+    document.getElementById('fbMonitor').value = monitorSelect.value || '';
+    document.getElementById('fbControllers').value = ctrlVals.join(', ');
+    document.getElementById('fbMotors').value = motVals.join(', ');
+    document.getElementById('fbDistance').value = distanceSelect.value || '';
+    feedbackDialog.showModal();
+  });
+
+  feedbackCancelBtn.addEventListener('click', () => {
+    feedbackDialog.close();
+  });
+
+  feedbackForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const entry = {
+      username: document.getElementById('fbUsername').value.trim(),
+      date: document.getElementById('fbDate').value,
+      location: document.getElementById('fbLocation').value.trim(),
+      camera: document.getElementById('fbCamera').value.trim(),
+      batteryPlate: document.getElementById('fbBatteryPlate').value.trim(),
+      lensMount: document.getElementById('fbLensMount').value.trim(),
+      resolution: document.getElementById('fbResolution').value.trim(),
+      codec: document.getElementById('fbCodec').value.trim(),
+      framerate: document.getElementById('fbFramerate').value.trim(),
+      cameraWifi: document.getElementById('fbWifi').value,
+      firmware: document.getElementById('fbFirmware').value.trim(),
+      battery: document.getElementById('fbBattery').value.trim(),
+      batteryAge: document.getElementById('fbBatteryAge').value.trim(),
+      wirelessVideo: document.getElementById('fbWirelessVideo').value.trim(),
+      monitor: document.getElementById('fbMonitor').value.trim(),
+      monitorBrightness: document.getElementById('fbMonitorBrightness').value.trim(),
+      lens: document.getElementById('fbLens').value.trim(),
+      lensData: document.getElementById('fbLensData').value.trim(),
+      controllers: document.getElementById('fbControllers').value.trim(),
+      motors: document.getElementById('fbMotors').value.trim(),
+      distance: document.getElementById('fbDistance').value.trim(),
+      temperature: document.getElementById('fbTemperature').value.trim(),
+      humidity: document.getElementById('fbHumidity').value.trim(),
+      runtime: document.getElementById('fbRuntime').value.trim(),
+      batteriesPerDay: document.getElementById('fbBatteriesPerDay').value.trim()
+    };
+    const key = getCurrentSetupKey();
+    const feedback = loadFeedbackSafe();
+    if (!feedback[key]) feedback[key] = [];
+    feedback[key].push(entry);
+    saveFeedbackSafe(feedback);
+    const lines = [];
+    Object.entries(entry).forEach(([k, v]) => {
+      lines.push(`${k}: ${v}`);
     });
+    const subject = encodeURIComponent('Camera Power Planner Runtime Feedback');
+    const body = encodeURIComponent(lines.join('\n'));
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    feedbackDialog.close();
+    updateCalculations();
+  });
 }
 
 function escapeHtml(str) {
@@ -6165,5 +6254,7 @@ if (typeof module !== "undefined" && module.exports) {
     normalizeVideoType,
     normalizeFizConnectorType,
     normalizePowerPortType,
+    getCurrentSetupKey,
+    renderFeedbackTable,
   };
 }

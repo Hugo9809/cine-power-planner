@@ -3,6 +3,7 @@
 const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
+const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 
 // --- Session State Storage ---
 function loadSessionState() {
@@ -120,6 +121,26 @@ function deleteSetup(name) {
   saveSetups(setups);
 }
 
+// --- User Feedback Storage ---
+function loadFeedback() {
+  try {
+    const data = localStorage.getItem(FEEDBACK_STORAGE_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch (e) {
+    console.error("Error loading feedback from localStorage:", e);
+    return {};
+  }
+}
+
+function saveFeedback(feedback) {
+  try {
+    localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(feedback));
+    console.log("Feedback saved to localStorage.");
+  } catch (e) {
+    console.error("Error saving feedback to localStorage:", e);
+  }
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     loadDeviceData,
@@ -130,6 +151,8 @@ if (typeof module !== "undefined" && module.exports) {
     loadSetup,
     deleteSetup,
     loadSessionState,
-    saveSessionState
+    saveSessionState,
+    loadFeedback,
+    saveFeedback
   };
 }
