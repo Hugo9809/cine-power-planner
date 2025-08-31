@@ -859,6 +859,12 @@ try {
 // Helper to apply translations to all UI text
 function setLanguage(lang) {
   currentLang = lang;
+  // persist selected language
+  try {
+    localStorage.setItem("language", lang);
+  } catch (e) {
+    console.warn("Could not save language to localStorage", e);
+  }
   // ensure dropdown reflects the active language
   if (languageSelect) {
     languageSelect.value = lang;
@@ -6212,7 +6218,7 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#1a1a1a' : '#ffffff');
+    meta.setAttribute('content', isDark ? '#121212' : '#ffffff');
   }
 }
 
