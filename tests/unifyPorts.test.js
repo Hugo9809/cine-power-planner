@@ -3,12 +3,24 @@ const {
   parsePowerInput,
   normalizeVideoDevice,
   cleanVoltageRange,
-  normalizeFiz
+  normalizeFiz,
+  cleanTypeName
 } = require('../unifyPorts.js');
 
 describe('cleanVoltageRange', () => {
   it('removes spaces around hyphen', () => {
     expect(cleanVoltageRange('DC 10 - 20V')).toBe('10-20');
+  });
+  it('normalizes en dashes and "to" ranges', () => {
+    expect(cleanVoltageRange('10 – 20 Volts')).toBe('10-20');
+    expect(cleanVoltageRange('12 to 24V')).toBe('12-24');
+  });
+});
+
+describe('cleanTypeName', () => {
+  it('standardizes common connector names', () => {
+    expect(cleanTypeName('dtap')).toBe('D-Tap');
+    expect(cleanTypeName('USB Type C')).toBe('USB-C');
   });
 });
 
