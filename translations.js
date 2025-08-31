@@ -282,7 +282,7 @@ const texts = {
     deleteSetupHelp:
       "Remove the highlighted saved setup permanently from your browser.",
     saveSetupHelp:
-      "Store the devices and battery you have selected so the setup can be recalled later.",
+      "Store the devices and battery you have selected so the setup can be recalled later. Press Ctrl+S (Cmd+S on Mac) to save quickly.",
     exportSetupsHelp:
       "Download every saved configuration as a JSON file for backup or sharing.",
     importSetupsHelp:
@@ -580,7 +580,7 @@ const texts = {
       "Scegli una configurazione salvata da caricare o inizia una nuova.",
     setupNameHelp: "Inserisci un nome per la configurazione corrente.",
     deleteSetupHelp: "Elimina la configurazione salvata selezionata.",
-    saveSetupHelp: "Salva la configurazione corrente.",
+    saveSetupHelp: "Salva la configurazione corrente. Premi Ctrl+S (Cmd+S su Mac) per salvare rapidamente.",
     exportSetupsHelp:
       "Scarica tutte le configurazioni salvate come file JSON.",
     importSetupsHelp: "Carica configurazioni da un file JSON.",
@@ -891,7 +891,7 @@ const texts = {
       "Elige una configuración guardada para cargarla o comienza una nueva.",
     setupNameHelp: "Introduce un nombre para la configuración actual.",
     deleteSetupHelp: "Elimina la configuración guardada seleccionada.",
-    saveSetupHelp: "Guarda la configuración actual.",
+    saveSetupHelp: "Guarda la configuración actual. Pulsa Ctrl+S (Cmd+S en Mac) para guardar rápidamente.",
     exportSetupsHelp:
       "Descarga todas las configuraciones guardadas como archivo JSON.",
     importSetupsHelp: "Carga configuraciones desde un archivo JSON.",
@@ -1203,7 +1203,7 @@ const texts = {
       "Choisissez une configuration enregistrée à charger ou commencez-en une nouvelle.",
     setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
     deleteSetupHelp: "Supprime la configuration enregistrée sélectionnée.",
-    saveSetupHelp: "Enregistre la configuration actuelle.",
+    saveSetupHelp: "Enregistre la configuration actuelle. Appuyez sur Ctrl+S (Cmd+S sur Mac) pour enregistrer rapidement.",
     exportSetupsHelp:
       "Télécharge toutes les configurations enregistrées au format JSON.",
     importSetupsHelp: "Charge des configurations depuis un fichier JSON.",
@@ -1516,7 +1516,7 @@ const texts = {
       "Wähle eine gespeicherte Konfiguration zum Laden oder starte eine neue.",
     setupNameHelp: "Gib einen Namen für die aktuelle Konfiguration ein.",
     deleteSetupHelp: "Löscht die ausgewählte gespeicherte Konfiguration.",
-    saveSetupHelp: "Speichert die aktuelle Konfiguration.",
+    saveSetupHelp: "Speichert die aktuelle Konfiguration. Drücke Strg+S (Cmd+S auf dem Mac), um schnell zu speichern.",
     exportSetupsHelp:
       "Lade alle gespeicherten Konfigurationen als JSON-Datei herunter.",
     importSetupsHelp: "Lade Konfigurationen aus einer JSON-Datei.",
