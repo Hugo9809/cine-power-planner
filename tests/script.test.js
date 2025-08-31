@@ -567,7 +567,7 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('dark-mode')).toBe(true);
     expect(toggle.textContent).toBe('☀️');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
-    expect(meta.getAttribute('content')).toBe('#1a1a1a');
+    expect(meta.getAttribute('content')).toBe('#121212');
     applyDarkMode(false);
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('🌙');
@@ -1463,6 +1463,7 @@ describe('script.js functions', () => {
     hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
     expect(document.body.style.cursor).toBe('help');
+    expect(document.body.classList.contains('hover-help-active')).toBe(true);
 
     helpButton.setAttribute('data-help', 'Open help dialog');
     helpButton.dispatchEvent(new MouseEvent('mouseover', { bubbles: true, clientX: 10, clientY: 10 }));
@@ -1473,6 +1474,7 @@ describe('script.js functions', () => {
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
     expect(document.body.style.cursor).toBe('');
+    expect(document.body.classList.contains('hover-help-active')).toBe(false);
   });
 
   test('hover help falls back to element text when no attributes', () => {
@@ -1485,6 +1487,7 @@ describe('script.js functions', () => {
     hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
     expect(document.body.style.cursor).toBe('help');
+    expect(document.body.classList.contains('hover-help-active')).toBe(true);
 
     const dummy = document.createElement('button');
     dummy.textContent = 'Save setup';
@@ -1499,6 +1502,7 @@ describe('script.js functions', () => {
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
     expect(document.body.style.cursor).toBe('');
+    expect(document.body.classList.contains('hover-help-active')).toBe(false);
   });
 
   test('saved setups label has descriptive hover help', () => {

@@ -303,6 +303,12 @@ body:not(.light-mode) #feedbackDialog {
   display: none;
 }
 
+/* Force help cursor when hover help is active */
+body.hover-help-active,
+body.hover-help-active * {
+  cursor: help !important;
+}
+
 /* Ensure selects and inputs inside wrappers match normal form fields */
 .field-with-label select,
 .field-with-label input {
