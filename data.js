@@ -7832,6 +7832,94 @@ let devices={
         "side_plates": true,
         "notes": "Professional cage kit with 15mm support for VENICE systems.",
         "verified_source": "https://www.brighttangerine.com/"
+      },
+      "SmallRig Full Cage for Panasonic Lumix GH6 / GH7 (3784)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix GH6", "Panasonic Lumix GH7"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 locating", "Arca-Swiss QR", "multiple mounting points"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Form-fitting, two-point anti-twist, Arca-Swiss bottom, magnetic spanner.",
+        "verified_source": "https://www.smallrig.com/full-camera-cage-for-panasonic-lumix-gh6-gh7-3784.html"
+      },
+      "SmallRig Camera Cage Kit for Panasonic Lumix GH6 (3785)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix GH6"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 locating", "cold shoe", "NATO rail", "cable clamps"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Handheld kit includes top handle, HDMI/USB-C clamp; two-point locking.",
+        "verified_source": "https://www.smallrig.com/smallrig-camera-cage-kit-for-panasonic-lumix-gh6-3785.html"
+      },
+      "SmallRig HawkLock Quick Release Cage for Panasonic GH6 / GH7 (4824)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix GH6", "Panasonic Lumix GH7"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16", "cold shoe", "NATO rail", "Arca-Swiss QR", "QD socket"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "HawkLock QR design; triple-point locking; cable clamps and accessory support.",
+        "verified_source": "https://www.smallrigreseller.com/smallrig-hawklock-quick-release-cage-for-panasonic-lumix-gh7-gh6-4824.html"
+      },
+      "Tilta Full Camera Cage for Nikon Z9": {
+        "brand": "Tilta",
+        "compatible": ["Nikon Z9"],
+        "material": "aluminum alloy",
+        "weight_g": 264.5,
+        "mounting_points": ["cold shoe", "1/4\"-20 w/ locating pins", "NATO rail", "dual 15mm rod holder option"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Includes top handle, rod holder, silicone cushions, Arca-compatible base.",
+        "verified_source": "https://www.adorama.com/iatat31ab.html"
+      },
+      "Tilta Camera Cage for Nikon Z9 – Pro Kit": {
+        "brand": "Tilta",
+        "compatible": ["Nikon Z9"],
+        "material": "aluminum alloy",
+        "weight_g": null,
+        "mounting_points": ["cold shoe", "1/4\"-20", "locating points", "NATO rail"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Premium expansion-ready kit for Nikon Z9.",
+        "verified_source": "https://tilta.com/shop/camera-cage-for-nikon-z9-pro-kit-black/?srsltid=AfmBOoqSdzCbI--UMAiS65Dnygi3YAMivLea388wni80d57WiYc-xIa5"
+      },
+      "Bright Tangerine LeftField 15mm LWS Baseplate for ARRI Alexa 35": {
+        "brand": "Bright Tangerine",
+        "compatible": ["Arri Alexa 35"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["15mm LWS", "ARRI BUD dovetail"],
+        "top_handle_included": false,
+        "side_plates": false,
+        "notes": "15mm baseplate compatible with Alexa 35 via BUD-1 system.",
+        "verified_source": "https://www.brighttangerine.com/product/leftfield-3-arri-bud-compatible-15mm-lws-baseplate/?srsltid=AfmBOoptKXWYvXI963Zf7yXArAyQtJRmkjtcDQL4PjMZH1yjUFI42frl"
+      },
+      "SmallRig Camera Cage for Z CAM E2 (2264)": {
+        "brand": "SmallRig",
+        "compatible": ["Z CAM E2"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI 3/8\"-16", "NATO rail (side)", "Arca-Swiss bottom", "HDMI/USB-C clamp"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Modular cage with lens adapter support, side NATO rails, cable clamps.",
+        "verified_source": "https://www.smallrig.com/smallrig-camera-cage-for-z-cam-e2-2264.html"
+      },
+      "SmallRig Camera Cage for Z CAM E2-S6/F6/F8/M4 (CVZ2423)": {
+        "brand": "SmallRig",
+        "compatible": ["Z CAM E2-S6", "Z CAM E2-F6", "Z CAM E2-F8", "Z CAM E2-M4"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI-style threads", "NATO rails (sides)", "ARRI rosette", "HDMI/USB-C clamp"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Designed for Z CAM cinema line with robust accessory integration.",
+        "verified_source": "https://www.bhphotovideo.com/c/product/1542957-REG/smallrig_cvz2423_cage_for_z_cam.html/accessories"
       }
     },
     "chargers": {
