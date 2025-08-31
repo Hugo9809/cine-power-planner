@@ -4,7 +4,7 @@ const texts = {
   en: {
     appTitle: "Camera Power Planner",
     appHeading: "Camera Power Consumption App",
-    tagline: "Plan your camera setup and calculate power consumption & battery life.",
+    tagline: "Plan your film rig and calculate power consumption & battery life.",
     skipToContent: "Skip to content",
 
     setupManageHeading: "Manage Setup",
@@ -305,7 +305,7 @@ const texts = {
   it: {
     appTitle: "Pianificatore di alimentazione della fotocamera",
     appHeading: "App per consumo di energia della fotocamera",
-    tagline: "Pianifica la configurazione della fotocamera e calcola il consumo di energia e la durata della batteria.",
+    tagline: "Pianifica la tua attrezzatura da set e calcola il consumo di energia e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     setupManageHeading: "Gestisci la configurazione",
     deviceSelectionHeading: "Selezione del dispositivo",
@@ -580,13 +580,13 @@ const texts = {
   es: {
     appTitle: "Planificador de Consumo de Energía de Cámaras",
     appHeading: "Aplicación de Consumo de Energía para Cámaras",
-    tagline: "Planifica tu equipo y calcula el consumo de energía y la autonomía de la batería.",
+    tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
 
     setupManageHeading: "Gestionar Configuración",
     deviceSelectionHeading: "Selección de Dispositivos",
     resultsHeading: "Resultados",
-    deviceManagerHeading: "Gestionar Base de Datos",
+    deviceManagerHeading: "Gestionar Base de Datos de Dispositivos",
     batteryComparisonHeading: "Comparación de Baterías",
     setupDiagramHeading: "Diagrama de Configuración",
     setupManageHeadingHelp:
@@ -873,13 +873,13 @@ const texts = {
   fr: {
     appTitle: "Planificateur de Consommation Caméra",
     appHeading: "Application de Consommation Caméra",
-    tagline: "Planifiez votre configuration et calculez la consommation et l'autonomie.",
+    tagline: "Planifiez votre équipement de tournage et calculez la consommation et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
 
     setupManageHeading: "Gérer la Configuration",
     deviceSelectionHeading: "Sélection des Appareils",
     resultsHeading: "Résultats",
-    deviceManagerHeading: "Gérer la Base de Données",
+    deviceManagerHeading: "Gérer la Base de Données des Appareils",
     batteryComparisonHeading: "Comparaison des Batteries",
     setupDiagramHeading: "Diagramme de Configuration",
     setupManageHeadingHelp:
@@ -1168,7 +1168,7 @@ const texts = {
   de: {
     appTitle: "Kamera Stromverbrauchs Planer",
     appHeading: "Kamera-Stromverbrauchs-App",
-    tagline: "Plane dein Kamera-Setup und berechne Stromverbrauch und Akkulaufzeit.",
+    tagline: "Plane dein Dreh-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
 
     setupManageHeading: "Setup verwalten",
