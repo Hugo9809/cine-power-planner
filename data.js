@@ -7700,6 +7700,94 @@ let devices={
         "side_plates": true,
         "notes": "Wooden Camera RED KOMODO cage with top plate.",
         "verified_source": "https://woodencamera.com/products/komodo-camera-cage"
+      },
+      "ARRI Cage Support Kit for ALEXA Mini LF": {
+        "brand": "ARRI",
+        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["15mm LWS", "ARRI locating", "3/8\"-16", "1/4\"-20"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "ARRI PCA kit including cage plates, top handle, and 15mm support.",
+        "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories"
+      },
+      "Wooden Camera Cage Kit for ARRI ALEXA Mini / Mini LF": {
+        "brand": "Wooden Camera",
+        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Complete Wooden Camera cage with top plate, side plates, and baseplate.",
+        "verified_source": "https://woodencamera.com/products/camera-cage-for-arri-alexa-mini"
+      },
+      "Bright Tangerine LeftField Cage Kit for ARRI ALEXA Mini / Mini LF": {
+        "brand": "Bright Tangerine",
+        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARRI locating", "15mm LWS", "3/8\"-16"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "LeftField 15mm baseplate and side cage system.",
+        "verified_source": "https://www.brighttangerine.com/"
+      },
+      "Tilta Canon C300 Mark III / C500 Mark II Cage Kit": {
+        "brand": "Tilta",
+        "compatible": ["Canon C300 Mk III", "Canon C500 Mk II"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Tilta cage with top plate and quick release side plates.",
+        "verified_source": "https://tilta.com/"
+      },
+      "SHAPE Canon C300 MkIII / C500 MkII Cage Kit": {
+        "brand": "SHAPE",
+        "compatible": ["Canon C300 Mk III", "Canon C500 Mk II"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARRI anti-twist 3/8\"-16", "cold shoe", "1/4\"-20"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Form fitting cage with top handle and ARRI threads.",
+        "verified_source": "https://www.shapewlb.com/"
+      },
+      "ARRI Pro Camera Accessories Kit for RED DSMC2": {
+        "brand": "ARRI",
+        "compatible": ["RED DSMC2", "RED Ranger"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARRI locating", "15mm LWS", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "ARRI PCA cage set for RED DSMC2 / Ranger.",
+        "verified_source": "https://www.arri.com/"
+      },
+      "Wooden Camera Cage Kit for RED DSMC2": {
+        "brand": "Wooden Camera",
+        "compatible": ["RED DSMC2"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Wooden Camera DSMC2 cage with top plate, side plates, baseplate.",
+        "verified_source": "https://woodencamera.com/products/unified-camera-cage-for-red-dsmc2"
+      },
+      "Bright Tangerine Cage Support Kit for Sony VENICE / VENICE 2": {
+        "brand": "Bright Tangerine",
+        "compatible": ["Sony Venice", "Sony Venice 2"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARRI locating", "3/8\"-16", "1/4\"-20", "15mm LWS"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Professional cage kit with 15mm support for VENICE systems.",
+        "verified_source": "https://www.brighttangerine.com/"
       }
     },
     "chargers": {
