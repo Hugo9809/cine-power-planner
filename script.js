@@ -6340,7 +6340,27 @@ function generatePrintableOverview() {
     } else {
         overviewDialog.setAttribute('open', '');
     }
-    window.addEventListener('afterprint', () => { overviewDialog.close(); }, { once: true });
+
+    const closeAfterPrint = () => { overviewDialog.close(); };
+    if (typeof window.matchMedia === 'function') {
+        const mql = window.matchMedia('print');
+        const mqlListener = e => {
+            if (!e.matches) {
+                if (mql.removeEventListener) {
+                    mql.removeEventListener('change', mqlListener);
+                } else if (mql.removeListener) {
+                    mql.removeListener(mqlListener);
+                }
+                closeAfterPrint();
+            }
+        };
+        if (mql.addEventListener) {
+            mql.addEventListener('change', mqlListener);
+        } else if (mql.addListener) {
+            mql.addListener(mqlListener);
+        }
+    }
+    window.addEventListener('afterprint', closeAfterPrint, { once: true });
 }
 
 
