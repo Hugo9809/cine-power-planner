@@ -512,7 +512,7 @@ const texts = {
   es: {
     appTitle: "Planificador de Consumo de Energía de Cámaras",
     appHeading: "Aplicación de Consumo de Energía para Cámaras",
-    tagline: "Planifica tu equipo y calcula el consumo y la autonomía de la batería.",
+    tagline: "Planifica tu equipo y calcula el consumo de energía y la autonomía de la batería.",
     skipToContent: "Saltar al contenido",
 
     setupManageHeading: "Gestionar Configuración",
@@ -564,7 +564,7 @@ const texts = {
     totalCurrent216Label: "Corriente Total (a 21.6V):",
     batteryLifeLabel: "Autonomía (estimada):",
     batteryCountLabel: "Baterías para rodaje de 10h (incl. repuesto):",
-    runtimeFeedbackBtn: "Enviar comentarios sobre la autonomía del usuario",
+    runtimeFeedbackBtn: "Enviar comentarios sobre la autonomía medida",
     weightingHeading: "Desglose ponderado de la autonomía",
     methodPinsOnly: "solo pines!",
     methodPinsAndDTap: "pines y D-Tap",
