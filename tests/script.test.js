@@ -1494,7 +1494,7 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('hover-help-active')).toBe(false);
   });
 
-  test('hover help falls back to element text when no attributes', () => {
+  test('hover help ignores elements without descriptive attributes', () => {
     const helpDialog = document.getElementById('helpDialog');
     const hoverHelpButton = document.getElementById('hoverHelpButton');
 
@@ -1514,7 +1514,7 @@ describe('script.js functions', () => {
       new MouseEvent('mouseover', { bubbles: true, clientX: 10, clientY: 10 })
     );
     const tooltip = document.getElementById('hoverHelpTooltip');
-    expect(tooltip.textContent).toBe('Save setup');
+    expect(tooltip.hasAttribute('hidden')).toBe(true);
 
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
