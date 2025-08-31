@@ -980,6 +980,9 @@ function setLanguage(lang) {
   generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
   generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
 
+  generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
+  generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
+
   shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
   shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
 
@@ -1311,6 +1314,7 @@ function setLanguage(lang) {
   document.getElementById("exportSetupsBtn").textContent = texts[lang].exportSetupsBtn;
   document.getElementById("importSetupsBtn").textContent = texts[lang].importSetupsBtn;
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
+  document.getElementById("generateGearListBtn").textContent = texts[lang].generateGearListBtn;
   document.getElementById("shareSetupBtn").textContent = texts[lang].shareSetupBtn;
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
@@ -1487,6 +1491,7 @@ const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
+const generateGearListBtn = document.getElementById("generateGearListBtn");
 const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackCancelBtn = document.getElementById("fbCancel");
@@ -5827,6 +5832,15 @@ generateOverviewBtn.addEventListener('click', () => {
     generatePrintableOverview();
 });
 
+// Generate a printable gear list of the current setup
+generateGearListBtn.addEventListener('click', () => {
+    if (!setupSelect.value) {
+        alert(texts[currentLang].alertSelectSetupForOverview);
+        return;
+    }
+    generateGearList();
+});
+
 shareSetupBtn.addEventListener('click', () => {
   const setupName = (setupNameInput && setupNameInput.value.trim()) ||
     (setupSelect && setupSelect.value) || '';
@@ -6411,6 +6425,122 @@ function generatePrintableOverview() {
     window.addEventListener('afterprint', closeAfterPrint, { once: true });
 }
 
+function collectAccessories() {
+    const accessories = [];
+    const acc = devices.accessories || {};
+
+    if (batterySelect.value) {
+        const mount = devices.batteries[batterySelect.value]?.mount_type;
+        if (acc.powerPlates) {
+            for (const [name, plate] of Object.entries(acc.powerPlates)) {
+                if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(cameraSelect.value))) {
+                    accessories.push(name);
+                }
+            }
+        }
+        if (acc.chargers) {
+            for (const [name, charger] of Object.entries(acc.chargers)) {
+                if (!charger.mount || charger.mount === mount) accessories.push(name);
+            }
+        }
+    }
+
+    if (cameraSelect.value && acc.cages) {
+        for (const [name, cage] of Object.entries(acc.cages)) {
+            if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) accessories.push(name);
+        }
+    }
+
+    const powerCableDb = acc.cables?.power || {};
+    const gatherPower = (data) => {
+        const input = data?.power?.input?.type;
+        const types = Array.isArray(input) ? input : input ? [input] : [];
+        types.forEach(t => {
+            for (const [name, cable] of Object.entries(powerCableDb)) {
+                if (cable.to === t) accessories.push(name);
+            }
+        });
+    };
+    gatherPower(devices.cameras[cameraSelect.value]);
+    gatherPower(devices.monitors[monitorSelect.value]);
+    gatherPower(devices.video[videoSelect.value]);
+    motorSelects.forEach(sel => gatherPower(devices.fiz.motors[sel.value]));
+    controllerSelects.forEach(sel => gatherPower(devices.fiz.controllers[sel.value]));
+    gatherPower(devices.fiz.distance[distanceSelect.value]);
+
+    const videoCableDb = acc.cables?.video || {};
+    const cameraOutputs = devices.cameras[cameraSelect.value]?.videoOutputs || [];
+    const matchVideo = device => {
+        if (!device) return;
+        const inputs = device.videoInputs || [];
+        cameraOutputs.forEach(out => {
+            inputs.forEach(inp => {
+                if (out.type === inp.type) {
+                    for (const [name, cable] of Object.entries(videoCableDb)) {
+                        if (cable.type === out.type) accessories.push(name);
+                    }
+                }
+            });
+        });
+    };
+    matchVideo(devices.monitors[monitorSelect.value]);
+    matchVideo(devices.video[videoSelect.value]);
+
+    const fizCableDb = acc.cables?.fiz || {};
+    const motorDatas = motorSelects.map(sel => devices.fiz.motors[sel.value]).filter(Boolean);
+    const controllerDatas = controllerSelects.map(sel => devices.fiz.controllers[sel.value]).filter(Boolean);
+    motorDatas.forEach(m => {
+        const mConns = (m.fizConnectors || []).map(fc => fc.type || fc);
+        controllerDatas.forEach(c => {
+            const cConns = (c.fizConnectors || []).map(fc => fc.type || fc);
+            mConns.forEach(mc => {
+                cConns.forEach(cc => {
+                    if (mc === cc) {
+                        for (const [name, cable] of Object.entries(fizCableDb)) {
+                            if (cable.from === mc && cable.to === cc) accessories.push(name);
+                        }
+                    }
+                });
+            });
+        });
+    });
+
+    return [...new Set(accessories)];
+}
+
+function generateGearList() {
+    const t = texts[currentLang];
+    const selected = [];
+    const addSelected = sel => {
+        if (sel && sel.value && sel.value !== 'None') {
+            const name = sel.options[sel.selectedIndex].text;
+            selected.push(name);
+        }
+    };
+    addSelected(cameraSelect);
+    addSelected(monitorSelect);
+    addSelected(videoSelect);
+    motorSelects.forEach(addSelected);
+    controllerSelects.forEach(addSelected);
+    addSelected(distanceSelect);
+    addSelected(batteryPlateSelect);
+    addSelected(batterySelect);
+    const accessories = collectAccessories();
+    const selectedHtml = selected.map(n => `<li>${escapeHtml(n)}</li>`).join('');
+    const accessoriesHtml = accessories.map(n => `<li>${escapeHtml(n)}</li>`).join('');
+    const setupName = escapeHtml(setupNameInput.value);
+    const win = window.open('', '_blank');
+    if (win) {
+        let body = `<button onclick="window.print()" class="print-btn">Print</button><h1>${setupName}</h1>`;
+        body += `<h2>${escapeHtml(t.selectedGearHeading)}</h2><ul>${selectedHtml}</ul>`;
+        if (accessories.length) {
+            body += `<h2>${escapeHtml(t.recommendationsHeading)}</h2><ul>${accessoriesHtml}</ul>`;
+        }
+        win.document.write(`<!DOCTYPE html><html><head><title>${t.generateGearListBtn}</title><link rel="stylesheet" href="overview-print.css" media="print" /></head><body>${body}</body></html>`);
+        win.document.close();
+    }
+}
+
 
 // --- SESSION STATE HANDLING ---
 function saveCurrentSession() {
@@ -6975,6 +7105,7 @@ if (typeof module !== "undefined" && module.exports) {
     applyDarkMode,
     applyPinkMode,
     generatePrintableOverview,
+    generateGearList,
     applySharedSetupFromUrl,
     applySharedSetup,
     updateBatteryPlateVisibility,

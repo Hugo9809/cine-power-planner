@@ -90,6 +90,9 @@ const texts = {
     copySummaryBtn: "Copy Summary",
     copySummaryBtnHelp: "Copy total power and runtime info to the clipboard.",
     copySummarySuccess: "Copied!",
+    selectedGearHeading: "Selected Gear",
+    recommendationsHeading: "Recommended Accessories",
+    recommendationsHeadingHelp: "Accessories suggested based on selected devices.",
     weightingHeading: "Runtime Weighting Breakdown",
 
     pinWarningHelp: "Alerts if current exceeds what the battery pins can supply.",
@@ -255,6 +258,7 @@ const texts = {
     exportSetupsBtn: "Export All Setups",
     importSetupsBtn: "Import Setups",
     generateOverviewBtn: "Generate Overview",
+    generateGearListBtn: "Generate Gear List",
     alertNoSetupsToExport: "There are no saved setups to export.",
     alertImportSetupsSuccess: "Successfully imported {num_setups} setups.",
     alertImportSetupsError: "Error: Could not import setups. The file may be invalid or corrupted.",
@@ -293,6 +297,8 @@ const texts = {
       "Load setups from a previously exported JSON file, replacing the current list.",
     generateOverviewHelp:
       "Generate a print-ready summary of any saved setup, including power and connection details.",
+    generateGearListHelp:
+      "Open a printable list of selected gear and recommended accessories.",
     shareSetupHelp:
       "Copy a unique link representing the current setup that others can open to load the same configuration.",
     applySharedLinkHelp:
@@ -410,6 +416,9 @@ const texts = {
     copySummaryBtn: "Copia riepilogo",
     copySummaryBtnHelp: "Copia negli appunti il riepilogo di potenza e autonomia.",
     copySummarySuccess: "Copiato!",
+    selectedGearHeading: "Attrezzatura selezionata",
+    recommendationsHeading: "Accessori consigliati",
+    recommendationsHeadingHelp: "Accessori suggeriti in base ai dispositivi selezionati.",
     weightingHeading: "Ripartizione ponderata della durata",
     pinWarningHelp: "Avvisa se la corrente supera quella fornibile dai pin della batteria.",
     dtapWarningHelp: "Avvisa se la corrente supera quella fornibile dalla porta D-Tap.",
@@ -561,6 +570,7 @@ const texts = {
     exportSetupsBtn: "Esporta tutte le configurazioni",
     importSetupsBtn: "Importa configurazioni",
     generateOverviewBtn: "Generare panoramica",
+    generateGearListBtn: "Genera elenco attrezzatura",
     alertNoSetupsToExport: "Non ci sono configurazioni salvate per l'esportazione.",
     alertImportSetupsSuccess: "Importate correttamente {num_setups} configurazioni.",
     alertImportSetupsError: "Errore: non è stato in grado di importare configurazioni. Il file può essere non valido o corrotto.",
@@ -594,6 +604,8 @@ const texts = {
     importSetupsHelp: "Carica configurazioni da un file JSON.",
     generateOverviewHelp:
       "Crea un riepilogo stampabile delle configurazioni salvate.",
+    generateGearListHelp:
+      "Apri un elenco stampabile dell'attrezzatura selezionata e degli accessori consigliati.",
     shareSetupHelp:
       "Copia un link che rappresenta la configurazione corrente.",
     applySharedLinkHelp: "Carica la configurazione dal link condiviso.",
@@ -713,6 +725,9 @@ const texts = {
     copySummaryBtn: "Copiar resumen",
     copySummaryBtnHelp: "Copiar al portapapeles el resumen de consumo y autonomía.",
     copySummarySuccess: "¡Copiado!",
+    selectedGearHeading: "Equipo seleccionado",
+    recommendationsHeading: "Accesorios recomendados",
+    recommendationsHeadingHelp: "Accesorios sugeridos según los dispositivos seleccionados.",
     weightingHeading: "Desglose ponderado de la autonomía",
     pinWarningHelp: "Advierte si la corriente supera lo que pueden entregar los pines de la batería.",
     dtapWarningHelp: "Advierte si la corriente supera lo que puede entregar el puerto D-Tap.",
@@ -875,6 +890,7 @@ const texts = {
     exportSetupsBtn: "Exportar todas las configuraciones",
     importSetupsBtn: "Importar configuraciones",
     generateOverviewBtn: "Generar resumen",
+    generateGearListBtn: "Generar lista de equipo",
     alertNoSetupsToExport: "No hay configuraciones para exportar.",
     alertImportSetupsSuccess: "{num_setups} configuraciones importadas.",
     alertImportSetupsError: "Error: no se pudieron importar las configuraciones.",
@@ -909,6 +925,8 @@ const texts = {
     importSetupsHelp: "Carga configuraciones desde un archivo JSON.",
     generateOverviewHelp:
       "Crea un resumen imprimible de las configuraciones guardadas.",
+    generateGearListHelp:
+      "Abre una lista imprimible del equipo seleccionado y accesorios recomendados.",
     shareSetupHelp:
       "Copia un enlace que representa la configuración actual.",
     applySharedLinkHelp: "Carga la configuración desde el enlace compartido.",
@@ -1029,6 +1047,9 @@ const texts = {
     copySummaryBtn: "Copier le résumé",
     copySummaryBtnHelp: "Copier dans le presse-papiers le résumé de puissance et d'autonomie.",
     copySummarySuccess: "Copié!",
+    selectedGearHeading: "Équipement sélectionné",
+    recommendationsHeading: "Accessoires recommandés",
+    recommendationsHeadingHelp: "Accessoires suggérés en fonction des appareils sélectionnés.",
     weightingHeading: "Répartition de la pondération de la durée d'utilisation",
     pinWarningHelp: "Avertit si le courant dépasse ce que peuvent fournir les broches de la batterie.",
     dtapWarningHelp: "Avertit si le courant dépasse ce que peut fournir le port D‑Tap.",
@@ -1191,6 +1212,7 @@ const texts = {
     exportSetupsBtn: "Exporter toutes les configurations",
     importSetupsBtn: "Importer des configurations",
     generateOverviewBtn: "Générer un résumé",
+    generateGearListBtn: "Générer la liste du matériel",
     alertNoSetupsToExport: "Aucune configuration à exporter.",
     alertImportSetupsSuccess: "{num_setups} configurations importées.",
     alertImportSetupsError: "Erreur : import impossible.",
@@ -1225,6 +1247,8 @@ const texts = {
     importSetupsHelp: "Charge des configurations depuis un fichier JSON.",
     generateOverviewHelp:
       "Crée un aperçu imprimable des configurations enregistrées.",
+    generateGearListHelp:
+      "Ouvre une liste imprimable de tout l'équipement sélectionné et des accessoires recommandés.",
     shareSetupHelp:
       "Copie un lien représentant la configuration actuelle.",
     applySharedLinkHelp: "Charge la configuration depuis le lien partagé.",
@@ -1347,6 +1371,9 @@ const texts = {
     copySummaryBtn: "Zusammenfassung kopieren",
     copySummaryBtnHelp: "Leistungszusammenfassung in die Zwischenablage kopieren.",
     copySummarySuccess: "Kopiert!",
+    selectedGearHeading: "Ausgewählte Geräte",
+    recommendationsHeading: "Empfohlenes Zubehör",
+    recommendationsHeadingHelp: "Zubehör, das auf Basis der ausgewählten Geräte empfohlen wird.",
     weightingHeading: "Aufschlüsselung der Laufzeitgewichtung",
     pinWarningHelp: "Warnt, wenn der Strom die Belastbarkeit der Akkupins überschreitet.",
     dtapWarningHelp: "Warnt, wenn der Strom die Belastbarkeit der D‑Tap‑Buchse überschreitet.",
@@ -1509,6 +1536,7 @@ const texts = {
     exportSetupsBtn: "Alle Setups exportieren",
     importSetupsBtn: "Setups importieren",
     generateOverviewBtn: "Übersicht erstellen",
+    generateGearListBtn: "Gear-Liste erstellen",
     alertNoSetupsToExport: "Es gibt keine gespeicherten Setups zum Exportieren.",
     alertImportSetupsSuccess: "{num_setups} Setups erfolgreich importiert.",
     alertImportSetupsError: "Fehler: Setups konnten nicht importiert werden. Die Datei ist möglicherweise ungültig oder beschädigt.",
@@ -1542,6 +1570,8 @@ const texts = {
     importSetupsHelp: "Lade Konfigurationen aus einer JSON-Datei.",
     generateOverviewHelp:
       "Erstellt eine druckbare Übersicht der gespeicherten Konfigurationen.",
+    generateGearListHelp:
+      "Öffnet eine druckbare Liste aller ausgewählten Geräte und empfohlenen Zubehörteile.",
     shareSetupHelp:
       "Kopiert einen Link, der die aktuelle Konfiguration repräsentiert.",
     applySharedLinkHelp: "Lädt die Konfiguration aus dem geteilten Link.",
