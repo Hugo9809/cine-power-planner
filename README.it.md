@@ -29,6 +29,7 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 
 ### ✅ Gestione delle configurazioni
 - Salvare, caricare ed eliminare più configurazioni di camera
+- Condividere una configurazione tramite link o azzerare la configurazione corrente
 - Tutti i dati sono memorizzati localmente tramite `localStorage`
 - Importare ed esportare le configurazioni in formato JSON
 - Generare una panoramica stampabile di qualsiasi configurazione salvata

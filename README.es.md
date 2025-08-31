@@ -30,6 +30,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 
 ### ✅ Gestión de Configuraciones
 - Guardar, cargar y borrar múltiples configuraciones
+- Compartir una configuración mediante un enlace o limpiar la configuración actual
 - Todos los datos se guardan localmente mediante `localStorage`
 - Importar y exportar configuraciones en JSON
 - Generar un resumen imprimible de cualquier configuración guardada

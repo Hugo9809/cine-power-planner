@@ -30,6 +30,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 
 ### ✅ Setup-Verwaltung
 - Mehrere Setups speichern, laden oder löschen
+- Ein Setup per Link teilen oder die aktuelle Konfiguration zurücksetzen
 - Daten werden lokal im Browser gespeichert (`localStorage`)
 - Setups als JSON importieren und exportieren
 - Druckbare Übersicht für jedes gespeicherte Setup erstellen
