@@ -60,7 +60,7 @@ See the language-specific README files for full details.
 - Save, load, share and clear setups; import/export them as JSON, and generate a printable overview.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
-- Switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
+- Automatically selects your browser language on first load, lets you switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
 - Works completely offline and offers a searchable help dialog with hover help for every button, field, dropdown and header.
 
 ## Runtime Data Weighting
