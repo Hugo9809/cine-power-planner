@@ -1171,13 +1171,19 @@ function setLanguage(lang) {
   // Determine text for Add/Update button
   if (addDeviceBtn.dataset.mode === "edit") {
     addDeviceBtn.textContent = texts[lang].updateDeviceBtn;
+    addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
     cancelEditBtn.textContent = texts[lang].cancelEditBtn;
+    cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
   } else {
     addDeviceBtn.textContent = texts[lang].addDeviceBtn;
+    addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
     cancelEditBtn.textContent = texts[lang].cancelEditBtn;
+    cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
   }
   exportBtn.textContent = texts[lang].exportDataBtn;
+  exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
   importDataBtn.textContent = texts[lang].importDataBtn; // New translation for import button
+  importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
   // Placeholders for inputs
   setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
   newNameInput.placeholder = texts[lang].placeholder_deviceName;
@@ -1317,7 +1323,10 @@ function setLanguage(lang) {
   document.getElementById("generateGearListBtn").textContent = texts[lang].generateGearListBtn;
   document.getElementById("shareSetupBtn").textContent = texts[lang].shareSetupBtn;
   const exportRevert = document.getElementById("exportAndRevertBtn");
-  if (exportRevert) exportRevert.textContent = texts[lang].exportAndRevertBtn;
+  if (exportRevert) {
+    exportRevert.textContent = texts[lang].exportAndRevertBtn;
+    exportRevert.setAttribute('data-help', texts[lang].exportAndRevertBtnHelp);
+  }
 
   if (downloadDiagramBtn) {
     downloadDiagramBtn.textContent = texts[lang].downloadDiagramBtn;
@@ -4840,6 +4849,7 @@ function renderDeviceList(categoryKey, ulElement) {
     toggleBtn.type = "button";
     toggleBtn.setAttribute("aria-expanded", "false");
     toggleBtn.textContent = texts[currentLang].showDetails;
+    toggleBtn.setAttribute('data-help', texts[currentLang].showDetails);
     header.appendChild(toggleBtn);
 
     const editBtn = document.createElement("button");
@@ -4847,6 +4857,7 @@ function renderDeviceList(categoryKey, ulElement) {
     editBtn.dataset.name = name;
     editBtn.dataset.category = categoryKey;
     editBtn.textContent = texts[currentLang].editBtn;
+    editBtn.setAttribute('data-help', texts[currentLang].editBtnHelp || texts[currentLang].editBtn);
     header.appendChild(editBtn);
 
     const deleteBtn = document.createElement("button");
@@ -4854,6 +4865,7 @@ function renderDeviceList(categoryKey, ulElement) {
     deleteBtn.dataset.name = name;
     deleteBtn.dataset.category = categoryKey;
     deleteBtn.textContent = texts[currentLang].deleteDeviceBtn;
+    deleteBtn.setAttribute('data-help', texts[currentLang].deleteDeviceBtnHelp || texts[currentLang].deleteDeviceBtn);
     header.appendChild(deleteBtn);
 
     li.appendChild(header);
@@ -5088,10 +5100,12 @@ function toggleDeviceDetails(button) {
     details.style.display = 'none';
     button.textContent = texts[currentLang].showDetails;
     button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('data-help', texts[currentLang].showDetails);
   } else {
     details.style.display = 'block';
     button.textContent = texts[currentLang].hideDetails;
     button.setAttribute('aria-expanded', 'true');
+    button.setAttribute('data-help', texts[currentLang].hideDetails);
   }
 }
 
@@ -5246,9 +5260,11 @@ deviceManagerSection.addEventListener("click", (event) => {
     }
     // Change button to "Update"
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
+    addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     addDeviceBtn.dataset.mode = "edit";
     addDeviceBtn.dataset.originalName = name; // Store original name for update
     cancelEditBtn.textContent = texts[currentLang].cancelEditBtn;
+    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     cancelEditBtn.style.display = "inline";
     document.getElementById("addDeviceHeading").scrollIntoView({ behavior: "smooth", block: "start" });
   } else if (event.target.classList.contains("delete-btn")) {
@@ -5424,9 +5440,11 @@ newCategorySelect.addEventListener("change", () => {
   distanceNotesInput.value = "";
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
+  addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
   addDeviceBtn.dataset.mode = "add";
   delete addDeviceBtn.dataset.originalName;
   newNameInput.value = ""; // Clear name to avoid accidental update
+  cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
   cancelEditBtn.style.display = "none";
 });
 
