@@ -567,7 +567,7 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('dark-mode')).toBe(true);
     expect(toggle.textContent).toBe('☀️');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
-    expect(meta.getAttribute('content')).toBe('#1a1a1a');
+    expect(meta.getAttribute('content')).toBe('#121212');
     applyDarkMode(false);
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('🌙');
