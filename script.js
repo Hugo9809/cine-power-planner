@@ -6591,11 +6591,13 @@ if (helpButton && helpDialog) {
 
   document.addEventListener('mouseover', e => {
     if (!hoverHelpActive || !hoverHelpTooltip) return;
-    const el =
-      e.target.closest(
-        '[data-help], [aria-label], [title], [aria-labelledby], [alt]' +
-          ', button, a, input, select, textarea, label'
-      ) || e.target;
+    const el = e.target.closest(
+      '[data-help], [aria-label], [title], [aria-labelledby], [alt]'
+    );
+    if (!el) {
+      hoverHelpTooltip.setAttribute('hidden', '');
+      return;
+    }
     let text =
       el.getAttribute('data-help') ||
       el.getAttribute('aria-label') ||
@@ -6604,7 +6606,12 @@ if (helpButton && helpDialog) {
       const labelled = el.getAttribute('aria-labelledby');
       if (labelled) {
         const labelEl = document.getElementById(labelled);
-        if (labelEl) text = labelEl.textContent.trim();
+        if (labelEl)
+          text =
+            labelEl.getAttribute('data-help') ||
+            labelEl.getAttribute('aria-label') ||
+            labelEl.getAttribute('title') ||
+            labelEl.textContent.trim();
       }
     }
     if (!text) text = el.getAttribute('alt');
