@@ -102,6 +102,12 @@ describe('utility function tests', () => {
     expect(normalizeVideoType('DP')).toBe('DisplayPort');
   });
 
+  test('normalizeVideoType maps HD-SDI variants to 3G-SDI', () => {
+    const { normalizeVideoType } = utils;
+    expect(normalizeVideoType('HD-SDI')).toBe('3G-SDI');
+    expect(normalizeVideoType('HD SDI')).toBe('3G-SDI');
+  });
+
   test('normalizeViewfinderType handles case-insensitive mappings', () => {
     const { normalizeViewfinderType } = utils;
     expect(normalizeViewfinderType('lcd touchscreen')).toBe('LCD touchscreen');
