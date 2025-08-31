@@ -388,6 +388,8 @@ describe('script.js functions', () => {
       expect(inp.getAttribute('autocorrect')).toBe('off');
       expect(inp.getAttribute('autocapitalize')).toBe('off');
       expect(inp.getAttribute('spellcheck')).toBe('false');
+      expect(inp.getAttribute('type')).toBe('search');
+      expect(inp.getAttribute('inputmode')).toBe('search');
     });
   });
 

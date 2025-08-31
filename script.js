@@ -1168,6 +1168,7 @@ function setLanguage(lang) {
       input.setAttribute('autocorrect', 'off');
       input.setAttribute('autocapitalize', 'off');
       input.setAttribute('spellcheck', 'false');
+      input.setAttribute('inputmode', 'search');
     }
   });
   // Toggle device manager button text (depends on current visibility)
