@@ -64,6 +64,23 @@ function cleanPowerInput(input) {
   }
 }
 
+function normalizeVideoPorts(obj) {
+  if (!obj) return;
+  if (obj.video) {
+    if (Array.isArray(obj.video.inputs)) obj.videoInputs = obj.video.inputs;
+    if (Array.isArray(obj.video.outputs)) obj.videoOutputs = obj.video.outputs;
+    delete obj.video;
+  }
+  if (Array.isArray(obj.videoInputs)) {
+    obj.videoInputs = obj.videoInputs.map(i => ({ type: i.portType || i.type || i }));
+    obj.videoInputs.forEach(cleanPort);
+  }
+  if (Array.isArray(obj.videoOutputs)) {
+    obj.videoOutputs = obj.videoOutputs.map(o => ({ type: o.portType || o.type || o }));
+    obj.videoOutputs.forEach(cleanPort);
+  }
+}
+
 function normalizeCamera(cam) {
   if (cam.power && cam.power.input) {
     if (cam.power.input.powerDrawWatts === cam.powerDrawWatts) {
@@ -86,19 +103,7 @@ function normalizeCamera(cam) {
 function normalizeMonitor(mon) {
   if (mon.power?.input) cleanPowerInput(mon.power.input);
   if (mon.power?.output) cleanPort(mon.power.output);
-
-  if (mon.video) {
-    if (Array.isArray(mon.video.inputs)) {
-      mon.videoInputs = mon.video.inputs.map(i => ({ type: i.portType || i.type || i }));
-    }
-    if (Array.isArray(mon.video.outputs)) {
-      mon.videoOutputs = mon.video.outputs.map(o => ({ type: o.portType || o.type || o }));
-    }
-    delete mon.video;
-  }
-
-  if (Array.isArray(mon.videoInputs)) mon.videoInputs.forEach(cleanPort);
-  if (Array.isArray(mon.videoOutputs)) mon.videoOutputs.forEach(cleanPort);
+  normalizeVideoPorts(mon);
 }
 
 function parsePowerInput(str) {
@@ -134,14 +139,7 @@ function normalizeVideoDevice(dev) {
     else if (arr && arr.length) dev.power = { input: arr };
     delete dev.powerInput;
   }
-  if (Array.isArray(dev.videoInputs)) {
-    dev.videoInputs = dev.videoInputs.map(i => ({ type: i.portType || i.type || i }));
-  }
-  if (Array.isArray(dev.videoOutputs)) {
-    dev.videoOutputs = dev.videoOutputs.map(o => ({ type: o.portType || o.type || o }));
-  }
-  if (Array.isArray(dev.videoInputs)) dev.videoInputs.forEach(cleanPort);
-  if (Array.isArray(dev.videoOutputs)) dev.videoOutputs.forEach(cleanPort);
+  normalizeVideoPorts(dev);
   if (dev.power?.input) cleanPowerInput(dev.power.input);
 
 }
@@ -191,6 +189,7 @@ if (typeof module !== 'undefined' && module.exports) {
     cleanPowerInput,
     normalizeCamera,
     normalizeMonitor,
+    normalizeVideoPorts,
     normalizeVideoDevice,
     normalizeFiz,
     parsePowerInput,
