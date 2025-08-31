@@ -6516,6 +6516,16 @@ if (helpButton && helpDialog) {
                document.activeElement.tagName !== 'TEXTAREA') {
       if (e.key === 'F1') e.preventDefault();
       toggleHelp();
+    } else if (e.key.toLowerCase() === 'p' &&
+               document.activeElement.tagName !== 'INPUT' &&
+               document.activeElement.tagName !== 'TEXTAREA') {
+      pinkModeEnabled = !document.body.classList.contains('pink-mode');
+      applyPinkMode(pinkModeEnabled);
+      try {
+        localStorage.setItem('pinkMode', pinkModeEnabled);
+      } catch (err) {
+        console.warn('Could not save pink mode preference', err);
+      }
     }
   });
 
