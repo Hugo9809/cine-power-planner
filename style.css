@@ -454,7 +454,6 @@ button:disabled {
 .detail-toggle:focus,
 .detail-toggle[aria-expanded="true"] {
   border-color: var(--accent-color);
-  outline: none;
 }
 
 .device-details {
