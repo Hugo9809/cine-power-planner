@@ -7657,6 +7657,39 @@ let devices={
         "notes": "ARRI PCA kit for a7S II.",
         "verified_source": "https://www.bhphotovideo.com/c/product/1287557-REG/arri_kk_0010079_pro_set_for_sony.html"
       },
+      "SmallRig Camera Cage for Panasonic Lumix S5 II / S5 IIX (4022)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix S5 II", "Panasonic Lumix S5 IIX"],
+        "material": "aluminum, steel",
+        "weight_g": 161,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "2 NATO rails", "2 cold shoes", "Arca-type quick release", "QD socket"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Three-point anti-twist, fits gimbals or tripods, ergonomic accessory mounting.",
+        "verified_source": "https://www.bhphotovideo.com/c/product/1751740-REG/smallrig_4022_cage_for_panasonic_lumix.html"
+      },
+      "SmallRig Cage Kit for Panasonic Lumix S5 II / S5 IIX (4143)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix S5 II", "Panasonic Lumix S5 IIX"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["NATO clamp top handle", "cable clamp", "Arca-Swiss plate", "multiple mounting points"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Handheld kit includes quick-release top handle, HDMI/USB-C clamp.",
+        "verified_source": "https://www.smallrig.com/SmallRig-Cage-Kit-for-Panasonic-LUMIX-S5-II-4143.html"
+      },
+      "SmallRig Black Mamba Cage for Panasonic Lumix S5 II / S5 IIX (4023)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix S5 II", "Panasonic Lumix S5 IIX"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["Arca-Swiss compatibility", "anti-twist three-point lock", "multiple mounts"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Slim form factor; bionic design skin for protection.",
+        "verified_source": "https://www.smallrig.com/uk/SmallRig-Black-Mamba-Cage-for-Panasonic-LUMIX-S5-II-4023.html"
+      },
       "SHAPE Canon C70 Cage with Top Handle": {
         "brand": "SHAPE",
         "compatible": ["Canon C70"],
@@ -7700,6 +7733,17 @@ let devices={
         "side_plates": true,
         "notes": "Wooden Camera RED KOMODO cage with top plate.",
         "verified_source": "https://woodencamera.com/products/komodo-camera-cage"
+      },
+      "Tilta Camera Cage for RED V-RAPTOR / V-RAPTOR X Basic Kit": {
+        "brand": "Tilta",
+        "compatible": ["RED V-RAPTOR", "RED V-RAPTOR X"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["NATO rail", "ARRI rosette", "cold shoe", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Black walnut side handle; 15mm rod support and rugged cage armor.",
+        "verified_source": "https://tilta.com/shop/camera-cage-for-red-v-raptor-basic-kit/?srsltid=AfmBOoq6NUGSlJqJv_fIuAE5L9KivRh1vJH5PbpxcquI_HljSX0mjhjx"
       },
       "ARRI Cage Support Kit for ALEXA Mini LF": {
         "brand": "ARRI",
