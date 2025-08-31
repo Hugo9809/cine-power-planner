@@ -762,6 +762,59 @@
     </div>
   </div>
 
+  <dialog id="projectDialog">
+    <form id="projectForm" method="dialog">
+      <h3>Project Requirements</h3>
+      <div class="form-row"><label for="projectName">Project Name:<input type="text" id="projectName" name="projectName"></label></div>
+      <div class="form-row"><label for="requiredScenarios">Required Scenarios:
+        <select id="requiredScenarios" name="requiredScenarios" multiple>
+          <option value="Handheld">Handheld</option>
+          <option value="Tripod">Tripod</option>
+          <option value="Gimbal">Gimbal</option>
+          <option value="Car Mount">Car Mount</option>
+          <option value="Steadicam">Steadicam</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="rigging">Camera Rigging:
+        <select id="rigging" name="rigging" multiple>
+          <option value="Handheld">Handheld</option>
+          <option value="Shoulder Rig">Shoulder Rig</option>
+          <option value="Gimbal">Gimbal</option>
+          <option value="Tripod">Tripod</option>
+          <option value="Steadicam">Steadicam</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="monitoringPreferences">Monitoring Preferences:
+        <select id="monitoringPreferences" name="monitoringPreferences" multiple>
+          <option value="Onboard Monitor">Onboard Monitor</option>
+          <option value="Director's Monitor">Director's Monitor</option>
+          <option value="Wireless Video">Wireless Video</option>
+          <option value="Focus Puller Monitor">Focus Puller Monitor</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="tripodPreferences">Tripod Preferences:
+        <select id="tripodPreferences" name="tripodPreferences" multiple>
+          <option value="Lightweight">Lightweight</option>
+          <option value="Heavy-duty">Heavy-duty</option>
+          <option value="Hi-Hat">Hi-Hat</option>
+          <option value="Slider">Slider</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="filters">Filters:
+        <select id="filters" name="filters" multiple>
+          <option value="ND">ND</option>
+          <option value="Polarizer">Polarizer</option>
+          <option value="Diffusion">Diffusion</option>
+          <option value="Clear">Clear</option>
+        </select>
+      </label></div>
+      <menu>
+        <button type="reset" id="projectCancel">Cancel</button>
+        <button type="submit">OK</button>
+      </menu>
+    </form>
+  </dialog>
+
   <dialog id="feedbackDialog">
     <form id="feedbackForm" method="dialog">
       <h3>User Runtime Feedback</h3>
