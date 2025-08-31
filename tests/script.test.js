@@ -341,6 +341,20 @@ describe('script.js functions', () => {
     expect(optionsB).not.toContain('VBatt');
   });
 
+  test('filter input clears on Escape key press', () => {
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
+
+    const filterInput = document.getElementById('cameraFilter');
+    filterInput.value = 'CamA';
+    filterInput.dispatchEvent(new Event('input'));
+    expect(camSel.options[1].hidden).toBe(true);
+
+    filterInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(filterInput.value).toBe('');
+    expect(camSel.options[1].hidden).toBe(false);
+  });
+
   test('battery comparison excludes B-Mount when camera lacks support', () => {
     global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
     global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
