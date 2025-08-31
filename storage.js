@@ -75,9 +75,16 @@ function loadSetups() {
       const parsedData = JSON.parse(data);
       if (Array.isArray(parsedData)) {
         const obj = {};
+        const used = new Set();
         parsedData.forEach((item, idx) => {
           if (item && typeof item === 'object') {
-            const key = item.name || item.setupName || `Setup ${idx + 1}`;
+            const base = item.name || item.setupName || `Setup ${idx + 1}`;
+            let key = base;
+            let suffix = 2;
+            while (used.has(key)) {
+              key = `${base} (${suffix++})`;
+            }
+            used.add(key);
             obj[key] = item;
           }
         });
