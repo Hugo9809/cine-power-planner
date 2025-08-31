@@ -4733,6 +4733,13 @@ languageSelect.addEventListener("change", (event) => {
   setLanguage(event.target.value);
 });
 
+if (skipLink) {
+  skipLink.addEventListener("click", () => {
+    const main = document.getElementById("mainContent");
+    if (main) main.focus();
+  });
+}
+
 // Filtering inputs
 bindFilterInput(cameraFilterInput, () => filterSelect(cameraSelect, cameraFilterInput.value));
 bindFilterInput(monitorFilterInput, () => filterSelect(monitorSelect, monitorFilterInput.value));
