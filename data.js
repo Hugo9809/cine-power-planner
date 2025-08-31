@@ -8009,6 +8009,138 @@ let devices={
         "notes": "ARRI lightweight expansion, includes adapter plate UAP-3, lightweight handle LCH-1 and shoulder pad.",
         "verified_source": "https://www.bhphotovideo.com/c/product/1708625-REG/arri_kk_0041530_alexa_35_lightweight_expansion.html"
       },
+      "Tilta Camera Cage for Canon R5C": {
+        "brand": "Tilta",
+        "compatible": ["Canon EOS R5C"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Tilta form-fitting cage for R5C with NATO rails.",
+        "verified_source": "https://tilta.com/shop/canon-r5c-cage/"
+      },
+      "Kondor Blue Canon R5C Cage": {
+        "brand": "Kondor Blue",
+        "compatible": ["Canon EOS R5C"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["dual NATO rails", "ARRI locating", "1/4\"-20", "cold shoe"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Kondor Blue modular R5C cage with bubble level and magnetic tool.",
+        "verified_source": "https://kondorblue.com/products/canon-r5c-cage"
+      },
+      "Tilta Camera Cage Rig for Canon C200 (ES-T20)": {
+        "brand": "Tilta",
+        "compatible": ["Canon C200"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["15mm LWS rods", "ARRI rosette", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Complete Tilta ES-T20 cage with shoulder support and top handle.",
+        "verified_source": "https://tilta.com/shop/es-t20-camera-rig-for-canon-c200/"
+      },
+      "Tilta Camera Cage Rig for Panasonic EVA1 (ES-T37)": {
+        "brand": "Tilta",
+        "compatible": ["Panasonic EVA1"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["15mm LWS rods", "ARRI rosette", "VCT baseplate", "1/4\"-20"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Tilta EVA1 cage with shoulder pad, rods, power distribution.",
+        "verified_source": "https://tilta.com/shop/es-t37-camera-rig-for-panasonic-eva1/"
+      },
+      "SmallRig Camera Cage for Panasonic BGH1 (2988)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix BGH1"],
+        "material": "aluminum",
+        "weight_g": 270,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe", "side NATO rails"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Compact box-camera cage with multiple NATO rails and mounting points.",
+        "verified_source": "https://www.smallrig.com/smallrig-cage-for-panasonic-lumix-bgh1-2988.html"
+      },
+      "Tilta Full Cage for Panasonic BGH1": {
+        "brand": "Tilta",
+        "compatible": ["Panasonic Lumix BGH1"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "cold shoe", "ARRI locating"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Tilta modular cage for BGH1 box cinema camera.",
+        "verified_source": "https://tilta.com/shop/panasonic-bgh1-cage/"
+      },
+      "SmallRig Camera Cage for Panasonic BS1H (3440)": {
+        "brand": "SmallRig",
+        "compatible": ["Panasonic Lumix BS1H"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Box-camera cage designed for Panasonic BS1H.",
+        "verified_source": "https://www.smallrig.com/smallrig-cage-for-panasonic-lumix-bs1h-3440.html"
+      },
+      "SmallRig Camera Cage for Nikon Z8 (3940)": {
+        "brand": "SmallRig",
+        "compatible": ["Nikon Z8"],
+        "material": "aluminum",
+        "weight_g": 293,
+        "mounting_points": ["1/4\"-20", "3/8\"-16 ARRI locating", "cold shoe", "Arca-Swiss bottom"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Form-fitting cage with multiple mounting points and Arca base.",
+        "verified_source": "https://www.smallrig.com/smallrig-camera-cage-for-nikon-z8-3940.html"
+      },
+      "Tilta Camera Cage for Fujifilm GFX100": {
+        "brand": "Tilta",
+        "compatible": ["Fujifilm GFX100"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Tilta form-fitting cage for medium format Fujifilm GFX100.",
+        "verified_source": "https://tilta.com/shop/fujifilm-gfx100-cage/"
+      },
+      "SmallRig Full Camera Cage for Fujifilm X-T5 (3928)": {
+        "brand": "SmallRig",
+        "compatible": ["Fujifilm X-T5"],
+        "material": "aluminum",
+        "weight_g": 129,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "cold shoe", "Arca-Swiss QR"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Slim X-T5 cage with Arca-Swiss bottom and cold shoe.",
+        "verified_source": "https://www.smallrig.com/smallrig-cage-for-fujifilm-x-t5-3928.html"
+      },
+      "Bright Tangerine V-RAPTOR XL Cage Kit": {
+        "brand": "Bright Tangerine",
+        "compatible": ["RED V-RAPTOR XL"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["15mm LWS", "ARRI dovetail", "ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Bright Tangerine professional cage with XL dovetail baseplate and handle support.",
+        "verified_source": "https://www.brighttangerine.com/product/v-raptor-xl-cage/"
+      },
+      "ARRI PCA Kit for Amira": {
+        "brand": "ARRI",
+        "compatible": ["Arri Amira"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARRI locating", "15mm LWS", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Pro Camera Accessories kit for ARRI Amira with baseplate, side plates, handle.",
+        "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories"
+      },
       "Wooden Camera Rear Cage System for RED Komodo-X": {
         "brand": "Wooden Camera",
         "compatible": ["RED Komodo-X"],
