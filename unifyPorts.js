@@ -1,6 +1,10 @@
 const fs = require('fs');
 let devices = require('./data.js');
 
+// Caches for expensive normalization steps to avoid repeated regex work
+const typeNameCache = new Map();
+const voltageRangeCache = new Map();
+
 /**
  * Standardizes connector type names for easier comparison.
  *
@@ -8,13 +12,17 @@ let devices = require('./data.js');
  * @returns {string} Normalized connector name.
  */
 function cleanTypeName(name) {
-  let t = String(name).trim();
+  const key = String(name);
+  if (typeNameCache.has(key)) return typeNameCache.get(key);
+  let t = key.trim();
   // Preserve explicit IN/OUT labels; only remove generic INPUT/OUTPUT words.
   t = t.replace(/\b(INPUT|OUTPUT)\b/i, "").trim();
   if (/lemo\s*2\s*-?\s*pin/i.test(t)) t = "LEMO 2-pin";
   if (/d[\s-]?tap/i.test(t)) t = "D-Tap";
   if (/usb\s*type[-\s]?c/i.test(t)) t = "USB-C";
-  return t.replace(/\s+/g, " ");
+  t = t.replace(/\s+/g, " ");
+  typeNameCache.set(key, t);
+  return t;
 }
 
 /**
@@ -25,7 +33,8 @@ function cleanTypeName(name) {
  */
 function cleanVoltageRange(str) {
   if (!str || typeof str !== "string") return str;
-  return str
+  if (voltageRangeCache.has(str)) return voltageRangeCache.get(str);
+  const cleaned = str
     .replace(/DC/gi, "")
     .replace(/V(?:olt)?(?:s)?/gi, "")
     .replace(/[–—]/g, "-")
@@ -35,6 +44,8 @@ function cleanVoltageRange(str) {
     .replace(/\s+\)/g, ")")
     .replace(/\(\s+/g, "(")
     .trim();
+  voltageRangeCache.set(str, cleaned);
+  return cleaned;
 }
 
 /**
