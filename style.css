@@ -6,6 +6,14 @@
 body.pink-mode {
   --accent-color: #ff69b4;
 }
+
+html,
+body {
+  background: #1a1a1a;
+  height: 100%;
+  margin: 0;
+}
+
 /* Ensure predictable sizing */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -18,6 +26,16 @@ body {
   background-color: #ffffff;
   color: #000000;
   font-size: 0.9em;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding:
+      env(safe-area-inset-top)
+      env(safe-area-inset-right)
+      env(safe-area-inset-bottom)
+      env(safe-area-inset-left);
+  }
 }
 
 .skip-link {
