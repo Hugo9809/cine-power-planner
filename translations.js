@@ -401,7 +401,7 @@ const texts = {
     notesLabel: "Note:",
     monitorDetailsHeading: "Dettagli monitor",
     monitorPowerHeading: "Input di potenza",
-    addDeviceBtn: "Aggiungere",
+    addDeviceBtn: "Aggiungi",
     updateDeviceBtn: "Aggiorna",
     editBtn: "Modifica",
     deleteDeviceBtn: "Elimina",
