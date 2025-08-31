@@ -1020,11 +1020,43 @@ function setLanguage(lang) {
     el.textContent = texts[lang].notesLabel;
   });
   // Results labels
-  document.getElementById("totalPowerLabel").textContent = texts[lang].totalPowerLabel;
-  document.getElementById("totalCurrent144Label").textContent = texts[lang].totalCurrent144Label;
-  document.getElementById("totalCurrent12Label").textContent = texts[lang].totalCurrent12Label;
-  document.getElementById("batteryCountLabel").textContent = texts[lang].batteryCountLabel;
-  document.getElementById("runtimeFeedbackBtn").textContent = texts[lang].runtimeFeedbackBtn;
+  if (breakdownListElem)
+    breakdownListElem.setAttribute("data-help", texts[lang].breakdownListHelp);
+
+  const totalPowerLabelElem = document.getElementById("totalPowerLabel");
+  totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
+  totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
+
+  const totalCurrent144LabelElem = document.getElementById(
+    "totalCurrent144Label"
+  );
+  totalCurrent144LabelElem.textContent = texts[lang].totalCurrent144Label;
+  totalCurrent144LabelElem.setAttribute(
+    "data-help",
+    texts[lang].totalCurrent144Help
+  );
+
+  const totalCurrent12LabelElem = document.getElementById("totalCurrent12Label");
+  totalCurrent12LabelElem.textContent = texts[lang].totalCurrent12Label;
+  totalCurrent12LabelElem.setAttribute(
+    "data-help",
+    texts[lang].totalCurrent12Help
+  );
+
+  const batteryCountLabelElem = document.getElementById("batteryCountLabel");
+  batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
+  batteryCountLabelElem.setAttribute(
+    "data-help",
+    texts[lang].batteryCountHelp
+  );
+
+  document.getElementById("runtimeFeedbackBtn").textContent =
+    texts[lang].runtimeFeedbackBtn;
+
+  if (pinWarnElem)
+    pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
+  if (dtapWarnElem)
+    dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   const fb = renderFeedbackTable(getCurrentSetupKey());
@@ -1038,12 +1070,19 @@ function setLanguage(lang) {
       }
     }
     batteryLifeLabelElem.textContent = label;
+    batteryLifeLabelElem.setAttribute(
+      "data-help",
+      texts[lang].batteryLifeHelp
+    );
   }
   if (runtimeAverageNoteElem) {
     runtimeAverageNoteElem.textContent =
       fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
   }
   renderTemperatureNote(lastRuntimeHours);
+  const tempNoteElem = document.getElementById("temperatureNote");
+  if (tempNoteElem)
+    tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
   // Device manager category headings
   document.getElementById("category_cameras").textContent = texts[lang].category_cameras;
   document.getElementById("category_monitors").textContent = texts[lang].category_monitors;
@@ -3271,10 +3310,26 @@ function updateCalculations() {
     totalCurrentHigh = totalWatt / highV;
     totalCurrentLow = totalWatt / lowV;
   }
-  document.getElementById("totalCurrent144Label").textContent = bMountCam ?
-    texts[currentLang].totalCurrent336Label : texts[currentLang].totalCurrent144Label;
-  document.getElementById("totalCurrent12Label").textContent = bMountCam ?
-    texts[currentLang].totalCurrent216Label : texts[currentLang].totalCurrent12Label;
+  const currentHighLabel = document.getElementById("totalCurrent144Label");
+  currentHighLabel.textContent = bMountCam
+    ? texts[currentLang].totalCurrent336Label
+    : texts[currentLang].totalCurrent144Label;
+  currentHighLabel.setAttribute(
+    "data-help",
+    bMountCam
+      ? texts[currentLang].totalCurrent336Help
+      : texts[currentLang].totalCurrent144Help
+  );
+  const currentLowLabel = document.getElementById("totalCurrent12Label");
+  currentLowLabel.textContent = bMountCam
+    ? texts[currentLang].totalCurrent216Label
+    : texts[currentLang].totalCurrent12Label;
+  currentLowLabel.setAttribute(
+    "data-help",
+    bMountCam
+      ? texts[currentLang].totalCurrent216Help
+      : texts[currentLang].totalCurrent12Help
+  );
   totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
 
@@ -3505,6 +3560,10 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)}`;
       }
       batteryLifeLabelElem.textContent = label;
+      batteryLifeLabelElem.setAttribute(
+        "data-help",
+        texts[currentLang].batteryLifeHelp
+      );
     }
     if (runtimeAverageNoteElem) {
       runtimeAverageNoteElem.textContent =
@@ -3515,6 +3574,10 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   } else {
     if (batteryLifeLabelElem) {
       batteryLifeLabelElem.textContent = texts[currentLang].batteryLifeLabel;
+      batteryLifeLabelElem.setAttribute(
+        "data-help",
+        texts[currentLang].batteryLifeHelp
+      );
     }
     if (runtimeAverageNoteElem) {
       runtimeAverageNoteElem.textContent = '';

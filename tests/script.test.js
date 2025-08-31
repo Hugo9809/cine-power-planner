@@ -1632,6 +1632,46 @@ describe('script.js functions', () => {
     );
   });
 
+  test('results section items expose descriptive hover help', () => {
+    const totalPowerLabel = document.getElementById('totalPowerLabel');
+    const totalCurrent144Label = document.getElementById('totalCurrent144Label');
+    const totalCurrent12Label = document.getElementById('totalCurrent12Label');
+    const batteryLifeLabel = document.getElementById('batteryLifeLabel');
+    const batteryCountLabel = document.getElementById('batteryCountLabel');
+    const breakdownList = document.getElementById('breakdownList');
+    const pinWarning = document.getElementById('pinWarning');
+    const dtapWarning = document.getElementById('dtapWarning');
+    const temperatureNote = document.getElementById('temperatureNote');
+
+    expect(breakdownList.getAttribute('data-help')).toBe(
+      texts.en.breakdownListHelp
+    );
+    expect(totalPowerLabel.getAttribute('data-help')).toBe(
+      texts.en.totalPowerHelp
+    );
+    expect(totalCurrent144Label.getAttribute('data-help')).toBe(
+      texts.en.totalCurrent144Help
+    );
+    expect(totalCurrent12Label.getAttribute('data-help')).toBe(
+      texts.en.totalCurrent12Help
+    );
+    expect(batteryLifeLabel.getAttribute('data-help')).toBe(
+      texts.en.batteryLifeHelp
+    );
+    expect(batteryCountLabel.getAttribute('data-help')).toBe(
+      texts.en.batteryCountHelp
+    );
+    expect(pinWarning.getAttribute('data-help')).toBe(
+      texts.en.pinWarningHelp
+    );
+    expect(dtapWarning.getAttribute('data-help')).toBe(
+      texts.en.dtapWarningHelp
+    );
+    expect(temperatureNote.getAttribute('data-help')).toBe(
+      texts.en.temperatureNoteHelp
+    );
+  });
+
   test('help dialog controls expose descriptive hover help', () => {
     const helpButton = document.getElementById('helpButton');
     const hoverHelpButton = document.getElementById('hoverHelpButton');
