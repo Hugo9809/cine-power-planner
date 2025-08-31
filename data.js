@@ -7557,6 +7557,149 @@ let devices={
     "cages": {
       "Universal Cage": {
         "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"]
+      },
+      "Tilta Full Camera Cage for BMPCC 6K Pro/G2 (TA-T11-FCC)": {
+        "brand": "Tilta",
+        "compatible": ["Blackmagic Pocket Cinema Camera 6K Pro", "Blackmagic BMPCC 6K G2"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe", "NATO rail"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Tilta full cage with NATO rails and rod ports.",
+        "verified_source": "https://tilta.com/shop/full-camera-cage-for-bmpcc-6k-pro/"
+      },
+      "SmallRig Full Cage for BMPCC 4K/6K (2203B)": {
+        "brand": "SmallRig",
+        "compatible": ["Blackmagic BMPCC 4K", "Blackmagic BMPCC 6K"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "cold shoe", "ARRI locating"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Classic SmallRig cage for BMPCC 4K/6K.",
+        "verified_source": "https://www.smallrig.com/smallrig-camera-cage-for-bmpcc-4k-2203b.html"
+      },
+      "Wooden Camera Camera Cage for BMPCC 6K Pro / 6K G2": {
+        "brand": "Wooden Camera",
+        "compatible": ["Blackmagic Pocket Cinema Camera 6K Pro", "Blackmagic BMPCC 6K G2"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["3/8\"-16 (front)", "ARRI locating"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "ARRI locating pins compatible.",
+        "verified_source": "https://woodencamera.com/products/blackmagic-pocket-cinema-camera-6k-pro-camera-cage"
+      },
+      "Tilta Full Camera Cage for Sony FX3/FX30 V2": {
+        "brand": "Tilta",
+        "compatible": ["Sony FX3", "Sony FX30"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARCA QR plate", "1/4\"-20", "3/8\"-16", "cold shoe"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Quick release ARCA base; modular system.",
+        "verified_source": "https://tilta.com/shop/full-camera-cage-for-sony-fx3-fx30-v2/"
+      },
+      "SmallRig Camera Cage for Sony FX6 (3186)": {
+        "brand": "SmallRig",
+        "compatible": ["Sony FX6"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARRI rosette", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Fits FX6 body with rosette mounts.",
+        "verified_source": "https://www.smallrig.com/smallrig-camera-cage-for-sony-fx6-3186.html"
+      },
+      "Bright Tangerine LeftField Baseplate & Cage Kit for Sony FX9": {
+        "brand": "Bright Tangerine",
+        "compatible": ["Sony FX9"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["15mm LWS", "ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Bright Tangerine LeftField support system for FX9.",
+        "verified_source": "https://www.brighttangerine.com/"
+      },
+      "Tilta Full Camera Cage for Sony a7/a9 Series (TA-T17-FCC-G)": {
+        "brand": "Tilta",
+        "compatible": ["Sony A7", "Sony A7 II", "Sony A7 III", "Sony A7S", "Sony A7S II", "Sony A7R", "Sony A7R II", "Sony A7R III", "Sony A7R IV", "Sony A9"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["cold shoe", "1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Tilta cage with NATO rail and ARRI locating points.",
+        "verified_source": "https://www.amazon.com/dp/B081GZ7JGM"
+      },
+      "SmallRig Full Camera Cage for Sony A7R V / A7 IV / A7S III / A1 / A7R IV (3667B)": {
+        "brand": "SmallRig",
+        "compatible": ["Sony A7R V", "Sony A7 IV", "Sony A7S III", "Sony A1", "Sony A7R IV"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 locating", "cold shoe", "NATO rail"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Arca-Swiss base; triple lock.",
+        "verified_source": "https://www.smallrigreseller.com/smallrig-full-cage-for-sony-alpha-7-iv-alpha-7s-iii-alpha-1-3667.html"
+      },
+      "ARRI Pro Set for Sony a7S II": {
+        "brand": "ARRI",
+        "compatible": ["Sony A7S II"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "ARRI PCA kit for a7S II.",
+        "verified_source": "https://www.bhphotovideo.com/c/product/1287557-REG/arri_kk_0010079_pro_set_for_sony.html"
+      },
+      "SHAPE Canon C70 Cage with Top Handle": {
+        "brand": "SHAPE",
+        "compatible": ["Canon C70"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["ARRI 3/8\"-16 anti-twist", "1/4\"-20", "cold shoe"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "C70 cage with ARRI-style threads and top handle.",
+        "verified_source": "https://www.shapewlb.com/products/shape-canon-c70-camera-cage-with-top-handle"
+      },
+      "Kondor Blue Canon C70 Cage": {
+        "brand": "Kondor Blue",
+        "compatible": ["Canon C70"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["dual NATO rails", "1/4\"-20", "ARRI 3/8\"-16", "cold shoe"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Three-sided modular cage; compatible with Canon stock handle.",
+        "verified_source": "https://kondorblue.com/products/canon-c70-cage"
+      },
+      "Bright Tangerine LeftField 3 Expert Kit for RED KOMODO & KOMODO-X": {
+        "brand": "Bright Tangerine",
+        "compatible": ["RED Komodo 6k", "RED Komodo X"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "NATO rail"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "LeftField 3 kit with side rails & helicoil mounts.",
+        "verified_source": "https://www.brighttangerine.com/product/leftfield-3-expert-kit-for-red-komodo-komodo-x-dji-rs-4-rs-3/"
+      },
+      "Wooden Camera Complete Cage Kit for RED KOMODO": {
+        "brand": "Wooden Camera",
+        "compatible": ["RED Komodo 6k"],
+        "material": "aluminum",
+        "weight_g": null,
+        "mounting_points": ["ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Wooden Camera RED KOMODO cage with top plate.",
+        "verified_source": "https://woodencamera.com/products/komodo-camera-cage"
       }
     },
     "chargers": {
