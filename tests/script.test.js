@@ -355,6 +355,25 @@ describe('script.js functions', () => {
     expect(camSel.options[1].hidden).toBe(false);
   });
 
+  test('clear filters button resets all filter fields', () => {
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
+
+    const ids = ['cameraFilter','monitorFilter','videoFilter','motorFilter','controllerFilter','distanceFilter','batteryFilter'];
+    ids.forEach(id => {
+      const inp = document.getElementById(id);
+      inp.value = 'x';
+      inp.dispatchEvent(new Event('input'));
+    });
+
+    document.getElementById('clearFiltersBtn').click();
+
+    ids.forEach(id => {
+      expect(document.getElementById(id).value).toBe('');
+    });
+    expect(camSel.options[1].hidden).toBe(false);
+  });
+
   test('battery comparison excludes B-Mount when camera lacks support', () => {
     global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
     global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };

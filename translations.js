@@ -45,6 +45,7 @@ const texts = {
     deleteSetupBtn: "Delete",
     saveSetupBtn: "Save",
     clearSetupBtn: "Clear Current Setup",
+    clearFiltersBtn: "Clear All Filters",
     shareSetupBtn: "Share Setup Link",
     shareSetupPrompt: "Copy this link to share your setup:",
     shareLinkCopied: "Link copied to clipboard.",
@@ -283,6 +284,7 @@ const texts = {
     batterySelectHelp: "Choose the battery model that will power the entire rig.",
     batteryPlateSelectHelp: "Choose the battery plate or adapter that connects the battery to the camera.",
     clearSetupHelp: "Reset the planner by removing every selected device.",
+    clearFiltersHelp: "Remove text from all filter fields to show all options.",
     runtimeFeedbackBtnHelp:
       "Open a form where you can submit real-world runtime data for this configuration.",
     zoomOutHelp: "Zoom out of the setup diagram to view more of the layout.",
@@ -342,6 +344,7 @@ const texts = {
     deleteSetupBtn: "Eliminare",
     saveSetupBtn: "Salva",
     clearSetupBtn: "Cancella configurazione corrente",
+    clearFiltersBtn: "Cancella tutti i filtri",
     shareSetupBtn: "Condividi link della configurazione",
     shareSetupPrompt: "Copia questo link per condividere la configurazione:",
     shareLinkCopied: "Link copiato negli appunti.",
@@ -558,6 +561,8 @@ const texts = {
     batteryPlateSelectHelp: "Seleziona la piastra o l'adattatore della batteria.",
     clearSetupHelp:
       "Rimuove tutti i dispositivi dalla configurazione corrente.",
+    clearFiltersHelp:
+      "Rimuove il testo da tutti i campi filtro per mostrare tutte le opzioni.",
     runtimeFeedbackBtnHelp:
       "Invia il runtime misurato per questa configurazione.",
     zoomOutHelp: "Allontana il diagramma di configurazione.",
@@ -616,6 +621,7 @@ const texts = {
     deleteSetupBtn: "Eliminar",
     saveSetupBtn: "Guardar",
     clearSetupBtn: "Borrar configuración actual",
+    clearFiltersBtn: "Limpiar todos los filtros",
     shareSetupBtn: "Compartir enlace de configuración",
     shareSetupPrompt: "Copia este enlace para compartir tu configuración:",
     shareLinkCopied: "Enlace copiado al portapapeles.",
@@ -847,6 +853,8 @@ const texts = {
     batteryPlateSelectHelp: "Selecciona la placa o adaptador de batería.",
     clearSetupHelp:
       "Borra todos los dispositivos de la configuración actual.",
+    clearFiltersHelp:
+      "Borra el texto de todos los campos de filtro para mostrar todas las opciones.",
     runtimeFeedbackBtnHelp:
       "Envía tu tiempo de funcionamiento medido para esta configuración.",
     zoomOutHelp: "Alejar el diagrama de configuración.",
@@ -906,6 +914,7 @@ const texts = {
     deleteSetupBtn: "Supprimer",
     saveSetupBtn: "Enregistrer",
     clearSetupBtn: "Effacer la configuration actuelle",
+    clearFiltersBtn: "Effacer tous les filtres",
     shareSetupBtn: "Partager le lien de configuration",
     shareSetupPrompt: "Copiez ce lien pour partager votre configuration :",
     shareLinkCopied: "Lien copié dans le presse-papiers.",
@@ -1139,6 +1148,8 @@ const texts = {
       "Sélectionnez la plaque ou l'adaptateur de batterie utilisé.",
     clearSetupHelp:
       "Efface tous les appareils de la configuration actuelle.",
+    clearFiltersHelp:
+      "Supprime le texte de tous les champs de filtre pour afficher toutes les options.",
     runtimeFeedbackBtnHelp:
       "Soumettez votre durée mesurée pour cette configuration.",
     zoomOutHelp: "Réduit le diagramme de configuration.",
@@ -1198,6 +1209,7 @@ const texts = {
     deleteSetupBtn: "Löschen",
     saveSetupBtn: "Speichern",
     clearSetupBtn: "Aktuelles Setup zurücksetzen",
+    clearFiltersBtn: "Alle Filter zurücksetzen",
     shareSetupBtn: "Link zum Setup teilen",
     shareSetupPrompt: "Diesen Link kopieren, um das Setup zu teilen:",
     shareLinkCopied: "Link in die Zwischenablage kopiert.",
@@ -1428,6 +1440,8 @@ const texts = {
     batteryPlateSelectHelp: "Wähle die Batterieplatte oder den Adapter aus.",
     clearSetupHelp:
       "Entfernt alle Geräte aus der aktuellen Konfiguration.",
+    clearFiltersHelp:
+      "Entfernt den Text aus allen Filterfeldern, um wieder alle Optionen anzuzeigen.",
     runtimeFeedbackBtnHelp:
       "Sende deine gemessene Laufzeit für diese Konfiguration.",
     zoomOutHelp: "Verkleinert das Setup-Diagramm.",
