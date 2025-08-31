@@ -6548,8 +6548,22 @@ if (helpButton && helpDialog) {
     hoverHelpTooltip.removeAttribute('hidden');
   });
 
-  document.addEventListener('click', () => {
-    if (hoverHelpActive) stopHoverHelp();
+  // Prevent interacting with controls like dropdowns while hover help is active
+  document.addEventListener(
+    'mousedown',
+    e => {
+      if (hoverHelpActive) {
+        e.preventDefault();
+      }
+    },
+    true
+  );
+
+  document.addEventListener('click', e => {
+    if (hoverHelpActive) {
+      e.preventDefault();
+      stopHoverHelp();
+    }
   });
 
   if (hoverHelpButton) {
