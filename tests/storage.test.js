@@ -3,14 +3,15 @@ const {
   saveDeviceData,
   loadSetups,
   saveSetups,
-  saveSetup,
-  loadSetup,
-  deleteSetup,
-  loadSessionState,
-  saveSessionState,
-  loadFeedback,
-  saveFeedback,
-  clearAllData,
+    saveSetup,
+    loadSetup,
+    deleteSetup,
+    renameSetup,
+    loadSessionState,
+    saveSessionState,
+    loadFeedback,
+    saveFeedback,
+    clearAllData,
 } = require('../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -124,13 +125,36 @@ describe('setup storage', () => {
     expect(loadSetup('A')).toEqual({foo:1});
   });
 
-  test('deleteSetup removes named setup', () => {
-    const setups = {A:{foo:1}, B:{bar:2}};
-    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
-    deleteSetup('A');
-    expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({B:{bar:2}});
+    test('deleteSetup removes named setup', () => {
+      const setups = {A:{foo:1}, B:{bar:2}};
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+      deleteSetup('A');
+      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({B:{bar:2}});
+    });
+
+    test('renameSetup renames setup to a new unique name', () => {
+      const setups = {A:{foo:1}, B:{bar:2}};
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+      const newName = renameSetup('A', 'C');
+      expect(newName).toBe('C');
+      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({C:{foo:1}, B:{bar:2}});
+    });
+
+    test('renameSetup appends suffix when target exists', () => {
+      const setups = {A:{foo:1}, C:{bar:2}};
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+      const newName = renameSetup('A', 'C');
+      expect(newName).toBe('C (2)');
+      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({'C (2)':{foo:1}, C:{bar:2}});
+    });
+
+    test('renameSetup returns null when original missing', () => {
+      localStorage.setItem(SETUP_KEY, JSON.stringify({A:{foo:1}}));
+      const result = renameSetup('B', 'C');
+      expect(result).toBeNull();
+      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}});
+    });
   });
-});
 
 describe('session state storage', () => {
   beforeEach(() => {

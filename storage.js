@@ -128,6 +128,24 @@ function deleteSetup(name) {
   saveSetups(setups);
 }
 
+function renameSetup(oldName, newName) {
+  const setups = loadSetups();
+  if (!Object.prototype.hasOwnProperty.call(setups, oldName)) {
+    return null;
+  }
+  if (oldName === newName) {
+    return newName;
+  }
+  let target = newName;
+  let suffix = 2;
+  while (Object.prototype.hasOwnProperty.call(setups, target)) {
+    target = `${newName} (${suffix++})`;
+  }
+  setups[target] = setups[oldName];
+  delete setups[oldName];
+  saveSetups(setups);
+  return target;
+}
 // --- User Feedback Storage ---
 function loadFeedback() {
   try {
@@ -175,6 +193,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveSetup,
     loadSetup,
     deleteSetup,
+    renameSetup,
     loadSessionState,
     saveSessionState,
     loadFeedback,
