@@ -248,6 +248,13 @@ const texts = {
     generateOverviewHelp: "Create a printable overview of saved setups.",
     shareSetupHelp: "Copy a link representing the current setup.",
     applySharedLinkHelp: "Load the setup from the shared link.",
+    sharedLinkHelp: "Paste a shared link here to load its setup.",
+    cameraSelectHelp: "Select the camera for your setup.",
+    monitorSelectHelp: "Select a monitor to include in your setup.",
+    videoSelectHelp: "Select a wireless video system to include.",
+    distanceSelectHelp: "Select a distance sensor for your setup.",
+    batterySelectHelp: "Select the battery that powers your setup.",
+    batteryPlateSelectHelp: "Select the battery plate or adapter used.",
     clearSetupHelp: "Remove all devices from the current setup.",
     runtimeFeedbackBtnHelp: "Submit your measured runtime for this setup.",
     zoomOutHelp: "Zoom out of the setup diagram.",
@@ -493,6 +500,14 @@ const texts = {
     shareSetupHelp:
       "Copia un link che rappresenta la configurazione corrente.",
     applySharedLinkHelp: "Carica la configurazione dal link condiviso.",
+    sharedLinkHelp:
+      "Incolla un link condiviso qui per caricare la sua configurazione.",
+    cameraSelectHelp: "Seleziona la fotocamera per la tua configurazione.",
+    monitorSelectHelp: "Seleziona un monitor da includere.",
+    videoSelectHelp: "Seleziona un sistema video wireless da includere.",
+    distanceSelectHelp: "Seleziona un sensore di distanza per la tua configurazione.",
+    batterySelectHelp: "Seleziona la batteria che alimenta la configurazione.",
+    batteryPlateSelectHelp: "Seleziona la piastra o l'adattatore della batteria.",
     clearSetupHelp:
       "Rimuove tutti i dispositivi dalla configurazione corrente.",
     runtimeFeedbackBtnHelp:
@@ -758,6 +773,14 @@ const texts = {
     shareSetupHelp:
       "Copia un enlace que representa la configuración actual.",
     applySharedLinkHelp: "Carga la configuración desde el enlace compartido.",
+    sharedLinkHelp:
+      "Pega aquí un enlace compartido para cargar su configuración.",
+    cameraSelectHelp: "Selecciona la cámara para tu configuración.",
+    monitorSelectHelp: "Selecciona un monitor para incluir.",
+    videoSelectHelp: "Selecciona un sistema de video inalámbrico para incluir.",
+    distanceSelectHelp: "Selecciona un sensor de distancia para tu configuración.",
+    batterySelectHelp: "Selecciona la batería que alimenta la configuración.",
+    batteryPlateSelectHelp: "Selecciona la placa o adaptador de batería.",
     clearSetupHelp:
       "Borra todos los dispositivos de la configuración actual.",
     runtimeFeedbackBtnHelp:
@@ -1024,6 +1047,16 @@ const texts = {
     shareSetupHelp:
       "Copie un lien représentant la configuration actuelle.",
     applySharedLinkHelp: "Charge la configuration depuis le lien partagé.",
+    sharedLinkHelp:
+      "Collez ici un lien partagé pour charger sa configuration.",
+    cameraSelectHelp: "Sélectionnez la caméra pour votre configuration.",
+    monitorSelectHelp: "Sélectionnez un moniteur à inclure.",
+    videoSelectHelp: "Sélectionnez un système vidéo sans fil à inclure.",
+    distanceSelectHelp:
+      "Sélectionnez un capteur de distance pour votre configuration.",
+    batterySelectHelp: "Sélectionnez la batterie qui alimente la configuration.",
+    batteryPlateSelectHelp:
+      "Sélectionnez la plaque ou l'adaptateur de batterie utilisé.",
     clearSetupHelp:
       "Efface tous les appareils de la configuration actuelle.",
     runtimeFeedbackBtnHelp:
@@ -1289,6 +1322,14 @@ const texts = {
     shareSetupHelp:
       "Kopiert einen Link, der die aktuelle Konfiguration repräsentiert.",
     applySharedLinkHelp: "Lädt die Konfiguration aus dem geteilten Link.",
+    sharedLinkHelp:
+      "Füge hier einen geteilten Link ein, um seine Konfiguration zu laden.",
+    cameraSelectHelp: "Wähle die Kamera für dein Setup.",
+    monitorSelectHelp: "Wähle einen Monitor, der enthalten sein soll.",
+    videoSelectHelp: "Wähle ein drahtloses Videosystem aus.",
+    distanceSelectHelp: "Wähle einen Abstandssensor für dein Setup.",
+    batterySelectHelp: "Wähle den Akku, der das Setup versorgt.",
+    batteryPlateSelectHelp: "Wähle die Batterieplatte oder den Adapter aus.",
     clearSetupHelp:
       "Entfernt alle Geräte aus der aktuellen Konfiguration.",
     runtimeFeedbackBtnHelp:
