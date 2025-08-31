@@ -3695,7 +3695,12 @@ function renderFeedbackTable(currentKey) {
   const container = document.getElementById('feedbackTableContainer');
   const table = document.getElementById('userFeedbackTable');
   const data = loadFeedbackSafe();
-  const entries = data[currentKey] || [];
+  // Filter out any stored location information to keep the table column hidden
+  const entries = (data[currentKey] || []).map(entry => {
+    const rest = { ...entry };
+    delete rest.location;
+    return rest;
+  });
 
   if (!entries.length) {
     if (table) {
