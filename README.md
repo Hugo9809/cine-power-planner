@@ -13,8 +13,10 @@ offline.
 - [Runtime Data Weighting](#runtime-data-weighting)
 - [Getting Started](#getting-started)
 - [Install as an App](#install-as-an-app)
+- [Browser Support](#browser-support)
 - [Development](#development)
 - [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
 - [License](#license)
 
 ## Documentation
@@ -88,8 +90,12 @@ access:
    - **Chrome/Edge (desktop):** Click the install icon in the address bar.
    - **Android:** Open the browser menu and choose *Add to Home screen*.
    - **iOS Safari:** Tap the share icon and select *Add to Home Screen*.
- 3. Launch the app from your applications list. The installed version works
-    offline and updates automatically.
+3. Launch the app from your applications list. The installed version works
+   offline and updates automatically.
+
+## Browser Support
+
+Camera Power Planner relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.
 
 ## Development
 
@@ -131,6 +137,10 @@ npm run check-consistency
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request on GitHub.
+
+## Acknowledgements
+
+The planner uses the [OpenMoji](https://openmoji.org/) icon set when a network connection is available and relies on [lz-string](https://pieroxy.net/blog/pages/lz-string/index.html) to compactly store setups in URLs.
 
 ## License
 
