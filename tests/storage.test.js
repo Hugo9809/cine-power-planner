@@ -12,6 +12,8 @@ const {
     loadFeedback,
     saveFeedback,
     clearAllData,
+    exportAllData,
+    importAllData,
 } = require('../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -219,5 +221,39 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
     expect(localStorage.getItem(FEEDBACK_KEY)).toBeNull();
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull();
+  });
+});
+
+describe('export/import all data', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  test('exportAllData collects all planner data', () => {
+    saveDeviceData(validDeviceData);
+    saveSetups({ A: { foo: 1 } });
+    saveSessionState({ camera: 'CamA' });
+    saveFeedback({ note: 'hi' });
+    expect(exportAllData()).toEqual({
+      devices: validDeviceData,
+      setups: { A: { foo: 1 } },
+      session: { camera: 'CamA' },
+      feedback: { note: 'hi' }
+    });
+  });
+
+  test('importAllData restores planner data', () => {
+    const data = {
+      devices: validDeviceData,
+      setups: { A: { foo: 1 } },
+      session: { camera: 'CamA' },
+      feedback: { note: 'hi' }
+    };
+    importAllData(data);
+    expect(loadDeviceData()).toEqual(validDeviceData);
+    expect(loadSetups()).toEqual({ A: { foo: 1 } });
+    expect(loadSessionState()).toEqual({ camera: 'CamA' });
+    expect(loadFeedback()).toEqual({ note: 'hi' });
   });
 });

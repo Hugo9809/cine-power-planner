@@ -201,6 +201,33 @@ function clearAllData() {
   }
 }
 
+// --- Export/Import All Planner Data ---
+function exportAllData() {
+  return {
+    devices: loadDeviceData(),
+    setups: loadSetups(),
+    session: loadSessionState(),
+    feedback: loadFeedback(),
+  };
+}
+
+function importAllData(data) {
+  if (data && typeof data === 'object') {
+    if (data.devices) {
+      saveDeviceData(data.devices);
+    }
+    if (data.setups) {
+      saveSetups(data.setups);
+    }
+    if (data.session) {
+      saveSessionState(data.session);
+    }
+    if (data.feedback) {
+      saveFeedback(data.feedback);
+    }
+  }
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     loadDeviceData,
@@ -215,6 +242,8 @@ if (typeof module !== "undefined" && module.exports) {
     saveSessionState,
     loadFeedback,
     saveFeedback,
-    clearAllData
+    clearAllData,
+    exportAllData,
+    importAllData
   };
 }
