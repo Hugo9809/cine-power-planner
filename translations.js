@@ -256,7 +256,7 @@ const texts = {
     helpSearchClearHelp: "Clear the search box and show all help topics again.",
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
-      "Activate hover help so moving the cursor over buttons and labels reveals brief explanations.",
+      "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations.",
     setupSelectHelp:
       "Pick a previously saved configuration or select '-- New Setup --' to start from scratch.",
     setupNameHelp:
@@ -537,7 +537,7 @@ const texts = {
     helpSearchClearHelp: "Cancella la ricerca corrente.",
     hoverHelpButtonLabel: "Passa il mouse per aiuto",
     hoverHelpButtonHelp:
-      "Attiva la modalità di aiuto al passaggio e sposta il cursore sugli elementi per saperne di più.",
+      "Attiva l'aiuto al passaggio del mouse così, spostando il cursore su pulsanti, campi, menu a discesa o intestazioni, vengono mostrate brevi spiegazioni.",
     setupSelectHelp:
       "Scegli una configurazione salvata da caricare o inizia una nuova.",
     setupNameHelp: "Inserisci un nome per la configurazione corrente.",
@@ -829,7 +829,7 @@ const texts = {
     helpSearchClearHelp: "Borra la consulta de búsqueda actual.",
     hoverHelpButtonLabel: "Pasa el cursor para ayuda",
     hoverHelpButtonHelp:
-      "Activa la ayuda al pasar el cursor y muévelo sobre los elementos para saber de ellos.",
+      "Activa la ayuda al pasar el cursor para que al moverlo sobre botones, campos, menús desplegables o encabezados aparezcan breves explicaciones.",
     setupSelectHelp:
       "Elige una configuración guardada para cargarla o comienza una nueva.",
     setupNameHelp: "Introduce un nombre para la configuración actual.",
@@ -1122,7 +1122,7 @@ const texts = {
     helpSearchClearHelp: "Effacer la requête de recherche en cours.",
     hoverHelpButtonLabel: "Survoler pour obtenir de l'aide",
     hoverHelpButtonHelp:
-      "Activez l'aide au survol et déplacez le curseur sur les éléments pour en savoir plus.",
+      "Active l'aide au survol pour qu'en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, des explications brèves apparaissent.",
     setupSelectHelp:
       "Choisissez une configuration enregistrée à charger ou commencez-en une nouvelle.",
     setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
@@ -1416,7 +1416,7 @@ const texts = {
     helpSearchClearHelp: "Lösche die aktuelle Suchanfrage.",
     hoverHelpButtonLabel: "Für Hilfe darüberfahren",
     hoverHelpButtonHelp:
-      "Aktiviere den Hover-Hilfemodus und fahre mit dem Cursor über Elemente, um mehr zu erfahren.",
+      "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen erscheinen.",
     setupSelectHelp:
       "Wähle eine gespeicherte Konfiguration zum Laden oder starte eine neue.",
     setupNameHelp: "Gib einen Namen für die aktuelle Konfiguration ein.",

@@ -19,6 +19,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - Interaktives Setup-Diagramm, mit dem Geräte verschoben, gezoomt und als SVG oder JPG exportiert werden können.
 - Verspieltes pinkes Akzent-Thema, das zwischen Besuchen erhalten bleibt.
 - Durchsuchbarer Hilfedialog mit Schritt-für-Schritt-Anleitung und FAQ.
+- Kontextbezogene Hover-Hilfe für Schaltflächen, Felder, Dropdowns und Überschriften.
 - Unterstützung für Kameras mit V- und B-Mount-Akkuplatten.
 
 ---

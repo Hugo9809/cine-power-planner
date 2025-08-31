@@ -19,6 +19,7 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 - Diagramme interactif de configuration permettant de faire glisser les appareils, de zoomer et d'exporter la mise en page en SVG ou JPG.
 - Thème rose ludique qui persiste entre les visites.
 - Fenêtre d'aide consultable avec sections pas à pas et FAQ.
+- Aide contextuelle au survol pour les boutons, champs, menus déroulants et en-têtes.
 - Prise en charge des caméras avec plaques batterie V et B‑Mount.
 
 ---
