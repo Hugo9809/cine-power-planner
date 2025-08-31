@@ -52,13 +52,24 @@ function cleanPort(port) {
   if (port.type) port.type = cleanTypeName(port.type);
 }
 
+function cleanPowerInput(input) {
+  if (!input) return;
+  cleanPort(input);
+  if (Array.isArray(input)) {
+    input.forEach(port => {
+      if (port.voltageRange) port.voltageRange = cleanVoltageRange(port.voltageRange);
+    });
+  } else if (input.voltageRange) {
+    input.voltageRange = cleanVoltageRange(input.voltageRange);
+  }
+}
+
 function normalizeCamera(cam) {
   if (cam.power && cam.power.input) {
     if (cam.power.input.powerDrawWatts === cam.powerDrawWatts) {
       delete cam.power.input.powerDrawWatts;
     }
-    cleanPort(cam.power.input);
-    if (cam.power.input.voltageRange) cam.power.input.voltageRange = cleanVoltageRange(cam.power.input.voltageRange);
+    cleanPowerInput(cam.power.input);
   }
   if (Array.isArray(cam.power?.powerDistributionOutputs)) cam.power.powerDistributionOutputs.forEach(cleanPort);
   if (Array.isArray(cam.videoOutputs)) cam.videoOutputs.forEach(cleanPort);
@@ -73,8 +84,7 @@ function normalizeCamera(cam) {
 }
 
 function normalizeMonitor(mon) {
-  if (mon.power?.input) cleanPort(mon.power.input);
-  if (mon.power?.input?.voltageRange) mon.power.input.voltageRange = cleanVoltageRange(mon.power.input.voltageRange);
+  if (mon.power?.input) cleanPowerInput(mon.power.input);
   if (mon.power?.output) cleanPort(mon.power.output);
 
   if (mon.video) {
@@ -132,16 +142,7 @@ function normalizeVideoDevice(dev) {
   }
   if (Array.isArray(dev.videoInputs)) dev.videoInputs.forEach(cleanPort);
   if (Array.isArray(dev.videoOutputs)) dev.videoOutputs.forEach(cleanPort);
-  if (dev.power?.input) {
-    cleanPort(dev.power.input);
-    if (Array.isArray(dev.power.input)) {
-      dev.power.input.forEach(i => {
-        if (i.voltageRange) i.voltageRange = cleanVoltageRange(i.voltageRange);
-      });
-    } else if (dev.power.input.voltageRange) {
-      dev.power.input.voltageRange = cleanVoltageRange(dev.power.input.voltageRange);
-    }
-  }
+  if (dev.power?.input) cleanPowerInput(dev.power.input);
 
 }
 function normalizeFiz(dev) {
@@ -149,16 +150,7 @@ function normalizeFiz(dev) {
     dev.fizConnectors = [{ type: dev.fizConnector }];
     delete dev.fizConnector;
   }
-  if (dev.power?.input) {
-    cleanPort(dev.power.input);
-    if (Array.isArray(dev.power.input)) {
-      dev.power.input.forEach(i => {
-        if (i.voltageRange) i.voltageRange = cleanVoltageRange(i.voltageRange);
-      });
-    } else if (dev.power.input.voltageRange) {
-      dev.power.input.voltageRange = cleanVoltageRange(dev.power.input.voltageRange);
-    }
-  }
+  if (dev.power?.input) cleanPowerInput(dev.power.input);
   if (Array.isArray(dev.fizConnectors)) dev.fizConnectors.forEach(cleanPort);
 }
 
@@ -196,6 +188,7 @@ if (typeof module !== 'undefined' && module.exports) {
     cleanVoltageRange,
     deepClean,
     cleanPort,
+    cleanPowerInput,
     normalizeCamera,
     normalizeMonitor,
     normalizeVideoDevice,
