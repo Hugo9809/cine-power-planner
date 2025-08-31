@@ -1347,7 +1347,7 @@ const diagramCssLight = `
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
 .conn.green{fill:#090;}
-text{font-family:'Open Sans',sans-serif;}
+text{font-family:system-ui,sans-serif;}
 .edge-label{font-size:10px;}
 line{stroke:#333;stroke-width:2px;}
 path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
@@ -1360,7 +1360,7 @@ const diagramCssDark = `
 .node-box{fill:#333;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-text{fill:#fff;font-family:'Open Sans',sans-serif;}
+text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
 path.power{stroke:#ff6666;}
@@ -6222,7 +6222,7 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#121212' : '#ffffff');
+    meta.setAttribute('content', isDark ? '#1a1a1a' : '#ffffff');
   }
 }
 
