@@ -567,7 +567,7 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('dark-mode')).toBe(true);
     expect(toggle.textContent).toBe('☀️');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
-    expect(meta.getAttribute('content')).toBe('#1a1a1a');
+    expect(meta.getAttribute('content')).toBe('#121212');
     applyDarkMode(false);
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('🌙');
@@ -1502,6 +1502,27 @@ describe('script.js functions', () => {
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
     expect(document.body.style.cursor).toBe('');
+  });
+
+  test('hover help prevents dropdown content from opening', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const hoverHelpButton = document.getElementById('hoverHelpButton');
+    const cameraSelect = document.getElementById('cameraSelect');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+
+    hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
+    const mouseEvent = new MouseEvent('mousedown', {
+      bubbles: true,
+      cancelable: true
+    });
+    cameraSelect.dispatchEvent(mouseEvent);
+    expect(mouseEvent.defaultPrevented).toBe(true);
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
 
   test('saved setups label has descriptive hover help', () => {
