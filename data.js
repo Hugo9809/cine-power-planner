@@ -7920,6 +7920,105 @@ let devices={
         "side_plates": true,
         "notes": "Designed for Z CAM cinema line with robust accessory integration.",
         "verified_source": "https://www.bhphotovideo.com/c/product/1542957-REG/smallrig_cvz2423_cage_for_z_cam.html/accessories"
+      },
+      "SmallRig Full Cage for Fujifilm X-H2 / X-H2S (3934)": {
+        "brand": "SmallRig",
+        "compatible": ["Fujifilm X-H2", "Fujifilm X-H2S"],
+        "material": "aluminum alloy",
+        "weight_g": 178,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail", "cold shoe", "H38 Arca-Swiss QR", "H18 cold shoe mount", "built-in HDMI clamp"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Three-point locking with locating pin and side lock; HawkLock quick-release interoperability; includes HDMI clamp and magnetic spanner.",
+        "verified_source": "https://www.smallrig.com/SmallRig-Cage-for-FUJIFILM-X-H2S-3934.html"
+      },
+      "SmallRig Handheld Cage Kit for Fujifilm X-H2 / X-H2S (4097)": {
+        "brand": "SmallRig",
+        "compatible": ["Fujifilm X-H2", "Fujifilm X-H2S"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail", "cold shoe", "Arca-Swiss QR", "HDMI clamp"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Includes quick-release top handle; cable clamp; ergonomic kit for handheld shooting.",
+        "verified_source": "https://www.smallrig.com/SmallRig-Handheld-Kit-for-FUJIFILM-X-H2-X-H2S-Limited-Edition-4097.html"
+      },
+      "SmallRig Cage for Fujifilm X-H2S with FT-XH / VG-XH Battery Grip (3933)": {
+        "brand": "SmallRig",
+        "compatible": ["Fujifilm X-H2S"],
+        "material": "aluminum",
+        "weight_g": 241,
+        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 anti-twist", "cold shoe", "Arca-Swiss QR bottom", "multiple 1/4\"-20/3/8\"-16 threads"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "Form-fitting cage that accommodates Fujifilm vertical battery grip; built-in Arca base and two shoe mounts.",
+        "verified_source": "https://www.bhphotovideo.com/c/product/1709406-REG/smallrig_3933_camera_cage_for_fujifilm.html"
+      },
+      "Tilta Rig for Panasonic VariCam LT (ES-T65)": {
+        "brand": "Tilta",
+        "compatible": ["Panasonic VariCam LT"],
+        "material": "CNC-machined aluminum",
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "15mm LWS rods", "ARRI rosette", "VCT-14 baseplate", "handle rosettes", "top handle", "side plate", "power distro outputs"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Complete rig with shoulder support, EVF bracket, power module (Gold mount or V-mount), 15 mm rod support and modular plates.",
+        "verified_source": "https://www.adorama.com/iaest65.html"
+      },
+      "Tilta Cage Rig for Panasonic VariCam 35 (ES-T75-AB)": {
+        "brand": "Tilta",
+        "compatible": ["Panasonic VariCam 35"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["1/4\"-20", "3/8\"-16", "15mm LWS rods", "ARRI rosette", "shoulder pad", "VCT-14 dovetail", "Gold mount battery plate", "power outputs", "EVF support", "quick-release top handle", "side plate", "bottom plate"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Full rig for VariCam 35 including shoulder support, battery power distro, multiple mounting points and EVF integration.",
+        "verified_source": "https://www.bhphotovideo.com/c/product/1414427-REG/tilta_es_t75_ab_rig_for_panasonic.html"
+      },
+      "Tilta Full Camera Cage for DJI Ronin 4D / Flex": {
+        "brand": "Tilta",
+        "compatible": ["DJI Ronin 4D", "DJI Ronin 4D Flex"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["Manfrotto quick release", "dual 15mm rod mount", "lens adapter support", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "Includes lens adapter support, rods, top handle, support plate.",
+        "verified_source": "https://www.bhphotovideo.com/c/product/1775459-REG/tilta_es_t09_a_camera_cage_for_dji.html"
+      },
+      "ARRI Alexa 35 Production Support Set (19 mm)": {
+        "brand": "ARRI",
+        "compatible": ["Arri Alexa 35"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["15 mm LWS (19 mm)", "ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "top_handle_included": false,
+        "side_plates": true,
+        "notes": "ARRI Production Support for Alexa 35, includes top/side/bottom support components (19 mm).",
+        "verified_source": "https://www.arri.com/en/camera-systems/mechanical-accessories/camera-support-systems/support-systems-for-arri-cameras/support-systems-for-alexa-35"
+      },
+      "ARRI Alexa 35 Lightweight Expansion Set": {
+        "brand": "ARRI",
+        "compatible": ["Arri Alexa 35"],
+        "material": null,
+        "weight_g": null,
+        "mounting_points": ["15 mm LWS lightweight", "UAP-3 adapter plate", "handle mounting", "shoulder pad"],
+        "top_handle_included": true,
+        "side_plates": true,
+        "notes": "ARRI lightweight expansion, includes adapter plate UAP-3, lightweight handle LCH-1 and shoulder pad.",
+        "verified_source": "https://www.bhphotovideo.com/c/product/1708625-REG/arri_kk_0041530_alexa_35_lightweight_expansion.html"
+      },
+      "Wooden Camera Rear Cage System for RED Komodo-X": {
+        "brand": "Wooden Camera",
+        "compatible": ["RED Komodo-X"],
+        "material": null,
+        "weight_g": 123,
+        "mounting_points": ["accessory rails", "ties into side rails"],
+        "top_handle_included": false,
+        "side_plates": false,
+        "notes": "Rear cage adds mounting points, accessory rail compatible; lightweight at 123 g.",
+        "verified_source": "https://woodencamera.com/products/rear-cage-system-red-komodo-x"
       }
     },
     "chargers": {
