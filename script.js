@@ -5829,14 +5829,13 @@ function escapeHtml(str) {
 
 
 function summarizeByType(list) {
-    const counts = {};
-    if (!Array.isArray(list)) return counts;
-    for (const it of list) {
-        if (it && it.type) {
+    if (!Array.isArray(list)) return {};
+    return list.reduce((counts, it) => {
+        if (it?.type) {
             counts[it.type] = (counts[it.type] || 0) + 1;
         }
-    }
-    return counts;
+        return counts;
+    }, {});
 }
 
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
@@ -5854,37 +5853,20 @@ function generateConnectorSummary(data) {
     if (!data || typeof data !== 'object') return '';
 
     let portHtml = '';
-    if (data.power) {
-        if (Array.isArray(data.power.powerDistributionOutputs)) {
-            portHtml += connectorBlocks(data.power.powerDistributionOutputs, '⚡', 'power-conn', 'Power', 'Out');
-        }
-        const inputs = powerInputTypes(data).map(t => ({ type: t }));
-        if (inputs.length) {
-            portHtml += connectorBlocks(inputs, '🔌', 'power-conn', 'Power', 'In');
-        }
-    }
-    if (Array.isArray(data.fizConnectors)) {
-        portHtml += connectorBlocks(data.fizConnectors, '🎚️', 'fiz-conn', 'FIZ Port');
-    }
-    const videoIn = (data.video && data.video.inputs) || data.videoInputs;
-    if (Array.isArray(videoIn)) {
-        portHtml += connectorBlocks(videoIn, '📺', 'video-conn', 'Video', 'In');
-    }
-    const videoOut = (data.video && data.video.outputs) || data.videoOutputs;
-    if (Array.isArray(videoOut)) {
-        portHtml += connectorBlocks(videoOut, '📺', 'video-conn', 'Video', 'Out');
-    }
-    if (Array.isArray(data.timecode)) {
-        portHtml += connectorBlocks(data.timecode, '⏱️', 'neutral-conn', 'Timecode');
-    }
-    if (data.audioInput && data.audioInput.portType) {
-        portHtml += connectorBlocks([{ type: data.audioInput.portType }], '🎤', 'neutral-conn', 'Audio', 'In');
-    }
-    if (data.audioOutput && data.audioOutput.portType) {
-        portHtml += connectorBlocks([{ type: data.audioOutput.portType }], '🔊', 'neutral-conn', 'Audio', 'Out');
-    }
-    if (data.audioIo && data.audioIo.portType) {
-        portHtml += connectorBlocks([{ type: data.audioIo.portType }], '🎚️', 'neutral-conn', 'Audio', 'I/O');
+    const connectors = [
+        { items: data.power?.powerDistributionOutputs, icon: '⚡', cls: 'power-conn', label: 'Power', dir: 'Out' },
+        { items: powerInputTypes(data).map(t => ({ type: t })), icon: '🔌', cls: 'power-conn', label: 'Power', dir: 'In' },
+        { items: data.fizConnectors, icon: '🎚️', cls: 'fiz-conn', label: 'FIZ Port' },
+        { items: data.video?.inputs || data.videoInputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'In' },
+        { items: data.video?.outputs || data.videoOutputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'Out' },
+        { items: data.timecode, icon: '⏱️', cls: 'neutral-conn', label: 'Timecode' },
+        { items: data.audioInput?.portType ? [{ type: data.audioInput.portType }] : undefined, icon: '🎤', cls: 'neutral-conn', label: 'Audio', dir: 'In' },
+        { items: data.audioOutput?.portType ? [{ type: data.audioOutput.portType }] : undefined, icon: '🔊', cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
+        { items: data.audioIo?.portType ? [{ type: data.audioIo.portType }] : undefined, icon: '🎚️', cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
+    ];
+
+    for (const { items, icon, cls, label, dir } of connectors) {
+        portHtml += connectorBlocks(items, icon, cls, label, dir);
     }
 
     let specHtml = '';
