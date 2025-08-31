@@ -552,7 +552,8 @@ button:disabled {
   display: flex;
   gap: 5px;
   align-items: center;
-
+  flex-wrap: wrap;
+  max-width: 100%;
 }
 #langSelector select,
 #langSelector button {
@@ -1132,16 +1133,17 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 /* Responsive layout adjustments */
+@media (max-width: 768px) {
+  #langSelector {
+    position: static;
+    margin-bottom: 10px;
+  }
+}
+
 @media (max-width: 600px) {
   body {
     margin: 10px;
     font-size: 0.85em;
-  }
-
-  #langSelector {
-    position: static;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
   }
 
   #langSelector select {
