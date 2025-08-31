@@ -5,110 +5,129 @@ const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 
-// --- Session State Storage ---
-function loadSessionState() {
+// Generic helpers for storage access
+function loadJSONFromStorage(storage, key, errorMessage) {
   try {
-    const data = sessionStorage.getItem(SESSION_STATE_KEY);
+    const data = storage.getItem(key);
     return data ? JSON.parse(data) : null;
   } catch (e) {
-    console.error("Error loading session state from sessionStorage:", e);
+    console.error(errorMessage, e);
     return null;
   }
 }
 
-function saveSessionState(state) {
+function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
   try {
-    sessionStorage.setItem(SESSION_STATE_KEY, JSON.stringify(state));
+    storage.setItem(key, JSON.stringify(value));
+    if (successMessage) {
+      console.log(successMessage);
+    }
   } catch (e) {
-    console.error("Error saving session state to sessionStorage:", e);
+    console.error(errorMessage, e);
   }
+}
+
+// --- Session State Storage ---
+function loadSessionState() {
+  return loadJSONFromStorage(
+    sessionStorage,
+    SESSION_STATE_KEY,
+    "Error loading session state from sessionStorage:"
+  );
+}
+
+function saveSessionState(state) {
+  saveJSONToStorage(
+    sessionStorage,
+    SESSION_STATE_KEY,
+    state,
+    "Error saving session state to sessionStorage:"
+  );
 }
 
 // --- Device Data Storage ---
 function loadDeviceData() {
-  try {
-    const data = localStorage.getItem(DEVICE_STORAGE_KEY);
-    if (data) {
-      const parsedData = JSON.parse(data);
-      // Helper to ensure a value is a non-null object
-      const isObject = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
-      // Validate that top-level categories exist and are non-null objects
-      const isValid = isObject(parsedData) &&
-                      isObject(parsedData.cameras) &&
-                      isObject(parsedData.monitors) &&
-                      isObject(parsedData.video) &&
-                      isObject(parsedData.batteries) &&
-                      isObject(parsedData.fiz) && // Check fiz is an object
-                      isObject(parsedData.fiz.motors) && // Check nested fiz categories
-                      isObject(parsedData.fiz.controllers) &&
-                      isObject(parsedData.fiz.distance);
+  const parsedData = loadJSONFromStorage(
+    localStorage,
+    DEVICE_STORAGE_KEY,
+    "Error loading device data from localStorage:"
+  );
+  if (parsedData) {
+    // Helper to ensure a value is a non-null object
+    const isObject = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
+    // Validate that top-level categories exist and are non-null objects
+    const isValid =
+      isObject(parsedData) &&
+      isObject(parsedData.cameras) &&
+      isObject(parsedData.monitors) &&
+      isObject(parsedData.video) &&
+      isObject(parsedData.batteries) &&
+      isObject(parsedData.fiz) && // Check fiz is an object
+      isObject(parsedData.fiz.motors) && // Check nested fiz categories
+      isObject(parsedData.fiz.controllers) &&
+      isObject(parsedData.fiz.distance);
 
-      if (isValid) {
-        console.log("Device data loaded from localStorage.");
-        return parsedData;
-      } else {
-        console.warn("Invalid device data structure in localStorage. Reverting to default.");
-        return null; // Return null to indicate that default should be used
-      }
+    if (isValid) {
+      console.log("Device data loaded from localStorage.");
+      return parsedData;
     }
-  } catch (e) {
-    console.error("Error loading device data from localStorage:", e);
-    return null; // Return null to indicate that default should be used
+    console.warn("Invalid device data structure in localStorage. Reverting to default.");
   }
-  return null; // No data found
+  return null; // Return null to indicate that default should be used
 }
 
 function saveDeviceData(data) {
-  try {
-    localStorage.setItem(DEVICE_STORAGE_KEY, JSON.stringify(data));
-    console.log("Device data saved to localStorage.");
-  } catch (e) {
-    console.error("Error saving device data to localStorage:", e);
-  }
+  saveJSONToStorage(
+    localStorage,
+    DEVICE_STORAGE_KEY,
+    data,
+    "Error saving device data to localStorage:",
+    "Device data saved to localStorage."
+  );
 }
 
 // --- Setup Data Storage ---
 function loadSetups() {
-  try {
-    const data = localStorage.getItem(SETUP_STORAGE_KEY);
-    if (data) {
-      const parsedData = JSON.parse(data);
-      if (Array.isArray(parsedData)) {
-        const obj = {};
-        const used = new Set();
-        parsedData.forEach((item, idx) => {
-          if (item && typeof item === 'object') {
-            const base = item.name || item.setupName || `Setup ${idx + 1}`;
-            let key = base;
-            let suffix = 2;
-            while (used.has(key)) {
-              key = `${base} (${suffix++})`;
-            }
-            used.add(key);
-            obj[key] = item;
+  const parsedData = loadJSONFromStorage(
+    localStorage,
+    SETUP_STORAGE_KEY,
+    "Error loading setups from localStorage:"
+  );
+  if (parsedData) {
+    if (Array.isArray(parsedData)) {
+      const obj = {};
+      const used = new Set();
+      parsedData.forEach((item, idx) => {
+        if (item && typeof item === 'object') {
+          const base = item.name || item.setupName || `Setup ${idx + 1}`;
+          let key = base;
+          let suffix = 2;
+          while (used.has(key)) {
+            key = `${base} (${suffix++})`;
           }
-        });
-        localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(obj));
-        return obj;
-      }
-      // Ensure it's a plain object, not a primitive
-      if (parsedData && typeof parsedData === 'object') {
-        return parsedData;
-      }
+          used.add(key);
+          obj[key] = item;
+        }
+      });
+      localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(obj));
+      return obj;
     }
-  } catch (e) {
-    console.error("Error loading setups from localStorage:", e);
+    // Ensure it's a plain object, not a primitive
+    if (typeof parsedData === 'object') {
+      return parsedData;
+    }
   }
   return {}; // Return empty object if no setups found or error
 }
 
 function saveSetups(setups) {
-  try {
-    localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
-    console.log("Setups saved to localStorage.");
-  } catch (e) {
-    console.error("Error saving setups to localStorage:", e);
-  }
+  saveJSONToStorage(
+    localStorage,
+    SETUP_STORAGE_KEY,
+    setups,
+    "Error saving setups to localStorage:",
+    "Setups saved to localStorage."
+  );
 }
 
 function saveSetup(name, setup) {
@@ -130,27 +149,25 @@ function deleteSetup(name) {
 
 // --- User Feedback Storage ---
 function loadFeedback() {
-  try {
-    const data = localStorage.getItem(FEEDBACK_STORAGE_KEY);
-    if (data) {
-      const parsed = JSON.parse(data);
-      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        return parsed;
-      }
-    }
-  } catch (e) {
-    console.error("Error loading feedback from localStorage:", e);
+  const parsed = loadJSONFromStorage(
+    localStorage,
+    FEEDBACK_STORAGE_KEY,
+    "Error loading feedback from localStorage:"
+  );
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    return parsed;
   }
   return {};
 }
 
 function saveFeedback(feedback) {
-  try {
-    localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(feedback));
-    console.log("Feedback saved to localStorage.");
-  } catch (e) {
-    console.error("Error saving feedback to localStorage:", e);
-  }
+  saveJSONToStorage(
+    localStorage,
+    FEEDBACK_STORAGE_KEY,
+    feedback,
+    "Error saving feedback to localStorage:",
+    "Feedback saved to localStorage."
+  );
 }
 
 // --- Clear All Stored Data ---
