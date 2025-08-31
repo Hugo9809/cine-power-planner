@@ -5730,24 +5730,26 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
   });
 }
 
+const escapeDiv = document.createElement('div');
 function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    escapeDiv.textContent = str;
+    return escapeDiv.innerHTML;
 }
 
 
 function summarizeByType(list) {
     const counts = {};
-    (list || []).forEach(it => {
+    if (!Array.isArray(list)) return counts;
+    for (const it of list) {
         if (it && it.type) {
             counts[it.type] = (counts[it.type] || 0) + 1;
         }
-    });
+    }
     return counts;
 }
 
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
+    if (!Array.isArray(items) || items.length === 0) return '';
     const counts = summarizeByType(items);
     const entries = Object.entries(counts).map(([type, count]) => {
         return `${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}`;
@@ -6243,7 +6245,7 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#121212' : '#ffffff');
+    meta.setAttribute('content', isDark ? '#1a1a1a' : '#ffffff');
   }
 }
 
