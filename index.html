@@ -74,21 +74,21 @@
       <div class="form-row">
         <label for="cameraSelect" id="cameraLabel">Camera:</label>
         <div class="select-wrapper">
-          <input type="text" id="cameraFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
+          <input type="search" id="cameraFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           <select id="cameraSelect" aria-labelledby="cameraLabel"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="monitorSelect" id="monitorLabel">Monitor:</label>
         <div class="select-wrapper">
-          <input type="text" id="monitorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
+          <input type="search" id="monitorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           <select id="monitorSelect" aria-labelledby="monitorLabel"></select>
         </div>
       </div>
       <div class="form-row">
         <label for="videoSelect" id="videoLabel">Wireless Video:</label>
         <div class="select-wrapper">
-          <input type="text" id="videoFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
+          <input type="search" id="videoFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           <select id="videoSelect" aria-labelledby="videoLabel"></select>
         </div>
       </div>
@@ -98,7 +98,7 @@
       <div class="form-row">
         <label for="motor1Select" id="fizMotorsLabel">FIZ Motors:</label>
         <div class="select-wrapper">
-          <input type="text" id="motorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
+          <input type="search" id="motorFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           <select id="motor1Select" aria-labelledby="fizMotorsLabel"></select>
         </div>
       </div>
@@ -117,7 +117,7 @@
       <div class="form-row">
         <label for="controller1Select" id="fizControllersLabel">FIZ Controllers:</label>
         <div class="select-wrapper">
-          <input type="text" id="controllerFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
+          <input type="search" id="controllerFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
           <select id="controller1Select" aria-labelledby="fizControllersLabel"></select>
         </div>
       </div>
@@ -136,7 +136,7 @@
     <div class="form-row">
       <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
       <div class="select-wrapper">
-        <input type="text" id="distanceFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="distanceFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <select id="distanceSelect" aria-labelledby="distanceLabel"></select>
       </div>
     </div>
@@ -149,7 +149,7 @@
     <div class="form-row">
       <label for="batterySelect" id="batteryLabel">V-Mount Battery:</label>
       <div class="select-wrapper">
-        <input type="text" id="batteryFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="batteryFilter" class="filter-input" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <select id="batterySelect" aria-labelledby="batteryLabel"></select>
       </div>
     </div>
@@ -473,37 +473,37 @@
     <div class="device-list-container">
       <div class="device-category">
         <h4 id="category_cameras">Cameras</h4>
-        <input type="text" id="cameraListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="cameraListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <ul id="cameraList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_monitors">Monitors</h4>
-        <input type="text" id="monitorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="monitorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <ul id="monitorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_video">Wireless Video</h4>
-        <input type="text" id="videoListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="videoListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <ul id="videoList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_motors">FIZ Motors</h4>
-        <input type="text" id="motorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="motorListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <ul id="motorList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_controllers">FIZ Controllers</h4>
-        <input type="text" id="controllerListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="controllerListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <ul id="controllerList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_fiz_distance">FIZ Distance</h4>
-        <input type="text" id="distanceListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="distanceListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <ul id="distanceList" class="device-ul"></ul>
       </div>
       <div class="device-category">
         <h4 id="category_batteries">V-Mount Batteries</h4>
-        <input type="text" id="batteryListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" />
+        <input type="search" id="batteryListFilter" class="list-filter" placeholder="Filter..." aria-label="Filter" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
         <ul id="batteryList" class="device-ul"></ul>
       </div>
     </div>
