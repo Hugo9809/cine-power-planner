@@ -991,6 +991,8 @@ function setLanguage(lang) {
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
+  copySummaryBtn.setAttribute("title", texts[lang].copySummaryBtn);
+  copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryBtnHelp);
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -1078,6 +1080,7 @@ function setLanguage(lang) {
 
   document.getElementById("runtimeFeedbackBtn").textContent =
     texts[lang].runtimeFeedbackBtn;
+  document.getElementById("copySummaryBtn").textContent = texts[lang].copySummaryBtn;
 
   if (pinWarnElem)
     pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
@@ -1369,6 +1372,7 @@ const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
 const totalCurrent12Elem  = document.getElementById("totalCurrent12");
 const batteryLifeElem     = document.getElementById("batteryLife");
+const batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
 const batteryLifeLabelElem = document.getElementById("batteryLifeLabel");
 const runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
 const batteryCountElem    = document.getElementById("batteryCount");
@@ -1481,6 +1485,7 @@ const existingDevicesHeading = document.getElementById("existingDevicesHeading")
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
+const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
@@ -5873,6 +5878,24 @@ if (applySharedLinkBtn && sharedLinkInput) {
     }
     applySharedSetup(shared);
     updateCalculations();
+  });
+}
+
+if (copySummaryBtn && typeof navigator !== 'undefined' && navigator.clipboard) {
+  copySummaryBtn.addEventListener('click', () => {
+    const lines = [
+      `${texts[currentLang].totalPowerLabel} ${totalPowerElem.textContent} W`,
+      `${texts[currentLang].totalCurrent144Label} ${totalCurrent144Elem.textContent} A`,
+      `${texts[currentLang].totalCurrent12Label} ${totalCurrent12Elem.textContent} A`,
+      `${texts[currentLang].batteryLifeLabel} ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}`,
+      `${texts[currentLang].batteryCountLabel} ${batteryCountElem.textContent}`
+    ];
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
+      setTimeout(() => {
+        copySummaryBtn.textContent = texts[currentLang].copySummaryBtn;
+      }, 2000);
+    });
   });
 }
 
