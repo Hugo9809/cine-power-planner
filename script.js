@@ -1538,6 +1538,16 @@ const resetViewBtn = document.getElementById("resetView");
 const gridSnapToggleBtn = document.getElementById("gridSnapToggle");
 const diagramHint = document.getElementById("diagramHint");
 
+if (projectForm) {
+    projectForm.querySelectorAll('select[multiple]').forEach(sel => {
+        sel.addEventListener('mousedown', e => {
+            if (e.target.tagName !== 'OPTION') return;
+            e.preventDefault();
+            e.target.selected = !e.target.selected;
+        });
+    });
+}
+
 let manualPositions = {};
 let lastDiagramPositions = {};
 let gridSnap = false;
