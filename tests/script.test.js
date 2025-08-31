@@ -76,6 +76,9 @@ describe('script.js functions', () => {
     global.deleteSetup = jest.fn();
     global.loadFeedback = jest.fn(() => ({}));
     global.saveFeedback = jest.fn();
+    global.loadGearList = jest.fn(() => '');
+    global.saveGearList = jest.fn();
+    global.deleteGearList = jest.fn();
 
     require('../translations.js');
     script = require('../script.js');
@@ -841,6 +844,18 @@ describe('script.js functions', () => {
     sel.dispatchEvent(new Event('change'));
 
     expect(document.getElementById('batteryPlateSelect').value).toBe('B-Mount');
+  });
+
+  test('saving setup stores gear list HTML', () => {
+    global.saveSetups.mockClear();
+    const gear = document.getElementById('gearListOutput');
+    gear.innerHTML = '<table></table>';
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'WithGear';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('saveSetupBtn').click();
+    const saved = global.saveSetups.mock.calls[0][0];
+    expect(saved.WithGear.gearList).toContain('<table>');
   });
 
   test('Save button enables on input and Enter key saves setup', () => {
