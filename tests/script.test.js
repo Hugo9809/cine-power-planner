@@ -178,6 +178,22 @@ describe('script.js functions', () => {
     expect(firstRuntime).toBe('2.39');
   });
 
+  test('F1 opens help dialog even when input focused', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const input = document.getElementById('setupName');
+    input.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+  });
+
+  test('Ctrl+/ opens help dialog', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const input = document.getElementById('setupName');
+    input.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '/', ctrlKey: true }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+  });
+
   test('weighs high-resolution entries by camera power share', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);

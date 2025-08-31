@@ -18,7 +18,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 ## 🆕 Novedades
 - Diagrama de configuración interactivo que permite arrastrar dispositivos, hacer zoom y exportar el diseño en SVG o JPG.
 - Tema rosa divertido que se mantiene entre visitas.
-- Diálogo de ayuda con búsqueda, secciones paso a paso y una FAQ.
+- Diálogo de ayuda con búsqueda, secciones paso a paso y una FAQ; se abre con ?, H, F1 o Ctrl+/.
 - Ayuda contextual al pasar el cursor por botones, campos, menús desplegables y encabezados.
 - Compatibilidad con cámaras que aceptan placas de batería V y B‑Mount.
 - Envío de datos de autonomía del usuario con detalles ambientales para mejorar las estimaciones.
@@ -82,7 +82,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 - Conmutable con el botón de la luna junto al selector de idioma
 - La preferencia se guarda en el navegador
 - Color rosa opcional con el botón del caballo/unicornio
-- El diálogo de ayuda incluye búsqueda y preguntas frecuentes. Ábrelo con ? o con las teclas `?`/`H`/`F1` y ciérralo con Escape o al hacer clic fuera.
+- El diálogo de ayuda incluye búsqueda y preguntas frecuentes. Ábrelo con ? o con las teclas `?`/`H`/`F1`/`Ctrl+/` y ciérralo con Escape o al hacer clic fuera.
 
 ---
 

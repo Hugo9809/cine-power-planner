@@ -17,7 +17,7 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 ## 🆕 Novità
 - Diagramma interattivo della configurazione che consente di trascinare i dispositivi, zoomare ed esportare il layout in SVG o JPG.
 - Tema rosa giocoso che persiste tra una visita e l'altra.
-- Finestra di aiuto ricercabile con sezioni passo passo e FAQ.
+- Finestra di aiuto ricercabile con sezioni passo passo e FAQ; apribile con ?, H, F1 o Ctrl+/.
 - Aiuto contestuale al passaggio del mouse su pulsanti, campi, menu a discesa e intestazioni.
 - Supporto per fotocamere con piastre batteria V e B‑Mount.
 - Inviare feedback sull'autonomia reale con dettagli ambientali per affinare le stime.
@@ -81,7 +81,7 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 - Attivabile tramite il pulsante con la luna accanto al selettore della lingua
 - La preferenza viene salvata nel browser
 - Modalità rosa opzionale con il pulsante cavallo/unicorno
-- La finestra di aiuto è ricercabile con FAQ. Aprila con ? o con i tasti `?`/`H`/`F1` e chiudila con Esc o clic fuori dal popup
+- La finestra di aiuto è ricercabile con FAQ. Aprila con ? o con i tasti `?`/`H`/`F1`/`Ctrl+/` e chiudila con Esc o clic fuori dal popup
 
 ---
 

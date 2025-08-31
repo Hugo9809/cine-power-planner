@@ -6787,18 +6787,21 @@ if (helpButton && helpDialog) {
   });
 
   document.addEventListener('keydown', e => {
+    const tag = document.activeElement.tagName;
+    const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
     if (hoverHelpActive && e.key === 'Escape') {
       stopHoverHelp();
     } else if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {
       closeHelp();
-    } else if ((e.key === '?' || e.key.toLowerCase() === 'h' || e.key === 'F1') &&
-               document.activeElement.tagName !== 'INPUT' &&
-               document.activeElement.tagName !== 'TEXTAREA') {
-      if (e.key === 'F1') e.preventDefault();
+    } else if (
+      e.key === 'F1' ||
+      ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
+    ) {
+      e.preventDefault();
       toggleHelp();
-    } else if (e.key.toLowerCase() === 'd' &&
-               document.activeElement.tagName !== 'INPUT' &&
-               document.activeElement.tagName !== 'TEXTAREA') {
+    } else if ((e.key === '?' || e.key.toLowerCase() === 'h') && !isTextField) {
+      toggleHelp();
+    } else if (e.key.toLowerCase() === 'd' && !isTextField) {
       darkModeEnabled = !document.body.classList.contains('dark-mode');
       applyDarkMode(darkModeEnabled);
       try {
@@ -6811,9 +6814,7 @@ if (helpButton && helpDialog) {
       if (saveSetupBtn && !saveSetupBtn.disabled) {
         saveSetupBtn.click();
       }
-    } else if (e.key.toLowerCase() === 'p' &&
-               document.activeElement.tagName !== 'INPUT' &&
-               document.activeElement.tagName !== 'TEXTAREA') {
+    } else if (e.key.toLowerCase() === 'p' && !isTextField) {
       pinkModeEnabled = !document.body.classList.contains('pink-mode');
       applyPinkMode(pinkModeEnabled);
       try {
