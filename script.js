@@ -4762,6 +4762,12 @@ function createDeviceDetailsList(deviceData) {
   return list;
 }
 
+const escapeDiv = document.createElement('div');
+function escapeHtml(str) {
+  escapeDiv.textContent = str;
+  return escapeDiv.innerHTML;
+}
+
 // Helper to render existing devices in the manager section
 function renderDeviceList(categoryKey, ulElement) {
   ulElement.innerHTML = "";
@@ -4782,6 +4788,16 @@ function renderDeviceList(categoryKey, ulElement) {
 
     const nameSpan = document.createElement("span");
     nameSpan.textContent = name;
+    // Add a hover description summarizing connectors and notes
+    let summary = generateConnectorSummary(deviceData);
+    summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+    if (deviceData.notes) {
+      summary = summary ? `${summary}; Notes: ${deviceData.notes}` : deviceData.notes;
+    }
+    if (summary) {
+      nameSpan.setAttribute('title', summary);
+      nameSpan.setAttribute('data-help', summary);
+    }
     header.appendChild(nameSpan);
 
     const toggleBtn = document.createElement("button");
@@ -5943,12 +5959,6 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     feedbackDialog.close();
     updateCalculations();
   });
-}
-
-const escapeDiv = document.createElement('div');
-function escapeHtml(str) {
-    escapeDiv.textContent = str;
-    return escapeDiv.innerHTML;
 }
 
 
