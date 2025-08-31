@@ -81,12 +81,19 @@ const VIDEO_TYPE_PATTERNS = [
   { needles: ['dp'], value: 'DisplayPort' }
 ];
 
+// Cache normalized video type lookups to avoid repeated pattern scans
+const videoTypeCache = new Map();
 function normalizeVideoType(type) {
   if (!type) return '';
   const t = String(type).toLowerCase();
+  if (videoTypeCache.has(t)) return videoTypeCache.get(t);
   for (const { needles, value } of VIDEO_TYPE_PATTERNS) {
-    if (needles.every(n => t.includes(n))) return value;
+    if (needles.every(n => t.includes(n))) {
+      videoTypeCache.set(t, value);
+      return value;
+    }
   }
+  videoTypeCache.set(t, '');
   return '';
 }
 
@@ -182,10 +189,15 @@ const POWER_PORT_TYPE_MAP = {
   '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
 };
 
+// Cache power port normalization to reduce repeated string operations
+const powerPortCache = new Map();
 const mapPowerPortOne = val => {
   const trimmed = String(val).trim();
+  if (powerPortCache.has(trimmed)) return powerPortCache.get(trimmed);
   const lower = trimmed.toLowerCase();
-  return POWER_PORT_TYPE_MAP[lower] || trimmed;
+  const mapped = POWER_PORT_TYPE_MAP[lower] || trimmed;
+  powerPortCache.set(trimmed, mapped);
+  return mapped;
 };
 
 function normalizePowerPortType(type) {
