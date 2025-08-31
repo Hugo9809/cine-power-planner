@@ -1564,6 +1564,17 @@ describe('script.js functions', () => {
     );
   });
 
+  test('section headings expose descriptive hover help', () => {
+    const setupHeading = document.getElementById('setupManageHeading');
+    const resultsHeading = document.getElementById('resultsHeading');
+    expect(setupHeading.getAttribute('data-help')).toBe(
+      texts.en.setupManageHeadingHelp
+    );
+    expect(resultsHeading.getAttribute('data-help')).toBe(
+      texts.en.resultsHeadingHelp
+    );
+  });
+
   test('help dialog controls expose descriptive hover help', () => {
     const helpButton = document.getElementById('helpButton');
     const hoverHelpButton = document.getElementById('hoverHelpButton');

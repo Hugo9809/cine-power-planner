@@ -13,6 +13,18 @@ const texts = {
     deviceManagerHeading: "Manage Device Database",
     batteryComparisonHeading: "Battery Comparison",
     setupDiagramHeading: "Setup Diagram",
+    setupManageHeadingHelp:
+      "Manage saved setups: save, load, or clear configurations.",
+    deviceSelectionHeadingHelp:
+      "Choose cameras, monitors, and accessories for your rig.",
+    resultsHeadingHelp:
+      "See power consumption, estimated runtime, and battery counts.",
+    deviceManagerHeadingHelp:
+      "Add, edit, or remove entries from the device database.",
+    batteryComparisonHeadingHelp:
+      "Compare runtimes for all compatible batteries.",
+    setupDiagramHeadingHelp:
+      "View a visual diagram of how selected devices connect.",
     setupDiagramPlaceholder: "Select devices to visualize the setup.",
     diagramLegendPower: "Power",
     diagramLegendVideo: "Video",
@@ -299,6 +311,18 @@ const texts = {
     deviceManagerHeading: "Gestisci il database dei dispositivi",
     batteryComparisonHeading: "Confronto della batteria",
     setupDiagramHeading: "Diagramma di configurazione",
+    setupManageHeadingHelp:
+      "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
+    deviceSelectionHeadingHelp:
+      "Scegli fotocamere, monitor e accessori per il tuo rig.",
+    resultsHeadingHelp:
+      "Vedi il consumo di energia, la durata stimata e il numero di batterie.",
+    deviceManagerHeadingHelp:
+      "Aggiungi, modifica o rimuovi elementi dal database dei dispositivi.",
+    batteryComparisonHeadingHelp:
+      "Confronta le autonomie di tutte le batterie compatibili.",
+    setupDiagramHeadingHelp:
+      "Mostra un diagramma visivo di come i dispositivi selezionati si collegano.",
     setupDiagramPlaceholder: "Seleziona i dispositivi per visualizzare l'installazione.",
     diagramLegendPower: "Energia",
     diagramLegendVideo: "Video",
@@ -560,6 +584,18 @@ const texts = {
     deviceManagerHeading: "Gestionar Base de Datos",
     batteryComparisonHeading: "Comparación de Baterías",
     setupDiagramHeading: "Diagrama de Configuración",
+    setupManageHeadingHelp:
+      "Administra las configuraciones guardadas: guarda, carga o limpia configuraciones.",
+    deviceSelectionHeadingHelp:
+      "Elige cámaras, monitores y accesorios para tu equipo.",
+    resultsHeadingHelp:
+      "Consulta el consumo de energía, la autonomía estimada y la cantidad de baterías.",
+    deviceManagerHeadingHelp:
+      "Añade, edita o elimina entradas de la base de datos de dispositivos.",
+    batteryComparisonHeadingHelp:
+      "Compara los tiempos de funcionamiento de todas las baterías compatibles.",
+    setupDiagramHeadingHelp:
+      "Ve un diagrama visual de cómo se conectan los dispositivos seleccionados.",
     setupDiagramPlaceholder: "Elige dispositivos para visualizar el diagrama.",
     diagramLegendPower: "Energía",
     diagramLegendVideo: "Vídeo",
@@ -838,6 +874,18 @@ const texts = {
     deviceManagerHeading: "Gérer la Base de Données",
     batteryComparisonHeading: "Comparaison des Batteries",
     setupDiagramHeading: "Diagramme de Configuration",
+    setupManageHeadingHelp:
+      "Gérez les configurations enregistrées : sauvegarder, charger ou effacer.",
+    deviceSelectionHeadingHelp:
+      "Choisissez les caméras, moniteurs et accessoires de votre équipement.",
+    resultsHeadingHelp:
+      "Affiche la consommation, l’autonomie estimée et le nombre de batteries.",
+    deviceManagerHeadingHelp:
+      "Ajoutez, modifiez ou supprimez des entrées de la base de données des appareils.",
+    batteryComparisonHeadingHelp:
+      "Compare l’autonomie de toutes les batteries compatibles.",
+    setupDiagramHeadingHelp:
+      "Affiche un schéma visuel des connexions entre les appareils sélectionnés.",
     setupDiagramPlaceholder: "Sélectionnez des appareils pour afficher le schéma.",
     diagramLegendPower: "Alimentation",
     diagramLegendVideo: "Vidéo",
@@ -1118,6 +1166,18 @@ const texts = {
     deviceManagerHeading: "Geräte-Datenbank verwalten",
     batteryComparisonHeading: "Akkuvergleich",
     setupDiagramHeading: "Setup-Diagramm",
+    setupManageHeadingHelp:
+      "Gespeicherte Setups verwalten: Konfigurationen speichern, laden oder löschen.",
+    deviceSelectionHeadingHelp:
+      "Wähle Kameras, Monitore und Zubehör für dein Rig.",
+    resultsHeadingHelp:
+      "Zeigt Stromverbrauch, geschätzte Laufzeit und benötigte Akkus.",
+    deviceManagerHeadingHelp:
+      "Füge Geräte zur Datenbank hinzu, bearbeite oder entferne sie.",
+    batteryComparisonHeadingHelp:
+      "Vergleicht Laufzeiten aller kompatiblen Batterien.",
+    setupDiagramHeadingHelp:
+      "Zeigt ein visuelles Diagramm der Verbindungen der ausgewählten Geräte.",
     setupDiagramPlaceholder: "Geräte auswählen, um das Diagramm zu sehen.",
     diagramLegendPower: "Strom",
     diagramLegendVideo: "Video",
