@@ -3672,7 +3672,6 @@ function renderFeedbackTable(currentKey) {
   const columns = [
     { key: 'username', label: 'User' },
     { key: 'date', label: 'Date' },
-    { key: 'location', label: 'Location' },
     { key: 'cameraWifi', label: 'WIFI' },
     { key: 'resolution', label: 'Res' },
     { key: 'codec', label: 'Codec' },
@@ -3830,6 +3829,8 @@ function renderFeedbackTable(currentKey) {
         } else {
           html += '<td></td>';
         }
+      } else if (c.key === 'date') {
+        html += `<td>${escapeHtml(formatDateString(entry[c.key]))}</td>`;
       } else {
         html += `<td>${escapeHtml(entry[c.key] || '')}</td>`;
       }
@@ -4766,6 +4767,13 @@ const escapeDiv = document.createElement('div');
 function escapeHtml(str) {
   escapeDiv.textContent = str;
   return escapeDiv.innerHTML;
+}
+
+function formatDateString(val) {
+  if (!val) return '';
+  const d = new Date(val);
+  if (Number.isNaN(d.getTime())) return String(val);
+  return d.toISOString().split('T')[0];
 }
 
 // Helper to render existing devices in the manager section
