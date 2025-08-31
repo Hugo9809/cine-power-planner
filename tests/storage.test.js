@@ -99,6 +99,12 @@ describe('setup storage', () => {
     expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({ A: { name: 'A', foo: 1 }, B: { name: 'B', bar: 2 } });
   });
 
+  test('loadSetups ensures unique keys when names duplicate', () => {
+    const arr = [{ name: 'A', foo: 1 }, { name: 'A', bar: 2 }];
+    localStorage.setItem(SETUP_KEY, JSON.stringify(arr));
+    expect(loadSetups()).toEqual({ A: { name: 'A', foo: 1 }, 'A (2)': { name: 'A', bar: 2 } });
+  });
+
   test('loadSetups returns empty object for primitive data', () => {
     localStorage.setItem(SETUP_KEY, JSON.stringify(5));
     expect(loadSetups()).toEqual({});
