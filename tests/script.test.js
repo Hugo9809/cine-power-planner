@@ -2036,6 +2036,12 @@ describe('monitor wireless metadata', () => {
     expect(toggleBtn.textContent).toBe(texts.en.toggleDeviceManager);
   });
 
+  test('device manager lists include hover descriptions', () => {
+    const span = document.querySelector('#cameraList .device-summary span');
+    expect(span.getAttribute('title')).toContain('Power: 10 W');
+    expect(span.getAttribute('data-help')).toContain('Power: 10 W');
+  });
+
   test('detail toggle responds to keyboard events', () => {
     const detailToggle = document.querySelector('#device-manager .detail-toggle');
     const details = detailToggle.closest('li').querySelector('.device-details');
