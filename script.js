@@ -6245,7 +6245,7 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#1a1a1a' : '#ffffff');
+    meta.setAttribute('content', isDark ? '#121212' : '#ffffff');
   }
 }
 
