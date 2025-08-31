@@ -391,6 +391,14 @@ describe('script.js functions', () => {
     });
   });
 
+  test('skip link focuses main content', () => {
+    const main = document.getElementById('mainContent');
+    const skip = document.getElementById('skipLink');
+    expect(document.activeElement).not.toBe(main);
+    skip.click();
+    expect(document.activeElement).toBe(main);
+  });
+
   test('battery comparison excludes B-Mount when camera lacks support', () => {
     global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
     global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
