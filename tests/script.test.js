@@ -1395,9 +1395,11 @@ describe('script.js functions', () => {
     const helpNoResults = document.getElementById('helpNoResults');
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
-    helpSearch.value = 'nonexistent';
+    helpSearch.value = 'battery';
     helpSearch.dispatchEvent(new Event('input', { bubbles: true }));
     expect(helpSearchClear.hasAttribute('hidden')).toBe(false);
+    const mark = helpDialog.querySelector('mark');
+    expect(mark).not.toBeNull();
     helpSearchClear.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(helpSearch.value).toBe('');
     const sections = helpDialog.querySelectorAll('[data-help-section]');
@@ -1405,6 +1407,7 @@ describe('script.js functions', () => {
     expect(visible.length).toBe(sections.length);
     expect(helpNoResults.hasAttribute('hidden')).toBe(true);
     expect(helpSearchClear.hasAttribute('hidden')).toBe(true);
+    expect(helpDialog.querySelector('mark')).toBeNull();
     expect(document.activeElement).toBe(helpSearch);
   });
 
