@@ -19,15 +19,52 @@ describe('script.js functions', () => {
     document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.devices = {
-      cameras: { CamA: { powerDrawWatts: 10 } },
-      monitors: { MonA: { powerDrawWatts: 5, brightnessNits: 2300 } },
-      video: { VidA: { powerDrawWatts: 3 } },
-      fiz: {
-        motors: { MotorA: { powerDrawWatts: 2 } },
-        controllers: { ControllerA: { powerDrawWatts: 2 } },
-        distance: { DistA: { powerDrawWatts: 1 } }
+      cameras: {
+        CamA: {
+          powerDrawWatts: 10,
+          power: { input: { type: 'LEMO 2-pin' } },
+          videoOutputs: [{ type: '3G-SDI' }]
+        }
       },
-      batteries: { BattA: { capacity: 100, pinA: 10, dtapA: 5 } }
+      monitors: {
+        MonA: {
+          powerDrawWatts: 5,
+          brightnessNits: 2300,
+          power: { input: { type: 'LEMO 2-pin' } },
+          videoInputs: [{ type: '3G-SDI' }]
+        }
+      },
+      video: {
+        VidA: {
+          powerDrawWatts: 3,
+          power: { input: { type: 'LEMO 2-pin' } },
+          videoInputs: [{ type: '3G-SDI' }]
+        }
+      },
+      fiz: {
+        motors: {
+          MotorA: { powerDrawWatts: 2, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], power: { input: { type: 'LEMO 2-pin' } } }
+        },
+        controllers: {
+          ControllerA: { powerDrawWatts: 2, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], power: { input: { type: 'LEMO 2-pin' } } }
+        },
+        distance: {
+          DistA: { powerDrawWatts: 1, power: { input: { type: 'LEMO 2-pin' } } }
+        }
+      },
+      batteries: {
+        BattA: { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' }
+      },
+      accessories: {
+        powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
+        cages: { 'Universal Cage': { compatible: ['CamA'] } },
+        chargers: { 'Dual V-Mount Charger': { mount: 'V-Mount' } },
+        cables: {
+          power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
+          fiz: { 'LBUS to LBUS': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' } },
+          video: { 'BNC SDI Cable': { type: '3G-SDI' } }
+        }
+      }
     };
 
     global.loadDeviceData = jest.fn(() => null);
@@ -701,6 +738,32 @@ describe('script.js functions', () => {
     expect(html).toContain('id="breakdownList"');
     expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });
+
+  test('generateGearList lists selected devices and accessories', () => {
+      const { generateGearList } = script;
+      const addOpt = (id, value) => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = `<option value="${value}">${value}</option>`;
+        sel.value = value;
+      };
+      addOpt('cameraSelect', 'CamA');
+      addOpt('monitorSelect', 'MonA');
+      addOpt('videoSelect', 'VidA');
+      addOpt('motor1Select', 'MotorA');
+      addOpt('controller1Select', 'ControllerA');
+      addOpt('distanceSelect', 'DistA');
+      addOpt('batterySelect', 'BattA');
+      const mockWin = { document: { write: jest.fn(), close: jest.fn() } };
+      global.open = jest.fn(() => mockWin);
+      generateGearList();
+      expect(global.open).toHaveBeenCalled();
+      const html = mockWin.document.write.mock.calls[0][0];
+      expect(html).toContain('<h2>Selected Gear</h2>');
+      expect(html).toContain('<h2>Recommended Accessories</h2>');
+      expect(html).toContain('<li>CamA</li>');
+      expect(html).toContain('<li>BNC SDI Cable</li>');
+      expect(html).toContain('<li>Universal Cage</li>');
+    });
 
   test('battery plate selection is saved and loaded with setups', () => {
     // Add camera supporting both plates and matching batteries

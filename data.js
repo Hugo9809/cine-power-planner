@@ -7547,6 +7547,36 @@ let devices={
       "dtapA": 5,
       "mount_type": "V-Mount"
     }
+  },
+  "accessories": {
+    "powerPlates": {
+      "Generic V-Mount Plate": {
+        "mount": "V-Mount"
+      }
+    },
+    "cages": {
+      "Universal Cage": {
+        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"]
+      }
+    },
+    "chargers": {
+      "Dual V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 2
+      }
+    },
+    "cables": {
+      "power": {
+        "D-Tap to LEMO 2-pin": { "from": "D-Tap", "to": "LEMO 2-pin" }
+      },
+      "fiz": {
+        "LBUS to LBUS": { "from": "LBUS (LEMO 4-pin)", "to": "LBUS (LEMO 4-pin)" }
+      },
+      "video": {
+        "BNC SDI Cable": { "type": "3G-SDI" },
+        "HDMI Cable": { "type": "HDMI" }
+      }
+    }
   }
 };
 if (typeof module !== "undefined" && module.exports) { module.exports = devices; }
