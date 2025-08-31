@@ -1492,6 +1492,7 @@ const breakdownListElem = document.getElementById("breakdownList");
 const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
+const gearListOutput = document.getElementById("gearListOutput");
 const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackCancelBtn = document.getElementById("fbCancel");
@@ -5862,7 +5863,11 @@ generateGearListBtn.addEventListener('click', () => {
         alert(texts[currentLang].alertSelectSetupForOverview);
         return;
     }
-    generateGearList();
+    const html = generateGearListHtml();
+    if (gearListOutput) {
+        gearListOutput.innerHTML = html;
+        gearListOutput.classList.remove('hidden');
+    }
 });
 
 shareSetupBtn.addEventListener('click', () => {
@@ -6565,7 +6570,7 @@ function collectGearListInfo() {
     };
 }
 
-function generateGearList() {
+function generateGearListHtml() {
     const t = texts[currentLang];
     const info = collectGearListInfo();
     const selected = [];
@@ -6588,7 +6593,7 @@ function generateGearList() {
     const accessoriesHtml = accessories.map(n => `<li>${escapeHtml(n)}</li>`).join('');
     const setupName = escapeHtml(setupNameInput.value);
     const infoPairs = Object.entries(info).filter(([, v]) => v);
-    const infoHtml = infoPairs.length ? '<h2>Project Details</h2><ul>' +
+    const infoHtml = infoPairs.length ? '<h3>Project Details</h3><ul>' +
         infoPairs.map(([k, v]) => {
             const labels = {
                 projectName: 'Project Name',
@@ -6618,17 +6623,13 @@ function generateGearList() {
             const label = labels[k] || k;
             return `<li>${escapeHtml(label)}: ${escapeHtml(v)}</li>`;
         }).join('') + '</ul>' : '';
-    const win = window.open('', '_blank');
-    if (win) {
-        let body = `<button onclick="window.print()" class="print-btn">Print</button><h1>${setupName}</h1>`;
-        if (infoHtml) body += infoHtml;
-        body += `<h2>${escapeHtml(t.selectedGearHeading)}</h2><ul>${selectedHtml}</ul>`;
-        if (accessories.length) {
-            body += `<h2>${escapeHtml(t.recommendationsHeading)}</h2><ul>${accessoriesHtml}</ul>`;
-        }
-        win.document.write(`<!DOCTYPE html><html><head><title>${t.generateGearListBtn}</title><link rel="stylesheet" href="overview-print.css" media="print" /></head><body>${body}</body></html>`);
-        win.document.close();
+    let body = `<h2>${setupName}</h2>`;
+    if (infoHtml) body += infoHtml;
+    body += `<h3>${escapeHtml(t.selectedGearHeading)}</h3><ul>${selectedHtml}</ul>`;
+    if (accessories.length) {
+        body += `<h3>${escapeHtml(t.recommendationsHeading)}</h3><ul>${accessoriesHtml}</ul>`;
     }
+    return body;
 }
 
 
@@ -7195,7 +7196,7 @@ if (typeof module !== "undefined" && module.exports) {
     applyDarkMode,
     applyPinkMode,
     generatePrintableOverview,
-    generateGearList,
+    generateGearListHtml,
     applySharedSetupFromUrl,
     applySharedSetup,
     updateBatteryPlateVisibility,

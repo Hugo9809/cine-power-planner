@@ -258,7 +258,7 @@ const texts = {
     exportSetupsBtn: "Export All Setups",
     importSetupsBtn: "Import Setups",
     generateOverviewBtn: "Generate Overview",
-    generateGearListBtn: "Generate Gear List",
+    generateGearListBtn: "Generate Gear List and Project Requirements",
     alertNoSetupsToExport: "There are no saved setups to export.",
     alertImportSetupsSuccess: "Successfully imported {num_setups} setups.",
     alertImportSetupsError: "Error: Could not import setups. The file may be invalid or corrupted.",
@@ -298,7 +298,7 @@ const texts = {
     generateOverviewHelp:
       "Generate a print-ready summary of any saved setup, including power and connection details.",
     generateGearListHelp:
-      "Open a printable list of selected gear and recommended accessories.",
+      "Show a list of selected gear and project requirements.",
     shareSetupHelp:
       "Copy a unique link representing the current setup that others can open to load the same configuration.",
     applySharedLinkHelp:
@@ -570,7 +570,7 @@ const texts = {
     exportSetupsBtn: "Esporta tutte le configurazioni",
     importSetupsBtn: "Importa configurazioni",
     generateOverviewBtn: "Generare panoramica",
-    generateGearListBtn: "Genera elenco attrezzatura",
+    generateGearListBtn: "Genera elenco attrezzatura e requisiti del progetto",
     alertNoSetupsToExport: "Non ci sono configurazioni salvate per l'esportazione.",
     alertImportSetupsSuccess: "Importate correttamente {num_setups} configurazioni.",
     alertImportSetupsError: "Errore: non è stato in grado di importare configurazioni. Il file può essere non valido o corrotto.",
@@ -605,7 +605,7 @@ const texts = {
     generateOverviewHelp:
       "Crea un riepilogo stampabile delle configurazioni salvate.",
     generateGearListHelp:
-      "Apri un elenco stampabile dell'attrezzatura selezionata e degli accessori consigliati.",
+      "Mostra l'elenco dell'attrezzatura selezionata e i requisiti del progetto.",
     shareSetupHelp:
       "Copia un link che rappresenta la configurazione corrente.",
     applySharedLinkHelp: "Carica la configurazione dal link condiviso.",
@@ -890,7 +890,7 @@ const texts = {
     exportSetupsBtn: "Exportar todas las configuraciones",
     importSetupsBtn: "Importar configuraciones",
     generateOverviewBtn: "Generar resumen",
-    generateGearListBtn: "Generar lista de equipo",
+    generateGearListBtn: "Generar lista de equipo y requisitos del proyecto",
     alertNoSetupsToExport: "No hay configuraciones para exportar.",
     alertImportSetupsSuccess: "{num_setups} configuraciones importadas.",
     alertImportSetupsError: "Error: no se pudieron importar las configuraciones.",
@@ -926,7 +926,7 @@ const texts = {
     generateOverviewHelp:
       "Crea un resumen imprimible de las configuraciones guardadas.",
     generateGearListHelp:
-      "Abre una lista imprimible del equipo seleccionado y accesorios recomendados.",
+      "Muestra la lista del equipo seleccionado y los requisitos del proyecto.",
     shareSetupHelp:
       "Copia un enlace que representa la configuración actual.",
     applySharedLinkHelp: "Carga la configuración desde el enlace compartido.",
@@ -1212,7 +1212,7 @@ const texts = {
     exportSetupsBtn: "Exporter toutes les configurations",
     importSetupsBtn: "Importer des configurations",
     generateOverviewBtn: "Générer un résumé",
-    generateGearListBtn: "Générer la liste du matériel",
+    generateGearListBtn: "Générer la liste du matériel et les exigences du projet",
     alertNoSetupsToExport: "Aucune configuration à exporter.",
     alertImportSetupsSuccess: "{num_setups} configurations importées.",
     alertImportSetupsError: "Erreur : import impossible.",
@@ -1248,7 +1248,7 @@ const texts = {
     generateOverviewHelp:
       "Crée un aperçu imprimable des configurations enregistrées.",
     generateGearListHelp:
-      "Ouvre une liste imprimable de tout l'équipement sélectionné et des accessoires recommandés.",
+      "Affiche la liste du matériel sélectionné et les exigences du projet.",
     shareSetupHelp:
       "Copie un lien représentant la configuration actuelle.",
     applySharedLinkHelp: "Charge la configuration depuis le lien partagé.",
@@ -1536,7 +1536,7 @@ const texts = {
     exportSetupsBtn: "Alle Setups exportieren",
     importSetupsBtn: "Setups importieren",
     generateOverviewBtn: "Übersicht erstellen",
-    generateGearListBtn: "Gear-Liste erstellen",
+    generateGearListBtn: "Gear-Liste und Projektanforderungen erstellen",
     alertNoSetupsToExport: "Es gibt keine gespeicherten Setups zum Exportieren.",
     alertImportSetupsSuccess: "{num_setups} Setups erfolgreich importiert.",
     alertImportSetupsError: "Fehler: Setups konnten nicht importiert werden. Die Datei ist möglicherweise ungültig oder beschädigt.",
@@ -1571,7 +1571,7 @@ const texts = {
     generateOverviewHelp:
       "Erstellt eine druckbare Übersicht der gespeicherten Konfigurationen.",
     generateGearListHelp:
-      "Öffnet eine druckbare Liste aller ausgewählten Geräte und empfohlenen Zubehörteile.",
+      "Zeigt die Liste der ausgewählten Geräte und die Projektanforderungen.",
     shareSetupHelp:
       "Kopiert einen Link, der die aktuelle Konfiguration repräsentiert.",
     applySharedLinkHelp: "Lädt die Konfiguration aus dem geteilten Link.",
