@@ -6588,7 +6588,7 @@ if (helpButton && helpDialog) {
     const el = e.target.closest(
       '[data-help], [aria-label], [title], [aria-labelledby], [alt]'
     );
-    if (!el) {
+    if (!el || el.tagName === 'SECTION') {
       hoverHelpTooltip.setAttribute('hidden', '');
       return;
     }
