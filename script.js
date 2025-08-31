@@ -3273,6 +3273,7 @@ function updateCalculations() {
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
 
 // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
+let hours = null;
 if (!battery || battery === "None" || !devices.batteries[battery]) {
   batteryLifeElem.textContent = "–";
   batteryCountElem.textContent = "–";
@@ -3288,7 +3289,6 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     const maxDtapA = battData.dtapA;
     totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
     totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
-    let hours;
     if (totalWatt === 0) {
       hours = Infinity;
       batteryLifeElem.textContent = "∞";
@@ -3484,8 +3484,13 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   }
   const feedback = renderFeedbackTable(getCurrentSetupKey());
   if (feedback !== null) {
-    batteryLifeElem.textContent = feedback.runtime.toFixed(2);
-    lastRuntimeHours = feedback.runtime;
+    let combinedRuntime = feedback.runtime;
+    if (Number.isFinite(hours)) {
+      combinedRuntime =
+        (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
+    }
+    batteryLifeElem.textContent = combinedRuntime.toFixed(2);
+    lastRuntimeHours = combinedRuntime;
     if (batteryLifeLabelElem) {
       let label = texts[currentLang].batteryLifeLabel;
       const userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
@@ -3499,7 +3504,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       runtimeAverageNoteElem.textContent =
         feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
     }
-    const batteriesNeeded = Math.ceil(10 / feedback.runtime + 1);
+    const batteriesNeeded = Math.ceil(10 / combinedRuntime + 1);
     batteryCountElem.textContent = batteriesNeeded.toString();
   } else {
     if (batteryLifeLabelElem) {
@@ -3735,7 +3740,7 @@ function renderFeedbackTable(currentKey) {
   });
 
   if (count >= 3 && weightTotal > 0) {
-    return { runtime: weightedSum / weightTotal, count };
+    return { runtime: weightedSum / weightTotal, count, weight: weightTotal };
   }
   return null;
 }
