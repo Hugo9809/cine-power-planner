@@ -5,13 +5,17 @@ function cleanTypeName(name) {
   // Preserve explicit IN/OUT labels; only remove generic INPUT/OUTPUT words.
   t = t.replace(/\b(INPUT|OUTPUT)\b/i, "").trim();
   if (/lemo\s*2\s*-?\s*pin/i.test(t)) t = "LEMO 2-pin";
+  if (/d[\s-]?tap/i.test(t)) t = "D-Tap";
+  if (/usb\s*type[-\s]?c/i.test(t)) t = "USB-C";
   return t.replace(/\s+/g, " ");
 }
 function cleanVoltageRange(str) {
   if (!str || typeof str !== "string") return str;
   return str
     .replace(/DC/gi, "")
-    .replace(/V/gi, "")
+    .replace(/V(?:olt)?(?:s)?/gi, "")
+    .replace(/[–—]/g, "-")
+    .replace(/\bto\b/gi, "-")
     .replace(/\s+/g, " ")
     .replace(/\s*-\s*/g, "-")
     .replace(/\s+\)/g, ")")
