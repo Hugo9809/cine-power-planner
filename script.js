@@ -6613,6 +6613,15 @@ function collectProjectFormData() {
         .map(o => o.value).join(', ');
     return {
         projectName: val('projectName'),
+        dop: val('dop'),
+        firstDay: val('firstDay'),
+        lastDay: val('lastDay'),
+        deliveryResolution: val('deliveryResolution'),
+        recordingResolution: val('recordingResolution'),
+        aspectRatio: val('aspectRatio'),
+        codec: val('codec'),
+        baseFrameRate: val('baseFrameRate'),
+        lenses: val('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
         monitoringPreferences: multi('monitoringPreferences'),
@@ -6622,63 +6631,60 @@ function collectProjectFormData() {
 }
 
 function generateGearListHtml(info = {}) {
-    const t = texts[currentLang];
-    const selected = [];
-    const addSelected = sel => {
-        if (sel && sel.value && sel.value !== 'None') {
-            const name = sel.options[sel.selectedIndex].text;
-            selected.push(name);
-        }
+    const selectedNames = {
+        camera: cameraSelect && cameraSelect.value && cameraSelect.value !== 'None' ? cameraSelect.options[cameraSelect.selectedIndex].text : '',
+        monitor: monitorSelect && monitorSelect.value && monitorSelect.value !== 'None' ? monitorSelect.options[monitorSelect.selectedIndex].text : '',
+        video: videoSelect && videoSelect.value && videoSelect.value !== 'None' ? videoSelect.options[videoSelect.selectedIndex].text : '',
+        motors: motorSelects.map(sel => sel && sel.value && sel.value !== 'None' ? sel.options[sel.selectedIndex].text : '').filter(Boolean),
+        controllers: controllerSelects.map(sel => sel && sel.value && sel.value !== 'None' ? sel.options[sel.selectedIndex].text : '').filter(Boolean),
+        distance: distanceSelect && distanceSelect.value && distanceSelect.value !== 'None' ? distanceSelect.options[distanceSelect.selectedIndex].text : '',
+        batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? batteryPlateSelect.options[batteryPlateSelect.selectedIndex].text : '',
+        battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? batterySelect.options[batterySelect.selectedIndex].text : ''
     };
-    addSelected(cameraSelect);
-    addSelected(monitorSelect);
-    addSelected(videoSelect);
-    motorSelects.forEach(addSelected);
-    controllerSelects.forEach(addSelected);
-    addSelected(distanceSelect);
-    addSelected(batteryPlateSelect);
-    addSelected(batterySelect);
     const accessories = collectAccessories();
-    const selectedHtml = selected.map(n => `<li>${escapeHtml(n)}</li>`).join('');
-    const accessoriesHtml = accessories.map(n => `<li>${escapeHtml(n)}</li>`).join('');
-    const setupName = escapeHtml(setupNameInput.value);
-    const infoPairs = Object.entries(info).filter(([, v]) => v);
-    const infoHtml = infoPairs.length ? '<h3>Project Details</h3><ul>' +
-        infoPairs.map(([k, v]) => {
-            const labels = {
-                projectName: 'Project Name',
-                dop: 'DoP',
-                email: 'Email',
-                phone: 'Phone Number',
-                firstDay: 'First Day of Shooting',
-                lastDay: 'Last Day of Shooting',
-                loadingDays: 'Loading Days',
-                deliveryResolution: 'Delivery Resolution',
-                recordingResolution: 'Recording Resolution',
-                aspectRatio: 'Aspect Ratio',
-                codec: 'Codec',
-                lenses: 'Lenses',
-                baseFrameRate: 'Base Frame Rate',
-                requiredScenarios: 'Required Scenarios',
-                rigging: 'Camera Rigging',
-                luts: 'LUTs',
-                monitoringPreferences: 'Monitoring Preferences',
-                tripodPreferences: 'Tripod Preferences',
-                userButtons: 'User Buttons',
-                viewfinder: 'Viewfinder',
-                body: 'Body',
-                filters: 'Filters',
-                fullSetOrParts: 'Full Set or Parts'
-            };
-            const label = labels[k] || k;
-            return `<li>${escapeHtml(label)}: ${escapeHtml(v)}</li>`;
-        }).join('') + '</ul>' : '';
-    let body = `<h2>${setupName}</h2>`;
+    const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
+    const allowedInfo = ['dop','firstDay','lastDay','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
+    const labels = {
+        dop: 'DoP',
+        firstDay: 'First Day of Shooting',
+        lastDay: 'Last Day of Shooting',
+        deliveryResolution: 'Delivery Resolution',
+        recordingResolution: 'Recording Resolution',
+        aspectRatio: 'Aspect Ratio',
+        codec: 'Codec',
+        baseFrameRate: 'Base Frame Rate',
+        lenses: 'Lenses'
+    };
+    const infoPairs = Object.entries(info).filter(([k,v]) => v && allowedInfo.includes(k));
+    const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
+        infoPairs.map(([k,v]) => `<li>${escapeHtml(labels[k]||k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
+    const join = arr => arr.filter(Boolean).map(n => escapeHtml(n)).join(', ');
+    const rows = [];
+    const addRow = (cat, items) => {
+        rows.push(`<tr class="category-row"><td>${cat}</td></tr>`);
+        rows.push(`<tr><td>${items}</td></tr>`);
+    };
+    addRow('Camera', escapeHtml(selectedNames.camera || ''));
+    addRow('Camera Support', '');
+    addRow('Media', '');
+    addRow('Lens', escapeHtml(info.lenses || ''));
+    addRow('Lens Support', '');
+    addRow('Matte box + filter', escapeHtml(info.filters || ''));
+    addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance]));
+    addRow('Camera Batteries', escapeHtml(selectedNames.battery || ''));
+    addRow('Monitoring Batteries', '');
+    addRow('Chargers', '');
+    addRow('Monitoring', join([selectedNames.monitor, selectedNames.video]));
+    addRow('Monitoring support', escapeHtml(info.monitoringPreferences || ''));
+    addRow('Power', escapeHtml(selectedNames.batteryPlate || ''));
+    addRow('Rigging', escapeHtml(info.rigging || ''));
+    addRow('Grip', '');
+    addRow('Carts and Transportation', '');
+    addRow('Miscellaneous', join(accessories));
+    addRow('Consumables', '');
+    let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
-    body += `<h3>${escapeHtml(t.selectedGearHeading)}</h3><ul>${selectedHtml}</ul>`;
-    if (accessories.length) {
-        body += `<h3>${escapeHtml(t.recommendationsHeading)}</h3><ul>${accessoriesHtml}</ul>`;
-    }
+    body += '<h3>Gear List</h3><table class="gear-table">' + rows.join('') + '</table>';
     return body;
 }
 

@@ -1337,6 +1337,23 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   box-shadow: var(--panel-shadow);
 }
 
+.gear-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gear-table td {
+  padding: 4px 0;
+  border-left: none;
+  border-right: none;
+}
+
+.gear-table .category-row td {
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  font-weight: bold;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
