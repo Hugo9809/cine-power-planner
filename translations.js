@@ -22,6 +22,10 @@ const texts = {
     existingDevicesHeading: "Existing Devices",
     darkModeLabel: "Toggle dark mode",
     pinkModeLabel: "Toggle pink mode",
+    darkModeHelp:
+      "Switch between light and dark themes for comfortable viewing. The preference is saved.",
+    pinkModeHelp:
+      "Add a playful pink accent theme. Works with light or dark mode and is remembered for next time.",
 
     savedSetupsLabel: "Saved Setups:",
     newSetupOption: "-- New Setup --",
@@ -226,43 +230,59 @@ const texts = {
     exportAndRevertBtn: "Export and Revert to default Database",
     helpButtonLabel: "Help",
     helpButtonTitle: "Help (press ?, H or F1)",
-    helpButtonHelp: "Open the help dialog (press ?, H or F1).",
+    helpButtonHelp:
+      "Open the help dialog for step-by-step guidance (press ?, H or F1).",
     helpClose: "Close",
-    helpCloseHelp: "Close the help dialog.",
+    helpCloseHelp: "Close the help dialog and return to the planner.",
     helpTitle: "How to use",
     helpSearchPlaceholder: "Search help topics...",
     helpSearchLabel: "Search help topics",
     helpNoResults: "No results found.",
     helpSearchClear: "Clear search",
-    helpSearchHelp: "Type keywords to search help topics.",
-    helpSearchClearHelp: "Clear the current search query.",
+    helpSearchHelp: "Type keywords to instantly filter the help topics list.",
+    helpSearchClearHelp: "Clear the search box and show all help topics again.",
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
-      "Activate hover help and move the cursor over items to learn about them.",
-    setupSelectHelp: "Choose a saved setup to load it or start a new one.",
-    setupNameHelp: "Enter a name for the current setup.",
-    deleteSetupHelp: "Delete the selected saved setup.",
-    saveSetupHelp: "Save the current configuration.",
-    exportSetupsHelp: "Download all saved setups as a JSON file.",
-    importSetupsHelp: "Load setups from a JSON file.",
-    generateOverviewHelp: "Create a printable overview of saved setups.",
-    shareSetupHelp: "Copy a link representing the current setup.",
-    applySharedLinkHelp: "Load the setup from the shared link.",
-    sharedLinkHelp: "Paste a shared link here to load its setup.",
-    cameraSelectHelp: "Select the camera for your setup.",
-    monitorSelectHelp: "Select a monitor to include in your setup.",
-    videoSelectHelp: "Select a wireless video system to include.",
-    distanceSelectHelp: "Select a distance sensor for your setup.",
-    batterySelectHelp: "Select the battery that powers your setup.",
-    batteryPlateSelectHelp: "Select the battery plate or adapter used.",
-    clearSetupHelp: "Remove all devices from the current setup.",
-    runtimeFeedbackBtnHelp: "Submit your measured runtime for this setup.",
-    zoomOutHelp: "Zoom out of the setup diagram.",
-    zoomInHelp: "Zoom in on the setup diagram.",
-    downloadDiagramHelp: "Download the setup diagram as an image.",
-    gridSnapToggleHelp: "Toggle snapping diagram nodes to the grid.",
-    toggleDeviceManagerHelp: "Open the device database editor.",
-    hideDeviceManagerHelp: "Hide the device database editor.",
+      "Activate hover help so moving the cursor over buttons and labels reveals brief explanations.",
+    setupSelectHelp:
+      "Pick a previously saved configuration or select '-- New Setup --' to start from scratch.",
+    setupNameHelp:
+      "Enter a descriptive name for the current setup so you can recognize it later.",
+    deleteSetupHelp:
+      "Remove the highlighted saved setup permanently from your browser.",
+    saveSetupHelp:
+      "Store the devices and battery you have selected so the setup can be recalled later.",
+    exportSetupsHelp:
+      "Download every saved configuration as a JSON file for backup or sharing.",
+    importSetupsHelp:
+      "Load setups from a previously exported JSON file, replacing the current list.",
+    generateOverviewHelp:
+      "Generate a print-ready summary of any saved setup, including power and connection details.",
+    shareSetupHelp:
+      "Copy a unique link representing the current setup that others can open to load the same configuration.",
+    applySharedLinkHelp:
+      "Load the configuration described by the shared link entered above.",
+    sharedLinkHelp:
+      "Paste a previously generated share link in this field to load that setup.",
+    cameraSelectHelp: "Choose the camera body that anchors your rig.",
+    monitorSelectHelp: "Choose an on-board or wireless monitor to include.",
+    videoSelectHelp: "Choose a transmitter/receiver pair or other wireless video link.",
+    distanceSelectHelp: "Choose an optional distance or range-finder sensor.",
+    batterySelectHelp: "Choose the battery model that will power the entire rig.",
+    batteryPlateSelectHelp: "Choose the battery plate or adapter that connects the battery to the camera.",
+    clearSetupHelp: "Reset the planner by removing every selected device.",
+    runtimeFeedbackBtnHelp:
+      "Open a form where you can submit real-world runtime data for this configuration.",
+    zoomOutHelp: "Zoom out of the setup diagram to view more of the layout.",
+    zoomInHelp: "Zoom in on the setup diagram for a closer look at connections.",
+    downloadDiagramHelp:
+      "Download the current setup diagram as an SVG or JPG image.",
+    gridSnapToggleHelp:
+      "Turn grid snapping on or off to help align items in the diagram.",
+    toggleDeviceManagerHelp:
+      "Open the editor where you can add, modify, export or import device data.",
+    hideDeviceManagerHelp:
+      "Close the device database editor and return to normal mode.",
     zoomInLabel: "Zoom in",
     zoomOutLabel: "Zoom out",
     diagramMoveHint: "Move nodes with drag and drop.",
@@ -288,6 +308,10 @@ const texts = {
     existingDevicesHeading: "Dispositivi esistenti",
     darkModeLabel: "Attiva modalità scura",
     pinkModeLabel: "Attiva modalità rosa",
+    darkModeHelp:
+      "Passa tra tema chiaro e scuro; la scelta viene ricordata.",
+    pinkModeHelp:
+      "Attiva un tema rosa giocoso; funziona con modalità chiara o scura e viene salvato.",
     savedSetupsLabel: "Configurazioni salvate:",
     newSetupOption: "-- Nuova configurazione --",
     setupNameLabel: "Nome di configurazione:",
@@ -545,6 +569,10 @@ const texts = {
     existingDevicesHeading: "Dispositivos Existentes",
     darkModeLabel: "Alternar modo oscuro",
     pinkModeLabel: "Alternar modo rosa",
+    darkModeHelp:
+      "Alterna entre temas claro y oscuro; la preferencia se guarda.",
+    pinkModeHelp:
+      "Aplica un tema rosa divertido; funciona con modo claro u oscuro y se recuerda la próxima vez.",
 
     savedSetupsLabel: "Configuraciones guardadas:",
     newSetupOption: "-- Nueva Configuración --",
@@ -819,6 +847,10 @@ const texts = {
     existingDevicesHeading: "Appareils Existants",
     darkModeLabel: "Basculer en mode sombre",
     pinkModeLabel: "Basculer en mode rose",
+    darkModeHelp:
+      "Basculer entre thème clair et sombre; le choix est mémorisé.",
+    pinkModeHelp:
+      "Active un thème rose ludique; fonctionne en mode clair ou sombre et est enregistré.",
 
     savedSetupsLabel: "Configurations enregistrées:",
     newSetupOption: "-- Nouvelle Configuration --",
@@ -1095,6 +1127,10 @@ const texts = {
     existingDevicesHeading: "Vorhandene Geräte",
     darkModeLabel: "Dunkelmodus umschalten",
     pinkModeLabel: "Pinkmodus umschalten",
+    darkModeHelp:
+      "Zwischen hellem und dunklem Design wechseln; die Einstellung wird gespeichert.",
+    pinkModeHelp:
+      "Aktiviere ein verspieltes pinkes Design; funktioniert mit hellen oder dunklen Modi und wird gemerkt.",
 
     savedSetupsLabel: "Gespeicherte Setups:",
     newSetupOption: "-- Neues Setup --",

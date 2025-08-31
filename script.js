@@ -1114,12 +1114,18 @@ function setLanguage(lang) {
   if (darkModeToggle) {
     darkModeToggle.setAttribute("title", texts[lang].darkModeLabel);
     darkModeToggle.setAttribute("aria-label", texts[lang].darkModeLabel);
-    darkModeToggle.setAttribute("data-help", texts[lang].darkModeLabel);
+    darkModeToggle.setAttribute(
+      "data-help",
+      texts[lang].darkModeHelp || texts[lang].darkModeLabel
+    );
   }
   if (pinkModeToggle) {
     pinkModeToggle.setAttribute("title", texts[lang].pinkModeLabel);
     pinkModeToggle.setAttribute("aria-label", texts[lang].pinkModeLabel);
-    pinkModeToggle.setAttribute("data-help", texts[lang].pinkModeLabel);
+    pinkModeToggle.setAttribute(
+      "data-help",
+      texts[lang].pinkModeHelp || texts[lang].pinkModeLabel
+    );
   }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
