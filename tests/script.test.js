@@ -774,7 +774,7 @@ describe('script.js functions', () => {
     expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });
 
-  test('generateGearListHtml returns selected devices and accessories', () => {
+  test('generateGearListHtml returns table with categories and accessories', () => {
       const { generateGearListHtml } = script;
       const addOpt = (id, value) => {
         const sel = document.getElementById(id);
@@ -788,12 +788,16 @@ describe('script.js functions', () => {
       addOpt('controller1Select', 'ControllerA');
       addOpt('distanceSelect', 'DistA');
       addOpt('batterySelect', 'BattA');
-      const html = generateGearListHtml();
-      expect(html).toContain('<h3>Selected Gear</h3>');
-      expect(html).toContain('<h3>Recommended Accessories</h3>');
-      expect(html).toContain('<li>CamA</li>');
-      expect(html).toContain('<li>BNC SDI Cable</li>');
-      expect(html).toContain('<li>Universal Cage</li>');
+      const html = generateGearListHtml({ projectName: 'Proj', dop: 'DopName' });
+      expect(html).toContain('<h2>Proj</h2>');
+      expect(html).toContain('<h3>Project Requirements</h3>');
+      expect(html).toContain('DoP: DopName');
+      expect(html).toContain('<table class="gear-table">');
+      expect(html).toContain('Camera');
+      expect(html).toContain('CamA');
+      expect(html).toContain('Miscellaneous');
+      expect(html).toContain('BNC SDI Cable');
+      expect(html).toContain('Universal Cage');
     });
 
   test('battery plate selection is saved and loaded with setups', () => {
