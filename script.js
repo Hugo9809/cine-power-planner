@@ -1334,6 +1334,7 @@ const helpSearch      = document.getElementById("helpSearch");
 const helpNoResults   = document.getElementById("helpNoResults");
 const helpSearchClear = document.getElementById("helpSearchClear");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -6243,9 +6244,8 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 
 // Dark mode handling
 function updateThemeColor(isDark) {
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) {
-    meta.setAttribute('content', isDark ? '#1a1a1a' : '#ffffff');
+  if (themeColorMeta) {
+    themeColorMeta.setAttribute('content', isDark ? '#121212' : '#ffffff');
   }
 }
 
