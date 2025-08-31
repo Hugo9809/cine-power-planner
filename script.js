@@ -6532,8 +6532,42 @@ function collectAccessories() {
     return [...new Set(accessories)];
 }
 
+function collectGearListInfo() {
+    if (typeof window === 'undefined' || typeof window.prompt !== 'function' ||
+        (typeof process !== 'undefined' && process.env.JEST_WORKER_ID)) {
+        return {};
+    }
+    const ask = q => window.prompt(q) || '';
+    return {
+        projectName: ask('Project name'),
+        dop: ask('DoP'),
+        email: ask('Email'),
+        phone: ask('Phone number'),
+        firstDay: ask('First day of shooting'),
+        lastDay: ask('Last day of shooting'),
+        loadingDays: ask('Loading days (comma-separated dates)'),
+        deliveryResolution: ask('Delivery resolution'),
+        recordingResolution: ask('Recording resolution'),
+        aspectRatio: ask('Aspect ratio'),
+        codec: ask('Codec'),
+        lenses: ask('Lenses'),
+        baseFrameRate: ask('Base frame rate'),
+        requiredScenarios: ask('Required scenarios for the shoot (comma-separated)'),
+        rigging: ask('How would you like to have your camera rigged? (comma-separated)'),
+        luts: ask('LUTs'),
+        monitoringPreferences: ask('Monitoring preferences (comma-separated)'),
+        tripodPreferences: ask('Tripod preferences (comma-separated)'),
+        userButtons: ask('User Buttons (5/6)'),
+        viewfinder: ask('Viewfinder (if possible) 2 maximum'),
+        body: ask('Body (if possible) 4 maximum (+4 digital)'),
+        filters: ask('What filters do you want to use? (comma-separated)'),
+        fullSetOrParts: ask('Full set or only parts of a set?')
+    };
+}
+
 function generateGearList() {
     const t = texts[currentLang];
+    const info = collectGearListInfo();
     const selected = [];
     const addSelected = sel => {
         if (sel && sel.value && sel.value !== 'None') {
@@ -6553,9 +6587,41 @@ function generateGearList() {
     const selectedHtml = selected.map(n => `<li>${escapeHtml(n)}</li>`).join('');
     const accessoriesHtml = accessories.map(n => `<li>${escapeHtml(n)}</li>`).join('');
     const setupName = escapeHtml(setupNameInput.value);
+    const infoPairs = Object.entries(info).filter(([, v]) => v);
+    const infoHtml = infoPairs.length ? '<h2>Project Details</h2><ul>' +
+        infoPairs.map(([k, v]) => {
+            const labels = {
+                projectName: 'Project Name',
+                dop: 'DoP',
+                email: 'Email',
+                phone: 'Phone Number',
+                firstDay: 'First Day of Shooting',
+                lastDay: 'Last Day of Shooting',
+                loadingDays: 'Loading Days',
+                deliveryResolution: 'Delivery Resolution',
+                recordingResolution: 'Recording Resolution',
+                aspectRatio: 'Aspect Ratio',
+                codec: 'Codec',
+                lenses: 'Lenses',
+                baseFrameRate: 'Base Frame Rate',
+                requiredScenarios: 'Required Scenarios',
+                rigging: 'Camera Rigging',
+                luts: 'LUTs',
+                monitoringPreferences: 'Monitoring Preferences',
+                tripodPreferences: 'Tripod Preferences',
+                userButtons: 'User Buttons',
+                viewfinder: 'Viewfinder',
+                body: 'Body',
+                filters: 'Filters',
+                fullSetOrParts: 'Full Set or Parts'
+            };
+            const label = labels[k] || k;
+            return `<li>${escapeHtml(label)}: ${escapeHtml(v)}</li>`;
+        }).join('') + '</ul>' : '';
     const win = window.open('', '_blank');
     if (win) {
         let body = `<button onclick="window.print()" class="print-btn">Print</button><h1>${setupName}</h1>`;
+        if (infoHtml) body += infoHtml;
         body += `<h2>${escapeHtml(t.selectedGearHeading)}</h2><ul>${selectedHtml}</ul>`;
         if (accessories.length) {
             body += `<h2>${escapeHtml(t.recommendationsHeading)}</h2><ul>${accessoriesHtml}</ul>`;
