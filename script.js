@@ -6666,6 +6666,16 @@ if (helpButton && helpDialog) {
                document.activeElement.tagName !== 'TEXTAREA') {
       if (e.key === 'F1') e.preventDefault();
       toggleHelp();
+    } else if (e.key.toLowerCase() === 'd' &&
+               document.activeElement.tagName !== 'INPUT' &&
+               document.activeElement.tagName !== 'TEXTAREA') {
+      darkModeEnabled = !document.body.classList.contains('dark-mode');
+      applyDarkMode(darkModeEnabled);
+      try {
+        localStorage.setItem('darkMode', darkModeEnabled);
+      } catch (err) {
+        console.warn('Could not save dark mode preference', err);
+      }
     } else if (e.key.toLowerCase() === 'p' &&
                document.activeElement.tagName !== 'INPUT' &&
                document.activeElement.tagName !== 'TEXTAREA') {
