@@ -3132,6 +3132,22 @@ function bindFilterInput(inputElem, callback) {
   });
 }
 
+function clearFilterOnSelect(selectElem, filterInput, resetCallback) {
+  if (!selectElem || !filterInput) {
+    return;
+  }
+  selectElem.addEventListener("change", () => {
+    if (filterInput.value !== "") {
+      filterInput.value = "";
+      if (typeof resetCallback === "function") {
+        resetCallback();
+      } else {
+        filterSelect(selectElem, "");
+      }
+    }
+  });
+}
+
 function clearAllFilters() {
   [cameraFilterInput, monitorFilterInput, videoFilterInput, motorFilterInput,
    controllerFilterInput, distanceFilterInput, batteryFilterInput].forEach(input => {
@@ -4890,6 +4906,14 @@ bindFilterInput(motorFilterInput, () => motorSelects.forEach(sel => filterSelect
 bindFilterInput(controllerFilterInput, () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
 bindFilterInput(distanceFilterInput, () => filterSelect(distanceSelect, distanceFilterInput.value));
 bindFilterInput(batteryFilterInput, () => filterSelect(batterySelect, batteryFilterInput.value));
+
+clearFilterOnSelect(cameraSelect, cameraFilterInput);
+clearFilterOnSelect(monitorSelect, monitorFilterInput);
+clearFilterOnSelect(videoSelect, videoFilterInput);
+motorSelects.forEach(sel => clearFilterOnSelect(sel, motorFilterInput, () => motorSelects.forEach(s => filterSelect(s, ""))));
+controllerSelects.forEach(sel => clearFilterOnSelect(sel, controllerFilterInput, () => controllerSelects.forEach(s => filterSelect(s, ""))));
+clearFilterOnSelect(distanceSelect, distanceFilterInput);
+clearFilterOnSelect(batterySelect, batteryFilterInput);
 
 clearFiltersBtn.addEventListener("click", clearAllFilters);
 
