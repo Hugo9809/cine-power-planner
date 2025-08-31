@@ -6212,7 +6212,9 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#1a1a1a' : '#ffffff');
+    const colorVar = isDark ? '--bg-color-dark' : '--bg-color-light';
+    const color = getComputedStyle(document.body).getPropertyValue(colorVar).trim();
+    meta.setAttribute('content', color || (isDark ? '#121212' : '#ffffff'));
   }
 }
 

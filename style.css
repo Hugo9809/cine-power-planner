@@ -2,6 +2,8 @@
 /* General styles */
 :root {
   --accent-color: #001589;
+  --bg-color-light: #ffffff;
+  --bg-color-dark: #121212;
 }
 body.pink-mode {
   --accent-color: #ff69b4;
@@ -9,7 +11,7 @@ body.pink-mode {
 
 html,
 body {
-  background: #1a1a1a;
+  background: var(--bg-color-dark);
   height: 100%;
   margin: 0;
 }
@@ -24,7 +26,7 @@ body {
   font-weight: 300;
   margin: 20px auto;
   max-width: 1200px;
-  background-color: #ffffff;
+  background-color: var(--bg-color-light);
   color: #000000;
   font-size: 0.9em;
 }
@@ -912,7 +914,7 @@ body:not(.light-mode) #userFeedbackTable td {
 }
 
 body.dark-mode {
-  background-color: #121212;
+  background-color: var(--bg-color-dark);
   color: #f0f0f0;
 }
 .dark-mode h1,
@@ -1008,7 +1010,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 
 @media (prefers-color-scheme: dark) {
   body:not(.light-mode) {
-    background-color: #121212;
+    background-color: var(--bg-color-dark);
     color: #f0f0f0;
   }
   body:not(.light-mode) h1,
@@ -1264,7 +1266,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   --accent-color: #ff69b4;
 }
 #overviewDialogContent.dark-mode {
-  background-color: #121212;
+  background-color: var(--bg-color-dark);
   color: #f0f0f0;
 }
 #overviewDialogContent.dark-mode h1,
@@ -1277,7 +1279,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   background-color: #333;
 }
 #overviewDialogContent.dark-mode tr:nth-child(even) {
-  background-color: #1a1a1a;
+  background-color: #1e1e1e;
 }
 #overviewDialogContent.dark-mode .device-category {
   background: #1e1e1e;
