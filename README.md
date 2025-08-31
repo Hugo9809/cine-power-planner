@@ -46,7 +46,7 @@ Recent updates include:
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
-- **Quick setup saving** – press Enter or Ctrl+S to save a setup and the Save button stays disabled until a name is entered.
+- **Quick setup saving** – press Enter or Ctrl+S (⌘S on macOS) to save a setup and the Save button stays disabled until a name is entered.
 
 See the language-specific README files for full details.
 
