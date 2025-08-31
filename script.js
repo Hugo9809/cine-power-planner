@@ -28,6 +28,17 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 }
 
+if (typeof window !== 'undefined') {
+  const offlineIndicator = document.getElementById('offlineIndicator');
+  const updateOnlineStatus = () => {
+    if (!offlineIndicator) return;
+    offlineIndicator.style.display = navigator.onLine ? 'none' : 'block';
+  };
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+}
+
 // Use a Set for O(1) lookups when validating video output types
 const VIDEO_OUTPUT_TYPES = new Set([
   '3G-SDI',

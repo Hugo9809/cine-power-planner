@@ -64,6 +64,19 @@ body {
   top: 10px;
 }
 
+#offlineIndicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #ff9800;
+  color: #000;
+  text-align: center;
+  padding: 8px 0;
+  z-index: 1000;
+  display: none;
+}
+
 .visually-hidden {
   position: absolute !important;
   height: 1px; width: 1px;
