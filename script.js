@@ -1323,6 +1323,12 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
   }
+  if (resetViewBtn) {
+    resetViewBtn.textContent = texts[lang].resetViewBtn;
+    resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
+    resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
+    resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
+  }
   if (zoomInBtn) {
     zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
@@ -1486,6 +1492,7 @@ const diagramLegend = document.getElementById("diagramLegend");
 const downloadDiagramBtn = document.getElementById("downloadDiagram");
 const zoomInBtn = document.getElementById("zoomIn");
 const zoomOutBtn = document.getElementById("zoomOut");
+const resetViewBtn = document.getElementById("resetView");
 const gridSnapToggleBtn = document.getElementById("gridSnapToggle");
 const diagramHint = document.getElementById("diagramHint");
 
@@ -4578,6 +4585,13 @@ function enableDiagramInteractions() {
   if (zoomOutBtn) {
     zoomOutBtn.onclick = () => {
       scale *= 0.9;
+      apply();
+    };
+  }
+  if (resetViewBtn) {
+    resetViewBtn.onclick = () => {
+      pan = { x: 0, y: 0 };
+      scale = 1;
       apply();
     };
   }

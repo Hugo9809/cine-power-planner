@@ -1416,6 +1416,32 @@ describe('script.js functions', () => {
     expect(endY).toBeCloseTo(snap(startY + 27 / scale));
   });
 
+  test('reset view restores default pan and zoom', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const zoomBtn = document.getElementById('zoomIn');
+    const resetBtn = document.getElementById('resetView');
+    const svg = document.querySelector('#diagramArea svg');
+
+    zoomBtn.click();
+    svg.dispatchEvent(new MouseEvent('mousedown', { clientX: 0, clientY: 0, bubbles: true }));
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 50, clientY: 40, bubbles: true }));
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 50, clientY: 40, bubbles: true }));
+
+    const root = svg.querySelector('#diagramRoot') || svg;
+    expect(root.getAttribute('transform')).toBe('translate(50,40) scale(1.1)');
+    resetBtn.click();
+    expect(root.getAttribute('transform')).toBe('translate(0,0) scale(1)');
+  });
+
   test('help dialog toggles with keyboard and overlay click', () => {
     const helpDialog = document.getElementById('helpDialog');
     const helpSearch = document.getElementById('helpSearch');
