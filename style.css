@@ -21,7 +21,8 @@ body {
 body {
   font-family: system-ui, sans-serif;
   font-weight: 400;
-  margin: 20px auto;
+  margin: 0 auto;
+  padding: 20px 0;
   max-width: 1200px;
   background-color: #ffffff;
   color: #000000;
@@ -31,9 +32,9 @@ body {
 @supports (padding: env(safe-area-inset-top)) {
   body {
     padding:
-      env(safe-area-inset-top)
+      calc(env(safe-area-inset-top) + 20px)
       env(safe-area-inset-right)
-      env(safe-area-inset-bottom)
+      calc(env(safe-area-inset-bottom) + 20px)
       env(safe-area-inset-left);
   }
 }
