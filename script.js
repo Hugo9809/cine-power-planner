@@ -6326,14 +6326,27 @@ function generatePrintableOverview() {
     const overviewDialog = document.getElementById('overviewDialog');
     overviewDialog.innerHTML = overviewHtml;
     const content = overviewDialog.querySelector('#overviewDialogContent');
-    ['dark-mode', 'pink-mode'].forEach(cls => {
-        if (document.body.classList.contains(cls)) {
-            content.classList.add(cls);
+
+    const darkModeActive = document.body.classList.contains('dark-mode');
+    if (darkModeActive) {
+        document.body.classList.remove('dark-mode');
+    }
+    if (document.body.classList.contains('pink-mode')) {
+        content.classList.add('pink-mode');
+    }
+
+    const restoreTheme = () => {
+        if (darkModeActive) {
+            document.body.classList.add('dark-mode');
         }
-    });
+    };
+
     const closeBtn = overviewDialog.querySelector('#closeOverviewBtn');
     if (closeBtn) {
-        closeBtn.addEventListener('click', () => overviewDialog.close());
+        closeBtn.addEventListener('click', () => {
+            restoreTheme();
+            overviewDialog.close();
+        });
     }
     if (typeof overviewDialog.showModal === 'function') {
         overviewDialog.showModal();
@@ -6341,7 +6354,10 @@ function generatePrintableOverview() {
         overviewDialog.setAttribute('open', '');
     }
 
-    const closeAfterPrint = () => { overviewDialog.close(); };
+    const closeAfterPrint = () => {
+        restoreTheme();
+        overviewDialog.close();
+    };
     if (typeof window.matchMedia === 'function') {
         const mql = window.matchMedia('print');
         const mqlListener = e => {

@@ -3,12 +3,24 @@
   margin: 1cm;
 }
 
-body {
+body,
+body.dark-mode {
   background: #fff;
   color: #000;
   font-size: 12pt;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
+}
+
+#overviewDialogContent,
+#overviewDialogContent * {
+  color: #000 !important;
+}
+
+#overviewDialogContent h1,
+#overviewDialogContent h2,
+#overviewDialogContent h3 {
+  border-color: #000 !important;
 }
 
 h1 {
@@ -52,29 +64,23 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 
 .device-block,
 .device-category {
-  background: #fff !important;
   border: 1px solid #000;
   box-shadow: none;
 }
 
 .power-conn {
-  background: #fff !important;
   border: 1px solid #000;
-  border-style: solid;
 }
 
 .fiz-conn {
-  background: #fff !important;
   border: 1px dashed #000;
 }
 
 .video-conn {
-  background: #fff !important;
   border: 1px dotted #000;
 }
 
 .neutral-conn {
-  background: #fff !important;
   border: 1px double #000;
 }
 
