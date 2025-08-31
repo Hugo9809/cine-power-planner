@@ -942,7 +942,12 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  document.getElementById("setupActionsHeading").textContent = texts[lang].setupActionsHeading;
+  const setupActionsHeadingElem = document.getElementById("setupActionsHeading");
+  setupActionsHeadingElem.textContent = texts[lang].setupActionsHeading;
+  setupActionsHeadingElem.setAttribute(
+    "data-help",
+    texts[lang].setupActionsHeadingHelp
+  );
   saveSetupBtn.textContent = texts[lang].saveSetupBtn;
   deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
@@ -1014,11 +1019,30 @@ function setLanguage(lang) {
   clearFiltersBtn.setAttribute("aria-label", texts[lang].clearFiltersBtn);
   clearFiltersBtn.setAttribute("title", texts[lang].clearFiltersBtn);
   clearFiltersBtn.setAttribute("data-help", texts[lang].clearFiltersHelp);
-  // FIZ legend
-  document.getElementById("fizLegend").textContent = texts[lang].fizLegend;
-  document.querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel').forEach(el => {
-    el.textContent = texts[lang].notesLabel;
-  });
+  // FIZ legend and labels
+  const fizLegendElem = document.getElementById("fizLegend");
+  if (fizLegendElem) {
+    fizLegendElem.textContent = texts[lang].fizLegend;
+    fizLegendElem.setAttribute("data-help", texts[lang].fizLegendHelp);
+  }
+  const fizMotorsLabelElem = document.getElementById("fizMotorsLabel");
+  if (fizMotorsLabelElem) {
+    fizMotorsLabelElem.textContent = texts[lang].fizMotorsLabel;
+    fizMotorsLabelElem.setAttribute("data-help", texts[lang].fizMotorsHelp);
+  }
+  const fizControllersLabelElem = document.getElementById("fizControllersLabel");
+  if (fizControllersLabelElem) {
+    fizControllersLabelElem.textContent = texts[lang].fizControllersLabel;
+    fizControllersLabelElem.setAttribute(
+      "data-help",
+      texts[lang].fizControllersHelp
+    );
+  }
+  document
+    .querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel')
+    .forEach(el => {
+      el.textContent = texts[lang].notesLabel;
+    });
   // Results labels
   if (breakdownListElem)
     breakdownListElem.setAttribute("data-help", texts[lang].breakdownListHelp);
@@ -1271,7 +1295,14 @@ function setLanguage(lang) {
   }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
-  document.getElementById("setupActionsHeading").textContent = texts[lang].setupActionsHeading;
+  const setupActionsHeadingElem2 = document.getElementById("setupActionsHeading");
+  if (setupActionsHeadingElem2) {
+    setupActionsHeadingElem2.textContent = texts[lang].setupActionsHeading;
+    setupActionsHeadingElem2.setAttribute(
+      "data-help",
+      texts[lang].setupActionsHeadingHelp
+    );
+  }
   document.getElementById("exportSetupsBtn").textContent = texts[lang].exportSetupsBtn;
   document.getElementById("importSetupsBtn").textContent = texts[lang].importSetupsBtn;
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
