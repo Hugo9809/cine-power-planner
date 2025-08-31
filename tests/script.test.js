@@ -739,8 +739,8 @@ describe('script.js functions', () => {
     expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });
 
-  test('generateGearList lists selected devices and accessories', () => {
-      const { generateGearList } = script;
+  test('generateGearListHtml returns selected devices and accessories', () => {
+      const { generateGearListHtml } = script;
       const addOpt = (id, value) => {
         const sel = document.getElementById(id);
         sel.innerHTML = `<option value="${value}">${value}</option>`;
@@ -753,13 +753,9 @@ describe('script.js functions', () => {
       addOpt('controller1Select', 'ControllerA');
       addOpt('distanceSelect', 'DistA');
       addOpt('batterySelect', 'BattA');
-      const mockWin = { document: { write: jest.fn(), close: jest.fn() } };
-      global.open = jest.fn(() => mockWin);
-      generateGearList();
-      expect(global.open).toHaveBeenCalled();
-      const html = mockWin.document.write.mock.calls[0][0];
-      expect(html).toContain('<h2>Selected Gear</h2>');
-      expect(html).toContain('<h2>Recommended Accessories</h2>');
+      const html = generateGearListHtml();
+      expect(html).toContain('<h3>Selected Gear</h3>');
+      expect(html).toContain('<h3>Recommended Accessories</h3>');
       expect(html).toContain('<li>CamA</li>');
       expect(html).toContain('<li>BNC SDI Cable</li>');
       expect(html).toContain('<li>Universal Cage</li>');
