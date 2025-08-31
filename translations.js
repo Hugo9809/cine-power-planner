@@ -65,6 +65,11 @@ const texts = {
     fizLegend: "FIZ (Follow Focus) Systems",
     fizMotorsLabel: "FIZ Motors:",
     fizControllersLabel: "FIZ Controllers:",
+    fizLegendHelp:
+      "Add motors, controllers or distance units for focus/iris/zoom control.",
+    fizMotorsHelp: "Select focus, iris or zoom motors.",
+    fizControllersHelp:
+      "Choose hand units or controllers for your FIZ system.",
 
     breakdownListHelp: "Power consumption per device category.",
     totalPowerLabel: "Total Consumption:",
@@ -242,6 +247,8 @@ const texts = {
 
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
     setupActionsHeading: "Setup Actions",
+    setupActionsHeadingHelp:
+      "Export, import or share saved setups.",
     exportSetupsBtn: "Export All Setups",
     importSetupsBtn: "Import Setups",
     generateOverviewBtn: "Generate Overview",
@@ -373,6 +380,11 @@ const texts = {
     fizLegend: "Sistemi FIZ (Follow Focus)",
     fizMotorsLabel: "Motori FIZ:",
     fizControllersLabel: "Controller FIZ:",
+    fizLegendHelp:
+      "Aggiungi motori, controller o sensori di distanza per il controllo FIZ.",
+    fizMotorsHelp: "Seleziona i motori per fuoco, iris o zoom.",
+    fizControllersHelp:
+      "Scegli unità di controllo o controller per il sistema FIZ.",
     breakdownListHelp: "Consumo energetico per categoria di dispositivo.",
     totalPowerLabel: "Consumo totale:",
     totalPowerHelp: "Assorbimento complessivo di tutti i dispositivi selezionati.",
@@ -535,6 +547,8 @@ const texts = {
     alertDeviceName: "Il nome del dispositivo non può essere vuoto.",
     alertInvalidCameraJSON: "JSON non valido per i dettagli della fotocamera",
     setupActionsHeading: "Azioni di configurazione",
+    setupActionsHeadingHelp:
+      "Esporta, importa o condividi le configurazioni.",
     exportSetupsBtn: "Esporta tutte le configurazioni",
     importSetupsBtn: "Importa configurazioni",
     generateOverviewBtn: "Generare panoramica",
@@ -663,6 +677,11 @@ const texts = {
     fizLegend: "Sistemas FIZ (Follow Focus)",
     fizMotorsLabel: "Motores FIZ:",
     fizControllersLabel: "Controles FIZ:",
+    fizLegendHelp:
+      "Añade motores, controladores o unidades de distancia para el control FIZ.",
+    fizMotorsHelp: "Selecciona los motores de enfoque, iris o zoom.",
+    fizControllersHelp:
+      "Elige unidades de mano o controladores para el sistema FIZ.",
     breakdownListHelp: "Consumo de energía por categoría de dispositivo.",
     totalPowerLabel: "Consumo Total:",
     totalPowerHelp: "Consumo total de todos los dispositivos seleccionados.",
@@ -836,6 +855,8 @@ const texts = {
     alertInvalidCameraJSON: "JSON de cámara no válido",
 
     setupActionsHeading: "Acciones de Configuración",
+    setupActionsHeadingHelp:
+      "Exportar, importar o compartir configuraciones.",
     exportSetupsBtn: "Exportar todas las configuraciones",
     importSetupsBtn: "Importar configuraciones",
     generateOverviewBtn: "Generar resumen",
@@ -966,6 +987,11 @@ const texts = {
     fizLegend: "Systèmes FIZ",
     fizMotorsLabel: "Moteurs FIZ:",
     fizControllersLabel: "Contrôleurs FIZ:",
+    fizLegendHelp:
+      "Ajouter des moteurs, contrôleurs ou télémètres pour le contrôle FIZ.",
+    fizMotorsHelp: "Sélectionnez les moteurs de focus, iris ou zoom.",
+    fizControllersHelp:
+      "Choisissez les commandes ou contrôleurs pour le système FIZ.",
     breakdownListHelp: "Consommation par catégorie d’appareil.",
     totalPowerLabel: "Consommation Totale:",
     totalPowerHelp: "Consommation totale de tous les appareils sélectionnés.",
@@ -1139,6 +1165,8 @@ const texts = {
     alertInvalidCameraJSON: "JSON caméra invalide",
 
     setupActionsHeading: "Actions de Configuration",
+    setupActionsHeadingHelp:
+      "Exporter, importer ou partager des configurations.",
     exportSetupsBtn: "Exporter toutes les configurations",
     importSetupsBtn: "Importer des configurations",
     generateOverviewBtn: "Générer un résumé",
@@ -1271,6 +1299,11 @@ const texts = {
     fizLegend: "FIZ (Follow Focus) Systeme",
     fizMotorsLabel: "FIZ Motoren:",
     fizControllersLabel: "FIZ Controller:",
+    fizLegendHelp:
+      "Füge Motoren, Controller oder Distanzsensoren für FIZ-Steuerung hinzu.",
+    fizMotorsHelp: "Wähle Motoren für Fokus, Iris oder Zoom.",
+    fizControllersHelp:
+      "Wähle Handgriffe oder Controller für das FIZ-System.",
     breakdownListHelp: "Leistungsaufnahme nach Gerätekategorie.",
     totalPowerLabel: "Gesamtverbrauch:",
     totalPowerHelp: "Gesamter Leistungsbedarf aller ausgewählten Geräte.",
@@ -1444,6 +1477,8 @@ const texts = {
     alertInvalidCameraJSON: "Ungültiges JSON für Kameradetails",
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
     setupActionsHeading: "Setup-Aktionen",
+    setupActionsHeadingHelp:
+      "Setups exportieren, importieren oder teilen.",
     exportSetupsBtn: "Alle Setups exportieren",
     importSetupsBtn: "Setups importieren",
     generateOverviewBtn: "Übersicht erstellen",

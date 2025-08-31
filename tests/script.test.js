@@ -1628,11 +1628,26 @@ describe('script.js functions', () => {
   test('section headings expose descriptive hover help', () => {
     const setupHeading = document.getElementById('setupManageHeading');
     const resultsHeading = document.getElementById('resultsHeading');
+    const actionsHeading = document.getElementById('setupActionsHeading');
     expect(setupHeading.getAttribute('data-help')).toBe(
       texts.en.setupManageHeadingHelp
     );
     expect(resultsHeading.getAttribute('data-help')).toBe(
       texts.en.resultsHeadingHelp
+    );
+    expect(actionsHeading.getAttribute('data-help')).toBe(
+      texts.en.setupActionsHeadingHelp
+    );
+  });
+
+  test('FIZ section exposes descriptive hover help', () => {
+    const legend = document.getElementById('fizLegend');
+    const motorsLabel = document.getElementById('fizMotorsLabel');
+    const controllersLabel = document.getElementById('fizControllersLabel');
+    expect(legend.getAttribute('data-help')).toBe(texts.en.fizLegendHelp);
+    expect(motorsLabel.getAttribute('data-help')).toBe(texts.en.fizMotorsHelp);
+    expect(controllersLabel.getAttribute('data-help')).toBe(
+      texts.en.fizControllersHelp
     );
   });
 
