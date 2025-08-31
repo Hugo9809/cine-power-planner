@@ -19,6 +19,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 - Diagrama de configuración interactivo que permite arrastrar dispositivos, hacer zoom y exportar el diseño en SVG o JPG.
 - Tema rosa divertido que se mantiene entre visitas.
 - Diálogo de ayuda con búsqueda, secciones paso a paso y una FAQ.
+- Ayuda contextual al pasar el cursor por botones, campos, menús desplegables y encabezados.
 - Compatibilidad con cámaras que aceptan placas de batería V y B‑Mount.
 
 ---

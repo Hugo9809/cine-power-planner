@@ -18,6 +18,7 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 - Diagramma interattivo della configurazione che consente di trascinare i dispositivi, zoomare ed esportare il layout in SVG o JPG.
 - Tema rosa giocoso che persiste tra una visita e l'altra.
 - Finestra di aiuto ricercabile con sezioni passo passo e FAQ.
+- Aiuto contestuale al passaggio del mouse su pulsanti, campi, menu a discesa e intestazioni.
 - Supporto per fotocamere con piastre batteria V e B‑Mount.
 
 ---
