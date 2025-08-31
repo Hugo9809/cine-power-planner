@@ -11,7 +11,7 @@ This browser based tool helps plan professional camera setups powered by V‑Mou
 - 🇮🇹 Italiano
 - 🇫🇷 Français
 
-You can switch the language in the top right corner. The choice is remembered for your next visit.
+The app automatically uses your browser language on first load, and you can switch the language in the top right corner. The choice is remembered for your next visit.
 
 ---
 

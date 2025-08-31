@@ -540,6 +540,39 @@ describe('script.js functions', () => {
     expect(document.getElementById('mainTitle').textContent).toBe('Aplicación de Consumo de Energía para Cámaras');
   });
 
+  test('defaults to browser language when no preference saved', () => {
+    jest.resetModules();
+
+    global.alert = jest.fn();
+    global.prompt = jest.fn();
+    Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
+
+    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const body = html.split('<body>')[1].split('</body>')[0];
+    document.body.innerHTML = body;
+    document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
+
+    global.loadDeviceData = jest.fn(() => null);
+    global.saveDeviceData = jest.fn();
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.saveSetup = jest.fn();
+    global.loadSetup = jest.fn();
+    global.deleteSetup = jest.fn();
+    global.loadFeedback = jest.fn(() => ({}));
+    global.saveFeedback = jest.fn();
+
+    localStorage.removeItem('language');
+    Object.defineProperty(navigator, 'language', { value: 'fr-FR', configurable: true });
+    Object.defineProperty(navigator, 'languages', { value: ['fr-FR'], configurable: true });
+
+    require('../translations.js');
+    require('../script.js');
+
+    expect(document.documentElement.lang).toBe('fr');
+    expect(localStorage.getItem('language')).toBe('fr');
+  });
+
   test('unifyDevices normalizes videoOutputs', () => {
     jest.resetModules();
 
