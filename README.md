@@ -8,6 +8,10 @@ checks that batteries can safely deliver the required output and estimates how
 long your setup will run. The tool runs entirely in the browser and even works
 offline.
 
+No build step is required—open `index.html` in your browser and start planning
+immediately. Serving the repository over HTTP(S) installs a service worker so
+that future visits work offline and pick up updates automatically.
+
 ## Table of Contents
 
 - [Documentation](#documentation)
