@@ -8,7 +8,7 @@ body.pink-mode {
 
 html,
 body {
-  background: #1a1a1a;
+  background: #f9f9f9;
   height: 100%;
   margin: 0;
 }
@@ -24,7 +24,7 @@ body {
   margin: 0 auto;
   padding: 20px 0;
   max-width: 1200px;
-  background-color: #ffffff;
+  background-color: #f9f9f9;
   color: #000000;
   font-size: 0.9em;
 }
@@ -928,7 +928,7 @@ body:not(.light-mode) #userFeedbackTable td {
 }
 
 body.dark-mode {
-  background-color: #121212;
+  background-color: #1e1e1e;
   color: #f0f0f0;
 }
 .dark-mode h1,
@@ -1024,7 +1024,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 
 @media (prefers-color-scheme: dark) {
   body:not(.light-mode) {
-    background-color: #121212;
+    background-color: #1e1e1e;
     color: #f0f0f0;
   }
   body:not(.light-mode) h1,
