@@ -67,23 +67,24 @@ function storeSession(state) {
   }
 }
 
+const VIDEO_TYPE_PATTERNS = [
+  { needles: ['12g'], value: '12G-SDI' },
+  { needles: ['6g'], value: '6G-SDI' },
+  { needles: ['3g'], value: '3G-SDI' },
+  { needles: ['hd-sdi'], value: '3G-SDI' },
+  { needles: ['mini', 'bnc'], value: 'Mini BNC' },
+  { needles: ['micro', 'hdmi'], value: 'Micro HDMI' },
+  { needles: ['mini', 'hdmi'], value: 'Mini HDMI' },
+  { needles: ['hdmi'], value: 'HDMI' },
+  { needles: ['displayport'], value: 'DisplayPort' },
+  { needles: ['display', 'port'], value: 'DisplayPort' },
+  { needles: ['dp'], value: 'DisplayPort' }
+];
+
 function normalizeVideoType(type) {
   if (!type) return '';
-  const patterns = [
-    { needles: ['12g'], value: '12G-SDI' },
-    { needles: ['6g'], value: '6G-SDI' },
-    { needles: ['3g'], value: '3G-SDI' },
-    { needles: ['hd-sdi'], value: '3G-SDI' },
-    { needles: ['mini', 'bnc'], value: 'Mini BNC' },
-    { needles: ['micro', 'hdmi'], value: 'Micro HDMI' },
-    { needles: ['mini', 'hdmi'], value: 'Mini HDMI' },
-    { needles: ['hdmi'], value: 'HDMI' },
-    { needles: ['displayport'], value: 'DisplayPort' },
-    { needles: ['display', 'port'], value: 'DisplayPort' },
-    { needles: ['dp'], value: 'DisplayPort' }
-  ];
   const t = String(type).toLowerCase();
-  for (const { needles, value } of patterns) {
+  for (const { needles, value } of VIDEO_TYPE_PATTERNS) {
     if (needles.every(n => t.includes(n))) return value;
   }
   return '';
@@ -127,69 +128,72 @@ function normalizeFizConnectorType(type) {
   return FIZ_CONNECTOR_MAP[key] || type;
 }
 
+const VIEWFINDER_TYPE_MAP = {
+  'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
+  'red touch 7.0" lcd (optional)': 'RED Touch 7" LCD (Optional)',
+  'lcd touch panel': 'LCD touchscreen',
+  'lcd touchscreen': 'LCD touchscreen',
+  'native lcd capacitive touchscreen': 'LCD touchscreen',
+  'integrated touchscreen lcd': 'LCD touchscreen',
+  'free-angle lcd': 'Vari-angle LCD',
+  'lcd monitor (native)': 'Integrated LCD monitor',
+  'native lcd viewfinder': 'Integrated LCD monitor',
+  'lcd monitor lm-v2 (supplied)': 'LCD Monitor LM-V2',
+  'integrated main monitor': 'Integrated LCD monitor',
+  'optional evf-v70 viewfinder': 'EVF-V70 (Optional)',
+  'optional evf-v50': 'EVF-V50 (Optional)',
+  'optional oled viewfinder': 'OLED EVF (Optional)',
+  'blackmagic pocket cinema camera pro evf (optional)': 'Blackmagic Pro EVF (Optional)',
+  'external backlit lcd status display': 'LCD status display',
+  'built-in fold-out lcd': 'Fold-out LCD',
+  'oled lvf (live view finder)': 'OLED EVF',
+  'lcd capacitive touchscreen': 'LCD touchscreen',
+  'lemo 26 pin': 'LEMO 26-pin port'
+};
+
 function normalizeViewfinderType(type) {
   if (!type) return '';
-  const map = {
-    'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
-    'red touch 7.0" lcd (optional)': 'RED Touch 7" LCD (Optional)',
-    'lcd touch panel': 'LCD touchscreen',
-    'lcd touchscreen': 'LCD touchscreen',
-    'native lcd capacitive touchscreen': 'LCD touchscreen',
-    'integrated touchscreen lcd': 'LCD touchscreen',
-    'free-angle lcd': 'Vari-angle LCD',
-    'lcd monitor (native)': 'Integrated LCD monitor',
-    'native lcd viewfinder': 'Integrated LCD monitor',
-    'lcd monitor lm-v2 (supplied)': 'LCD Monitor LM-V2',
-    'integrated main monitor': 'Integrated LCD monitor',
-    'optional evf-v70 viewfinder': 'EVF-V70 (Optional)',
-    'optional evf-v50': 'EVF-V50 (Optional)',
-    'optional oled viewfinder': 'OLED EVF (Optional)',
-    'blackmagic pocket cinema camera pro evf (optional)': 'Blackmagic Pro EVF (Optional)',
-    'external backlit lcd status display': 'LCD status display',
-    'built-in fold-out lcd': 'Fold-out LCD',
-    'oled lvf (live view finder)': 'OLED EVF',
-    'lcd capacitive touchscreen': 'LCD touchscreen',
-    'lemo 26 pin': 'LEMO 26-pin port'
-  };
   const trimmed = String(type).trim();
   const key = trimmed.toLowerCase();
-  return map[key] || trimmed;
+  return VIEWFINDER_TYPE_MAP[key] || trimmed;
 }
+
+const POWER_PORT_TYPE_MAP = {
+  'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
+  'lemo 8-pin (bat)': 'Bat LEMO 8-pin',
+  'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
+  'lemo 8-pin': 'Bat LEMO 8-pin',
+  '2-pin dc-input': '2-pin DC-IN',
+  '2-pin xlr': 'XLR 2-pin',
+  '2-pin locking connector': 'LEMO 2-pin',
+  '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
+  '4-pin xlr / dc in 12v': 'XLR 4-pin',
+  '4-pin xlr / v-lock': 'XLR 4-pin',
+  'xlr 4-pin jack': 'XLR 4-pin',
+  'xlr 4-pin (main input)': 'XLR 4-pin',
+  'xlr-type 4 pin (male) / square-shaped 5 pin connector (battery)': 'XLR 4-pin / Square 5-pin',
+  '12-pin molex connector (at battery plate rear) / 4-pin xlr (external power)': 'Molex 12-pin / XLR 4-pin',
+  'usb-c (power delivery) / battery slot': 'Battery Slot / USB-C PD',
+  'battery slot / usb type-c®': 'Battery Slot / USB-C',
+  'battery slot / usb-c': 'Battery Slot / USB-C',
+  'battery slot / usb-c pd': 'Battery Slot / USB-C PD',
+  'dc input': 'DC IN',
+  'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
+  '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
+};
+
+const mapPowerPortOne = val => {
+  const trimmed = String(val).trim();
+  const lower = trimmed.toLowerCase();
+  return POWER_PORT_TYPE_MAP[lower] || trimmed;
+};
 
 function normalizePowerPortType(type) {
   if (!type) return [];
-  const map = {
-    'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
-    'lemo 8-pin (bat)': 'Bat LEMO 8-pin',
-    'bat (lemo 8-pin)': 'Bat LEMO 8-pin',
-    'lemo 8-pin': 'Bat LEMO 8-pin',
-    '2-pin dc-input': '2-pin DC-IN',
-    '2-pin xlr': 'XLR 2-pin',
-    '2-pin locking connector': 'LEMO 2-pin',
-    '2-pin locking connector / 2-pin lemo': 'LEMO 2-pin',
-    '4-pin xlr / dc in 12v': 'XLR 4-pin',
-    '4-pin xlr / v-lock': 'XLR 4-pin',
-    'xlr 4-pin jack': 'XLR 4-pin',
-    'xlr 4-pin (main input)': 'XLR 4-pin',
-    'xlr-type 4 pin (male) / square-shaped 5 pin connector (battery)': 'XLR 4-pin / Square 5-pin',
-    '12-pin molex connector (at battery plate rear) / 4-pin xlr (external power)': 'Molex 12-pin / XLR 4-pin',
-    'usb-c (power delivery) / battery slot': 'Battery Slot / USB-C PD',
-    'battery slot / usb type-c®': 'Battery Slot / USB-C',
-    'battery slot / usb-c': 'Battery Slot / USB-C',
-    'battery slot / usb-c pd': 'Battery Slot / USB-C PD',
-    'dc input': 'DC IN',
-    'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
-    '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
-  };
-  const mapOne = val => {
-    const trimmed = String(val).trim();
-    const lower = trimmed.toLowerCase();
-    return map[lower] || trimmed;
-  };
   const toArray = val =>
-    mapOne(val)
+    mapPowerPortOne(val)
       .split('/')
-      .map(p => mapOne(p));
+      .map(p => mapPowerPortOne(p));
   return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
 }
 
@@ -6212,7 +6216,7 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#1a1a1a' : '#ffffff');
+    meta.setAttribute('content', isDark ? '#121212' : '#ffffff');
   }
 }
 
