@@ -6,6 +6,7 @@ const texts = {
     appHeading: "Camera Power Consumption App",
     tagline: "Plan your film rig and calculate power consumption & battery life.",
     skipToContent: "Skip to content",
+    offlineIndicator: "Offline",
 
     setupManageHeading: "Manage Setup",
     deviceSelectionHeading: "Device Selection",
@@ -345,6 +346,7 @@ const texts = {
     appHeading: "App per consumo di energia della fotocamera",
     tagline: "Pianifica la tua attrezzatura da set e calcola il consumo di energia e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
+    offlineIndicator: "Offline",
     setupManageHeading: "Gestisci la configurazione",
     deviceSelectionHeading: "Selezione del dispositivo",
     resultsHeading: "Risultati",
@@ -658,6 +660,7 @@ const texts = {
     appHeading: "Aplicación de Consumo de Energía para Cámaras",
     tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
+    offlineIndicator: "Sin conexión",
 
     setupManageHeading: "Gestionar Configuración",
     deviceSelectionHeading: "Selección de Dispositivos",
@@ -988,6 +991,7 @@ const texts = {
     appHeading: "Application de Consommation Caméra",
     tagline: "Planifiez votre équipement de tournage et calculez la consommation et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
+    offlineIndicator: "Hors ligne",
 
     setupManageHeading: "Gérer la Configuration",
     deviceSelectionHeading: "Sélection des Appareils",
@@ -1320,6 +1324,7 @@ const texts = {
     appHeading: "Kamera-Stromverbrauchs-App",
     tagline: "Plane dein Dreh-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
+    offlineIndicator: "Offline",
 
     setupManageHeading: "Setup verwalten",
     deviceSelectionHeading: "Geräte-Auswahl",

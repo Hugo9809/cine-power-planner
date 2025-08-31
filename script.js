@@ -911,6 +911,8 @@ function setLanguage(lang) {
   document.getElementById("mainTitle").textContent = texts[lang].appHeading;
   document.getElementById("tagline").textContent = texts[lang].tagline;
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
+  const offlineElem = document.getElementById("offlineIndicator");
+  if (offlineElem) offlineElem.textContent = texts[lang].offlineIndicator;
   // Section headings with descriptive hover help
   const setupManageHeadingElem = document.getElementById("setupManageHeading");
   setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
