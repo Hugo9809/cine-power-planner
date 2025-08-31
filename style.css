@@ -22,6 +22,7 @@ body {
   background: var(--background-color);
   height: 100%;
   margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Ensure predictable sizing */
@@ -38,6 +39,14 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-size: 0.9em;
+}
+
+section,
+fieldset,
+input,
+select,
+textarea {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 @supports (padding: env(safe-area-inset-top)) {
@@ -431,7 +440,7 @@ button {
   margin: 5px;
   cursor: pointer;
   font-size: 0.85em; /* Adjusted font size to make buttons smaller */
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 button:hover {
   background-color: var(--control-hover-bg);
@@ -580,10 +589,12 @@ button:disabled {
 }
 #langSelector button {
   min-width: 32px;
+  width: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0;
+  border-radius: 50%;
 }
 #helpButton {
   padding: 0 4px;
@@ -1310,6 +1321,12 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   background: rgba(255, 255, 255, 0.1);
   border-color: #555;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
 
 @media print {
