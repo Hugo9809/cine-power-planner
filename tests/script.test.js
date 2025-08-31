@@ -76,6 +76,9 @@ describe('script.js functions', () => {
     global.deleteSetup = jest.fn();
     global.loadFeedback = jest.fn(() => ({}));
     global.saveFeedback = jest.fn();
+    global.loadGearList = jest.fn(() => null);
+    global.saveGearList = jest.fn();
+    global.deleteGearList = jest.fn();
 
     require('../translations.js');
     script = require('../script.js');
@@ -799,6 +802,21 @@ describe('script.js functions', () => {
       expect(html).toContain('BNC SDI Cable');
       expect(html).toContain('Universal Cage');
     });
+
+  test('gear list is stored with setup', () => {
+    const output = document.getElementById('gearListOutput');
+    const html = '<table class="gear-table"></table>';
+    output.innerHTML = html;
+    output.classList.remove('hidden');
+
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'GLSetup';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('saveSetupBtn').click();
+
+    const saved = global.saveSetups.mock.calls[0][0];
+    expect(saved.GLSetup.gearList).toBe(html);
+  });
 
   test('battery plate selection is saved and loaded with setups', () => {
     // Add camera supporting both plates and matching batteries

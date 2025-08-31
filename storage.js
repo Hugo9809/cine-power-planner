@@ -4,6 +4,7 @@ const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
+const GEAR_LIST_STORAGE_KEY = 'cameraPowerPlanner_gearList';
 
 // Generic helpers for storage access
 function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
@@ -198,6 +199,34 @@ function saveFeedback(feedback) {
   );
 }
 
+// --- Gear List Storage ---
+function loadGearList() {
+  return loadJSONFromStorage(
+    localStorage,
+    GEAR_LIST_STORAGE_KEY,
+    "Error loading gear list from localStorage:",
+    ''
+  );
+}
+
+function saveGearList(html) {
+  saveJSONToStorage(
+    localStorage,
+    GEAR_LIST_STORAGE_KEY,
+    html,
+    "Error saving gear list to localStorage:",
+    "Gear list saved to localStorage."
+  );
+}
+
+function deleteGearList() {
+  try {
+    localStorage.removeItem(GEAR_LIST_STORAGE_KEY);
+  } catch (e) {
+    console.error("Error deleting gear list from localStorage:", e);
+  }
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   try {
@@ -252,6 +281,9 @@ if (typeof module !== "undefined" && module.exports) {
     saveSessionState,
     loadFeedback,
     saveFeedback,
+    loadGearList,
+    saveGearList,
+    deleteGearList,
     clearAllData,
     exportAllData,
     importAllData

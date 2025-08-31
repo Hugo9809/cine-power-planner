@@ -1354,6 +1354,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   font-weight: bold;
 }
 
+.gear-list-actions {
+  margin-top: 10px;
+}
+
+.gear-list-actions button {
+  margin-right: 5px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;

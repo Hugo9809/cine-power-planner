@@ -1,5 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
-/* global texts, categoryNames, loadSessionState, saveSessionState */
+/* global texts, categoryNames, loadSessionState, saveSessionState, loadGearList, saveGearList, deleteGearList */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -4996,6 +4996,12 @@ saveSetupBtn.addEventListener("click", () => {
     batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value
   };
+  if (gearListOutput && !gearListOutput.classList.contains('hidden')) {
+    currentSetup.gearList = gearListOutput.innerHTML;
+    if (typeof saveGearList === 'function') {
+      saveGearList(gearListOutput.innerHTML);
+    }
+  }
   let setups = getSetups();
   setups[setupName] = currentSetup;
   storeSetups(setups);
@@ -5054,6 +5060,11 @@ clearSetupBtn.addEventListener("click", () => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    if (gearListOutput) {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+    }
+    if (typeof deleteGearList === 'function') deleteGearList();
     updateCalculations();
   }
 });
@@ -5076,6 +5087,11 @@ setupSelect.addEventListener("change", (event) => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    if (gearListOutput) {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+    }
+    if (typeof deleteGearList === 'function') deleteGearList();
   } else {
     let setups = getSetups();
     const setup = setups[setupName];
@@ -5091,6 +5107,18 @@ setupSelect.addEventListener("change", (event) => {
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
       updateBatteryOptions();
+      if (gearListOutput) {
+        if (setup.gearList) {
+          gearListOutput.innerHTML = setup.gearList;
+          gearListOutput.classList.remove('hidden');
+          if (typeof saveGearList === 'function') saveGearList(setup.gearList);
+          attachGearListActions();
+        } else {
+          gearListOutput.innerHTML = '';
+          gearListOutput.classList.add('hidden');
+          if (typeof deleteGearList === 'function') deleteGearList();
+        }
+      }
     }
   }
   updateCalculations();
@@ -5108,6 +5136,13 @@ function populateSetupSelect() {
   }
 }
 populateSetupSelect(); // Initial populate of setups
+
+const savedGearList = typeof loadGearList === 'function' ? loadGearList() : null;
+if (savedGearList && gearListOutput) {
+  gearListOutput.innerHTML = savedGearList;
+  gearListOutput.classList.remove('hidden');
+  attachGearListActions();
+}
 
 
 // Toggle device manager visibility
@@ -5934,9 +5969,103 @@ if (projectForm) {
         if (gearListOutput) {
             gearListOutput.innerHTML = html;
             gearListOutput.classList.remove('hidden');
+            attachGearListActions();
         }
         projectDialog.close();
     });
+}
+
+function attachGearListActions() {
+    const saveBtn = document.getElementById('gearListSaveBtn');
+    const exportBtn = document.getElementById('gearListExportBtn');
+    const importBtn = document.getElementById('gearListImportBtn');
+    const importInput = document.getElementById('gearListImportInput');
+    const deleteBtn = document.getElementById('gearListDeleteBtn');
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            if (!gearListOutput) return;
+            const html = gearListOutput.innerHTML;
+            if (typeof saveGearList === 'function') {
+                saveGearList(html);
+            }
+            const setupName = (setupSelect && setupSelect.value) || (setupNameInput && setupNameInput.value.trim());
+            if (setupName) {
+                const setups = getSetups();
+                if (setups[setupName]) {
+                    setups[setupName].gearList = html;
+                    storeSetups(setups);
+                }
+            }
+        });
+    }
+
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            if (!gearListOutput) return;
+            const data = { gearList: gearListOutput.innerHTML };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'gearlist.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    }
+
+    if (importBtn && importInput) {
+        importBtn.addEventListener('click', () => importInput.click());
+        importInput.addEventListener('change', event => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    const parsed = JSON.parse(ev.target.result);
+                    if (parsed && parsed.gearList && gearListOutput) {
+                        gearListOutput.innerHTML = parsed.gearList;
+                        gearListOutput.classList.remove('hidden');
+                        if (typeof saveGearList === 'function') saveGearList(parsed.gearList);
+                        const setupName = (setupSelect && setupSelect.value) || (setupNameInput && setupNameInput.value.trim());
+                        if (setupName) {
+                            const setups = getSetups();
+                            if (setups[setupName]) {
+                                setups[setupName].gearList = parsed.gearList;
+                                storeSetups(setups);
+                            }
+                        }
+                        attachGearListActions();
+                    } else {
+                        alert('Invalid gear list file');
+                    }
+                } catch {
+                    alert('Invalid gear list file');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        });
+    }
+
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+            if (!gearListOutput) return;
+            gearListOutput.innerHTML = '';
+            gearListOutput.classList.add('hidden');
+            if (typeof deleteGearList === 'function') deleteGearList();
+            const setupName = (setupSelect && setupSelect.value) || (setupNameInput && setupNameInput.value.trim());
+            if (setupName) {
+                const setups = getSetups();
+                if (setups[setupName] && setups[setupName].gearList) {
+                    delete setups[setupName].gearList;
+                    storeSetups(setups);
+                }
+            }
+        });
+    }
 }
 
 shareSetupBtn.addEventListener('click', () => {
@@ -6685,6 +6814,13 @@ function generateGearListHtml(info = {}) {
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
     body += '<h3>Gear List</h3><table class="gear-table">' + rows.join('') + '</table>';
+    body += '<div class="gear-list-actions">'
+      + '<button id="gearListSaveBtn" type="button">Save</button>'
+      + '<button id="gearListExportBtn" type="button">Export</button>'
+      + '<button id="gearListImportBtn" type="button">Import</button>'
+      + '<input type="file" id="gearListImportInput" accept=".json" class="hidden" />'
+      + '<button id="gearListDeleteBtn" type="button">Delete</button>'
+      + '</div>';
     return body;
 }
 
