@@ -28,7 +28,8 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 }
 
-const VIDEO_OUTPUT_TYPES = [
+// Use a Set for O(1) lookups when validating video output types
+const VIDEO_OUTPUT_TYPES = new Set([
   '3G-SDI',
   '6G-SDI',
   '12G-SDI',
@@ -37,7 +38,7 @@ const VIDEO_OUTPUT_TYPES = [
   'Mini HDMI',
   'Micro HDMI',
   'DisplayPort'
-];
+]);
 
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 const localeSort = (a, b) => collator.compare(a, b);
@@ -282,7 +283,7 @@ function unifyDevices(data) {
     }
     cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' }).flatMap(vo => {
       const norm = normalizeVideoType(vo.type);
-      if (!VIDEO_OUTPUT_TYPES.includes(norm)) return [];
+      if (!VIDEO_OUTPUT_TYPES.has(norm)) return [];
       const count = parseInt(vo.count, 10);
       const num = Number.isFinite(count) && count > 0 ? count : 1;
       const notes = vo.notes || '';
