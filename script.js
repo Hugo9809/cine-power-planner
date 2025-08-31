@@ -1217,6 +1217,8 @@ function setLanguage(lang) {
     }
     if (closeHelpBtn) {
       closeHelpBtn.textContent = texts[lang].helpClose;
+      closeHelpBtn.setAttribute("title", texts[lang].helpClose);
+      closeHelpBtn.setAttribute("aria-label", texts[lang].helpClose);
       closeHelpBtn.setAttribute(
         "data-help",
         texts[lang].helpCloseHelp || texts[lang].helpClose
