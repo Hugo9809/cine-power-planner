@@ -6503,12 +6503,14 @@ if (helpButton && helpDialog) {
       hoverHelpTooltip = null;
     }
     document.body.style.cursor = '';
+    document.body.classList.remove('hover-help-active');
   };
 
   const startHoverHelp = () => {
     hoverHelpActive = true;
     closeHelp();
     document.body.style.cursor = 'help';
+    document.body.classList.add('hover-help-active');
     hoverHelpTooltip = document.createElement('div');
     hoverHelpTooltip.id = 'hoverHelpTooltip';
     hoverHelpTooltip.setAttribute('hidden', '');
