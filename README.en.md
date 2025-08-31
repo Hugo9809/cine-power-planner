@@ -18,7 +18,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 ## 🆕 Recent Features
 - Interactive setup diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
 - Playful pink accent theme that persists between visits.
-- Searchable help dialog with step-by-step sections and a FAQ.
+- Searchable help dialog with step-by-step sections and a FAQ; open with ?, H, F1 or Ctrl+/.
 - Contextual hover help for buttons, fields, dropdowns and headers.
 - Support for cameras with both V- and B-Mount battery plates.
 - Submit user runtime feedback with temperature for better estimates.
@@ -110,7 +110,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Entries are saved in your browser and improve future estimates.
 
 ### ❓ Searchable Help
-- Open via the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd> or <kbd>F1</kbd>.
+- Open via the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl+/</kbd>.
 - Use the search field to filter topics instantly; the query resets when the dialog closes.
 - Close with <kbd>Escape</kbd> or by clicking outside the dialog.
 

@@ -18,7 +18,7 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 ## 🆕 Fonctionnalités récentes
 - Diagramme interactif de configuration permettant de faire glisser les appareils, de zoomer et d'exporter la mise en page en SVG ou JPG.
 - Thème rose ludique qui persiste entre les visites.
-- Fenêtre d'aide consultable avec sections pas à pas et FAQ.
+- Fenêtre d'aide consultable avec sections pas à pas et FAQ; ouvrable via ?, H, F1 ou Ctrl+/.
 - Aide contextuelle au survol pour les boutons, champs, menus déroulants et en-têtes.
 - Prise en charge des caméras avec plaques batterie V et B‑Mount.
 - Retour d'autonomie utilisateur avec détails d'environnement pour affiner les estimations.
@@ -82,7 +82,7 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 - Bouton lune pour activer/désactiver le mode sombre
 - La préférence est enregistrée dans le navigateur
 - Couleur rose optionnelle via le bouton cheval/unicorne
-- La fenêtre d’aide est consultable par recherche et FAQ. Ouvrez‑la avec ? ou les touches `?`/`H`/`F1` puis fermez‑la avec Échap ou en cliquant à l’extérieur.
+- La fenêtre d’aide est consultable par recherche et FAQ. Ouvrez‑la avec ? ou les touches `?`/`H`/`F1`/`Ctrl+/` puis fermez‑la avec Échap ou en cliquant à l’extérieur.
 
 ---
 

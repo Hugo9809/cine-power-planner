@@ -18,7 +18,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 ## 🆕 Neueste Funktionen
 - Interaktives Setup-Diagramm, mit dem Geräte verschoben, gezoomt und als SVG oder JPG exportiert werden können.
 - Verspieltes pinkes Akzent-Thema, das zwischen Besuchen erhalten bleibt.
-- Durchsuchbarer Hilfedialog mit Schritt-für-Schritt-Anleitung und FAQ.
+- Durchsuchbarer Hilfedialog mit Schritt-für-Schritt-Anleitung und FAQ; kann mit ?, H, F1 oder Strg+/ geöffnet werden.
 - Kontextbezogene Hover-Hilfe für Schaltflächen, Felder, Dropdowns und Überschriften.
 - Unterstützung für Kameras mit V- und B-Mount-Akkuplatten.
 - Nutzer-Laufzeit-Feedback mit Umgebungsdetails zur Verbesserung der Schätzungen.
@@ -82,7 +82,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - Über den Mond-Button neben der Sprachwahl umschaltbar
 - Einstellung wird im Browser gespeichert
 - Optionaler Pinkmodus über den Pferd/Einhorn-Button
-- Der Hilfedialog enthält eine durchsuchbare Anleitung und FAQ. Geöffnet wird er mit ? oder den Tasten `?`/`H`/`F1` und mit Escape oder Klick außerhalb geschlossen.
+- Der Hilfedialog enthält eine durchsuchbare Anleitung und FAQ. Geöffnet wird er mit ? oder den Tasten `?`/`H`/`F1`/`Strg+/` und mit Escape oder Klick außerhalb geschlossen.
 
 ---
 
