@@ -33,7 +33,7 @@ Recent updates include:
 
 - **Interactive setup diagram** – drag devices, zoom with dedicated controls, optionally snap nodes to a grid, and export the layout as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits.
-- **Searchable help dialog** – open with the ? button or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
+- **Searchable help dialog** – open with the ? button or keyboard shortcuts and close with Esc, filter topics instantly and browse the built-in FAQ.
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
@@ -51,7 +51,7 @@ See the language-specific README files for full details.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
 - Switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
-- Works completely offline and offers a searchable help dialog.
+- Works completely offline and offers a searchable help dialog that opens with ?/H/F1 and closes with Esc.
 
 ## Runtime Data Weighting
 
