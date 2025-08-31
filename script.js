@@ -1520,6 +1520,9 @@ const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
+const projectDialog = document.getElementById("projectDialog");
+const projectForm = document.getElementById("projectForm");
+const projectCancelBtn = document.getElementById("projectCancel");
 const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackCancelBtn = document.getElementById("fbCancel");
@@ -5904,12 +5907,27 @@ generateGearListBtn.addEventListener('click', () => {
         alert(texts[currentLang].alertSelectSetupForOverview);
         return;
     }
-    const html = generateGearListHtml();
-    if (gearListOutput) {
-        gearListOutput.innerHTML = html;
-        gearListOutput.classList.remove('hidden');
-    }
+    projectDialog.showModal();
 });
+
+if (projectCancelBtn) {
+    projectCancelBtn.addEventListener('click', () => {
+        projectDialog.close();
+    });
+}
+
+if (projectForm) {
+    projectForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const info = collectProjectFormData();
+        const html = generateGearListHtml(info);
+        if (gearListOutput) {
+            gearListOutput.innerHTML = html;
+            gearListOutput.classList.remove('hidden');
+        }
+        projectDialog.close();
+    });
+}
 
 shareSetupBtn.addEventListener('click', () => {
   const setupName = (setupNameInput && setupNameInput.value.trim()) ||
@@ -6578,42 +6596,23 @@ function collectAccessories() {
     return [...new Set(accessories)];
 }
 
-function collectGearListInfo() {
-    if (typeof window === 'undefined' || typeof window.prompt !== 'function' ||
-        (typeof process !== 'undefined' && process.env.JEST_WORKER_ID)) {
-        return {};
-    }
-    const ask = q => window.prompt(q) || '';
+function collectProjectFormData() {
+    if (!projectForm) return {};
+    const val = name => (projectForm.querySelector(`[name="${name}"]`)?.value || '').trim();
+    const multi = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
+        .map(o => o.value).join(', ');
     return {
-        projectName: ask('Project name'),
-        dop: ask('DoP'),
-        email: ask('Email'),
-        phone: ask('Phone number'),
-        firstDay: ask('First day of shooting'),
-        lastDay: ask('Last day of shooting'),
-        loadingDays: ask('Loading days (comma-separated dates)'),
-        deliveryResolution: ask('Delivery resolution'),
-        recordingResolution: ask('Recording resolution'),
-        aspectRatio: ask('Aspect ratio'),
-        codec: ask('Codec'),
-        lenses: ask('Lenses'),
-        baseFrameRate: ask('Base frame rate'),
-        requiredScenarios: ask('Required scenarios for the shoot (comma-separated)'),
-        rigging: ask('How would you like to have your camera rigged? (comma-separated)'),
-        luts: ask('LUTs'),
-        monitoringPreferences: ask('Monitoring preferences (comma-separated)'),
-        tripodPreferences: ask('Tripod preferences (comma-separated)'),
-        userButtons: ask('User Buttons (5/6)'),
-        viewfinder: ask('Viewfinder (if possible) 2 maximum'),
-        body: ask('Body (if possible) 4 maximum (+4 digital)'),
-        filters: ask('What filters do you want to use? (comma-separated)'),
-        fullSetOrParts: ask('Full set or only parts of a set?')
+        projectName: val('projectName'),
+        requiredScenarios: multi('requiredScenarios'),
+        rigging: multi('rigging'),
+        monitoringPreferences: multi('monitoringPreferences'),
+        tripodPreferences: multi('tripodPreferences'),
+        filters: multi('filters')
     };
 }
 
-function generateGearListHtml() {
+function generateGearListHtml(info = {}) {
     const t = texts[currentLang];
-    const info = collectGearListInfo();
     const selected = [];
     const addSelected = sel => {
         if (sel && sel.value && sel.value !== 'None') {
