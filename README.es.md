@@ -21,6 +21,8 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 - Diálogo de ayuda con búsqueda, secciones paso a paso y una FAQ.
 - Ayuda contextual al pasar el cursor por botones, campos, menús desplegables y encabezados.
 - Compatibilidad con cámaras que aceptan placas de batería V y B‑Mount.
+- Envío de datos de autonomía del usuario con detalles ambientales para mejorar las estimaciones.
+- Panel visual de ponderación de autonomías que muestra cómo la temperatura, la resolución, la frecuencia de cuadro y el códec afectan cada informe, ordenado por peso con porcentajes exactos.
 
 ---
 

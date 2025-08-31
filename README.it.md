@@ -20,6 +20,8 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 - Finestra di aiuto ricercabile con sezioni passo passo e FAQ.
 - Aiuto contestuale al passaggio del mouse su pulsanti, campi, menu a discesa e intestazioni.
 - Supporto per fotocamere con piastre batteria V e B‑Mount.
+- Inviare feedback sull'autonomia reale con dettagli ambientali per affinare le stime.
+- Dashboard visiva della ponderazione della durata che mostra come temperatura, risoluzione, frame rate e codec influenzano ogni report, ordinati per peso con percentuali esatte.
 
 ---
 

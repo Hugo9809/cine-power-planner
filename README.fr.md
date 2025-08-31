@@ -21,6 +21,8 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 - Fenêtre d'aide consultable avec sections pas à pas et FAQ.
 - Aide contextuelle au survol pour les boutons, champs, menus déroulants et en-têtes.
 - Prise en charge des caméras avec plaques batterie V et B‑Mount.
+- Retour d'autonomie utilisateur avec détails d'environnement pour affiner les estimations.
+- Tableau visuel de pondération des autonomies montrant comment température, résolution, cadence et codec influencent chaque rapport, trié par poids avec pourcentages exacts.
 
 ---
 
