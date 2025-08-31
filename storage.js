@@ -27,6 +27,17 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
   }
 }
 
+// Generate a unique name by appending numeric suffixes if needed
+function generateUniqueName(base, usedNames) {
+  let name = base;
+  let suffix = 2;
+  while (usedNames.has(name)) {
+    name = `${base} (${suffix++})`;
+  }
+  usedNames.add(name);
+  return name;
+}
+
 // --- Session State Storage ---
 function loadSessionState() {
   return loadJSONFromStorage(
@@ -93,32 +104,27 @@ function loadSetups() {
     SETUP_STORAGE_KEY,
     "Error loading setups from localStorage:"
   );
-  if (parsedData) {
-    if (Array.isArray(parsedData)) {
-      const obj = {};
-      const used = new Set();
-      parsedData.forEach((item, idx) => {
-        if (item && typeof item === 'object') {
-          const base = item.name || item.setupName || `Setup ${idx + 1}`;
-          let key = base;
-          let suffix = 2;
-          while (used.has(key)) {
-            key = `${base} (${suffix++})`;
+    if (parsedData) {
+      if (Array.isArray(parsedData)) {
+        const obj = {};
+        const used = new Set();
+        parsedData.forEach((item, idx) => {
+          if (item && typeof item === 'object') {
+            const base = item.name || item.setupName || `Setup ${idx + 1}`;
+            const key = generateUniqueName(base, used);
+            obj[key] = item;
           }
-          used.add(key);
-          obj[key] = item;
-        }
-      });
-      localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(obj));
-      return obj;
+        });
+        localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(obj));
+        return obj;
+      }
+      // Ensure it's a plain object, not a primitive
+      if (typeof parsedData === 'object') {
+        return parsedData;
+      }
     }
-    // Ensure it's a plain object, not a primitive
-    if (typeof parsedData === 'object') {
-      return parsedData;
-    }
+    return {}; // Return empty object if no setups found or error
   }
-  return {}; // Return empty object if no setups found or error
-}
 
 function saveSetups(setups) {
   saveJSONToStorage(
@@ -155,11 +161,9 @@ function renameSetup(oldName, newName) {
   if (oldName === newName) {
     return newName;
   }
-  let target = newName;
-  let suffix = 2;
-  while (Object.prototype.hasOwnProperty.call(setups, target)) {
-    target = `${newName} (${suffix++})`;
-  }
+  const used = new Set(Object.keys(setups));
+  used.delete(oldName);
+  const target = generateUniqueName(newName, used);
   setups[target] = setups[oldName];
   delete setups[oldName];
   saveSetups(setups);
