@@ -524,7 +524,7 @@ button:disabled {
   position: absolute;
   top: 10px;
   right: 10px;
-  padding: 5px;
+  padding: 2px 5px;
   display: flex;
   gap: 5px;
   align-items: center;
@@ -533,6 +533,7 @@ button:disabled {
 #langSelector select,
 #langSelector button {
   height: 32px;
+  margin: 0;
 }
 #langSelector select {
   font-size: 1em;
