@@ -7575,6 +7575,265 @@ let devices={
       "video": {
         "BNC SDI Cable": { "type": "3G-SDI" },
         "HDMI Cable": { "type": "HDMI" }
+      },
+      "cables": {
+        "Cable CAM (10-pin) – EXT (7-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0007730",
+          "lengthM": 0.5,
+          "connectors": ["CAM (10-pin)", "EXT (7-pin)"],
+          "orientation": "straight",
+          "useCase": ["Run/Stop", "Tally"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
+          "compatibleCameras": ["ALEXA Mini", "ALEXA Mini LF"]
+        },
+        "Cable CAM (10-pin) – RS (3-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001606",
+          "lengthM": 0.5,
+          "connectors": ["CAM (10-pin)", "ARRI RS (3-pin)"],
+          "orientation": "straight",
+          "useCase": ["Run/Stop", "Tally"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
+          "compatibleCameras": ["ALEXA", "AMIRA"]
+        },
+        "Cable CAM (10-pin) – D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0002682",
+          "lengthM": 0.5,
+          "connectors": ["CAM (10-pin)", "D-Tap"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"]
+        },
+        "Cable CAM (10-pin) – LANC/D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001999",
+          "lengthM": 0.5,
+          "connectors": ["CAM (10-pin)", "LANC + D-Tap"],
+          "orientation": "straight",
+          "useCase": ["Run/Stop", "Tally", "Power"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
+          "compatibleCameras": ["Canon C300/500", "Sony PXW-FS7"]
+        },
+        "Cable CAM (10-pin) – Sony F5/55": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001997",
+          "lengthM": 0.5,
+          "connectors": ["CAM (10-pin)", "Sony Remote"],
+          "orientation": "straight",
+          "useCase": ["Run/Stop", "Tally"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
+          "compatibleCameras": ["Sony F5", "Sony F55", "Sony Venice", "Panasonic Varicam 35"]
+        },
+        "Cable CAM (10-pin) – RED EPIC/D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001998",
+          "lengthM": 1.0,
+          "connectors": ["CAM (10-pin ×2)", "RED EPIC + D-Tap"],
+          "orientation": "straight",
+          "useCase": ["Run/Stop", "Power"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
+          "compatibleCameras": ["RED EPIC", "RED Weapon"]
+        },
+        "Cable CAM (10-pin) – PSC": {
+          "brand": "ARRI",
+          "kNumber": "K2.0002727",
+          "lengthM": 0.7,
+          "connectors": ["CAM (10-pin)", "PSC"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"]
+        },
+        "Cable CAM (10-pin) – Open End": {
+          "brand": "ARRI",
+          "kNumber": "K2.0002725",
+          "lengthM": 0.5,
+          "connectors": ["CAM (10-pin)", "Open End"],
+          "orientation": "straight",
+          "useCase": ["Custom"],
+          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"]
+        },
+        "Cable Cooke/i Lens Control (16-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.65012.0",
+          "lengthM": 0.7,
+          "connectors": ["CAM (16-pin)", "Cooke/i"],
+          "orientation": "straight",
+          "useCase": ["Lens Control"],
+          "compatibleControllers": ["Universal Motor Controller"]
+        },
+        "Battery Adapter VMicro (WVR-1s)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0024373",
+          "lengthM": null,
+          "connectors": ["VMicro Battery", "Lemo 12 V Out (2-pin)"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["WVR-1s Wireless Video Receiver"]
+        },
+        "Battery Adapter AMicro (WVR-1s)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0024374",
+          "lengthM": null,
+          "connectors": ["AMicro Battery", "Lemo 12 V Out (2-pin)"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["WVR-1s"]
+        },
+        "Receiver Power Supply (RPS-1)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014774",
+          "lengthM": null,
+          "connectors": ["AC In", "Output to WVR-1"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["WVR-1", "WVT-1", "UMC-4"]
+        },
+        "PWR OUT Lemo (2-pin) – RS/PWR IN Fischer (3-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014331",
+          "lengthM": 0.5,
+          "connectors": ["Lemo 2-pin", "Fischer 3-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["WVR-1", "WVT-1", "UMC-4"]
+        },
+        "PWR OUT Lemo (2-pin) – XLR (4-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014342",
+          "lengthM": 0.5,
+          "connectors": ["Lemo 2-pin", "XLR 4-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["Camera/Monitor from battery plate or WVR-1"]
+        },
+        "PWR OUT Lemo (2-pin) – MiniXLR (4-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014343",
+          "lengthM": 0.5,
+          "connectors": ["Lemo 2-pin", "MiniXLR 4-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["External camera monitor"]
+        },
+        "PWR OUT Lemo (2-pin) – Hi (4-pin Hirose)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014344",
+          "lengthM": 0.5,
+          "connectors": ["Lemo 2-pin", "Hirose 4-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["External camera monitor"]
+        },
+        "PWR OUT Lemo (2-pin) – Lemo 5-pin": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014777",
+          "lengthM": 0.5,
+          "connectors": ["Lemo 2-pin", "Lemo 5-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["Camera accessories"]
+        },
+        "PWR OUT Lemo (2-pin) – LCS (5-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0024590",
+          "lengthM": 0.3,
+          "connectors": ["Lemo 2-pin", "LCS 5-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleDevices": ["WCU-4", "SXU-1"]
+        },
+        "Monitor Power 12 V (Lemo 0B 2-pin to XLR 4-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0010546",
+          "lengthM": null,
+          "connectors": ["Lemo 0B 2-pin", "XLR 4-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["ARTEMIS/TRINITY"]
+        },
+        "Monitor Power 12 V (Lemo 0B 2-pin to Lemo 0B 2-pin Short)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0041723",
+          "lengthM": null,
+          "connectors": ["Lemo 0B 2-pin", "Lemo 0B 2-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["ARTEMIS/TRINITY"]
+        },
+        "360 EVO D-Tap / XLR Battery Power to RCP or Monitor": {
+          "brand": "ARRI",
+          "kNumber": "K2.0021422",
+          "lengthM": 1.5,
+          "connectors": ["D-Tap", "XLR 4-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["360 EVO", "SRH-3", "SRH-360"]
+        },
+        "MTG Monitor Power (Lemo 0B 4-pin to Lemo 0B 2-pin, 24 V)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0038998",
+          "lengthM": null,
+          "connectors": ["Lemo 0B 4-pin", "Lemo 0B 2-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["Master Grip", "TRINITY 2"]
+        },
+        "MTG Monitor Power (Lemo 0B 4-pin to Lemo 0B 5-pin, 24 V)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0038999",
+          "lengthM": null,
+          "connectors": ["Lemo 0B 4-pin", "Lemo 0B 5-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["Master Grip", "TRINITY 2"]
+        },
+        "TRINITY 2 Joystick Cable": {
+          "brand": "ARRI",
+          "kNumber": "K2.0043861",
+          "lengthM": 0.75,
+          "connectors": ["Lemo 0B 4-pin", "Lemo 0B 4-pin"],
+          "orientation": "straight",
+          "useCase": ["Control"],
+          "compatibleSystems": ["TRINITY 2"]
+        },
+        "SRH FS CAN Bus Cable": {
+          "brand": "ARRI",
+          "kNumber": "K2.0037788",
+          "lengthM": 0.3,
+          "connectors": ["FS CAN Bus"],
+          "orientation": "straight",
+          "useCase": ["Control"],
+          "compatibleSystems": ["SRH-3", "SRH-360", "360 EVO"]
+        },
+        "SRH High-Capacity Battery Power Cable Set (12 V/24 V, 0.5 m)": {
+          "brand": "ARRI",
+          "kNumber": "K0.0021437",
+          "lengthM": 0.5,
+          "connectors": ["XLR 4-pin 12 V", "XLR 3-pin 24 V"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["SRH-3", "SRH-360", "360 EVO"]
+        },
+        "SRH High-Capacity Battery Power Cable 24 V, 20 m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0021429",
+          "lengthM": 20,
+          "connectors": ["XLR 3-pin 24 V"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["SRH systems"]
+        },
+        "SRH High-Capacity Battery Power Cable 12 V, 20 m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0021430",
+          "lengthM": 20,
+          "connectors": ["XLR 4-pin 12 V"],
+          "orientation": "straight",
+          "useCase": ["Power"],
+          "compatibleSystems": ["SRH systems"]
+        }
       }
     }
   }
