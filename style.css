@@ -1300,15 +1300,18 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 @media print {
-  body *:not(#overviewDialog):not(#overviewDialog *) {
+  /* Hide everything except the overview dialog when printing */
+  body > :not(#overviewDialog) {
     display: none !important;
   }
+
   #overviewDialog {
     display: block;
     position: static;
     width: auto;
     max-width: none;
   }
+
   #overviewDialogContent {
     max-height: none;
     overflow: visible;
