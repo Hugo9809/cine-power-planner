@@ -311,6 +311,8 @@ const texts = {
       "Download the current setup diagram as an SVG or JPG image.",
     gridSnapToggleHelp:
       "Turn grid snapping on or off to help align items in the diagram.",
+    resetViewBtn: "Reset View",
+    resetViewHelp: "Reset zoom and pan to their defaults.",
     toggleDeviceManagerHelp:
       "Open the editor where you can add, modify, export or import device data.",
     hideDeviceManagerHelp:
@@ -607,6 +609,8 @@ const texts = {
       "Scarica il diagramma di configurazione come immagine.",
     gridSnapToggleHelp:
       "Attiva/disattiva l'allineamento alla griglia dei nodi del diagramma.",
+    resetViewBtn: "Reimposta vista",
+    resetViewHelp: "Ripristina lo zoom e il movimento del diagramma.",
     toggleDeviceManagerHelp: "Apri l'editor del database dei dispositivi.",
     hideDeviceManagerHelp: "Nascondi l'editor del database dei dispositivi.",
     zoomInLabel: "Ingrandisci",
@@ -916,6 +920,8 @@ const texts = {
       "Descarga el diagrama de configuración como imagen.",
     gridSnapToggleHelp:
       "Activa o desactiva el ajuste a la cuadrícula de los nodos del diagrama.",
+    resetViewBtn: "Restablecer vista",
+    resetViewHelp: "Restablece el zoom y la posición del diagrama.",
     toggleDeviceManagerHelp: "Abre el editor de la base de datos de dispositivos.",
     hideDeviceManagerHelp: "Oculta el editor de la base de datos de dispositivos.",
     zoomInLabel: "Acercar",
@@ -1228,6 +1234,8 @@ const texts = {
       "Télécharge le diagramme de configuration comme image.",
     gridSnapToggleHelp:
       "Active/désactive l'alignement des nœuds du diagramme sur la grille.",
+    resetViewBtn: "Réinitialiser la vue",
+    resetViewHelp: "Réinitialise le zoom et le panoramique du diagramme.",
     toggleDeviceManagerHelp: "Ouvre l'éditeur de la base de données des appareils.",
     hideDeviceManagerHelp: "Masque l'éditeur de la base de données des appareils.",
     zoomInLabel: "Zoom avant",
@@ -1537,6 +1545,8 @@ const texts = {
       "Lädt das Setup-Diagramm als Bild herunter.",
     gridSnapToggleHelp:
       "Schaltet das Einrasten der Diagrammknoten am Raster um.",
+    resetViewBtn: "Ansicht zurücksetzen",
+    resetViewHelp: "Setzt Zoom und Verschiebung des Diagramms zurück.",
     toggleDeviceManagerHelp: "Öffnet den Gerätedatenbank-Editor.",
     hideDeviceManagerHelp: "Blendet den Gerätedatenbank-Editor aus.",
     zoomInLabel: "Hineinzoomen",
