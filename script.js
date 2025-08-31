@@ -651,6 +651,7 @@ function updateBatteryPlateVisibility() {
 function updateBatteryLabel() {
   const label = document.getElementById('batteryLabel');
   if (!label) return;
+  label.setAttribute('data-help', texts[currentLang].batterySelectHelp);
   if (getSelectedPlate() === 'B-Mount') {
     label.textContent = texts[currentLang].batteryBMountLabel || 'B-Mount Battery:';
   } else {
@@ -878,13 +879,19 @@ function setLanguage(lang) {
   document.getElementById("batteryComparisonHeading").textContent = texts[lang].batteryComparisonHeading;
   document.getElementById("setupDiagramHeading").textContent = texts[lang].setupDiagramHeading;
   // Setup manager labels and buttons
-  document.getElementById("savedSetupsLabel").textContent = texts[lang].savedSetupsLabel;
-  document.getElementById("setupNameLabel").textContent = texts[lang].setupNameLabel;
+  const savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
+  savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
+  savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
+  const setupNameLabelElem = document.getElementById("setupNameLabel");
+  setupNameLabelElem.textContent = texts[lang].setupNameLabel;
+  setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
   document.getElementById("setupActionsHeading").textContent = texts[lang].setupActionsHeading;
   saveSetupBtn.textContent = texts[lang].saveSetupBtn;
   deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
-  document.getElementById("sharedLinkLabel").textContent = texts[lang].sharedLinkLabel;
+  const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
+  sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
+  sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
   applySharedLinkBtn.textContent = texts[lang].loadSharedLinkBtn;
   if (sharedLinkInput) sharedLinkInput.placeholder = texts[lang].sharedLinkPlaceholder;
 
@@ -924,13 +931,27 @@ function setLanguage(lang) {
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
   }
-  // Device selection labels
-  document.getElementById("cameraLabel").textContent = texts[lang].cameraLabel;
-  document.getElementById("monitorLabel").textContent = texts[lang].monitorLabel;
-  document.getElementById("videoLabel").textContent = texts[lang].videoLabel;
-  document.getElementById("distanceLabel").textContent = texts[lang].distanceLabel;
-  document.getElementById("batteryLabel").textContent = texts[lang].batteryLabel;
-  document.getElementById("batteryPlateLabel").textContent = texts[lang].batteryPlateLabel;
+  // Device selection labels with help
+  const cameraLabelElem = document.getElementById("cameraLabel");
+  cameraLabelElem.textContent = texts[lang].cameraLabel;
+  cameraLabelElem.setAttribute("data-help", texts[lang].cameraSelectHelp);
+
+  const monitorLabelElem = document.getElementById("monitorLabel");
+  monitorLabelElem.textContent = texts[lang].monitorLabel;
+  monitorLabelElem.setAttribute("data-help", texts[lang].monitorSelectHelp);
+
+  const videoLabelElem = document.getElementById("videoLabel");
+  videoLabelElem.textContent = texts[lang].videoLabel;
+  videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
+
+  const distanceLabelElem = document.getElementById("distanceLabel");
+  distanceLabelElem.textContent = texts[lang].distanceLabel;
+  distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
+
+  const batteryPlateLabelElem = document.getElementById("batteryPlateLabel");
+  batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
+  batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
+
   updateBatteryLabel();
   // FIZ legend
   document.getElementById("fizLegend").textContent = texts[lang].fizLegend;

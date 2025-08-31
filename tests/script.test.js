@@ -567,7 +567,7 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('dark-mode')).toBe(true);
     expect(toggle.textContent).toBe('☀️');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
-    expect(meta.getAttribute('content')).toBe('#121212');
+    expect(meta.getAttribute('content')).toBe('#1a1a1a');
     applyDarkMode(false);
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('🌙');
@@ -1499,6 +1499,27 @@ describe('script.js functions', () => {
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.getElementById('hoverHelpTooltip')).toBeNull();
     expect(document.body.style.cursor).toBe('');
+  });
+
+  test('saved setups label has descriptive hover help', () => {
+    const label = document.getElementById('savedSetupsLabel');
+    expect(label.getAttribute('data-help')).toBe(texts.en.setupSelectHelp);
+  });
+
+  test('other labels expose descriptive hover help', () => {
+    const setupNameLabel = document.getElementById('setupNameLabel');
+    const sharedLinkLabel = document.getElementById('sharedLinkLabel');
+    const cameraLabel = document.getElementById('cameraLabel');
+
+    expect(setupNameLabel.getAttribute('data-help')).toBe(
+      texts.en.setupNameHelp
+    );
+    expect(sharedLinkLabel.getAttribute('data-help')).toBe(
+      texts.en.sharedLinkHelp
+    );
+    expect(cameraLabel.getAttribute('data-help')).toBe(
+      texts.en.cameraSelectHelp
+    );
   });
 
   test('help dialog controls expose descriptive hover help', () => {
