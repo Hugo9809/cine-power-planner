@@ -1122,9 +1122,13 @@ function setLanguage(lang) {
    cameraListFilterInput, monitorListFilterInput, videoListFilterInput,
    motorListFilterInput, controllerListFilterInput, distanceListFilterInput,
    batteryListFilterInput].forEach(input => {
-    if (input) {
+   if (input) {
       input.placeholder = filterPlaceholder;
       input.setAttribute('aria-label', filterPlaceholder);
+      input.setAttribute('autocomplete', 'off');
+      input.setAttribute('autocorrect', 'off');
+      input.setAttribute('autocapitalize', 'off');
+      input.setAttribute('spellcheck', 'false');
     }
   });
   // Toggle device manager button text (depends on current visibility)

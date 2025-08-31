@@ -374,6 +374,23 @@ describe('script.js functions', () => {
     expect(camSel.options[1].hidden).toBe(false);
   });
 
+  test('filter inputs disable autocomplete and spellcheck', () => {
+    const ids = [
+      'cameraFilter', 'monitorFilter', 'videoFilter', 'motorFilter',
+      'controllerFilter', 'distanceFilter', 'batteryFilter',
+      'cameraListFilter', 'monitorListFilter', 'videoListFilter',
+      'motorListFilter', 'controllerListFilter', 'distanceListFilter',
+      'batteryListFilter'
+    ];
+    ids.forEach(id => {
+      const inp = document.getElementById(id);
+      expect(inp.getAttribute('autocomplete')).toBe('off');
+      expect(inp.getAttribute('autocorrect')).toBe('off');
+      expect(inp.getAttribute('autocapitalize')).toBe('off');
+      expect(inp.getAttribute('spellcheck')).toBe('false');
+    });
+  });
+
   test('battery comparison excludes B-Mount when camera lacks support', () => {
     global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
     global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
