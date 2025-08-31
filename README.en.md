@@ -100,7 +100,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 - Preference is stored in your browser.
 
 ### 🦄 Pink Mode
-- Click the unicorn button for a playful pink accent.
+- Click the unicorn button or press **P** for a playful pink accent.
 - Works in both light and dark themes and persists between visits.
 
 ### 📝 User Runtime Feedback
