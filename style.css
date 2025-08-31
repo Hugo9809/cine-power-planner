@@ -356,6 +356,18 @@ select {
   appearance: none;
 }
 
+#clearFiltersBtn {
+  float: right;
+  background: transparent;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+#setup-config .form-row:first-of-type {
+  clear: both;
+}
+
 /* Specific style for the setupSelect dropdown */
 #setupSelect {
   flex: 1; /* Allow it to grow */

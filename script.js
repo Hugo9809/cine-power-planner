@@ -963,6 +963,10 @@ function setLanguage(lang) {
   batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
 
   updateBatteryLabel();
+  clearFiltersBtn.textContent = "\u00d7";
+  clearFiltersBtn.setAttribute("aria-label", texts[lang].clearFiltersBtn);
+  clearFiltersBtn.setAttribute("title", texts[lang].clearFiltersBtn);
+  clearFiltersBtn.setAttribute("data-help", texts[lang].clearFiltersHelp);
   // FIZ legend
   document.getElementById("fizLegend").textContent = texts[lang].fizLegend;
   document.querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel').forEach(el => {
@@ -1244,6 +1248,7 @@ const setupNameInput  = document.getElementById("setupName");
 const saveSetupBtn    = document.getElementById("saveSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
 const clearSetupBtn   = document.getElementById("clearSetupBtn");
+const clearFiltersBtn = document.getElementById("clearFiltersBtn");
 const shareSetupBtn   = document.getElementById("shareSetupBtn");
 const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
@@ -2989,6 +2994,20 @@ function bindFilterInput(inputElem, callback) {
   });
 }
 
+function clearAllFilters() {
+  [cameraFilterInput, monitorFilterInput, videoFilterInput, motorFilterInput,
+   controllerFilterInput, distanceFilterInput, batteryFilterInput].forEach(input => {
+    if (input) input.value = "";
+  });
+  filterSelect(cameraSelect, "");
+  filterSelect(monitorSelect, "");
+  filterSelect(videoSelect, "");
+  motorSelects.forEach(sel => filterSelect(sel, ""));
+  controllerSelects.forEach(sel => filterSelect(sel, ""));
+  filterSelect(distanceSelect, "");
+  filterSelect(batterySelect, "");
+}
+
 function applyFilters() {
   filterSelect(cameraSelect, cameraFilterInput.value);
   filterSelect(monitorSelect, monitorFilterInput.value);
@@ -4666,6 +4685,8 @@ bindFilterInput(motorFilterInput, () => motorSelects.forEach(sel => filterSelect
 bindFilterInput(controllerFilterInput, () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
 bindFilterInput(distanceFilterInput, () => filterSelect(distanceSelect, distanceFilterInput.value));
 bindFilterInput(batteryFilterInput, () => filterSelect(batterySelect, batteryFilterInput.value));
+
+clearFiltersBtn.addEventListener("click", clearAllFilters);
 
 bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
 bindFilterInput(monitorListFilterInput, () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
@@ -6694,5 +6715,6 @@ if (typeof module !== "undefined" && module.exports) {
     normalizePowerPortType,
     getCurrentSetupKey,
     renderFeedbackTable,
+    clearAllFilters,
   };
 }
