@@ -6806,6 +6806,11 @@ if (helpButton && helpDialog) {
       } catch (err) {
         console.warn('Could not save dark mode preference', err);
       }
+    } else if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (saveSetupBtn && !saveSetupBtn.disabled) {
+        saveSetupBtn.click();
+      }
     } else if (e.key.toLowerCase() === 'p' &&
                document.activeElement.tagName !== 'INPUT' &&
                document.activeElement.tagName !== 'TEXTAREA') {
