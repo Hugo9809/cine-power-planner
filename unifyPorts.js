@@ -117,25 +117,48 @@ function parsePowerInput(str) {
   const parts = [];
   let buf = "";
   let depth = 0;
+  let quote = null;
   for (const ch of str) {
-    if (ch === "(") depth++;
-    else if (ch === ")") depth = Math.max(0, depth - 1);
-    if (ch === "/" && depth === 0) {
-      parts.push(buf);
-      buf = "";
-      continue;
+    if (quote) {
+      if (ch === quote) quote = null;
+    } else {
+      if (ch === '"' || ch === "'") {
+        quote = ch;
+      } else if (ch === "(") {
+        depth++;
+      } else if (ch === ")") {
+        depth = Math.max(0, depth - 1);
+      } else if (ch === "/" && depth === 0) {
+        if (buf) parts.push(buf);
+        buf = "";
+        continue;
+      }
     }
     buf += ch;
   }
   if (buf) parts.push(buf);
-  return parts.map(p => {
-    const m = p.trim().match(/^(.+?)(?:\(([^)]+)\))?$/);
-    const type = m ? m[1].trim() : p.trim();
-    const notes = m && m[2] ? m[2].trim() : "";
-    const obj = { type };
-    if (notes) obj.notes = notes;
-    return obj;
-  });
+  return parts
+    .map(p => p.trim())
+    .filter(p => p.length > 0)
+    .map(p => {
+      let type = p;
+      let notes = "";
+
+      let m = type.match(/^(.+?)\s*\(([^)]+)\)$/);
+      if (m) {
+        type = m[1].trim();
+        notes = m[2].trim();
+      } else {
+        m = type.match(/^(.+?)\s*['"]([^'"]+)['"]$/);
+        if (m) {
+          type = m[1].trim();
+          notes = m[2].trim();
+        }
+      }
+      const obj = { type };
+      if (notes) obj.notes = notes;
+      return obj;
+    });
 }
 
 function normalizeVideoDevice(dev) {

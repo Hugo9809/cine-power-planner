@@ -46,6 +46,22 @@ describe('parsePowerInput', () => {
       { type: 'D-Tap' }
     ]);
   });
+
+  it('does not split slashes inside quotes', () => {
+    const input = 'LEMO "5V/3A" / D-Tap';
+    expect(parsePowerInput(input)).toEqual([
+      { type: 'LEMO', notes: '5V/3A' },
+      { type: 'D-Tap' }
+    ]);
+  });
+
+  it('filters out empty segments', () => {
+    const input = 'LEMO / / D-Tap';
+    expect(parsePowerInput(input)).toEqual([
+      { type: 'LEMO' },
+      { type: 'D-Tap' }
+    ]);
+  });
 });
 
 describe('normalizeVideoDevice', () => {
