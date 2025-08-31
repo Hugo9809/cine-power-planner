@@ -13,6 +13,7 @@ offline.
 - [Documentation](#documentation)
 - [Features at a Glance](#features-at-a-glance)
 - [Runtime Data Weighting](#runtime-data-weighting)
+- [Quick Start](#quick-start)
 - [Getting Started](#getting-started)
 - [Install as an App](#install-as-an-app)
 - [Browser Support](#browser-support)
@@ -70,15 +71,22 @@ User-submitted battery runtimes are combined using a weighted average to better 
 - The final weight reflects how much of the total power draw comes from the camera, monitor and other devices so that similar rigs count more.
 - A dedicated dashboard orders entries by weight and shows the share percentage for each runtime entry.
 
+## Quick Start
+
+1. Download or clone this repository.
+2. Open `index.html` in a modern browser.
+3. (Optional) Serve the folder over HTTP to enable the service worker and other Progressive Web App features:
+   ```bash
+   npx http-server
+   ```
+   The planner then works fully offline and updates automatically.
+
 ## Getting Started
 
-1. Clone the repository and open `index.html` in a modern browser. No build
-   step is required and the planner can be used completely offline. To enable
-   the service worker and other Progressive Web App features, serve the files
-   over HTTP with a simple static server such as `npx http-server` or
-   `python3 -m http.server`.
-2. Install Node.js 18 or later if you plan to develop or run the tests.
-3. Install dependencies and run the full test suite:
+Set up a development environment:
+
+1. Install Node.js 18 or later.
+2. Install dependencies and run the full test suite:
    ```bash
    npm install
    npm test
