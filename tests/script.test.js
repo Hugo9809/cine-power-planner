@@ -1579,6 +1579,19 @@ describe('script.js functions', () => {
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
 
+  test('hover help uses label help text for aria-labelledby controls', () => {
+    const hoverHelpButton = document.getElementById('hoverHelpButton');
+    const cameraSelect = document.getElementById('cameraSelect');
+
+    hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    cameraSelect.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+
+    const tooltip = document.getElementById('hoverHelpTooltip');
+    expect(tooltip.textContent).toBe(texts.en.cameraSelectHelp);
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+
   test('saved setups label has descriptive hover help', () => {
     const label = document.getElementById('savedSetupsLabel');
     expect(label.getAttribute('data-help')).toBe(texts.en.setupSelectHelp);
