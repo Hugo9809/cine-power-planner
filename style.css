@@ -215,9 +215,9 @@ p {
   background: rgba(0, 0, 0, 0.6);
 }
 
-body.dark-mode #feedbackDialog,
-body:not(.light-mode) #feedbackDialog {
-  background: #1e1e1e;
+.dark-mode #feedbackDialog,
+html:not(.light-mode) #feedbackDialog {
+  background: #1c1c1e;
   color: #f0f0f0;
 }
 
@@ -933,8 +933,9 @@ body:not(.light-mode) #userFeedbackTable td {
     font-weight: bold;
 }
 
+html.dark-mode,
 body.dark-mode {
-  background-color: #1e1e1e;
+  background-color: #1c1c1e;
   color: #f0f0f0;
 }
 .dark-mode h1,
@@ -956,7 +957,7 @@ body.dark-mode.pink-mode h2 {
 .dark-mode section,
 .dark-mode .device-category,
 .dark-mode #batteryComparison {
-  background-color: #1e1e1e;
+  background-color: #1c1c1e;
   border-color: #333;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
@@ -1022,15 +1023,16 @@ body.dark-mode.pink-mode h2 {
 .dark-mode #setupDiagram marker polygon { fill: #fff; }
 .dark-mode #setupDiagram .diagram-placeholder { color: #bbb; }
 .dark-mode .help-content {
-  background: #1e1e1e;
+  background: #1c1c1e;
   color: #f0f0f0;
   border-color: #555;
 }
 body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 
 @media (prefers-color-scheme: dark) {
+  html:not(.light-mode),
   body:not(.light-mode) {
-    background-color: #1e1e1e;
+    background-color: #1c1c1e;
     color: #f0f0f0;
   }
   body:not(.light-mode) h1,
@@ -1052,7 +1054,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   body:not(.light-mode) section,
   body:not(.light-mode) .device-category,
   body:not(.light-mode) #batteryComparison {
-    background-color: #1e1e1e;
+    background-color: #1c1c1e;
     border-color: #333;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   }
@@ -1122,7 +1124,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
                       linear-gradient(90deg, #444 1px, transparent 1px);
   }
   body:not(.light-mode) .help-content {
-    background: #1e1e1e;
+    background: #1c1c1e;
     color: #f0f0f0;
     border-color: #555;
   }
@@ -1312,7 +1314,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   background-color: #1a1a1a;
 }
 #overviewDialogContent.dark-mode .device-category {
-  background: #1e1e1e;
+  background: #1c1c1e;
   border-color: #333;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }

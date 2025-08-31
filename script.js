@@ -6395,21 +6395,25 @@ if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession)
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) {
-    meta.setAttribute('content', isDark ? '#121212' : '#ffffff');
+    meta.setAttribute('content', isDark ? '#1c1c1e' : '#ffffff');
   }
 }
 
 function applyDarkMode(enabled) {
   if (enabled) {
     document.body.classList.add("dark-mode");
+    document.documentElement.classList.add("dark-mode");
     document.body.classList.remove("light-mode");
+    document.documentElement.classList.remove("light-mode");
     if (darkModeToggle) {
       darkModeToggle.textContent = "☀️";
       darkModeToggle.setAttribute("aria-pressed", "true");
     }
   } else {
     document.body.classList.remove("dark-mode");
+    document.documentElement.classList.remove("dark-mode");
     document.body.classList.add("light-mode");
+    document.documentElement.classList.add("light-mode");
     if (darkModeToggle) {
       darkModeToggle.textContent = "🌙";
       darkModeToggle.setAttribute("aria-pressed", "false");

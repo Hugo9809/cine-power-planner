@@ -623,11 +623,13 @@ describe('script.js functions', () => {
     const meta = document.querySelector('meta[name="theme-color"]');
     applyDarkMode(true);
     expect(document.body.classList.contains('dark-mode')).toBe(true);
+    expect(document.documentElement.classList.contains('dark-mode')).toBe(true);
     expect(toggle.textContent).toBe('☀️');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
-    expect(meta.getAttribute('content')).toBe('#121212');
+    expect(meta.getAttribute('content')).toBe('#1c1c1e');
     applyDarkMode(false);
     expect(document.body.classList.contains('dark-mode')).toBe(false);
+    expect(document.documentElement.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('🌙');
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
     expect(meta.getAttribute('content')).toBe('#ffffff');
