@@ -1,5 +1,12 @@
 const fs = require('fs');
 let devices = require('./data.js');
+
+/**
+ * Standardizes connector type names for easier comparison.
+ *
+ * @param {string} name - Raw connector name.
+ * @returns {string} Normalized connector name.
+ */
 function cleanTypeName(name) {
   let t = String(name).trim();
   // Preserve explicit IN/OUT labels; only remove generic INPUT/OUTPUT words.
@@ -9,6 +16,13 @@ function cleanTypeName(name) {
   if (/usb\s*type[-\s]?c/i.test(t)) t = "USB-C";
   return t.replace(/\s+/g, " ");
 }
+
+/**
+ * Normalizes voltage range strings by stripping units and excess spacing.
+ *
+ * @param {string} str - Raw voltage range description.
+ * @returns {string} Cleaned voltage range.
+ */
 function cleanVoltageRange(str) {
   if (!str || typeof str !== "string") return str;
   return str
@@ -23,6 +37,12 @@ function cleanVoltageRange(str) {
     .trim();
 }
 
+/**
+ * Recursively walks an object, normalizing voltage ranges and connector types.
+ *
+ * @param {any} obj - Object or array to clean.
+ * @returns {any} The mutated input for convenience.
+ */
 function deepClean(obj) {
   if (Array.isArray(obj)) {
     obj.forEach((v, i) => {
@@ -112,10 +132,16 @@ function normalizeMonitor(mon) {
   normalizeVideoPorts(mon);
 }
 
-function parsePowerInput(str) {
-  if (!str) return null;
+/**
+ * Splits a string by a delimiter, ignoring delimiters inside parentheses or quotes.
+ *
+ * @param {string} str - String to split.
+ * @param {string} [delimiter='/'] - Delimiter character.
+ * @returns {string[]} Array of string segments.
+ */
+function splitOutside(str, delimiter = '/') {
   const parts = [];
-  let buf = "";
+  let buf = '';
   let depth = 0;
   let quote = null;
   for (const ch of str) {
@@ -124,25 +150,40 @@ function parsePowerInput(str) {
     } else {
       if (ch === '"' || ch === "'") {
         quote = ch;
-      } else if (ch === "(") {
+      } else if (ch === '(') {
         depth++;
-      } else if (ch === ")") {
+      } else if (ch === ')') {
         depth = Math.max(0, depth - 1);
-      } else if (ch === "/" && depth === 0) {
+      } else if (ch === delimiter && depth === 0) {
         if (buf) parts.push(buf);
-        buf = "";
+        buf = '';
         continue;
       }
     }
     buf += ch;
   }
   if (buf) parts.push(buf);
-  return parts
+  return parts;
+}
+
+/**
+ * Parses a power input description into structured objects.
+ *
+ * Each segment is separated by `/` unless the slash appears inside parentheses
+ * or quotes. Notes inside parentheses or quotes are stored on the returned
+ * object.
+ *
+ * @param {string} str - Power input description (e.g. "LEMO (5V/3A) / D-Tap").
+ * @returns {Array<{type: string, notes?: string}>|null} Parsed representation.
+ */
+function parsePowerInput(str) {
+  if (!str) return null;
+  return splitOutside(str)
     .map(p => p.trim())
     .filter(p => p.length > 0)
     .map(p => {
       let type = p;
-      let notes = "";
+      let notes = '';
 
       let m = type.match(/^(.+?)\s*\(([^)]+)\)$/);
       if (m) {
@@ -213,6 +254,7 @@ if (typeof module !== 'undefined' && module.exports) {
     normalizeVideoPorts,
     normalizeVideoDevice,
     normalizeFiz,
+    splitOutside,
     parsePowerInput,
     devices,
   };
