@@ -21,6 +21,8 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - Durchsuchbarer Hilfedialog mit Schritt-für-Schritt-Anleitung und FAQ.
 - Kontextbezogene Hover-Hilfe für Schaltflächen, Felder, Dropdowns und Überschriften.
 - Unterstützung für Kameras mit V- und B-Mount-Akkuplatten.
+- Nutzer-Laufzeit-Feedback mit Umgebungsdetails zur Verbesserung der Schätzungen.
+- Visuelles Laufzeit-Gewichtungs-Dashboard, das zeigt, wie Temperatur, Auflösung, Bildrate und Codec jeden Bericht beeinflussen, sortiert nach Gewicht mit genauen Prozentanteilen.
 
 ---
 
