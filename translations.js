@@ -35,7 +35,7 @@ const texts = {
     darkModeLabel: "Toggle dark mode",
     pinkModeLabel: "Toggle pink mode",
     darkModeHelp:
-      "Switch between light and dark themes for comfortable viewing. The preference is saved.",
+      "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
     pinkModeHelp:
       "Add a playful pink accent theme. Works with light or dark mode and is remembered for next time.",
 
@@ -335,7 +335,7 @@ const texts = {
     darkModeLabel: "Attiva modalità scura",
     pinkModeLabel: "Attiva modalità rosa",
     darkModeHelp:
-      "Passa tra tema chiaro e scuro; la scelta viene ricordata.",
+      "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
       "Attiva un tema rosa giocoso; funziona con modalità chiara o scura e viene salvato.",
     savedSetupsLabel: "Configurazioni salvate:",
@@ -611,7 +611,7 @@ const texts = {
     darkModeLabel: "Alternar modo oscuro",
     pinkModeLabel: "Alternar modo rosa",
     darkModeHelp:
-      "Alterna entre temas claro y oscuro; la preferencia se guarda.",
+      "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
       "Aplica un tema rosa divertido; funciona con modo claro u oscuro y se recuerda la próxima vez.",
 
@@ -904,7 +904,7 @@ const texts = {
     darkModeLabel: "Basculer en mode sombre",
     pinkModeLabel: "Basculer en mode rose",
     darkModeHelp:
-      "Basculer entre thème clair et sombre; le choix est mémorisé.",
+      "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
     pinkModeHelp:
       "Active un thème rose ludique; fonctionne en mode clair ou sombre et est enregistré.",
 
@@ -1199,7 +1199,7 @@ const texts = {
     darkModeLabel: "Dunkelmodus umschalten",
     pinkModeLabel: "Pinkmodus umschalten",
     darkModeHelp:
-      "Zwischen hellem und dunklem Design wechseln; die Einstellung wird gespeichert.",
+      "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:
       "Aktiviere ein verspieltes pinkes Design; funktioniert mit hellen oder dunklen Modi und wird gemerkt.",
 
