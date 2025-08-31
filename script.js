@@ -6548,7 +6548,6 @@ if (helpButton && helpDialog) {
       }
     }
     if (!text) text = el.getAttribute('alt');
-    if (!text) text = el.textContent.trim();
     if (!text) {
       hoverHelpTooltip.setAttribute('hidden', '');
       return;
