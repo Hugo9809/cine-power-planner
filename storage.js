@@ -6,13 +6,13 @@ const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 
 // Generic helpers for storage access
-function loadJSONFromStorage(storage, key, errorMessage) {
+function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
   try {
     const data = storage.getItem(key);
-    return data ? JSON.parse(data) : null;
+    return data ? JSON.parse(data) : defaultValue;
   } catch (e) {
     console.error(errorMessage, e);
-    return null;
+    return defaultValue;
   }
 }
 
@@ -28,11 +28,16 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
 }
 
 // Generate a unique name by appending numeric suffixes if needed
+// Comparisons are case-insensitive and ignore surrounding whitespace.
 function generateUniqueName(base, usedNames) {
-  let name = base;
+  const trimmedBase = base.trim();
+  let name = trimmedBase;
   let suffix = 2;
-  while (usedNames.has(name)) {
-    name = `${base} (${suffix++})`;
+  const normalized = new Set([...usedNames].map((n) => n.trim().toLowerCase()));
+  let candidate = name.toLowerCase();
+  while (normalized.has(candidate)) {
+    name = `${trimmedBase} (${suffix++})`;
+    candidate = name.toLowerCase();
   }
   usedNames.add(name);
   return name;
@@ -158,12 +163,13 @@ function renameSetup(oldName, newName) {
   if (!Object.prototype.hasOwnProperty.call(setups, oldName)) {
     return null;
   }
-  if (oldName === newName) {
-    return newName;
+  const sanitized = newName.trim();
+  if (oldName.trim().toLowerCase() === sanitized.toLowerCase()) {
+    return oldName;
   }
   const used = new Set(Object.keys(setups));
   used.delete(oldName);
-  const target = generateUniqueName(newName, used);
+  const target = generateUniqueName(sanitized, used);
   setups[target] = setups[oldName];
   delete setups[oldName];
   saveSetups(setups);

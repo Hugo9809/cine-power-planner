@@ -108,6 +108,12 @@ describe('setup storage', () => {
     expect(loadSetups()).toEqual({ A: { name: 'A', foo: 1 }, 'A (2)': { name: 'A', bar: 2 } });
   });
 
+  test('loadSetups treats case or whitespace variants as duplicates', () => {
+    const arr = [{ name: 'A' }, { name: 'a' }, { name: ' A ' }];
+    localStorage.setItem(SETUP_KEY, JSON.stringify(arr));
+    expect(loadSetups()).toEqual({ A: { name: 'A' }, 'a (2)': { name: 'a' }, 'A (3)': { name: ' A ' } });
+  });
+
   test('loadSetups returns empty object for primitive data', () => {
     localStorage.setItem(SETUP_KEY, JSON.stringify(5));
     expect(loadSetups()).toEqual({});
@@ -148,6 +154,22 @@ describe('setup storage', () => {
       const newName = renameSetup('A', 'C');
       expect(newName).toBe('C (2)');
       expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({'C (2)':{foo:1}, C:{bar:2}});
+    });
+
+    test('renameSetup ignores case and whitespace when name unchanged', () => {
+      const setups = {A:{foo:1}};
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+      const newName = renameSetup('A', ' a ');
+      expect(newName).toBe('A');
+      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}});
+    });
+
+    test('renameSetup prevents case-insensitive duplicates', () => {
+      const setups = {A:{foo:1}, B:{bar:2}};
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+      const newName = renameSetup('B', ' a ');
+      expect(newName).toBe('a (2)');
+      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}, 'a (2)':{bar:2}});
     });
 
     test('renameSetup returns null when original missing', () => {
