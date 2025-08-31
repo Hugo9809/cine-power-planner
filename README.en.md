@@ -18,7 +18,7 @@ You can switch the language in the top right corner. The choice is remembered fo
 ## 🆕 Recent Features
 - Interactive setup diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
 - Playful pink accent theme that persists between visits.
-- Searchable help dialog with step-by-step sections and a FAQ.
+- Searchable help dialog with step-by-step sections, FAQ and an optional hover help mode.
 - Support for cameras with both V- and B-Mount battery plates.
 - Submit user runtime feedback with temperature for better estimates.
 - Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
