@@ -1,6 +1,14 @@
 /* General styles */
 :root {
   --accent-color: #001589;
+  --background-color: #f9f9f9;
+  --text-color: #000000;
+  --control-bg: #e8e8e8;
+  --control-text: #333333;
+  --control-border: #cccccc;
+  --control-hover-bg: #d0d0d0;
+  --control-active-bg: #c0c0c0;
+  --control-disabled-bg: #cccccc;
 }
 body.pink-mode {
   --accent-color: #ff69b4;
@@ -8,7 +16,7 @@ body.pink-mode {
 
 html,
 body {
-  background: #f9f9f9;
+  background: var(--background-color);
   height: 100%;
   margin: 0;
 }
@@ -24,8 +32,8 @@ body {
   margin: 0 auto;
   padding: 20px 0;
   max-width: 1200px;
-  background-color: #f9f9f9;
-  color: #000000;
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-size: 0.9em;
 }
 
@@ -136,12 +144,6 @@ p {
 .form-row select,
 .form-row input {
   flex: 1;
-  padding: 4px;
-  font-size: 1em;
-  background-color: #e8e8e8; /* Grey background */
-  color: #333; /* Darker text color */
-  border: 0px solid #ccc; /* Light grey border */
-  border-radius: 5px;
   margin: 5px 5px 0 0;
 }
 
@@ -313,12 +315,6 @@ body.hover-help-active * {
 .field-with-label select,
 .field-with-label input {
   flex: 1;
-  padding: 4px;
-  font-size: 1em;
-  background-color: #e8e8e8; /* Grey background */
-  color: #333; /* Darker text color */
-  border: 0px solid #ccc; /* Light grey border */
-  border-radius: 5px;
   margin: 5px 5px 0 0;
 }
 
@@ -337,20 +333,26 @@ body.hover-help-active * {
   display: none;
 }
 
+
 .device-category .list-filter {
   width: 100%;
   margin-bottom: 5px;
   font-size: 0.9em;
 }
 
-/* Ensure dropdowns use a solid background across browsers */
-select {
+/* Ensure form controls use consistent styling */
+input,
+select,
+textarea {
   padding: 4px;
   font-size: 1em;
-  background-color: #e8e8e8; /* Grey background */
-  color: #333; /* Darker text color */
-  border: 0px solid #ccc; /* Light grey border */
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  border: 1px solid var(--control-border);
   border-radius: 5px;
+}
+
+select {
   background-image: none;
   -webkit-appearance: none;
   appearance: none;
@@ -368,26 +370,10 @@ select {
   clear: both;
 }
 
-/* Specific style for the setupSelect dropdown */
-#setupSelect {
-  flex: 1; /* Allow it to grow */
-  padding: 4px;
-  font-size: 1em;
-  background-color: #e8e8e8; /* Grey background */
-  color: #333; /* Darker text color */
-  border: 0px solid #ccc; /* Light grey border */
-  border-radius: 5px;
-}
-
-/* Specific style for the setupName input */
+/* Specific style for setup controls */
+#setupSelect,
 #setupName {
-  flex: 1; /* Allow it to grow */
-  padding: 4px;
-  font-size: 1em;
-  background-color: #e8e8e8; /* Grey background */
-  color: #333; /* Darker text color */
-  border: 0px solid #ccc; /* Light grey border */
-  border-radius: 5px;
+  flex: 1; /* Allow them to grow */
 }
 
 /* FIZ group fieldset */
@@ -413,26 +399,26 @@ section {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* All Buttons (default grey) */
+/* All Buttons */
 button {
-  background-color: #e8e8e8; /* Grey background */
-  color: #333; /* Darker text color */
-  border: 0px solid #ccc; /* Light grey border */
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  border: 1px solid var(--control-border);
   border-radius: 5px;
   padding: 5px 10px; /* Adjusted padding to make buttons smaller */
-  margin: 5px 5px 5px 5px;
+  margin: 5px;
   cursor: pointer;
   font-size: 0.85em; /* Adjusted font size to make buttons smaller */
   transition: background-color 0.2s;
 }
 button:hover {
-  background-color: #d0d0d0; /* Slightly darker grey on hover */
+  background-color: var(--control-hover-bg);
 }
 button:active {
-  background-color: #c0c0c0; /* Even darker grey on active */
+  background-color: var(--control-active-bg);
 }
 button:disabled {
-  background-color: #cccccc;
+  background-color: var(--control-disabled-bg);
   cursor: not-allowed;
 }
 
@@ -563,10 +549,6 @@ button:disabled {
 #langSelector select {
   font-size: 1em;
   padding: 2px 4px;
-  background-color: #e8e8e8; /* Grey background */
-  color: #333; /* Darker text color */
-  border: 0px solid #ccc; /* Light grey border */
-  border-radius: 5px;
 }
 #langSelector button {
   min-width: 32px;
@@ -935,10 +917,23 @@ body:not(.light-mode) #userFeedbackTable td {
 }
 
 html.dark-mode,
-body.dark-mode {
-  background-color: #1c1c1e;
-  color: #f0f0f0;
+.dark-mode {
+  --background-color: #1c1c1e;
+  --text-color: #f0f0f0;
+  --control-bg: #333;
+  --control-text: #f0f0f0;
+  --control-border: #555;
+  --control-hover-bg: #444;
+  --control-active-bg: #555;
+  --control-disabled-bg: #555;
 }
+
+html.dark-mode,
+body.dark-mode {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
 .dark-mode h1,
 .dark-mode h2,
 .dark-mode h3 {
@@ -964,30 +959,6 @@ body.dark-mode.pink-mode h2 {
 }
 .dark-mode fieldset { border-color: #ffffff; }
 .dark-mode legend { color: #ffffff; }
-.dark-mode button,
-.dark-mode #langSelector select,
-.dark-mode input,
-.dark-mode select,
-.dark-mode textarea {
-  background-color: #333;
-  color: #f0f0f0;
-  border-color: #555;
-}
-.dark-mode select,
-.dark-mode input,
-.dark-mode textarea {
-  background-image: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.dark-mode #setupSelect,
-.dark-mode #setupName {
-  background-color: #333;
-  color: #f0f0f0;
-  border-color: #555;
-}
-.dark-mode button:hover { background-color: #444; }
-.dark-mode button:active { background-color: #555; }
 .dark-mode #batteryComparison th { background-color: #333; }
 .dark-mode .barContainer { background-color: #333; }
 .dark-mode .selectedBatteryRow { background-color: #003366; }
@@ -1033,8 +1004,16 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 @media (prefers-color-scheme: dark) {
   html:not(.light-mode),
   body:not(.light-mode) {
-    background-color: #1c1c1e;
-    color: #f0f0f0;
+    --background-color: #1c1c1e;
+    --text-color: #f0f0f0;
+    --control-bg: #333;
+    --control-text: #f0f0f0;
+    --control-border: #555;
+    --control-hover-bg: #444;
+    --control-active-bg: #555;
+    --control-disabled-bg: #555;
+    background-color: var(--background-color);
+    color: var(--text-color);
   }
   body:not(.light-mode) h1,
   body:not(.light-mode) h2,
@@ -1061,30 +1040,6 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   }
   body:not(.light-mode) fieldset { border-color: #ffffff; }
   body:not(.light-mode) legend { color: #ffffff; }
-  body:not(.light-mode) button,
-  body:not(.light-mode) #langSelector select,
-  body:not(.light-mode) input,
-  body:not(.light-mode) select,
-  body:not(.light-mode) textarea {
-    background-color: #333;
-    color: #f0f0f0;
-    border-color: #555;
-  }
-  body:not(.light-mode) select,
-  body:not(.light-mode) input,
-  body:not(.light-mode) textarea {
-    background-image: none;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  body:not(.light-mode) #setupSelect,
-  body:not(.light-mode) #setupName {
-    background-color: #333;
-    color: #f0f0f0;
-    border-color: #555;
-  }
-  body:not(.light-mode) button:hover { background-color: #444; }
-  body:not(.light-mode) button:active { background-color: #555; }
   body:not(.light-mode) #batteryComparison th { background-color: #333; }
   body:not(.light-mode) .barContainer { background-color: #333; }
   body:not(.light-mode) .selectedBatteryRow { background-color: #003366; }
