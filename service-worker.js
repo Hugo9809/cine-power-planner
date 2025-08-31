@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'camera-power-planner-v5';
+const CACHE_NAME = 'camera-power-planner-v6';
 const ASSETS = [
   './',
   './index.html',
