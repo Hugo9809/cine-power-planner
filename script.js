@@ -6423,6 +6423,20 @@ motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurren
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
 
+// Enable Save button only when a setup name is entered and allow Enter to save
+if (setupNameInput && saveSetupBtn) {
+  const toggleSaveSetupBtn = () => {
+    saveSetupBtn.disabled = !setupNameInput.value.trim();
+  };
+  toggleSaveSetupBtn();
+  setupNameInput.addEventListener("input", toggleSaveSetupBtn);
+  setupNameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !saveSetupBtn.disabled) {
+      saveSetupBtn.click();
+    }
+  });
+}
+
 // Dark mode handling
 function updateThemeColor(isDark) {
   const meta = document.querySelector('meta[name="theme-color"]');
