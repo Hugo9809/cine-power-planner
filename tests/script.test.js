@@ -371,6 +371,21 @@ describe('script.js functions', () => {
     expect(camSel.options[1].hidden).toBe(false);
   });
 
+  test('filter input clears after selecting an option', () => {
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
+
+    const filterInput = document.getElementById('cameraFilter');
+    filterInput.value = 'CamA';
+    filterInput.dispatchEvent(new Event('input'));
+    expect(camSel.options[1].hidden).toBe(true);
+
+    camSel.value = 'CamA';
+    camSel.dispatchEvent(new Event('change'));
+    expect(filterInput.value).toBe('');
+    expect(camSel.options[1].hidden).toBe(false);
+  });
+
   test('clear filters button resets all filter fields', () => {
     const camSel = document.getElementById('cameraSelect');
     camSel.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
