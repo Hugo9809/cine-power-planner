@@ -42,7 +42,7 @@ Recent updates include:
 
 - **Interactive setup diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits or press **P** to switch quickly.
-- **Searchable help dialog and hover hints** – open with ?, H, F1 or Ctrl+/ (even while typing), filter topics instantly, browse the built-in FAQ, and hover over any button, field, dropdown or header for a quick explanation.
+- **Searchable help dialog and hover hints** – open with ?, H, F1 or Ctrl+/ (even while typing), filter topics instantly, press / or Ctrl+F to jump to the search box, browse the built-in FAQ, and hover over any button, field, dropdown or header for a quick explanation.
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.

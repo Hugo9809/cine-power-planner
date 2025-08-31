@@ -1478,6 +1478,23 @@ describe('script.js functions', () => {
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
   });
 
+  test('slash or Ctrl+F focuses help search', () => {
+    const helpDialog = document.getElementById('helpDialog');
+    const helpSearch = document.getElementById('helpSearch');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    helpDialog.focus();
+    expect(document.activeElement).toBe(helpDialog);
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '/' }));
+    expect(document.activeElement).toBe(helpSearch);
+
+    helpDialog.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', ctrlKey: true }));
+    expect(document.activeElement).toBe(helpSearch);
+  });
+
   test('help search filters and resets on reopen', () => {
     const helpDialog = document.getElementById('helpDialog');
     const helpSearch = document.getElementById('helpSearch');

@@ -6831,6 +6831,12 @@ if (helpButton && helpDialog) {
       toggleHelp();
     } else if ((e.key === '?' || e.key.toLowerCase() === 'h') && !isTextField) {
       toggleHelp();
+    } else if (
+      !helpDialog.hasAttribute('hidden') &&
+      ((e.key === '/' && !isTextField) || (e.key.toLowerCase() === 'f' && (e.ctrlKey || e.metaKey)))
+    ) {
+      e.preventDefault();
+      if (helpSearch) helpSearch.focus();
     } else if (e.key.toLowerCase() === 'd' && !isTextField) {
       darkModeEnabled = !document.body.classList.contains('dark-mode');
       applyDarkMode(darkModeEnabled);

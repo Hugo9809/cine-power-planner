@@ -270,7 +270,8 @@ const texts = {
     helpSearchLabel: "Search help topics",
     helpNoResults: "No results found.",
     helpSearchClear: "Clear search",
-    helpSearchHelp: "Type keywords to instantly filter the help topics list.",
+    helpSearchHelp:
+      "Type keywords to instantly filter the help topics list. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box quickly.",
     helpSearchClearHelp: "Clear the search box and show all help topics again.",
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
@@ -571,7 +572,8 @@ const texts = {
     helpSearchLabel: "Cerca negli argomenti dell'aiuto",
     helpNoResults: "Nessun risultato trovato.",
     helpSearchClear: "Cancella ricerca",
-    helpSearchHelp: "Digita parole chiave per cercare gli argomenti dell'aiuto.",
+    helpSearchHelp:
+      "Digita parole chiave per cercare gli argomenti dell'aiuto. Premi '/' o Ctrl+F (Cmd+F su Mac) per focalizzare rapidamente la casella di ricerca.",
     helpSearchClearHelp: "Cancella la ricerca corrente.",
     hoverHelpButtonLabel: "Passa il mouse per aiuto",
     hoverHelpButtonHelp:
@@ -882,7 +884,8 @@ const texts = {
     helpSearchLabel: "Buscar temas de ayuda",
     helpNoResults: "No se encontraron resultados.",
     helpSearchClear: "Borrar búsqueda",
-    helpSearchHelp: "Escribe palabras clave para buscar temas de ayuda.",
+    helpSearchHelp:
+      "Escribe palabras clave para buscar temas de ayuda. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para enfocar rápidamente el campo de búsqueda.",
     helpSearchClearHelp: "Borra la consulta de búsqueda actual.",
     hoverHelpButtonLabel: "Pasa el cursor para ayuda",
     hoverHelpButtonHelp:
@@ -1194,7 +1197,8 @@ const texts = {
     helpSearchLabel: "Rechercher des sujets d'aide",
     helpNoResults: "Aucun résultat trouvé.",
     helpSearchClear: "Effacer la recherche",
-    helpSearchHelp: "Tapez des mots-clés pour rechercher des sujets d'aide.",
+    helpSearchHelp:
+      "Tapez des mots-clés pour rechercher des sujets d'aide. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour cibler rapidement le champ de recherche.",
     helpSearchClearHelp: "Effacer la requête de recherche en cours.",
     hoverHelpButtonLabel: "Survoler pour obtenir de l'aide",
     hoverHelpButtonHelp:
@@ -1507,7 +1511,8 @@ const texts = {
     helpSearchLabel: "Hilfe-Themen durchsuchen",
     helpNoResults: "Keine Ergebnisse gefunden.",
     helpSearchClear: "Suche löschen",
-    helpSearchHelp: "Gib Stichwörter ein, um Hilfethemen zu durchsuchen.",
+    helpSearchHelp:
+      "Gib Stichwörter ein, um Hilfethemen zu durchsuchen. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld schnell zu fokussieren.",
     helpSearchClearHelp: "Lösche die aktuelle Suchanfrage.",
     hoverHelpButtonLabel: "Für Hilfe darüberfahren",
     hoverHelpButtonHelp:
