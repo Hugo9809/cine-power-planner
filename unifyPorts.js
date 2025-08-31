@@ -64,6 +64,14 @@ function cleanPowerInput(input) {
   }
 }
 
+function normalizePortList(list) {
+  return list.map(p => {
+    const portObj = { type: p.portType || p.type || p };
+    cleanPort(portObj);
+    return portObj;
+  });
+}
+
 function normalizeVideoPorts(obj) {
   if (!obj) return;
   if (obj.video) {
@@ -71,14 +79,8 @@ function normalizeVideoPorts(obj) {
     if (Array.isArray(obj.video.outputs)) obj.videoOutputs = obj.video.outputs;
     delete obj.video;
   }
-  if (Array.isArray(obj.videoInputs)) {
-    obj.videoInputs = obj.videoInputs.map(i => ({ type: i.portType || i.type || i }));
-    obj.videoInputs.forEach(cleanPort);
-  }
-  if (Array.isArray(obj.videoOutputs)) {
-    obj.videoOutputs = obj.videoOutputs.map(o => ({ type: o.portType || o.type || o }));
-    obj.videoOutputs.forEach(cleanPort);
-  }
+  if (Array.isArray(obj.videoInputs)) obj.videoInputs = normalizePortList(obj.videoInputs);
+  if (Array.isArray(obj.videoOutputs)) obj.videoOutputs = normalizePortList(obj.videoOutputs);
 }
 
 function normalizeCamera(cam) {
@@ -152,25 +154,17 @@ function normalizeFiz(dev) {
   if (Array.isArray(dev.fizConnectors)) dev.fizConnectors.forEach(cleanPort);
 }
 
+function normalizeCollection(collection, fn) {
+  Object.values(collection).forEach(fn);
+}
+
 if (require.main === module) {
-  for (const cam of Object.values(devices.cameras)) {
-    normalizeCamera(cam);
-  }
-  for (const mon of Object.values(devices.monitors)) {
-    normalizeMonitor(mon);
-  }
-  for (const vd of Object.values(devices.video)) {
-    normalizeVideoDevice(vd);
-  }
-  for (const motor of Object.values(devices.fiz.motors)) {
-    normalizeFiz(motor);
-  }
-  for (const ctrl of Object.values(devices.fiz.controllers)) {
-    normalizeFiz(ctrl);
-  }
-  for (const dist of Object.values(devices.fiz.distance)) {
-    normalizeFiz(dist);
-  }
+  normalizeCollection(devices.cameras, normalizeCamera);
+  normalizeCollection(devices.monitors, normalizeMonitor);
+  normalizeCollection(devices.video, normalizeVideoDevice);
+  normalizeCollection(devices.fiz.motors, normalizeFiz);
+  normalizeCollection(devices.fiz.controllers, normalizeFiz);
+  normalizeCollection(devices.fiz.distance, normalizeFiz);
   deepClean(devices);
   fs.writeFileSync(
     'data.js',
