@@ -1187,6 +1187,25 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   }
 }
 
+/* Project requirements dialog */
+#projectDialog {
+  width: 90%;
+  max-width: 700px;
+  padding: 0;
+  border: none;
+}
+#projectDialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+#projectDialog form {
+  padding: 20px;
+  background: var(--surface-color);
+  color: var(--control-text);
+}
+#projectDialog select[multiple] {
+  height: auto;
+}
+
 /* Overview dialog */
 #overviewDialog {
   width: 90%;
