@@ -142,11 +142,17 @@ const FIZ_CONNECTOR_MAP = {
   'remote control terminal': 'REMOTE A connector',
   'remote 8 pin': 'REMOTE B connector'
 };
-function normalizeFizConnectorType(type) {
+
+const createMapNormalizer = (map, cache) => type => {
   if (!type) return '';
-  const key = String(type).trim().toLowerCase();
-  return FIZ_CONNECTOR_MAP[key] || type;
-}
+  const trimmed = String(type).trim();
+  if (cache && cache.has(trimmed)) return cache.get(trimmed);
+  const normalized = map[trimmed.toLowerCase()] || trimmed;
+  if (cache) cache.set(trimmed, normalized);
+  return normalized;
+};
+
+const normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP);
 
 const VIEWFINDER_TYPE_MAP = {
   'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
@@ -171,12 +177,7 @@ const VIEWFINDER_TYPE_MAP = {
   'lemo 26 pin': 'LEMO 26-pin port'
 };
 
-function normalizeViewfinderType(type) {
-  if (!type) return '';
-  const trimmed = String(type).trim();
-  const key = trimmed.toLowerCase();
-  return VIEWFINDER_TYPE_MAP[key] || trimmed;
-}
+const normalizeViewfinderType = createMapNormalizer(VIEWFINDER_TYPE_MAP);
 
 const POWER_PORT_TYPE_MAP = {
   'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
@@ -204,14 +205,7 @@ const POWER_PORT_TYPE_MAP = {
 
 // Cache power port normalization to reduce repeated string operations
 const powerPortCache = new Map();
-const mapPowerPortOne = val => {
-  const trimmed = String(val).trim();
-  if (powerPortCache.has(trimmed)) return powerPortCache.get(trimmed);
-  const lower = trimmed.toLowerCase();
-  const mapped = POWER_PORT_TYPE_MAP[lower] || trimmed;
-  powerPortCache.set(trimmed, mapped);
-  return mapped;
-};
+const mapPowerPortOne = createMapNormalizer(POWER_PORT_TYPE_MAP, powerPortCache);
 
 function normalizePowerPortType(type) {
   if (!type) return [];
