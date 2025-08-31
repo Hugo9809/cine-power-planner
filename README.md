@@ -1,5 +1,7 @@
 # Camera Power Planner
 
+![Camera Power Planner icon](icon.svg)
+
 Camera Power Planner is a standalone web app for planning professional camera
 rigs powered by V‑Mount or B‑Mount batteries. It calculates total power draw,
 checks that batteries can safely deliver the required output and estimates how
@@ -33,9 +35,9 @@ Choose your preferred language above.
 
 Recent updates include:
 
-- **Interactive setup diagram** – drag devices, zoom with dedicated controls, optionally snap nodes to a grid, and export the layout as SVG or JPG.
+- **Interactive setup diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits or press **P** to switch quickly.
-- **Searchable help dialog** – open with the ? button or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
+- **Searchable help dialog** – open with ? or keyboard shortcuts, filter topics instantly and browse the built-in FAQ.
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
