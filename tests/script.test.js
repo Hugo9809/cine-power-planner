@@ -696,7 +696,9 @@ describe('script.js functions', () => {
     plateSel.value = 'B-Mount';
     addOpt('batterySelect', 'BBatt');
 
-    document.getElementById('setupName').value = 'TestSetup';
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'TestSetup';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
     document.getElementById('saveSetupBtn').click();
 
     const saved = global.saveSetups.mock.calls[0][0];
@@ -710,6 +712,20 @@ describe('script.js functions', () => {
     sel.dispatchEvent(new Event('change'));
 
     expect(document.getElementById('batteryPlateSelect').value).toBe('B-Mount');
+  });
+
+  test('Save button enables on input and Enter key saves setup', () => {
+    const saveSpy = global.saveSetups;
+    const nameInput = document.getElementById('setupName');
+    const saveBtn = document.getElementById('saveSetupBtn');
+    expect(saveBtn.disabled).toBe(true);
+
+    nameInput.value = 'QuickSave';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(saveBtn.disabled).toBe(false);
+
+    nameInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(saveSpy).toHaveBeenCalled();
   });
 
   test('warning colors are applied in Spanish', () => {
