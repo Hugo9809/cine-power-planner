@@ -6421,9 +6421,19 @@ if (helpButton && helpDialog) {
     const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
     const elements = sections.concat(items);
     let anyVisible = false;
+    const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = query ? new RegExp(`(${escapeRegExp(query)})`, 'ig') : null;
     elements.forEach(el => {
+      if (!el.dataset.origHtml) {
+        el.dataset.origHtml = el.innerHTML;
+      } else {
+        el.innerHTML = el.dataset.origHtml;
+      }
       const text = el.textContent.toLowerCase();
       if (!query || text.includes(query)) {
+        if (query && regex) {
+          el.innerHTML = el.innerHTML.replace(regex, '<mark>$1</mark>');
+        }
         el.removeAttribute('hidden');
         anyVisible = true;
       } else {
