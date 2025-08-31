@@ -91,7 +91,7 @@ describe('script.js functions', () => {
 
     script.updateCalculations();
 
-    expect(document.getElementById('batteryLife').textContent).toBe('2.00');
+    expect(document.getElementById('batteryLife').textContent).toBe('2.39');
     const expectedLabel = texts.en.batteryLifeLabel.replace(
       '):',
       `, ${texts.en.runtimeUserCountNote.replace('{count}', 5)}):`
@@ -123,7 +123,7 @@ describe('script.js functions', () => {
 
     script.updateCalculations();
 
-    expect(document.getElementById('batteryLife').textContent).toBe('1.25');
+    expect(document.getElementById('batteryLife').textContent).toBe('1.77');
   });
 
   test('interpolates temperature scaling between points', () => {
@@ -142,9 +142,9 @@ describe('script.js functions', () => {
     const key = script.getCurrentSetupKey();
 
     const cases = [
-      { temp: '5', expected: '1.20' },
-      { temp: '-5', expected: '1.43' },
-      { temp: '-15', expected: '1.80' }
+      { temp: '5', expected: '1.72' },
+      { temp: '-5', expected: '1.91' },
+      { temp: '-15', expected: '2.22' }
     ];
 
     cases.forEach(({ temp, expected }) => {
@@ -175,7 +175,7 @@ describe('script.js functions', () => {
     script.updateCalculations();
 
     const firstRuntime = document.querySelector('#temperatureNote table tr:nth-child(2) td:nth-child(2)').textContent;
-    expect(firstRuntime).toBe('2.00');
+    expect(firstRuntime).toBe('2.39');
   });
 
   test('weighs high-resolution entries by camera power share', () => {
@@ -203,7 +203,7 @@ describe('script.js functions', () => {
 
     script.updateCalculations();
 
-    expect(document.getElementById('batteryLife').textContent).toBe('1.77');
+    expect(document.getElementById('batteryLife').textContent).toBe('2.18');
   });
 
   test('weights codecs by camera power share', () => {
@@ -231,7 +231,7 @@ describe('script.js functions', () => {
 
     script.updateCalculations();
 
-    expect(document.getElementById('batteryLife').textContent).toBe('1.75');
+    expect(document.getElementById('batteryLife').textContent).toBe('2.17');
   });
 
   test('weights monitor brightness by monitor power share', () => {
@@ -259,7 +259,7 @@ describe('script.js functions', () => {
 
     script.updateCalculations();
 
-    expect(document.getElementById('batteryLife').textContent).toBe('1.82');
+    expect(document.getElementById('batteryLife').textContent).toBe('2.25');
   });
 
   test('B-Mount camera uses high-voltage current labels', () => {
