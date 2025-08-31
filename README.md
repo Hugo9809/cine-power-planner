@@ -71,7 +71,10 @@ User-submitted battery runtimes are combined using a weighted average to better 
 ## Getting Started
 
 1. Clone the repository and open `index.html` in a modern browser. No build
-   step is required and the planner can be used completely offline.
+   step is required and the planner can be used completely offline. To enable
+   the service worker and other Progressive Web App features, serve the files
+   over HTTP with a simple static server such as `npx http-server` or
+   `python3 -m http.server`.
 2. Install Node.js 18 or later if you plan to develop or run the tests.
 3. Install dependencies and run the full test suite:
    ```bash
