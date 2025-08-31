@@ -893,13 +893,48 @@ function setLanguage(lang) {
   document.getElementById("mainTitle").textContent = texts[lang].appHeading;
   document.getElementById("tagline").textContent = texts[lang].tagline;
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
-  // Section headings
-  document.getElementById("setupManageHeading").textContent = texts[lang].setupManageHeading;
-  document.getElementById("deviceSelectionHeading").textContent = texts[lang].deviceSelectionHeading;
-  document.getElementById("resultsHeading").textContent = texts[lang].resultsHeading; // Fixed typo here
-  document.getElementById("deviceManagerHeading").textContent = texts[lang].deviceManagerHeading;
-  document.getElementById("batteryComparisonHeading").textContent = texts[lang].batteryComparisonHeading;
-  document.getElementById("setupDiagramHeading").textContent = texts[lang].setupDiagramHeading;
+  // Section headings with descriptive hover help
+  const setupManageHeadingElem = document.getElementById("setupManageHeading");
+  setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
+  setupManageHeadingElem.setAttribute(
+    "data-help",
+    texts[lang].setupManageHeadingHelp
+  );
+
+  const deviceSelectionHeadingElem = document.getElementById("deviceSelectionHeading");
+  deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
+  deviceSelectionHeadingElem.setAttribute(
+    "data-help",
+    texts[lang].deviceSelectionHeadingHelp
+  );
+
+  const resultsHeadingElem = document.getElementById("resultsHeading");
+  resultsHeadingElem.textContent = texts[lang].resultsHeading; // Fixed typo here
+  resultsHeadingElem.setAttribute(
+    "data-help",
+    texts[lang].resultsHeadingHelp
+  );
+
+  const deviceManagerHeadingElem = document.getElementById("deviceManagerHeading");
+  deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
+  deviceManagerHeadingElem.setAttribute(
+    "data-help",
+    texts[lang].deviceManagerHeadingHelp
+  );
+
+  const batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
+  batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
+  batteryComparisonHeadingElem.setAttribute(
+    "data-help",
+    texts[lang].batteryComparisonHeadingHelp
+  );
+
+  const setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
+  setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
+  setupDiagramHeadingElem.setAttribute(
+    "data-help",
+    texts[lang].setupDiagramHeadingHelp
+  );
   // Setup manager labels and buttons
   const savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
   savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
