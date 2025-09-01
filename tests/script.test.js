@@ -139,12 +139,15 @@ describe('script.js functions', () => {
     const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
     expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
     const itemsRow = rows[cameraSupportIndex + 1];
-    expect(itemsRow.textContent).toContain('1x Universal Cage');
+    const cageSel = itemsRow.querySelector('#gearListCage');
+    expect(cageSel).not.toBeNull();
+    expect(cageSel.value).toBe('Universal Cage');
   });
 
   test('gear list updates when device selection changes', () => {
     const projectDialog = document.getElementById('projectDialog');
     projectDialog.close = jest.fn();
+    devices.accessories.cages = { Cage1: {}, Cage2: {} };
     const cameraSelect = document.getElementById('cameraSelect');
     cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
     cameraSelect.value = 'CamA';
@@ -155,10 +158,12 @@ describe('script.js functions', () => {
     const projectForm = document.getElementById('projectForm');
     projectForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const gearList = document.getElementById('gearListOutput');
-    expect(gearList.innerHTML).toContain('Cage1');
+    let cageSelEl = gearList.querySelector('#gearListCage');
+    expect(cageSelEl.value).toBe('Cage1');
     cageSelect.value = 'Cage2';
     cageSelect.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(gearList.innerHTML).toContain('Cage2');
+    cageSelEl = gearList.querySelector('#gearListCage');
+    expect(cageSelEl.value).toBe('Cage2');
   });
 
   test('suggests chargers based on total batteries', () => {
@@ -883,6 +888,7 @@ describe('script.js functions', () => {
       addOpt('controller1Select', 'ControllerA');
       addOpt('distanceSelect', 'DistA');
       addOpt('batterySelect', 'BattA');
+      document.getElementById('batteryCount').textContent = '1';
       const html = generateGearListHtml({ projectName: 'Proj', dop: 'DopName' });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
@@ -891,7 +897,8 @@ describe('script.js functions', () => {
       expect(html).toContain('Camera');
       expect(html).toContain('1x CamA');
       expect(html).toContain('Camera Support');
-      expect(html).toContain('1x Universal Cage');
+      expect(html).toContain('<select id="gearListCage"');
+      expect(html).toContain('<option value="Universal Cage"');
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('1x LBUS to LBUS');
       expect(html).toContain('Chargers');
