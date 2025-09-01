@@ -791,7 +791,7 @@ describe('script.js functions', () => {
       addOpt('controller1Select', 'ControllerA');
       addOpt('distanceSelect', 'DistA');
       addOpt('batterySelect', 'BattA');
-      const html = generateGearListHtml({ projectName: 'Proj', dop: 'DopName' });
+      const html = generateGearListHtml({ projectName: 'Proj', dop: 'DopName', cage: 'Universal Cage' });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
       expect(html).toContain('DoP: DopName');
@@ -799,7 +799,8 @@ describe('script.js functions', () => {
       expect(html).toContain('Camera');
       expect(html).toContain('CamA');
       expect(html).toContain('Camera Support');
-      expect(html).toContain('Universal Cage');
+      expect(html).toContain('id="gearListCage"');
+      expect(html).toContain('<option value="Universal Cage" selected>');
       expect(html).toContain('Miscellaneous');
       expect(html).toContain('BNC SDI Cable');
     });

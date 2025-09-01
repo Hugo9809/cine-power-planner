@@ -5127,13 +5127,13 @@ setupSelect.addEventListener("change", (event) => {
       cameraSelect.value = setup.camera;
       updateBatteryPlateVisibility();
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
+      updateBatteryOptions();
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
       setup.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
       setup.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
-      updateBatteryOptions();
       if (gearListOutput) {
         gearListOutput.innerHTML = setup.gearList || '';
         if (setup.gearList) {
@@ -6606,12 +6606,6 @@ function collectAccessories() {
         }
     }
 
-    if (cameraSelect.value && acc.cages) {
-        for (const [name, cage] of Object.entries(acc.cages)) {
-            if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(name);
-        }
-    }
-
     const powerCableDb = acc.cables?.power || {};
     const gatherPower = (data) => {
         const input = data?.power?.input?.type;
@@ -6696,6 +6690,20 @@ function collectProjectFormData() {
     };
 }
 
+function buildCageSelect(selected = '') {
+    const cages = devices.accessories?.cages || {};
+    const cam = cameraSelect && cameraSelect.value;
+    let options = '<option value=""></option>';
+    for (const [name, cage] of Object.entries(cages)) {
+        if (!cam || !cage?.compatible || cage.compatible.includes(cam)) {
+            const sel = name === selected ? ' selected' : '';
+            options += `<option value="${escapeHtml(name)}"${sel}>${escapeHtml(name)}</option>`;
+        }
+    }
+    const label = escapeHtml(texts[currentLang].cageLabel || 'Cage:');
+    return `${label} <select id="gearListCage">${options}</select>`;
+}
+
 function generateGearListHtml(info = {}) {
     const selectedNames = {
         camera: cameraSelect && cameraSelect.value && cameraSelect.value !== 'None' ? cameraSelect.options[cameraSelect.selectedIndex].text : '',
@@ -6731,7 +6739,9 @@ function generateGearListHtml(info = {}) {
         rows.push(`<tr><td>${items}</td></tr>`);
     };
     addRow('Camera', escapeHtml(selectedNames.camera || ''));
-    addRow('Camera Support', join([selectedNames.batteryPlate, ...cameraSupportAcc]));
+    const cageSelect = buildCageSelect(info.cage);
+    const cameraSupportText = join([selectedNames.batteryPlate, ...cameraSupportAcc]);
+    addRow('Camera Support', cageSelect + (cameraSupportText ? ', ' + cameraSupportText : ''));
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
@@ -6914,13 +6924,13 @@ function applySharedSetup(shared) {
       applyDeviceChanges(decoded.changedDevices);
     }
     if (setupNameInput && decoded.setupName) setupNameInput.value = decoded.setupName;
-    if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
-    updateBatteryPlateVisibility();
-    if (batteryPlateSelect && decoded.batteryPlate) batteryPlateSelect.value = decoded.batteryPlate;
-    updateBatteryOptions();
-    if (monitorSelect && decoded.monitor) monitorSelect.value = decoded.monitor;
-    if (videoSelect && decoded.video) videoSelect.value = decoded.video;
-    if (distanceSelect && decoded.distance) distanceSelect.value = decoded.distance;
+  if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
+  updateBatteryPlateVisibility();
+  if (batteryPlateSelect && decoded.batteryPlate) batteryPlateSelect.value = decoded.batteryPlate;
+  updateBatteryOptions();
+  if (monitorSelect && decoded.monitor) monitorSelect.value = decoded.monitor;
+  if (videoSelect && decoded.video) videoSelect.value = decoded.video;
+  if (distanceSelect && decoded.distance) distanceSelect.value = decoded.distance;
     if (Array.isArray(decoded.motors)) {
       decoded.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
     }

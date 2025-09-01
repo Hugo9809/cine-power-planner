@@ -63,6 +63,7 @@ const texts = {
     batteryLabel: "V-Mount Battery:",
     batteryBMountLabel: "B-Mount Battery:",
     batteryPlateLabel: "Battery Plate:",
+    cageLabel: "Cage:",
 
     fizLegend: "FIZ (Follow Focus) Systems",
     fizMotorsLabel: "FIZ Motors:",
@@ -405,6 +406,7 @@ const texts = {
     batteryLabel: "Batteria a V-Mount:",
     batteryBMountLabel: "Batteria B-Mount:",
     batteryPlateLabel: "Piastra batteria:",
+    cageLabel: "Gabbia:",
     fizLegend: "Sistemi FIZ (Follow Focus)",
     fizMotorsLabel: "Motori FIZ:",
     fizControllersLabel: "Controller FIZ:",
@@ -727,6 +729,7 @@ const texts = {
     batteryLabel: "Batería V-Mount:",
     batteryBMountLabel: "Batería B-Mount:",
     batteryPlateLabel: "Placa de Batería:",
+    cageLabel: "Jaula:",
 
     fizLegend: "Sistemas FIZ (Follow Focus)",
     fizMotorsLabel: "Motores FIZ:",
@@ -1063,6 +1066,7 @@ const texts = {
     batteryLabel: "Batterie V-Mount:",
     batteryBMountLabel: "Batterie B-Mount:",
     batteryPlateLabel: "Plaque Batterie:",
+    cageLabel: "Cage:",
 
     fizLegend: "Systèmes FIZ",
     fizMotorsLabel: "Moteurs FIZ:",
@@ -1401,6 +1405,7 @@ const texts = {
     batteryLabel: "V-Mount Akku:",
     batteryBMountLabel: "B-Mount Akku:",
     batteryPlateLabel: "Akkuschacht:",
+    cageLabel: "Cage:",
 
     fizLegend: "FIZ (Follow Focus) Systeme",
     fizMotorsLabel: "FIZ Motoren:",
