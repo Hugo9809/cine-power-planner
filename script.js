@@ -359,6 +359,10 @@ function unifyDevices(data) {
     fixPowerInput(vd);
   });
 
+  Object.values(data.viewfinders || {}).forEach(vf => {
+    fixPowerInput(vf);
+  });
+
   Object.values(data.fiz?.motors || {}).forEach(fm => {
     fixPowerInput(fm);
   });
@@ -1139,6 +1143,7 @@ function setLanguage(lang) {
     tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
   // Device manager category headings
   document.getElementById("category_cameras").textContent = texts[lang].category_cameras;
+  document.getElementById("category_viewfinders").textContent = texts[lang].category_viewfinders;
   document.getElementById("category_monitors").textContent = texts[lang].category_monitors;
   document.getElementById("category_video").textContent = texts[lang].category_video;
   document.getElementById("category_fiz_motors").textContent = texts[lang].category_fiz_motors;
@@ -1221,7 +1226,7 @@ function setLanguage(lang) {
   const filterPlaceholder = texts[lang].placeholder_filter;
   [cameraFilterInput, monitorFilterInput, videoFilterInput, cageFilterInput, motorFilterInput,
    controllerFilterInput, distanceFilterInput, batteryFilterInput,
-   cameraListFilterInput, monitorListFilterInput, videoListFilterInput,
+   cameraListFilterInput, viewfinderListFilterInput, monitorListFilterInput, videoListFilterInput,
    motorListFilterInput, controllerListFilterInput, distanceListFilterInput,
    batteryListFilterInput, fizCableListFilterInput, cameraSupportListFilterInput, chargerListFilterInput].forEach(input => {
    if (input) {
@@ -1432,6 +1437,7 @@ const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const cameraListElem  = document.getElementById("cameraList");
+const viewfinderListElem = document.getElementById("viewfinderList");
 const monitorListElem = document.getElementById("monitorList");
 const videoListElem   = document.getElementById("videoList");
 const motorListElem   = document.getElementById("motorList");
@@ -1649,6 +1655,7 @@ const diagramIcons = {
   battery: "\uD83D\uDD0B", // 🔋 battery
   camera: "\uD83C\uDFA5", // 🎥 camera
   monitor: "\uD83D\uDDA5\uFE0F", // 🖥️ monitor
+  viewfinder: "\uD83D\uDC41\uFE0F", // 👁️ viewfinder
   video: "\uD83D\uDCE1", // 📡 wireless video
   motors: "\u2699\uFE0F", // ⚙️ lens motor
   controllers: "\uD83C\uDFAE", // 🎮 game controller
@@ -1661,6 +1668,7 @@ const diagramIcons = {
 const overviewSectionIcons = {
   category_batteries: diagramIcons.battery,
   category_cameras: diagramIcons.camera,
+  category_viewfinders: diagramIcons.viewfinder,
   category_monitors: diagramIcons.monitor,
   category_video: diagramIcons.video,
   category_cages: diagramIcons.camera,
@@ -1682,6 +1690,7 @@ const batteryFilterInput = document.getElementById("batteryFilter");
 
 // List filters for existing device categories
 const cameraListFilterInput = document.getElementById("cameraListFilter");
+const viewfinderListFilterInput = document.getElementById("viewfinderListFilter");
 const monitorListFilterInput = document.getElementById("monitorListFilter");
 const videoListFilterInput = document.getElementById("videoListFilter");
 const motorListFilterInput = document.getElementById("motorListFilter");
@@ -2437,6 +2446,7 @@ function firstPowerInputType(dev) {
 function getAllPowerPortTypes() {
   const types = new Set();
   Object.values(devices.cameras).forEach(cam => powerInputTypes(cam).forEach(t => types.add(t)));
+  Object.values(devices.viewfinders || {}).forEach(vf => powerInputTypes(vf).forEach(t => types.add(t)));
   Object.values(devices.monitors || {}).forEach(mon => powerInputTypes(mon).forEach(t => types.add(t)));
   Object.values(devices.video || {}).forEach(vd => powerInputTypes(vd).forEach(t => types.add(t)));
   Object.values(devices.fiz?.motors || {}).forEach(m => powerInputTypes(m).forEach(t => types.add(t)));
@@ -3276,6 +3286,7 @@ function applyFilters() {
   filterSelect(batterySelect, batteryFilterInput.value);
 
   filterDeviceList(cameraListElem, cameraListFilterInput.value);
+  filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
   filterDeviceList(monitorListElem, monitorListFilterInput.value);
   filterDeviceList(videoListElem, videoListFilterInput.value);
   filterDeviceList(motorListElem, motorListFilterInput.value);
@@ -4020,6 +4031,7 @@ function getDeviceChanges() {
     });
   };
   compare('cameras', window.defaultDevices.cameras || {}, devices.cameras || {});
+  compare('viewfinders', window.defaultDevices.viewfinders || {}, devices.viewfinders || {});
   compare('monitors', window.defaultDevices.monitors || {}, devices.monitors || {});
   compare('video', window.defaultDevices.video || {}, devices.video || {});
   compare('batteries', window.defaultDevices.batteries || {}, devices.batteries || {});
@@ -4982,6 +4994,7 @@ function renderDeviceList(categoryKey, ulElement) {
 
 function refreshDeviceLists() {
   renderDeviceList("cameras", cameraListElem);
+  renderDeviceList("viewfinders", viewfinderListElem);
   renderDeviceList("monitors", monitorListElem);
   renderDeviceList("video", videoListElem);
   renderDeviceList("fiz.motors", motorListElem);
@@ -4993,6 +5006,7 @@ function refreshDeviceLists() {
   renderDeviceList("accessories.chargers", chargerListElem);
 
   filterDeviceList(cameraListElem, cameraListFilterInput.value);
+  filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
   filterDeviceList(monitorListElem, monitorListFilterInput.value);
   filterDeviceList(videoListElem, videoListFilterInput.value);
   filterDeviceList(motorListElem, motorListFilterInput.value);
@@ -5043,6 +5057,7 @@ clearFilterOnSelect(batterySelect, batteryFilterInput);
 clearFiltersBtn.addEventListener("click", clearAllFilters);
 
 bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
+bindFilterInput(viewfinderListFilterInput, () => filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value));
 bindFilterInput(monitorListFilterInput, () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
 bindFilterInput(videoListFilterInput, () => filterDeviceList(videoListElem, videoListFilterInput.value));
 bindFilterInput(motorListFilterInput, () => filterDeviceList(motorListElem, motorListFilterInput.value));
@@ -5883,7 +5898,7 @@ importFileInput.addEventListener("change", (event) => {
     try {
       const importedData = JSON.parse(e.target.result);
       // Basic validation: check if it has expected top-level keys
-      const expectedKeys = ["cameras", "monitors", "video", "fiz", "batteries"];
+      const expectedKeys = ["cameras", "viewfinders", "monitors", "video", "fiz", "batteries"];
       const hasAllKeys = expectedKeys.every(key => Object.prototype.hasOwnProperty.call(importedData, key));
 
       if (hasAllKeys && typeof importedData.fiz === 'object' &&
@@ -6753,6 +6768,11 @@ function generateGearListHtml(info = {}) {
         batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? batteryPlateSelect.options[batteryPlateSelect.selectedIndex].text : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? batterySelect.options[batterySelect.selectedIndex].text : ''
     };
+    if (["Arri Alexa Mini", "Arri Amira"].includes(selectedNames.camera)) {
+        selectedNames.viewfinder = "ARRI K2.75004.0 MVF-1 Viewfinder";
+    } else {
+        selectedNames.viewfinder = "";
+    }
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const allowedInfo = ['dop','firstDay','lastDay','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
@@ -6787,8 +6807,11 @@ function generateGearListHtml(info = {}) {
     addRow('Monitoring Batteries', '');
     addRow('Chargers', join(chargersAcc));
     let monitoringItems = '';
+    if (selectedNames.viewfinder) {
+        monitoringItems += `<strong>Viewfinder</strong><br>- ${escapeHtml(selectedNames.viewfinder)}`;
+    }
     if (selectedNames.monitor) {
-        monitoringItems += `<strong>Onboard Monitor</strong><br>- ${escapeHtml(selectedNames.monitor)}<br>- incl. Sunhood`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong><br>- ${escapeHtml(selectedNames.monitor)}<br>- incl. Sunhood`;
     }
     if (selectedNames.video) {
         monitoringItems += (monitoringItems ? '<br>' : '') + escapeHtml(selectedNames.video);

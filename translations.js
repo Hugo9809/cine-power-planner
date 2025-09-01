@@ -125,6 +125,7 @@ const texts = {
     masterGripWirelessWarning: "WARNING: Master Grip has no wireless capability. Use RIA-1, UMC-4 or cforce RF for wireless control.",
 
     category_cameras: "Cameras",
+    category_viewfinders: "Viewfinders",
     category_monitors: "Monitors",
     category_video: "Wireless Video",
     category_cages: "Cages",
@@ -466,6 +467,7 @@ const texts = {
     distanceControllerWarning: "ATTENZIONE: le unità di distanza richiedono UMC-4, RIA-1 o CFORCE RF.",
     masterGripWirelessWarning: "ATTENZIONE: Master Grip non ha capacità wireless. Utilizzare RIA-1, UMC-4 o CFORCE RF per il controllo wireless.",
     category_cameras: "Telecamere",
+    category_viewfinders: "Mirini",
     category_monitors: "Monitor",
     category_video: "Video wireless",
     category_cages: "Gabbie",
@@ -799,6 +801,7 @@ const texts = {
     masterGripWirelessWarning: "ADVERTENCIA: Master Grip no tiene capacidad inalámbrica. Se necesita un controlador RIA-1, UMC-4 o cforce RF para usarlo de forma inalámbrica.",
 
     category_cameras: "Cámaras",
+    category_viewfinders: "Visores",
     category_monitors: "Monitores",
     category_video: "Vídeo inalámbrico",
     category_cages: "Jaulas",
@@ -1141,6 +1144,7 @@ const texts = {
     masterGripWirelessWarning: "ATTENTION : le Master Grip n'a pas de fonction sans fil. Utilisez un RIA-1, un UMC-4 ou un cforce RF pour un fonctionnement sans fil.",
 
     category_cameras: "Caméras",
+    category_viewfinders: "Viseurs",
     category_monitors: "Moniteurs",
     category_video: "Vidéo Sans Fil",
     category_cages: "Cages",
@@ -1485,6 +1489,7 @@ const texts = {
     masterGripWirelessWarning: "WARNUNG: Der Master Grip verfügt über keine Funkfunktion. Verwenden Sie einen RIA-1-, UMC-4- oder cforce-RF-Controller für den drahtlosen Betrieb.",
 
     category_cameras: "Kameras",
+    category_viewfinders: "Sucher",
     category_monitors: "Monitore",
     category_video: "Videofunk",
     category_cages: "Käfige",
