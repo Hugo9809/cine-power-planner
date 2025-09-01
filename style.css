@@ -948,6 +948,27 @@ body:not(.light-mode) #userFeedbackTable td {
   border-color: #555;
 }
 
+/* Accent handling for feedback table */
+body.light-mode #userFeedbackTable th,
+body.light-mode #userFeedbackTable td,
+body.light-mode.pink-mode #userFeedbackTable th,
+body.light-mode.pink-mode #userFeedbackTable td {
+  border-color: #001589;
+}
+body.light-mode #userFeedbackTable th,
+body.light-mode.pink-mode #userFeedbackTable th {
+  background-color: #001589;
+  color: var(--inverse-text-color);
+}
+body:not(.light-mode).pink-mode #userFeedbackTable th,
+body:not(.light-mode).pink-mode #userFeedbackTable td {
+  border-color: var(--accent-color);
+}
+body:not(.light-mode).pink-mode #userFeedbackTable th {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+
 /* Battery comparison bars */
 .barContainer {
   width: 100%;
