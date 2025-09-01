@@ -1455,6 +1455,7 @@ const controllerSelects = [
 ];
 const distanceSelect = document.getElementById("distanceSelect");
 const batterySelect  = document.getElementById("batterySelect");
+const sliderBowlSelect = document.getElementById("sliderBowl");
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
@@ -1606,7 +1607,8 @@ function getCurrentSetupState() {
     controllers: controllerSelects.map(sel => sel.value),
     distance: distanceSelect.value,
     batteryPlate: batteryPlateSelect.value,
-    battery: batterySelect.value
+    battery: batterySelect.value,
+    sliderBowl: sliderBowlSelect ? sliderBowlSelect.value : ''
   };
 }
 
@@ -5183,7 +5185,7 @@ deleteSetupBtn.addEventListener("click", () => {
     populateSetupSelect();
     setupNameInput.value = ""; // Clear setup name input
     // Reset dropdowns to "None" or first option after deleting current setup
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, sliderBowlSelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
         sel.value = "None";
@@ -5265,6 +5267,7 @@ setupSelect.addEventListener("change", (event) => {
       setup.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
+      if (sliderBowlSelect) sliderBowlSelect.value = setup.sliderBowl || '';
       updateBatteryOptions();
       if (gearListOutput) {
         gearListOutput.innerHTML = setup.gearList || '';
@@ -6900,6 +6903,7 @@ function collectProjectFormData() {
         rigging: multi('rigging'),
         monitoringPreferences: multi('monitoringPreferences'),
         tripodPreferences: multi('tripodPreferences'),
+        sliderBowl: val('sliderBowl'),
         filter: val('filter')
     };
 }
@@ -6940,7 +6944,7 @@ function generateGearListHtml(info = {}) {
     }
     const supportAccNoCages = cameraSupportAcc.filter(item => !compatibleCages.includes(item));
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
-    const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
+    const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses','sliderBowl'];
     const labels = {
         dop: 'DoP',
         prepDays: 'Prep Days',
@@ -6950,7 +6954,8 @@ function generateGearListHtml(info = {}) {
         aspectRatio: 'Aspect Ratio',
         codec: 'Codec',
         baseFrameRate: 'Base Frame Rate',
-        lenses: 'Lenses'
+        lenses: 'Lenses',
+        sliderBowl: 'Tango Roller Mount'
     };
     const infoPairs = Object.entries(info).filter(([k,v]) => v && allowedInfo.includes(k));
     const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
@@ -7039,6 +7044,22 @@ function generateGearListHtml(info = {}) {
     const gripItems = [];
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
+    if (scenarios.includes('Slider')) {
+        const mount = info.sliderBowl ? ` (${info.sliderBowl})` : '';
+        gripItems.push(`Prosup Tango Roller${mount}`);
+        gripItems.push('Avenger Combo Stand 10 A1010CS 64-100 cm black');
+        gripItems.push('Avenger Combo Stand 10 A1010CS 64-100 cm black');
+        gripItems.push('Avenger Combo Stand 20 A1020B 110-198 cm black');
+        gripItems.push('Avenger Combo Stand 20 A1020B 110-198 cm black');
+        gripItems.push('Apple Box Set / Bühnenkisten Set');
+        gripItems.push('Apple Box Set / Bühnenkisten Set');
+        gripItems.push('Satz Paganinis');
+        gripItems.push('Sandsack');
+        gripItems.push('Sandsack');
+        gripItems.push('Bodenmatte');
+        gripItems.push('Bodenmatte');
+        gripItems.push('Bodenmatte');
+    }
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
@@ -7216,7 +7237,8 @@ function saveCurrentSession() {
     controllers: controllerSelects.map(sel => sel ? sel.value : ''),
     distance: distanceSelect ? distanceSelect.value : '',
     batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
-    battery: batterySelect ? batterySelect.value : ''
+    battery: batterySelect ? batterySelect.value : '',
+    sliderBowl: sliderBowlSelect ? sliderBowlSelect.value : ''
   };
   storeSession(state);
 }
@@ -7240,6 +7262,7 @@ function restoreSessionState() {
     state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
   }
   if (batterySelect && state.battery) batterySelect.value = state.battery;
+  if (sliderBowlSelect && state.sliderBowl) sliderBowlSelect.value = state.sliderBowl;
   if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
 }
 
@@ -7304,13 +7327,13 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, setupSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, sliderBowlSelect, setupSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, sliderBowlSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
