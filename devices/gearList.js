@@ -491,6 +491,19 @@ const gear = {
             "Power"
           ]
         },
+        "ultra slim 3G-SDI BNC cable 0,3m": {
+          "lengthM": 0.3,
+          "connectors": [
+            "BNC",
+            "BNC"
+          ],
+          "orientation": "straight",
+          "type": "3G-SDI",
+          "notes": "ultra slim",
+          "useCase": [
+            "Video"
+          ]
+        },
         "ultra slim 3G-SDI BNC cable 0,5m": {
           "lengthM": 0.5,
           "connectors": [

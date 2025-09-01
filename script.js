@@ -6952,8 +6952,8 @@ function generateGearListHtml(info = {}) {
     addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare');
     addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'for wireless transmitter');
     addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'spare');
-    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'for wireless transmitter');
-    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare');
+    addCable('ultra slim 3G-SDI BNC cable 0,3m', 'for wireless transmitter');
+    addCable('ultra slim 3G-SDI BNC cable 0,3m', 'spare');
     const formatCableUsage = usageMap => {
         return Object.entries(usageMap).map(([name, uses]) => {
             const total = Object.values(uses).reduce((sum, n) => sum + n, 0);
