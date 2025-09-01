@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'camera-power-planner-v10';
+const CACHE_NAME = 'camera-power-planner-v12';
 const ASSETS = [
   './',
   './index.html',
@@ -22,7 +22,8 @@ const ASSETS = [
   './icon.svg',
   './icon.png',
   './manifest.webmanifest',
-  './lz-string.min.js'
+  './lz-string.min.js',
+  './fonts/ubuntu.css'
 ];
 
 if (typeof self !== 'undefined') {

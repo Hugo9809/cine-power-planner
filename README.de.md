@@ -88,7 +88,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 
 ## 🎨 Design
 - Klare Gestaltung mit blauen Überschriften und grauen Eingabefeldern
-- Verwendet Google-Font „Open Sans“
+  - Verwendet die lokal gebündelte Schrift „Ubuntu“
 - Responsives Layout für kleine Bildschirme
 - Heller und dunkler Modus
 
@@ -113,8 +113,8 @@ data.js          # Standard-Datenbank
 storage.js       # Hilfsfunktionen für LocalStorage
 README.*.md      # Dokumentation in verschiedenen Sprachen
 ```
-Schriftarten werden über Google Fonts in `index.html` geladen.
-Nach dem ersten Laden mit Internetverbindung kann die Anwendung komplett offline genutzt werden.
+Schriftarten sind lokal gebündelt und in `index.html` eingebunden.
+Die Anwendung funktioniert bereits beim ersten Laden komplett offline.
 
 ## 🛠️ Entwicklung
 Erfordert Node.js 18 oder neuer.

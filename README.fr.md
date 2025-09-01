@@ -88,7 +88,7 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 
 ## 🎨 Design
 - Mise en page épurée avec titres bleus et champs gris
-- Utilise la police Google "Open Sans"
+  - Utilise la police « Ubuntu » incluse localement
 - Mise en page responsive pour les petits écrans
 - Thèmes clair et sombre séparés
 
@@ -113,8 +113,8 @@ data.js          # Base par défaut
 storage.js       # Fonctions LocalStorage
 README.*.md      # Documentation en plusieurs langues
 ```
-Les polices sont chargées via Google Fonts dans `index.html`.
-Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
+Les polices sont regroupées localement et référencées dans `index.html`.
+L'application fonctionne entièrement hors ligne dès le premier chargement.
 
 ## 🛠️ Développement
 Nécessite Node.js 18 ou version ultérieure.

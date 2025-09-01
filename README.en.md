@@ -118,7 +118,7 @@ The app automatically uses your browser language on first load, and you can swit
 
 ## 🎨 Design
 - Clean layout with blue headings and grey input fields
-- Uses Google Fonts "Open Sans"
+  - Uses the locally bundled "Ubuntu" font
 - Responsive design adapts for small screens
 - Separate light and dark themes
 
@@ -154,8 +154,7 @@ data.js          # Default device list
 storage.js       # LocalStorage helpers
 README.*.md      # Documentation in different languages
 ```
-Fonts are loaded via Google Fonts links in `index.html`.
-After the fonts are cached on first load, the application works entirely offline.
+Fonts are bundled locally in the `fonts/` directory and referenced in `index.html`, so the application works entirely offline from the first load.
 
 ## 🛠️ Development
 Requires Node.js 18 or later.

@@ -88,7 +88,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 
 ## 🎨 Diseño
 - Diseño limpio con títulos azules y campos grises
-- Usa la fuente "Open Sans" de Google Fonts
+  - Usa la fuente "Ubuntu" incluida localmente
 - Diseño adaptable para pantallas pequeñas
 - Temas claro y oscuro
 
@@ -113,8 +113,8 @@ data.js          # Base de datos por defecto
 storage.js       # Utilidades de LocalStorage
 README.*.md      # Documentación en distintos idiomas
 ```
-Las fuentes se cargan desde Google Fonts en `index.html`.
-Una vez almacenadas las fuentes en caché, la aplicación puede usarse totalmente sin conexión.
+Las fuentes están incluidas localmente y se referencian en `index.html`.
+La aplicación funciona completamente sin conexión desde la primera carga.
 
 ## 🛠️ Desarrollo
 Se requiere Node.js 18 o posterior.

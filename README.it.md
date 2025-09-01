@@ -87,7 +87,7 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 
 ## 🎨 Design
 - Layout pulito con titoli blu e campi di input grigi
-- Utilizza i Google Font "Open Sans"
+  - Utilizza il font "Ubuntu" incluso localmente
 - Design responsivo adatto anche agli schermi piccoli
 - Temi chiaro e scuro separati
 
@@ -112,8 +112,8 @@ data.js          # Elenco dispositivi predefinito
 storage.js       # Funzioni di LocalStorage
 README.*.md      # Documentazione in diverse lingue
 ```
-I font vengono caricati tramite Google Fonts in `index.html`.
-Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'applicazione funziona interamente offline.
+I font sono inclusi localmente in `index.html`.
+L'applicazione funziona completamente offline fin dal primo caricamento.
 
 ## 🛠️ Sviluppo
 È necessario Node.js 18 o successivo.

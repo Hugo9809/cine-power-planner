@@ -5,6 +5,12 @@ describe('service worker configuration', () => {
     expect(ASSETS).toEqual(expect.arrayContaining(['./overview.css', './overview-print.css']));
   });
 
+    test('caches fonts for offline usage', () => {
+      expect(ASSETS).toEqual(expect.arrayContaining([
+        './fonts/ubuntu.css'
+      ]));
+    });
+
   test('exposes a cache name', () => {
     expect(typeof CACHE_NAME).toBe('string');
     expect(CACHE_NAME).not.toBe('');
