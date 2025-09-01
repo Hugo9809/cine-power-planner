@@ -1,3 +1,4 @@
+(() => {
 const data = {
   "motors": {
     "None": {
@@ -767,3 +768,4 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices = globalThis.devices || {};
   globalThis.devices.fiz = data;
 }
+})();

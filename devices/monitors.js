@@ -1,3 +1,4 @@
+(() => {
 const data = {
   "SmallHD Ultra 7": {
     "screenSizeInches": 7,
@@ -842,3 +843,4 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices = globalThis.devices || {};
   globalThis.devices.monitors = data;
 }
+})();

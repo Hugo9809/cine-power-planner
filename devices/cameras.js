@@ -1,3 +1,4 @@
+(() => {
 const data = {
   "Arri Alexa Mini LF": {
     "powerDrawWatts": 89,
@@ -4781,3 +4782,4 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices = globalThis.devices || {};
   globalThis.devices.cameras = data;
 }
+})();
