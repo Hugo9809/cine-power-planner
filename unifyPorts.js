@@ -4,6 +4,8 @@ let devices = require('./data.js');
 // Caches for expensive normalization steps to avoid repeated regex work
 const typeNameCache = new Map();
 const voltageRangeCache = new Map();
+// Cache for parsed power input strings to avoid repeated parsing work
+const powerInputCache = new Map();
 
 /**
  * Standardizes connector type names for easier comparison.
@@ -186,7 +188,8 @@ function splitOutside(str, delimiter = '/') {
  */
 function parsePowerInput(str) {
   if (!str) return null;
-  return splitOutside(str)
+  if (powerInputCache.has(str)) return powerInputCache.get(str);
+  const arr = splitOutside(str)
     .map(p => p.trim())
     .filter(p => p.length > 0)
     .map(p => {
@@ -204,10 +207,12 @@ function parsePowerInput(str) {
           notes = m[2].trim();
         }
       }
-      const obj = { type };
+      const obj = { type: cleanTypeName(type) };
       if (notes) obj.notes = notes;
       return obj;
     });
+  powerInputCache.set(str, arr);
+  return arr;
 }
 
 function normalizeVideoDevice(dev) {
