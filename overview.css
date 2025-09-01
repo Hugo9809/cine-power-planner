@@ -1,5 +1,7 @@
-body { font-family: system-ui, sans-serif; margin: 25px; color: var(--control-text); font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-h1, h2, h3 { font-family: system-ui, sans-serif; font-weight: 500; color: var(--accent-color); }
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap');
+
+body { font-family: 'Ubuntu', sans-serif; font-weight: 300; margin: 25px; color: var(--control-text); font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+h1, h2, h3 { font-family: 'Ubuntu', sans-serif; font-weight: 700; color: var(--accent-color); }
 h1 { font-size: 1.8em; margin-bottom: 0.2em; }
 h2 { font-size: 1.4em; margin-top: 1.3em; border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; }
 h3 { font-size: 1.1em; margin-top: 1em; }
@@ -13,7 +15,7 @@ table {
   table-layout: fixed;
 }
 th, td { border: 1px solid var(--panel-border); padding: 8px; text-align: left; font-size: 0.9em; overflow: hidden; }
-th { background-color: var(--control-bg); }
+th { background-color: var(--control-bg); font-weight: 700; }
 .warning { color: red; font-weight: bold; margin-top: 10px; }
 .print-btn, .back-btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border-radius: 5px; border: 1px solid var(--control-border); background: var(--control-bg); color: var(--control-text); margin-bottom: 20px; }
 .device-block-grid {
@@ -47,6 +49,8 @@ th { background-color: var(--control-bg); }
   box-shadow: var(--panel-shadow);
 }
 .device-category h3 {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 700;
   margin-top: 0;
   margin-bottom: 5px;
   border-bottom: 1px solid #eee;
@@ -69,7 +73,7 @@ th { background-color: var(--control-bg); }
   body { background-color: var(--background-color); color: var(--text-color); }
   h1, h2, h3 { color: var(--inverse-text-color); }
   h2 { border-bottom: 2px solid var(--inverse-text-color); }
-  th { background-color: var(--control-bg); }
+  th { background-color: var(--control-bg); font-weight: 700; }
   .print-btn, .back-btn { background: var(--control-bg); color: var(--text-color); border-color: var(--panel-border); }
   .device-category { background: var(--panel-bg); border-color: var(--panel-border); box-shadow: var(--panel-shadow); }
   .device-category h3 { border-bottom: 1px solid var(--inverse-text-color); color: var(--inverse-text-color); }
