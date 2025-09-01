@@ -6734,6 +6734,7 @@ function collectProjectFormData() {
     return {
         projectName: val('projectName'),
         dop: val('dop'),
+        prepDay: val('prepDay'),
         firstDay: val('firstDay'),
         lastDay: val('lastDay'),
         deliveryResolution: val('deliveryResolution'),
@@ -6764,9 +6765,10 @@ function generateGearListHtml(info = {}) {
     };
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
-    const allowedInfo = ['dop','firstDay','lastDay','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
+    const allowedInfo = ['dop','prepDay','firstDay','lastDay','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
     const labels = {
         dop: 'DoP',
+        prepDay: 'Prep Day',
         firstDay: 'First Day of Shooting',
         lastDay: 'Last Day of Shooting',
         deliveryResolution: 'Delivery Resolution',
