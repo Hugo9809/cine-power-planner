@@ -6,6 +6,11 @@ const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const GEARLIST_STORAGE_KEY = 'cameraPowerPlanner_gearList';
 
+// Helper to check for plain objects
+function isPlainObject(val) {
+  return val !== null && typeof val === 'object' && !Array.isArray(val);
+}
+
 // Generic helpers for storage access
 function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
   try {
@@ -70,19 +75,17 @@ function loadDeviceData() {
     "Error loading device data from localStorage:"
   );
   if (parsedData) {
-    // Helper to ensure a value is a non-null object
-    const isObject = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
     // Validate that top-level categories exist and are non-null objects
     const isValid =
-      isObject(parsedData) &&
-      isObject(parsedData.cameras) &&
-      isObject(parsedData.monitors) &&
-      isObject(parsedData.video) &&
-      isObject(parsedData.batteries) &&
-      isObject(parsedData.fiz) && // Check fiz is an object
-      isObject(parsedData.fiz.motors) && // Check nested fiz categories
-      isObject(parsedData.fiz.controllers) &&
-      isObject(parsedData.fiz.distance);
+      isPlainObject(parsedData) &&
+      isPlainObject(parsedData.cameras) &&
+      isPlainObject(parsedData.monitors) &&
+      isPlainObject(parsedData.video) &&
+      isPlainObject(parsedData.batteries) &&
+      isPlainObject(parsedData.fiz) && // Check fiz is an object
+      isPlainObject(parsedData.fiz.motors) && // Check nested fiz categories
+      isPlainObject(parsedData.fiz.controllers) &&
+      isPlainObject(parsedData.fiz.distance);
 
     if (isValid) {
       console.log("Device data loaded from localStorage.");
@@ -110,7 +113,7 @@ function normalizeSetups(data) {
     const obj = {};
     const used = new Set();
     data.forEach((item, idx) => {
-      if (item && typeof item === 'object') {
+      if (isPlainObject(item)) {
         const base = item.name || item.setupName || `Setup ${idx + 1}`;
         const key = generateUniqueName(base, used);
         obj[key] = item;
@@ -118,7 +121,7 @@ function normalizeSetups(data) {
     });
     return obj;
   }
-  return typeof data === 'object' ? data : {};
+  return isPlainObject(data) ? data : {};
 }
 
 function loadSetups() {
@@ -214,7 +217,7 @@ function loadFeedback() {
     FEEDBACK_STORAGE_KEY,
     "Error loading feedback from localStorage:"
   );
-  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+  if (isPlainObject(parsed)) {
     return parsed;
   }
   return {};
@@ -254,7 +257,7 @@ function exportAllData() {
 }
 
 function importAllData(data) {
-  if (data && typeof data === 'object') {
+  if (isPlainObject(data)) {
     if (data.devices) {
       saveDeviceData(data.devices);
     }
