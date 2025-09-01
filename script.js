@@ -6626,9 +6626,7 @@ function collectAccessories() {
     }
 
     if (cameraSelect.value && acc.cages) {
-        if (cageSelect.value && cageSelect.value !== 'None') {
-            cameraSupport.push(cageSelect.value);
-        } else {
+        if (!cageSelect.value || cageSelect.value === 'None') {
             for (const [name, cage] of Object.entries(acc.cages)) {
                 if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(name);
             }
@@ -6729,6 +6727,7 @@ function generateGearListHtml(info = {}) {
         motors: motorSelects.map(sel => sel && sel.value && sel.value !== 'None' ? sel.options[sel.selectedIndex].text : '').filter(Boolean),
         controllers: controllerSelects.map(sel => sel && sel.value && sel.value !== 'None' ? sel.options[sel.selectedIndex].text : '').filter(Boolean),
         distance: distanceSelect && distanceSelect.value && distanceSelect.value !== 'None' ? distanceSelect.options[distanceSelect.selectedIndex].text : '',
+        cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? cageSelect.options[cageSelect.selectedIndex].text : '',
         batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? batteryPlateSelect.options[batteryPlateSelect.selectedIndex].text : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? batterySelect.options[batterySelect.selectedIndex].text : ''
     };
@@ -6756,7 +6755,7 @@ function generateGearListHtml(info = {}) {
         rows.push(`<tr><td>${items}</td></tr>`);
     };
     addRow('Camera', escapeHtml(selectedNames.camera || ''));
-    addRow('Camera Support', join([selectedNames.batteryPlate, ...cameraSupportAcc]));
+    addRow('Camera Support', join([selectedNames.batteryPlate, selectedNames.cage, ...cameraSupportAcc]));
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
