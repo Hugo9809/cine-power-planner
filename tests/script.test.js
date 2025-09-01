@@ -1050,8 +1050,12 @@ describe('script.js functions', () => {
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
     const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
     const itemsRow = rows[gripIdx + 1];
+    const select = itemsRow.querySelector('#gearListSliderBowl');
+    expect(select).not.toBeNull();
+    expect(Array.from(select.options).map(o => o.value)).toEqual(['', '75er bowl', '100er bowl', '150er bowl', 'Mitchell Mount']);
+    expect(select.value).toBe('75er bowl');
     const text = itemsRow.textContent;
-    expect(text).toContain('1x Prosup Tango Roller (75er bowl)');
+    expect(text).toContain('1x Prosup Tango Roller');
     expect(text).toContain('2x Avenger Combo Stand 10 A1010CS 64-100 cm black');
     expect(text).toContain('2x Avenger Combo Stand 20 A1020B 110-198 cm black');
     expect(text).toContain('2x Apple Box Set / Bühnenkisten Set');
