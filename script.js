@@ -6994,6 +6994,18 @@ function getCurrentGearListHtml() {
     const clone = gearListOutput.cloneNode(true);
     const actions = clone.querySelector('#gearListActions');
     if (actions) actions.remove();
+    const cageSel = clone.querySelector('#gearListCage');
+    if (cageSel) {
+        const originalSel = gearListOutput.querySelector('#gearListCage');
+        const val = originalSel ? originalSel.value : cageSel.value;
+        Array.from(cageSel.options).forEach(opt => {
+            if (opt.value === val) {
+                opt.setAttribute('selected', '');
+            } else {
+                opt.removeAttribute('selected');
+            }
+        });
+    }
     return clone.innerHTML.trim();
 }
 
@@ -7110,8 +7122,9 @@ function bindGearListCageListener() {
         sel.addEventListener('change', e => {
             if (cageSelect) {
                 cageSelect.value = e.target.value;
-                refreshGearListIfVisible();
+                cageSelect.dispatchEvent(new Event('change'));
             }
+            saveCurrentGearList();
         });
     }
 }
@@ -7771,5 +7784,6 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentSetupKey,
     renderFeedbackTable,
     clearAllFilters,
+    saveCurrentGearList,
   };
 }
