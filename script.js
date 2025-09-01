@@ -5086,6 +5086,13 @@ setupSelect.addEventListener("change", (event) => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    if (gearListOutput) {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+      if (typeof deleteGearList === 'function') {
+        deleteGearList();
+      }
+    }
   } else {
     let setups = getSetups();
     const setup = setups[setupName];
@@ -5106,8 +5113,14 @@ setupSelect.addEventListener("change", (event) => {
         if (setup.gearList) {
           gearListOutput.classList.remove('hidden');
           ensureGearListActions();
+          if (typeof saveGearList === 'function') {
+            saveGearList(setup.gearList);
+          }
         } else {
           gearListOutput.classList.add('hidden');
+          if (typeof deleteGearList === 'function') {
+            deleteGearList();
+          }
         }
       }
     }
@@ -5954,6 +5967,7 @@ if (projectForm) {
             gearListOutput.innerHTML = html;
             gearListOutput.classList.remove('hidden');
             ensureGearListActions();
+            saveCurrentGearList();
         }
         projectDialog.close();
     });
