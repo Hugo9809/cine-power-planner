@@ -372,7 +372,7 @@ let devices={
       "powerDrawWatts": 50,
       "power": {
         "input": {
-          "voltageRange": "10.5 - 34",
+          "voltageRange": "10.5-34",
           "type": "XLR 4-pin"
         },
         "batteryPlateSupport": [
@@ -479,7 +479,7 @@ let devices={
       "powerDrawWatts": 76,
       "power": {
         "input": {
-          "voltageRange": "12 (11.0 to 17.0) / 24 (22.0 to 32.0)",
+          "voltageRange": "12 (11.0-17.0) / 24 (22.0-32.0)",
           "type": "XLR 4-pin,Square 5-pin"
         },
         "batteryPlateSupport": [
@@ -625,7 +625,7 @@ let devices={
       "powerDrawWatts": 60,
       "power": {
         "input": {
-          "voltageRange": "12 (11.0 to 17.0) / 24 (22.0 to 32.0)",
+          "voltageRange": "12 (11.0-17.0) / 24 (22.0-32.0)",
           "type": "XLR 4-pin,Square 5-pin"
         },
         "batteryPlateSupport": [
@@ -1384,7 +1384,7 @@ let devices={
       "powerDrawWatts": 31,
       "power": {
         "input": {
-          "voltageRange": "11.5 - 20",
+          "voltageRange": "11.5-20",
           "type": "XLR 4-pin"
         },
         "batteryPlateSupport": [
@@ -1596,7 +1596,7 @@ let devices={
       "powerDrawWatts": 63,
       "power": {
         "input": {
-          "voltageRange": "11.5 - 20",
+          "voltageRange": "11.5-20",
           "type": "XLR 4-pin"
         },
         "batteryPlateSupport": [
@@ -1772,7 +1772,7 @@ let devices={
       "powerDrawWatts": 26,
       "power": {
         "input": {
-          "voltageRange": "12 - 20",
+          "voltageRange": "12-20",
           "type": "LEMO 2-pin"
         },
         "batteryPlateSupport": [
@@ -2416,7 +2416,7 @@ let devices={
       "powerDrawWatts": 37,
       "power": {
         "input": {
-          "voltageRange": "+7 to +17",
+          "voltageRange": "+7-+17",
           "type": "LEMO 2-pin"
         },
         "batteryPlateSupport": [
@@ -2518,7 +2518,7 @@ let devices={
       "powerDrawWatts": 45,
       "power": {
         "input": {
-          "voltageRange": "+7 to +17",
+          "voltageRange": "+7-+17",
           "type": "LEMO 2-pin"
         },
         "batteryPlateSupport": [
@@ -4329,7 +4329,7 @@ let devices={
       "powerDrawWatts": 8.1,
       "power": {
         "input": {
-          "voltageRange": "12 (11.4 to 12.6)",
+          "voltageRange": "12 (11.4-12.6)",
           "type": "Weipu SF610,S2"
         },
         "batteryPlateSupport": [
@@ -4780,7 +4780,10 @@ let devices={
       "brand": "ARRI",
       "model": "MVF-1",
       "kNumber": "K2.75004.0",
-      "compatible": ["Arri Alexa Mini", "Arri Amira"],
+      "compatible": [
+        "Arri Alexa Mini",
+        "Arri Amira"
+      ],
       "isPersonalGear": false,
       "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
     }
@@ -5595,11 +5598,17 @@ let devices={
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI" }
+        {
+          "type": "3G-SDI"
+        }
       ]
     },
     "None": {
@@ -5630,11 +5639,17 @@ let devices={
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI" }
+        {
+          "type": "3G-SDI"
+        }
       ]
     },
     "Directors Monitor 13\" (SmallHD/FSI)": {
@@ -5650,11 +5665,17 @@ let devices={
       },
       "wirelessTx": false,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
       ],
       "videoOutputs": [
-        { "type": "3G-SDI" }
+        {
+          "type": "3G-SDI"
+        }
       ]
     },
     "None": {
@@ -6485,16 +6506,25 @@ let devices={
     "Teradek Serv": {
       "powerDrawWatts": 9,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
       ],
       "videoOutputs": [],
       "frequency": "2.4 GHz / 5 GHz Wi-Fi",
       "latencyMs": "< 60ms",
       "power": {
         "input": [
-          { "type": "LEMO 2-pin", "notes": "6-28V" },
-          { "type": "D-Tap" }
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "D-Tap"
+          }
         ]
       },
       "notes": "Streams to iOS devices for on-set monitoring"
@@ -6502,16 +6532,25 @@ let devices={
     "Teradek Serv + Link": {
       "powerDrawWatts": 9,
       "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
       ],
       "videoOutputs": [],
       "frequency": "2.4 GHz / 5 GHz Wi-Fi",
       "latencyMs": "< 60ms",
       "power": {
         "input": [
-          { "type": "LEMO 2-pin", "notes": "6-28V" },
-          { "type": "D-Tap" }
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "D-Tap"
+          }
         ]
       },
       "notes": "Streams to iOS devices for on-set monitoring; includes Link access point"
@@ -6522,16 +6561,27 @@ let devices={
       "powerDrawWatts": 16,
       "videoInputs": [],
       "videoOutputs": [
-        { "type": "HDMI" },
-        { "type": "12G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
       "latencyMs": "< 1ms",
       "power": {
         "input": [
-          { "type": "LEMO 2-pin", "notes": "6-28V" },
-          { "type": "Gold-mount" },
-          { "type": "V-mount" }
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "Gold-mount"
+          },
+          {
+            "type": "V-mount"
+          }
         ]
       }
     },
@@ -6539,16 +6589,27 @@ let devices={
       "powerDrawWatts": 16,
       "videoInputs": [],
       "videoOutputs": [
-        { "type": "HDMI" },
-        { "type": "12G-SDI" }
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
       ],
       "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
       "latencyMs": "< 1ms",
       "power": {
         "input": [
-          { "type": "LEMO 2-pin", "notes": "6-28V" },
-          { "type": "Gold-mount" },
-          { "type": "V-mount" }
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "Gold-mount"
+          },
+          {
+            "type": "V-mount"
+          }
         ]
       }
     },
@@ -6964,8 +7025,13 @@ let devices={
       "Arri Hi-5": {
         "powerDrawWatts": 6,
         "fizConnectors": [
-          { "type": "LBUS (LEMO 4-pin)" },
-          { "type": "USB-C", "notes": "charging/config" }
+          {
+            "type": "LBUS (LEMO 4-pin)"
+          },
+          {
+            "type": "USB-C",
+            "notes": "charging/config"
+          }
         ],
         "internalController": false,
         "power_source": "Internal Battery (ARRI LBP-3500) or External (LBUS)",
@@ -6976,8 +7042,13 @@ let devices={
       "Arri WCU-4": {
         "powerDrawWatts": 8,
         "fizConnectors": [
-          { "type": "LCS (LEMO 4-pin)" },
-          { "type": "USB", "notes": "firmware" }
+          {
+            "type": "LCS (LEMO 4-pin)"
+          },
+          {
+            "type": "USB",
+            "notes": "firmware"
+          }
         ],
         "internalController": false,
         "power_source": "Internal Battery (ARRI LBP-3500) or External (LCS)",
@@ -7341,7 +7412,7 @@ let devices={
       "capacity": 143,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount",
+      "mount_type": "V-Mount"
     },
     "Bebob V200micro": {
       "capacity": 190,
@@ -7371,7 +7442,7 @@ let devices={
       "capacity": 285,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "V-Mount",
+      "mount_type": "V-Mount"
     },
     "Bebob B90cine": {
       "capacity": 86,
@@ -7383,7 +7454,7 @@ let devices={
       "capacity": 155,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount",
+      "mount_type": "B-Mount"
     },
     "Bebob B290cine": {
       "capacity": 294,
@@ -7760,14 +7831,26 @@ let devices={
     },
     "cages": {
       "Universal Cage": {
-        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"]
+        "compatible": [
+          "Arri Alexa Mini",
+          "Arri Alexa Mini LF"
+        ]
       },
       "Tilta Full Camera Cage for BMPCC 6K Pro/G2 (TA-T11-FCC)": {
         "brand": "Tilta",
-        "compatible": ["Blackmagic Pocket Cinema Camera 6K Pro", "Blackmagic BMPCC 6K G2"],
+        "compatible": [
+          "Blackmagic Pocket Cinema Camera 6K Pro",
+          "Blackmagic BMPCC 6K G2"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "cold shoe",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Tilta full cage with NATO rails and rod ports.",
@@ -7775,10 +7858,18 @@ let devices={
       },
       "SmallRig Full Cage for BMPCC 4K/6K (2203B)": {
         "brand": "SmallRig",
-        "compatible": ["Blackmagic BMPCC 4K", "Blackmagic BMPCC 6K"],
+        "compatible": [
+          "Blackmagic BMPCC 4K",
+          "Blackmagic BMPCC 6K"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "cold shoe", "ARRI locating"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "cold shoe",
+          "ARRI locating"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Classic SmallRig cage for BMPCC 4K/6K.",
@@ -7786,10 +7877,16 @@ let devices={
       },
       "Wooden Camera Camera Cage for BMPCC 6K Pro / 6K G2": {
         "brand": "Wooden Camera",
-        "compatible": ["Blackmagic Pocket Cinema Camera 6K Pro", "Blackmagic BMPCC 6K G2"],
+        "compatible": [
+          "Blackmagic Pocket Cinema Camera 6K Pro",
+          "Blackmagic BMPCC 6K G2"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["3/8\"-16 (front)", "ARRI locating"],
+        "mounting_points": [
+          "3/8\"-16 (front)",
+          "ARRI locating"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "ARRI locating pins compatible.",
@@ -7797,10 +7894,18 @@ let devices={
       },
       "Tilta Full Camera Cage for Sony FX3/FX30 V2": {
         "brand": "Tilta",
-        "compatible": ["Sony FX3", "Sony FX30"],
+        "compatible": [
+          "Sony FX3",
+          "Sony FX30"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARCA QR plate", "1/4\"-20", "3/8\"-16", "cold shoe"],
+        "mounting_points": [
+          "ARCA QR plate",
+          "1/4\"-20",
+          "3/8\"-16",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Quick release ARCA base; modular system.",
@@ -7808,10 +7913,16 @@ let devices={
       },
       "SmallRig Camera Cage for Sony FX6 (3186)": {
         "brand": "SmallRig",
-        "compatible": ["Sony FX6"],
+        "compatible": [
+          "Sony FX6"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARRI rosette", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "ARRI rosette",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Fits FX6 body with rosette mounts.",
@@ -7819,10 +7930,17 @@ let devices={
       },
       "Bright Tangerine LeftField Baseplate & Cage Kit for Sony FX9": {
         "brand": "Bright Tangerine",
-        "compatible": ["Sony FX9"],
+        "compatible": [
+          "Sony FX9"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm LWS", "ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "15mm LWS",
+          "ARRI locating",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Bright Tangerine LeftField support system for FX9.",
@@ -7830,10 +7948,27 @@ let devices={
       },
       "Tilta Full Camera Cage for Sony a7/a9 Series (TA-T17-FCC-G)": {
         "brand": "Tilta",
-        "compatible": ["Sony A7", "Sony A7 II", "Sony A7 III", "Sony A7S", "Sony A7S II", "Sony A7R", "Sony A7R II", "Sony A7R III", "Sony A7R IV", "Sony A9"],
+        "compatible": [
+          "Sony A7",
+          "Sony A7 II",
+          "Sony A7 III",
+          "Sony A7S",
+          "Sony A7S II",
+          "Sony A7R",
+          "Sony A7R II",
+          "Sony A7R III",
+          "Sony A7R IV",
+          "Sony A9"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["cold shoe", "1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail"],
+        "mounting_points": [
+          "cold shoe",
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Tilta cage with NATO rail and ARRI locating points.",
@@ -7841,10 +7976,21 @@ let devices={
       },
       "SmallRig Full Camera Cage for Sony A7R V / A7 IV / A7S III / A1 / A7R IV (3667B)": {
         "brand": "SmallRig",
-        "compatible": ["Sony A7R V", "Sony A7 IV", "Sony A7S III", "Sony A1", "Sony A7R IV"],
+        "compatible": [
+          "Sony A7R V",
+          "Sony A7 IV",
+          "Sony A7S III",
+          "Sony A1",
+          "Sony A7R IV"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 locating", "cold shoe", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16 locating",
+          "cold shoe",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Arca-Swiss base; triple lock.",
@@ -7852,10 +7998,15 @@ let devices={
       },
       "ARRI Pro Set for Sony a7S II": {
         "brand": "ARRI",
-        "compatible": ["Sony A7S II"],
+        "compatible": [
+          "Sony A7S II"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "ARRI PCA kit for a7S II.",
@@ -7863,10 +8014,20 @@ let devices={
       },
       "SmallRig Camera Cage for Panasonic Lumix S5 II / S5 IIX (4022)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix S5 II", "Panasonic Lumix S5 IIX"],
+        "compatible": [
+          "Panasonic Lumix S5 II",
+          "Panasonic Lumix S5 IIX"
+        ],
         "material": "aluminum, steel",
         "weight_g": 161,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "2 NATO rails", "2 cold shoes", "Arca-type quick release", "QD socket"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "2 NATO rails",
+          "2 cold shoes",
+          "Arca-type quick release",
+          "QD socket"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Three-point anti-twist, fits gimbals or tripods, ergonomic accessory mounting.",
@@ -7874,10 +8035,18 @@ let devices={
       },
       "SmallRig Cage Kit for Panasonic Lumix S5 II / S5 IIX (4143)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix S5 II", "Panasonic Lumix S5 IIX"],
+        "compatible": [
+          "Panasonic Lumix S5 II",
+          "Panasonic Lumix S5 IIX"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["NATO clamp top handle", "cable clamp", "Arca-Swiss plate", "multiple mounting points"],
+        "mounting_points": [
+          "NATO clamp top handle",
+          "cable clamp",
+          "Arca-Swiss plate",
+          "multiple mounting points"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Handheld kit includes quick-release top handle, HDMI/USB-C clamp.",
@@ -7885,10 +8054,17 @@ let devices={
       },
       "SmallRig Black Mamba Cage for Panasonic Lumix S5 II / S5 IIX (4023)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix S5 II", "Panasonic Lumix S5 IIX"],
+        "compatible": [
+          "Panasonic Lumix S5 II",
+          "Panasonic Lumix S5 IIX"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["Arca-Swiss compatibility", "anti-twist three-point lock", "multiple mounts"],
+        "mounting_points": [
+          "Arca-Swiss compatibility",
+          "anti-twist three-point lock",
+          "multiple mounts"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Slim form factor; bionic design skin for protection.",
@@ -7896,10 +8072,16 @@ let devices={
       },
       "SHAPE Canon C70 Cage with Top Handle": {
         "brand": "SHAPE",
-        "compatible": ["Canon C70"],
+        "compatible": [
+          "Canon C70"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARRI 3/8\"-16 anti-twist", "1/4\"-20", "cold shoe"],
+        "mounting_points": [
+          "ARRI 3/8\"-16 anti-twist",
+          "1/4\"-20",
+          "cold shoe"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "C70 cage with ARRI-style threads and top handle.",
@@ -7907,10 +8089,17 @@ let devices={
       },
       "Kondor Blue Canon C70 Cage": {
         "brand": "Kondor Blue",
-        "compatible": ["Canon C70"],
+        "compatible": [
+          "Canon C70"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["dual NATO rails", "1/4\"-20", "ARRI 3/8\"-16", "cold shoe"],
+        "mounting_points": [
+          "dual NATO rails",
+          "1/4\"-20",
+          "ARRI 3/8\"-16",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Three-sided modular cage; compatible with Canon stock handle.",
@@ -7918,10 +8107,17 @@ let devices={
       },
       "Bright Tangerine LeftField 3 Expert Kit for RED KOMODO & KOMODO-X": {
         "brand": "Bright Tangerine",
-        "compatible": ["RED Komodo 6k", "RED Komodo X"],
+        "compatible": [
+          "RED Komodo 6k",
+          "RED Komodo X"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "LeftField 3 kit with side rails & helicoil mounts.",
@@ -7929,10 +8125,16 @@ let devices={
       },
       "Wooden Camera Complete Cage Kit for RED KOMODO": {
         "brand": "Wooden Camera",
-        "compatible": ["RED Komodo 6k"],
+        "compatible": [
+          "RED Komodo 6k"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "ARRI locating",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Wooden Camera RED KOMODO cage with top plate.",
@@ -7940,10 +8142,19 @@ let devices={
       },
       "Tilta Camera Cage for RED V-RAPTOR / V-RAPTOR X Basic Kit": {
         "brand": "Tilta",
-        "compatible": ["RED V-RAPTOR", "RED V-RAPTOR X"],
+        "compatible": [
+          "RED V-RAPTOR",
+          "RED V-RAPTOR X"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["NATO rail", "ARRI rosette", "cold shoe", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "NATO rail",
+          "ARRI rosette",
+          "cold shoe",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Black walnut side handle; 15mm rod support and rugged cage armor.",
@@ -7951,10 +8162,18 @@ let devices={
       },
       "ARRI Cage Support Kit for ALEXA Mini LF": {
         "brand": "ARRI",
-        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"],
+        "compatible": [
+          "Arri Alexa Mini",
+          "Arri Alexa Mini LF"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm LWS", "ARRI locating", "3/8\"-16", "1/4\"-20"],
+        "mounting_points": [
+          "15mm LWS",
+          "ARRI locating",
+          "3/8\"-16",
+          "1/4\"-20"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "ARRI PCA kit including cage plates, top handle, and 15mm support.",
@@ -7968,10 +8187,17 @@ let devices={
       },
       "Wooden Camera Cage Kit for ARRI ALEXA Mini / Mini LF": {
         "brand": "Wooden Camera",
-        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"],
+        "compatible": [
+          "Arri Alexa Mini",
+          "Arri Alexa Mini LF"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "ARRI locating",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Complete Wooden Camera cage with top plate, side plates, and baseplate.",
@@ -7979,10 +8205,17 @@ let devices={
       },
       "Bright Tangerine LeftField Cage Kit for ARRI ALEXA Mini / Mini LF": {
         "brand": "Bright Tangerine",
-        "compatible": ["Arri Alexa Mini", "Arri Alexa Mini LF"],
+        "compatible": [
+          "Arri Alexa Mini",
+          "Arri Alexa Mini LF"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARRI locating", "15mm LWS", "3/8\"-16"],
+        "mounting_points": [
+          "ARRI locating",
+          "15mm LWS",
+          "3/8\"-16"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "LeftField 15mm baseplate and side cage system.",
@@ -7990,10 +8223,18 @@ let devices={
       },
       "Tilta Canon C300 Mark III / C500 Mark II Cage Kit": {
         "brand": "Tilta",
-        "compatible": ["Canon C300 Mk III", "Canon C500 Mk II"],
+        "compatible": [
+          "Canon C300 Mk III",
+          "Canon C500 Mk II"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "NATO rail"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Tilta cage with top plate and quick release side plates.",
@@ -8001,10 +8242,17 @@ let devices={
       },
       "SHAPE Canon C300 MkIII / C500 MkII Cage Kit": {
         "brand": "SHAPE",
-        "compatible": ["Canon C300 Mk III", "Canon C500 Mk II"],
+        "compatible": [
+          "Canon C300 Mk III",
+          "Canon C500 Mk II"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARRI anti-twist 3/8\"-16", "cold shoe", "1/4\"-20"],
+        "mounting_points": [
+          "ARRI anti-twist 3/8\"-16",
+          "cold shoe",
+          "1/4\"-20"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Form fitting cage with top handle and ARRI threads.",
@@ -8012,10 +8260,18 @@ let devices={
       },
       "ARRI Pro Camera Accessories Kit for RED DSMC2": {
         "brand": "ARRI",
-        "compatible": ["RED DSMC2", "RED Ranger"],
+        "compatible": [
+          "RED DSMC2",
+          "RED Ranger"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARRI locating", "15mm LWS", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "ARRI locating",
+          "15mm LWS",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "ARRI PCA cage set for RED DSMC2 / Ranger.",
@@ -8023,10 +8279,16 @@ let devices={
       },
       "Wooden Camera Cage Kit for RED DSMC2": {
         "brand": "Wooden Camera",
-        "compatible": ["RED DSMC2"],
+        "compatible": [
+          "RED DSMC2"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "ARRI locating",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Wooden Camera DSMC2 cage with top plate, side plates, baseplate.",
@@ -8034,10 +8296,18 @@ let devices={
       },
       "Bright Tangerine Cage Support Kit for Sony VENICE / VENICE 2": {
         "brand": "Bright Tangerine",
-        "compatible": ["Sony Venice", "Sony Venice 2"],
+        "compatible": [
+          "Sony Venice",
+          "Sony Venice 2"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARRI locating", "3/8\"-16", "1/4\"-20", "15mm LWS"],
+        "mounting_points": [
+          "ARRI locating",
+          "3/8\"-16",
+          "1/4\"-20",
+          "15mm LWS"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Professional cage kit with 15mm support for VENICE systems.",
@@ -8045,10 +8315,18 @@ let devices={
       },
       "SmallRig Full Cage for Panasonic Lumix GH6 / GH7 (3784)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix GH6", "Panasonic Lumix GH7"],
+        "compatible": [
+          "Panasonic Lumix GH6",
+          "Panasonic Lumix GH7"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 locating", "Arca-Swiss QR", "multiple mounting points"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16 locating",
+          "Arca-Swiss QR",
+          "multiple mounting points"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Form-fitting, two-point anti-twist, Arca-Swiss bottom, magnetic spanner.",
@@ -8056,10 +8334,18 @@ let devices={
       },
       "SmallRig Camera Cage Kit for Panasonic Lumix GH6 (3785)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix GH6"],
+        "compatible": [
+          "Panasonic Lumix GH6"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 locating", "cold shoe", "NATO rail", "cable clamps"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16 locating",
+          "cold shoe",
+          "NATO rail",
+          "cable clamps"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Handheld kit includes top handle, HDMI/USB-C clamp; two-point locking.",
@@ -8067,10 +8353,20 @@ let devices={
       },
       "SmallRig HawkLock Quick Release Cage for Panasonic GH6 / GH7 (4824)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix GH6", "Panasonic Lumix GH7"],
+        "compatible": [
+          "Panasonic Lumix GH6",
+          "Panasonic Lumix GH7"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16", "cold shoe", "NATO rail", "Arca-Swiss QR", "QD socket"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16",
+          "cold shoe",
+          "NATO rail",
+          "Arca-Swiss QR",
+          "QD socket"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "HawkLock QR design; triple-point locking; cable clamps and accessory support.",
@@ -8078,10 +8374,17 @@ let devices={
       },
       "Tilta Full Camera Cage for Nikon Z9": {
         "brand": "Tilta",
-        "compatible": ["Nikon Z9"],
+        "compatible": [
+          "Nikon Z9"
+        ],
         "material": "aluminum alloy",
         "weight_g": 264.5,
-        "mounting_points": ["cold shoe", "1/4\"-20 w/ locating pins", "NATO rail", "dual 15mm rod holder option"],
+        "mounting_points": [
+          "cold shoe",
+          "1/4\"-20 w/ locating pins",
+          "NATO rail",
+          "dual 15mm rod holder option"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Includes top handle, rod holder, silicone cushions, Arca-compatible base.",
@@ -8089,10 +8392,17 @@ let devices={
       },
       "Tilta Camera Cage for Nikon Z9 – Pro Kit": {
         "brand": "Tilta",
-        "compatible": ["Nikon Z9"],
+        "compatible": [
+          "Nikon Z9"
+        ],
         "material": "aluminum alloy",
         "weight_g": null,
-        "mounting_points": ["cold shoe", "1/4\"-20", "locating points", "NATO rail"],
+        "mounting_points": [
+          "cold shoe",
+          "1/4\"-20",
+          "locating points",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Premium expansion-ready kit for Nikon Z9.",
@@ -8100,10 +8410,15 @@ let devices={
       },
       "Bright Tangerine LeftField 15mm LWS Baseplate for ARRI Alexa 35": {
         "brand": "Bright Tangerine",
-        "compatible": ["Arri Alexa 35"],
+        "compatible": [
+          "Arri Alexa 35"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm LWS", "ARRI BUD dovetail"],
+        "mounting_points": [
+          "15mm LWS",
+          "ARRI BUD dovetail"
+        ],
         "top_handle_included": false,
         "side_plates": false,
         "notes": "15mm baseplate compatible with Alexa 35 via BUD-1 system.",
@@ -8111,10 +8426,19 @@ let devices={
       },
       "SmallRig Camera Cage for Z CAM E2 (2264)": {
         "brand": "SmallRig",
-        "compatible": ["Z CAM E2"],
+        "compatible": [
+          "Z CAM E2"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI 3/8\"-16", "NATO rail (side)", "Arca-Swiss bottom", "HDMI/USB-C clamp"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI 3/8\"-16",
+          "NATO rail (side)",
+          "Arca-Swiss bottom",
+          "HDMI/USB-C clamp"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Modular cage with lens adapter support, side NATO rails, cable clamps.",
@@ -8122,10 +8446,22 @@ let devices={
       },
       "SmallRig Camera Cage for Z CAM E2-S6/F6/F8/M4 (CVZ2423)": {
         "brand": "SmallRig",
-        "compatible": ["Z CAM E2-S6", "Z CAM E2-F6", "Z CAM E2-F8", "Z CAM E2-M4"],
+        "compatible": [
+          "Z CAM E2-S6",
+          "Z CAM E2-F6",
+          "Z CAM E2-F8",
+          "Z CAM E2-M4"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI-style threads", "NATO rails (sides)", "ARRI rosette", "HDMI/USB-C clamp"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI-style threads",
+          "NATO rails (sides)",
+          "ARRI rosette",
+          "HDMI/USB-C clamp"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Designed for Z CAM cinema line with robust accessory integration.",
@@ -8133,10 +8469,22 @@ let devices={
       },
       "SmallRig Full Cage for Fujifilm X-H2 / X-H2S (3934)": {
         "brand": "SmallRig",
-        "compatible": ["Fujifilm X-H2", "Fujifilm X-H2S"],
+        "compatible": [
+          "Fujifilm X-H2",
+          "Fujifilm X-H2S"
+        ],
         "material": "aluminum alloy",
         "weight_g": 178,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail", "cold shoe", "H38 Arca-Swiss QR", "H18 cold shoe mount", "built-in HDMI clamp"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "NATO rail",
+          "cold shoe",
+          "H38 Arca-Swiss QR",
+          "H18 cold shoe mount",
+          "built-in HDMI clamp"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Three-point locking with locating pin and side lock; HawkLock quick-release interoperability; includes HDMI clamp and magnetic spanner.",
@@ -8144,10 +8492,21 @@ let devices={
       },
       "SmallRig Handheld Cage Kit for Fujifilm X-H2 / X-H2S (4097)": {
         "brand": "SmallRig",
-        "compatible": ["Fujifilm X-H2", "Fujifilm X-H2S"],
+        "compatible": [
+          "Fujifilm X-H2",
+          "Fujifilm X-H2S"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail", "cold shoe", "Arca-Swiss QR", "HDMI clamp"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "NATO rail",
+          "cold shoe",
+          "Arca-Swiss QR",
+          "HDMI clamp"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Includes quick-release top handle; cable clamp; ergonomic kit for handheld shooting.",
@@ -8155,10 +8514,18 @@ let devices={
       },
       "SmallRig Cage for Fujifilm X-H2S with FT-XH / VG-XH Battery Grip (3933)": {
         "brand": "SmallRig",
-        "compatible": ["Fujifilm X-H2S"],
+        "compatible": [
+          "Fujifilm X-H2S"
+        ],
         "material": "aluminum",
         "weight_g": 241,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 anti-twist", "cold shoe", "Arca-Swiss QR bottom", "multiple 1/4\"-20/3/8\"-16 threads"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16 anti-twist",
+          "cold shoe",
+          "Arca-Swiss QR bottom",
+          "multiple 1/4\"-20/3/8\"-16 threads"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Form-fitting cage that accommodates Fujifilm vertical battery grip; built-in Arca base and two shoe mounts.",
@@ -8166,10 +8533,22 @@ let devices={
       },
       "Tilta Rig for Panasonic VariCam LT (ES-T65)": {
         "brand": "Tilta",
-        "compatible": ["Panasonic VariCam LT"],
+        "compatible": [
+          "Panasonic VariCam LT"
+        ],
         "material": "CNC-machined aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "15mm LWS rods", "ARRI rosette", "VCT-14 baseplate", "handle rosettes", "top handle", "side plate", "power distro outputs"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "15mm LWS rods",
+          "ARRI rosette",
+          "VCT-14 baseplate",
+          "handle rosettes",
+          "top handle",
+          "side plate",
+          "power distro outputs"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Complete rig with shoulder support, EVF bracket, power module (Gold mount or V-mount), 15 mm rod support and modular plates.",
@@ -8177,10 +8556,25 @@ let devices={
       },
       "Tilta Cage Rig for Panasonic VariCam 35 (ES-T75-AB)": {
         "brand": "Tilta",
-        "compatible": ["Panasonic VariCam 35"],
+        "compatible": [
+          "Panasonic VariCam 35"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "15mm LWS rods", "ARRI rosette", "shoulder pad", "VCT-14 dovetail", "Gold mount battery plate", "power outputs", "EVF support", "quick-release top handle", "side plate", "bottom plate"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "15mm LWS rods",
+          "ARRI rosette",
+          "shoulder pad",
+          "VCT-14 dovetail",
+          "Gold mount battery plate",
+          "power outputs",
+          "EVF support",
+          "quick-release top handle",
+          "side plate",
+          "bottom plate"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Full rig for VariCam 35 including shoulder support, battery power distro, multiple mounting points and EVF integration.",
@@ -8188,10 +8582,19 @@ let devices={
       },
       "Tilta Full Camera Cage for DJI Ronin 4D / Flex": {
         "brand": "Tilta",
-        "compatible": ["DJI Ronin 4D", "DJI Ronin 4D Flex"],
+        "compatible": [
+          "DJI Ronin 4D",
+          "DJI Ronin 4D Flex"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["Manfrotto quick release", "dual 15mm rod mount", "lens adapter support", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "Manfrotto quick release",
+          "dual 15mm rod mount",
+          "lens adapter support",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Includes lens adapter support, rods, top handle, support plate.",
@@ -8199,10 +8602,17 @@ let devices={
       },
       "ARRI Alexa 35 Production Support Set (19 mm)": {
         "brand": "ARRI",
-        "compatible": ["Arri Alexa 35"],
+        "compatible": [
+          "Arri Alexa 35"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15 mm LWS (19 mm)", "ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "15 mm LWS (19 mm)",
+          "ARRI locating",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "ARRI Production Support for Alexa 35, includes top/side/bottom support components (19 mm).",
@@ -8210,10 +8620,17 @@ let devices={
       },
       "ARRI Alexa 35 Lightweight Expansion Set": {
         "brand": "ARRI",
-        "compatible": ["Arri Alexa 35"],
+        "compatible": [
+          "Arri Alexa 35"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15 mm LWS lightweight", "UAP-3 adapter plate", "handle mounting", "shoulder pad"],
+        "mounting_points": [
+          "15 mm LWS lightweight",
+          "UAP-3 adapter plate",
+          "handle mounting",
+          "shoulder pad"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "ARRI lightweight expansion, includes adapter plate UAP-3, lightweight handle LCH-1 and shoulder pad.",
@@ -8221,10 +8638,17 @@ let devices={
       },
       "Tilta Camera Cage for Canon R5C": {
         "brand": "Tilta",
-        "compatible": ["Canon EOS R5C"],
+        "compatible": [
+          "Canon EOS R5C"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Tilta form-fitting cage for R5C with NATO rails.",
@@ -8232,10 +8656,17 @@ let devices={
       },
       "Kondor Blue Canon R5C Cage": {
         "brand": "Kondor Blue",
-        "compatible": ["Canon EOS R5C"],
+        "compatible": [
+          "Canon EOS R5C"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["dual NATO rails", "ARRI locating", "1/4\"-20", "cold shoe"],
+        "mounting_points": [
+          "dual NATO rails",
+          "ARRI locating",
+          "1/4\"-20",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Kondor Blue modular R5C cage with bubble level and magnetic tool.",
@@ -8243,10 +8674,17 @@ let devices={
       },
       "Tilta Camera Cage Rig for Canon C200 (ES-T20)": {
         "brand": "Tilta",
-        "compatible": ["Canon C200"],
+        "compatible": [
+          "Canon C200"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["15mm LWS rods", "ARRI rosette", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "15mm LWS rods",
+          "ARRI rosette",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Complete Tilta ES-T20 cage with shoulder support and top handle.",
@@ -8254,10 +8692,17 @@ let devices={
       },
       "Tilta Camera Cage Rig for Panasonic EVA1 (ES-T37)": {
         "brand": "Tilta",
-        "compatible": ["Panasonic EVA1"],
+        "compatible": [
+          "Panasonic EVA1"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm LWS rods", "ARRI rosette", "VCT baseplate", "1/4\"-20"],
+        "mounting_points": [
+          "15mm LWS rods",
+          "ARRI rosette",
+          "VCT baseplate",
+          "1/4\"-20"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Tilta EVA1 cage with shoulder pad, rods, power distribution.",
@@ -8265,10 +8710,18 @@ let devices={
       },
       "SmallRig Camera Cage for Panasonic BGH1 (2988)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix BGH1"],
+        "compatible": [
+          "Panasonic Lumix BGH1"
+        ],
         "material": "aluminum",
         "weight_g": 270,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe", "side NATO rails"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "cold shoe",
+          "side NATO rails"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Compact box-camera cage with multiple NATO rails and mounting points.",
@@ -8276,10 +8729,16 @@ let devices={
       },
       "Tilta Full Cage for Panasonic BGH1": {
         "brand": "Tilta",
-        "compatible": ["Panasonic Lumix BGH1"],
+        "compatible": [
+          "Panasonic Lumix BGH1"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "cold shoe", "ARRI locating"],
+        "mounting_points": [
+          "1/4\"-20",
+          "cold shoe",
+          "ARRI locating"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Tilta modular cage for BGH1 box cinema camera.",
@@ -8287,10 +8746,17 @@ let devices={
       },
       "SmallRig Camera Cage for Panasonic BS1H (3440)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic Lumix BS1H"],
+        "compatible": [
+          "Panasonic Lumix BS1H"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Box-camera cage designed for Panasonic BS1H.",
@@ -8298,10 +8764,17 @@ let devices={
       },
       "SmallRig Camera Cage for Nikon Z8 (3940)": {
         "brand": "SmallRig",
-        "compatible": ["Nikon Z8"],
+        "compatible": [
+          "Nikon Z8"
+        ],
         "material": "aluminum",
         "weight_g": 293,
-        "mounting_points": ["1/4\"-20", "3/8\"-16 ARRI locating", "cold shoe", "Arca-Swiss bottom"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16 ARRI locating",
+          "cold shoe",
+          "Arca-Swiss bottom"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Form-fitting cage with multiple mounting points and Arca base.",
@@ -8309,10 +8782,17 @@ let devices={
       },
       "Tilta Camera Cage for Fujifilm GFX100": {
         "brand": "Tilta",
-        "compatible": ["Fujifilm GFX100"],
+        "compatible": [
+          "Fujifilm GFX100"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "ARRI locating", "cold shoe"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "ARRI locating",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Tilta form-fitting cage for medium format Fujifilm GFX100.",
@@ -8320,10 +8800,17 @@ let devices={
       },
       "SmallRig Full Camera Cage for Fujifilm X-T5 (3928)": {
         "brand": "SmallRig",
-        "compatible": ["Fujifilm X-T5"],
+        "compatible": [
+          "Fujifilm X-T5"
+        ],
         "material": "aluminum",
         "weight_g": 129,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "cold shoe", "Arca-Swiss QR"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "cold shoe",
+          "Arca-Swiss QR"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Slim X-T5 cage with Arca-Swiss bottom and cold shoe.",
@@ -8331,10 +8818,18 @@ let devices={
       },
       "Bright Tangerine V-RAPTOR XL Cage Kit": {
         "brand": "Bright Tangerine",
-        "compatible": ["RED V-RAPTOR XL"],
+        "compatible": [
+          "RED V-RAPTOR XL"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm LWS", "ARRI dovetail", "ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "15mm LWS",
+          "ARRI dovetail",
+          "ARRI locating",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Bright Tangerine professional cage with XL dovetail baseplate and handle support.",
@@ -8342,10 +8837,17 @@ let devices={
       },
       "ARRI PCA Kit for Amira": {
         "brand": "ARRI",
-        "compatible": ["Arri Amira"],
+        "compatible": [
+          "Arri Amira"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["ARRI locating", "15mm LWS", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "ARRI locating",
+          "15mm LWS",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Pro Camera Accessories kit for ARRI Amira with baseplate, side plates, handle.",
@@ -8353,10 +8855,15 @@ let devices={
       },
       "Wooden Camera Rear Cage System for RED Komodo-X": {
         "brand": "Wooden Camera",
-        "compatible": ["RED Komodo-X"],
+        "compatible": [
+          "RED Komodo-X"
+        ],
         "material": null,
         "weight_g": 123,
-        "mounting_points": ["accessory rails", "ties into side rails"],
+        "mounting_points": [
+          "accessory rails",
+          "ties into side rails"
+        ],
         "top_handle_included": false,
         "side_plates": false,
         "notes": "Rear cage adds mounting points, accessory rail compatible; lightweight at 123 g.",
@@ -8364,10 +8871,22 @@ let devices={
       },
       "SmallRig Camera Cage for Nikon Z5/Z6/Z7/Z6II/Z7II (2926B)": {
         "brand": "SmallRig",
-        "compatible": ["Nikon Z5", "Nikon Z6", "Nikon Z7", "Nikon Z6 II", "Nikon Z7 II"],
+        "compatible": [
+          "Nikon Z5",
+          "Nikon Z6",
+          "Nikon Z7",
+          "Nikon Z6 II",
+          "Nikon Z7 II"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16 locating", "cold shoe", "Arca-Swiss bottom", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16 locating",
+          "cold shoe",
+          "Arca-Swiss bottom",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Full cage protection, dual-screw lock, Arca-Swiss compatibility, built-in screwdriver.",
@@ -8375,10 +8894,19 @@ let devices={
       },
       "SmallRig Camera Cage Kit for Nikon Z6 III (4520)": {
         "brand": "SmallRig",
-        "compatible": ["Nikon Z6 III"],
+        "compatible": [
+          "Nikon Z6 III"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "ARRI locating", "cold shoe", "Arca-Swiss quick-release", "NATO rail", "wrist/strap holes"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI locating",
+          "cold shoe",
+          "Arca-Swiss quick-release",
+          "NATO rail",
+          "wrist/strap holes"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Ergonomic handheld kit with cable clamp, Arca-Swiss quick release.",
@@ -8386,10 +8914,19 @@ let devices={
       },
       "SmallRig Camera Cage for Panasonic S1H (CCP2488)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic S1H"],
+        "compatible": [
+          "Panasonic S1H"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16", "cold shoe", "NATO rail", "built-in screwdriver", "strap slots"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16",
+          "cold shoe",
+          "NATO rail",
+          "built-in screwdriver",
+          "strap slots"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Protective cage with multiple mounting points and screwdriver for quick install.",
@@ -8397,10 +8934,19 @@ let devices={
       },
       "Tilta Camera Cage for Sony FX6 Basic Kit (ES-T20-A)": {
         "brand": "Tilta",
-        "compatible": ["Sony FX6"],
+        "compatible": [
+          "Sony FX6"
+        ],
         "material": "aluminum alloy, stainless steel",
         "weight_g": 1030,
-        "mounting_points": ["ARRI rosette", "1/4\"-20", "3/8\"-16", "15 mm LWS rods", "lens support", "V-mount/Gold Mount interfaces"],
+        "mounting_points": [
+          "ARRI rosette",
+          "1/4\"-20",
+          "3/8\"-16",
+          "15 mm LWS rods",
+          "lens support",
+          "V-mount/Gold Mount interfaces"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Protective armor with rod support, top/side plates, battery options, quick-release baseplate.",
@@ -8408,10 +8954,19 @@ let devices={
       },
       "Wooden Camera Unified Accessory Kit for Blackmagic URSA Mini / Mini Pro / 12K": {
         "brand": "Wooden Camera",
-        "compatible": ["Blackmagic URSA Mini", "Blackmagic URSA Mini Pro", "Blackmagic URSA Mini 12K"],
+        "compatible": [
+          "Blackmagic URSA Mini",
+          "Blackmagic URSA Mini Pro",
+          "Blackmagic URSA Mini 12K"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm rods", "dovetail/Q-release", "adjustable top handle", "baseplate"],
+        "mounting_points": [
+          "15mm rods",
+          "dovetail/Q-release",
+          "adjustable top handle",
+          "baseplate"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Advanced accessory kit with rods, ARCA dovetail, top handle, for URSA Mini family.",
@@ -8419,10 +8974,18 @@ let devices={
       },
       "SmallRig Black Mamba Cage for Canon EOS R7 (4003B)": {
         "brand": "SmallRig",
-        "compatible": ["Canon EOS R7"],
+        "compatible": [
+          "Canon EOS R7"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "3/8\"-16 locating", "cold shoe", "NATO rails", "Arca-Swiss QR bottom"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16 locating",
+          "cold shoe",
+          "NATO rails",
+          "Arca-Swiss QR bottom"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Slim, form-fitting cage with triple-point lock and Arca-Swiss quick-release base.",
@@ -8430,10 +8993,19 @@ let devices={
       },
       "Tilta Full Camera Cage for Fujifilm X-T3 / X-T4 (TA-T04-FCC-B)": {
         "brand": "Tilta",
-        "compatible": ["Fujifilm X-T3", "Fujifilm X-T4"],
+        "compatible": [
+          "Fujifilm X-T3",
+          "Fujifilm X-T4"
+        ],
         "material": "aluminum alloy, stainless steel",
         "weight_g": 426,
-        "mounting_points": ["1/4\"-20", "cold shoe (x2)", "NATO rail", "Type II baseplate compatible", "quick-release top handle"],
+        "mounting_points": [
+          "1/4\"-20",
+          "cold shoe (x2)",
+          "NATO rail",
+          "Type II baseplate compatible",
+          "quick-release top handle"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Complete protective armor, hand strap, handles, and optional rod/power configs.",
@@ -8441,10 +9013,17 @@ let devices={
       },
       "SmallRig Full Cage for Canon EOS R3 (3884)": {
         "brand": "SmallRig",
-        "compatible": ["Canon EOS R3"],
+        "compatible": [
+          "Canon EOS R3"
+        ],
         "material": "aluminum",
         "weight_g": 283,
-        "mounting_points": ["1/4\"-20", "3/8\"-16 locating", "cold shoe", "Arca-Swiss QR"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16 locating",
+          "cold shoe",
+          "Arca-Swiss QR"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Form-fitting full cage with Arca base and cold shoe.",
@@ -8452,10 +9031,17 @@ let devices={
       },
       "SmallRig Full Cage for Canon EOS R10 (3947)": {
         "brand": "SmallRig",
-        "compatible": ["Canon EOS R10"],
+        "compatible": [
+          "Canon EOS R10"
+        ],
         "material": "aluminum",
         "weight_g": 156,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "cold shoe", "Arca-Swiss bottom"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "cold shoe",
+          "Arca-Swiss bottom"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Lightweight Arca-compatible cage for Canon R10.",
@@ -8463,10 +9049,17 @@ let devices={
       },
       "SmallRig Full Cage for Canon EOS R50 (4236)": {
         "brand": "SmallRig",
-        "compatible": ["Canon EOS R50"],
+        "compatible": [
+          "Canon EOS R50"
+        ],
         "material": "aluminum",
         "weight_g": 121,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "cold shoe", "Arca-Swiss base"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "cold shoe",
+          "Arca-Swiss base"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Compact cage designed for R50 with cold shoe and multiple mounts.",
@@ -8474,10 +9067,17 @@ let devices={
       },
       "SmallRig Camera Cage for Sony ZV-E1 (4135)": {
         "brand": "SmallRig",
-        "compatible": ["Sony ZV-E1"],
+        "compatible": [
+          "Sony ZV-E1"
+        ],
         "material": "aluminum",
         "weight_g": 166,
-        "mounting_points": ["1/4\"-20", "ARRI locating", "cold shoe", "Arca-Swiss base"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI locating",
+          "cold shoe",
+          "Arca-Swiss base"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Form-fitting cage for ZV-E1 with Arca quick release.",
@@ -8485,10 +9085,17 @@ let devices={
       },
       "SmallRig Camera Cage for Sony ZV-E10 (3529)": {
         "brand": "SmallRig",
-        "compatible": ["Sony ZV-E10"],
+        "compatible": [
+          "Sony ZV-E10"
+        ],
         "material": "aluminum",
         "weight_g": 145,
-        "mounting_points": ["1/4\"-20", "3/8\"-16", "cold shoe", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "3/8\"-16",
+          "cold shoe",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Lightweight cage for Sony ZV-E10 with cold shoe and NATO.",
@@ -8496,10 +9103,15 @@ let devices={
       },
       "Wooden Camera Camera Cage for Blackmagic Micro Cinema Camera": {
         "brand": "Wooden Camera",
-        "compatible": ["Blackmagic Micro Cinema Camera"],
+        "compatible": [
+          "Blackmagic Micro Cinema Camera"
+        ],
         "material": "aluminum",
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "cold shoe"],
+        "mounting_points": [
+          "1/4\"-20",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Protective cage for the Micro Cinema Camera with multiple 1/4\"-20 mounts.",
@@ -8507,10 +9119,17 @@ let devices={
       },
       "Wooden Camera Unified Accessory Kit for Blackmagic URSA Broadcast G2": {
         "brand": "Wooden Camera",
-        "compatible": ["Blackmagic URSA Broadcast G2"],
+        "compatible": [
+          "Blackmagic URSA Broadcast G2"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm rods", "ARRI locating", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "15mm rods",
+          "ARRI locating",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Accessory kit with rods, baseplate, and top handle for URSA Broadcast G2.",
@@ -8518,10 +9137,16 @@ let devices={
       },
       "SmallRig Camera Cage for Panasonic GH5 (2049)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic GH5"],
+        "compatible": [
+          "Panasonic GH5"
+        ],
         "material": "aluminum",
         "weight_g": 270,
-        "mounting_points": ["1/4\"-20", "ARRI locating", "cold shoe"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI locating",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Classic SmallRig cage for GH5 with multiple mounts.",
@@ -8529,10 +9154,17 @@ let devices={
       },
       "SmallRig Camera Cage for Panasonic GH5 II (3188)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic GH5 II"],
+        "compatible": [
+          "Panasonic GH5 II"
+        ],
         "material": "aluminum",
         "weight_g": 240,
-        "mounting_points": ["1/4\"-20", "ARRI locating", "cold shoe", "NATO rail"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI locating",
+          "cold shoe",
+          "NATO rail"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Updated cage designed specifically for GH5 Mark II.",
@@ -8540,10 +9172,17 @@ let devices={
       },
       "SmallRig Cage for Panasonic S1 / S1R (CCS2416)": {
         "brand": "SmallRig",
-        "compatible": ["Panasonic S1", "Panasonic S1R"],
+        "compatible": [
+          "Panasonic S1",
+          "Panasonic S1R"
+        ],
         "material": "aluminum",
         "weight_g": 220,
-        "mounting_points": ["1/4\"-20", "ARRI 3/8\"-16", "cold shoe"],
+        "mounting_points": [
+          "1/4\"-20",
+          "ARRI 3/8\"-16",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Form-fitting cage with ARRI locating mounts and cold shoe.",
@@ -8551,10 +9190,16 @@ let devices={
       },
       "SmallRig Half Cage for Fujifilm X100V (3126)": {
         "brand": "SmallRig",
-        "compatible": ["Fujifilm X100V"],
+        "compatible": [
+          "Fujifilm X100V"
+        ],
         "material": "aluminum",
         "weight_g": 104,
-        "mounting_points": ["1/4\"-20", "cold shoe", "Arca-Swiss base"],
+        "mounting_points": [
+          "1/4\"-20",
+          "cold shoe",
+          "Arca-Swiss base"
+        ],
         "top_handle_included": false,
         "side_plates": false,
         "notes": "Compact half cage for X100V with Arca-Swiss compatibility.",
@@ -8562,10 +9207,19 @@ let devices={
       },
       "Wooden Camera Unified Accessory Kit for RED Ranger (Monstro/Gemini/Helium)": {
         "brand": "Wooden Camera",
-        "compatible": ["RED Ranger Monstro", "RED Ranger Gemini", "RED Ranger Helium"],
+        "compatible": [
+          "RED Ranger Monstro",
+          "RED Ranger Gemini",
+          "RED Ranger Helium"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm rods", "ARRI dovetail", "1/4\"-20", "3/8\"-16"],
+        "mounting_points": [
+          "15mm rods",
+          "ARRI dovetail",
+          "1/4\"-20",
+          "3/8\"-16"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "Unified Wooden Camera rig with top handle and baseplate for Ranger cameras.",
@@ -8573,10 +9227,17 @@ let devices={
       },
       "ARRI PCA Support Kit for Alexa LF": {
         "brand": "ARRI",
-        "compatible": ["Arri Alexa LF"],
+        "compatible": [
+          "Arri Alexa LF"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["15mm LWS", "ARRI locating", "3/8\"-16", "1/4\"-20"],
+        "mounting_points": [
+          "15mm LWS",
+          "ARRI locating",
+          "3/8\"-16",
+          "1/4\"-20"
+        ],
         "top_handle_included": true,
         "side_plates": true,
         "notes": "ARRI PCA support package for full-size Alexa LF.",
@@ -8584,10 +9245,16 @@ let devices={
       },
       "Tilta Cage Kit for DJI Inspire X7 Air Unit": {
         "brand": "Tilta",
-        "compatible": ["DJI Inspire X7"],
+        "compatible": [
+          "DJI Inspire X7"
+        ],
         "material": null,
         "weight_g": null,
-        "mounting_points": ["1/4\"-20", "cold shoe", "lens adapter support"],
+        "mounting_points": [
+          "1/4\"-20",
+          "cold shoe",
+          "lens adapter support"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Tilta cage kit for Inspire X7 camera module.",
@@ -8595,10 +9262,15 @@ let devices={
       },
       "SmallRig Camera Cage for DJI Osmo / Zenmuse X5 (1889)": {
         "brand": "SmallRig",
-        "compatible": ["DJI Osmo X5"],
+        "compatible": [
+          "DJI Osmo X5"
+        ],
         "material": "aluminum",
         "weight_g": 250,
-        "mounting_points": ["1/4\"-20", "cold shoe"],
+        "mounting_points": [
+          "1/4\"-20",
+          "cold shoe"
+        ],
         "top_handle_included": false,
         "side_plates": true,
         "notes": "Protective cage for Osmo X5 gimbal camera with cold shoe.",
@@ -8606,39 +9278,145 @@ let devices={
       }
     },
     "cameraSupport": {
-      "ARRI CBP-3 Compact Bridge Plate": { "brand": "ARRI", "kNumber": "K2.0019580", "rodStandard": "19mm" },
-      "ARRI SAB-2 Side Accessory Bracket": { "brand": "ARRI", "kNumber": "K2.0014088" },
-      "ARRI VEB-3 Viewfinder Extension Bracket": { "brand": "ARRI", "kNumber": "K2.74000.0" },
-      "ARRI Dovetail Plate": { "brand": "ARRI", "kNumber": "K2.0043086" },
-      "ARRI Top Plate (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034691", "compatible": ["Sony FS7 II", "Sony FX9"] },
-      "ARRI Base Plate (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0035830", "compatible": ["Sony FS7 II", "Sony FX9"] },
-      "ARRI Lens Adapter Support LAS-1": { "brand": "ARRI", "kNumber": "K2.0003899" },
-      "ARRI 15mm LWS Rod Console": { "brand": "ARRI", "kNumber": "K2.65264.0" },
-      "ARRI Support Rods 240mm/15mm": { "brand": "ARRI", "kNumber": "K2.66253.0", "lengthMm": 240, "diameterMm": 15 },
-      "ARRI Side Bracket Left (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034727", "compatible": ["Sony FS7 II", "Sony FX9"] },
-      "ARRI Side Bracket Right (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034709", "compatible": ["Sony FS7 II", "Sony FX9"] },
-      "ARRI E- to PL-Mount Support (Vocas)": { "brand": "ARRI", "kNumber": "K2.0034700" },
-      "ARRI Camera Center Handle CCH-4": { "brand": "ARRI", "kNumber": "K2.0017270" },
-      "ARRI Sliding Adapter (CCH-4)": { "brand": "ARRI", "kNumber": "K2.0019282" },
-      "ARRI Rod Mounting Bracket RMB-3": { "brand": "ARRI", "kNumber": "K2.0006186" },
-      "ARRI 15mm Reduction Insert": { "brand": "ARRI", "kNumber": "K2.66255.0" },
-      "ARRI Viewfinder Bracket (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034657", "compatible": ["Sony FS7 II", "Sony FX9"] },
-      "ARRI Mini Side Bracket MSB-1": { "brand": "ARRI", "kNumber": "K2.0014957" },
-      "ARRI Handle Extension Set": { "brand": "ARRI", "kNumber": "KK.0037820" },
-      "ARRI Video Transmitter Bracket": { "brand": "ARRI", "kNumber": "K2.0033676" }
+      "ARRI CBP-3 Compact Bridge Plate": {
+        "brand": "ARRI",
+        "kNumber": "K2.0019580",
+        "rodStandard": "19mm"
+      },
+      "ARRI SAB-2 Side Accessory Bracket": {
+        "brand": "ARRI",
+        "kNumber": "K2.0014088"
+      },
+      "ARRI VEB-3 Viewfinder Extension Bracket": {
+        "brand": "ARRI",
+        "kNumber": "K2.74000.0"
+      },
+      "ARRI Dovetail Plate": {
+        "brand": "ARRI",
+        "kNumber": "K2.0043086"
+      },
+      "ARRI Top Plate (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034691",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Base Plate (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0035830",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Lens Adapter Support LAS-1": {
+        "brand": "ARRI",
+        "kNumber": "K2.0003899"
+      },
+      "ARRI 15mm LWS Rod Console": {
+        "brand": "ARRI",
+        "kNumber": "K2.65264.0"
+      },
+      "ARRI Support Rods 240mm/15mm": {
+        "brand": "ARRI",
+        "kNumber": "K2.66253.0",
+        "lengthMm": 240,
+        "diameterMm": 15
+      },
+      "ARRI Side Bracket Left (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034727",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Side Bracket Right (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034709",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI E- to PL-Mount Support (Vocas)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034700"
+      },
+      "ARRI Camera Center Handle CCH-4": {
+        "brand": "ARRI",
+        "kNumber": "K2.0017270"
+      },
+      "ARRI Sliding Adapter (CCH-4)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0019282"
+      },
+      "ARRI Rod Mounting Bracket RMB-3": {
+        "brand": "ARRI",
+        "kNumber": "K2.0006186"
+      },
+      "ARRI 15mm Reduction Insert": {
+        "brand": "ARRI",
+        "kNumber": "K2.66255.0"
+      },
+      "ARRI Viewfinder Bracket (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034657",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Mini Side Bracket MSB-1": {
+        "brand": "ARRI",
+        "kNumber": "K2.0014957"
+      },
+      "ARRI Handle Extension Set": {
+        "brand": "ARRI",
+        "kNumber": "KK.0037820"
+      },
+      "ARRI Video Transmitter Bracket": {
+        "brand": "ARRI",
+        "kNumber": "K2.0033676"
+      }
     },
     "matteboxes": {
-      "ARRI LMB 4x5 Clamp-On (3-Stage)": { "brand": "ARRI", "kNumber": "KK.0015175", "stages": 3, "type": "Clamp-On" },
-      "ARRI Tray Catcher": { "brand": "ARRI", "kNumber": "K2.66202.0", "compatible": ["LMB 4x5", "LMB-6"] }
+      "ARRI LMB 4x5 Clamp-On (3-Stage)": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015175",
+        "stages": 3,
+        "type": "Clamp-On"
+      },
+      "ARRI Tray Catcher": {
+        "brand": "ARRI",
+        "kNumber": "K2.66202.0",
+        "compatible": [
+          "LMB 4x5",
+          "LMB-6"
+        ]
+      }
     },
     "filters": {
-      "ARRI Rota Pola Filter Holder": { "brand": "ARRI", "kNumber": "K2.0009434" }
+      "ARRI Rota Pola Filter Holder": {
+        "brand": "ARRI",
+        "kNumber": "K2.0009434"
+      }
     },
     "rigging": {
-      "Manfrotto 026 Lite-Tite": { "brand": "Manfrotto" },
-      "Manfrotto 244N Friction Arm": { "brand": "Manfrotto" },
-      "ULCS Bracket 1/4 to 1/4": { "brand": "ULCS" },
-      "ULCS Bracket 3/8 to 1/4": { "brand": "ULCS" }
+      "Manfrotto 026 Lite-Tite": {
+        "brand": "Manfrotto"
+      },
+      "Manfrotto 244N Friction Arm": {
+        "brand": "Manfrotto"
+      },
+      "ULCS Bracket 1/4 to 1/4": {
+        "brand": "ULCS"
+      },
+      "ULCS Bracket 3/8 to 1/4": {
+        "brand": "ULCS"
+      }
     },
     "chargers": {
       "Dual V-Mount Charger": {
@@ -8648,321 +9426,641 @@ let devices={
     },
     "cables": {
       "power": {
-        "D-Tap to LEMO 2-pin": { "from": "D-Tap", "to": "LEMO 2-pin" },
-        "D-Tap Splitter 3-way": { "from": "D-Tap", "to": ["D-Tap", "D-Tap", "D-Tap"] },
-        "D-Tap to miniXLR (0.3 m)": { "from": "D-Tap", "to": "miniXLR", "lengthM": 0.3 }
+        "D-Tap to LEMO 2-pin": {
+          "from": "D-Tap",
+          "to": "LEMO 2-pin"
+        },
+        "D-Tap Splitter 3-way": {
+          "from": "D-Tap",
+          "to": [
+            "D-Tap",
+            "D-Tap",
+            "D-Tap"
+          ]
+        },
+        "D-Tap to miniXLR (0.3 m)": {
+          "from": "D-Tap",
+          "to": "miniXLR",
+          "lengthM": 0.3
+        }
       },
       "video": {
-        "BNC SDI Cable": { "type": "3G-SDI" },
-        "HDMI Cable": { "type": "HDMI" },
-        "Ultraslim BNC 0.3 m": { "type": "3G-SDI", "lengthM": 0.3 },
-        "Ultraslim BNC 0.5 m": { "type": "3G-SDI", "lengthM": 0.5 },
-        "BNC Cable 0.5 m": { "type": "3G-SDI", "lengthM": 0.5 },
-        "BNC Cable 1 m": { "type": "3G-SDI", "lengthM": 1 },
-        "BNC Cable 5 m": { "type": "3G-SDI", "lengthM": 5 },
-        "BNC Cable 10 m": { "type": "3G-SDI", "lengthM": 10 },
-        "BNC Drum 25 m": { "type": "3G-SDI", "lengthM": 25, "notes": "drum" }
+        "BNC SDI Cable": {
+          "type": "3G-SDI"
+        },
+        "HDMI Cable": {
+          "type": "HDMI"
+        },
+        "Ultraslim BNC 0.3 m": {
+          "type": "3G-SDI",
+          "lengthM": 0.3
+        },
+        "Ultraslim BNC 0.5 m": {
+          "type": "3G-SDI",
+          "lengthM": 0.5
+        },
+        "BNC Cable 0.5 m": {
+          "type": "3G-SDI",
+          "lengthM": 0.5
+        },
+        "BNC Cable 1 m": {
+          "type": "3G-SDI",
+          "lengthM": 1
+        },
+        "BNC Cable 5 m": {
+          "type": "3G-SDI",
+          "lengthM": 5
+        },
+        "BNC Cable 10 m": {
+          "type": "3G-SDI",
+          "lengthM": 10
+        },
+        "BNC Drum 25 m": {
+          "type": "3G-SDI",
+          "lengthM": 25,
+          "notes": "drum"
+        }
       },
       "cables": {
-        "LBUS to LBUS": { "from": "LBUS (LEMO 4-pin)", "to": "LBUS (LEMO 4-pin)" },
+        "LBUS to LBUS": {
+          "from": "LBUS (LEMO 4-pin)",
+          "to": "LBUS (LEMO 4-pin)"
+        },
         "Cable CAM (7-pin) – EXT (6-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.015756",
           "lengthM": 0.6,
-          "connectors": ["CAM (7-pin)", "EXT (6-pin)"],
+          "connectors": [
+            "CAM (7-pin)",
+            "EXT (6-pin)"
+          ],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Tally"]
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ]
         },
         "Cable CAM (7-pin) – D-Tap": {
           "brand": "ARRI",
           "kNumber": "K2.0018813",
           "lengthM": 0.6,
-          "connectors": ["CAM (7-pin)", "D-Tap"],
+          "connectors": [
+            "CAM (7-pin)",
+            "D-Tap"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"]
+          "useCase": [
+            "Power"
+          ]
         },
         "Cable CAM (7-pin) – LANC/D-Tap": {
           "brand": "ARRI",
           "kNumber": "K2.0015757",
           "lengthM": 0.6,
-          "connectors": ["CAM (7-pin)", "LANC + D-Tap"],
+          "connectors": [
+            "CAM (7-pin)",
+            "LANC + D-Tap"
+          ],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Power"]
+          "useCase": [
+            "Run/Stop",
+            "Power"
+          ]
         },
         "D-Tap to Lemo-2-pin Cable 0,3m": {
           "lengthM": 0.3,
-          "connectors": ["D-Tap", "Lemo 2-pin"],
+          "connectors": [
+            "D-Tap",
+            "Lemo 2-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"]
+          "useCase": [
+            "Power"
+          ]
         },
         "ultra slim 3G-SDI BNC cable 0,5m": {
           "lengthM": 0.5,
-          "connectors": ["BNC", "BNC"],
+          "connectors": [
+            "BNC",
+            "BNC"
+          ],
           "orientation": "straight",
           "type": "3G-SDI",
           "notes": "ultra slim",
-          "useCase": ["Video"]
+          "useCase": [
+            "Video"
+          ]
         },
         "Cable CAM (10-pin) – EXT (7-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0007730",
           "lengthM": 0.5,
-          "connectors": ["CAM (10-pin)", "EXT (7-pin)"],
+          "connectors": [
+            "CAM (10-pin)",
+            "EXT (7-pin)"
+          ],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Tally"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
-          "compatibleCameras": ["ALEXA Mini", "ALEXA Mini LF"]
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "ALEXA Mini",
+            "ALEXA Mini LF"
+          ]
         },
         "Cable CAM (10-pin) – RS (3-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0001606",
           "lengthM": 0.5,
-          "connectors": ["CAM (10-pin)", "ARRI RS (3-pin)"],
+          "connectors": [
+            "CAM (10-pin)",
+            "ARRI RS (3-pin)"
+          ],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Tally"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
-          "compatibleCameras": ["ALEXA", "AMIRA"]
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "ALEXA",
+            "AMIRA"
+          ]
         },
         "Cable CAM (10-pin) – D-Tap": {
           "brand": "ARRI",
           "kNumber": "K2.0002682",
           "lengthM": 0.5,
-          "connectors": ["CAM (10-pin)", "D-Tap"],
+          "connectors": [
+            "CAM (10-pin)",
+            "D-Tap"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ]
         },
         "Cable CAM (10-pin) – LANC/D-Tap": {
           "brand": "ARRI",
           "kNumber": "K2.0001999",
           "lengthM": 0.5,
-          "connectors": ["CAM (10-pin)", "LANC + D-Tap"],
+          "connectors": [
+            "CAM (10-pin)",
+            "LANC + D-Tap"
+          ],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Tally", "Power"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
-          "compatibleCameras": ["Canon C300/500", "Sony PXW-FS7"]
+          "useCase": [
+            "Run/Stop",
+            "Tally",
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "Canon C300/500",
+            "Sony PXW-FS7"
+          ]
         },
         "Cable CAM (10-pin) – Sony F5/55": {
           "brand": "ARRI",
           "kNumber": "K2.0001997",
           "lengthM": 0.5,
-          "connectors": ["CAM (10-pin)", "Sony Remote"],
+          "connectors": [
+            "CAM (10-pin)",
+            "Sony Remote"
+          ],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Tally"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
-          "compatibleCameras": ["Sony F5", "Sony F55", "Sony Venice", "Panasonic Varicam 35"]
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "Sony F5",
+            "Sony F55",
+            "Sony Venice",
+            "Panasonic Varicam 35"
+          ]
         },
         "Cable CAM (10-pin) – RED EPIC/D-Tap": {
           "brand": "ARRI",
           "kNumber": "K2.0001998",
-          "lengthM": 1.0,
-          "connectors": ["CAM (10-pin ×2)", "RED EPIC + D-Tap"],
+          "lengthM": 1,
+          "connectors": [
+            "CAM (10-pin ×2)",
+            "RED EPIC + D-Tap"
+          ],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Power"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"],
-          "compatibleCameras": ["RED EPIC", "RED Weapon"]
+          "useCase": [
+            "Run/Stop",
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "RED EPIC",
+            "RED Weapon"
+          ]
         },
         "Cable CAM (10-pin) – PSC": {
           "brand": "ARRI",
           "kNumber": "K2.0002727",
           "lengthM": 0.7,
-          "connectors": ["CAM (10-pin)", "PSC"],
+          "connectors": [
+            "CAM (10-pin)",
+            "PSC"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ]
         },
         "Cable CAM (10-pin) – Open End": {
           "brand": "ARRI",
           "kNumber": "K2.0002725",
           "lengthM": 0.5,
-          "connectors": ["CAM (10-pin)", "Open End"],
+          "connectors": [
+            "CAM (10-pin)",
+            "Open End"
+          ],
           "orientation": "straight",
-          "useCase": ["Custom"],
-          "compatibleControllers": ["SMC-1", "EMC-1", "AMC-1"]
+          "useCase": [
+            "Custom"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ]
         },
         "Cable Cooke/i Lens Control (16-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.65012.0",
           "lengthM": 0.7,
-          "connectors": ["CAM (16-pin)", "Cooke/i"],
+          "connectors": [
+            "CAM (16-pin)",
+            "Cooke/i"
+          ],
           "orientation": "straight",
-          "useCase": ["Lens Control"],
-          "compatibleControllers": ["Universal Motor Controller"]
+          "useCase": [
+            "Lens Control"
+          ],
+          "compatibleControllers": [
+            "Universal Motor Controller"
+          ]
         },
         "Battery Adapter VMicro (WVR-1s)": {
           "brand": "ARRI",
           "kNumber": "K2.0024373",
           "lengthM": null,
-          "connectors": ["VMicro Battery", "Lemo 12 V Out (2-pin)"],
+          "connectors": [
+            "VMicro Battery",
+            "Lemo 12 V Out (2-pin)"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["WVR-1s Wireless Video Receiver"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1s Wireless Video Receiver"
+          ]
         },
         "Battery Adapter AMicro (WVR-1s)": {
           "brand": "ARRI",
           "kNumber": "K2.0024374",
           "lengthM": null,
-          "connectors": ["AMicro Battery", "Lemo 12 V Out (2-pin)"],
+          "connectors": [
+            "AMicro Battery",
+            "Lemo 12 V Out (2-pin)"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["WVR-1s"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1s"
+          ]
         },
         "Receiver Power Supply (RPS-1)": {
           "brand": "ARRI",
           "kNumber": "K2.0014774",
           "lengthM": null,
-          "connectors": ["AC In", "Output to WVR-1"],
+          "connectors": [
+            "AC In",
+            "Output to WVR-1"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["WVR-1", "WVT-1", "UMC-4"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1",
+            "WVT-1",
+            "UMC-4"
+          ]
         },
         "PWR OUT Lemo (2-pin) – RS/PWR IN Fischer (3-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0014331",
           "lengthM": 0.5,
-          "connectors": ["Lemo 2-pin", "Fischer 3-pin"],
+          "connectors": [
+            "Lemo 2-pin",
+            "Fischer 3-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["WVR-1", "WVT-1", "UMC-4"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1",
+            "WVT-1",
+            "UMC-4"
+          ]
         },
         "PWR OUT Lemo (2-pin) – XLR (4-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0014342",
           "lengthM": 0.5,
-          "connectors": ["Lemo 2-pin", "XLR 4-pin"],
+          "connectors": [
+            "Lemo 2-pin",
+            "XLR 4-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["Camera/Monitor from battery plate or WVR-1"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "Camera/Monitor from battery plate or WVR-1"
+          ]
         },
         "PWR OUT Lemo (2-pin) – MiniXLR (4-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0014343",
           "lengthM": 0.5,
-          "connectors": ["Lemo 2-pin", "MiniXLR 4-pin"],
+          "connectors": [
+            "Lemo 2-pin",
+            "MiniXLR 4-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["External camera monitor"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "External camera monitor"
+          ]
         },
         "PWR OUT Lemo (2-pin) – Hi (4-pin Hirose)": {
           "brand": "ARRI",
           "kNumber": "K2.0014344",
           "lengthM": 0.5,
-          "connectors": ["Lemo 2-pin", "Hirose 4-pin"],
+          "connectors": [
+            "Lemo 2-pin",
+            "Hirose 4-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["External camera monitor"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "External camera monitor"
+          ]
         },
         "PWR OUT Lemo (2-pin) – Lemo 5-pin": {
           "brand": "ARRI",
           "kNumber": "K2.0014777",
           "lengthM": 0.5,
-          "connectors": ["Lemo 2-pin", "Lemo 5-pin"],
+          "connectors": [
+            "Lemo 2-pin",
+            "Lemo 5-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["Camera accessories"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "Camera accessories"
+          ]
         },
         "PWR OUT Lemo (2-pin) – LCS (5-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0024590",
           "lengthM": 0.3,
-          "connectors": ["Lemo 2-pin", "LCS 5-pin"],
+          "connectors": [
+            "Lemo 2-pin",
+            "LCS 5-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleDevices": ["WCU-4", "SXU-1"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WCU-4",
+            "SXU-1"
+          ]
         },
         "Monitor Power 12 V (Lemo 0B 2-pin to XLR 4-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0010546",
           "lengthM": null,
-          "connectors": ["Lemo 0B 2-pin", "XLR 4-pin"],
+          "connectors": [
+            "Lemo 0B 2-pin",
+            "XLR 4-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["ARTEMIS/TRINITY"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "ARTEMIS/TRINITY"
+          ]
         },
         "Monitor Power 12 V (Lemo 0B 2-pin to Lemo 0B 2-pin Short)": {
           "brand": "ARRI",
           "kNumber": "K2.0041723",
           "lengthM": null,
-          "connectors": ["Lemo 0B 2-pin", "Lemo 0B 2-pin"],
+          "connectors": [
+            "Lemo 0B 2-pin",
+            "Lemo 0B 2-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["ARTEMIS/TRINITY"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "ARTEMIS/TRINITY"
+          ]
         },
         "360 EVO D-Tap / XLR Battery Power to RCP or Monitor": {
           "brand": "ARRI",
           "kNumber": "K2.0021422",
           "lengthM": 1.5,
-          "connectors": ["D-Tap", "XLR 4-pin"],
+          "connectors": [
+            "D-Tap",
+            "XLR 4-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["360 EVO", "SRH-3", "SRH-360"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "360 EVO",
+            "SRH-3",
+            "SRH-360"
+          ]
         },
         "MTG Monitor Power (Lemo 0B 4-pin to Lemo 0B 2-pin, 24 V)": {
           "brand": "ARRI",
           "kNumber": "K2.0038998",
           "lengthM": null,
-          "connectors": ["Lemo 0B 4-pin", "Lemo 0B 2-pin"],
+          "connectors": [
+            "Lemo 0B 4-pin",
+            "Lemo 0B 2-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["Master Grip", "TRINITY 2"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "Master Grip",
+            "TRINITY 2"
+          ]
         },
         "MTG Monitor Power (Lemo 0B 4-pin to Lemo 0B 5-pin, 24 V)": {
           "brand": "ARRI",
           "kNumber": "K2.0038999",
           "lengthM": null,
-          "connectors": ["Lemo 0B 4-pin", "Lemo 0B 5-pin"],
+          "connectors": [
+            "Lemo 0B 4-pin",
+            "Lemo 0B 5-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["Master Grip", "TRINITY 2"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "Master Grip",
+            "TRINITY 2"
+          ]
         },
         "TRINITY 2 Joystick Cable": {
           "brand": "ARRI",
           "kNumber": "K2.0043861",
           "lengthM": 0.75,
-          "connectors": ["Lemo 0B 4-pin", "Lemo 0B 4-pin"],
+          "connectors": [
+            "Lemo 0B 4-pin",
+            "Lemo 0B 4-pin"
+          ],
           "orientation": "straight",
-          "useCase": ["Control"],
-          "compatibleSystems": ["TRINITY 2"]
+          "useCase": [
+            "Control"
+          ],
+          "compatibleSystems": [
+            "TRINITY 2"
+          ]
         },
         "SRH FS CAN Bus Cable": {
           "brand": "ARRI",
           "kNumber": "K2.0037788",
           "lengthM": 0.3,
-          "connectors": ["FS CAN Bus"],
+          "connectors": [
+            "FS CAN Bus"
+          ],
           "orientation": "straight",
-          "useCase": ["Control"],
-          "compatibleSystems": ["SRH-3", "SRH-360", "360 EVO"]
+          "useCase": [
+            "Control"
+          ],
+          "compatibleSystems": [
+            "SRH-3",
+            "SRH-360",
+            "360 EVO"
+          ]
         },
         "SRH High-Capacity Battery Power Cable Set (12 V/24 V, 0.5 m)": {
           "brand": "ARRI",
           "kNumber": "K0.0021437",
           "lengthM": 0.5,
-          "connectors": ["XLR 4-pin 12 V", "XLR 3-pin 24 V"],
+          "connectors": [
+            "XLR 4-pin 12 V",
+            "XLR 3-pin 24 V"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["SRH-3", "SRH-360", "360 EVO"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "SRH-3",
+            "SRH-360",
+            "360 EVO"
+          ]
         },
         "SRH High-Capacity Battery Power Cable 24 V, 20 m": {
           "brand": "ARRI",
           "kNumber": "K2.0021429",
           "lengthM": 20,
-          "connectors": ["XLR 3-pin 24 V"],
+          "connectors": [
+            "XLR 3-pin 24 V"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["SRH systems"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "SRH systems"
+          ]
         },
         "SRH High-Capacity Battery Power Cable 12 V, 20 m": {
           "brand": "ARRI",
           "kNumber": "K2.0021430",
           "lengthM": 20,
-          "connectors": ["XLR 4-pin 12 V"],
+          "connectors": [
+            "XLR 4-pin 12 V"
+          ],
           "orientation": "straight",
-          "useCase": ["Power"],
-          "compatibleSystems": ["SRH systems"]
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "SRH systems"
+          ]
         }
       }
     }
-  }
+  },
+  "filterOptions": [
+    "ND",
+    "Polarizer",
+    "Diffusion",
+    "Clear"
+  ]
 };
-const filterOptions = ['ND', 'Polarizer', 'Diffusion', 'Clear'];
-if (typeof module !== "undefined" && module.exports) { module.exports = { ...devices, filterOptions }; }
+if (typeof module !== "undefined" && module.exports) { module.exports = devices; }
