@@ -69,8 +69,8 @@ function storeSetups(setups) {
   saveSetups(setups);
 }
 
-function storeDevices(data) {
-  saveDeviceData(data);
+function storeDevices(deviceData) {
+  saveDeviceData(deviceData);
 }
 
 function loadSession() {
@@ -254,9 +254,9 @@ function fixPowerInput(dev) {
 
 // Normalize various camera properties so downstream logic works with
 // consistent structures and value formats.
-function unifyDevices(data) {
-  if (!data || typeof data !== 'object') return;
-  Object.values(data.cameras || {}).forEach(cam => {
+function unifyDevices(devicesData) {
+  if (!devicesData || typeof devicesData !== 'object') return;
+  Object.values(devicesData.cameras || {}).forEach(cam => {
     if (cam.power?.input && cam.power.input.powerDrawWatts !== undefined) {
       delete cam.power.input.powerDrawWatts;
     }
@@ -355,32 +355,32 @@ function unifyDevices(data) {
       );
   });
 
-  Object.values(data.monitors || {}).forEach(mon => {
+  Object.values(devicesData.monitors || {}).forEach(mon => {
     fixPowerInput(mon);
   });
 
-  Object.values(data.video || {}).forEach(vd => {
+  Object.values(devicesData.video || {}).forEach(vd => {
     fixPowerInput(vd);
   });
 
-  Object.values(data.viewfinders || {}).forEach(vf => {
+  Object.values(devicesData.viewfinders || {}).forEach(vf => {
     fixPowerInput(vf);
   });
 
-  Object.values(data.fiz?.motors || {}).forEach(fm => {
+  Object.values(devicesData.fiz?.motors || {}).forEach(fm => {
     fixPowerInput(fm);
   });
 
-  Object.values(data.fiz?.controllers || {}).forEach(fc => {
+  Object.values(devicesData.fiz?.controllers || {}).forEach(fc => {
     fixPowerInput(fc);
   });
 
-  Object.values(data.fiz?.distance || {}).forEach(fd => {
+  Object.values(devicesData.fiz?.distance || {}).forEach(fd => {
     fixPowerInput(fd);
   });
 
   // Normalize FIZ motors
-  Object.values(data.fiz?.motors || {}).forEach(m => {
+  Object.values(devicesData.fiz?.motors || {}).forEach(m => {
     if (!m) return;
     if (m.connector && !m.fizConnector) {
       m.fizConnector = m.connector;
@@ -392,7 +392,7 @@ function unifyDevices(data) {
   });
 
   // Normalize FIZ controllers
-  Object.values(data.fiz?.controllers || {}).forEach(c => {
+  Object.values(devicesData.fiz?.controllers || {}).forEach(c => {
     if (!c) return;
     if (c.FIZ_connector && !c.fizConnector && !c.fizConnectors) {
       c.fizConnector = c.FIZ_connector;
@@ -455,8 +455,8 @@ function supportsBMountCamera(name) {
 
 function getBatteriesByMount(mountType) {
   const out = {};
-  for (const [name, data] of Object.entries(devices.batteries)) {
-    if (data && data.mount_type === mountType) out[name] = data;
+  for (const [name, info] of Object.entries(devices.batteries)) {
+    if (info && info.mount_type === mountType) out[name] = info;
   }
   return out;
 }
@@ -3656,18 +3656,18 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       if (battName === "None") continue;
       if (selectedCandidate && battName === selectedCandidate.name) continue;
 
-      const data = devices.batteries[battName];
-      if (plateFilter && data.mount_type !== plateFilter) continue;
-      if (!plateFilter && !supportsB && data.mount_type === 'B-Mount') continue;
-      const canPin = totalCurrentLow <= data.pinA;
-      const canDTap = !bMountCam && totalCurrentLow <= data.dtapA;
+      const battData = devices.batteries[battName];
+      if (plateFilter && battData.mount_type !== plateFilter) continue;
+      if (!plateFilter && !supportsB && battData.mount_type === 'B-Mount') continue;
+      const canPin = totalCurrentLow <= battData.pinA;
+      const canDTap = !bMountCam && totalCurrentLow <= battData.dtapA;
 
       if (canPin) {
-        const hours = data.capacity / totalWatt;
+        const hours = battData.capacity / totalWatt;
         const method = (canDTap ? "both pins and D-Tap" : "pins");
         pinsCandidates.push({ name: battName, hours: hours, method: method });
       } else if (canDTap) {
-        const hours = data.capacity / totalWatt;
+        const hours = battData.capacity / totalWatt;
         dtapCandidates.push({ name: battName, hours: hours, method: "dtap" });
       }
     }
@@ -3807,13 +3807,13 @@ function getCurrentSetupKey() {
 }
 
 function deleteFeedbackEntry(key, index) {
-  const data = loadFeedbackSafe();
-  if (data[key]) {
-    data[key].splice(index, 1);
-    if (!data[key].length) {
-      delete data[key];
+  const feedbackData = loadFeedbackSafe();
+  if (feedbackData[key]) {
+    feedbackData[key].splice(index, 1);
+    if (!feedbackData[key].length) {
+      delete feedbackData[key];
     }
-    saveFeedbackSafe(data);
+    saveFeedbackSafe(feedbackData);
     updateCalculations();
   }
 }
@@ -3821,9 +3821,9 @@ function deleteFeedbackEntry(key, index) {
 function renderFeedbackTable(currentKey) {
   const container = document.getElementById('feedbackTableContainer');
   const table = document.getElementById('userFeedbackTable');
-  const data = loadFeedbackSafe();
+  const feedbackData = loadFeedbackSafe();
   // Filter out any stored location information to keep the table column hidden
-  const entries = (data[currentKey] || []).map(entry => {
+  const entries = (feedbackData[currentKey] || []).map(entry => {
     const rest = { ...entry };
     delete rest.location;
     return rest;
@@ -4700,22 +4700,22 @@ function attachDiagramPopups(map) {
     const id = node.getAttribute('data-node');
     const info = map[id];
     if (!info) return;
-    let data;
+    let deviceData;
     if (info.category === 'fiz.controllers') {
-      data = devices.fiz?.controllers?.[info.name];
+      deviceData = devices.fiz?.controllers?.[info.name];
     } else if (info.category === 'fiz.motors') {
-      data = devices.fiz?.motors?.[info.name];
+      deviceData = devices.fiz?.motors?.[info.name];
     } else if (info.category === 'fiz.distance') {
-      data = devices.fiz?.distance?.[info.name];
+      deviceData = devices.fiz?.distance?.[info.name];
     } else {
-      data = devices[info.category]?.[info.name];
+      deviceData = devices[info.category]?.[info.name];
     }
-    const connectors = data ? generateConnectorSummary(data) : '';
+    const connectors = deviceData ? generateConnectorSummary(deviceData) : '';
     const infoHtml =
-      (data && data.latencyMs ?
-        `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
-      (data && data.frequency ?
-        `<div class="info-box video-conn"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
+      (deviceData && deviceData.latencyMs ?
+        `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(deviceData.latencyMs))}</div>` : '') +
+      (deviceData && deviceData.frequency ?
+        `<div class="info-box video-conn"><strong>Frequency:</strong> ${escapeHtml(String(deviceData.frequency))}</div>` : '');
     const html = `<strong>${escapeHtml(info.name)}</strong>` +
       connectors + infoHtml;
 
@@ -6048,21 +6048,21 @@ generateOverviewBtn.addEventListener('click', () => {
 function batteryPinsSufficient() {
     const batt = batterySelect && batterySelect.value;
     if (!batt || batt === 'None' || !devices.batteries[batt]) return true;
-    const data = devices.batteries[batt];
+    const battData = devices.batteries[batt];
     const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
     if (!isFinite(totalCurrentLow)) return true;
-    return totalCurrentLow <= data.pinA;
+    return totalCurrentLow <= battData.pinA;
 }
 
 function alertPinExceeded() {
     const batt = batterySelect && batterySelect.value;
     if (!batt || batt === 'None' || !devices.batteries[batt]) return;
-    const data = devices.batteries[batt];
+    const battData = devices.batteries[batt];
     const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
     alert(
         texts[currentLang].warnPinExceeded
             .replace('{current}', totalCurrentLow.toFixed(2))
-            .replace('{max}', data.pinA)
+            .replace('{max}', battData.pinA)
     );
 }
 
@@ -6295,20 +6295,20 @@ function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = ''
     return `<span class="connector-block ${cls}">${icon} ${prefix}${entries.join(', ')}</span>`;
 }
 
-function generateConnectorSummary(data) {
-    if (!data || typeof data !== 'object') return '';
+function generateConnectorSummary(device) {
+    if (!device || typeof device !== 'object') return '';
 
     let portHtml = '';
     const connectors = [
-        { items: data.power?.powerDistributionOutputs, icon: '⚡', cls: 'power-conn', label: 'Power', dir: 'Out' },
-        { items: powerInputTypes(data).map(t => ({ type: t })), icon: '🔌', cls: 'power-conn', label: 'Power', dir: 'In' },
-        { items: data.fizConnectors, icon: '🎚️', cls: 'fiz-conn', label: 'FIZ Port' },
-        { items: data.video?.inputs || data.videoInputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'In' },
-        { items: data.video?.outputs || data.videoOutputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'Out' },
-        { items: data.timecode, icon: '⏱️', cls: 'neutral-conn', label: 'Timecode' },
-        { items: data.audioInput?.portType ? [{ type: data.audioInput.portType }] : undefined, icon: '🎤', cls: 'neutral-conn', label: 'Audio', dir: 'In' },
-        { items: data.audioOutput?.portType ? [{ type: data.audioOutput.portType }] : undefined, icon: '🔊', cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
-        { items: data.audioIo?.portType ? [{ type: data.audioIo.portType }] : undefined, icon: '🎚️', cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
+        { items: device.power?.powerDistributionOutputs, icon: '⚡', cls: 'power-conn', label: 'Power', dir: 'Out' },
+        { items: powerInputTypes(device).map(t => ({ type: t })), icon: '🔌', cls: 'power-conn', label: 'Power', dir: 'In' },
+        { items: device.fizConnectors, icon: '🎚️', cls: 'fiz-conn', label: 'FIZ Port' },
+        { items: device.video?.inputs || device.videoInputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'In' },
+        { items: device.video?.outputs || device.videoOutputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'Out' },
+        { items: device.timecode, icon: '⏱️', cls: 'neutral-conn', label: 'Timecode' },
+        { items: device.audioInput?.portType ? [{ type: device.audioInput.portType }] : undefined, icon: '🎤', cls: 'neutral-conn', label: 'Audio', dir: 'In' },
+        { items: device.audioOutput?.portType ? [{ type: device.audioOutput.portType }] : undefined, icon: '🔊', cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
+        { items: device.audioIo?.portType ? [{ type: device.audioIo.portType }] : undefined, icon: '🎚️', cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
     ];
 
     for (const { items, icon, cls, label, dir } of connectors) {
@@ -6316,73 +6316,73 @@ function generateConnectorSummary(data) {
     }
 
     let specHtml = '';
-    if (typeof data.powerDrawWatts === 'number') {
-        specHtml += `<span class="info-box power-conn">⚡ Power: ${data.powerDrawWatts} W</span>`;
+    if (typeof device.powerDrawWatts === 'number') {
+        specHtml += `<span class="info-box power-conn">⚡ Power: ${device.powerDrawWatts} W</span>`;
     }
-    if (data.power?.input?.voltageRange) {
-        specHtml += `<span class="info-box power-conn">🔋 Voltage: ${escapeHtml(String(data.power.input.voltageRange))}V</span>`;
+    if (device.power?.input?.voltageRange) {
+        specHtml += `<span class="info-box power-conn">🔋 Voltage: ${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
     }
-    if (typeof data.capacity === 'number') {
-        specHtml += `<span class="info-box power-conn">🔋 Capacity: ${data.capacity} Wh</span>`;
+    if (typeof device.capacity === 'number') {
+        specHtml += `<span class="info-box power-conn">🔋 Capacity: ${device.capacity} Wh</span>`;
     }
-    if (typeof data.pinA === 'number') {
-        specHtml += `<span class="info-box power-conn">Pins: ${data.pinA}A</span>`;
+    if (typeof device.pinA === 'number') {
+        specHtml += `<span class="info-box power-conn">Pins: ${device.pinA}A</span>`;
     }
-    if (typeof data.dtapA === 'number') {
-        specHtml += `<span class="info-box power-conn">D-Tap: ${data.dtapA}A</span>`;
+    if (typeof device.dtapA === 'number') {
+        specHtml += `<span class="info-box power-conn">D-Tap: ${device.dtapA}A</span>`;
     }
-    if (data.mount_type) {
-        specHtml += `<span class="info-box power-conn">Mount: ${escapeHtml(String(data.mount_type))}</span>`;
+    if (device.mount_type) {
+        specHtml += `<span class="info-box power-conn">Mount: ${escapeHtml(String(device.mount_type))}</span>`;
     }
-    if (typeof data.screenSizeInches === 'number') {
-        specHtml += `<span class="info-box video-conn">📐 Screen: ${data.screenSizeInches}"</span>`;
+    if (typeof device.screenSizeInches === 'number') {
+        specHtml += `<span class="info-box video-conn">📐 Screen: ${device.screenSizeInches}"</span>`;
     }
-    if (typeof data.brightnessNits === 'number') {
-        specHtml += `<span class="info-box video-conn">💡 Brightness: ${data.brightnessNits} nits</span>`;
+    if (typeof device.brightnessNits === 'number') {
+        specHtml += `<span class="info-box video-conn">💡 Brightness: ${device.brightnessNits} nits</span>`;
     }
-    if (typeof data.wirelessTx === 'boolean') {
-        specHtml += `<span class="info-box video-conn">📡 Wireless: ${data.wirelessTx}</span>`;
+    if (typeof device.wirelessTx === 'boolean') {
+        specHtml += `<span class="info-box video-conn">📡 Wireless: ${device.wirelessTx}</span>`;
     }
-    if (data.internalController) {
+    if (device.internalController) {
         specHtml += `<span class="info-box fiz-conn">🎛️ Controller: Internal</span>`;
     }
-    if (typeof data.torqueNm === 'number') {
-        specHtml += `<span class="info-box fiz-conn">⚙️ Torque: ${data.torqueNm} Nm</span>`;
+    if (typeof device.torqueNm === 'number') {
+        specHtml += `<span class="info-box fiz-conn">⚙️ Torque: ${device.torqueNm} Nm</span>`;
     }
-    if (data.power_source) {
-        specHtml += `<span class="info-box power-conn">🔌 Power Source: ${escapeHtml(String(data.power_source))}</span>`;
+    if (device.power_source) {
+        specHtml += `<span class="info-box power-conn">🔌 Power Source: ${escapeHtml(String(device.power_source))}</span>`;
     }
 
     let extraHtml = '';
-    if (Array.isArray(data.power?.batteryPlateSupport) && data.power.batteryPlateSupport.length) {
-        const types = data.power.batteryPlateSupport.map(p => {
+    if (Array.isArray(device.power?.batteryPlateSupport) && device.power.batteryPlateSupport.length) {
+        const types = device.power.batteryPlateSupport.map(p => {
             const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
             return `${escapeHtml(p.type)}${mount}`;
         });
         extraHtml += `<span class="info-box power-conn">Battery Plate: ${types.join(', ')}</span>`;
     }
-    if (Array.isArray(data.recordingMedia) && data.recordingMedia.length) {
-        const types = data.recordingMedia.map(m => escapeHtml(m.type));
+    if (Array.isArray(device.recordingMedia) && device.recordingMedia.length) {
+        const types = device.recordingMedia.map(m => escapeHtml(m.type));
         extraHtml += `<span class="info-box video-conn">Media: ${types.join(', ')}</span>`;
     }
-    if (Array.isArray(data.viewfinder) && data.viewfinder.length) {
-        const types = data.viewfinder.map(v => escapeHtml(v.type));
+    if (Array.isArray(device.viewfinder) && device.viewfinder.length) {
+        const types = device.viewfinder.map(v => escapeHtml(v.type));
         extraHtml += `<span class="info-box video-conn">Viewfinder: ${types.join(', ')}</span>`;
     }
-    if (Array.isArray(data.gearTypes) && data.gearTypes.length) {
-        const types = data.gearTypes.map(g => escapeHtml(g));
+    if (Array.isArray(device.gearTypes) && device.gearTypes.length) {
+        const types = device.gearTypes.map(g => escapeHtml(g));
         extraHtml += `<span class="info-box fiz-conn">Gear: ${types.join(', ')}</span>`;
     }
-    if (data.connectivity) {
-        extraHtml += `<span class="info-box video-conn">Connectivity: ${escapeHtml(String(data.connectivity))}</span>`;
+    if (device.connectivity) {
+        extraHtml += `<span class="info-box video-conn">Connectivity: ${escapeHtml(String(device.connectivity))}</span>`;
     }
-    if (data.notes) {
-        extraHtml += `<span class="info-box neutral-conn">Notes: ${escapeHtml(String(data.notes))}</span>`;
+    if (device.notes) {
+        extraHtml += `<span class="info-box neutral-conn">Notes: ${escapeHtml(String(device.notes))}</span>`;
     }
 
     let lensHtml = '';
-    if (Array.isArray(data.lensMount)) {
-        const boxes = data.lensMount.map(lm => {
+    if (Array.isArray(device.lensMount)) {
+        const boxes = device.lensMount.map(lm => {
             const mount = lm.mount ? ` (${escapeHtml(lm.mount)})` : '';
             return `<span class="info-box neutral-conn">${escapeHtml(lm.type)}${mount}</span>`;
         }).join('');
@@ -6425,21 +6425,21 @@ function generatePrintableOverview() {
         if (selectElement.value && selectElement.value !== "None") {
             const deviceKey = selectElement.value;
             const deviceName = selectElement.options[selectElement.selectedIndex].text;
-            let data;
+            let deviceInfo;
             if (subcategory) {
-                data = devices[category] &&
+                deviceInfo = devices[category] &&
                        devices[category][subcategory] &&
                        devices[category][subcategory][deviceKey];
             } else {
-                data = devices[category] && devices[category][deviceKey];
+                deviceInfo = devices[category] && devices[category][deviceKey];
             }
             const safeName = escapeHtml(deviceName);
             let details = '';
-            if (data !== undefined && data !== null) {
-                const connectors = generateConnectorSummary(data);
+            if (deviceInfo !== undefined && deviceInfo !== null) {
+                const connectors = generateConnectorSummary(deviceInfo);
                 const infoBoxes =
-                    (data.latencyMs !== undefined ? `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(data.latencyMs))}</div>` : '') +
-                    (data.frequency ? `<div class="info-box video-conn"><strong>Frequency:</strong> ${escapeHtml(String(data.frequency))}</div>` : '');
+                    (deviceInfo.latencyMs !== undefined ? `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(deviceInfo.latencyMs))}</div>` : '') +
+                    (deviceInfo.frequency ? `<div class="info-box video-conn"><strong>Frequency:</strong> ${escapeHtml(String(deviceInfo.frequency))}</div>` : '');
                 details = connectors + infoBoxes;
             }
             addToSection(headingKey, `<div class="device-block"><strong>${safeName}</strong>${details}</div>`);
@@ -6516,17 +6516,17 @@ function generatePrintableOverview() {
         for (let battName in devices.batteries) {
             if (battName === 'None') continue;
             if (selectedCandidate && battName === selectedCandidate.name) continue;
-            const data = devices.batteries[battName];
-            if (plateFilter && data.mount_type !== plateFilter) continue;
-            if (!plateFilter && !supportsB && data.mount_type === 'B-Mount') continue;
-            const canPin = totalCurrentLow <= data.pinA;
-            const canDTap = !bMountCam && totalCurrentLow <= data.dtapA;
+            const battInfo = devices.batteries[battName];
+            if (plateFilter && battInfo.mount_type !== plateFilter) continue;
+            if (!plateFilter && !supportsB && battInfo.mount_type === 'B-Mount') continue;
+            const canPin = totalCurrentLow <= battInfo.pinA;
+            const canDTap = !bMountCam && totalCurrentLow <= battInfo.dtapA;
             if (canPin) {
-                const hours = data.capacity / totalWatt;
+                const hours = battInfo.capacity / totalWatt;
                 const method = canDTap ? 'both pins and D-Tap' : 'pins';
                 pinsCandidates.push({ name: battName, hours, method });
             } else if (canDTap) {
-                const hours = data.capacity / totalWatt;
+                const hours = battInfo.capacity / totalWatt;
                 dtapCandidates.push({ name: battName, hours, method: 'dtap' });
             }
         }

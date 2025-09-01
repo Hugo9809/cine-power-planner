@@ -14,8 +14,8 @@ function isPlainObject(val) {
 // Generic helpers for storage access
 function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
   try {
-    const data = storage.getItem(key);
-    return data ? JSON.parse(data) : defaultValue;
+    const raw = storage.getItem(key);
+    return raw ? JSON.parse(raw) : defaultValue;
   } catch (e) {
     console.error(errorMessage, e);
     return defaultValue;
@@ -96,23 +96,23 @@ function loadDeviceData() {
   return null; // Return null to indicate that default should be used
 }
 
-function saveDeviceData(data) {
+function saveDeviceData(deviceData) {
   saveJSONToStorage(
     localStorage,
     DEVICE_STORAGE_KEY,
-    data,
+    deviceData,
     "Error saving device data to localStorage:",
     "Device data saved to localStorage."
   );
 }
 
 // --- Setup Data Storage ---
-function normalizeSetups(data) {
-  if (!data) return {};
-  if (Array.isArray(data)) {
+function normalizeSetups(rawData) {
+  if (!rawData) return {};
+  if (Array.isArray(rawData)) {
     const obj = {};
     const used = new Set();
-    data.forEach((item, idx) => {
+    rawData.forEach((item, idx) => {
       if (isPlainObject(item)) {
         const base = item.name || item.setupName || `Setup ${idx + 1}`;
         const key = generateUniqueName(base, used);
@@ -121,7 +121,7 @@ function normalizeSetups(data) {
     });
     return obj;
   }
-  return isPlainObject(data) ? data : {};
+  return isPlainObject(rawData) ? rawData : {};
 }
 
 function loadSetups() {
@@ -256,19 +256,19 @@ function exportAllData() {
   };
 }
 
-function importAllData(data) {
-  if (isPlainObject(data)) {
-    if (data.devices) {
-      saveDeviceData(data.devices);
+function importAllData(allData) {
+  if (isPlainObject(allData)) {
+    if (allData.devices) {
+      saveDeviceData(allData.devices);
     }
-    if (data.setups) {
-      saveSetups(data.setups);
+    if (allData.setups) {
+      saveSetups(allData.setups);
     }
-    if (data.session) {
-      saveSessionState(data.session);
+    if (allData.session) {
+      saveSessionState(allData.session);
     }
-    if (data.feedback) {
-      saveFeedback(data.feedback);
+    if (allData.feedback) {
+      saveFeedback(allData.feedback);
     }
   }
 }
