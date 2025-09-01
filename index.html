@@ -961,46 +961,46 @@
 
       <fieldset>
         <legend>📋 Basic Info</legend>
-        <div class="form-row"><label>User:<input type="text" id="fbUsername" required></label></div>
-        <div class="form-row"><label>Date:<input type="date" id="fbDate" required></label></div>
+        <div class="form-row"><label>User:<input type="text" id="fbUsername" name="fbUsername" required></label></div>
+        <div class="form-row"><label>Date:<input type="date" id="fbDate" name="fbDate" required></label></div>
         <div class="form-row">
-          <label>Location:<input type="text" id="fbLocation"></label>
+          <label>Location:<input type="text" id="fbLocation" name="fbLocation"></label>
           <button type="button" id="fbUseLocationBtn">Use Current Location</button>
         </div>
       </fieldset>
 
       <fieldset>
         <legend>🎥 Camera Setup</legend>
-        <div class="form-row"><label>Camera:<input type="text" id="fbCamera" readonly></label></div>
-        <div class="form-row"><label>Battery Plate:<input type="text" id="fbBatteryPlate" readonly></label></div>
-        <div class="form-row"><label>Lens Mount:<input list="mountOptions" id="fbLensMount"></label></div>
-        <div class="form-row"><label>Res:<input list="resolutionOptions" id="fbResolution"></label></div>
-        <div class="form-row"><label>Codec:<input list="codecOptions" id="fbCodec"></label></div>
-        <div class="form-row"><label>FPS:<input list="framerateOptions" id="fbFramerate"></label></div>
-        <div class="form-row"><label>Camera WIFI:<select id="fbWifi"><option value="on">On</option><option value="off">Off</option></select></label></div>
-        <div class="form-row"><label>Firmware:<input type="text" id="fbFirmware"></label></div>
+        <div class="form-row"><label>Camera:<input type="text" id="fbCamera" name="fbCamera" readonly></label></div>
+        <div class="form-row"><label>Battery Plate:<input type="text" id="fbBatteryPlate" name="fbBatteryPlate" readonly></label></div>
+        <div class="form-row"><label>Lens Mount:<input list="mountOptions" id="fbLensMount" name="fbLensMount"></label></div>
+        <div class="form-row"><label>Res:<input list="resolutionOptions" id="fbResolution" name="fbResolution"></label></div>
+        <div class="form-row"><label>Codec:<input list="codecOptions" id="fbCodec" name="fbCodec"></label></div>
+        <div class="form-row"><label>FPS:<input list="framerateOptions" id="fbFramerate" name="fbFramerate"></label></div>
+        <div class="form-row"><label>Camera WIFI:<select id="fbWifi" name="fbWifi"><option value="on">On</option><option value="off">Off</option></select></label></div>
+        <div class="form-row"><label>Firmware:<input type="text" id="fbFirmware" name="fbFirmware"></label></div>
       </fieldset>
 
       <fieldset>
         <legend>🔋 Power &amp; Accessories</legend>
-        <div class="form-row"><label>Battery:<input type="text" id="fbBattery" readonly></label></div>
-        <div class="form-row"><label>Battery Age:<input type="number" id="fbBatteryAge"></label></div>
-        <div class="form-row"><label>Wireless Video:<input type="text" id="fbWirelessVideo" readonly></label></div>
-        <div class="form-row"><label>Monitor:<input type="text" id="fbMonitor" readonly></label></div>
-        <div class="form-row"><label>Monitor Brightness:<input type="text" id="fbMonitorBrightness"></label></div>
-        <div class="form-row"><label>Lens:<input type="text" id="fbLens"></label></div>
-        <div class="form-row"><label>Lens Data:<select id="fbLensData"><option value="">--</option><option value="on">On</option><option value="off">Off</option></select></label></div>
-        <div class="form-row"><label>FIZ Controllers:<input type="text" id="fbControllers" readonly></label></div>
-        <div class="form-row"><label>FIZ Motors:<input type="text" id="fbMotors" readonly></label></div>
-        <div class="form-row"><label>FIZ Distance:<select id="fbDistance" disabled></select></label></div>
+        <div class="form-row"><label>Battery:<input type="text" id="fbBattery" name="fbBattery" readonly></label></div>
+        <div class="form-row"><label>Battery Age:<input type="number" id="fbBatteryAge" name="fbBatteryAge"></label></div>
+        <div class="form-row"><label>Wireless Video:<input type="text" id="fbWirelessVideo" name="fbWirelessVideo" readonly></label></div>
+        <div class="form-row"><label>Monitor:<input type="text" id="fbMonitor" name="fbMonitor" readonly></label></div>
+        <div class="form-row"><label>Monitor Brightness:<input type="text" id="fbMonitorBrightness" name="fbMonitorBrightness"></label></div>
+        <div class="form-row"><label>Lens:<input type="text" id="fbLens" name="fbLens"></label></div>
+        <div class="form-row"><label>Lens Data:<select id="fbLensData" name="fbLensData"><option value="">--</option><option value="on">On</option><option value="off">Off</option></select></label></div>
+        <div class="form-row"><label>FIZ Controllers:<input type="text" id="fbControllers" name="fbControllers" readonly></label></div>
+        <div class="form-row"><label>FIZ Motors:<input type="text" id="fbMotors" name="fbMotors" readonly></label></div>
+        <div class="form-row"><label>FIZ Distance:<select id="fbDistance" name="fbDistance" disabled></select></label></div>
       </fieldset>
 
       <fieldset>
         <legend>🌡️ Environment</legend>
-        <div class="form-row"><label>Temp (°C):<select id="fbTemperature"></select></label></div>
-        <div class="form-row"><label>Charging:<select id="fbCharging"><option value="yes">Yes</option><option value="no">No</option></select></label></div>
-        <div class="form-row"><label>Runtime (hrs):<input type="number" step="0.01" id="fbRuntime" required></label></div>
-        <div class="form-row"><label>Batteries Used per Day:<input type="number" id="fbBatteriesPerDay"></label></div>
+        <div class="form-row"><label>Temp (°C):<select id="fbTemperature" name="fbTemperature"></select></label></div>
+        <div class="form-row"><label>Charging:<select id="fbCharging" name="fbCharging"><option value="yes">Yes</option><option value="no">No</option></select></label></div>
+        <div class="form-row"><label>Runtime (hrs):<input type="number" step="0.01" id="fbRuntime" name="fbRuntime" required></label></div>
+        <div class="form-row"><label>Batteries Used per Day:<input type="number" id="fbBatteriesPerDay" name="fbBatteriesPerDay"></label></div>
       </fieldset>
 
       <div class="form-row button-row">
