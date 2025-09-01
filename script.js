@@ -102,16 +102,14 @@ const VIDEO_TYPE_PATTERNS = [
 const videoTypeCache = new Map();
 function normalizeVideoType(type) {
   if (!type) return '';
-  const t = String(type).toLowerCase();
-  if (videoTypeCache.has(t)) return videoTypeCache.get(t);
-  for (const { needles, value } of VIDEO_TYPE_PATTERNS) {
-    if (needles.every(n => t.includes(n))) {
-      videoTypeCache.set(t, value);
-      return value;
-    }
+  const key = String(type).toLowerCase();
+  if (!videoTypeCache.has(key)) {
+    const match = VIDEO_TYPE_PATTERNS.find(({ needles }) =>
+      needles.every(n => key.includes(n))
+    );
+    videoTypeCache.set(key, match ? match.value : '');
   }
-  videoTypeCache.set(t, '');
-  return '';
+  return videoTypeCache.get(key);
 }
 
 const FIZ_CONNECTOR_MAP = {
@@ -156,7 +154,7 @@ const createMapNormalizer = (map, cache) => type => {
   return normalized;
 };
 
-const normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP);
+const normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP, new Map());
 
 const VIEWFINDER_TYPE_MAP = {
   'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
