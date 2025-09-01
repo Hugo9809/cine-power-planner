@@ -1025,7 +1025,35 @@ describe('script.js functions', () => {
     const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
     expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
     const itemsRow = rows[cameraSupportIndex + 1];
-    expect(itemsRow.textContent).toContain('SHAPE Telescopic Handle ARRI Rosette Kit 12"');
+    expect(itemsRow.textContent).toContain('1x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
+  });
+
+  test('Hand Grips rigging adds telescopic handle', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ rigging: 'Hand Grips' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[cameraSupportIndex + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('1x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
+    expect(text).not.toContain('2x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
+  });
+
+  test('Rigging options add telescopic handle without duplication', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ rigging: 'Shoulder rig, Hand Grips' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[cameraSupportIndex + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('1x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
+    expect(text).not.toContain('2x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
   test('Carts and Transportation category includes default items', () => {

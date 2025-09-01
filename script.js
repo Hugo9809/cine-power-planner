@@ -6947,8 +6947,20 @@ function generateGearListHtml(info = {}) {
     const scenarios = info.requiredScenarios
         ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    const rigging = info.rigging
+        ? info.rigging.split(',').map(r => r.trim()).filter(Boolean)
+        : [];
+    const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
+    const addHandle = () => {
+        if (!supportAccNoCages.includes(handleName)) {
+            supportAccNoCages.push(handleName);
+        }
+    };
     if (scenarios.includes('Handheld') && scenarios.includes('Easyrig')) {
-        supportAccNoCages.push('SHAPE Telescopic Handle ARRI Rosette Kit 12"');
+        addHandle();
+    }
+    if (rigging.some(r => r === 'Shoulder rig' || r === 'Hand Grips')) {
+        addHandle();
     }
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
