@@ -897,7 +897,7 @@ describe('script.js functions', () => {
       expect(html).toContain('Camera');
       expect(html).toContain('1x CamA');
       expect(html).toContain('Camera Support');
-      expect(html).toContain('<select id="gearListCage"');
+      expect(html).toContain('1x <select id="gearListCage"');
       expect(html).toContain('<option value="Universal Cage"');
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('1x LBUS to LBUS');
@@ -917,7 +917,7 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain('<strong>Onboard Monitor</strong> - 1x MonA - incl. Sunhood<br><strong>Wireless Transmitter</strong> - 1x VidA');
+    expect(html).toContain('1x <strong>Onboard Monitor</strong> - MonA - incl. Sunhood<br>1x <strong>Wireless Transmitter</strong> - VidA');
     expect(html).not.toContain('MonA, VidA');
   });
 

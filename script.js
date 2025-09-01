@@ -6916,7 +6916,7 @@ function generateGearListHtml(info = {}) {
     let cageSelectHtml = '';
     if (compatibleCages.length) {
         const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(c)}</option>`).join('');
-        cageSelectHtml = `<select id="gearListCage">${options}</select>`;
+        cageSelectHtml = `1x <select id="gearListCage">${options}</select>`;
     }
     addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
     addRow('Media', '');
@@ -6936,13 +6936,13 @@ function generateGearListHtml(info = {}) {
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     if (selectedNames.viewfinder) {
-        monitoringItems += `<strong>Viewfinder</strong><br>- 1x ${escapeHtml(selectedNames.viewfinder)}`;
+        monitoringItems += `1x <strong>Viewfinder</strong> - ${escapeHtml(selectedNames.viewfinder)}`;
     }
     if (selectedNames.monitor) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong> - 1x ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
     if (selectedNames.video) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Wireless Transmitter</strong> - 1x ${escapeHtml(selectedNames.video)}`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
     }
     addRow('Monitoring', monitoringItems);
 
