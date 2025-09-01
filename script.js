@@ -1285,6 +1285,14 @@ function setLanguage(lang) {
       texts[lang].pinkModeHelp || texts[lang].pinkModeLabel
     );
   }
+  if (reloadButton) {
+    reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
+    reloadButton.setAttribute("aria-label", texts[lang].reloadAppLabel);
+    reloadButton.setAttribute(
+      "data-help",
+      texts[lang].reloadAppHelp || texts[lang].reloadAppLabel
+    );
+  }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
@@ -1518,6 +1526,7 @@ const languageSelect  = document.getElementById("languageSelect");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
 const darkModeToggle  = document.getElementById("darkModeToggle");
 const helpButton      = document.getElementById("helpButton");
+const reloadButton    = document.getElementById("reloadButton");
 const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
 const helpSearch      = document.getElementById("helpSearch");
@@ -7143,6 +7152,25 @@ if (pinkModeToggle) {
       localStorage.setItem("pinkMode", pinkModeEnabled);
     } catch (e) {
       console.warn("Could not save pink mode preference", e);
+    }
+  });
+}
+
+if (reloadButton) {
+  reloadButton.addEventListener("click", async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(reg => reg.unregister()));
+      }
+      if (typeof caches !== "undefined") {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(key => caches.delete(key)));
+      }
+    } catch (e) {
+      console.warn("Cache clear failed", e);
+    } finally {
+      window.location.reload(true);
     }
   });
 }

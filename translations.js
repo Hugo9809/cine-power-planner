@@ -40,6 +40,9 @@ const texts = {
     pinkModeHelp:
       "Add a playful pink accent theme. Works with light or dark mode and is remembered for next time.",
 
+    reloadAppLabel: "Force reload",
+    reloadAppHelp: "Clear cached files and reload to apply updates.",
+
     savedSetupsLabel: "Saved Setups:",
     newSetupOption: "-- New Setup --",
     setupNameLabel: "Setup Name:",
@@ -389,6 +392,8 @@ const texts = {
       "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
       "Attiva un tema rosa giocoso; funziona con modalità chiara o scura e viene salvato.",
+    reloadAppLabel: "Ricarica",
+    reloadAppHelp: "Svuota la cache e ricarica l'app senza eliminare i dati salvati.",
     savedSetupsLabel: "Configurazioni salvate:",
     newSetupOption: "-- Nuova configurazione --",
     setupNameLabel: "Nome di configurazione:",
@@ -715,7 +720,8 @@ const texts = {
       "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
       "Aplica un tema rosa divertido; funciona con modo claro u oscuro y se recuerda la próxima vez.",
-
+    reloadAppLabel: "Recargar",
+    reloadAppHelp: "Borra la caché y recarga la aplicación sin eliminar los datos guardados.",
     savedSetupsLabel: "Configuraciones guardadas:",
     newSetupOption: "-- Nueva Configuración --",
     setupNameLabel: "Nombre de Configuración:",
@@ -1057,7 +1063,8 @@ const texts = {
       "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
     pinkModeHelp:
       "Active un thème rose ludique; fonctionne en mode clair ou sombre et est enregistré.",
-
+    reloadAppLabel: "Recharger",
+    reloadAppHelp: "Vider le cache et recharger l'application sans supprimer les données enregistrées.",
     savedSetupsLabel: "Configurations enregistrées:",
     newSetupOption: "-- Nouvelle Configuration --",
     setupNameLabel: "Nom de la Configuration:",
@@ -1401,7 +1408,8 @@ const texts = {
       "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:
       "Aktiviere ein verspieltes pinkes Design; funktioniert mit hellen oder dunklen Modi und wird gemerkt.",
-
+    reloadAppLabel: "Neu laden",
+    reloadAppHelp: "Cache leeren und Anwendung neu laden, ohne gespeicherte Daten zu entfernen.",
     savedSetupsLabel: "Gespeicherte Setups:",
     newSetupOption: "-- Neues Setup --",
     setupNameLabel: "Setup-Name:",
