@@ -6973,7 +6973,7 @@ function generateGearListHtml(info = {}) {
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
-        monitoringPreferences: 'Monitoring Preferences',
+        monitoringPreferences: 'Monitoring support',
         tripodPreferences: 'Tripod Preferences',
         sliderBowl: 'Tango Roller Mount',
         filter: 'Filter'
@@ -7031,35 +7031,6 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
     }
     addRow('Monitoring', monitoringItems);
-
-    const cableUsage = { power: {}, video: {} };
-    const addCable = (name, use, type) => {
-        if (!cableUsage[type][name]) cableUsage[type][name] = {};
-        cableUsage[type][name][use] = (cableUsage[type][name][use] || 0) + 1;
-    };
-    addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'for onboard monitor', 'power');
-    addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'spare', 'power');
-    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'for onboard monitor', 'video');
-    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare', 'video');
-    addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'for wireless transmitter', 'power');
-    addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'spare', 'power');
-    addCable('ultra slim 3G-SDI BNC cable 0,3m', 'for wireless transmitter', 'video');
-    addCable('ultra slim 3G-SDI BNC cable 0,3m', 'spare', 'video');
-    const formatCableUsage = usageMap => {
-        return Object.entries(usageMap).map(([name, uses]) => {
-            const total = Object.values(uses).reduce((sum, n) => sum + n, 0);
-            const notes = Object.entries(uses).map(([use, count]) => `${count}x ${use}`).join('; ');
-            return `${total}x ${escapeHtml(name)} (${escapeHtml(notes)})`;
-        }).join('<br>');
-    };
-    const powerUsage = formatCableUsage(cableUsage.power);
-    const videoUsage = formatCableUsage(cableUsage.video);
-    let monitoringSupportItems = '';
-    if (powerUsage) monitoringSupportItems += `<strong>Power</strong><br>${powerUsage}`;
-    if (videoUsage) monitoringSupportItems += (monitoringSupportItems ? '<br>' : '') + `<strong>Video</strong><br>${videoUsage}`;
-    if (info.monitoringPreferences) {
-        monitoringSupportItems = `${escapeHtml(info.monitoringPreferences)}<br>${monitoringSupportItems}`;
-    }
     const gripItems = [];
     let easyrigSelectHtml = '';
     if (scenarios.includes('Easyrig')) {
@@ -7107,9 +7078,7 @@ function generateGearListHtml(info = {}) {
             gripItems.push('Sachtler FSB 8 Head');
         }
     }
-    addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
-    addRow('Rigging', escapeHtml(info.rigging || ''));
     addRow('Grip', [formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
     const cartsTransportationItems = [
         'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
@@ -7118,7 +7087,8 @@ function generateGearListHtml(info = {}) {
         ...Array(20).fill('Airliner Ösen')
     ];
     addRow('Carts and Transportation', formatItems(cartsTransportationItems));
-    const miscItems = [...miscAcc];
+    const miscExcluded = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable']);
+    const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     const consumables = [];
     if (scenarios.includes('Outdoor')) {
         if (selectedNames.camera) miscItems.push(`Rain Cover "${selectedNames.camera}"`);
