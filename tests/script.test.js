@@ -2738,6 +2738,20 @@ describe('monitor wireless metadata', () => {
     expect(global.devices.monitors.MonA.latencyMs).toBe('10ms');
   });
 
+  test('runtime feedback dialog pre-fills resolution and codec', () => {
+    const cam = devices.cameras.CamA;
+    cam.resolutions = ['1920x1080'];
+    cam.recordingCodecs = ['ProRes'];
+    const camSelect = document.getElementById('cameraSelect');
+    camSelect.innerHTML = '<option value="CamA">CamA</option>';
+    camSelect.value = 'CamA';
+    const dialog = document.getElementById('feedbackDialog');
+    dialog.showModal = jest.fn();
+    document.getElementById('runtimeFeedbackBtn').click();
+    expect(document.getElementById('fbResolution').value).toBe('1920x1080');
+    expect(document.getElementById('fbCodec').value).toBe('ProRes');
+  });
+
   test('device manager toggle button reflects visibility', () => {
     const toggleBtn = document.getElementById('toggleDeviceManager');
     const deviceManager = document.getElementById('device-manager');
