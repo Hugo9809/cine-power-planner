@@ -1961,6 +1961,43 @@ const cameraData = {
       "HD 1920×1080"
     ]
   },
+  "Canon EOS C700 FF": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 3455,
+    "recordingCodecs": [
+      "Cinema RAW (with Codex CDX-36150)",
+      "ProRes 4444 XQ",
+      "ProRes 4444",
+      "ProRes 422 HQ",
+      "ProRes 422",
+      "XF-AVC Intra 10-bit 4:2:2",
+      "XF-AVC LongGOP 10-bit 4:2:2",
+      "XF-AVC RGB 12-bit 4:4:4"
+    ],
+    "sensorModes": [
+      "Full Frame 5.9K",
+      "Super 35 (crop) 4K/UHD",
+      "Super 16 (crop) 2K/FHD"
+    ],
+    "resolutions": [
+      "5952×3140",
+      "4096×2160",
+      "3840×2160",
+      "2048×1080",
+      "1920×1080"
+    ]
+  },
   "Blackmagic BMPCC 4K": {
     "powerDrawWatts": 22,
     "power": {
@@ -4377,7 +4414,22 @@ const cameraData = {
         "notes": "Supports Sony E-mount electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 699,
+    "recordingCodecs": [
+      "XAVC S-I 10-bit 4:2:2",
+      "XAVC HS (H.265)",
+      "XAVC S (H.264)"
+    ],
+    "sensorModes": [
+      "Full-Frame 4K",
+      "APS-C/S35 crop 4K",
+      "Full-Frame HD"
+    ],
+    "resolutions": [
+      "3840×2160",
+      "1920×1080"
+    ]
   },
   "Fujifilm X-H2S": {
     "powerDrawWatts": 15,
@@ -5144,6 +5196,45 @@ const cameraData = {
       "1920×1080"
     ]
   },
+  "Panasonic VariCam LT": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 2700,
+    "recordingCodecs": [
+      "AVC-Intra 4K",
+      "AVC-Intra 2K444",
+      "AVC-Intra 2K422",
+      "AVC-Intra 2K-LT",
+      "AVC-Intra 444",
+      "AVC-Intra 422",
+      "AVC-Intra 100",
+      "AVC-Intra LT",
+      "ProRes 4444",
+      "ProRes 422 HQ"
+    ],
+    "sensorModes": [
+      "S35 4K 4096×2160",
+      "S35 UHD 3840×2160",
+      "2K 2048×1080 (crop for HFR)",
+      "HD 1920×1080"
+    ],
+    "resolutions": [
+      "4096×2160",
+      "3840×2160",
+      "2048×1080",
+      "1920×1080"
+    ]
+  },
   "RED V-RAPTOR 8K VV": {
     "powerDrawWatts": 0,
     "power": {
@@ -5176,6 +5267,53 @@ const cameraData = {
       "6144×3240",
       "4096×2160",
       "2048×1080"
+    ]
+  },
+  "RED V-RAPTOR 8K S35": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1814,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "ProRes 4444 XQ (to 4K)",
+      "ProRes 4444 (to 4K)",
+      "ProRes 422 HQ (to 4K)",
+      "ProRes 422 (to 4K)",
+      "ProRes 422 LT (to 4K)"
+    ],
+    "sensorModes": [
+      "S35 8K 17:9",
+      "S35 8K 2.4:1",
+      "S35 7K 17:9",
+      "S35 7K 2.4:1",
+      "S35 6K 17:9",
+      "S35 6K 2.4:1"
+    ],
+    "resolutions": [
+      "8192×4320",
+      "8192×3456",
+      "7168×3780",
+      "7168×3024",
+      "6144×3240",
+      "6144×2592",
+      "5120×2700",
+      "5120×2160",
+      "4096×2160",
+      "4096×1728",
+      "3072×1620",
+      "3072×1296",
+      "2048×1080",
+      "2048×864"
     ]
   },
   "Blackmagic Cinema Camera 6K": {
