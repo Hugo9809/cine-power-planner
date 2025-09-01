@@ -7774,17 +7774,25 @@ function populateEnvironmentDropdowns() {
 
 function populateLensDropdown() {
   const lensSelect = document.getElementById('lenses');
-  if (lensSelect && devices && devices.lenses) {
-    const emptyOpt = document.createElement('option');
-    emptyOpt.value = '';
-    lensSelect.appendChild(emptyOpt);
-    Object.keys(devices.lenses).sort(localeSort).forEach(name => {
-      const opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      lensSelect.appendChild(opt);
-    });
+  if (!lensSelect) return;
+
+  lensSelect.innerHTML = '';
+  const lensData = devices && devices.lenses;
+
+  if (!lensData || Object.keys(lensData).length === 0) {
+    console.warn('No lens data available to populate dropdown');
+    return;
   }
+
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  lensSelect.appendChild(emptyOpt);
+  Object.keys(lensData).sort(localeSort).forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    lensSelect.appendChild(opt);
+  });
 }
 
 function populateFilterDropdown() {
@@ -7844,5 +7852,6 @@ if (typeof module !== "undefined" && module.exports) {
     renderFeedbackTable,
     clearAllFilters,
     saveCurrentGearList,
+    populateLensDropdown,
   };
 }
