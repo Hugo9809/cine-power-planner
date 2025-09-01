@@ -6740,8 +6740,20 @@ function generateGearListHtml(info = {}) {
     addRow('Camera Batteries', escapeHtml(selectedNames.battery || ''));
     addRow('Monitoring Batteries', '');
     addRow('Chargers', '');
-    addRow('Monitoring', join([selectedNames.monitor, selectedNames.video]));
-    addRow('Monitoring support', escapeHtml(info.monitoringPreferences || ''));
+    let monitoringItems = '';
+    if (selectedNames.monitor) {
+        monitoringItems += `<strong>Onboard Monitor</strong><br>- ${escapeHtml(selectedNames.monitor)}<br>- incl. Sunhood`;
+    }
+    if (selectedNames.video) {
+        monitoringItems += (monitoringItems ? '<br>' : '') + escapeHtml(selectedNames.video);
+    }
+    addRow('Monitoring', monitoringItems);
+    const monitoringSupportItems = [
+        info.monitoringPreferences,
+        '2x D-Tap to Lemo-2-pin Cable 0,5m (for onboard monitor)',
+        '2x ultra slim 3G-SDI BNC cable 0,5m (for onboard monitor)'
+    ].filter(Boolean).map(escapeHtml).join(', ');
+    addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
     addRow('Grip', '');
