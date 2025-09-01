@@ -112,6 +112,20 @@ describe('script.js functions', () => {
       .toBe(texts.en.dtapOk.replace('{max}', '5'));
   });
 
+  test('selected cage appears in gear list', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    addOpt('cageSelect', 'Universal Cage');
+
+    const html = script.generateGearListHtml();
+    expect(html).toContain('Universal Cage');
+  });
+
   test('shows runtime average note when more than four user entries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
