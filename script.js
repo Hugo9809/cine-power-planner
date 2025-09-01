@@ -6832,39 +6832,46 @@ function generateGearListHtml(info = {}) {
     const infoPairs = Object.entries(info).filter(([k,v]) => v && allowedInfo.includes(k));
     const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
         infoPairs.map(([k,v]) => `<li>${escapeHtml(labels[k]||k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
-    const join = arr => arr.filter(Boolean).map(n => escapeHtml(n)).join('<br>');
+    const formatItems = arr => {
+        const counts = {};
+        arr.filter(Boolean).forEach(n => {
+            counts[n] = (counts[n] || 0) + 1;
+        });
+        return Object.entries(counts)
+            .map(([n, c]) => `${c}x ${escapeHtml(n)}`)
+            .join('<br>');
+    };
     const rows = [];
     const addRow = (cat, items) => {
         rows.push(`<tr class="category-row"><td>${cat}</td></tr>`);
         rows.push(`<tr><td>${items}</td></tr>`);
     };
-    addRow('Camera', escapeHtml(selectedNames.camera || ''));
-    addRow('Camera Support', join([selectedNames.batteryPlate, selectedNames.cage, ...cameraSupportAcc]));
+    addRow('Camera', formatItems([selectedNames.camera]));
+    addRow('Camera Support', formatItems([selectedNames.batteryPlate, selectedNames.cage, ...cameraSupportAcc]));
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
     addRow('Matte box + filter', escapeHtml(info.filter || ''));
-    addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
+    addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
     if (selectedNames.battery) {
-        const count = batteryCountElem ? batteryCountElem.textContent : '';
+        let count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
+        if (!count || isNaN(count)) count = 1;
         const safeBatt = escapeHtml(selectedNames.battery);
-        batteryItems = count && count.trim() !== '–'
-            ? `${escapeHtml(count)}x ${safeBatt}`
-            : safeBatt;
+        batteryItems = `${count}x ${safeBatt}`;
     }
     addRow('Camera Batteries', batteryItems);
     addRow('Monitoring Batteries', '');
-    addRow('Chargers', join(chargersAcc));
+    addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     if (selectedNames.viewfinder) {
-        monitoringItems += `<strong>Viewfinder</strong><br>- ${escapeHtml(selectedNames.viewfinder)}`;
+        monitoringItems += `<strong>Viewfinder</strong><br>- 1x ${escapeHtml(selectedNames.viewfinder)}`;
     }
     if (selectedNames.monitor) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong> - 1x ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
     if (selectedNames.video) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Wireless Transmitter</strong> - 1x ${escapeHtml(selectedNames.video)}`;
     }
     addRow('Monitoring', monitoringItems);
 
@@ -6897,7 +6904,7 @@ function generateGearListHtml(info = {}) {
     addRow('Rigging', escapeHtml(info.rigging || ''));
     addRow('Grip', '');
     addRow('Carts and Transportation', '');
-    addRow('Miscellaneous', join(miscAcc));
+    addRow('Miscellaneous', formatItems(miscAcc));
     addRow('Consumables', '');
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;

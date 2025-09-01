@@ -135,7 +135,7 @@ describe('script.js functions', () => {
     const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
     expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
     const itemsRow = rows[cameraSupportIndex + 1];
-    expect(itemsRow.textContent).toContain('Universal Cage');
+    expect(itemsRow.textContent).toContain('1x Universal Cage');
   });
 
   test('gear list updates when device selection changes', () => {
@@ -859,15 +859,15 @@ describe('script.js functions', () => {
       expect(html).toContain('DoP: DopName');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
-      expect(html).toContain('CamA');
+      expect(html).toContain('1x CamA');
       expect(html).toContain('Camera Support');
-      expect(html).toContain('Universal Cage');
+      expect(html).toContain('1x Universal Cage');
       expect(html).toContain('LDS (FIZ)');
-      expect(html).toContain('LBUS to LBUS');
+      expect(html).toContain('1x LBUS to LBUS');
       expect(html).toContain('Chargers');
-      expect(html).toContain('Dual V-Mount Charger');
+      expect(html).toContain('1x Dual V-Mount Charger');
       expect(html).toContain('Miscellaneous');
-      expect(html).toContain('BNC SDI Cable');
+      expect(html).toContain('1x BNC SDI Cable');
     });
 
   test('gear list separates multiple items with line breaks', () => {
@@ -880,7 +880,7 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain('<strong>Onboard Monitor</strong> - MonA - incl. Sunhood<br><strong>Wireless Transmitter</strong> - VidA');
+    expect(html).toContain('<strong>Onboard Monitor</strong> - 1x MonA - incl. Sunhood<br><strong>Wireless Transmitter</strong> - 1x VidA');
     expect(html).not.toContain('MonA, VidA');
   });
 
@@ -895,6 +895,19 @@ describe('script.js functions', () => {
     document.getElementById('batteryCount').textContent = '6';
     const html = generateGearListHtml();
     expect(html).toContain('6x BattA');
+  });
+
+  test('duplicate motors are aggregated with count in gear list', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('motor1Select', 'MotorA');
+    addOpt('motor2Select', 'MotorA');
+    const html = generateGearListHtml({ projectName: 'Proj' });
+    expect(html).toContain('2x MotorA');
   });
 
   test('alert shown if battery cannot power setup over pins when generating gear list', () => {
