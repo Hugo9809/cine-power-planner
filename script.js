@@ -2040,6 +2040,7 @@ function createVideoOutputRow(value = '') {
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'video-output-select';
+  select.name = 'videoOutput';
   addEmptyOption(select);
   videoOutputOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2094,6 +2095,7 @@ function createMonitorVideoInputRow(value = '') {
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'monitor-video-input-select';
+  select.name = 'monitorVideoInput';
   addEmptyOption(select);
   videoOutputOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2148,6 +2150,7 @@ function createMonitorVideoOutputRow(value = '') {
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'monitor-video-output-select';
+  select.name = 'monitorVideoOutput';
   addEmptyOption(select);
   videoOutputOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2202,6 +2205,7 @@ function createVideoInputRow(value = '') {
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'video-input-select';
+  select.name = 'videoInput';
   addEmptyOption(select);
   videoOutputOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2254,6 +2258,7 @@ function createVideoIOOutputRow(value = '') {
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'video-output-select-io';
+  select.name = 'videoIOOutput';
   addEmptyOption(select);
   videoOutputOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2307,6 +2312,7 @@ function createFizConnectorRow(value = '') {
   row.className = 'form-row';
   const select = document.createElement('select');
   select.className = 'fiz-connector-select';
+  select.name = 'fizConnector';
   addEmptyOption(select);
   fizConnectorOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2391,6 +2397,7 @@ function createRecordingMediaRow(type = '', notes = '') {
 
   const select = document.createElement('select');
   select.className = 'recording-media-select';
+  select.name = 'recordingMediaType';
   addEmptyOption(select);
   recordingMediaOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2412,6 +2419,7 @@ function createRecordingMediaRow(type = '', notes = '') {
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
+  notesInput.name = 'recordingMediaNotes';
   notesInput.value = notes;
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
@@ -2570,6 +2578,7 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'battery-plate-type-select';
+  typeSelect.name = 'batteryPlateType';
   addEmptyOption(typeSelect);
   plateTypeOptions.forEach(pt => {
     const opt = document.createElement('option');
@@ -2588,6 +2597,7 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
 
   const mountSelect = document.createElement('select');
   addEmptyOption(mountSelect);
+  mountSelect.name = 'batteryPlateMount';
   ['native','adapted'].forEach(m => {
     const opt = document.createElement('option');
     opt.value = m;
@@ -2601,6 +2611,7 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
+  notesInput.name = 'batteryPlateNotes';
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
@@ -2682,6 +2693,7 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'viewfinder-type-select';
+  typeSelect.name = 'viewfinderType';
   addEmptyOption(typeSelect);
   viewfinderTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2702,11 +2714,13 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
   resInput.type = 'text';
   resInput.placeholder = 'Resolution';
   resInput.value = resolution;
+  resInput.name = 'viewfinderResolution';
   row.appendChild(createFieldWithLabel(resInput, 'Resolution'));
 
   const connSelect = document.createElement('select');
   connSelect.className = 'viewfinder-connector-select';
   addEmptyOption(connSelect);
+  connSelect.name = 'viewfinderConnector';
   viewfinderConnectorOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -2726,6 +2740,7 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
+  notesInput.name = 'viewfinderNotes';
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
@@ -2815,6 +2830,7 @@ function createLensMountRow(type = '', mount = 'native') {
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'lens-mount-type-select';
+  typeSelect.name = 'lensMountType';
   addEmptyOption(typeSelect);
   mountTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2833,6 +2849,7 @@ function createLensMountRow(type = '', mount = 'native') {
 
   const mountSelect = document.createElement('select');
   addEmptyOption(mountSelect);
+  mountSelect.name = 'lensMount';
   ['native', 'adapted'].forEach(m => {
     const opt = document.createElement('option');
     opt.value = m;
@@ -2979,6 +2996,7 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'power-dist-type-select';
+  typeSelect.name = 'powerDistType';
   addEmptyOption(typeSelect);
   powerDistTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -2998,6 +3016,7 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
   const voltSelect = document.createElement('select');
   voltSelect.className = 'power-dist-voltage-select';
   addEmptyOption(voltSelect);
+  voltSelect.name = 'powerDistVoltage';
   powerDistVoltageOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -3016,6 +3035,7 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
   const currSelect = document.createElement('select');
   currSelect.className = 'power-dist-current-select';
   addEmptyOption(currSelect);
+  currSelect.name = 'powerDistCurrent';
   powerDistCurrentOptions.forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
@@ -3036,12 +3056,14 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
   wattInput.step = '0.1';
   wattInput.placeholder = 'W';
   wattInput.value = wattage === null || wattage === undefined ? '' : wattage;
+  wattInput.name = 'powerDistWatt';
   row.appendChild(createFieldWithLabel(wattInput, 'W')); 
 
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
+  notesInput.name = 'powerDistNotes';
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
@@ -3131,6 +3153,7 @@ function createTimecodeRow(type = '', notes = '') {
 
   const typeSelect = document.createElement('select');
   typeSelect.className = 'timecode-type-select';
+  typeSelect.name = 'timecodeType';
   addEmptyOption(typeSelect);
   timecodeTypeOptions.forEach(optVal => {
     const opt = document.createElement('option');
@@ -3151,6 +3174,7 @@ function createTimecodeRow(type = '', notes = '') {
   notesInput.type = 'text';
   notesInput.placeholder = 'Notes';
   notesInput.value = notes;
+  notesInput.name = 'timecodeNotes';
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
 
   const addBtn = document.createElement('button');
@@ -7128,6 +7152,7 @@ function ensureGearListActions() {
         importInput.accept = '.json';
         importInput.id = 'importGearListInput';
         importInput.className = 'hidden';
+        importInput.name = 'importGearList';
         const deleteBtn = document.createElement('button');
         deleteBtn.id = 'deleteGearListBtn';
         actions.append(saveBtn, exportBtn, importBtn, importInput, deleteBtn);
