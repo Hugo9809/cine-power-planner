@@ -8,7 +8,14 @@ beforeAll(() => {
   const body = html.split('<body>')[1].split('</body>')[0];
   document.body.innerHTML = body;
 
-  global.devices = { cameras: {}, monitors: {}, video: {}, fiz: { motors: {}, controllers: {}, distance: {} }, batteries: {} };
+  global.devices = {
+    cameras: {},
+    monitors: {},
+    video: {},
+    fiz: { motors: {}, controllers: {}, distance: {} },
+    batteries: {},
+    lenses: { Dummy: {} }
+  };
   global.loadDeviceData = jest.fn(() => null);
   global.saveDeviceData = jest.fn();
   global.loadSetups = jest.fn(() => ({}));
