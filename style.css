@@ -466,21 +466,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Accent-style buttons for key actions */
-button.btn-primary {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  border-color: var(--accent-color);
-}
-
-button.btn-primary:hover {
-  filter: brightness(1.1);
-}
-
-button.btn-primary:active {
-  filter: brightness(0.9);
-}
-
 
 /* Device Manager specific styles */
 .device-list-container {
