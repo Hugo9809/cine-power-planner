@@ -6259,6 +6259,9 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     const ctrlVals = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
     document.getElementById('fbDate').value = today;
     document.getElementById('fbCamera').value = cameraSelect.value || '';
+    const camData = devices?.cameras?.[cameraSelect.value];
+    document.getElementById('fbResolution').value = camData?.resolutions?.[0] || '';
+    document.getElementById('fbCodec').value = camData?.recordingCodecs?.[0] || '';
     document.getElementById('fbBatteryPlate').value = getSelectedPlate() || '';
     document.getElementById('fbBattery').value = batterySelect.value || '';
     document.getElementById('fbWirelessVideo').value = videoSelect.value || '';

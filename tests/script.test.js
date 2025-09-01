@@ -32,7 +32,9 @@ describe('script.js functions', () => {
         CamA: {
           powerDrawWatts: 10,
           power: { input: { type: 'LEMO 2-pin' } },
-          videoOutputs: [{ type: '3G-SDI' }]
+          videoOutputs: [{ type: '3G-SDI' }],
+          recordingCodecs: ['ProRes', 'BRAW'],
+          resolutions: ['4K', '1080p']
         }
       },
       monitors: {
@@ -150,6 +152,18 @@ describe('script.js functions', () => {
     const copyBtn = document.getElementById('copySummaryBtn');
     const generateBtn = document.getElementById('generateGearListBtn');
     expect(copyBtn.nextElementSibling).toBe(generateBtn);
+  });
+
+  test('runtime feedback prepopulates resolution and codec from selected camera', () => {
+    const sel = document.getElementById('cameraSelect');
+    sel.innerHTML = '<option value="CamA">CamA</option>';
+    sel.value = 'CamA';
+    const dialog = document.getElementById('feedbackDialog');
+    dialog.showModal = jest.fn();
+    const btn = document.getElementById('runtimeFeedbackBtn');
+    btn.click();
+    expect(document.getElementById('fbResolution').value).toBe('4K');
+    expect(document.getElementById('fbCodec').value).toBe('ProRes');
   });
 
   test('populateLensDropdown fills lens list without duplicates', () => {
