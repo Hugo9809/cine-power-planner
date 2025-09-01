@@ -1462,7 +1462,6 @@ const controllerSelects = [
 ];
 const distanceSelect = document.getElementById("distanceSelect");
 const batterySelect  = document.getElementById("batterySelect");
-const sliderBowlSelect = document.getElementById("sliderBowl");
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
@@ -1591,6 +1590,18 @@ const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
+function getSliderBowlSelect() {
+  return gearListOutput ? gearListOutput.querySelector('#gearListSliderBowl') : null;
+}
+function getSliderBowlValue() {
+  const sel = getSliderBowlSelect();
+  return sel ? sel.value : '';
+}
+function setSliderBowlValue(val) {
+  const sel = getSliderBowlSelect();
+  if (sel) sel.value = val;
+}
+
 if (gearListOutput) {
   const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
   if (storedGearList) {
@@ -1599,6 +1610,7 @@ if (gearListOutput) {
     ensureGearListActions();
     bindGearListCageListener();
     bindGearListEasyrigListener();
+    bindGearListSliderBowlListener();
   }
 }
 
@@ -1616,7 +1628,7 @@ function getCurrentSetupState() {
     distance: distanceSelect.value,
     batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value,
-    sliderBowl: sliderBowlSelect ? sliderBowlSelect.value : ''
+    sliderBowl: getSliderBowlValue()
   };
 }
 
@@ -5193,7 +5205,7 @@ deleteSetupBtn.addEventListener("click", () => {
     populateSetupSelect();
     setupNameInput.value = ""; // Clear setup name input
     // Reset dropdowns to "None" or first option after deleting current setup
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, sliderBowlSelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
         sel.value = "None";
@@ -5201,6 +5213,8 @@ deleteSetupBtn.addEventListener("click", () => {
         sel.selectedIndex = 0;
       }
     });
+    const sbSel = getSliderBowlSelect();
+    if (sbSel) sbSel.value = '';
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateCalculations(); // Recalculate after clearing setup
@@ -5226,6 +5240,8 @@ clearSetupBtn.addEventListener("click", () => {
         sel.selectedIndex = 0;
       }
     });
+    const sbSel = getSliderBowlSelect();
+    if (sbSel) sbSel.value = '';
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
@@ -5248,6 +5264,8 @@ setupSelect.addEventListener("change", (event) => {
         sel.selectedIndex = 0;
       }
     });
+    const sbSel = getSliderBowlSelect();
+    if (sbSel) sbSel.value = '';
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
@@ -5275,7 +5293,7 @@ setupSelect.addEventListener("change", (event) => {
       setup.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
-      if (sliderBowlSelect) sliderBowlSelect.value = setup.sliderBowl || '';
+      setSliderBowlValue(setup.sliderBowl || '');
       updateBatteryOptions();
       if (gearListOutput) {
         gearListOutput.innerHTML = setup.gearList || '';
@@ -5284,6 +5302,7 @@ setupSelect.addEventListener("change", (event) => {
           ensureGearListActions();
           bindGearListCageListener();
           bindGearListEasyrigListener();
+          bindGearListSliderBowlListener();
           if (typeof saveGearList === 'function') {
             saveGearList(setup.gearList);
           }
@@ -6172,6 +6191,7 @@ if (projectForm) {
             ensureGearListActions();
             bindGearListCageListener();
             bindGearListEasyrigListener();
+            bindGearListSliderBowlListener();
             saveCurrentGearList();
         }
         projectDialog.close();
@@ -6904,7 +6924,7 @@ function collectProjectFormData() {
         rigging: multi('rigging'),
         monitoringPreferences: multi('monitoringPreferences'),
         tripodPreferences: multi('tripodPreferences'),
-        sliderBowl: val('sliderBowl'),
+        sliderBowl: getSliderBowlValue(),
         filter: val('filter')
     };
 }
@@ -6983,11 +7003,10 @@ function generateGearListHtml(info = {}) {
         rigging: 'Rigging',
         monitoringPreferences: 'Monitoring support',
         tripodPreferences: 'Tripod Preferences',
-        sliderBowl: 'Tango Roller Mount',
         filter: 'Filter'
     };
     const infoPairs = Object.entries(info)
-        .filter(([k, v]) => v && k !== 'projectName');
+        .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
     const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
         infoPairs.map(([k, v]) => `<li>${escapeHtml(labels[k] || k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
     const formatItems = arr => {
@@ -7040,6 +7059,7 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Monitoring', monitoringItems);
     const gripItems = [];
+    let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
     if (scenarios.includes('Tripod')) {
         const tripodDb = devices && devices.accessories && devices.accessories.tripods;
@@ -7063,8 +7083,8 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
     if (scenarios.includes('Slider')) {
-        const mount = info.sliderBowl ? ` (${info.sliderBowl})` : '';
-        gripItems.push(`Prosup Tango Roller${mount}`);
+        const options = ['', '75er bowl', '100er bowl', '150er bowl', 'Mitchell Mount'].map(o => `<option value="${escapeHtml(o)}"${o === info.sliderBowl ? ' selected' : ''}>${escapeHtml(o)}</option>`).join('');
+        sliderSelectHtml = `1x Prosup Tango Roller <select id="gearListSliderBowl">${options}</select>`;
         gripItems.push('Avenger Combo Stand 10 A1010CS 64-100 cm black');
         gripItems.push('Avenger Combo Stand 10 A1010CS 64-100 cm black');
         gripItems.push('Avenger Combo Stand 20 A1020B 110-198 cm black');
@@ -7093,7 +7113,7 @@ function generateGearListHtml(info = {}) {
         }
     }
     addRow('Power', '');
-    addRow('Grip', [formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
+    addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
     const cartsTransportationItems = [
         'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
         ...Array(10).fill('Securing Straps (25mm wide)'),
@@ -7162,6 +7182,19 @@ function getCurrentGearListHtml() {
             }
         });
     }
+    const sliderSel = clone.querySelector('#gearListSliderBowl');
+    if (sliderSel) {
+        const originalSel = gearListOutput.querySelector('#gearListSliderBowl');
+        const val = originalSel ? originalSel.value : sliderSel.value;
+        Array.from(sliderSel.options).forEach(opt => {
+            if (opt.value === val) {
+                opt.setAttribute('selected', '');
+            } else {
+                opt.removeAttribute('selected');
+            }
+        });
+    }
+
     return clone.innerHTML.trim();
 }
 
@@ -7207,6 +7240,7 @@ function handleImportGearList(e) {
                 ensureGearListActions();
                 bindGearListCageListener();
                 bindGearListEasyrigListener();
+                bindGearListSliderBowlListener();
                 saveCurrentGearList();
             }
         } catch {
@@ -7297,6 +7331,19 @@ function bindGearListEasyrigListener() {
     }
 }
 
+function bindGearListSliderBowlListener() {
+    if (!gearListOutput) return;
+    const sel = gearListOutput.querySelector('#gearListSliderBowl');
+    if (sel) {
+        sel.addEventListener('change', () => {
+            saveCurrentGearList();
+            saveCurrentSession();
+            checkSetupChanged();
+        });
+    }
+}
+
+
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
     const html = generateGearListHtml(currentProjectInfo);
@@ -7304,6 +7351,7 @@ function refreshGearListIfVisible() {
     ensureGearListActions();
     bindGearListCageListener();
     bindGearListEasyrigListener();
+    bindGearListSliderBowlListener();
     saveCurrentGearList();
 }
 
@@ -7321,7 +7369,7 @@ function saveCurrentSession() {
     distance: distanceSelect ? distanceSelect.value : '',
     batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
     battery: batterySelect ? batterySelect.value : '',
-    sliderBowl: sliderBowlSelect ? sliderBowlSelect.value : ''
+    sliderBowl: getSliderBowlValue()
   };
   storeSession(state);
 }
@@ -7345,7 +7393,7 @@ function restoreSessionState() {
     state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
   }
   if (batterySelect && state.battery) batterySelect.value = state.battery;
-  if (sliderBowlSelect && state.sliderBowl) sliderBowlSelect.value = state.sliderBowl;
+  setSliderBowlValue(state.sliderBowl);
   if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
 }
 
@@ -7410,13 +7458,13 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, sliderBowlSelect, setupSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, setupSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, sliderBowlSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
