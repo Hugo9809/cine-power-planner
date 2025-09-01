@@ -501,6 +501,7 @@ const cameraData = {
     ],
     "weight_g": 4100,
     "recordingCodecs": [
+      "ProRes 4444 XQ",
       "ProRes 4444",
       "ProRes 422 HQ",
       "ProRes 422",
@@ -512,13 +513,14 @@ const cameraData = {
       "HD 2880×1620",
       "2K 2868×1612",
       "3.2K 3200×1800",
+      "4K UHD 3200×1800 (UHD option)",
       "ARRIRAW 16:9 2.8K 2880×1620"
     ],
     "resolutions": [
       "HD 1920×1080",
       "2K 2048×1152",
       "3.2K 3200×1800",
-      "UHD 3840×2160 (via 3.2K upsample; option)"
+      "UHD 3840×2160 (with UHD option)"
     ]
   },
   "Sony Venice 2": {
@@ -993,7 +995,7 @@ const cameraData = {
     "weight_g": 715,
     "recordingCodecs": [
       "XAVC S-I 10-bit 4:2:2",
-      "XAVC S 10-bit",
+      "XAVC S (H.264)",
       "XAVC HS (H.265)"
     ],
     "sensorModes": [
@@ -1002,8 +1004,8 @@ const cameraData = {
       "S35 crop 4K"
     ],
     "resolutions": [
-      "UHD 3840×2160 up to 120p",
-      "HD 1920×1080 up to 240p"
+      "UHD 3840×2160 (up to 120p)",
+      "HD 1920×1080 (up to 240p)"
     ]
   },
   "Sony FX6": {
@@ -1242,18 +1244,18 @@ const cameraData = {
       ],
       "weight_g": 2000,
       "recordingCodecs": [
-        "XAVC-I 10-bit 4:2:2",
-        "XAVC-L 10-bit 4:2:2",
+        "XAVC-I 4:2:2 10-bit",
+        "XAVC-L 4:2:2 10-bit",
         "MPEG HD 422"
       ],
       "sensorModes": [
-        "Full-Frame 6K oversample to 4K",
-        "Super35 4K (DCI 4096×2160)",
-        "Full-Frame HD",
-        "Super35 UHD"
+        "FF 6K oversample→4K",
+        "S35 4K (DCI)",
+        "FF HD",
+        "S35 UHD"
       ],
       "resolutions": [
-        "DCI 4K 4096×2160 (S35)*",
+        "DCI 4K 4096×2160 (S35)",
         "UHD 3840×2160",
         "HD 1920×1080"
       ]
@@ -1947,8 +1949,8 @@ const cameraData = {
     ],
     "weight_g": 680,
     "recordingCodecs": [
-      "Blackmagic RAW (various bitrates)",
-      "ProRes 422 (various)"
+      "Blackmagic RAW",
+      "Apple ProRes 422 family"
     ],
     "sensorModes": [
       "MFT 4K DCI",
