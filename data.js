@@ -5582,6 +5582,81 @@ let devices={
         }
       ]
     },
+    "SmallHD 703 UltraBright": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2200,
+      "powerDrawWatts": 18,
+      "power": {
+        "input": {
+          "voltageRange": "10-34",
+          "type": "LEMO 2-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" }
+      ]
+    },
+    "None": {
+      "powerDrawWatts": 0,
+      "power": {
+        "input": {
+          "voltageRange": "",
+          "type": ""
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [],
+      "videoOutputs": []
+    }
+  },
+  "directorMonitors": {
+    "Directors Monitor 17\" (SmallHD/FSI)": {
+      "screenSizeInches": 17,
+      "brightnessNits": 1000,
+      "powerDrawWatts": 45,
+      "power": {
+        "input": {
+          "voltageRange": "10-34",
+          "type": "LEMO 2-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" }
+      ]
+    },
+    "Directors Monitor 13\" (SmallHD/FSI)": {
+      "screenSizeInches": 13,
+      "brightnessNits": 1000,
+      "powerDrawWatts": 30,
+      "power": {
+        "input": {
+          "voltageRange": "10-34",
+          "type": "LEMO 2-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" }
+      ]
+    },
     "None": {
       "powerDrawWatts": 0,
       "power": {
@@ -6406,6 +6481,91 @@ let devices={
       "latencyMs": null
     }
   },
+  "iosVideo": {
+    "Teradek Serv": {
+      "powerDrawWatts": 9,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [],
+      "frequency": "2.4 GHz / 5 GHz Wi-Fi",
+      "latencyMs": "< 60ms",
+      "power": {
+        "input": [
+          { "type": "LEMO 2-pin", "notes": "6-28V" },
+          { "type": "D-Tap" }
+        ]
+      },
+      "notes": "Streams to iOS devices for on-set monitoring"
+    },
+    "Teradek Serv + Link": {
+      "powerDrawWatts": 9,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [],
+      "frequency": "2.4 GHz / 5 GHz Wi-Fi",
+      "latencyMs": "< 60ms",
+      "power": {
+        "input": [
+          { "type": "LEMO 2-pin", "notes": "6-28V" },
+          { "type": "D-Tap" }
+        ]
+      },
+      "notes": "Streams to iOS devices for on-set monitoring; includes Link access point"
+    }
+  },
+  "wirelessReceivers": {
+    "Teradek Bolt 6 XT RX": {
+      "powerDrawWatts": 16,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "12G-SDI" }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": "LEMO 2-pin", "notes": "6-28V" },
+          { "type": "Gold-mount" },
+          { "type": "V-mount" }
+        ]
+      }
+    },
+    "Teradek Bolt 4K RX": {
+      "powerDrawWatts": 16,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "12G-SDI" }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": "LEMO 2-pin", "notes": "6-28V" },
+          { "type": "Gold-mount" },
+          { "type": "V-mount" }
+        ]
+      }
+    },
+    "None": {
+      "powerDrawWatts": 0,
+      "power": {
+        "input": {
+          "voltageRange": "",
+          "type": ""
+        }
+      },
+      "videoInputs": [],
+      "videoOutputs": [],
+      "frequency": "5 GHz",
+      "latencyMs": null
+    }
+  },
   "fiz": {
     "motors": {
       "None": {
@@ -6792,6 +6952,40 @@ let devices={
         ]
       }
     },
+    "handUnits": {
+      "None": {
+        "powerDrawWatts": 0,
+        "fizConnectors": [],
+        "power_source": "N/A",
+        "battery_type": "N/A",
+        "connectivity": "N/A",
+        "notes": "Placeholder for no hand unit."
+      },
+      "Arri Hi-5": {
+        "powerDrawWatts": 6,
+        "fizConnectors": [
+          { "type": "LBUS (LEMO 4-pin)" },
+          { "type": "USB-C", "notes": "charging/config" }
+        ],
+        "internalController": false,
+        "power_source": "Internal Battery (ARRI LBP-3500) or External (LBUS)",
+        "battery_type": "ARRI LBP-3500",
+        "connectivity": "Wireless (swappable ARRI radio modules) or Wired (LBUS)",
+        "notes": "3-axis hand unit with daylight-readable touchscreen and hot-swappable battery."
+      },
+      "Arri WCU-4": {
+        "powerDrawWatts": 8,
+        "fizConnectors": [
+          { "type": "LCS (LEMO 4-pin)" },
+          { "type": "USB", "notes": "firmware" }
+        ],
+        "internalController": false,
+        "power_source": "Internal Battery (ARRI LBP-3500) or External (LCS)",
+        "battery_type": "ARRI LBP-3500",
+        "connectivity": "Wireless (swappable ARRI radio modules) or Wired (LCS)",
+        "notes": "3-axis wireless compact unit with integrated lens mapping."
+      }
+    },
     "controllers": {
       "None": {
         "powerDrawWatts": 0,
@@ -7147,7 +7341,7 @@ let devices={
       "capacity": 143,
       "pinA": 10,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
     },
     "Bebob V200micro": {
       "capacity": 190,
@@ -7177,7 +7371,7 @@ let devices={
       "capacity": 285,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "V-Mount"
+      "mount_type": "V-Mount",
     },
     "Bebob B90cine": {
       "capacity": 86,
@@ -7189,7 +7383,7 @@ let devices={
       "capacity": 155,
       "pinA": 20,
       "dtapA": 5,
-      "mount_type": "B-Mount"
+      "mount_type": "B-Mount",
     },
     "Bebob B290cine": {
       "capacity": 294,
@@ -7765,6 +7959,12 @@ let devices={
         "side_plates": true,
         "notes": "ARRI PCA kit including cage plates, top handle, and 15mm support.",
         "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories"
+      },
+      "ARRI Studio 19mm Set ALEXA Mini (V-Mount)": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015124",
+        "rodStandard": "19mm",
+        "batteryMount": "V-Mount"
       },
       "Wooden Camera Cage Kit for ARRI ALEXA Mini / Mini LF": {
         "brand": "Wooden Camera",
@@ -8405,6 +8605,41 @@ let devices={
         "verified_source": "https://www.smallrig.com/smallrig-osmo-x5-cage-1889.html"
       }
     },
+    "cameraSupport": {
+      "ARRI CBP-3 Compact Bridge Plate": { "brand": "ARRI", "kNumber": "K2.0019580", "rodStandard": "19mm" },
+      "ARRI SAB-2 Side Accessory Bracket": { "brand": "ARRI", "kNumber": "K2.0014088" },
+      "ARRI VEB-3 Viewfinder Extension Bracket": { "brand": "ARRI", "kNumber": "K2.74000.0" },
+      "ARRI Dovetail Plate": { "brand": "ARRI", "kNumber": "K2.0043086" },
+      "ARRI Top Plate (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034691", "compatible": ["Sony FS7 II", "Sony FX9"] },
+      "ARRI Base Plate (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0035830", "compatible": ["Sony FS7 II", "Sony FX9"] },
+      "ARRI Lens Adapter Support LAS-1": { "brand": "ARRI", "kNumber": "K2.0003899" },
+      "ARRI 15mm LWS Rod Console": { "brand": "ARRI", "kNumber": "K2.65264.0" },
+      "ARRI Support Rods 240mm/15mm": { "brand": "ARRI", "kNumber": "K2.66253.0", "lengthMm": 240, "diameterMm": 15 },
+      "ARRI Side Bracket Left (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034727", "compatible": ["Sony FS7 II", "Sony FX9"] },
+      "ARRI Side Bracket Right (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034709", "compatible": ["Sony FS7 II", "Sony FX9"] },
+      "ARRI E- to PL-Mount Support (Vocas)": { "brand": "ARRI", "kNumber": "K2.0034700" },
+      "ARRI Camera Center Handle CCH-4": { "brand": "ARRI", "kNumber": "K2.0017270" },
+      "ARRI Sliding Adapter (CCH-4)": { "brand": "ARRI", "kNumber": "K2.0019282" },
+      "ARRI Rod Mounting Bracket RMB-3": { "brand": "ARRI", "kNumber": "K2.0006186" },
+      "ARRI 15mm Reduction Insert": { "brand": "ARRI", "kNumber": "K2.66255.0" },
+      "ARRI Viewfinder Bracket (FS7II/FX9)": { "brand": "ARRI", "kNumber": "K2.0034657", "compatible": ["Sony FS7 II", "Sony FX9"] },
+      "ARRI Mini Side Bracket MSB-1": { "brand": "ARRI", "kNumber": "K2.0014957" },
+      "ARRI Handle Extension Set": { "brand": "ARRI", "kNumber": "KK.0037820" },
+      "ARRI Video Transmitter Bracket": { "brand": "ARRI", "kNumber": "K2.0033676" }
+    },
+    "matteboxes": {
+      "ARRI LMB 4x5 Clamp-On (3-Stage)": { "brand": "ARRI", "kNumber": "KK.0015175", "stages": 3, "type": "Clamp-On" },
+      "ARRI Tray Catcher": { "brand": "ARRI", "kNumber": "K2.66202.0", "compatible": ["LMB 4x5", "LMB-6"] }
+    },
+    "filters": {
+      "ARRI Rota Pola Filter Holder": { "brand": "ARRI", "kNumber": "K2.0009434" }
+    },
+    "rigging": {
+      "Manfrotto 026 Lite-Tite": { "brand": "Manfrotto" },
+      "Manfrotto 244N Friction Arm": { "brand": "Manfrotto" },
+      "ULCS Bracket 1/4 to 1/4": { "brand": "ULCS" },
+      "ULCS Bracket 3/8 to 1/4": { "brand": "ULCS" }
+    },
     "chargers": {
       "Dual V-Mount Charger": {
         "mount": "V-Mount",
@@ -8413,14 +8648,46 @@ let devices={
     },
     "cables": {
       "power": {
-        "D-Tap to LEMO 2-pin": { "from": "D-Tap", "to": "LEMO 2-pin" }
+        "D-Tap to LEMO 2-pin": { "from": "D-Tap", "to": "LEMO 2-pin" },
+        "D-Tap Splitter 3-way": { "from": "D-Tap", "to": ["D-Tap", "D-Tap", "D-Tap"] },
+        "D-Tap to miniXLR (0.3 m)": { "from": "D-Tap", "to": "miniXLR", "lengthM": 0.3 }
       },
       "video": {
         "BNC SDI Cable": { "type": "3G-SDI" },
-        "HDMI Cable": { "type": "HDMI" }
+        "HDMI Cable": { "type": "HDMI" },
+        "Ultraslim BNC 0.3 m": { "type": "3G-SDI", "lengthM": 0.3 },
+        "Ultraslim BNC 0.5 m": { "type": "3G-SDI", "lengthM": 0.5 },
+        "BNC Cable 0.5 m": { "type": "3G-SDI", "lengthM": 0.5 },
+        "BNC Cable 1 m": { "type": "3G-SDI", "lengthM": 1 },
+        "BNC Cable 5 m": { "type": "3G-SDI", "lengthM": 5 },
+        "BNC Cable 10 m": { "type": "3G-SDI", "lengthM": 10 },
+        "BNC Drum 25 m": { "type": "3G-SDI", "lengthM": 25, "notes": "drum" }
       },
       "cables": {
         "LBUS to LBUS": { "from": "LBUS (LEMO 4-pin)", "to": "LBUS (LEMO 4-pin)" },
+        "Cable CAM (7-pin) – EXT (6-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.015756",
+          "lengthM": 0.6,
+          "connectors": ["CAM (7-pin)", "EXT (6-pin)"],
+          "orientation": "straight",
+          "useCase": ["Run/Stop", "Tally"]
+        },
+        "Cable CAM (7-pin) – D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0018813",
+          "lengthM": 0.6,
+          "connectors": ["CAM (7-pin)", "D-Tap"],
+          "orientation": "straight",
+          "useCase": ["Power"]
+        },
+        "Cable CAM (7-pin) – LANC/D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015757",
+          "lengthM": 0.6,
+          "connectors": ["CAM (7-pin)", "LANC + D-Tap"],
+          "orientation": "straight",
+          "useCase": ["Run/Stop", "Power"]
         "D-Tap to Lemo-2-pin Cable 0,3m": {
           "lengthM": 0.3,
           "connectors": ["D-Tap", "Lemo 2-pin"],
