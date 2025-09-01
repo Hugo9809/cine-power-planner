@@ -6960,7 +6960,6 @@ function generateGearListHtml(info = {}) {
         supportAccNoCages.push('SHAPE Telescopic Handle ARRI Rosette Kit 12"');
     }
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
-    const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses','sliderBowl'];
     const labels = {
         dop: 'DoP',
         prepDays: 'Prep Days',
@@ -6971,11 +6970,17 @@ function generateGearListHtml(info = {}) {
         codec: 'Codec',
         baseFrameRate: 'Base Frame Rate',
         lenses: 'Lenses',
-        sliderBowl: 'Tango Roller Mount'
+        requiredScenarios: 'Required Scenarios',
+        rigging: 'Rigging',
+        monitoringPreferences: 'Monitoring Preferences',
+        tripodPreferences: 'Tripod Preferences',
+        sliderBowl: 'Tango Roller Mount',
+        filter: 'Filter'
     };
-    const infoPairs = Object.entries(info).filter(([k,v]) => v && allowedInfo.includes(k));
+    const infoPairs = Object.entries(info)
+        .filter(([k, v]) => v && k !== 'projectName');
     const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
-        infoPairs.map(([k,v]) => `<li>${escapeHtml(labels[k]||k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
+        infoPairs.map(([k, v]) => `<li>${escapeHtml(labels[k] || k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
     const formatItems = arr => {
         const counts = {};
         arr.filter(Boolean).forEach(n => {
@@ -7000,9 +7005,9 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
     addRow('Media', '');
-    addRow('Lens', escapeHtml(info.lenses || ''));
+    addRow('Lens', '');
     addRow('Lens Support', '');
-    addRow('Matte box + filter', escapeHtml(info.filter || ''));
+    addRow('Matte box + filter', '');
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
     if (selectedNames.battery) {

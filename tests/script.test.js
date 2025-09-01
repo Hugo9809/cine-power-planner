@@ -929,10 +929,17 @@ describe('script.js functions', () => {
       addOpt('distanceSelect', 'DistA');
       addOpt('batterySelect', 'BattA');
       document.getElementById('batteryCount').textContent = '1';
-      const html = generateGearListHtml({ projectName: 'Proj', dop: 'DopName' });
+      const html = generateGearListHtml({
+        projectName: 'Proj',
+        dop: 'DopName',
+        requiredScenarios: 'Handheld, Slider',
+        filter: 'ND'
+      });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
       expect(html).toContain('DoP: DopName');
+      expect(html).toContain('Required Scenarios: Handheld, Slider');
+      expect(html).toContain('Filter: ND');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain('1x CamA');
