@@ -6962,6 +6962,12 @@ function generateGearListHtml(info = {}) {
     if (rigging.some(r => r === 'Shoulder rig' || r === 'Hand Grips')) {
         addHandle();
     }
+    const riggingSelections = info.rigging
+        ? info.rigging.split(',').map(s => s.trim())
+        : [];
+    if (riggingSelections.includes('Top handle extension') || riggingSelections.includes('Rear Handle')) {
+        supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
+    }
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
