@@ -419,7 +419,7 @@ function unifyDevices(data) {
   });
 }
 
-// Store a deep copy of the initial 'devices' data as defined in data.js.
+// Store a deep copy of the initial 'devices' data as defined in the device files.
 // This 'defaultDevices' will be used when reverting the database.
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
 // "already declared" errors if the script is loaded multiple times.
@@ -5891,7 +5891,7 @@ if (exportAndRevertBtn) {
 
       // Give a small delay to ensure download prompt appears before next step
       setTimeout(() => {
-        // Step 2: Remove saved database and reload page so data.js is re-read
+        // Step 2: Remove saved database and reload page so device files are re-read
         localStorage.removeItem('cameraPowerPlanner_devices');
         alert(texts[currentLang].alertExportAndRevertSuccess);
         location.reload();
@@ -6443,7 +6443,7 @@ function generatePrintableOverview() {
 
     processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
     processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
-    processSelectForOverview(videoSelect, 'category_video', 'video'); // Original data.js uses 'video', not 'wirelessVideo'
+    processSelectForOverview(videoSelect, 'category_video', 'video'); // Original database uses 'video', not 'wirelessVideo'
     processSelectForOverview(cageSelect, 'category_cages', 'accessories', 'cages');
     processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');
     motorSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_motors', 'fiz', 'motors'));
@@ -6720,7 +6720,7 @@ function collectAccessories() {
         }
         if (acc.chargers) {
             let camCount = parseInt(batteryCountElem?.textContent || '', 10);
-            if (!Number.isFinite(camCount)) camCount = 0;
+            if (!Number.isFinite(camCount)) camCount = batterySelect.value ? 1 : 0;
             const monitorElem = document.getElementById('monitoringBatteryCount');
             let monCount = monitorElem ? parseInt(monitorElem.textContent, 10) : 0;
             if (!Number.isFinite(monCount)) monCount = 0;
