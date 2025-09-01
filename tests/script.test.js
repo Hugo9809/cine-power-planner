@@ -1016,6 +1016,19 @@ describe('script.js functions', () => {
     expect(text).toContain('3x Bodenmatte');
   });
 
+  test('Slider with undersling mode adds Tango Beam regardless of order', () => {
+    const { generateGearListHtml } = script;
+    ['Slider, Undersling mode', 'Undersling mode, Slider'].forEach(order => {
+      const html = generateGearListHtml({ requiredScenarios: order });
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html;
+      const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+      const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+      const itemsRow = rows[gripIdx + 1];
+      expect(itemsRow.textContent).toContain('Tango Beam');
+    });
+  });
+
   test('Easyrig scenario adds stabiliser with dropdown options', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
