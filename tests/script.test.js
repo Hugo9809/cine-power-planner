@@ -3,6 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const LZString = require('lz-string');
 
+test('Easyrig stabiliser data exposes attachments', () => {
+  const gear = require('../devices/gearList.js');
+  const stabiliser = gear.accessories.cameraStabiliser['Easyrig 5 Vario'];
+  expect(stabiliser.options).toEqual([
+    'FlowCine Serene Spring Arm',
+    'Easyrig - STABIL G3'
+  ]);
+});
+
 describe('script.js functions', () => {
   let script;
 
@@ -70,6 +79,11 @@ describe('script.js functions', () => {
           power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
           fiz: { 'LBUS to LBUS': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' } },
           video: { 'BNC SDI Cable': { type: '3G-SDI' } }
+        },
+        cameraStabiliser: {
+          'Easyrig 5 Vario': {
+            options: ['FlowCine Serene Spring Arm', 'Easyrig - STABIL G3']
+          }
         }
       }
     };
@@ -1000,6 +1014,21 @@ describe('script.js functions', () => {
     expect(text).toContain('1x Satz Paganinis');
     expect(text).toContain('2x Sandsack');
     expect(text).toContain('3x Bodenmatte');
+  });
+
+  test('Easyrig scenario adds stabiliser with dropdown options', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const sel = wrap.querySelector('#gearListEasyrig');
+    expect(sel).not.toBeNull();
+    const optionTexts = Array.from(sel.options).map(o => o.textContent);
+    expect(optionTexts).toEqual([
+      'no further stabilisation',
+      'FlowCine Serene Spring Arm',
+      'Easyrig - STABIL G3'
+    ]);
   });
 
   test('monitoring support cables grouped by type', () => {
