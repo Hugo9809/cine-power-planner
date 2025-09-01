@@ -6745,12 +6745,12 @@ function collectProjectFormData() {
     const val = name => (projectForm.querySelector(`[name="${name}"]`)?.value || '').trim();
     const multi = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
         .map(o => o.value).join(', ');
+    const range = (start, end) => [val(start), val(end)].filter(Boolean).join(' to ');
     return {
         projectName: val('projectName'),
         dop: val('dop'),
-        prepDay: val('prepDay'),
-        firstDay: val('firstDay'),
-        lastDay: val('lastDay'),
+        prepDays: range('prepStart','prepEnd'),
+        shootingDays: range('shootStart','shootEnd'),
         deliveryResolution: val('deliveryResolution'),
         recordingResolution: val('recordingResolution'),
         aspectRatio: val('aspectRatio'),
@@ -6784,12 +6784,11 @@ function generateGearListHtml(info = {}) {
     }
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
-    const allowedInfo = ['dop','prepDay','firstDay','lastDay','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
+    const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
     const labels = {
         dop: 'DoP',
-        prepDay: 'Prep Day',
-        firstDay: 'First Day of Shooting',
-        lastDay: 'Last Day of Shooting',
+        prepDays: 'Prep Days',
+        shootingDays: 'Shooting Days',
         deliveryResolution: 'Delivery Resolution',
         recordingResolution: 'Recording Resolution',
         aspectRatio: 'Aspect Ratio',
