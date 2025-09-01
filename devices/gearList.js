@@ -1550,6 +1550,15 @@ const gear = {
         "brand": "Hudson Spider"
       }
     },
+    "cameraStabiliser": {
+      "Easyrig 5 Vario": {
+        "brand": "Easyrig",
+        "options": [
+          "FlowCine Serene Spring Arm",
+          "Easyrig - STABIL G3"
+        ]
+      }
+    },
     "grip": {
       "Cinekinetic Cinesaddle": {
         "brand": "Cinekinetic"
