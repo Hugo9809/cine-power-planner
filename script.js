@@ -7156,7 +7156,13 @@ function generateGearListHtml(info = {}) {
         ...Array(20).fill('Airliner Ösen')
     ];
     addRow('Carts and Transportation', formatItems(cartsTransportationItems));
-    const miscExcluded = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable']);
+    const miscExcluded = new Set([
+        'D-Tap to LEMO 2-pin',
+        'HDMI Cable',
+        'BNC SDI Cable',
+        'Ultraslim BNC 0.3 m',
+        'Ultraslim BNC 0.5 m'
+    ]);
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     const consumables = [];
     if (scenarios.includes('Outdoor')) {
