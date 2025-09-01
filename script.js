@@ -6826,11 +6826,27 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + escapeHtml(selectedNames.video);
     }
     addRow('Monitoring', monitoringItems);
-    const monitoringSupportItems = [
-        info.monitoringPreferences,
-        '2x D-Tap to Lemo-2-pin Cable 0,5m (for onboard monitor)',
-        '2x ultra slim 3G-SDI BNC cable 0,5m (for onboard monitor)'
-    ].filter(Boolean).map(escapeHtml).join(', ');
+
+    const cableUsage = {};
+    const addCable = (name, use) => {
+        if (!cableUsage[name]) cableUsage[name] = {};
+        cableUsage[name][use] = (cableUsage[name][use] || 0) + 1;
+    };
+    addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'for onboard monitor');
+    addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'spare');
+    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'for onboard monitor');
+    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare');
+    const formatCableUsage = usageMap => {
+        return Object.entries(usageMap).map(([name, uses]) => {
+            const total = Object.values(uses).reduce((sum, n) => sum + n, 0);
+            const notes = Object.entries(uses).map(([use, count]) => `${count}x ${use}`).join('; ');
+            return `${total}x ${escapeHtml(name)} (${escapeHtml(notes)})`;
+        }).join('<br>');
+    };
+    let monitoringSupportItems = formatCableUsage(cableUsage);
+    if (info.monitoringPreferences) {
+        monitoringSupportItems = `${escapeHtml(info.monitoringPreferences)}<br>${monitoringSupportItems}`;
+    }
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
