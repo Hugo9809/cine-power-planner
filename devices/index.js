@@ -1,23 +1,33 @@
 var devices = {};
 
+function registerDevice(path, data) {
+  var parts = path.split('.');
+  var obj = devices;
+  while (parts.length > 1) {
+    var part = parts.shift();
+    obj = obj[part] = obj[part] || {};
+  }
+  var last = parts[0];
+  if (obj[last] && typeof obj[last] === 'object' && typeof data === 'object' && !Array.isArray(data)) {
+    obj[last] = Object.assign(obj[last], data);
+  } else {
+    obj[last] = data;
+  }
+  return obj[last];
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  devices.cameras = require('./cameras.js');
-  devices.monitors = require('./monitors.js');
-  devices.video = require('./video.js');
-  devices.fiz = require('./fiz.js');
-  devices.batteries = require('./batteries.js');
-  devices.accessories = { cages: require('./cages.js') };
-  const gear = require('./gearList.js');
-  devices.viewfinders = gear.viewfinders;
-  devices.directorMonitors = gear.directorMonitors;
-  devices.iosVideo = gear.iosVideo;
-  devices.wirelessReceivers = gear.wirelessReceivers;
-  devices.videoAssist = gear.videoAssist;
-  devices.media = gear.media;
-  devices.lenses = gear.lenses;
-  devices.accessories = Object.assign(devices.accessories, gear.accessories);
-  devices.filterOptions = gear.filterOptions;
+  globalThis.registerDevice = registerDevice;
+  require('./cameras.js');
+  require('./monitors.js');
+  require('./video.js');
+  require('./fiz.js');
+  require('./batteries.js');
+  require('./cages.js');
+  require('./gearList.js');
+  delete globalThis.registerDevice;
   module.exports = devices;
 } else {
+  globalThis.registerDevice = registerDevice;
   globalThis.devices = devices;
 }
