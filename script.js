@@ -3173,7 +3173,8 @@ function clearTimecodes() {
 
 
 // Populate dropdowns with device options
-function populateSelect(selectElem, optionsObj, includeNone=true) {
+function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
+  if (!selectElem) return;
   selectElem.innerHTML = "";
   if (includeNone) {
     const noneOpt = document.createElement("option");
