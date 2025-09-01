@@ -7079,8 +7079,30 @@ function generateGearListHtml(info = {}) {
     addRow('Rigging', escapeHtml(info.rigging || ''));
     addRow('Grip', [formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
     addRow('Carts and Transportation', '');
-    addRow('Miscellaneous', formatItems(miscAcc));
-    addRow('Consumables', '');
+    const miscItems = [...miscAcc];
+    const consumables = [];
+    if (scenarios.includes('Outdoor')) {
+        if (selectedNames.camera) miscItems.push(`Rain Cover "${selectedNames.camera}"`);
+        miscItems.push('Umbrella for Focus Monitor');
+        miscItems.push('Super Clamp');
+        miscItems.push('Super Clamp');
+        miscItems.push('Spigot');
+        miscItems.push('Umbrella Magliner incl Mounting to Magliner');
+        const monitorSizes = [];
+        if (monitorSelect && monitorSelect.value) {
+            const m = devices.monitors[monitorSelect.value];
+            if (m && m.screenSizeInches) monitorSizes.push(m.screenSizeInches);
+        }
+        const monitorsAbove10 = monitorSizes.filter(s => s > 10).length;
+        const monitorsUnder10 = monitorSizes.filter(s => s <= 10).length;
+        for (let i = 0; i < monitorsAbove10 + 2; i++) consumables.push('CapIt Large');
+        for (let i = 0; i < monitorsUnder10 + 3; i++) consumables.push('CapIt Medium');
+        for (let i = 0; i < 3; i++) consumables.push('CapIt Small');
+        for (let i = 0; i < 10; i++) consumables.push('Duschhaube');
+        consumables.push('Magliner Rain Cover Transparent');
+    }
+    addRow('Miscellaneous', formatItems(miscItems));
+    addRow('Consumables', formatItems(consumables));
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
     body += '<h3>Gear List</h3><table class="gear-table">' + rows.join('') + '</table>';
