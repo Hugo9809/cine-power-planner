@@ -15,22 +15,13 @@ function checkConsistency(devices = require('./data.js')) {
   };
   const inconsistent = [];
 
-  for (const [name, cam] of Object.entries(devices.cameras || {})) {
-    if (name === 'None') continue;
-    const missing = rules.cameras.filter(f => cam[f] == null);
-    if (missing.length) inconsistent.push({ category: 'cameras', name, missing });
-  }
-
-  for (const [name, mon] of Object.entries(devices.monitors || {})) {
-    if (name === 'None') continue;
-    const missing = rules.monitors.filter(f => mon[f] == null);
-    if (missing.length) inconsistent.push({ category: 'monitors', name, missing });
-  }
-
-  for (const [name, vid] of Object.entries(devices.video || {})) {
-    if (name === 'None') continue;
-    const missing = rules.video.filter(f => vid[f] == null);
-    if (missing.length) inconsistent.push({ category: 'video', name, missing });
+  for (const [category, fields] of Object.entries(rules)) {
+    const collection = devices[category] || {};
+    for (const [name, device] of Object.entries(collection)) {
+      if (name === 'None') continue;
+      const missing = fields.filter(f => device[f] == null);
+      if (missing.length) inconsistent.push({ category, name, missing });
+    }
   }
 
   return inconsistent;
