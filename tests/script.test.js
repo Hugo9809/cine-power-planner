@@ -861,7 +861,7 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain('MonA - incl. Sunhood<br>VidA');
+    expect(html).toContain('<strong>Onboard Monitor</strong> - MonA - incl. Sunhood<br><strong>Wireless Transmitter</strong> - VidA');
     expect(html).not.toContain('MonA, VidA');
   });
 

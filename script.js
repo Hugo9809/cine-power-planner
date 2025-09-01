@@ -6823,7 +6823,7 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
     if (selectedNames.video) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + escapeHtml(selectedNames.video);
+        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
     }
     addRow('Monitoring', monitoringItems);
 
@@ -6835,6 +6835,10 @@ function generateGearListHtml(info = {}) {
     addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'for onboard monitor');
     addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'spare');
     addCable('ultra slim 3G-SDI BNC cable 0,5m', 'for onboard monitor');
+    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare');
+    addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'for wireless transmitter');
+    addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'spare');
+    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'for wireless transmitter');
     addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare');
     const formatCableUsage = usageMap => {
         return Object.entries(usageMap).map(([name, uses]) => {
