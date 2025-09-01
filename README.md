@@ -46,6 +46,7 @@ Recent updates include:
 - **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
+- **Gear list generator** – compile selected gear and project requirements with one click.
 - **Quick setup saving** – press Enter or Ctrl+S (⌘S on macOS) to save a setup and the Save button stays disabled until a name is entered.
 
 See the language-specific README files for full details.
@@ -57,7 +58,7 @@ See the language-specific README files for full details.
 - Check that selected batteries can supply the required output.
 - See required battery counts for a 10 h shoot and adjust runtimes for temperature.
 - Compare runtimes across all batteries with an optional battery comparison panel.
-- Save, load, share and clear setups; import/export them as JSON, and generate a printable overview.
+- Save, load, share and clear setups; import/export them as JSON, and generate gear lists and printable overviews.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
 - Automatically selects your browser language on first load, lets you switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
