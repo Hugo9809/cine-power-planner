@@ -1560,6 +1560,12 @@ const gear = {
           "FlowCine Serene Spring Arm",
           "Easyrig - STABIL G3"
         ]
+      },
+      "DJI Ronin RS4 Pro Combo": {
+        "brand": "DJI"
+      },
+      "DJI Ronin 2": {
+        "brand": "DJI"
       }
     },
     "grip": {

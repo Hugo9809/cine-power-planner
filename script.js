@@ -7063,6 +7063,12 @@ function generateGearListHtml(info = {}) {
         const optsHtml = options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
         easyrigSelectHtml = `1x Easyrig 5 Vario <select id="gearListEasyrig">${optsHtml}</select>`;
     }
+    if (scenarios.includes('Gimbal')) {
+        const cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
+        const weight = cam && cam.weight_g;
+        const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
+        gripItems.push(isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
+    }
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
     if (scenarios.includes('Slider')) {
