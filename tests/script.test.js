@@ -1017,6 +1017,36 @@ describe('script.js functions', () => {
     expect(text).toContain('3x Bodenmatte');
   });
 
+  test('Gimbal scenario adds RS4 Pro for lightweight camera', () => {
+    const { generateGearListHtml } = script;
+    devices.cameras.SmallCam = { weight_g: 1000 };
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="SmallCam">SmallCam</option>';
+    camSel.value = 'SmallCam';
+    const html = generateGearListHtml({ requiredScenarios: 'Gimbal' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    expect(itemsRow.textContent).toContain('DJI Ronin RS4 Pro Combo');
+  });
+
+  test('Gimbal scenario adds Ronin 2 for heavy camera', () => {
+    const { generateGearListHtml } = script;
+    devices.cameras.BigCam = { weight_g: 3000 };
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="BigCam">BigCam</option>';
+    camSel.value = 'BigCam';
+    const html = generateGearListHtml({ requiredScenarios: 'Gimbal' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    expect(itemsRow.textContent).toContain('DJI Ronin 2');
+  });
+
   test('Easyrig scenario adds stabiliser with dropdown options', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });

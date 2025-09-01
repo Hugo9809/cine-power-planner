@@ -1566,6 +1566,12 @@ const gear = {
       "Cinekinetic Cinesaddle": {
         "brand": "Cinekinetic"
       },
+      "DJI Ronin 2": {
+        "brand": "DJI"
+      },
+      "DJI Ronin RS4 Pro Combo": {
+        "brand": "DJI"
+      },
       "Steadybag": {
         "brand": "Steadybag"
       }

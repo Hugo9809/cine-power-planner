@@ -7074,6 +7074,14 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Bodenmatte');
         gripItems.push('Bodenmatte');
     }
+    if (scenarios.includes('Gimbal')) {
+        const camData = cameraSelect && cameraSelect.value && cameraSelect.value !== 'None'
+            ? devices.cameras[cameraSelect.value]
+            : null;
+        const weight = camData?.weight_g;
+        const gimbal = weight >= 2000 ? 'DJI Ronin 2' : 'DJI Ronin RS4 Pro Combo';
+        gripItems.push(gimbal);
+    }
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
