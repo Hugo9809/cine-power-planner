@@ -953,9 +953,9 @@ describe('script.js functions', () => {
     expect(html).toContain('Grip');
     expect(html).toContain('1x Easyrig 5 Vario');
     expect(html).toContain('<select id="gearListEasyrig"');
-    expect(html).toContain('no further stabilisation');
     expect(html).toContain('FlowCine Serene Spring Arm');
     expect(html).toContain('Easyrig - STABIL G3');
+    expect(html).toContain('none');
   });
 
   test('camera stabiliser database lists Easyrig 5 Vario with options', () => {

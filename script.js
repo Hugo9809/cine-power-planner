@@ -7044,10 +7044,10 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Easyrig')) {
         const stabiliser = (typeof gear !== 'undefined' && gear.cameraStabiliser && gear.cameraStabiliser['Easyrig 5 Vario']) || { options: ['FlowCine Serene Spring Arm', 'Easyrig - STABIL G3'] };
         const opts = [
-            { value: '', label: 'no further stabilisation' },
-            ...stabiliser.options.map(o => ({ value: o, label: o }))
-        ].map((o, i) => `<option value="${escapeHtml(o.value)}"${i === 0 ? ' selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
-        gripItems = `1x Easyrig 5 Vario <select id="gearListEasyrig">${opts}</select>`;
+            ...stabiliser.options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`),
+            `<option value="" selected>none</option>`
+        ].join('');
+        gripItems = `1x Easyrig 5 Vario <select id="gearListEasyrig">${opts}</select>`; 
     }
     addRow('Grip', gripItems);
     addRow('Carts and Transportation', '');
