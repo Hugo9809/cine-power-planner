@@ -79,7 +79,14 @@ describe('script.js functions', () => {
         cables: {
           power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
           fiz: { 'LBUS to LBUS': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' } },
-          video: { 'BNC SDI Cable': { type: '3G-SDI' }, 'HDMI Cable': { type: 'HDMI' } }
+          video: {
+            'HDMI Cable': { type: 'HDMI' },
+            'BNC Cable 0.5 m': { type: '3G-SDI' },
+            'BNC Cable 1 m': { type: '3G-SDI' },
+            'BNC Cable 5 m': { type: '3G-SDI' },
+            'BNC Cable 10 m': { type: '3G-SDI' },
+            'BNC Drum 25 m': { type: '3G-SDI' }
+          }
         },
         cameraStabiliser: {
           'Easyrig 5 Vario': {
@@ -951,7 +958,15 @@ describe('script.js functions', () => {
       expect(html).toContain('Chargers');
       expect(html).toContain('1x Dual V-Mount Charger');
       expect(html).toContain('Miscellaneous');
-      expect(html).toContain('1x BNC SDI Cable');
+      expect(html).toContain('1x BNC Cable 0.5 m');
+      expect(html).toContain('1x BNC Cable 1 m');
+      expect(html).toContain('1x BNC Cable 5 m');
+      expect(html).toContain('1x BNC Cable 10 m');
+      expect(html).toContain('1x BNC Drum 25 m');
+      expect(html).toContain('4x BNC Connector');
+      expect(html).not.toContain('BNC SDI Cable');
+      expect(html).not.toContain('Ultraslim BNC 0.3 m');
+      expect(html).not.toContain('Ultraslim BNC 0.5 m');
       expect(html).not.toContain('D-Tap to LEMO 2-pin');
       expect(html).not.toContain('HDMI Cable');
     });

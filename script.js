@@ -6781,7 +6781,13 @@ function suggestChargerCounts(total) {
 
 function collectAccessories() {
     const cameraSupport = [];
-    const misc = [];
+    const misc = [
+        'BNC Cable 0.5 m',
+        'BNC Cable 1 m',
+        'BNC Cable 5 m',
+        'BNC Cable 10 m',
+        'BNC Drum 25 m'
+    ];
     const chargers = [];
     const fizCables = [];
     const acc = devices.accessories || {};
@@ -6848,24 +6854,6 @@ function collectAccessories() {
     controllerSelects.forEach(sel => gatherPower(devices.fiz.controllers[sel.value]));
     gatherPower(devices.fiz.distance[distanceSelect.value]);
 
-    const videoCableDb = acc.cables?.video || {};
-    const cameraOutputs = devices.cameras[cameraSelect.value]?.videoOutputs || [];
-    const matchVideo = device => {
-        if (!device) return;
-        const inputs = device.videoInputs || [];
-        cameraOutputs.forEach(out => {
-            inputs.forEach(inp => {
-                if (out.type === inp.type) {
-                    for (const [name, cable] of Object.entries(videoCableDb)) {
-                        if (cable.type === out.type && !excludedCables.has(name)) misc.push(name);
-                    }
-                }
-            });
-        });
-    };
-    matchVideo(devices.monitors[monitorSelect.value]);
-    matchVideo(devices.video[videoSelect.value]);
-
     const fizCableDb = devices.fiz?.cables || acc.cables?.fiz || {};
     const motorDatas = motorSelects.map(sel => devices.fiz.motors[sel.value]).filter(Boolean);
     const controllerDatas = controllerSelects.map(sel => devices.fiz.controllers[sel.value]).filter(Boolean);
@@ -6885,11 +6873,13 @@ function collectAccessories() {
         });
     });
 
+    const miscUnique = [...new Set(misc)];
+    for (let i = 0; i < 4; i++) miscUnique.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
         fizCables: [...new Set(fizCables)],
-        misc: [...new Set(misc)]
+        misc: miscUnique
     };
 }
 
