@@ -151,7 +151,7 @@ npm run normalize
 npm run check-consistency
 ```
 
-`npm run normalize` applies various cleanup routines to unify connector names and expand shorthand entries. `npm run check-consistency` confirms that required fields are present and raises an error if anything is missing.
+`npm run normalize` applies various cleanup routines to unify connector names and expand shorthand entries. `npm run check-consistency` confirms that required fields are present and raises an error if anything is missing. Append `--help` to either command for usage details.
 
 ## Contributing
 

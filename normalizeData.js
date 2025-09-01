@@ -374,5 +374,17 @@ function normalizeAll() {
   updateVideoOutputs();
 }
 
-normalizeAll();
-save();
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(
+      'Usage: node normalizeData.js\n' +
+        '\nCleans and expands device data, then overwrites data.js with the result.'
+    );
+    process.exit(0);
+  }
+  normalizeAll();
+  save();
+} else {
+  module.exports = { normalizeAll, save };
+}

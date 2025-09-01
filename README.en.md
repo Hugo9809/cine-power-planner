@@ -179,6 +179,7 @@ Requires Node.js 18 or later.
    npm run normalize
    npm run check-consistency
    ```
+   Append `--help` to either command for usage details.
 
 ## 🤝 Contributing
 Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
