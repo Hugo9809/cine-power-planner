@@ -8688,6 +8688,7 @@ let devices={
           "connectors": ["CAM (7-pin)", "LANC + D-Tap"],
           "orientation": "straight",
           "useCase": ["Run/Stop", "Power"]
+        },
         "D-Tap to Lemo-2-pin Cable 0,3m": {
           "lengthM": 0.3,
           "connectors": ["D-Tap", "Lemo 2-pin"],
