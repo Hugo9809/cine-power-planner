@@ -378,8 +378,10 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node normalizeData.js\n' +
-        '\nCleans and expands device data, then overwrites data.js with the result.'
+      'Usage: node normalizeData.js [--help]\n' +
+        '\nCleans and expands device data, then overwrites data.js with the result.\n' +
+        '\nOptions:\n' +
+        '  -h, --help  Show this help message.'
     );
     process.exit(0);
   }
