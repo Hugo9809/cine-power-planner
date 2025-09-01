@@ -410,6 +410,23 @@ const data = {
       "connectivity": "Wireless (swappable ARRI radio modules) or Wired (LBUS)",
       "notes": "3-axis hand unit with daylight-readable touchscreen and hot-swappable battery."
     },
+    "Arri SXU-1": {
+      "powerDrawWatts": 5,
+      "fizConnectors": [
+        {
+          "type": "LCS (LEMO 4-pin)"
+        },
+        {
+          "type": "USB",
+          "notes": "firmware"
+        }
+      ],
+      "internalController": false,
+      "power_source": "Internal Battery (ARRI LBP-3500) or External (LCS)",
+      "battery_type": "ARRI LBP-3500",
+      "connectivity": "Wireless (swappable ARRI radio modules) or Wired (LCS)",
+      "notes": "Single-axis wireless control unit.",
+    },
     "Arri WCU-4": {
       "powerDrawWatts": 8,
       "fizConnectors": [

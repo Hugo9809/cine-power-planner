@@ -1394,6 +1394,24 @@ const data = {
     "notes": "Unified Wooden Camera rig with top handle and baseplate for Ranger cameras.",
     "verified_source": "https://woodencamera.com/products/unified-camera-cage-for-red-ranger"
   },
+  "ARRI Alexa 35 Production Expansion Set (19mm)": {
+    "brand": "ARRI",
+    "compatible": [
+      "Arri Alexa 35"
+    ],
+    "material": null,
+    "weight_g": null,
+    "mounting_points": [
+      "19mm Studio",
+      "ARRI locating",
+      "3/8\"-16",
+      "1/4\"-20"
+    ],
+    "top_handle_included": true,
+    "side_plates": true,
+    "notes": "Production cage set for ALEXA 35 with 19mm studio rod support.",
+    "verified_source": "https://www.arri.com/"
+  },
   "ARRI PCA Support Kit for Alexa LF": {
     "brand": "ARRI",
     "compatible": [
