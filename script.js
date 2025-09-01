@@ -6031,10 +6031,35 @@ generateOverviewBtn.addEventListener('click', () => {
     generatePrintableOverview();
 });
 
+function batteryPinsSufficient() {
+    const batt = batterySelect && batterySelect.value;
+    if (!batt || batt === 'None' || !devices.batteries[batt]) return true;
+    const data = devices.batteries[batt];
+    const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+    if (!isFinite(totalCurrentLow)) return true;
+    return totalCurrentLow <= data.pinA;
+}
+
+function alertPinExceeded() {
+    const batt = batterySelect && batterySelect.value;
+    if (!batt || batt === 'None' || !devices.batteries[batt]) return;
+    const data = devices.batteries[batt];
+    const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+    alert(
+        texts[currentLang].warnPinExceeded
+            .replace('{current}', totalCurrentLow.toFixed(2))
+            .replace('{max}', data.pinA)
+    );
+}
+
 // Generate a printable gear list of the current setup
 generateGearListBtn.addEventListener('click', () => {
     if (!setupSelect.value) {
         alert(texts[currentLang].alertSelectSetupForOverview);
+        return;
+    }
+    if (!batteryPinsSufficient()) {
+        alertPinExceeded();
         return;
     }
     projectDialog.showModal();
@@ -6049,6 +6074,10 @@ if (projectCancelBtn) {
 if (projectForm) {
     projectForm.addEventListener('submit', e => {
         e.preventDefault();
+        if (!batteryPinsSufficient()) {
+            alertPinExceeded();
+            return;
+        }
         const info = collectProjectFormData();
         const html = generateGearListHtml(info);
         if (gearListOutput) {
@@ -6812,7 +6841,15 @@ function generateGearListHtml(info = {}) {
     addRow('Lens Support', '');
     addRow('Matte box + filter', escapeHtml(info.filters || ''));
     addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
-    addRow('Camera Batteries', escapeHtml(selectedNames.battery || ''));
+    let batteryItems = '';
+    if (selectedNames.battery) {
+        const count = batteryCountElem ? batteryCountElem.textContent : '';
+        const safeBatt = escapeHtml(selectedNames.battery);
+        batteryItems = count && count.trim() !== '–'
+            ? `${escapeHtml(count)}x ${safeBatt}`
+            : safeBatt;
+    }
+    addRow('Camera Batteries', batteryItems);
     addRow('Monitoring Batteries', '');
     addRow('Chargers', join(chargersAcc));
     let monitoringItems = '';
