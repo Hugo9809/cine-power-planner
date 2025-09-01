@@ -134,6 +134,9 @@ function normalizeCamera(cam) {
 function normalizeMonitor(mon) {
   if (mon.power?.input) cleanPowerInput(mon.power.input);
   if (mon.power?.output) cleanPort(mon.power.output);
+  cleanPort(mon.audioInput);
+  cleanPort(mon.audioOutput);
+  cleanPort(mon.audioIo);
   normalizeVideoPorts(mon);
 }
 
@@ -216,6 +219,9 @@ function normalizeVideoDevice(dev) {
   }
   normalizeVideoPorts(dev);
   if (dev.power?.input) cleanPowerInput(dev.power.input);
+  cleanPort(dev.audioInput);
+  cleanPort(dev.audioOutput);
+  cleanPort(dev.audioIo);
 
 }
 function normalizeFiz(dev) {
