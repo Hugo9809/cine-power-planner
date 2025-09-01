@@ -968,7 +968,6 @@ function setLanguage(lang) {
     "data-help",
     texts[lang].setupActionsHeadingHelp
   );
-  saveSetupBtn.textContent = texts[lang].saveSetupBtn;
   deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
@@ -1018,6 +1017,7 @@ function setLanguage(lang) {
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
   }
+  checkSetupChanged();
   // Device selection labels with help
   const cameraLabelElem = document.getElementById("cameraLabel");
   cameraLabelElem.textContent = texts[lang].cameraLabel;
@@ -1529,6 +1529,36 @@ if (gearListOutput) {
     ensureGearListActions();
   }
 }
+
+let loadedSetupState = null;
+
+function getCurrentSetupState() {
+  return {
+    camera: cameraSelect.value,
+    monitor: monitorSelect.value,
+    video: videoSelect.value,
+    motors: motorSelects.map(sel => sel.value),
+    controllers: controllerSelects.map(sel => sel.value),
+    distance: distanceSelect.value,
+    batteryPlate: batteryPlateSelect.value,
+    battery: batterySelect.value
+  };
+}
+
+function checkSetupChanged() {
+  if (!saveSetupBtn) return;
+  if (
+    loadedSetupState &&
+    setupSelect.value &&
+    setupNameInput.value.trim() === setupSelect.value &&
+    JSON.stringify(getCurrentSetupState()) !== JSON.stringify(loadedSetupState)
+  ) {
+    saveSetupBtn.textContent = texts[currentLang].updateSetupBtn;
+  } else {
+    saveSetupBtn.textContent = texts[currentLang].saveSetupBtn;
+  }
+}
+
 const projectDialog = document.getElementById("projectDialog");
 const projectForm = document.getElementById("projectForm");
 const projectCancelBtn = document.getElementById("projectCancel");
@@ -4996,14 +5026,7 @@ saveSetupBtn.addEventListener("click", () => {
     return;
   }
   const currentSetup = {
-    camera: cameraSelect.value,
-    monitor: monitorSelect.value,
-    video: videoSelect.value,
-    motors: motorSelects.map(sel => sel.value),
-    controllers: controllerSelects.map(sel => sel.value),
-    distance: distanceSelect.value,
-    batteryPlate: batteryPlateSelect.value,
-    battery: batterySelect.value,
+    ...getCurrentSetupState(),
     gearList: getCurrentGearListHtml()
   };
   let setups = getSetups();
@@ -5011,6 +5034,8 @@ saveSetupBtn.addEventListener("click", () => {
   storeSetups(setups);
   populateSetupSelect();
   setupSelect.value = setupName; // Select the newly saved setup
+  loadedSetupState = getCurrentSetupState();
+  checkSetupChanged();
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
 });
 
@@ -5086,6 +5111,7 @@ setupSelect.addEventListener("change", (event) => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    loadedSetupState = null;
     if (gearListOutput) {
       gearListOutput.innerHTML = '';
       gearListOutput.classList.add('hidden');
@@ -5124,8 +5150,10 @@ setupSelect.addEventListener("change", (event) => {
         }
       }
     }
+    loadedSetupState = getCurrentSetupState();
   }
   updateCalculations();
+  checkSetupChanged();
 });
 
 
@@ -5140,7 +5168,7 @@ function populateSetupSelect() {
   }
 }
 populateSetupSelect(); // Initial populate of setups
-
+checkSetupChanged();
 
 // Toggle device manager visibility
 if (toggleDeviceBtn) {
@@ -6940,6 +6968,12 @@ controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updat
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
+
+[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect]
+  .forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
+motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
+controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
+if (setupNameInput) setupNameInput.addEventListener("input", checkSetupChanged);
 
 // Enable Save button only when a setup name is entered and allow Enter to save
 if (setupNameInput && saveSetupBtn) {

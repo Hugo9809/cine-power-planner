@@ -872,6 +872,32 @@ describe('script.js functions', () => {
     expect(saveSpy).toHaveBeenCalled();
   });
 
+  test('Save button shows Update after modifying loaded setup', () => {
+    global.saveSetups.mockClear();
+    global.loadSetups.mockClear();
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="Cam1">Cam1</option><option value="Cam2">Cam2</option>';
+    camSel.value = 'Cam1';
+
+    const nameInput = document.getElementById('setupName');
+    const saveBtn = document.getElementById('saveSetupBtn');
+    nameInput.value = 'MySetup';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    saveBtn.click();
+
+    const saved = global.saveSetups.mock.calls[0][0];
+    global.loadSetups.mockReturnValue(saved);
+    const sel = document.getElementById('setupSelect');
+    sel.innerHTML = '<option value="">-- New Setup --</option><option value="MySetup">MySetup</option>';
+    sel.value = 'MySetup';
+    sel.dispatchEvent(new Event('change'));
+    expect(saveBtn.textContent).toBe('Save');
+
+    camSel.value = 'Cam2';
+    camSel.dispatchEvent(new Event('change'));
+    expect(saveBtn.textContent).toBe('Update');
+  });
+
   test('warning colors are applied in Spanish', () => {
     global.devices.batteries.WarnBatt = { capacity: 50, pinA: 1, dtapA: 1, mount_type: 'V-Mount' };
     const addOpt = (id, value) => {
