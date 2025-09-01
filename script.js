@@ -1556,6 +1556,7 @@ if (gearListOutput) {
   }
 }
 
+let currentProjectInfo = null;
 let loadedSetupState = null;
 
 function getCurrentSetupState() {
@@ -3778,6 +3779,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   checkFizController();
   checkArriCompatibility();
   if (setupDiagramContainer) renderSetupDiagram();
+  refreshGearListIfVisible();
 }
 
 function getCurrentSetupKey() {
@@ -6050,6 +6052,7 @@ if (projectForm) {
     projectForm.addEventListener('submit', e => {
         e.preventDefault();
         const info = collectProjectFormData();
+        currentProjectInfo = info;
         const html = generateGearListHtml(info);
         if (gearListOutput) {
             gearListOutput.innerHTML = html;
@@ -6978,6 +6981,13 @@ function ensureGearListActions() {
     deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
 }
 
+function refreshGearListIfVisible() {
+    if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
+    const html = generateGearListHtml(currentProjectInfo);
+    gearListOutput.innerHTML = html;
+    ensureGearListActions();
+    saveCurrentGearList();
+}
 
 // --- SESSION STATE HANDLING ---
 function saveCurrentSession() {

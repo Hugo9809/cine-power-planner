@@ -138,6 +138,25 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('Universal Cage');
   });
 
+  test('gear list updates when device selection changes', () => {
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.close = jest.fn();
+    const cameraSelect = document.getElementById('cameraSelect');
+    cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
+    cameraSelect.value = 'CamA';
+    const cageSelect = document.getElementById('cageSelect');
+    cageSelect.innerHTML = '<option value="Cage1">Cage1</option><option value="Cage2">Cage2</option>';
+    cageSelect.value = 'Cage1';
+    document.getElementById('projectName').value = 'Proj';
+    const projectForm = document.getElementById('projectForm');
+    projectForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const gearList = document.getElementById('gearListOutput');
+    expect(gearList.innerHTML).toContain('Cage1');
+    cageSelect.value = 'Cage2';
+    cageSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(gearList.innerHTML).toContain('Cage2');
+  });
+
   test('shows runtime average note when more than four user entries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
