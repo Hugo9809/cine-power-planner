@@ -6588,6 +6588,8 @@ function generatePrintableOverview() {
 function collectAccessories() {
     const cameraSupport = [];
     const misc = [];
+    const chargers = [];
+    const fizCables = [];
     const acc = devices.accessories || {};
 
     if (batterySelect.value) {
@@ -6601,7 +6603,7 @@ function collectAccessories() {
         }
         if (acc.chargers) {
             for (const [name, charger] of Object.entries(acc.chargers)) {
-                if (!charger.mount || charger.mount === mount) misc.push(name);
+                if (!charger.mount || charger.mount === mount) chargers.push(name);
             }
         }
     }
@@ -6658,7 +6660,7 @@ function collectAccessories() {
                 cConns.forEach(cc => {
                     if (mc === cc) {
                         for (const [name, cable] of Object.entries(fizCableDb)) {
-                            if (cable.from === mc && cable.to === cc) misc.push(name);
+                            if (cable.from === mc && cable.to === cc) fizCables.push(name);
                         }
                     }
                 });
@@ -6668,6 +6670,8 @@ function collectAccessories() {
 
     return {
         cameraSupport: [...new Set(cameraSupport)],
+        chargers: [...new Set(chargers)],
+        fizCables: [...new Set(fizCables)],
         misc: [...new Set(misc)]
     };
 }
@@ -6707,7 +6711,7 @@ function generateGearListHtml(info = {}) {
         batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? batteryPlateSelect.options[batteryPlateSelect.selectedIndex].text : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? batterySelect.options[batterySelect.selectedIndex].text : ''
     };
-    const { cameraSupport: cameraSupportAcc, misc: miscAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargerAcc, fizCables: fizCablesAcc, misc: miscAcc } = collectAccessories();
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const allowedInfo = ['dop','firstDay','lastDay','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
     const labels = {
@@ -6736,10 +6740,10 @@ function generateGearListHtml(info = {}) {
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
     addRow('Matte box + filter', escapeHtml(info.filters || ''));
-    addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance]));
+    addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCablesAcc]));
     addRow('Camera Batteries', escapeHtml(selectedNames.battery || ''));
     addRow('Monitoring Batteries', '');
-    addRow('Chargers', '');
+    addRow('Chargers', join(chargerAcc));
     let monitoringItems = '';
     if (selectedNames.monitor) {
         monitoringItems += `<strong>Onboard Monitor</strong><br>- ${escapeHtml(selectedNames.monitor)}<br>- incl. Sunhood`;
