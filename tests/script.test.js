@@ -1030,6 +1030,42 @@ describe('script.js functions', () => {
     });
   });
 
+  test('Tripod scenario adds OConnor head for heavy camera', () => {
+    const { generateGearListHtml } = script;
+    global.devices.cameras['Arri Alexa Mini LF'] = { weight_g: 2600 };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'Arri Alexa Mini LF');
+    const html = generateGearListHtml({ requiredScenarios: 'Tripod' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    expect(itemsRow.textContent).toContain('OConnor 2560 Head');
+  });
+
+  test('Tripod scenario adds 75mm head for light camera', () => {
+    const { generateGearListHtml } = script;
+    global.devices.cameras['Blackmagic BMPCC 4K'] = { weight_g: 680 };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'Blackmagic BMPCC 4K');
+    const html = generateGearListHtml({ requiredScenarios: 'Tripod' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    expect(itemsRow.textContent).toContain('Sachtler FSB 8 Head');
+  });
+
   test('Easyrig scenario adds stabiliser with dropdown options', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });

@@ -7084,6 +7084,17 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Slider') && scenarios.includes('Undersling mode')) {
         gripItems.push('Tango Beam');
     }
+    const needsTripodHead = ['Tripod', 'Dolly', 'Slider', 'Car Mount', 'Jib'].some(s => scenarios.includes(s));
+    if (needsTripodHead) {
+        const cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
+        const weight = cam && cam.weight_g ? cam.weight_g : 0;
+        const HEAVY_THRESHOLD_G = 2000;
+        if (weight > HEAVY_THRESHOLD_G) {
+            gripItems.push('OConnor 2560 Head');
+        } else {
+            gripItems.push('Sachtler FSB 8 Head');
+        }
+    }
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
