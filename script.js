@@ -7111,7 +7111,13 @@ function generateGearListHtml(info = {}) {
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
     addRow('Grip', [formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
-    addRow('Carts and Transportation', '');
+    const cartsTransportationItems = [
+        'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
+        ...Array(10).fill('Securing Straps (25mm wide)'),
+        'Loading Ramp (pair, 420kg)',
+        ...Array(20).fill('Airliner Ösen')
+    ];
+    addRow('Carts and Transportation', formatItems(cartsTransportationItems));
     const miscItems = [...miscAcc];
     const consumables = [];
     if (scenarios.includes('Outdoor')) {

@@ -1008,6 +1008,20 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
+  test('Carts and Transportation category includes default items', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml();
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cartsIdx = rows.findIndex(r => r.textContent === 'Carts and Transportation');
+    const itemsText = rows[cartsIdx + 1].textContent;
+    expect(itemsText).toContain('1x Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung');
+    expect(itemsText).toContain('10x Securing Straps (25mm wide)');
+    expect(itemsText).toContain('1x Loading Ramp (pair, 420kg)');
+    expect(itemsText).toContain('20x Airliner Ösen');
+  });
+
   test('Slider scenario adds Tango Roller and accessories', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Slider', sliderBowl: '75er bowl' });
