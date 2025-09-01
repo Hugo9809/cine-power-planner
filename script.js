@@ -7081,6 +7081,9 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Bodenmatte');
         gripItems.push('Bodenmatte');
     }
+    if (scenarios.includes('Slider') && scenarios.includes('Undersling mode')) {
+        gripItems.push('Tango Beam');
+    }
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
