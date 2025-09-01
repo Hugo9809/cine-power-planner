@@ -1527,6 +1527,11 @@ const gear = {
         "brand": "OConnor",
         "bowlSizeMm": 150,
         "material": "Aluminum"
+      },
+      "Sachtler FSB 8 Head": {
+        "brand": "Sachtler",
+        "bowlSizeMm": 75,
+        "material": "Aluminum"
       }
     },
     "tripods": {
