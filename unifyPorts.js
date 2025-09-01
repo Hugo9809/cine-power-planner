@@ -150,6 +150,9 @@ function normalizeMonitor(mon) {
  * @returns {string[]} Array of string segments.
  */
 function splitOutside(str, delimiter = '/') {
+  if (typeof str !== 'string' || !str.includes(delimiter)) {
+    return [str];
+  }
   const parts = [];
   let buf = '';
   let depth = 0;

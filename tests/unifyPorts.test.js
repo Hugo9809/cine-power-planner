@@ -82,6 +82,13 @@ describe('parsePowerInput', () => {
       { type: 'USB-C' }
     ]);
   });
+
+  it('handles single connector without delimiter', () => {
+    const input = 'LEMO';
+    expect(parsePowerInput(input)).toEqual([
+      { type: 'LEMO' }
+    ]);
+  });
 });
 
 describe('normalizeVideoDevice', () => {
