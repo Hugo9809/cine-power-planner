@@ -85,6 +85,11 @@ describe('script.js functions', () => {
           'Easyrig 5 Vario': {
             options: ['FlowCine Serene Spring Arm', 'Easyrig - STABIL G3']
           }
+        },
+        tripods: {
+          'Legs Large': {},
+          'Legs Medium': {},
+          'Legs Short': {}
         }
       }
     };
@@ -1051,6 +1056,20 @@ describe('script.js functions', () => {
       const itemsRow = rows[gripIdx + 1];
       expect(itemsRow.textContent).toContain('Tango Beam');
     });
+  });
+
+  test('Tripod scenario adds tripod legs', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Tripod' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('1x Legs Large');
+    expect(text).toContain('1x Legs Medium');
+    expect(text).toContain('1x Legs Short');
   });
 
   test('Tripod scenario adds OConnor head for heavy camera', () => {
