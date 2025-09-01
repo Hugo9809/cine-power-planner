@@ -14,6 +14,11 @@ const gear = {
     "Sony DVF-EL200 OLED Viewfinder": {
       "brand": "Sony",
       "model": "DVF-EL200 OLED Viewfinder",
+      "compatible": [
+        "Sony Venice",
+        "Sony Venice 2",
+        "Sony F55"
+      ],
       "isPersonalGear": false,
       "listOfOrigin": "240315_Detective_von_Fock_Equpment_B-Cam_Rental.pdf"
     }
@@ -69,46 +74,6 @@ const gear = {
         {
           "type": "3G-SDI"
         }
-      ]
-    },
-    "TVLogic F-5A 5\" Onboard": {
-      "screenSizeInches": 5,
-      "brightnessNits": 500,
-      "powerDrawWatts": 12,
-      "power": {
-        "input": {
-          "voltageRange": "12",
-          "type": "LEMO 2-pin"
-        },
-        "output": null
-      },
-      "wirelessTx": false,
-      "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
-      ],
-      "videoOutputs": [
-        { "type": "3G-SDI" }
-      ]
-    },
-    "SmallHD 703 UltraBright": {
-      "screenSizeInches": 7,
-      "brightnessNits": 2200,
-      "powerDrawWatts": 18,
-      "power": {
-        "input": {
-          "voltageRange": "10-34",
-          "type": "LEMO 2-pin"
-        },
-        "output": null
-      },
-      "wirelessTx": false,
-      "videoInputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
-      ],
-      "videoOutputs": [
-        { "type": "3G-SDI" }
       ]
     },
     "Sony PVM-A170 17\" OLED": {
