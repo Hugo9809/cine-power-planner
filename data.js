@@ -8696,4 +8696,5 @@ let devices={
     }
   }
 };
-if (typeof module !== "undefined" && module.exports) { module.exports = devices; }
+const filterOptions = ['ND', 'Polarizer', 'Diffusion', 'Clear'];
+if (typeof module !== "undefined" && module.exports) { module.exports = { ...devices, filterOptions }; }
