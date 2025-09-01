@@ -28,6 +28,16 @@ function checkConsistency(devices = require('./data.js')) {
 }
 
 if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(
+      'Usage: node checkConsistency.js\n' +
+        '\nChecks that device entries contain required fields. ' +
+        'Exits with code 1 when missing fields are found.'
+    );
+    process.exit(0);
+  }
+
   const result = checkConsistency();
   if (result.length) {
     console.log('Devices missing fields:', result);
