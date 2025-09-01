@@ -800,6 +800,10 @@ describe('script.js functions', () => {
       expect(html).toContain('CamA');
       expect(html).toContain('Camera Support');
       expect(html).toContain('Universal Cage');
+      expect(html).toContain('LDS (FIZ)');
+      expect(html).toContain('LBUS to LBUS');
+      expect(html).toContain('Chargers');
+      expect(html).toContain('Dual V-Mount Charger');
       expect(html).toContain('Miscellaneous');
       expect(html).toContain('BNC SDI Cable');
     });
@@ -814,7 +818,7 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain('MonA<br>VidA');
+    expect(html).toContain('MonA<br>- incl. Sunhood<br>VidA');
     expect(html).not.toContain('MonA, VidA');
   });
 
