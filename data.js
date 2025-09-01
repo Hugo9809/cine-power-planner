@@ -9419,9 +9419,29 @@ let devices={
       }
     },
     "chargers": {
+      "Single V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 1
+      },
       "Dual V-Mount Charger": {
         "mount": "V-Mount",
         "slots": 2
+      },
+      "Quad V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 4
+      },
+      "Single B-Mount Charger": {
+        "mount": "B-Mount",
+        "slots": 1
+      },
+      "Dual B-Mount Charger": {
+        "mount": "B-Mount",
+        "slots": 2
+      },
+      "Quad B-Mount Charger": {
+        "mount": "B-Mount",
+        "slots": 4
       }
     },
     "cables": {
