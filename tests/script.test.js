@@ -112,6 +112,12 @@ describe('script.js functions', () => {
       .toBe(texts.en.dtapOk.replace('{max}', '5'));
   });
 
+  test('copy summary button is placed before generate gear list button', () => {
+    const copyBtn = document.getElementById('copySummaryBtn');
+    const generateBtn = document.getElementById('generateGearListBtn');
+    expect(copyBtn.nextElementSibling).toBe(generateBtn);
+  });
+
   test('selected cage appears in camera support category of gear list', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
