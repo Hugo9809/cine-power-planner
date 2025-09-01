@@ -853,6 +853,8 @@ describe('script.js functions', () => {
       addOpt('controller1Select', 'ControllerA');
       addOpt('distanceSelect', 'DistA');
       addOpt('batterySelect', 'BattA');
+      const batteryCountElem = document.getElementById('batteryCount');
+      batteryCountElem.textContent = '9';
       const html = generateGearListHtml({ projectName: 'Proj', dop: 'DopName' });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
@@ -865,7 +867,8 @@ describe('script.js functions', () => {
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('LBUS to LBUS');
       expect(html).toContain('Chargers');
-      expect(html).toContain('Dual V-Mount Charger');
+      expect(html).toContain('2x Quad Charger');
+      expect(html).toContain('1x Dual Charger');
       expect(html).toContain('Miscellaneous');
       expect(html).toContain('BNC SDI Cable');
     });

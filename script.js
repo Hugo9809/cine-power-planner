@@ -6683,7 +6683,6 @@ function generatePrintableOverview() {
 function collectAccessories() {
     const cameraSupport = [];
     const misc = [];
-    const chargers = [];
     const fizCables = [];
     const acc = devices.accessories || {};
 
@@ -6694,11 +6693,6 @@ function collectAccessories() {
                 if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(cameraSelect.value))) {
                     cameraSupport.push(name);
                 }
-            }
-        }
-        if (acc.chargers) {
-            for (const [name, charger] of Object.entries(acc.chargers)) {
-                if (!charger.mount || charger.mount === mount) chargers.push(name);
             }
         }
     }
@@ -6767,7 +6761,6 @@ function collectAccessories() {
 
     return {
         cameraSupport: [...new Set(cameraSupport)],
-        chargers: [...new Set(chargers)],
         fizCables: [...new Set(fizCables)],
         misc: [...new Set(misc)]
     };
@@ -6798,6 +6791,28 @@ function collectProjectFormData() {
     };
 }
 
+function suggestChargers(total) {
+    const items = [];
+    if (!Number.isFinite(total) || total <= 0) return items;
+    let quad = Math.floor(total / 4);
+    let remainder = total % 4;
+    let dual = 0;
+    let single = 0;
+    if (total === 1) {
+        single = 1;
+    } else if (remainder === 0) {
+        // nothing
+    } else if (remainder <= 2) {
+        dual = 1;
+    } else {
+        quad += 1;
+    }
+    if (quad > 0) items.push(`${quad}x Quad Charger`);
+    if (dual > 0) items.push(`${dual}x Dual Charger`);
+    if (single > 0) items.push(`${single}x Single Charger`);
+    return items;
+}
+
 function generateGearListHtml(info = {}) {
     const selectedNames = {
         camera: cameraSelect && cameraSelect.value && cameraSelect.value !== 'None' ? cameraSelect.options[cameraSelect.selectedIndex].text : '',
@@ -6815,7 +6830,7 @@ function generateGearListHtml(info = {}) {
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
     const labels = {
@@ -6846,16 +6861,22 @@ function generateGearListHtml(info = {}) {
     addRow('Matte box + filter', escapeHtml(info.filter || ''));
     addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
+    let cameraBatteryCount = 0;
     if (selectedNames.battery) {
-        const count = batteryCountElem ? batteryCountElem.textContent : '';
+        const countText = batteryCountElem ? batteryCountElem.textContent : '';
+        cameraBatteryCount = parseInt(countText, 10);
+        if (!Number.isFinite(cameraBatteryCount)) cameraBatteryCount = 0;
         const safeBatt = escapeHtml(selectedNames.battery);
-        batteryItems = count && count.trim() !== '–'
-            ? `${escapeHtml(count)}x ${safeBatt}`
+        batteryItems = cameraBatteryCount
+            ? `${escapeHtml(countText)}x ${safeBatt}`
             : safeBatt;
     }
+    const monitoringBatteryCount = parseInt(info.monitoringBatteryCount || 0, 10);
+    const totalBatteryCount = cameraBatteryCount + (Number.isFinite(monitoringBatteryCount) ? monitoringBatteryCount : 0);
+    const chargerItems = suggestChargers(totalBatteryCount);
     addRow('Camera Batteries', batteryItems);
     addRow('Monitoring Batteries', '');
-    addRow('Chargers', join(chargersAcc));
+    addRow('Chargers', join(chargerItems));
     let monitoringItems = '';
     if (selectedNames.viewfinder) {
         monitoringItems += `<strong>Viewfinder</strong><br>- ${escapeHtml(selectedNames.viewfinder)}`;
