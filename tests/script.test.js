@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const LZString = require('lz-string');
+const gear = require('../devices/gearList.js');
 
 describe('script.js functions', () => {
   let script;
@@ -944,6 +945,25 @@ describe('script.js functions', () => {
     document.getElementById('batteryCount').textContent = '6';
     const html = generateGearListHtml();
     expect(html).toContain('6x BattA');
+  });
+
+  test('Easyrig scenario adds stabiliser with options to grip section', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    expect(html).toContain('Grip');
+    expect(html).toContain('1x Easyrig 5 Vario');
+    expect(html).toContain('<select id="gearListEasyrig"');
+    expect(html).toContain('no further stabilisation');
+    expect(html).toContain('FlowCine Serene Spring Arm');
+    expect(html).toContain('Easyrig - STABIL G3');
+  });
+
+  test('camera stabiliser database lists Easyrig 5 Vario with options', () => {
+    const stabilisers = gear.accessories.cameraStabiliser;
+    expect(Object.keys(stabilisers)).toEqual(['Easyrig 5 Vario']);
+    expect(stabilisers['Easyrig 5 Vario'].options).toEqual(
+      expect.arrayContaining(['FlowCine Serene Spring Arm', 'Easyrig - STABIL G3'])
+    );
   });
 
   test('monitoring support cables grouped by type', () => {

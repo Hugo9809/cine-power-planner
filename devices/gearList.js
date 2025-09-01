@@ -512,6 +512,15 @@ const gear = {
         "brand": "ULCS"
       }
     },
+    "cameraStabiliser": {
+      "Easyrig 5 Vario": {
+        "brand": "Easyrig",
+        "options": [
+          "FlowCine Serene Spring Arm",
+          "Easyrig - STABIL G3"
+        ]
+      }
+    },
     "batteries": {
       "Sony NP-F970": {
         "capacity": 47,

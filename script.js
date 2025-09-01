@@ -1,5 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
-/* global texts, categoryNames, loadSessionState, saveSessionState, loadGearList, saveGearList, deleteGearList */
+/* global texts, categoryNames, loadSessionState, saveSessionState, loadGearList, saveGearList, deleteGearList, gear */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -1590,6 +1590,7 @@ if (gearListOutput) {
     gearListOutput.classList.remove('hidden');
     ensureGearListActions();
     bindGearListCageListener();
+    bindGearListEasyrigListener();
   }
 }
 
@@ -5272,6 +5273,7 @@ setupSelect.addEventListener("change", (event) => {
           gearListOutput.classList.remove('hidden');
           ensureGearListActions();
           bindGearListCageListener();
+          bindGearListEasyrigListener();
           if (typeof saveGearList === 'function') {
             saveGearList(setup.gearList);
           }
@@ -6159,6 +6161,7 @@ if (projectForm) {
             gearListOutput.classList.remove('hidden');
             ensureGearListActions();
             bindGearListCageListener();
+            bindGearListEasyrigListener();
             saveCurrentGearList();
         }
         projectDialog.close();
@@ -7036,7 +7039,17 @@ function generateGearListHtml(info = {}) {
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
-    addRow('Grip', '');
+    let gripItems = '';
+    const scenarios = (info.requiredScenarios || '').split(',').map(s => s.trim());
+    if (scenarios.includes('Easyrig')) {
+        const stabiliser = (typeof gear !== 'undefined' && gear.cameraStabiliser && gear.cameraStabiliser['Easyrig 5 Vario']) || { options: ['FlowCine Serene Spring Arm', 'Easyrig - STABIL G3'] };
+        const opts = [
+            { value: '', label: 'no further stabilisation' },
+            ...stabiliser.options.map(o => ({ value: o, label: o }))
+        ].map((o, i) => `<option value="${escapeHtml(o.value)}"${i === 0 ? ' selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
+        gripItems = `1x Easyrig 5 Vario <select id="gearListEasyrig">${opts}</select>`;
+    }
+    addRow('Grip', gripItems);
     addRow('Carts and Transportation', '');
     addRow('Miscellaneous', formatItems(miscAcc));
     addRow('Consumables', '');
@@ -7057,6 +7070,18 @@ function getCurrentGearListHtml() {
         const originalSel = gearListOutput.querySelector('#gearListCage');
         const val = originalSel ? originalSel.value : cageSel.value;
         Array.from(cageSel.options).forEach(opt => {
+            if (opt.value === val) {
+                opt.setAttribute('selected', '');
+            } else {
+                opt.removeAttribute('selected');
+            }
+        });
+    }
+    const easyrigSel = clone.querySelector('#gearListEasyrig');
+    if (easyrigSel) {
+        const originalSel = gearListOutput.querySelector('#gearListEasyrig');
+        const val = originalSel ? originalSel.value : easyrigSel.value;
+        Array.from(easyrigSel.options).forEach(opt => {
             if (opt.value === val) {
                 opt.setAttribute('selected', '');
             } else {
@@ -7108,6 +7133,7 @@ function handleImportGearList(e) {
                 gearListOutput.classList.remove('hidden');
                 ensureGearListActions();
                 bindGearListCageListener();
+                bindGearListEasyrigListener();
                 saveCurrentGearList();
             }
         } catch {
@@ -7188,12 +7214,23 @@ function bindGearListCageListener() {
     }
 }
 
+function bindGearListEasyrigListener() {
+    if (!gearListOutput) return;
+    const sel = gearListOutput.querySelector('#gearListEasyrig');
+    if (sel) {
+        sel.addEventListener('change', () => {
+            saveCurrentGearList();
+        });
+    }
+}
+
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
     const html = generateGearListHtml(currentProjectInfo);
     gearListOutput.innerHTML = html;
     ensureGearListActions();
     bindGearListCageListener();
+    bindGearListEasyrigListener();
     saveCurrentGearList();
 }
 
