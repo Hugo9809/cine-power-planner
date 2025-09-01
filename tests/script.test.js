@@ -41,6 +41,9 @@ describe('script.js functions', () => {
           videoInputs: [{ type: '3G-SDI' }]
         }
       },
+      lenses: {
+        LensA: { brand: 'TestBrand', tStop: 2.0 }
+      },
       fiz: {
         motors: {
           MotorA: { powerDrawWatts: 2, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], power: { input: { type: 'LEMO 2-pin' } } }
@@ -120,6 +123,16 @@ describe('script.js functions', () => {
     const copyBtn = document.getElementById('copySummaryBtn');
     const generateBtn = document.getElementById('generateGearListBtn');
     expect(copyBtn.nextElementSibling).toBe(generateBtn);
+  });
+
+  test('populateLensDropdown fills lens list without duplicates', () => {
+    const sel = document.getElementById('lenses');
+    sel.innerHTML = '<option value="Existing">Existing</option>';
+    script.populateLensDropdown();
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['', 'LensA']);
+    // Call again to ensure no duplication occurs
+    script.populateLensDropdown();
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['', 'LensA']);
   });
 
   test('selected cage appears in camera support category of gear list', () => {
