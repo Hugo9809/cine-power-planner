@@ -1,3 +1,4 @@
+(() => {
 const data = {
   "None": {
     "capacity": 0,
@@ -439,3 +440,4 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices = globalThis.devices || {};
   globalThis.devices.batteries = data;
 }
+})();

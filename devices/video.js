@@ -1,3 +1,4 @@
+(() => {
 const data = {
   "Teradek Bolt 6 LT TX": {
     "powerDrawWatts": 9,
@@ -815,3 +816,4 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices = globalThis.devices || {};
   globalThis.devices.video = data;
 }
+})();

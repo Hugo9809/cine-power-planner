@@ -1,3 +1,4 @@
+(() => {
 const data = {
   "Universal Cage": {
     "compatible": [
@@ -1454,3 +1455,4 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices.accessories = globalThis.devices.accessories || {};
   globalThis.devices.accessories.cages = data;
 }
+})();
