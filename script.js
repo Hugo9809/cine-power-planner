@@ -6283,6 +6283,9 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     document.getElementById('fbBattery').value = batterySelect.value || '';
     document.getElementById('fbWirelessVideo').value = videoSelect.value || '';
     document.getElementById('fbMonitor').value = monitorSelect.value || '';
+    const cam = devices?.cameras?.[cameraSelect.value];
+    document.getElementById('fbResolution').value = cam?.resolutions?.[0] || '';
+    document.getElementById('fbCodec').value = cam?.recordingCodecs?.[0] || '';
     document.getElementById('fbControllers').value = ctrlVals.join(', ');
     document.getElementById('fbMotors').value = motVals.join(', ');
     const fbDistance = document.getElementById('fbDistance');
