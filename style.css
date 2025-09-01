@@ -440,10 +440,15 @@ button {
   transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 button:hover {
-  background-color: var(--control-hover-bg);
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
 }
 button:active {
-  background-color: var(--control-active-bg);
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
+  filter: brightness(0.9);
 }
 button:disabled {
   background-color: var(--control-disabled-bg);
