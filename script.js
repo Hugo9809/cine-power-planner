@@ -6,7 +6,6 @@
 // would attempt to create a new lexical binding and throw a SyntaxError in
 // browsers that already have the global property. `var` simply reuses the
 // existing global variable if present.
-/* global filterOptions */
 var LZString;
 try {
   LZString = require('lz-string');
@@ -7671,6 +7670,7 @@ function initApp() {
     }
   }
   populateEnvironmentDropdowns();
+  populateLensDropdown();
   populateFilterDropdown();
   setLanguage(currentLang);
   resetDeviceForm();
@@ -7695,13 +7695,28 @@ function populateEnvironmentDropdowns() {
 
 }
 
+function populateLensDropdown() {
+  const lensSelect = document.getElementById('lenses');
+  if (lensSelect && devices && devices.lenses) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    lensSelect.appendChild(emptyOpt);
+    Object.keys(devices.lenses).sort(localeSort).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      lensSelect.appendChild(opt);
+    });
+  }
+}
+
 function populateFilterDropdown() {
   const filterSelect = document.getElementById('filter');
-  if (filterSelect && typeof filterOptions !== 'undefined' && Array.isArray(filterOptions)) {
+  if (filterSelect && devices && Array.isArray(devices.filterOptions)) {
     const emptyOpt = document.createElement('option');
     emptyOpt.value = '';
     filterSelect.appendChild(emptyOpt);
-    filterOptions.forEach(f => {
+    devices.filterOptions.forEach(f => {
       const opt = document.createElement('option');
       opt.value = f;
       opt.textContent = f;

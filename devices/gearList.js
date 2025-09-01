@@ -1174,7 +1174,12 @@ const gear = {
     "ND",
     "Polarizer",
     "Diffusion",
-    "Clear"
+    "Clear",
+    "UV",
+    "Infrared",
+    "Graduated ND",
+    "Soft FX",
+    "Pro-Mist"
   ]
 };
 
@@ -1186,6 +1191,7 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices.directorMonitors = gear.directorMonitors;
   globalThis.devices.iosVideo = gear.iosVideo;
   globalThis.devices.wirelessReceivers = gear.wirelessReceivers;
+  globalThis.devices.lenses = gear.lenses;
   globalThis.devices.accessories = Object.assign(globalThis.devices.accessories || {}, gear.accessories);
   globalThis.devices.filterOptions = gear.filterOptions;
 }
