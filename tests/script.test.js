@@ -1413,6 +1413,30 @@ describe('script.js functions', () => {
     expect(saveSpy).toHaveBeenCalled();
   });
 
+  test('Deleting a setup requires confirmation', () => {
+    const deleteBtn = document.getElementById('deleteSetupBtn');
+    const sel = document.getElementById('setupSelect');
+    sel.innerHTML = '<option value="">-- New Setup --</option><option value="Existing">Existing</option>';
+    sel.value = 'Existing';
+
+    global.loadSetups
+      .mockReturnValueOnce({ Existing: {} })
+      .mockReturnValueOnce({});
+    global.saveSetups.mockClear();
+
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
+
+    deleteBtn.click();
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(global.saveSetups).not.toHaveBeenCalled();
+
+    confirmSpy.mockReturnValue(true);
+    deleteBtn.click();
+    expect(global.saveSetups).toHaveBeenCalledWith({});
+
+    confirmSpy.mockRestore();
+  });
+
   test('Save button shows Update after modifying loaded setup', () => {
     global.saveSetups.mockClear();
     global.loadSetups.mockClear();
