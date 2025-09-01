@@ -796,6 +796,26 @@ const monitorData = {
       }
     ]
   },
+  "TVLogic F-5A 5\" Onboard": {
+    "screenSizeInches": 5,
+    "brightnessNits": 500,
+    "powerDrawWatts": 12,
+    "power": {
+      "input": {
+        "voltageRange": "12",
+        "type": "Mini XLR 3-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "videoInputs": [
+      { "type": "HDMI" },
+      { "type": "3G-SDI" }
+    ],
+    "videoOutputs": [
+      { "type": "3G-SDI" }
+    ]
+  },
   "SmallHD 703 UltraBright": {
     "screenSizeInches": 7,
     "brightnessNits": 2200,

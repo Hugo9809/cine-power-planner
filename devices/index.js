@@ -12,6 +12,8 @@ if (typeof module !== 'undefined' && module.exports) {
   devices.directorMonitors = gear.directorMonitors;
   devices.iosVideo = gear.iosVideo;
   devices.wirelessReceivers = gear.wirelessReceivers;
+  devices.videoAssist = gear.videoAssist;
+  devices.media = gear.media;
   devices.lenses = gear.lenses;
   devices.accessories = Object.assign(devices.accessories, gear.accessories);
   devices.filterOptions = gear.filterOptions;

@@ -1467,6 +1467,14 @@ const cageData = {
     "side_plates": true,
     "notes": "Protective cage for Osmo X5 gimbal camera with cold shoe.",
     "verified_source": "https://www.smallrig.com/smallrig-osmo-x5-cage-1889.html"
+  },
+  "ARRI Pro Cine Set for Sony Venice 1/2": {
+    "brand": "ARRI",
+    "kNumber": "KK.0043759",
+    "compatible": [
+      "Sony Venice 1",
+      "Sony Venice 2"
+    ]
   }
 };
 
