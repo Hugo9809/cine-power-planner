@@ -206,6 +206,11 @@ const gear = {
   },
   "accessories": {
     "powerPlates": {
+      "ARRI B-Mount Battery Adapter": {
+        "brand": "ARRI",
+        "kNumber": "K2.0023751",
+        "mount": "B-Mount"
+      },
       "Generic V-Mount Plate": {
         "mount": "V-Mount"
       }
@@ -313,6 +318,38 @@ const gear = {
       "ARRI Video Transmitter Bracket": {
         "brand": "ARRI",
         "kNumber": "K2.0033676"
+      },
+      "ARRI Alexa Set for Ronin 2": {
+        "brand": "ARRI",
+        "kNumber": "K0.0049866"
+      },
+      "ARRI Camera Side Bracket CSB-1L": {
+        "brand": "ARRI",
+        "kNumber": "K2.0033573"
+      },
+      "ARRI Camera Side Bracket CSB-1R": {
+        "brand": "ARRI",
+        "kNumber": "K2.0033571"
+      },
+      "ARRI Rod Mounting Bracket RMB-7": {
+        "brand": "ARRI",
+        "kNumber": "K2.0023907"
+      },
+      "ARRI Stabilizer Adapter Mount SAM-6": {
+        "brand": "ARRI",
+        "kNumber": "K2.0024508"
+      },
+      "ARRI Stabilizer Adapter Mount SAM-9": {
+        "brand": "ARRI",
+        "kNumber": "K2.0041949"
+      },
+      "ARRI Viewfinder Adapter VFA-3": {
+        "brand": "ARRI",
+        "kNumber": "K2.0048079"
+      },
+      "ARRI Viewfinder Adapter VFA-4": {
+        "brand": "ARRI",
+        "kNumber": "K2.0048510"
       }
     },
     "matteboxes": {
@@ -1019,6 +1056,117 @@ const gear = {
             "SRH systems"
           ]
         }
+      }
+    },
+    "videoAssist": {
+      "Ovide Smart Assist": {
+        "brand": "Ovide"
+      }
+    },
+    "media": {
+      "ARRI Codex Compact Drive 2TB": {
+        "brand": "ARRI",
+        "kNumber": "K2.0023447",
+        "capacityTb": 2
+      },
+      "ARRI Codex Compact Drive Reader (USB-C)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0024134",
+        "interface": "USB-C"
+      }
+    },
+    "lenses": {
+      "ZEISS High Speed MK III 18mm T1.3": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.3
+      },
+      "ZEISS High Speed MK III 20mm T2.1": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 2.1
+      },
+      "ZEISS High Speed MK III 25mm T1.3": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.3
+      },
+      "ZEISS High Speed MK III 35mm T1.3": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.3
+      },
+      "ZEISS High Speed MK III 50mm T1.3": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.3
+      },
+      "ZEISS High Speed MK III 65mm T1.3": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.3
+      },
+      "ZEISS High Speed MK III 85mm T1.3": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.3
+      },
+      "ZEISS High Speed MK III 135mm T1.3": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 80,
+        "clampOn": true,
+        "tStop": 1.3
+      },
+      "Angenieux Optimo 25-250mm T3.5 (PL)": {
+        "brand": "Angénieux",
+        "frontDiameterMm": 136,
+        "clampOn": true,
+        "tStop": 3.5,
+        "mount": "PL"
+      }
+    },
+    "tripodHeads": {
+      "OConnor 2560 Head": {
+        "brand": "OConnor",
+        "bowlSizeMm": 150,
+        "material": "Aluminum"
+      }
+    },
+    "tripods": {
+      "Sachtler EFP-2 CF Tripod (mid spreader)": {
+        "brand": "Sachtler",
+        "bowlSizeMm": 150,
+        "material": "Carbon Fiber",
+        "spreader": "mid"
+      },
+      "Sachtler Cine 150 Tripod (medium + spreader)": {
+        "brand": "Sachtler",
+        "bowlSizeMm": 150,
+        "material": "Aluminum",
+        "spreader": "medium"
+      },
+      "Sachtler Cine 2000 Tripod (short + spreader)": {
+        "brand": "Sachtler",
+        "bowlSizeMm": 150,
+        "material": "Aluminum",
+        "spreader": "short"
+      }
+    },
+    "sliders": {
+      "Hudson Spider Compound Slider X2": {
+        "brand": "Hudson Spider"
+      }
+    },
+    "carts": {
+      "Magliner Senior Videomagliner": {
+        "brand": "Magliner"
       }
     }
   },
