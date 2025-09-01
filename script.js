@@ -6984,6 +6984,9 @@ function generateGearListHtml(info = {}) {
     const monitoringPrefs = info.monitoringPreferences
         ? info.monitoringPreferences.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    const monitorEquipOptions = ['Directors Monitor 7" handheld', 'Directors Monitor 15-19 inch', 'Combo Monitor 15-19 inch'];
+    const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
+    const monitoringSupportPrefs = monitoringPrefs.filter(p => !monitorEquipOptions.includes(p));
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
     const addHandle = () => {
         if (!supportAccNoCages.includes(handleName)) {
@@ -7002,6 +7005,14 @@ function generateGearListHtml(info = {}) {
     if (riggingSelections.includes('Top handle extension') || riggingSelections.includes('Rear Handle')) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
+    const projectInfo = { ...info };
+    if (monitoringSupportPrefs.length) {
+        projectInfo.monitoringSupport = monitoringSupportPrefs.join(', ');
+    }
+    if (monitoringEquipmentPrefs.length) {
+        projectInfo.monitoring = monitoringEquipmentPrefs.join(', ');
+    }
+    delete projectInfo.monitoringPreferences;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
@@ -7016,11 +7027,12 @@ function generateGearListHtml(info = {}) {
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
-        monitoringPreferences: 'Monitoring support',
+        monitoringSupport: 'Monitoring support',
+        monitoring: 'Monitoring',
         tripodPreferences: 'Tripod Preferences',
         filter: 'Filter'
     };
-    const infoPairs = Object.entries(info)
+    const infoPairs = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
     const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
         infoPairs.map(([k, v]) => `<li>${escapeHtml(labels[k] || k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
@@ -7061,7 +7073,7 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = '';
-    if (monitoringPrefs.includes('Directors Monitor 7 inch handheld')) {
+    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         monitoringBatteryItems = '3x Bebob 98 Micros';
     }
     addRow('Monitoring Batteries', monitoringBatteryItems);
@@ -7073,7 +7085,7 @@ function generateGearListHtml(info = {}) {
     if (selectedNames.monitor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
-    if (monitoringPrefs.includes('Directors Monitor 7 inch handheld')) {
+    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
         const sevenInchNames = Object.keys(monitorsDb).filter(n => monitorsDb[n].screenSizeInches === 7).sort(localeSort);
         const opts = sevenInchNames.map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`).join('');
@@ -7090,7 +7102,7 @@ function generateGearListHtml(info = {}) {
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
-    if (monitoringPrefs.includes('Directors Monitor 7 inch handheld')) {
+    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         gripItems.push('C-Stand 20"');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
         gripItems.push('spigot');
