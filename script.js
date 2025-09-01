@@ -6,6 +6,7 @@
 // would attempt to create a new lexical binding and throw a SyntaxError in
 // browsers that already have the global property. `var` simply reuses the
 // existing global variable if present.
+/* global filterOptions */
 var LZString;
 try {
   LZString = require('lz-string');
@@ -6761,7 +6762,7 @@ function collectProjectFormData() {
         rigging: multi('rigging'),
         monitoringPreferences: multi('monitoringPreferences'),
         tripodPreferences: multi('tripodPreferences'),
-        filters: multi('filters')
+        filter: val('filter')
     };
 }
 
@@ -6810,7 +6811,7 @@ function generateGearListHtml(info = {}) {
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
-    addRow('Matte box + filter', escapeHtml(info.filters || ''));
+    addRow('Matte box + filter', escapeHtml(info.filter || ''));
     addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     addRow('Camera Batteries', escapeHtml(selectedNames.battery || ''));
     addRow('Monitoring Batteries', '');
@@ -7529,6 +7530,7 @@ function initApp() {
     }
   }
   populateEnvironmentDropdowns();
+  populateFilterDropdown();
   setLanguage(currentLang);
   resetDeviceForm();
   restoreSessionState();
@@ -7550,6 +7552,21 @@ function populateEnvironmentDropdowns() {
     }
   }
 
+}
+
+function populateFilterDropdown() {
+  const filterSelect = document.getElementById('filter');
+  if (filterSelect && typeof filterOptions !== 'undefined' && Array.isArray(filterOptions)) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    filterSelect.appendChild(emptyOpt);
+    filterOptions.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      filterSelect.appendChild(opt);
+    });
+  }
 }
 
 if (document.readyState === "loading") {
