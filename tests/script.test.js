@@ -1158,27 +1158,16 @@ describe('script.js functions', () => {
     expect(consumText).toContain('3x CapIt Medium');
   });
 
-  test('monitoring support cables grouped by type', () => {
+  test('rigging and monitoring support appear only in project requirements', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml();
-    document.body.innerHTML = html;
-    const rows = document.querySelectorAll('table.gear-table tr');
-    let monitoringHtml = '';
-    rows.forEach((tr, idx) => {
-      if (tr.textContent === 'Monitoring support' && rows[idx + 1]) {
-        monitoringHtml = rows[idx + 1].innerHTML;
-      }
+    const html = generateGearListHtml({
+      rigging: 'Shoulder rig, Hand Grips',
+      monitoringPreferences: 'VF Clean Feed, Onboard 7 inch'
     });
-    expect(monitoringHtml).toContain('<strong>Power</strong>');
-    expect(monitoringHtml).toContain('<strong>Video</strong>');
-    const powerIdx = monitoringHtml.indexOf('<strong>Power</strong>');
-    const videoIdx = monitoringHtml.indexOf('<strong>Video</strong>');
-    const dtapIdx = monitoringHtml.indexOf('D-Tap to Lemo-2-pin Cable 0,5m');
-    const bncIdx = monitoringHtml.indexOf('ultra slim 3G-SDI BNC cable 0,5m');
-    expect(powerIdx).toBeLessThan(videoIdx);
-    expect(dtapIdx).toBeGreaterThan(powerIdx);
-    expect(dtapIdx).toBeLessThan(videoIdx);
-    expect(bncIdx).toBeGreaterThan(videoIdx);
+    expect(html).toContain('Rigging: Shoulder rig, Hand Grips');
+    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard 7 inch');
+    expect(html).not.toContain('<td>Rigging</td>');
+    expect(html).not.toContain('<td>Monitoring support</td>');
   });
 
   test('duplicate motors are aggregated with count in gear list', () => {
