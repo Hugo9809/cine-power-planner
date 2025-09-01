@@ -1,5 +1,5 @@
 (() => {
-const data = {
+const fizData = {
   "motors": {
     "None": {
       "powerDrawWatts": 0,
@@ -780,9 +780,9 @@ const data = {
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = data;
+  module.exports = fizData;
 } else {
   globalThis.devices = globalThis.devices || {};
-  globalThis.devices.fiz = data;
+  globalThis.devices.fiz = fizData;
 }
 })();

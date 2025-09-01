@@ -1,5 +1,5 @@
 (() => {
-const data = {
+const cageData = {
   "Universal Cage": {
     "compatible": [
       "Arri Alexa Mini",
@@ -1467,10 +1467,10 @@ const data = {
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = data;
+  module.exports = cageData;
 } else {
   globalThis.devices = globalThis.devices || {};
   globalThis.devices.accessories = globalThis.devices.accessories || {};
-  globalThis.devices.accessories.cages = data;
+  globalThis.devices.accessories.cages = cageData;
 }
 })();

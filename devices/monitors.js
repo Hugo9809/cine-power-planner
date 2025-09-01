@@ -1,5 +1,5 @@
 (() => {
-const data = {
+const monitorData = {
   "SmallHD Ultra 7": {
     "screenSizeInches": 7,
     "brightnessNits": 2300,
@@ -838,9 +838,9 @@ const data = {
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = data;
+  module.exports = monitorData;
 } else {
   globalThis.devices = globalThis.devices || {};
-  globalThis.devices.monitors = data;
+  globalThis.devices.monitors = monitorData;
 }
 })();
