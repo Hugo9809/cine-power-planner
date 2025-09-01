@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap');
+
 @page {
   size: A4;
   margin: 1cm;
@@ -7,6 +9,8 @@ body,
 body.dark-mode {
   background: #fff;
   color: #000;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 300;
   font-size: 12pt;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
@@ -20,6 +24,8 @@ body.dark-mode {
 #overviewDialogContent h1,
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 700;
   border-color: #000 !important;
 }
 
@@ -59,7 +65,7 @@ table, th, td {
   word-break: break-word;
   hyphens: auto;
 }
-th { background-color: #e0e0e0; }
+th { background-color: #e0e0e0; font-weight: 700; }
 tr:nth-child(even) { background-color: #f9f9f9; }
 
 .device-block,
