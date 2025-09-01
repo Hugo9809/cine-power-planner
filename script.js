@@ -7062,6 +7062,12 @@ function generateGearListHtml(info = {}) {
     }
     const gripItems = [];
     let easyrigSelectHtml = '';
+    if (scenarios.includes('Tripod')) {
+        const tripodDb = devices && devices.accessories && devices.accessories.tripods;
+        if (tripodDb) {
+            gripItems.push(...Object.keys(tripodDb));
+        }
+    }
     if (scenarios.includes('Easyrig')) {
         const stabiliser = devices && devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
         const opts = stabiliser && Array.isArray(stabiliser.options) ? stabiliser.options : [];
