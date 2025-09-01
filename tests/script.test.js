@@ -79,7 +79,7 @@ describe('script.js functions', () => {
         cables: {
           power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
           fiz: { 'LBUS to LBUS': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' } },
-          video: { 'BNC SDI Cable': { type: '3G-SDI' } }
+          video: { 'BNC SDI Cable': { type: '3G-SDI' }, 'HDMI Cable': { type: 'HDMI' } }
         },
         cameraStabiliser: {
           'Easyrig 5 Vario': {
@@ -945,6 +945,8 @@ describe('script.js functions', () => {
       expect(html).toContain('1x Dual V-Mount Charger');
       expect(html).toContain('Miscellaneous');
       expect(html).toContain('1x BNC SDI Cable');
+      expect(html).not.toContain('D-Tap to LEMO 2-pin');
+      expect(html).not.toContain('HDMI Cable');
     });
 
   test('gear list separates multiple items with line breaks', () => {

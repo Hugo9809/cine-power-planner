@@ -6785,6 +6785,7 @@ function collectAccessories() {
     const chargers = [];
     const fizCables = [];
     const acc = devices.accessories || {};
+    const excludedCables = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable']);
 
     if (batterySelect.value) {
         const mount = devices.batteries[batterySelect.value]?.mount_type;
@@ -6836,7 +6837,7 @@ function collectAccessories() {
         const types = Array.isArray(input) ? input : input ? [input] : [];
         types.forEach(t => {
             for (const [name, cable] of Object.entries(powerCableDb)) {
-                if (cable.to === t) misc.push(name);
+                if (cable.to === t && !excludedCables.has(name)) misc.push(name);
             }
         });
     };
@@ -6856,7 +6857,7 @@ function collectAccessories() {
             inputs.forEach(inp => {
                 if (out.type === inp.type) {
                     for (const [name, cable] of Object.entries(videoCableDb)) {
-                        if (cable.type === out.type) misc.push(name);
+                        if (cable.type === out.type && !excludedCables.has(name)) misc.push(name);
                     }
                 }
             });
