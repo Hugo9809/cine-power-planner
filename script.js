@@ -6573,6 +6573,7 @@ function generatePrintableOverview() {
 
     const darkModeActive = document.body.classList.contains('dark-mode');
     if (darkModeActive) {
+        content.classList.add('dark-mode');
         document.body.classList.remove('dark-mode');
     }
     if (document.body.classList.contains('pink-mode')) {

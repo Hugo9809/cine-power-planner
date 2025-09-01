@@ -797,6 +797,22 @@ describe('script.js functions', () => {
     expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });
 
+  test('generatePrintableOverview applies dark mode styling when active', () => {
+    const { generatePrintableOverview } = script;
+    document.body.classList.add('dark-mode');
+    document.getElementById('setupName').value = 'Test';
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    script.updateCalculations();
+    generatePrintableOverview();
+    const content = document.querySelector('#overviewDialogContent');
+    expect(content.classList.contains('dark-mode')).toBe(true);
+  });
+
   test('generateGearListHtml returns table with categories and accessories', () => {
       const { generateGearListHtml } = script;
       const addOpt = (id, value) => {
