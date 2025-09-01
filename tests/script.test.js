@@ -859,6 +859,18 @@ describe('script.js functions', () => {
     expect(html).not.toContain('MonA, VidA');
   });
 
+  test('viewfinder is auto-added for Alexa Mini and Amira', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'Arri Alexa Mini');
+    const html = generateGearListHtml();
+    expect(html).toContain('ARRI K2.75004.0 MVF-1 Viewfinder');
+  });
+
   test('battery plate selection is saved and loaded with setups', () => {
     // Add camera supporting both plates and matching batteries
     global.devices.cameras.BothCam = {

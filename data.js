@@ -4775,6 +4775,16 @@ let devices={
       "timecode": []
     }
   },
+  "viewfinders": {
+    "ARRI K2.75004.0 MVF-1 Viewfinder": {
+      "brand": "ARRI",
+      "model": "MVF-1",
+      "kNumber": "K2.75004.0",
+      "compatible": ["Arri Alexa Mini", "Arri Amira"],
+      "isPersonalGear": false,
+      "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
+    }
+  },
   "monitors": {
     "SmallHD Ultra 7": {
       "screenSizeInches": 7,
