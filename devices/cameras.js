@@ -129,6 +129,31 @@ const cameraData = {
         "type": "SYNC",
         "notes": "Black burst/tri-level sync"
       }
+    ],
+    "weight_g": 2600,
+    "recordingCodecs": [
+      "MXF/ARRIRAW",
+      "ProRes 4444 XQ",
+      "ProRes 4444",
+      "ProRes 422 HQ",
+      "ProRes 422"
+    ],
+    "sensorModes": [
+      "LF Open Gate 4.5K (3:2)",
+      "LF 16:9",
+      "LF 2.39:1",
+      "S35 3:2",
+      "S35 16:9"
+    ],
+    "resolutions": [
+      "4448×3096",
+      "3840×2160",
+      "4448×1856",
+      "3424×2202",
+      "3200×1800",
+      "2880×1620",
+      "2048×1152",
+      "1920×1080"
     ]
   },
   "Arri Alexa Mini": {
@@ -1130,6 +1155,20 @@ const cameraData = {
         "type": "Analog Audio Inputs",
         "notes": "2x mini XLR, 1x 3.5mm stereo input can be used for Timecode input"
       }
+    ],
+    "weight_g": 890,
+    "recordingCodecs": [
+      "XAVC-I",
+      "XAVC-L"
+    ],
+    "sensorModes": [
+      "Full Frame (DCI 4K/UHD/HD)",
+      "Super 35 crop (HD)"
+    ],
+    "resolutions": [
+      "4096×2160",
+      "3840×2160",
+      "1920×1080"
     ]
   },
   "Sony FX9": {
@@ -1393,6 +1432,23 @@ const cameraData = {
       {
         "type": "BNC"
       }
+    ],
+    "weight_g": 1170,
+    "recordingCodecs": [
+      "Cinema RAW Light (HQ/ST/LT)",
+      "XF-AVC (H.264)",
+      "MP4 HEVC (H.265)",
+      "MP4 H.264"
+    ],
+    "sensorModes": [
+      "Super 35 4K (DCI/UHD)",
+      "Super 16 crop (2K/HD)"
+    ],
+    "resolutions": [
+      "4096×2160",
+      "3840×2160",
+      "2048×1080",
+      "1920×1080"
     ]
   },
   "Canon C80": {
@@ -2798,6 +2854,27 @@ const cameraData = {
         "type": "EXT Port (9-pin)",
         "notes": "Timecode In"
       }
+    ],
+    "weight_g": 1188,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "ProRes 4444 XQ (to 4K)",
+      "ProRes 4444 (to 4K)",
+      "ProRes 422 HQ",
+      "ProRes 422",
+      "ProRes 422 LT"
+    ],
+    "sensorModes": [
+      "6K S35",
+      "5K S35",
+      "4K S35",
+      "2K S16"
+    ],
+    "resolutions": [
+      "6144×3240",
+      "5120×2700",
+      "4096×2160",
+      "2048×1080"
     ]
   },
   "V-Raptor XL 8K VV": {
@@ -4896,6 +4973,167 @@ const cameraData = {
       }
     ],
     "timecode": []
+  },
+  "Sony PXW-FS7": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 2000,
+    "recordingCodecs": [
+      "XAVC-I",
+      "XAVC-L",
+      "MPEG HD 422"
+    ],
+    "sensorModes": [
+      "Super 35 4K (DCI/UHD)",
+      "Super 35 HD"
+    ],
+    "resolutions": [
+      "4096×2160",
+      "3840×2160",
+      "1920×1080",
+      "1280×720"
+    ]
+  },
+  "Canon C200": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1430,
+    "recordingCodecs": [
+      "Cinema RAW Light",
+      "XF-AVC",
+      "MP4"
+    ],
+    "sensorModes": [
+      "Super 35 4K (DCI/UHD)",
+      "2K/HD"
+    ],
+    "resolutions": [
+      "4096×2160",
+      "3840×2160",
+      "2048×1080",
+      "1920×1080"
+    ]
+  },
+  "Panasonic AU-EVA1": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1200,
+    "recordingCodecs": [
+      "AVC-Intra 4:2:2 10-bit",
+      "AVC-LongGOP 4:2:2 10-bit",
+      "AVCHD"
+    ],
+    "sensorModes": [
+      "Super 35 4K (DCI/UHD)",
+      "Super 35 2K/HD"
+    ],
+    "resolutions": [
+      "4096×2160",
+      "3840×2160",
+      "2048×1080",
+      "1920×1080"
+    ]
+  },
+  "RED V-RAPTOR 8K VV": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1828,
+    "recordingCodecs": [
+      "REDCODE RAW (16-bit)",
+      "ProRes 4444 XQ (to 4K)",
+      "ProRes 4444 (to 4K)",
+      "ProRes 422 HQ (to 4K)",
+      "ProRes 422 (to 4K)",
+      "ProRes 422 LT (to 4K)"
+    ],
+    "sensorModes": [
+      "8K VV (Full Frame)",
+      "6K S35",
+      "4K S35"
+    ],
+    "resolutions": [
+      "8192×4320",
+      "6144×3240",
+      "4096×2160",
+      "2048×1080"
+    ]
+  },
+  "Blackmagic Cinema Camera 6K": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1200,
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "H.264 Proxy (1080p)"
+    ],
+    "sensorModes": [
+      "Full Frame 3:2 Open Gate",
+      "6K DCI 17:9",
+      "6K 2.4:1",
+      "Super 35 4:3",
+      "4K DCI 17:9",
+      "Super 16 16:9"
+    ],
+    "resolutions": [
+      "6048×4032",
+      "4832×4032",
+      "6048×3200",
+      "6048×2520",
+      "4096×3072",
+      "4096×2160",
+      "2112×1184",
+      "1920×1080"
+    ]
   },
   "Leica SL3-S": {
     "powerDrawWatts": 10,
