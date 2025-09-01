@@ -6724,7 +6724,7 @@ function generateGearListHtml(info = {}) {
     const infoPairs = Object.entries(info).filter(([k,v]) => v && allowedInfo.includes(k));
     const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
         infoPairs.map(([k,v]) => `<li>${escapeHtml(labels[k]||k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
-    const join = arr => arr.filter(Boolean).map(n => escapeHtml(n)).join(', ');
+    const join = arr => arr.filter(Boolean).map(n => escapeHtml(n)).join('<br>');
     const rows = [];
     const addRow = (cat, items) => {
         rows.push(`<tr class="category-row"><td>${cat}</td></tr>`);
