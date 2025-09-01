@@ -990,6 +990,18 @@ describe('script.js functions', () => {
     expect(text).toContain('3x Bodenmatte');
   });
 
+  test('Slider with undersling mode includes Tango Beam', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Slider, Undersling mode', sliderBowl: '75er bowl' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('1x Tango Beam');
+  });
+
   test('monitoring support cables grouped by type', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml();
