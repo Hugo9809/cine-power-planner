@@ -125,7 +125,7 @@ After cloning the repository, you can inspect or modify the code base.
 index.html       # Main HTML layout
 style.css        # Styles and layout
 script.js        # Application logic
-data.js          # Default device list
+devices/         # Default device lists by category
 storage.js       # LocalStorage helpers
 README.*.md      # Documentation in different languages
 ```
@@ -143,7 +143,7 @@ The `npm test` command runs ESLint, data consistency checks and Jest tests.
 
 ### Update device data
 
-Device definitions live in `data.js`. After modifying this file, run the helper scripts to clean and verify the database:
+Device definitions live in the files under `devices/`. After modifying these files, run the helper scripts to clean and verify the database:
 
 ```bash
 npm run normalize

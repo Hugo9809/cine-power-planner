@@ -1,0 +1,1030 @@
+const gear = {
+  "viewfinders": {
+    "ARRI K2.75004.0 MVF-1 Viewfinder": {
+      "brand": "ARRI",
+      "model": "MVF-1",
+      "kNumber": "K2.75004.0",
+      "compatible": [
+        "Arri Alexa Mini",
+        "Arri Amira"
+      ],
+      "isPersonalGear": false,
+      "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
+    }
+  },
+  "directorMonitors": {
+    "Directors Monitor 17\" (SmallHD/FSI)": {
+      "screenSizeInches": 17,
+      "brightnessNits": 1000,
+      "powerDrawWatts": 45,
+      "power": {
+        "input": {
+          "voltageRange": "10-34",
+          "type": "LEMO 2-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "type": "3G-SDI"
+        }
+      ]
+    },
+    "Directors Monitor 13\" (SmallHD/FSI)": {
+      "screenSizeInches": 13,
+      "brightnessNits": 1000,
+      "powerDrawWatts": 30,
+      "power": {
+        "input": {
+          "voltageRange": "10-34",
+          "type": "LEMO 2-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "videoOutputs": [
+        {
+          "type": "3G-SDI"
+        }
+      ]
+    },
+    "None": {
+      "powerDrawWatts": 0,
+      "power": {
+        "input": {
+          "voltageRange": "",
+          "type": ""
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [],
+      "videoOutputs": []
+    }
+  },
+  "iosVideo": {
+    "Teradek Serv": {
+      "powerDrawWatts": 9,
+      "videoInputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "videoOutputs": [],
+      "frequency": "2.4 GHz / 5 GHz Wi-Fi",
+      "latencyMs": "< 60ms",
+      "power": {
+        "input": [
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "D-Tap"
+          }
+        ]
+      },
+      "notes": "Streams to iOS devices for on-set monitoring"
+    },
+    "Teradek Serv + Link": {
+      "powerDrawWatts": 9,
+      "videoInputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "3G-SDI"
+        }
+      ],
+      "videoOutputs": [],
+      "frequency": "2.4 GHz / 5 GHz Wi-Fi",
+      "latencyMs": "< 60ms",
+      "power": {
+        "input": [
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "D-Tap"
+          }
+        ]
+      },
+      "notes": "Streams to iOS devices for on-set monitoring; includes Link access point"
+    }
+  },
+  "wirelessReceivers": {
+    "Teradek Bolt 6 XT RX": {
+      "powerDrawWatts": 16,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "Gold-mount"
+          },
+          {
+            "type": "V-mount"
+          }
+        ]
+      }
+    },
+    "Teradek Bolt 4K RX": {
+      "powerDrawWatts": 16,
+      "videoInputs": [],
+      "videoOutputs": [
+        {
+          "type": "HDMI"
+        },
+        {
+          "type": "12G-SDI"
+        }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          {
+            "type": "LEMO 2-pin",
+            "notes": "6-28V"
+          },
+          {
+            "type": "Gold-mount"
+          },
+          {
+            "type": "V-mount"
+          }
+        ]
+      }
+    },
+    "None": {
+      "powerDrawWatts": 0,
+      "power": {
+        "input": {
+          "voltageRange": "",
+          "type": ""
+        }
+      },
+      "videoInputs": [],
+      "videoOutputs": [],
+      "frequency": "5 GHz",
+      "latencyMs": null
+    }
+  },
+  "accessories": {
+    "powerPlates": {
+      "Generic V-Mount Plate": {
+        "mount": "V-Mount"
+      }
+    },
+    "cameraSupport": {
+      "ARRI CBP-3 Compact Bridge Plate": {
+        "brand": "ARRI",
+        "kNumber": "K2.0019580",
+        "rodStandard": "19mm"
+      },
+      "ARRI SAB-2 Side Accessory Bracket": {
+        "brand": "ARRI",
+        "kNumber": "K2.0014088"
+      },
+      "ARRI VEB-3 Viewfinder Extension Bracket": {
+        "brand": "ARRI",
+        "kNumber": "K2.74000.0"
+      },
+      "ARRI Dovetail Plate": {
+        "brand": "ARRI",
+        "kNumber": "K2.0043086"
+      },
+      "ARRI Top Plate (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034691",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Base Plate (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0035830",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Lens Adapter Support LAS-1": {
+        "brand": "ARRI",
+        "kNumber": "K2.0003899"
+      },
+      "ARRI 15mm LWS Rod Console": {
+        "brand": "ARRI",
+        "kNumber": "K2.65264.0"
+      },
+      "ARRI Support Rods 240mm/15mm": {
+        "brand": "ARRI",
+        "kNumber": "K2.66253.0",
+        "lengthMm": 240,
+        "diameterMm": 15
+      },
+      "ARRI Side Bracket Left (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034727",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Side Bracket Right (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034709",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI E- to PL-Mount Support (Vocas)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034700"
+      },
+      "ARRI Camera Center Handle CCH-4": {
+        "brand": "ARRI",
+        "kNumber": "K2.0017270"
+      },
+      "ARRI Sliding Adapter (CCH-4)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0019282"
+      },
+      "ARRI Rod Mounting Bracket RMB-3": {
+        "brand": "ARRI",
+        "kNumber": "K2.0006186"
+      },
+      "ARRI 15mm Reduction Insert": {
+        "brand": "ARRI",
+        "kNumber": "K2.66255.0"
+      },
+      "ARRI Viewfinder Bracket (FS7II/FX9)": {
+        "brand": "ARRI",
+        "kNumber": "K2.0034657",
+        "compatible": [
+          "Sony FS7 II",
+          "Sony FX9"
+        ]
+      },
+      "ARRI Mini Side Bracket MSB-1": {
+        "brand": "ARRI",
+        "kNumber": "K2.0014957"
+      },
+      "ARRI Handle Extension Set": {
+        "brand": "ARRI",
+        "kNumber": "KK.0037820"
+      },
+      "ARRI Video Transmitter Bracket": {
+        "brand": "ARRI",
+        "kNumber": "K2.0033676"
+      }
+    },
+    "matteboxes": {
+      "ARRI LMB 4x5 Clamp-On (3-Stage)": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015175",
+        "stages": 3,
+        "type": "Clamp-On"
+      },
+      "ARRI Tray Catcher": {
+        "brand": "ARRI",
+        "kNumber": "K2.66202.0",
+        "compatible": [
+          "LMB 4x5",
+          "LMB-6"
+        ]
+      }
+    },
+    "filters": {
+      "ARRI Rota Pola Filter Holder": {
+        "brand": "ARRI",
+        "kNumber": "K2.0009434"
+      }
+    },
+    "rigging": {
+      "Manfrotto 026 Lite-Tite": {
+        "brand": "Manfrotto"
+      },
+      "Manfrotto 244N Friction Arm": {
+        "brand": "Manfrotto"
+      },
+      "ULCS Bracket 1/4 to 1/4": {
+        "brand": "ULCS"
+      },
+      "ULCS Bracket 3/8 to 1/4": {
+        "brand": "ULCS"
+      }
+    },
+    "chargers": {
+      "Single V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 1
+      },
+      "Dual V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 2
+      },
+      "Quad V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 4
+      },
+      "Single B-Mount Charger": {
+        "mount": "B-Mount",
+        "slots": 1
+      },
+      "Dual B-Mount Charger": {
+        "mount": "B-Mount",
+        "slots": 2
+      },
+      "Quad B-Mount Charger": {
+        "mount": "B-Mount",
+        "slots": 4
+      }
+    },
+    "cables": {
+      "power": {
+        "D-Tap to LEMO 2-pin": {
+          "from": "D-Tap",
+          "to": "LEMO 2-pin"
+        },
+        "D-Tap Splitter 3-way": {
+          "from": "D-Tap",
+          "to": [
+            "D-Tap",
+            "D-Tap",
+            "D-Tap"
+          ]
+        },
+        "D-Tap to miniXLR (0.3 m)": {
+          "from": "D-Tap",
+          "to": "miniXLR",
+          "lengthM": 0.3
+        }
+      },
+      "video": {
+        "BNC SDI Cable": {
+          "type": "3G-SDI"
+        },
+        "HDMI Cable": {
+          "type": "HDMI"
+        },
+        "Ultraslim BNC 0.3 m": {
+          "type": "3G-SDI",
+          "lengthM": 0.3
+        },
+        "Ultraslim BNC 0.5 m": {
+          "type": "3G-SDI",
+          "lengthM": 0.5
+        },
+        "BNC Cable 0.5 m": {
+          "type": "3G-SDI",
+          "lengthM": 0.5
+        },
+        "BNC Cable 1 m": {
+          "type": "3G-SDI",
+          "lengthM": 1
+        },
+        "BNC Cable 5 m": {
+          "type": "3G-SDI",
+          "lengthM": 5
+        },
+        "BNC Cable 10 m": {
+          "type": "3G-SDI",
+          "lengthM": 10
+        },
+        "BNC Drum 25 m": {
+          "type": "3G-SDI",
+          "lengthM": 25,
+          "notes": "drum"
+        }
+      },
+      "cables": {
+        "LBUS to LBUS": {
+          "from": "LBUS (LEMO 4-pin)",
+          "to": "LBUS (LEMO 4-pin)"
+        },
+        "Cable CAM (7-pin) – EXT (6-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.015756",
+          "lengthM": 0.6,
+          "connectors": [
+            "CAM (7-pin)",
+            "EXT (6-pin)"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ]
+        },
+        "Cable CAM (7-pin) – D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0018813",
+          "lengthM": 0.6,
+          "connectors": [
+            "CAM (7-pin)",
+            "D-Tap"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ]
+        },
+        "Cable CAM (7-pin) – LANC/D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015757",
+          "lengthM": 0.6,
+          "connectors": [
+            "CAM (7-pin)",
+            "LANC + D-Tap"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power"
+          ]
+        },
+        "D-Tap to Lemo-2-pin Cable 0,3m": {
+          "lengthM": 0.3,
+          "connectors": [
+            "D-Tap",
+            "Lemo 2-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ]
+        },
+        "ultra slim 3G-SDI BNC cable 0,5m": {
+          "lengthM": 0.5,
+          "connectors": [
+            "BNC",
+            "BNC"
+          ],
+          "orientation": "straight",
+          "type": "3G-SDI",
+          "notes": "ultra slim",
+          "useCase": [
+            "Video"
+          ]
+        },
+        "Cable CAM (10-pin) – EXT (7-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0007730",
+          "lengthM": 0.5,
+          "connectors": [
+            "CAM (10-pin)",
+            "EXT (7-pin)"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "ALEXA Mini",
+            "ALEXA Mini LF"
+          ]
+        },
+        "Cable CAM (10-pin) – RS (3-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001606",
+          "lengthM": 0.5,
+          "connectors": [
+            "CAM (10-pin)",
+            "ARRI RS (3-pin)"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "ALEXA",
+            "AMIRA"
+          ]
+        },
+        "Cable CAM (10-pin) – D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0002682",
+          "lengthM": 0.5,
+          "connectors": [
+            "CAM (10-pin)",
+            "D-Tap"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ]
+        },
+        "Cable CAM (10-pin) – LANC/D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001999",
+          "lengthM": 0.5,
+          "connectors": [
+            "CAM (10-pin)",
+            "LANC + D-Tap"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Tally",
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "Canon C300/500",
+            "Sony PXW-FS7"
+          ]
+        },
+        "Cable CAM (10-pin) – Sony F5/55": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001997",
+          "lengthM": 0.5,
+          "connectors": [
+            "CAM (10-pin)",
+            "Sony Remote"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Tally"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "Sony F5",
+            "Sony F55",
+            "Sony Venice",
+            "Panasonic Varicam 35"
+          ]
+        },
+        "Cable CAM (10-pin) – RED EPIC/D-Tap": {
+          "brand": "ARRI",
+          "kNumber": "K2.0001998",
+          "lengthM": 1,
+          "connectors": [
+            "CAM (10-pin ×2)",
+            "RED EPIC + D-Tap"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ],
+          "compatibleCameras": [
+            "RED EPIC",
+            "RED Weapon"
+          ]
+        },
+        "Cable CAM (10-pin) – PSC": {
+          "brand": "ARRI",
+          "kNumber": "K2.0002727",
+          "lengthM": 0.7,
+          "connectors": [
+            "CAM (10-pin)",
+            "PSC"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ]
+        },
+        "Cable CAM (10-pin) – Open End": {
+          "brand": "ARRI",
+          "kNumber": "K2.0002725",
+          "lengthM": 0.5,
+          "connectors": [
+            "CAM (10-pin)",
+            "Open End"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Custom"
+          ],
+          "compatibleControllers": [
+            "SMC-1",
+            "EMC-1",
+            "AMC-1"
+          ]
+        },
+        "Cable Cooke/i Lens Control (16-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.65012.0",
+          "lengthM": 0.7,
+          "connectors": [
+            "CAM (16-pin)",
+            "Cooke/i"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Lens Control"
+          ],
+          "compatibleControllers": [
+            "Universal Motor Controller"
+          ]
+        },
+        "Battery Adapter VMicro (WVR-1s)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0024373",
+          "lengthM": null,
+          "connectors": [
+            "VMicro Battery",
+            "Lemo 12 V Out (2-pin)"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1s Wireless Video Receiver"
+          ]
+        },
+        "Battery Adapter AMicro (WVR-1s)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0024374",
+          "lengthM": null,
+          "connectors": [
+            "AMicro Battery",
+            "Lemo 12 V Out (2-pin)"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1s"
+          ]
+        },
+        "Receiver Power Supply (RPS-1)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014774",
+          "lengthM": null,
+          "connectors": [
+            "AC In",
+            "Output to WVR-1"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1",
+            "WVT-1",
+            "UMC-4"
+          ]
+        },
+        "PWR OUT Lemo (2-pin) – RS/PWR IN Fischer (3-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014331",
+          "lengthM": 0.5,
+          "connectors": [
+            "Lemo 2-pin",
+            "Fischer 3-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WVR-1",
+            "WVT-1",
+            "UMC-4"
+          ]
+        },
+        "PWR OUT Lemo (2-pin) – XLR (4-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014342",
+          "lengthM": 0.5,
+          "connectors": [
+            "Lemo 2-pin",
+            "XLR 4-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "Camera/Monitor from battery plate or WVR-1"
+          ]
+        },
+        "PWR OUT Lemo (2-pin) – MiniXLR (4-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014343",
+          "lengthM": 0.5,
+          "connectors": [
+            "Lemo 2-pin",
+            "MiniXLR 4-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "External camera monitor"
+          ]
+        },
+        "PWR OUT Lemo (2-pin) – Hi (4-pin Hirose)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014344",
+          "lengthM": 0.5,
+          "connectors": [
+            "Lemo 2-pin",
+            "Hirose 4-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "External camera monitor"
+          ]
+        },
+        "PWR OUT Lemo (2-pin) – Lemo 5-pin": {
+          "brand": "ARRI",
+          "kNumber": "K2.0014777",
+          "lengthM": 0.5,
+          "connectors": [
+            "Lemo 2-pin",
+            "Lemo 5-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "Camera accessories"
+          ]
+        },
+        "PWR OUT Lemo (2-pin) – LCS (5-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0024590",
+          "lengthM": 0.3,
+          "connectors": [
+            "Lemo 2-pin",
+            "LCS 5-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleDevices": [
+            "WCU-4",
+            "SXU-1"
+          ]
+        },
+        "Monitor Power 12 V (Lemo 0B 2-pin to XLR 4-pin)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0010546",
+          "lengthM": null,
+          "connectors": [
+            "Lemo 0B 2-pin",
+            "XLR 4-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "ARTEMIS/TRINITY"
+          ]
+        },
+        "Monitor Power 12 V (Lemo 0B 2-pin to Lemo 0B 2-pin Short)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0041723",
+          "lengthM": null,
+          "connectors": [
+            "Lemo 0B 2-pin",
+            "Lemo 0B 2-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "ARTEMIS/TRINITY"
+          ]
+        },
+        "360 EVO D-Tap / XLR Battery Power to RCP or Monitor": {
+          "brand": "ARRI",
+          "kNumber": "K2.0021422",
+          "lengthM": 1.5,
+          "connectors": [
+            "D-Tap",
+            "XLR 4-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "360 EVO",
+            "SRH-3",
+            "SRH-360"
+          ]
+        },
+        "MTG Monitor Power (Lemo 0B 4-pin to Lemo 0B 2-pin, 24 V)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0038998",
+          "lengthM": null,
+          "connectors": [
+            "Lemo 0B 4-pin",
+            "Lemo 0B 2-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "Master Grip",
+            "TRINITY 2"
+          ]
+        },
+        "MTG Monitor Power (Lemo 0B 4-pin to Lemo 0B 5-pin, 24 V)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0038999",
+          "lengthM": null,
+          "connectors": [
+            "Lemo 0B 4-pin",
+            "Lemo 0B 5-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "Master Grip",
+            "TRINITY 2"
+          ]
+        },
+        "TRINITY 2 Joystick Cable": {
+          "brand": "ARRI",
+          "kNumber": "K2.0043861",
+          "lengthM": 0.75,
+          "connectors": [
+            "Lemo 0B 4-pin",
+            "Lemo 0B 4-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Control"
+          ],
+          "compatibleSystems": [
+            "TRINITY 2"
+          ]
+        },
+        "SRH FS CAN Bus Cable": {
+          "brand": "ARRI",
+          "kNumber": "K2.0037788",
+          "lengthM": 0.3,
+          "connectors": [
+            "FS CAN Bus"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Control"
+          ],
+          "compatibleSystems": [
+            "SRH-3",
+            "SRH-360",
+            "360 EVO"
+          ]
+        },
+        "SRH High-Capacity Battery Power Cable Set (12 V/24 V, 0.5 m)": {
+          "brand": "ARRI",
+          "kNumber": "K0.0021437",
+          "lengthM": 0.5,
+          "connectors": [
+            "XLR 4-pin 12 V",
+            "XLR 3-pin 24 V"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "SRH-3",
+            "SRH-360",
+            "360 EVO"
+          ]
+        },
+        "SRH High-Capacity Battery Power Cable 24 V, 20 m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0021429",
+          "lengthM": 20,
+          "connectors": [
+            "XLR 3-pin 24 V"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "SRH systems"
+          ]
+        },
+        "SRH High-Capacity Battery Power Cable 12 V, 20 m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0021430",
+          "lengthM": 20,
+          "connectors": [
+            "XLR 4-pin 12 V"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleSystems": [
+            "SRH systems"
+          ]
+        }
+      }
+    }
+  },
+  "filterOptions": [
+    "ND",
+    "Polarizer",
+    "Diffusion",
+    "Clear"
+  ]
+};
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = gear;
+} else {
+  globalThis.devices = globalThis.devices || {};
+  globalThis.devices.viewfinders = gear.viewfinders;
+  globalThis.devices.directorMonitors = gear.directorMonitors;
+  globalThis.devices.iosVideo = gear.iosVideo;
+  globalThis.devices.wirelessReceivers = gear.wirelessReceivers;
+  globalThis.devices.accessories = Object.assign(globalThis.devices.accessories || {}, gear.accessories);
+  globalThis.devices.filterOptions = gear.filterOptions;
+}
