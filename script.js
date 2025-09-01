@@ -1238,16 +1238,35 @@ function setLanguage(lang) {
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
-  const filterPlaceholder = texts[lang].placeholder_filter;
-   [cameraFilterInput, monitorFilterInput, videoFilterInput, cageFilterInput, motorFilterInput,
-    controllerFilterInput, distanceFilterInput, batteryFilterInput,
-    cameraListFilterInput, viewfinderListFilterInput, monitorListFilterInput, videoListFilterInput,
-    motorListFilterInput, controllerListFilterInput, distanceListFilterInput,
-    batteryListFilterInput, accessoryBatteryListFilterInput, fizCableListFilterInput,
-    cameraSupportListFilterInput, chargerListFilterInput].forEach(input => {
-   if (input) {
-      input.placeholder = filterPlaceholder;
-      input.setAttribute('aria-label', filterPlaceholder);
+  const filterMappings = [
+    {input: cameraFilterInput, label: texts[lang].cameraLabel},
+    {input: monitorFilterInput, label: texts[lang].monitorLabel},
+    {input: videoFilterInput, label: texts[lang].videoLabel},
+    {input: cageFilterInput, label: texts[lang].cageLabel},
+    {input: motorFilterInput, label: texts[lang].fizMotorsLabel},
+    {input: controllerFilterInput, label: texts[lang].fizControllersLabel},
+    {input: distanceFilterInput, label: texts[lang].distanceLabel},
+    {input: batteryFilterInput, label: texts[lang].batteryLabel},
+    {input: cameraListFilterInput, label: texts[lang].category_cameras},
+    {input: viewfinderListFilterInput, label: texts[lang].category_viewfinders},
+    {input: monitorListFilterInput, label: texts[lang].category_monitors},
+    {input: videoListFilterInput, label: texts[lang].category_video},
+    {input: motorListFilterInput, label: texts[lang].category_fiz_motors},
+    {input: controllerListFilterInput, label: texts[lang].category_fiz_controllers},
+    {input: distanceListFilterInput, label: texts[lang].category_fiz_distance},
+    {input: batteryListFilterInput, label: texts[lang].category_batteries},
+    {input: accessoryBatteryListFilterInput, label: texts[lang].category_accessory_batteries},
+    {input: fizCableListFilterInput, label: texts[lang].category_fiz_cables},
+    {input: cameraSupportListFilterInput, label: texts[lang].category_camera_support},
+    {input: chargerListFilterInput, label: texts[lang].category_chargers}
+  ];
+
+  filterMappings.forEach(({ input, label }) => {
+    if (input) {
+      const labelText = label.replace(/[:：]$/, '').toLowerCase();
+      const placeholder = texts[lang].placeholder_filter.replace('{item}', labelText);
+      input.placeholder = placeholder;
+      input.setAttribute('aria-label', placeholder);
       input.setAttribute('autocomplete', 'off');
       input.setAttribute('autocorrect', 'off');
       input.setAttribute('autocapitalize', 'off');
