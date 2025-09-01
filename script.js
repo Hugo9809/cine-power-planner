@@ -497,21 +497,28 @@ function formatConnLabel(from, to) {
 const hasCamConnector = str => /CAM/i.test(str);
 const hasLemo7PinConnector = str => /7-pin/i.test(str);
 
+// Collect a list of FIZ connector type strings from a device definition.
+function getFizConnectorTypes(device) {
+  if (!device) return [];
+  if (Array.isArray(device.fizConnectors)) {
+    return device.fizConnectors.map(fc => fc.type);
+  }
+  return device.fizConnector ? [device.fizConnector] : [];
+}
+
 function controllerCamPort(name) {
   const isRf = /cforce.*rf/i.test(name) || /RIA-1/i.test(name);
   if (isRf) return 'Cam';
   const c = devices.fiz?.controllers?.[name];
   if (c) {
     if (/UMC-4/i.test(name)) return '3-Pin R/S';
-    const connStr = c.fizConnectors
-      ? c.fizConnectors.map(fc => fc.type).join(', ')
-      : c.fizConnector || '';
+    const connStr = getFizConnectorTypes(c).join(', ');
     if (hasCamConnector(connStr)) return 'Cam';
     if (hasLemo7PinConnector(connStr)) return 'LEMO 7-pin';
   }
   const m = devices.fiz?.motors?.[name];
   if (m) {
-    const connStr = m.fizConnector || (m.fizConnectors || []).map(fc => fc.type).join(', ');
+    const connStr = getFizConnectorTypes(m).join(', ');
     if (hasCamConnector(connStr)) return 'Cam';
     if (hasLemo7PinConnector(connStr)) return 'LEMO 7-pin';
   }
@@ -522,7 +529,7 @@ function controllerCamPort(name) {
 function controllerDistancePort(name) {
   const c = devices.fiz?.controllers?.[name];
   if (/RIA-1/i.test(name) || /UMC-4/i.test(name)) return 'Serial';
-  if (c && (c.fizConnectors || []).some(fc => /SERIAL/i.test(fc.type))) return 'Serial';
+  if (getFizConnectorTypes(c).some(type => /SERIAL/i.test(type))) return 'Serial';
   return 'LBUS';
 }
 
@@ -7927,6 +7934,7 @@ if (typeof module !== "undefined" && module.exports) {
     updateDiagramLegend,
     cameraFizPort,
     controllerCamPort,
+    controllerDistancePort,
     detectBrand,
     connectionLabel,
     generateConnectorSummary,

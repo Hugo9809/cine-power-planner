@@ -1384,6 +1384,15 @@ describe('script.js functions', () => {
     expect(controllerCamPort('Generic FIZ Device')).toBe('FIZ Port');
   });
 
+  test('controller distance port detects Serial connectors', () => {
+    const { controllerDistancePort } = script;
+    global.devices.fiz.controllers['Serial Controller'] = {
+      fizConnectors: [{ type: 'Serial' }]
+    };
+    expect(controllerDistancePort('Serial Controller')).toBe('Serial');
+    expect(controllerDistancePort('ControllerA')).toBe('LBUS');
+  });
+
   test('ARRI camera with LBUS avoids distance warning', () => {
     jest.resetModules();
 
