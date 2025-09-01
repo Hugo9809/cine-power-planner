@@ -3175,6 +3175,9 @@ function clearTimecodes() {
 // Populate dropdowns with device options
 function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
   if (!selectElem) return;
+  // Ensure we always work with an object so Object.keys does not throw if
+  // `optionsObj` is passed as `null`.
+  const opts = optionsObj && typeof optionsObj === "object" ? optionsObj : {};
   selectElem.innerHTML = "";
   if (includeNone) {
     const noneOpt = document.createElement("option");
@@ -3183,7 +3186,7 @@ function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
     noneOpt.textContent = noneMap[currentLang] || "None";
     selectElem.appendChild(noneOpt);
   }
-  Object.keys(optionsObj)
+  Object.keys(opts)
     .filter(name => name !== "None")
     .sort(localeSort)
     .forEach(name => {
