@@ -6166,6 +6166,7 @@ generateGearListBtn.addEventListener('click', () => {
         alertPinExceeded();
         return;
     }
+    populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
     projectDialog.showModal();
 });
 
@@ -6919,6 +6920,7 @@ function collectProjectFormData() {
         aspectRatio: val('aspectRatio'),
         codec: val('codec'),
         baseFrameRate: val('baseFrameRate'),
+        sensorMode: val('sensorMode'),
         lenses: val('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
@@ -6998,6 +7000,7 @@ function generateGearListHtml(info = {}) {
         aspectRatio: 'Aspect Ratio',
         codec: 'Codec',
         baseFrameRate: 'Base Frame Rate',
+        sensorMode: 'Sensor Mode',
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
@@ -7955,6 +7958,31 @@ function populateLensDropdown() {
   });
 }
 
+function populateSensorModeDropdown(selected = '') {
+  const sensorSelect = document.getElementById('sensorMode');
+  if (!sensorSelect) return;
+
+  sensorSelect.innerHTML = '';
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  sensorSelect.appendChild(emptyOpt);
+
+  const camKey = cameraSelect && cameraSelect.value;
+  const modes =
+    camKey && devices && devices.cameras && devices.cameras[camKey]
+      ? devices.cameras[camKey].sensorModes
+      : null;
+  if (Array.isArray(modes)) {
+    modes.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = m;
+      if (m === selected) opt.selected = true;
+      sensorSelect.appendChild(opt);
+    });
+  }
+}
+
 function populateFilterDropdown() {
   const filterSelect = document.getElementById('filter');
   if (filterSelect && devices && Array.isArray(devices.filterOptions)) {
@@ -8014,5 +8042,6 @@ if (typeof module !== "undefined" && module.exports) {
     clearAllFilters,
     saveCurrentGearList,
     populateLensDropdown,
+    populateSensorModeDropdown,
   };
 }

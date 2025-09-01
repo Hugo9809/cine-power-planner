@@ -1256,6 +1256,12 @@ describe('script.js functions', () => {
     expect(html).not.toContain('<td>Monitoring support</td>');
   });
 
+  test('sensor mode appears in project requirements when provided', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ sensorMode: 'S35 3:2' });
+    expect(html).toContain('Sensor Mode: S35 3:2');
+  });
+
   test('duplicate motors are aggregated with count in gear list', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
