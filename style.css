@@ -122,6 +122,11 @@ textarea:focus-visible {
   margin-bottom: 10px;
 }
 
+.button-row {
+  display: flex;
+  gap: 10px;
+}
+
 .flex-1 {
   flex: 1;
 }
