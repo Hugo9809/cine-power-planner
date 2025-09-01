@@ -6820,7 +6820,7 @@ function generateGearListHtml(info = {}) {
         monitoringItems += `<strong>Viewfinder</strong><br>- ${escapeHtml(selectedNames.viewfinder)}`;
     }
     if (selectedNames.monitor) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong><br>- ${escapeHtml(selectedNames.monitor)}<br>- incl. Sunhood`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
     if (selectedNames.video) {
         monitoringItems += (monitoringItems ? '<br>' : '') + escapeHtml(selectedNames.video);
