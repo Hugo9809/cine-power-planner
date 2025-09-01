@@ -21,6 +21,11 @@ body.dark-mode {
   color: #000 !important;
 }
 
+#overviewDialogContent,
+#overviewDialogContent.dark-mode {
+  background: #fff !important;
+}
+
 #overviewDialogContent h1,
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
@@ -55,11 +60,14 @@ h2, h3, table, .device-block, .device-category {
   break-inside: avoid;
 }
 
-.device-category-container {
+#overviewDialogContent .device-category-container {
   display: block;
 }
 
-h2, h3 { page-break-after: avoid; }
+#overviewDialogContent h2,
+#overviewDialogContent h3 {
+  page-break-after: avoid;
+}
 
 table, th, td {
   word-break: break-word;
@@ -67,6 +75,7 @@ table, th, td {
 }
 th { background-color: #e0e0e0; font-weight: 700; }
 tr:nth-child(even) { background-color: #f9f9f9; }
+
 
 .device-block,
 .device-category {
@@ -95,16 +104,16 @@ tr:nth-child(even) { background-color: #f9f9f9; }
   font-weight: bold;
 }
 
-.device-category {
+#overviewDialogContent .device-category {
   flex: 1 1 100%;
   page-break-after: always;
 }
 
-.device-category:last-child {
+#overviewDialogContent .device-category:last-child {
   page-break-after: auto;
 }
 
-.device-block-grid.two-column {
+#overviewDialogContent .device-block-grid.two-column {
   grid-template-columns: 1fr;
 }
 
