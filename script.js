@@ -7033,10 +7033,16 @@ function generateGearListHtml(info = {}) {
     if (info.monitoringPreferences) {
         monitoringSupportItems = `${escapeHtml(info.monitoringPreferences)}<br>${monitoringSupportItems}`;
     }
+    const scenarios = info.requiredScenarios
+        ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+    const gripItems = [];
+    if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
+    if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
-    addRow('Grip', '');
+    addRow('Grip', formatItems(gripItems));
     addRow('Carts and Transportation', '');
     addRow('Miscellaneous', formatItems(miscAcc));
     addRow('Consumables', '');

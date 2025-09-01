@@ -1550,6 +1550,14 @@ const gear = {
         "brand": "Hudson Spider"
       }
     },
+    "grip": {
+      "Cinekinetic Cinesaddle": {
+        "brand": "Cinekinetic"
+      },
+      "Steadybag": {
+        "brand": "Steadybag"
+      }
+    },
     "carts": {
       "Magliner Senior Videomagliner": {
         "brand": "Magliner"

@@ -959,6 +959,19 @@ describe('script.js functions', () => {
     expect(html).toContain('6x BattA');
   });
 
+  test('Cine Saddle and Steadybag scenarios populate grip section', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Cine Saddle, Steadybag' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    expect(gripIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[gripIdx + 1];
+    expect(itemsRow.textContent).toContain('Cinekinetic Cinesaddle');
+    expect(itemsRow.textContent).toContain('Steadybag');
+  });
+
   test('monitoring support cables grouped by type', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml();
