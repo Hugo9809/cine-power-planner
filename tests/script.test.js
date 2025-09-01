@@ -804,6 +804,20 @@ describe('script.js functions', () => {
       expect(html).toContain('BNC SDI Cable');
     });
 
+  test('gear list separates multiple items with line breaks', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    const html = generateGearListHtml({ projectName: 'Proj' });
+    expect(html).toContain('MonA<br>VidA');
+    expect(html).not.toContain('MonA, VidA');
+  });
+
   test('battery plate selection is saved and loaded with setups', () => {
     // Add camera supporting both plates and matching batteries
     global.devices.cameras.BothCam = {
