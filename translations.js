@@ -129,7 +129,10 @@ const texts = {
     category_fiz_motors: "FIZ Motors",
     category_fiz_controllers: "FIZ Controllers",
     category_fiz_distance: "FIZ Distance",
+    category_fiz_cables: "FIZ Cables",
     category_batteries: "V-Mount Batteries",
+    category_camera_support: "Camera Support",
+    category_chargers: "Chargers",
 
     addDeviceHeading: "Add New Device",
     categoryLabel: "Category:",
@@ -464,7 +467,10 @@ const texts = {
     category_fiz_motors: "Motori FIZ",
     category_fiz_controllers: "Controller FIZ",
     category_fiz_distance: "Distanza FIZ",
+    category_fiz_cables: "Cavi FIZ",
     category_batteries: "Batterie a V-Mount",
+    category_camera_support: "Supporto camera",
+    category_chargers: "Caricatori",
     addDeviceHeading: "Aggiungi nuovo dispositivo",
     categoryLabel: "Categoria:",
     deviceNameLabel: "Nome:",
@@ -791,7 +797,10 @@ const texts = {
     category_fiz_motors: "Motores FIZ",
     category_fiz_controllers: "Controles FIZ",
     category_fiz_distance: "Distancia FIZ",
+    category_fiz_cables: "Cables FIZ",
     category_batteries: "Baterías V-Mount",
+    category_camera_support: "Soporte de cámara",
+    category_chargers: "Cargadores",
 
     addDeviceHeading: "Añadir Nuevo Dispositivo",
     categoryLabel: "Categoría:",
@@ -1127,7 +1136,10 @@ const texts = {
     category_fiz_motors: "Moteurs FIZ",
     category_fiz_controllers: "Contrôleurs FIZ",
     category_fiz_distance: "Distance FIZ",
+    category_fiz_cables: "Câbles FIZ",
     category_batteries: "Batteries V-Mount",
+    category_camera_support: "Support caméra",
+    category_chargers: "Chargeurs",
 
     addDeviceHeading: "Ajouter un Nouvel Appareil",
     categoryLabel: "Catégorie:",
@@ -1465,7 +1477,10 @@ const texts = {
     category_fiz_motors: "FIZ Motoren",
     category_fiz_controllers: "FIZ Controller",
     category_fiz_distance: "FIZ Distanz",
+    category_fiz_cables: "FIZ-Kabel",
     category_batteries: "V-Mount Akkus",
+    category_camera_support: "Kamera-Support",
+    category_chargers: "Ladegeräte",
 
     addDeviceHeading: "Neues Gerät hinzufügen",
     categoryLabel: "Kategorie:",
@@ -1685,7 +1700,10 @@ const categoryNames = {
     "fiz.motors": "FIZ Motor",
     "fiz.controllers": "FIZ Controller",
     "fiz.distance": "FIZ Distance",
-    "batteries": "V-Mount Battery"
+    "fiz.cables": "FIZ Cable",
+    "batteries": "V-Mount Battery",
+    "accessories.cages": "Camera Support",
+    "accessories.chargers": "Charger"
   },
   it: {
     "cameras": "Camera",
@@ -1694,7 +1712,10 @@ const categoryNames = {
     "fiz.motors": "Motore FIZ",
     "fiz.controllers": "Controller FIZ",
     "fiz.distance": "Distanza FIZ",
-    "batteries": "Batteria V-Mount"
+    "fiz.cables": "Cavo FIZ",
+    "batteries": "Batteria V-Mount",
+    "accessories.cages": "Supporto camera",
+    "accessories.chargers": "Caricatore"
   },
   es: {
     "cameras": "Cámara",
@@ -1703,7 +1724,10 @@ const categoryNames = {
     "fiz.motors": "Motor FIZ",
     "fiz.controllers": "Control FIZ",
     "fiz.distance": "Distancia FIZ",
-    "batteries": "Batería V-Mount"
+    "fiz.cables": "Cable FIZ",
+    "batteries": "Batería V-Mount",
+    "accessories.cages": "Soporte de cámara",
+    "accessories.chargers": "Cargador"
   },
   fr: {
     "cameras": "Caméra",
@@ -1712,7 +1736,10 @@ const categoryNames = {
     "fiz.motors": "Moteur FIZ",
     "fiz.controllers": "Contrôleur FIZ",
     "fiz.distance": "Distance FIZ",
-    "batteries": "Batterie V-Mount"
+    "fiz.cables": "Câble FIZ",
+    "batteries": "Batterie V-Mount",
+    "accessories.cages": "Support caméra",
+    "accessories.chargers": "Chargeur"
   },
   de: {
     "cameras": "Kamera",
@@ -1721,7 +1748,10 @@ const categoryNames = {
     "fiz.motors": "FIZ Motoren",
     "fiz.controllers": "FIZ Controller",
     "fiz.distance": "FIZ Distanz",
-    "batteries": "V-Mount Akku"
+    "fiz.cables": "FIZ-Kabel",
+    "batteries": "V-Mount Akku",
+    "accessories.cages": "Kamera-Support",
+    "accessories.chargers": "Ladegerät"
   },
 };
 
