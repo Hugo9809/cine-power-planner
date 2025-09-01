@@ -693,6 +693,22 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode Output (AUX)"
       }
+    ],
+    "weight_g": 4300,
+    "recordingCodecs": [
+      "X-OCN XT/ST/LT",
+      "Apple ProRes 4444 XQ/4444/422 HQ (to 4K)"
+    ],
+    "sensorModes": [
+      "6K 3:2 Open Gate",
+      "6K 17:9",
+      "S35 4K"
+    ],
+    "resolutions": [
+      "6048×4032 (6K 3:2)",
+      "4096×2160 (DCI 4K)",
+      "3840×2160 (UHD)",
+      "1920×1080 (HD)"
     ]
   },
   "Sony Venice": {
@@ -839,6 +855,23 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode Output (AUX)"
       }
+    ],
+    "weight_g": 3900,
+    "recordingCodecs": [
+      "X-OCN XT/ST/LT (with AXS-R7)",
+      "16-bit RAW (with AXS-R7)",
+      "XAVC (QFHD classes)",
+      "Apple ProRes 4444/422 HQ (HD)"
+    ],
+    "sensorModes": [
+      "Full-Frame 3:2 6K",
+      "Super 35 4K"
+    ],
+    "resolutions": [
+      "6048×4032 (6K 3:2)",
+      "4096×2160 (DCI 4K)",
+      "3840×2160 (UHD)",
+      "1920×1080 (HD)"
     ]
   },
   "Sony Burano": {
@@ -2271,6 +2304,22 @@ const cameraData = {
         "type": "Analog Audio Inputs",
         "notes": "2x mini XLR, 1x 3.5mm Stereo Input can be used for Timecode input"
       }
+    ],
+    "weight_g": 1238,
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "Apple ProRes 422 family"
+    ],
+    "sensorModes": [
+      "S35 6K 16:9",
+      "S35 6K 2.4:1",
+      "2.8K window (HFR)"
+    ],
+    "resolutions": [
+      "6144×3456 (6K 16:9)",
+      "6144×2560 (6K 2.4:1)",
+      "2868×1512 (2.8K 17:9)",
+      "1920×1080 (HD)"
     ]
   },
   "Blackmagic URSA 12K": {
@@ -4530,7 +4579,23 @@ const cameraData = {
         "notes": "Supports Sony E-mount electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 1450,
+    "recordingCodecs": [
+      "Apple ProRes 422 HQ/LT",
+      "H.264",
+      "Apple ProRes RAW (with RAW License to PROSSD)"
+    ],
+    "sensorModes": [
+      "Full-Frame 6K",
+      "C4K",
+      "2K"
+    ],
+    "resolutions": [
+      "4096×2160 (C4K)",
+      "2048×1080 (2K)",
+      "6K up to 60p"
+    ]
   },
   "Sony FX30": {
     "powerDrawWatts": 5.6,
@@ -4613,6 +4678,20 @@ const cameraData = {
         "type": "Multi/Micro USB (TC )",
         "notes": "Timecode Input [S1.1]"
       }
+    ],
+    "weight_g": 646,
+    "recordingCodecs": [
+      "XAVC S-I 10-bit 4:2:2",
+      "XAVC S (H.264)",
+      "XAVC HS (H.265)"
+    ],
+    "sensorModes": [
+      "Super 35 6K oversample → 4K",
+      "Super 35 HD"
+    ],
+    "resolutions": [
+      "3840×2160 (UHD)",
+      "1920×1080 (HD)"
     ]
   },
   "Panasonic Lumix BS1H": {
@@ -5207,6 +5286,223 @@ const cameraData = {
       }
     ],
     "timecode": []
+  },
+  "Canon EOS R5 C": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 680,
+    "recordingCodecs": [
+      "Cinema RAW Light (CRM) 12-bit",
+      "XF-AVC (MXF) 4:2:2 10-bit (ALL-I/Long GOP)",
+      "HEVC/H.265 4:2:2 10-bit / 4:2:0 10-bit",
+      "H.264/AVC 4:2:0 8-bit"
+    ],
+    "sensorModes": [
+      "Full-Frame 8K",
+      "Super 35 (5.9K crop)",
+      "Super 16 (2.9K crop)"
+    ],
+    "resolutions": [
+      "8192×4320 (8K)",
+      "5952×3140 (5.9K)",
+      "2976×1570 (2.9K)",
+      "4096×2160 (DCI 4K)",
+      "3840×2160 (UHD)",
+      "1920×1080 (HD)"
+    ]
+  },
+  "Blackmagic URSA Broadcast G2": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 3550,
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "Apple ProRes",
+      "H.265/HEVC",
+      "H.264/AVC"
+    ],
+    "sensorModes": [
+      "6K film (digital film mode)",
+      "UHD 4K video",
+      "HD"
+    ],
+    "resolutions": [
+      "3840×2160 (UHD)",
+      "1920×1080 (HD)"
+    ]
+  },
+  "Kinefinity MAVO Edge 6K": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1600,
+    "recordingCodecs": [
+      "Apple ProRes 422 LT/422/422 HQ",
+      "Apple ProRes 4444/4444 XQ",
+      "CinemaDNG (uncompressed RAW)"
+    ],
+    "sensorModes": [
+      "Full-Frame 3:2 6K Open Gate",
+      "FF 6K 2.4:1",
+      "FF 5.7K 3:2",
+      "S35/APS-C modes"
+    ],
+    "resolutions": [
+      "6016×2520 (6K 2.4:1)",
+      "5760×3700 (5.7K 3:2)",
+      "5120×2700 (5K DCI)",
+      "3840×2160 (UHD)"
+    ]
+  },
+  "Z CAM E2-F6": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1090,
+    "recordingCodecs": [
+      "ZRAW 12-bit",
+      "Apple ProRes 422 family",
+      "H.265/HEVC",
+      "H.264/AVC"
+    ],
+    "sensorModes": [
+      "Full-Frame 6K Open Gate",
+      "C6K",
+      "6K 2.4:1",
+      "6K UHD"
+    ],
+    "resolutions": [
+      "6064×4040 (Open Gate)",
+      "6064×3196 (C6K)",
+      "6064×2560 (6K 2.4:1)",
+      "5760×3240 (6K UHD)",
+      "4096×2160 (DCI 4K)",
+      "3840×2160 (UHD)"
+    ]
+  },
+  "RED DSMC2 MONSTRO 8K VV": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1520,
+    "recordingCodecs": [
+      "REDCODE RAW (R3D)",
+      "Apple ProRes 422 HQ/422/422 LT (to 2K)",
+      "Avid DNxHR/HD"
+    ],
+    "sensorModes": [
+      "Full-Frame/VV 8K"
+    ],
+    "resolutions": [
+      "8192×4320 (8K 17:9)",
+      "8192×3456 (8K 2.4:1)",
+      "4096×2160 (4K)",
+      "2048×1080 (2K)"
+    ]
+  },
+  "RED DSMC2 HELIUM 8K S35": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1520,
+    "recordingCodecs": [
+      "REDCODE RAW (R3D)",
+      "Apple ProRes",
+      "Avid DNxHR/HD"
+    ],
+    "sensorModes": [
+      "Super 35 8K"
+    ],
+    "resolutions": [
+      "8192×4320 (8K 17:9)",
+      "8192×3456 (8K 2.4:1)",
+      "4096×2160 (4K)",
+      "2048×1080 (2K)"
+    ]
+  },
+  "RED DSMC2 GEMINI 5K S35": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1520,
+    "recordingCodecs": [
+      "REDCODE RAW (R3D)",
+      "Apple ProRes 4444/422 HQ/422/422 LT (to 4K/2K)",
+      "Avid DNxHR/HD"
+    ],
+    "sensorModes": [
+      "Super 35 5K"
+    ],
+    "resolutions": [
+      "5120×3000 (5K 17:9)",
+      "4096×2160 (4K)",
+      "2048×1080 (2K)"
+    ]
   },
   "None": {
     "powerDrawWatts": 0,
