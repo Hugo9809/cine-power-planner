@@ -315,7 +315,9 @@ const cageData = {
     "brand": "Tilta",
     "compatible": [
       "RED V-RAPTOR",
-      "RED V-RAPTOR X"
+      "RED V-RAPTOR X",
+      "RED V-RAPTOR 8K VV",
+      "RED V-RAPTOR 8K S35"
     ],
     "material": null,
     "weight_g": null,
