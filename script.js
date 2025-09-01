@@ -6870,6 +6870,12 @@ function collectAccessories() {
     gatherPower(devices.cameras[cameraSelect.value]);
     gatherPower(devices.monitors[monitorSelect.value]);
     gatherPower(devices.video[videoSelect.value]);
+    if (videoSelect.value) {
+        const rxName = videoSelect.value.replace(/ TX\b/, ' RX');
+        if (devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
+            gatherPower(devices.wirelessReceivers[rxName]);
+        }
+    }
     motorSelects.forEach(sel => gatherPower(devices.fiz.motors[sel.value]));
     controllerSelects.forEach(sel => gatherPower(devices.fiz.controllers[sel.value]));
     gatherPower(devices.fiz.distance[distanceSelect.value]);
@@ -6970,6 +6976,9 @@ function generateGearListHtml(info = {}) {
     const rigging = info.rigging
         ? info.rigging.split(',').map(r => r.trim()).filter(Boolean)
         : [];
+    const monitoringPrefs = info.monitoringPreferences
+        ? info.monitoringPreferences.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
     const addHandle = () => {
         if (!supportAccNoCages.includes(handleName)) {
@@ -7045,7 +7054,11 @@ function generateGearListHtml(info = {}) {
         batteryItems = `${count}x ${safeBatt}`;
     }
     addRow('Camera Batteries', batteryItems);
-    addRow('Monitoring Batteries', '');
+    let monitoringBatteryItems = '';
+    if (monitoringPrefs.includes('Directors Monitor 7 inch handheld')) {
+        monitoringBatteryItems = '3x Bebob 98 Micros';
+    }
+    addRow('Monitoring Batteries', monitoringBatteryItems);
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     if (selectedNames.viewfinder) {
@@ -7054,13 +7067,29 @@ function generateGearListHtml(info = {}) {
     if (selectedNames.monitor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
+    if (monitoringPrefs.includes('Directors Monitor 7 inch handheld')) {
+        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
+        const sevenInchNames = Object.keys(monitorsDb).filter(n => monitorsDb[n].screenSizeInches === 7).sort(localeSort);
+        const opts = sevenInchNames.map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`).join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+    }
     if (selectedNames.video) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
+        const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
+        if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
+            monitoringItems += `<br>1x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)}`;
+        }
     }
     addRow('Monitoring', monitoringItems);
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
+    if (monitoringPrefs.includes('Directors Monitor 7 inch handheld')) {
+        gripItems.push('C-Stand 20"');
+        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
+        gripItems.push('spigot');
+        gripItems.push('spigot');
+    }
     if (scenarios.includes('Tripod')) {
         const tripodDb = devices && devices.accessories && devices.accessories.tripods;
         if (tripodDb) {

@@ -1606,6 +1606,25 @@ const gear = {
   ]
 };
 
+// Automatically add a matching wireless receiver entry for every
+// transmitter defined in the video devices. This ensures the list of
+// receivers always covers all available transmitters without having to
+// manually maintain a separate list.
+const videoDevices = globalThis.devices && globalThis.devices.video ? globalThis.devices.video : {};
+for (const [txName, txData] of Object.entries(videoDevices)) {
+  const rxName = txName.replace(/\bTX\b/, 'RX');
+  if (!gear.wirelessReceivers[rxName]) {
+    gear.wirelessReceivers[rxName] = {
+      powerDrawWatts: txData.powerDrawWatts,
+      videoInputs: [],
+      videoOutputs: txData.videoOutputs || txData.videoInputs || [],
+      frequency: txData.frequency,
+      latencyMs: txData.latencyMs,
+      power: txData.power
+    };
+  }
+}
+
 if (typeof registerDevice === 'function') {
   registerDevice('viewfinders', gear.viewfinders);
   registerDevice('directorMonitors', gear.directorMonitors);
