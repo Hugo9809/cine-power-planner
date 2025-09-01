@@ -1606,6 +1606,9 @@ const gear = {
   ]
 };
 
+// Expose lenses at the top level for easier access
+gear.lenses = gear.accessories.lenses;
+
 // Automatically add a matching wireless receiver entry for every
 // transmitter defined in the video devices. This ensures the list of
 // receivers always covers all available transmitters without having to
