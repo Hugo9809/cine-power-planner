@@ -972,6 +972,24 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('Steadybag');
   });
 
+  test('Slider scenario adds Tango Roller and accessories', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Slider', sliderBowl: '75er bowl' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('1x Prosup Tango Roller (75er bowl)');
+    expect(text).toContain('2x Avenger Combo Stand 10 A1010CS 64-100 cm black');
+    expect(text).toContain('2x Avenger Combo Stand 20 A1020B 110-198 cm black');
+    expect(text).toContain('2x Apple Box Set / Bühnenkisten Set');
+    expect(text).toContain('1x Satz Paganinis');
+    expect(text).toContain('2x Sandsack');
+    expect(text).toContain('3x Bodenmatte');
+  });
+
   test('monitoring support cables grouped by type', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml();
