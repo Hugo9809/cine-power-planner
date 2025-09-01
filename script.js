@@ -29,7 +29,7 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 }
 
-if (typeof window !== 'undefined') {
+function setupOfflineIndicator() {
   const offlineIndicator = document.getElementById('offlineIndicator');
   const updateOnlineStatus = () => {
     if (!offlineIndicator) return;
@@ -38,6 +38,10 @@ if (typeof window !== 'undefined') {
   window.addEventListener('online', updateOnlineStatus);
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
+}
+
+if (typeof window !== 'undefined') {
+  setupOfflineIndicator();
 }
 
 // Use a Set for O(1) lookups when validating video output types
