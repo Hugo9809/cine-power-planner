@@ -76,6 +76,27 @@ const gear = {
         }
       ]
     },
+    "Atomos Sumo 19SE": {
+      "screenSizeInches": 19,
+      "brightnessNits": 1200,
+      "powerDrawWatts": 75,
+      "power": {
+        "input": {
+          "voltageRange": "12-16",
+          "type": "XLR 4-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "12G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "12G-SDI" }
+      ]
+    },
     "Sony PVM-A170 17\" OLED": {
       "screenSizeInches": 17,
       "brightnessNits": 250,
@@ -489,6 +510,23 @@ const gear = {
       },
       "ULCS Bracket 3/8 to 1/4": {
         "brand": "ULCS"
+      }
+    },
+    "batteries": {
+      "Sony NP-F970": {
+        "capacity": 47,
+        "mount": "NP-F",
+        "weight_g": 225
+      },
+      "Sony NP-F750": {
+        "capacity": 33,
+        "mount": "NP-F",
+        "weight_g": 220
+      },
+      "Sony NP-F550": {
+        "capacity": 16,
+        "mount": "NP-F",
+        "weight_g": 110
       }
     },
     "chargers": {
@@ -1436,6 +1474,48 @@ const gear = {
         "frontDiameterMm": 30,
         "clampOn": true,
         "tStop": 8
+      },
+      "Sigma 18–35mm f/1.8 DC HSM Art": {
+        "brand": "Sigma",
+        "frontDiameterMm": 82,
+        "clampOn": true,
+        "tStop": 1.8
+      },
+      "Sony FE 24–70mm f/2.8 G Master II": {
+        "brand": "Sony",
+        "frontDiameterMm": 82,
+        "clampOn": true,
+        "tStop": 2.8
+      },
+      "Sony FE 70–200mm f/2.8 G Master II": {
+        "brand": "Sony",
+        "frontDiameterMm": 77,
+        "clampOn": true,
+        "tStop": 2.8
+      },
+      "Minolta 28mm f/2.8": {
+        "brand": "Minolta",
+        "frontDiameterMm": 55,
+        "clampOn": true,
+        "tStop": 2.8
+      },
+      "Minolta 35mm f/1.4": {
+        "brand": "Minolta",
+        "frontDiameterMm": 72,
+        "clampOn": true,
+        "tStop": 1.4
+      },
+      "Minolta 50mm f/1.4": {
+        "brand": "Minolta",
+        "frontDiameterMm": 55,
+        "clampOn": true,
+        "tStop": 1.4
+      },
+      "Minolta 85mm f/1.8": {
+        "brand": "Minolta",
+        "frontDiameterMm": 55,
+        "clampOn": true,
+        "tStop": 1.8
       }
     },
     "tripodHeads": {

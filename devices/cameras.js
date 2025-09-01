@@ -989,7 +989,22 @@ const cameraData = {
         "notes": "Supports Sony E-mount electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 715,
+    "recordingCodecs": [
+      "XAVC S-I 10-bit 4:2:2",
+      "XAVC S 10-bit",
+      "XAVC HS (H.265)"
+    ],
+    "sensorModes": [
+      "Full-Frame 4K (oversampled)",
+      "Full-Frame HD",
+      "S35 crop 4K"
+    ],
+    "resolutions": [
+      "UHD 3840×2160 up to 120p",
+      "HD 1920×1080 up to 240p"
+    ]
   },
   "Sony FX6": {
     "powerDrawWatts": 18,
@@ -1243,6 +1258,72 @@ const cameraData = {
         "HD 1920×1080"
       ]
     },
+  "Sony FS7 II": {
+    "powerDrawWatts": 19,
+    "power": {
+      "input": {
+        "voltageRange": "12-17",
+        "type": "XLR 4-pin"
+      },
+      "batteryPlateSupport": [
+        { "type": "BP-U", "mount": "native", "notes": "" },
+        { "type": "V-Mount", "mount": "adapted", "notes": "" },
+        { "type": "Gold-Mount", "mount": "adapted", "notes": "" }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "D-Tap",
+          "voltage": "14.4V",
+          "wattage": 50,
+          "notes": "Via optional XDCA-FS7 extension unit, per port"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "14.4V",
+          "wattage": 50,
+          "notes": "Via optional XDCA-FS7 extension unit, per port"
+        }
+      ]
+    },
+    "videoOutputs": [
+      { "type": "3G-SDI" },
+      { "type": "HDMI" }
+    ],
+    "fizConnectors": [
+      { "type": "LANC", "notes": "Remote control" }
+    ],
+    "recordingMedia": [
+      { "type": "XQD Card", "notes": "" },
+      { "type": "SD Card", "notes": "for proxy/backup" }
+    ],
+    "viewfinder": [
+      { "type": "Sony FS7 EVF Port (Proprietary)", "notes": "For Sony viewfinder" },
+      { "type": "Integrated LCD monitor", "size": "3.5-inch", "resolution": "1280x720" }
+    ],
+    "lensMount": [
+      { "type": "E-mount", "mount": "native", "notes": "Supports Sony E-mount electronic lens data" },
+      { "type": "PL", "mount": "adapted", "notes": "No ARRI LDS or Cooke /i lens data" }
+    ],
+    "timecode": [
+      { "type": "BNC", "notes": "Timecode In/Out via XDCA-FS7" }
+    ],
+    "weight_g": 2070,
+    "recordingCodecs": [
+      "XAVC-I 4:2:2 10-bit",
+      "XAVC-L 4:2:2 10-bit",
+      "MPEG HD422"
+    ],
+    "sensorModes": [
+      "Super35 4K (DCI)",
+      "UHD 3840×2160",
+      "HD 1920×1080"
+    ],
+    "resolutions": [
+      "DCI 4K 4096×2160",
+      "UHD 3840×2160",
+      "HD 1920×1080"
+    ]
+  },
   "Canon C70": {
     "powerDrawWatts": 14.6,
     "power": {
@@ -1541,6 +1622,23 @@ const cameraData = {
         "type": "Genlock",
         "notes": "Yes, with optional Expansion Unit EU-V1 and EU-V2 (BNC jack, input only/also serves as SYNC OUT connector)"
       }
+    ],
+    "weight_g": 1750,
+    "recordingCodecs": [
+      "Cinema RAW Light",
+      "XF-AVC Intra 4:2:2 10-bit",
+      "XF-AVC Long GOP 4:2:2 10-bit"
+    ],
+    "sensorModes": [
+      "Super35 4K DCI",
+      "Super35 4K UHD",
+      "2K crop"
+    ],
+    "resolutions": [
+      "DCI 4K 4096×2160",
+      "UHD 3840×2160",
+      "2K 2048×1080",
+      "HD 1920×1080"
     ]
   },
   "Canon C400": {
@@ -1752,6 +1850,23 @@ const cameraData = {
         "type": "Genlock",
         "notes": "Yes, with optional Expansion Unit EU-V1 and EU-V2 (BNC jack, input only/also serves as SYNC OUT connector)"
       }
+    ],
+    "weight_g": 1750,
+    "recordingCodecs": [
+      "Cinema RAW Light",
+      "XF-AVC Intra 4:2:2 10-bit"
+    ],
+    "sensorModes": [
+      "Full-Frame 5.9K",
+      "Super35 4K crop",
+      "Super16 HD crop"
+    ],
+    "resolutions": [
+      "5.9K 5952×3140",
+      "DCI 4K 4096×2160",
+      "UHD 3840×2160",
+      "2K 2048×1080",
+      "HD 1920×1080"
     ]
   },
   "Blackmagic BMPCC 4K": {
@@ -1829,6 +1944,21 @@ const cameraData = {
         "type": "3.5mm Stereo",
         "notes": "Can also be used for Timecode input"
       }
+    ],
+    "weight_g": 680,
+    "recordingCodecs": [
+      "Blackmagic RAW (various bitrates)",
+      "ProRes 422 (various)"
+    ],
+    "sensorModes": [
+      "MFT 4K DCI",
+      "UHD 4K",
+      "HD (windowed high-fps)"
+    ],
+    "resolutions": [
+      "DCI 4K 4096×2160",
+      "UHD 3840×2160",
+      "HD 1920×1080"
     ]
   },
   "Blackmagic BMPCC 6K G2": {
@@ -2575,6 +2705,23 @@ const cameraData = {
         "type": "EXT Port (9-pin)",
         "notes": "Timecode In"
       }
+    ],
+    "weight_g": 950,
+    "recordingCodecs": [
+      "REDCODE RAW (R3D)",
+      "ProRes 422 HQ",
+      "ProRes 422"
+    ],
+    "sensorModes": [
+      "Super35 6K",
+      "S35 4K crop",
+      "S35 2K crop"
+    ],
+    "resolutions": [
+      "6K 6144×3240",
+      "5K 5120×2700",
+      "4K 4096×2160",
+      "2K 2048×1080"
     ]
   },
   "RED Komodo X": {

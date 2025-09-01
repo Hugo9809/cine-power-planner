@@ -3,7 +3,7 @@ const monitorData = {
   "SmallHD Ultra 7": {
     "screenSizeInches": 7,
     "brightnessNits": 2300,
-    "powerDrawWatts": 37.5,
+    "powerDrawWatts": 25,
     "power": {
       "input": {
         "voltageRange": "10-34",
@@ -819,7 +819,7 @@ const monitorData = {
   "SmallHD 703 UltraBright": {
     "screenSizeInches": 7,
     "brightnessNits": 2200,
-    "powerDrawWatts": 18,
+    "powerDrawWatts": 13,
     "power": {
       "input": {
         "voltageRange": "10-34",
@@ -840,6 +840,26 @@ const monitorData = {
       {
         "type": "3G-SDI"
       }
+    ]
+  },
+  "TVLogic F-7H mkII": {
+    "screenSizeInches": 7,
+    "brightnessNits": 3600,
+    "powerDrawWatts": 34,
+    "power": {
+      "input": {
+        "voltageRange": "6-17",
+        "type": "LEMO 2-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "videoInputs": [
+      { "type": "HDMI" },
+      { "type": "3G-SDI" }
+    ],
+    "videoOutputs": [
+      { "type": "3G-SDI" }
     ]
   },
   "None": {
