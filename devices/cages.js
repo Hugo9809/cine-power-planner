@@ -351,6 +351,10 @@ const cageData = {
   },
   "ARRI Studio 19mm Set ALEXA Mini (V-Mount)": {
     "brand": "ARRI",
+    "compatible": [
+      "Arri Alexa Mini",
+      "Arri Alexa Mini LF"
+    ],
     "kNumber": "KK.0015124",
     "rodStandard": "19mm",
     "batteryMount": "V-Mount"
