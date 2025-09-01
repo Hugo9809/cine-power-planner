@@ -22,6 +22,7 @@ that future visits work offline and pick up updates automatically.
 - [Install as an App](#install-as-an-app)
 - [Browser Support](#browser-support)
 - [Development](#development)
+- [Feedback and Support](#feedback-and-support)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
@@ -81,9 +82,11 @@ User-submitted battery runtimes are combined using a weighted average to better 
 
 1. Download or clone this repository.
 2. Open `index.html` in a modern browser.
-3. (Optional) Serve the folder over HTTP to enable the service worker and other Progressive Web App features:
+3. (Optional) Serve the folder over HTTP to enable the service worker and other Progressive Web App features. You can use any static file server, for example:
    ```bash
    npx http-server
+   # or
+   python -m http.server
    ```
    The planner then works fully offline and updates automatically.
 
@@ -152,6 +155,10 @@ npm run check-consistency
 ```
 
 `npm run normalize` applies various cleanup routines to unify connector names and expand shorthand entries. `npm run check-consistency` confirms that required fields are present and raises an error if anything is missing. Append `--help` to either command for usage details.
+
+## Feedback and Support
+
+If you run into problems, have questions, or want to suggest new features, please open an issue on GitHub. Community feedback helps improve the planner for everyone.
 
 ## Contributing
 
