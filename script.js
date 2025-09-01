@@ -6683,7 +6683,7 @@ function generatePrintableOverview() {
 function collectAccessories() {
     const cameraSupport = [];
     const misc = [];
-    const chargers = [];
+    const chargers = {};
     const fizCables = [];
     const acc = devices.accessories || {};
 
@@ -6698,7 +6698,10 @@ function collectAccessories() {
         }
         if (acc.chargers) {
             for (const [name, charger] of Object.entries(acc.chargers)) {
-                if (!charger.mount || charger.mount === mount) chargers.push(name);
+                if (!charger.mount || charger.mount === mount) {
+                    const slots = charger.slots || 1;
+                    if (!chargers[slots]) chargers[slots] = name;
+                }
             }
         }
     }
@@ -6767,7 +6770,7 @@ function collectAccessories() {
 
     return {
         cameraSupport: [...new Set(cameraSupport)],
-        chargers: [...new Set(chargers)],
+        chargers,
         fizCables: [...new Set(fizCables)],
         misc: [...new Set(misc)]
     };
@@ -6815,7 +6818,7 @@ function generateGearListHtml(info = {}) {
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargerOptions, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
     const labels = {
@@ -6862,7 +6865,38 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Batteries', batteryItems);
     addRow('Monitoring Batteries', '');
-    addRow('Chargers', formatItems(chargersAcc));
+
+    const monitoringBatteryCountElem = document.getElementById('monitoringBatteryCount');
+    const monitoringBatteryCount = monitoringBatteryCountElem ? parseInt(monitoringBatteryCountElem.textContent, 10) : 0;
+    const cameraBatteryCount = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : 0;
+    const totalBatteryCount = (isNaN(cameraBatteryCount) ? 0 : cameraBatteryCount) +
+        (isNaN(monitoringBatteryCount) ? 0 : monitoringBatteryCount);
+
+    let chargerItems = '';
+    if (totalBatteryCount > 0) {
+        let remaining = totalBatteryCount;
+        let quad = Math.floor(remaining / 4);
+        remaining %= 4;
+        let dual = 0;
+        let single = 0;
+        if (remaining === 1) {
+            if (totalBatteryCount === 1 && chargerOptions[1]) {
+                single = 1;
+            } else {
+                dual = 1;
+            }
+        } else if (remaining === 2) {
+            dual = 1;
+        } else if (remaining === 3) {
+            quad += 1;
+        }
+        const chargerLines = [];
+        if (quad && chargerOptions[4]) chargerLines.push(`${quad}x ${escapeHtml(chargerOptions[4])}`);
+        if (dual && chargerOptions[2]) chargerLines.push(`${dual}x ${escapeHtml(chargerOptions[2])}`);
+        if (single && chargerOptions[1]) chargerLines.push(`${single}x ${escapeHtml(chargerOptions[1])}`);
+        chargerItems = chargerLines.join('<br>');
+    }
+    addRow('Chargers', chargerItems);
     let monitoringItems = '';
     if (selectedNames.viewfinder) {
         monitoringItems += `<strong>Viewfinder</strong><br>- 1x ${escapeHtml(selectedNames.viewfinder)}`;

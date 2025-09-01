@@ -8641,9 +8641,17 @@ let devices={
       "ULCS Bracket 3/8 to 1/4": { "brand": "ULCS" }
     },
     "chargers": {
+      "Single V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 1
+      },
       "Dual V-Mount Charger": {
         "mount": "V-Mount",
         "slots": 2
+      },
+      "Quad V-Mount Charger": {
+        "mount": "V-Mount",
+        "slots": 4
       }
     },
     "cables": {
@@ -8687,7 +8695,8 @@ let devices={
           "lengthM": 0.6,
           "connectors": ["CAM (7-pin)", "LANC + D-Tap"],
           "orientation": "straight",
-          "useCase": ["Run/Stop", "Power"]
+        "useCase": ["Run/Stop", "Power"]
+        },
         "D-Tap to Lemo-2-pin Cable 0,3m": {
           "lengthM": 0.3,
           "connectors": ["D-Tap", "Lemo 2-pin"],

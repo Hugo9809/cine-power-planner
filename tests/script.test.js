@@ -58,7 +58,11 @@ describe('script.js functions', () => {
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
         cages: { 'Universal Cage': { compatible: ['CamA'] } },
-        chargers: { 'Dual V-Mount Charger': { mount: 'V-Mount' } },
+        chargers: {
+          'Single V-Mount Charger': { mount: 'V-Mount', slots: 1 },
+          'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2 },
+          'Quad V-Mount Charger': { mount: 'V-Mount', slots: 4 }
+        },
         cables: {
           power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
           fiz: { 'LBUS to LBUS': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' } },
@@ -155,6 +159,25 @@ describe('script.js functions', () => {
     cageSelect.value = 'Cage2';
     cageSelect.dispatchEvent(new Event('change', { bubbles: true }));
     expect(gearList.innerHTML).toContain('Cage2');
+  });
+
+  test('suggests charger counts based on total battery count', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    document.getElementById('batteryCount').textContent = '9';
+    const html = script.generateGearListHtml();
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const chargerIndex = rows.findIndex(r => r.textContent === 'Chargers');
+    const itemsRow = rows[chargerIndex + 1];
+    expect(itemsRow.innerHTML).toContain('2x Quad V-Mount Charger');
+    expect(itemsRow.innerHTML).toContain('1x Dual V-Mount Charger');
   });
 
   test('shows runtime average note when more than four user entries', () => {
@@ -853,6 +876,7 @@ describe('script.js functions', () => {
       addOpt('controller1Select', 'ControllerA');
       addOpt('distanceSelect', 'DistA');
       addOpt('batterySelect', 'BattA');
+      document.getElementById('batteryCount').textContent = '2';
       const html = generateGearListHtml({ projectName: 'Proj', dop: 'DopName' });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
