@@ -417,6 +417,37 @@ const cameraData = {
         "type": "EXT LEMO 7-pin",
         "notes": "For multi-camera sync"
       }
+    ],
+    "weight_g": 2900,
+    "recordingCodecs": [
+      "ARRIRAW MXF",
+      "Apple ProRes 4444 XQ",
+      "Apple ProRes 4444",
+      "Apple ProRes 422 HQ",
+      "Apple ProRes 422",
+      "Apple ProRes 422 LT"
+    ],
+    "sensorModes": [
+      "4.6K 3:2 Open Gate",
+      "4.6K 16:9",
+      "4K 16:9",
+      "4K 2:1",
+      "3.8K 16:9",
+      "3.3K 6:5",
+      "3K 1:1",
+      "2.7K 8:9",
+      "2K 16:9 S16"
+    ],
+    "resolutions": [
+      "4608x3164",
+      "4608x2592",
+      "4096x2304",
+      "4096x2048",
+      "3840x2160",
+      "3328x2790",
+      "3072x3072",
+      "2743x3086",
+      "2048x1152"
     ]
   },
   "Arri Amira": {
@@ -1843,6 +1874,24 @@ const cameraData = {
         "type": "Genlock",
         "notes": "DIN1.0 / 2.3 (shared with Sync & Return)"
       }
+    ],
+    "weight_g": 1550,
+    "recordingCodecs": [
+      "Cinema RAW Light (LT/ST/HQ)",
+      "XF-AVC",
+      "XF-AVC S",
+      "XF-HEVC S"
+    ],
+    "sensorModes": [
+      "Full Frame 6K",
+      "Super 35",
+      "Super 16"
+    ],
+    "resolutions": [
+      "6K",
+      "4K DCI",
+      "4K UHD",
+      "2K/HD"
     ]
   },
   "Canon C500 Mk II": {
@@ -2170,6 +2219,23 @@ const cameraData = {
         "type": "3.5mm Stereo",
         "notes": "Also for LTC timecode"
       }
+    ],
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "Apple ProRes"
+    ],
+    "sensorModes": [
+      "Super 35"
+    ],
+    "resolutions": [
+      "6144x3456",
+      "6144x2560",
+      "5744x3024",
+      "4096x2160",
+      "3840x2160",
+      "3728x3104",
+      "2880x1512",
+      "1920x1080"
     ]
   },
   "Blackmagic BMPCC 6K": {
@@ -2252,6 +2318,24 @@ const cameraData = {
         "type": "3.5mm Stereo",
         "notes": "Can also be used for Timecode input"
       }
+    ],
+    "weight_g": 900,
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "Apple ProRes"
+    ],
+    "sensorModes": [
+      "Super 35"
+    ],
+    "resolutions": [
+      "6144x3456",
+      "6144x2560",
+      "5744x3024",
+      "4096x2160",
+      "3840x2160",
+      "3728x3104",
+      "2868x1512",
+      "1920x1080"
     ]
   },
   "Blackmagic Pocket Cinema Camera 6K Pro": {
@@ -2465,6 +2549,20 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode Input (Reference Inputs: Tri-Sync/Black Burst/Timecode)"
       }
+    ],
+    "weight_g": 2700,
+    "recordingCodecs": [
+      "Blackmagic RAW"
+    ],
+    "sensorModes": [
+      "Super 35"
+    ],
+    "resolutions": [
+      "12288x6480",
+      "8192x4320",
+      "6144x3240",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "Blackmagic URSA Cine": {
@@ -2602,6 +2700,18 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "Blackmagic RAW"
+    ],
+    "sensorModes": [
+      "Large Format (36x24 / 65mm variant per model)"
+    ],
+    "resolutions": [
+      "12288x8040",
+      "12288x6480",
+      "8192x4320",
+      "4096x2160"
     ]
   },
   "Blackmagic PYXIS 6K": {
@@ -2675,6 +2785,19 @@ const cameraData = {
         "type": "3.5mm Stereo",
         "notes": "Can be used for Timecode input"
       }
+    ],
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "Apple ProRes (selected modes)"
+    ],
+    "sensorModes": [
+      "Full Frame / S35 crops (per mode)"
+    ],
+    "resolutions": [
+      "6144x3456",
+      "4096x2160",
+      "3840x2160",
+      "1920x1080"
     ]
   },
   "Blackmagic PYXIS 12K": {
@@ -2748,6 +2871,25 @@ const cameraData = {
         "type": "3.5mm Stereo",
         "notes": "Can be used for Timecode input"
       }
+    ],
+    "recordingCodecs": [
+      "Blackmagic RAW"
+    ],
+    "sensorModes": [
+      "Full Frame Open Gate",
+      "16:9",
+      "17:9",
+      "2.4:1",
+      "6:5"
+    ],
+    "resolutions": [
+      "12288x8040",
+      "12288x6912",
+      "12288x6480",
+      "12288x5112",
+      "9648x8040",
+      "8192x4320",
+      "4096x2160"
     ]
   },
   "RED Komodo 6k": {
@@ -3069,6 +3211,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "Full Frame 8K VV",
+      "FF/S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "V-RAPTOR® X XL 8K VV": {
@@ -3176,6 +3331,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "Full Frame 8K VV (Global Shutter)",
+      "FF/S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "V-RAPTOR® XL 8K S35": {
@@ -3283,6 +3451,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "S35 8K",
+      "S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "V-RAPTOR® X XL 8K S35": {
@@ -3390,6 +3571,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "S35 8K (Global Shutter)",
+      "S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "V-Raptor 8k S35": {
@@ -3465,6 +3659,20 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "weight_g": 1814,
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "S35 8K",
+      "Lower-resolution S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "V-Raptor X 8k S35": {
@@ -3540,6 +3748,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "S35 8K (Global Shutter)",
+      "S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "V-Raptor 8k VV": {
@@ -3615,6 +3836,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "Full Frame 8K VV",
+      "Lower-resolution FF/S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "V-Raptor X 8k VV": {
@@ -3690,6 +3924,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "Full Frame 8K VV (Global Shutter)",
+      "FF/S35 windows"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "RED Scarlet-W (Dragon Sensor)": {
@@ -3761,6 +4008,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)"
+    ],
+    "sensorModes": [
+      "S35 5K",
+      "S35 windows"
+    ],
+    "resolutions": [
+      "5120x2700",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "RED Epic-W (Helium 8K S35)": {
@@ -3832,6 +4092,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)",
+      "Avid DNx (selected modes)"
+    ],
+    "sensorModes": [
+      "S35 8K"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "RED Weapon (Helium 8K S35/VV)": {
@@ -3903,6 +4176,20 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW",
+      "Apple ProRes (up to 4K)",
+      "Avid DNx (selected modes)"
+    ],
+    "sensorModes": [
+      "S35 8K (Helium)",
+      "FF/VV (per configuration)"
+    ],
+    "resolutions": [
+      "8192x4320",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "RED Epic Dragon (6K)": {
@@ -3974,6 +4261,18 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW"
+    ],
+    "sensorModes": [
+      "S35 6K"
+    ],
+    "resolutions": [
+      "6144x3160",
+      "5120x2700",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "RED Scarlet Dragon (5K)": {
@@ -4045,6 +4344,19 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "weight_g": 2268,
+    "recordingCodecs": [
+      "REDCODE RAW"
+    ],
+    "sensorModes": [
+      "S35 6K / 5K windows (per mode)"
+    ],
+    "resolutions": [
+      "6144x3160",
+      "5120x2700",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "RED Epic (Mysterium-X Sensor)": {
@@ -4116,6 +4428,17 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "recordingCodecs": [
+      "REDCODE RAW"
+    ],
+    "sensorModes": [
+      "S35 5K"
+    ],
+    "resolutions": [
+      "5120x2700",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "RED Scarlet (Mysterium-X Sensor)": {
@@ -4187,6 +4510,18 @@ const cameraData = {
         "type": "BNC",
         "notes": "Timecode In/Out"
       }
+    ],
+    "weight_g": 2268,
+    "recordingCodecs": [
+      "REDCODE RAW"
+    ],
+    "sensorModes": [
+      "S35 5K"
+    ],
+    "resolutions": [
+      "5120x2700",
+      "4096x2160",
+      "2048x1080"
     ]
   },
   "Panasonic Lumix S5 II": {
@@ -4260,7 +4595,23 @@ const cameraData = {
         "notes": "Supports L-Mount electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 657,
+    "recordingCodecs": [
+      "H.265/HEVC",
+      "H.264/AVC"
+    ],
+    "sensorModes": [
+      "FF 3:2 Open Gate",
+      "FF 17:9/16:9"
+    ],
+    "resolutions": [
+      "5952x3968",
+      "5888x3312",
+      "4096x2160",
+      "3840x2160",
+      "1920x1080"
+    ]
   },
   "Panasonic Lumix GH6": {
     "powerDrawWatts": 5,
@@ -4337,7 +4688,25 @@ const cameraData = {
         "notes": "Supports Micro Four Thirds electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 739,
+    "recordingCodecs": [
+      "Apple ProRes 422 HQ",
+      "Apple ProRes 422",
+      "H.265/HEVC",
+      "H.264/AVC"
+    ],
+    "sensorModes": [
+      "MFT 17:9",
+      "MFT 4:3 Anamorphic"
+    ],
+    "resolutions": [
+      "5728x3024",
+      "5760x4320",
+      "4096x2160",
+      "3840x2160",
+      "1920x1080"
+    ]
   },
   "Sony A7S III": {
     "powerDrawWatts": 5,
@@ -4505,7 +4874,24 @@ const cameraData = {
         "notes": "Supports Fujifilm X electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "recordingCodecs": [
+      "Apple ProRes 422 HQ",
+      "Apple ProRes 422",
+      "Apple ProRes 422 LT",
+      "H.265/HEVC",
+      "H.264/AVC"
+    ],
+    "sensorModes": [
+      "APS-C 3:2 Open Gate",
+      "APS-C 17:9/16:9"
+    ],
+    "resolutions": [
+      "6240x4160",
+      "4096x2160",
+      "3840x2160",
+      "1920x1080"
+    ]
   },
   "DJI Ronin 4D 6K": {
     "powerDrawWatts": 40,
@@ -4819,6 +5205,21 @@ const cameraData = {
         "type": "BNC",
         "notes": "Data Input/Output [2.3]"
       }
+    ],
+    "recordingCodecs": [
+      "H.265/HEVC",
+      "H.264/AVC"
+    ],
+    "sensorModes": [
+      "FF 3:2 Open Gate",
+      "FF 17:9/16:9"
+    ],
+    "resolutions": [
+      "5952x3968",
+      "5888x3312",
+      "4096x2160",
+      "3840x2160",
+      "1920x1080"
     ]
   },
   "Sony ZV-E1": {
@@ -4881,7 +5282,20 @@ const cameraData = {
         "notes": "Supports Sony E-mount electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 483,
+    "recordingCodecs": [
+      "XAVC S-I (All-Intra)",
+      "XAVC S (H.264)",
+      "XAVC HS (H.265)"
+    ],
+    "sensorModes": [
+      "FF 16:9/UHD"
+    ],
+    "resolutions": [
+      "3840x2160",
+      "1920x1080"
+    ]
   },
   "Fujifilm X-M5": {
     "powerDrawWatts": 5.5,
@@ -5423,7 +5837,22 @@ const cameraData = {
         "notes": "Supports L-Mount electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 768,
+    "recordingCodecs": [
+      "Apple ProRes 422 HQ (SSD)",
+      "H.265/HEVC",
+      "H.264/AVC"
+    ],
+    "sensorModes": [
+      "FF 3:2 Open Gate",
+      "FF 16:9"
+    ],
+    "resolutions": [
+      "6K",
+      "4K",
+      "1920x1080"
+    ]
   },
   "Canon EOS R5 C": {
     "powerDrawWatts": 0,
