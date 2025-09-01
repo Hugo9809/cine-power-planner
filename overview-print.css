@@ -21,6 +21,12 @@ body.dark-mode {
   color: #000 !important;
 }
 
+#overviewDialogContent {
+  max-height: none;
+  overflow: visible;
+  background: #fff;
+}
+
 #overviewDialogContent h1,
 #overviewDialogContent h2,
 #overviewDialogContent h3 {

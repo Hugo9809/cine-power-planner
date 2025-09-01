@@ -6571,8 +6571,9 @@ function generatePrintableOverview() {
     overviewDialog.innerHTML = overviewHtml;
     const content = overviewDialog.querySelector('#overviewDialogContent');
 
-    const darkModeActive = document.body.classList.contains('dark-mode');
+    const darkModeActive = document.documentElement.classList.contains('dark-mode');
     if (darkModeActive) {
+        document.documentElement.classList.remove('dark-mode');
         document.body.classList.remove('dark-mode');
     }
     if (document.body.classList.contains('pink-mode')) {
@@ -6581,6 +6582,7 @@ function generatePrintableOverview() {
 
     const restoreTheme = () => {
         if (darkModeActive) {
+            document.documentElement.classList.add('dark-mode');
             document.body.classList.add('dark-mode');
         }
     };
