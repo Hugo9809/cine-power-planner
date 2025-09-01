@@ -806,14 +806,36 @@
       <div class="form-row"><label for="dop">DoP:<input type="text" id="dop" name="dop"></label></div>
       <div class="form-row"><label for="prepStart">Prep Days:<input type="date" id="prepStart" name="prepStart"> to <input type="date" id="prepEnd" name="prepEnd"></label></div>
       <div class="form-row"><label for="shootStart">Shooting Days:<input type="date" id="shootStart" name="shootStart"> to <input type="date" id="shootEnd" name="shootEnd"></label></div>
-      <div class="form-row"><label for="deliveryResolution">Delivery Resolution:<input type="text" id="deliveryResolution" name="deliveryResolution"></label></div>
-      <div class="form-row"><label for="recordingResolution">Recording Resolution:<input type="text" id="recordingResolution" name="recordingResolution"></label></div>
+      <div class="form-row"><label for="deliveryResolution">Delivery Resolution:<select id="deliveryResolution" name="deliveryResolution">
+          <option value=""></option>
+          <option value="720p">720p</option>
+          <option value="1080p">1080p</option>
+          <option value="2K">2K</option>
+          <option value="3.2K UHD">3.2K UHD</option>
+          <option value="4K">4K</option>
+          <option value="5K">5K</option>
+          <option value="6K">6K</option>
+          <option value="8K">8K</option>
+          <option value="12K">12K</option>
+        </select></label></div>
+      <div class="form-row"><label for="recordingResolution">Recording Resolution:<select id="recordingResolution" name="recordingResolution">
+          <option value=""></option>
+          <option value="720p">720p</option>
+          <option value="1080p">1080p</option>
+          <option value="2K">2K</option>
+          <option value="3.2K UHD">3.2K UHD</option>
+          <option value="4K">4K</option>
+          <option value="5K">5K</option>
+          <option value="6K">6K</option>
+          <option value="8K">8K</option>
+          <option value="12K">12K</option>
+        </select></label></div>
       <div class="form-row"><label for="aspectRatio">Aspect Ratio:<input type="text" id="aspectRatio" name="aspectRatio"></label></div>
       <div class="form-row"><label for="codec">Codec:<input type="text" id="codec" name="codec"></label></div>
       <div class="form-row"><label for="baseFrameRate">Base Frame Rate:<input type="text" id="baseFrameRate" name="baseFrameRate"></label></div>
       <div class="form-row"><label for="lenses">Lenses:<input type="text" id="lenses" name="lenses"></label></div>
-      <div class="form-row"><label for="requiredScenarios">16. What required scenarios do we have for this shoot?
-        <select id="requiredScenarios" name="requiredScenarios" multiple size="8">
+      <div class="form-row"><label for="requiredScenarios">What required scenarios do we have for this shoot?
+        <select id="requiredScenarios" name="requiredScenarios" multiple size="25">
           <option value="Indoor">Indoor</option>
           <option value="Outdoor">Outdoor</option>
           <option value="Studio">Studio</option>
@@ -841,8 +863,8 @@
           <option value="Dolly Remote handle">Dolly Remote handle</option>
         </select>
       </label></div>
-      <div class="form-row"><label for="rigging">17. How would you like to have your camera rigged?
-        <select id="rigging" name="rigging" multiple size="8">
+      <div class="form-row"><label for="rigging">How would you like to have your camera rigged?
+        <select id="rigging" name="rigging" multiple size="15">
           <option value="Shoulder rig">Shoulder rig</option>
           <option value="Hand Grips">Hand Grips</option>
           <option value="Teradek and Battery belt">Teradek and Battery belt</option>
@@ -861,7 +883,7 @@
         </select>
       </label></div>
       <div class="form-row"><label for="monitoringPreferences">Monitoring Preferences:
-        <select id="monitoringPreferences" name="monitoringPreferences" multiple size="8">
+        <select id="monitoringPreferences" name="monitoringPreferences" multiple size="18">
           <option value="VF Clean Feed">VF Clean Feed</option>
           <option value="Onboard Clean Feed">Onboard Clean Feed</option>
           <option value="Surroundview (if available)">Surroundview (if available)</option>
@@ -890,13 +912,8 @@
           <option value="Slider">Slider</option>
         </select>
       </label></div>
-      <div class="form-row"><label for="filters">Filters:
-        <select id="filters" name="filters" multiple size="4">
-          <option value="ND">ND</option>
-          <option value="Polarizer">Polarizer</option>
-          <option value="Diffusion">Diffusion</option>
-          <option value="Clear">Clear</option>
-        </select>
+      <div class="form-row"><label for="filter">Filter:
+        <select id="filter" name="filter"></select>
       </label></div>
       <menu>
         <button type="reset" id="projectCancel">Cancel</button>

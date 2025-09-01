@@ -138,6 +138,25 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('Universal Cage');
   });
 
+  test('gear list updates when device selection changes', () => {
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.close = jest.fn();
+    const cameraSelect = document.getElementById('cameraSelect');
+    cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
+    cameraSelect.value = 'CamA';
+    const cageSelect = document.getElementById('cageSelect');
+    cageSelect.innerHTML = '<option value="Cage1">Cage1</option><option value="Cage2">Cage2</option>';
+    cageSelect.value = 'Cage1';
+    document.getElementById('projectName').value = 'Proj';
+    const projectForm = document.getElementById('projectForm');
+    projectForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const gearList = document.getElementById('gearListOutput');
+    expect(gearList.innerHTML).toContain('Cage1');
+    cageSelect.value = 'Cage2';
+    cageSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(gearList.innerHTML).toContain('Cage2');
+  });
+
   test('shows runtime average note when more than four user entries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -861,8 +880,49 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain('MonA - incl. Sunhood<br>VidA');
+    expect(html).toContain('<strong>Onboard Monitor</strong> - MonA - incl. Sunhood<br><strong>Wireless Transmitter</strong> - VidA');
     expect(html).not.toContain('MonA, VidA');
+  });
+
+  test('gear list includes battery count in camera batteries row', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('batterySelect', 'BattA');
+    document.getElementById('batteryCount').textContent = '6';
+    const html = generateGearListHtml();
+    expect(html).toContain('6x BattA');
+  });
+
+  test('alert shown if battery cannot power setup over pins when generating gear list', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    devices.batteries.BattA.pinA = 0.1;
+    script.updateCalculations();
+    const setupSelectElem = document.getElementById('setupSelect');
+    setupSelectElem.innerHTML = '<option value="Test">Test</option>';
+    setupSelectElem.value = 'Test';
+    const dialog = document.getElementById('projectDialog');
+    dialog.showModal = jest.fn();
+    document.getElementById('generateGearListBtn').click();
+    const current = (23 / 12).toFixed(2);
+    expect(alert).toHaveBeenCalledWith(
+      texts.en.warnPinExceeded.replace('{current}', current).replace('{max}', '0.1')
+    );
+    expect(dialog.showModal).not.toHaveBeenCalled();
   });
 
   test('viewfinder is auto-added for Alexa Mini and Amira', () => {

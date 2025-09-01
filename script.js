@@ -6,6 +6,7 @@
 // would attempt to create a new lexical binding and throw a SyntaxError in
 // browsers that already have the global property. `var` simply reuses the
 // existing global variable if present.
+/* global filterOptions */
 var LZString;
 try {
   LZString = require('lz-string');
@@ -1556,6 +1557,7 @@ if (gearListOutput) {
   }
 }
 
+let currentProjectInfo = null;
 let loadedSetupState = null;
 
 function getCurrentSetupState() {
@@ -3778,6 +3780,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   checkFizController();
   checkArriCompatibility();
   if (setupDiagramContainer) renderSetupDiagram();
+  refreshGearListIfVisible();
 }
 
 function getCurrentSetupKey() {
@@ -6031,10 +6034,35 @@ generateOverviewBtn.addEventListener('click', () => {
     generatePrintableOverview();
 });
 
+function batteryPinsSufficient() {
+    const batt = batterySelect && batterySelect.value;
+    if (!batt || batt === 'None' || !devices.batteries[batt]) return true;
+    const data = devices.batteries[batt];
+    const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+    if (!isFinite(totalCurrentLow)) return true;
+    return totalCurrentLow <= data.pinA;
+}
+
+function alertPinExceeded() {
+    const batt = batterySelect && batterySelect.value;
+    if (!batt || batt === 'None' || !devices.batteries[batt]) return;
+    const data = devices.batteries[batt];
+    const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+    alert(
+        texts[currentLang].warnPinExceeded
+            .replace('{current}', totalCurrentLow.toFixed(2))
+            .replace('{max}', data.pinA)
+    );
+}
+
 // Generate a printable gear list of the current setup
 generateGearListBtn.addEventListener('click', () => {
     if (!setupSelect.value) {
         alert(texts[currentLang].alertSelectSetupForOverview);
+        return;
+    }
+    if (!batteryPinsSufficient()) {
+        alertPinExceeded();
         return;
     }
     projectDialog.showModal();
@@ -6049,7 +6077,12 @@ if (projectCancelBtn) {
 if (projectForm) {
     projectForm.addEventListener('submit', e => {
         e.preventDefault();
+        if (!batteryPinsSufficient()) {
+            alertPinExceeded();
+            return;
+        }
         const info = collectProjectFormData();
+        currentProjectInfo = info;
         const html = generateGearListHtml(info);
         if (gearListOutput) {
             gearListOutput.innerHTML = html;
@@ -6761,7 +6794,7 @@ function collectProjectFormData() {
         rigging: multi('rigging'),
         monitoringPreferences: multi('monitoringPreferences'),
         tripodPreferences: multi('tripodPreferences'),
-        filters: multi('filters')
+        filter: val('filter')
     };
 }
 
@@ -6810,9 +6843,17 @@ function generateGearListHtml(info = {}) {
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
-    addRow('Matte box + filter', escapeHtml(info.filters || ''));
+    addRow('Matte box + filter', escapeHtml(info.filter || ''));
     addRow('LDS (FIZ)', join([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
-    addRow('Camera Batteries', escapeHtml(selectedNames.battery || ''));
+    let batteryItems = '';
+    if (selectedNames.battery) {
+        const count = batteryCountElem ? batteryCountElem.textContent : '';
+        const safeBatt = escapeHtml(selectedNames.battery);
+        batteryItems = count && count.trim() !== '–'
+            ? `${escapeHtml(count)}x ${safeBatt}`
+            : safeBatt;
+    }
+    addRow('Camera Batteries', batteryItems);
     addRow('Monitoring Batteries', '');
     addRow('Chargers', join(chargersAcc));
     let monitoringItems = '';
@@ -6823,7 +6864,7 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
     if (selectedNames.video) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + escapeHtml(selectedNames.video);
+        monitoringItems += (monitoringItems ? '<br>' : '') + `<strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
     }
     addRow('Monitoring', monitoringItems);
 
@@ -6835,6 +6876,10 @@ function generateGearListHtml(info = {}) {
     addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'for onboard monitor');
     addCable('D-Tap to Lemo-2-pin Cable 0,5m', 'spare');
     addCable('ultra slim 3G-SDI BNC cable 0,5m', 'for onboard monitor');
+    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare');
+    addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'for wireless transmitter');
+    addCable('D-Tap to Lemo-2-pin Cable 0,3m', 'spare');
+    addCable('ultra slim 3G-SDI BNC cable 0,5m', 'for wireless transmitter');
     addCable('ultra slim 3G-SDI BNC cable 0,5m', 'spare');
     const formatCableUsage = usageMap => {
         return Object.entries(usageMap).map(([name, uses]) => {
@@ -6974,6 +7019,13 @@ function ensureGearListActions() {
     deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
 }
 
+function refreshGearListIfVisible() {
+    if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
+    const html = generateGearListHtml(currentProjectInfo);
+    gearListOutput.innerHTML = html;
+    ensureGearListActions();
+    saveCurrentGearList();
+}
 
 // --- SESSION STATE HANDLING ---
 function saveCurrentSession() {
@@ -7525,6 +7577,7 @@ function initApp() {
     }
   }
   populateEnvironmentDropdowns();
+  populateFilterDropdown();
   setLanguage(currentLang);
   resetDeviceForm();
   restoreSessionState();
@@ -7546,6 +7599,21 @@ function populateEnvironmentDropdowns() {
     }
   }
 
+}
+
+function populateFilterDropdown() {
+  const filterSelect = document.getElementById('filter');
+  if (filterSelect && typeof filterOptions !== 'undefined' && Array.isArray(filterOptions)) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    filterSelect.appendChild(emptyOpt);
+    filterOptions.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f;
+      filterSelect.appendChild(opt);
+    });
+  }
 }
 
 if (document.readyState === "loading") {

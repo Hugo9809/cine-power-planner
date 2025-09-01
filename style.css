@@ -1179,6 +1179,15 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   body:not(.light-mode) .help-content {
     border-color: var(--control-border);
   }
+  body:not(.light-mode) .gear-table td {
+    border-top: 1px solid var(--inverse-text-color);
+    border-bottom: 1px solid var(--inverse-text-color);
+  }
+  body:not(.light-mode) .gear-table .category-row td {
+    border-top: 1px solid var(--inverse-text-color);
+    border-bottom: 1px solid var(--inverse-text-color);
+    color: var(--inverse-text-color);
+  }
   body:not(.light-mode).pink-mode .help-content { border-color: var(--accent-color); }
 }
 
@@ -1420,6 +1429,17 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border-bottom: 1px solid var(--accent-color);
   font-weight: bold;
   color: var(--accent-color);
+}
+
+.dark-mode .gear-table td {
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+}
+
+.dark-mode .gear-table .category-row td {
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+  color: var(--inverse-text-color);
 }
 
 #gearListOutput {
