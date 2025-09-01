@@ -465,6 +465,9 @@ const gear = {
       "ARRI Heated Eyecup HE-7": {
         "brand": "ARRI",
         "kNumber": "K2.0003898"
+      },
+      "SHAPE Telescopic Handle ARRI Rosette Kit 12\"": {
+        "brand": "SHAPE"
       }
     },
     "matteboxes": {

@@ -6943,6 +6943,12 @@ function generateGearListHtml(info = {}) {
         }
     }
     const supportAccNoCages = cameraSupportAcc.filter(item => !compatibleCages.includes(item));
+    const scenarios = info.requiredScenarios
+        ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+    if (scenarios.includes('Handheld') && scenarios.includes('Easyrig')) {
+        supportAccNoCages.push('SHAPE Telescopic Handle ARRI Rosette Kit 12"');
+    }
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses','sliderBowl'];
     const labels = {
@@ -7038,9 +7044,6 @@ function generateGearListHtml(info = {}) {
     if (info.monitoringPreferences) {
         monitoringSupportItems = `${escapeHtml(info.monitoringPreferences)}<br>${monitoringSupportItems}`;
     }
-    const scenarios = info.requiredScenarios
-        ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
     const gripItems = [];
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
