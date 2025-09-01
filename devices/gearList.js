@@ -1589,15 +1589,20 @@ const gear = {
     }
   },
   "filterOptions": [
-    "ND",
-    "Polarizer",
-    "Diffusion",
     "Clear",
-    "UV",
-    "Infrared",
-    "Graduated ND",
-    "Soft FX",
-    "Pro-Mist"
+    "IRND",
+    "FSND",
+    "Rota-Pol",
+    "Pol",
+    "ND Grad SE",
+    "ND Grad HE",
+    "BPM",
+    "WPM",
+    "PM",
+    "HBM",
+    "GG",
+    "Pearl",
+    "Soft FX"
   ]
 };
 
