@@ -10,7 +10,8 @@ const batteryData = {
     "capacity": 43,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 330
   },
   "Bebob V98micro": {
     "capacity": 95,
@@ -110,7 +111,8 @@ const batteryData = {
     "capacity": 210,
     "pinA": 16,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1020
   },
   "Swit PB-M98S (Mini V-Mount)": {
     "capacity": 98,
