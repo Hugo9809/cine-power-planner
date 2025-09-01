@@ -101,12 +101,19 @@ textarea {
   display: none !important;
 }
 
-/* Improve keyboard accessibility by clearly showing focus on interactive elements */
+/* Improve keyboard accessibility by clearly showing focus only when using the keyboard */
 button:focus,
 a:focus,
 input:focus,
 select:focus,
 textarea:focus {
+  outline: none;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
 }
