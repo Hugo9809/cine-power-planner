@@ -1002,7 +1002,7 @@ describe('script.js functions', () => {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
-    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7 inch handheld' });
+    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
     expect(html).toContain('<select id="gearListDirectorsMonitor7"');
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
@@ -1270,6 +1270,13 @@ describe('script.js functions', () => {
     expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
     expect(html).not.toContain('<td>Rigging</td>');
     expect(html).not.toContain('<td>Monitoring support</td>');
+  });
+
+  test('Directors handheld monitor appears under monitoring in project requirements', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
+    expect(html).toContain('Monitoring: Directors Monitor 7" handheld');
+    expect(html).not.toContain('Monitoring support: Directors Monitor 7" handheld');
   });
 
   test('sensor mode appears in project requirements when provided', () => {
