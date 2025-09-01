@@ -1028,6 +1028,20 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
+  test('Top handle extension or Rear Handle rigging adds handle extension set', () => {
+    const { generateGearListHtml } = script;
+    ['Top handle extension', 'Rear Handle'].forEach(rig => {
+      const html = generateGearListHtml({ rigging: rig });
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html;
+      const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+      const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+      expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+      const itemsRow = rows[cameraSupportIndex + 1];
+      expect(itemsRow.textContent).toContain('ARRI KK.0037820 Handle Extension Set');
+    });
+  });
+
   test('Carts and Transportation category includes default items', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml();

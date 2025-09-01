@@ -6950,6 +6950,12 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Handheld') && scenarios.includes('Easyrig')) {
         supportAccNoCages.push('SHAPE Telescopic Handle ARRI Rosette Kit 12"');
     }
+    const riggingSelections = info.rigging
+        ? info.rigging.split(',').map(s => s.trim())
+        : [];
+    if (riggingSelections.includes('Top handle extension') || riggingSelections.includes('Rear Handle')) {
+        supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
+    }
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
