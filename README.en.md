@@ -23,17 +23,19 @@ The app automatically uses your browser language on first load, and you can swit
 - Support for cameras with both V- and B-Mount battery plates.
 - Submit user runtime feedback with temperature for better estimates.
 - Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
+- Generate gear lists to compile selected gear and project requirements.
 
 ---
 
 ## 🔧 Features
 
 ### ✅ Setup Management
-- Save, load and delete multiple camera setups
+- Save, load and delete multiple camera setups (press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered)
 - Share a setup via link or clear the current configuration
 - Data is stored locally via `localStorage`
 - Import and export setups as JSON
 - Generate a printable overview for any saved setup
+- Generate gear lists for selected equipment and project requirements
 - Works fully offline – language, dark mode, setups and device data persist
 - Choose a **B‑Mount** or **V‑Mount** plate on supported cameras; the battery list adapts automatically
 
