@@ -133,6 +133,24 @@ const cameraData = {
   },
   "Arri Alexa Mini": {
     "powerDrawWatts": 84,
+    "weight_g": 2300,
+    "recordingCodecs": ["ARRIRAW", "ProRes 4444 XQ", "ProRes 4444", "ProRes 422 HQ", "ProRes 422", "ProRes 422 LT"],
+    "sensorModes": [
+      "S16 HD 1600×900",
+      "HD 2880×1620",
+      "2K 2868×1612",
+      "3.2K 3200×1800",
+      "UHD 3840×2160 (upsampled from 3.2K)",
+      "4:3 2.8K 2880×2160",
+      "ARRIRAW 16:9 2.8K 2880×1620",
+      "ARRIRAW Open Gate 3.4K 3424×2202"
+    ],
+    "resolutions": [
+      "HD 1920×1080",
+      "2K 2048×1152",
+      "3.2K 3200×1800",
+      "UHD 3840×2160"
+    ],
     "power": {
       "input": {
         "voltageRange": "11-34",
@@ -370,6 +388,21 @@ const cameraData = {
   },
   "Arri Amira": {
     "powerDrawWatts": 50,
+    "weight_g": 4100,
+    "recordingCodecs": ["ProRes 4444", "ProRes 422 HQ", "ProRes 422", "ProRes 422 LT", "MPEG-2 (AMIRA only)"],
+    "sensorModes": [
+      "S16 HD 1600×900",
+      "HD 2880×1620",
+      "2K 2868×1612",
+      "3.2K 3200×1800",
+      "ARRIRAW 16:9 2.8K 2880×1620"
+    ],
+    "resolutions": [
+      "HD 1920×1080",
+      "2K 2048×1152",
+      "3.2K 3200×1800",
+      "UHD 3840×2160 (via 3.2K upsample; option)"
+    ],
     "power": {
       "input": {
         "voltageRange": "10.5-34",
@@ -1071,6 +1104,19 @@ const cameraData = {
   },
   "Sony FX9": {
     "powerDrawWatts": 35.2,
+    "weight_g": 2000,
+    "recordingCodecs": ["XAVC-I 10-bit 4:2:2", "XAVC-L 10-bit 4:2:2", "MPEG HD 422"],
+    "sensorModes": [
+      "Full-Frame 6K oversample to 4K",
+      "Super35 4K (DCI 4096×2160)",
+      "Full-Frame HD",
+      "Super35 UHD"
+    ],
+    "resolutions": [
+      "DCI 4K 4096×2160 (S35)*",
+      "UHD 3840×2160",
+      "HD 1920×1080"
+    ],
     "power": {
       "input": {
         "voltageRange": "19.5",

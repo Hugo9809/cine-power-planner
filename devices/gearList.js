@@ -1130,6 +1130,120 @@ const gear = {
         "clampOn": true,
         "tStop": 3.5,
         "mount": "PL"
+      },
+      "ARRI/ZEISS Ultra Prime 16mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 20mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 24mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 32mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 40mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 50mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 65mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 85mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ARRI/ZEISS Ultra Prime 100mm T1.9": {
+        "brand": "ARRI/ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.9
+      },
+      "ZEISS Compact Zoom CZ.2 28–80mm T2.9": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.9
+      },
+      "ZEISS Compact Zoom CZ.2 70–200mm T2.9": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 2.9
+      },
+      "ZEISS Supreme Prime Radiance 50mm T1.5": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.5
+      },
+      "ZEISS Supreme Prime Radiance 85mm T1.5": {
+        "brand": "ZEISS",
+        "frontDiameterMm": 95,
+        "clampOn": true,
+        "tStop": 1.5
+      },
+      "Cooke Speed Panchro 18mm (P+S rehousing)": {
+        "brand": "Cooke (P+S rehoused)",
+        "frontDiameterMm": 100,
+        "clampOn": true,
+        "tStop": 2.3
+      },
+      "Cooke Speed Panchro 25mm (P+S rehousing)": {
+        "brand": "Cooke (P+S rehoused)",
+        "frontDiameterMm": 100,
+        "clampOn": true,
+        "tStop": 2.3
+      },
+      "Cooke Speed Panchro 35mm (P+S rehousing)": {
+        "brand": "Cooke (P+S rehoused)",
+        "frontDiameterMm": 100,
+        "clampOn": true,
+        "tStop": 2.3
+      },
+      "Cooke Speed Panchro 40mm (P+S rehousing)": {
+        "brand": "Cooke (P+S rehoused)",
+        "frontDiameterMm": 100,
+        "clampOn": true,
+        "tStop": 2.3
+      },
+      "Cooke Speed Panchro 75mm (P+S rehousing)": {
+        "brand": "Cooke (P+S rehoused)",
+        "frontDiameterMm": 100,
+        "clampOn": true,
+        "tStop": 2.3
+      },
+      "Laowa 24mm T8 2× Pro2be (3-lens set: Direct / 35° / Periscope)": {
+        "brand": "Laowa",
+        "frontDiameterMm": 30,
+        "clampOn": true,
+        "tStop": 8
       }
     },
     "tripodHeads": {

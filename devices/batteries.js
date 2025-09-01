@@ -16,13 +16,15 @@ const batteryData = {
     "capacity": 95,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 550
   },
   "Bebob V150micro": {
     "capacity": 143,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 770
   },
   "Bebob V200micro": {
     "capacity": 190,
@@ -52,7 +54,8 @@ const batteryData = {
     "capacity": 285,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1390
   },
   "Bebob B90cine": {
     "capacity": 86,
@@ -64,7 +67,8 @@ const batteryData = {
     "capacity": 155,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1000
   },
   "Bebob B290cine": {
     "capacity": 294,
