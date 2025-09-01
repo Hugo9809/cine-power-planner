@@ -112,6 +112,26 @@ describe('script.js functions', () => {
       .toBe(texts.en.dtapOk.replace('{max}', '5'));
   });
 
+  test('selected cage appears in camera support category of gear list', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    addOpt('cageSelect', 'Universal Cage');
+
+    const html = script.generateGearListHtml();
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[cameraSupportIndex + 1];
+    expect(itemsRow.textContent).toContain('Universal Cage');
+  });
+
   test('shows runtime average note when more than four user entries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);

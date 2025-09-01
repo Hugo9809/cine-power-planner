@@ -1031,6 +1031,10 @@ function setLanguage(lang) {
   videoLabelElem.textContent = texts[lang].videoLabel;
   videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
 
+  const cageLabelElem = document.getElementById("cageLabel");
+  cageLabelElem.textContent = texts[lang].cageLabel;
+  cageLabelElem.setAttribute("data-help", texts[lang].cageSelectHelp);
+
   const distanceLabelElem = document.getElementById("distanceLabel");
   distanceLabelElem.textContent = texts[lang].distanceLabel;
   distanceLabelElem.setAttribute("data-help", texts[lang].distanceSelectHelp);
@@ -1215,7 +1219,7 @@ function setLanguage(lang) {
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
   const filterPlaceholder = texts[lang].placeholder_filter;
-  [cameraFilterInput, monitorFilterInput, videoFilterInput, motorFilterInput,
+  [cameraFilterInput, monitorFilterInput, videoFilterInput, cageFilterInput, motorFilterInput,
    controllerFilterInput, distanceFilterInput, batteryFilterInput,
    cameraListFilterInput, monitorListFilterInput, videoListFilterInput,
    motorListFilterInput, controllerListFilterInput, distanceListFilterInput,
@@ -1388,6 +1392,7 @@ function setLanguage(lang) {
 const cameraSelect    = document.getElementById("cameraSelect");
 const monitorSelect   = document.getElementById("monitorSelect");
 const videoSelect     = document.getElementById("videoSelect");
+const cageSelect      = document.getElementById("cageSelect");
 const motorSelects    = [
   document.getElementById("motor1Select"),
   document.getElementById("motor2Select"),
@@ -1543,6 +1548,7 @@ function getCurrentSetupState() {
     camera: cameraSelect.value,
     monitor: monitorSelect.value,
     video: videoSelect.value,
+    cage: cageSelect.value,
     motors: motorSelects.map(sel => sel.value),
     controllers: controllerSelects.map(sel => sel.value),
     distance: distanceSelect.value,
@@ -1657,6 +1663,7 @@ const overviewSectionIcons = {
   category_cameras: diagramIcons.camera,
   category_monitors: diagramIcons.monitor,
   category_video: diagramIcons.video,
+  category_cages: diagramIcons.camera,
   category_fiz_motors: diagramIcons.motors,
   category_fiz_controllers: diagramIcons.controllers,
   category_fiz_distance: diagramIcons.distance
@@ -1667,6 +1674,7 @@ const overviewSectionIcons = {
 const cameraFilterInput = document.getElementById("cameraFilter");
 const monitorFilterInput = document.getElementById("monitorFilter");
 const videoFilterInput = document.getElementById("videoFilter");
+const cageFilterInput = document.getElementById("cageFilter");
 const motorFilterInput = document.getElementById("motorFilter");
 const controllerFilterInput = document.getElementById("controllerFilter");
 const distanceFilterInput = document.getElementById("distanceFilter");
@@ -3243,13 +3251,14 @@ function clearFilterOnSelect(selectElem, filterInput, resetCallback) {
 }
 
 function clearAllFilters() {
-  [cameraFilterInput, monitorFilterInput, videoFilterInput, motorFilterInput,
+  [cameraFilterInput, monitorFilterInput, videoFilterInput, cageFilterInput, motorFilterInput,
    controllerFilterInput, distanceFilterInput, batteryFilterInput].forEach(input => {
     if (input) input.value = "";
   });
   filterSelect(cameraSelect, "");
   filterSelect(monitorSelect, "");
   filterSelect(videoSelect, "");
+  filterSelect(cageSelect, "");
   motorSelects.forEach(sel => filterSelect(sel, ""));
   controllerSelects.forEach(sel => filterSelect(sel, ""));
   filterSelect(distanceSelect, "");
@@ -3260,6 +3269,7 @@ function applyFilters() {
   filterSelect(cameraSelect, cameraFilterInput.value);
   filterSelect(monitorSelect, monitorFilterInput.value);
   filterSelect(videoSelect, videoFilterInput.value);
+  filterSelect(cageSelect, cageFilterInput.value);
   motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value));
   controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value));
   filterSelect(distanceSelect, distanceFilterInput.value);
@@ -3281,6 +3291,7 @@ function applyFilters() {
 populateSelect(cameraSelect, devices.cameras, true);
 populateSelect(monitorSelect, devices.monitors, true);
 populateSelect(videoSelect, devices.video, true);
+populateSelect(cageSelect, devices.accessories?.cages || {}, true);
 motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
@@ -3289,7 +3300,7 @@ updateBatteryPlateVisibility();
 updateBatteryOptions();
 
 // Enable search inside dropdowns
-[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect]
   .forEach(sel => attachSelectSearch(sel));
 motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
@@ -3753,12 +3764,13 @@ function getCurrentSetupKey() {
   const camera = cameraSelect.value || '';
   const monitor = monitorSelect.value || '';
   const video = videoSelect.value || '';
+  const cage = cageSelect.value || '';
   const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
   const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
   const distance = distanceSelect.value || '';
   const battery = batterySelect.value || '';
   const plate = getSelectedPlate() || '';
-  return [camera, monitor, video, motors, controllers, distance, battery, plate].join('|');
+  return [camera, monitor, video, cage, motors, controllers, distance, battery, plate].join('|');
 }
 
 function deleteFeedbackEntry(key, index) {
@@ -5013,6 +5025,7 @@ if (skipLink) {
 bindFilterInput(cameraFilterInput, () => filterSelect(cameraSelect, cameraFilterInput.value));
 bindFilterInput(monitorFilterInput, () => filterSelect(monitorSelect, monitorFilterInput.value));
 bindFilterInput(videoFilterInput, () => filterSelect(videoSelect, videoFilterInput.value));
+bindFilterInput(cageFilterInput, () => filterSelect(cageSelect, cageFilterInput.value));
 bindFilterInput(motorFilterInput, () => motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value)));
 bindFilterInput(controllerFilterInput, () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
 bindFilterInput(distanceFilterInput, () => filterSelect(distanceSelect, distanceFilterInput.value));
@@ -5021,6 +5034,7 @@ bindFilterInput(batteryFilterInput, () => filterSelect(batterySelect, batteryFil
 clearFilterOnSelect(cameraSelect, cameraFilterInput);
 clearFilterOnSelect(monitorSelect, monitorFilterInput);
 clearFilterOnSelect(videoSelect, videoFilterInput);
+clearFilterOnSelect(cageSelect, cageFilterInput);
 motorSelects.forEach(sel => clearFilterOnSelect(sel, motorFilterInput, () => motorSelects.forEach(s => filterSelect(s, ""))));
 controllerSelects.forEach(sel => clearFilterOnSelect(sel, controllerFilterInput, () => controllerSelects.forEach(s => filterSelect(s, ""))));
 clearFilterOnSelect(distanceSelect, distanceFilterInput);
@@ -5073,7 +5087,7 @@ deleteSetupBtn.addEventListener("click", () => {
     populateSetupSelect();
     setupNameInput.value = ""; // Clear setup name input
     // Reset dropdowns to "None" or first option after deleting current setup
-    [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
         sel.value = "None";
@@ -5097,7 +5111,7 @@ clearSetupBtn.addEventListener("click", () => {
     }
     setupSelect.value = "";
     setupNameInput.value = "";
-    [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect].forEach(sel => {
       if (!sel) return;
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
@@ -5120,7 +5134,7 @@ setupSelect.addEventListener("change", (event) => {
   if (setupName === "") { // "-- New Setup --" selected
     setupNameInput.value = "";
     // Reset all dropdowns to "None" or first option
-    [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
         sel.value = "None";
@@ -5150,6 +5164,7 @@ setupSelect.addEventListener("change", (event) => {
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
+      if (cageSelect) cageSelect.value = setup.cage || cageSelect.value;
       setup.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
       setup.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
@@ -6030,6 +6045,7 @@ shareSetupBtn.addEventListener('click', () => {
     camera: cameraSelect.value,
     monitor: monitorSelect.value,
     video: videoSelect.value,
+    cage: cageSelect.value,
     motors: motorSelects.map(sel => sel.value),
     controllers: controllerSelects.map(sel => sel.value),
     distance: distanceSelect.value,
@@ -6364,6 +6380,7 @@ function generatePrintableOverview() {
     processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
     processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
     processSelectForOverview(videoSelect, 'category_video', 'video'); // Original data.js uses 'video', not 'wirelessVideo'
+    processSelectForOverview(cageSelect, 'category_cages', 'accessories', 'cages');
     processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');
     motorSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_motors', 'fiz', 'motors'));
     controllerSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_controllers', 'fiz', 'controllers'));
@@ -6630,8 +6647,10 @@ function collectAccessories() {
     }
 
     if (cameraSelect.value && acc.cages) {
-        for (const [name, cage] of Object.entries(acc.cages)) {
-            if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(name);
+        if (!cageSelect.value || cageSelect.value === 'None') {
+            for (const [name, cage] of Object.entries(acc.cages)) {
+                if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(name);
+            }
         }
     }
 
@@ -6729,6 +6748,7 @@ function generateGearListHtml(info = {}) {
         motors: motorSelects.map(sel => sel && sel.value && sel.value !== 'None' ? sel.options[sel.selectedIndex].text : '').filter(Boolean),
         controllers: controllerSelects.map(sel => sel && sel.value && sel.value !== 'None' ? sel.options[sel.selectedIndex].text : '').filter(Boolean),
         distance: distanceSelect && distanceSelect.value && distanceSelect.value !== 'None' ? distanceSelect.options[distanceSelect.selectedIndex].text : '',
+        cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? cageSelect.options[cageSelect.selectedIndex].text : '',
         batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? batteryPlateSelect.options[batteryPlateSelect.selectedIndex].text : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? batterySelect.options[batterySelect.selectedIndex].text : ''
     };
@@ -6756,7 +6776,7 @@ function generateGearListHtml(info = {}) {
         rows.push(`<tr><td>${items}</td></tr>`);
     };
     addRow('Camera', escapeHtml(selectedNames.camera || ''));
-    addRow('Camera Support', join([selectedNames.batteryPlate, ...cameraSupportAcc]));
+    addRow('Camera Support', join([selectedNames.batteryPlate, selectedNames.cage, ...cameraSupportAcc]));
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
@@ -6914,6 +6934,7 @@ function saveCurrentSession() {
     camera: cameraSelect ? cameraSelect.value : '',
     monitor: monitorSelect ? monitorSelect.value : '',
     video: videoSelect ? videoSelect.value : '',
+    cage: cageSelect ? cageSelect.value : '',
     motors: motorSelects.map(sel => sel ? sel.value : ''),
     controllers: controllerSelects.map(sel => sel ? sel.value : ''),
     distance: distanceSelect ? distanceSelect.value : '',
@@ -6933,6 +6954,7 @@ function restoreSessionState() {
   updateBatteryOptions();
   if (monitorSelect && state.monitor) monitorSelect.value = state.monitor;
   if (videoSelect && state.video) videoSelect.value = state.video;
+  if (cageSelect && state.cage) cageSelect.value = state.cage;
   if (distanceSelect && state.distance) distanceSelect.value = state.distance;
   if (Array.isArray(state.motors)) {
     state.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
@@ -6957,6 +6979,7 @@ function applySharedSetup(shared) {
     updateBatteryOptions();
     if (monitorSelect && decoded.monitor) monitorSelect.value = decoded.monitor;
     if (videoSelect && decoded.video) videoSelect.value = decoded.video;
+    if (cageSelect && decoded.cage) cageSelect.value = decoded.cage;
     if (distanceSelect && decoded.distance) distanceSelect.value = decoded.distance;
     if (Array.isArray(decoded.motors)) {
       decoded.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
@@ -6991,7 +7014,7 @@ function applySharedSetupFromUrl() {
 // --- EVENT LISTENERS FÜR NEUBERECHNUNG ---
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
-[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 if (cameraSelect) {
   cameraSelect.addEventListener('change', () => {
@@ -7004,13 +7027,13 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 
-[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect, setupSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, setupSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
 
-[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
