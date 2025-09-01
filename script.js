@@ -1140,7 +1140,10 @@ function setLanguage(lang) {
   document.getElementById("category_fiz_motors").textContent = texts[lang].category_fiz_motors;
   document.getElementById("category_fiz_controllers").textContent = texts[lang].category_fiz_controllers;
   document.getElementById("category_fiz_distance").textContent = texts[lang].category_fiz_distance;
+  document.getElementById("category_fiz_cables").textContent = texts[lang].category_fiz_cables;
   document.getElementById("category_batteries").textContent = texts[lang].category_batteries;
+  document.getElementById("category_camera_support").textContent = texts[lang].category_camera_support;
+  document.getElementById("category_chargers").textContent = texts[lang].category_chargers;
   // Add device form labels and button
   document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
   document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
@@ -1216,7 +1219,7 @@ function setLanguage(lang) {
    controllerFilterInput, distanceFilterInput, batteryFilterInput,
    cameraListFilterInput, monitorListFilterInput, videoListFilterInput,
    motorListFilterInput, controllerListFilterInput, distanceListFilterInput,
-   batteryListFilterInput].forEach(input => {
+   batteryListFilterInput, fizCableListFilterInput, cameraSupportListFilterInput, chargerListFilterInput].forEach(input => {
    if (input) {
       input.placeholder = filterPlaceholder;
       input.setAttribute('aria-label', filterPlaceholder);
@@ -1430,6 +1433,9 @@ const motorListElem   = document.getElementById("motorList");
 const controllerListElem = document.getElementById("controllerList");
 const distanceListElem   = document.getElementById("distanceList");
 const batteryListElem    = document.getElementById("batteryList");
+const fizCableListElem    = document.getElementById("fizCableList");
+const cameraSupportListElem = document.getElementById("cameraSupportList");
+const chargerListElem       = document.getElementById("chargerList");
 const newCategorySelect  = document.getElementById("newCategory");
 const newNameInput    = document.getElementById("newName");
 const newWattInput    = document.getElementById("newWatt");
@@ -1674,6 +1680,9 @@ const motorListFilterInput = document.getElementById("motorListFilter");
 const controllerListFilterInput = document.getElementById("controllerListFilter");
 const distanceListFilterInput = document.getElementById("distanceListFilter");
 const batteryListFilterInput = document.getElementById("batteryListFilter");
+const fizCableListFilterInput = document.getElementById("fizCableListFilter");
+const cameraSupportListFilterInput = document.getElementById("cameraSupportListFilter");
+const chargerListFilterInput = document.getElementById("chargerListFilter");
 
 // NEW SETUP MANAGEMENT DOM ELEMENTS
 const exportSetupsBtn = document.getElementById('exportSetupsBtn');
@@ -3263,6 +3272,9 @@ function applyFilters() {
   filterDeviceList(controllerListElem, controllerListFilterInput.value);
   filterDeviceList(distanceListElem, distanceListFilterInput.value);
   filterDeviceList(batteryListElem, batteryListFilterInput.value);
+  filterDeviceList(fizCableListElem, fizCableListFilterInput.value);
+  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
+  filterDeviceList(chargerListElem, chargerListFilterInput.value);
 }
 
 // Initialize device selection dropdowns
@@ -4963,7 +4975,10 @@ function refreshDeviceLists() {
   renderDeviceList("fiz.motors", motorListElem);
   renderDeviceList("fiz.controllers", controllerListElem);
   renderDeviceList("fiz.distance", distanceListElem);
+  renderDeviceList("fiz.cables", fizCableListElem);
   renderDeviceList("batteries", batteryListElem);
+  renderDeviceList("accessories.cages", cameraSupportListElem);
+  renderDeviceList("accessories.chargers", chargerListElem);
 
   filterDeviceList(cameraListElem, cameraListFilterInput.value);
   filterDeviceList(monitorListElem, monitorListFilterInput.value);
@@ -4971,7 +4986,10 @@ function refreshDeviceLists() {
   filterDeviceList(motorListElem, motorListFilterInput.value);
   filterDeviceList(controllerListElem, controllerListFilterInput.value);
   filterDeviceList(distanceListElem, distanceListFilterInput.value);
+  filterDeviceList(fizCableListElem, fizCableListFilterInput.value);
   filterDeviceList(batteryListElem, batteryListFilterInput.value);
+  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
+  filterDeviceList(chargerListElem, chargerListFilterInput.value);
 }
 
 // Initial render of device lists
@@ -5017,6 +5035,9 @@ bindFilterInput(motorListFilterInput, () => filterDeviceList(motorListElem, moto
 bindFilterInput(controllerListFilterInput, () => filterDeviceList(controllerListElem, controllerListFilterInput.value));
 bindFilterInput(distanceListFilterInput, () => filterDeviceList(distanceListElem, distanceListFilterInput.value));
 bindFilterInput(batteryListFilterInput, () => filterDeviceList(batteryListElem, batteryListFilterInput.value));
+bindFilterInput(fizCableListFilterInput, () => filterDeviceList(fizCableListElem, fizCableListFilterInput.value));
+bindFilterInput(cameraSupportListFilterInput, () => filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value));
+bindFilterInput(chargerListFilterInput, () => filterDeviceList(chargerListElem, chargerListFilterInput.value));
 
 // Setup management
 saveSetupBtn.addEventListener("click", () => {
@@ -6649,7 +6670,7 @@ function collectAccessories() {
     matchVideo(devices.monitors[monitorSelect.value]);
     matchVideo(devices.video[videoSelect.value]);
 
-    const fizCableDb = acc.cables?.fiz || {};
+    const fizCableDb = devices.fiz?.cables || acc.cables?.fiz || {};
     const motorDatas = motorSelects.map(sel => devices.fiz.motors[sel.value]).filter(Boolean);
     const controllerDatas = controllerSelects.map(sel => devices.fiz.controllers[sel.value]).filter(Boolean);
     motorDatas.forEach(m => {

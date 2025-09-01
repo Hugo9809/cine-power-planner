@@ -7112,6 +7112,9 @@ let devices={
         "output_display": "DJI RS gimbal screen, DJI Focus Motor (visual focus assist), DJI RS Focus Motor, Ronin App",
         "notes": "Integrated LiDAR sensor designed for DJI RS series gimbals. It provides accurate and fast distance measurements, enabling autofocus for manual lenses (when paired with a DJI Focus Motor). Features a built-in camera that can recognize the subject and track focus. Ideal for solo operators seeking precise autofocus capabilities with cinema lenses."
       }
+    },
+    "cables": {
+      "LBUS to LBUS": { "from": "LBUS (LEMO 4-pin)", "to": "LBUS (LEMO 4-pin)" }
     }
   },
   "batteries": {
@@ -8404,9 +8407,6 @@ let devices={
     "cables": {
       "power": {
         "D-Tap to LEMO 2-pin": { "from": "D-Tap", "to": "LEMO 2-pin" }
-      },
-      "fiz": {
-        "LBUS to LBUS": { "from": "LBUS (LEMO 4-pin)", "to": "LBUS (LEMO 4-pin)" }
       },
       "video": {
         "BNC SDI Cable": { "type": "3G-SDI" },
