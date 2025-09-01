@@ -1,3 +1,4 @@
+/* global registerDevice */
 (() => {
 const videoData = {
   "Teradek Bolt 6 LT TX": {
@@ -810,7 +811,13 @@ const videoData = {
   }
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof registerDevice === 'function') {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = registerDevice('video', videoData);
+  } else {
+    registerDevice('video', videoData);
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
   module.exports = videoData;
 } else {
   globalThis.devices = globalThis.devices || {};

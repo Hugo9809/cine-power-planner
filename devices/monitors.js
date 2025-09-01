@@ -1,3 +1,4 @@
+/* global registerDevice */
 (() => {
 const monitorData = {
   "SmallHD Ultra 7": {
@@ -877,7 +878,13 @@ const monitorData = {
   }
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof registerDevice === 'function') {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = registerDevice('monitors', monitorData);
+  } else {
+    registerDevice('monitors', monitorData);
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
   module.exports = monitorData;
 } else {
   globalThis.devices = globalThis.devices || {};

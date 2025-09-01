@@ -1,3 +1,4 @@
+/* global registerDevice */
 const gear = {
   "viewfinders": {
     "ARRI K2.75004.0 MVF-1 Viewfinder": {
@@ -1589,7 +1590,20 @@ const gear = {
   ]
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof registerDevice === 'function') {
+  registerDevice('viewfinders', gear.viewfinders);
+  registerDevice('directorMonitors', gear.directorMonitors);
+  registerDevice('iosVideo', gear.iosVideo);
+  registerDevice('wirelessReceivers', gear.wirelessReceivers);
+  registerDevice('videoAssist', gear.videoAssist);
+  registerDevice('media', gear.media);
+  registerDevice('lenses', gear.lenses);
+  registerDevice('accessories', gear.accessories);
+  registerDevice('filterOptions', gear.filterOptions);
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = gear;
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
   module.exports = gear;
 } else {
   globalThis.devices = globalThis.devices || {};

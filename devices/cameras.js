@@ -1,3 +1,4 @@
+/* global registerDevice */
 (() => {
 const cameraData = {
   "Arri Alexa Mini LF": {
@@ -5226,7 +5227,13 @@ const cameraData = {
   }
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof registerDevice === 'function') {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = registerDevice('cameras', cameraData);
+  } else {
+    registerDevice('cameras', cameraData);
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
   module.exports = cameraData;
 } else {
   globalThis.devices = globalThis.devices || {};

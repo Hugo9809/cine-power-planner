@@ -1,3 +1,4 @@
+/* global registerDevice */
 (() => {
 const batteryData = {
   "None": {
@@ -440,7 +441,13 @@ const batteryData = {
   }
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof registerDevice === 'function') {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = registerDevice('batteries', batteryData);
+  } else {
+    registerDevice('batteries', batteryData);
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
   module.exports = batteryData;
 } else {
   globalThis.devices = globalThis.devices || {};

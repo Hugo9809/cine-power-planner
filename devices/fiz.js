@@ -1,3 +1,4 @@
+/* global registerDevice */
 (() => {
 const fizData = {
   "motors": {
@@ -779,7 +780,13 @@ const fizData = {
   }
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof registerDevice === 'function') {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = registerDevice('fiz', fizData);
+  } else {
+    registerDevice('fiz', fizData);
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
   module.exports = fizData;
 } else {
   globalThis.devices = globalThis.devices || {};

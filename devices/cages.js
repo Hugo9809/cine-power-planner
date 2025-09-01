@@ -1,3 +1,4 @@
+/* global registerDevice */
 (() => {
 const cageData = {
   "Universal Cage": {
@@ -1478,7 +1479,13 @@ const cageData = {
   }
 };
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof registerDevice === 'function') {
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = registerDevice('accessories.cages', cageData);
+  } else {
+    registerDevice('accessories.cages', cageData);
+  }
+} else if (typeof module !== 'undefined' && module.exports) {
   module.exports = cageData;
 } else {
   globalThis.devices = globalThis.devices || {};
