@@ -940,6 +940,19 @@ describe('script.js functions', () => {
     expect(html).toContain('2x MotorA');
   });
 
+  test('motor names with extra whitespace are trimmed and aggregated', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value, text) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${text}</option>`;
+      sel.value = value;
+    };
+    addOpt('motor1Select', 'MotorA1', 'MotorA ');
+    addOpt('motor2Select', 'MotorA2', 'MotorA');
+    const html = generateGearListHtml({ projectName: 'Proj' });
+    expect(html).toContain('2x MotorA');
+  });
+
   test('alert shown if battery cannot power setup over pins when generating gear list', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
