@@ -85,18 +85,12 @@ function cleanPort(port) {
     delete port.portType;
   }
   if (port.type) port.type = cleanTypeName(port.type);
+  deepClean(port);
 }
 
 function cleanPowerInput(input) {
   if (!input) return;
   cleanPort(input);
-  if (Array.isArray(input)) {
-    input.forEach(port => {
-      if (port.voltageRange) port.voltageRange = cleanVoltageRange(port.voltageRange);
-    });
-  } else if (input.voltageRange) {
-    input.voltageRange = cleanVoltageRange(input.voltageRange);
-  }
 }
 
 function normalizePortList(list) {
