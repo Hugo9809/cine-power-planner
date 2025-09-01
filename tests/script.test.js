@@ -990,6 +990,39 @@ describe('script.js functions', () => {
     expect(text).toContain('3x Bodenmatte');
   });
 
+  test('Outdoor scenario adds weather protection gear', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    devices.monitors.MonA.screenSizeInches = 7;
+    const html = generateGearListHtml({
+      requiredScenarios: 'Outdoor',
+      monitoringPreferences: 'Directors Monitor 15-19 inch'
+    });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('Rain Cover "CamA"');
+    expect(miscText).toContain('1x Umbrella for Focus Monitor');
+    expect(miscText).toContain('2x Super Clamp');
+    expect(miscText).toContain('1x Spigot');
+    expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
+    const consIdx = rows.findIndex(r => r.textContent === 'Consumables');
+    const consText = rows[consIdx + 1].textContent;
+    expect(consText).toContain('3x CapIt Large');
+    expect(consText).toContain('4x CapIt Medium');
+    expect(consText).toContain('3x CapIt Small');
+    expect(consText).toContain('10x Duschhaube');
+    expect(consText).toContain('1x Magliner Rain Cover Transparent');
+  });
+
   test('monitoring support cables grouped by type', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml();
