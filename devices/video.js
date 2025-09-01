@@ -1,5 +1,5 @@
 (() => {
-const data = {
+const videoData = {
   "Teradek Bolt 6 LT TX": {
     "powerDrawWatts": 9,
     "videoInputs": [
@@ -811,9 +811,9 @@ const data = {
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = data;
+  module.exports = videoData;
 } else {
   globalThis.devices = globalThis.devices || {};
-  globalThis.devices.video = data;
+  globalThis.devices.video = videoData;
 }
 })();

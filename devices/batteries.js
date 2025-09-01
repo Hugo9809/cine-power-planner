@@ -1,5 +1,5 @@
 (() => {
-const data = {
+const batteryData = {
   "None": {
     "capacity": 0,
     "pinA": 0,
@@ -435,9 +435,9 @@ const data = {
 };
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = data;
+  module.exports = batteryData;
 } else {
   globalThis.devices = globalThis.devices || {};
-  globalThis.devices.batteries = data;
+  globalThis.devices.batteries = batteryData;
 }
 })();
