@@ -10,6 +10,12 @@ const gear = {
       ],
       "isPersonalGear": false,
       "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
+    },
+    "Sony DVF-EL200 OLED Viewfinder": {
+      "brand": "Sony",
+      "model": "DVF-EL200 OLED Viewfinder",
+      "isPersonalGear": false,
+      "listOfOrigin": "240315_Detective_von_Fock_Equpment_B-Cam_Rental.pdf"
     }
   },
   "directorMonitors": {
@@ -63,6 +69,66 @@ const gear = {
         {
           "type": "3G-SDI"
         }
+      ]
+    },
+    "TVLogic F-5A 5\" Onboard": {
+      "screenSizeInches": 5,
+      "brightnessNits": 500,
+      "powerDrawWatts": 12,
+      "power": {
+        "input": {
+          "voltageRange": "12",
+          "type": "LEMO 2-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" }
+      ]
+    },
+    "SmallHD 703 UltraBright": {
+      "screenSizeInches": 7,
+      "brightnessNits": 2200,
+      "powerDrawWatts": 18,
+      "power": {
+        "input": {
+          "voltageRange": "10-34",
+          "type": "LEMO 2-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" }
+      ]
+    },
+    "Sony PVM-A170 17\" OLED": {
+      "screenSizeInches": 17,
+      "brightnessNits": 250,
+      "powerDrawWatts": 54,
+      "power": {
+        "input": {
+          "voltageRange": "12",
+          "type": "XLR 4-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" }
       ]
     },
     "None": {
@@ -187,6 +253,40 @@ const gear = {
           {
             "type": "V-mount"
           }
+        ]
+      }
+    },
+    "Teradek Bolt 4K LT 750 RX": {
+      "powerDrawWatts": 10,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "12G-SDI" }
+      ],
+      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": "LEMO 2-pin", "notes": "6-28V" },
+          { "type": "Gold-mount" },
+          { "type": "V-mount" }
+        ]
+      }
+    },
+    "Vaxis Storm 3000 RX": {
+      "powerDrawWatts": 9,
+      "videoInputs": [],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "3G-SDI" }
+      ],
+      "frequency": "5 GHz",
+      "latencyMs": "< 1ms",
+      "power": {
+        "input": [
+          { "type": "LEMO 2-pin", "notes": "7-17V" },
+          { "type": "Gold-mount" },
+          { "type": "V-mount" }
         ]
       }
     },
@@ -350,6 +450,35 @@ const gear = {
       "ARRI Viewfinder Adapter VFA-4": {
         "brand": "ARRI",
         "kNumber": "K2.0048510"
+      },
+      "ARRI Bridge Plate BP-8/9": {
+        "brand": "ARRI",
+        "kNumber": "K2.0031436"
+      },
+      "ARRI Bridge Plate Adapter BPA-5": {
+        "brand": "ARRI",
+        "kNumber": "K2.0017138"
+      },
+      "ARRI Bottom Dovetail Plate 300mm": {
+        "brand": "ARRI",
+        "kNumber": "K2.0015896",
+        "lengthMm": 300
+      },
+      "ARRI Rosette Adapters RA-6": {
+        "brand": "ARRI",
+        "kNumber": "K2.0024574"
+      },
+      "ARRI Handle Extension HEX-4": {
+        "brand": "ARRI",
+        "kNumber": "K2.0019798"
+      },
+      "ARRI Viewfinder Adapter VFA-2": {
+        "brand": "ARRI",
+        "kNumber": "K2.0001222"
+      },
+      "ARRI Heated Eyecup HE-7": {
+        "brand": "ARRI",
+        "kNumber": "K2.0003898"
       }
     },
     "matteboxes": {
@@ -366,6 +495,15 @@ const gear = {
           "LMB 4x5",
           "LMB-6"
         ]
+      },
+      "ARRI Diopter Frame 138mm": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013740",
+        "diameterMm": 138
+      },
+      "ARRI LMB Accessory Adapter": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013014"
       }
     },
     "filters": {
@@ -1061,6 +1199,10 @@ const gear = {
     "videoAssist": {
       "Ovide Smart Assist": {
         "brand": "Ovide"
+      },
+      "Video Devices PIX-E5 5\" Recorder": {
+        "brand": "Video Devices",
+        "screenSizeInches": 5
       }
     },
     "media": {
@@ -1073,6 +1215,15 @@ const gear = {
         "brand": "ARRI",
         "kNumber": "K2.0024134",
         "interface": "USB-C"
+      },
+      "Sony AXS Memory Card 512GB": {
+        "brand": "Sony",
+        "capacityGb": 512
+      },
+      "Sony AXS-AR1 Card Reader": {
+        "brand": "Sony",
+        "model": "AXS-AR1 Card Reader",
+        "interface": "USB 3.0"
       }
     },
     "lenses": {
@@ -1130,6 +1281,82 @@ const gear = {
         "clampOn": true,
         "tStop": 3.5,
         "mount": "PL"
+      },
+      "LOMO Anamorphic RF 35mm T2.5": {
+        "brand": "LOMO",
+        "frontDiameterMm": 141,
+        "clampOn": true,
+        "tStop": 2.5
+      },
+      "LOMO Anamorphic RF 50mm T2.4": {
+        "brand": "LOMO",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4
+      },
+      "LOMO Anamorphic RF 75mm T2.4": {
+        "brand": "LOMO",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.4
+      },
+      "LOMO Anamorphic RF 100mm T3.2": {
+        "brand": "LOMO",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 3.2
+      },
+      "Canon CN7x17 17-120mm T3.0-3.9": {
+        "brand": "Canon",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 3.0,
+        "mount": "PL"
+      },
+      "Angénieux Ultra Compact FF 37-102mm T2.9": {
+        "brand": "Angénieux",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.9,
+        "mount": "PL"
+      },
+      "Angénieux Ultra Compact FF 21-56mm T2.9": {
+        "brand": "Angénieux",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 2.9,
+        "mount": "PL"
+      },
+      "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
+        "brand": "Angénieux",
+        "frontDiameterMm": 162,
+        "clampOn": true,
+        "tStop": 4.2,
+        "mount": "PL"
+      },
+      "ARRI Signature Prime 15mm T1.8": {
+        "brand": "ARRI",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8
+      },
+      "ARRI Signature Prime 18mm T1.8": {
+        "brand": "ARRI",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8
+      },
+      "ARRI Signature Prime 21mm T1.8": {
+        "brand": "ARRI",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8
+      },
+      "ARRI Signature Prime 25mm T1.8": {
+        "brand": "ARRI",
+        "frontDiameterMm": 114,
+        "clampOn": true,
+        "tStop": 1.8
       }
     },
     "tripodHeads": {
@@ -1191,6 +1418,8 @@ if (typeof module !== 'undefined' && module.exports) {
   globalThis.devices.directorMonitors = gear.directorMonitors;
   globalThis.devices.iosVideo = gear.iosVideo;
   globalThis.devices.wirelessReceivers = gear.wirelessReceivers;
+  globalThis.devices.videoAssist = gear.videoAssist;
+  globalThis.devices.media = gear.media;
   globalThis.devices.lenses = gear.lenses;
   globalThis.devices.accessories = Object.assign(globalThis.devices.accessories || {}, gear.accessories);
   globalThis.devices.filterOptions = gear.filterOptions;
