@@ -104,33 +104,35 @@ function saveDeviceData(data) {
 }
 
 // --- Setup Data Storage ---
+function normalizeSetups(data) {
+  if (!data) return {};
+  if (Array.isArray(data)) {
+    const obj = {};
+    const used = new Set();
+    data.forEach((item, idx) => {
+      if (item && typeof item === 'object') {
+        const base = item.name || item.setupName || `Setup ${idx + 1}`;
+        const key = generateUniqueName(base, used);
+        obj[key] = item;
+      }
+    });
+    return obj;
+  }
+  return typeof data === 'object' ? data : {};
+}
+
 function loadSetups() {
   const parsedData = loadJSONFromStorage(
     localStorage,
     SETUP_STORAGE_KEY,
     "Error loading setups from localStorage:"
   );
-    if (parsedData) {
-      if (Array.isArray(parsedData)) {
-        const obj = {};
-        const used = new Set();
-        parsedData.forEach((item, idx) => {
-          if (item && typeof item === 'object') {
-            const base = item.name || item.setupName || `Setup ${idx + 1}`;
-            const key = generateUniqueName(base, used);
-            obj[key] = item;
-          }
-        });
-        localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(obj));
-        return obj;
-      }
-      // Ensure it's a plain object, not a primitive
-      if (typeof parsedData === 'object') {
-        return parsedData;
-      }
-    }
-    return {}; // Return empty object if no setups found or error
+  const setups = normalizeSetups(parsedData);
+  if (parsedData && Array.isArray(parsedData)) {
+    localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
   }
+  return setups;
+}
 
 function saveSetups(setups) {
   saveJSONToStorage(
