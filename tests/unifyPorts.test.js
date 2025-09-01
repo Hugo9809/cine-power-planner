@@ -74,6 +74,14 @@ describe('parsePowerInput', () => {
       { type: 'D-Tap' }
     ]);
   });
+
+  it('normalizes connector names', () => {
+    const input = 'dtap / usb type c';
+    expect(parsePowerInput(input)).toEqual([
+      { type: 'D-Tap' },
+      { type: 'USB-C' }
+    ]);
+  });
 });
 
 describe('normalizeVideoDevice', () => {
