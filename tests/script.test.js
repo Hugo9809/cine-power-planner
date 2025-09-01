@@ -996,6 +996,22 @@ describe('script.js functions', () => {
     expect(html).not.toContain('MonA, VidA');
   });
 
+  test('Directors handheld monitor adds dropdown, batteries and grip items', () => {
+    const { generateGearListHtml } = script;
+    global.devices.monitors = {
+      'SmallHD Ultra 7': { screenSizeInches: 7 },
+      MonA: { screenSizeInches: 7 }
+    };
+    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7 inch handheld' });
+    expect(html).toContain('<select id="gearListDirectorsMonitor7"');
+    expect(html).toContain('SmallHD Ultra 7');
+    expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
+    expect(html).toContain('3x Bebob 98 Micros');
+    expect(html).toContain('C-Stand 20"');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
+    expect(html).toContain('2x spigot');
+  });
+
   test('gear list includes battery count in camera batteries row', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
