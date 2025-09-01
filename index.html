@@ -24,22 +24,24 @@
 <body>
   <a href="#mainContent" class="skip-link" id="skipLink">Skip to content</a>
   <div id="offlineIndicator" role="status" aria-live="polite">Offline</div>
-  <div id="langSelector">
-    <select id="languageSelect" aria-label="Select language">
-      <option value="en">English</option>
-      <option value="de">Deutsch</option>
-      <option value="es">Español</option>
-      <option value="fr">Français</option>
-      <option value="it">Italiano</option>
-    </select>
-    <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
-    <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode" aria-pressed="false">🐴</button>
-    <button id="helpButton" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">?</button>
-  </div>
+  <header id="topBar">
+    <h1 id="mainTitle">Camera Power Consumption App</h1>
+    <div class="controls">
+      <select id="languageSelect" aria-label="Select language">
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="it">Italiano</option>
+      </select>
+      <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
+      <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode" aria-pressed="false">🐴</button>
+      <button id="helpButton" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">?</button>
+    </div>
+  </header>
 
   <main id="mainContent" tabindex="-1">
 
-  <h1 id="mainTitle">Camera Power Consumption App</h1>
   <p id="tagline">Plan your camera setup and calculate power consumption &amp; battery life.</p>
 
   <section id="setup-manager">
