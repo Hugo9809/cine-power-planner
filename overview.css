@@ -17,7 +17,17 @@ table {
 th, td { border: 1px solid var(--panel-border); padding: 8px; text-align: left; font-size: 0.9em; overflow: hidden; }
 th { background-color: var(--control-bg); font-weight: 700; }
 .warning { color: red; font-weight: bold; margin-top: 10px; }
-.print-btn, .back-btn { padding: 10px 20px; font-size: 1em; cursor: pointer; border-radius: 5px; border: 1px solid var(--control-border); background: var(--control-bg); color: var(--control-text); margin-bottom: 20px; }
+.print-btn,
+.back-btn {
+  padding: 5px 10px;
+  font-size: 0.85em;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
+  margin: 5px;
+}
 .device-block-grid {
   display: grid;
   gap: 8px;
