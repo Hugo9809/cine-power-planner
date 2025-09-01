@@ -6586,7 +6586,8 @@ function generatePrintableOverview() {
 }
 
 function collectAccessories() {
-    const accessories = [];
+    const cameraSupport = [];
+    const misc = [];
     const acc = devices.accessories || {};
 
     if (batterySelect.value) {
@@ -6594,20 +6595,20 @@ function collectAccessories() {
         if (acc.powerPlates) {
             for (const [name, plate] of Object.entries(acc.powerPlates)) {
                 if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(cameraSelect.value))) {
-                    accessories.push(name);
+                    cameraSupport.push(name);
                 }
             }
         }
         if (acc.chargers) {
             for (const [name, charger] of Object.entries(acc.chargers)) {
-                if (!charger.mount || charger.mount === mount) accessories.push(name);
+                if (!charger.mount || charger.mount === mount) misc.push(name);
             }
         }
     }
 
     if (cameraSelect.value && acc.cages) {
         for (const [name, cage] of Object.entries(acc.cages)) {
-            if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) accessories.push(name);
+            if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(name);
         }
     }
 
@@ -6617,7 +6618,7 @@ function collectAccessories() {
         const types = Array.isArray(input) ? input : input ? [input] : [];
         types.forEach(t => {
             for (const [name, cable] of Object.entries(powerCableDb)) {
-                if (cable.to === t) accessories.push(name);
+                if (cable.to === t) misc.push(name);
             }
         });
     };
@@ -6637,7 +6638,7 @@ function collectAccessories() {
             inputs.forEach(inp => {
                 if (out.type === inp.type) {
                     for (const [name, cable] of Object.entries(videoCableDb)) {
-                        if (cable.type === out.type) accessories.push(name);
+                        if (cable.type === out.type) misc.push(name);
                     }
                 }
             });
@@ -6657,7 +6658,7 @@ function collectAccessories() {
                 cConns.forEach(cc => {
                     if (mc === cc) {
                         for (const [name, cable] of Object.entries(fizCableDb)) {
-                            if (cable.from === mc && cable.to === cc) accessories.push(name);
+                            if (cable.from === mc && cable.to === cc) misc.push(name);
                         }
                     }
                 });
@@ -6665,7 +6666,10 @@ function collectAccessories() {
         });
     });
 
-    return [...new Set(accessories)];
+    return {
+        cameraSupport: [...new Set(cameraSupport)],
+        misc: [...new Set(misc)]
+    };
 }
 
 function collectProjectFormData() {
@@ -6703,7 +6707,7 @@ function generateGearListHtml(info = {}) {
         batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? batteryPlateSelect.options[batteryPlateSelect.selectedIndex].text : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? batterySelect.options[batterySelect.selectedIndex].text : ''
     };
-    const accessories = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, misc: miscAcc } = collectAccessories();
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const allowedInfo = ['dop','firstDay','lastDay','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
     const labels = {
@@ -6727,7 +6731,7 @@ function generateGearListHtml(info = {}) {
         rows.push(`<tr><td>${items}</td></tr>`);
     };
     addRow('Camera', escapeHtml(selectedNames.camera || ''));
-    addRow('Camera Support', '');
+    addRow('Camera Support', join([selectedNames.batteryPlate, ...cameraSupportAcc]));
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
@@ -6738,11 +6742,11 @@ function generateGearListHtml(info = {}) {
     addRow('Chargers', '');
     addRow('Monitoring', join([selectedNames.monitor, selectedNames.video]));
     addRow('Monitoring support', escapeHtml(info.monitoringPreferences || ''));
-    addRow('Power', escapeHtml(selectedNames.batteryPlate || ''));
+    addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
     addRow('Grip', '');
     addRow('Carts and Transportation', '');
-    addRow('Miscellaneous', join(accessories));
+    addRow('Miscellaneous', join(miscAcc));
     addRow('Consumables', '');
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
