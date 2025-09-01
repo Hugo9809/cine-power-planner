@@ -872,6 +872,42 @@ describe('script.js functions', () => {
     expect(saveSpy).toHaveBeenCalled();
   });
 
+  test('Save button changes to Update after modifying loaded setup', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+
+    const nameInput = document.getElementById('setupName');
+    const saveBtn = document.getElementById('saveSetupBtn');
+    nameInput.value = 'Setup1';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    saveBtn.click();
+
+    const setupSel = document.getElementById('setupSelect');
+    setupSel.innerHTML = '<option value="">-- New Setup --</option><option value="Setup1">Setup1</option>';
+    setupSel.value = 'Setup1';
+
+    global.devices.cameras.CamB = { powerDrawWatts: 11, power: { input: { type: 'LEMO 2-pin' } }, videoOutputs: [{ type: '3G-SDI' }] };
+    const camSelect = document.getElementById('cameraSelect');
+    camSelect.innerHTML += '<option value="CamB">CamB</option>';
+    camSelect.value = 'CamB';
+    camSelect.dispatchEvent(new Event('change'));
+
+    expect(saveBtn.textContent).toBe('Update');
+
+    saveBtn.click();
+    expect(saveBtn.textContent).toBe('Save');
+  });
+
   test('warning colors are applied in Spanish', () => {
     global.devices.batteries.WarnBatt = { capacity: 50, pinA: 1, dtapA: 1, mount_type: 'V-Mount' };
     const addOpt = (id, value) => {

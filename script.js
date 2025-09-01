@@ -988,6 +988,7 @@ function setLanguage(lang) {
   saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
   saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
   saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+  updateSaveSetupButton();
 
   exportSetupsBtn.setAttribute("title", texts[lang].exportSetupsBtn);
   exportSetupsBtn.setAttribute("data-help", texts[lang].exportSetupsHelp);
@@ -4989,6 +4990,49 @@ bindFilterInput(distanceListFilterInput, () => filterDeviceList(distanceListElem
 bindFilterInput(batteryListFilterInput, () => filterDeviceList(batteryListElem, batteryListFilterInput.value));
 
 // Setup management
+let lastSavedSetup = null;
+
+function getCurrentSetupState() {
+  return {
+    camera: cameraSelect.value,
+    monitor: monitorSelect.value,
+    video: videoSelect.value,
+    motors: motorSelects.map(sel => sel.value),
+    controllers: controllerSelects.map(sel => sel.value),
+    distance: distanceSelect.value,
+    batteryPlate: batteryPlateSelect.value,
+    battery: batterySelect.value
+  };
+}
+
+function arraysEqual(a, b) {
+  if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+  return a.every((val, idx) => val === b[idx]);
+}
+
+function setupsEqual(a, b) {
+  return (
+    a && b &&
+    a.camera === b.camera &&
+    a.monitor === b.monitor &&
+    a.video === b.video &&
+    arraysEqual(a.motors, b.motors) &&
+    arraysEqual(a.controllers, b.controllers) &&
+    a.distance === b.distance &&
+    a.batteryPlate === b.batteryPlate &&
+    a.battery === b.battery
+  );
+}
+
+function updateSaveSetupButton() {
+  const sameName = setupSelect.value && setupNameInput.value.trim() === setupSelect.value;
+  if (sameName && lastSavedSetup && !setupsEqual(lastSavedSetup, getCurrentSetupState())) {
+    saveSetupBtn.textContent = texts[currentLang].updateSetupBtn;
+  } else {
+    saveSetupBtn.textContent = texts[currentLang].saveSetupBtn;
+  }
+}
+
 saveSetupBtn.addEventListener("click", () => {
   const setupName = setupNameInput.value.trim();
   if (!setupName) {
@@ -5011,6 +5055,8 @@ saveSetupBtn.addEventListener("click", () => {
   storeSetups(setups);
   populateSetupSelect();
   setupSelect.value = setupName; // Select the newly saved setup
+  lastSavedSetup = getCurrentSetupState();
+  updateSaveSetupButton();
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
 });
 
@@ -5038,6 +5084,8 @@ deleteSetupBtn.addEventListener("click", () => {
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateCalculations(); // Recalculate after clearing setup
+    lastSavedSetup = null;
+    updateSaveSetupButton();
   }
 });
 
@@ -5065,6 +5113,8 @@ clearSetupBtn.addEventListener("click", () => {
     updateBatteryPlateVisibility();
     updateBatteryOptions();
     updateCalculations();
+    lastSavedSetup = null;
+    updateSaveSetupButton();
   }
 });
 
@@ -5086,6 +5136,8 @@ setupSelect.addEventListener("change", (event) => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    lastSavedSetup = null;
+    updateSaveSetupButton();
   } else {
     let setups = getSetups();
     const setup = setups[setupName];
@@ -5111,6 +5163,8 @@ setupSelect.addEventListener("change", (event) => {
         }
       }
     }
+    lastSavedSetup = getCurrentSetupState();
+    updateSaveSetupButton();
   }
   updateCalculations();
 });
@@ -6922,10 +6976,10 @@ motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalc
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 
 [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, batteryPlateSelect, setupSelect]
-  .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
-motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
-controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
-if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
+  .forEach(sel => { if (sel) sel.addEventListener("change", () => { saveCurrentSession(); updateSaveSetupButton(); }); });
+motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", () => { saveCurrentSession(); updateSaveSetupButton(); }); });
+controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", () => { saveCurrentSession(); updateSaveSetupButton(); }); });
+if (setupNameInput) setupNameInput.addEventListener("input", () => { saveCurrentSession(); updateSaveSetupButton(); });
 
 // Enable Save button only when a setup name is entered and allow Enter to save
 if (setupNameInput && saveSetupBtn) {
