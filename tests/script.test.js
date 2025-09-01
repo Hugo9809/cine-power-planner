@@ -798,9 +798,10 @@ describe('script.js functions', () => {
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain('CamA');
+      expect(html).toContain('Camera Support');
+      expect(html).toContain('Universal Cage');
       expect(html).toContain('Miscellaneous');
       expect(html).toContain('BNC SDI Cable');
-      expect(html).toContain('Universal Cage');
     });
 
   test('battery plate selection is saved and loaded with setups', () => {
