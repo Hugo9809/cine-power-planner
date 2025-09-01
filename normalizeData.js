@@ -4,6 +4,10 @@ const fs = require('fs');
 const path = require('path');
 let devices = require('./data.js');
 
+function forEachCamera(cb) {
+  Object.values(devices.cameras).forEach(cb);
+}
+
 // -- Unify helper functions --
 function unifyFizConnectorTypes() {
   const map = {
@@ -53,7 +57,7 @@ function unifyFizConnectorTypes() {
     '2x Motor Ports (proprietary 7-pin Lemo), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)':
       '2x Motor Ports (proprietary LEMO 7-pin), Serial (for Light Ranger 2), Analog (for Micro Force), USB (firmware)'
   };
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const list = cam.fizConnectors;
     if (Array.isArray(list)) {
       list.forEach(conn => {
@@ -62,7 +66,7 @@ function unifyFizConnectorTypes() {
         }
       });
     }
-  }
+  });
 
   for (const motor of Object.values(devices.fiz?.motors || {})) {
     if (motor.fizConnector && map[motor.fizConnector]) {
@@ -100,7 +104,7 @@ function unifyPowerDistTypes() {
     'USB-C Terminal (Grip)': 'USB-C',
     'USB-C Terminal (LCD Monitor)': 'USB-C'
   };
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const list = cam.power?.powerDistributionOutputs;
     if (Array.isArray(list)) {
       list.forEach(output => {
@@ -109,7 +113,7 @@ function unifyPowerDistTypes() {
         }
       });
     }
-  }
+  });
 }
 
 function unifyPowerInputPortTypes() {
@@ -136,16 +140,16 @@ function unifyPowerInputPortTypes() {
     'Weipu SF610/S2 (12VDC) Input': 'Weipu SF610/S2',
     '6-pin 1B DC-IN / TB50 Battery Mount': '6-pin 1B DC-IN / TB50'
   };
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const input = cam.power?.input;
-    if (!input || !input.portType) continue;
+    if (!input || !input.portType) return;
     const original = input.portType;
     const arr = ([]).concat(original).flatMap(val => {
       const mapped = map[val] || val;
       return mapped.split('/').map(p => map[p.trim()] || p.trim());
     });
     input.portType = arr.length > 1 ? arr : arr[0];
-  }
+  });
 }
 
 function unifyRecordingMedia() {
@@ -187,7 +191,7 @@ function unifyRecordingMedia() {
     }
     return { type, notes };
   }
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const list = cam.recordingMedia;
     if (Array.isArray(list)) {
       const result = [];
@@ -203,7 +207,7 @@ function unifyRecordingMedia() {
       }
       cam.recordingMedia = result;
     }
-  }
+  });
 }
 
 function unifyTimecodeTypes() {
@@ -219,7 +223,7 @@ function unifyTimecodeTypes() {
     'DIN1.0 / 2.3': 'DIN 1.0/2.3',
     'Timecode interface': 'Timecode Interface'
   };
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const list = cam.timecode;
     if (Array.isArray(list)) {
       list.forEach(tc => {
@@ -228,7 +232,7 @@ function unifyTimecodeTypes() {
         }
       });
     }
-  }
+  });
 }
 
 function unifyViewfinderTypes() {
@@ -254,7 +258,7 @@ function unifyViewfinderTypes() {
     'LCD capacitive touchscreen': 'LCD touchscreen',
     'LEMO 26 pin': 'LEMO 26-pin port'
   };
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const list = cam.viewfinder;
     if (Array.isArray(list)) {
       list.forEach(vf => {
@@ -263,11 +267,11 @@ function unifyViewfinderTypes() {
         }
       });
     }
-  }
+  });
 }
 
 function unifyLensMounts() {
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const list = cam.lensMount;
     if (Array.isArray(list)) {
       const result = [];
@@ -295,12 +299,12 @@ function unifyLensMounts() {
       }
       cam.lensMount = result;
     }
-  }
+  });
 }
 
 // -- Update helper functions --
 function updatePowerDistribution() {
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     const outputs = cam.power?.powerDistributionOutputs;
     if (Array.isArray(outputs)) {
       const expanded = [];
@@ -325,11 +329,11 @@ function updatePowerDistribution() {
       }
       cam.power.powerDistributionOutputs = expanded;
     }
-  }
+  });
 }
 
 function updateVideoOutputs() {
-  for (const cam of Object.values(devices.cameras)) {
+  forEachCamera(cam => {
     if (Array.isArray(cam.videoOutputs)) {
       const outputs = [];
       for (const entry of cam.videoOutputs) {
@@ -345,7 +349,7 @@ function updateVideoOutputs() {
       }
       cam.videoOutputs = outputs;
     }
-  }
+  });
 }
 
 function save() {
