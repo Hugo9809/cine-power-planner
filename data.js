@@ -8421,6 +8421,20 @@ let devices={
       },
       "cables": {
         "LBUS to LBUS": { "from": "LBUS (LEMO 4-pin)", "to": "LBUS (LEMO 4-pin)" },
+        "D-Tap to Lemo-2-pin Cable 0,3m": {
+          "lengthM": 0.3,
+          "connectors": ["D-Tap", "Lemo 2-pin"],
+          "orientation": "straight",
+          "useCase": ["Power"]
+        },
+        "ultra slim 3G-SDI BNC cable 0,5m": {
+          "lengthM": 0.5,
+          "connectors": ["BNC", "BNC"],
+          "orientation": "straight",
+          "type": "3G-SDI",
+          "notes": "ultra slim",
+          "useCase": ["Video"]
+        },
         "Cable CAM (10-pin) – EXT (7-pin)": {
           "brand": "ARRI",
           "kNumber": "K2.0007730",
