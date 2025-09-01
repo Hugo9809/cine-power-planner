@@ -166,6 +166,18 @@ describe('script.js functions', () => {
     expect(cageSelEl.value).toBe('Cage2');
   });
 
+  test('gear list cage selection is stored with selected attribute', () => {
+    global.saveGearList = jest.fn();
+    const gear = document.getElementById('gearListOutput');
+    gear.innerHTML = '1x <select id="gearListCage"><option value="Cage1">Cage1</option><option value="Cage2">Cage2</option></select>';
+    gear.classList.remove('hidden');
+    const cageSel = gear.querySelector('#gearListCage');
+    cageSel.value = 'Cage2';
+    script.saveCurrentGearList();
+    const savedHtml = global.saveGearList.mock.calls[0][0];
+    expect(savedHtml).toContain('<option value="Cage2" selected');
+  });
+
   test('suggests chargers based on total batteries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
