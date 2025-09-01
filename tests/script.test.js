@@ -934,6 +934,29 @@ describe('script.js functions', () => {
     expect(html).toContain('6x BattA');
   });
 
+  test('monitoring support cables grouped by type', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml();
+    document.body.innerHTML = html;
+    const rows = document.querySelectorAll('table.gear-table tr');
+    let monitoringHtml = '';
+    rows.forEach((tr, idx) => {
+      if (tr.textContent === 'Monitoring support' && rows[idx + 1]) {
+        monitoringHtml = rows[idx + 1].innerHTML;
+      }
+    });
+    expect(monitoringHtml).toContain('<strong>Power</strong>');
+    expect(monitoringHtml).toContain('<strong>Video</strong>');
+    const powerIdx = monitoringHtml.indexOf('<strong>Power</strong>');
+    const videoIdx = monitoringHtml.indexOf('<strong>Video</strong>');
+    const dtapIdx = monitoringHtml.indexOf('D-Tap to Lemo-2-pin Cable 0,5m');
+    const bncIdx = monitoringHtml.indexOf('ultra slim 3G-SDI BNC cable 0,5m');
+    expect(powerIdx).toBeLessThan(videoIdx);
+    expect(dtapIdx).toBeGreaterThan(powerIdx);
+    expect(dtapIdx).toBeLessThan(videoIdx);
+    expect(bncIdx).toBeGreaterThan(videoIdx);
+  });
+
   test('duplicate motors are aggregated with count in gear list', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
