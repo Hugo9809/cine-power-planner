@@ -467,6 +467,14 @@ const gear = {
         "kNumber": "K2.0003898"
       }
     },
+    "cameraStabiliser": {
+      "Easyrig 5 Vario": {
+        "options": [
+          "FlowCine Serene Spring Arm",
+          "Easyrig - STABIL G3"
+        ]
+      }
+    },
     "matteboxes": {
       "ARRI LMB 4x5 Clamp-On (3-Stage)": {
         "brand": "ARRI",

@@ -1590,6 +1590,7 @@ if (gearListOutput) {
     gearListOutput.classList.remove('hidden');
     ensureGearListActions();
     bindGearListCageListener();
+    bindGearListStabiliserListener();
   }
 }
 
@@ -5272,6 +5273,7 @@ setupSelect.addEventListener("change", (event) => {
           gearListOutput.classList.remove('hidden');
           ensureGearListActions();
           bindGearListCageListener();
+          bindGearListStabiliserListener();
           if (typeof saveGearList === 'function') {
             saveGearList(setup.gearList);
           }
@@ -6159,6 +6161,7 @@ if (projectForm) {
             gearListOutput.classList.remove('hidden');
             ensureGearListActions();
             bindGearListCageListener();
+            bindGearListStabiliserListener();
             saveCurrentGearList();
         }
         projectDialog.close();
@@ -7039,10 +7042,21 @@ function generateGearListHtml(info = {}) {
     const gripItems = [];
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
+    let gripHtml = '';
+    if (gripItems.length) gripHtml = formatItems(gripItems);
+    if (scenarios.includes('Easyrig')) {
+        const stabiliser = devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
+        const opts = stabiliser && stabiliser.options ? stabiliser.options : [];
+        const optionsHtml = ['no further stabilisation', ...opts]
+            .map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`)
+            .join('');
+        const easyrigHtml = `1x Easyrig 5 Vario - <select id="gearListStabiliser">${optionsHtml}</select>`;
+        gripHtml = [gripHtml, easyrigHtml].filter(Boolean).join('<br>');
+    }
     addRow('Monitoring support', monitoringSupportItems);
     addRow('Power', '');
     addRow('Rigging', escapeHtml(info.rigging || ''));
-    addRow('Grip', formatItems(gripItems));
+    addRow('Grip', gripHtml);
     addRow('Carts and Transportation', '');
     addRow('Miscellaneous', formatItems(miscAcc));
     addRow('Consumables', '');
@@ -7063,6 +7077,18 @@ function getCurrentGearListHtml() {
         const originalSel = gearListOutput.querySelector('#gearListCage');
         const val = originalSel ? originalSel.value : cageSel.value;
         Array.from(cageSel.options).forEach(opt => {
+            if (opt.value === val) {
+                opt.setAttribute('selected', '');
+            } else {
+                opt.removeAttribute('selected');
+            }
+        });
+    }
+    const stabSel = clone.querySelector('#gearListStabiliser');
+    if (stabSel) {
+        const originalSel = gearListOutput.querySelector('#gearListStabiliser');
+        const val = originalSel ? originalSel.value : stabSel.value;
+        Array.from(stabSel.options).forEach(opt => {
             if (opt.value === val) {
                 opt.setAttribute('selected', '');
             } else {
@@ -7114,6 +7140,7 @@ function handleImportGearList(e) {
                 gearListOutput.classList.remove('hidden');
                 ensureGearListActions();
                 bindGearListCageListener();
+                bindGearListStabiliserListener();
                 saveCurrentGearList();
             }
         } catch {
@@ -7194,12 +7221,23 @@ function bindGearListCageListener() {
     }
 }
 
+function bindGearListStabiliserListener() {
+    if (!gearListOutput) return;
+    const sel = gearListOutput.querySelector('#gearListStabiliser');
+    if (sel) {
+        sel.addEventListener('change', () => {
+            saveCurrentGearList();
+        });
+    }
+}
+
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
     const html = generateGearListHtml(currentProjectInfo);
     gearListOutput.innerHTML = html;
     ensureGearListActions();
     bindGearListCageListener();
+    bindGearListStabiliserListener();
     saveCurrentGearList();
 }
 

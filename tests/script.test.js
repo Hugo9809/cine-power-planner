@@ -61,6 +61,11 @@ describe('script.js functions', () => {
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
         cages: { 'Universal Cage': { compatible: ['CamA'] } },
+        cameraStabiliser: {
+          'Easyrig 5 Vario': {
+            options: ['FlowCine Serene Spring Arm', 'Easyrig - STABIL G3']
+          }
+        },
         chargers: {
           'Single V-Mount Charger': { mount: 'V-Mount', slots: 1 },
           'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2 },
@@ -970,6 +975,23 @@ describe('script.js functions', () => {
     const itemsRow = rows[gripIdx + 1];
     expect(itemsRow.textContent).toContain('Cinekinetic Cinesaddle');
     expect(itemsRow.textContent).toContain('Steadybag');
+  });
+
+  test('Easyrig scenario adds stabiliser dropdown', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    expect(gripIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[gripIdx + 1];
+    const sel = itemsRow.querySelector('#gearListStabiliser');
+    expect(sel).not.toBeNull();
+    const optionTexts = Array.from(sel.options).map(o => o.textContent);
+    expect(optionTexts).toContain('no further stabilisation');
+    expect(optionTexts).toContain('FlowCine Serene Spring Arm');
+    expect(optionTexts).toContain('Easyrig - STABIL G3');
   });
 
   test('monitoring support cables grouped by type', () => {
