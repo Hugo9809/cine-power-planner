@@ -960,11 +960,11 @@ body.light-mode.pink-mode #userFeedbackTable th {
   background-color: #001589;
   color: var(--inverse-text-color);
 }
-body:not(.light-mode).pink-mode #userFeedbackTable th,
-body:not(.light-mode).pink-mode #userFeedbackTable td {
+body:not(.light-mode) #userFeedbackTable th,
+body:not(.light-mode) #userFeedbackTable td {
   border-color: var(--accent-color);
 }
-body:not(.light-mode).pink-mode #userFeedbackTable th {
+body:not(.light-mode) #userFeedbackTable th {
   background-color: var(--accent-color);
   color: var(--inverse-text-color);
 }
