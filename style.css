@@ -367,24 +367,6 @@ body.hover-help-active * {
   display: none;
 }
 
-#setupContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-@media (min-width: 900px) {
-  #setupContainer {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-  #setup-manager,
-  #setup-config {
-    flex: 1;
-  }
-}
-
-
 .device-category .list-filter {
   width: 100%;
   margin-bottom: 5px;
