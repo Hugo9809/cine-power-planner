@@ -6680,6 +6680,21 @@ function generatePrintableOverview() {
     window.addEventListener('afterprint', closeAfterPrint, { once: true });
 }
 
+function suggestChargerCounts(total) {
+    let quad = Math.floor(total / 4);
+    const remainder = total % 4;
+    let dual = 0;
+    let single = 0;
+    if (remainder === 0) {
+        // nothing
+    } else if (remainder === 3) {
+        quad += 1;
+    } else if (remainder > 0) {
+        dual += 1;
+    }
+    return { quad, dual, single };
+}
+
 function collectAccessories() {
     const cameraSupport = [];
     const misc = [];
@@ -6697,8 +6712,28 @@ function collectAccessories() {
             }
         }
         if (acc.chargers) {
-            for (const [name, charger] of Object.entries(acc.chargers)) {
-                if (!charger.mount || charger.mount === mount) chargers.push(name);
+            let camCount = parseInt(batteryCountElem?.textContent || '', 10);
+            if (!Number.isFinite(camCount)) camCount = 0;
+            const monitorElem = document.getElementById('monitoringBatteryCount');
+            let monCount = monitorElem ? parseInt(monitorElem.textContent, 10) : 0;
+            if (!Number.isFinite(monCount)) monCount = 0;
+            const total = camCount + monCount;
+            if (total > 0) {
+                const counts = suggestChargerCounts(total);
+                const findName = slots => {
+                    for (const [name, charger] of Object.entries(acc.chargers)) {
+                        if (charger.mount === mount && charger.slots === slots) return name;
+                    }
+                    return null;
+                };
+                const pushCharger = (slots, count) => {
+                    const n = findName(slots);
+                    if (!n) return;
+                    for (let i = 0; i < count; i++) chargers.push(n);
+                };
+                pushCharger(4, counts.quad);
+                pushCharger(2, counts.dual);
+                pushCharger(1, counts.single);
             }
         }
     }
@@ -6767,7 +6802,7 @@ function collectAccessories() {
 
     return {
         cameraSupport: [...new Set(cameraSupport)],
-        chargers: [...new Set(chargers)],
+        chargers,
         fizCables: [...new Set(fizCables)],
         misc: [...new Set(misc)]
     };

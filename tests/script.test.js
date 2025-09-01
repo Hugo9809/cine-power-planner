@@ -58,7 +58,11 @@ describe('script.js functions', () => {
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
         cages: { 'Universal Cage': { compatible: ['CamA'] } },
-        chargers: { 'Dual V-Mount Charger': { mount: 'V-Mount' } },
+        chargers: {
+          'Single V-Mount Charger': { mount: 'V-Mount', slots: 1 },
+          'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2 },
+          'Quad V-Mount Charger': { mount: 'V-Mount', slots: 4 }
+        },
         cables: {
           power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
           fiz: { 'LBUS to LBUS': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' } },
@@ -155,6 +159,32 @@ describe('script.js functions', () => {
     cageSelect.value = 'Cage2';
     cageSelect.dispatchEvent(new Event('change', { bubbles: true }));
     expect(gearList.innerHTML).toContain('Cage2');
+  });
+
+  test('suggests chargers based on total batteries', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    document.getElementById('batteryCount').textContent = '9';
+    const monElem = document.createElement('span');
+    monElem.id = 'monitoringBatteryCount';
+    monElem.textContent = '0';
+    document.body.appendChild(monElem);
+
+    const html = script.generateGearListHtml();
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const chargersIndex = rows.findIndex(r => r.textContent === 'Chargers');
+    expect(chargersIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[chargersIndex + 1];
+    expect(itemsRow.textContent).toContain('2x Quad V-Mount Charger');
+    expect(itemsRow.textContent).toContain('1x Dual V-Mount Charger');
   });
 
   test('shows runtime average note when more than four user entries', () => {
