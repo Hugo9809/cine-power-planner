@@ -800,8 +800,14 @@ describe('script.js functions', () => {
       expect(html).toContain('CamA');
       expect(html).toContain('Camera Support');
       expect(html).toContain('Universal Cage');
+      expect(html).toContain('LDS (FIZ)');
+      expect(html).toContain('LBUS to LBUS');
+      expect(html).toContain('Chargers');
+      expect(html).toContain('Dual V-Mount Charger');
       expect(html).toContain('Miscellaneous');
       expect(html).toContain('BNC SDI Cable');
+      expect(html).not.toMatch(/Miscellaneous[\s\S]*LBUS to LBUS/);
+      expect(html).not.toMatch(/Miscellaneous[\s\S]*Dual V-Mount Charger/);
     });
 
   test('battery plate selection is saved and loaded with setups', () => {
