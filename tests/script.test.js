@@ -152,6 +152,12 @@ describe('script.js functions', () => {
     expect(copyBtn.nextElementSibling).toBe(generateBtn);
   });
 
+  test('project form includes User Buttons monitoring option', () => {
+    const select = document.getElementById('monitoringPreferences');
+    const hasOption = Array.from(select.options).some(o => o.value === 'User Buttons');
+    expect(hasOption).toBe(true);
+  });
+
   test('populateLensDropdown fills lens list without duplicates', () => {
     const sel = document.getElementById('lenses');
     sel.innerHTML = '<option value="Existing">Existing</option>';
@@ -1242,10 +1248,10 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
-      monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed'
+      monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed, User Buttons'
     });
     expect(html).toContain('Rigging: Shoulder rig, Hand Grips');
-    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed');
+    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
     expect(html).not.toContain('<td>Rigging</td>');
     expect(html).not.toContain('<td>Monitoring support</td>');
   });
