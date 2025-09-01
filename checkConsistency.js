@@ -31,9 +31,11 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node checkConsistency.js\n' +
-        '\nChecks that device entries contain required fields. ' +
-        'Exits with code 1 when missing fields are found.'
+      'Usage: node checkConsistency.js [--help]\n' +
+        '\nChecks that device entries contain required fields.\n' +
+        'Exits with code 1 when missing fields are found.\n' +
+        '\nOptions:\n' +
+        '  -h, --help  Show this help message.'
     );
     process.exit(0);
   }
