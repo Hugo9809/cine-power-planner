@@ -36,6 +36,18 @@ describe('normalizeMonitor', () => {
     normalizeMonitor(monitor);
     expect(monitor.power.input.voltageRange).toBe('12-24');
   });
+
+  it('normalizes audio connector fields', () => {
+    const monitor = {
+      audioOutput: { portType: '3.5mm Headphone Jack' },
+      audioInput: { portType: '3.5mm Mic/Line' },
+      audioIo: { portType: '10-pin LEMO (analog audio)' }
+    };
+    normalizeMonitor(monitor);
+    expect(monitor.audioOutput).toEqual({ type: '3.5mm Headphone Jack' });
+    expect(monitor.audioInput).toEqual({ type: '3.5mm Mic/Line' });
+    expect(monitor.audioIo).toEqual({ type: '10-pin LEMO (analog audio)' });
+  });
 });
 
 describe('parsePowerInput', () => {
@@ -73,6 +85,18 @@ describe('normalizeVideoDevice', () => {
     normalizeVideoDevice(dev);
     expect(dev.power.input[0].voltageRange).toBe('5-16');
     expect(dev.power.input[1].voltageRange).toBe('14');
+  });
+
+  it('normalizes audio connector fields', () => {
+    const dev = {
+      audioOutput: { portType: '3.5mm Headphone Jack' },
+      audioInput: { portType: '3.5mm Mic/Line' },
+      audioIo: { portType: '10-pin LEMO (analog audio)' }
+    };
+    normalizeVideoDevice(dev);
+    expect(dev.audioOutput).toEqual({ type: '3.5mm Headphone Jack' });
+    expect(dev.audioInput).toEqual({ type: '3.5mm Mic/Line' });
+    expect(dev.audioIo).toEqual({ type: '10-pin LEMO (analog audio)' });
   });
 });
 
