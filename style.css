@@ -1346,13 +1346,16 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   padding: 4px 0;
   border-left: none;
   border-right: none;
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
 }
 
 .gear-table .category-row td {
-  border-top: 1px solid var(--text-color);
-  border-bottom: 1px solid var(--text-color);
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
   font-weight: bold;
+  color: var(--accent-color);
 }
 
 #gearListOutput {
