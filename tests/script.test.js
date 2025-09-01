@@ -1238,10 +1238,10 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
-      monitoringPreferences: 'VF Clean Feed, Onboard 7 inch'
+      monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed'
     });
     expect(html).toContain('Rigging: Shoulder rig, Hand Grips');
-    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard 7 inch');
+    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed');
     expect(html).not.toContain('<td>Rigging</td>');
     expect(html).not.toContain('<td>Monitoring support</td>');
   });
