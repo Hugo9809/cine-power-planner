@@ -235,7 +235,7 @@ const texts = {
     placeholder_videooutputs: "[{}]",
     placeholder_fizconnector: "[{}]",
     placeholder_timecode: "[{}]",
-    placeholder_filter: "Filter...",
+    placeholder_filter: "Filter {item}...",
 
     toggleDeviceManager: "Edit Device Data…",
     hideDeviceManager: "Hide Device Data",
@@ -578,7 +578,7 @@ const texts = {
     placeholder_videooutputs: "[{}]",
     placeholder_fizconnector: "[{}]",
     placeholder_timecode: "[{}]",
-    placeholder_filter: "Filtro...",
+    placeholder_filter: "Filtra {item}...",
     toggleDeviceManager: "Modifica dati dispositivi…",
     hideDeviceManager: "Nascondi dati dispositivi",
     showDetails: "Mostra i dettagli",
@@ -917,7 +917,7 @@ const texts = {
     placeholder_fizconnector: "[{}]",
     placeholder_timecode: "[{}]",
 
-    placeholder_filter: "Filtrar...",
+    placeholder_filter: "Filtrar {item}...",
     toggleDeviceManager: "Editar Datos de Dispositivos…",
     hideDeviceManager: "Ocultar Datos de Dispositivos",
     showDetails: "Mostrar Detalles",
@@ -1261,7 +1261,7 @@ const texts = {
     placeholder_videooutputs: "[{}]",
     placeholder_fizconnector: "[{}]",
     placeholder_timecode: "[{}]",
-    placeholder_filter: "Filtrer...",
+    placeholder_filter: "Filtrer {item}...",
 
     toggleDeviceManager: "Éditer les Données…",
     hideDeviceManager: "Masquer les Données",
@@ -1608,7 +1608,7 @@ const texts = {
     placeholder_videooutputs: "[{}]",
     placeholder_fizconnector: "[{}]",
     placeholder_timecode: "[{}]",
-    placeholder_filter: "Filter...",
+    placeholder_filter: "Nach {item} filtern...",
 
     toggleDeviceManager: "Gerätedaten bearbeiten…",
     hideDeviceManager: "Gerätedaten ausblenden",
