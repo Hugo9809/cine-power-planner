@@ -1049,8 +1049,10 @@ function setLanguage(lang) {
   videoLabelElem.setAttribute("data-help", texts[lang].videoSelectHelp);
 
   const cageLabelElem = document.getElementById("cageLabel");
-  cageLabelElem.textContent = texts[lang].cageLabel;
-  cageLabelElem.setAttribute("data-help", texts[lang].cageSelectHelp);
+  if (cageLabelElem) {
+    cageLabelElem.textContent = texts[lang].cageLabel;
+    cageLabelElem.setAttribute("data-help", texts[lang].cageSelectHelp);
+  }
 
   const distanceLabelElem = document.getElementById("distanceLabel");
   distanceLabelElem.textContent = texts[lang].distanceLabel;
@@ -3342,7 +3344,7 @@ function clearAllFilters() {
   filterSelect(cameraSelect, "");
   filterSelect(monitorSelect, "");
   filterSelect(videoSelect, "");
-  filterSelect(cageSelect, "");
+  if (cageSelect) filterSelect(cageSelect, "");
   motorSelects.forEach(sel => filterSelect(sel, ""));
   controllerSelects.forEach(sel => filterSelect(sel, ""));
   filterSelect(distanceSelect, "");
@@ -3353,7 +3355,7 @@ function applyFilters() {
   filterSelect(cameraSelect, cameraFilterInput.value);
   filterSelect(monitorSelect, monitorFilterInput.value);
   filterSelect(videoSelect, videoFilterInput.value);
-  filterSelect(cageSelect, cageFilterInput.value);
+  if (cageSelect) filterSelect(cageSelect, cageFilterInput ? cageFilterInput.value : "");
   motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value));
   controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value));
   filterSelect(distanceSelect, distanceFilterInput.value);
@@ -3377,7 +3379,7 @@ function applyFilters() {
 populateSelect(cameraSelect, devices.cameras, true);
 populateSelect(monitorSelect, devices.monitors, true);
 populateSelect(videoSelect, devices.video, true);
-populateSelect(cageSelect, devices.accessories?.cages || {}, true);
+if (cageSelect) populateSelect(cageSelect, devices.accessories?.cages || {}, true);
 motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
@@ -3386,7 +3388,7 @@ updateBatteryPlateVisibility();
 updateBatteryOptions();
 
 // Enable search inside dropdowns
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect]
+[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect]
   .forEach(sel => attachSelectSearch(sel));
 motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
@@ -3851,7 +3853,7 @@ function getCurrentSetupKey() {
   const camera = cameraSelect.value || '';
   const monitor = monitorSelect.value || '';
   const video = videoSelect.value || '';
-  const cage = cageSelect.value || '';
+  const cage = cageSelect ? cageSelect.value : '';
   const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
   const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
   const distance = distanceSelect.value || '';
@@ -5117,7 +5119,7 @@ if (skipLink) {
 bindFilterInput(cameraFilterInput, () => filterSelect(cameraSelect, cameraFilterInput.value));
 bindFilterInput(monitorFilterInput, () => filterSelect(monitorSelect, monitorFilterInput.value));
 bindFilterInput(videoFilterInput, () => filterSelect(videoSelect, videoFilterInput.value));
-bindFilterInput(cageFilterInput, () => filterSelect(cageSelect, cageFilterInput.value));
+if (cageFilterInput && cageSelect) bindFilterInput(cageFilterInput, () => filterSelect(cageSelect, cageFilterInput.value));
 bindFilterInput(motorFilterInput, () => motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value)));
 bindFilterInput(controllerFilterInput, () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
 bindFilterInput(distanceFilterInput, () => filterSelect(distanceSelect, distanceFilterInput.value));
@@ -5126,7 +5128,7 @@ bindFilterInput(batteryFilterInput, () => filterSelect(batterySelect, batteryFil
 clearFilterOnSelect(cameraSelect, cameraFilterInput);
 clearFilterOnSelect(monitorSelect, monitorFilterInput);
 clearFilterOnSelect(videoSelect, videoFilterInput);
-clearFilterOnSelect(cageSelect, cageFilterInput);
+if (cageSelect && cageFilterInput) clearFilterOnSelect(cageSelect, cageFilterInput);
 motorSelects.forEach(sel => clearFilterOnSelect(sel, motorFilterInput, () => motorSelects.forEach(s => filterSelect(s, ""))));
 controllerSelects.forEach(sel => clearFilterOnSelect(sel, controllerFilterInput, () => controllerSelects.forEach(s => filterSelect(s, ""))));
 clearFilterOnSelect(distanceSelect, distanceFilterInput);
