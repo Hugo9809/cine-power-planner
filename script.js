@@ -714,19 +714,25 @@ function updateBatteryOptions() {
   updateBatteryLabel();
 }
 
+const BRAND_KEYWORDS = {
+  arri: 'arri',
+  cmotion: 'cmotion',
+  focusbug: 'focusbug',
+  tilta: 'tilta',
+  preston: 'preston',
+  chrosziel: 'chrosziel',
+  smallrig: 'smallrig',
+  dji: 'dji',
+  redrock: 'redrock',
+  teradek: 'teradek'
+};
+
 function detectBrand(name) {
   if (!name || name === 'None') return null;
   const n = name.toLowerCase();
-  if (n.includes('arri')) return 'arri';
-  if (n.includes('cmotion')) return 'cmotion';
-  if (n.includes('focusbug')) return 'focusbug';
-  if (n.includes('tilta')) return 'tilta';
-  if (n.includes('preston')) return 'preston';
-  if (n.includes('chrosziel')) return 'chrosziel';
-  if (n.includes('smallrig')) return 'smallrig';
-  if (n.includes('dji')) return 'dji';
-  if (n.includes('redrock')) return 'redrock';
-  if (n.includes('teradek')) return 'teradek';
+  for (const [keyword, brand] of Object.entries(BRAND_KEYWORDS)) {
+    if (n.includes(keyword)) return brand;
+  }
   return 'other';
 }
 
