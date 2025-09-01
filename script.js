@@ -1558,6 +1558,7 @@ if (gearListOutput) {
     gearListOutput.innerHTML = storedGearList;
     gearListOutput.classList.remove('hidden');
     ensureGearListActions();
+    bindGearListCageListener();
   }
 }
 
@@ -5206,6 +5207,7 @@ setupSelect.addEventListener("change", (event) => {
         if (setup.gearList) {
           gearListOutput.classList.remove('hidden');
           ensureGearListActions();
+          bindGearListCageListener();
           if (typeof saveGearList === 'function') {
             saveGearList(setup.gearList);
           }
@@ -6092,6 +6094,7 @@ if (projectForm) {
             gearListOutput.innerHTML = html;
             gearListOutput.classList.remove('hidden');
             ensureGearListActions();
+            bindGearListCageListener();
             saveCurrentGearList();
         }
         projectDialog.close();
@@ -6855,6 +6858,16 @@ function generateGearListHtml(info = {}) {
         selectedNames.viewfinder = "";
     }
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
+    const cagesDb = devices.accessories?.cages || {};
+    const compatibleCages = [];
+    if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
+        for (const [name, cage] of Object.entries(cagesDb)) {
+            if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) {
+                compatibleCages.push(name);
+            }
+        }
+    }
+    const supportAccNoCages = cameraSupportAcc.filter(item => !compatibleCages.includes(item));
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const allowedInfo = ['dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','lenses'];
     const labels = {
@@ -6886,7 +6899,13 @@ function generateGearListHtml(info = {}) {
         rows.push(`<tr><td>${items}</td></tr>`);
     };
     addRow('Camera', formatItems([selectedNames.camera]));
-    addRow('Camera Support', formatItems([selectedNames.batteryPlate, selectedNames.cage, ...cameraSupportAcc]));
+    const cameraSupportText = formatItems([selectedNames.batteryPlate, ...supportAccNoCages]);
+    let cageSelectHtml = '';
+    if (compatibleCages.length) {
+        const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(c)}</option>`).join('');
+        cageSelectHtml = `<select id="gearListCage">${options}</select>`;
+    }
+    addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
     addRow('Media', '');
     addRow('Lens', escapeHtml(info.lenses || ''));
     addRow('Lens Support', '');
@@ -7000,6 +7019,7 @@ function handleImportGearList(e) {
                 gearListOutput.innerHTML = obj.gearList;
                 gearListOutput.classList.remove('hidden');
                 ensureGearListActions();
+                bindGearListCageListener();
                 saveCurrentGearList();
             }
         } catch {
@@ -7065,11 +7085,25 @@ function ensureGearListActions() {
     deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
 }
 
+function bindGearListCageListener() {
+    if (!gearListOutput) return;
+    const sel = gearListOutput.querySelector('#gearListCage');
+    if (sel) {
+        sel.addEventListener('change', e => {
+            if (cageSelect) {
+                cageSelect.value = e.target.value;
+                refreshGearListIfVisible();
+            }
+        });
+    }
+}
+
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
     const html = generateGearListHtml(currentProjectInfo);
     gearListOutput.innerHTML = html;
     ensureGearListActions();
+    bindGearListCageListener();
     saveCurrentGearList();
 }
 
