@@ -560,6 +560,31 @@ function firstConnector(str) {
   return str.split(',')[0].trim();
 }
 
+/**
+ * Returns the first FIZ connector for a device, optionally prioritizing
+ * connectors that match a set of regular expressions. This consolidates the
+ * repeated logic for choosing between `fizConnector` and `fizConnectors` while
+ * keeping any existing preference order.
+ *
+ * @param {object} device - Device object that may include `fizConnector` or
+ *   `fizConnectors`.
+ * @param {RegExp[]} [preferredMatchers=[]] - Regex patterns to prioritize.
+ * @returns {string} The normalized connector label or an empty string if none
+ *   is found.
+ */
+function getFizPort(device, preferredMatchers = []) {
+  if (!device) return '';
+  const connectors = Array.isArray(device.fizConnectors)
+    ? device.fizConnectors
+    : [];
+  for (const matcher of preferredMatchers) {
+    const match = connectors.find(fc => matcher.test(fc.type));
+    if (match) return firstConnector(match.type);
+  }
+  const portStr = device.fizConnector || connectors[0]?.type;
+  return firstConnector(portStr);
+}
+
 function cameraFizPort(camName, controllerPort, deviceName = '') {
   const cam = devices.cameras[camName];
   if (!cam || !Array.isArray(cam.fizConnectors) || cam.fizConnectors.length === 0) return 'LBUS';
@@ -578,45 +603,25 @@ function cameraFizPort(camName, controllerPort, deviceName = '') {
 
 function controllerFizPort(name) {
   const c = devices.fiz?.controllers?.[name];
-  let portStr = '';
   if (/UMC-4/i.test(name)) {
-    const lcs = c?.fizConnectors?.find(fc => /LCS/i.test(fc.type));
-    portStr = lcs ? lcs.type : 'LCS (LEMO 7-pin)';
-  } else if (Array.isArray(c?.fizConnectors) && c.fizConnectors.length) {
-    portStr = c.fizConnectors[0].type;
-  } else if (c?.fizConnector) {
-    portStr = c.fizConnector;
+    return getFizPort(c, [/LCS/i]) || 'LCS (LEMO 7-pin)';
   }
-  const port = firstConnector(portStr);
-  if (port) return port;
-  return isArriOrCmotion(name) ? 'LBUS' : 'Proprietary';
+  const port = getFizPort(c);
+  return port || (isArriOrCmotion(name) ? 'LBUS' : 'Proprietary');
 }
 
 function motorFizPort(name) {
   const m = devices.fiz?.motors?.[name];
-  const portStr = m?.fizConnector || m?.fizConnectors?.[0]?.type;
-  const port = firstConnector(portStr);
-  if (port) return port;
-  return isArriOrCmotion(name) ? 'LBUS' : 'Proprietary';
+  const port = getFizPort(m);
+  return port || (isArriOrCmotion(name) ? 'LBUS' : 'Proprietary');
 }
 
 function distanceFizPort(name) {
   const d = devices.fiz?.distance?.[name];
   if (!d) return 'LBUS';
-  let portStr = '';
-  if (Array.isArray(d.fizConnectors) && d.fizConnectors.length) {
-    const lbus = d.fizConnectors.find(fc => /LBUS/i.test(fc.type));
-    const serial = d.fizConnectors.find(fc => /SERIAL/i.test(fc.type));
-    if (lbus) portStr = lbus.type;
-    else if (serial) portStr = serial.type;
-    else portStr = d.fizConnectors[0].type;
-  } else if (d.fizConnector) {
-    portStr = d.fizConnector;
-  }
-  const port = firstConnector(portStr);
+  const port = getFizPort(d, [/LBUS/i, /SERIAL/i]);
   if (port) return port;
-  if (/preston/i.test(name)) return 'Serial';
-  return 'LBUS';
+  return /preston/i.test(name) ? 'Serial' : 'LBUS';
 }
 
 function fizPort(name) {
