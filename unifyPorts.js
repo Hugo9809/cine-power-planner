@@ -119,9 +119,9 @@ function normalizeCamera(cam) {
     }
     cleanPowerInput(cam.power.input);
   }
-  if (Array.isArray(cam.power?.powerDistributionOutputs)) cam.power.powerDistributionOutputs.forEach(cleanPort);
-  if (Array.isArray(cam.videoOutputs)) cam.videoOutputs.forEach(cleanPort);
-  if (Array.isArray(cam.fizConnectors)) cam.fizConnectors.forEach(cleanPort);
+  cleanPort(cam.power?.powerDistributionOutputs);
+  cleanPort(cam.videoOutputs);
+  cleanPort(cam.fizConnectors);
   if (Array.isArray(cam.lensMount)) {
     cam.lensMount.forEach(m => {
       if (m.mount === 'adapted' && /LDS|Cooke/i.test(m.notes || '')) {
@@ -224,7 +224,7 @@ function normalizeFiz(dev) {
     delete dev.fizConnector;
   }
   if (dev.power?.input) cleanPowerInput(dev.power.input);
-  if (Array.isArray(dev.fizConnectors)) dev.fizConnectors.forEach(cleanPort);
+  cleanPort(dev.fizConnectors);
 }
 
 function normalizeCollection(collection, fn) {
