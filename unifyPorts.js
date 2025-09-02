@@ -82,6 +82,11 @@ function cleanPort(port) {
     port.forEach(cleanPort);
     return;
   }
+  // Guard against primitive values (e.g. strings) which would cause the
+  // `in` operator to throw a TypeError. Such values can't be normalized in
+  // place, so we simply ignore them.
+  if (typeof port !== 'object') return;
+
   if ('portType' in port) {
     if (!('type' in port)) port.type = port.portType;
     delete port.portType;
