@@ -6835,7 +6835,8 @@ function suggestChargerCounts(total) {
 
 function collectAccessories() {
     const cameraSupport = [];
-    const misc = [
+    const misc = [];
+    const monitoringSupport = [
         'BNC Cable 0.5 m',
         'BNC Cable 1 m',
         'BNC Cable 5 m',
@@ -6934,12 +6935,14 @@ function collectAccessories() {
     });
 
     const miscUnique = [...new Set(misc)];
-    for (let i = 0; i < 4; i++) miscUnique.push('BNC Connector');
+    const monitoringSupportUnique = [...new Set(monitoringSupport)];
+    for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
         fizCables: [...new Set(fizCables)],
-        misc: miscUnique
+        misc: miscUnique,
+        monitoringSupport: monitoringSupportUnique
     };
 }
 
@@ -6994,7 +6997,7 @@ function generateGearListHtml(info = {}) {
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc } = collectAccessories();
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
     if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
@@ -7020,7 +7023,9 @@ function generateGearListHtml(info = {}) {
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         miscAcc.push(
             'D-Tap to Lemo-2-pin Cable 0,3m',
-            'D-Tap to Lemo-2-pin Cable 0,3m',
+            'D-Tap to Lemo-2-pin Cable 0,3m'
+        );
+        monitoringSupportAcc.push(
             'Ultraslim BNC 0.3 m',
             'Ultraslim BNC 0.3 m'
         );
@@ -7140,6 +7145,10 @@ function generateGearListHtml(info = {}) {
     let monitoringSupportItems = '';
     if (monitoringSupportPrefs.length) {
         monitoringSupportItems = escapeHtml(monitoringSupportPrefs.join(', '));
+    }
+    const monitoringSupportHardware = formatItems(monitoringSupportAcc);
+    if (monitoringSupportHardware) {
+        monitoringSupportItems = [monitoringSupportItems, monitoringSupportHardware].filter(Boolean).join('<br>');
     }
     addRow('Monitoring support', monitoringSupportItems);
     const gripItems = [];
