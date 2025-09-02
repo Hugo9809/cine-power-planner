@@ -1010,6 +1010,8 @@ describe('script.js functions', () => {
     expect(html).toContain('C-Stand 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     expect(html).toContain('2x spigot');
+    expect(html).toContain('2x Ultraslim BNC 0.3 m');
+    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
   });
 
   test('gear list includes battery count in camera batteries row', () => {

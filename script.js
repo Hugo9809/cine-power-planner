@@ -6987,6 +6987,14 @@ function generateGearListHtml(info = {}) {
     const monitorEquipOptions = ['Directors Monitor 7" handheld', 'Directors Monitor 15-19 inch', 'Combo Monitor 15-19 inch'];
     const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
     const monitoringSupportPrefs = monitoringPrefs.filter(p => !monitorEquipOptions.includes(p));
+    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
+        miscAcc.push(
+            'D-Tap to Lemo-2-pin Cable 0,3m',
+            'D-Tap to Lemo-2-pin Cable 0,3m',
+            'Ultraslim BNC 0.3 m',
+            'Ultraslim BNC 0.3 m'
+        );
+    }
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
     const addHandle = () => {
         if (!supportAccNoCages.includes(handleName)) {
@@ -7172,7 +7180,6 @@ function generateGearListHtml(info = {}) {
         'D-Tap to LEMO 2-pin',
         'HDMI Cable',
         'BNC SDI Cable',
-        'Ultraslim BNC 0.3 m',
         'Ultraslim BNC 0.5 m'
     ]);
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
