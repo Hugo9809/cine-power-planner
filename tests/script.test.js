@@ -229,6 +229,26 @@ describe('script.js functions', () => {
     expect(supportRow.textContent).toContain('15mm lens support');
   });
 
+  test('multiple lenses with same rod length only add one pair of rods', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    addOpt('cageSelect', 'Universal Cage');
+    devices.lenses.LensB = { brand: 'TestBrand', rodStandard: '15mm', rodLengthCm: 30 };
+    const html = script.generateGearListHtml({ lenses: 'LensA, LensB' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const supportIndex = rows.findIndex(r => r.textContent === 'Lens Support');
+    const supportRow = rows[supportIndex + 1];
+    expect(supportRow.textContent).toContain('1x 15mm rods 30cm');
+    expect(supportRow.textContent).not.toContain('2x 15mm rods 30cm');
+  });
+
   test('selected lens does not appear in project requirements list', () => {
     const html = script.generateGearListHtml({ lenses: 'LensA' });
     expect(html).not.toContain('Lenses: LensA');
