@@ -2568,6 +2568,17 @@ describe('script.js functions', () => {
     expect(helpDialog.hasAttribute('hidden')).toBe(false);
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
+    // open with question mark while typing
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    input.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    expect(input.value).toBe('');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    document.body.removeChild(input);
   });
 
   test('slash or Ctrl+F focuses help search', () => {

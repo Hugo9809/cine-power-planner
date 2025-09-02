@@ -8226,7 +8226,8 @@ if (helpButton && helpDialog) {
     ) {
       e.preventDefault();
       toggleHelp();
-    } else if ((e.key === '?' || e.key.toLowerCase() === 'h') && !isTextField) {
+    } else if (e.key === '?' || e.key.toLowerCase() === 'h') {
+      e.preventDefault();
       toggleHelp();
     } else if (
       !helpDialog.hasAttribute('hidden') &&
