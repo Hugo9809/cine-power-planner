@@ -7050,6 +7050,9 @@ function generateGearListHtml(info = {}) {
     const monitorEquipOptions = ['Directors Monitor 7" handheld', 'Directors Monitor 15-19 inch', 'Combo Monitor 15-19 inch'];
     const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
     const monitoringSupportPrefs = monitoringPrefs.filter(p => !monitorEquipOptions.includes(p));
+    const filterSelections = info.filter
+        ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
     const receiverCount = (monitoringPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
     if (selectedNames.video) {
         monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
@@ -7097,6 +7100,7 @@ function generateGearListHtml(info = {}) {
     }
     const projectInfo = { ...info };
     delete projectInfo.lenses;
+    delete projectInfo.filter;
     if (monitoringSupportPrefs.length) {
         projectInfo.monitoringSupport = monitoringSupportPrefs.join(', ');
     }
@@ -7120,8 +7124,7 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
         monitoringSupport: 'Monitoring support',
-        monitoring: 'Monitoring',
-        filter: 'Filter'
+        monitoring: 'Monitoring'
     };
     const boxFields = ['deliveryResolution', 'recordingResolution', 'aspectRatio', 'codec', 'baseFrameRate', 'sensorMode'];
     const fieldIcons = {
@@ -7228,7 +7231,7 @@ function generateGearListHtml(info = {}) {
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
-    addRow('Matte box + filter', '');
+    addRow('Matte box + filter', formatItems(filterSelections));
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
     if (selectedNames.battery) {

@@ -1008,7 +1008,9 @@ describe('script.js functions', () => {
       expect(html).toContain('<h3>Project Requirements</h3>');
       expect(html).toContain('DoP: DopName');
       expect(html).toContain('Required Scenarios: Handheld, Slider');
-      expect(html).toContain('Filter: IRND');
+      expect(html).not.toContain('Filter: IRND');
+      expect(html).toContain('Matte box + filter');
+      expect(html).toContain('1x IRND');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain('1x CamA');
