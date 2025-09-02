@@ -200,6 +200,10 @@ p {
     min-width: unset;
     margin-bottom: 5px;
   }
+  .form-row select,
+  .form-row input {
+    margin: 5px 0 0 0;
+  }
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -1223,6 +1227,10 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     width: auto;
     min-width: auto;
     margin-bottom: 4px;
+  }
+  .form-row select,
+  .form-row input {
+    margin: 5px 0 0 0;
   }
 
   .form-row > button {
