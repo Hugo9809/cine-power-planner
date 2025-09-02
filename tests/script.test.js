@@ -294,6 +294,20 @@ describe('script.js functions', () => {
     expect(savedHtml).toContain('<option value="Cage2" selected');
   });
 
+  test('project requirements are saved with gear list', () => {
+    global.saveGearList = jest.fn();
+    const proj = document.getElementById('projectRequirementsOutput');
+    proj.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
+    proj.classList.remove('hidden');
+    const gear = document.getElementById('gearListOutput');
+    gear.innerHTML = '<h2>Proj</h2><h3>Gear List</h3><table class="gear-table"></table>';
+    gear.classList.remove('hidden');
+    script.saveCurrentGearList();
+    const savedHtml = global.saveGearList.mock.calls[0][0];
+    expect(savedHtml).toContain('<div class="requirements-grid">');
+    expect(savedHtml).toContain('<table class="gear-table">');
+  });
+
   test('suggests chargers based on total batteries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
