@@ -14,6 +14,7 @@
   --panel-bg: #f9f9f9;
   --panel-border: #ddd;
   --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --border-radius: 5px;
   --page-padding: 20px;
 }
 @media (max-width: 600px) {
@@ -260,7 +261,7 @@ p {
 
 #feedbackDialog {
   border: 2px solid var(--accent-color);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 20px;
   width: min(90vw, 700px);
   background: var(--surface-color);
@@ -404,7 +405,7 @@ textarea {
   background-color: var(--control-bg);
   color: var(--control-text);
   border: 1px solid var(--control-border);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
 }
 
 select {
@@ -434,7 +435,7 @@ select {
 /* FIZ group fieldset */
 fieldset {
   border: 1px solid var(--accent-color);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 10px;
   margin-top: 1em;
   width: 100%;
@@ -452,7 +453,7 @@ legend {
 section {
   background-color: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 15px;
   margin-top: 1.5em;
   box-shadow: var(--panel-shadow);
@@ -469,7 +470,7 @@ button {
   background-color: var(--control-bg);
   color: var(--control-text);
   border: 1px solid var(--control-border);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 5px 10px; /* Adjusted padding to make buttons smaller */
   margin: 5px;
   cursor: pointer;
@@ -508,7 +509,7 @@ button:disabled {
   min-width: 250px; /* Minimum width for each column */
   background-color: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 10px;
   box-shadow: var(--panel-shadow);
   transition: box-shadow 0.2s, transform 0.2s;
@@ -927,7 +928,7 @@ button:disabled {
   padding: 15px; /* Match section padding */
   margin-top: 1em; /* Match section margin */
   border: 1px solid var(--panel-border); /* Match section border */
-  border-radius: 5px; /* Match section border-radius */
+  border-radius: var(--border-radius); /* Match section border-radius */
   box-shadow: var(--panel-shadow);
   transition: box-shadow 0.2s, transform 0.2s;
 }
@@ -1447,7 +1448,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 #overviewDialogContent .device-category {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 10px;
   margin-bottom: 10px;
   flex: 1 1 calc((100% - 20px) / 3);
@@ -1541,7 +1542,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   color: var(--text-color);
   padding: 10px;
   border: 1px solid var(--panel-border);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   margin-top: 10px;
   overflow-x: auto;
 }

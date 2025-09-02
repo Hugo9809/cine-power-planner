@@ -25,7 +25,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
   padding: 5px 10px;
   font-size: 0.85em;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--control-border);
   background: var(--control-bg);
   color: var(--control-text);
@@ -54,7 +54,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
 .device-category {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 10px;
   margin-bottom: 10px;
   flex: 1 1 calc((100% - 20px) / 3);
