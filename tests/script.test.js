@@ -983,6 +983,7 @@ describe('script.js functions', () => {
       expect(msSection).toContain('1x BNC Cable 10 m');
       expect(msSection).toContain('1x BNC Drum 25 m');
       expect(msSection).toContain('4x BNC Connector');
+      expect(msSection).toContain('1x Antenna 5,8GHz 5dBi Long (spare)');
       const powerSection = html.slice(html.indexOf('Power'), html.indexOf('Grip'));
       expect(powerSection).toContain('1x Power Cable Drum 25-50 m');
       expect(powerSection).toContain('2x Power Cable 10 m');
@@ -1083,6 +1084,8 @@ describe('script.js functions', () => {
     expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     expect(html).toContain('3x Tennisball');
+    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
@@ -1104,6 +1107,8 @@ describe('script.js functions', () => {
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
     expect(html).toContain('2x <strong>Wireless Receiver</strong> - VidA RX');
+    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (spare)');
   });
 
   test('gear list includes battery count in camera batteries row', () => {
