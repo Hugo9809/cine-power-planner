@@ -7160,7 +7160,8 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
-            monitoringItems += `<br>1x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)}`;
+            const receiverCount = (monitoringPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
+            monitoringItems += `<br>${receiverCount || 1}x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)}`;
         }
     }
     addRow('Monitoring', monitoringItems);

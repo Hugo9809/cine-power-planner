@@ -1048,6 +1048,27 @@ describe('script.js functions', () => {
     expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
   });
 
+  test('director handheld and focus monitor each get wireless receiver', () => {
+    const { generateGearListHtml } = script;
+    global.devices.video = {
+      'VidA TX': {
+        powerDrawWatts: 3,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoInputs: [{ type: '3G-SDI' }]
+      }
+    };
+    global.devices.wirelessReceivers = { 'VidA RX': {} };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('motor1Select', 'MotorA');
+    addOpt('videoSelect', 'VidA TX');
+    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
+    expect(html).toContain('2x <strong>Wireless Receiver</strong> - VidA RX');
+  });
+
   test('gear list includes battery count in camera batteries row', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
