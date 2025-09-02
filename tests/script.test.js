@@ -990,6 +990,12 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('BNC Cable 10 m');
       expect(miscSection).not.toContain('BNC Drum 25 m');
       expect(miscSection).not.toContain('BNC Connector');
+      expect(miscSection).toContain('1x Power Cable Drum 25-50 m');
+      expect(miscSection).toContain('2x Power Cable 10 m');
+      expect(miscSection).toContain('2x Power Cable 5 m');
+      expect(miscSection).toContain('3x Power Strip');
+      expect(miscSection).toContain('3x PRCD-S (Portable Residual Current Device-Safety)');
+      expect(miscSection).toContain('3x Power Three Way Splitter');
       expect(html).not.toContain('BNC SDI Cable');
       expect(html).toContain('2x Ultraslim BNC 0.3 m');
       expect(html).not.toContain('Ultraslim BNC 0.5 m');
