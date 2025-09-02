@@ -7190,6 +7190,10 @@ function generateGearListHtml(info = {}) {
         gripItems.push('spigot');
         gripItems.push('spigot');
     }
+    if (hasMotor) {
+        gripItems.push('Avenger C-Stand Sliding Leg 20"');
+        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
+    }
     if (scenarios.includes('Tripod')) {
         const tripodDb = devices && devices.accessories && devices.accessories.tripods;
         if (tripodDb) {
