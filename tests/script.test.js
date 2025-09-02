@@ -1021,6 +1021,10 @@ describe('script.js functions', () => {
     expect(html).toContain('2x spigot');
     expect(html).toContain('2x Ultraslim BNC 0.3 m');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
+    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
+    const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
+    expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m');
   });
 
   test('motor adds focus monitor and related accessories to gear list', () => {
