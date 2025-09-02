@@ -1026,8 +1026,17 @@ function setLanguage(lang) {
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-  copySummaryBtn.setAttribute("title", texts[lang].copySummaryBtn);
-  copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryBtnHelp);
+  if (navigator.clipboard) {
+    copySummaryBtn.textContent = texts[lang].copySummaryBtn;
+    copySummaryBtn.removeAttribute("disabled");
+    copySummaryBtn.setAttribute("title", texts[lang].copySummaryBtn);
+    copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryBtnHelp);
+  } else {
+    copySummaryBtn.textContent = texts[lang].copySummaryUnsupported;
+    copySummaryBtn.setAttribute("title", texts[lang].copySummaryUnsupported);
+    copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryUnsupported);
+    copySummaryBtn.setAttribute("disabled", "");
+  }
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -1122,7 +1131,6 @@ function setLanguage(lang) {
 
   document.getElementById("runtimeFeedbackBtn").textContent =
     texts[lang].runtimeFeedbackBtn;
-  document.getElementById("copySummaryBtn").textContent = texts[lang].copySummaryBtn;
 
   if (pinWarnElem)
     pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
@@ -6348,22 +6356,26 @@ if (applySharedLinkBtn && sharedLinkInput) {
   });
 }
 
-if (copySummaryBtn && typeof navigator !== 'undefined' && navigator.clipboard) {
-  copySummaryBtn.addEventListener('click', () => {
-    const lines = [
-      `${texts[currentLang].totalPowerLabel} ${totalPowerElem.textContent} W`,
-      `${texts[currentLang].totalCurrent144Label} ${totalCurrent144Elem.textContent} A`,
-      `${texts[currentLang].totalCurrent12Label} ${totalCurrent12Elem.textContent} A`,
-      `${texts[currentLang].batteryLifeLabel} ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}`,
-      `${texts[currentLang].batteryCountLabel} ${batteryCountElem.textContent}`
-    ];
-    navigator.clipboard.writeText(lines.join('\n')).then(() => {
-      copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
-      setTimeout(() => {
-        copySummaryBtn.textContent = texts[currentLang].copySummaryBtn;
-      }, 2000);
+if (copySummaryBtn) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard) {
+    copySummaryBtn.addEventListener('click', () => {
+      const lines = [
+        `${texts[currentLang].totalPowerLabel} ${totalPowerElem.textContent} W`,
+        `${texts[currentLang].totalCurrent144Label} ${totalCurrent144Elem.textContent} A`,
+        `${texts[currentLang].totalCurrent12Label} ${totalCurrent12Elem.textContent} A`,
+        `${texts[currentLang].batteryLifeLabel} ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}`,
+        `${texts[currentLang].batteryCountLabel} ${batteryCountElem.textContent}`
+      ];
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
+        setTimeout(() => {
+          copySummaryBtn.textContent = texts[currentLang].copySummaryBtn;
+        }, 2000);
+      });
     });
-  });
+  } else {
+    copySummaryBtn.setAttribute('disabled', '');
+  }
 }
 
 // Open feedback dialog and handle submission
