@@ -3382,6 +3382,29 @@ function bindFilterInput(inputElem, callback) {
       callback();
     }
   });
+  addInputClearButton(inputElem, callback);
+}
+
+function addInputClearButton(inputElem, callback) {
+  const label = (texts[currentLang] && texts[currentLang].clearFilter) || "Clear filter";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.textContent = "\u00D7";
+  btn.className = "clear-input-btn";
+  btn.setAttribute("aria-label", label);
+  btn.title = label;
+  btn.hidden = true;
+  btn.addEventListener("click", () => {
+    inputElem.value = "";
+    callback();
+    inputElem.focus();
+  });
+  inputElem.insertAdjacentElement("afterend", btn);
+  const toggle = () => {
+    btn.hidden = !inputElem.value;
+  };
+  inputElem.addEventListener("input", toggle);
+  toggle();
 }
 
 function clearFilterOnSelect(selectElem, filterInput, resetCallback) {

@@ -421,6 +421,18 @@ select {
   cursor: pointer;
 }
 
+.clear-input-btn {
+  margin-left: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+.clear-input-btn:hover {
+  color: var(--accent-color);
+}
+
 #setup-config .form-row:first-of-type {
   clear: both;
 }
