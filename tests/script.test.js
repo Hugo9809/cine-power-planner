@@ -755,7 +755,7 @@ describe('script.js functions', () => {
     script.setLanguage('de');
     expect(document.documentElement.lang).toBe('de');
     expect(localStorage.getItem('language')).toBe('de');
-    expect(document.getElementById('mainTitle').textContent).toBe('Kamera-Stromverbrauchs-App');
+    expect(document.getElementById('mainTitle').textContent).toBe(texts.de.appHeading);
     expect(document.getElementById('offlineIndicator').textContent).toBe(texts.de.offlineIndicator);
   });
 
@@ -763,7 +763,7 @@ describe('script.js functions', () => {
     script.setLanguage('es');
     expect(document.documentElement.lang).toBe('es');
     expect(localStorage.getItem('language')).toBe('es');
-    expect(document.getElementById('mainTitle').textContent).toBe('Aplicación de Consumo de Energía para Cámaras');
+    expect(document.getElementById('mainTitle').textContent).toBe(texts.es.appHeading);
     expect(document.getElementById('offlineIndicator').textContent).toBe(texts.es.offlineIndicator);
   });
 

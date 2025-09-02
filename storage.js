@@ -35,17 +35,34 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
 
 // Generate a unique name by appending numeric suffixes if needed
 // Comparisons are case-insensitive and ignore surrounding whitespace.
+// Uses a cached Set on the passed `usedNames` to avoid rebuilding
+// normalized variants on every call, which can become costly when many
+// names are processed in sequence.
 function generateUniqueName(base, usedNames) {
   const trimmedBase = base.trim();
   let name = trimmedBase;
   let suffix = 2;
-  const normalized = new Set([...usedNames].map((n) => n.trim().toLowerCase()));
+
+  // Reuse a cached Set of normalized names (trimmed + lowercased).
+  // The cache is stored as a non-enumerable property so normal Set
+  // iteration isn't affected.
+  if (!Object.prototype.hasOwnProperty.call(usedNames, '_normalized')) {
+    const norm = new Set([...usedNames].map(n => n.trim().toLowerCase()));
+    Object.defineProperty(usedNames, '_normalized', {
+      value: norm,
+      enumerable: false,
+      configurable: true
+    });
+  }
+  const normalized = usedNames._normalized;
+
   let candidate = name.toLowerCase();
   while (normalized.has(candidate)) {
     name = `${trimmedBase} (${suffix++})`;
     candidate = name.toLowerCase();
   }
   usedNames.add(name);
+  normalized.add(candidate);
   return name;
 }
 
