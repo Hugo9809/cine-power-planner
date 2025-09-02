@@ -6852,6 +6852,7 @@ function collectAccessories() {
         'BNC Cable 10 m',
         'BNC Drum 25 m'
     ];
+    const rigging = [];
     const chargers = [];
     const fizCables = [];
     const acc = devices.accessories || {};
@@ -6945,13 +6946,15 @@ function collectAccessories() {
 
     const miscUnique = [...new Set(misc)];
     const monitoringSupportUnique = [...new Set(monitoringSupport)];
+    const riggingUnique = [...new Set(rigging)];
     for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
         fizCables: [...new Set(fizCables)],
         misc: miscUnique,
-        monitoringSupport: monitoringSupportUnique
+        monitoringSupport: monitoringSupportUnique,
+        rigging: riggingUnique
     };
 }
 
@@ -7007,7 +7010,14 @@ function generateGearListHtml(info = {}) {
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories();
+    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4 to 1/4');
+    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8 to 1/4');
+    for (let i = 0; i < 2; i++) riggingAcc.push('Noga Arm');
+    for (let i = 0; i < 2; i++) riggingAcc.push('Mini Magic Arm');
+    for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
+    riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
+    for (let i = 0; i < 3; i++) riggingAcc.push('stud 5/8" with male 3/8" and 1/4"');
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
     if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
@@ -7181,6 +7191,8 @@ function generateGearListHtml(info = {}) {
         monitoringSupportItems = [monitoringSupportItems, monitoringSupportHardware].filter(Boolean).join('<br>');
     }
     addRow('Monitoring support', monitoringSupportItems);
+    const riggingItems = formatItems(riggingAcc);
+    addRow('Rigging', riggingItems);
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
