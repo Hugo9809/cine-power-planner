@@ -1252,6 +1252,23 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   #setupDiagram {
     min-height: 300px;
   }
+
+  /* Allow wrapping instead of horizontal scroll on small screens */
+  #feedbackTableContainer,
+  #batteryTableContainer,
+  #gearListOutput {
+    overflow-x: visible;
+  }
+
+  #userFeedbackTable th,
+  #userFeedbackTable td,
+  .port-table th,
+  .port-table td,
+  #batteryComparison th,
+  #batteryComparison td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* Project requirements dialog */
