@@ -1370,6 +1370,43 @@ describe('script.js functions', () => {
     expect(consumText).toContain('3x CapIt Medium');
   });
 
+  test('base consumables added with correct counts for short shoot', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ shootingDays: '2024-05-01 to 2024-05-05' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
+    const consumText = rows[consumIdx + 1].textContent;
+    expect(consumText).toContain('1x Kimtech Wipes');
+    expect(consumText).toContain('1x Lasso Rot 24mm');
+    expect(consumText).toContain('1x Lasso Blau 24mm');
+    expect(consumText).toContain('1x Sprigs rot 1/4“');
+    expect(consumText).toContain('2x Augenleder Large Oval Farbe rot');
+    expect(consumText).toContain('2x Klappenstift');
+  });
+
+  test('consumables scale with shooting days and special rules', () => {
+    const { generateGearListHtml } = script;
+    const scenarios = [
+      ['2024-05-01 to 2024-05-10', '2x Kimtech Wipes', '4x Klappenstift', '4x Augenleder Large Oval Farbe rot'],
+      ['2024-05-01 to 2024-05-16', '3x Kimtech Wipes', '4x Klappenstift', '6x Augenleder Large Oval Farbe rot'],
+      ['2024-05-01 to 2024-05-22', '4x Kimtech Wipes', '8x Klappenstift', '8x Augenleder Large Oval Farbe rot']
+    ];
+    scenarios.forEach(([range, wipes, klappen, augen]) => {
+      const html = generateGearListHtml({ shootingDays: range });
+      const wrap = document.createElement('div');
+      wrap.innerHTML = html;
+      const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+      const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
+      const consumText = rows[consumIdx + 1].textContent;
+      expect(consumText).toContain(wipes);
+      expect(consumText).toContain('1x Sprigs rot 1/4“');
+      expect(consumText).toContain(klappen);
+      expect(consumText).toContain(augen);
+    });
+  });
+
   test('rigging appears in project requirements and gear table', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({

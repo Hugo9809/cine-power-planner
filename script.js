@@ -7285,6 +7285,45 @@ function generateGearListHtml(info = {}) {
         ...Array(3).fill('Power Three Way Splitter')
     );
     const consumables = [];
+    const baseConsumables = [
+        { name: 'Kimtech Wipes', count: 1 },
+        { name: 'Lasso Rot 24mm', count: 1 },
+        { name: 'Lasso Blau 24mm', count: 1 },
+        { name: 'Sprigs rot 1/4“', count: 1, noScale: true },
+        { name: 'Augenleder Large Oval Farbe rot', count: 2 },
+        { name: 'Klappenstift', count: 2, klappen: true }
+    ];
+    let shootDays = 0;
+    if (info.shootingDays) {
+        const parts = info.shootingDays.split(' to ');
+        if (parts.length === 2) {
+            const start = new Date(parts[0]);
+            const end = new Date(parts[1]);
+            if (!isNaN(start) && !isNaN(end)) {
+                shootDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            }
+        }
+    }
+    let multiplier = 1;
+    if (shootDays > 21) {
+        multiplier = 4;
+    } else if (shootDays > 14) {
+        multiplier = 3;
+    } else if (shootDays > 7) {
+        multiplier = 2;
+    }
+    const klappenMultiplier = multiplier % 2 === 0 ? multiplier : Math.max(1, multiplier - 1);
+    for (const item of baseConsumables) {
+        let count = item.count;
+        if (item.noScale) {
+            // no scaling
+        } else if (item.klappen) {
+            count *= klappenMultiplier;
+        } else {
+            count *= multiplier;
+        }
+        for (let i = 0; i < count; i++) consumables.push(item.name);
+    }
     if (scenarios.includes('Outdoor')) {
         if (selectedNames.camera) miscItems.push(`Rain Cover "${selectedNames.camera}"`);
         miscItems.push('Umbrella for Focus Monitor');
