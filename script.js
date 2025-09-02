@@ -1598,6 +1598,39 @@ const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
+const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+
+function splitGearListHtml(html) {
+  if (!html) return { projectHtml: '', gearHtml: '' };
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const title = doc.querySelector('h2');
+  const h3s = doc.querySelectorAll('h3');
+  const reqHeading = h3s[0];
+  const gearHeading = h3s.length > 1 ? h3s[1] : h3s[0];
+  const reqGrid = doc.querySelector('.requirements-grid');
+  const table = doc.querySelector('.gear-table');
+  const titleHtml = title ? title.outerHTML : '';
+  const projectHtml = reqHeading && reqGrid ? titleHtml + reqHeading.outerHTML + reqGrid.outerHTML : '';
+  const gearHtml = table ? titleHtml + (gearHeading ? gearHeading.outerHTML : '') + table.outerHTML : '';
+  return { projectHtml, gearHtml };
+}
+
+function displayGearAndRequirements(html) {
+  const { projectHtml, gearHtml } = splitGearListHtml(html);
+  if (projectRequirementsOutput) {
+    if (projectHtml) {
+      projectRequirementsOutput.innerHTML = projectHtml;
+      projectRequirementsOutput.classList.remove('hidden');
+    } else {
+      projectRequirementsOutput.innerHTML = '';
+      projectRequirementsOutput.classList.add('hidden');
+    }
+  }
+  if (gearListOutput) {
+    gearListOutput.innerHTML = gearHtml;
+    gearListOutput.classList.remove('hidden');
+  }
+}
 function getSliderBowlSelect() {
   return gearListOutput ? gearListOutput.querySelector('#gearListSliderBowl') : null;
 }
@@ -1613,8 +1646,7 @@ function setSliderBowlValue(val) {
 if (gearListOutput) {
   const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
   if (storedGearList) {
-    gearListOutput.innerHTML = storedGearList;
-    gearListOutput.classList.remove('hidden');
+    displayGearAndRequirements(storedGearList);
     ensureGearListActions();
     bindGearListCageListener();
     bindGearListEasyrigListener();
@@ -5292,9 +5324,13 @@ setupSelect.addEventListener("change", (event) => {
     if (gearListOutput) {
       gearListOutput.innerHTML = '';
       gearListOutput.classList.add('hidden');
-      if (typeof deleteGearList === 'function') {
-        deleteGearList();
-      }
+    }
+    if (projectRequirementsOutput) {
+      projectRequirementsOutput.innerHTML = '';
+      projectRequirementsOutput.classList.add('hidden');
+    }
+    if (typeof deleteGearList === 'function') {
+      deleteGearList();
     }
   } else {
     let setups = getSetups();
@@ -5314,9 +5350,8 @@ setupSelect.addEventListener("change", (event) => {
       setSliderBowlValue(setup.sliderBowl || '');
       updateBatteryOptions();
       if (gearListOutput) {
-        gearListOutput.innerHTML = setup.gearList || '';
+        displayGearAndRequirements(setup.gearList || '');
         if (setup.gearList) {
-          gearListOutput.classList.remove('hidden');
           ensureGearListActions();
           bindGearListCageListener();
           bindGearListEasyrigListener();
@@ -5325,7 +5360,6 @@ setupSelect.addEventListener("change", (event) => {
             saveGearList(setup.gearList);
           }
         } else {
-          gearListOutput.classList.add('hidden');
           if (typeof deleteGearList === 'function') {
             deleteGearList();
           }
@@ -6235,15 +6269,12 @@ if (projectForm) {
         const info = collectProjectFormData();
         currentProjectInfo = info;
         const html = generateGearListHtml(info);
-        if (gearListOutput) {
-            gearListOutput.innerHTML = html;
-            gearListOutput.classList.remove('hidden');
-            ensureGearListActions();
-            bindGearListCageListener();
-            bindGearListEasyrigListener();
-            bindGearListSliderBowlListener();
-            saveCurrentGearList();
-        }
+        displayGearAndRequirements(html);
+        ensureGearListActions();
+        bindGearListCageListener();
+        bindGearListEasyrigListener();
+        bindGearListSliderBowlListener();
+        saveCurrentGearList();
         projectDialog.close();
     });
 }
@@ -7541,8 +7572,7 @@ function handleImportGearList(e) {
         try {
             const obj = JSON.parse(ev.target.result);
             if (obj && obj.gearList) {
-                gearListOutput.innerHTML = obj.gearList;
-                gearListOutput.classList.remove('hidden');
+                displayGearAndRequirements(obj.gearList);
                 ensureGearListActions();
                 bindGearListCageListener();
                 bindGearListEasyrigListener();
@@ -7558,9 +7588,14 @@ function handleImportGearList(e) {
 }
 
 function deleteCurrentGearList() {
-    if (!gearListOutput) return;
-    gearListOutput.innerHTML = '';
-    gearListOutput.classList.add('hidden');
+    if (gearListOutput) {
+        gearListOutput.innerHTML = '';
+        gearListOutput.classList.add('hidden');
+    }
+    if (projectRequirementsOutput) {
+        projectRequirementsOutput.innerHTML = '';
+        projectRequirementsOutput.classList.add('hidden');
+    }
     if (typeof deleteGearList === 'function') {
         deleteGearList();
     }
@@ -7653,7 +7688,7 @@ function bindGearListSliderBowlListener() {
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
     const html = generateGearListHtml(currentProjectInfo);
-    gearListOutput.innerHTML = html;
+    displayGearAndRequirements(html);
     ensureGearListActions();
     bindGearListCageListener();
     bindGearListEasyrigListener();

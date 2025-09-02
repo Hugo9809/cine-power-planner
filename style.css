@@ -1534,7 +1534,8 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   color: var(--inverse-text-color);
 }
 
-#gearListOutput {
+#gearListOutput,
+#projectRequirementsOutput {
   background: var(--panel-bg);
   color: var(--text-color);
   padding: 10px;
@@ -1545,18 +1546,23 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 @media (max-width: 600px) {
-  #gearListOutput {
+  #gearListOutput,
+  #projectRequirementsOutput {
     overflow-x: visible;
   }
   #gearListOutput table,
-  #gearListOutput select {
+  #projectRequirementsOutput table,
+  #gearListOutput select,
+  #projectRequirementsOutput select {
     width: 100%;
     max-width: 100%;
   }
-  #gearListOutput select {
+  #gearListOutput select,
+  #projectRequirementsOutput select {
     box-sizing: border-box;
   }
-  #gearListOutput td {
+  #gearListOutput td,
+  #projectRequirementsOutput td {
     white-space: normal;
     overflow-wrap: anywhere;
   }
