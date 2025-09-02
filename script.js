@@ -1413,6 +1413,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
+    gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap);
   }
   if (resetViewBtn) {
     resetViewBtn.textContent = texts[lang].resetViewBtn;
@@ -8041,6 +8042,7 @@ if (gridSnapToggleBtn) {
   gridSnapToggleBtn.addEventListener('click', () => {
     gridSnap = !gridSnap;
     gridSnapToggleBtn.classList.toggle('active', gridSnap);
+    gridSnapToggleBtn.setAttribute('aria-pressed', gridSnap);
     if (setupDiagramContainer) {
       setupDiagramContainer.classList.toggle('grid-snap', gridSnap);
     }
