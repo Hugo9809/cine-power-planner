@@ -1027,6 +1027,24 @@ describe('script.js functions', () => {
     expect(html).toContain('6x BattA');
   });
 
+  test('gear list adds hotswap plate matching battery mount', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    // V-Mount battery
+    addOpt('batterySelect', 'BattA');
+    let html = generateGearListHtml();
+    expect(html).toContain('1x Hotswap Plate V-Mount');
+    // B-Mount battery
+    devices.batteries.BattB = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
+    addOpt('batterySelect', 'BattB');
+    html = generateGearListHtml();
+    expect(html).toContain('1x Hotswap Plate B-Mount');
+  });
+
   test('Cine Saddle and Steadybag scenarios populate grip section', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Cine Saddle, Steadybag' });
