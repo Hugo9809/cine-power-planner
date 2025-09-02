@@ -162,7 +162,7 @@ If you run into problems, have questions, or want to suggest new features, pleas
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on GitHub.
+Contributions are welcome! Please open an issue or submit a pull request on GitHub. Before submitting, run `npm test` to ensure that linting, data consistency checks, and unit tests all pass.
 
 ## Acknowledgements
 
