@@ -1284,12 +1284,11 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     min-height: 300px;
   }
 
-  /* Allow wrapping instead of horizontal scroll on small screens */
-  #feedbackTableContainer,
-  #batteryTableContainer,
-  #gearListOutput {
-    overflow-x: visible;
-  }
+    /* Allow wrapping instead of horizontal scroll on small screens */
+    #feedbackTableContainer,
+    #batteryTableContainer {
+      overflow-x: visible;
+    }
 
   #userFeedbackTable th,
   #userFeedbackTable td,
@@ -1528,6 +1527,20 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border-radius: 5px;
   margin-top: 10px;
   overflow-x: auto;
+}
+
+@media (max-width: 600px) {
+  #gearListOutput {
+    overflow-x: visible;
+  }
+  #gearListOutput table,
+  #gearListOutput select {
+    max-width: 100%;
+  }
+  #gearListOutput td {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
