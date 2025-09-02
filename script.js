@@ -6902,17 +6902,17 @@ function collectAccessories() {
     }
 
     const powerCableDb = acc.cables?.power || {};
-    const gatherPower = (data) => {
+    const gatherPower = (data, target = misc) => {
         const input = data?.power?.input?.type;
         const types = Array.isArray(input) ? input : input ? [input] : [];
         types.forEach(t => {
             for (const [name, cable] of Object.entries(powerCableDb)) {
-                if (cable.to === t && !excludedCables.has(name)) misc.push(name);
+                if (cable.to === t && !excludedCables.has(name)) target.push(name);
             }
         });
     };
     gatherPower(devices.cameras[cameraSelect.value]);
-    gatherPower(devices.monitors[monitorSelect.value]);
+    gatherPower(devices.monitors[monitorSelect.value], monitoringSupport);
     gatherPower(devices.video[videoSelect.value]);
     if (videoSelect.value) {
         const rxName = videoSelect.value.replace(/ TX\b/, ' RX');
@@ -7031,11 +7031,9 @@ function generateGearListHtml(info = {}) {
     const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
     const monitoringSupportPrefs = monitoringPrefs.filter(p => !monitorEquipOptions.includes(p));
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
-        miscAcc.push(
-            'D-Tap to Lemo-2-pin Cable 0,3m',
-            'D-Tap to Lemo-2-pin Cable 0,3m'
-        );
         monitoringSupportAcc.push(
+            'D-Tap to Lemo-2-pin Cable 0,3m',
+            'D-Tap to Lemo-2-pin Cable 0,3m',
             'Ultraslim BNC 0.3 m',
             'Ultraslim BNC 0.3 m'
         );
