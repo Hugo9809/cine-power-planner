@@ -11,6 +11,7 @@ const {
     saveSessionState,
     loadFeedback,
     saveFeedback,
+    saveGearList,
     clearAllData,
     exportAllData,
     importAllData,
@@ -20,6 +21,7 @@ const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_KEY = 'cameraPowerPlanner_setups';
 const SESSION_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_KEY = 'cameraPowerPlanner_feedback';
+const GEARLIST_KEY = 'cameraPowerPlanner_gearList';
 
 const validDeviceData = {
   cameras: {},
@@ -237,11 +239,13 @@ describe('clearAllData', () => {
     saveDeviceData(validDeviceData);
     saveSetups({ A: { foo: 1 } });
     saveFeedback({ note: 'hi' });
+    saveGearList('<ul></ul>');
     saveSessionState({ camera: 'CamA' });
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
     expect(localStorage.getItem(FEEDBACK_KEY)).toBeNull();
+    expect(localStorage.getItem(GEARLIST_KEY)).toBeNull();
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull();
   });
 });
