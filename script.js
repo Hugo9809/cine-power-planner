@@ -6206,6 +6206,7 @@ generateGearListBtn.addEventListener('click', () => {
         return;
     }
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+    populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
     projectDialog.showModal();
 });
 
@@ -8122,6 +8123,31 @@ function populateSensorModeDropdown(selected = '') {
   }
 }
 
+function populateCodecDropdown(selected = '') {
+  const codecSelect = document.getElementById('codec');
+  if (!codecSelect) return;
+
+  codecSelect.innerHTML = '';
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  codecSelect.appendChild(emptyOpt);
+
+  const camKey = cameraSelect && cameraSelect.value;
+  const codecs =
+    camKey && devices && devices.cameras && devices.cameras[camKey]
+      ? devices.cameras[camKey].recordingCodecs
+      : null;
+  if (Array.isArray(codecs)) {
+    codecs.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      if (c === selected) opt.selected = true;
+      codecSelect.appendChild(opt);
+    });
+  }
+}
+
 function populateFilterDropdown() {
   const filterSelect = document.getElementById('filter');
   if (filterSelect && devices && Array.isArray(devices.filterOptions)) {
@@ -8182,5 +8208,6 @@ if (typeof module !== "undefined" && module.exports) {
     saveCurrentGearList,
     populateLensDropdown,
     populateSensorModeDropdown,
+    populateCodecDropdown,
   };
 }
