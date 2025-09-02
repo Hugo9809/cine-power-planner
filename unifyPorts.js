@@ -214,7 +214,13 @@ function splitOutside(str, delimiter = '/') {
  */
 function parsePowerInput(str) {
   if (!str) return null;
-  if (powerInputCache.has(str)) return powerInputCache.get(str);
+  if (powerInputCache.has(str)) {
+    // Return a fresh copy of the cached array so callers can mutate the
+    // result without affecting subsequent lookups.
+    const cached = powerInputCache.get(str);
+    return cached.map(obj => ({ ...obj }));
+  }
+
   const arr = splitOutside(str)
     .map(p => p.trim())
     .filter(p => p.length > 0)
@@ -237,7 +243,12 @@ function parsePowerInput(str) {
       if (notes) obj.notes = notes;
       return obj;
     });
-  powerInputCache.set(str, arr);
+
+  // Store a defensive copy to keep the cached data immutable.
+  powerInputCache.set(
+    str,
+    arr.map(obj => ({ ...obj }))
+  );
   return arr;
 }
 
