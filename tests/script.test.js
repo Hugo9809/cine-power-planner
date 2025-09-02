@@ -152,10 +152,9 @@ describe('script.js functions', () => {
     expect(copyBtn.nextElementSibling).toBe(generateBtn);
   });
 
-  test('project form includes User Buttons monitoring option', () => {
-    const select = document.getElementById('monitoringPreferences');
-    const hasOption = Array.from(select.options).some(o => o.value === 'User Buttons');
-    expect(hasOption).toBe(true);
+  test('project form includes user buttons input', () => {
+    const input = document.getElementById('userButtons');
+    expect(input).not.toBeNull();
   });
 
   test('new device form includes cable category option', () => {
@@ -1575,18 +1574,21 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
-      monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed, User Buttons'
+      monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed',
+      userButtons: 'Toggle LUT, False Color'
     });
     expect(html).toContain('<span class="req-label">Rigging</span>');
     expect(html).toContain('<span class="req-value">Shoulder rig, Hand Grips</span>');
     expect(html).toContain('<td>Rigging</td>');
     expect(html).toContain('<span class="req-label">Monitoring support</span>');
-    expect(html).toContain('<span class="req-value">VF Clean Feed, Onboard Clean Feed, User Buttons</span>');
+    expect(html).toContain('<span class="req-value">VF Clean Feed, Onboard Clean Feed</span>');
     expect(html).toContain('<td>Monitoring support</td>');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).not.toContain('VF Clean Feed');
     expect(msSection).not.toContain('Onboard Clean Feed');
     expect(msSection).not.toContain('User Buttons');
+    expect(html).toContain('<span class="req-label">User Buttons</span>');
+    expect(html).toContain('<span class="req-value">Toggle LUT, False Color</span>');
   });
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
