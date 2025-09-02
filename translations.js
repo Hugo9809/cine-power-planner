@@ -3,7 +3,6 @@
 const texts = {
   en: {
     appTitle: "Camera Power Planner",
-    appHeading: "Camera Power Planner",
     tagline: "Plan your film rig and calculate power consumption & battery life.",
     skipToContent: "Skip to content",
     offlineIndicator: "Offline",
@@ -362,7 +361,6 @@ const texts = {
   },
   it: {
     appTitle: "Pianificatore di alimentazione della fotocamera",
-    appHeading: "Pianificatore di alimentazione della fotocamera",
     tagline: "Pianifica la tua attrezzatura da set e calcola il consumo di energia e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Offline",
@@ -694,7 +692,6 @@ const texts = {
   },
   es: {
     appTitle: "Planificador de Consumo de Energía de Cámaras",
-    appHeading: "Planificador de Consumo de Energía de Cámaras",
     tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
@@ -1042,7 +1039,6 @@ const texts = {
   },
   fr: {
     appTitle: "Planificateur de Consommation Caméra",
-    appHeading: "Planificateur de Consommation Caméra",
     tagline: "Planifiez votre équipement de tournage et calculez la consommation et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
@@ -1392,7 +1388,6 @@ const texts = {
   },
   de: {
     appTitle: "Kamera Stromverbrauchs Planer",
-    appHeading: "Kamera Stromverbrauchs Planer",
     tagline: "Plane dein Dreh-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",

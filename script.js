@@ -920,9 +920,9 @@ function setLanguage(lang) {
   }
   // update html lang attribute for better persistence
   document.documentElement.lang = lang;
-  // Document title and main heading
+  // Document title and main heading share the same text
   document.title = texts[lang].appTitle;
-  document.getElementById("mainTitle").textContent = texts[lang].appHeading;
+  document.getElementById("mainTitle").textContent = texts[lang].appTitle;
   document.getElementById("tagline").textContent = texts[lang].tagline;
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
