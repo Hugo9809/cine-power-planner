@@ -693,8 +693,8 @@ const texts = {
     diagramMoveHint: "Trascina i nodi per spostarli.",
   },
   es: {
-    appTitle: "Planificador de Consumo de Energía de Cámaras",
-    appHeading: "Planificador de Consumo de Energía de Cámaras",
+    appTitle: "Aplicación de Consumo de Energía para Cámaras",
+    appHeading: "Aplicación de Consumo de Energía para Cámaras",
     tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
@@ -1391,8 +1391,8 @@ const texts = {
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   de: {
-    appTitle: "Kamera Stromverbrauchs Planer",
-    appHeading: "Kamera Stromverbrauchs Planer",
+    appTitle: "Kamera-Stromverbrauchs-App",
+    appHeading: "Kamera-Stromverbrauchs-App",
     tagline: "Plane dein Dreh-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",
