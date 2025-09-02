@@ -7249,6 +7249,14 @@ function generateGearListHtml(info = {}) {
         'Ultraslim BNC 0.5 m'
     ]);
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
+    miscItems.push(
+        'Power Cable Drum 25-50 m',
+        ...Array(2).fill('Power Cable 10 m'),
+        ...Array(2).fill('Power Cable 5 m'),
+        ...Array(3).fill('Power Strip'),
+        ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
+        ...Array(3).fill('Power Three Way Splitter')
+    );
     const consumables = [];
     if (scenarios.includes('Outdoor')) {
         if (selectedNames.camera) miscItems.push(`Rain Cover "${selectedNames.camera}"`);
