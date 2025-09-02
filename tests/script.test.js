@@ -168,10 +168,10 @@ describe('script.js functions', () => {
     const sel = document.getElementById('lenses');
     sel.innerHTML = '<option value="Existing">Existing</option>';
     script.populateLensDropdown();
-    expect(Array.from(sel.options).map(o => o.value)).toEqual(['', 'LensA']);
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
     // Call again to ensure no duplication occurs
     script.populateLensDropdown();
-    expect(Array.from(sel.options).map(o => o.value)).toEqual(['', 'LensA']);
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
   });
 
   test('selected cage appears in camera support category of gear list', () => {

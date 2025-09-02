@@ -6972,13 +6972,13 @@ function collectProjectFormData() {
         codec: val('codec'),
         baseFrameRate: val('baseFrameRate'),
         sensorMode: val('sensorMode'),
-        lenses: val('lenses'),
+        lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
         monitoringPreferences: multi('monitoringPreferences'),
         tripodPreferences: multi('tripodPreferences'),
         sliderBowl: getSliderBowlValue(),
-        filter: val('filter')
+        filter: multi('filter')
     };
 }
 
@@ -8085,9 +8085,11 @@ function populateLensDropdown() {
     return;
   }
 
-  const emptyOpt = document.createElement('option');
-  emptyOpt.value = '';
-  lensSelect.appendChild(emptyOpt);
+  if (!lensSelect.multiple) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    lensSelect.appendChild(emptyOpt);
+  }
   Object.keys(lensData).sort(localeSort).forEach(name => {
     const opt = document.createElement('option');
     opt.value = name;
@@ -8124,9 +8126,11 @@ function populateSensorModeDropdown(selected = '') {
 function populateFilterDropdown() {
   const filterSelect = document.getElementById('filter');
   if (filterSelect && devices && Array.isArray(devices.filterOptions)) {
-    const emptyOpt = document.createElement('option');
-    emptyOpt.value = '';
-    filterSelect.appendChild(emptyOpt);
+    if (!filterSelect.multiple) {
+      const emptyOpt = document.createElement('option');
+      emptyOpt.value = '';
+      filterSelect.appendChild(emptyOpt);
+    }
     devices.filterOptions.forEach(f => {
       const opt = document.createElement('option');
       opt.value = f;
