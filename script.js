@@ -1467,6 +1467,8 @@ const controllerSelects = [
 const distanceSelect = document.getElementById("distanceSelect");
 const batterySelect  = document.getElementById("batterySelect");
 const lensSelect     = document.getElementById("lenses");
+const requiredScenariosSelect = document.getElementById("requiredScenarios");
+const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
@@ -8185,6 +8187,50 @@ function isRunningPWA() {
   );
 }
 
+const scenarioIcons = {
+  Indoor: '🏠',
+  Outdoor: '🌳',
+  Studio: '🎬',
+  Tripod: '🎥',
+  Handheld: '✋',
+  Easyrig: '🎒',
+  'Cine Saddle': '💺',
+  Steadybag: '👜',
+  Dolly: '🛞',
+  Slider: '📏',
+  Steadicam: '🏃',
+  Gimbal: '🌀',
+  Trinity: '♾️',
+  Rollcage: '🛡️',
+  'Car Mount': '🚗',
+  Jib: '🪝',
+  'Undersling mode': '⬇️',
+  Crane: '🏗️',
+  'Remote Head': '🎮',
+  'Extreme weather conditions (like snow, rain, heat)': '🌧️',
+  'Rain Machine': '🌧️',
+  'Slow Motion': '🐌',
+  'Viewfinder Extension': '🔭',
+  'Zoom Remote handle': '🔍',
+  'Dolly Remote handle': '🎛️'
+};
+
+function updateRequiredScenariosSummary() {
+  if (!requiredScenariosSelect || !requiredScenariosSummary) return;
+  requiredScenariosSummary.innerHTML = '';
+  const selected = Array.from(requiredScenariosSelect.selectedOptions).map(o => o.value);
+  selected.forEach(val => {
+    const box = document.createElement('span');
+    box.className = 'scenario-box';
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'scenario-icon';
+    iconSpan.textContent = scenarioIcons[val] || '📌';
+    box.appendChild(iconSpan);
+    box.appendChild(document.createTextNode(val));
+    requiredScenariosSummary.appendChild(box);
+  });
+}
+
 function initApp() {
   if (sharedLinkRow) {
     if (isRunningPWA()) {
@@ -8201,6 +8247,10 @@ function initApp() {
   resetDeviceForm();
   restoreSessionState();
   applySharedSetupFromUrl();
+  if (requiredScenariosSelect) {
+    requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
+    updateRequiredScenariosSummary();
+  }
   updateCalculations();
   applyFilters();
 }
@@ -8358,5 +8408,6 @@ if (typeof module !== "undefined" && module.exports) {
     populateLensDropdown,
     populateSensorModeDropdown,
     populateCodecDropdown,
+    updateRequiredScenariosSummary,
   };
 }
