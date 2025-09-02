@@ -6989,6 +6989,7 @@ function generateGearListHtml(info = {}) {
         batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? getText(batteryPlateSelect) : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
     };
+    const hasMotor = selectedNames.motors.length > 0;
     if (["Arri Alexa Mini", "Arri Amira"].includes(selectedNames.camera)) {
         selectedNames.viewfinder = "ARRI K2.75004.0 MVF-1 Viewfinder";
     } else {
@@ -7021,6 +7022,14 @@ function generateGearListHtml(info = {}) {
         miscAcc.push(
             'D-Tap to Lemo-2-pin Cable 0,3m',
             'D-Tap to Lemo-2-pin Cable 0,3m',
+            'Ultraslim BNC 0.3 m',
+            'Ultraslim BNC 0.3 m'
+        );
+    }
+    if (hasMotor) {
+        miscAcc.push(
+            'D-Tap to Mini XLR 3-pin Cable 0,3m',
+            'D-Tap to Mini XLR 3-pin Cable 0,3m',
             'Ultraslim BNC 0.3 m',
             'Ultraslim BNC 0.3 m'
         );
@@ -7110,11 +7119,14 @@ function generateGearListHtml(info = {}) {
         batteryItems = `${count}x ${safeBatt}`;
     }
     addRow('Camera Batteries', batteryItems);
-    let monitoringBatteryItems = '';
+    let monitoringBatteryItems = [];
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
-        monitoringBatteryItems = '3x Bebob 98 Micros';
+        monitoringBatteryItems.push('3x Bebob 98 Micros');
     }
-    addRow('Monitoring Batteries', monitoringBatteryItems);
+    if (hasMotor) {
+        monitoringBatteryItems.push('3x Bebob 150micro');
+    }
+    addRow('Monitoring Batteries', monitoringBatteryItems.join('<br>'));
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     if (selectedNames.viewfinder) {
@@ -7128,6 +7140,9 @@ function generateGearListHtml(info = {}) {
         const sevenInchNames = Object.keys(monitorsDb).filter(n => monitorsDb[n].screenSizeInches === 7).sort(localeSort);
         const opts = sevenInchNames.map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`).join('');
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+    }
+    if (hasMotor) {
+        monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
     }
     if (selectedNames.video) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
