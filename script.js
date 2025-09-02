@@ -6805,13 +6805,14 @@ function suggestChargerCounts(total) {
 
 function collectAccessories() {
     const cameraSupport = [];
-    const misc = [
+    const monitoringSupport = [
         'BNC Cable 0.5 m',
         'BNC Cable 1 m',
         'BNC Cable 5 m',
         'BNC Cable 10 m',
         'BNC Drum 25 m'
     ];
+    const misc = [];
     const chargers = [];
     const fizCables = [];
     const acc = devices.accessories || {};
@@ -6904,11 +6905,13 @@ function collectAccessories() {
     });
 
     const miscUnique = [...new Set(misc)];
-    for (let i = 0; i < 4; i++) miscUnique.push('BNC Connector');
+    const monitoringSupportUnique = [...new Set(monitoringSupport)];
+    for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
         fizCables: [...new Set(fizCables)],
+        monitoringSupport: monitoringSupportUnique,
         misc: miscUnique
     };
 }
@@ -6964,7 +6967,7 @@ function generateGearListHtml(info = {}) {
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, monitoringSupport: monitoringSupportAcc, misc: miscAcc } = collectAccessories();
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
     if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
@@ -7077,6 +7080,7 @@ function generateGearListHtml(info = {}) {
         monitoringBatteryItems = '3x Bebob 98 Micros';
     }
     addRow('Monitoring Batteries', monitoringBatteryItems);
+    addRow('Monitoring support', formatItems(monitoringSupportAcc));
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     if (selectedNames.viewfinder) {

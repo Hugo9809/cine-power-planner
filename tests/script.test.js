@@ -966,15 +966,16 @@ describe('script.js functions', () => {
       expect(html).toContain('<option value="Universal Cage"');
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('1x LBUS to LBUS');
-      expect(html).toContain('Chargers');
-      expect(html).toContain('1x Dual V-Mount Charger');
-      expect(html).toContain('Miscellaneous');
+      expect(html).toContain('Monitoring support');
       expect(html).toContain('1x BNC Cable 0.5 m');
       expect(html).toContain('1x BNC Cable 1 m');
       expect(html).toContain('1x BNC Cable 5 m');
       expect(html).toContain('1x BNC Cable 10 m');
       expect(html).toContain('1x BNC Drum 25 m');
       expect(html).toContain('4x BNC Connector');
+      expect(html).toContain('Chargers');
+      expect(html).toContain('1x Dual V-Mount Charger');
+      expect(html).toContain('Miscellaneous');
       expect(html).not.toContain('BNC SDI Cable');
       expect(html).not.toContain('Ultraslim BNC 0.3 m');
       expect(html).not.toContain('Ultraslim BNC 0.5 m');
@@ -1260,7 +1261,7 @@ describe('script.js functions', () => {
     expect(consumText).toContain('3x CapIt Medium');
   });
 
-  test('rigging and monitoring support appear only in project requirements', () => {
+  test('rigging appears only in project requirements while monitoring support also listed in gear', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
@@ -1269,7 +1270,7 @@ describe('script.js functions', () => {
     expect(html).toContain('Rigging: Shoulder rig, Hand Grips');
     expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
     expect(html).not.toContain('<td>Rigging</td>');
-    expect(html).not.toContain('<td>Monitoring support</td>');
+    expect(html).toContain('<td>Monitoring support</td>');
   });
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
