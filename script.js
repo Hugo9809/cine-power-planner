@@ -7104,7 +7104,14 @@ function generateGearListHtml(info = {}) {
         rows.push(`<tr><td>${items}</td></tr>`);
     };
     addRow('Camera', formatItems([selectedNames.camera]));
-    const cameraSupportText = formatItems([selectedNames.batteryPlate, ...supportAccNoCages]);
+    const cameraSupportItems = [selectedNames.batteryPlate, ...supportAccNoCages];
+    if (selectedNames.battery && batterySelect && batterySelect.value) {
+        const mount = devices.batteries?.[batterySelect.value]?.mount_type;
+        if (mount === 'V-Mount' || mount === 'B-Mount') {
+            cameraSupportItems.push(`Hotswap Plate ${mount}`);
+        }
+    }
+    const cameraSupportText = formatItems(cameraSupportItems);
     let cageSelectHtml = '';
     if (compatibleCages.length) {
         const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(c)}</option>`).join('');
