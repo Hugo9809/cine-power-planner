@@ -174,6 +174,20 @@ describe('script.js functions', () => {
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
   });
 
+  test('lens filter input filters lens options', () => {
+    devices.lenses = {
+      LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true },
+      LensB: { brand: 'TestBrand', tStop: 2.8, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: false }
+    };
+    script.populateLensDropdown();
+    const filter = document.getElementById('lensFilter');
+    const sel = document.getElementById('lenses');
+    filter.value = 'b';
+    filter.dispatchEvent(new Event('input'));
+    const visible = Array.from(sel.options).filter(o => !o.hidden).map(o => o.value);
+    expect(visible).toEqual(['LensB']);
+  });
+
   test('selected cage appears in camera support category of gear list', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -1118,8 +1132,8 @@ describe('script.js functions', () => {
     expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     expect(html).toContain('3x Tennisball');
-    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
+    const msSection2 = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection2).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
