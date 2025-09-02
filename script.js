@@ -7126,29 +7126,26 @@ function generateGearListHtml(info = {}) {
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring'
     };
-    const boxFields = ['deliveryResolution', 'recordingResolution', 'aspectRatio', 'codec', 'baseFrameRate', 'sensorMode'];
     const fieldIcons = {
+        dop: '👤',
+        prepDays: '📅',
+        shootingDays: '🎬',
         deliveryResolution: '📺',
-        recordingResolution: '🎥',
+        recordingResolution: '📹',
         aspectRatio: '🖼️',
         codec: '💾',
         baseFrameRate: '⏱️',
-        sensorMode: '🔍'
+        sensorMode: '🔍',
+        requiredScenarios: '🌄',
+        rigging: '🛠️',
+        monitoringSupport: '🧰',
+        monitoring: '📡'
     };
-    const boxInfoPairs = [];
-    boxFields.forEach(f => {
-        if (projectInfo[f]) {
-            boxInfoPairs.push([f, projectInfo[f]]);
-            delete projectInfo[f];
-        }
-    });
-    const infoPairs = Object.entries(projectInfo)
+    const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
-    const boxesHtml = boxInfoPairs.length ? '<div class="requirements-grid">' +
-        boxInfoPairs.map(([k, v]) => `<div class="requirement-box"><span class="req-icon">${fieldIcons[k]}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
-    const listHtml = infoPairs.length ? '<ul>' +
-        infoPairs.map(([k, v]) => `<li>${escapeHtml(labels[k] || k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
-    const infoHtml = (boxInfoPairs.length || infoPairs.length) ? `<h3>Project Requirements</h3>${boxesHtml}${listHtml}` : '';
+    const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
+        infoEntries.map(([k, v]) => `<div class="requirement-box"><span class="req-icon">${fieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
+    const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
         arr.filter(Boolean).forEach(n => {

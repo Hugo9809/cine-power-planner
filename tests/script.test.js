@@ -1006,8 +1006,10 @@ describe('script.js functions', () => {
       });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
-      expect(html).toContain('DoP: DopName');
-      expect(html).toContain('Required Scenarios: Handheld, Slider');
+      expect(html).toContain('<span class="req-label">DoP</span>');
+      expect(html).toContain('<span class="req-value">DopName</span>');
+      expect(html).toContain('<span class="req-label">Required Scenarios</span>');
+      expect(html).toContain('<span class="req-value">Handheld, Slider</span>');
       expect(html).not.toContain('Filter: IRND');
       expect(html).toContain('Matte box + filter');
       expect(html).toContain('1x IRND');
@@ -1552,9 +1554,11 @@ describe('script.js functions', () => {
       rigging: 'Shoulder rig, Hand Grips',
       monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed, User Buttons'
     });
-    expect(html).toContain('Rigging: Shoulder rig, Hand Grips');
+    expect(html).toContain('<span class="req-label">Rigging</span>');
+    expect(html).toContain('<span class="req-value">Shoulder rig, Hand Grips</span>');
     expect(html).toContain('<td>Rigging</td>');
-    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
+    expect(html).toContain('<span class="req-label">Monitoring support</span>');
+    expect(html).toContain('<span class="req-value">VF Clean Feed, Onboard Clean Feed, User Buttons</span>');
     expect(html).toContain('<td>Monitoring support</td>');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).not.toContain('VF Clean Feed');
@@ -1565,8 +1569,9 @@ describe('script.js functions', () => {
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
-    expect(html).toContain('Monitoring: Directors Monitor 7" handheld');
-    expect(html).not.toContain('Monitoring support: Directors Monitor 7" handheld');
+    expect(html).toContain('<span class="req-label">Monitoring</span>');
+    expect(html).toContain('<span class="req-value">Directors Monitor 7" handheld</span>');
+    expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">Directors Monitor 7" handheld</span>');
   });
 
   test('sensor mode appears in project requirements when provided', () => {
