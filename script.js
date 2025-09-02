@@ -7102,6 +7102,7 @@ function generateGearListHtml(info = {}) {
         projectInfo.monitoring = monitoringEquipmentPrefs.join(', ');
     }
     delete projectInfo.monitoringPreferences;
+    delete projectInfo.tripodPreferences;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
@@ -7118,7 +7119,6 @@ function generateGearListHtml(info = {}) {
         rigging: 'Rigging',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
-        tripodPreferences: 'Tripod Preferences',
         filter: 'Filter'
     };
     const infoPairs = Object.entries(projectInfo)
