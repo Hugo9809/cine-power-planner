@@ -991,6 +991,19 @@ describe('script.js functions', () => {
       expect(html).not.toContain('HDMI Cable');
     });
 
+  test('standard rigging accessories are always included', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({});
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('2x ULCS Bracket with 1/4 to 1/4');
+    expect(rigSection).toContain('2x ULCS Bracket with 3/8 to 1/4');
+    expect(rigSection).toContain('2x Noga Arm');
+    expect(rigSection).toContain('2x Mini Magic Arm');
+    expect(rigSection).toContain('4x Cine Quick Release');
+    expect(rigSection).toContain('1x SmallRig - Super lightweight 15mm RailBlock');
+    expect(rigSection).toContain('3x stud 5/8" with male 3/8" and 1/4"');
+  });
+
   test('gear list separates multiple items with line breaks', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
@@ -1314,14 +1327,14 @@ describe('script.js functions', () => {
     expect(consumText).toContain('3x CapIt Medium');
   });
 
-  test('rigging appears only in project requirements while monitoring support also appears in gear table', () => {
+  test('rigging appears in project requirements and gear table', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
       monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed, User Buttons'
     });
     expect(html).toContain('Rigging: Shoulder rig, Hand Grips');
-    expect(html).not.toContain('<td>Rigging</td>');
+    expect(html).toContain('<td>Rigging</td>');
     expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
     expect(html).toContain('<td>Monitoring support</td>');
   });
