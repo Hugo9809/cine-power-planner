@@ -118,6 +118,10 @@ function cleanPowerInput(input) {
   cleanPort(input);
 }
 
+function cleanPorts(...ports) {
+  ports.forEach(cleanPort);
+}
+
 function normalizePortList(list) {
   return list.map(p => {
     const portObj = { type: p.portType || p.type || p };
@@ -144,9 +148,11 @@ function normalizeCamera(cam) {
     }
     cleanPowerInput(cam.power.input);
   }
-  cleanPort(cam.power?.powerDistributionOutputs);
-  cleanPort(cam.videoOutputs);
-  cleanPort(cam.fizConnectors);
+  cleanPorts(
+    cam.power?.powerDistributionOutputs,
+    cam.videoOutputs,
+    cam.fizConnectors
+  );
   if (Array.isArray(cam.lensMount)) {
     cam.lensMount.forEach(m => {
       if (m.mount === 'adapted' && /LDS|Cooke/i.test(m.notes || '')) {
@@ -158,10 +164,12 @@ function normalizeCamera(cam) {
 
 function normalizeMonitor(mon) {
   if (mon.power?.input) cleanPowerInput(mon.power.input);
-  if (mon.power?.output) cleanPort(mon.power.output);
-  cleanPort(mon.audioInput);
-  cleanPort(mon.audioOutput);
-  cleanPort(mon.audioIo);
+  cleanPorts(
+    mon.power?.output,
+    mon.audioInput,
+    mon.audioOutput,
+    mon.audioIo
+  );
   normalizeVideoPorts(mon);
 }
 
@@ -250,10 +258,7 @@ function normalizeVideoDevice(dev) {
   }
   normalizeVideoPorts(dev);
   if (dev.power?.input) cleanPowerInput(dev.power.input);
-  cleanPort(dev.audioInput);
-  cleanPort(dev.audioOutput);
-  cleanPort(dev.audioIo);
-
+  cleanPorts(dev.audioInput, dev.audioOutput, dev.audioIo);
 }
 function normalizeFiz(dev) {
   if (dev.fizConnector && !dev.fizConnectors) {
@@ -261,7 +266,7 @@ function normalizeFiz(dev) {
     delete dev.fizConnector;
   }
   if (dev.power?.input) cleanPowerInput(dev.power.input);
-  cleanPort(dev.fizConnectors);
+  cleanPorts(dev.fizConnectors);
 }
 
 function normalizeCollection(collection, fn) {
