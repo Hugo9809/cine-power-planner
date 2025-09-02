@@ -7041,6 +7041,17 @@ function generateGearListHtml(info = {}) {
     const monitorEquipOptions = ['Directors Monitor 7" handheld', 'Directors Monitor 15-19 inch', 'Combo Monitor 15-19 inch'];
     const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
     const monitoringSupportPrefs = monitoringPrefs.filter(p => !monitorEquipOptions.includes(p));
+    const receiverCount = (monitoringPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
+    if (selectedNames.video) {
+        monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
+        const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
+        if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
+            const receivers = receiverCount || 1;
+            for (let i = 0; i < receivers; i++) {
+                monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
+            }
+        }
+    }
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         monitoringSupportAcc.push(
             'D-Tap to Lemo-2-pin Cable 0,3m',
@@ -7211,8 +7222,8 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
-            const receiverCount = (monitoringPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
-            monitoringItems += `<br>${receiverCount || 1}x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)}`;
+            const receivers = receiverCount || 1;
+            monitoringItems += `<br>${receivers}x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)}`;
         }
     }
     addRow('Monitoring', monitoringItems);
