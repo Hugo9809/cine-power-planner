@@ -1075,6 +1075,8 @@ describe('script.js functions', () => {
     expect(html).toContain('2x Ultraslim BNC 0.3 m');
     expect(html).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
     expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
