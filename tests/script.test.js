@@ -72,9 +72,9 @@ describe('script.js functions', () => {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
         cages: { 'Universal Cage': { compatible: ['CamA'] } },
         chargers: {
-          'Single V-Mount Charger': { mount: 'V-Mount', slots: 1 },
-          'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2 },
-          'Quad V-Mount Charger': { mount: 'V-Mount', slots: 4 }
+          'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
+          'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
+          'Quad V-Mount Charger': { mount: 'V-Mount', slots: 4, chargingSpeedAmps: 2 }
         },
         cables: {
           power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
