@@ -419,6 +419,8 @@ fieldset {
   border-radius: 5px;
   padding: 10px;
   margin-top: 1em;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 legend {
   font-weight: 500;
@@ -477,6 +479,8 @@ button:disabled {
   flex-wrap: wrap;
   gap: 15px;
   margin-top: 15px;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .device-category {
@@ -488,6 +492,7 @@ button:disabled {
   padding: 10px;
   box-shadow: var(--panel-shadow);
   transition: box-shadow 0.2s, transform 0.2s;
+  box-sizing: border-box;
 }
 
 .device-category:hover {
@@ -1444,6 +1449,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border: 1px solid var(--panel-border);
   border-radius: 5px;
   margin-top: 10px;
+  overflow-x: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
