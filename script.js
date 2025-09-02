@@ -7105,6 +7105,8 @@ function generateGearListHtml(info = {}) {
     }
     delete projectInfo.monitoringPreferences;
     delete projectInfo.tripodPreferences;
+    // Filters should only appear in the gear list table, not in the summary
+    delete projectInfo.filter;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
@@ -7120,11 +7122,10 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
         monitoringSupport: 'Monitoring support',
-        monitoring: 'Monitoring',
-        filter: 'Filter'
+        monitoring: 'Monitoring'
     };
     const infoPairs = Object.entries(projectInfo)
-        .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
+        .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl' && k !== 'filter');
     const infoHtml = infoPairs.length ? '<h3>Project Requirements</h3><ul>' +
         infoPairs.map(([k, v]) => `<li>${escapeHtml(labels[k] || k)}: ${escapeHtml(v)}</li>`).join('') + '</ul>' : '';
     const formatItems = arr => {
@@ -7209,7 +7210,10 @@ function generateGearListHtml(info = {}) {
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
-    addRow('Matte box + filter', '');
+    const filterItems = info.filter
+        ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+    addRow('Matte box + filter', formatItems(filterItems));
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
     if (selectedNames.battery) {
