@@ -249,6 +249,11 @@ function fixPowerInput(dev) {
   dev.power.input = Array.isArray(input) ? input.map(normalizeEntry) : normalizeEntry(input);
 }
 
+function applyFixPowerInput(collection) {
+  if (!collection || typeof collection !== 'object') return;
+  Object.values(collection).forEach(fixPowerInput);
+}
+
 
 // Normalize various camera properties so downstream logic works with
 // consistent structures and value formats.
@@ -353,28 +358,13 @@ function unifyDevices(devicesData) {
       );
   });
 
-  Object.values(devicesData.monitors || {}).forEach(mon => {
-    fixPowerInput(mon);
+  ['monitors', 'video', 'viewfinders'].forEach(key => {
+    applyFixPowerInput(devicesData[key]);
   });
 
-  Object.values(devicesData.video || {}).forEach(vd => {
-    fixPowerInput(vd);
-  });
-
-  Object.values(devicesData.viewfinders || {}).forEach(vf => {
-    fixPowerInput(vf);
-  });
-
-  Object.values(devicesData.fiz?.motors || {}).forEach(fm => {
-    fixPowerInput(fm);
-  });
-
-  Object.values(devicesData.fiz?.controllers || {}).forEach(fc => {
-    fixPowerInput(fc);
-  });
-
-  Object.values(devicesData.fiz?.distance || {}).forEach(fd => {
-    fixPowerInput(fd);
+  const fizGroups = devicesData.fiz || {};
+  ['motors', 'controllers', 'distance'].forEach(key => {
+    applyFixPowerInput(fizGroups[key]);
   });
 
   // Normalize FIZ motors
