@@ -479,7 +479,7 @@ const texts = {
     category_viewfinders: "Mirini",
     category_monitors: "Monitor",
     category_video: "Video wireless",
-    category_cages: "Gabbie",
+    category_cages: "Cages",
     category_fiz_motors: "Motori FIZ",
     category_fiz_controllers: "Controller FIZ",
     category_fiz_distance: "Distanza FIZ",
@@ -817,7 +817,7 @@ const texts = {
     category_viewfinders: "Visores",
     category_monitors: "Monitores",
     category_video: "Vídeo inalámbrico",
-    category_cages: "Jaulas",
+    category_cages: "Cages",
     category_fiz_motors: "Motores FIZ",
     category_fiz_controllers: "Controles FIZ",
     category_fiz_distance: "Distancia FIZ",
@@ -1513,7 +1513,7 @@ const texts = {
     category_viewfinders: "Sucher",
     category_monitors: "Monitore",
     category_video: "Videofunk",
-    category_cages: "Käfige",
+    category_cages: "Cages",
     category_fiz_motors: "FIZ Motoren",
     category_fiz_controllers: "FIZ Controller",
     category_fiz_distance: "FIZ Distanz",
@@ -1748,7 +1748,7 @@ const categoryNames = {
     "batteries": "V-Mount Battery",
     "accessories.batteries": "Accessory Battery",
     "accessories.cables": "Cable",
-    "accessories.cages": "Camera Support",
+    "accessories.cages": "Camera Cage",
     "accessories.chargers": "Charger"
   },
   it: {
@@ -1763,7 +1763,7 @@ const categoryNames = {
     "batteries": "Batteria V-Mount",
     "accessories.batteries": "Batteria accessorio",
     "accessories.cables": "Cavo",
-    "accessories.cages": "Supporto camera",
+    "accessories.cages": "Cage",
     "accessories.chargers": "Caricatore"
   },
   es: {
@@ -1778,7 +1778,7 @@ const categoryNames = {
     "batteries": "Batería V-Mount",
     "accessories.batteries": "Batería de accesorios",
     "accessories.cables": "Cable",
-    "accessories.cages": "Soporte de cámara",
+    "accessories.cages": "Cage",
     "accessories.chargers": "Cargador"
   },
   fr: {
@@ -1793,7 +1793,7 @@ const categoryNames = {
     "batteries": "Batterie V-Mount",
     "accessories.batteries": "Batterie accessoire",
     "accessories.cables": "Câble",
-    "accessories.cages": "Support caméra",
+    "accessories.cages": "Cage",
     "accessories.chargers": "Chargeur"
   },
   de: {
@@ -1808,7 +1808,7 @@ const categoryNames = {
     "batteries": "V-Mount Akku",
     "accessories.batteries": "Zubehör-Akku",
     "accessories.cables": "Kabel",
-    "accessories.cages": "Kamera-Support",
+    "accessories.cages": "Cage",
     "accessories.chargers": "Ladegerät"
   },
 };
