@@ -4,7 +4,8 @@ const {
   normalizeVideoDevice,
   cleanVoltageRange,
   normalizeFiz,
-  cleanTypeName
+  cleanTypeName,
+  cleanPort
 } = require('../unifyPorts.js');
 
 describe('cleanVoltageRange', () => {
@@ -128,5 +129,11 @@ describe('normalizeFiz', () => {
     normalizeFiz(dev);
     expect(dev.power.input[0].voltageRange).toBe('5-16');
     expect(dev.power.input[1].voltageRange).toBe('11-17');
+  });
+});
+
+describe('cleanPort', () => {
+  it('handles primitive values without throwing', () => {
+    expect(() => cleanPort('USB-C')).not.toThrow();
   });
 });
