@@ -1157,7 +1157,7 @@ describe('script.js functions', () => {
     expect(html).toContain('6x BattA');
   });
 
-  test('gear list adds hotswap plate matching battery mount', () => {
+  test('gear list adds hotswap plate only in battery section', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -1167,12 +1167,18 @@ describe('script.js functions', () => {
     // V-Mount battery
     addOpt('batterySelect', 'BattA');
     let html = generateGearListHtml();
-    expect(html).toContain('1x Hotswap Plate V-Mount');
+    let csSection = html.slice(html.indexOf('Camera Support'), html.indexOf('Lens Support'));
+    let battSection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
+    expect(csSection).not.toContain('Hotswap Plate');
+    expect(battSection).toContain('1x Hotswap Plate V-Mount');
     // B-Mount battery
     devices.batteries.BattB = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
     addOpt('batterySelect', 'BattB');
     html = generateGearListHtml();
-    expect(html).toContain('1x Hotswap Plate B-Mount');
+    csSection = html.slice(html.indexOf('Camera Support'), html.indexOf('Lens Support'));
+    battSection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
+    expect(csSection).not.toContain('Hotswap Plate');
+    expect(battSection).toContain('1x Hotswap Plate B-Mount');
   });
 
   test('gear list lists 4x media cards with usable size', () => {

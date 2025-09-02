@@ -7134,12 +7134,6 @@ function generateGearListHtml(info = {}) {
     };
     addRow('Camera', formatItems([selectedNames.camera]));
     const cameraSupportItems = [selectedNames.batteryPlate, ...supportAccNoCages];
-    if (selectedNames.battery && batterySelect && batterySelect.value) {
-        const mount = devices.batteries?.[batterySelect.value]?.mount_type;
-        if (mount === 'V-Mount' || mount === 'B-Mount') {
-            cameraSupportItems.push(`Hotswap Plate ${mount}`);
-        }
-    }
     const cameraSupportText = formatItems(cameraSupportItems);
     let cageSelectHtml = '';
     if (compatibleCages.length) {
@@ -7213,6 +7207,10 @@ function generateGearListHtml(info = {}) {
         if (!count || isNaN(count)) count = 1;
         const safeBatt = escapeHtml(selectedNames.battery);
         batteryItems = `${count}x ${safeBatt}`;
+        const mount = devices.batteries?.[batterySelect && batterySelect.value]?.mount_type;
+        if (mount === 'V-Mount' || mount === 'B-Mount') {
+            batteryItems += `<br>1x Hotswap Plate ${mount}`;
+        }
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = [];
