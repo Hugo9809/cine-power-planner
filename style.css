@@ -378,10 +378,23 @@ body.hover-help-active * {
   flex-direction: column;
   flex: 1;
   min-width: 0; /* allow wrapper to shrink on narrow screens */
+  position: relative;
 }
 
 .select-wrapper .filter-input {
-  display: none;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 4px;
+  padding-right: 1.5em; /* space for clear button */
+}
+
+.select-wrapper .filter-input + .clear-input-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  margin: 0;
+  line-height: 1;
 }
 
 /* Prevent long option text from widening selects on mobile */
