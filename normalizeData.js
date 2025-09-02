@@ -380,6 +380,9 @@ if (require.main === module) {
     console.log(
       'Usage: node normalizeData.js [--help]\n' +
         '\nCleans and expands device data, then overwrites data.js with the result.\n' +
+        '\nExamples:\n' +
+        '  npm run normalize\n' +
+        '  node normalizeData.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message.'
     );

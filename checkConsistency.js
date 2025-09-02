@@ -34,6 +34,9 @@ if (require.main === module) {
       'Usage: node checkConsistency.js [--help]\n' +
         '\nChecks that device entries contain required fields.\n' +
         'Exits with code 1 when missing fields are found.\n' +
+        '\nExamples:\n' +
+        '  npm run check-consistency\n' +
+        '  node checkConsistency.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message.'
     );
