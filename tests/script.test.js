@@ -1037,6 +1037,9 @@ describe('script.js functions', () => {
       expect(powerSection).toContain('1x Power Cable Drum 25-50 m');
       expect(powerSection).toContain('2x Power Cable 10 m');
       expect(powerSection).toContain('2x Power Cable 5 m');
+      expect(powerSection).toContain('3x Power Strip');
+      expect(powerSection).toContain('3x PRCD-S (Portable Residual Current Device-Safety)');
+      expect(powerSection).toContain('3x Power Three Way Splitter');
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
       expect(miscSection).not.toContain('BNC Cable 0.5 m');
       expect(miscSection).not.toContain('BNC Cable 1 m');
@@ -1047,9 +1050,9 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('Power Cable Drum 25-50 m');
       expect(miscSection).not.toContain('Power Cable 10 m');
       expect(miscSection).not.toContain('Power Cable 5 m');
-      expect(miscSection).toContain('3x Power Strip');
-      expect(miscSection).toContain('3x PRCD-S (Portable Residual Current Device-Safety)');
-      expect(miscSection).toContain('3x Power Three Way Splitter');
+      expect(miscSection).not.toContain('Power Strip');
+      expect(miscSection).not.toContain('PRCD-S (Portable Residual Current Device-Safety)');
+      expect(miscSection).not.toContain('Power Three Way Splitter');
       expect(html).not.toContain('BNC SDI Cable');
       expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
       expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');

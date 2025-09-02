@@ -7367,7 +7367,10 @@ function generateGearListHtml(info = {}) {
     const powerItems = [
         'Power Cable Drum 25-50 m',
         ...Array(2).fill('Power Cable 10 m'),
-        ...Array(2).fill('Power Cable 5 m')
+        ...Array(2).fill('Power Cable 5 m'),
+        ...Array(3).fill('Power Strip'),
+        ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
+        ...Array(3).fill('Power Three Way Splitter')
     ];
     addRow('Power', formatItems(powerItems));
     addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
@@ -7385,11 +7388,6 @@ function generateGearListHtml(info = {}) {
         'Ultraslim BNC 0.5 m'
     ]);
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
-    miscItems.push(
-        ...Array(3).fill('Power Strip'),
-        ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
-        ...Array(3).fill('Power Three Way Splitter')
-    );
     const consumables = [];
     const baseConsumables = [
         { name: 'Kimtech Wipes', count: 1 },
