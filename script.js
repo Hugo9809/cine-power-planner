@@ -1256,6 +1256,7 @@ function setLanguage(lang) {
     {input: controllerFilterInput, label: texts[lang].fizControllersLabel},
     {input: distanceFilterInput, label: texts[lang].distanceLabel},
     {input: batteryFilterInput, label: texts[lang].batteryLabel},
+    {input: lensFilterInput, label: texts[lang].lensesLabel},
     {input: cameraListFilterInput, label: texts[lang].category_cameras},
     {input: viewfinderListFilterInput, label: texts[lang].category_viewfinders},
     {input: monitorListFilterInput, label: texts[lang].category_monitors},
@@ -1465,6 +1466,7 @@ const controllerSelects = [
 ];
 const distanceSelect = document.getElementById("distanceSelect");
 const batterySelect  = document.getElementById("batterySelect");
+const lensSelect     = document.getElementById("lenses");
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
@@ -1760,6 +1762,7 @@ const motorFilterInput = document.getElementById("motorFilter");
 const controllerFilterInput = document.getElementById("controllerFilter");
 const distanceFilterInput = document.getElementById("distanceFilter");
 const batteryFilterInput = document.getElementById("batteryFilter");
+const lensFilterInput = document.getElementById("lensFilter");
 
 // List filters for existing device categories
 const cameraListFilterInput = document.getElementById("cameraListFilter");
@@ -3365,7 +3368,7 @@ function clearFilterOnSelect(selectElem, filterInput, resetCallback) {
 
 function clearAllFilters() {
   [cameraFilterInput, monitorFilterInput, videoFilterInput, cageFilterInput, motorFilterInput,
-   controllerFilterInput, distanceFilterInput, batteryFilterInput].forEach(input => {
+   controllerFilterInput, distanceFilterInput, batteryFilterInput, lensFilterInput].forEach(input => {
     if (input) input.value = "";
   });
   filterSelect(cameraSelect, "");
@@ -3376,6 +3379,7 @@ function clearAllFilters() {
   controllerSelects.forEach(sel => filterSelect(sel, ""));
   filterSelect(distanceSelect, "");
   filterSelect(batterySelect, "");
+  filterSelect(lensSelect, "");
 }
 
 function applyFilters() {
@@ -3387,6 +3391,7 @@ function applyFilters() {
   controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value));
   filterSelect(distanceSelect, distanceFilterInput.value);
   filterSelect(batterySelect, batteryFilterInput.value);
+  filterSelect(lensSelect, lensFilterInput.value);
 
   filterDeviceList(cameraListElem, cameraListFilterInput.value);
   filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
@@ -5154,6 +5159,7 @@ bindFilterInput(motorFilterInput, () => motorSelects.forEach(sel => filterSelect
 bindFilterInput(controllerFilterInput, () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
 bindFilterInput(distanceFilterInput, () => filterSelect(distanceSelect, distanceFilterInput.value));
 bindFilterInput(batteryFilterInput, () => filterSelect(batterySelect, batteryFilterInput.value));
+bindFilterInput(lensFilterInput, () => filterSelect(lensSelect, lensFilterInput.value));
 
 clearFilterOnSelect(cameraSelect, cameraFilterInput);
 clearFilterOnSelect(monitorSelect, monitorFilterInput);
@@ -5163,6 +5169,7 @@ motorSelects.forEach(sel => clearFilterOnSelect(sel, motorFilterInput, () => mot
 controllerSelects.forEach(sel => clearFilterOnSelect(sel, controllerFilterInput, () => controllerSelects.forEach(s => filterSelect(s, ""))));
 clearFilterOnSelect(distanceSelect, distanceFilterInput);
 clearFilterOnSelect(batterySelect, batteryFilterInput);
+clearFilterOnSelect(lensSelect, lensFilterInput);
 
 clearFiltersBtn.addEventListener("click", clearAllFilters);
 
@@ -8188,12 +8195,14 @@ function initApp() {
   }
   populateEnvironmentDropdowns();
   populateLensDropdown();
+  attachSelectSearch(lensSelect);
   populateFilterDropdown();
   setLanguage(currentLang);
   resetDeviceForm();
   restoreSessionState();
   applySharedSetupFromUrl();
   updateCalculations();
+  applyFilters();
 }
 
 function populateEnvironmentDropdowns() {
@@ -8213,7 +8222,6 @@ function populateEnvironmentDropdowns() {
 }
 
 function populateLensDropdown() {
-  const lensSelect = document.getElementById('lenses');
   if (!lensSelect) return;
 
   lensSelect.innerHTML = '';

@@ -174,6 +174,16 @@ describe('script.js functions', () => {
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
   });
 
+  test('lens filter narrows lens options', () => {
+    const sel = document.getElementById('lenses');
+    sel.innerHTML = '<option value="LensA">LensA</option><option value="LensB">LensB</option>';
+    const input = document.getElementById('lensFilter');
+    input.value = 'b';
+    input.dispatchEvent(new Event('input'));
+    expect(sel.options[0].hidden).toBe(true);
+    expect(sel.options[1].hidden).toBe(false);
+  });
+
   test('selected cage appears in camera support category of gear list', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
