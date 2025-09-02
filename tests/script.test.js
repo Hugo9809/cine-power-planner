@@ -1555,7 +1555,8 @@ describe('script.js functions', () => {
   test('sensor mode appears in project requirements when provided', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ sensorMode: 'S35 3:2' });
-    expect(html).toContain('Sensor Mode: S35 3:2');
+    expect(html).toContain('<span class="req-label">Sensor Mode</span>');
+    expect(html).toContain('<span class="req-value">S35 3:2</span>');
   });
 
   test('codec dropdown populates from camera recording codecs', () => {
