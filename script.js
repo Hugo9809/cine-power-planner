@@ -7241,7 +7241,12 @@ function generateGearListHtml(info = {}) {
             gripItems.push('Sachtler FSB 8 Head');
         }
     }
-    addRow('Power', '');
+    const powerItems = [
+        'Power Cable Drum 25-50 m',
+        ...Array(2).fill('Power Cable 10 m'),
+        ...Array(2).fill('Power Cable 5 m')
+    ];
+    addRow('Power', formatItems(powerItems));
     addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
     const cartsTransportationItems = [
         'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
@@ -7258,9 +7263,6 @@ function generateGearListHtml(info = {}) {
     ]);
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     miscItems.push(
-        'Power Cable Drum 25-50 m',
-        ...Array(2).fill('Power Cable 10 m'),
-        ...Array(2).fill('Power Cable 5 m'),
         ...Array(3).fill('Power Strip'),
         ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
         ...Array(3).fill('Power Three Way Splitter')
