@@ -7181,8 +7181,30 @@ function generateGearListHtml(info = {}) {
         }).filter(Boolean).join('<br>');
     }
     addRow('Media', mediaItems);
-    addRow('Lens', '');
-    addRow('Lens Support', '');
+    const selectedLensNames = info.lenses
+        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+    addRow('Lens', formatItems(selectedLensNames));
+    const lensSupportItems = [];
+    const requiredRodTypes = new Set();
+    selectedLensNames.forEach(name => {
+        const lens = devices.lenses && devices.lenses[name];
+        if (!lens) return;
+        const rodType = lens.rodStandard || '15mm';
+        const rodLength = lens.rodLengthCm || (rodType === '19mm' ? 45 : 30);
+        lensSupportItems.push(`${rodType} rods ${rodLength}cm`);
+        requiredRodTypes.add(rodType);
+        if (lens.needsLensSupport) {
+            lensSupportItems.push(`${rodType} lens support`);
+        }
+    });
+    const cageRodType = devices.accessories?.cages?.[selectedNames.cage]?.rodStandard;
+    requiredRodTypes.forEach(rt => {
+        if (cageRodType && cageRodType !== rt) {
+            lensSupportItems.push(`⚠️ cage incompatible with ${rt} rods`);
+        }
+    });
+    addRow('Lens Support', formatItems(lensSupportItems));
     addRow('Matte box + filter', '');
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
