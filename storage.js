@@ -239,6 +239,7 @@ function clearAllData() {
     localStorage.removeItem(DEVICE_STORAGE_KEY);
     localStorage.removeItem(SETUP_STORAGE_KEY);
     localStorage.removeItem(FEEDBACK_STORAGE_KEY);
+    localStorage.removeItem(GEARLIST_STORAGE_KEY);
     sessionStorage.removeItem(SESSION_STATE_KEY);
     console.log("All planner data cleared from storage.");
   } catch (e) {
