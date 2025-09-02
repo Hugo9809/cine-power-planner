@@ -7045,6 +7045,9 @@ function generateGearListHtml(info = {}) {
     const monitoringPrefs = info.monitoringPreferences
         ? info.monitoringPreferences.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    const selectedFilters = info.filter
+        ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
     const monitorEquipOptions = ['Directors Monitor 7" handheld', 'Directors Monitor 15-19 inch', 'Combo Monitor 15-19 inch'];
     const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
     const monitoringSupportPrefs = monitoringPrefs.filter(p => !monitorEquipOptions.includes(p));
@@ -7101,6 +7104,7 @@ function generateGearListHtml(info = {}) {
         projectInfo.monitoring = monitoringEquipmentPrefs.join(', ');
     }
     delete projectInfo.monitoringPreferences;
+    delete projectInfo.filter;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
@@ -7206,7 +7210,7 @@ function generateGearListHtml(info = {}) {
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
-    addRow('Matte box + filter', '');
+    addRow('Matte box + filter', formatItems(selectedFilters));
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
     if (selectedNames.battery) {

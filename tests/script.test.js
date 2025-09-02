@@ -996,7 +996,7 @@ describe('script.js functions', () => {
       expect(html).toContain('<h3>Project Requirements</h3>');
       expect(html).toContain('DoP: DopName');
       expect(html).toContain('Required Scenarios: Handheld, Slider');
-      expect(html).toContain('Filter: IRND');
+      expect(html).not.toContain('Filter: IRND');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain('1x CamA');
@@ -1041,6 +1041,8 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m');
       expect(html).not.toContain('Ultraslim BNC 0.5 m');
       expect(html).not.toContain('HDMI Cable');
+      const filterSection = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+      expect(filterSection).toContain('1x IRND');
     });
 
   test('standard rigging accessories are always included', () => {
