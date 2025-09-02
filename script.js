@@ -7281,14 +7281,8 @@ function generateGearListHtml(info = {}) {
         }
     }
     addRow('Monitoring', monitoringItems);
-    let monitoringSupportItems = '';
-    if (monitoringSupportPrefs.length) {
-        monitoringSupportItems = escapeHtml(monitoringSupportPrefs.join(', '));
-    }
     const monitoringSupportHardware = formatItems(monitoringSupportAcc);
-    if (monitoringSupportHardware) {
-        monitoringSupportItems = [monitoringSupportItems, monitoringSupportHardware].filter(Boolean).join('<br>');
-    }
+    const monitoringSupportItems = monitoringSupportHardware;
     addRow('Monitoring support', monitoringSupportItems);
     const gripItems = [];
     let sliderSelectHtml = '';
