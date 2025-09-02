@@ -1546,6 +1546,12 @@ describe('script.js functions', () => {
     expect(html).toContain('Sensor Mode: S35 3:2');
   });
 
+  test('tripod preferences are excluded from project requirements', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ tripodPreferences: 'OConnor 2560 Head' });
+    expect(html).not.toContain('Tripod Preferences');
+  });
+
   test('codec dropdown populates from camera recording codecs', () => {
     devices.cameras.CamA.recordingCodecs = ['CodecA', 'CodecB'];
     const camSel = document.getElementById('cameraSelect');
