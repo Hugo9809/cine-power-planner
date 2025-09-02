@@ -7210,12 +7210,17 @@ function generateGearListHtml(info = {}) {
     addRow('Lens', formatItems(selectedLensNames));
     const lensSupportItems = [];
     const requiredRodTypes = new Set();
+    const addedRodPairs = new Set();
     selectedLensNames.forEach(name => {
         const lens = devices.lenses && devices.lenses[name];
         if (!lens) return;
         const rodType = lens.rodStandard || '15mm';
         const rodLength = lens.rodLengthCm || (rodType === '19mm' ? 45 : 30);
-        lensSupportItems.push(`${rodType} rods ${rodLength}cm`);
+        const rodKey = `${rodType}-${rodLength}`;
+        if (!addedRodPairs.has(rodKey)) {
+            lensSupportItems.push(`${rodType} rods ${rodLength}cm`);
+            addedRodPairs.add(rodKey);
+        }
         requiredRodTypes.add(rodType);
         if (lens.needsLensSupport) {
             lensSupportItems.push(`${rodType} lens support`);
