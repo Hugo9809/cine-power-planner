@@ -7183,11 +7183,14 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = [];
+    const batteryNames = devices && devices.batteries ? Object.keys(devices.batteries) : [];
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
-        monitoringBatteryItems.push('3x Bebob 98 Micros');
+        const bebob98 = batteryNames.find(name => /\bV98micro\b/.test(name));
+        if (bebob98) monitoringBatteryItems.push(`3x ${escapeHtml(bebob98)}`);
     }
     if (hasMotor) {
-        monitoringBatteryItems.push('3x Bebob 150micro');
+        const bebob150 = batteryNames.find(name => /\bV150micro\b/.test(name));
+        if (bebob150) monitoringBatteryItems.push(`3x ${escapeHtml(bebob150)}`);
     }
     addRow('Monitoring Batteries', monitoringBatteryItems.join('<br>'));
     addRow('Chargers', formatItems(chargersAcc));

@@ -1040,11 +1040,12 @@ describe('script.js functions', () => {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
+    global.devices.batteries['Bebob V98micro'] = {};
     const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
     expect(html).toContain('<select id="gearListDirectorsMonitor7"');
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
-    expect(html).toContain('3x Bebob 98 Micros');
+    expect(html).toContain('3x Bebob V98micro');
     expect(html).toContain('C-Stand 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     expect(html).toContain('2x spigot');
@@ -1074,9 +1075,10 @@ describe('script.js functions', () => {
     };
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
+    global.devices.batteries['Bebob V150micro'] = {};
     const html = generateGearListHtml();
     expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
-    expect(html).toContain('3x Bebob 150micro');
+    expect(html).toContain('3x Bebob V150micro');
     expect(html).toContain('2x Ultraslim BNC 0.3 m');
     expect(html).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
     expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
