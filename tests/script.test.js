@@ -1048,6 +1048,7 @@ describe('script.js functions', () => {
     expect(html).toContain('C-Stand 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     expect(html).toContain('2x spigot');
+    expect(html).toContain('1x Manfrotto 244N Friktion Arm');
     expect(html).toContain('2x Ultraslim BNC 0.3 m');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
@@ -1146,6 +1147,21 @@ describe('script.js functions', () => {
     const itemsRow = rows[gripIdx + 1];
     expect(itemsRow.textContent).toContain('Cinekinetic Cinesaddle');
     expect(itemsRow.textContent).toContain('Steadybag');
+  });
+
+  test('Gimbal scenario adds friction arms and accessories', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Gimbal' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('2x Manfrotto 244N Friktion Arm');
+    expect(text).toContain('1x Super Clamp');
+    expect(text).toContain('1x Gobo Head');
+    expect(text).toContain('1x spigot');
   });
 
   test('Handheld and Easyrig scenarios add telescopic handle to camera support', () => {

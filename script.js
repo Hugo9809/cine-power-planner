@@ -7226,6 +7226,13 @@ function generateGearListHtml(info = {}) {
         const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
         gripItems.push(isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
     }
+    const frictionArmCount = scenarios.includes('Gimbal') ? 2 : 1;
+    gripItems.push(...Array(frictionArmCount).fill('Manfrotto 244N Friktion Arm'));
+    if (scenarios.includes('Gimbal')) {
+        gripItems.push('Super Clamp');
+        gripItems.push('Gobo Head');
+        gripItems.push('spigot');
+    }
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
     if (scenarios.includes('Slider')) {
