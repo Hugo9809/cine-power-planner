@@ -138,6 +138,7 @@ const texts = {
     category_fiz_cables: "FIZ Cables",
     category_batteries: "V-Mount Batteries",
     category_accessory_batteries: "Accessory Batteries",
+    category_cables: "Cables",
     category_camera_support: "Camera Support",
     category_chargers: "Chargers",
 
@@ -483,6 +484,7 @@ const texts = {
     category_fiz_cables: "Cavi FIZ",
     category_batteries: "Batterie a V-Mount",
     category_accessory_batteries: "Batterie accessorie",
+    category_cables: "Cavi",
     category_camera_support: "Supporto camera",
     category_chargers: "Caricatori",
     addDeviceHeading: "Aggiungi nuovo dispositivo",
@@ -819,6 +821,7 @@ const texts = {
     category_fiz_cables: "Cables FIZ",
     category_batteries: "Baterías V-Mount",
     category_accessory_batteries: "Baterías de accesorios",
+    category_cables: "Cables",
     category_camera_support: "Soporte de cámara",
     category_chargers: "Cargadores",
 
@@ -1164,6 +1167,7 @@ const texts = {
     category_fiz_cables: "Câbles FIZ",
     category_batteries: "Batteries V-Mount",
     category_accessory_batteries: "Batteries accessoires",
+    category_cables: "Câbles",
     category_camera_support: "Support caméra",
     category_chargers: "Chargeurs",
 
@@ -1511,6 +1515,7 @@ const texts = {
     category_fiz_cables: "FIZ-Kabel",
     category_batteries: "V-Mount Akkus",
     category_accessory_batteries: "Zubehör-Akkus",
+    category_cables: "Kabel",
     category_camera_support: "Kamera-Support",
     category_chargers: "Ladegeräte",
 
@@ -1737,6 +1742,7 @@ const categoryNames = {
     "fiz.cables": "FIZ Cable",
     "batteries": "V-Mount Battery",
     "accessories.batteries": "Accessory Battery",
+    "accessories.cables": "Cable",
     "accessories.cages": "Camera Support",
     "accessories.chargers": "Charger"
   },
@@ -1751,6 +1757,7 @@ const categoryNames = {
     "fiz.cables": "Cavo FIZ",
     "batteries": "Batteria V-Mount",
     "accessories.batteries": "Batteria accessorio",
+    "accessories.cables": "Cavo",
     "accessories.cages": "Supporto camera",
     "accessories.chargers": "Caricatore"
   },
@@ -1765,6 +1772,7 @@ const categoryNames = {
     "fiz.cables": "Cable FIZ",
     "batteries": "Batería V-Mount",
     "accessories.batteries": "Batería de accesorios",
+    "accessories.cables": "Cable",
     "accessories.cages": "Soporte de cámara",
     "accessories.chargers": "Cargador"
   },
@@ -1779,6 +1787,7 @@ const categoryNames = {
     "fiz.cables": "Câble FIZ",
     "batteries": "Batterie V-Mount",
     "accessories.batteries": "Batterie accessoire",
+    "accessories.cables": "Câble",
     "accessories.cages": "Support caméra",
     "accessories.chargers": "Chargeur"
   },
@@ -1793,6 +1802,7 @@ const categoryNames = {
     "fiz.cables": "FIZ-Kabel",
     "batteries": "V-Mount Akku",
     "accessories.batteries": "Zubehör-Akku",
+    "accessories.cables": "Kabel",
     "accessories.cages": "Kamera-Support",
     "accessories.chargers": "Ladegerät"
   },
