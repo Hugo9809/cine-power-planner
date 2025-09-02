@@ -6843,7 +6843,7 @@ function suggestChargerCounts(total) {
     return { quad, dual, single };
 }
 
-function collectAccessories() {
+function collectAccessories(info = {}) {
     const cameraSupport = [];
     const misc = [];
     const monitoringSupport = [
@@ -6858,6 +6858,7 @@ function collectAccessories() {
     const fizCables = [];
     const acc = devices.accessories || {};
     const excludedCables = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable']);
+    let antennaCount = 0;
 
     if (batterySelect.value) {
         const mount = devices.batteries[batterySelect.value]?.mount_type;
@@ -6917,6 +6918,18 @@ function collectAccessories() {
     gatherPower(devices.monitors[monitorSelect.value], monitoringSupport);
     gatherPower(devices.video[videoSelect.value]);
     if (videoSelect.value) {
+        antennaCount += 1;
+        let monitoringPrefs = [];
+        if (info.monitoringPreferences) {
+            monitoringPrefs = info.monitoringPreferences.split(',').map(s => s.trim()).filter(Boolean);
+        } else {
+            const monitoringSelect = document.getElementById('monitoringPreferences');
+            monitoringPrefs = Array.from(monitoringSelect?.selectedOptions || []).map(o => o.value);
+        }
+        const hasMotor = motorSelects.some(sel => sel.value && sel.value !== 'None');
+        let receiverCount = (monitoringPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
+        if (!receiverCount) receiverCount = 1;
+        antennaCount += receiverCount;
         const rxName = videoSelect.value.replace(/ TX\b/, ' RX');
         if (devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
             gatherPower(devices.wirelessReceivers[rxName]);
@@ -6948,6 +6961,7 @@ function collectAccessories() {
     const miscUnique = [...new Set(misc)];
     const monitoringSupportUnique = [...new Set(monitoringSupport)];
     const riggingUnique = [...new Set(rigging)];
+    for (let i = 0; i < antennaCount; i++) monitoringSupportUnique.push('Antenna 5,8GHz 5dBi Long (spare)');
     for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
@@ -7011,7 +7025,7 @@ function generateGearListHtml(info = {}) {
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories(info);
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('Noga Arm');

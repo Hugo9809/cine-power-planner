@@ -1034,6 +1034,24 @@ describe('script.js functions', () => {
     expect(html).not.toContain('MonA, VidA');
   });
 
+  test('monitoring support includes spare antennas for wireless video devices', () => {
+    const { generateGearListHtml } = script;
+    global.devices.video = {
+      'VidA TX': {
+        powerDrawWatts: 3,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoInputs: [{ type: '3G-SDI' }]
+      }
+    };
+    global.devices.wirelessReceivers = { 'VidA RX': {} };
+    const sel = document.getElementById('videoSelect');
+    sel.innerHTML = '<option value="VidA TX">VidA TX</option>';
+    sel.value = 'VidA TX';
+    const html = generateGearListHtml();
+    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
+  });
+
   test('Directors handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {
@@ -1081,6 +1099,8 @@ describe('script.js functions', () => {
     expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
+    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
@@ -1102,6 +1122,8 @@ describe('script.js functions', () => {
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
     expect(html).toContain('2x <strong>Wireless Receiver</strong> - VidA RX');
+    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (spare)');
   });
 
   test('gear list includes battery count in camera batteries row', () => {
