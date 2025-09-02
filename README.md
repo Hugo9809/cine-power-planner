@@ -18,6 +18,7 @@ that future visits work offline and pick up updates automatically.
 - [Features at a Glance](#features-at-a-glance)
 - [Runtime Data Weighting](#runtime-data-weighting)
 - [Quick Start](#quick-start)
+- [Gear List](#gear-list)
 - [Getting Started](#getting-started)
 - [Install as an App](#install-as-an-app)
 - [Browser Support](#browser-support)
@@ -91,6 +92,13 @@ User-submitted battery runtimes are combined using a weighted average to better 
    python -m http.server
    ```
    The planner then works fully offline and updates automatically.
+
+## Gear List
+
+- Click **Generate Gear List** to compile selected gear and project requirements.
+- **Save Gear List** stores the current list with the setup.
+- **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
+- **Delete Gear List** removes the saved list and hides the output.
 
 ## Getting Started
 
