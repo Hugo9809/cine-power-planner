@@ -7094,6 +7094,7 @@ function generateGearListHtml(info = {}) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
     const projectInfo = { ...info };
+    delete projectInfo.lenses;
     if (monitoringSupportPrefs.length) {
         projectInfo.monitoringSupport = monitoringSupportPrefs.join(', ');
     }
