@@ -1615,6 +1615,20 @@ const gear = {
 // Expose lenses at the top level for easier access
 gear.lenses = gear.accessories.lenses;
 
+// Ensure every lens has lens support metadata and add specific overrides
+for (const lens of Object.values(gear.lenses)) {
+  if (!lens.lensSupport) {
+    lens.lensSupport = { rodType: '15mm', rodLengthCm: 30, required: false };
+  }
+}
+if (gear.lenses['Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)']) {
+  gear.lenses['Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)'].lensSupport = {
+    rodType: '19mm',
+    rodLengthCm: 45,
+    required: true,
+  };
+}
+
 // Automatically add a matching wireless receiver entry for every
 // transmitter defined in the video devices. This ensures the list of
 // receivers always covers all available transmitters without having to

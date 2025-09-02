@@ -52,7 +52,7 @@ describe('script.js functions', () => {
         }
       },
       lenses: {
-        LensA: { brand: 'TestBrand', tStop: 2.0 }
+        LensA: { brand: 'TestBrand', tStop: 2.0, lensSupport: { rodType: '19mm', rodLengthCm: 20, required: true } }
       },
       fiz: {
         motors: {
@@ -70,7 +70,7 @@ describe('script.js functions', () => {
       },
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-        cages: { 'Universal Cage': { compatible: ['CamA'] } },
+        cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
         chargers: {
           'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
           'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
@@ -216,6 +216,25 @@ describe('script.js functions', () => {
     cageSelect.dispatchEvent(new Event('change', { bubbles: true }));
     cageSelEl = gearList.querySelector('#gearListCage');
     expect(cageSelEl.value).toBe('Cage2');
+  });
+
+  test('lens selection adds rods, support and cage compatibility warning', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    addOpt('cageSelect', 'Universal Cage');
+    const lensSel = document.getElementById('lenses');
+    lensSel.innerHTML = '<option value="LensA">LensA</option>';
+    lensSel.options[0].selected = true;
+    const html = script.generateGearListHtml({ lenses: 'LensA' });
+    const section = html.slice(html.indexOf('Lens Support'), html.indexOf('Matte box'));
+    expect(section).toContain('1x 19mm rods 20 cm');
+    expect(section).toContain('1x 19mm lens support');
+    expect(section).toContain('1x Cage incompatible with 19mm rods');
   });
 
   test('gear list cage selection is stored with selected attribute', () => {

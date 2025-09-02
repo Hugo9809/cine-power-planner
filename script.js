@@ -6843,7 +6843,7 @@ function suggestChargerCounts(total) {
     return { quad, dual, single };
 }
 
-function collectAccessories() {
+function collectAccessories(info = {}) {
     const cameraSupport = [];
     const misc = [];
     const monitoringSupport = [
@@ -6856,8 +6856,13 @@ function collectAccessories() {
     const rigging = [];
     const chargers = [];
     const fizCables = [];
+    const lensSupport = [];
     const acc = devices.accessories || {};
     const excludedCables = new Set(['D-Tap to LEMO 2-pin', 'HDMI Cable']);
+
+    const lensNames = info.lenses
+        ? info.lenses.split(',').map(l => l.trim()).filter(Boolean)
+        : [];
 
     if (batterySelect.value) {
         const mount = devices.batteries[batterySelect.value]?.mount_type;
@@ -6901,6 +6906,22 @@ function collectAccessories() {
                 if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(name);
             }
         }
+    }
+
+    if (lensNames.length) {
+        const cageData = acc.cages?.[cageSelect.value] || {};
+        lensNames.forEach(name => {
+            const lens = devices.lenses?.[name];
+            if (!lens) return;
+            const ls = lens.lensSupport || {};
+            const rodType = ls.rodType || '15mm';
+            const lengthCm = ls.rodLengthCm || 30;
+            lensSupport.push(`${rodType} rods ${lengthCm} cm`);
+            if (ls.required) lensSupport.push(`${rodType} lens support`);
+            if (cageData.rodStandard && cageData.rodStandard !== rodType) {
+                lensSupport.push(`Cage incompatible with ${rodType} rods`);
+            }
+        });
     }
 
     const powerCableDb = acc.cables?.power || {};
@@ -6948,6 +6969,7 @@ function collectAccessories() {
     const miscUnique = [...new Set(misc)];
     const monitoringSupportUnique = [...new Set(monitoringSupport)];
     const riggingUnique = [...new Set(rigging)];
+    const lensSupportUnique = [...new Set(lensSupport)];
     for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
@@ -6955,7 +6977,8 @@ function collectAccessories() {
         fizCables: [...new Set(fizCables)],
         misc: miscUnique,
         monitoringSupport: monitoringSupportUnique,
-        rigging: riggingUnique
+        rigging: riggingUnique,
+        lensSupport: lensSupportUnique,
     };
 }
 
@@ -7011,7 +7034,7 @@ function generateGearListHtml(info = {}) {
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc, lensSupport: lensSupportAcc } = collectAccessories(info);
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('Noga Arm');
@@ -7037,6 +7060,9 @@ function generateGearListHtml(info = {}) {
         : [];
     const monitoringPrefs = info.monitoringPreferences
         ? info.monitoringPreferences.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+    const lenses = info.lenses
+        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
         : [];
     const monitorEquipOptions = ['Directors Monitor 7" handheld', 'Directors Monitor 15-19 inch', 'Combo Monitor 15-19 inch'];
     const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
@@ -7137,8 +7163,8 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
     addRow('Media', '');
-    addRow('Lens', '');
-    addRow('Lens Support', '');
+    addRow('Lens', formatItems(lenses));
+    addRow('Lens Support', formatItems(lensSupportAcc));
     addRow('Matte box + filter', '');
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
