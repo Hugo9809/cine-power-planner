@@ -7,6 +7,23 @@ const voltageRangeCache = new Map();
 // Cache for parsed power input strings to avoid repeated parsing work
 const powerInputCache = new Map();
 
+// Precompiled regular expressions reused across calls to avoid recreating them
+const IO_WORDS_REGEX = /\b(?:INPUT|OUTPUT)\b/gi;
+const LEMO_2PIN_REGEX = /lemo\s*2\s*-?\s*pin/i;
+const DTAP_REGEX = /d[\s-]?tap/i;
+const USB_TYPEC_REGEX = /usb\s*type[-\s]?c/i;
+const MULTISPACE_REGEX = /\s+/g;
+
+const VOLTAGE_DC_REGEX = /DC/gi;
+const VOLTAGE_V_REGEX = /V(?:olt)?(?:s)?/gi;
+const EN_DASH_REGEX = /[–—]/g;
+const TO_WORD_REGEX = /\bto\b/gi;
+const SPACE_DASH_SPACE_REGEX = /\s*-\s*/g;
+const SPACE_CLOSE_REGEX = /\s+\)/g;
+const OPEN_SPACE_REGEX = /\(\s+/g;
+const PAREN_NOTES_REGEX = /^(.+?)\s*\(([^)]+)\)$/;
+const QUOTE_NOTES_REGEX = /^(.+?)\s*['"]([^'"]+)['"]$/;
+
 /**
  * Standardizes connector type names for easier comparison.
  *
@@ -18,12 +35,12 @@ function cleanTypeName(name) {
   if (typeNameCache.has(key)) return typeNameCache.get(key);
   let t = key.trim();
   // Preserve explicit IN/OUT labels; only remove generic INPUT/OUTPUT words.
-  // The regex is global to ensure multiple occurrences are stripped.
-  t = t.replace(/\b(?:INPUT|OUTPUT)\b/gi, "").trim();
-  if (/lemo\s*2\s*-?\s*pin/i.test(t)) t = "LEMO 2-pin";
-  if (/d[\s-]?tap/i.test(t)) t = "D-Tap";
-  if (/usb\s*type[-\s]?c/i.test(t)) t = "USB-C";
-  t = t.replace(/\s+/g, " ");
+  // The regex is precompiled and global to strip multiple occurrences.
+  t = t.replace(IO_WORDS_REGEX, "").trim();
+  if (LEMO_2PIN_REGEX.test(t)) t = "LEMO 2-pin";
+  else if (DTAP_REGEX.test(t)) t = "D-Tap";
+  else if (USB_TYPEC_REGEX.test(t)) t = "USB-C";
+  t = t.replace(MULTISPACE_REGEX, " ");
   typeNameCache.set(key, t);
   return t;
 }
@@ -38,14 +55,14 @@ function cleanVoltageRange(str) {
   if (!str || typeof str !== "string") return str;
   if (voltageRangeCache.has(str)) return voltageRangeCache.get(str);
   const cleaned = str
-    .replace(/DC/gi, "")
-    .replace(/V(?:olt)?(?:s)?/gi, "")
-    .replace(/[–—]/g, "-")
-    .replace(/\bto\b/gi, "-")
-    .replace(/\s+/g, " ")
-    .replace(/\s*-\s*/g, "-")
-    .replace(/\s+\)/g, ")")
-    .replace(/\(\s+/g, "(")
+    .replace(VOLTAGE_DC_REGEX, "")
+    .replace(VOLTAGE_V_REGEX, "")
+    .replace(EN_DASH_REGEX, "-")
+    .replace(TO_WORD_REGEX, "-")
+    .replace(MULTISPACE_REGEX, " ")
+    .replace(SPACE_DASH_SPACE_REGEX, "-")
+    .replace(SPACE_CLOSE_REGEX, ")")
+    .replace(OPEN_SPACE_REGEX, "(")
     .trim();
   voltageRangeCache.set(str, cleaned);
   return cleaned;
@@ -205,12 +222,12 @@ function parsePowerInput(str) {
       let type = p;
       let notes = '';
 
-      let m = type.match(/^(.+?)\s*\(([^)]+)\)$/);
+      let m = type.match(PAREN_NOTES_REGEX);
       if (m) {
         type = m[1].trim();
         notes = m[2].trim();
       } else {
-        m = type.match(/^(.+?)\s*['"]([^'"]+)['"]$/);
+        m = type.match(QUOTE_NOTES_REGEX);
         if (m) {
           type = m[1].trim();
           notes = m[2].trim();
