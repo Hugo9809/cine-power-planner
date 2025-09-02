@@ -740,6 +740,12 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.scenario-summary {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .connector-block,
 .info-box {
   display: inline-block;
@@ -749,6 +755,21 @@ button:disabled {
   border: 1px solid;
   background-color: rgba(0,0,0,0.03);
   font-size: 0.75em;
+}
+
+.scenario-box {
+  display: flex;
+  align-items: center;
+  padding: 2px 6px;
+  margin: 2px;
+  border-radius: 3px;
+  border: 1px solid;
+  background-color: rgba(0,0,0,0.03);
+  font-size: 0.75em;
+}
+
+.scenario-box .scenario-icon {
+  margin-right: 4px;
 }
 
 .tray-box {
@@ -1081,6 +1102,7 @@ body.dark-mode.pink-mode h2 {
 }
 .dark-mode .connector-block,
 .dark-mode .info-box { background-color: rgba(255,255,255,0.1); }
+.dark-mode .scenario-box { background-color: rgba(255,255,255,0.1); }
 .dark-mode .power-conn { background-color: rgba(244, 67, 54, 0.3); }
 .dark-mode .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
 .dark-mode .video-conn { background-color: rgba(33, 150, 243, 0.3); }
@@ -1154,6 +1176,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   }
   body:not(.light-mode) .connector-block,
   body:not(.light-mode) .info-box { background-color: rgba(255,255,255,0.1); }
+  body:not(.light-mode) .scenario-box { background-color: rgba(255,255,255,0.1); }
   body:not(.light-mode) .power-conn { background-color: rgba(244, 67, 54, 0.3); }
   body:not(.light-mode) .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
   body:not(.light-mode) .video-conn { background-color: rgba(33, 150, 243, 0.3); }

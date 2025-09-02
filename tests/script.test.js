@@ -1241,6 +1241,17 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
+  test('updateRequiredScenariosSummary creates a box for each selection', () => {
+    const select = document.getElementById('requiredScenarios');
+    select.querySelector('option[value="Indoor"]').selected = true;
+    select.querySelector('option[value="Gimbal"]').selected = true;
+    script.updateRequiredScenariosSummary();
+    const boxes = document.querySelectorAll('#requiredScenariosSummary .scenario-box');
+    expect(boxes).toHaveLength(2);
+    expect(boxes[0].textContent).toContain('Indoor');
+    expect(boxes[1].textContent).toContain('Gimbal');
+  });
+
   test('Hand Grips rigging adds telescopic handle', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ rigging: 'Hand Grips' });
