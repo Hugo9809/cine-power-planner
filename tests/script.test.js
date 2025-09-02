@@ -229,6 +229,18 @@ describe('script.js functions', () => {
     expect(supportRow.textContent).toContain('15mm lens support');
   });
 
+  test('selected lens does not appear in project requirements list', () => {
+    const html = script.generateGearListHtml({ lenses: 'LensA' });
+    expect(html).not.toContain('Lenses: LensA');
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const lensIndex = rows.findIndex(r => r.textContent === 'Lens');
+    expect(lensIndex).toBeGreaterThanOrEqual(0);
+    const lensRow = rows[lensIndex + 1];
+    expect(lensRow.textContent).toContain('LensA');
+  });
+
   test('gear list updates when device selection changes', () => {
     const projectDialog = document.getElementById('projectDialog');
     projectDialog.close = jest.fn();
