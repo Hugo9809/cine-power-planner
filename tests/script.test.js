@@ -1104,7 +1104,7 @@ describe('script.js functions', () => {
     expect(html).toContain('3x Tennisball');
     expect(html).toContain('2x Ultraslim BNC 0.3 m');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
-    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
@@ -1132,7 +1132,7 @@ describe('script.js functions', () => {
     const html = generateGearListHtml();
     expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V150micro');
-    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
     expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
@@ -1556,6 +1556,10 @@ describe('script.js functions', () => {
     expect(html).toContain('<td>Rigging</td>');
     expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
     expect(html).toContain('<td>Monitoring support</td>');
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).not.toContain('VF Clean Feed');
+    expect(msSection).not.toContain('Onboard Clean Feed');
+    expect(msSection).not.toContain('User Buttons');
   });
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
