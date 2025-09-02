@@ -158,6 +158,12 @@ describe('script.js functions', () => {
     expect(hasOption).toBe(true);
   });
 
+  test('new device form includes cable category option', () => {
+    const select = document.getElementById('newCategory');
+    const hasCable = Array.from(select.options).some(o => o.value === 'accessories.cables');
+    expect(hasCable).toBe(true);
+  });
+
   test('populateLensDropdown fills lens list without duplicates', () => {
     const sel = document.getElementById('lenses');
     sel.innerHTML = '<option value="Existing">Existing</option>';
