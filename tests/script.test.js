@@ -52,7 +52,7 @@ describe('script.js functions', () => {
         }
       },
       lenses: {
-        LensA: { brand: 'TestBrand', tStop: 2.0 }
+        LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true }
       },
       fiz: {
         motors: {
@@ -70,7 +70,7 @@ describe('script.js functions', () => {
       },
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-        cages: { 'Universal Cage': { compatible: ['CamA'] } },
+        cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
         chargers: {
           'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
           'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
@@ -194,6 +194,29 @@ describe('script.js functions', () => {
     const cageSel = itemsRow.querySelector('#gearListCage');
     expect(cageSel).not.toBeNull();
     expect(cageSel.value).toBe('Universal Cage');
+  });
+
+  test('selected lens adds rods and support to lens support category of gear list', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    addOpt('cageSelect', 'Universal Cage');
+    const html = script.generateGearListHtml({ lenses: 'LensA' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const lensIndex = rows.findIndex(r => r.textContent === 'Lens');
+    expect(lensIndex).toBeGreaterThanOrEqual(0);
+    const lensRow = rows[lensIndex + 1];
+    expect(lensRow.textContent).toContain('LensA');
+    const supportIndex = rows.findIndex(r => r.textContent === 'Lens Support');
+    const supportRow = rows[supportIndex + 1];
+    expect(supportRow.textContent).toContain('15mm rods 30cm');
+    expect(supportRow.textContent).toContain('15mm lens support');
   });
 
   test('gear list updates when device selection changes', () => {

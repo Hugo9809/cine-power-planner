@@ -1612,6 +1612,30 @@ const gear = {
   ]
 };
 
+// Annotate lenses with support requirements and rod details.
+const lensSupportDefaults = {
+  "Angenieux Optimo 25-250mm T3.5 (PL)": { rodStandard: "19mm", rodLengthCm: 45, needsLensSupport: true },
+  "LOMO Anamorphic RF 35mm T2.5": { rodStandard: "19mm", rodLengthCm: 45, needsLensSupport: true },
+  "LOMO Anamorphic RF 50mm T2.4": { rodStandard: "15mm", rodLengthCm: 30, needsLensSupport: true },
+  "LOMO Anamorphic RF 75mm T2.4": { rodStandard: "15mm", rodLengthCm: 30, needsLensSupport: true },
+  "LOMO Anamorphic RF 100mm T3.2": { rodStandard: "15mm", rodLengthCm: 30, needsLensSupport: true },
+  "Canon CN7x17 17-120mm T3.0-3.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
+  "Angénieux Ultra Compact FF 37-102mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
+  "Angénieux Ultra Compact FF 21-56mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
+  "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": { rodStandard: "19mm", rodLengthCm: 60, needsLensSupport: true },
+  "ZEISS Compact Zoom CZ.2 28-80mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
+  "ZEISS Compact Zoom CZ.2 70-200mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
+  "Laowa 24mm T8 2× Pro2be (3-lens set: Direct / 35° / Periscope)": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
+  "Sony FE 70–200mm f/2.8 G Master II": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true }
+};
+
+for (const [name, lens] of Object.entries(gear.accessories.lenses)) {
+  const cfg = lensSupportDefaults[name] || {};
+  lens.rodStandard = cfg.rodStandard || "15mm";
+  lens.rodLengthCm = cfg.rodLengthCm || 30;
+  lens.needsLensSupport = cfg.needsLensSupport || false;
+}
+
 // Expose lenses at the top level for easier access
 gear.lenses = gear.accessories.lenses;
 
