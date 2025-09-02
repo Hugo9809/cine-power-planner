@@ -7494,48 +7494,67 @@ function generateGearListHtml(info = {}) {
 
 
 function getCurrentGearListHtml() {
-    if (!gearListOutput) return '';
-    const clone = gearListOutput.cloneNode(true);
-    const actions = clone.querySelector('#gearListActions');
-    if (actions) actions.remove();
-    const cageSel = clone.querySelector('#gearListCage');
-    if (cageSel) {
-        const originalSel = gearListOutput.querySelector('#gearListCage');
-        const val = originalSel ? originalSel.value : cageSel.value;
-        Array.from(cageSel.options).forEach(opt => {
-            if (opt.value === val) {
-                opt.setAttribute('selected', '');
-            } else {
-                opt.removeAttribute('selected');
-            }
-        });
-    }
-    const easyrigSel = clone.querySelector('#gearListEasyrig');
-    if (easyrigSel) {
-        const originalSel = gearListOutput.querySelector('#gearListEasyrig');
-        const val = originalSel ? originalSel.value : easyrigSel.value;
-        Array.from(easyrigSel.options).forEach(opt => {
-            if (opt.value === val) {
-                opt.setAttribute('selected', '');
-            } else {
-                opt.removeAttribute('selected');
-            }
-        });
-    }
-    const sliderSel = clone.querySelector('#gearListSliderBowl');
-    if (sliderSel) {
-        const originalSel = gearListOutput.querySelector('#gearListSliderBowl');
-        const val = originalSel ? originalSel.value : sliderSel.value;
-        Array.from(sliderSel.options).forEach(opt => {
-            if (opt.value === val) {
-                opt.setAttribute('selected', '');
-            } else {
-                opt.removeAttribute('selected');
-            }
-        });
+    if (!gearListOutput && !projectRequirementsOutput) return '';
+
+    const titleElem = (projectRequirementsOutput && projectRequirementsOutput.querySelector('h2'))
+        || (gearListOutput && gearListOutput.querySelector('h2'));
+    const titleHtml = titleElem ? titleElem.outerHTML : '';
+
+    let projHtml = '';
+    if (projectRequirementsOutput) {
+        const projClone = projectRequirementsOutput.cloneNode(true);
+        const t = projClone.querySelector('h2');
+        if (t) t.remove();
+        projHtml = projClone.innerHTML.trim();
     }
 
-    return clone.innerHTML.trim();
+    let gearHtml = '';
+    if (gearListOutput) {
+        const clone = gearListOutput.cloneNode(true);
+        const actions = clone.querySelector('#gearListActions');
+        if (actions) actions.remove();
+        const t = clone.querySelector('h2');
+        if (t) t.remove();
+        const cageSel = clone.querySelector('#gearListCage');
+        if (cageSel) {
+            const originalSel = gearListOutput.querySelector('#gearListCage');
+            const val = originalSel ? originalSel.value : cageSel.value;
+            Array.from(cageSel.options).forEach(opt => {
+                if (opt.value === val) {
+                    opt.setAttribute('selected', '');
+                } else {
+                    opt.removeAttribute('selected');
+                }
+            });
+        }
+        const easyrigSel = clone.querySelector('#gearListEasyrig');
+        if (easyrigSel) {
+            const originalSel = gearListOutput.querySelector('#gearListEasyrig');
+            const val = originalSel ? originalSel.value : easyrigSel.value;
+            Array.from(easyrigSel.options).forEach(opt => {
+                if (opt.value === val) {
+                    opt.setAttribute('selected', '');
+                } else {
+                    opt.removeAttribute('selected');
+                }
+            });
+        }
+        const sliderSel = clone.querySelector('#gearListSliderBowl');
+        if (sliderSel) {
+            const originalSel = gearListOutput.querySelector('#gearListSliderBowl');
+            const val = originalSel ? originalSel.value : sliderSel.value;
+            Array.from(sliderSel.options).forEach(opt => {
+                if (opt.value === val) {
+                    opt.setAttribute('selected', '');
+                } else {
+                    opt.removeAttribute('selected');
+                }
+            });
+        }
+        gearHtml = clone.innerHTML.trim();
+    }
+
+    return `${titleHtml}${projHtml}${gearHtml}`.trim();
 }
 
 function saveCurrentGearList() {
