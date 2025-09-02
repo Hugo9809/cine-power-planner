@@ -1260,16 +1260,16 @@ describe('script.js functions', () => {
     expect(consumText).toContain('3x CapIt Medium');
   });
 
-  test('rigging and monitoring support appear only in project requirements', () => {
+  test('rigging appears only in project requirements while monitoring support also appears in gear table', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
       monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed, User Buttons'
     });
     expect(html).toContain('Rigging: Shoulder rig, Hand Grips');
-    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
     expect(html).not.toContain('<td>Rigging</td>');
-    expect(html).not.toContain('<td>Monitoring support</td>');
+    expect(html).toContain('Monitoring support: VF Clean Feed, Onboard Clean Feed, User Buttons');
+    expect(html).toContain('<td>Monitoring support</td>');
   });
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {

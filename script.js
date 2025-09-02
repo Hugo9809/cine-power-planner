@@ -7129,6 +7129,11 @@ function generateGearListHtml(info = {}) {
         }
     }
     addRow('Monitoring', monitoringItems);
+    let monitoringSupportItems = '';
+    if (monitoringSupportPrefs.length) {
+        monitoringSupportItems = escapeHtml(monitoringSupportPrefs.join(', '));
+    }
+    addRow('Monitoring support', monitoringSupportItems);
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
