@@ -1541,7 +1541,11 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   }
   #gearListOutput table,
   #gearListOutput select {
+    width: 100%;
     max-width: 100%;
+  }
+  #gearListOutput select {
+    box-sizing: border-box;
   }
   #gearListOutput td {
     white-space: normal;
