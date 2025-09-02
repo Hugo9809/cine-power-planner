@@ -6989,6 +6989,7 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
         monitoringPreferences: multi('monitoringPreferences'),
+        userButtons: val('userButtons'),
         tripodPreferences: multi('tripodPreferences'),
         sliderBowl: getSliderBowlValue(),
         filter: multi('filter')
@@ -7124,7 +7125,8 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
         monitoringSupport: 'Monitoring support',
-        monitoring: 'Monitoring'
+        monitoring: 'Monitoring',
+        userButtons: 'User Buttons'
     };
     const fieldIcons = {
         dop: '👤',
@@ -7139,7 +7141,8 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: '🌄',
         rigging: '🛠️',
         monitoringSupport: '🧰',
-        monitoring: '📡'
+        monitoring: '📡',
+        userButtons: '🔘'
     };
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
