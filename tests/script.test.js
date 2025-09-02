@@ -1391,6 +1391,22 @@ describe('script.js functions', () => {
     expect(html).toContain('Sensor Mode: S35 3:2');
   });
 
+  test('codec dropdown populates from camera recording codecs', () => {
+    devices.cameras.CamA.recordingCodecs = ['CodecA', 'CodecB'];
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option>';
+    camSel.value = 'CamA';
+    const setupSelectElem = document.getElementById('setupSelect');
+    setupSelectElem.innerHTML = '<option value="Test">Test</option>';
+    setupSelectElem.value = 'Test';
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.showModal = jest.fn();
+    document.getElementById('generateGearListBtn').click();
+    const codecSelect = document.getElementById('codec');
+    const opts = Array.from(codecSelect.options).map(o => o.value);
+    expect(opts).toEqual(['', 'CodecA', 'CodecB']);
+  });
+
   test('duplicate motors are aggregated with count in gear list', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
