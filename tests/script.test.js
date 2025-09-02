@@ -1343,6 +1343,44 @@ describe('script.js functions', () => {
     ]);
   });
 
+  test('Grip section always includes a friction arm', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    const html = generateGearListHtml();
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    expect(itemsRow.textContent).toContain('1x Manfrotto 244N Friktion Arm');
+  });
+
+  test('Gimbal scenario adds extra grip accessories', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    const html = generateGearListHtml({ requiredScenarios: 'Gimbal' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('2x Manfrotto 244N Friktion Arm');
+    expect(text).toContain('1x Super Clamp');
+    expect(text).toContain('1x Gobo Head');
+    expect(text).toContain('1x spigot');
+  });
+
   test('Outdoor scenario adds weather protection gear and consumables for small monitor', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {

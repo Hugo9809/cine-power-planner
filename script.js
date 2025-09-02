@@ -7228,6 +7228,7 @@ function generateGearListHtml(info = {}) {
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
+    const hasGimbal = scenarios.includes('Gimbal');
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         gripItems.push('C-Stand 20"');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
@@ -7251,11 +7252,18 @@ function generateGearListHtml(info = {}) {
         const optsHtml = options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
         easyrigSelectHtml = `1x Easyrig 5 Vario <select id="gearListEasyrig">${optsHtml}</select>`;
     }
-    if (scenarios.includes('Gimbal')) {
+    if (hasGimbal) {
         const cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
         const weight = cam && cam.weight_g;
         const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
         gripItems.push(isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
+    }
+    const frictionArmCount = hasGimbal ? 2 : 1;
+    gripItems.push(...Array(frictionArmCount).fill('Manfrotto 244N Friktion Arm'));
+    if (hasGimbal) {
+        gripItems.push('Super Clamp');
+        gripItems.push('Gobo Head');
+        gripItems.push('spigot');
     }
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
