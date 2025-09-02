@@ -203,6 +203,31 @@ function splitOutside(str, delimiter = '/') {
 }
 
 /**
+ * Extracts a connector type and optional notes from a segment.
+ *
+ * @param {string} segment - Raw segment containing type and optional notes.
+ * @returns {{type: string, notes: string}} Parsed type and notes.
+ */
+function extractTypeAndNotes(segment) {
+  let type = segment;
+  let notes = '';
+
+  let m = type.match(PAREN_NOTES_REGEX);
+  if (m) {
+    type = m[1].trim();
+    notes = m[2].trim();
+  } else {
+    m = type.match(QUOTE_NOTES_REGEX);
+    if (m) {
+      type = m[1].trim();
+      notes = m[2].trim();
+    }
+  }
+
+  return { type, notes };
+}
+
+/**
  * Parses a power input description into structured objects.
  *
  * Each segment is separated by `/` unless the slash appears inside parentheses
@@ -223,22 +248,9 @@ function parsePowerInput(str) {
 
   const arr = splitOutside(str)
     .map(p => p.trim())
-    .filter(p => p.length > 0)
-    .map(p => {
-      let type = p;
-      let notes = '';
-
-      let m = type.match(PAREN_NOTES_REGEX);
-      if (m) {
-        type = m[1].trim();
-        notes = m[2].trim();
-      } else {
-        m = type.match(QUOTE_NOTES_REGEX);
-        if (m) {
-          type = m[1].trim();
-          notes = m[2].trim();
-        }
-      }
+    .filter(Boolean)
+    .map(segment => {
+      const { type, notes } = extractTypeAndNotes(segment);
       const obj = { type: cleanTypeName(type) };
       if (notes) obj.notes = notes;
       return obj;
