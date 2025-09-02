@@ -976,9 +976,9 @@ describe('script.js functions', () => {
       expect(html).toContain('1x BNC Drum 25 m');
       expect(html).toContain('4x BNC Connector');
       expect(html).not.toContain('BNC SDI Cable');
-      expect(html).not.toContain('Ultraslim BNC 0.3 m');
+      expect(html).toContain('2x Ultraslim BNC 0.3 m');
       expect(html).not.toContain('Ultraslim BNC 0.5 m');
-      expect(html).not.toContain('D-Tap to LEMO 2-pin');
+      expect(html).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
       expect(html).not.toContain('HDMI Cable');
     });
 
@@ -1012,6 +1012,31 @@ describe('script.js functions', () => {
     expect(html).toContain('2x spigot');
     expect(html).toContain('2x Ultraslim BNC 0.3 m');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
+  });
+
+  test('motor adds focus monitor and related accessories to gear list', () => {
+    const { generateGearListHtml } = script;
+    global.devices.video = {
+      'VidA TX': {
+        powerDrawWatts: 3,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoInputs: [{ type: '3G-SDI' }]
+      }
+    };
+    global.devices.wirelessReceivers = { 'VidA RX': {} };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('motor1Select', 'MotorA');
+    addOpt('videoSelect', 'VidA TX');
+    const html = generateGearListHtml();
+    expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
+    expect(html).toContain('3x Bebob 150micro');
+    expect(html).toContain('2x Ultraslim BNC 0.3 m');
+    expect(html).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
+    expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
   });
 
   test('gear list includes battery count in camera batteries row', () => {
