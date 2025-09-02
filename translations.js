@@ -1728,6 +1728,7 @@ const texts = {
 const categoryNames = {
   en: {
     "cameras": "Camera",
+    "viewfinders": "Viewfinder",
     "monitors": "Monitor",
     "video": "Wireless Video",
     "fiz.motors": "FIZ Motor",
@@ -1741,6 +1742,7 @@ const categoryNames = {
   },
   it: {
     "cameras": "Camera",
+    "viewfinders": "Mirino",
     "monitors": "Monitor",
     "video": "Video wireless",
     "fiz.motors": "Motore FIZ",
@@ -1754,6 +1756,7 @@ const categoryNames = {
   },
   es: {
     "cameras": "Cámara",
+    "viewfinders": "Visor",
     "monitors": "Monitor",
     "video": "Video inalámbrico",
     "fiz.motors": "Motor FIZ",
@@ -1767,6 +1770,7 @@ const categoryNames = {
   },
   fr: {
     "cameras": "Caméra",
+    "viewfinders": "Viseur",
     "monitors": "Moniteur",
     "video": "Vidéo sans fil",
     "fiz.motors": "Moteur FIZ",
@@ -1780,6 +1784,7 @@ const categoryNames = {
   },
   de: {
     "cameras": "Kamera",
+    "viewfinders": "Sucher",
     "monitors": "Monitor",
     "video": "Videofunk",
     "fiz.motors": "FIZ Motoren",

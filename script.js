@@ -5580,7 +5580,7 @@ deviceManagerSection.addEventListener('keydown', (event) => {
 newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
   placeWattField(val);
-  if (val === "batteries") {
+  if (val === "batteries" || val === "accessories.batteries") {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
@@ -5598,7 +5598,7 @@ newCategorySelect.addEventListener("change", () => {
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
-  } else if (val === "monitors") {
+  } else if (val === "monitors" || val === "viewfinders") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
@@ -5746,7 +5746,7 @@ addDeviceBtn.addEventListener("click", () => {
     return;
   }
 
-  if (category === "batteries") {
+  if (category === "batteries" || category === "accessories.batteries") {
     const capacity = parseFloat(newCapacityInput.value);
     const pinA = parseFloat(newPinAInput.value);
     const dtapA = parseFloat(newDtapAInput.value);
@@ -5799,6 +5799,36 @@ addDeviceBtn.addEventListener("click", () => {
       timecode: timecode
     };
   } else if (category === "monitors") {
+    const watt = parseFloat(monitorWattInput.value);
+    if (isNaN(watt) || watt <= 0) {
+      alert(texts[currentLang].alertDeviceWatt);
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    const screenSize = parseFloat(monitorScreenSizeInput.value);
+    const brightness = parseFloat(monitorBrightnessInput.value);
+    targetCategory[name] = {
+      screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
+      brightnessNits: isNaN(brightness) ? undefined : brightness,
+      powerDrawWatts: watt,
+      power: {
+        input: {
+          voltageRange: monitorVoltageInput.value,
+          type: monitorPortTypeInput.value
+        },
+        output: null
+      },
+      video: {
+        inputs: getMonitorVideoInputs(),
+        outputs: getMonitorVideoOutputs()
+      },
+      wirelessTx: monitorWirelessTxInput.checked,
+      latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
+      audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
+    };
+  } else if (category === "viewfinders") {
     const watt = parseFloat(monitorWattInput.value);
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
