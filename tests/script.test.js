@@ -983,6 +983,8 @@ describe('script.js functions', () => {
       expect(msSection).toContain('1x BNC Cable 10 m');
       expect(msSection).toContain('1x BNC Drum 25 m');
       expect(msSection).toContain('4x BNC Connector');
+      expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
+      expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
       expect(miscSection).not.toContain('BNC Cable 0.5 m');
       expect(miscSection).not.toContain('BNC Cable 1 m');
@@ -990,6 +992,8 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('BNC Cable 10 m');
       expect(miscSection).not.toContain('BNC Drum 25 m');
       expect(miscSection).not.toContain('BNC Connector');
+      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
+      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m');
       expect(miscSection).toContain('1x Power Cable Drum 25-50 m');
       expect(miscSection).toContain('2x Power Cable 10 m');
       expect(miscSection).toContain('2x Power Cable 5 m');
@@ -997,9 +1001,7 @@ describe('script.js functions', () => {
       expect(miscSection).toContain('3x PRCD-S (Portable Residual Current Device-Safety)');
       expect(miscSection).toContain('3x Power Three Way Splitter');
       expect(html).not.toContain('BNC SDI Cable');
-      expect(html).toContain('2x Ultraslim BNC 0.3 m');
       expect(html).not.toContain('Ultraslim BNC 0.5 m');
-      expect(html).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
       expect(html).not.toContain('HDMI Cable');
     });
 
@@ -1030,13 +1032,18 @@ describe('script.js functions', () => {
     expect(html).toContain('3x Bebob 98 Micros');
     expect(html).toContain('C-Stand 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
-    expect(html).toContain('2x spigot');
-    expect(html).toContain('2x Ultraslim BNC 0.3 m');
-    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const rigIdx = rows.findIndex(r => r.textContent === 'Rigging');
+    const rigText = rows[rigIdx + 1].textContent;
+    expect(rigText).toContain('2x Spigot');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
     expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m');
+    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
   });
 
   test('motor adds focus monitor and related accessories to gear list', () => {
@@ -1059,9 +1066,13 @@ describe('script.js functions', () => {
     const html = generateGearListHtml();
     expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob 150micro');
-    expect(html).toContain('2x Ultraslim BNC 0.3 m');
-    expect(html).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
     expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
+    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
+    expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
+    const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
+    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
+    expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
@@ -1314,9 +1325,14 @@ describe('script.js functions', () => {
     const miscText = rows[miscIdx + 1].textContent;
     expect(miscText).toContain('Rain Cover "CamA"');
     expect(miscText).toContain('1x Umbrella for Focus Monitor');
-    expect(miscText).toContain('2x Super Clamp');
-    expect(miscText).toContain('1x Spigot');
     expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const gripText = rows[gripIdx + 1].textContent;
+    expect(gripText).toContain('2x Super Clamp');
+    const rigIdx = rows.findIndex(r => r.textContent === 'Rigging');
+    expect(rigIdx).not.toBe(-1);
+    const rigText = rows[rigIdx + 1].textContent;
+    expect(rigText).toContain('1x Spigot');
     const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
     const consumText = rows[consumIdx + 1].textContent;
     expect(consumText).toContain('2x CapIt Large');

@@ -7039,7 +7039,7 @@ function generateGearListHtml(info = {}) {
         );
     }
     if (hasMotor) {
-        miscAcc.push(
+        monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m',
             'D-Tap to Mini XLR 3-pin Cable 0,3m',
             'Ultraslim BNC 0.3 m',
@@ -7182,13 +7182,14 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Monitoring support', monitoringSupportItems);
     const gripItems = [];
+    const riggingItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         gripItems.push('C-Stand 20"');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
-        gripItems.push('spigot');
-        gripItems.push('spigot');
+        riggingItems.push('Spigot');
+        riggingItems.push('Spigot');
     }
     if (scenarios.includes('Tripod')) {
         const tripodDb = devices && devices.accessories && devices.accessories.tripods;
@@ -7241,8 +7242,15 @@ function generateGearListHtml(info = {}) {
             gripItems.push('Sachtler FSB 8 Head');
         }
     }
+    if (scenarios.includes('Outdoor')) {
+        gripItems.push('Super Clamp');
+        gripItems.push('Super Clamp');
+        riggingItems.push('Spigot');
+    }
     addRow('Power', '');
     addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
+    const riggingHardware = formatItems(riggingItems);
+    if (riggingHardware) addRow('Rigging', riggingHardware);
     const cartsTransportationItems = [
         'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
         ...Array(10).fill('Securing Straps (25mm wide)'),
@@ -7269,9 +7277,6 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Outdoor')) {
         if (selectedNames.camera) miscItems.push(`Rain Cover "${selectedNames.camera}"`);
         miscItems.push('Umbrella for Focus Monitor');
-        miscItems.push('Super Clamp');
-        miscItems.push('Super Clamp');
-        miscItems.push('Spigot');
         miscItems.push('Umbrella Magliner incl Mounting to Magliner');
         const monitorSizes = [];
         if (monitorSelect && monitorSelect.value) {
