@@ -1137,6 +1137,19 @@ describe('script.js functions', () => {
     expect(html).toContain('1x Hotswap Plate B-Mount');
   });
 
+  test('gear list lists 4x media cards with usable size', () => {
+    const { generateGearListHtml } = script;
+    devices.cameras.CamA.recordingMedia = [{ type: 'CFast 2.0' }];
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    const html = generateGearListHtml();
+    expect(html).toContain('4x 512GB CFast 2.0');
+  });
+
   test('Cine Saddle and Steadybag scenarios populate grip section', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Cine Saddle, Steadybag' });
