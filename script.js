@@ -7258,6 +7258,10 @@ function generateGearListHtml(info = {}) {
             gripItems.push('Sachtler FSB 8 Head');
         }
     }
+    const standCount = gripItems.filter(item => /\bstand\b/i.test(item)).length;
+    if (standCount) {
+        gripItems.push(...Array(standCount * 3).fill('Tennisball'));
+    }
     const powerItems = [
         'Power Cable Drum 25-50 m',
         ...Array(2).fill('Power Cable 10 m'),

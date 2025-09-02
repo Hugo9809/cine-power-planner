@@ -1048,6 +1048,7 @@ describe('script.js functions', () => {
     expect(html).toContain('C-Stand 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     expect(html).toContain('2x spigot');
+    expect(html).toContain('3x Tennisball');
     expect(html).toContain('2x Ultraslim BNC 0.3 m');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
@@ -1081,6 +1082,7 @@ describe('script.js functions', () => {
     expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
+    expect(html).toContain('3x Tennisball');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
@@ -1236,6 +1238,7 @@ describe('script.js functions', () => {
     expect(text).toContain('1x Satz Paganinis');
     expect(text).toContain('2x Sandsack');
     expect(text).toContain('3x Bodenmatte');
+    expect(text).toContain('12x Tennisball');
   });
 
   test('Slider with undersling mode adds Tango Beam regardless of order', () => {
