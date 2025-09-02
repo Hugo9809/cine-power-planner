@@ -1070,7 +1070,7 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListDirectorsMonitor7"');
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
-    expect(html).toContain('3x Bebob 98 Micros');
+    expect(html).toContain('3x Bebob V98micro');
     expect(html).toContain('C-Stand 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
@@ -1107,20 +1107,19 @@ describe('script.js functions', () => {
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml();
     expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
-    expect(html).toContain('3x Bebob 150micro');
+    expect(html).toContain('3x Bebob V150micro');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
     expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
-    const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
-    expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m');
-    expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
-    expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
-    expect(html).toContain('3x Tennisball');
-    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
-  });
+      const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
+      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
+      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m');
+      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
+      expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
+      expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
+      expect(html).toContain('3x Tennisball');
+      expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
+    });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
     const { generateGearListHtml } = script;

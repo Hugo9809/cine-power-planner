@@ -7217,10 +7217,12 @@ function generateGearListHtml(info = {}) {
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = [];
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
-        monitoringBatteryItems.push('3x Bebob 98 Micros');
+        const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
+        monitoringBatteryItems.push(`3x ${escapeHtml(bebob98)}`);
     }
     if (hasMotor) {
-        monitoringBatteryItems.push('3x Bebob 150micro');
+        const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
+        monitoringBatteryItems.push(`3x ${escapeHtml(bebob150)}`);
     }
     addRow('Monitoring Batteries', monitoringBatteryItems.join('<br>'));
     addRow('Chargers', formatItems(chargersAcc));
