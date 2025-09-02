@@ -23,6 +23,10 @@ describe('cleanTypeName', () => {
     expect(cleanTypeName('dtap')).toBe('D-Tap');
     expect(cleanTypeName('USB Type C')).toBe('USB-C');
   });
+  it('strips multiple generic input/output words', () => {
+    expect(cleanTypeName('HDMI Input OUTPUT')).toBe('HDMI');
+    expect(cleanTypeName('SDI IN/OUT')).toBe('SDI IN/OUT');
+  });
 });
 
 describe('normalizeMonitor', () => {

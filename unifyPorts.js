@@ -18,7 +18,8 @@ function cleanTypeName(name) {
   if (typeNameCache.has(key)) return typeNameCache.get(key);
   let t = key.trim();
   // Preserve explicit IN/OUT labels; only remove generic INPUT/OUTPUT words.
-  t = t.replace(/\b(INPUT|OUTPUT)\b/i, "").trim();
+  // The regex is global to ensure multiple occurrences are stripped.
+  t = t.replace(/\b(?:INPUT|OUTPUT)\b/gi, "").trim();
   if (/lemo\s*2\s*-?\s*pin/i.test(t)) t = "LEMO 2-pin";
   if (/d[\s-]?tap/i.test(t)) t = "D-Tap";
   if (/usb\s*type[-\s]?c/i.test(t)) t = "USB-C";
