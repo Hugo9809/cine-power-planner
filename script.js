@@ -7134,12 +7134,6 @@ function generateGearListHtml(info = {}) {
     };
     addRow('Camera', formatItems([selectedNames.camera]));
     const cameraSupportItems = [selectedNames.batteryPlate, ...supportAccNoCages];
-    if (selectedNames.battery && batterySelect && batterySelect.value) {
-        const mount = devices.batteries?.[batterySelect.value]?.mount_type;
-        if (mount === 'V-Mount' || mount === 'B-Mount') {
-            cameraSupportItems.push(`Hotswap Plate ${mount}`);
-        }
-    }
     const cameraSupportText = formatItems(cameraSupportItems);
     let cageSelectHtml = '';
     if (compatibleCages.length) {
@@ -7207,14 +7201,20 @@ function generateGearListHtml(info = {}) {
     addRow('Lens Support', formatItems(lensSupportItems));
     addRow('Matte box + filter', '');
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
-    let batteryItems = '';
+    const batteryItems = [];
     if (selectedNames.battery) {
         let count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
         if (!count || isNaN(count)) count = 1;
         const safeBatt = escapeHtml(selectedNames.battery);
-        batteryItems = `${count}x ${safeBatt}`;
+        batteryItems.push(`${count}x ${safeBatt}`);
+        if (batterySelect && batterySelect.value) {
+            const mount = devices.batteries?.[batterySelect.value]?.mount_type;
+            if (mount === 'V-Mount' || mount === 'B-Mount') {
+                batteryItems.push(`Hotswap Plate ${escapeHtml(mount)}`);
+            }
+        }
     }
-    addRow('Camera Batteries', batteryItems);
+    addRow('Camera Batteries', batteryItems.join('<br>'));
     let monitoringBatteryItems = [];
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         monitoringBatteryItems.push('3x Bebob 98 Micros');

@@ -1118,8 +1118,8 @@ describe('script.js functions', () => {
     expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
     expect(html).toContain('3x Tennisball');
-    const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
+    const msSection2 = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
+    expect(msSection2).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
@@ -1158,7 +1158,7 @@ describe('script.js functions', () => {
     expect(html).toContain('6x BattA');
   });
 
-  test('gear list adds hotswap plate matching battery mount', () => {
+  test('gear list adds hotswap plate matching battery mount in batteries row', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -1168,12 +1168,16 @@ describe('script.js functions', () => {
     // V-Mount battery
     addOpt('batterySelect', 'BattA');
     let html = generateGearListHtml();
-    expect(html).toContain('1x Hotswap Plate V-Mount');
+    let camSupportSection = html.slice(html.indexOf('Camera Support'), html.indexOf('Lens Support'));
+    expect(camSupportSection).not.toContain('Hotswap Plate');
+    let batterySection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
+    expect(batterySection).toContain('Hotswap Plate V-Mount');
     // B-Mount battery
     devices.batteries.BattB = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
     addOpt('batterySelect', 'BattB');
     html = generateGearListHtml();
-    expect(html).toContain('1x Hotswap Plate B-Mount');
+    batterySection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
+    expect(batterySection).toContain('Hotswap Plate B-Mount');
   });
 
   test('gear list lists 4x media cards with usable size', () => {
