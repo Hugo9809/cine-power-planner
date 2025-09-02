@@ -250,6 +250,16 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x Dual V-Mount Charger');
   });
 
+  test('adds charger with charging speed', () => {
+    const categorySel = document.getElementById('newCategory');
+    categorySel.value = 'accessories.chargers';
+    categorySel.dispatchEvent(new Event('change'));
+    document.getElementById('newName').value = 'Test Charger';
+    document.getElementById('newAmp').value = '3.5';
+    document.getElementById('addDeviceBtn').click();
+    expect(devices.accessories.chargers['Test Charger'].chargingSpeedAmps).toBe(3.5);
+  });
+
   test('shows runtime average note when more than four user entries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);

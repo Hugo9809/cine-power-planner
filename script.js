@@ -1180,6 +1180,7 @@ function setLanguage(lang) {
   document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
   document.getElementById("deviceNameLabel").textContent = texts[lang].deviceNameLabel;
   document.getElementById("consumptionLabel").textContent = texts[lang].consumptionLabel;
+  document.getElementById("chargingSpeedLabel").textContent = texts[lang].chargingSpeedLabel;
   document.getElementById("capacityLabel").textContent = texts[lang].capacityLabel;
   document.getElementById("pinLabel").textContent = texts[lang].pinLabel;
   document.getElementById("dtapLabel").textContent = texts[lang].dtapLabel;
@@ -1240,6 +1241,7 @@ function setLanguage(lang) {
   setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
   newNameInput.placeholder = texts[lang].placeholder_deviceName;
   newWattInput.placeholder = texts[lang].placeholder_watt;
+  newAmpInput.placeholder = texts[lang].placeholder_amp;
   newCapacityInput.placeholder = texts[lang].placeholder_capacity;
   newPinAInput.placeholder = texts[lang].placeholder_pin;
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
@@ -1501,7 +1503,9 @@ const chargerListElem       = document.getElementById("chargerList");
 const newCategorySelect  = document.getElementById("newCategory");
 const newNameInput    = document.getElementById("newName");
 const newWattInput    = document.getElementById("newWatt");
+const newAmpInput     = document.getElementById("newAmp");
 const wattFieldDiv    = document.getElementById("wattField");
+const ampFieldDiv     = document.getElementById("ampField");
 const cameraFieldsDiv = document.getElementById("cameraFields");
 const cameraWattInput = document.getElementById("cameraWatt");
 const cameraVoltageInput = document.getElementById("cameraVoltage");
@@ -4944,7 +4948,8 @@ function humanizeKey(key) {
     internalController: 'Internal Controller',
     power_source: 'Power Source',
     battery_type: 'Battery Type',
-    connectivity: 'Connectivity'
+    connectivity: 'Connectivity',
+    chargingSpeedAmps: 'Charging Speed (A)'
   };
   if (map[key]) return map[key];
   return key
@@ -5442,6 +5447,17 @@ deviceManagerSection.addEventListener("click", (event) => {
         deviceData.audioOutput?.portType ||
         deviceData.audioOutput?.type ||
         deviceData.audioOutput || '';
+    } else if (categoryKey === "accessories.chargers") {
+      wattFieldDiv.style.display = "none";
+      ampFieldDiv.style.display = "block";
+      batteryFieldsDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
+      videoFieldsDiv.style.display = "none";
+      motorFieldsDiv.style.display = "none";
+      controllerFieldsDiv.style.display = "none";
+      distanceFieldsDiv.style.display = "none";
+      newAmpInput.value = deviceData.chargingSpeedAmps || '';
     } else if (categoryKey === "video") {
       wattFieldDiv.style.display = "block";
       cameraFieldsDiv.style.display = "none";
@@ -5580,6 +5596,7 @@ deviceManagerSection.addEventListener('keydown', (event) => {
 newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
   placeWattField(val);
+  ampFieldDiv.style.display = "none";
   if (val === "batteries") {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
@@ -5589,6 +5606,16 @@ newCategorySelect.addEventListener("change", () => {
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
     batteryFieldsDiv.style.display = "block";
+  } else if (val === "accessories.chargers") {
+    wattFieldDiv.style.display = "none";
+    ampFieldDiv.style.display = "block";
+    batteryFieldsDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
   } else if (val === "cameras") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
@@ -5654,6 +5681,7 @@ newCategorySelect.addEventListener("change", () => {
     distanceFieldsDiv.style.display = "none";
   }
   newWattInput.value = "";
+  newAmpInput.value = "";
   newCapacityInput.value = "";
   newPinAInput.value = "";
   newDtapAInput.value = "";
@@ -5828,6 +5856,16 @@ addDeviceBtn.addEventListener("click", () => {
       latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
+  } else if (category === "accessories.chargers") {
+    const amp = parseFloat(newAmpInput.value);
+    if (isNaN(amp) || amp <= 0) {
+      alert(texts[currentLang].alertDeviceAmp);
+      return;
+    }
+    if (isEditing && name !== originalName) {
+      delete targetCategory[originalName];
+    }
+    targetCategory[name] = { chargingSpeedAmps: amp };
   } else if (category === "video") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
