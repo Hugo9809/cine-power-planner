@@ -102,6 +102,12 @@ describe('utility function tests', () => {
     expect(normalizePowerPortType('battery slot / usb type-c®')).toEqual(['Battery Slot', 'USB-C']);
   });
 
+  test('normalizePowerPortType filters empty segments', () => {
+    const { normalizePowerPortType } = utils;
+    expect(normalizePowerPortType('dc input /')).toEqual(['DC IN']);
+    expect(normalizePowerPortType('/ LEMO 8-PIN (BAT)')).toEqual(['Bat LEMO 8-pin']);
+  });
+
   test('normalizeVideoType recognizes DisplayPort variants', () => {
     const { normalizeVideoType } = utils;
     expect(normalizeVideoType('DisplayPort')).toBe('DisplayPort');

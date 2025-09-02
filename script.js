@@ -214,7 +214,8 @@ function normalizePowerPortType(type) {
   const toArray = val =>
     mapPowerPortOne(val)
       .split('/')
-      .map(p => mapPowerPortOne(p));
+      .map(p => mapPowerPortOne(p))
+      .filter(Boolean);
   return Array.isArray(type) ? type.flatMap(toArray) : toArray(type);
 }
 
