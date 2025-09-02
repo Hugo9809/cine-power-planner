@@ -7050,7 +7050,7 @@ function generateGearListHtml(info = {}) {
         );
     }
     if (hasMotor) {
-        miscAcc.push(
+        monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m',
             'D-Tap to Mini XLR 3-pin Cable 0,3m',
             'Ultraslim BNC 0.3 m',
@@ -7225,16 +7225,14 @@ function generateGearListHtml(info = {}) {
         monitoringSupportItems = [monitoringSupportItems, monitoringSupportHardware].filter(Boolean).join('<br>');
     }
     addRow('Monitoring support', monitoringSupportItems);
-    const riggingItems = formatItems(riggingAcc);
-    addRow('Rigging', riggingItems);
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
     if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
         gripItems.push('C-Stand 20"');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
-        gripItems.push('spigot');
-        gripItems.push('spigot');
+        riggingAcc.push('Spigot');
+        riggingAcc.push('Spigot');
     }
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20"');
@@ -7280,6 +7278,11 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Slider') && scenarios.includes('Undersling mode')) {
         gripItems.push('Tango Beam');
     }
+    if (scenarios.includes('Outdoor')) {
+        gripItems.push('Super Clamp');
+        gripItems.push('Super Clamp');
+        riggingAcc.push('Spigot');
+    }
     const needsTripodHead = ['Tripod', 'Dolly', 'Slider', 'Car Mount', 'Jib'].some(s => scenarios.includes(s));
     if (needsTripodHead) {
         const cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
@@ -7295,6 +7298,8 @@ function generateGearListHtml(info = {}) {
     if (standCount) {
         gripItems.push(...Array(standCount * 3).fill('Tennisball'));
     }
+    const riggingItems = formatItems(riggingAcc);
+    addRow('Rigging', riggingItems);
     const powerItems = [
         'Power Cable Drum 25-50 m',
         ...Array(2).fill('Power Cable 10 m'),
@@ -7364,9 +7369,6 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Outdoor')) {
         if (selectedNames.camera) miscItems.push(`Rain Cover "${selectedNames.camera}"`);
         miscItems.push('Umbrella for Focus Monitor');
-        miscItems.push('Super Clamp');
-        miscItems.push('Super Clamp');
-        miscItems.push('Spigot');
         miscItems.push('Umbrella Magliner incl Mounting to Magliner');
         const monitorSizes = [];
         if (monitorSelect && monitorSelect.value) {
