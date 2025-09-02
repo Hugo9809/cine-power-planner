@@ -672,7 +672,7 @@ const gear = {
           "lengthM": 0.3,
           "connectors": [
             "D-Tap",
-            "Lemo 2-pin"
+            "LEMO 2-pin"
           ],
           "orientation": "straight",
           "useCase": [
@@ -899,7 +899,7 @@ const gear = {
           "lengthM": null,
           "connectors": [
             "VMicro Battery",
-            "Lemo 12 V Out (2-pin)"
+            "LEMO 12 V Out (2-pin)"
           ],
           "orientation": "straight",
           "useCase": [
@@ -915,7 +915,7 @@ const gear = {
           "lengthM": null,
           "connectors": [
             "AMicro Battery",
-            "Lemo 12 V Out (2-pin)"
+            "LEMO 12 V Out (2-pin)"
           ],
           "orientation": "straight",
           "useCase": [
@@ -948,7 +948,7 @@ const gear = {
           "kNumber": "K2.0014331",
           "lengthM": 0.5,
           "connectors": [
-            "Lemo 2-pin",
+            "LEMO 2-pin",
             "Fischer 3-pin"
           ],
           "orientation": "straight",
@@ -966,7 +966,7 @@ const gear = {
           "kNumber": "K2.0014342",
           "lengthM": 0.5,
           "connectors": [
-            "Lemo 2-pin",
+            "LEMO 2-pin",
             "XLR 4-pin"
           ],
           "orientation": "straight",
@@ -982,7 +982,7 @@ const gear = {
           "kNumber": "K2.0014343",
           "lengthM": 0.5,
           "connectors": [
-            "Lemo 2-pin",
+            "LEMO 2-pin",
             "MiniXLR 4-pin"
           ],
           "orientation": "straight",
@@ -998,7 +998,7 @@ const gear = {
           "kNumber": "K2.0014344",
           "lengthM": 0.5,
           "connectors": [
-            "Lemo 2-pin",
+            "LEMO 2-pin",
             "Hirose 4-pin"
           ],
           "orientation": "straight",
@@ -1014,8 +1014,8 @@ const gear = {
           "kNumber": "K2.0014777",
           "lengthM": 0.5,
           "connectors": [
-            "Lemo 2-pin",
-            "Lemo 5-pin"
+            "LEMO 2-pin",
+            "LEMO 5-pin"
           ],
           "orientation": "straight",
           "useCase": [
@@ -1030,7 +1030,7 @@ const gear = {
           "kNumber": "K2.0024590",
           "lengthM": 0.3,
           "connectors": [
-            "Lemo 2-pin",
+            "LEMO 2-pin",
             "LCS 5-pin"
           ],
           "orientation": "straight",
@@ -1047,14 +1047,14 @@ const gear = {
           "kNumber": "K2.0010546",
           "lengthM": null,
           "connectors": [
-            "Lemo 0B 2-pin",
+            "LEMO 0B 2-pin",
             "XLR 4-pin"
           ],
           "orientation": "straight",
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "ARTEMIS/TRINITY"
           ]
         },
@@ -1063,14 +1063,14 @@ const gear = {
           "kNumber": "K2.0041723",
           "lengthM": null,
           "connectors": [
-            "Lemo 0B 2-pin",
-            "Lemo 0B 2-pin"
+            "LEMO 0B 2-pin",
+            "LEMO 0B 2-pin"
           ],
           "orientation": "straight",
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "ARTEMIS/TRINITY"
           ]
         },
@@ -1086,7 +1086,7 @@ const gear = {
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "360 EVO",
             "SRH-3",
             "SRH-360"
@@ -1097,14 +1097,14 @@ const gear = {
           "kNumber": "K2.0038998",
           "lengthM": null,
           "connectors": [
-            "Lemo 0B 4-pin",
-            "Lemo 0B 2-pin"
+            "LEMO 0B 4-pin",
+            "LEMO 0B 2-pin"
           ],
           "orientation": "straight",
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "Master Grip",
             "TRINITY 2"
           ]
@@ -1114,14 +1114,14 @@ const gear = {
           "kNumber": "K2.0038999",
           "lengthM": null,
           "connectors": [
-            "Lemo 0B 4-pin",
-            "Lemo 0B 5-pin"
+            "LEMO 0B 4-pin",
+            "LEMO 0B 5-pin"
           ],
           "orientation": "straight",
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "Master Grip",
             "TRINITY 2"
           ]
@@ -1131,14 +1131,14 @@ const gear = {
           "kNumber": "K2.0043861",
           "lengthM": 0.75,
           "connectors": [
-            "Lemo 0B 4-pin",
-            "Lemo 0B 4-pin"
+            "LEMO 0B 4-pin",
+            "LEMO 0B 4-pin"
           ],
           "orientation": "straight",
           "useCase": [
             "Control"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "TRINITY 2"
           ]
         },
@@ -1153,7 +1153,7 @@ const gear = {
           "useCase": [
             "Control"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "SRH-3",
             "SRH-360",
             "360 EVO"
@@ -1171,7 +1171,7 @@ const gear = {
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "SRH-3",
             "SRH-360",
             "360 EVO"
@@ -1188,7 +1188,7 @@ const gear = {
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "SRH systems"
           ]
         },
@@ -1203,7 +1203,7 @@ const gear = {
           "useCase": [
             "Power"
           ],
-          "compatibleSystems": [
+          "compatibleDevices": [
             "SRH systems"
           ]
         }
