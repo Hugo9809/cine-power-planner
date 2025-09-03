@@ -173,16 +173,6 @@ describe('script.js functions', () => {
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
   });
 
-  test('lens filter narrows lens options', () => {
-    const sel = document.getElementById('lenses');
-    sel.innerHTML = '<option value="LensA">LensA</option><option value="LensB">LensB</option>';
-    const input = document.getElementById('lensFilter');
-    input.value = 'b';
-    input.dispatchEvent(new Event('input'));
-    expect(sel.options[0].hidden).toBe(true);
-    expect(sel.options[1].hidden).toBe(false);
-  });
-
   test('selected cage appears in camera support category of gear list', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -619,61 +609,12 @@ describe('script.js functions', () => {
     expect(optionsB).not.toContain('VBatt');
   });
 
-  test('filter input clears on Escape key press', () => {
-    const camSel = document.getElementById('cameraSelect');
-    camSel.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
-
-    const filterInput = document.getElementById('cameraFilter');
-    filterInput.value = 'CamA';
-    filterInput.dispatchEvent(new Event('input'));
-    expect(camSel.options[1].hidden).toBe(true);
-
-    filterInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    expect(filterInput.value).toBe('');
-    expect(camSel.options[1].hidden).toBe(false);
-  });
-
-  test('filter input clears after selecting an option', () => {
-    const camSel = document.getElementById('cameraSelect');
-    camSel.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
-
-    const filterInput = document.getElementById('cameraFilter');
-    filterInput.value = 'CamA';
-    filterInput.dispatchEvent(new Event('input'));
-    expect(camSel.options[1].hidden).toBe(true);
-
-    camSel.value = 'CamA';
-    camSel.dispatchEvent(new Event('change'));
-    expect(filterInput.value).toBe('');
-    expect(camSel.options[1].hidden).toBe(false);
-  });
-
-  test('clear filters button resets all filter fields', () => {
-    const camSel = document.getElementById('cameraSelect');
-    camSel.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
-
-    const ids = ['cameraFilter','monitorFilter','videoFilter','motorFilter','controllerFilter','distanceFilter','batteryFilter'];
-    ids.forEach(id => {
-      const inp = document.getElementById(id);
-      inp.value = 'x';
-      inp.dispatchEvent(new Event('input'));
-    });
-
-    document.getElementById('clearFiltersBtn').click();
-
-    ids.forEach(id => {
-      expect(document.getElementById(id).value).toBe('');
-    });
-    expect(camSel.options[1].hidden).toBe(false);
-  });
-
   test('filter inputs disable autocomplete and spellcheck', () => {
     const ids = [
-      'cameraFilter', 'monitorFilter', 'videoFilter', 'motorFilter',
-      'controllerFilter', 'distanceFilter', 'batteryFilter',
-      'cameraListFilter', 'monitorListFilter', 'videoListFilter',
+      'cameraListFilter', 'viewfinderListFilter', 'monitorListFilter', 'videoListFilter',
       'motorListFilter', 'controllerListFilter', 'distanceListFilter',
-      'batteryListFilter'
+      'batteryListFilter', 'accessoryBatteryListFilter', 'cableListFilter',
+      'fizCableListFilter', 'cameraSupportListFilter', 'chargerListFilter'
     ];
     ids.forEach(id => {
       const inp = document.getElementById(id);

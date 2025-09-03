@@ -70,8 +70,8 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
   🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie
 
 ### 🔍 Recherche et Filtres
-- Champ de recherche pour filtrer toutes les listes et menus déroulants
 - Taper dans les menus pour trouver rapidement
+- Champ de recherche pour filtrer les listes
 
 ### 🛠 Base de Données des Appareils
 - Ajouter, modifier ou supprimer des appareils de chaque catégorie

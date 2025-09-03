@@ -70,7 +70,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
   🎮 Controller, 📐 Distanz, 🎮 Griff und 🔌 Akkuschacht
 
 ### 🔍 Suche & Filter
-- Alle Dropdowns und Listen lassen sich über ein Suchfeld filtern
+- Listen lassen sich über ein Suchfeld filtern
 - Durch Tippen im Dropdown schnell Einträge finden
 
 ### 🛠 Geräte-Datenbank

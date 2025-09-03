@@ -710,7 +710,6 @@ function updateBatteryOptions() {
   if (Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
   }
-  filterSelect(batterySelect, batteryFilterInput.value);
   updateBatteryLabel();
 }
 
@@ -1070,10 +1069,6 @@ function setLanguage(lang) {
   batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
 
   updateBatteryLabel();
-  clearFiltersBtn.textContent = "\u00d7";
-  clearFiltersBtn.setAttribute("aria-label", texts[lang].clearFiltersBtn);
-  clearFiltersBtn.setAttribute("title", texts[lang].clearFiltersBtn);
-  clearFiltersBtn.setAttribute("data-help", texts[lang].clearFiltersHelp);
   // FIZ legend and labels
   const fizLegendElem = document.getElementById("fizLegend");
   if (fizLegendElem) {
@@ -1247,15 +1242,6 @@ function setLanguage(lang) {
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
   const filterMappings = [
-    {input: cameraFilterInput, label: texts[lang].cameraLabel},
-    {input: monitorFilterInput, label: texts[lang].monitorLabel},
-    {input: videoFilterInput, label: texts[lang].videoLabel},
-    {input: cageFilterInput, label: texts[lang].cageLabel},
-    {input: motorFilterInput, label: texts[lang].fizMotorsLabel},
-    {input: controllerFilterInput, label: texts[lang].fizControllersLabel},
-    {input: distanceFilterInput, label: texts[lang].distanceLabel},
-    {input: batteryFilterInput, label: texts[lang].batteryLabel},
-    {input: lensFilterInput, label: texts[lang].lensesLabel},
     {input: cameraListFilterInput, label: texts[lang].category_cameras},
     {input: viewfinderListFilterInput, label: texts[lang].category_viewfinders},
     {input: monitorListFilterInput, label: texts[lang].category_monitors},
@@ -1485,7 +1471,6 @@ const setupNameInput  = document.getElementById("setupName");
 const saveSetupBtn    = document.getElementById("saveSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
 const clearSetupBtn   = document.getElementById("clearSetupBtn");
-const clearFiltersBtn = document.getElementById("clearFiltersBtn");
 const shareSetupBtn   = document.getElementById("shareSetupBtn");
 const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
@@ -1786,17 +1771,6 @@ const overviewSectionIcons = {
 };
 
 // Load an image and optionally strip a solid background using Canvas
-// Filter inputs
-const cameraFilterInput = document.getElementById("cameraFilter");
-const monitorFilterInput = document.getElementById("monitorFilter");
-const videoFilterInput = document.getElementById("videoFilter");
-const cageFilterInput = document.getElementById("cageFilter");
-const motorFilterInput = document.getElementById("motorFilter");
-const controllerFilterInput = document.getElementById("controllerFilter");
-const distanceFilterInput = document.getElementById("distanceFilter");
-const batteryFilterInput = document.getElementById("batteryFilter");
-const lensFilterInput = document.getElementById("lensFilter");
-
 // List filters for existing device categories
 const cameraListFilterInput = document.getElementById("cameraListFilter");
 const viewfinderListFilterInput = document.getElementById("viewfinderListFilter");
@@ -3406,49 +3380,7 @@ function addInputClearButton(inputElem, callback) {
   toggle();
 }
 
-function clearFilterOnSelect(selectElem, filterInput, resetCallback) {
-  if (!selectElem || !filterInput) {
-    return;
-  }
-  selectElem.addEventListener("change", () => {
-    if (filterInput.value !== "") {
-      filterInput.value = "";
-      if (typeof resetCallback === "function") {
-        resetCallback();
-      } else {
-        filterSelect(selectElem, "");
-      }
-    }
-  });
-}
-
-function clearAllFilters() {
-  [cameraFilterInput, monitorFilterInput, videoFilterInput, cageFilterInput, motorFilterInput,
-   controllerFilterInput, distanceFilterInput, batteryFilterInput, lensFilterInput].forEach(input => {
-    if (input) input.value = "";
-  });
-  filterSelect(cameraSelect, "");
-  filterSelect(monitorSelect, "");
-  filterSelect(videoSelect, "");
-  if (cageSelect) filterSelect(cageSelect, "");
-  motorSelects.forEach(sel => filterSelect(sel, ""));
-  controllerSelects.forEach(sel => filterSelect(sel, ""));
-  filterSelect(distanceSelect, "");
-  filterSelect(batterySelect, "");
-  filterSelect(lensSelect, "");
-}
-
 function applyFilters() {
-  filterSelect(cameraSelect, cameraFilterInput.value);
-  filterSelect(monitorSelect, monitorFilterInput.value);
-  filterSelect(videoSelect, videoFilterInput.value);
-  if (cageSelect) filterSelect(cageSelect, cageFilterInput ? cageFilterInput.value : "");
-  motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value));
-  controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value));
-  filterSelect(distanceSelect, distanceFilterInput.value);
-  filterSelect(batterySelect, batteryFilterInput.value);
-  filterSelect(lensSelect, lensFilterInput.value);
-
   filterDeviceList(cameraListElem, cameraListFilterInput.value);
   filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
   filterDeviceList(monitorListElem, monitorListFilterInput.value);
@@ -5207,27 +5139,8 @@ if (skipLink) {
 }
 
 // Filtering inputs
-bindFilterInput(cameraFilterInput, () => filterSelect(cameraSelect, cameraFilterInput.value));
-bindFilterInput(monitorFilterInput, () => filterSelect(monitorSelect, monitorFilterInput.value));
-bindFilterInput(videoFilterInput, () => filterSelect(videoSelect, videoFilterInput.value));
-if (cageFilterInput && cageSelect) bindFilterInput(cageFilterInput, () => filterSelect(cageSelect, cageFilterInput.value));
-bindFilterInput(motorFilterInput, () => motorSelects.forEach(sel => filterSelect(sel, motorFilterInput.value)));
-bindFilterInput(controllerFilterInput, () => controllerSelects.forEach(sel => filterSelect(sel, controllerFilterInput.value)));
-bindFilterInput(distanceFilterInput, () => filterSelect(distanceSelect, distanceFilterInput.value));
-bindFilterInput(batteryFilterInput, () => filterSelect(batterySelect, batteryFilterInput.value));
-bindFilterInput(lensFilterInput, () => filterSelect(lensSelect, lensFilterInput.value));
 
-clearFilterOnSelect(cameraSelect, cameraFilterInput);
-clearFilterOnSelect(monitorSelect, monitorFilterInput);
-clearFilterOnSelect(videoSelect, videoFilterInput);
-if (cageSelect && cageFilterInput) clearFilterOnSelect(cageSelect, cageFilterInput);
-motorSelects.forEach(sel => clearFilterOnSelect(sel, motorFilterInput, () => motorSelects.forEach(s => filterSelect(s, ""))));
-controllerSelects.forEach(sel => clearFilterOnSelect(sel, controllerFilterInput, () => controllerSelects.forEach(s => filterSelect(s, ""))));
-clearFilterOnSelect(distanceSelect, distanceFilterInput);
-clearFilterOnSelect(batterySelect, batteryFilterInput);
-clearFilterOnSelect(lensSelect, lensFilterInput);
 
-clearFiltersBtn.addEventListener("click", clearAllFilters);
 
 bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
 bindFilterInput(viewfinderListFilterInput, () => filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value));
@@ -8504,7 +8417,6 @@ if (typeof module !== "undefined" && module.exports) {
     normalizePowerPortType,
     getCurrentSetupKey,
     renderFeedbackTable,
-    clearAllFilters,
     saveCurrentGearList,
     populateLensDropdown,
     populateSensorModeDropdown,
