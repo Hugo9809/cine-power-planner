@@ -1718,7 +1718,12 @@ if (projectForm) {
         sel.addEventListener('mousedown', e => {
             if (e.target.tagName !== 'OPTION') return;
             e.preventDefault();
-            e.target.selected = !e.target.selected;
+            const option = e.target;
+            const scrollTop = sel.scrollTop;
+            option.selected = !option.selected;
+            sel.dispatchEvent(new Event('change'));
+            sel.focus();
+            sel.scrollTop = scrollTop;
         });
     });
 }
