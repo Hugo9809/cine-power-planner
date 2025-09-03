@@ -1538,8 +1538,11 @@ const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsCon
 const videoFrequencyInput = document.getElementById("videoFrequency");
 const videoLatencyInput = document.getElementById("videoLatency");
 const addDeviceForm = wattFieldDiv.parentNode;
-function placeWattField(category) {
-  if (category === "video") {
+function placeWattField(category, data) {
+  const isVideoLike =
+    category === "video" ||
+    (data && (data.videoInputs || data.videoOutputs || data.frequency));
+  if (isVideoLike) {
     videoFieldsDiv.insertBefore(wattFieldDiv, videoFieldsDiv.firstChild);
   } else {
     addDeviceForm.insertBefore(wattFieldDiv, cameraFieldsDiv);
@@ -5497,6 +5500,123 @@ function toggleDeviceDetails(button) {
   }
 }
 
+function inferDeviceCategory(key, data) {
+  if (key === "batteries" || key.endsWith('.batteries') || data.capacity !== undefined) return "batteries";
+  if (key === "cameras" || data.recordingMedia || data.lensMount || data.power?.batteryPlateSupport) return "cameras";
+  if (key === "monitors" || (data.screenSizeInches !== undefined && !key.includes("viewfinder"))) return "monitors";
+  if (key === "viewfinders" || key.includes("viewfinder")) return "viewfinders";
+  if (key === "video" || data.videoInputs || data.videoOutputs || data.frequency !== undefined) return "video";
+  if (key === "fiz.motors" || data.torqueNm !== undefined || data.gearTypes) return "fiz.motors";
+  if (key === "fiz.controllers" || data.power_source || data.battery_type || data.connectivity) return "fiz.controllers";
+  if (key === "fiz.distance" || data.measurement_method || data.connection_compatibility || data.measurement_range || data.accuracy) return "fiz.distance";
+  return "generic";
+}
+
+function populateDeviceForm(categoryKey, deviceData) {
+  placeWattField(categoryKey, deviceData);
+  const type = inferDeviceCategory(categoryKey, deviceData);
+  wattFieldDiv.style.display = "block";
+  batteryFieldsDiv.style.display = "none";
+  cameraFieldsDiv.style.display = "none";
+  monitorFieldsDiv.style.display = "none";
+  viewfinderFieldsDiv.style.display = "none";
+  videoFieldsDiv.style.display = "none";
+  motorFieldsDiv.style.display = "none";
+  controllerFieldsDiv.style.display = "none";
+  distanceFieldsDiv.style.display = "none";
+
+  if (type === "batteries") {
+    wattFieldDiv.style.display = "none";
+    batteryFieldsDiv.style.display = "block";
+    newCapacityInput.value = deviceData.capacity || '';
+    newPinAInput.value = deviceData.pinA || '';
+    newDtapAInput.value = deviceData.dtapA || '';
+  } else if (type === "cameras") {
+    wattFieldDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "block";
+    const tmp = firstPowerInputType(deviceData);
+    cameraWattInput.value = deviceData.powerDrawWatts || '';
+    cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
+    cameraPortTypeInput.value = tmp || "";
+    setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
+    setRecordingMedia(deviceData.recordingMedia || []);
+    setLensMounts(deviceData.lensMount || []);
+    setPowerDistribution(deviceData.power?.powerDistributionOutputs || []);
+    setVideoOutputs(deviceData.videoOutputs || []);
+    setFizConnectors(deviceData.fizConnectors || []);
+    setViewfinders(deviceData.viewfinder || []);
+    setTimecodes(deviceData.timecode || []);
+  } else if (type === "monitors") {
+    monitorFieldsDiv.style.display = "block";
+    monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
+    monitorBrightnessInput.value = deviceData.brightnessNits || '';
+    monitorWattInput.value = deviceData.powerDrawWatts || '';
+    monitorVoltageInput.value = deviceData.power?.input?.voltageRange || '';
+    const mpt = firstPowerInputType(deviceData);
+    monitorPortTypeInput.value = mpt || "";
+    setMonitorVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
+    setMonitorVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
+    monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
+    monitorLatencyInput.value = deviceData.latencyMs || '';
+    monitorAudioOutputInput.value =
+      deviceData.audioOutput?.portType ||
+      deviceData.audioOutput?.type ||
+      deviceData.audioOutput || '';
+  } else if (type === "viewfinders") {
+    viewfinderFieldsDiv.style.display = "block";
+    viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
+    viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
+    viewfinderWattInput.value = deviceData.powerDrawWatts || '';
+    viewfinderVoltageInput.value = deviceData.power?.input?.voltageRange || '';
+    const vfpt = firstPowerInputType(deviceData);
+    viewfinderPortTypeInput.value = vfpt || "";
+    setViewfinderVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
+    setViewfinderVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
+    viewfinderWirelessTxInput.checked = !!deviceData.wirelessTx;
+    viewfinderLatencyInput.value = deviceData.latencyMs || '';
+  } else if (type === "video") {
+    videoFieldsDiv.style.display = "block";
+    newWattInput.value = deviceData.powerDrawWatts || '';
+    videoPowerInput.value = firstPowerInputType(deviceData);
+    setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
+    setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
+    videoFrequencyInput.value = deviceData.frequency || '';
+    videoLatencyInput.value = deviceData.latencyMs || '';
+    motorConnectorInput.value = '';
+  } else if (type === "fiz.motors") {
+    motorFieldsDiv.style.display = "block";
+    newWattInput.value = deviceData.powerDrawWatts || '';
+    motorConnectorInput.value = deviceData.fizConnector || '';
+    motorInternalInput.checked = !!deviceData.internalController;
+    motorTorqueInput.value = deviceData.torqueNm || '';
+    motorGearInput.value = Array.isArray(deviceData.gearTypes) ? deviceData.gearTypes.join(', ') : '';
+    motorNotesInput.value = deviceData.notes || '';
+  } else if (type === "fiz.controllers") {
+    controllerFieldsDiv.style.display = "block";
+    newWattInput.value = deviceData.powerDrawWatts || '';
+    const cc = Array.isArray(deviceData.fizConnectors)
+      ? deviceData.fizConnectors.map(fc => fc.type).join(', ')
+      : (deviceData.fizConnector || '');
+    controllerConnectorInput.value = cc;
+    controllerPowerInput.value = deviceData.power_source || '';
+    controllerBatteryInput.value = deviceData.battery_type || '';
+    controllerConnectivityInput.value = deviceData.connectivity || '';
+    controllerNotesInput.value = deviceData.notes || '';
+  } else if (type === "fiz.distance") {
+    distanceFieldsDiv.style.display = "block";
+    newWattInput.value = deviceData.powerDrawWatts || '';
+    distanceConnectionInput.value = deviceData.connection_compatibility || '';
+    distanceMethodInput.value = deviceData.measurement_method || '';
+    distanceRangeInput.value = deviceData.measurement_range || '';
+    distanceAccuracyInput.value = deviceData.accuracy || '';
+    distanceOutputInput.value = deviceData.output_display || '';
+    distanceNotesInput.value = deviceData.notes || '';
+  } else {
+    const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
+    newWattInput.value = watt || '';
+  }
+}
+
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
 deviceManagerSection.addEventListener("click", (event) => {
   if (event.target.classList.contains("detail-toggle")) {
@@ -5505,10 +5625,18 @@ deviceManagerSection.addEventListener("click", (event) => {
     const name = event.target.dataset.name;
     const categoryKey = event.target.dataset.category;
 
+    // Ensure category exists in selector
+    if (!Array.from(newCategorySelect.options).some(opt => opt.value === categoryKey)) {
+      const opt = document.createElement("option");
+      opt.value = categoryKey;
+      opt.textContent = categoryNames[currentLang]?.[categoryKey] || categoryKey;
+      newCategorySelect.appendChild(opt);
+    }
+
     // Set form for editing
     newCategorySelect.value = categoryKey;
     newCategorySelect.disabled = true; // Prevent changing category during edit
-    // Trigger change handler so correct fields are shown and others cleared
+    // Trigger change handler so fields are cleared
     newCategorySelect.dispatchEvent(new Event('change'));
     // After the change handler runs, restore the device name for editing
     newNameInput.value = name;
@@ -5520,161 +5648,8 @@ deviceManagerSection.addEventListener("click", (event) => {
     } else {
       deviceData = devices[categoryKey][name];
     }
-    placeWattField(categoryKey);
 
-    if (categoryKey === "batteries" || categoryKey === "accessories.batteries") {
-      wattFieldDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "block";
-      newCapacityInput.value = deviceData.capacity;
-      newPinAInput.value = deviceData.pinA;
-      newDtapAInput.value = deviceData.dtapA;
-    } else if (categoryKey === "cameras") {
-      wattFieldDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "block";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      cameraWattInput.value = deviceData.powerDrawWatts || '';
-      cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-      const tmp = firstPowerInputType(deviceData);
-      cameraPortTypeInput.value = tmp || "";
-      setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
-      setRecordingMedia(deviceData.recordingMedia || []);
-      setLensMounts(deviceData.lensMount || []);
-      setPowerDistribution(deviceData.power?.powerDistributionOutputs || []);
-      setVideoOutputs(deviceData.videoOutputs || []);
-      setFizConnectors(deviceData.fizConnectors || []);
-      setViewfinders(deviceData.viewfinder || []);
-      setTimecodes(deviceData.timecode || []);
-    } else if (categoryKey === "monitors") {
-      wattFieldDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "block";
-      videoFieldsDiv.style.display = "none";
-      motorFieldsDiv.style.display = "none";
-      controllerFieldsDiv.style.display = "none";
-      distanceFieldsDiv.style.display = "none";
-      monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
-      monitorBrightnessInput.value = deviceData.brightnessNits || '';
-      monitorWattInput.value = deviceData.powerDrawWatts || '';
-      monitorVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-      const mpt = firstPowerInputType(deviceData);
-      monitorPortTypeInput.value = mpt || "";
-      setMonitorVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
-      setMonitorVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
-      monitorWirelessTxInput.checked = !!deviceData.wirelessTx;
-      monitorLatencyInput.value = deviceData.latencyMs || '';
-      monitorAudioOutputInput.value =
-        deviceData.audioOutput?.portType ||
-        deviceData.audioOutput?.type ||
-        deviceData.audioOutput || '';
-    } else if (categoryKey === "viewfinders") {
-      wattFieldDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "block";
-      videoFieldsDiv.style.display = "none";
-      motorFieldsDiv.style.display = "none";
-      controllerFieldsDiv.style.display = "none";
-      distanceFieldsDiv.style.display = "none";
-      viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
-      viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
-      viewfinderWattInput.value = deviceData.powerDrawWatts || '';
-      viewfinderVoltageInput.value = deviceData.power?.input?.voltageRange || '';
-      const vfpt = firstPowerInputType(deviceData);
-      viewfinderPortTypeInput.value = vfpt || "";
-      setViewfinderVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
-      setViewfinderVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
-      viewfinderWirelessTxInput.checked = !!deviceData.wirelessTx;
-      viewfinderLatencyInput.value = deviceData.latencyMs || '';
-    } else if (categoryKey === "video") {
-      wattFieldDiv.style.display = "block";
-      cameraFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "none";
-      videoFieldsDiv.style.display = "block";
-      motorFieldsDiv.style.display = "none";
-      controllerFieldsDiv.style.display = "none";
-      distanceFieldsDiv.style.display = "none";
-      newWattInput.value = deviceData.powerDrawWatts || '';
-      videoPowerInput.value = firstPowerInputType(deviceData);
-      setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
-      setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
-      videoFrequencyInput.value = deviceData.frequency || '';
-      videoLatencyInput.value = deviceData.latencyMs || '';
-      motorConnectorInput.value = '';
-    } else if (categoryKey === "fiz.motors") {
-      wattFieldDiv.style.display = "block";
-      videoFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "none";
-      motorFieldsDiv.style.display = "block";
-      controllerFieldsDiv.style.display = "none";
-      distanceFieldsDiv.style.display = "none";
-      newWattInput.value = deviceData.powerDrawWatts || '';
-      motorConnectorInput.value = deviceData.fizConnector || '';
-      motorInternalInput.checked = !!deviceData.internalController;
-      motorTorqueInput.value = deviceData.torqueNm || '';
-      motorGearInput.value = Array.isArray(deviceData.gearTypes) ? deviceData.gearTypes.join(', ') : '';
-      motorNotesInput.value = deviceData.notes || '';
-    } else if (categoryKey === "fiz.controllers") {
-      wattFieldDiv.style.display = "block";
-      videoFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "none";
-      motorFieldsDiv.style.display = "none";
-      controllerFieldsDiv.style.display = "block";
-      distanceFieldsDiv.style.display = "none";
-      newWattInput.value = deviceData.powerDrawWatts || '';
-      const cc = Array.isArray(deviceData.fizConnectors)
-        ? deviceData.fizConnectors.map(fc => fc.type).join(', ')
-        : (deviceData.fizConnector || '');
-      controllerConnectorInput.value = cc;
-      controllerPowerInput.value = deviceData.power_source || '';
-      controllerBatteryInput.value = deviceData.battery_type || '';
-      controllerConnectivityInput.value = deviceData.connectivity || '';
-      controllerNotesInput.value = deviceData.notes || '';
-    } else if (categoryKey === "fiz.distance") {
-      wattFieldDiv.style.display = "block";
-      videoFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "none";
-      batteryFieldsDiv.style.display = "none";
-      motorFieldsDiv.style.display = "none";
-      controllerFieldsDiv.style.display = "none";
-      distanceFieldsDiv.style.display = "block";
-      newWattInput.value = deviceData.powerDrawWatts || '';
-      distanceConnectionInput.value = deviceData.connection_compatibility || '';
-      distanceMethodInput.value = deviceData.measurement_method || '';
-      distanceRangeInput.value = deviceData.measurement_range || '';
-      distanceAccuracyInput.value = deviceData.accuracy || '';
-      distanceOutputInput.value = deviceData.output_display || '';
-      distanceNotesInput.value = deviceData.notes || '';
-    } else {
-      wattFieldDiv.style.display = "block";
-      batteryFieldsDiv.style.display = "none";
-      cameraFieldsDiv.style.display = "none";
-      monitorFieldsDiv.style.display = "none";
-      viewfinderFieldsDiv.style.display = "none";
-      videoFieldsDiv.style.display = "none";
-      motorFieldsDiv.style.display = "none";
-      controllerFieldsDiv.style.display = "none";
-      distanceFieldsDiv.style.display = "none";
-      const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
-      newWattInput.value = watt;
-    }
+    populateDeviceForm(categoryKey, deviceData);
     // Change button to "Update"
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);

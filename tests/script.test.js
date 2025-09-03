@@ -3169,6 +3169,28 @@ describe('monitor wireless metadata', () => {
     });
   });
 
+  test('editing wireless receiver populates video fields', () => {
+    devices.wirelessReceivers = {
+      RxA: {
+        powerDrawWatts: 7,
+        videoOutputs: [{ type: 'HDMI' }],
+        frequency: '5GHz',
+        latencyMs: '2ms'
+      }
+    };
+    const deviceManager = document.getElementById('device-manager');
+    const btn = document.createElement('button');
+    btn.className = 'edit-btn';
+    btn.dataset.name = 'RxA';
+    btn.dataset.category = 'wirelessReceivers';
+    deviceManager.appendChild(btn);
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
+    btn.click();
+    expect(document.getElementById('newCategory').value).toBe('wirelessReceivers');
+    expect(document.getElementById('videoFields').style.display).toBe('block');
+    expect(document.getElementById('videoFrequency').value).toBe('5GHz');
+  });
+
   test('runtime feedback dialog pre-fills resolution and codec', () => {
     const cam = devices.cameras.CamA;
     cam.resolutions = ['1920x1080'];
