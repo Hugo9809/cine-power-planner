@@ -12,6 +12,118 @@ test('Easyrig stabiliser data exposes attachments', () => {
   ]);
 });
 
+test('restores project requirements from storage when gear list element is absent', () => {
+  jest.resetModules();
+
+  global.alert = jest.fn();
+  global.prompt = jest.fn();
+  Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
+
+  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+  const body = html.split('<body>')[1].split('</body>')[0];
+  document.body.innerHTML = body;
+  const gearEl = document.getElementById('gearListOutput');
+  if (gearEl) gearEl.remove();
+  document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
+
+  global.devices = {
+    cameras: {
+      CamA: {
+        powerDrawWatts: 10,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoOutputs: [{ type: '3G-SDI' }]
+      }
+    },
+    monitors: {
+      MonA: {
+        powerDrawWatts: 5,
+        brightnessNits: 2300,
+        screenSizeInches: 7,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoInputs: [{ type: '3G-SDI' }]
+      }
+    },
+    video: {
+      VidA: {
+        powerDrawWatts: 3,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoInputs: [{ type: '3G-SDI' }]
+      }
+    },
+    lenses: {
+      LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true }
+    },
+    fiz: {
+      motors: {
+        MotorA: { powerDrawWatts: 2, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], power: { input: { type: 'LEMO 2-pin' } } }
+      },
+      controllers: {
+        ControllerA: { powerDrawWatts: 2, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], power: { input: { type: 'LEMO 2-pin' } } }
+      },
+      distance: {
+        DistA: { powerDrawWatts: 1, power: { input: { type: 'LEMO 2-pin' } } }
+      }
+    },
+    batteries: {
+      BattA: { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' }
+    },
+    accessories: {
+      powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
+      cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+      chargers: {
+        'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
+        'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
+        'Quad V-Mount Charger': { mount: 'V-Mount', slots: 4, chargingSpeedAmps: 2 }
+      },
+      cables: {
+        power: { 'D-Tap to LEMO 2-pin': { to: 'LEMO 2-pin' } },
+        fiz: { 'LBUS to LBUS': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' } },
+        video: {
+          'HDMI Cable': { type: 'HDMI' },
+          'BNC Cable 0.5 m': { type: '3G-SDI' },
+          'BNC Cable 1 m': { type: '3G-SDI' },
+          'BNC Cable 5 m': { type: '3G-SDI' },
+          'BNC Cable 10 m': { type: '3G-SDI' },
+          'BNC Drum 25 m': { type: '3G-SDI' }
+        }
+      },
+      cameraStabiliser: {
+        'Easyrig 5 Vario': {
+          options: ['FlowCine Serene Spring Arm', 'Easyrig - STABIL G3']
+        }
+      },
+      tripods: {
+        'Legs Large': {},
+        'Legs Medium': {},
+        'Legs Short': {}
+      }
+    }
+  };
+
+  global.loadDeviceData = jest.fn(() => null);
+  global.saveDeviceData = jest.fn();
+  global.loadSetups = jest.fn(() => ({}));
+  global.saveSetups = jest.fn();
+  global.saveSetup = jest.fn();
+  global.loadSetup = jest.fn();
+  global.deleteSetup = jest.fn();
+  global.loadFeedback = jest.fn(() => ({}));
+  global.saveFeedback = jest.fn();
+  const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
+  global.loadGearList = jest.fn(() => storedHtml);
+  global.saveGearList = jest.fn();
+  global.deleteGearList = jest.fn();
+
+  require('../translations.js');
+  const script = require('../script.js');
+  script.setLanguage('en');
+  script.setLanguage('en');
+
+  const projOut = document.getElementById('projectRequirementsOutput');
+  expect(projOut.classList.contains('hidden')).toBe(false);
+  expect(projOut.innerHTML).toContain('Project Requirements');
+});
+
 describe('script.js functions', () => {
   let script;
 
