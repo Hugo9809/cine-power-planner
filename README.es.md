@@ -70,8 +70,8 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
   🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería
 
 ### 🔍 Búsqueda y Filtros
-- Filtrar cualquier lista o menú desplegable con un campo de búsqueda
 - Escribir dentro de los desplegables para encontrar rápido
+- Filtrar las listas con un campo de búsqueda
 
 ### 🛠 Base de Datos de Dispositivos
 - Añadir, editar o eliminar dispositivos de todas las categorías

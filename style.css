@@ -368,33 +368,13 @@ body.hover-help-active * {
   margin: 5px 5px 0 0;
 }
 
-/* smaller width for search inputs */
-.form-row .filter-input {
-  flex: 0 0 120px;
-}
-
+/* Wrapper for selects to allow flexible layout */
 .select-wrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 0; /* allow wrapper to shrink on narrow screens */
   position: relative;
-}
-
-.select-wrapper .filter-input {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 4px;
-  padding-right: 1.5em; /* space for clear button */
-}
-
-.select-wrapper .filter-input + .clear-input-btn {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  margin: 0;
-  line-height: 1;
 }
 
 /* Prevent long option text from widening selects on mobile */
@@ -425,14 +405,6 @@ select {
   background-image: none;
   -webkit-appearance: none;
   appearance: none;
-}
-
-#clearFiltersBtn {
-  float: right;
-  background: transparent;
-  border: none;
-  font-size: 1.2em;
-  cursor: pointer;
 }
 
 .clear-input-btn {

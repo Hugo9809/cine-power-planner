@@ -98,8 +98,8 @@ The app automatically uses your browser language on first load, and you can swit
 - A dashboard orders entries by weight and displays each one's share percentage for quick comparison.
 
 ### 🔍 Search & Filtering
-- Filter every dropdown and device list with a search box
 - Type inside dropdowns to quickly find entries
+- Filter device lists with a search box
 
 ### 🛠 Device Database Editor
 - Add, edit or delete devices in all categories

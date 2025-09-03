@@ -69,8 +69,8 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
   🎮 controller, 📐 distanza, 🎮 impugnatura e 🔌 piastra batteria
 
 ### 🔍 Ricerca e filtri
-- Filtra ogni menu a discesa e lista dispositivi con un campo di ricerca
 - Digita nei menu a discesa per trovare rapidamente le voci
+- Filtra le liste dispositivi con un campo di ricerca
 
 ### 🛠 Editor del database dei dispositivi
 - Aggiungi, modifica o elimina dispositivi in tutte le categorie
