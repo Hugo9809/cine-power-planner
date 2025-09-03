@@ -6816,6 +6816,12 @@ function generatePrintableOverview() {
     const diagramSectionHtmlWithBreak = diagramSectionHtml ? `<div class="page-break"></div>${diagramSectionHtml}` : '';
     const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
 
+    let gearListHtml = getCurrentGearListHtml();
+    if (!gearListHtml && currentProjectInfo) {
+        gearListHtml = generateGearListHtml(currentProjectInfo);
+    }
+    const gearListHtmlWithBreak = gearListHtml ? `<div class="page-break"></div>${gearListHtml}` : '';
+
     const overviewHtml = `
         <div id="overviewDialogContent">
             <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
@@ -6832,6 +6838,8 @@ function generatePrintableOverview() {
             <h2>${t.resultsHeading}</h2>
             ${resultsHtml}
             ${warningHtml}
+
+            ${gearListHtmlWithBreak}
 
             ${diagramSectionHtmlWithBreak}
             ${batteryTableHtmlWithBreak}

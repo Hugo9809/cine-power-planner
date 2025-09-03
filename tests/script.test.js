@@ -1016,6 +1016,31 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('dark-mode')).toBe(false);
   });
 
+  test('generatePrintableOverview includes project requirements and gear list', () => {
+    const { generatePrintableOverview } = script;
+    document.getElementById('setupName').value = 'Test';
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    script.updateCalculations();
+
+    const projOut = document.getElementById('projectRequirementsOutput');
+    projOut.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3>';
+    projOut.classList.remove('hidden');
+    const gearOut = document.getElementById('gearListOutput');
+    gearOut.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr></table>';
+    gearOut.classList.remove('hidden');
+
+    generatePrintableOverview();
+    const html = document.getElementById('overviewDialog').innerHTML;
+    expect(html).toContain('Project Requirements');
+    expect(html).toContain('Gear List');
+    expect(html).toContain('CamA');
+  });
+
   test('generateGearListHtml returns table with categories and accessories', () => {
       const { generateGearListHtml } = script;
       const addOpt = (id, value) => {
