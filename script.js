@@ -1652,14 +1652,21 @@ function setSliderBowlValue(val) {
   if (sel) sel.value = val;
 }
 
-if (gearListOutput) {
+// Restore previously saved gear list and project requirements on load.
+// Previous logic only ran when the gear list element existed, which meant
+// project requirements were lost on refresh if that element was absent.
+// Now we load whenever either output section is present and only bind gear
+// list specific actions when needed.
+if (gearListOutput || projectRequirementsOutput) {
   const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
   if (storedGearList) {
     displayGearAndRequirements(storedGearList);
-    ensureGearListActions();
-    bindGearListCageListener();
-    bindGearListEasyrigListener();
-    bindGearListSliderBowlListener();
+    if (gearListOutput) {
+      ensureGearListActions();
+      bindGearListCageListener();
+      bindGearListEasyrigListener();
+      bindGearListSliderBowlListener();
+    }
   }
 }
 
