@@ -8437,8 +8437,9 @@ function initApp() {
   }
   populateEnvironmentDropdowns();
   populateLensDropdown();
-  attachSelectSearch(lensSelect);
   populateFilterDropdown();
+  document.querySelectorAll('#projectForm select')
+    .forEach(sel => attachSelectSearch(sel));
   setLanguage(currentLang);
   resetDeviceForm();
   restoreSessionState();
