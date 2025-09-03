@@ -5298,6 +5298,9 @@ clearSetupBtn.addEventListener("click", () => {
     confirm(texts[currentLang].confirmClearSetup) &&
     confirm(texts[currentLang].confirmClearSetupAgain)
   ) {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('cameraPowerPlanner_session');
+    }
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.removeItem('cameraPowerPlanner_session');
     }
