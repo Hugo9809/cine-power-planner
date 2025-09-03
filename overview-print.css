@@ -73,8 +73,16 @@ table, th, td {
   word-break: break-word;
   hyphens: auto;
 }
-th { background-color: #e0e0e0; font-weight: 700; }
-tr:nth-child(even) { background-color: #f9f9f9; }
+#overviewDialogContent th {
+  background-color: #e0e0e0 !important;
+  font-weight: 700;
+}
+#overviewDialogContent tr {
+  background-color: #fff !important;
+}
+#overviewDialogContent tr:nth-child(even) {
+  background-color: #f9f9f9 !important;
+}
 
 
 .device-block,
