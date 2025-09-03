@@ -25,6 +25,7 @@ if (typeof module !== 'undefined' && module.exports) {
   require('./batteries.js');
   require('./cages.js');
   require('./gearList.js');
+  require('./wirelessReceivers.js');
   delete globalThis.registerDevice;
   module.exports = devices;
 } else {
