@@ -6842,24 +6842,16 @@ function generatePrintableOverview() {
     overviewDialog.innerHTML = overviewHtml;
     const content = overviewDialog.querySelector('#overviewDialogContent');
 
-    const darkModeActive = document.body.classList.contains('dark-mode');
-    if (darkModeActive) {
-        document.body.classList.remove('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+        content.classList.add('dark-mode');
     }
     if (document.body.classList.contains('pink-mode')) {
         content.classList.add('pink-mode');
     }
 
-    const restoreTheme = () => {
-        if (darkModeActive) {
-            document.body.classList.add('dark-mode');
-        }
-    };
-
     const closeBtn = overviewDialog.querySelector('#closeOverviewBtn');
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
-            restoreTheme();
             overviewDialog.close();
         });
     }
@@ -6870,7 +6862,6 @@ function generatePrintableOverview() {
     }
 
     const closeAfterPrint = () => {
-        restoreTheme();
         overviewDialog.close();
     };
     if (typeof window.matchMedia === 'function') {
