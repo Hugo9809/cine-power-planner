@@ -7839,7 +7839,10 @@ function bindGearListSliderBowlListener() {
 
 
 function refreshGearListIfVisible() {
-    if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
+    if (!gearListOutput || gearListOutput.classList.contains('hidden')) return;
+    if (!currentProjectInfo) {
+        currentProjectInfo = collectProjectFormData();
+    }
     const html = generateGearListHtml(currentProjectInfo);
     displayGearAndRequirements(html);
     ensureGearListActions();

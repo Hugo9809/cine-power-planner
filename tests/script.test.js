@@ -272,6 +272,49 @@ describe('script.js functions', () => {
     expect(cageSelEl.value).toBe('Cage2');
   });
 
+  test('gear list updates when camera selection changes', () => {
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.close = jest.fn();
+    devices.cameras.CamB = {
+      powerDrawWatts: 12,
+      power: { input: { type: 'LEMO 2-pin' } },
+      videoOutputs: [{ type: '3G-SDI' }]
+    };
+    const cameraSelect = document.getElementById('cameraSelect');
+    cameraSelect.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
+    cameraSelect.value = 'CamA';
+    document.getElementById('projectName').value = 'Proj';
+    const projectForm = document.getElementById('projectForm');
+    projectForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const gearList = document.getElementById('gearListOutput');
+    let rows = Array.from(gearList.querySelectorAll('.gear-table tr'));
+    expect(rows[1].textContent).toContain('CamA');
+    expect(gearList.querySelector('#gearListCage')).toBeTruthy();
+    cameraSelect.value = 'CamB';
+    cameraSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    rows = Array.from(gearList.querySelectorAll('.gear-table tr'));
+    expect(rows[1].textContent).toContain('CamB');
+    expect(gearList.querySelector('#gearListCage')).toBeNull();
+  });
+
+  test('camera change refreshes gear list even without project info', () => {
+    const gearList = document.getElementById('gearListOutput');
+    gearList.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr></table>';
+    gearList.classList.remove('hidden');
+    devices.cameras.CamB = {
+      powerDrawWatts: 12,
+      power: { input: { type: 'LEMO 2-pin' } },
+      videoOutputs: [{ type: '3G-SDI' }]
+    };
+    const cameraSelect = document.getElementById('cameraSelect');
+    cameraSelect.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
+    cameraSelect.value = 'CamA';
+    cameraSelect.value = 'CamB';
+    cameraSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    const rows = Array.from(gearList.querySelectorAll('.gear-table tr'));
+    expect(rows[1].textContent).toContain('CamB');
+  });
+
   test('gear list cage selection is stored with selected attribute', () => {
     global.saveGearList = jest.fn();
     const gear = document.getElementById('gearListOutput');
