@@ -26,6 +26,42 @@ body.dark-mode {
   background: #fff !important;
 }
 
+/* Ensure setup diagram uses light theme when printing */
+#overviewDialogContent #setupDiagram .node-box,
+#overviewDialogContent #setupDiagram .node-box.first-fiz {
+  fill: #e8f0fe;
+  stroke: none;
+}
+#overviewDialogContent #setupDiagram text {
+  fill: #000;
+  font-family: 'Ubuntu', sans-serif;
+}
+#overviewDialogContent #setupDiagram line,
+#overviewDialogContent #setupDiagram path.edge-path {
+  stroke: #333;
+}
+#overviewDialogContent #setupDiagram path.power {
+  stroke: #d33;
+}
+#overviewDialogContent #setupDiagram path.video {
+  stroke: #369;
+}
+#overviewDialogContent #setupDiagram path.fiz {
+  stroke: #090;
+}
+#overviewDialogContent #setupDiagram .conn.red {
+  fill: #d33;
+}
+#overviewDialogContent #setupDiagram .conn.blue {
+  fill: #369;
+}
+#overviewDialogContent #setupDiagram .conn.green {
+  fill: #090;
+}
+#overviewDialogContent #setupDiagram marker polygon {
+  fill: #333;
+}
+
 #overviewDialogContent h1,
 #overviewDialogContent h2,
 #overviewDialogContent h3 {

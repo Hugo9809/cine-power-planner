@@ -999,7 +999,7 @@ describe('script.js functions', () => {
     expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });
 
-  test('generatePrintableOverview keeps dark mode styling when active', () => {
+  test('generatePrintableOverview uses light mode styling even when dark mode active', () => {
     const { generatePrintableOverview } = script;
     document.body.classList.add('dark-mode');
     document.getElementById('setupName').value = 'Test';
@@ -1012,7 +1012,7 @@ describe('script.js functions', () => {
     script.updateCalculations();
     generatePrintableOverview();
     const content = document.querySelector('#overviewDialogContent');
-    expect(content.classList.contains('dark-mode')).toBe(true);
+    expect(content.classList.contains('dark-mode')).toBe(false);
     expect(document.body.classList.contains('dark-mode')).toBe(true);
   });
 
