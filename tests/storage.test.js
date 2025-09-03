@@ -184,18 +184,18 @@ describe('setup storage', () => {
 
 describe('session state storage', () => {
   beforeEach(() => {
-    sessionStorage.clear();
+    localStorage.clear();
   });
 
-  test('saveSessionState stores JSON in sessionStorage', () => {
+  test('saveSessionState stores JSON in localStorage', () => {
     const state = { camera: 'CamA' };
     saveSessionState(state);
-    expect(sessionStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(state));
+    expect(localStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(state));
   });
 
   test('loadSessionState returns parsed object when present', () => {
     const state = { camera: 'CamA' };
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    localStorage.setItem(SESSION_KEY, JSON.stringify(state));
     expect(loadSessionState()).toEqual(state);
   });
 
@@ -246,7 +246,7 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
     expect(localStorage.getItem(FEEDBACK_KEY)).toBeNull();
     expect(localStorage.getItem(GEARLIST_KEY)).toBeNull();
-    expect(sessionStorage.getItem(SESSION_KEY)).toBeNull();
+    expect(localStorage.getItem(SESSION_KEY)).toBeNull();
   });
 });
 

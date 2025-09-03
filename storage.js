@@ -50,20 +50,22 @@ function generateUniqueName(base, usedNames) {
 }
 
 // --- Session State Storage ---
+// Store the current session (unsaved setup) in localStorage so it survives
+// full app reloads.
 function loadSessionState() {
   return loadJSONFromStorage(
-    sessionStorage,
+    localStorage,
     SESSION_STATE_KEY,
-    "Error loading session state from sessionStorage:"
+    "Error loading session state from localStorage:"
   );
 }
 
 function saveSessionState(state) {
   saveJSONToStorage(
-    sessionStorage,
+    localStorage,
     SESSION_STATE_KEY,
     state,
-    "Error saving session state to sessionStorage:"
+    "Error saving session state to localStorage:"
   );
 }
 
@@ -240,7 +242,10 @@ function clearAllData() {
     localStorage.removeItem(SETUP_STORAGE_KEY);
     localStorage.removeItem(FEEDBACK_STORAGE_KEY);
     localStorage.removeItem(GEARLIST_STORAGE_KEY);
-    sessionStorage.removeItem(SESSION_STATE_KEY);
+    localStorage.removeItem(SESSION_STATE_KEY);
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem(SESSION_STATE_KEY);
+    }
     console.log("All planner data cleared from storage.");
   } catch (e) {
     console.error("Error clearing storage:", e);
