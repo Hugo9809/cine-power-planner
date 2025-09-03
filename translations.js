@@ -337,7 +337,7 @@ const texts = {
     generateOverviewHelp:
       "Generate a print-ready summary of any saved setup, including power and connection details.",
     generateGearListHelp:
-      "Show a list of selected gear and project requirements.",
+      "Show selected gear and project requirements in a list.",
     shareSetupHelp:
       "Copy a unique link representing the current setup that others can open to load the same configuration.",
     applySharedLinkHelp:

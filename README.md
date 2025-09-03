@@ -51,8 +51,8 @@ Recent updates include:
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
 - **Gear list generator** – compile selected gear and project requirements with one click.
 - **Quick setup saving** – press Enter or Ctrl+S (⌘S on macOS) to save a setup and the Save button stays disabled until a name is entered.
-- **Project requirement saving** – store project requirements with each setup so gear lists restore full context.
-- **User entry duplication** – gear list forms include fork buttons to copy user fields instantly.
+- **Project requirement saving** – store project requirements with each setup so gear lists retain full context.
+- **User entry duplication** – gear list forms use fork buttons to copy user fields instantly.
 
 See the language-specific README files for full details.
 

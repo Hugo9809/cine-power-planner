@@ -6368,7 +6368,7 @@ function alertPinExceeded() {
     );
 }
 
-// Generate a printable gear list of the current setup
+// Generate a printable gear list for the current setup
 generateGearListBtn.addEventListener('click', () => {
     if (!setupSelect.value) {
         alert(texts[currentLang].alertSelectSetupForOverview);
@@ -7733,7 +7733,7 @@ function handleImportGearList(e) {
                 saveCurrentGearList();
             }
         } catch {
-            alert('Invalid gear list file');
+            alert('Invalid gear list file.');
         }
         e.target.value = '';
     };

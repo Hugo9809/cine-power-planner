@@ -24,8 +24,8 @@ The app automatically uses your browser language on first load, and you can swit
 - Submit user runtime feedback with temperature for better estimates.
 - Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
 - Generate gear lists to compile selected gear and project requirements.
-- Save project requirements with each setup so gear lists keep context.
-- Duplicate user entries in gear list forms with new fork buttons.
+- Save project requirements with each setup so gear lists retain full context.
+- Duplicate user entries in gear list forms using fork buttons to copy fields instantly.
 
 ---
 
