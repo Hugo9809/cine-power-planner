@@ -1538,6 +1538,34 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   color: var(--inverse-text-color);
 }
 
+#overviewDialogContent .gear-table td {
+  padding: 4px 0;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  background: var(--panel-bg);
+  line-height: 1.4em;
+}
+
+#overviewDialogContent .gear-table .category-row td {
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+#overviewDialogContent.dark-mode .gear-table td {
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+}
+
+#overviewDialogContent.dark-mode .gear-table .category-row td {
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+  color: var(--inverse-text-color);
+}
+
 #gearListOutput,
 #projectRequirementsOutput {
   background: var(--panel-bg);

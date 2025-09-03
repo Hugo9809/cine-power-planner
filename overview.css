@@ -20,6 +20,23 @@ table {
 th, td { border: 1px solid var(--panel-border); padding: 8px; text-align: left; font-size: 0.9em; overflow: hidden; }
 th { background-color: var(--control-bg); font-weight: 700; }
 .warning { color: red; font-weight: bold; margin-top: 10px; }
+
+.gear-table td {
+  padding: 4px 0;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  background: var(--panel-bg);
+  line-height: 1.4em;
+}
+
+.gear-table .category-row td {
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  font-weight: bold;
+  color: var(--accent-color);
+}
 .print-btn,
 .back-btn {
   padding: 5px 10px;
@@ -96,4 +113,13 @@ th { background-color: var(--control-bg); font-weight: 700; }
   .fiz-conn { background-color: rgba(76,175,80,0.3); }
   .video-conn { background-color: rgba(33,150,243,0.3); }
   .neutral-conn { background-color: rgba(158,158,158,0.3); }
+  .gear-table td {
+    border-top: 1px solid var(--inverse-text-color);
+    border-bottom: 1px solid var(--inverse-text-color);
+  }
+  .gear-table .category-row td {
+    border-top: 1px solid var(--inverse-text-color);
+    border-bottom: 1px solid var(--inverse-text-color);
+    color: var(--inverse-text-color);
+  }
 }
