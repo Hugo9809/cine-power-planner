@@ -3162,6 +3162,72 @@ describe('monitor wireless metadata', () => {
     expect(global.devices.monitors.MonA.latencyMs).toBe('10ms');
   });
 
+  test('editing accessory battery updates fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    devices.accessories.batteries = { AccBatA: { capacity: 20, pinA: 10, dtapA: 5 } };
+    document.getElementById('newCategory').value = 'accessories.batteries';
+    document.getElementById('newName').value = 'AccBatA';
+    document.getElementById('newCapacity').value = '30';
+    document.getElementById('newPinA').value = '8';
+    document.getElementById('newDtapA').value = '2';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'AccBatA';
+    addDeviceBtn.click();
+
+    expect(devices.accessories.batteries.AccBatA).toEqual({ capacity: 30, pinA: 8, dtapA: 2 });
+  });
+
+  test('editing viewfinder updates its fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    devices.viewfinders = { ViewA: { powerDrawWatts: 5 } };
+
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'viewfinders';
+    catSelect.dispatchEvent(new Event('change'));
+
+    document.getElementById('newName').value = 'ViewA';
+    document.getElementById('viewfinderScreenSize').value = '4.5';
+    document.getElementById('viewfinderBrightness').value = '1000';
+    document.getElementById('viewfinderWatt').value = '6';
+    document.getElementById('viewfinderVoltage').value = '5-12V';
+
+    const portSelect = document.getElementById('viewfinderPortType');
+    const portValue = portSelect.options[1] ? portSelect.options[1].value : '';
+    portSelect.value = portValue;
+
+    const inputSelect = document.querySelector('#viewfinderVideoInputsContainer select');
+    const inputValue = inputSelect.options[1] ? inputSelect.options[1].value : '';
+    inputSelect.value = inputValue;
+
+    const outputSelect = document.querySelector('#viewfinderVideoOutputsContainer select');
+    const outputValue = outputSelect.options[1] ? outputSelect.options[1].value : '';
+    outputSelect.value = outputValue;
+
+    document.getElementById('viewfinderWirelessTx').checked = true;
+    document.getElementById('viewfinderLatency').value = '20ms';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'ViewA';
+    addDeviceBtn.click();
+
+    expect(devices.viewfinders.ViewA).toEqual({
+      screenSizeInches: 4.5,
+      brightnessNits: 1000,
+      powerDrawWatts: 6,
+      power: {
+        input: { voltageRange: '5-12V', type: portValue },
+        output: null
+      },
+      video: {
+        inputs: inputValue ? [{ type: inputValue }] : [],
+        outputs: outputValue ? [{ type: outputValue }] : []
+      },
+      wirelessTx: true,
+      latencyMs: '20ms'
+    });
+  });
+
   test('runtime feedback dialog pre-fills resolution and codec', () => {
     const cam = devices.cameras.CamA;
     cam.resolutions = ['1920x1080'];
