@@ -186,111 +186,6 @@ const gear = {
       "notes": "Streams to iOS devices for on-set monitoring; includes Link access point"
     }
   },
-  "wirelessReceivers": {
-    "Teradek Bolt 6 XT RX": {
-      "powerDrawWatts": 16,
-      "videoInputs": [],
-      "videoOutputs": [
-        {
-          "type": "HDMI"
-        },
-        {
-          "type": "12G-SDI"
-        }
-      ],
-      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
-      "latencyMs": "< 1ms",
-      "power": {
-        "input": [
-          {
-            "type": "LEMO 2-pin",
-            "notes": "6-28V"
-          },
-          {
-            "type": "Gold-mount"
-          },
-          {
-            "type": "V-mount"
-          }
-        ]
-      }
-    },
-    "Teradek Bolt 4K RX": {
-      "powerDrawWatts": 16,
-      "videoInputs": [],
-      "videoOutputs": [
-        {
-          "type": "HDMI"
-        },
-        {
-          "type": "12G-SDI"
-        }
-      ],
-      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms",
-      "power": {
-        "input": [
-          {
-            "type": "LEMO 2-pin",
-            "notes": "6-28V"
-          },
-          {
-            "type": "Gold-mount"
-          },
-          {
-            "type": "V-mount"
-          }
-        ]
-      }
-    },
-    "Teradek Bolt 4K LT 750 RX": {
-      "powerDrawWatts": 10,
-      "videoInputs": [],
-      "videoOutputs": [
-        { "type": "HDMI" },
-        { "type": "12G-SDI" }
-      ],
-      "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
-      "latencyMs": "< 1ms",
-      "power": {
-        "input": [
-          { "type": "LEMO 2-pin", "notes": "6-28V" },
-          { "type": "Gold-mount" },
-          { "type": "V-mount" }
-        ]
-      }
-    },
-    "Vaxis Storm 3000 RX": {
-      "powerDrawWatts": 9,
-      "videoInputs": [],
-      "videoOutputs": [
-        { "type": "HDMI" },
-        { "type": "3G-SDI" }
-      ],
-      "frequency": "5 GHz",
-      "latencyMs": "< 1ms",
-      "power": {
-        "input": [
-          { "type": "LEMO 2-pin", "notes": "7-17V" },
-          { "type": "Gold-mount" },
-          { "type": "V-mount" }
-        ]
-      }
-    },
-    "None": {
-      "powerDrawWatts": 0,
-      "power": {
-        "input": {
-          "voltageRange": "",
-          "type": ""
-        }
-      },
-      "videoInputs": [],
-      "videoOutputs": [],
-      "frequency": "5 GHz",
-      "latencyMs": null
-    }
-  },
   "accessories": {
     "powerPlates": {
       "ARRI B-Mount Battery Adapter": {
@@ -1940,30 +1835,10 @@ for (const [name, lens] of Object.entries(gear.accessories.lenses)) {
 // Expose lenses at the top level for easier access
 gear.lenses = gear.accessories.lenses;
 
-// Automatically add a matching wireless receiver entry for every
-// transmitter defined in the video devices. This ensures the list of
-// receivers always covers all available transmitters without having to
-// manually maintain a separate list.
-const videoDevices = globalThis.devices && globalThis.devices.video ? globalThis.devices.video : {};
-for (const [txName, txData] of Object.entries(videoDevices)) {
-  const rxName = txName.replace(/\bTX\b/, 'RX');
-  if (!gear.wirelessReceivers[rxName]) {
-    gear.wirelessReceivers[rxName] = {
-      powerDrawWatts: txData.powerDrawWatts,
-      videoInputs: [],
-      videoOutputs: txData.videoOutputs || txData.videoInputs || [],
-      frequency: txData.frequency,
-      latencyMs: txData.latencyMs,
-      power: txData.power
-    };
-  }
-}
-
-if (typeof registerDevice === 'function') {
+  if (typeof registerDevice === 'function') {
   registerDevice('viewfinders', gear.viewfinders);
   registerDevice('directorMonitors', gear.directorMonitors);
   registerDevice('iosVideo', gear.iosVideo);
-  registerDevice('wirelessReceivers', gear.wirelessReceivers);
   registerDevice('videoAssist', gear.videoAssist);
   registerDevice('media', gear.media);
   registerDevice('lenses', gear.lenses);
@@ -1979,7 +1854,6 @@ if (typeof registerDevice === 'function') {
   globalThis.devices.viewfinders = gear.viewfinders;
   globalThis.devices.directorMonitors = gear.directorMonitors;
   globalThis.devices.iosVideo = gear.iosVideo;
-  globalThis.devices.wirelessReceivers = gear.wirelessReceivers;
   globalThis.devices.videoAssist = gear.videoAssist;
   globalThis.devices.media = gear.media;
   globalThis.devices.lenses = gear.lenses;
