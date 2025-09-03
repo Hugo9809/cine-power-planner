@@ -367,6 +367,56 @@
         <input type="text" id="monitorAudioOutput" aria-labelledby="monitorAudioOutputLabel" />
       </div>
     </div>
+    <div id="viewfinderFields" class="hidden">
+      <div class="viewfinder-subsection">
+        <h4 id="viewfinderDetailsHeading">Viewfinder Details</h4>
+        <div class="form-row">
+          <label for="viewfinderScreenSize" id="viewfinderScreenSizeLabel">Screen Size (in):</label>
+          <input type="number" id="viewfinderScreenSize" step="0.1" aria-labelledby="viewfinderScreenSizeLabel" />
+        </div>
+        <div class="form-row">
+          <label for="viewfinderBrightness" id="viewfinderBrightnessLabel">Brightness (nits):</label>
+          <input type="number" id="viewfinderBrightness" step="1" aria-labelledby="viewfinderBrightnessLabel" />
+        </div>
+      </div>
+      <div class="viewfinder-subsection">
+        <h4 id="viewfinderPowerHeading">Power Input</h4>
+        <div class="form-row">
+          <label for="viewfinderWatt" id="viewfinderWattLabel">Power Draw (W):</label>
+          <input type="number" id="viewfinderWatt" step="0.1" aria-labelledby="viewfinderWattLabel" />
+        </div>
+        <div class="form-row">
+          <label for="viewfinderVoltage" id="viewfinderVoltageLabel">Voltage Range:</label>
+          <input type="text" id="viewfinderVoltage" aria-labelledby="viewfinderVoltageLabel" />
+        </div>
+        <div class="form-row">
+          <label for="viewfinderPortType" id="viewfinderPortTypeLabel">Port Type:</label>
+          <select id="viewfinderPortType" aria-labelledby="viewfinderPortTypeLabel"></select>
+        </div>
+      </div>
+      <div class="viewfinder-subsection">
+        <h4 id="viewfinderVideoInputsHeading">Video Inputs</h4>
+        <div class="form-row">
+          <label id="viewfinderVideoInputsLabel">Inputs:</label>
+          <div id="viewfinderVideoInputsContainer" class="flex-1"></div>
+        </div>
+      </div>
+      <div class="viewfinder-subsection">
+        <h4 id="viewfinderVideoOutputsHeading">Video Outputs</h4>
+        <div class="form-row">
+          <label id="viewfinderVideoOutputsLabel">Outputs:</label>
+          <div id="viewfinderVideoOutputsContainer" class="flex-1"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="viewfinderWirelessTx" id="viewfinderWirelessTxLabel">Wireless TX:</label>
+        <input type="checkbox" id="viewfinderWirelessTx" aria-labelledby="viewfinderWirelessTxLabel" />
+      </div>
+      <div class="form-row">
+        <label for="viewfinderLatency" id="viewfinderLatencyLabel">Latency:</label>
+        <input type="text" id="viewfinderLatency" aria-labelledby="viewfinderLatencyLabel" />
+      </div>
+    </div>
     <div id="videoFields" class="hidden">
       <div class="form-row">
         <label for="videoPower" id="videoPowerInputLabel">Power Input:</label>

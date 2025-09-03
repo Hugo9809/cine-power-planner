@@ -1210,6 +1210,18 @@ function setLanguage(lang) {
   document.getElementById("monitorWirelessTxLabel").textContent = texts[lang].monitorWirelessTxLabel;
   document.getElementById("monitorLatencyLabel").textContent = texts[lang].monitorLatencyLabel;
   document.getElementById("monitorAudioOutputLabel").textContent = texts[lang].monitorAudioOutputLabel;
+  document.getElementById("viewfinderDetailsHeading").textContent = texts[lang].viewfinderDetailsHeading;
+  document.getElementById("viewfinderScreenSizeLabel").textContent = texts[lang].viewfinderScreenSizeLabel;
+  document.getElementById("viewfinderBrightnessLabel").textContent = texts[lang].viewfinderBrightnessLabel;
+  document.getElementById("viewfinderWattLabel").textContent = texts[lang].viewfinderWattLabel;
+  document.getElementById("viewfinderVoltageLabel").textContent = texts[lang].viewfinderVoltageLabel;
+  document.getElementById("viewfinderPortTypeLabel").textContent = texts[lang].viewfinderPortTypeLabel;
+  document.getElementById("viewfinderVideoInputsHeading").textContent = texts[lang].viewfinderVideoInputsHeading;
+  document.getElementById("viewfinderVideoOutputsHeading").textContent = texts[lang].viewfinderVideoOutputsHeading;
+  document.getElementById("viewfinderVideoInputsLabel").textContent = texts[lang].viewfinderVideoInputsLabel;
+  document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
+  document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
+  document.getElementById("viewfinderLatencyLabel").textContent = texts[lang].viewfinderLatencyLabel;
   document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
   document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
   document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
@@ -1509,6 +1521,16 @@ const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutput
 const monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
 const monitorLatencyInput = document.getElementById("monitorLatency");
 const monitorAudioOutputInput = document.getElementById("monitorAudioOutput");
+const viewfinderFieldsDiv = document.getElementById("viewfinderFields");
+const viewfinderScreenSizeInput = document.getElementById("viewfinderScreenSize");
+const viewfinderBrightnessInput = document.getElementById("viewfinderBrightness");
+const viewfinderWattInput = document.getElementById("viewfinderWatt");
+const viewfinderVoltageInput = document.getElementById("viewfinderVoltage");
+const viewfinderPortTypeInput = document.getElementById("viewfinderPortType");
+const viewfinderVideoInputsContainer = document.getElementById("viewfinderVideoInputsContainer");
+const viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideoOutputsContainer");
+const viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
+const viewfinderLatencyInput = document.getElementById("viewfinderLatency");
 const videoFieldsDiv = document.getElementById("videoFields");
 const videoPowerInput = document.getElementById("videoPower");
 const videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
@@ -2236,6 +2258,119 @@ function getMonitorVideoOutputs() {
 function clearMonitorVideoOutputs() {
   setMonitorVideoOutputs([]);
 }
+
+function createViewfinderVideoInputRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const select = document.createElement('select');
+  select.className = 'viewfinder-video-input-select';
+  select.name = 'viewfinderVideoInput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createViewfinderVideoInputRow());
+  });
+  row.appendChild(addBtn);
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (viewfinderVideoInputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setViewfinderVideoInputs(list) {
+  viewfinderVideoInputsContainer.innerHTML = '';
+  const filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(item => {
+      const t = typeof item === 'string' ? item : item.type || item.portType;
+      viewfinderVideoInputsContainer.appendChild(createViewfinderVideoInputRow(t));
+    });
+  } else {
+    viewfinderVideoInputsContainer.appendChild(createViewfinderVideoInputRow());
+  }
+}
+
+function getViewfinderVideoInputs() {
+  return Array.from(viewfinderVideoInputsContainer.querySelectorAll('select'))
+    .map(sel => ({ type: sel.value }))
+    .filter(v => v.type && v.type !== 'None');
+}
+
+function clearViewfinderVideoInputs() {
+  setViewfinderVideoInputs([]);
+}
+
+function createViewfinderVideoOutputRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  const select = document.createElement('select');
+  select.className = 'viewfinder-video-output-select';
+  select.name = 'viewfinderVideoOutput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createViewfinderVideoOutputRow());
+  });
+  row.appendChild(addBtn);
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (viewfinderVideoOutputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+
+function setViewfinderVideoOutputs(list) {
+  viewfinderVideoOutputsContainer.innerHTML = '';
+  const filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(item => {
+      const t = typeof item === 'string' ? item : item.type || item.portType;
+      viewfinderVideoOutputsContainer.appendChild(createViewfinderVideoOutputRow(t));
+    });
+  } else {
+    viewfinderVideoOutputsContainer.appendChild(createViewfinderVideoOutputRow());
+  }
+}
+
+function getViewfinderVideoOutputs() {
+  return Array.from(viewfinderVideoOutputsContainer.querySelectorAll('select'))
+    .map(sel => ({ type: sel.value }))
+    .filter(v => v.type && v.type !== 'None');
+}
+
+function clearViewfinderVideoOutputs() {
+  setViewfinderVideoOutputs([]);
+}
+
+setViewfinderVideoInputs([]);
+setViewfinderVideoOutputs([]);
 
 function createVideoInputRow(value = '') {
   const row = document.createElement('div');
@@ -3417,6 +3552,8 @@ applyFilters();
 setVideoOutputs([]);
 setMonitorVideoInputs([]);
 setMonitorVideoOutputs([]);
+setViewfinderVideoInputs([]);
+setViewfinderVideoOutputs([]);
 setFizConnectors([]);
 updateFizConnectorOptions();
 updateMotorConnectorOptions();
@@ -5385,9 +5522,11 @@ deviceManagerSection.addEventListener("click", (event) => {
     }
     placeWattField(categoryKey);
 
-    if (categoryKey === "batteries") {
+    if (categoryKey === "batteries" || categoryKey === "accessories.batteries") {
       wattFieldDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       batteryFieldsDiv.style.display = "block";
       newCapacityInput.value = deviceData.capacity;
       newPinAInput.value = deviceData.pinA;
@@ -5397,6 +5536,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       batteryFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "block";
       monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       cameraWattInput.value = deviceData.powerDrawWatts || '';
       cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
       const tmp = firstPowerInputType(deviceData);
@@ -5413,6 +5553,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       wattFieldDiv.style.display = "none";
       batteryFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "block";
       videoFieldsDiv.style.display = "none";
       motorFieldsDiv.style.display = "none";
@@ -5432,10 +5573,31 @@ deviceManagerSection.addEventListener("click", (event) => {
         deviceData.audioOutput?.portType ||
         deviceData.audioOutput?.type ||
         deviceData.audioOutput || '';
+    } else if (categoryKey === "viewfinders") {
+      wattFieldDiv.style.display = "none";
+      batteryFieldsDiv.style.display = "none";
+      cameraFieldsDiv.style.display = "none";
+      monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "block";
+      videoFieldsDiv.style.display = "none";
+      motorFieldsDiv.style.display = "none";
+      controllerFieldsDiv.style.display = "none";
+      distanceFieldsDiv.style.display = "none";
+      viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
+      viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
+      viewfinderWattInput.value = deviceData.powerDrawWatts || '';
+      viewfinderVoltageInput.value = deviceData.power?.input?.voltageRange || '';
+      const vfpt = firstPowerInputType(deviceData);
+      viewfinderPortTypeInput.value = vfpt || "";
+      setViewfinderVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
+      setViewfinderVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
+      viewfinderWirelessTxInput.checked = !!deviceData.wirelessTx;
+      viewfinderLatencyInput.value = deviceData.latencyMs || '';
     } else if (categoryKey === "video") {
       wattFieldDiv.style.display = "block";
       cameraFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       batteryFieldsDiv.style.display = "none";
       videoFieldsDiv.style.display = "block";
       motorFieldsDiv.style.display = "none";
@@ -5452,6 +5614,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       wattFieldDiv.style.display = "block";
       videoFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
       batteryFieldsDiv.style.display = "none";
       motorFieldsDiv.style.display = "block";
@@ -5467,6 +5630,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       wattFieldDiv.style.display = "block";
       videoFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
       batteryFieldsDiv.style.display = "none";
       motorFieldsDiv.style.display = "none";
@@ -5485,6 +5649,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       wattFieldDiv.style.display = "block";
       videoFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
       batteryFieldsDiv.style.display = "none";
       motorFieldsDiv.style.display = "none";
@@ -5502,6 +5667,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       batteryFieldsDiv.style.display = "none";
       cameraFieldsDiv.style.display = "none";
       monitorFieldsDiv.style.display = "none";
+      viewfinderFieldsDiv.style.display = "none";
       videoFieldsDiv.style.display = "none";
       motorFieldsDiv.style.display = "none";
       controllerFieldsDiv.style.display = "none";
@@ -5574,6 +5740,7 @@ newCategorySelect.addEventListener("change", () => {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "none";
     videoFieldsDiv.style.display = "none";
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
@@ -5584,15 +5751,27 @@ newCategorySelect.addEventListener("change", () => {
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "block";
     monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "none";
     videoFieldsDiv.style.display = "none";
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
-  } else if (val === "monitors" || val === "viewfinders") {
+  } else if (val === "monitors") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "block";
+    viewfinderFieldsDiv.style.display = "none";
+    videoFieldsDiv.style.display = "none";
+    motorFieldsDiv.style.display = "none";
+    controllerFieldsDiv.style.display = "none";
+    distanceFieldsDiv.style.display = "none";
+  } else if (val === "viewfinders") {
+    wattFieldDiv.style.display = "none";
+    batteryFieldsDiv.style.display = "none";
+    cameraFieldsDiv.style.display = "none";
+    monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "block";
     videoFieldsDiv.style.display = "none";
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
@@ -5602,6 +5781,7 @@ newCategorySelect.addEventListener("change", () => {
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "none";
     videoFieldsDiv.style.display = "block";
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
@@ -5611,6 +5791,7 @@ newCategorySelect.addEventListener("change", () => {
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "none";
     videoFieldsDiv.style.display = "none";
     motorFieldsDiv.style.display = "block";
     controllerFieldsDiv.style.display = "none";
@@ -5620,6 +5801,7 @@ newCategorySelect.addEventListener("change", () => {
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "none";
     videoFieldsDiv.style.display = "none";
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "block";
@@ -5629,6 +5811,7 @@ newCategorySelect.addEventListener("change", () => {
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "none";
     videoFieldsDiv.style.display = "none";
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
@@ -5638,6 +5821,7 @@ newCategorySelect.addEventListener("change", () => {
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
+    viewfinderFieldsDiv.style.display = "none";
     videoFieldsDiv.style.display = "none";
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
@@ -5660,6 +5844,15 @@ newCategorySelect.addEventListener("change", () => {
   monitorAudioOutputInput.value = "";
   clearMonitorVideoInputs();
   clearMonitorVideoOutputs();
+  viewfinderScreenSizeInput.value = "";
+  viewfinderBrightnessInput.value = "";
+  viewfinderWattInput.value = "";
+  viewfinderVoltageInput.value = "";
+  viewfinderPortTypeInput.value = "";
+  viewfinderWirelessTxInput.checked = false;
+  viewfinderLatencyInput.value = "";
+  clearViewfinderVideoInputs();
+  clearViewfinderVideoOutputs();
   clearBatteryPlates();
   clearRecordingMedia();
   clearLensMounts();
@@ -5819,7 +6012,7 @@ addDeviceBtn.addEventListener("click", () => {
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
   } else if (category === "viewfinders") {
-    const watt = parseFloat(monitorWattInput.value);
+    const watt = parseFloat(viewfinderWattInput.value);
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
       return;
@@ -5827,26 +6020,25 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
-    const screenSize = parseFloat(monitorScreenSizeInput.value);
-    const brightness = parseFloat(monitorBrightnessInput.value);
+    const screenSize = parseFloat(viewfinderScreenSizeInput.value);
+    const brightness = parseFloat(viewfinderBrightnessInput.value);
     targetCategory[name] = {
       screenSizeInches: isNaN(screenSize) ? undefined : screenSize,
       brightnessNits: isNaN(brightness) ? undefined : brightness,
       powerDrawWatts: watt,
       power: {
         input: {
-          voltageRange: monitorVoltageInput.value,
-          type: monitorPortTypeInput.value
+          voltageRange: viewfinderVoltageInput.value,
+          type: viewfinderPortTypeInput.value
         },
         output: null
       },
       video: {
-        inputs: getMonitorVideoInputs(),
-        outputs: getMonitorVideoOutputs()
+        inputs: getViewfinderVideoInputs(),
+        outputs: getViewfinderVideoOutputs()
       },
-      wirelessTx: monitorWirelessTxInput.checked,
-      latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
-      audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
+      wirelessTx: viewfinderWirelessTxInput.checked,
+      latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
   } else if (category === "video") {
     const watt = parseFloat(newWattInput.value);
