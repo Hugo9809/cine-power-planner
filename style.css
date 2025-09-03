@@ -1334,6 +1334,11 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   height: auto;
 }
 
+#projectDialog #lenses {
+  height: 15rem;
+  overflow-y: auto;
+}
+
 /* Project requirement boxes */
 .requirements-grid {
   display: flex;
