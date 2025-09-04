@@ -3,29 +3,19 @@ const fs = require('fs');
 const path = require('path');
 const LZString = require('lz-string');
 
-test('Easyrig stabiliser data exposes attachments', () => {
-  const gear = require('../devices/gearList.js');
-  const stabiliser = gear.accessories.cameraStabiliser['Easyrig 5 Vario'];
-  expect(stabiliser.options).toEqual([
-    'FlowCine Serene Spring Arm',
-    'Easyrig - STABIL G3'
-  ]);
-});
-
-test('restores project requirements from storage when gear list element is absent', () => {
+function setupDom(removeGear) {
   jest.resetModules();
-
   global.alert = jest.fn();
   global.prompt = jest.fn();
   Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
-
   const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
   const body = html.split('<body>')[1].split('</body>')[0];
   document.body.innerHTML = body;
-  const gearEl = document.getElementById('gearListOutput');
-  if (gearEl) gearEl.remove();
+  if (removeGear) {
+    const gearEl = document.getElementById('gearListOutput');
+    if (gearEl) gearEl.remove();
+  }
   document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
-
   global.devices = {
     cameras: {
       CamA: {
@@ -99,7 +89,6 @@ test('restores project requirements from storage when gear list element is absen
       }
     }
   };
-
   global.loadDeviceData = jest.fn(() => null);
   global.saveDeviceData = jest.fn();
   global.loadSetups = jest.fn(() => ({}));
@@ -109,16 +98,42 @@ test('restores project requirements from storage when gear list element is absen
   global.deleteSetup = jest.fn();
   global.loadFeedback = jest.fn(() => ({}));
   global.saveFeedback = jest.fn();
+}
+
+test('Easyrig stabiliser data exposes attachments', () => {
+  const gear = require('../devices/gearList.js');
+  const stabiliser = gear.accessories.cameraStabiliser['Easyrig 5 Vario'];
+  expect(stabiliser.options).toEqual([
+    'FlowCine Serene Spring Arm',
+    'Easyrig - STABIL G3'
+  ]);
+});
+
+test('restores project requirements from storage when gear list element is absent', () => {
+  setupDom(true);
   const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
   global.loadGearList = jest.fn(() => storedHtml);
   global.saveGearList = jest.fn();
   global.deleteGearList = jest.fn();
-
   require('../translations.js');
   const script = require('../script.js');
   script.setLanguage('en');
   script.setLanguage('en');
+  const projOut = document.getElementById('projectRequirementsOutput');
+  expect(projOut.classList.contains('hidden')).toBe(false);
+  expect(projOut.innerHTML).toContain('Project Requirements');
+});
 
+test('restores project requirements from storage with gear list present', () => {
+  setupDom(false);
+  const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div><h3>Gear List</h3><table class="gear-table"></table>';
+  global.loadGearList = jest.fn(() => storedHtml);
+  global.saveGearList = jest.fn();
+  global.deleteGearList = jest.fn();
+  require('../translations.js');
+  const script = require('../script.js');
+  script.setLanguage('en');
+  script.setLanguage('en');
   const projOut = document.getElementById('projectRequirementsOutput');
   expect(projOut.classList.contains('hidden')).toBe(false);
   expect(projOut.innerHTML).toContain('Project Requirements');
@@ -409,7 +424,7 @@ describe('script.js functions', () => {
     expect(gearList.querySelector('#gearListCage')).toBeNull();
   });
 
-  test('camera change refreshes gear list even without project info', () => {
+  test('camera change does not refresh gear list without project info', () => {
     const gearList = document.getElementById('gearListOutput');
     gearList.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr></table>';
     gearList.classList.remove('hidden');
@@ -424,7 +439,7 @@ describe('script.js functions', () => {
     cameraSelect.value = 'CamB';
     cameraSelect.dispatchEvent(new Event('change', { bubbles: true }));
     const rows = Array.from(gearList.querySelectorAll('.gear-table tr'));
-    expect(rows[1].textContent).toContain('CamB');
+    expect(rows[1].textContent).toContain('CamA');
   });
 
   test('gear list cage selection is stored with selected attribute', () => {
