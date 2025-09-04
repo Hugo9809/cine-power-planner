@@ -1611,6 +1611,17 @@ const projectRequirementsOutput = document.getElementById("projectRequirementsOu
 
 function splitGearListHtml(html) {
   if (!html) return { projectHtml: '', gearHtml: '' };
+  // Support legacy storage formats where the gear list and project
+  // requirements were saved separately as an object.
+  if (typeof html === 'object') {
+    const legacyProject = html.projectHtml || html.project || '';
+    const legacyGear = html.gearHtml || html.gear || '';
+    if (legacyProject || legacyGear) {
+      return { projectHtml: legacyProject, gearHtml: legacyGear };
+    }
+    // Some old exports used a gearList property.
+    html = html.gearList || '';
+  }
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const title = doc.querySelector('h2');
   const h3s = doc.querySelectorAll('h3');
