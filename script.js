@@ -7837,9 +7837,22 @@ function bindGearListSliderBowlListener() {
 
 
 function refreshGearListIfVisible() {
-    if (!gearListOutput || gearListOutput.classList.contains('hidden') || !currentProjectInfo) return;
-    const html = generateGearListHtml(currentProjectInfo);
-    displayGearAndRequirements(html);
+    if (!gearListOutput || gearListOutput.classList.contains('hidden')) return;
+
+    if (projectForm) {
+        populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+        populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
+        const info = collectProjectFormData();
+        currentProjectInfo = Object.values(info).some(v => v) ? info : null;
+    }
+
+    const html = generateGearListHtml(currentProjectInfo || {});
+    if (currentProjectInfo) {
+        displayGearAndRequirements(html);
+    } else {
+        const { gearHtml } = splitGearListHtml(html);
+        gearListOutput.innerHTML = gearHtml;
+    }
     ensureGearListActions();
     bindGearListCageListener();
     bindGearListEasyrigListener();

@@ -441,14 +441,16 @@ describe('script.js functions', () => {
     expect(gearList.querySelector('#gearListCage')).toBeNull();
   });
 
-  test('camera change does not refresh gear list without project info', () => {
+  test('camera change refreshes gear list without project info', () => {
     const gearList = document.getElementById('gearListOutput');
     gearList.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr></table>';
     gearList.classList.remove('hidden');
     devices.cameras.CamB = {
       powerDrawWatts: 12,
       power: { input: { type: 'LEMO 2-pin' } },
-      videoOutputs: [{ type: '3G-SDI' }]
+      videoOutputs: [{ type: '3G-SDI' }],
+      sensorModes: ['Full'],
+      recordingCodecs: ['ProRes']
     };
     const cameraSelect = document.getElementById('cameraSelect');
     cameraSelect.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
@@ -456,7 +458,35 @@ describe('script.js functions', () => {
     cameraSelect.value = 'CamB';
     cameraSelect.dispatchEvent(new Event('change', { bubbles: true }));
     const rows = Array.from(gearList.querySelectorAll('.gear-table tr'));
-    expect(rows[1].textContent).toContain('CamA');
+    expect(rows[1].textContent).toContain('CamB');
+  });
+
+  test('camera change runs project form logic', () => {
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.close = jest.fn();
+    devices.cameras.CamB = {
+      powerDrawWatts: 12,
+      power: { input: { type: 'LEMO 2-pin' } },
+      videoOutputs: [{ type: '3G-SDI' }],
+      sensorModes: ['Full'],
+      recordingCodecs: ['ProRes']
+    };
+    const cameraSelect = document.getElementById('cameraSelect');
+    cameraSelect.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
+    cameraSelect.value = 'CamA';
+    document.getElementById('projectName').value = 'Proj';
+    const projectForm = document.getElementById('projectForm');
+    projectForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const sensorSelect = document.getElementById('sensorMode');
+    const codecSelect = document.getElementById('codec');
+    expect(Array.from(sensorSelect.options).some(o => o.value === 'Full')).toBe(false);
+    expect(Array.from(codecSelect.options).some(o => o.value === 'ProRes')).toBe(false);
+    cameraSelect.value = 'CamB';
+    cameraSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    const sensorValues = Array.from(sensorSelect.options).map(o => o.value);
+    const codecValues = Array.from(codecSelect.options).map(o => o.value);
+    expect(sensorValues).toContain('Full');
+    expect(codecValues).toContain('ProRes');
   });
 
   test('gear list cage selection is stored with selected attribute', () => {
