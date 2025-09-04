@@ -139,6 +139,23 @@ test('restores project requirements from storage with gear list present', () => 
   expect(projOut.innerHTML).toContain('Project Requirements');
 });
 
+test('restores project requirements from legacy object storage', () => {
+  setupDom(true);
+  const storedObj = {
+    projectHtml: '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>',
+    gearHtml: ''
+  };
+  global.loadGearList = jest.fn(() => storedObj);
+  global.saveGearList = jest.fn();
+  global.deleteGearList = jest.fn();
+  require('../translations.js');
+  const script = require('../script.js');
+  script.setLanguage('en');
+  const projOut = document.getElementById('projectRequirementsOutput');
+  expect(projOut.classList.contains('hidden')).toBe(false);
+  expect(projOut.innerHTML).toContain('Project Requirements');
+});
+
 describe('script.js functions', () => {
   let script;
 
