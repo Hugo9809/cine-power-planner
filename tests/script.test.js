@@ -1843,6 +1843,54 @@ describe('script.js functions', () => {
     expect(consumText).toContain('1x Magliner Rain Cover Transparent');
   });
 
+  test('Extreme rain scenario adds weather protection gear and consumables for small monitor', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    const html = generateGearListHtml({ requiredScenarios: 'Extreme rain' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('Rain Cover "CamA"');
+    expect(miscText).toContain('1x Umbrella for Focus Monitor');
+    expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
+    const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
+    const consumText = rows[consumIdx + 1].textContent;
+    expect(consumText).toContain('2x CapIt Large');
+    expect(consumText).toContain('4x CapIt Medium');
+    expect(consumText).toContain('3x CapIt Small');
+    expect(consumText).toContain('10x Duschhaube');
+    expect(consumText).toContain('1x Magliner Rain Cover Transparent');
+  });
+
+  test('Rain Machine scenario does not duplicate umbrellas when combined with Outdoor', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    const html = generateGearListHtml({ requiredScenarios: 'Outdoor, Rain Machine' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('1x Umbrella for Focus Monitor');
+    expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
+    expect(miscText).not.toContain('2x Umbrella for Focus Monitor');
+    expect(miscText).not.toContain('2x Umbrella Magliner incl Mounting to Magliner');
+  });
+
   test('Outdoor scenario calculates CapIt sizes for large monitors', () => {
     const { generateGearListHtml } = script;
     devices.monitors.MonB = {
