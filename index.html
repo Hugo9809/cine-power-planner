@@ -6,9 +6,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="description" content="Plan your camera setup and calculate power consumption &amp; battery life." />
+  <meta name="description" content="Plan your camera project and calculate power consumption &amp; battery life." />
   <meta property="og:title" content="Camera Power Planner" />
-  <meta property="og:description" content="Plan your camera setup and calculate power consumption &amp; battery life." />
+  <meta property="og:description" content="Plan your camera project and calculate power consumption &amp; battery life." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="icon.png" />
   <meta name="theme-color" content="#f9f9f9" />
@@ -47,35 +47,35 @@
 
   <main id="mainContent" tabindex="-1">
 
-  <p id="tagline">Plan your camera setup and calculate power consumption &amp; battery life.</p>
+  <p id="tagline">Plan your camera project and calculate power consumption &amp; battery life.</p>
 
   <section id="setup-manager">
-    <h2 id="setupManageHeading">Manage Setup</h2>
+    <h2 id="setupManageHeading">Manage Project</h2>
     <div class="form-row">
-      <label for="setupSelect" id="savedSetupsLabel">Saved Setups:</label>
+      <label for="setupSelect" id="savedSetupsLabel">Saved Projects:</label>
       <select id="setupSelect" aria-labelledby="savedSetupsLabel">
-        <option value="">-- New Setup --</option>
+        <option value="">-- New Project --</option>
       </select>
-      <button id="deleteSetupBtn" title="Delete selected setup">Delete</button>
+      <button id="deleteSetupBtn" title="Delete selected project">Delete</button>
     </div>
     <div class="form-row">
-      <label for="setupName" id="setupNameLabel">Setup Name:</label>
-      <input type="text" id="setupName" placeholder="Setup name" aria-labelledby="setupNameLabel" />
+      <label for="setupName" id="setupNameLabel">Project Name:</label>
+      <input type="text" id="setupName" placeholder="Project name" aria-labelledby="setupNameLabel" />
       <button id="saveSetupBtn">Save</button>
     </div>
-    <!-- Moved Setup Actions here -->
-    <h3 id="setupActionsHeading">Setup Actions</h3>
-    <button id="exportSetupsBtn">Export All Setups</button>
-    <button id="importSetupsBtn">Import Setups</button>
+    <!-- Moved Project Actions here -->
+    <h3 id="setupActionsHeading">Project Actions</h3>
+    <button id="exportSetupsBtn">Export All Projects</button>
+    <button id="importSetupsBtn">Import Projects</button>
     <input type="file" id="importSetupsInput" accept=".json" class="hidden" />
     <button id="generateOverviewBtn">Generate Overview</button>
-    <button id="shareSetupBtn">Share Setup Link</button>
+      <button id="shareSetupBtn">Share Project Link</button>
     <div class="form-row hidden" id="sharedLinkRow">
       <label for="sharedLinkInput" id="sharedLinkLabel">Shared Link:</label>
       <input type="url" id="sharedLinkInput" placeholder="Paste shared link" aria-labelledby="sharedLinkLabel" />
       <button id="applySharedLinkBtn">Load</button>
     </div>
-    <button id="clearSetupBtn">Clear Current Setup</button>
+    <button id="clearSetupBtn">Clear Current Project</button>
   </section>
 
   <section id="setup-config">
@@ -187,10 +187,10 @@
   <section id="gearListOutput" class="hidden"></section>
 
   <section id="setupDiagram">
-    <h2 id="setupDiagramHeading">Setup Diagram</h2>
+    <h2 id="setupDiagramHeading">Project Diagram</h2>
     <p id="compatWarning" role="status" aria-live="polite"></p>
     <p id="diagramDesc" class="visually-hidden">Visual representation of connected devices.</p>
-    <div id="diagramArea" role="img" aria-label="Setup diagram" aria-describedby="diagramDesc">
+    <div id="diagramArea" role="img" aria-label="Project diagram" aria-describedby="diagramDesc">
       <div id="diagramPopup" class="diagram-popup"></div>
     </div>
     <div id="diagramLegend" class="diagram-legend"></div>
@@ -624,7 +624,7 @@
           <h3><span class="help-icon" aria-hidden="true">✨</span>Features at a Glance</h3>
           <ul>
             <li>Plan complete camera rigs and compute power draw and battery life.</li>
-            <li>Save multiple setups, export or import them and print overviews.</li>
+            <li>Save multiple projects, export or import them and print overviews.</li>
             <li>Visualize power and video connections with an interactive diagram—drag to rearrange, pan, snap to grid, reset the view, zoom and download the layout.</li>
             <li>Compare battery runtimes and check against safe output limits.</li>
             <li>Customize the device database with your own gear.</li>
@@ -642,20 +642,20 @@
           </ol>
         </section>
         <section data-help-section id="managingSetups">
-          <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Setups</h3>
+          <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Projects</h3>
           <ul>
             <li>Use <strong>Save</strong> to store the current configuration in your browser. Press Enter or Ctrl+S (⌘S on macOS) to save quickly; the Save button stays disabled until a name is entered.</li>
-            <li>Import, export or delete setups via the <em>Setup Actions</em> section.</li>
-            <li><strong>Share Setup Link</strong> copies a URL for the current configuration.</li>
-            <li><strong>Clear Current Setup</strong> removes all selected devices.</li>
-            <li><strong>Generate Overview</strong> produces a printable summary of any saved setup.</li>
+            <li>Import, export or delete projects via the <em>Project Actions</em> section.</li>
+            <li><strong>Share Project Link</strong> copies a URL for the current configuration.</li>
+            <li><strong>Clear Current Project</strong> removes all selected devices.</li>
+            <li><strong>Generate Overview</strong> produces a printable summary of any saved project.</li>
             </ul>
           </section>
           <section data-help-section id="gearListHelp">
             <h3><span class="help-icon" aria-hidden="true">📋</span>Gear List</h3>
             <ul>
               <li>The <strong>Generate Gear List</strong> button compiles selected gear and project requirements.</li>
-              <li>The <strong>Save Gear List</strong> button stores the current list with the setup.</li>
+              <li>The <strong>Save Gear List</strong> button stores the current list with the project.</li>
               <li>The <strong>Export Gear List</strong> button downloads a JSON file, and <strong>Import Gear List</strong> restores it.</li>
               <li>The <strong>Delete Gear List</strong> button removes the saved list and hides the output.</li>
             </ul>
@@ -702,7 +702,7 @@
           </ul>
         </section>
         <section data-help-section id="setupDiagramHelp">
-          <h3><span class="help-icon" aria-hidden="true">🗺️</span>Setup Diagram</h3>
+          <h3><span class="help-icon" aria-hidden="true">🗺️</span>Project Diagram</h3>
           <ul>
             <li>Visualizes power and video connections between selected devices.</li>
             <li>Drag nodes to rearrange the layout; use +/– buttons to zoom.</li>
@@ -780,19 +780,19 @@
             <li><kbd>Escape</kbd> – close dialogs</li>
             <li><kbd>D</kbd> – toggle dark mode</li>
             <li><kbd>P</kbd> – toggle pink mode</li>
-            <li><kbd>Enter</kbd> or <kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd> on macOS) – save setup</li>
+            <li><kbd>Enter</kbd> or <kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd> on macOS) – save project</li>
             <li>Type in dropdowns to filter options</li>
           </ul>
         </section>
         <section data-help-section id="faq">
           <h3><span class="help-icon" aria-hidden="true">❓</span>FAQ</h3>
           <details class="faq-item">
-            <summary>How do I save a setup?</summary>
-            <p>Enter a name in the Setup Name field and click Save. It will then appear in the Saved Setups list.</p>
+            <summary>How do I save a project?</summary>
+            <p>Enter a name in the Project Name field and click Save. It will then appear in the Saved Projects list.</p>
           </details>
           <details class="faq-item">
-            <summary>Can I export my setups?</summary>
-            <p>Yes. Use the Export All Setups button to download a JSON file containing every saved setup.</p>
+            <summary>Can I export my projects?</summary>
+            <p>Yes. Use the Export All Projects button to download a JSON file containing every saved project.</p>
           </details>
           <details class="faq-item">
             <summary>How do I edit device data?</summary>
@@ -800,15 +800,15 @@
           </details>
           <details class="faq-item">
             <summary>How is battery runtime calculated?</summary>
-            <p>The app divides the selected battery's capacity (in watt-hours) by the total power consumption of your devices. For example, a 98&nbsp;Wh battery powering a 24&nbsp;W setup is estimated to run for about 4&nbsp;hours.</p>
+            <p>The app divides the selected battery's capacity (in watt-hours) by the total power consumption of your devices. For example, a 98&nbsp;Wh battery powering a 24&nbsp;W project is estimated to run for about 4&nbsp;hours.</p>
           </details>
           <details class="faq-item">
             <summary>What do the warning colors mean?</summary>
-            <p>Orange messages indicate the setup is nearing the battery's output limit. Red warnings mean the estimated current exceeds the safe rating and could damage the battery.</p>
+            <p>Orange messages indicate the project is nearing the battery's output limit. Red warnings mean the estimated current exceeds the safe rating and could damage the battery.</p>
           </details>
           <details class="faq-item">
-            <summary>Where are my setups saved?</summary>
-            <p>Setups and device edits are stored in your browser's <code>localStorage</code>. Use Export/Import to back them up or share them.</p>
+            <summary>Where are my projects saved?</summary>
+            <p>Projects and device edits are stored in your browser's <code>localStorage</code>. Use Export/Import to back them up or share them.</p>
           </details>
           <details class="faq-item">
             <summary>Does the planner work offline?</summary>
@@ -826,15 +826,15 @@
           </details>
           <details class="faq-item">
             <summary>How do I reset everything to the defaults?</summary>
-            <p>Open the device editor and choose <em>Export and Revert</em> to restore the default database. Delete setups individually using the Delete button.</p>
+            <p>Open the device editor and choose <em>Export and Revert</em> to restore the default database. Delete projects individually using the Delete button.</p>
           </details>
           <details class="faq-item">
             <summary>How do I change the language?</summary>
             <p>Use the dropdown in the top right to pick a language. The planner remembers your choice for the next visit.</p>
           </details>
           <details class="faq-item">
-            <summary>How can I print a setup overview?</summary>
-            <p>Save the setup, then click <em>Generate Overview</em> in Setup Actions and print from the dialog.</p>
+            <summary>How can I print a project overview?</summary>
+            <p>Save the project, then click <em>Generate Overview</em> in Project Actions and print from the dialog.</p>
           </details>
           <details class="faq-item">
             <summary>How do I compare different batteries?</summary>
@@ -849,7 +849,7 @@
             <p>Yes. In the Device Database Editor you can create new devices, change existing ones or delete entries. The changes appear immediately in the dropdown menus.</p>
           </details>
           <details class="faq-item">
-            <summary>What does the Setup Diagram show?</summary>
+            <summary>What does the Project Diagram show?</summary>
             <p>The diagram illustrates how power and video cables connect between your chosen devices. Drag the nodes to arrange them and use the buttons to zoom or download an image.</p>
           </details>
           <details class="faq-item">
@@ -1071,7 +1071,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🎥 Camera Setup</legend>
+        <legend>🎥 Camera Project</legend>
         <div class="form-row"><label>Camera:<input type="text" id="fbCamera" name="fbCamera" readonly></label></div>
         <div class="form-row"><label>Battery Plate:<input type="text" id="fbBatteryPlate" name="fbBatteryPlate" readonly></label></div>
         <div class="form-row"><label>Lens Mount:<input list="mountOptions" id="fbLensMount" name="fbLensMount"></label></div>

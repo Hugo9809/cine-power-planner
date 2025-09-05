@@ -5,7 +5,7 @@
 Camera Power Planner is a standalone web app for planning professional camera
 rigs powered by V‑Mount or B‑Mount batteries. It calculates total power draw,
 checks that batteries can safely deliver the required output and estimates how
-long your setup will run. The tool runs entirely in the browser and even works
+ long your project will run. The tool runs entirely in the browser and even works
 offline.
 
 No build step is required—open `index.html` in your browser and start planning
@@ -42,7 +42,7 @@ Choose your preferred language above.
 
 Recent updates include:
 
-- **Interactive setup diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
+- **Interactive project diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits or press **P** to switch quickly.
 - **Searchable help dialog and hover hints** – open with ?, H, F1 or Ctrl+/ (even while typing), filter topics instantly, press / or Ctrl+F to jump to the search box, browse the built-in FAQ, and hover over any button, field, dropdown or header for a quick explanation.
 - **Type-to-search dropdowns** – quickly narrow device lists by typing directly into any selector.
@@ -50,8 +50,8 @@ Recent updates include:
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
 - **Gear list generator** – compile selected gear and project requirements with one click.
-- **Quick setup saving** – press Enter or Ctrl+S (⌘S on macOS) to save a setup and the Save button stays disabled until a name is entered.
-- **Project requirement saving** – store project requirements with each setup so gear lists retain full context.
+- **Quick project saving** – press Enter or Ctrl+S (⌘S on macOS) to save a project and the Save button stays disabled until a name is entered.
+- **Project requirement saving** – store project requirements with each project so gear lists retain full context.
 - **User entry duplication** – gear list forms use fork buttons to copy user fields instantly.
 
 See the language-specific README files for full details.
@@ -63,7 +63,7 @@ See the language-specific README files for full details.
 - Check that selected batteries can supply the required output.
 - See required battery counts for a 10 h shoot and adjust runtimes for temperature.
 - Compare runtimes across all batteries with an optional battery comparison panel.
-- Save, load, share and clear setups (project requirements included); import/export them as JSON, and generate gear lists and printable overviews.
+- Save, load, share and clear projects (project requirements included); import/export them as JSON, and generate gear lists and printable overviews.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
 - Automatically selects your browser language on first load, lets you switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
@@ -71,7 +71,7 @@ See the language-specific README files for full details.
 
 ## Runtime Data Weighting
 
-User-submitted battery runtimes are combined using a weighted average to better match your setup:
+User-submitted battery runtimes are combined using a weighted average to better match your project:
 
 - Entries are adjusted for temperature, scaling from ×1 at 25 °C to ×1.25 at 0 °C, ×1.6 at −10 °C and ×2 at −20 °C.
 - Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled relative to 1080p.
@@ -97,7 +97,7 @@ User-submitted battery runtimes are combined using a weighted average to better 
 ## Gear List
 
 - Click **Generate Gear List** to compile selected gear and project requirements.
-- **Save Gear List** stores the current list with the setup.
+- **Save Gear List** stores the current list with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
 
@@ -177,7 +177,7 @@ Contributions are welcome! Please open an issue or submit a pull request on GitH
 
 ## Acknowledgements
 
-The planner uses the [OpenMoji](https://openmoji.org/) icon set when a network connection is available and relies on [lz-string](https://pieroxy.net/blog/pages/lz-string/index.html) to compactly store setups in URLs.
+ The planner uses the [OpenMoji](https://openmoji.org/) icon set when a network connection is available and relies on [lz-string](https://pieroxy.net/blog/pages/lz-string/index.html) to compactly store projects in URLs.
 
 ## License
 
