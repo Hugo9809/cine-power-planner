@@ -5571,6 +5571,23 @@ function populateSetupSelect() {
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
 
+// Auto-save a backup project after 10 minutes if none selected
+setTimeout(() => {
+  if (!setupSelect || setupSelect.value) return;
+  const pad = (n) => String(n).padStart(2, "0");
+  const now = new Date();
+  const backupName = `saved-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
+  const currentSetup = { ...getCurrentSetupState(), gearList: getCurrentGearListHtml() };
+  const setups = getSetups();
+  setups[backupName] = currentSetup;
+  storeSetups(setups);
+  populateSetupSelect();
+  setupSelect.value = backupName;
+  if (setupNameInput) setupNameInput.value = backupName;
+  loadedSetupState = getCurrentSetupState();
+  checkSetupChanged();
+}, 10 * 60 * 1000);
+
 // Toggle device manager visibility
 if (toggleDeviceBtn) {
   toggleDeviceBtn.addEventListener("click", () => {

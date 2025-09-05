@@ -156,6 +156,27 @@ test('restores project requirements from legacy object storage', () => {
   expect(projOut.innerHTML).toContain('Project Requirements');
 });
 
+describe('auto backup', () => {
+  test('creates backup after 10 minutes when no project selected', () => {
+    setupDom(false);
+    const stored = {};
+    global.loadSetups = jest.fn(() => stored);
+    global.saveSetups = jest.fn((data) => Object.assign(stored, data));
+    jest.useFakeTimers();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    jest.advanceTimersByTime(10 * 60 * 1000);
+    expect(global.saveSetups).toHaveBeenCalled();
+    const names = Object.keys(stored);
+    expect(names.length).toBe(1);
+    const backupName = names[0];
+    expect(backupName.startsWith('saved-backup-')).toBe(true);
+    expect(document.getElementById('setupSelect').value).toBe(backupName);
+    jest.useRealTimers();
+  });
+});
+
 describe('script.js functions', () => {
   let script;
 
