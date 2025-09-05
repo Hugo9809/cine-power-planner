@@ -1437,8 +1437,51 @@ describe('script.js functions', () => {
       expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
       expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
       expect(html).toContain('3x Tennisball');
-      expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
-    });
+    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
+  });
+
+  test('zoom remote adds second motor and controller for Arri brand', () => {
+    const { ensureZoomRemoteSetup, generateGearListHtml } = script;
+    global.devices.fiz.motors['Arri cforce mini RF (KK.0040345)'] = { powerDrawWatts: 1 };
+    global.devices.fiz.motors['Arri Cforce Mini'] = { powerDrawWatts: 1 };
+    global.devices.fiz.controllers['Arri Master Grip (single unit)'] = { powerDrawWatts: 1 };
+    const m1 = document.getElementById('motor1Select');
+    m1.innerHTML = '<option value="Arri cforce mini RF (KK.0040345)">Arri cforce mini RF (KK.0040345)</option>';
+    m1.value = 'Arri cforce mini RF (KK.0040345)';
+    const m2 = document.getElementById('motor2Select');
+    m2.innerHTML = '<option value="None">None</option><option value="Arri Cforce Mini">Arri Cforce Mini</option>';
+    m2.value = 'None';
+    const c1 = document.getElementById('controller1Select');
+    c1.innerHTML = '<option value="None">None</option><option value="Arri Master Grip (single unit)">Arri Master Grip (single unit)</option>';
+    c1.value = 'None';
+    ensureZoomRemoteSetup({ tripodPreferences: 'Zoom Remote handle' });
+    expect(m2.value).toBe('Arri Cforce Mini');
+    expect(c1.value).toBe('Arri Master Grip (single unit)');
+    const html = generateGearListHtml();
+    expect(html).toContain('Arri Cforce Mini');
+    expect(html).toContain('Arri Master Grip (single unit)');
+  });
+
+  test('zoom remote adds second motor and controller for Tilta brand', () => {
+    const { ensureZoomRemoteSetup, generateGearListHtml } = script;
+    global.devices.fiz.motors['Tilta Nucleus M'] = { powerDrawWatts: 1 };
+    global.devices.fiz.controllers['Tilta Nucleus-M Hand Grip (single)'] = { powerDrawWatts: 1 };
+    const m1 = document.getElementById('motor1Select');
+    m1.innerHTML = '<option value="Tilta Nucleus M">Tilta Nucleus M</option>';
+    m1.value = 'Tilta Nucleus M';
+    const m2 = document.getElementById('motor2Select');
+    m2.innerHTML = '<option value="None">None</option><option value="Tilta Nucleus M">Tilta Nucleus M</option>';
+    m2.value = 'None';
+    const c1 = document.getElementById('controller1Select');
+    c1.innerHTML = '<option value="None">None</option><option value="Tilta Nucleus-M Hand Grip (single)">Tilta Nucleus-M Hand Grip (single)</option>';
+    c1.value = 'None';
+    ensureZoomRemoteSetup({ tripodPreferences: 'Zoom Remote handle' });
+    expect(m2.value).toBe('Tilta Nucleus M');
+    expect(c1.value).toBe('Tilta Nucleus-M Hand Grip (single)');
+    const html = generateGearListHtml();
+    expect(html).toContain('Tilta Nucleus M');
+    expect(html).toContain('Tilta Nucleus-M Hand Grip (single)');
+  });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
     const { generateGearListHtml } = script;
