@@ -7728,6 +7728,10 @@ function generateGearListHtml(info = {}) {
     }
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
+    if (scenarios.includes('Jib')) {
+        gripItems.push('Pro Sup EJIb-Arm');
+        gripItems.push('jib counter weights');
+    }
     if (scenarios.includes('Slider')) {
         const options = ['', '75er bowl', '100er bowl', '150er bowl', 'Mitchell Mount'].map(o => `<option value="${escapeHtml(o)}"${o === info.sliderBowl ? ' selected' : ''}>${escapeHtml(o)}</option>`).join('');
         sliderSelectHtml = `1x Prosup Tango Roller <select id="gearListSliderBowl">${options}</select>`;
