@@ -752,7 +752,13 @@ const fizData = {
     },
     "Preston Light Ranger 2 (LR2) Main Sensor": {
       "powerDrawWatts": 20,
-      "connection_compatibility": "Preston systems only (via MDR4)",
+      "fizConnectors": [
+        {
+          "type": "Serial",
+          "notes": "connects to MDR3/MDR4 serial port"
+        }
+      ],
+      "connection_compatibility": "Preston systems only (via MDR3/MDR4)",
       "measurement_method": "LADAR (Laser Detection and Ranging)",
       "measurement_range": "2ft - 60ft (0.6m - 18.3m) with standard sensor; up to 200ft+ with optional long-range sensors.",
       "accuracy": "High precision, measures distance to multiple objects simultaneously.",
@@ -761,6 +767,12 @@ const fizData = {
     },
     "Teradek TOF.1 Range Finder Module": {
       "powerDrawWatts": 3.6,
+      "fizConnectors": [
+        {
+          "type": "LEMO 7-pin",
+          "notes": "motor cable to MDR.X middle motor input"
+        }
+      ],
       "connection_compatibility": "Teradek systems only (MDR.X/MDR.S/MDR.M)",
       "measurement_method": "LiDAR (Time-of-Flight Laser)",
       "measurement_range": "0.3m - 20m (1ft - 65ft)",
@@ -770,6 +782,16 @@ const fizData = {
     },
     "DJI LiDAR Range Finder": {
       "powerDrawWatts": 6.8,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "LiDAR connection"
+        },
+        {
+          "type": "USB-C",
+          "notes": "Focus Motor connection"
+        }
+      ],
       "connection_compatibility": "DJI Ronin 4D or Focus Pro Handle with Focus Pro Motors",
       "measurement_method": "LiDAR (Light Detection and Ranging)",
       "measurement_range": "0.5m - 14m (1.6ft - 46ft)",
