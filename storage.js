@@ -172,6 +172,12 @@ function renameSetup(oldName, newName) {
     return null;
   }
   const sanitized = newName.trim();
+  // Guard against empty or whitespace-only names. Renaming to such a value
+  // would create an empty key in the setups object. In that case simply keep
+  // the original name.
+  if (!sanitized) {
+    return oldName;
+  }
   if (oldName.trim().toLowerCase() === sanitized.toLowerCase()) {
     return oldName;
   }
