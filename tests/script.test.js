@@ -1565,6 +1565,23 @@ describe('script.js functions', () => {
     expect(Array.from(tripodSelect.selectedOptions)).toHaveLength(0);
   });
 
+  test('double-clicking an option only deselects that option', () => {
+    const selects = document.querySelectorAll('#projectForm select[multiple]');
+    selects.forEach(sel => {
+      const [first, second] = sel.options;
+      if (!first) return;
+      Array.from(sel.options).forEach(o => { o.selected = false; });
+      if (second) second.selected = true;
+      first.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, detail: 1 }));
+      first.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      first.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, detail: 2 }));
+      first.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      first.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }));
+      expect(first.selected).toBe(false);
+      if (second) expect(second.selected).toBe(true);
+    });
+  });
+
   test('Hand Grips rigging adds telescopic handle', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ rigging: 'Hand Grips' });
