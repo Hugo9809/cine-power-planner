@@ -1,6 +1,6 @@
 # 🎥 Camera Power Consumption Planner
 
-This browser based tool helps plan professional camera setups powered by V‑Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
+This browser based tool helps plan professional camera projects powered by V‑Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
 
 ---
 
@@ -16,7 +16,7 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
-- Interactive setup diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
+- Interactive project diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
 - Playful pink accent theme that persists between visits.
 - Searchable help dialog with step-by-step sections and a FAQ; open with ?, H, F1 or Ctrl+/.
 - Contextual hover help for buttons, fields, dropdowns and headers.
@@ -24,26 +24,26 @@ The app automatically uses your browser language on first load, and you can swit
 - Submit user runtime feedback with temperature for better estimates.
 - Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
 - Generate gear lists to compile selected gear and project requirements.
-- Save project requirements with each setup so gear lists retain full context.
+- Save project requirements with each project so gear lists retain full context.
 - Duplicate user entries in gear list forms using fork buttons to copy fields instantly.
 
 ---
 
 ## 🔧 Features
 
-### ✅ Setup Management
-- Save, load and delete multiple camera setups (press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered)
-- Share a setup via link or clear the current configuration
+-### ✅ Project Management
+- Save, load and delete multiple camera projects (press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered)
+- Share a project via link or clear the current configuration
 - Data is stored locally via `localStorage`
-- Import and export setups as JSON
-- Generate a printable overview for any saved setup
-- Save project requirements along with each setup
-- Works fully offline – language, dark mode, setups and device data persist
+- Import and export projects as JSON
+- Generate a printable overview for any saved project
+- Save project requirements along with each project
+- Works fully offline – language, dark mode, projects and device data persist
 - Choose a **B‑Mount** or **V‑Mount** plate on supported cameras; the battery list adapts automatically
 
 ### 📋 Gear List
 - Click **Generate Gear List** to compile selected gear and project requirements.
-- **Save Gear List** stores the current list with the setup.
+- **Save Gear List** stores the current list with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
 
@@ -72,7 +72,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Compare runtime estimates across all batteries
 - Visual bar graph for quick reference
 
-### 🖼 Setup Diagram
+### 🖼 Project Diagram
 - Visualize power and video connections for the selected devices
 - Warns when FIZ brands are incompatible
 - Drag nodes to rearrange the layout, zoom with the buttons and download the diagram as SVG or JPG
@@ -93,7 +93,7 @@ The app automatically uses your browser language on first load, and you can swit
   - Wi‑Fi enabled adds 10 %
   - Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7
   - Monitor entries below the specified brightness are weighted by their brightness ratio
-- The final weight reflects each device's share of the total power draw, so matching setups count more.
+- The final weight reflects each device's share of the total power draw, so matching projects count more.
 - The weighted average is used once at least three entries are available.
 - A dashboard orders entries by weight and displays each one's share percentage for quick comparison.
 
@@ -139,7 +139,7 @@ The app automatically uses your browser language on first load, and you can swit
 2. **Select Devices:** Choose devices from each category using the dropdowns
 3. **View Calculations:** See total draw, current and runtime when a battery is selected
 4. **Check Output Limits:** Status indicators show if the battery output is exceeded
-5. **Save & Load Setups:** Name and save your setup, export/import them and generate a printable overview
+5. **Save & Load Projects:** Name and save your project, export/import them and generate a printable overview
 6. **Manage Device List:** Click “Edit Device Data…” to open the editor, modify devices or revert to the defaults
 7. **Submit Runtime Data (optional):** Use “Submit User Runtime Feedback” to share your results and improve estimates
 

@@ -7,14 +7,14 @@ const texts = {
     skipToContent: "Skip to content",
     offlineIndicator: "Offline",
 
-    setupManageHeading: "Manage Setup",
+    setupManageHeading: "Manage Project",
     deviceSelectionHeading: "Device Selection",
     resultsHeading: "Results",
     deviceManagerHeading: "Manage Device Database",
     batteryComparisonHeading: "Battery Comparison",
-    setupDiagramHeading: "Setup Diagram",
+    setupDiagramHeading: "Project Diagram",
     setupManageHeadingHelp:
-      "Manage saved setups: save, load, or clear configurations.",
+      "Manage saved projects: save, load, or clear configurations.",
     deviceSelectionHeadingHelp:
       "Choose cameras, monitors, and accessories for your rig.",
     resultsHeadingHelp:
@@ -25,7 +25,7 @@ const texts = {
       "Compare runtimes for all compatible batteries.",
     setupDiagramHeadingHelp:
       "View a visual diagram of how selected devices connect.",
-    setupDiagramPlaceholder: "Select devices to visualize the setup.",
+    setupDiagramPlaceholder: "Select devices to visualize the project.",
     diagramLegendPower: "Power",
     diagramLegendVideo: "Video",
     diagramLegendFIZ: "FIZ",
@@ -42,16 +42,16 @@ const texts = {
     reloadAppLabel: "Force reload",
     reloadAppHelp: "Clear cached files and reload to apply updates.",
 
-    savedSetupsLabel: "Saved Setups:",
-    newSetupOption: "-- New Setup --",
-    setupNameLabel: "Setup Name:",
+    savedSetupsLabel: "Saved Projects:",
+    newSetupOption: "-- New Project --",
+    setupNameLabel: "Project Name:",
     deleteSetupBtn: "Delete",
     saveSetupBtn: "Save",
     updateSetupBtn: "Update",
-    clearSetupBtn: "Clear Current Setup",
+    clearSetupBtn: "Clear Current Project",
     clearFilter: "Clear filter",
-    shareSetupBtn: "Share Setup Link",
-    shareSetupPrompt: "Copy this link to share your setup:",
+    shareSetupBtn: "Share Project Link",
+    shareSetupPrompt: "Copy this link to share your project:",
     shareLinkCopied: "Link copied to clipboard.",
     sharedLinkLabel: "Shared Link:",
     sharedLinkPlaceholder: "Paste shared link",
@@ -124,7 +124,7 @@ const texts = {
     missingFIZControllerWarning: "ERROR: FIZ motors require a controller with LBUS/CAM connection.",
     arriUMC4Warning: "WARNING: UMC-4 only works with LCS (LEMO 7-pin) to LBUS cable with LBUS devices.",
     arriRIA1Warning: "WARNING: RIA-1 or cforce RF controllers are not compatible with CLM-4/5.",
-    arriCLMNoUMC4Warning: "WARNING: No FIZ controller present. Select a UMC-4 for a complete setup. CLM-4/5 are not compatible with RIA-1, cforce RF or Master Grips.",
+    arriCLMNoUMC4Warning: "WARNING: No FIZ controller present. Select a UMC-4 for a complete project. CLM-4/5 are not compatible with RIA-1, cforce RF or Master Grips.",
     distanceControllerWarning: "WARNING: Distance units require UMC-4, RIA-1 or cforce RF.",
     masterGripWirelessWarning: "WARNING: Master Grip has no wireless capability. Use RIA-1, UMC-4 or cforce RF for wireless control.",
 
@@ -261,7 +261,7 @@ const texts = {
     runtimeLabel: "Estimated Runtime (h)",
     batteryLifeUnit: "hrs",
     runtimeAverageNote: "Note: runtime estimate uses a weighted average of user-submitted runtimes adjusted for resolution, codec, frame rate, brightness and temperature.",
-    runtimeUserCountNote: "Based on {count} user reports for this setup.",
+    runtimeUserCountNote: "Based on {count} user reports for this project.",
     temperatureNoteHeading: "Temperature impact on runtime:",
     temperatureNoteHelp: "Shows how different temperatures affect battery runtime.",
     temperatureLabel: "Temperature (°C)",
@@ -269,12 +269,12 @@ const texts = {
 
     noBatterySupports: "No battery can supply this load.",
 
-    alertSetupName: "Please enter a name for the setup.",
-    alertSetupSaved: "Setup \"{name}\" saved.",
-    alertNoSetupSelected: "Please select a saved setup to delete.",
-    confirmClearSetup: "Clear current setup?",
+    alertSetupName: "Please enter a name for the project.",
+    alertSetupSaved: "Project \"{name}\" saved.",
+    alertNoSetupSelected: "Please select a saved project to delete.",
+    confirmClearSetup: "Clear current project?",
     confirmClearSetupAgain: "This will remove all selections. Are you sure?",
-    confirmDeleteSetup: "Really delete setup \"{name}\"?",
+    confirmDeleteSetup: "Really delete project \"{name}\"?",
     // alertSetupDeleted not used
     confirmDeleteDevice: "Really delete device \"{name}\"?",
     alertDeviceExists: "A device with this name already exists in this category.",
@@ -286,11 +286,11 @@ const texts = {
     alertInvalidCameraJSON: "Invalid JSON for camera details",
 
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
-    setupActionsHeading: "Setup Actions",
+    setupActionsHeading: "Project Actions",
     setupActionsHeadingHelp:
-      "Export, import or share saved setups.",
-    exportSetupsBtn: "Export All Setups",
-    importSetupsBtn: "Import Setups",
+      "Export, import or share saved projects.",
+    exportSetupsBtn: "Export All Projects",
+    importSetupsBtn: "Import Projects",
     generateOverviewBtn: "Generate Overview",
     generateGearListBtn: "Generate Gear List and Project Requirements",
     editProjectBtn: "Edit Project requirements",
@@ -298,11 +298,11 @@ const texts = {
     exportGearListBtn: "Export Gear List",
     importGearListBtn: "Import Gear List",
     deleteGearListBtn: "Delete Gear List",
-    alertNoSetupsToExport: "There are no saved setups to export.",
-    alertImportSetupsSuccess: "Successfully imported {num_setups} setups.",
-    alertImportSetupsError: "Error: Could not import setups. The file may be invalid or corrupted.",
-    alertSelectSetupForOverview: "Please select a saved setup to generate an overview.",
-    overviewTitle: "Setup Overview",
+    alertNoSetupsToExport: "There are no saved projects to export.",
+    alertImportSetupsSuccess: "Successfully imported {num_setups} projects.",
+    alertImportSetupsError: "Error: Could not import projects. The file may be invalid or corrupted.",
+    alertSelectSetupForOverview: "Please select a saved project to generate an overview.",
+    overviewTitle: "Project Overview",
     backToAppBtn: "Back to App",
     exportAndRevertBtn: "Export and Revert to default Database",
     exportAndRevertBtnHelp: "Export your database and restore default entries.",
@@ -324,27 +324,27 @@ const texts = {
     hoverHelpButtonHelp:
       "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations.",
     setupSelectHelp:
-      "Pick a previously saved configuration or select '-- New Setup --' to start from scratch.",
+      "Pick a previously saved configuration or select '-- New Project --' to start from scratch.",
     setupNameHelp:
-      "Enter a descriptive name for the current setup so you can recognize it later.",
+      "Enter a descriptive name for the current project so you can recognize it later.",
     deleteSetupHelp:
-      "Remove the highlighted saved setup permanently from your browser.",
+      "Remove the highlighted saved project permanently from your browser.",
     saveSetupHelp:
-      "Store the devices and battery you have selected so the setup can be recalled later. Press Enter or Ctrl+S (Cmd+S on Mac) to save quickly; the Save button stays disabled until a name is entered.",
+      "Store the devices and battery you have selected so the project can be recalled later. Press Enter or Ctrl+S (Cmd+S on Mac) to save quickly; the Save button stays disabled until a name is entered.",
     exportSetupsHelp:
       "Download every saved configuration as a JSON file for backup or sharing.",
     importSetupsHelp:
-      "Load setups from a previously exported JSON file, replacing the current list.",
+      "Load projects from a previously exported JSON file, replacing the current list.",
     generateOverviewHelp:
-      "Generate a print-ready summary of any saved setup, including power and connection details.",
+      "Generate a print-ready summary of any saved project, including power and connection details.",
     generateGearListHelp:
       "Show selected gear and project requirements in a list.",
     shareSetupHelp:
-      "Copy a unique link representing the current setup that others can open to load the same configuration.",
+      "Copy a unique link representing the current project that others can open to load the same configuration.",
     applySharedLinkHelp:
       "Load the configuration described by the shared link entered above.",
     sharedLinkHelp:
-      "Paste a previously generated share link in this field to load that setup.",
+      "Paste a previously generated share link in this field to load that project.",
     cameraSelectHelp: "Choose the camera body that anchors your rig.",
     monitorSelectHelp: "Choose an on-board or wireless monitor to include.",
     videoSelectHelp: "Choose a transmitter/receiver pair or other wireless video link.",
@@ -354,10 +354,10 @@ const texts = {
     batteryPlateSelectHelp: "Choose the battery plate or adapter that connects the battery to the camera.",
     clearSetupHelp: "Reset the planner by removing every selected device.",    runtimeFeedbackBtnHelp:
       "Open a form where you can submit real-world runtime data for this configuration.",
-    zoomOutHelp: "Zoom out of the setup diagram to view more of the layout.",
-    zoomInHelp: "Zoom in on the setup diagram for a closer look at connections.",
+    zoomOutHelp: "Zoom out of the project diagram to view more of the layout.",
+    zoomInHelp: "Zoom in on the project diagram for a closer look at connections.",
     downloadDiagramHelp:
-      "Download the current setup diagram as an SVG or JPG image.",
+      "Download the current project diagram as an SVG or JPG image.",
     gridSnapToggleHelp:
       "Turn grid snapping on or off to help align items in the diagram.",
     resetViewBtn: "Reset View",
