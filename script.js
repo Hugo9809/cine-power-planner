@@ -7623,6 +7623,12 @@ function generateGearListHtml(info = {}) {
     const monitoringSupportHardware = formatItems(monitoringSupportAcc);
     const monitoringSupportItems = monitoringSupportHardware;
     addRow('Monitoring support', monitoringSupportItems);
+    const cartsTransportationItems = [
+        'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
+        ...Array(10).fill('Securing Straps (25mm wide)'),
+        'Loading Ramp (pair, 420kg)',
+        ...Array(20).fill('Airliner Ösen')
+    ];
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
@@ -7730,6 +7736,10 @@ function generateGearListHtml(info = {}) {
     if (standCount) {
         gripItems.push(...Array(standCount * 3).fill('Tennisball'));
     }
+    const maglinerCount = cartsTransportationItems.filter(item => /Magliner/i.test(item)).length;
+    if (maglinerCount) {
+        gripItems.push(...Array(maglinerCount * 2).fill('Wooden wedge'));
+    }
     const riggingItems = formatItems(riggingAcc);
     addRow('Rigging', riggingItems);
     const powerItems = [
@@ -7742,12 +7752,6 @@ function generateGearListHtml(info = {}) {
     ];
     addRow('Power', formatItems(powerItems));
     addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
-    const cartsTransportationItems = [
-        'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
-        ...Array(10).fill('Securing Straps (25mm wide)'),
-        'Loading Ramp (pair, 420kg)',
-        ...Array(20).fill('Airliner Ösen')
-    ];
     addRow('Carts and Transportation', formatItems(cartsTransportationItems));
     const miscExcluded = new Set([
         'D-Tap to LEMO 2-pin',

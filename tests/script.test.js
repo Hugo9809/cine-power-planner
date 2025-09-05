@@ -1648,6 +1648,17 @@ describe('script.js functions', () => {
     expect(itemsText).toContain('20x Airliner Ösen');
   });
 
+  test('Magliner adds wooden wedges to grip section', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml();
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const gripText = rows[gripIdx + 1].textContent;
+    expect(gripText).toContain('2x Wooden wedge');
+  });
+
   test('Slider scenario adds Tango Roller and accessories', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Slider', sliderBowl: '75er bowl' });
