@@ -1027,25 +1027,41 @@
       <div class="form-row"><label for="monitorUserButtons">Onboard Monitor User Buttons:<input type="text" id="monitorUserButtons" name="monitorUserButtons"></label></div>
       <div class="form-row"><label for="cameraUserButtons">Camera User Buttons:<input type="text" id="cameraUserButtons" name="cameraUserButtons"></label></div>
       <div class="form-row"><label for="viewfinderUserButtons">Viewfinder User Buttons:<input type="text" id="viewfinderUserButtons" name="viewfinderUserButtons"></label></div>
-      <div class="form-row hidden" id="tripodPreferencesRow"><label for="tripodPreferences">Tripod Preferences:
-        <select id="tripodPreferences" name="tripodPreferences" multiple size="15">
-          <option value="O'Connor">O'Connor</option>
-          <option value="Sachtler">Sachtler</option>
-          <option value="Other Head Brand">Other Head Brand</option>
-          <option value="75er bowl">75er bowl</option>
-          <option value="100er bowl">100er bowl</option>
-          <option value="150 bowl">150 bowl</option>
-          <option value="Mitchell Mount">Mitchell Mount</option>
-          <option value="Bodenstern">Bodenstern</option>
-          <option value="Frosch">Frosch</option>
-          <option value="Baby">Baby</option>
-          <option value="Normal">Normal</option>
-          <option value="Bodenspinne">Bodenspinne</option>
-          <option value="Mittelspinne">Mittelspinne</option>
-          <option value="Zoom Remote handle">Zoom Remote handle</option>
-          <option value="Dolly Remote handle">Dolly Remote handle</option>
-        </select>
-      </label></div>
+      <div class="form-row hidden" id="tripodPreferencesRow">
+        <strong>Tripod Preferences:</strong>
+        <label for="tripodHeadBrand">Head Brand:
+          <select id="tripodHeadBrand" name="tripodHeadBrand">
+            <option value=""></option>
+            <option value="OConnor">O'Connor</option>
+            <option value="Sachtler">Sachtler</option>
+            <option value="other">other</option>
+          </select>
+        </label>
+        <label for="tripodBowl">Bowl type:
+          <select id="tripodBowl" name="tripodBowl">
+            <option value=""></option>
+            <option value="75mm bowl">75mm bowl</option>
+            <option value="100mm bowl">100mm bowl</option>
+            <option value="150mm bowl">150mm bowl</option>
+            <option value="Mitchell Mount">Mitchell Mount</option>
+          </select>
+        </label>
+        <label for="tripodTypes">Tripod types:
+          <select id="tripodTypes" name="tripodTypes" multiple size="4">
+            <option value="Standard Tripod">Standard Tripod</option>
+            <option value="Baby Tripod">Baby Tripod</option>
+            <option value="Frog Tripod">Frog Tripod</option>
+            <option value="Hi-Head">Hi-Head</option>
+          </select>
+        </label>
+        <label for="tripodSpreader">Spreader Preference:
+          <select id="tripodSpreader" name="tripodSpreader">
+            <option value=""></option>
+            <option value="Mid-Level Spreader">Mid-Level Spreader</option>
+            <option value="Ground Spreader">Ground Spreader</option>
+          </select>
+        </label>
+      </div>
       <div class="form-row"><label for="filter">Filter:
         <select id="filter" name="filter" multiple size="10"></select>
       </label></div>
