@@ -1014,6 +1014,13 @@ function setLanguage(lang) {
   generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
   generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
 
+  const editProjectBtnElem = document.getElementById("editProjectBtn");
+  if (editProjectBtnElem) {
+    editProjectBtnElem.textContent = texts[lang].editProjectBtn;
+    editProjectBtnElem.setAttribute("title", texts[lang].editProjectBtn);
+    editProjectBtnElem.setAttribute("data-help", texts[lang].editProjectBtn);
+  }
+
   shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
   shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
 
@@ -1611,6 +1618,57 @@ const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
 const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
 
+function setEditProjectBtnText() {
+  const btn = document.getElementById('editProjectBtn');
+  if (btn) {
+    btn.textContent = texts[currentLang].editProjectBtn;
+    btn.setAttribute('title', texts[currentLang].editProjectBtn);
+    btn.setAttribute('data-help', texts[currentLang].editProjectBtn);
+  }
+}
+
+function ensureEditProjectButton() {
+  let container = null;
+  if (projectRequirementsOutput && !projectRequirementsOutput.classList.contains('hidden')) {
+    container = projectRequirementsOutput;
+  } else if (gearListOutput && !gearListOutput.classList.contains('hidden')) {
+    container = gearListOutput;
+  }
+  if (!container) return;
+  let btn = document.getElementById('editProjectBtn');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.id = 'editProjectBtn';
+    btn.addEventListener('click', () => {
+      populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+      populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
+      projectDialog.showModal();
+    });
+  }
+  const title = container.querySelector('h2');
+  if (title && btn.parentElement !== container) {
+    title.insertAdjacentElement('afterend', btn);
+  } else if (!title && btn.parentElement !== container) {
+    container.prepend(btn);
+  }
+  setEditProjectBtnText();
+}
+
+function updateGearListButtonVisibility() {
+  const hasGear =
+    gearListOutput &&
+    !gearListOutput.classList.contains('hidden') &&
+    gearListOutput.innerHTML.trim() !== '';
+  if (hasGear) {
+    generateGearListBtn.classList.add('hidden');
+    ensureEditProjectButton();
+  } else {
+    generateGearListBtn.classList.remove('hidden');
+    const btn = document.getElementById('editProjectBtn');
+    if (btn) btn.remove();
+  }
+}
+
 function splitGearListHtml(html) {
   if (!html) return { projectHtml: '', gearHtml: '' };
   // Support legacy storage formats where the gear list and project
@@ -1652,6 +1710,7 @@ function displayGearAndRequirements(html) {
     gearListOutput.innerHTML = gearHtml;
     gearListOutput.classList.remove('hidden');
   }
+  updateGearListButtonVisibility();
 }
 function getSliderBowlSelect() {
   return gearListOutput ? gearListOutput.querySelector('#gearListSliderBowl') : null;
@@ -7651,6 +7710,8 @@ function getCurrentGearListHtml() {
     let projHtml = '';
     if (projectRequirementsOutput) {
         const projClone = projectRequirementsOutput.cloneNode(true);
+        const editBtn = projClone.querySelector('#editProjectBtn');
+        if (editBtn) editBtn.remove();
         const t = projClone.querySelector('h2');
         if (t) t.remove();
         projHtml = projClone.innerHTML.trim();
@@ -7661,6 +7722,8 @@ function getCurrentGearListHtml() {
         const clone = gearListOutput.cloneNode(true);
         const actions = clone.querySelector('#gearListActions');
         if (actions) actions.remove();
+        const editBtn = clone.querySelector('#editProjectBtn');
+        if (editBtn) editBtn.remove();
         const t = clone.querySelector('h2');
         if (t) t.remove();
         const cageSel = clone.querySelector('#gearListCage');
@@ -7777,6 +7840,7 @@ function deleteCurrentGearList() {
             storeSetups(setups);
         }
     }
+    updateGearListButtonVisibility();
 }
 
 function ensureGearListActions() {

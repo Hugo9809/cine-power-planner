@@ -515,6 +515,32 @@ describe('script.js functions', () => {
     expect(savedHtml).toContain('<table class="gear-table">');
   });
 
+  test('generate gear list hides button until deleted', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    script.updateCalculations();
+    const setupSelectElem = document.getElementById('setupSelect');
+    setupSelectElem.innerHTML = '<option value="Test">Test</option>';
+    setupSelectElem.value = 'Test';
+    document.getElementById('setupName').value = 'Test Setup';
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.showModal = jest.fn();
+    projectDialog.close = jest.fn();
+    document.getElementById('generateGearListBtn').click();
+    document.getElementById('projectForm').dispatchEvent(new Event('submit', { bubbles: true }));
+    const genBtn = document.getElementById('generateGearListBtn');
+    expect(genBtn.classList.contains('hidden')).toBe(true);
+    expect(document.getElementById('editProjectBtn')).not.toBeNull();
+    document.getElementById('deleteGearListBtn').click();
+    expect(genBtn.classList.contains('hidden')).toBe(false);
+    expect(document.getElementById('editProjectBtn')).toBeNull();
+  });
+
   test('suggests chargers based on total batteries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
