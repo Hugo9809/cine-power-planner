@@ -8538,18 +8538,16 @@ const scenarioIcons = {
   Gimbal: '🌀',
   Trinity: '♾️',
   Rollcage: '🛡️',
-  'Car Mount': '🚗',
-  Jib: '🪝',
-  'Undersling mode': '⬇️',
-  Crane: '🏗️',
-  'Remote Head': '🎮',
-  'Extreme weather conditions (like snow, rain, heat)': '🌧️',
-  'Rain Machine': '🌧️',
-  'Slow Motion': '🐌',
-  'Viewfinder Extension': '🔭',
-  'Zoom Remote handle': '🔍',
-  'Dolly Remote handle': '🎛️'
-};
+    'Car Mount': '🚗',
+    Jib: '🪝',
+    'Undersling mode': '⬇️',
+    Crane: '🏗️',
+    'Remote Head': '🎮',
+    'Extreme weather conditions (like snow, rain, heat)': '🌧️',
+    'Rain Machine': '🌧️',
+    'Slow Motion': '🐌',
+    'Viewfinder Extension': '🔭'
+  };
 
 function updateRequiredScenariosSummary() {
   if (!requiredScenariosSelect || !requiredScenariosSummary) return;

@@ -1559,6 +1559,15 @@ describe('script.js functions', () => {
     expect(Array.from(tripodSelect.selectedOptions)).toHaveLength(0);
   });
 
+  test('tripod preferences include remote handles', () => {
+    const requiredSelect = document.getElementById('requiredScenarios');
+    const tripodSelect = document.getElementById('tripodPreferences');
+    expect(requiredSelect.querySelector('option[value="Zoom Remote handle"]')).toBeNull();
+    expect(requiredSelect.querySelector('option[value="Dolly Remote handle"]')).toBeNull();
+    expect(tripodSelect.querySelector('option[value="Zoom Remote handle"]')).not.toBeNull();
+    expect(tripodSelect.querySelector('option[value="Dolly Remote handle"]')).not.toBeNull();
+  });
+
   test('Hand Grips rigging adds telescopic handle', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ rigging: 'Hand Grips' });
