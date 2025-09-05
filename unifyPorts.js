@@ -293,7 +293,11 @@ function normalizeFiz(dev) {
 }
 
 function normalizeCollection(collection, fn) {
-  Object.values(collection).forEach(fn);
+  for (const key in collection) {
+    if (Object.prototype.hasOwnProperty.call(collection, key)) {
+      fn(collection[key]);
+    }
+  }
 }
 
 if (require.main === module) {
