@@ -7257,6 +7257,7 @@ function generateGearListHtml(info = {}) {
     for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
     riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
     for (let i = 0; i < 3; i++) riggingAcc.push('stud 5/8" with male 3/8" and 1/4"');
+    for (let i = 0; i < 2; i++) riggingAcc.push('D-Tap Splitter');
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
     if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
@@ -7270,6 +7271,12 @@ function generateGearListHtml(info = {}) {
     const scenarios = info.requiredScenarios
         ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    if (scenarios.includes('Trinity') || scenarios.includes('Steadicam')) {
+        for (let i = 0; i < 2; i++) {
+            riggingAcc.push('D-Tap Splitter');
+            riggingAcc.push('D-Tap Extension 50 cm');
+        }
+    }
     const rigging = info.rigging
         ? info.rigging.split(',').map(r => r.trim()).filter(Boolean)
         : [];

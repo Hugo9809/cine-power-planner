@@ -1326,7 +1326,19 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('4x Cine Quick Release');
     expect(rigSection).toContain('1x SmallRig - Super lightweight 15mm RailBlock');
     expect(rigSection).toContain('3x stud 5/8" with male 3/8" and 1/4"');
+    expect(rigSection).toContain('2x D-Tap Splitter');
   });
+
+  test.each(['Trinity', 'Steadicam'])(
+    '%s scenario adds D-Tap rigging accessories',
+    (scenario) => {
+      const { generateGearListHtml } = script;
+      const html = generateGearListHtml({ requiredScenarios: scenario });
+      const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+      expect(rigSection).toContain('4x D-Tap Splitter');
+      expect(rigSection).toContain('2x D-Tap Extension 50 cm');
+    }
+  );
 
   test('gear list separates multiple items with line breaks', () => {
     const { generateGearListHtml } = script;
