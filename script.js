@@ -7354,17 +7354,21 @@ function generateGearListHtml(info = {}) {
             'USB-C 3.1 Gen 2 expansion port for external media': '1TB',
             'USB-C to external SSD/HDD': '1TB'
         };
-        mediaItems = cam.recordingMedia.map(m => {
-            const type = m && m.type ? m.type : '';
-            if (!type) return '';
-            let size = '';
-            if (m.notes) {
-                const match = m.notes.match(/(\d+(?:\.\d+)?\s*(?:TB|GB))/i);
-                if (match) size = match[1].toUpperCase();
-            }
-            if (!size) size = sizeMap[type] || '512GB';
-            return `4x ${escapeHtml(size)} ${escapeHtml(type)}`;
-        }).filter(Boolean).join('<br>');
+        mediaItems = cam.recordingMedia
+            .slice(0, 1)
+            .map(m => {
+                const type = m && m.type ? m.type : '';
+                if (!type) return '';
+                let size = '';
+                if (m.notes) {
+                    const match = m.notes.match(/(\d+(?:\.\d+)?\s*(?:TB|GB))/i);
+                    if (match) size = match[1].toUpperCase();
+                }
+                if (!size) size = sizeMap[type] || '512GB';
+                return `4x ${escapeHtml(size)} ${escapeHtml(type)}`;
+            })
+            .filter(Boolean)
+            .join('<br>');
     }
     addRow('Media', mediaItems);
     const selectedLensNames = info.lenses

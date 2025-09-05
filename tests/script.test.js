@@ -1439,6 +1439,20 @@ describe('script.js functions', () => {
     expect(html).toContain('4x 512GB CFast 2.0');
   });
 
+  test('gear list uses first recording media when multiple types', () => {
+    const { generateGearListHtml } = script;
+    devices.cameras.CamA.recordingMedia = [{ type: 'CFast 2.0' }, { type: 'SD' }];
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    const html = generateGearListHtml();
+    expect(html).toContain('4x 512GB CFast 2.0');
+    expect(html).not.toContain('SD');
+  });
+
   test('Cine Saddle and Steadybag scenarios populate grip section', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Cine Saddle, Steadybag' });
