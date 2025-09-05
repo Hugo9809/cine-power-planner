@@ -2177,6 +2177,26 @@ describe('script.js functions', () => {
     expect(html).not.toContain('Tripod Preferences');
   });
 
+  test('recording resolution and sensor mode dropdowns populate from camera data', () => {
+    devices.cameras.CamA.resolutions = ['720p', '1080p'];
+    devices.cameras.CamA.sensorModes = ['ModeA', 'ModeB'];
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option>';
+    camSel.value = 'CamA';
+    const setupSelectElem = document.getElementById('setupSelect');
+    setupSelectElem.innerHTML = '<option value="Test">Test</option>';
+    setupSelectElem.value = 'Test';
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.showModal = jest.fn();
+    document.getElementById('generateGearListBtn').click();
+    const resSelect = document.getElementById('recordingResolution');
+    const resOpts = Array.from(resSelect.options).map(o => o.value);
+    expect(resOpts).toEqual(['', '720p', '1080p']);
+    const sensorSelect = document.getElementById('sensorMode');
+    const sensorOpts = Array.from(sensorSelect.options).map(o => o.value);
+    expect(sensorOpts).toEqual(['', 'ModeA', 'ModeB']);
+  });
+
   test('codec dropdown populates from camera recording codecs', () => {
     devices.cameras.CamA.recordingCodecs = ['CodecA', 'CodecB'];
     const camSel = document.getElementById('cameraSelect');

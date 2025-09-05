@@ -1696,6 +1696,9 @@ function ensureEditProjectButton() {
     btn.id = 'editProjectBtn';
     btn.addEventListener('click', () => {
       populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+      populateRecordingResolutionDropdown(
+        currentProjectInfo && currentProjectInfo.recordingResolution
+      );
       populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
       projectDialog.showModal();
     });
@@ -6514,6 +6517,9 @@ generateGearListBtn.addEventListener('click', () => {
         return;
     }
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+    populateRecordingResolutionDropdown(
+        currentProjectInfo && currentProjectInfo.recordingResolution
+    );
     populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
     projectDialog.showModal();
 });
@@ -8142,6 +8148,9 @@ function refreshGearListIfVisible() {
 
     if (projectForm) {
         populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+        populateRecordingResolutionDropdown(
+            currentProjectInfo && currentProjectInfo.recordingResolution
+        );
         populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
         const info = collectProjectFormData();
         currentProjectInfo = Object.values(info).some(v => v) ? info : null;
@@ -8902,6 +8911,31 @@ function populateSensorModeDropdown(selected = '') {
   }
 }
 
+function populateRecordingResolutionDropdown(selected = '') {
+  const resSelect = document.getElementById('recordingResolution');
+  if (!resSelect) return;
+
+  resSelect.innerHTML = '';
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  resSelect.appendChild(emptyOpt);
+
+  const camKey = cameraSelect && cameraSelect.value;
+  const resolutions =
+    camKey && devices && devices.cameras && devices.cameras[camKey]
+      ? devices.cameras[camKey].resolutions
+      : null;
+  if (Array.isArray(resolutions)) {
+    resolutions.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r;
+      opt.textContent = r;
+      if (r === selected) opt.selected = true;
+      resSelect.appendChild(opt);
+    });
+  }
+}
+
 function populateCodecDropdown(selected = '') {
   const codecSelect = document.getElementById('codec');
   if (!codecSelect) return;
@@ -8989,6 +9023,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveCurrentGearList,
     populateLensDropdown,
     populateSensorModeDropdown,
+    populateRecordingResolutionDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
   };
