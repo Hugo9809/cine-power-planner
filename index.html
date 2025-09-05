@@ -864,207 +864,259 @@
       </div>
     </div>
   </div>
-
-  <dialog id="projectDialog">
-    <form id="projectForm" method="dialog">
-      <h3>Project Requirements</h3>
-      <div class="form-row"><label for="projectName">Project Name:<input type="text" id="projectName" name="projectName"></label></div>
-      <div class="form-row"><label for="dop">DoP:<input type="text" id="dop" name="dop"></label></div>
-      <div class="form-row"><label for="prepStart">Prep Days:<input type="date" id="prepStart" name="prepStart"> to <input type="date" id="prepEnd" name="prepEnd"></label></div>
-      <div class="form-row"><label for="shootStart">Shooting Days:<input type="date" id="shootStart" name="shootStart"> to <input type="date" id="shootEnd" name="shootEnd"></label></div>
-      <div class="form-row"><label for="deliveryResolution">Delivery Resolution:<select id="deliveryResolution" name="deliveryResolution">
-          <option value=""></option>
-          <option value="720p">720p</option>
-          <option value="1080p">1080p</option>
-          <option value="1440p">1440p</option>
-          <option value="2K">2K</option>
-          <option value="2.7K">2.7K</option>
-          <option value="3.2K UHD">3.2K UHD</option>
-          <option value="4K">4K</option>
-          <option value="4.5K">4.5K</option>
-          <option value="5K">5K</option>
-          <option value="5.7K">5.7K</option>
-          <option value="6K">6K</option>
-          <option value="7K">7K</option>
-          <option value="8K">8K</option>
-          <option value="9K">9K</option>
-          <option value="12K">12K</option>
-          <option value="16K">16K</option>
-        </select></label></div>
-      <div class="form-row"><label for="recordingResolution">Recording Resolution:<select id="recordingResolution" name="recordingResolution">
-          <option value=""></option>
-          <option value="720p">720p</option>
-          <option value="1080p">1080p</option>
-          <option value="1440p">1440p</option>
-          <option value="2K">2K</option>
-          <option value="2.7K">2.7K</option>
-          <option value="3.2K UHD">3.2K UHD</option>
-          <option value="4K">4K</option>
-          <option value="4.5K">4.5K</option>
-          <option value="5K">5K</option>
-          <option value="5.7K">5.7K</option>
-          <option value="6K">6K</option>
-          <option value="7K">7K</option>
-          <option value="8K">8K</option>
-          <option value="9K">9K</option>
-          <option value="12K">12K</option>
-          <option value="16K">16K</option>
-        </select></label></div>
-      <div class="form-row"><label for="sensorMode">Sensor Mode:<select id="sensorMode" name="sensorMode"></select></label></div>
-        <div class="form-row"><label for="aspectRatio">Aspect Ratio:<select id="aspectRatio" name="aspectRatio" multiple size="20">
-          <option value="16:9">16:9</option>
-          <option value="17:9">17:9</option>
-          <option value="4:3">4:3</option>
-          <option value="1.85:1">1.85:1</option>
-          <option value="2.39:1">2.39:1</option>
-          <option value="1:1">1:1</option>
-          <option value="3:2">3:2</option>
-          <option value="2:1">2:1</option>
-          <option value="9:16">9:16</option>
-          <option value="21:9">21:9</option>
-          <option value="1.37:1">1.37:1</option>
-          <option value="1.66:1">1.66:1</option>
-          <option value="1.90:1">1.90:1</option>
-          <option value="2.20:1">2.20:1</option>
-          <option value="2.35:1">2.35:1</option>
-          <option value="2.40:1">2.40:1</option>
-          <option value="2.76:1">2.76:1</option>
-          <option value="4:5">4:5</option>
-          <option value="5:4">5:4</option>
-          <option value="16:10">16:10</option>
-        </select></label></div>
-      <div class="form-row"><label for="codec">Codec:<select id="codec" name="codec"></select></label></div>
-      <div class="form-row"><label for="baseFrameRate">Base Frame Rate:<select id="baseFrameRate" name="baseFrameRate">
-          <option value=""></option>
-          <option value="23.976">23.976</option>
-          <option value="24">24</option>
-          <option value="25">25</option>
-          <option value="29.97">29.97</option>
-          <option value="30">30</option>
-          <option value="50">50</option>
-          <option value="59.94">59.94</option>
-          <option value="60">60</option>
-        </select></label></div>
-      <div class="form-row">
-        <label for="lenses" id="lensesLabel">Lenses:</label>
-        <div class="select-wrapper">
-          <select id="lenses" name="lenses" multiple size="10" aria-labelledby="lensesLabel"></select>
+    <dialog id="projectDialog">
+      <form id="projectForm" method="dialog">
+        <h3>Project Requirements</h3>
+        <div class="form-row">
+          <label for="projectName">Project Name:</label>
+          <input type="text" id="projectName" name="projectName">
         </div>
-      </div>
-      <div class="form-row"><label for="requiredScenarios">What required scenarios do we have for this shoot?
-        <select id="requiredScenarios" name="requiredScenarios" multiple size="25">
-          <option value="Indoor">Indoor</option>
-          <option value="Outdoor">Outdoor</option>
-          <option value="Studio">Studio</option>
-          <option value="Tripod">Tripod</option>
-          <option value="Handheld">Handheld</option>
-          <option value="Easyrig">Easyrig</option>
-          <option value="Cine Saddle">Cine Saddle</option>
-          <option value="Steadybag">Steadybag</option>
-          <option value="Dolly">Dolly</option>
-          <option value="Slider">Slider</option>
-          <option value="Steadicam">Steadicam</option>
-          <option value="Gimbal">Gimbal</option>
-          <option value="Trinity">Trinity</option>
-          <option value="Rollcage">Rollcage</option>
-          <option value="Car Mount">Car Mount</option>
-          <option value="Jib">Jib</option>
-          <option value="Undersling mode">Undersling mode</option>
-          <option value="Crane">Crane</option>
-          <option value="Remote Head">Remote Head</option>
-          <option value="Extreme cold (snow)">Extreme cold (snow)</option>
-          <option value="Extreme rain">Extreme rain</option>
-          <option value="Extreme heat">Extreme heat</option>
-          <option value="Rain Machine">Rain Machine</option>
-          <option value="Slow Motion">Slow Motion</option>
-          <option value="Viewfinder Extension">Viewfinder Extension</option>
-        </select>
-      </label>
-      <div id="requiredScenariosSummary" class="scenario-summary" aria-live="polite"></div>
-      </div>
-      <div class="form-row"><label for="rigging">How would you like to have your camera rigged?
-        <select id="rigging" name="rigging" multiple size="15">
-          <option value="Shoulder rig">Shoulder rig</option>
-          <option value="Hand Grips">Hand Grips</option>
-          <option value="Teradek and Battery belt">Teradek and Battery belt</option>
-          <option value="Top handle extension">Top handle extension</option>
-          <option value="Rear Handle">Rear Handle</option>
-          <option value="Clamp-On Mattebox">Clamp-On Mattebox</option>
-          <option value="Swingaway Mattebox">Swingaway Mattebox</option>
-          <option value="Rod based Mattebox">Rod based Mattebox</option>
-        </select>
-      </label></div>
-      <h3 id="monitoringHeading">Monitoring</h3>
-      <div class="form-row"><label for="monitoringConfiguration">Camera Monitoring Configuration:
-        <select id="monitoringConfiguration" name="monitoringConfiguration">
-          <option value="Viewfinder only">Viewfinder only</option>
-          <option value="Viewfinder and Onboard">Viewfinder and Onboard</option>
-          <option value="Onboard Only">Onboard Only</option>
-        </select>
-      </label></div>
-      <div class="form-row hidden" id="viewfinderSettingsRow"><label for="viewfinderSettings">Viewfinder Settings:
-        <select id="viewfinderSettings" name="viewfinderSettings" multiple size="2">
-          <option value="Viewfinder Clean Feed">Viewfinder Clean Feed</option>
-          <option value="Surround View">Surround View</option>
-        </select>
-      </label></div>
-      <div class="form-row"><label for="frameGuides">Frameguides:
-        <select id="frameGuides" name="frameGuides" multiple size="5">
-          <option value="Frame Guide: Center Dot">Frame Guide: Center Dot</option>
-          <option value="Frame Guides: Center Cross">Frame Guides: Center Cross</option>
-          <option value="Frame Guide: Rule of Thirds">Frame Guide: Rule of Thirds</option>
-          <option value="Frame Guide: User Box">Frame Guide: User Box</option>
-          <option value="Frame Guide: 90% marker">Frame Guide: 90% marker</option>
-        </select>
-      </label></div>
-      <div class="form-row"><label for="aspectMaskOpacity">Aspect Mask Opacity:
-        <select id="aspectMaskOpacity" name="aspectMaskOpacity" multiple size="5">
-          <option value="Aspect Mask Opacity 100%">Aspect Mask Opacity 100%</option>
-          <option value="AM Opacity 75%">AM Opacity 75%</option>
-          <option value="AM Opacity 50%">AM Opacity 50%</option>
-          <option value="AM Opacity 25%">AM Opacity 25%</option>
-          <option value="AM Opacity 0%">AM Opacity 0%</option>
-        </select>
-      </label></div>
-      <div class="form-row"><label for="videoDistribution">Video distribution:
-        <select id="videoDistribution" name="videoDistribution" multiple size="4">
-          <option value="Directors Monitor 7&quot; handheld">Directors Monitor 7&quot; handheld</option>
-          <option value="Directors Monitor 15-21 inch">Directors Monitor 15-21 inch</option>
-          <option value="Combo Monitor 15-21 inch">Combo Monitor 15-21 inch</option>
-          <option value="IOS Video (Teradek Serv + Link)">IOS Video (Teradek Serv + Link)</option>
-        </select>
-      </label></div>
-      <div class="form-row"><label for="monitorUserButtons">Onboard Monitor User Buttons:<input type="text" id="monitorUserButtons" name="monitorUserButtons"></label></div>
-      <div class="form-row"><label for="cameraUserButtons">Camera User Buttons:<input type="text" id="cameraUserButtons" name="cameraUserButtons"></label></div>
-      <div class="form-row"><label for="viewfinderUserButtons">Viewfinder User Buttons:<input type="text" id="viewfinderUserButtons" name="viewfinderUserButtons"></label></div>
-      <div class="form-row hidden" id="tripodPreferencesRow"><label for="tripodPreferences">Tripod Preferences:
-        <select id="tripodPreferences" name="tripodPreferences" multiple size="15">
-          <option value="O'Connor">O'Connor</option>
-          <option value="Sachtler">Sachtler</option>
-          <option value="Other Head Brand">Other Head Brand</option>
-          <option value="75er bowl">75er bowl</option>
-          <option value="100er bowl">100er bowl</option>
-          <option value="150 bowl">150 bowl</option>
-          <option value="Mitchell Mount">Mitchell Mount</option>
-          <option value="Bodenstern">Bodenstern</option>
-          <option value="Frosch">Frosch</option>
-          <option value="Baby">Baby</option>
-          <option value="Normal">Normal</option>
-          <option value="Bodenspinne">Bodenspinne</option>
-          <option value="Mittelspinne">Mittelspinne</option>
-          <option value="Zoom Remote handle">Zoom Remote handle</option>
-          <option value="Dolly Remote handle">Dolly Remote handle</option>
-        </select>
-      </label></div>
-      <div class="form-row"><label for="filter">Filter:
-        <select id="filter" name="filter" multiple size="10"></select>
-      </label></div>
-      <menu>
-        <button type="reset" id="projectCancel">Cancel</button>
-        <button type="submit">OK</button>
-      </menu>
-    </form>
-  </dialog>
+        <div class="form-row">
+          <label for="dop">DoP:</label>
+          <input type="text" id="dop" name="dop">
+        </div>
+        <div class="form-row">
+          <label for="prepStart">Prep Days:</label>
+          <input type="date" id="prepStart" name="prepStart">
+          <span class="range-separator">to</span>
+          <input type="date" id="prepEnd" name="prepEnd">
+        </div>
+        <div class="form-row">
+          <label for="shootStart">Shooting Days:</label>
+          <input type="date" id="shootStart" name="shootStart">
+          <span class="range-separator">to</span>
+          <input type="date" id="shootEnd" name="shootEnd">
+        </div>
+        <div class="form-row">
+          <label for="deliveryResolution">Delivery Resolution:</label>
+          <select id="deliveryResolution" name="deliveryResolution">
+            <option value=""></option>
+            <option value="720p">720p</option>
+            <option value="1080p">1080p</option>
+            <option value="1440p">1440p</option>
+            <option value="2K">2K</option>
+            <option value="2.7K">2.7K</option>
+            <option value="3.2K UHD">3.2K UHD</option>
+            <option value="4K">4K</option>
+            <option value="4.5K">4.5K</option>
+            <option value="5K">5K</option>
+            <option value="5.7K">5.7K</option>
+            <option value="6K">6K</option>
+            <option value="7K">7K</option>
+            <option value="8K">8K</option>
+            <option value="9K">9K</option>
+            <option value="12K">12K</option>
+            <option value="16K">16K</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="recordingResolution">Recording Resolution:</label>
+          <select id="recordingResolution" name="recordingResolution">
+            <option value=""></option>
+            <option value="720p">720p</option>
+            <option value="1080p">1080p</option>
+            <option value="1440p">1440p</option>
+            <option value="2K">2K</option>
+            <option value="2.7K">2.7K</option>
+            <option value="3.2K UHD">3.2K UHD</option>
+            <option value="4K">4K</option>
+            <option value="4.5K">4.5K</option>
+            <option value="5K">5K</option>
+            <option value="5.7K">5.7K</option>
+            <option value="6K">6K</option>
+            <option value="7K">7K</option>
+            <option value="8K">8K</option>
+            <option value="9K">9K</option>
+            <option value="12K">12K</option>
+            <option value="16K">16K</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="sensorMode">Sensor Mode:</label>
+          <select id="sensorMode" name="sensorMode"></select>
+        </div>
+        <div class="form-row">
+          <label for="aspectRatio">Aspect Ratio:</label>
+          <select id="aspectRatio" name="aspectRatio" multiple size="20">
+            <option value="16:9">16:9</option>
+            <option value="17:9">17:9</option>
+            <option value="4:3">4:3</option>
+            <option value="1.85:1">1.85:1</option>
+            <option value="2.39:1">2.39:1</option>
+            <option value="1:1">1:1</option>
+            <option value="3:2">3:2</option>
+            <option value="2:1">2:1</option>
+            <option value="9:16">9:16</option>
+            <option value="21:9">21:9</option>
+            <option value="1.37:1">1.37:1</option>
+            <option value="1.66:1">1.66:1</option>
+            <option value="1.90:1">1.90:1</option>
+            <option value="2.20:1">2.20:1</option>
+            <option value="2.35:1">2.35:1</option>
+            <option value="2.40:1">2.40:1</option>
+            <option value="2.76:1">2.76:1</option>
+            <option value="4:5">4:5</option>
+            <option value="5:4">5:4</option>
+            <option value="16:10">16:10</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="codec">Codec:</label>
+          <select id="codec" name="codec"></select>
+        </div>
+        <div class="form-row">
+          <label for="baseFrameRate">Base Frame Rate:</label>
+          <select id="baseFrameRate" name="baseFrameRate">
+            <option value=""></option>
+            <option value="23.976">23.976</option>
+            <option value="24">24</option>
+            <option value="25">25</option>
+            <option value="29.97">29.97</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="59.94">59.94</option>
+            <option value="60">60</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="lenses" id="lensesLabel">Lenses:</label>
+          <div class="select-wrapper">
+            <select id="lenses" name="lenses" multiple size="10" aria-labelledby="lensesLabel"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="requiredScenarios">What required scenarios do we have for this shoot?</label>
+          <div class="select-wrapper">
+            <select id="requiredScenarios" name="requiredScenarios" multiple size="25">
+              <option value="Indoor">Indoor</option>
+              <option value="Outdoor">Outdoor</option>
+              <option value="Studio">Studio</option>
+              <option value="Tripod">Tripod</option>
+              <option value="Handheld">Handheld</option>
+              <option value="Easyrig">Easyrig</option>
+              <option value="Cine Saddle">Cine Saddle</option>
+              <option value="Steadybag">Steadybag</option>
+              <option value="Dolly">Dolly</option>
+              <option value="Slider">Slider</option>
+              <option value="Steadicam">Steadicam</option>
+              <option value="Gimbal">Gimbal</option>
+              <option value="Trinity">Trinity</option>
+              <option value="Rollcage">Rollcage</option>
+              <option value="Car Mount">Car Mount</option>
+              <option value="Jib">Jib</option>
+              <option value="Undersling mode">Undersling mode</option>
+              <option value="Crane">Crane</option>
+              <option value="Remote Head">Remote Head</option>
+              <option value="Extreme cold (snow)">Extreme cold (snow)</option>
+              <option value="Extreme rain">Extreme rain</option>
+              <option value="Extreme heat">Extreme heat</option>
+              <option value="Rain Machine">Rain Machine</option>
+              <option value="Slow Motion">Slow Motion</option>
+              <option value="Viewfinder Extension">Viewfinder Extension</option>
+            </select>
+            <div id="requiredScenariosSummary" class="scenario-summary" aria-live="polite"></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="rigging">How would you like to have your camera rigged?</label>
+          <select id="rigging" name="rigging" multiple size="15">
+            <option value="Shoulder rig">Shoulder rig</option>
+            <option value="Hand Grips">Hand Grips</option>
+            <option value="Teradek and Battery belt">Teradek and Battery belt</option>
+            <option value="Top handle extension">Top handle extension</option>
+            <option value="Rear Handle">Rear Handle</option>
+            <option value="Clamp-On Mattebox">Clamp-On Mattebox</option>
+            <option value="Swingaway Mattebox">Swingaway Mattebox</option>
+            <option value="Rod based Mattebox">Rod based Mattebox</option>
+          </select>
+        </div>
+        <h3 id="monitoringHeading">Monitoring</h3>
+        <div class="form-row">
+          <label for="monitoringConfiguration">Camera Monitoring Configuration:</label>
+          <select id="monitoringConfiguration" name="monitoringConfiguration">
+            <option value="Viewfinder only">Viewfinder only</option>
+            <option value="Viewfinder and Onboard">Viewfinder and Onboard</option>
+            <option value="Onboard Only">Onboard Only</option>
+          </select>
+        </div>
+        <div class="form-row hidden" id="viewfinderSettingsRow">
+          <label for="viewfinderSettings">Viewfinder Settings:</label>
+          <select id="viewfinderSettings" name="viewfinderSettings" multiple size="2">
+            <option value="Viewfinder Clean Feed">Viewfinder Clean Feed</option>
+            <option value="Surround View">Surround View</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="frameGuides">Frameguides:</label>
+          <select id="frameGuides" name="frameGuides" multiple size="5">
+            <option value="Frame Guide: Center Dot">Frame Guide: Center Dot</option>
+            <option value="Frame Guides: Center Cross">Frame Guides: Center Cross</option>
+            <option value="Frame Guide: Rule of Thirds">Frame Guide: Rule of Thirds</option>
+            <option value="Frame Guide: User Box">Frame Guide: User Box</option>
+            <option value="Frame Guide: 90% marker">Frame Guide: 90% marker</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="aspectMaskOpacity">Aspect Mask Opacity:</label>
+          <select id="aspectMaskOpacity" name="aspectMaskOpacity" multiple size="5">
+            <option value="Aspect Mask Opacity 100%">Aspect Mask Opacity 100%</option>
+            <option value="AM Opacity 75%">AM Opacity 75%</option>
+            <option value="AM Opacity 50%">AM Opacity 50%</option>
+            <option value="AM Opacity 25%">AM Opacity 25%</option>
+            <option value="AM Opacity 0%">AM Opacity 0%</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="videoDistribution">Video distribution:</label>
+          <select id="videoDistribution" name="videoDistribution" multiple size="4">
+            <option value="Directors Monitor 7&quot; handheld">Directors Monitor 7&quot; handheld</option>
+            <option value="Directors Monitor 15-21 inch">Directors Monitor 15-21 inch</option>
+            <option value="Combo Monitor 15-21 inch">Combo Monitor 15-21 inch</option>
+            <option value="IOS Video (Teradek Serv + Link)">IOS Video (Teradek Serv + Link)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="monitorUserButtons">Onboard Monitor User Buttons:</label>
+          <input type="text" id="monitorUserButtons" name="monitorUserButtons">
+        </div>
+        <div class="form-row">
+          <label for="cameraUserButtons">Camera User Buttons:</label>
+          <input type="text" id="cameraUserButtons" name="cameraUserButtons">
+        </div>
+        <div class="form-row">
+          <label for="viewfinderUserButtons">Viewfinder User Buttons:</label>
+          <input type="text" id="viewfinderUserButtons" name="viewfinderUserButtons">
+        </div>
+        <div class="form-row hidden" id="tripodPreferencesRow">
+          <label for="tripodPreferences">Tripod Preferences:</label>
+          <select id="tripodPreferences" name="tripodPreferences" multiple size="15">
+            <option value="O'Connor">O'Connor</option>
+            <option value="Sachtler">Sachtler</option>
+            <option value="Other Head Brand">Other Head Brand</option>
+            <option value="75er bowl">75er bowl</option>
+            <option value="100er bowl">100er bowl</option>
+            <option value="150 bowl">150 bowl</option>
+            <option value="Mitchell Mount">Mitchell Mount</option>
+            <option value="Bodenstern">Bodenstern</option>
+            <option value="Frosch">Frosch</option>
+            <option value="Baby">Baby</option>
+            <option value="Normal">Normal</option>
+            <option value="Bodenspinne">Bodenspinne</option>
+            <option value="Mittelspinne">Mittelspinne</option>
+            <option value="Zoom Remote handle">Zoom Remote handle</option>
+            <option value="Dolly Remote handle">Dolly Remote handle</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="filter">Filter:</label>
+          <select id="filter" name="filter" multiple size="10"></select>
+        </div>
+        <menu>
+          <button type="reset" id="projectCancel">Cancel</button>
+          <button type="submit">OK</button>
+        </menu>
+      </form>
+    </dialog>
 
   <dialog id="feedbackDialog">
     <form id="feedbackForm" method="dialog">
