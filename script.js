@@ -7148,6 +7148,7 @@ function collectProjectFormData() {
         lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
+        gimbal: multi('gimbal'),
         monitoringPreferences: multi('monitoringPreferences'),
         userButtons: val('userButtons'),
         tripodPreferences: multi('tripodPreferences'),
@@ -7284,6 +7285,7 @@ function generateGearListHtml(info = {}) {
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
+        gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
         userButtons: 'User Buttons'
@@ -7300,6 +7302,7 @@ function generateGearListHtml(info = {}) {
         sensorMode: '🔍',
         requiredScenarios: '🌄',
         rigging: '🛠️',
+        gimbal: '🌀',
         monitoringSupport: '🧰',
         monitoring: '📡',
         userButtons: '🔘'
@@ -7481,10 +7484,17 @@ function generateGearListHtml(info = {}) {
         easyrigSelectHtml = `1x Easyrig 5 Vario <select id="gearListEasyrig">${optsHtml}</select>`;
     }
     if (hasGimbal) {
-        const cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
-        const weight = cam && cam.weight_g;
-        const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
-        gripItems.push(isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
+        const gimbalSelections = info.gimbal
+            ? info.gimbal.split(',').map(s => s.trim()).filter(Boolean)
+            : [];
+        if (gimbalSelections.length) {
+            gripItems.push(...gimbalSelections);
+        } else {
+            const cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
+            const weight = cam && cam.weight_g;
+            const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
+            gripItems.push(isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
+        }
     }
     const frictionArmCount = hasGimbal ? 2 : 1;
     gripItems.push(...Array(frictionArmCount).fill('Manfrotto 244N Friktion Arm'));
