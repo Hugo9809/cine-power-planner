@@ -180,6 +180,14 @@ describe('setup storage', () => {
       expect(result).toBeNull();
       expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}});
     });
+
+    test('renameSetup ignores empty new name', () => {
+      const setups = {A:{foo:1}};
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+      const newName = renameSetup('A', '   ');
+      expect(newName).toBe('A');
+      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}});
+    });
   });
 
 describe('session state storage', () => {
