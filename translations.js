@@ -353,7 +353,8 @@ const texts = {
     distanceSelectHelp: "Choose an optional distance or range-finder sensor.",
     batterySelectHelp: "Choose the battery model that will power the entire rig.",
     batteryPlateSelectHelp: "Choose the battery plate or adapter that connects the battery to the camera.",
-    clearSetupHelp: "Reset the planner by removing every selected device.",    runtimeFeedbackBtnHelp:
+    clearSetupHelp: "Reset the planner by removing every selected device.",
+    runtimeFeedbackBtnHelp:
       "Open a form where you can submit real-world runtime data for this configuration.",
     zoomOutHelp: "Zoom out of the project diagram to view more of the layout.",
     zoomInHelp: "Zoom in on the project diagram for a closer look at connections.",
@@ -699,8 +700,9 @@ const texts = {
     batterySelectHelp: "Seleziona la batteria che alimenta la configurazione.",
     batteryPlateSelectHelp: "Seleziona la piastra o l'adattatore della batteria.",
     clearSetupHelp:
-      "Rimuove tutti i dispositivi dalla configurazione corrente.",    runtimeFeedbackBtnHelp:
-      "Invia il runtime misurato per questa configurazione.",
+      "Rimuove tutti i dispositivi dalla configurazione corrente.",
+    runtimeFeedbackBtnHelp:
+      "Invia la durata di funzionamento misurata per questa configurazione.",
     zoomOutHelp: "Allontana il diagramma di configurazione.",
     zoomInHelp: "Avvicina il diagramma di configurazione.",
     downloadDiagramHelp:
@@ -1057,8 +1059,9 @@ const texts = {
     batterySelectHelp: "Selecciona la batería que alimenta la configuración.",
     batteryPlateSelectHelp: "Selecciona la placa o adaptador de batería.",
     clearSetupHelp:
-      "Borra todos los dispositivos de la configuración actual.",    runtimeFeedbackBtnHelp:
-      "Envía tu tiempo de funcionamiento medido para esta configuración.",
+      "Borra todos los dispositivos de la configuración actual.",
+    runtimeFeedbackBtnHelp:
+      "Envía la duración de funcionamiento medida para esta configuración.",
     zoomOutHelp: "Alejar el diagrama de configuración.",
     zoomInHelp: "Acercar el diagrama de configuración.",
     downloadDiagramHelp:
@@ -1418,8 +1421,9 @@ const texts = {
     batteryPlateSelectHelp:
       "Sélectionnez la plaque ou l'adaptateur de batterie utilisé.",
     clearSetupHelp:
-      "Efface tous les appareils de la configuration actuelle.",    runtimeFeedbackBtnHelp:
-      "Soumettez votre durée mesurée pour cette configuration.",
+      "Efface tous les appareils de la configuration actuelle.",
+    runtimeFeedbackBtnHelp:
+      "Soumettez la durée de fonctionnement mesurée pour cette configuration.",
     zoomOutHelp: "Réduit le diagramme de configuration.",
     zoomInHelp: "Agrandit le diagramme de configuration.",
     downloadDiagramHelp:
@@ -1776,7 +1780,8 @@ const texts = {
     batterySelectHelp: "Wähle den Akku, der das Setup versorgt.",
     batteryPlateSelectHelp: "Wähle die Batterieplatte oder den Adapter aus.",
     clearSetupHelp:
-      "Entfernt alle Geräte aus der aktuellen Konfiguration.",    runtimeFeedbackBtnHelp:
+      "Entfernt alle Geräte aus der aktuellen Konfiguration.",
+    runtimeFeedbackBtnHelp:
       "Sende deine gemessene Laufzeit für diese Konfiguration.",
     zoomOutHelp: "Verkleinert das Setup-Diagramm.",
     zoomInHelp: "Vergrößert das Setup-Diagramm.",
