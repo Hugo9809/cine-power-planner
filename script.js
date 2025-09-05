@@ -7208,7 +7208,7 @@ function collectProjectFormData() {
         shootingDays: range('shootStart','shootEnd'),
         deliveryResolution: val('deliveryResolution'),
         recordingResolution: val('recordingResolution'),
-        aspectRatio: val('aspectRatio'),
+        aspectRatio: multi('aspectRatio'),
         codec: val('codec'),
         baseFrameRate: val('baseFrameRate'),
         sensorMode: val('sensorMode'),
