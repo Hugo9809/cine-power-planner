@@ -8898,54 +8898,37 @@ function populateLensDropdown() {
   });
 }
 
-function populateSensorModeDropdown(selected = '') {
-  const sensorSelect = document.getElementById('sensorMode');
-  if (!sensorSelect) return;
+function populateCameraPropertyDropdown(selectId, property, selected = '') {
+  const dropdown = document.getElementById(selectId);
+  if (!dropdown) return;
 
-  sensorSelect.innerHTML = '';
+  dropdown.innerHTML = '';
   const emptyOpt = document.createElement('option');
   emptyOpt.value = '';
-  sensorSelect.appendChild(emptyOpt);
+  dropdown.appendChild(emptyOpt);
 
   const camKey = cameraSelect && cameraSelect.value;
-  const modes =
+  const values =
     camKey && devices && devices.cameras && devices.cameras[camKey]
-      ? devices.cameras[camKey].sensorModes
+      ? devices.cameras[camKey][property]
       : null;
-  if (Array.isArray(modes)) {
-    modes.forEach(m => {
+  if (Array.isArray(values)) {
+    values.forEach(v => {
       const opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = m;
-      if (m === selected) opt.selected = true;
-      sensorSelect.appendChild(opt);
+      opt.value = v;
+      opt.textContent = v;
+      if (v === selected) opt.selected = true;
+      dropdown.appendChild(opt);
     });
   }
 }
 
+function populateSensorModeDropdown(selected = '') {
+  populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
+}
+
 function populateCodecDropdown(selected = '') {
-  const codecSelect = document.getElementById('codec');
-  if (!codecSelect) return;
-
-  codecSelect.innerHTML = '';
-  const emptyOpt = document.createElement('option');
-  emptyOpt.value = '';
-  codecSelect.appendChild(emptyOpt);
-
-  const camKey = cameraSelect && cameraSelect.value;
-  const codecs =
-    camKey && devices && devices.cameras && devices.cameras[camKey]
-      ? devices.cameras[camKey].recordingCodecs
-      : null;
-  if (Array.isArray(codecs)) {
-    codecs.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c;
-      opt.textContent = c;
-      if (c === selected) opt.selected = true;
-      codecSelect.appendChild(opt);
-    });
-  }
+  populateCameraPropertyDropdown('codec', 'recordingCodecs', selected);
 }
 
 function populateFilterDropdown() {
@@ -9009,6 +8992,7 @@ if (typeof module !== "undefined" && module.exports) {
     renderFeedbackTable,
     saveCurrentGearList,
     populateLensDropdown,
+    populateCameraPropertyDropdown,
     populateSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
