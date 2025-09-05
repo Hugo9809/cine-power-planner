@@ -4,8 +4,8 @@
 
 Camera Power Planner is a standalone web app for planning professional camera
 rigs powered by V‑Mount or B‑Mount batteries. It calculates total power draw,
-checks that batteries can safely deliver the required output and estimates how
- long your project will run. The tool runs entirely in the browser and even works
+checks that batteries can safely deliver the required output, and estimates how
+long your project will run. The tool runs entirely in the browser and even works
 offline.
 
 No build step is required—open `index.html` in your browser and start planning
@@ -14,7 +14,8 @@ that future visits work offline and pick up updates automatically.
 
 ## Table of Contents
 
-- [Documentation](#documentation)
+- [Translations](#translations)
+- [Recent Updates](#recent-updates)
 - [Features at a Glance](#features-at-a-glance)
 - [Runtime Data Weighting](#runtime-data-weighting)
 - [Quick Start](#quick-start)
@@ -28,9 +29,9 @@ that future visits work offline and pick up updates automatically.
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
-## Documentation
+## Translations
 
-This repository provides the documentation in multiple languages:
+Documentation is available in multiple languages:
 
 - [English](README.en.md)
 - [Deutsch](README.de.md)
@@ -40,7 +41,7 @@ This repository provides the documentation in multiple languages:
 
 Choose your preferred language above.
 
-Recent updates include:
+## Recent Updates
 
 - **Interactive project diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits or press **P** to switch quickly.
