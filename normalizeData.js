@@ -5,7 +5,12 @@ const path = require('path');
 let devices = require('./data.js');
 
 function forEachCamera(cb) {
-  Object.values(devices.cameras).forEach(cb);
+  const cameras = devices.cameras;
+  for (const key in cameras) {
+    if (Object.prototype.hasOwnProperty.call(cameras, key)) {
+      cb(cameras[key]);
+    }
+  }
 }
 
 // -- Unify helper functions --
@@ -68,13 +73,17 @@ function unifyFizConnectorTypes() {
     }
   });
 
-  for (const motor of Object.values(devices.fiz?.motors || {})) {
+  const motors = devices.fiz?.motors || {};
+  for (const key in motors) {
+    const motor = motors[key];
     if (motor.fizConnector && map[motor.fizConnector]) {
       motor.fizConnector = map[motor.fizConnector];
     }
   }
 
-  for (const controller of Object.values(devices.fiz?.controllers || {})) {
+  const controllers = devices.fiz?.controllers || {};
+  for (const key in controllers) {
+    const controller = controllers[key];
     if (controller.fizConnector && map[controller.fizConnector]) {
       controller.fizConnector = map[controller.fizConnector];
     }
