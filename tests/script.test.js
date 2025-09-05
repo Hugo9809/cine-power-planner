@@ -1984,6 +1984,28 @@ describe('script.js functions', () => {
     expect(miscText).not.toContain('2x Umbrella Magliner incl Mounting to Magliner');
   });
 
+  test('Extreme cold scenario adds hair dryer to miscellaneous', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Extreme cold (snow)' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('1x Hair Dryer');
+  });
+
+  test('Winter shooting days add hair dryer to miscellaneous', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ shootingDays: '2024-01-10 to 2024-01-12' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('1x Hair Dryer');
+  });
+
   test('Outdoor scenario calculates CapIt sizes for large monitors', () => {
     const { generateGearListHtml } = script;
     devices.monitors.MonB = {
