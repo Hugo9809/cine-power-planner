@@ -41,7 +41,7 @@ function setupDom(removeGear) {
       }
     },
     lenses: {
-      LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true }
+      LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110 }
     },
     fiz: {
       motors: {
@@ -217,7 +217,7 @@ describe('script.js functions', () => {
         }
       },
       lenses: {
-        LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true }
+        LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110 }
       },
       fiz: {
         motors: {
@@ -332,11 +332,14 @@ describe('script.js functions', () => {
     expect(hasCable).toBe(true);
   });
 
-  test('populateLensDropdown fills lens list without duplicates', () => {
+  test('populateLensDropdown fills lens list without duplicates and adds attributes', () => {
     const sel = document.getElementById('lenses');
     sel.innerHTML = '<option value="Existing">Existing</option>';
     script.populateLensDropdown();
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
+    expect(sel.options[0].textContent).toContain('LensA');
+    expect(sel.options[0].textContent).toContain('110g');
+    expect(sel.options[0].textContent).toContain('80mm front');
     // Call again to ensure no duplication occurs
     script.populateLensDropdown();
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
@@ -385,6 +388,18 @@ describe('script.js functions', () => {
     const supportRow = rows[supportIndex + 1];
     expect(supportRow.textContent).toContain('15mm rods 30cm');
     expect(supportRow.textContent).toContain('15mm lens support');
+  });
+
+  test('gear list lens row includes lens attributes', () => {
+    const html = script.generateGearListHtml({ lenses: 'LensA' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const lensIndex = rows.findIndex(r => r.textContent === 'Lens');
+    const lensRow = rows[lensIndex + 1];
+    expect(lensRow.textContent).toContain('LensA');
+    expect(lensRow.textContent).toContain('110g');
+    expect(lensRow.textContent).toContain('80mm front');
   });
 
   test('multiple lenses with same rod length only add one pair of rods', () => {

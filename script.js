@@ -7544,7 +7544,16 @@ function generateGearListHtml(info = {}) {
     const selectedLensNames = info.lenses
         ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
         : [];
-    addRow('Lens', formatItems(selectedLensNames));
+    const lensDisplayNames = selectedLensNames.map(name => {
+        const lens = devices.lenses && devices.lenses[name];
+        if (!lens) return name;
+        const attrs = [];
+        if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
+        if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm front`);
+        if (lens.tStop) attrs.push(`T${lens.tStop}`);
+        return attrs.length ? `${name} (${attrs.join(', ')})` : name;
+    });
+    addRow('Lens', formatItems(lensDisplayNames));
     const lensSupportItems = [];
     const requiredRodTypes = new Set();
     const addedRodPairs = new Set();
@@ -8759,7 +8768,12 @@ function populateLensDropdown() {
   Object.keys(lensData).sort(localeSort).forEach(name => {
     const opt = document.createElement('option');
     opt.value = name;
-    opt.textContent = name;
+    const lens = lensData[name] || {};
+    const attrs = [];
+    if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
+    if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm front`);
+    if (lens.tStop) attrs.push(`T${lens.tStop}`);
+    opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
     lensSelect.appendChild(opt);
   });
 }
