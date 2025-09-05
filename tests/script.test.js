@@ -109,6 +109,11 @@ test('Easyrig stabiliser data exposes attachments', () => {
   ]);
 });
 
+test('filter options include diopter', () => {
+  const gear = require('../devices/gearList.js');
+  expect(gear.filterOptions).toContain('Diopter');
+});
+
 test('restores project requirements from storage when gear list element is absent', () => {
   setupDom(true);
   const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
