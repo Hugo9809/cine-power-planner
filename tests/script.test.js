@@ -1685,6 +1685,32 @@ describe('script.js functions', () => {
     expect(remoteOpt.selected).toBe(false);
   });
 
+  test.each([
+    'Trinity',
+    'Gimbal',
+    'Car Mount',
+    'Remote Head',
+    'Crane',
+    'Steadicam'
+  ])('DoP monitor options toggle when %s is selected', scenario => {
+    const reqSel = document.getElementById('requiredScenarios');
+    const videoSel = document.getElementById('videoDistribution');
+    const getVals = () => Array.from(videoSel.options).map(o => o.value);
+
+    expect(getVals()).not.toContain('DoP Handheld 7" Monitor');
+    expect(getVals()).not.toContain('DoP 15-21" Monitor');
+
+    reqSel.querySelector(`option[value="${scenario}"]`).selected = true;
+    script.updateVideoDistributionOptions();
+    expect(getVals()).toContain('DoP Handheld 7" Monitor');
+    expect(getVals()).toContain('DoP 15-21" Monitor');
+
+    reqSel.querySelector(`option[value="${scenario}"]`).selected = false;
+    script.updateVideoDistributionOptions();
+    expect(getVals()).not.toContain('DoP Handheld 7" Monitor');
+    expect(getVals()).not.toContain('DoP 15-21" Monitor');
+  });
+
   test('double-clicking an option only deselects that option', () => {
     const selects = document.querySelectorAll('#projectForm select[multiple]');
     selects.forEach(sel => {

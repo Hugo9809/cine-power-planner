@@ -1501,6 +1501,7 @@ const tripodTypesSelect = document.getElementById("tripodTypes");
 const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
+const videoDistributionSelect = document.getElementById("videoDistribution");
 
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
@@ -8759,6 +8760,37 @@ function updateRequiredScenariosSummary() {
   }
 }
 
+function updateVideoDistributionOptions() {
+  if (!requiredScenariosSelect || !videoDistributionSelect) return;
+  const selected = Array.from(requiredScenariosSelect.selectedOptions).map(o => o.value);
+  const needsDopMonitor = selected.some(s => [
+    'Trinity',
+    'Gimbal',
+    'Car Mount',
+    'Remote Head',
+    'Crane',
+    'Steadicam'
+  ].includes(s));
+  const dopOptions = ['DoP Handheld 7" Monitor', 'DoP 15-21" Monitor'];
+  if (needsDopMonitor) {
+    dopOptions.forEach(val => {
+      const exists = Array.from(videoDistributionSelect.options).some(o => o.value === val);
+      if (!exists) {
+        const opt = new Option(val, val);
+        videoDistributionSelect.add(opt);
+      }
+    });
+  } else {
+    dopOptions.forEach(val => {
+      const opt = Array.from(videoDistributionSelect.options).find(o => o.value === val);
+      if (opt) {
+        opt.selected = false;
+        opt.remove();
+      }
+    });
+  }
+}
+
 function initApp() {
   if (sharedLinkRow) {
     if (isRunningPWA()) {
@@ -8778,7 +8810,9 @@ function initApp() {
   applySharedSetupFromUrl();
   if (requiredScenariosSelect) {
     requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
+    requiredScenariosSelect.addEventListener('change', updateVideoDistributionOptions);
     updateRequiredScenariosSummary();
+    updateVideoDistributionOptions();
   }
   if (tripodHeadBrandSelect) {
     tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
@@ -8950,5 +8984,6 @@ if (typeof module !== "undefined" && module.exports) {
     populateSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
+    updateVideoDistributionOptions,
   };
 }
