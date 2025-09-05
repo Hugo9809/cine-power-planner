@@ -1843,6 +1843,25 @@ describe('script.js functions', () => {
     expect(consumText).toContain('1x Magliner Rain Cover Transparent');
   });
 
+  test('Extreme heat scenario ensures umbrella gear', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    const html = generateGearListHtml({ requiredScenarios: 'Extreme heat' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('1x Umbrella for Focus Monitor');
+    expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
+  });
+
   test('Outdoor scenario calculates CapIt sizes for large monitors', () => {
     const { generateGearListHtml } = script;
     devices.monitors.MonB = {
