@@ -6956,7 +6956,10 @@ function generatePrintableOverview() {
     overviewDialog.innerHTML = overviewHtml;
     const content = overviewDialog.querySelector('#overviewDialogContent');
 
-    // Always use light mode for printed overview regardless of current theme
+    // Match current theme for on-screen overview; print stylesheet will override
+    if (document.body.classList.contains('dark-mode')) {
+        content.classList.add('dark-mode');
+    }
     if (document.body.classList.contains('pink-mode')) {
         content.classList.add('pink-mode');
     }
