@@ -7247,7 +7247,9 @@ function collectProjectFormData() {
         monitoringSettings: monitoringSelections,
         videoDistribution: multi('videoDistribution'),
         monitoringConfiguration: val('monitoringConfiguration'),
-        userButtons: val('userButtons'),
+        monitorUserButtons: val('monitorUserButtons'),
+        cameraUserButtons: val('cameraUserButtons'),
+        viewfinderUserButtons: val('viewfinderUserButtons'),
         tripodPreferences: multi('tripodPreferences'),
         sliderBowl: getSliderBowlValue(),
         filter: multi('filter')
@@ -7395,7 +7397,9 @@ function generateGearListHtml(info = {}) {
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
         monitoringConfiguration: 'Monitoring configuration',
-        userButtons: 'User Buttons'
+        monitorUserButtons: 'Onboard Monitor User Buttons',
+        cameraUserButtons: 'Camera User Buttons',
+        viewfinderUserButtons: 'Viewfinder User Buttons'
     };
     const fieldIcons = {
         dop: '👤',
@@ -7413,7 +7417,9 @@ function generateGearListHtml(info = {}) {
         monitoringSupport: '🧰',
         monitoring: '📡',
         monitoringConfiguration: '🎛️',
-        userButtons: '🔘'
+        monitorUserButtons: '🔘',
+        cameraUserButtons: '🔘',
+        viewfinderUserButtons: '🔘'
     };
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
