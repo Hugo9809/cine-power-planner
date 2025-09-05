@@ -39,13 +39,15 @@ const batteryData = {
     "capacity": 238,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1180
   },
   "Bebob V90RM-Cine": {
     "capacity": 85,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 820
   },
   "Bebob V155RM-Cine": {
     "capacity": 156,
@@ -64,7 +66,8 @@ const batteryData = {
     "capacity": 86,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 622
   },
   "Bebob B155cine": {
     "capacity": 155,
@@ -83,7 +86,8 @@ const batteryData = {
     "capacity": 475,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 2360
   },
   "Bebob B90cineML": {
     "capacity": 86,
@@ -151,7 +155,8 @@ const batteryData = {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 10.4,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 668
   },
   "Swit BIVO-160 (B-Mount)": {
     "capacity": 160,
@@ -211,13 +216,15 @@ const batteryData = {
     "capacity": 99,
     "pinA": 12,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 800
   },
   "Anton/Bauer Dionic XT150 (V-Mount)": {
     "capacity": 156,
     "pinA": 12,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1090
   },
   "Anton/Bauer Dionic 240Wh (V-Mount)": {
     "capacity": 240,
@@ -333,7 +340,8 @@ const batteryData = {
     "capacity": 91,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 798
   },
   "IDX CUE-D150 (V-Mount)": {
     "capacity": 146,
@@ -387,7 +395,8 @@ const batteryData = {
     "capacity": 212,
     "pinA": 14.7,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1310
   },
   "Hawk-Woods Mini V-Lok 50Wh": {
     "capacity": 50,
@@ -399,7 +408,8 @@ const batteryData = {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 500
   },
   "Hawk-Woods Mini V-Lok 150Wh": {
     "capacity": 150,
