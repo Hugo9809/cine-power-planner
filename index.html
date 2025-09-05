@@ -993,16 +993,23 @@
           <option value="Onboard Only">Onboard Only</option>
         </select>
       </label></div>
-      <div class="form-row"><label for="monitoringSettings">Camera Monitoring Settings:
-        <select id="monitoringSettings" name="monitoringSettings" multiple size="13">
-          <option value="VF Clean Feed">VF Clean Feed</option>
-          <option value="Onboard Clean Feed">Onboard Clean Feed</option>
-          <option value="Surroundview (if available)">Surroundview (if available)</option>
+      <div class="form-row hidden" id="viewfinderSettingsRow"><label for="viewfinderSettings">Viewfinder Settings:
+        <select id="viewfinderSettings" name="viewfinderSettings" multiple size="2">
+          <option value="Viewfinder Clean Feed">Viewfinder Clean Feed</option>
+          <option value="Surround View">Surround View</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="frameGuides">Frameguides:
+        <select id="frameGuides" name="frameGuides" multiple size="5">
           <option value="Frame Guide: Center Dot">Frame Guide: Center Dot</option>
           <option value="Frame Guides: Center Cross">Frame Guides: Center Cross</option>
           <option value="Frame Guide: Rule of Thirds">Frame Guide: Rule of Thirds</option>
           <option value="Frame Guide: User Box">Frame Guide: User Box</option>
           <option value="Frame Guide: 90% marker">Frame Guide: 90% marker</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="aspectMaskOpacity">Aspect Mask Opacity:
+        <select id="aspectMaskOpacity" name="aspectMaskOpacity" multiple size="5">
           <option value="Aspect Mask Opacity 100%">Aspect Mask Opacity 100%</option>
           <option value="AM Opacity 75%">AM Opacity 75%</option>
           <option value="AM Opacity 50%">AM Opacity 50%</option>

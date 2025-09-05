@@ -1874,18 +1874,18 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
-      monitoringSettings: 'VF Clean Feed, Onboard Clean Feed',
+      monitoringSettings: 'Viewfinder Clean Feed, Surround View',
       userButtons: 'Toggle LUT, False Color'
     });
     expect(html).toContain('<span class="req-label">Rigging</span>');
     expect(html).toContain('<span class="req-value">Shoulder rig, Hand Grips</span>');
     expect(html).toContain('<td>Rigging</td>');
     expect(html).toContain('<span class="req-label">Monitoring support</span>');
-    expect(html).toContain('<span class="req-value">VF Clean Feed, Onboard Clean Feed</span>');
+    expect(html).toContain('<span class="req-value">Viewfinder Clean Feed, Surround View</span>');
     expect(html).toContain('<td>Monitoring support</td>');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).not.toContain('VF Clean Feed');
-    expect(msSection).not.toContain('Onboard Clean Feed');
+    expect(msSection).not.toContain('Viewfinder Clean Feed');
+    expect(msSection).not.toContain('Surround View');
     expect(msSection).not.toContain('User Buttons');
     expect(html).toContain('<span class="req-label">User Buttons</span>');
     expect(html).toContain('<span class="req-value">Toggle LUT, False Color</span>');
