@@ -1738,6 +1738,7 @@ if (gearListOutput || projectRequirementsOutput) {
       bindGearListCageListener();
       bindGearListEasyrigListener();
       bindGearListSliderBowlListener();
+      bindGearListDirectorsMonitorListener();
     }
   }
 }
@@ -5515,9 +5516,10 @@ setupSelect.addEventListener("change", (event) => {
         displayGearAndRequirements(setup.gearList || '');
         if (setup.gearList) {
           ensureGearListActions();
-          bindGearListCageListener();
-          bindGearListEasyrigListener();
-          bindGearListSliderBowlListener();
+      bindGearListCageListener();
+      bindGearListEasyrigListener();
+      bindGearListSliderBowlListener();
+      bindGearListDirectorsMonitorListener();
           if (typeof saveGearList === 'function') {
             saveGearList(setup.gearList);
           }
@@ -6463,6 +6465,7 @@ if (projectForm) {
         bindGearListCageListener();
         bindGearListEasyrigListener();
         bindGearListSliderBowlListener();
+        bindGearListDirectorsMonitorListener();
         saveCurrentGearList();
         projectDialog.close();
     });
@@ -7805,12 +7808,13 @@ function handleImportGearList(e) {
         try {
             const obj = JSON.parse(ev.target.result);
             if (obj && obj.gearList) {
-                displayGearAndRequirements(obj.gearList);
-                ensureGearListActions();
-                bindGearListCageListener();
-                bindGearListEasyrigListener();
-                bindGearListSliderBowlListener();
-                saveCurrentGearList();
+            displayGearAndRequirements(obj.gearList);
+            ensureGearListActions();
+            bindGearListCageListener();
+            bindGearListEasyrigListener();
+            bindGearListSliderBowlListener();
+            bindGearListDirectorsMonitorListener();
+            saveCurrentGearList();
             }
         } catch {
             alert('Invalid gear list file.');
@@ -7918,6 +7922,16 @@ function bindGearListSliderBowlListener() {
     }
 }
 
+function bindGearListDirectorsMonitorListener() {
+    if (!gearListOutput) return;
+    const sel = gearListOutput.querySelector('#gearListDirectorsMonitor7');
+    if (sel) {
+        sel.addEventListener('change', () => {
+            saveCurrentGearList();
+        });
+    }
+}
+
 
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden')) return;
@@ -7940,6 +7954,7 @@ function refreshGearListIfVisible() {
     bindGearListCageListener();
     bindGearListEasyrigListener();
     bindGearListSliderBowlListener();
+    bindGearListDirectorsMonitorListener();
     saveCurrentGearList();
 }
 
@@ -8051,6 +8066,11 @@ controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updat
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
+
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
+  .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
+motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
+controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
 
 [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
