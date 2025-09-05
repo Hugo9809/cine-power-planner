@@ -1466,6 +1466,8 @@ const batterySelect  = document.getElementById("batterySelect");
 const lensSelect     = document.getElementById("lenses");
 const requiredScenariosSelect = document.getElementById("requiredScenarios");
 const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
+const tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
+const tripodPreferencesSelect = document.getElementById("tripodPreferences");
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
@@ -8453,6 +8455,16 @@ function updateRequiredScenariosSummary() {
     box.appendChild(document.createTextNode(val));
     requiredScenariosSummary.appendChild(box);
   });
+  if (tripodPreferencesRow) {
+    if (selected.includes('Tripod')) {
+      tripodPreferencesRow.classList.remove('hidden');
+    } else {
+      tripodPreferencesRow.classList.add('hidden');
+      if (tripodPreferencesSelect) {
+        Array.from(tripodPreferencesSelect.options).forEach(o => { o.selected = false; });
+      }
+    }
+  }
 }
 
 function initApp() {
