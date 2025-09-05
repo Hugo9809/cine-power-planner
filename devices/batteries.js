@@ -32,7 +32,8 @@ const batteryData = {
     "capacity": 190,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 950
   },
   "Bebob V240micro": {
     "capacity": 238,
@@ -100,7 +101,8 @@ const batteryData = {
     "capacity": 70,
     "pinA": 8.3,
     "dtapA": 6,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 419
   },
   "Swit MINO-S140 (V-Mount)": {
     "capacity": 140,
@@ -113,7 +115,7 @@ const batteryData = {
     "pinA": 16,
     "dtapA": 10,
     "mount_type": "V-Mount",
-    "weight_g": 1020
+    "weight_g": 713
   },
   "Swit PB-M98S (Mini V-Mount)": {
     "capacity": 98,
@@ -239,13 +241,21 @@ const batteryData = {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 544
   },
   "Core SWX NANO Micro 150Wh (V-Mount)": {
     "capacity": 150,
     "pinA": 10,
     "dtapA": 10,
     "mount_type": "V-Mount"
+  },
+  "Core SWX NANO X Micro 98Wh (V-Mount)": {
+    "capacity": 98,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 560
   },
   "Core SWX Helix Max 98Wh (V-Mount)": {
     "capacity": 98,
