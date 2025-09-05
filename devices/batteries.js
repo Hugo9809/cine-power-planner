@@ -100,7 +100,8 @@ const batteryData = {
     "capacity": 156,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1040
   },
   "Swit MINO-S70 (V-Mount)": {
     "capacity": 70,
@@ -113,7 +114,8 @@ const batteryData = {
     "capacity": 140,
     "pinA": 12.5,
     "dtapA": 8,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 713
   },
   "Swit MINO-S210 (V-Mount)": {
     "capacity": 210,
@@ -126,7 +128,8 @@ const batteryData = {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 6,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 510
   },
   "Swit PB-R290S (V-Mount)": {
     "capacity": 290,
@@ -199,7 +202,8 @@ const batteryData = {
     "capacity": 92,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 798
   },
   "Anton/Bauer Titon 150 (V-Mount)": {
     "capacity": 144,
@@ -312,7 +316,15 @@ const batteryData = {
     "capacity": 97,
     "pinA": 10,
     "dtapA": 5.56,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 550
+  },
+  "IDX Imicro-98P (V-Mount)": {
+    "capacity": 97,
+    "pinA": 10,
+    "dtapA": 5.56,
+    "mount_type": "V-Mount",
+    "weight_g": 380
   },
   "IDX Imicro-150 (V-Mount)": {
     "capacity": 145,
@@ -381,7 +393,8 @@ const batteryData = {
     "capacity": 99,
     "pinA": 10,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 585
   },
   "SmallRig VB155 mini (V-Mount)": {
     "capacity": 155,
@@ -425,7 +438,8 @@ const batteryData = {
     "capacity": 150,
     "pinA": 12,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 710
   },
   "Hawk-Woods Mini V-Lok 200Wh": {
     "capacity": 200,
