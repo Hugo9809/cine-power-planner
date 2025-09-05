@@ -515,6 +515,16 @@ describe('script.js functions', () => {
     expect(savedHtml).toContain('<table class="gear-table">');
   });
 
+  test('changing device selection triggers gear list save', () => {
+    global.saveGearList = jest.fn();
+    const gear = document.getElementById('gearListOutput');
+    gear.innerHTML = '<div>Test</div>';
+    gear.classList.remove('hidden');
+    const camSel = document.getElementById('cameraSelect');
+    camSel.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(global.saveGearList).toHaveBeenCalled();
+  });
+
   test('generate gear list hides button until deleted', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
