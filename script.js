@@ -7850,10 +7850,11 @@ function generateGearListHtml(info = {}) {
         }
         for (let i = 0; i < count; i++) consumables.push(item.name);
     }
-    if (scenarios.includes('Outdoor')) {
+    const needsRainProtection = ['Outdoor', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s));
+    if (needsRainProtection) {
         if (selectedNames.camera) miscItems.push(`Rain Cover "${selectedNames.camera}"`);
-        miscItems.push('Umbrella for Focus Monitor');
-        miscItems.push('Umbrella Magliner incl Mounting to Magliner');
+        if (!miscItems.includes('Umbrella for Focus Monitor')) miscItems.push('Umbrella for Focus Monitor');
+        if (!miscItems.includes('Umbrella Magliner incl Mounting to Magliner')) miscItems.push('Umbrella Magliner incl Mounting to Magliner');
         const monitorSizes = [];
         if (monitorSelect && monitorSelect.value) {
             const m = devices.monitors[monitorSelect.value];
