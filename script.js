@@ -7133,6 +7133,7 @@ function collectProjectFormData() {
     const val = name => (projectForm.querySelector(`[name="${name}"]`)?.value || '').trim();
     const multi = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
         .map(o => o.value).join(', ');
+    const multiAll = names => names.map(multi).filter(Boolean).join(', ');
     const range = (start, end) => [val(start), val(end)].filter(Boolean).join(' to ');
     return {
         projectName: val('projectName'),
@@ -7148,7 +7149,7 @@ function collectProjectFormData() {
         lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
-        monitoringPreferences: multi('monitoringPreferences'),
+        monitoringPreferences: multiAll(['monitoringVideo', 'monitoringSettings', 'monitoringConfiguration']),
         userButtons: val('userButtons'),
         tripodPreferences: multi('tripodPreferences'),
         sliderBowl: getSliderBowlValue(),
