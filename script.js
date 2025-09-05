@@ -8579,9 +8579,7 @@ const scenarioIcons = {
   'Extreme heat': '🔥',
   'Rain Machine': '🌧️',
   'Slow Motion': '🐌',
-  'Viewfinder Extension': '🔭',
-  'Zoom Remote handle': '🔍',
-  'Dolly Remote handle': '🎛️'
+  'Viewfinder Extension': '🔭'
 };
 
 function updateRequiredScenariosSummary() {
