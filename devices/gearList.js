@@ -2154,7 +2154,8 @@ const gear = {
     "HBM",
     "GG",
     "Pearl",
-    "Soft FX"
+    "Soft FX",
+    "Diopter"
   ]
 };
 
