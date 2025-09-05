@@ -2755,6 +2755,162 @@ const cameraData = {
       "2048x1080 (DCI 2K)"
     ]
   },
+  "Blackmagic URSA Cine 17K 65": {
+    "powerDrawWatts": 100,
+    "power": {
+      "input": {
+        "voltageRange": "20-30",
+        "type": "XLR 2-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "B-Mount",
+          "mount": "native",
+          "notes": ""
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Limited functionality"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Limited functionality"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "wattage": 36,
+          "notes": "Regulated"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "wattage": 36,
+          "notes": "Regulated"
+        },
+        {
+          "type": "Fischer 3-pin",
+          "voltage": "24V",
+          "current": "3A",
+          "wattage": 72,
+          "notes": "Regulated, with run/stop"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "Battery Voltage",
+          "wattage": null,
+          "notes": "Unregulated"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "Battery Voltage",
+          "wattage": null,
+          "notes": "Unregulated"
+        },
+        {
+          "type": "USB-C",
+          "voltage": "5V",
+          "current": "1.5A",
+          "wattage": 7.5,
+          "notes": "For accessories"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "12G-SDI"
+      },
+      {
+        "type": "12G-SDI"
+      },
+      {
+        "type": "HDMI"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "type": "LANC",
+        "notes": "2.5mm"
+      },
+      {
+        "type": "Hirose 12-pin",
+        "notes": "For broadcast lenses"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "Blackmagic Media Module",
+        "notes": "8TB"
+      },
+      {
+        "type": "CFexpress Type B",
+        "notes": "via adapter"
+      }
+    ],
+    "viewfinder": [
+      {
+        "type": "Fold- LCD",
+        "size": "5-inch",
+        "resolution": "1920x1080"
+      },
+      {
+        "type": "Blackmagic URSA Cine EVF (Optional)"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "LPL",
+        "mount": "native",
+        "notes": "Supports ARRI LDS-2 and Cooke /i lens data"
+      },
+      {
+        "type": "PL",
+        "mount": "native",
+        "notes": "Supports ARRI LDS and Cooke /i lens data"
+      },
+      {
+        "type": "EF",
+        "mount": "native",
+        "notes": "Supports Canon EF electronic lens data"
+      },
+      {
+        "type": "Hasselblad",
+        "mount": "native",
+        "notes": "Supports Hasselblad electronic lens data"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "Timecode In/Out"
+      }
+    ],
+    "weight_g": 3950,
+    "recordingCodecs": [
+      "Blackmagic RAW",
+      "H.264 Proxies"
+    ],
+    "sensorModes": [
+      "17,520×8040 (17K 2.2:1 open gate)",
+      "11,680×5360 (8K 2.2:1 open gate)",
+      "8K 3:2",
+      "8K 16:9",
+      "8K 17:9"
+    ],
+    "resolutions": [
+      "17520x8040 (17K)",
+      "11680x5360 (8K)",
+      "8192x5461 (8K 3:2)",
+      "8192x4320 (8K 16:9)",
+      "8192x4320 (8K 17:9)"
+    ]
+  },
   "Blackmagic PYXIS 6K": {
     "powerDrawWatts": 60,
     "power": {
@@ -3887,13 +4043,17 @@ const cameraData = {
         "notes": "Timecode In/Out"
       }
     ],
+    "weight_g": 1800,
     "recordingCodecs": [
       "REDCODE RAW (HQ/MQ/LQ)",
       "Apple ProRes 4444 XQ/4444/422HQ/422/422LT (up to 4K)"
     ],
     "sensorModes": [
-      "VV 8K (17:9, 2.4:1, 1:1)",
-      "S35 window (6K/4K)"
+      "8K 8192×4320 up to 120 fps",
+      "4K up to 240 fps",
+      "8K 17:9",
+      "8K 16:9",
+      "8K 2:1"
     ],
     "resolutions": [
       "8192x4320 (8K)",
@@ -5432,7 +5592,25 @@ const cameraData = {
         "notes": "Supports Fujifilm X electronic lens data"
       }
     ],
-    "timecode": []
+    "timecode": [],
+    "weight_g": 355,
+    "recordingCodecs": [
+      "H.264",
+      "H.265 10-bit 4:2:2",
+      "RAW external"
+    ],
+    "sensorModes": [
+      "6.2K open gate 25/30p",
+      "Uncropped 4K/DCI 25/30p",
+      "Cropped 4K/DCI 50/60p",
+      "FHD 240p"
+    ],
+    "resolutions": [
+      "6240x4160 (6.2K)",
+      "4096x2160 (DCI 4K)",
+      "3840x2160 (UHD 4K)",
+      "1920x1080 (FHD)"
+    ]
   },
   "Canon EOS R5 Mark II": {
     "powerDrawWatts": 15,
