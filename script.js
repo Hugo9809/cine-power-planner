@@ -1492,6 +1492,8 @@ const batterySelect  = document.getElementById("batterySelect");
 const lensSelect     = document.getElementById("lenses");
 const requiredScenariosSelect = document.getElementById("requiredScenarios");
 const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
+const remoteHeadOption = requiredScenariosSelect ?
+  requiredScenariosSelect.querySelector('option[value="Remote Head"]') : null;
 const tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
 const tripodHeadBrandSelect = document.getElementById("tripodHeadBrand");
 const tripodBowlSelect = document.getElementById("tripodBowl");
@@ -8670,7 +8672,17 @@ const scenarioIcons = {
 function updateRequiredScenariosSummary() {
   if (!requiredScenariosSelect || !requiredScenariosSummary) return;
   requiredScenariosSummary.innerHTML = '';
-  const selected = Array.from(requiredScenariosSelect.selectedOptions).map(o => o.value);
+  let selected = Array.from(requiredScenariosSelect.selectedOptions).map(o => o.value);
+  const hasDolly = selected.includes('Dolly');
+  if (remoteHeadOption) {
+    if (!hasDolly) {
+      remoteHeadOption.hidden = true;
+      remoteHeadOption.selected = false;
+      selected = selected.filter(v => v !== 'Remote Head');
+    } else {
+      remoteHeadOption.hidden = false;
+    }
+  }
   selected.forEach(val => {
     const box = document.createElement('span');
     box.className = 'scenario-box';

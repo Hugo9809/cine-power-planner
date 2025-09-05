@@ -1592,6 +1592,27 @@ describe('script.js functions', () => {
     expect(spreaderSel.value).toBe('');
   });
 
+  test('remote head option is only visible when Dolly is selected', () => {
+    const select = document.getElementById('requiredScenarios');
+    const remoteOpt = select.querySelector('option[value="Remote Head"]');
+
+    script.updateRequiredScenariosSummary();
+    expect(remoteOpt.hidden).toBe(true);
+
+    select.querySelector('option[value="Dolly"]').selected = true;
+    script.updateRequiredScenariosSummary();
+    expect(remoteOpt.hidden).toBe(false);
+
+    remoteOpt.selected = true;
+    script.updateRequiredScenariosSummary();
+    expect(remoteOpt.hidden).toBe(false);
+
+    select.querySelector('option[value="Dolly"]').selected = false;
+    script.updateRequiredScenariosSummary();
+    expect(remoteOpt.hidden).toBe(true);
+    expect(remoteOpt.selected).toBe(false);
+  });
+
   test('double-clicking an option only deselects that option', () => {
     const selects = document.querySelectorAll('#projectForm select[multiple]');
     selects.forEach(sel => {
