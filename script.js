@@ -7820,6 +7820,7 @@ function generateGearListHtml(info = {}) {
         { name: 'Klappenstift', count: 2, klappen: true }
     ];
     let shootDays = 0;
+    let isWinterShoot = false;
     if (info.shootingDays) {
         const parts = info.shootingDays.split(' to ');
         if (parts.length === 2) {
@@ -7827,6 +7828,16 @@ function generateGearListHtml(info = {}) {
             const end = new Date(parts[1]);
             if (!isNaN(start) && !isNaN(end)) {
                 shootDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                const winterMonths = new Set([9, 10, 11, 0, 1, 2, 3, 4]);
+                const m = new Date(start);
+                m.setHours(0, 0, 0, 0);
+                while (m <= end) {
+                    if (winterMonths.has(m.getMonth())) {
+                        isWinterShoot = true;
+                        break;
+                    }
+                    m.setMonth(m.getMonth() + 1);
+                }
             }
         }
     }
@@ -7867,6 +7878,10 @@ function generateGearListHtml(info = {}) {
         for (let i = 0; i < 3; i++) consumables.push('CapIt Small');
         for (let i = 0; i < 10; i++) consumables.push('Duschhaube');
         consumables.push('Magliner Rain Cover Transparent');
+    }
+    const needsHairDryer = isWinterShoot || scenarios.includes('Extreme cold (snow)');
+    if (needsHairDryer) {
+        miscItems.push('Hair Dryer');
     }
     addRow('Miscellaneous', formatItems(miscItems));
     addRow('Consumables', formatItems(consumables));
