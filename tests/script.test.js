@@ -1490,6 +1490,27 @@ describe('script.js functions', () => {
     expect(boxes[1].textContent).toContain('Gimbal');
   });
 
+  test('tripod preferences selector is shown only when Tripod scenario is selected', () => {
+    const select = document.getElementById('requiredScenarios');
+    const tripodRow = document.getElementById('tripodPreferencesRow');
+    const tripodSelect = document.getElementById('tripodPreferences');
+
+    // Initially hidden
+    expect(tripodRow.classList.contains('hidden')).toBe(true);
+
+    // Select Tripod scenario
+    select.querySelector('option[value="Tripod"]').selected = true;
+    script.updateRequiredScenariosSummary();
+    expect(tripodRow.classList.contains('hidden')).toBe(false);
+
+    // Choose a tripod preference and then deselect Tripod scenario
+    tripodSelect.querySelector('option').selected = true;
+    select.querySelector('option[value="Tripod"]').selected = false;
+    script.updateRequiredScenariosSummary();
+    expect(tripodRow.classList.contains('hidden')).toBe(true);
+    expect(Array.from(tripodSelect.selectedOptions)).toHaveLength(0);
+  });
+
   test('Hand Grips rigging adds telescopic handle', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ rigging: 'Hand Grips' });
