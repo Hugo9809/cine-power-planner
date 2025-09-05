@@ -1858,6 +1858,9 @@ if (projectForm) {
             sel.focus();
             sel.scrollTop = scrollTop;
         });
+        sel.addEventListener('dblclick', e => {
+            e.preventDefault();
+        });
     });
 }
 
