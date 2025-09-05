@@ -1670,6 +1670,25 @@ describe('script.js functions', () => {
     expect(text).toContain('1x spigot');
   });
 
+  test('Gimbal selector adds specified devices', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    const html = generateGearListHtml({ requiredScenarios: 'Gimbal', gimbal: 'DJI Ronin 2, DJI Ronin RS4 Pro Combo' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('1x DJI Ronin 2');
+    expect(text).toContain('1x DJI Ronin RS4 Pro Combo');
+  });
+
   test('Outdoor scenario adds weather protection gear and consumables for small monitor', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
