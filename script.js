@@ -8627,6 +8627,14 @@ function updateRequiredScenariosSummary() {
       }
     }
   }
+  if (tripodPreferencesSelect) {
+    const dollyOption = Array.from(tripodPreferencesSelect.options).find(o => o.value === 'Dolly Remote handle');
+    if (dollyOption) {
+      const show = selected.includes('Dolly');
+      dollyOption.hidden = !show;
+      if (!show) dollyOption.selected = false;
+    }
+  }
 }
 
 function initApp() {
