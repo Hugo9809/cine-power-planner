@@ -1685,6 +1685,26 @@ describe('script.js functions', () => {
     expect(remoteOpt.selected).toBe(false);
   });
 
+  test('DoP monitor options appear for specific scenarios', () => {
+    const select = document.getElementById('requiredScenarios');
+    const videoSel = document.getElementById('videoDistribution');
+
+    const values = () => Array.from(videoSel.options).map(o => o.value);
+
+    expect(values()).not.toContain('DoP Handheld 7" Monitor');
+    expect(values()).not.toContain('DoP 15-21" Monitor');
+
+    select.querySelector('option[value="Trinity"]').selected = true;
+    script.updateRequiredScenariosSummary();
+    expect(values()).toContain('DoP Handheld 7" Monitor');
+    expect(values()).toContain('DoP 15-21" Monitor');
+
+    select.querySelector('option[value="Trinity"]').selected = false;
+    script.updateRequiredScenariosSummary();
+    expect(values()).not.toContain('DoP Handheld 7" Monitor');
+    expect(values()).not.toContain('DoP 15-21" Monitor');
+  });
+
   test('selecting Dolly adds SmallHD Ultra 7 monitor when none selected', () => {
     const select = document.getElementById('requiredScenarios');
     const monitorSel = document.getElementById('monitorSelect');
