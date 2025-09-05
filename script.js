@@ -7295,7 +7295,8 @@ function collectProjectFormData() {
         sensorMode: val('sensorMode'),
         lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
-        rigging: multi('rigging'),
+        cameraHandle: multi('cameraHandle'),
+        mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
         videoDistribution: multi('videoDistribution'),
@@ -7400,8 +7401,8 @@ function generateGearListHtml(info = {}) {
             riggingAcc.push('D-Tap Extension 50 cm');
         }
     }
-    const rigging = info.rigging
-        ? info.rigging.split(',').map(r => r.trim()).filter(Boolean)
+    const handleSelections = info.cameraHandle
+        ? info.cameraHandle.split(',').map(r => r.trim()).filter(Boolean)
         : [];
     const monitoringSettings = info.monitoringSettings
         ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
@@ -7454,13 +7455,10 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Handheld') && scenarios.includes('Easyrig')) {
         addHandle();
     }
-    if (rigging.some(r => r === 'Shoulder rig' || r === 'Hand Grips')) {
+    if (handleSelections.includes('Hand Grips')) {
         addHandle();
     }
-    const riggingSelections = info.rigging
-        ? info.rigging.split(',').map(s => s.trim())
-        : [];
-    if (riggingSelections.includes('Top handle extension') || riggingSelections.includes('Rear Handle')) {
+    if (handleSelections.includes('Handle Extension') || handleSelections.includes('L-Handle')) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
     const projectInfo = { ...info };
@@ -7492,7 +7490,8 @@ function generateGearListHtml(info = {}) {
         sensorMode: 'Sensor Mode',
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
-        rigging: 'Rigging',
+        cameraHandle: 'Camera Handle',
+        mattebox: 'Mattebox',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
@@ -7512,7 +7511,8 @@ function generateGearListHtml(info = {}) {
         baseFrameRate: '⏱️',
         sensorMode: '🔍',
         requiredScenarios: '🌄',
-        rigging: '🛠️',
+        cameraHandle: '🛠️',
+        mattebox: '🎬',
         gimbal: '🌀',
         monitoringSupport: '🧰',
         monitoring: '📡',

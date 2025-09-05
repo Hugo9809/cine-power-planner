@@ -1702,9 +1702,9 @@ describe('script.js functions', () => {
     });
   });
 
-  test('Hand Grips rigging adds telescopic handle', () => {
+  test('Hand Grips handle adds telescopic handle', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ rigging: 'Hand Grips' });
+    const html = generateGearListHtml({ cameraHandle: 'Hand Grips' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
@@ -1716,9 +1716,9 @@ describe('script.js functions', () => {
     expect(text).not.toContain('2x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
-  test('Rigging options add telescopic handle without duplication', () => {
+  test('Handle and scenario combo adds telescopic handle only once', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ rigging: 'Shoulder rig, Hand Grips' });
+    const html = generateGearListHtml({ cameraHandle: 'Hand Grips', requiredScenarios: 'Handheld, Easyrig' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
@@ -1730,10 +1730,10 @@ describe('script.js functions', () => {
     expect(text).not.toContain('2x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
-  test('Top handle extension or Rear Handle rigging adds handle extension set', () => {
+  test('Handle extension or L-Handle adds handle extension set', () => {
     const { generateGearListHtml } = script;
-    ['Top handle extension', 'Rear Handle'].forEach(rig => {
-      const html = generateGearListHtml({ rigging: rig });
+    ['Handle Extension', 'L-Handle'].forEach(rig => {
+      const html = generateGearListHtml({ cameraHandle: rig });
       const wrap = document.createElement('div');
       wrap.innerHTML = html;
       const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
@@ -2068,21 +2068,22 @@ describe('script.js functions', () => {
     });
   });
 
-  test('rigging appears in project requirements and gear table', () => {
+  test('camera handle and mattebox appear in project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
-      rigging: 'Shoulder rig, Hand Grips',
+      cameraHandle: 'Hand Grips, L-Handle',
+      mattebox: 'Rod based',
       monitoringSettings: 'Viewfinder Clean Feed, Surround View',
       monitorUserButtons: 'Toggle LUT',
       cameraUserButtons: 'False Color',
       viewfinderUserButtons: 'Peaking'
     });
-    expect(html).toContain('<span class="req-label">Rigging</span>');
-    expect(html).toContain('<span class="req-value">Shoulder rig, Hand Grips</span>');
-    expect(html).toContain('<td>Rigging</td>');
+    expect(html).toContain('<span class="req-label">Camera Handle</span>');
+    expect(html).toContain('<span class="req-value">Hand Grips, L-Handle</span>');
+    expect(html).toContain('<span class="req-label">Mattebox</span>');
+    expect(html).toContain('<span class="req-value">Rod based</span>');
     expect(html).toContain('<span class="req-label">Monitoring support</span>');
     expect(html).toContain('<span class="req-value">Viewfinder Clean Feed, Surround View</span>');
-    expect(html).toContain('<td>Monitoring support</td>');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).not.toContain('Viewfinder Clean Feed');
     expect(msSection).not.toContain('Surround View');
@@ -2095,6 +2096,7 @@ describe('script.js functions', () => {
     expect(html).toContain('<span class="req-value">False Color</span>');
     expect(html).toContain('<span class="req-label">Viewfinder User Buttons</span>');
     expect(html).toContain('<span class="req-value">Peaking</span>');
+    expect(html).toContain('<td>Rigging</td>');
   });
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
