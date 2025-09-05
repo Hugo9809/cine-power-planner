@@ -38,19 +38,22 @@ const batteryData = {
     "capacity": 238,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1180
   },
   "Bebob V90RM-Cine": {
     "capacity": 85,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 820
   },
   "Bebob V155RM-Cine": {
     "capacity": 156,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1000
   },
   "Bebob V290RM-Cine": {
     "capacity": 285,
@@ -197,7 +200,8 @@ const batteryData = {
     "capacity": 144,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1088
   },
   "Anton/Bauer Titon 240 (V-Mount)": {
     "capacity": 240,
@@ -311,7 +315,15 @@ const batteryData = {
     "capacity": 143,
     "pinA": 14,
     "dtapA": 5.56,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 910
+  },
+  "IDX DUO-C150P (V-Mount)": {
+    "capacity": 143,
+    "pinA": 14,
+    "dtapA": 5.56,
+    "mount_type": "V-Mount",
+    "weight_g": 948
   },
   "IDX DUO-C198 (V-Mount)": {
     "capacity": 196,
