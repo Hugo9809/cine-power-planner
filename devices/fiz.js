@@ -747,9 +747,6 @@ const fizData = {
       "output_display": "Handset Control Unit (touchscreen), High-Bright LED Display, ARRI WCU-4/Hi-5, Preston HU3, cmotion, Teradek, Heden LCS",
       "notes": "The Focusbug Cine RT is a comprehensive ultrasonic distance measuring system. The listed power draw is for the main system (Base Sensor + Handset/Display + Bug), with the LCube adding its own small draw. It offers advanced features like tracking multiple 'Bugs' (miniature transmitters), limits, lockout, and a 'Tape Mode' on the handset for quick measurements. The LCube CUB-1 is used for integrating the Cine RT's serial output into ARRI's LBUS ecosystem for seamless data flow."
     },
-    "ARRI LCube": {
-      "powerDrawWatts": 0.24
-    },
     "Preston Light Ranger 2 (LR2) Main Sensor": {
       "powerDrawWatts": 20,
       "connection_compatibility": "Preston systems only (via MDR4)",
