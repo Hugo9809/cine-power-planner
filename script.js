@@ -1493,9 +1493,41 @@ const lensSelect     = document.getElementById("lenses");
 const requiredScenariosSelect = document.getElementById("requiredScenarios");
 const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
 const tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
-const tripodPreferencesSelect = document.getElementById("tripodPreferences");
+const tripodHeadBrandSelect = document.getElementById("tripodHeadBrand");
+const tripodBowlSelect = document.getElementById("tripodBowl");
+const tripodTypesSelect = document.getElementById("tripodTypes");
+const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
+
+function updateTripodOptions() {
+  const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
+  const bowl = tripodBowlSelect ? tripodBowlSelect.value : '';
+  const headOpts = tripodHeadBrandSelect ? Array.from(tripodHeadBrandSelect.options) : [];
+  const bowlOpts = tripodBowlSelect ? Array.from(tripodBowlSelect.options) : [];
+  headOpts.forEach(o => { o.hidden = false; });
+  bowlOpts.forEach(o => { o.hidden = false; });
+  if (headBrand === 'OConnor') {
+    const opt = bowlOpts.find(o => o.value === '75mm bowl');
+    if (opt) opt.hidden = true;
+    if (tripodBowlSelect.value === '75mm bowl') tripodBowlSelect.value = '';
+  }
+  if (headBrand === 'Sachtler') {
+    const opt = bowlOpts.find(o => o.value === 'Mitchell Mount');
+    if (opt) opt.hidden = true;
+    if (tripodBowlSelect.value === 'Mitchell Mount') tripodBowlSelect.value = '';
+  }
+  if (bowl === '75mm bowl') {
+    const opt = headOpts.find(o => o.value === 'OConnor');
+    if (opt) opt.hidden = true;
+    if (tripodHeadBrandSelect.value === 'OConnor') tripodHeadBrandSelect.value = '';
+  }
+  if (bowl === 'Mitchell Mount') {
+    const opt = headOpts.find(o => o.value === 'Sachtler');
+    if (opt) opt.hidden = true;
+    if (tripodHeadBrandSelect.value === 'Sachtler') tripodHeadBrandSelect.value = '';
+  }
+}
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
@@ -7265,7 +7297,10 @@ function collectProjectFormData() {
         monitorUserButtons: val('monitorUserButtons'),
         cameraUserButtons: val('cameraUserButtons'),
         viewfinderUserButtons: val('viewfinderUserButtons'),
-        tripodPreferences: multi('tripodPreferences'),
+        tripodHeadBrand: val('tripodHeadBrand'),
+        tripodBowl: val('tripodBowl'),
+        tripodTypes: multi('tripodTypes'),
+        tripodSpreader: val('tripodSpreader'),
         sliderBowl: getSliderBowlValue(),
         filter: multi('filter')
     };
@@ -7393,7 +7428,10 @@ function generateGearListHtml(info = {}) {
     if (!info.monitoringConfiguration) delete projectInfo.monitoringConfiguration;
     delete projectInfo.monitoringSettings;
     delete projectInfo.videoDistribution;
-    delete projectInfo.tripodPreferences;
+    delete projectInfo.tripodHeadBrand;
+    delete projectInfo.tripodBowl;
+    delete projectInfo.tripodTypes;
+    delete projectInfo.tripodSpreader;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
@@ -7599,12 +7637,6 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Avenger C-Stand Sliding Leg 20"');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
     }
-    if (scenarios.includes('Tripod')) {
-        const tripodDb = devices && devices.accessories && devices.accessories.tripods;
-        if (tripodDb) {
-            gripItems.push(...Object.keys(tripodDb));
-        }
-    }
     if (scenarios.includes('Easyrig')) {
         const stabiliser = devices && devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
         const opts = stabiliser && Array.isArray(stabiliser.options) ? stabiliser.options : [];
@@ -7658,17 +7690,42 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Super Clamp');
         riggingAcc.push('Spigot');
     }
-    const needsTripodHead = ['Tripod', 'Dolly', 'Slider', 'Car Mount', 'Jib'].some(s => scenarios.includes(s));
-    if (needsTripodHead) {
-        const cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
-        const weight = cam && cam.weight_g ? cam.weight_g : 0;
-        const HEAVY_THRESHOLD_G = 2000;
-        if (weight > HEAVY_THRESHOLD_G) {
-            gripItems.push('OConnor 2560 Head');
-        } else {
-            gripItems.push('Sachtler FSB 8 Head');
+    const tripodTypes = info.tripodTypes ? info.tripodTypes.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const bowlType = info.tripodBowl;
+    const spreader = info.tripodSpreader;
+    const headBrand = info.tripodHeadBrand;
+    const headMap = {
+        'OConnor': {
+            '100mm bowl': "O'Connor Ultimate 1040 Fluid-Head",
+            '150mm bowl': "O'Connor Ultimate 2560 Fluid-Head",
+            'Mitchell Mount': "O'Connor Ultimate 2560 Fluid-Head"
+        },
+        'Sachtler': {
+            '75mm bowl': 'Sachtler aktiv8T S2068T',
+            '100mm bowl': 'Sachtler aktiv18T S2088T',
+            '150mm bowl': 'Sachtler Cine 30 3007'
         }
+    };
+    const headName = headMap[headBrand] && headMap[headBrand][bowlType];
+    if (headName) {
+        gripItems.push(`${headName} ${bowlType}`);
     }
+    tripodTypes.forEach(t => {
+        const base = bowlType ? `${bowlType} ${t}` : t;
+        if (t === 'Hi-Head') {
+            gripItems.push(base);
+        } else if (spreader) {
+            gripItems.push(`${base} + ${spreader}`);
+        } else {
+            gripItems.push(base);
+        }
+        if (t === 'Frog Tripod') {
+            gripItems.push('Sandsack (for Frog Tripod)');
+        }
+        if (t === 'Hi-Head') {
+            gripItems.push('Sandsack (for Hi-Head)');
+        }
+    });
     const standCount = gripItems.filter(item => /\bstand\b/i.test(item)).length;
     if (standCount) {
         gripItems.push(...Array(standCount * 3).fill('Tennisball'));
@@ -8622,9 +8679,11 @@ function updateRequiredScenariosSummary() {
       tripodPreferencesRow.classList.remove('hidden');
     } else {
       tripodPreferencesRow.classList.add('hidden');
-      if (tripodPreferencesSelect) {
-        Array.from(tripodPreferencesSelect.options).forEach(o => { o.selected = false; });
-      }
+      if (tripodHeadBrandSelect) tripodHeadBrandSelect.value = '';
+      if (tripodBowlSelect) tripodBowlSelect.value = '';
+      if (tripodTypesSelect) Array.from(tripodTypesSelect.options).forEach(o => { o.selected = false; });
+      if (tripodSpreaderSelect) tripodSpreaderSelect.value = '';
+      updateTripodOptions();
     }
   }
 }
@@ -8650,6 +8709,13 @@ function initApp() {
     requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
     updateRequiredScenariosSummary();
   }
+  if (tripodHeadBrandSelect) {
+    tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
+  }
+  if (tripodBowlSelect) {
+    tripodBowlSelect.addEventListener('change', updateTripodOptions);
+  }
+  updateTripodOptions();
   updateCalculations();
   applyFilters();
 }

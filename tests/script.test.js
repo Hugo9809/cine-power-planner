@@ -1568,22 +1568,28 @@ describe('script.js functions', () => {
   test('tripod preferences selector is shown only when Tripod scenario is selected', () => {
     const select = document.getElementById('requiredScenarios');
     const tripodRow = document.getElementById('tripodPreferencesRow');
-    const tripodSelect = document.getElementById('tripodPreferences');
+    const headSel = document.getElementById('tripodHeadBrand');
+    const bowlSel = document.getElementById('tripodBowl');
+    const typesSel = document.getElementById('tripodTypes');
+    const spreaderSel = document.getElementById('tripodSpreader');
 
-    // Initially hidden
     expect(tripodRow.classList.contains('hidden')).toBe(true);
 
-    // Select Tripod scenario
     select.querySelector('option[value="Tripod"]').selected = true;
     script.updateRequiredScenariosSummary();
     expect(tripodRow.classList.contains('hidden')).toBe(false);
 
-    // Choose a tripod preference and then deselect Tripod scenario
-    tripodSelect.querySelector('option').selected = true;
+    headSel.value = 'OConnor';
+    bowlSel.value = '100mm bowl';
+    typesSel.querySelector('option').selected = true;
+    spreaderSel.value = 'Mid-Level Spreader';
     select.querySelector('option[value="Tripod"]').selected = false;
     script.updateRequiredScenariosSummary();
     expect(tripodRow.classList.contains('hidden')).toBe(true);
-    expect(Array.from(tripodSelect.selectedOptions)).toHaveLength(0);
+    expect(headSel.value).toBe('');
+    expect(bowlSel.value).toBe('');
+    expect(Array.from(typesSel.selectedOptions)).toHaveLength(0);
+    expect(spreaderSel.value).toBe('');
   });
 
   test('Hand Grips rigging adds telescopic handle', () => {
@@ -1678,54 +1684,28 @@ describe('script.js functions', () => {
     });
   });
 
-  test('Tripod scenario adds tripod legs', () => {
+
+  test('Tripod preferences add selected head and tripods', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ requiredScenarios: 'Tripod' });
+    const html = generateGearListHtml({
+      requiredScenarios: 'Tripod',
+      tripodHeadBrand: 'OConnor',
+      tripodBowl: '100mm bowl',
+      tripodTypes: 'Standard Tripod, Frog Tripod, Hi-Head',
+      tripodSpreader: 'Mid-Level Spreader'
+    });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
     const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
     const itemsRow = rows[gripIdx + 1];
     const text = itemsRow.textContent;
-    expect(text).toContain('1x Legs Large');
-    expect(text).toContain('1x Legs Medium');
-    expect(text).toContain('1x Legs Short');
-  });
-
-  test('Tripod scenario adds OConnor head for heavy camera', () => {
-    const { generateGearListHtml } = script;
-    global.devices.cameras['Arri Alexa Mini LF'] = { weight_g: 2600 };
-    const addOpt = (id, value) => {
-      const sel = document.getElementById(id);
-      sel.innerHTML = `<option value="${value}">${value}</option>`;
-      sel.value = value;
-    };
-    addOpt('cameraSelect', 'Arri Alexa Mini LF');
-    const html = generateGearListHtml({ requiredScenarios: 'Tripod' });
-    const wrap = document.createElement('div');
-    wrap.innerHTML = html;
-    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
-    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
-    const itemsRow = rows[gripIdx + 1];
-    expect(itemsRow.textContent).toContain('OConnor 2560 Head');
-  });
-
-  test('Tripod scenario adds 75mm head for light camera', () => {
-    const { generateGearListHtml } = script;
-    global.devices.cameras['Blackmagic BMPCC 4K'] = { weight_g: 680 };
-    const addOpt = (id, value) => {
-      const sel = document.getElementById(id);
-      sel.innerHTML = `<option value="${value}">${value}</option>`;
-      sel.value = value;
-    };
-    addOpt('cameraSelect', 'Blackmagic BMPCC 4K');
-    const html = generateGearListHtml({ requiredScenarios: 'Tripod' });
-    const wrap = document.createElement('div');
-    wrap.innerHTML = html;
-    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
-    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
-    const itemsRow = rows[gripIdx + 1];
-    expect(itemsRow.textContent).toContain('Sachtler FSB 8 Head');
+    expect(text).toContain("1x O'Connor Ultimate 1040 Fluid-Head 100mm bowl");
+    expect(text).toContain('1x 100mm bowl Standard Tripod + Mid-Level Spreader');
+    expect(text).toContain('1x 100mm bowl Frog Tripod + Mid-Level Spreader');
+    expect(text).toContain('1x 100mm bowl Hi-Head');
+    expect(text).toContain('1x Sandsack (for Frog Tripod)');
+    expect(text).toContain('1x Sandsack (for Hi-Head)');
   });
 
   test('Easyrig scenario adds stabiliser with dropdown options', () => {
@@ -1951,7 +1931,7 @@ describe('script.js functions', () => {
 
   test('tripod preferences are excluded from project requirements', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ tripodPreferences: 'OConnor 2560 Head' });
+    const html = generateGearListHtml({ tripodHeadBrand: 'OConnor' });
     expect(html).not.toContain('Tripod Preferences');
   });
 
