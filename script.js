@@ -6496,6 +6496,7 @@ if (projectForm) {
         }
         const info = collectProjectFormData();
         currentProjectInfo = info;
+        ensureZoomRemoteSetup(info);
         const html = generateGearListHtml(info);
         displayGearAndRequirements(html);
         ensureGearListActions();
@@ -7269,6 +7270,41 @@ function collectProjectFormData() {
         sliderBowl: getSliderBowlValue(),
         filter: multi('filter')
     };
+}
+
+function ensureZoomRemoteSetup(info) {
+    if (!info || !info.tripodPreferences || !info.tripodPreferences.includes('Zoom Remote handle')) return;
+    let motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    if (!motors.length) return;
+    if (motors.length < 2 && motorSelects[1]) {
+        let second = motors[0];
+        if (/cforce.*rf/i.test(second) && devices.fiz.motors['Arri Cforce Mini']) {
+            second = 'Arri Cforce Mini';
+        }
+        motorSelects[1].value = second;
+        motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    }
+    const allowed = new Set([
+        'Arri Master Grip (single unit)',
+        'Arri ZMU-4 (body only, wired)',
+        'Tilta Nucleus-M Hand Grip (single)',
+        'Tilta Nucleus-M II Handle (single)'
+    ]);
+    const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    if (!controllers.some(c => allowed.has(c))) {
+        const brand = detectBrand(motors[0]);
+        let ctrl = null;
+        if (brand === 'arri') {
+            ctrl = 'Arri Master Grip (single unit)';
+        } else if (brand === 'tilta') {
+            ctrl = 'Tilta Nucleus-M Hand Grip (single)';
+        }
+        if (ctrl && controllerSelects[0]) {
+            controllerSelects[0].value = ctrl;
+        }
+    }
+    if (typeof updateCalculations === 'function') updateCalculations();
+    if (typeof saveCurrentSession === 'function') saveCurrentSession();
 }
 
 function generateGearListHtml(info = {}) {
@@ -8780,6 +8816,7 @@ if (typeof module !== "undefined" && module.exports) {
     applyPinkMode,
     generatePrintableOverview,
     generateGearListHtml,
+    ensureZoomRemoteSetup,
     applySharedSetupFromUrl,
     applySharedSetup,
     updateBatteryPlateVisibility,
