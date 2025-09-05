@@ -2739,6 +2739,7 @@ const cameraData = {
         "notes": "Timecode In/Out"
       }
     ],
+    "weight_g": 3955,
     "recordingCodecs": [
       "Blackmagic RAW (up to 12K)",
       "H.264 Proxies"
@@ -2983,6 +2984,7 @@ const cameraData = {
         "notes": "Can be used for Timecode input"
       }
     ],
+    "weight_g": null,
     "recordingCodecs": [
       "Blackmagic RAW",
       "H.264 Proxy (sidecar)"
@@ -3071,6 +3073,7 @@ const cameraData = {
         "notes": "Can be used for Timecode input"
       }
     ],
+    "weight_g": null,
     "recordingCodecs": [
       "Blackmagic RAW (12K)",
       "H.264 Proxy (sidecar)"
@@ -4312,6 +4315,7 @@ const cameraData = {
         "notes": "Timecode In/Out"
       }
     ],
+    "weight_g": 1520,
     "recordingCodecs": [
       "REDCODE RAW",
       "Apple ProRes 422HQ/422/422LT (up to 4K30)",
@@ -4400,6 +4404,7 @@ const cameraData = {
         "notes": "Timecode In/Out"
       }
     ],
+    "weight_g": 1520,
     "recordingCodecs": [
       "REDCODE RAW",
       "Apple ProRes (selected sub-resolutions)"
@@ -5691,6 +5696,7 @@ const cameraData = {
       }
     ],
     "timecode": [],
+    "weight_g": 588,
     "recordingCodecs": [
       "RAW (internal)",
       "XF-HEVC S (H.265)",
@@ -5779,6 +5785,7 @@ const cameraData = {
       }
     ],
     "timecode": [],
+    "weight_g": 920,
     "recordingCodecs": [
       "RAW (up to 6K)",
       "XF-HEVC S (H.265 10-bit 4:2:2/4:2:0)",
@@ -5926,6 +5933,40 @@ const cameraData = {
     ]
   },
   "RED V-RAPTOR 8K VV": {
+    "powerDrawWatts": 0,
+    "power": {
+      "input": { "voltageRange": null, "type": null },
+      "batteryPlateSupport": [],
+      "powerDistributionOutputs": []
+    },
+    "videoOutputs": [],
+    "fizConnectors": [],
+    "recordingMedia": [],
+    "viewfinder": [],
+    "lensMount": [],
+    "timecode": [],
+    "weight_g": 1828,
+    "recordingCodecs": [
+      "REDCODE RAW (16-bit)",
+      "ProRes 4444 XQ (to 4K)",
+      "ProRes 4444 (to 4K)",
+      "ProRes 422 HQ (to 4K)",
+      "ProRes 422 (to 4K)",
+      "ProRes 422 LT (to 4K)"
+    ],
+    "sensorModes": [
+      "8K VV (Full Frame)",
+      "6K S35",
+      "4K S35"
+    ],
+    "resolutions": [
+      "8192×4320",
+      "6144×3240",
+      "4096×2160",
+      "2048×1080"
+    ]
+  },
+  "RED V-RAPTOR [X] 8K VV": {
     "powerDrawWatts": 0,
     "power": {
       "input": { "voltageRange": null, "type": null },
