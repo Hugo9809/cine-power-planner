@@ -7374,6 +7374,12 @@ function generateGearListHtml(info = {}) {
     const filterSelections = info.filter
         ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    if (scenarios.includes('Rain Machine') || scenarios.includes('Extreme rain')) {
+        filterSelections.push('Schulz Sprayoff Micro');
+        filterSelections.push('Fischer RS to D-Tap cable 0,5m');
+        filterSelections.push('Fischer RS to D-Tap cable 0,5m');
+        filterSelections.push('Spare Disc (Schulz Sprayoff Micro)');
+    }
     const receiverCount = (videoDistPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
     if (selectedNames.video) {
         monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');

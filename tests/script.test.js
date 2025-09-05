@@ -1552,6 +1552,20 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
+  test('Rain Machine scenario adds Sprayoff and cables to Matte box section', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Rain Machine' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const matteIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    expect(matteIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[matteIdx + 1];
+    expect(itemsRow.textContent).toContain('1x Schulz Sprayoff Micro');
+    expect(itemsRow.textContent).toContain('2x Fischer RS to D-Tap cable 0,5m');
+    expect(itemsRow.textContent).toContain('1x Spare Disc (Schulz Sprayoff Micro)');
+  });
+
   test('updateRequiredScenariosSummary creates a box for each selection', () => {
     const select = document.getElementById('requiredScenarios');
     select.querySelector('option[value="Indoor"]').selected = true;
