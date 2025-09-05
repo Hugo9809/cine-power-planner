@@ -7216,7 +7216,9 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
         gimbal: multi('gimbal'),
-        monitoringPreferences: multi('monitoringPreferences'),
+        monitoringSettings: multi('monitoringSettings'),
+        videoDistribution: multi('videoDistribution'),
+        monitoringConfiguration: val('monitoringConfiguration'),
         userButtons: val('userButtons'),
         tripodPreferences: multi('tripodPreferences'),
         sliderBowl: getSliderBowlValue(),
@@ -7280,16 +7282,16 @@ function generateGearListHtml(info = {}) {
     const rigging = info.rigging
         ? info.rigging.split(',').map(r => r.trim()).filter(Boolean)
         : [];
-    const monitoringPrefs = info.monitoringPreferences
-        ? info.monitoringPreferences.split(',').map(s => s.trim()).filter(Boolean)
+    const monitoringSettings = info.monitoringSettings
+        ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
         : [];
-    const monitorEquipOptions = ['Directors Monitor 7" handheld', 'Directors Monitor 15-19 inch', 'Combo Monitor 15-19 inch'];
-    const monitoringEquipmentPrefs = monitoringPrefs.filter(p => monitorEquipOptions.includes(p));
-    const monitoringSupportPrefs = monitoringPrefs.filter(p => !monitorEquipOptions.includes(p));
+    const videoDistPrefs = info.videoDistribution
+        ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
     const filterSelections = info.filter
         ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
-    const receiverCount = (monitoringPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
+    const receiverCount = (videoDistPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
     if (selectedNames.video) {
         monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
@@ -7300,7 +7302,7 @@ function generateGearListHtml(info = {}) {
             }
         }
     }
-    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
+    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         monitoringSupportAcc.push(
             'D-Tap to Lemo-2-pin Cable 0,3m',
             'D-Tap to Lemo-2-pin Cable 0,3m',
@@ -7337,13 +7339,15 @@ function generateGearListHtml(info = {}) {
     const projectInfo = { ...info };
     delete projectInfo.lenses;
     delete projectInfo.filter;
-    if (monitoringSupportPrefs.length) {
-        projectInfo.monitoringSupport = monitoringSupportPrefs.join(', ');
+    if (monitoringSettings.length) {
+        projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
-    if (monitoringEquipmentPrefs.length) {
-        projectInfo.monitoring = monitoringEquipmentPrefs.join(', ');
+    if (videoDistPrefs.length) {
+        projectInfo.monitoring = videoDistPrefs.join(', ');
     }
-    delete projectInfo.monitoringPreferences;
+    if (!info.monitoringConfiguration) delete projectInfo.monitoringConfiguration;
+    delete projectInfo.monitoringSettings;
+    delete projectInfo.videoDistribution;
     delete projectInfo.tripodPreferences;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
@@ -7362,6 +7366,7 @@ function generateGearListHtml(info = {}) {
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
+        monitoringConfiguration: 'Monitoring configuration',
         userButtons: 'User Buttons'
     };
     const fieldIcons = {
@@ -7379,6 +7384,7 @@ function generateGearListHtml(info = {}) {
         gimbal: '🌀',
         monitoringSupport: '🧰',
         monitoring: '📡',
+        monitoringConfiguration: '🎛️',
         userButtons: '🔘'
     };
     const infoEntries = Object.entries(projectInfo)
@@ -7492,7 +7498,7 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = [];
-    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
+    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
         monitoringBatteryItems.push(`3x ${escapeHtml(bebob98)}`);
     }
@@ -7509,7 +7515,7 @@ function generateGearListHtml(info = {}) {
     if (selectedNames.monitor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
-    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
+    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
         const sevenInchNames = Object.keys(monitorsDb).filter(n => monitorsDb[n].screenSizeInches === 7).sort(localeSort);
         const opts = sevenInchNames.map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`).join('');
@@ -7534,7 +7540,7 @@ function generateGearListHtml(info = {}) {
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
     const hasGimbal = scenarios.includes('Gimbal');
-    if (monitoringPrefs.includes('Directors Monitor 7" handheld')) {
+    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         gripItems.push('C-Stand 20"');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
         riggingAcc.push('Spigot');

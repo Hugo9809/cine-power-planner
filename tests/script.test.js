@@ -1360,7 +1360,7 @@ describe('script.js functions', () => {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
-    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
     expect(html).toContain('<select id="gearListDirectorsMonitor7"');
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
@@ -1432,7 +1432,7 @@ describe('script.js functions', () => {
     };
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
-    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
     expect(html).toContain('2x <strong>Wireless Receiver</strong> - VidA RX');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (spare)');
@@ -1874,7 +1874,7 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
-      monitoringPreferences: 'VF Clean Feed, Onboard Clean Feed',
+      monitoringSettings: 'VF Clean Feed, Onboard Clean Feed',
       userButtons: 'Toggle LUT, False Color'
     });
     expect(html).toContain('<span class="req-label">Rigging</span>');
@@ -1893,7 +1893,7 @@ describe('script.js functions', () => {
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ monitoringPreferences: 'Directors Monitor 7" handheld' });
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
     expect(html).toContain('<span class="req-label">Monitoring</span>');
     expect(html).toContain('<span class="req-value">Directors Monitor 7" handheld</span>');
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">Directors Monitor 7" handheld</span>');
