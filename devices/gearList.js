@@ -1830,6 +1830,7 @@ for (const [name, lens] of Object.entries(gear.accessories.lenses)) {
   lens.rodStandard = cfg.rodStandard || "15mm";
   lens.rodLengthCm = cfg.rodLengthCm || 30;
   lens.needsLensSupport = cfg.needsLensSupport || false;
+  lens.lensType = "spherical";
 }
 
 // Expose lenses at the top level for easier access
