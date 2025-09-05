@@ -7348,6 +7348,38 @@ function ensureZoomRemoteSetup(info) {
     if (typeof saveCurrentSession === 'function') saveCurrentSession();
 }
 
+const fieldIcons = {
+    dop: '👤',
+    prepDays: '📅',
+    shootingDays: '🎬',
+    deliveryResolution: '📺',
+    recordingResolution: '📹',
+    aspectRatio: '🖼️',
+    codec: '💾',
+    baseFrameRate: '⏱️',
+    sensorMode: '🔍',
+    lenses: '🎞️',
+    requiredScenarios: '🌄',
+    cameraHandle: '🛠️',
+    mattebox: '🎬',
+    gimbal: '🌀',
+    monitoringConfiguration: '🎛️',
+    viewfinderSettings: '🔭',
+    frameGuides: '🎯',
+    aspectMaskOpacity: '🌓',
+    videoDistribution: '📡',
+    monitoringSupport: '🧰',
+    monitoring: '📡',
+    monitorUserButtons: '🔘',
+    cameraUserButtons: '🔘',
+    viewfinderUserButtons: '🔘',
+    tripodHeadBrand: '🎥',
+    tripodBowl: '⚪',
+    tripodTypes: '🎥',
+    tripodSpreader: '🛞',
+    filter: '🪟'
+};
+
 function generateGearListHtml(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
@@ -7499,27 +7531,6 @@ function generateGearListHtml(info = {}) {
         monitorUserButtons: 'Onboard Monitor User Buttons',
         cameraUserButtons: 'Camera User Buttons',
         viewfinderUserButtons: 'Viewfinder User Buttons'
-    };
-    const fieldIcons = {
-        dop: '👤',
-        prepDays: '📅',
-        shootingDays: '🎬',
-        deliveryResolution: '📺',
-        recordingResolution: '📹',
-        aspectRatio: '🖼️',
-        codec: '💾',
-        baseFrameRate: '⏱️',
-        sensorMode: '🔍',
-        requiredScenarios: '🌄',
-        cameraHandle: '🛠️',
-        mattebox: '🎬',
-        gimbal: '🌀',
-        monitoringSupport: '🧰',
-        monitoring: '📡',
-        monitoringConfiguration: '🎛️',
-        monitorUserButtons: '🔘',
-        cameraUserButtons: '🔘',
-        viewfinderUserButtons: '🔘'
     };
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
@@ -8741,9 +8752,49 @@ const scenarioIcons = {
   'Viewfinder Extension': '🔭'
 };
 
+function updateSelectIconBoxes(select) {
+  if (!select) return;
+  const summary = select.id === 'requiredScenarios'
+    ? document.getElementById('requiredScenariosSummary')
+    : select.nextElementSibling && select.nextElementSibling.classList.contains('selector-summary')
+      ? select.nextElementSibling
+      : null;
+  if (!summary) return;
+  summary.innerHTML = '';
+  const iconMap = select.id === 'requiredScenarios' ? scenarioIcons : null;
+  const defaultIcon = fieldIcons[select.id] || '';
+  Array.from(select.selectedOptions).forEach(opt => {
+    if (!opt.value) return;
+    const isScenario = select.id === 'requiredScenarios';
+    const box = document.createElement('span');
+    box.className = isScenario ? 'scenario-box' : 'selector-box';
+    const iconSpan = document.createElement('span');
+    iconSpan.className = isScenario ? 'scenario-icon' : 'selector-icon';
+    iconSpan.textContent = iconMap ? (iconMap[opt.value] || defaultIcon) : defaultIcon;
+    box.appendChild(iconSpan);
+    box.appendChild(document.createTextNode(opt.value));
+    summary.appendChild(box);
+  });
+}
+
+function setupSelectSummaries() {
+  if (!projectForm) return;
+  projectForm.querySelectorAll('select').forEach(sel => {
+    if (sel.id === 'requiredScenarios') {
+      sel.addEventListener('change', updateRequiredScenariosSummary);
+      updateRequiredScenariosSummary();
+    } else {
+      const summary = document.createElement('div');
+      summary.className = 'selector-summary';
+      sel.insertAdjacentElement('afterend', summary);
+      sel.addEventListener('change', () => updateSelectIconBoxes(sel));
+      updateSelectIconBoxes(sel);
+    }
+  });
+}
+
 function updateRequiredScenariosSummary() {
   if (!requiredScenariosSelect || !requiredScenariosSummary) return;
-  requiredScenariosSummary.innerHTML = '';
   let selected = Array.from(requiredScenariosSelect.selectedOptions).map(o => o.value);
   const hasDolly = selected.includes('Dolly');
   if (remoteHeadOption) {
@@ -8772,16 +8823,8 @@ function updateRequiredScenariosSummary() {
       monitorSelect.dispatchEvent(new Event('change'));
     }
   }
-  selected.forEach(val => {
-    const box = document.createElement('span');
-    box.className = 'scenario-box';
-    const iconSpan = document.createElement('span');
-    iconSpan.className = 'scenario-icon';
-    iconSpan.textContent = scenarioIcons[val] || '📌';
-    box.appendChild(iconSpan);
-    box.appendChild(document.createTextNode(val));
-    requiredScenariosSummary.appendChild(box);
-  });
+  selected = Array.from(requiredScenariosSelect.selectedOptions).map(o => o.value);
+  updateSelectIconBoxes(requiredScenariosSelect);
   if (tripodPreferencesRow) {
     if (selected.includes('Tripod')) {
       tripodPreferencesRow.classList.remove('hidden');
@@ -8813,10 +8856,7 @@ function initApp() {
   resetDeviceForm();
   restoreSessionState();
   applySharedSetupFromUrl();
-  if (requiredScenariosSelect) {
-    requiredScenariosSelect.addEventListener('change', updateRequiredScenariosSummary);
-    updateRequiredScenariosSummary();
-  }
+  setupSelectSummaries();
   if (tripodHeadBrandSelect) {
     tripodHeadBrandSelect.addEventListener('change', updateTripodOptions);
   }

@@ -1637,6 +1637,16 @@ describe('script.js functions', () => {
     expect(boxes[2].textContent).toContain('Extreme cold (snow)');
   });
 
+  test('camera handle selector creates icon box', () => {
+    const select = document.getElementById('cameraHandle');
+    select.querySelector('option[value="L-Handle"]').selected = true;
+    select.dispatchEvent(new Event('change'));
+    const summary = select.nextElementSibling;
+    const boxes = summary.querySelectorAll('.selector-box');
+    expect(boxes).toHaveLength(1);
+    expect(boxes[0].textContent).toContain('L-Handle');
+  });
+
   test('tripod preferences selector is shown only when Tripod scenario is selected', () => {
     const select = document.getElementById('requiredScenarios');
     const tripodRow = document.getElementById('tripodPreferencesRow');

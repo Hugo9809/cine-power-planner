@@ -754,7 +754,8 @@ button:disabled {
   flex-wrap: wrap;
 }
 
-.scenario-summary {
+.scenario-summary,
+.selector-summary {
     margin-top: 4px;
     display: flex;
     flex-wrap: wrap;
@@ -772,7 +773,8 @@ button:disabled {
   font-size: 0.75em;
 }
 
-.scenario-box {
+.scenario-box,
+.selector-box {
   display: flex;
   align-items: center;
   padding: 2px 6px;
@@ -783,7 +785,8 @@ button:disabled {
   font-size: 0.75em;
 }
 
-.scenario-box .scenario-icon {
+.scenario-box .scenario-icon,
+.selector-box .selector-icon {
   margin-right: 4px;
 }
 
