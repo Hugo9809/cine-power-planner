@@ -1474,6 +1474,7 @@ function setLanguage(lang) {
 const cameraSelect    = document.getElementById("cameraSelect");
 const monitorSelect   = document.getElementById("monitorSelect");
 const videoSelect     = document.getElementById("videoSelect");
+const videoDistributionSelect = document.getElementById("videoDistribution");
 const cageSelect      = document.getElementById("cageSelect");
 const motorSelects    = [
   document.getElementById("motor1Select"),
@@ -8771,6 +8772,26 @@ function updateRequiredScenariosSummary() {
       monitorSelect.value = defaultMonitor;
       monitorSelect.dispatchEvent(new Event('change'));
     }
+  }
+  if (videoDistributionSelect) {
+    const dopScenarios = ['Trinity', 'Gimbal', 'Car Mount', 'Remote Head', 'Crane'];
+    const needsDop = selected.some(s => dopScenarios.includes(s));
+    const ensureOption = val => {
+      let opt = Array.from(videoDistributionSelect.options).find(o => o.value === val);
+      if (needsDop) {
+        if (!opt) {
+          opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          videoDistributionSelect.appendChild(opt);
+        }
+      } else if (opt) {
+        if (opt.selected) opt.selected = false;
+        opt.remove();
+      }
+    };
+    ensureOption('DoP Handheld 7" Monitor');
+    ensureOption('DoP 15-21" Monitor');
   }
   selected.forEach(val => {
     const box = document.createElement('span');
