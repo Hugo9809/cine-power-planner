@@ -296,9 +296,13 @@ describe('script.js functions', () => {
     expect(copyBtn.nextElementSibling).toBe(generateBtn);
   });
 
-  test('project form includes user buttons input', () => {
-    const input = document.getElementById('userButtons');
-    expect(input).not.toBeNull();
+  test('project form includes user buttons inputs', () => {
+    const monitorInput = document.getElementById('monitorUserButtons');
+    const cameraInput = document.getElementById('cameraUserButtons');
+    const viewfinderInput = document.getElementById('viewfinderUserButtons');
+    expect(monitorInput).not.toBeNull();
+    expect(cameraInput).not.toBeNull();
+    expect(viewfinderInput).not.toBeNull();
   });
 
   test('new device form includes cable category option', () => {
@@ -1877,7 +1881,9 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({
       rigging: 'Shoulder rig, Hand Grips',
       monitoringSettings: 'Viewfinder Clean Feed, Surround View',
-      userButtons: 'Toggle LUT, False Color'
+      monitorUserButtons: 'Toggle LUT',
+      cameraUserButtons: 'False Color',
+      viewfinderUserButtons: 'Peaking'
     });
     expect(html).toContain('<span class="req-label">Rigging</span>');
     expect(html).toContain('<span class="req-value">Shoulder rig, Hand Grips</span>');
@@ -1888,9 +1894,15 @@ describe('script.js functions', () => {
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).not.toContain('Viewfinder Clean Feed');
     expect(msSection).not.toContain('Surround View');
-    expect(msSection).not.toContain('User Buttons');
-    expect(html).toContain('<span class="req-label">User Buttons</span>');
-    expect(html).toContain('<span class="req-value">Toggle LUT, False Color</span>');
+    expect(msSection).not.toContain('Onboard Monitor User Buttons');
+    expect(msSection).not.toContain('Camera User Buttons');
+    expect(msSection).not.toContain('Viewfinder User Buttons');
+    expect(html).toContain('<span class="req-label">Onboard Monitor User Buttons</span>');
+    expect(html).toContain('<span class="req-value">Toggle LUT</span>');
+    expect(html).toContain('<span class="req-label">Camera User Buttons</span>');
+    expect(html).toContain('<span class="req-value">False Color</span>');
+    expect(html).toContain('<span class="req-label">Viewfinder User Buttons</span>');
+    expect(html).toContain('<span class="req-value">Peaking</span>');
   });
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
