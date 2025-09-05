@@ -1685,6 +1685,23 @@ describe('script.js functions', () => {
     expect(remoteOpt.selected).toBe(false);
   });
 
+  test('selecting Dolly adds SmallHD Ultra 7 monitor when none selected', () => {
+    const select = document.getElementById('requiredScenarios');
+    const monitorSel = document.getElementById('monitorSelect');
+
+    devices.monitors['SmallHD Ultra 7'] = { powerDrawWatts: 5 };
+    const opt = document.createElement('option');
+    opt.value = 'SmallHD Ultra 7';
+    opt.textContent = 'SmallHD Ultra 7';
+    monitorSel.appendChild(opt);
+    monitorSel.value = 'None';
+
+    select.querySelector('option[value="Dolly"]').selected = true;
+    script.updateRequiredScenariosSummary();
+
+    expect(monitorSel.value).toBe('SmallHD Ultra 7');
+  });
+
   test('double-clicking an option only deselects that option', () => {
     const selects = document.querySelectorAll('#projectForm select[multiple]');
     selects.forEach(sel => {

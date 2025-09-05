@@ -8735,6 +8735,23 @@ function updateRequiredScenariosSummary() {
       remoteHeadOption.hidden = false;
     }
   }
+  if (
+    hasDolly &&
+    monitorSelect &&
+    (!monitorSelect.value || monitorSelect.value === 'None')
+  ) {
+    const defaultMonitor = 'SmallHD Ultra 7';
+    if (devices?.monitors?.[defaultMonitor]) {
+      if (!Array.from(monitorSelect.options).some(o => o.value === defaultMonitor)) {
+        const opt = document.createElement('option');
+        opt.value = defaultMonitor;
+        opt.textContent = defaultMonitor;
+        monitorSelect.appendChild(opt);
+      }
+      monitorSelect.value = defaultMonitor;
+      monitorSelect.dispatchEvent(new Event('change'));
+    }
+  }
   selected.forEach(val => {
     const box = document.createElement('span');
     box.className = 'scenario-box';
