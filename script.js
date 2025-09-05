@@ -678,6 +678,7 @@ function updateBatteryPlateVisibility() {
     else batteryPlateSelect.value = '';
   }
   updateViewfinderSettingsVisibility();
+  updateViewfinderExtensionVisibility();
 }
 
 function updateViewfinderSettingsVisibility() {
@@ -693,6 +694,21 @@ function updateViewfinderSettingsVisibility() {
       const vfSelect = document.getElementById('viewfinderSettings');
       if (vfSelect) {
         Array.from(vfSelect.options).forEach(o => { o.selected = false; });
+      }
+    }
+  }
+}
+
+function updateViewfinderExtensionVisibility() {
+  const cam = devices?.cameras?.[cameraSelect?.value];
+  const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
+  if (viewfinderExtensionRow) {
+    if (hasViewfinder) {
+      viewfinderExtensionRow.classList.remove('hidden');
+    } else {
+      viewfinderExtensionRow.classList.add('hidden');
+      if (viewfinderExtensionSelect) {
+        viewfinderExtensionSelect.value = '';
       }
     }
   }
@@ -1248,6 +1264,7 @@ function setLanguage(lang) {
   document.getElementById("viewfinderVideoOutputsLabel").textContent = texts[lang].viewfinderVideoOutputsLabel;
   document.getElementById("viewfinderWirelessTxLabel").textContent = texts[lang].viewfinderWirelessTxLabel;
   document.getElementById("viewfinderLatencyLabel").textContent = texts[lang].viewfinderLatencyLabel;
+  document.getElementById("viewfinderExtensionLabel").textContent = texts[lang].viewfinderExtensionLabel;
   document.getElementById("videoVideoInputsHeading").textContent = texts[lang].videoVideoInputsHeading;
   document.getElementById("videoVideoInputsLabel").textContent = texts[lang].videoVideoInputsLabel;
   document.getElementById("videoVideoOutputsHeading").textContent = texts[lang].videoVideoOutputsHeading;
@@ -1501,6 +1518,8 @@ const tripodTypesSelect = document.getElementById("tripodTypes");
 const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
+const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
+const viewfinderExtensionSelect = document.getElementById("viewfinderExtension");
 
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
@@ -7296,6 +7315,7 @@ function collectProjectFormData() {
         lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
+        viewfinderExtension: val('viewfinderExtension'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
         videoDistribution: multi('videoDistribution'),
@@ -7403,6 +7423,9 @@ function generateGearListHtml(info = {}) {
     const rigging = info.rigging
         ? info.rigging.split(',').map(r => r.trim()).filter(Boolean)
         : [];
+    if (info.viewfinderExtension) {
+        riggingAcc.push(info.viewfinderExtension);
+    }
     const monitoringSettings = info.monitoringSettings
         ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -7493,6 +7516,7 @@ function generateGearListHtml(info = {}) {
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
         rigging: 'Rigging',
+        viewfinderExtension: 'Viewfinder Extension',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
@@ -7513,6 +7537,7 @@ function generateGearListHtml(info = {}) {
         sensorMode: '🔍',
         requiredScenarios: '🌄',
         rigging: '🛠️',
+        viewfinderExtension: '🔭',
         gimbal: '🌀',
         monitoringSupport: '🧰',
         monitoring: '📡',
@@ -8737,8 +8762,7 @@ const scenarioIcons = {
   'Extreme rain': '🌧️',
   'Extreme heat': '🔥',
   'Rain Machine': '🌧️',
-  'Slow Motion': '🐌',
-  'Viewfinder Extension': '🔭'
+  'Slow Motion': '🐌'
 };
 
 function updateRequiredScenariosSummary() {

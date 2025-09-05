@@ -1719,6 +1719,20 @@ describe('script.js functions', () => {
     });
   });
 
+  test('viewfinder extension selector is shown only when camera has viewfinder', () => {
+    const row = document.getElementById('viewfinderExtensionRow');
+    const camSel = document.getElementById('cameraSelect');
+    devices.cameras.NoVF = {};
+    devices.cameras.WithVF = { viewfinder: [{ type: 'EVF' }] };
+    camSel.innerHTML = '<option value="NoVF">NoVF</option><option value="WithVF">WithVF</option>';
+    camSel.value = 'NoVF';
+    script.updateBatteryPlateVisibility();
+    expect(row.classList.contains('hidden')).toBe(true);
+    camSel.value = 'WithVF';
+    script.updateBatteryPlateVisibility();
+    expect(row.classList.contains('hidden')).toBe(false);
+  });
+
   test('Hand Grips rigging adds telescopic handle', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ rigging: 'Hand Grips' });
@@ -1759,6 +1773,12 @@ describe('script.js functions', () => {
       const itemsRow = rows[cameraSupportIndex + 1];
       expect(itemsRow.textContent).toContain('ARRI KK.0037820 Handle Extension Set');
     });
+  });
+
+  test('selecting viewfinder extension adds it to rigging', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ viewfinderExtension: 'Viewfinder Extension' });
+    expect(html).toContain('Viewfinder Extension');
   });
 
   test('Carts and Transportation category includes default items', () => {
