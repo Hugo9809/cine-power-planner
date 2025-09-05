@@ -980,17 +980,22 @@
           <option value="Teradek and Battery belt">Teradek and Battery belt</option>
           <option value="Top handle extension">Top handle extension</option>
           <option value="Rear Handle">Rear Handle</option>
-          <option value="Viewfinder + Onboard">Viewfinder + Onboard</option>
-          <option value="VF only">VF only</option>
-          <option value="Onboard only">Onboard only</option>
           <option value="Clamp-On Mattebox">Clamp-On Mattebox</option>
           <option value="Swingaway Mattebox">Swingaway Mattebox</option>
           <option value="Rod based Mattebox">Rod based Mattebox</option>
           <option value="Film magazines">Film magazines</option>
         </select>
       </label></div>
-      <div class="form-row"><label for="monitoringPreferences">Monitoring support:
-        <select id="monitoringPreferences" name="monitoringPreferences" multiple size="18">
+      <h3 id="monitoringHeading">Monitoring</h3>
+      <div class="form-row"><label for="monitoringConfiguration">Camera Monitoring Configuration:
+        <select id="monitoringConfiguration" name="monitoringConfiguration">
+          <option value="Viewfinder only">Viewfinder only</option>
+          <option value="Viewfinder and Onboard">Viewfinder and Onboard</option>
+          <option value="Onboard Only">Onboard Only</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="monitoringSettings">Camera Monitoring Settings:
+        <select id="monitoringSettings" name="monitoringSettings" multiple size="13">
           <option value="VF Clean Feed">VF Clean Feed</option>
           <option value="Onboard Clean Feed">Onboard Clean Feed</option>
           <option value="Surroundview (if available)">Surroundview (if available)</option>
@@ -1004,6 +1009,10 @@
           <option value="AM Opacity 50%">AM Opacity 50%</option>
           <option value="AM Opacity 25%">AM Opacity 25%</option>
           <option value="AM Opacity 0%">AM Opacity 0%</option>
+        </select>
+      </label></div>
+      <div class="form-row"><label for="videoDistribution">Video distribution:
+        <select id="videoDistribution" name="videoDistribution" multiple size="3">
           <option value="Directors Monitor 7&quot; handheld">Directors Monitor 7&quot; handheld</option>
           <option value="Directors Monitor 15-19 inch">Directors Monitor 15-19 inch</option>
           <option value="Combo Monitor 15-19 inch">Combo Monitor 15-19 inch</option>
