@@ -1135,588 +1135,945 @@ const gear = {
       }
     },
     "lenses": {
-      "ZEISS High Speed MK III 18mm T1.3": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 1.3
-      },
-      "ZEISS High Speed MK III 20mm T2.1": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 2.1
-      },
-      "ZEISS High Speed MK III 25mm T1.3": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 1.3
-      },
-      "ZEISS High Speed MK III 35mm T1.3": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 1.3
-      },
-      "ZEISS High Speed MK III 50mm T1.3": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 1.3
-      },
-      "ZEISS High Speed MK III 65mm T1.3": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 1.3
-      },
-      "ZEISS High Speed MK III 85mm T1.3": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 1.3
-      },
-      "ZEISS High Speed MK III 135mm T1.3": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 1.3
-      },
-      "Angenieux Optimo 25-250mm T3.5 (PL)": {
-        "brand": "Angénieux",
-        "frontDiameterMm": 136,
-        "clampOn": true,
-        "tStop": 3.5,
-        "mount": "PL"
-      },
-      "LOMO Anamorphic RF 35mm T2.5": {
-        "brand": "LOMO",
-        "frontDiameterMm": 141,
-        "clampOn": true,
-        "tStop": 2.5
-      },
-      "LOMO Anamorphic RF 50mm T2.4": {
-        "brand": "LOMO",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.4
-      },
-      "LOMO Anamorphic RF 75mm T2.4": {
-        "brand": "LOMO",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.4
-      },
-      "LOMO Anamorphic RF 100mm T3.2": {
-        "brand": "LOMO",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 3.2
-      },
-      "Canon CN7x17 17-120mm T3.0-3.9": {
-        "brand": "Canon",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 3.0,
-        "mount": "PL"
-      },
-      "Angénieux Ultra Compact FF 37-102mm T2.9": {
-        "brand": "Angénieux",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.9,
-        "mount": "PL"
-      },
-      "Angénieux Ultra Compact FF 21-56mm T2.9": {
-        "brand": "Angénieux",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.9,
-        "mount": "PL"
-      },
-      "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
-        "brand": "Angénieux",
-        "frontDiameterMm": 162,
-        "clampOn": true,
-        "tStop": 4.2,
-        "mount": "PL"
-      },
-      "ARRI Signature Prime 12mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 134,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 15mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8
-      },
-      "ARRI Signature Prime 18mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8
-      },
-      "ARRI Signature Prime 21mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8
-      },
-      "ARRI Signature Prime 25mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8
-      },
-      "ARRI Signature Prime 29mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 35mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 40mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 47mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 58mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 75mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 95mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 125mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 150mm T1.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 200mm T2.5": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.5,
-        "mount": "LPL"
-      },
-      "ARRI Signature Prime 280mm T2.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 134,
-        "clampOn": true,
-        "tStop": 2.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Zoom 16-32mm T2.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 156,
-        "clampOn": true,
-        "tStop": 2.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Zoom 24-75mm T2.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Zoom 45-135mm T2.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.8,
-        "mount": "LPL"
-      },
-      "ARRI Signature Zoom 65-300mm T2.8": {
-        "brand": "ARRI",
-        "frontDiameterMm": 156,
-        "clampOn": true,
-        "tStop": 2.8,
-        "mount": "LPL"
-      },
-      "ARRI/ZEISS Ultra Prime 16mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 20mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 24mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 32mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 40mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 50mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 65mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 85mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ARRI/ZEISS Ultra Prime 100mm T1.9": {
-        "brand": "ARRI/ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.9
-      },
-      "ZEISS Master Prime 14mm T1.3": {
-        "brand": "ZEISS/ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.3,
-        "mount": "PL"
-      },
-      "ZEISS Master Prime 27mm T1.3": {
-        "brand": "ZEISS/ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.3,
-        "mount": "PL"
-      },
-      "ZEISS Master Prime 40mm T1.3": {
-        "brand": "ZEISS/ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.3,
-        "mount": "PL"
-      },
-      "ZEISS Master Prime 65mm T1.3": {
-        "brand": "ZEISS/ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.3,
-        "mount": "PL"
-      },
-      "ZEISS Master Prime 100mm T1.3": {
-        "brand": "ZEISS/ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.3,
-        "mount": "PL"
-      },
-      "ZEISS Master Prime 135mm T1.3": {
-        "brand": "ZEISS/ARRI",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 1.3,
-        "mount": "PL"
-      },
-      "ZEISS Compact Zoom CZ.2 28-80mm T2.9": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.9
-      },
-      "ZEISS Compact Zoom CZ.2 70-200mm T2.9": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.9
-      },
-      "ZEISS Supreme Prime Radiance 50mm T1.5": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.5
-      },
-      "ZEISS Supreme Prime Radiance 85mm T1.5": {
-        "brand": "ZEISS",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 1.5
-      },
-      "Leitz Summicron-C 18mm T2.0": {
-        "brand": "Leitz",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Leitz Summicron-C 25mm T2.0": {
-        "brand": "Leitz",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Leitz Summicron-C 35mm T2.0": {
-        "brand": "Leitz",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Leitz Summicron-C 50mm T2.0": {
-        "brand": "Leitz",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Leitz Summicron-C 75mm T2.0": {
-        "brand": "Leitz",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Leitz Summicron-C 100mm T2.0": {
-        "brand": "Leitz",
-        "frontDiameterMm": 95,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Cooke S7/i FF 25mm T2.0": {
-        "brand": "Cooke",
-        "frontDiameterMm": 110,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Cooke S7/i FF 32mm T2.0": {
-        "brand": "Cooke",
-        "frontDiameterMm": 110,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Cooke S7/i FF 40mm T2.0": {
-        "brand": "Cooke",
-        "frontDiameterMm": 110,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Cooke S7/i FF 50mm T2.0": {
-        "brand": "Cooke",
-        "frontDiameterMm": 110,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Cooke S7/i FF 75mm T2.0": {
-        "brand": "Cooke",
-        "frontDiameterMm": 110,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Cooke S7/i FF 100mm T2.0": {
-        "brand": "Cooke",
-        "frontDiameterMm": 110,
-        "clampOn": true,
-        "tStop": 2.0,
-        "mount": "PL"
-      },
-      "Fujinon Premista 19-45mm T2.9": {
-        "brand": "Fujinon",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.9,
-        "mount": "PL"
-      },
-      "Fujinon Premista 28-100mm T2.9": {
-        "brand": "Fujinon",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.9,
-        "mount": "PL"
-      },
-      "Fujinon Premista 80-250mm T2.9-3.5": {
-        "brand": "Fujinon",
-        "frontDiameterMm": 114,
-        "clampOn": true,
-        "tStop": 2.9,
-        "mount": "PL"
-      },
-      "DZOFilm Vespid 35mm T2.1": {
-        "brand": "DZOFilm",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 2.1,
-        "mount": "PL"
-      },
-      "DZOFilm Vespid 50mm T2.1": {
-        "brand": "DZOFilm",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 2.1,
-        "mount": "PL"
-      },
-      "DZOFilm Vespid 75mm T2.1": {
-        "brand": "DZOFilm",
-        "frontDiameterMm": 80,
-        "clampOn": true,
-        "tStop": 2.1,
-        "mount": "PL"
-      },
-      "Meike FF Prime 24mm T2.1": {
-        "brand": "Meike",
-        "frontDiameterMm": 85,
-        "clampOn": true,
-        "tStop": 2.1,
-        "mount": "PL"
-      },
-      "Meike FF Prime 35mm T2.1": {
-        "brand": "Meike",
-        "frontDiameterMm": 85,
-        "clampOn": true,
-        "tStop": 2.1,
-        "mount": "PL"
-      },
-      "Cooke Speed Panchro 18mm (P+S rehousing)": {
-        "brand": "Cooke (P+S rehoused)",
-        "frontDiameterMm": 100,
-        "clampOn": true,
-        "tStop": 2.3
-      },
-      "Cooke Speed Panchro 25mm (P+S rehousing)": {
-        "brand": "Cooke (P+S rehoused)",
-        "frontDiameterMm": 100,
-        "clampOn": true,
-        "tStop": 2.3
-      },
-      "Cooke Speed Panchro 35mm (P+S rehousing)": {
-        "brand": "Cooke (P+S rehoused)",
-        "frontDiameterMm": 100,
-        "clampOn": true,
-        "tStop": 2.3
-      },
-      "Cooke Speed Panchro 40mm (P+S rehousing)": {
-        "brand": "Cooke (P+S rehoused)",
-        "frontDiameterMm": 100,
-        "clampOn": true,
-        "tStop": 2.3
-      },
-      "Cooke Speed Panchro 75mm (P+S rehousing)": {
-        "brand": "Cooke (P+S rehoused)",
-        "frontDiameterMm": 100,
-        "clampOn": true,
-        "tStop": 2.3
-      },
-      "Laowa 24mm T8 2× Pro2be (3-lens set: Direct / 35° / Periscope)": {
-        "brand": "Laowa",
-        "frontDiameterMm": 30,
-        "clampOn": true,
-        "tStop": 8
-      },
-      "Sigma 18–35mm f/1.8 DC HSM Art": {
-        "brand": "Sigma",
-        "frontDiameterMm": 82,
-        "clampOn": true,
-        "tStop": 1.8
-      },
-      "Sony FE 24–70mm f/2.8 G Master II": {
-        "brand": "Sony",
-        "frontDiameterMm": 82,
-        "clampOn": true,
-        "tStop": 2.8
-      },
-      "Sony FE 70–200mm f/2.8 G Master II": {
-        "brand": "Sony",
-        "frontDiameterMm": 77,
-        "clampOn": true,
-        "tStop": 2.8
-      },
-      "Minolta 28mm f/2.8": {
-        "brand": "Minolta",
-        "frontDiameterMm": 55,
-        "clampOn": true,
-        "tStop": 2.8
-      },
-      "Minolta 35mm f/1.4": {
-        "brand": "Minolta",
-        "frontDiameterMm": 72,
-        "clampOn": true,
-        "tStop": 1.4
-      },
-      "Minolta 50mm f/1.4": {
-        "brand": "Minolta",
-        "frontDiameterMm": 55,
-        "clampOn": true,
-        "tStop": 1.4
-      },
-      "Minolta 85mm f/1.8": {
-        "brand": "Minolta",
-        "frontDiameterMm": 55,
-        "clampOn": true,
-        "tStop": 1.8
-      }
+        "ZEISS High Speed MK III 18mm T1.3": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS High Speed MK III 20mm T2.1": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS High Speed MK III 25mm T1.3": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS High Speed MK III 35mm T1.3": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS High Speed MK III 50mm T1.3": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS High Speed MK III 65mm T1.3": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS High Speed MK III 85mm T1.3": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS High Speed MK III 135mm T1.3": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Angenieux Optimo 25-250mm T3.5 (PL)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 136,
+          "clampOn": true,
+          "tStop": 3.5,
+          "mount": "PL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "LOMO Anamorphic RF 35mm T2.5": {
+          "brand": "LOMO",
+          "frontDiameterMm": 141,
+          "clampOn": true,
+          "tStop": 2.5,
+          "rodStandard": "19mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "LOMO Anamorphic RF 50mm T2.4": {
+          "brand": "LOMO",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "LOMO Anamorphic RF 75mm T2.4": {
+          "brand": "LOMO",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "LOMO Anamorphic RF 100mm T3.2": {
+          "brand": "LOMO",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 3.2,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Canon CN7x17 17-120mm T3.0-3.9": {
+          "brand": "Canon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Angénieux Ultra Compact FF 37-102mm T2.9": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Angénieux Ultra Compact FF 21-56mm T2.9": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 162,
+          "clampOn": true,
+          "tStop": 4.2,
+          "mount": "PL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 60,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 12mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 134,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 15mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 18mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 21mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 25mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 29mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 35mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 40mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 47mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 58mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 75mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 95mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 125mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 150mm T1.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 200mm T2.5": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.5,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Prime 280mm T2.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 134,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Zoom 16-32mm T2.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 156,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "LPL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Zoom 24-75mm T2.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Zoom 45-135mm T2.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ARRI Signature Zoom 65-300mm T2.8": {
+          "brand": "ARRI",
+          "frontDiameterMm": 156,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "LPL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 16mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 20mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 24mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 32mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 40mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 50mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 65mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 85mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ARRI/ZEISS Ultra Prime 100mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Master Prime 14mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Master Prime 27mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Master Prime 40mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Master Prime 65mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Master Prime 100mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Master Prime 135mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Compact Zoom CZ.2 28-80mm T2.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ZEISS Compact Zoom CZ.2 70-200mm T2.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 50mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 85mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Leitz Summicron-C 18mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Leitz Summicron-C 25mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Leitz Summicron-C 35mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Leitz Summicron-C 50mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Leitz Summicron-C 75mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Leitz Summicron-C 100mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S7/i FF 25mm T2.0": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S7/i FF 32mm T2.0": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S7/i FF 40mm T2.0": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S7/i FF 50mm T2.0": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S7/i FF 75mm T2.0": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S7/i FF 100mm T2.0": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Fujinon Premista 19-45mm T2.9": {
+          "brand": "Fujinon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Fujinon Premista 28-100mm T2.9": {
+          "brand": "Fujinon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Fujinon Premista 80-250mm T2.9-3.5": {
+          "brand": "Fujinon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "DZOFilm Vespid 35mm T2.1": {
+          "brand": "DZOFilm",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFilm Vespid 50mm T2.1": {
+          "brand": "DZOFilm",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFilm Vespid 75mm T2.1": {
+          "brand": "DZOFilm",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Meike FF Prime 24mm T2.1": {
+          "brand": "Meike",
+          "frontDiameterMm": 85,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Meike FF Prime 35mm T2.1": {
+          "brand": "Meike",
+          "frontDiameterMm": 85,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke Speed Panchro 18mm (P+S rehousing)": {
+          "brand": "Cooke (P+S rehoused)",
+          "frontDiameterMm": 100,
+          "clampOn": true,
+          "tStop": 2.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke Speed Panchro 25mm (P+S rehousing)": {
+          "brand": "Cooke (P+S rehoused)",
+          "frontDiameterMm": 100,
+          "clampOn": true,
+          "tStop": 2.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke Speed Panchro 35mm (P+S rehousing)": {
+          "brand": "Cooke (P+S rehoused)",
+          "frontDiameterMm": 100,
+          "clampOn": true,
+          "tStop": 2.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke Speed Panchro 40mm (P+S rehousing)": {
+          "brand": "Cooke (P+S rehoused)",
+          "frontDiameterMm": 100,
+          "clampOn": true,
+          "tStop": 2.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke Speed Panchro 75mm (P+S rehousing)": {
+          "brand": "Cooke (P+S rehoused)",
+          "frontDiameterMm": 100,
+          "clampOn": true,
+          "tStop": 2.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Laowa 24mm T8 2× Pro2be (3-lens set: Direct / 35° / Periscope)": {
+          "brand": "Laowa",
+          "frontDiameterMm": 30,
+          "clampOn": true,
+          "tStop": 8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Sigma 18–35mm f/1.8 DC HSM Art": {
+          "brand": "Sigma",
+          "frontDiameterMm": 82,
+          "clampOn": true,
+          "tStop": 1.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Sony FE 24–70mm f/2.8 G Master II": {
+          "brand": "Sony",
+          "frontDiameterMm": 82,
+          "clampOn": true,
+          "tStop": 2.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Sony FE 70–200mm f/2.8 G Master II": {
+          "brand": "Sony",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Minolta 28mm f/2.8": {
+          "brand": "Minolta",
+          "frontDiameterMm": 55,
+          "clampOn": true,
+          "tStop": 2.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Minolta 35mm f/1.4": {
+          "brand": "Minolta",
+          "frontDiameterMm": 72,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Minolta 50mm f/1.4": {
+          "brand": "Minolta",
+          "frontDiameterMm": 55,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Minolta 85mm f/1.8": {
+          "brand": "Minolta",
+          "frontDiameterMm": 55,
+          "clampOn": true,
+          "tStop": 1.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        }
     },
+
     "tripodHeads": {
       "OConnor 2560 Head": {
         "brand": "OConnor",
@@ -1800,38 +2157,6 @@ const gear = {
     "Soft FX"
   ]
 };
-
-// Annotate lenses with support requirements and rod details.
-const lensSupportDefaults = {
-  "Angenieux Optimo 25-250mm T3.5 (PL)": { rodStandard: "19mm", rodLengthCm: 45, needsLensSupport: true },
-  "LOMO Anamorphic RF 35mm T2.5": { rodStandard: "19mm", rodLengthCm: 45, needsLensSupport: true },
-  "LOMO Anamorphic RF 50mm T2.4": { rodStandard: "15mm", rodLengthCm: 30, needsLensSupport: true },
-  "LOMO Anamorphic RF 75mm T2.4": { rodStandard: "15mm", rodLengthCm: 30, needsLensSupport: true },
-  "LOMO Anamorphic RF 100mm T3.2": { rodStandard: "15mm", rodLengthCm: 30, needsLensSupport: true },
-  "Canon CN7x17 17-120mm T3.0-3.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "Angénieux Ultra Compact FF 37-102mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "Angénieux Ultra Compact FF 21-56mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "Angénieux Optimo Ultra 12x 36-435mm T4.2 (FF/VV)": { rodStandard: "19mm", rodLengthCm: 60, needsLensSupport: true },
-  "ZEISS Compact Zoom CZ.2 28-80mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "ZEISS Compact Zoom CZ.2 70-200mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "ARRI Signature Zoom 16-32mm T2.8": { rodStandard: "19mm", rodLengthCm: 45, needsLensSupport: true },
-  "ARRI Signature Zoom 24-75mm T2.8": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "ARRI Signature Zoom 45-135mm T2.8": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "ARRI Signature Zoom 65-300mm T2.8": { rodStandard: "19mm", rodLengthCm: 45, needsLensSupport: true },
-  "Fujinon Premista 19-45mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "Fujinon Premista 28-100mm T2.9": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "Fujinon Premista 80-250mm T2.9-3.5": { rodStandard: "19mm", rodLengthCm: 45, needsLensSupport: true },
-  "Laowa 24mm T8 2× Pro2be (3-lens set: Direct / 35° / Periscope)": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true },
-  "Sony FE 70–200mm f/2.8 G Master II": { rodStandard: "15mm", rodLengthCm: 45, needsLensSupport: true }
-};
-
-for (const [name, lens] of Object.entries(gear.accessories.lenses)) {
-  const cfg = lensSupportDefaults[name] || {};
-  lens.rodStandard = cfg.rodStandard || "15mm";
-  lens.rodLengthCm = cfg.rodLengthCm || 30;
-  lens.needsLensSupport = cfg.needsLensSupport || false;
-  lens.lensType = "spherical";
-}
 
 // Expose lenses at the top level for easier access
 gear.lenses = gear.accessories.lenses;
