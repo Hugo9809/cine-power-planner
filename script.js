@@ -1895,7 +1895,6 @@ const overviewSectionIcons = {
   category_viewfinders: diagramIcons.viewfinder,
   category_monitors: diagramIcons.monitor,
   category_video: diagramIcons.video,
-  category_cages: diagramIcons.camera,
   category_fiz_motors: diagramIcons.motors,
   category_fiz_controllers: diagramIcons.controllers,
   category_fiz_distance: diagramIcons.distance
@@ -6842,7 +6841,6 @@ function generatePrintableOverview() {
     processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
     processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
     processSelectForOverview(videoSelect, 'category_video', 'video'); // Original database uses 'video', not 'wirelessVideo'
-    processSelectForOverview(cageSelect, 'category_cages', 'accessories', 'cages');
     processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');
     motorSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_motors', 'fiz', 'motors'));
     controllerSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_controllers', 'fiz', 'controllers'));
