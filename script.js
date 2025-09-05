@@ -7868,6 +7868,10 @@ function generateGearListHtml(info = {}) {
         for (let i = 0; i < 10; i++) consumables.push('Duschhaube');
         consumables.push('Magliner Rain Cover Transparent');
     }
+    if (scenarios.includes('Extreme heat')) {
+        if (!miscItems.includes('Umbrella for Focus Monitor')) miscItems.push('Umbrella for Focus Monitor');
+        if (!miscItems.includes('Umbrella Magliner incl Mounting to Magliner')) miscItems.push('Umbrella Magliner incl Mounting to Magliner');
+    }
     addRow('Miscellaneous', formatItems(miscItems));
     addRow('Consumables', formatItems(consumables));
     let body = `<h2>${projectTitle}</h2>`;
