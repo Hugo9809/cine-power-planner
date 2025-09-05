@@ -147,6 +147,32 @@ table, th, td {
 .device-category {
   border: 1px solid #000;
   box-shadow: none;
+  background: #fff !important;
+}
+
+#overviewDialogContent .connector-block,
+#overviewDialogContent .info-box {
+  background: #fff !important;
+}
+
+#overviewDialogContent .barContainer {
+  background: #fff !important;
+}
+
+#overviewDialogContent .selectedBatteryRow {
+  background: #e6f7ff !important;
+}
+
+#overviewDialogContent select {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #000 !important;
+}
+
+#overviewDialogContent .diagram-controls button {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #000 !important;
 }
 
 .power-conn {
