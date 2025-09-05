@@ -2752,6 +2752,12 @@ describe('script.js functions', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
 
+    // open with letter h and close with Escape
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'h' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
     // open with question mark while typing
     const input = document.createElement('input');
     document.body.appendChild(input);
@@ -2762,6 +2768,16 @@ describe('script.js functions', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
     document.body.removeChild(input);
+
+    // typing h in a field should not open help
+    const input2 = document.createElement('input');
+    document.body.appendChild(input2);
+    input2.focus();
+    const event = new KeyboardEvent('keydown', { key: 'h', bubbles: true, cancelable: true });
+    const result = input2.dispatchEvent(event);
+    expect(result).toBe(true);
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    document.body.removeChild(input2);
   });
 
   test('slash or Ctrl+F focuses help search', () => {
