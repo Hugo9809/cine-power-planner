@@ -1822,6 +1822,18 @@ describe('script.js functions', () => {
     });
   });
 
+  test('Jib scenario adds EJib Arm and counter weights', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Jib' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const text = rows[gripIdx + 1].textContent;
+    expect(text).toContain('1x Pro Sup EJIb-Arm');
+    expect(text).toContain('1x jib counter weights');
+  });
+
 
   test('Tripod preferences add selected head and tripods', () => {
     const { generateGearListHtml } = script;
