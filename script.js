@@ -677,6 +677,25 @@ function updateBatteryPlateVisibility() {
     else if (hasV) batteryPlateSelect.value = 'V-Mount';
     else batteryPlateSelect.value = '';
   }
+  updateViewfinderSettingsVisibility();
+}
+
+function updateViewfinderSettingsVisibility() {
+  const cam = devices?.cameras?.[cameraSelect?.value];
+  const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
+  const config = monitoringConfigurationSelect?.value;
+  const show = hasViewfinder && (config === 'Viewfinder only' || config === 'Viewfinder and Onboard');
+  if (viewfinderSettingsRow) {
+    if (show) {
+      viewfinderSettingsRow.classList.remove('hidden');
+    } else {
+      viewfinderSettingsRow.classList.add('hidden');
+      const vfSelect = document.getElementById('viewfinderSettings');
+      if (vfSelect) {
+        Array.from(vfSelect.options).forEach(o => { o.selected = false; });
+      }
+    }
+  }
 }
 
 
@@ -1475,6 +1494,8 @@ const requiredScenariosSelect = document.getElementById("requiredScenarios");
 const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
 const tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
 const tripodPreferencesSelect = document.getElementById("tripodPreferences");
+const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
+const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
@@ -7200,7 +7221,14 @@ function collectProjectFormData() {
     const val = name => (projectForm.querySelector(`[name="${name}"]`)?.value || '').trim();
     const multi = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
         .map(o => o.value).join(', ');
+    const multiVals = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
+        .map(o => o.value);
     const range = (start, end) => [val(start), val(end)].filter(Boolean).join(' to ');
+    const monitoringSelections = [
+        ...multiVals('viewfinderSettings'),
+        ...multiVals('frameGuides'),
+        ...multiVals('aspectMaskOpacity')
+    ].join(', ');
     return {
         projectName: val('projectName'),
         dop: val('dop'),
@@ -7216,7 +7244,7 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         rigging: multi('rigging'),
         gimbal: multi('gimbal'),
-        monitoringSettings: multi('monitoringSettings'),
+        monitoringSettings: monitoringSelections,
         videoDistribution: multi('videoDistribution'),
         monitoringConfiguration: val('monitoringConfiguration'),
         userButtons: val('userButtons'),
@@ -8068,6 +8096,9 @@ if (cameraSelect) {
     updateBatteryPlateVisibility();
     updateBatteryOptions();
   });
+}
+if (monitoringConfigurationSelect) {
+  monitoringConfigurationSelect.addEventListener('change', updateViewfinderSettingsVisibility);
 }
 if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
 
