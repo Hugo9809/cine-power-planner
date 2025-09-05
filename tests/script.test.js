@@ -1157,9 +1157,10 @@ describe('script.js functions', () => {
     expect(html).toContain(`<strong>${texts.en.cameraLabel}</strong>`);
   });
 
-  test('generatePrintableOverview uses light mode styling even when dark mode active', () => {
+  test('generatePrintableOverview inherits current theme classes', () => {
     const { generatePrintableOverview } = script;
     document.body.classList.add('dark-mode');
+    document.body.classList.add('pink-mode');
     document.getElementById('setupName').value = 'Test';
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -1170,8 +1171,8 @@ describe('script.js functions', () => {
     script.updateCalculations();
     generatePrintableOverview();
     const content = document.querySelector('#overviewDialogContent');
-    expect(content.classList.contains('dark-mode')).toBe(false);
-    expect(document.body.classList.contains('dark-mode')).toBe(true);
+    expect(content.classList.contains('dark-mode')).toBe(true);
+    expect(content.classList.contains('pink-mode')).toBe(true);
   });
 
   test('generatePrintableOverview includes project requirements and gear list', () => {
