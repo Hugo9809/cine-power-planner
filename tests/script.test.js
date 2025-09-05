@@ -1531,11 +1531,13 @@ describe('script.js functions', () => {
     const select = document.getElementById('requiredScenarios');
     select.querySelector('option[value="Indoor"]').selected = true;
     select.querySelector('option[value="Gimbal"]').selected = true;
+    select.querySelector('option[value="Extreme cold (snow)"]').selected = true;
     script.updateRequiredScenariosSummary();
     const boxes = document.querySelectorAll('#requiredScenariosSummary .scenario-box');
-    expect(boxes).toHaveLength(2);
+    expect(boxes).toHaveLength(3);
     expect(boxes[0].textContent).toContain('Indoor');
     expect(boxes[1].textContent).toContain('Gimbal');
+    expect(boxes[2].textContent).toContain('Extreme cold (snow)');
   });
 
   test('tripod preferences selector is shown only when Tripod scenario is selected', () => {
