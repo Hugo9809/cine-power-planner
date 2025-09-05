@@ -9,6 +9,7 @@ const texts = {
 
     setupManageHeading: "Manage Project",
     deviceSelectionHeading: "Device Selection",
+    overviewDeviceSelectionHeading: "Camera Setup Devices",
     resultsHeading: "Results",
     deviceManagerHeading: "Manage Device Database",
     batteryComparisonHeading: "Battery Comparison",
@@ -378,6 +379,7 @@ const texts = {
     offlineIndicator: "Offline",
     setupManageHeading: "Gestisci la configurazione",
     deviceSelectionHeading: "Selezione del dispositivo",
+    overviewDeviceSelectionHeading: "Dispositivi della Configurazione della Camera",
     resultsHeading: "Risultati",
     deviceManagerHeading: "Gestisci il database dei dispositivi",
     batteryComparisonHeading: "Confronto della batteria",
@@ -721,6 +723,7 @@ const texts = {
 
     setupManageHeading: "Gestionar Configuración",
     deviceSelectionHeading: "Selección de Dispositivos",
+    overviewDeviceSelectionHeading: "Dispositivos de Configuración de Cámara",
     resultsHeading: "Resultados",
     deviceManagerHeading: "Gestionar Base de Datos de Dispositivos",
     batteryComparisonHeading: "Comparación de Baterías",
@@ -1079,6 +1082,7 @@ const texts = {
 
     setupManageHeading: "Gérer la Configuration",
     deviceSelectionHeading: "Sélection des Appareils",
+    overviewDeviceSelectionHeading: "Appareils de configuration de caméra",
     resultsHeading: "Résultats",
     deviceManagerHeading: "Gérer la Base de Données des Appareils",
     batteryComparisonHeading: "Comparaison des Batteries",
@@ -1439,6 +1443,7 @@ const texts = {
 
     setupManageHeading: "Setup verwalten",
     deviceSelectionHeading: "Geräte-Auswahl",
+    overviewDeviceSelectionHeading: "Geräte im Kamera-Setup",
     resultsHeading: "Ergebnisse",
     deviceManagerHeading: "Geräte-Datenbank verwalten",
     batteryComparisonHeading: "Akkuvergleich",

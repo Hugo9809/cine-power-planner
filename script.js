@@ -7019,7 +7019,7 @@ function generatePrintableOverview() {
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
             <p><em>Generated on: ${dateTimeString}</em></p>
 
-            <h2>${t.deviceSelectionHeading}</h2>
+            <h2>${t.overviewDeviceSelectionHeading || t.deviceSelectionHeading}</h2>
             ${deviceListHtml}
 
             <div class="page-break"></div>
