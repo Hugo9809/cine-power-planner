@@ -1362,7 +1362,7 @@ describe('script.js functions', () => {
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('1x LBUS to LBUS');
       expect(html).toContain('Chargers');
-      expect(html).toContain('1x Dual V-Mount Charger');
+      expect(html).toContain('1x Quad V-Mount Charger');
       expect(html).toContain('Monitoring support');
       expect(html).toContain('Miscellaneous');
       const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
