@@ -7492,7 +7492,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         if (hasLemo2) {
             monitoringSupport.push(
                 `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`,
-                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`
+                'D-Tap to Lemo-2-pin Cable 0,5m'
             );
         }
         const cameraData = devices.cameras[cameraSelect.value];
@@ -7503,12 +7503,12 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         if (hasSDI) {
             monitoringSupport.push(
                 `Ultraslim BNC 0.5 m (${monitorLabel})`,
-                `Ultraslim BNC 0.5 m (${monitorLabel})`
+                'Ultraslim BNC 0.5 m'
             );
         } else if (hasHDMI) {
             monitoringSupport.push(
                 `Ultraslim HDMI 0.5 m (${monitorLabel})`,
-                `Ultraslim HDMI 0.5 m (${monitorLabel})`
+                'Ultraslim HDMI 0.5 m'
             );
         }
         rigging.push(`ULCS Arm mit 3/8" und 1/4" double (${monitorLabel})`);
@@ -7861,27 +7861,27 @@ function generateGearListHtml(info = {}) {
     const addMonitorCables = label => {
         monitoringSupportAcc.push(
             `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
-            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
+            'D-Tap to Lemo-2-pin Cable 0,3m',
             `Ultraslim BNC Cable 0.3 m (${label})`,
-            `Ultraslim BNC Cable 0.3 m (${label})`
+            'Ultraslim BNC Cable 0.3 m'
         );
     };
     handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
     const addLargeMonitorCables = label => {
         monitoringSupportAcc.push(
             `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
-            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
+            'D-Tap to Lemo-2-pin Cable 0,5m',
             `Ultraslim BNC 0.5 m (${label})`,
-            `Ultraslim BNC 0.5 m (${label})`
+            'Ultraslim BNC 0.5 m'
         );
     };
     largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
     if (hasMotor) {
         monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
-            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
+            'D-Tap to Mini XLR 3-pin Cable 0,3m',
             'Ultraslim BNC Cable 0.3 m (Focus)',
-            'Ultraslim BNC Cable 0.3 m (Focus)'
+            'Ultraslim BNC Cable 0.3 m'
         );
     }
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
@@ -7965,8 +7965,9 @@ function generateGearListHtml(info = {}) {
                 let ctxParts = [];
                 if (hasContext) {
                     const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
-                    const spareCount = total - realContexts.length;
-                    ctxParts = realContexts.map(c => `1x ${c}`);
+                    const realTotal = realContexts.reduce((sum, c) => sum + ctxCounts[c], 0);
+                    ctxParts = realContexts.map(c => `${ctxCounts[c]}x ${c}`);
+                    const spareCount = total - realTotal;
                     if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                 }
                 const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
@@ -8159,7 +8160,8 @@ function generateGearListHtml(info = {}) {
     addRow('Monitoring support', monitoringSupportItems);
     const cartsTransportationItems = [
         'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
-        ...Array(10).fill('Securing Straps (25mm wide)'),
+        'Securing Straps (25mm wide)',
+        ...Array(9).fill('Securing Straps'),
         'Loading Ramp (pair, 420kg)',
         ...Array(20).fill('Airliner Ösen')
     ];
@@ -8182,7 +8184,7 @@ function generateGearListHtml(info = {}) {
         riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
         riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
-        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
+        riggingAcc.push('D-Tap Splitter');
     });
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
@@ -8222,8 +8224,8 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Satz Paganinis');
-        gripItems.push('sand bag');
-        gripItems.push('sand bag');
+        gripItems.push('sand bag (for Slider)');
+        gripItems.push('sand bag (for Slider)');
         gripItems.push('Bodenmatte');
         gripItems.push('Bodenmatte');
         gripItems.push('Bodenmatte');
@@ -8291,7 +8293,9 @@ function generateGearListHtml(info = {}) {
         ...Array(2).fill('Power Cable 10 m'),
         ...Array(2).fill('Power Cable 5 m'),
         ...Array(3).fill('Power Strip'),
-        ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
+        'PRCD-S (Portable Residual Current Device-Safety)',
+        'PRCD-S',
+        'PRCD-S',
         ...Array(3).fill('Power Three Way Splitter')
     ];
     addRow('Power', formatItems(powerItems));

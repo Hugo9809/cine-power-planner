@@ -2285,7 +2285,7 @@ describe('script.js functions', () => {
     expect(text).toContain('2x Avenger Combo Stand 20 A1020B 110-198 cm black');
     expect(text).toContain('2x Apple Box Set / Bühnenkisten Set');
     expect(text).toContain('1x Satz Paganinis');
-    expect(text).toContain('2x sand bag');
+    expect(text).toContain('2x sand bag (2x for Slider)');
     expect(text).toContain('3x Bodenmatte');
     expect(text).toContain('12x Tennisball');
   });
@@ -2336,6 +2336,27 @@ describe('script.js functions', () => {
     expect(text).toContain('1x 100mm bowl Frog Tripod + Mid-Level Spreader');
     expect(text).toContain('1x 100mm bowl Hi-Head');
     expect(text).toContain('2x sand bag (1x for Frog Tripod, 1x for Hi-Head)');
+  });
+
+  test('Slider and tripod scenarios list sand bags for each context', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({
+      requiredScenarios: 'Slider, Tripod',
+      sliderBowl: '75er bowl',
+      tripodHeadBrand: 'OConnor',
+      tripodBowl: '100mm bowl',
+      tripodTypes: 'Frog Tripod, Hi-Head'
+    });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const itemsRow = rows[gripIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('4x sand bag');
+    expect(text).toContain('1x for Frog Tripod');
+    expect(text).toContain('1x for Hi-Head');
+    expect(text).toContain('2x for Slider');
   });
 
   test('Easyrig scenario adds stabiliser with dropdown options', () => {
