@@ -9317,7 +9317,8 @@ function updateRequiredScenariosSummary() {
         opt.remove();
       }
     };
-    ensureOption('DoP Monitor handheld');
+    ensureOption('DoP Monitor 5" handheld');
+    ensureOption('DoP Monitor 7" handheld');
     ensureOption('DoP Monitor 15-21"');
   }
   selected.forEach(val => {
