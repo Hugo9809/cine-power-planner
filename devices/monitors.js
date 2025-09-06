@@ -1001,6 +1001,26 @@ const monitorData = {
       }
     ]
   },
+  "TV Logic F7HS": {
+    "screenSizeInches": 7,
+    "brightnessNits": 1800,
+    "powerDrawWatts": 24,
+    "power": {
+      "input": {
+        "voltageRange": "12-24",
+        "type": "Mini XLR 3-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "videoInputs": [
+      { "type": "HDMI" },
+      { "type": "3G-SDI" }
+    ],
+    "videoOutputs": [
+      { "type": "3G-SDI" }
+    ]
+  },
   "TVLogic F-7H mkII": {
     "screenSizeInches": 7,
     "brightnessNits": 3600,
