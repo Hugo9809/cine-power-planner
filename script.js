@@ -718,6 +718,7 @@ function updateBatteryPlateVisibility() {
   }
   updateViewfinderSettingsVisibility();
   updateViewfinderExtensionVisibility();
+  updateEyeLeatherColorVisibility();
   updateMonitoringConfigurationOptions();
 }
 
@@ -767,6 +768,18 @@ function updateViewfinderExtensionVisibility() {
       if (vfExtSel) {
         vfExtSel.value = '';
       }
+    }
+  }
+}
+
+function updateEyeLeatherColorVisibility() {
+  const cam = devices?.cameras?.[cameraSelect?.value];
+  const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
+  if (eyeLeatherColorRow) {
+    if (hasViewfinder) {
+      eyeLeatherColorRow.classList.remove('hidden');
+    } else {
+      eyeLeatherColorRow.classList.add('hidden');
     }
   }
 }
@@ -1614,6 +1627,7 @@ const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
+const eyeLeatherColorRow = document.getElementById("eyeLeatherColorRow");
 
 const projectFieldIcons = {
   dop: '👤',
@@ -7648,6 +7662,7 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
         viewfinderExtension: val('viewfinderExtension'),
+        viewfinderEyeLeatherColor: val('viewfinderEyeLeatherColor'),
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
@@ -7700,6 +7715,7 @@ function populateProjectForm(info) {
     setMulti('requiredScenarios', info.requiredScenarios);
     setMulti('cameraHandle', info.cameraHandle);
     setVal('viewfinderExtension', info.viewfinderExtension);
+    setVal('viewfinderEyeLeatherColor', info.viewfinderEyeLeatherColor);
     setVal('mattebox', info.mattebox);
     setMulti('gimbal', info.gimbal);
     setMulti('videoDistribution', info.videoDistribution);
@@ -8391,14 +8407,18 @@ function generateGearListHtml(info = {}) {
     ]);
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     const consumables = [];
+    const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
+    const eyeLeatherColor = info.viewfinderEyeLeatherColor || 'rot';
     const baseConsumables = [
         { name: 'Kimtech Wipes', count: 1 },
         { name: 'Lasso Rot 24mm', count: 1 },
         { name: 'Lasso Blau 24mm', count: 1 },
         { name: 'Sprigs rot 1/4“', count: 1, noScale: true },
-        { name: 'Augenleder Large Oval Farbe rot', count: 2 },
         { name: 'Klappenstift', count: 2, klappen: true }
     ];
+    if (hasViewfinder) {
+        baseConsumables.splice(baseConsumables.length - 1, 0, { name: `Bluestar eye leather made of microfiber oval, large ${eyeLeatherColor}`, count: 2 });
+    }
     let shootDays = 0;
     let isWinterShoot = false;
     if (info.shootingDays) {
@@ -9575,6 +9595,7 @@ function initApp() {
   }
   updateTripodOptions();
   updateViewfinderExtensionVisibility();
+  updateEyeLeatherColorVisibility();
   updateCalculations();
   applyFilters();
 }
