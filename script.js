@@ -1707,16 +1707,38 @@ function drawPowerDiagram(availableWatt, segments) {
   powerDiagramElem.classList.remove("hidden");
   powerDiagramBarElem.innerHTML = "";
   const MAX_WIDTH = 300;
+  const total = segments.reduce((sum, s) => sum + s.power, 0);
+  const scale = MAX_WIDTH / Math.max(availableWatt, total);
+  const limitPos = availableWatt * scale;
+
   segments.forEach(seg => {
-    const width = (seg.power / availableWatt) * MAX_WIDTH;
+    const width = seg.power * scale;
     if (width <= 0) return;
     const div = document.createElement("div");
     div.className = `segment ${seg.className}`;
     div.style.width = `${width}px`;
     div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
+    const span = document.createElement("span");
+    span.textContent = seg.label.replace(/:$/, "");
+    div.appendChild(span);
     powerDiagramBarElem.appendChild(div);
   });
+
+  if (total > availableWatt) {
+    const over = document.createElement("div");
+    over.className = "over-usage";
+    over.style.left = `${limitPos}px`;
+    powerDiagramBarElem.appendChild(over);
+  }
+
+  const limit = document.createElement("div");
+  limit.className = "limit-line";
+  limit.style.left = `${limitPos}px`;
+  powerDiagramBarElem.appendChild(limit);
+
+  powerDiagramElem.classList.toggle("over", total > availableWatt);
   maxPowerTextElem.textContent = `${texts[currentLang].availablePowerLabel} ${availableWatt.toFixed(0)} W`;
+  maxPowerTextElem.style.color = total > availableWatt ? "red" : "";
 }
 
 const setupSelect     = document.getElementById("setupSelect");
