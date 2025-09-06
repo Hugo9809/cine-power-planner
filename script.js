@@ -44,7 +44,13 @@ if (typeof window !== 'undefined') {
 }
 
 // Simple HTML escaping helper available early for bootstrap code
-const escapeDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
+// Avoid directly referencing `document` to prevent ReferenceErrors in
+// environments where it exists as an uninitialised `let` binding
+// (observed in Safari). Using `globalThis.document` safely returns
+// `undefined` when no DOM is present.
+const escapeDiv = typeof globalThis !== 'undefined' && globalThis.document
+  ? globalThis.document.createElement('div')
+  : null;
 function escapeHtml(str) {
   if (!escapeDiv) return String(str);
   escapeDiv.textContent = str;
