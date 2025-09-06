@@ -1716,18 +1716,18 @@ describe('script.js functions', () => {
 
     const values = () => Array.from(videoSel.options).map(o => o.value);
 
-    expect(values()).not.toContain('DoP Handheld 7" Monitor');
-    expect(values()).not.toContain('DoP 15-21" Monitor');
+    expect(values()).not.toContain('DoP Monitor 7" handheld');
+    expect(values()).not.toContain('DoP Monitor 15-21"');
 
-    select.querySelector('option[value="Trinity"]').selected = true;
+    select.querySelector('option[value="Steadicam"]').selected = true;
     script.updateRequiredScenariosSummary();
-    expect(values()).toContain('DoP Handheld 7" Monitor');
-    expect(values()).toContain('DoP 15-21" Monitor');
+    expect(values()).toContain('DoP Monitor 7" handheld');
+    expect(values()).toContain('DoP Monitor 15-21"');
 
-    select.querySelector('option[value="Trinity"]').selected = false;
+    select.querySelector('option[value="Steadicam"]').selected = false;
     script.updateRequiredScenariosSummary();
-    expect(values()).not.toContain('DoP Handheld 7" Monitor');
-    expect(values()).not.toContain('DoP 15-21" Monitor');
+    expect(values()).not.toContain('DoP Monitor 7" handheld');
+    expect(values()).not.toContain('DoP Monitor 15-21"');
   });
 
   test('selecting Dolly adds SmallHD Ultra 7 monitor when none selected', () => {
