@@ -60,7 +60,7 @@ function setupDom(removeGear) {
     },
     accessories: {
       powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-      cages: { 'Generic Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+      cages: { 'CamA Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
       matteboxes: {
         'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
         'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' }
@@ -246,7 +246,7 @@ describe('script.js functions', () => {
       },
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-        cages: { 'Generic Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+        cages: { 'CamA Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
         matteboxes: {
           'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
           'ARRI LMB 4x5 15mm LWS Set 3-Stage': { type: 'Rod based' },
@@ -382,7 +382,7 @@ describe('script.js functions', () => {
     };
     addOpt('cameraSelect', 'CamA');
     addOpt('batterySelect', 'BattA');
-    addOpt('cageSelect', 'Generic Cage');
+    addOpt('cageSelect', 'CamA Cage');
 
     const html = script.generateGearListHtml();
     const wrap = document.createElement('div');
@@ -393,7 +393,7 @@ describe('script.js functions', () => {
     const itemsRow = rows[cameraSupportIndex + 1];
     const cageSel = itemsRow.querySelector('#gearListCage');
     expect(cageSel).not.toBeNull();
-    expect(cageSel.value).toBe('Generic Cage');
+    expect(cageSel.value).toBe('CamA Cage');
   });
 
   test('selected lens adds rods and support to lens support category of gear list', () => {
@@ -404,7 +404,7 @@ describe('script.js functions', () => {
     };
     addOpt('cameraSelect', 'CamA');
     addOpt('batterySelect', 'BattA');
-    addOpt('cageSelect', 'Generic Cage');
+    addOpt('cageSelect', 'CamA Cage');
     const html = script.generateGearListHtml({ lenses: 'LensA' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
@@ -439,7 +439,7 @@ describe('script.js functions', () => {
     };
     addOpt('cameraSelect', 'CamA');
     addOpt('batterySelect', 'BattA');
-    addOpt('cageSelect', 'Generic Cage');
+    addOpt('cageSelect', 'CamA Cage');
     devices.lenses.LensB = { brand: 'TestBrand', rodStandard: '15mm', rodLengthCm: 30 };
     const html = script.generateGearListHtml({ lenses: 'LensA, LensB' });
     const wrap = document.createElement('div');
@@ -1342,7 +1342,7 @@ describe('script.js functions', () => {
       expect(html).toContain('1x CamA');
       expect(html).toContain('Camera Support');
       expect(html).toContain('1x <select id="gearListCage"');
-      expect(html).toContain('<option value="Generic Cage"');
+      expect(html).toContain('<option value="CamA Cage"');
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('1x LBUS to LBUS');
       expect(html).toContain('Chargers');
@@ -4536,7 +4536,7 @@ describe('copy summary button without clipboard support', () => {
       },
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-        cages: { 'Generic Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+        cages: { 'CamA Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
         chargers: {
           'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
           'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
