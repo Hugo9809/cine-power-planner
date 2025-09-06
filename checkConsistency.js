@@ -38,7 +38,7 @@ if (require.main === module) {
         '  npm run check-consistency\n' +
         '  node checkConsistency.js --help\n' +
         '\nOptions:\n' +
-        '  -h, --help  Show this help message.'
+        '  -h, --help  Show this help message and exit.'
     );
     process.exit(0);
   }
