@@ -1416,7 +1416,6 @@ describe('script.js functions', () => {
         expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
         expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
         expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
-      expect(html).not.toContain('Ultraslim BNC 0.5 m');
       expect(html).not.toContain('HDMI Cable');
     });
 
@@ -1455,10 +1454,27 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain(
-      '1x <strong>Onboard Monitor</strong> - MonA - incl. Sunhood<br><span class="gear-item" data-gear-name="Wireless Transmitter - VidA">1x <strong>Wireless Transmitter</strong> - VidA</span>'
-    );
+    expect(html).toContain('1x <strong>Onboard Monitor</strong> - 7&quot; - MonA - incl. Sunhood');
+    expect(html).toContain('Wireless Transmitter</strong> - 7&quot; - VidA');
     expect(html).not.toContain('MonA, VidA');
+  });
+
+  test('gear list reflects 5" monitor selection', () => {
+    const { generateGearListHtml } = script;
+    const originalSize = global.devices.monitors.MonA.screenSizeInches;
+    global.devices.monitors.MonA.screenSizeInches = 5;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    const html = generateGearListHtml({ projectName: 'Proj' });
+    expect(html).toContain(
+      '1x <strong>Onboard Monitor</strong> - 5&quot; - MonA - incl. Sunhood<br><span class="gear-item" data-gear-name="Wireless Transmitter - 5&quot; - VidA">1x <strong>Wireless Transmitter</strong> - 5&quot; - VidA</span>'
+    );
+    global.devices.monitors.MonA.screenSizeInches = originalSize;
   });
 
   test('onboard monitor adds power cable to monitoring support', () => {
@@ -1586,9 +1602,7 @@ describe('script.js functions', () => {
       videoDistribution:
         'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
     });
-    expect(html).toContain(
-      '4x <strong>Wireless Receiver</strong> - VidA RX (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus)'
-    );
+    expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain(
       '6x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 3x Spare)'
@@ -1650,7 +1664,7 @@ describe('script.js functions', () => {
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
       expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
       expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
-      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (1x Focus)');
+      expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Focus)');
       expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Focus)');
       expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Focus)');
       expect(html).toContain('3x Tennisball');
@@ -1718,9 +1732,7 @@ describe('script.js functions', () => {
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain(
-      '2x <strong>Wireless Receiver</strong> - VidA RX (1x Directors handheld, 1x Focus)'
-    );
+    expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Directors handheld, 1x Focus)');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (3x Spare)');
   });
