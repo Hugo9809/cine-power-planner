@@ -1415,8 +1415,7 @@ describe('script.js functions', () => {
         expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
         expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
         expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
-        expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
-      expect(html).not.toContain('Ultraslim BNC 0.5 m');
+      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       expect(html).not.toContain('HDMI Cable');
     });
 
@@ -1472,12 +1471,7 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     const html = generateGearListHtml();
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain(
-      '2x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Spare)'
-    );
-    expect(msSection).toContain(
-      '2x Ultraslim BNC 0.5 m (1x Onboard monitor, 1x Spare)'
-    );
+    expect(msSection).toContain('Ultraslim BNC 0.5 m (1x Onboard monitor)');
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
     expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,5m');
     expect(miscSection).not.toContain('Ultraslim BNC 0.5 m');
@@ -1547,6 +1541,28 @@ describe('script.js functions', () => {
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x DoP handheld, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x DoP handheld, 1x Spare)');
+  });
+
+  test('Directors 15-21 monitor adds dropdown and accessories', () => {
+    const { generateGearListHtml } = script;
+    global.devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      MonA: { screenSizeInches: 17 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 15-21 inch' });
+    expect(html).toContain('<select id="gearListDirectorsMonitor15"');
+    expect(html).toContain('SmallHD Cine 24" 4K High-Bright Monitor');
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Ultraslim BNC 0.5 m (1x Directors, 1x Spare)');
+    expect(msSection).toContain('D-Tap to Lemo-2-pin Cable 0,5m (1x Directors');
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('D-Tap Splitter (1x Directors');
+    expect(rigSection).toContain('ULCS Bracket with 1/4 to 1/4 (1x Directors');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Directors)');
+    expect(gripSection).toContain('Avenger C590 Conka Bonka Stativ-Verlängerungen Set (1x Directors)');
+    expect(gripSection).toContain('Impact Baby to Junior Receiver Adapter (1x Directors)');
+    expect(gripSection).toContain("Matthews BIG F'ING Monitor Rollen Set (3 Stück) (1x Directors)");
   });
 
   test('multiple handheld monitors merge grip items', () => {

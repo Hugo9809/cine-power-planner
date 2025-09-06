@@ -7774,6 +7774,9 @@ function generateGearListHtml(info = {}) {
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) receiverLabels.push('Directors handheld');
     if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) receiverLabels.push('Gaffers handheld');
     if (videoDistPrefs.includes('DoP Monitor 7" handheld')) receiverLabels.push('DoP handheld');
+    if (videoDistPrefs.includes('Directors Monitor 15-21 inch')) receiverLabels.push('Directors');
+    if (videoDistPrefs.includes('Combo Monitor 15-21 inch')) receiverLabels.push('Combo');
+    if (videoDistPrefs.includes('DoP Monitor 15-21"') || videoDistPrefs.includes('DoP Monitor 15-21 inch')) receiverLabels.push('DoP');
     if (hasMotor) receiverLabels.push('Focus');
     const receiverCount = receiverLabels.length;
     if (selectedNames.video) {
@@ -7794,9 +7797,20 @@ function generateGearListHtml(info = {}) {
             `Ultraslim BNC 0.3 m (${label})`
         );
     };
+    const addLargeMonitorCables = label => {
+        monitoringSupportAcc.push(
+            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
+            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
+            `Ultraslim BNC 0.5 m (${label})`,
+            `Ultraslim BNC 0.5 m (${label})`
+        );
+    };
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) addMonitorCables('Directors handheld');
     if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) addMonitorCables('Gaffers handheld');
     if (videoDistPrefs.includes('DoP Monitor 7" handheld')) addMonitorCables('DoP handheld');
+    if (videoDistPrefs.includes('Directors Monitor 15-21 inch')) addLargeMonitorCables('Directors');
+    if (videoDistPrefs.includes('Combo Monitor 15-21 inch')) addLargeMonitorCables('Combo');
+    if (videoDistPrefs.includes('DoP Monitor 15-21"') || videoDistPrefs.includes('DoP Monitor 15-21 inch')) addLargeMonitorCables('DoP');
     if (hasMotor) {
         monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
@@ -8049,6 +8063,42 @@ function generateGearListHtml(info = {}) {
             .join('');
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
+    if (videoDistPrefs.includes('Directors Monitor 15-21 inch')) {
+        const monitorsDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
+        const largeNames = Object.keys(monitorsDb)
+            .filter(n => monitorsDb[n].screenSizeInches >= 15 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
+            .sort(localeSort);
+        const defMon = 'SmallHD Cine 24" 4K High-Bright Monitor';
+        const defSize = monitorsDb[defMon]?.screenSizeInches || '';
+        const opts = largeNames
+            .map(n => `<option value="${escapeHtml(n)}"${n === defMon ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Monitor</strong> - ${defSize}&quot; - <select id="gearListDirectorsMonitor15">${opts}</select> incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
+    }
+    if (videoDistPrefs.includes('Combo Monitor 15-21 inch')) {
+        const monitorsDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
+        const largeNames = Object.keys(monitorsDb)
+            .filter(n => monitorsDb[n].screenSizeInches >= 15 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
+            .sort(localeSort);
+        const defMon = 'SmallHD Cine 24" 4K High-Bright Monitor';
+        const defSize = monitorsDb[defMon]?.screenSizeInches || '';
+        const opts = largeNames
+            .map(n => `<option value="${escapeHtml(n)}"${n === defMon ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Combo Monitor</strong> - ${defSize}&quot; - <select id="gearListComboMonitor15">${opts}</select> incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
+    }
+    if (videoDistPrefs.includes('DoP Monitor 15-21"') || videoDistPrefs.includes('DoP Monitor 15-21 inch')) {
+        const monitorsDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
+        const largeNames = Object.keys(monitorsDb)
+            .filter(n => monitorsDb[n].screenSizeInches >= 15 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
+            .sort(localeSort);
+        const defMon = 'SmallHD Cine 24" 4K High-Bright Monitor';
+        const defSize = monitorsDb[defMon]?.screenSizeInches || '';
+        const opts = largeNames
+            .map(n => `<option value="${escapeHtml(n)}"${n === defMon ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Monitor</strong> - ${defSize}&quot; - <select id="gearListDopMonitor15">${opts}</select> incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
+    }
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
     }
@@ -8098,6 +8148,54 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
         riggingAcc.push('spigot with male 3/8" and 1/4" (DoP handheld)');
         riggingAcc.push('spigot with male 3/8" and 1/4" (DoP handheld)');
+    }
+    if (videoDistPrefs.includes('Directors Monitor 15-21 inch')) {
+        riggingAcc.push(
+            'ULCS Bracket with 1/4 to 1/4 (Directors)',
+            'Manfrotto 635 Quick-Action Super Clamp (Directors)',
+            'spigot with male 3/8" and 1/4" (Directors)',
+            'Cine Quick Release (Directors)',
+            'D-Tap Splitter (Directors)',
+            'D-Tap Splitter (Directors)'
+        );
+        gripItems.push(
+            'Matthews Monitor Stand II (249562) (Directors)',
+            'Avenger C590 Conka Bonka Stativ-Verlängerungen Set (Directors)',
+            'Impact Baby to Junior Receiver Adapter (Directors)',
+            `Matthews BIG F'ING Monitor Rollen Set (3 Stück) (Directors)`
+        );
+    }
+    if (videoDistPrefs.includes('Combo Monitor 15-21 inch')) {
+        riggingAcc.push(
+            'ULCS Bracket with 1/4 to 1/4 (Combo)',
+            'Manfrotto 635 Quick-Action Super Clamp (Combo)',
+            'spigot with male 3/8" and 1/4" (Combo)',
+            'Cine Quick Release (Combo)',
+            'D-Tap Splitter (Combo)',
+            'D-Tap Splitter (Combo)'
+        );
+        gripItems.push(
+            'Matthews Monitor Stand II (249562) (Combo)',
+            'Avenger C590 Conka Bonka Stativ-Verlängerungen Set (Combo)',
+            'Impact Baby to Junior Receiver Adapter (Combo)',
+            `Matthews BIG F'ING Monitor Rollen Set (3 Stück) (Combo)`
+        );
+    }
+    if (videoDistPrefs.includes('DoP Monitor 15-21"') || videoDistPrefs.includes('DoP Monitor 15-21 inch')) {
+        riggingAcc.push(
+            'ULCS Bracket with 1/4 to 1/4 (DoP)',
+            'Manfrotto 635 Quick-Action Super Clamp (DoP)',
+            'spigot with male 3/8" and 1/4" (DoP)',
+            'Cine Quick Release (DoP)',
+            'D-Tap Splitter (DoP)',
+            'D-Tap Splitter (DoP)'
+        );
+        gripItems.push(
+            'Matthews Monitor Stand II (249562) (DoP)',
+            'Avenger C590 Conka Bonka Stativ-Verlängerungen Set (DoP)',
+            'Impact Baby to Junior Receiver Adapter (DoP)',
+            `Matthews BIG F'ING Monitor Rollen Set (3 Stück) (DoP)`
+        );
     }
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');

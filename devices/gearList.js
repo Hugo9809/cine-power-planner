@@ -118,6 +118,27 @@ const gear = {
         { "type": "3G-SDI" }
       ]
     },
+    "SmallHD Cine 24\" 4K High-Bright Monitor": {
+      "screenSizeInches": 24,
+      "brightnessNits": 1350,
+      "powerDrawWatts": 80,
+      "power": {
+        "input": {
+          "voltageRange": "12-34",
+          "type": "XLR 4-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "12G-SDI" },
+        { "type": "HDMI" }
+      ],
+      "videoOutputs": [
+        { "type": "12G-SDI" },
+        { "type": "HDMI" }
+      ]
+    },
     "None": {
       "powerDrawWatts": 0,
       "power": {
