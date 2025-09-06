@@ -1902,25 +1902,6 @@ function setSliderBowlValue(val) {
   if (sel) sel.value = val;
 }
 
-// Restore previously saved gear list and project requirements on load.
-// Previous logic only ran when the gear list element existed, which meant
-// project requirements were lost on refresh if that element was absent.
-// Now we load whenever either output section is present and only bind gear
-// list specific actions when needed.
-if (gearListOutput || projectRequirementsOutput) {
-  const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
-  if (storedGearList) {
-    displayGearAndRequirements(storedGearList);
-    if (gearListOutput) {
-      ensureGearListActions();
-      bindGearListCageListener();
-      bindGearListEasyrigListener();
-      bindGearListSliderBowlListener();
-      bindGearListDirectorsMonitorListener();
-    }
-  }
-}
-
 let currentProjectInfo = null;
 let loadedSetupState = null;
 
@@ -8604,7 +8585,20 @@ function autoSaveCurrentSetup() {
 
 function restoreSessionState() {
   const state = loadSession();
-  if (!state) return;
+  if (!state) {
+    if (gearListOutput) {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+    }
+    if (projectRequirementsOutput) {
+      projectRequirementsOutput.innerHTML = '';
+      projectRequirementsOutput.classList.add('hidden');
+    }
+    if (typeof deleteGearList === 'function') {
+      deleteGearList();
+    }
+    return;
+  }
   if (setupNameInput) {
     setupNameInput.value = state.setupName || '';
     setupNameInput.dispatchEvent(new Event('input'));
@@ -8626,6 +8620,19 @@ function restoreSessionState() {
   if (batterySelect && state.battery) batterySelect.value = state.battery;
   setSliderBowlValue(state.sliderBowl);
   if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
+  if (gearListOutput || projectRequirementsOutput) {
+    const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
+    if (storedGearList) {
+      displayGearAndRequirements(storedGearList);
+      if (gearListOutput) {
+        ensureGearListActions();
+        bindGearListCageListener();
+        bindGearListEasyrigListener();
+        bindGearListSliderBowlListener();
+        bindGearListDirectorsMonitorListener();
+      }
+    }
+  }
 }
 
 function applySharedSetup(shared) {
