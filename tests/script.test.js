@@ -3488,11 +3488,14 @@ describe('script.js functions', () => {
     const popup = document.getElementById('diagramPopup');
     expect(popup.style.display).toBe('block');
 
-    // Clicking outside hides the popup
-    document.getElementById('diagramArea').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    // Tapping outside hides the popup
+    document.getElementById('diagramArea').dispatchEvent(new Event('touchstart', { bubbles: true }));
     expect(popup.style.display).toBe('none');
 
-    delete navigator.maxTouchPoints;
+    Object.defineProperty(navigator, 'maxTouchPoints', {
+      value: 0,
+      configurable: true
+    });
   });
 
   test('diagram popup opens to the left near right edge', () => {

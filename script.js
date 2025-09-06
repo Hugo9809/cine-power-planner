@@ -5157,6 +5157,7 @@ function attachDiagramPopups(map) {
   const popup = document.getElementById('diagramPopup');
   if (!popup) return;
   popup.style.display = 'none';
+  const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
 
   setupDiagramContainer.querySelectorAll('.diagram-node').forEach(node => {
     const id = node.getAttribute('data-node');
@@ -5182,6 +5183,7 @@ function attachDiagramPopups(map) {
       connectors + infoHtml;
 
     const show = e => {
+      e.stopPropagation();
       const pointer = e.touches && e.touches[0] ? e.touches[0] : e;
       popup.innerHTML = html;
       popup.style.display = 'block';
@@ -5202,7 +5204,6 @@ function attachDiagramPopups(map) {
       popup.style.top = `${relY + offset}px`;
     };
     const hide = () => { popup.style.display = 'none'; };
-    const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
     if (isTouchDevice) {
       node.addEventListener('touchstart', show);
       node.addEventListener('click', show);
@@ -5217,8 +5218,11 @@ function attachDiagramPopups(map) {
     const hideOnOutside = e => {
       if (!e.target.closest('.diagram-node')) popup.style.display = 'none';
     };
-    setupDiagramContainer.addEventListener('click', hideOnOutside);
-    setupDiagramContainer.addEventListener('touchstart', hideOnOutside);
+    if (isTouchDevice) {
+      setupDiagramContainer.addEventListener('touchstart', hideOnOutside);
+    } else {
+      setupDiagramContainer.addEventListener('click', hideOnOutside);
+    }
     setupDiagramContainer.dataset.popupOutsideListeners = 'true';
   }
 }
