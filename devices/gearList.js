@@ -373,7 +373,17 @@ const gear = {
         "stages": 3,
         "type": "Clamp-On"
       },
-      "ARRI Tray Catcher": {
+      "ARRI LMB 4x5 Pro Set": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015177",
+        "stages": 3,
+        "type": "Swing Away"
+      },
+      "ARRI LMB 19mm Studio Rod Adapter": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013432"
+      },
+      "ARRI LMB 4x5 / LMB-6 Tray Catcher": {
         "brand": "ARRI",
         "kNumber": "K2.66202.0",
         "compatible": [
