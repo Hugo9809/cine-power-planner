@@ -421,6 +421,13 @@ const batteryData = {
     "mount_type": "V-Mount",
     "weight_g": 1310
   },
+  "SmallRig X-Touch X99 (V-Mount)": {
+    "capacity": 99,
+    "pinA": 6.8,
+    "dtapA": 6.8,
+    "mount_type": "V-Mount",
+    "weight_g": 880
+  },
   "Hawk-Woods Mini V-Lok 50Wh": {
     "capacity": 50,
     "pinA": 6,
