@@ -2220,6 +2220,38 @@ describe('script.js functions', () => {
     expect(opts).toEqual(['', 'CodecA', 'CodecB']);
   });
 
+  test('recording resolution dropdown populates from camera resolutions', () => {
+    devices.cameras.CamA.resolutions = ['4K', '6K'];
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option>';
+    camSel.value = 'CamA';
+    const setupSelectElem = document.getElementById('setupSelect');
+    setupSelectElem.innerHTML = '<option value="Test">Test</option>';
+    setupSelectElem.value = 'Test';
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.showModal = jest.fn();
+    document.getElementById('generateGearListBtn').click();
+    const resSelect = document.getElementById('recordingResolution');
+    const opts = Array.from(resSelect.options).map(o => o.value);
+    expect(opts).toEqual(['', '4K', '6K']);
+  });
+
+  test('sensor mode dropdown populates from camera sensor modes', () => {
+    devices.cameras.CamA.sensorModes = ['ModeA', 'ModeB'];
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option>';
+    camSel.value = 'CamA';
+    const setupSelectElem = document.getElementById('setupSelect');
+    setupSelectElem.innerHTML = '<option value="Test">Test</option>';
+    setupSelectElem.value = 'Test';
+    const projectDialog = document.getElementById('projectDialog');
+    projectDialog.showModal = jest.fn();
+    document.getElementById('generateGearListBtn').click();
+    const modeSelect = document.getElementById('sensorMode');
+    const opts = Array.from(modeSelect.options).map(o => o.value);
+    expect(opts).toEqual(['', 'ModeA', 'ModeB']);
+  });
+
   test('duplicate motors are aggregated with count in gear list', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
