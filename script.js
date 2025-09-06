@@ -8868,7 +8868,7 @@ function updateRequiredScenariosSummary() {
     }
   }
   if (videoDistributionSelect) {
-    const dopScenarios = ['Trinity', 'Gimbal', 'Car Mount', 'Remote Head', 'Crane'];
+    const dopScenarios = ['Steadicam', 'Trinity', 'Remote Head', 'Crane', 'Car Mount'];
     const needsDop = selected.some(s => dopScenarios.includes(s));
     const ensureOption = val => {
       let opt = Array.from(videoDistributionSelect.options).find(o => o.value === val);
@@ -8884,8 +8884,8 @@ function updateRequiredScenariosSummary() {
         opt.remove();
       }
     };
-    ensureOption('DoP Handheld 7" Monitor');
-    ensureOption('DoP 15-21" Monitor');
+    ensureOption('DoP Monitor 7" handheld');
+    ensureOption('DoP Monitor 15-21"');
   }
   selected.forEach(val => {
     const box = document.createElement('span');
