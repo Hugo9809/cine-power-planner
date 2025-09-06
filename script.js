@@ -1503,6 +1503,28 @@ const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 
+const projectFieldIcons = {
+  dop: '👤',
+  prepDays: '📅',
+  shootingDays: '🎬',
+  deliveryResolution: '📺',
+  recordingResolution: '📹',
+  aspectRatio: '🖼️',
+  codec: '💾',
+  baseFrameRate: '⏱️',
+  sensorMode: '🔍',
+  requiredScenarios: '🌄',
+  cameraHandle: '🛠️',
+  mattebox: '🎬',
+  gimbal: '🌀',
+  monitoringSupport: '🧰',
+  monitoring: '📡',
+  monitoringConfiguration: '🎛️',
+  monitorUserButtons: '🔘',
+  cameraUserButtons: '🔘',
+  viewfinderUserButtons: '🔘'
+};
+
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
   const bowl = tripodBowlSelect ? tripodBowlSelect.value : '';
@@ -1865,6 +1887,12 @@ if (projectForm) {
         sel.addEventListener('dblclick', e => {
             e.preventDefault();
         });
+    });
+
+    projectForm.querySelectorAll('select').forEach(sel => {
+        if (sel.id === 'requiredScenarios') return;
+        sel.addEventListener('change', () => updateSelectIconBoxes(sel));
+        updateSelectIconBoxes(sel);
     });
 }
 
@@ -7503,31 +7531,10 @@ function generateGearListHtml(info = {}) {
         cameraUserButtons: 'Camera User Buttons',
         viewfinderUserButtons: 'Viewfinder User Buttons'
     };
-    const fieldIcons = {
-        dop: '👤',
-        prepDays: '📅',
-        shootingDays: '🎬',
-        deliveryResolution: '📺',
-        recordingResolution: '📹',
-        aspectRatio: '🖼️',
-        codec: '💾',
-        baseFrameRate: '⏱️',
-        sensorMode: '🔍',
-        requiredScenarios: '🌄',
-        cameraHandle: '🛠️',
-        mattebox: '🎬',
-        gimbal: '🌀',
-        monitoringSupport: '🧰',
-        monitoring: '📡',
-        monitoringConfiguration: '🎛️',
-        monitorUserButtons: '🔘',
-        cameraUserButtons: '🔘',
-        viewfinderUserButtons: '🔘'
-    };
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
-        infoEntries.map(([k, v]) => `<div class="requirement-box"><span class="req-icon">${fieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
+        infoEntries.map(([k, v]) => `<div class="requirement-box"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
@@ -8750,6 +8757,30 @@ const scenarioIcons = {
   'Slow Motion': '🐌',
   'Viewfinder Extension': '🔭'
 };
+
+function updateSelectIconBoxes(sel) {
+  if (!sel) return;
+  let container = sel.parentNode.querySelector('.icon-box-summary');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'icon-box-summary';
+    sel.parentNode.insertBefore(container, sel.nextSibling);
+  }
+  container.innerHTML = '';
+  const opts = sel.multiple
+    ? Array.from(sel.selectedOptions)
+    : (sel.value ? [sel.options[sel.selectedIndex]] : []);
+  opts.forEach(opt => {
+    const box = document.createElement('span');
+    box.className = 'icon-box';
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'icon';
+    iconSpan.textContent = opt.dataset.icon || projectFieldIcons[sel.name] || '📌';
+    box.appendChild(iconSpan);
+    box.appendChild(document.createTextNode(opt.value));
+    container.appendChild(box);
+  });
+}
 
 function updateRequiredScenariosSummary() {
   if (!requiredScenariosSelect || !requiredScenariosSummary) return;
