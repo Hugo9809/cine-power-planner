@@ -2303,7 +2303,7 @@ describe('script.js functions', () => {
     });
   });
 
-  test('Jib scenario adds EJib Arm and counter weights', () => {
+  test('Jib scenario adds EJib Arm, counter weights, and tripod legs', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ requiredScenarios: 'Jib' });
     const wrap = document.createElement('div');
@@ -2313,6 +2313,22 @@ describe('script.js functions', () => {
     const text = rows[gripIdx + 1].textContent;
     expect(text).toContain('1x Pro Sup EJIb-Arm');
     expect(text).toContain('1x jib counter weights');
+    expect(text).toContain('1x Standard Tripod');
+  });
+
+  test('Tripod legs for Jib are not duplicated when Tripod selected', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({
+      requiredScenarios: 'Jib, Tripod',
+      tripodTypes: 'Standard Tripod'
+    });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const text = rows[gripIdx + 1].textContent;
+    const matches = text.match(/Standard Tripod/g) || [];
+    expect(matches.length).toBe(1);
   });
 
 
