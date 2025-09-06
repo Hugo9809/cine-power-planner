@@ -2947,7 +2947,7 @@ describe('script.js functions', () => {
 
     camSel.value = 'Cam2';
     camSel.dispatchEvent(new Event('change'));
-    expect(saveBtn.textContent).toBe('Update');
+    expect(saveBtn.textContent).toBe('Save');
   });
 
   test('warning colors are applied in Spanish', () => {
