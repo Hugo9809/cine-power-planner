@@ -5808,7 +5808,7 @@ function populateSetupSelect() {
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
 
-// Auto-save a backup project after 10 minutes if none selected. The timer is
+// Auto-save a backup project after 5 minutes if none selected. The timer is
 // long-lived and would keep Node's event loop active in tests or server-side
 // rendering scenarios. Calling `unref()` (when available) allows the process to
 // exit naturally without waiting for the timeout to fire.
@@ -5826,7 +5826,7 @@ const backupTimer = setTimeout(() => {
   if (setupNameInput) setupNameInput.value = backupName;
   loadedSetupState = getCurrentSetupState();
   checkSetupChanged();
-}, 10 * 60 * 1000);
+}, 5 * 60 * 1000);
 if (typeof backupTimer.unref === 'function') {
   backupTimer.unref();
 }

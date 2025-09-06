@@ -200,7 +200,7 @@ test('restores project requirements from legacy object storage', () => {
 });
 
 describe('auto backup', () => {
-  test('creates backup after 10 minutes when no project selected', () => {
+  test('creates backup after 5 minutes when no project selected', () => {
     setupDom(false);
     const stored = {};
     global.loadSetups = jest.fn(() => stored);
@@ -209,7 +209,7 @@ describe('auto backup', () => {
     require('../translations.js');
     const script = require('../script.js');
     script.setLanguage('en');
-    jest.advanceTimersByTime(10 * 60 * 1000);
+    jest.advanceTimersByTime(5 * 60 * 1000);
     expect(global.saveSetups).toHaveBeenCalled();
     const names = Object.keys(stored);
     expect(names.length).toBe(1);
