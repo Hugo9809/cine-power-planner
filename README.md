@@ -31,15 +31,14 @@ that future visits work offline and pick up updates automatically.
 
 ## Translations
 
-Documentation is available in multiple languages:
+Documentation is available in multiple languages. The app detects your browser
+language on first load, and you can switch languages in the top right corner:
 
-- [English](README.en.md)
-- [Deutsch](README.de.md)
-- [Español](README.es.md)
-- [Italiano](README.it.md)
-- [Français](README.fr.md)
-
-Choose your preferred language above.
+- 🇬🇧 [English](README.en.md)
+- 🇩🇪 [Deutsch](README.de.md)
+- 🇪🇸 [Español](README.es.md)
+- 🇮🇹 [Italiano](README.it.md)
+- 🇫🇷 [Français](README.fr.md)
 
 ## Recent Updates
 

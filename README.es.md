@@ -5,11 +5,11 @@ Esta herramienta en el navegador ayuda a planificar configuraciones profesionale
 ---
 
 ## 🌍 Idiomas
-- 🇬🇧 English
-- 🇩🇪 Deutsch
+- 🇬🇧 [English](README.en.md)
+- 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 Español (predeterminado si el navegador está en español)
-- 🇮🇹 Italiano
-- 🇫🇷 Français
+- 🇮🇹 [Italiano](README.it.md)
+- 🇫🇷 [Français](README.fr.md)
 
 El idioma puede cambiarse en la esquina superior derecha y se recuerda para la próxima visita.
 
