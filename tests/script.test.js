@@ -1575,6 +1575,31 @@ describe('script.js functions', () => {
     expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
   });
 
+  test('RX-only monitors hidden from monitor select and TX-only monitors excluded from gear list', () => {
+    setupDom();
+    global.devices.monitors = {
+      'Mon TX': { screenSizeInches: 7, wirelessTx: true },
+      'Mon RX': { screenSizeInches: 7, wirelessRX: true },
+      'Mon RXTX': { screenSizeInches: 7, wirelessTx: true, wirelessRX: true },
+      'Mon Plain': { screenSizeInches: 7 }
+    };
+    const script = require('../script.js');
+    const options = Array.from(document.getElementById('monitorSelect').options).map(o => o.value);
+    expect(options).toContain('Mon TX');
+    expect(options).toContain('Mon RXTX');
+    expect(options).toContain('Mon Plain');
+    expect(options).not.toContain('Mon RX');
+    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const selectHtml = html.slice(
+      html.indexOf('<select id="gearListDirectorsMonitor7"'),
+      html.indexOf('</select>', html.indexOf('<select id="gearListDirectorsMonitor7"'))
+    );
+    expect(selectHtml).toContain('Mon RX');
+    expect(selectHtml).toContain('Mon RXTX');
+    expect(selectHtml).toContain('Mon Plain');
+    expect(selectHtml).not.toContain('Mon TX');
+  });
+
   test('motor adds focus monitor and related accessories to gear list', () => {
     const { generateGearListHtml } = script;
     global.devices.video = {
