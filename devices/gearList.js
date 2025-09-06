@@ -383,6 +383,12 @@ const gear = {
         "stages": 3,
         "type": "Swing Away"
       },
+      "ARRI LMB 4x5 15mm LWS Set 3-Stage": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015176",
+        "stages": 3,
+        "type": "Rod based"
+      },
       "ARRI LMB 19mm Studio Rod Adapter": {
         "brand": "ARRI",
         "kNumber": "K2.0013432"

@@ -247,6 +247,7 @@ describe('script.js functions', () => {
         cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
         matteboxes: {
           'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
+          'ARRI LMB 4x5 15mm LWS Set 3-Stage': { type: 'Rod based' },
           'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' }
         },
         chargers: {
@@ -1719,6 +1720,25 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Pro Set');
     expect(itemsRow.textContent).toContain('1x ARRI LMB 19mm Studio Rod Adapter');
     expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
+  });
+
+  test('Rod based mattebox adds LMB 4x5 15mm LWS Set and accessories to gear list', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ mattebox: 'Rod based' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const matteIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    expect(matteIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[matteIdx + 1];
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 15mm LWS Set 3-Stage');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 19mm Studio Rod Adapter');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Side Flags');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB Flag Holders');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Set of Mattes spherical');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB Accessory Adapter');
+    expect(itemsRow.textContent).toContain('1x ARRI Anti-Reflection Frame 4x5.65');
   });
 
   test('Clamp On mattebox adds LMB 4x5 Clamp-On set and accessories to gear list', () => {
