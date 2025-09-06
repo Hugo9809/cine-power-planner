@@ -8360,9 +8360,9 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Paganini set');
         gripItems.push('sand bag');
         gripItems.push('sand bag');
-        gripItems.push('Bodenmatte');
-        gripItems.push('Bodenmatte');
-        gripItems.push('Bodenmatte');
+        gripItems.push('cable mat');
+        gripItems.push('cable mat');
+        gripItems.push('cable mat');
     }
     if (scenarios.includes('Slider') && scenarios.includes('Undersling mode')) {
         gripItems.push('Tango Beam');
