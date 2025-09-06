@@ -3719,6 +3719,9 @@ function attachSelectSearch(selectElem) {
     timer = setTimeout(() => {
       searchStr = "";
     }, 1000);
+    if (typeof timer.unref === 'function') {
+      timer.unref();
+    }
   });
 
   selectElem.addEventListener('blur', () => {
@@ -5768,8 +5771,11 @@ function populateSetupSelect() {
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
 
-// Auto-save a backup project after 10 minutes if none selected
-setTimeout(() => {
+// Auto-save a backup project after 10 minutes if none selected. The timer is
+// long-lived and would keep Node's event loop active in tests or server-side
+// rendering scenarios. Calling `unref()` (when available) allows the process to
+// exit naturally without waiting for the timeout to fire.
+const backupTimer = setTimeout(() => {
   if (!setupSelect || setupSelect.value) return;
   const pad = (n) => String(n).padStart(2, "0");
   const now = new Date();
@@ -5784,6 +5790,9 @@ setTimeout(() => {
   loadedSetupState = getCurrentSetupState();
   checkSetupChanged();
 }, 10 * 60 * 1000);
+if (typeof backupTimer.unref === 'function') {
+  backupTimer.unref();
+}
 
 // Toggle device manager visibility
 if (toggleDeviceBtn) {
@@ -6493,12 +6502,15 @@ if (exportAndRevertBtn) {
       URL.revokeObjectURL(url);
 
       // Give a small delay to ensure download prompt appears before next step
-      setTimeout(() => {
+      const revertTimer = setTimeout(() => {
         // Step 2: Remove saved database and reload page so device files are re-read
         localStorage.removeItem('cameraPowerPlanner_devices');
         alert(texts[currentLang].alertExportAndRevertSuccess);
         location.reload();
       }, 500); // 500ms delay
+      if (typeof revertTimer.unref === 'function') {
+        revertTimer.unref();
+      }
     }
   });
 }
@@ -6775,9 +6787,12 @@ if (copySummaryBtn) {
       ];
       navigator.clipboard.writeText(lines.join('\n')).then(() => {
         copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
-        setTimeout(() => {
+        const resetTimer = setTimeout(() => {
           copySummaryBtn.textContent = texts[currentLang].copySummaryBtn;
         }, 2000);
+        if (typeof resetTimer.unref === 'function') {
+          resetTimer.unref();
+        }
       });
     });
   } else {
