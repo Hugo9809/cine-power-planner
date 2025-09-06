@@ -7349,7 +7349,7 @@ function addArriKNumber(name) {
     return name;
 }
 
-function collectAccessories() {
+function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     const cameraSupport = [];
     const misc = [];
     const monitoringSupport = [
@@ -7377,9 +7377,12 @@ function collectAccessories() {
         if (acc.chargers) {
             let camCount = parseInt(batteryCountElem?.textContent || '', 10);
             if (!Number.isFinite(camCount)) camCount = batterySelect.value ? 1 : 0;
-            const monitorElem = document.getElementById('monitoringBatteryCount');
-            let monCount = monitorElem ? parseInt(monitorElem.textContent, 10) : 0;
-            if (!Number.isFinite(monCount)) monCount = 0;
+            let monCount = 0;
+            if (Array.isArray(videoDistPrefs)) {
+                const handheldCount = videoDistPrefs.filter(v => v.endsWith('Monitor 7" handheld')).length;
+                monCount += handheldCount * 3;
+            }
+            if (hasMotor) monCount += 3;
             const total = camCount + monCount;
             if (total > 0) {
                 const counts = suggestChargerCounts(total);
@@ -7566,12 +7569,15 @@ function generateGearListHtml(info = {}) {
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
     };
     const hasMotor = selectedNames.motors.length > 0;
+    const videoDistPrefs = info.videoDistribution
+        ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
     if (["Arri Alexa Mini", "Arri Amira"].includes(selectedNames.camera)) {
         selectedNames.viewfinder = "ARRI K2.75004.0 MVF-1 Viewfinder";
     } else {
         selectedNames.viewfinder = "";
     }
-    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories();
+    const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories({ hasMotor, videoDistPrefs });
     for (const key of Object.keys(selectedNames)) {
         if (Array.isArray(selectedNames[key])) {
             selectedNames[key] = selectedNames[key].map(addArriKNumber);
@@ -7615,9 +7621,6 @@ function generateGearListHtml(info = {}) {
         : [];
     const monitoringSettings = info.monitoringSettings
         ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
-    const videoDistPrefs = info.videoDistribution
-        ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
         : [];
     const selectedLensNames = info.lenses
         ? info.lenses.split(',').map(s => addArriKNumber(s.trim())).filter(Boolean)

@@ -632,10 +632,6 @@ describe('script.js functions', () => {
     addOpt('batterySelect', 'BattA');
 
     document.getElementById('batteryCount').textContent = '9';
-    const monElem = document.createElement('span');
-    monElem.id = 'monitoringBatteryCount';
-    monElem.textContent = '0';
-    document.body.appendChild(monElem);
 
     const html = script.generateGearListHtml();
     const wrap = document.createElement('div');
@@ -646,6 +642,26 @@ describe('script.js functions', () => {
     const itemsRow = rows[chargersIndex + 1];
     expect(itemsRow.textContent).toContain('2x Quad V-Mount Charger');
     expect(itemsRow.textContent).toContain('1x Dual V-Mount Charger');
+  });
+
+  test('adds monitoring batteries to charger calculation', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    document.getElementById('batteryCount').textContent = '9';
+    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const chargersIndex = rows.findIndex(r => r.textContent === 'Chargers');
+    expect(chargersIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[chargersIndex + 1];
+    expect(itemsRow.textContent).toContain('3x Quad V-Mount Charger');
+    expect(itemsRow.textContent).not.toContain('Dual V-Mount Charger');
   });
 
   test('shows runtime average note when more than four user entries', () => {
