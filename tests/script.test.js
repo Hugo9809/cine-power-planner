@@ -1412,7 +1412,7 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('2x Mini Magic Arm');
     expect(rigSection).toContain('4x Cine Quick Release');
     expect(rigSection).toContain('1x SmallRig - Super lightweight 15mm RailBlock');
-    expect(rigSection).toContain('3x stud 5/8" with male 3/8" and 1/4"');
+    expect(rigSection).toContain('3x spigot with male 3/8" and 1/4"');
     expect(rigSection).toContain('2x D-Tap Splitter');
   });
 
@@ -1473,9 +1473,9 @@ describe('script.js functions', () => {
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Directors handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('2x Spigot (Directors handheld)');
+    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (Directors handheld)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
-    expect(gripSection).not.toContain('Spigot');
+    expect(gripSection).not.toContain('spigot with male 3/8" and 1/4"');
     expect(html).toContain('3x Tennisball');
     expect(html).toContain('2x Ultraslim BNC 0.3 m (Directors handheld)');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld)');
@@ -1500,7 +1500,7 @@ describe('script.js functions', () => {
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Gaffers handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('2x Spigot (Gaffers handheld)');
+    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (Gaffers handheld)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Gaffers handheld)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Gaffers handheld)');
@@ -1519,7 +1519,7 @@ describe('script.js functions', () => {
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (DoP handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('2x Spigot (DoP handheld)');
+    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (DoP handheld)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m (DoP handheld)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (DoP handheld)');
@@ -2148,7 +2148,7 @@ describe('script.js functions', () => {
     expect(text).toContain('2x Manfrotto 244N Friktion Arm');
     expect(text).toContain('1x Super Clamp');
     expect(text).toContain('1x Gobo Head');
-    expect(text).toContain('1x spigot');
+    expect(text).toContain('1x spigot with male 3/8" and 1/4"');
   });
 
   test('Gimbal selector adds specified devices', () => {
@@ -2236,11 +2236,11 @@ describe('script.js functions', () => {
     expect(miscText).toContain('1x Umbrella for Focus Monitor');
     expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
     expect(gripText).toContain('2x Super Clamp');
-    expect(rigText).toContain('1x Spigot');
+    expect(rigText).toContain('4x spigot with male 3/8" and 1/4"');
     expect(gripText).not.toContain('Large Umbrella');
     expect(gripText).not.toContain('Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
     expect(miscText).not.toContain('Super Clamp');
-    expect(miscText).not.toContain('Spigot');
+    expect(miscText).not.toContain('spigot with male 3/8" and 1/4"');
     const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
     const consumText = rows[consumIdx + 1].textContent;
     expect(consumText).toContain('2x CapIt Large');
