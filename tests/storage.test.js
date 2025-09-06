@@ -203,6 +203,7 @@ describe('setup storage', () => {
 describe('session state storage', () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
   });
 
   test('saveSessionState stores JSON in localStorage', () => {
@@ -219,6 +220,14 @@ describe('session state storage', () => {
 
   test('loadSessionState returns null when none', () => {
     expect(loadSessionState()).toBeNull();
+  });
+
+  test('loadSessionState migrates data from sessionStorage', () => {
+    const state = { camera: 'CamA' };
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+    expect(loadSessionState()).toEqual(state);
+    expect(localStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(state));
+    expect(sessionStorage.getItem(SESSION_KEY)).toBeNull();
   });
 });
 
