@@ -1638,10 +1638,44 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListDirectorsMonitor15"');
     expect(html).toContain('Directors Monitor');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('D-Tap to Lemo-2-pin Cable 0,5m');
-    expect(msSection).toContain('Directors 15-21"');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x Directors 15-21", 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC 0.5 m (1x Directors 15-21", 1x Spare)');
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('D-Tap Splitter (1x Directors 15-21"');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Directors 15-21")');
+    expect(gripSection).toContain('Avenger C590 Conka Bonka Stativ-Verlängerungen Set (1x Directors 15-21")');
+    expect(gripSection).toContain('Impact Baby to Junior Receiver Adapter (1x Directors 15-21")');
+  });
+
+  test('Combo 15-21" monitor adds dropdown and accessories', () => {
+    const { generateGearListHtml } = script;
+    global.devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      Other: { screenSizeInches: 17 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Combo Monitor 15-21"' });
+    expect(html).toContain('<select id="gearListComboMonitor15"');
+    expect(html).toContain('Combo Monitor');
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x Combo 15-21", 1x Spare)');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Combo 15-21")');
+  });
+
+  test('DoP 15-21" monitor adds dropdown and accessories', () => {
+    const { generateGearListHtml } = script;
+    global.devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      Other: { screenSizeInches: 17 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'DoP Monitor 15-21"' });
+    expect(html).toContain('<select id="gearListDopMonitor15"');
+    expect(html).toContain('DoP Monitor');
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x DoP 15-21", 1x Spare)');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x DoP 15-21")');
   });
 
   test('multiple handheld monitors merge grip items', () => {
