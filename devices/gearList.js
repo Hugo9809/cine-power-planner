@@ -143,6 +143,103 @@ const gear = {
         { "type": "3G-SDI" }
       ]
     },
+    "SmallHD 1303 HDR": {
+      "brand": "SmallHD",
+      "model": "1303 HDR",
+      "screenSizeInches": 13,
+      "brightnessNits": 1500,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "XLR" },
+          { "type": "D-Tap" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI" },
+        { "type": "HDMI" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" },
+        { "type": "HDMI" }
+      ]
+    },
+    "SmallHD Cine 13 UHD 4K": {
+      "brand": "SmallHD",
+      "model": "Cine 13 UHD 4K",
+      "screenSizeInches": 13.3,
+      "brightnessNits": 1500,
+      "powerDrawWatts": 36.7,
+      "power": {
+        "input": [
+          { "type": "XLR 4-pin" },
+          { "type": "V-Mount" },
+          { "type": "Gold Mount" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "12G-SDI" },
+        { "type": "HDMI" }
+      ],
+      "videoOutputs": [
+        { "type": "12G-SDI" },
+        { "type": "HDMI" }
+      ]
+    },
+    "SEETEC P133-9HSD": {
+      "brand": "SEETEC",
+      "model": "P133-9HSD",
+      "screenSizeInches": 13.3,
+      "brightnessNits": 400,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "DC" },
+          { "type": "Battery Plate" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI" },
+        { "type": "HDMI" },
+        { "type": "Composite" },
+        { "type": "DVI-I" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI" },
+        { "type": "HDMI" }
+      ]
+    },
+    "Tarion BM120-4KS": {
+      "brand": "Tarion",
+      "model": "BM120-4KS",
+      "screenSizeInches": 12.5,
+      "brightnessNits": null,
+      "powerDrawWatts": 23,
+      "power": {
+        "input": [
+          { "voltageRange": "10-24", "type": "DC" },
+          { "type": "V-Mount" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "SDI" },
+        { "type": "VGA" }
+      ],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "SDI" },
+        { "type": "VGA" }
+      ]
+    },
     "None": {
       "powerDrawWatts": 0,
       "power": {
