@@ -1372,13 +1372,13 @@ describe('script.js functions', () => {
       expect(msSection).toContain('1x BNC Cable 10 m');
       expect(msSection).toContain('1x BNC Drum 25 m');
       expect(msSection).toContain('4x BNC Connector');
-      expect(msSection).toContain('1x Antenna 5,8GHz 5dBi Long (spare)');
+      expect(msSection).toContain('1x Antenna 5,8GHz 5dBi Long (1x Spare)');
       const powerSection = html.slice(html.indexOf('Power'), html.indexOf('Grip'));
       expect(powerSection).toContain('1x Power Cable Drum 25-50 m');
       expect(powerSection).toContain('2x Power Cable 10 m');
       expect(powerSection).toContain('2x Power Cable 5 m');
       expect(powerSection).toContain('3x Power Strip');
-      expect(powerSection).toContain('3x PRCD-S (Portable Residual Current Device-Safety)');
+      expect(powerSection).toContain('3x PRCD-S (1x Portable Residual Current Device-Safety, 2x Spare)');
       expect(powerSection).toContain('3x Power Three Way Splitter');
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
       expect(miscSection).not.toContain('BNC Cable 0.5 m');
@@ -1391,13 +1391,13 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('Power Cable 10 m');
       expect(miscSection).not.toContain('Power Cable 5 m');
       expect(miscSection).not.toContain('Power Strip');
-      expect(miscSection).not.toContain('PRCD-S (Portable Residual Current Device-Safety)');
+      expect(miscSection).not.toContain('PRCD-S (1x Portable Residual Current Device-Safety, 2x Spare)');
       expect(miscSection).not.toContain('Power Three Way Splitter');
       expect(html).not.toContain('BNC SDI Cable');
-        expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Focus)');
-        expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
-        expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Focus)');
-        expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
+        expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+        expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
+        expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+        expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       expect(html).not.toContain('Ultraslim BNC 0.5 m');
       expect(html).not.toContain('HDMI Cable');
     });
@@ -1470,21 +1470,21 @@ describe('script.js functions', () => {
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V98micro');
-    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Directors handheld)');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Directors handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (Directors handheld)');
+    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (1x Directors handheld, 4x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).not.toContain('spigot with male 3/8" and 1/4"');
     expect(html).toContain('3x Tennisball');
-    expect(html).toContain('2x Ultraslim BNC 0.3 m (Directors handheld)');
-    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld)');
+    expect(html).toContain('2x Ultraslim BNC 0.3 m (1x Directors handheld, 1x Spare)');
+    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Directors handheld)');
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld)');
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Directors handheld, 1x Spare)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Directors handheld)');
-  expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld)');
+    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Directors handheld, 1x Spare)');
+  expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
   });
 
   test('Gaffers handheld monitor adds dropdown, batteries and grip items', () => {
@@ -1497,13 +1497,13 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListGaffersMonitor7"');
     expect(html).toContain('Gaffer Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
-    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Gaffers handheld)');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Gaffers handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Gaffers handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (Gaffers handheld)');
+    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (1x Gaffers handheld, 4x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Gaffers handheld)');
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Gaffers handheld)');
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Gaffers handheld, 1x Spare)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Gaffers handheld, 1x Spare)');
   });
 
   test('DoP handheld monitor adds dropdown, batteries and grip items', () => {
@@ -1516,13 +1516,13 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListDopMonitor7"');
     expect(html).toContain('DoP Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
-    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (DoP handheld)');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x DoP handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x DoP handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (DoP handheld)');
+    expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (1x DoP handheld, 4x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (DoP handheld)');
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (DoP handheld)');
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x DoP handheld, 1x Spare)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x DoP handheld, 1x Spare)');
   });
 
   test('multiple handheld monitors merge grip items', () => {
@@ -1533,10 +1533,10 @@ describe('script.js functions', () => {
     });
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain(
-      '3x Avenger C-Stand Sliding Leg 20" (Directors handheld, Gaffers handheld, DoP handheld)'
+      '3x Avenger C-Stand Sliding Leg 20" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
     );
     expect(gripSection).toContain(
-      '3x Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld, Gaffers handheld, DoP handheld)'
+      '3x Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
     );
   });
 
@@ -1563,16 +1563,16 @@ describe('script.js functions', () => {
         'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
     });
     expect(html).toContain(
-      '4x <strong>Wireless Receiver</strong> - VidA RX (Directors handheld, Gaffers handheld, DoP handheld, Focus)'
+      '4x <strong>Wireless Receiver</strong> - VidA RX (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus)'
     );
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain(
-      '6x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld, Gaffers handheld, DoP handheld)'
+      '6x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 3x Spare)'
     );
     expect(msSection).toContain(
-      '8x Ultraslim BNC 0.3 m (Directors handheld, Gaffers handheld, DoP handheld, Focus)'
+      '8x Ultraslim BNC 0.3 m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus, 4x Spare)'
     );
-    expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
+    expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
   });
 
   test('RX-only monitors hidden from monitor select and TX-only monitors excluded from gear list', () => {
@@ -1621,16 +1621,16 @@ describe('script.js functions', () => {
     expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V150micro');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Focus)');
-    expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+    expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Focus)');
-      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
-      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (Focus)');
-      expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Focus)');
-      expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
+      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
+      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (1x Focus)');
+      expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Focus)');
+      expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Focus)');
       expect(html).toContain('3x Tennisball');
-    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
+    expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (2x Spare)');
   });
 
   test('zoom remote adds second motor and controller for Arri brand', () => {
@@ -1652,7 +1652,7 @@ describe('script.js functions', () => {
     expect(c1.value).toBe('Arri Master Grip (single unit)');
     const html = generateGearListHtml();
     expect(html).toContain('Arri Cforce Mini');
-    expect(html).toContain('Arri Master Grip (single unit)');
+    expect(html).toContain('Arri Master Grip (1x single unit)');
   });
 
   test('zoom remote adds second motor and controller for Tilta brand', () => {
@@ -1673,7 +1673,7 @@ describe('script.js functions', () => {
     expect(c1.value).toBe('Tilta Nucleus-M Hand Grip (single)');
     const html = generateGearListHtml();
     expect(html).toContain('Tilta Nucleus M');
-    expect(html).toContain('Tilta Nucleus-M Hand Grip (single)');
+    expect(html).toContain('Tilta Nucleus-M Hand Grip (1x single)');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {
@@ -1695,10 +1695,10 @@ describe('script.js functions', () => {
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
     expect(html).toContain(
-      '2x <strong>Wireless Receiver</strong> - VidA RX (Directors handheld, Focus)'
+      '2x <strong>Wireless Receiver</strong> - VidA RX (1x Directors handheld, 1x Focus)'
     );
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
-    expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (spare)');
+    expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (3x Spare)');
   });
 
   test('gear list includes battery count in camera batteries row', () => {
@@ -1802,7 +1802,7 @@ describe('script.js functions', () => {
     const itemsRow = rows[matteIdx + 1];
     expect(itemsRow.textContent).toContain('1x Schulz Sprayoff Micro');
     expect(itemsRow.textContent).toContain('2x Fischer RS to D-Tap cable 0,5m');
-    expect(itemsRow.textContent).toContain('1x Spare Disc (Schulz Sprayoff Micro)');
+    expect(itemsRow.textContent).toContain('1x Spare Disc (1x Schulz Sprayoff Micro)');
   });
 
   test('Swing Away mattebox adds LMB 4x5 Pro Set and accessories to gear list', () => {
@@ -1848,7 +1848,7 @@ describe('script.js functions', () => {
     const matteIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
     expect(matteIdx).toBeGreaterThanOrEqual(0);
     const itemsRow = rows[matteIdx + 1];
-    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Clamp-On (3-Stage)');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Clamp-On (1x 3-Stage)');
     expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
     expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Side Flags');
     expect(itemsRow.textContent).toContain('1x ARRI LMB Flag Holders');
@@ -2036,8 +2036,8 @@ describe('script.js functions', () => {
     const cartsIdx = rows.findIndex(r => r.textContent === 'Carts and Transportation');
     const itemsText = rows[cartsIdx + 1].textContent;
     expect(itemsText).toContain('1x Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung');
-    expect(itemsText).toContain('10x Securing Straps (25mm wide)');
-    expect(itemsText).toContain('1x Loading Ramp (pair, 420kg)');
+    expect(itemsText).toContain('10x Securing Straps (1x 25mm wide, 9x Spare)');
+    expect(itemsText).toContain('1x Loading Ramp (1x pair, 420kg)');
     expect(itemsText).toContain('20x Airliner Ösen');
   });
 
@@ -2120,7 +2120,7 @@ describe('script.js functions', () => {
     expect(text).toContain('1x 100mm bowl Standard Tripod + Mid-Level Spreader');
     expect(text).toContain('1x 100mm bowl Frog Tripod + Mid-Level Spreader');
     expect(text).toContain('1x 100mm bowl Hi-Head');
-    expect(text).toContain('2x Sandsack (for Frog Tripod, for Hi-Head)');
+    expect(text).toContain('2x Sandsack (1x for Frog Tripod, 1x for Hi-Head)');
   });
 
   test('Easyrig scenario adds stabiliser with dropdown options', () => {
