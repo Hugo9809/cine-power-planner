@@ -701,6 +701,37 @@ button:disabled {
   margin: 3px 0;
 }
 
+/* Power diagram */
+#powerDiagram {
+  max-width: 300px;
+  margin: 10px 0;
+}
+
+.power-bar {
+  position: relative;
+  display: flex;
+  height: 20px;
+  border: 1px solid #ccc;
+  overflow: visible;
+}
+
+.power-bar .segment {
+  height: 100%;
+  flex: 0 0 auto;
+}
+
+.power-bar .camera { background-color: #4caf50; }
+.power-bar .monitor { background-color: #2196f3; }
+.power-bar .video { background-color: #ffc107; }
+.power-bar .motors { background-color: #9c27b0; }
+.power-bar .controllers { background-color: #ff5722; }
+.power-bar .distance { background-color: #795548; }
+
+#maxPowerText {
+  margin-top: 4px;
+  font-size: 0.9em;
+}
+
 /* Project diagram */
 #setupDiagram {
   text-align: center;

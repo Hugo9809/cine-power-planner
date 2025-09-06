@@ -1692,6 +1692,32 @@ const batteryCountElem    = document.getElementById("batteryCount");
 const pinWarnElem         = document.getElementById("pinWarning");
 const dtapWarnElem        = document.getElementById("dtapWarning");
 const hotswapWarnElem     = document.getElementById("hotswapWarning");
+const powerDiagramElem    = document.getElementById("powerDiagram");
+const powerDiagramBarElem = document.getElementById("powerDiagramBar");
+const maxPowerTextElem    = document.getElementById("maxPowerText");
+
+function drawPowerDiagram(availableWatt, segments) {
+  if (!powerDiagramElem || !powerDiagramBarElem || !maxPowerTextElem) return;
+  if (!availableWatt || availableWatt <= 0) {
+    powerDiagramElem.classList.add("hidden");
+    powerDiagramBarElem.innerHTML = "";
+    maxPowerTextElem.textContent = "";
+    return;
+  }
+  powerDiagramElem.classList.remove("hidden");
+  powerDiagramBarElem.innerHTML = "";
+  const MAX_WIDTH = 300;
+  segments.forEach(seg => {
+    const width = (seg.power / availableWatt) * MAX_WIDTH;
+    if (width <= 0) return;
+    const div = document.createElement("div");
+    div.className = `segment ${seg.className}`;
+    div.style.width = `${width}px`;
+    div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
+    powerDiagramBarElem.appendChild(div);
+  });
+  maxPowerTextElem.textContent = `${texts[currentLang].availablePowerLabel} ${availableWatt.toFixed(0)} W`;
+}
 
 const setupSelect     = document.getElementById("setupSelect");
 const setupNameInput  = document.getElementById("setupName");
@@ -4020,6 +4046,15 @@ function updateCalculations() {
   const totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
   totalPowerElem.textContent = totalWatt.toFixed(1);
 
+  const segments = [
+    { power: cameraW, className: "camera", label: texts[currentLang].cameraLabel },
+    { power: monitorW, className: "monitor", label: texts[currentLang].monitorLabel },
+    { power: videoW, className: "video", label: texts[currentLang].videoLabel },
+    { power: motorsW, className: "motors", label: texts[currentLang].fizMotorsLabel },
+    { power: controllersW, className: "controllers", label: texts[currentLang].fizControllersLabel },
+    { power: distanceW, className: "distance", label: texts[currentLang].distanceLabel }
+  ].filter(s => s.power > 0);
+
   // Update breakdown by category
   breakdownListElem.innerHTML = "";
   if (cameraW > 0) {
@@ -4100,6 +4135,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     hotswapWarnElem.style.color = "";
   }
   lastRuntimeHours = null;
+  drawPowerDiagram(0, segments);
 } else {
     const battData = devices.batteries[battery];
     const hsName = hotswapSelect.value;
@@ -4120,10 +4156,12 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       }
     } else {
       if (hotswapWarnElem) {
-        hotswapWarnElem.textContent = "";
-        hotswapWarnElem.style.color = "";
-      }
+      hotswapWarnElem.textContent = "";
+      hotswapWarnElem.style.color = "";
     }
+  }
+    const availableWatt = maxPinA * lowV;
+    drawPowerDiagram(availableWatt, segments);
     totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
     totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
     if (totalWatt === 0) {
