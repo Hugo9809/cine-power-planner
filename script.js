@@ -8085,6 +8085,10 @@ function generateGearListHtml(info = {}) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
         monitoringBatteryItems.push(bebob150, bebob150, bebob150);
     }
+    const bebob290 = Object.keys(devices.batteries || {}).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
+    largeMonitorPrefs.forEach(() => {
+        monitoringBatteryItems.push(bebob290, bebob290);
+    });
     addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';

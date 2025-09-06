@@ -1965,6 +1965,19 @@ describe('script.js functions', () => {
     expect(battSection).toContain('1x Hotswap Plate B-Mount');
   });
 
+  test('gear list adds 2x Bebob V290RM-Cine for each large monitor', () => {
+    devices.batteries['Bebob V290RM-Cine'] = {
+      capacity: 285,
+      pinA: 20,
+      dtapA: 5,
+      mount_type: 'V-Mount'
+    };
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 15-21"' });
+    const battSection = html.slice(html.indexOf('Monitoring Batteries'), html.indexOf('Chargers'));
+    expect(battSection).toContain('2x Bebob V290RM-Cine');
+  });
+
   test('gear list lists media cards and USB-C readers', () => {
     const { generateGearListHtml } = script;
     devices.cameras.CamA.recordingMedia = [{ type: 'CFast 2.0' }];
