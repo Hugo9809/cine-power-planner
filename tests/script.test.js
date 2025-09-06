@@ -2284,7 +2284,7 @@ describe('script.js functions', () => {
     expect(text).toContain('2x Avenger Combo Stand 10 A1010CS 64-100 cm black');
     expect(text).toContain('2x Avenger Combo Stand 20 A1020B 110-198 cm black');
     expect(text).toContain('2x Apple Box Set / Bühnenkisten Set');
-    expect(text).toContain('1x Satz Paganinis');
+    expect(text).toContain('1x Paganini set');
     expect(text).toContain('2x sand bag');
     expect(text).toContain('3x Bodenmatte');
     expect(text).toContain('12x Tennisball');
