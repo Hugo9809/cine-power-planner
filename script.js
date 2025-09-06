@@ -9497,7 +9497,6 @@ function populateLensDropdown() {
   const lensData = devices && devices.lenses;
 
   if (!lensData || Object.keys(lensData).length === 0) {
-    console.warn('No lens data available to populate dropdown');
     return;
   }
 
