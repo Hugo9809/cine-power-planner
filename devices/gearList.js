@@ -395,14 +395,34 @@ const gear = {
           "LMB-6"
         ]
       },
-      "ARRI Diopter Frame 138mm": {
+      "ARRI LMB 4x5 Side Flags": {
         "brand": "ARRI",
-        "kNumber": "K2.0013740",
-        "diameterMm": 138
+        "kNumber": "K2.0013750"
+      },
+      "ARRI LMB Flag Holders": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013825"
+      },
+      "ARRI LMB 4x5 Set of Mattes spherical": {
+        "brand": "ARRI",
+        "kNumber": "K2.0000069"
       },
       "ARRI LMB Accessory Adapter": {
         "brand": "ARRI",
         "kNumber": "K2.0013014"
+      },
+      "ARRI LMB 4x5 Clamp Adapter Set Pro": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015133"
+      },
+      "ARRI Anti-Reflection Frame 4x5.65": {
+        "brand": "ARRI",
+        "kNumber": "K2.0008133"
+      },
+      "ARRI Diopter Frame 138mm": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013740",
+        "diameterMm": 138
       }
     },
     "filters": {
