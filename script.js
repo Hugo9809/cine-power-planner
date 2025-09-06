@@ -1645,7 +1645,6 @@ const projectFieldIcons = {
   viewfinderExtension: '🔭',
   gimbal: '🌀',
   monitoringSupport: '🧰',
-  monitoring: '🖥️',
   monitoringConfiguration: '🎛️',
   monitorUserButtons: '🔘',
   cameraUserButtons: '🔘',
@@ -8061,13 +8060,11 @@ function generateGearListHtml(info = {}) {
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
-    if (videoDistPrefs.length) {
-        projectInfo.monitoring = videoDistPrefs.join(', ');
-    }
     if (!info.monitoringConfiguration || info.monitoringConfiguration === 'Viewfinder and Onboard') {
         delete projectInfo.monitoringConfiguration;
     }
     delete projectInfo.monitoringSettings;
+    delete projectInfo.monitoring;
     delete projectInfo.videoDistribution;
     delete projectInfo.tripodHeadBrand;
     delete projectInfo.tripodBowl;
@@ -8088,7 +8085,6 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: 'Required Scenarios',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
-        monitoring: 'Monitoring',
         monitoringConfiguration: 'Monitoring configuration',
         monitorUserButtons: 'Onboard Monitor User Buttons',
         cameraUserButtons: 'Camera User Buttons',

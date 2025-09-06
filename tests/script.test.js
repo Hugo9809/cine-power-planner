@@ -2951,11 +2951,11 @@ describe('script.js functions', () => {
     expect(customHtml).toContain('<span class="req-value">Onboard Only</span>');
   });
 
-  test('iOS video option appears under monitoring in project requirements', () => {
+  test('iOS video option is not included in project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ videoDistribution: 'IOS Video (Teradek Serv + Link)' });
-    expect(html).toContain('<span class="req-label">Monitoring</span>');
-    expect(html).toContain('<span class="req-value">IOS Video (Teradek Serv + Link)</span>');
+    expect(html).not.toContain('<span class="req-label">Monitoring</span>');
+    expect(html).not.toContain('<span class="req-value">IOS Video (Teradek Serv + Link)</span>');
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
   });
 
