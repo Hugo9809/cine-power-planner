@@ -199,6 +199,21 @@ test('restores project requirements from legacy object storage', () => {
   expect(projOut.innerHTML).toContain('Project Requirements');
 });
 
+test('restores project requirements form from saved gear list', () => {
+  setupDom(false);
+  global.loadSessionState = jest.fn(() => null);
+  global.saveSessionState = jest.fn();
+  const stored = { projectInfo: { projectName: 'Proj' }, gearList: '<h2>Proj</h2>' };
+  global.loadGearList = jest.fn(() => stored);
+  global.saveGearList = jest.fn();
+  global.deleteGearList = jest.fn();
+  require('../translations.js');
+  const script = require('../script.js');
+  script.setLanguage('en');
+  const projName = document.getElementById('projectName');
+  expect(projName.value).toBe('Proj');
+});
+
 describe('auto backup', () => {
   test('creates backup after 5 minutes when no project selected', () => {
     setupDom(false);
@@ -584,8 +599,8 @@ describe('script.js functions', () => {
     const cageSel = gear.querySelector('#gearListCage');
     cageSel.value = 'Cage2';
     script.saveCurrentGearList();
-    const savedHtml = global.saveGearList.mock.calls[0][0];
-    expect(savedHtml).toContain('<option value="Cage2" selected');
+    const saved = global.saveGearList.mock.calls[0][0];
+    expect(saved.gearList).toContain('<option value="Cage2" selected');
   });
 
   test('project requirements are saved with gear list', () => {
@@ -597,9 +612,39 @@ describe('script.js functions', () => {
     gear.innerHTML = '<h2>Proj</h2><h3>Gear List</h3><table class="gear-table"></table>';
     gear.classList.remove('hidden');
     script.saveCurrentGearList();
-    const savedHtml = global.saveGearList.mock.calls[0][0];
-    expect(savedHtml).toContain('<div class="requirements-grid">');
-    expect(savedHtml).toContain('<table class="gear-table">');
+    const saved = global.saveGearList.mock.calls[0][0];
+    expect(saved.gearList).toContain('<div class="requirements-grid">');
+    expect(saved.gearList).toContain('<table class="gear-table">');
+  });
+
+  test('project requirements form data saved with gear list', () => {
+    global.saveGearList = jest.fn();
+    document.getElementById('projectName').value = 'Proj';
+    const codecSel = document.getElementById('codec');
+    codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
+    codecSel.value = 'ProRes';
+    const form = document.getElementById('projectForm');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const saved = global.saveGearList.mock.calls[0][0];
+    expect(saved.projectInfo.projectName).toBe('Proj');
+    expect(saved.projectInfo.codec).toBe('ProRes');
+  });
+
+  test('project requirements form saved with project', () => {
+    const stored = {};
+    global.saveSetups = jest.fn((data) => Object.assign(stored, data));
+    global.saveGearList = jest.fn();
+    document.getElementById('projectName').value = 'Proj';
+    const codecSel = document.getElementById('codec');
+    codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
+    codecSel.value = 'ProRes';
+    const form = document.getElementById('projectForm');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'Setup1';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('saveSetupBtn').click();
+    expect(stored.Setup1.projectInfo.codec).toBe('ProRes');
   });
 
   test('changing device selection triggers gear list save', () => {
