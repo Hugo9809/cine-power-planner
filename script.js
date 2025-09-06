@@ -8320,7 +8320,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Avenger Combo Stand 20 A1020B 110-198 cm black');
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Apple Box Set / Bühnenkisten Set');
-        gripItems.push('Satz Paganinis');
+        gripItems.push('Paganini set');
         gripItems.push('sand bag');
         gripItems.push('sand bag');
         gripItems.push('Bodenmatte');
