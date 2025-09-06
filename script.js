@@ -1770,6 +1770,8 @@ const existingDevicesHeading = document.getElementById("existingDevicesHeading")
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
+const powerDiagramElem = document.getElementById("powerDiagram");
+const powerColors = ['#4caf50', '#2196f3', '#ffc107', '#e91e63', '#9c27b0', '#009688'];
 const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
@@ -3920,6 +3922,31 @@ function renderTemperatureNote(baseHours) {
   container.innerHTML = html;
 }
 
+function renderPowerDiagram(items, maxAvailable) {
+  if (!powerDiagramElem) return;
+  powerDiagramElem.innerHTML = '';
+  const total = items.reduce((sum, it) => sum + it.value, 0);
+  const max = Math.max(maxAvailable, total);
+  const bar = document.createElement('div');
+  bar.className = 'power-bar';
+  powerDiagramElem.appendChild(bar);
+  items.forEach(it => {
+    if (it.value <= 0) return;
+    const seg = document.createElement('div');
+    seg.className = 'power-segment';
+    seg.style.background = it.color;
+    seg.style.width = max ? `${(it.value / max) * 100}%` : '0';
+    seg.setAttribute('title', `${it.label}: ${it.value.toFixed(1)} W`);
+    bar.appendChild(seg);
+  });
+  if (maxAvailable > 0) {
+    const line = document.createElement('div');
+    line.className = 'power-capacity-line';
+    line.style.left = `${(maxAvailable / max) * 100}%`;
+    powerDiagramElem.appendChild(line);
+  }
+}
+
 // Calculation function to update results and warnings
 function updateCalculations() {
   // Gather selected values
@@ -3930,6 +3957,7 @@ function updateCalculations() {
   const controllers = controllerSelects.map(sel => sel.value);
   const distance    = distanceSelect.value;
   const battery     = batterySelect.value;
+  const battData    = devices.batteries[battery];
 
   // Calculate total power consumption (W)
   let cameraW = 0;
@@ -4002,11 +4030,20 @@ function updateCalculations() {
     li.innerHTML = `<strong>${texts[currentLang].distanceLabel}</strong> ${distanceW.toFixed(1)} W`;
     breakdownListElem.appendChild(li);
   }
-
-  // Calculate currents depending on battery type
   const bMountCam = getSelectedPlate() === 'B-Mount';
   let highV = bMountCam ? 33.6 : 14.4;
   let lowV = bMountCam ? 21.6 : 12.0;
+  const maxAvailableW = battData ? battData.pinA * highV : 0;
+  renderPowerDiagram([
+    { label: texts[currentLang].cameraLabel, value: cameraW, color: powerColors[0] },
+    { label: texts[currentLang].monitorLabel, value: monitorW, color: powerColors[1] },
+    { label: texts[currentLang].videoLabel, value: videoW, color: powerColors[2] },
+    { label: texts[currentLang].fizMotorsLabel, value: motorsW, color: powerColors[3] },
+    { label: texts[currentLang].fizControllersLabel, value: controllersW, color: powerColors[4] },
+    { label: texts[currentLang].distanceLabel, value: distanceW, color: powerColors[5] },
+  ], maxAvailableW);
+
+  // Calculate currents depending on battery type
   let totalCurrentHigh = 0;
   let totalCurrentLow = 0;
   if (totalWatt > 0) {
@@ -4038,7 +4075,7 @@ function updateCalculations() {
 
 // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
 let hours = null;
-if (!battery || battery === "None" || !devices.batteries[battery]) {
+if (!battery || battery === "None" || !battData) {
   batteryLifeElem.textContent = "–";
   batteryCountElem.textContent = "–";
   pinWarnElem.textContent = "";
@@ -4047,7 +4084,6 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   dtapWarnElem.style.color = "";
   lastRuntimeHours = null;
 } else {
-    const battData = devices.batteries[battery];
     const capacityWh = battData.capacity;
     const maxPinA = battData.pinA;
     const maxDtapA = battData.dtapA;

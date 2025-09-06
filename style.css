@@ -697,6 +697,30 @@ button:disabled {
   margin: 3px 0;
 }
 
+/* Power usage diagram */
+#powerDiagram {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 24px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+}
+#powerDiagram .power-bar {
+  height: 100%;
+  display: flex;
+}
+#powerDiagram .power-segment {
+  height: 100%;
+}
+#powerDiagram .power-capacity-line {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #000;
+}
+
 /* Project diagram */
 #setupDiagram {
   text-align: center;
