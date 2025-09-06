@@ -301,6 +301,19 @@ function normalizeCollection(collection, fn) {
 }
 
 if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(
+      'Usage: node unifyPorts.js [--help]\n' +
+        '\nNormalizes connector and port definitions in data.js and overwrites the file.\n' +
+        '\nExamples:\n' +
+        '  node unifyPorts.js\n' +
+        '  node unifyPorts.js --help\n' +
+        '\nOptions:\n' +
+        '  -h, --help  Show this help message.'
+    );
+    process.exit(0);
+  }
   normalizeCollection(devices.cameras, normalizeCamera);
   normalizeCollection(devices.monitors, normalizeMonitor);
   normalizeCollection(devices.video, normalizeVideoDevice);
