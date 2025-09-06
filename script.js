@@ -7305,6 +7305,40 @@ function suggestChargerCounts(total) {
     return { quad, dual, single };
 }
 
+function addArriKNumber(name) {
+    if (!name) return name;
+    const d = typeof devices !== 'undefined' ? devices : {};
+    const collections = [
+        d.viewfinders,
+        d.directorMonitors,
+        d.iosVideo,
+        d.videoAssist,
+        d.media,
+        d.lenses
+    ];
+    for (const col of collections) {
+        if (col && col[name]) {
+            const item = col[name];
+            if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
+                return name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `);
+            }
+            return name;
+        }
+    }
+    if (d.accessories) {
+        for (const col of Object.values(d.accessories)) {
+            if (col && col[name]) {
+                const item = col[name];
+                if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
+                    return name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `);
+                }
+                return name;
+            }
+        }
+    }
+    return name;
+}
+
 function collectAccessories() {
     const cameraSupport = [];
     const misc = [];
@@ -7408,14 +7442,14 @@ function collectAccessories() {
         });
     });
 
-    const miscUnique = [...new Set(misc)];
-    const monitoringSupportUnique = [...new Set(monitoringSupport)];
-    const riggingUnique = [...new Set(rigging)];
+    const miscUnique = [...new Set(misc)].map(addArriKNumber);
+    const monitoringSupportUnique = [...new Set(monitoringSupport)].map(addArriKNumber);
+    const riggingUnique = [...new Set(rigging)].map(addArriKNumber);
     for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
     return {
-        cameraSupport: [...new Set(cameraSupport)],
-        chargers,
-        fizCables: [...new Set(fizCables)],
+        cameraSupport: [...new Set(cameraSupport)].map(addArriKNumber),
+        chargers: chargers.map(addArriKNumber),
+        fizCables: [...new Set(fizCables)].map(addArriKNumber),
         misc: miscUnique,
         monitoringSupport: monitoringSupportUnique,
         rigging: riggingUnique
@@ -7528,6 +7562,13 @@ function generateGearListHtml(info = {}) {
         selectedNames.viewfinder = "";
     }
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories();
+    for (const key of Object.keys(selectedNames)) {
+        if (Array.isArray(selectedNames[key])) {
+            selectedNames[key] = selectedNames[key].map(addArriKNumber);
+        } else {
+            selectedNames[key] = addArriKNumber(selectedNames[key]);
+        }
+    }
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('Noga Arm');
@@ -7569,14 +7610,14 @@ function generateGearListHtml(info = {}) {
         ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
         : [];
     const selectedLensNames = info.lenses
-        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
+        ? info.lenses.split(',').map(s => addArriKNumber(s.trim())).filter(Boolean)
         : [];
     const maxLensFront = selectedLensNames.reduce((max, name) => {
         const lens = devices.lenses && devices.lenses[name];
         return Math.max(max, lens && lens.frontDiameterMm || 0);
     }, 0);
     const filterSelections = info.filter
-        ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
+        ? info.filter.split(',').map(s => addArriKNumber(s.trim())).filter(Boolean)
         : [];
     if (info.mattebox) {
         const matteboxes = devices.accessories?.matteboxes || {};
