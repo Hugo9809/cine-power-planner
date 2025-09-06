@@ -72,6 +72,17 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
   }
 }
 
+// Generic helper to delete a key from storage with consistent error handling
+function deleteFromStorage(storage, key, errorMessage) {
+  if (!storage) return;
+  try {
+    storage.removeItem(key);
+  } catch (e) {
+    console.error(errorMessage, e);
+    alertStorageError();
+  }
+}
+
 // Generate a unique name by appending numeric suffixes if needed
 // Comparisons are case-insensitive and ignore surrounding whitespace.
 function generateUniqueName(base, usedNames) {
@@ -252,13 +263,11 @@ function saveGearList(html) {
 }
 
 function deleteGearList() {
-  if (!SAFE_LOCAL_STORAGE) return;
-  try {
-    SAFE_LOCAL_STORAGE.removeItem(GEARLIST_STORAGE_KEY);
-  } catch (e) {
-    console.error("Error deleting gear list from localStorage:", e);
-    alertStorageError();
-  }
+  deleteFromStorage(
+    SAFE_LOCAL_STORAGE,
+    GEARLIST_STORAGE_KEY,
+    "Error deleting gear list from localStorage:",
+  );
 }
 
 // --- User Feedback Storage ---
@@ -286,22 +295,16 @@ function saveFeedback(feedback) {
 
 // --- Clear All Stored Data ---
 function clearAllData() {
-  try {
-    if (SAFE_LOCAL_STORAGE) {
-      SAFE_LOCAL_STORAGE.removeItem(DEVICE_STORAGE_KEY);
-      SAFE_LOCAL_STORAGE.removeItem(SETUP_STORAGE_KEY);
-      SAFE_LOCAL_STORAGE.removeItem(FEEDBACK_STORAGE_KEY);
-      SAFE_LOCAL_STORAGE.removeItem(GEARLIST_STORAGE_KEY);
-      SAFE_LOCAL_STORAGE.removeItem(SESSION_STATE_KEY);
-    }
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem(SESSION_STATE_KEY);
-    }
-    console.log("All planner data cleared from storage.");
-  } catch (e) {
-    console.error("Error clearing storage:", e);
-    alertStorageError();
+  const msg = "Error clearing storage:";
+  deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, GEARLIST_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
+  if (typeof sessionStorage !== 'undefined') {
+    deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
+  console.log("All planner data cleared from storage.");
 }
 
 // --- Export/Import All Planner Data ---
