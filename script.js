@@ -9394,20 +9394,13 @@ function updateRequiredScenariosSummary() {
     }
   }
   if (videoDistributionSelect) {
-    const dopScenarios = ['Steadicam', 'Trinity', 'Remote Head', 'Crane', 'Car Mount'];
-    const needsDop = selected.some(s => dopScenarios.includes(s));
     const ensureOption = val => {
       let opt = Array.from(videoDistributionSelect.options).find(o => o.value === val);
-      if (needsDop) {
-        if (!opt) {
-          opt = document.createElement('option');
-          opt.value = val;
-          opt.textContent = val;
-          videoDistributionSelect.appendChild(opt);
-        }
-      } else if (opt) {
-        if (opt.selected) opt.selected = false;
-        opt.remove();
+      if (!opt) {
+        opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        videoDistributionSelect.appendChild(opt);
       }
     };
     ensureOption('DoP Monitor 5" handheld');

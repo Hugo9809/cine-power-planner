@@ -103,11 +103,36 @@ function generateUniqueName(base, usedNames) {
 // Store the current session (unsaved setup) in localStorage so it survives
 // full app reloads.
 function loadSessionState() {
-  return loadJSONFromStorage(
+  const state = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     SESSION_STATE_KEY,
     "Error loading session state from localStorage:",
   );
+  if (state !== null) {
+    return state;
+  }
+  if (typeof sessionStorage !== 'undefined') {
+    const migrated = loadJSONFromStorage(
+      sessionStorage,
+      SESSION_STATE_KEY,
+      "Error loading session state from sessionStorage:",
+    );
+    if (migrated !== null) {
+      saveJSONToStorage(
+        SAFE_LOCAL_STORAGE,
+        SESSION_STATE_KEY,
+        migrated,
+        "Error saving session state to localStorage:",
+      );
+      deleteFromStorage(
+        sessionStorage,
+        SESSION_STATE_KEY,
+        "Error deleting session state from sessionStorage:",
+      );
+      return migrated;
+    }
+  }
+  return null;
 }
 
 function saveSessionState(state) {
