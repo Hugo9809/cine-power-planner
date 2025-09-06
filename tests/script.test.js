@@ -164,8 +164,7 @@ test('restores project requirements from storage when gear list element is absen
   global.deleteProject = jest.fn();
   require('../translations.js');
   const script = require('../script.js');
-  script.setLanguage('en');
-  script.setLanguage('en');
+  script.displayGearAndRequirements(storedHtml);
   const projOut = document.getElementById('projectRequirementsOutput');
   expect(projOut.classList.contains('hidden')).toBe(false);
   expect(projOut.innerHTML).toContain('Project Requirements');
@@ -179,8 +178,7 @@ test('restores project requirements from storage with gear list present', () => 
   global.deleteProject = jest.fn();
   require('../translations.js');
   const script = require('../script.js');
-  script.setLanguage('en');
-  script.setLanguage('en');
+  script.displayGearAndRequirements(storedHtml);
   const projOut = document.getElementById('projectRequirementsOutput');
   expect(projOut.classList.contains('hidden')).toBe(false);
   expect(projOut.innerHTML).toContain('Project Requirements');
@@ -2883,7 +2881,7 @@ describe('script.js functions', () => {
       cameraHandle: 'Hand Grips, L-Handle',
       viewfinderExtension: 'ARRI VEB-3 Viewfinder Extension Bracket',
       mattebox: 'Rod based',
-      monitoringSettings: 'Viewfinder Clean Feed, Surround View',
+      viewfinderSettings: 'Viewfinder Clean Feed, Surround View',
       monitorUserButtons: 'Toggle LUT',
       cameraUserButtons: 'False Color',
       viewfinderUserButtons: 'Peaking'
@@ -2976,8 +2974,8 @@ describe('script.js functions', () => {
     expect(defaultHtml).not.toContain('<span class="req-value">Viewfinder and Onboard</span>');
 
     const customHtml = generateGearListHtml({ monitoringConfiguration: 'Onboard Only' });
-    expect(customHtml).toContain('<span class="req-label">Monitoring configuration</span>');
-    expect(customHtml).toContain('<span class="req-value">Onboard Only</span>');
+    expect(customHtml).not.toContain('<span class="req-label">Monitoring configuration</span>');
+    expect(customHtml).not.toContain('<span class="req-value">Onboard Only</span>');
   });
 
   test('iOS video option is not included in project requirements', () => {

@@ -7725,6 +7725,7 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
         viewfinderExtension: val('viewfinderExtension'),
+        viewfinderEyeLeatherColor: val('viewfinderEyeLeatherColor'),
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         viewfinderSettings,
@@ -7910,6 +7911,7 @@ function generateGearListHtml(info = {}) {
         ...(info.viewfinderSettings ? info.viewfinderSettings.split(',').map(s => s.trim()) : []),
         ...(info.frameGuides ? info.frameGuides.split(',').map(s => s.trim()) : []),
         ...(info.aspectMaskOpacity ? info.aspectMaskOpacity.split(',').map(s => s.trim()) : []),
+        ...(info.monitoringSettings ? info.monitoringSettings.split(',').map(s => s.trim()) : []),
     ].filter(Boolean);
     const selectedLensNames = info.lenses
         ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
@@ -8054,6 +8056,7 @@ function generateGearListHtml(info = {}) {
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
+    delete projectInfo.monitoringSettings;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
@@ -8088,8 +8091,21 @@ function generateGearListHtml(info = {}) {
         sliderBowl: 'Slider Bowl',
         filter: 'Filter'
     };
+    const excludedFields = new Set([
+        'cameraHandle',
+        'viewfinderExtension',
+        'mattebox',
+        'videoDistribution',
+        'monitoringConfiguration',
+        'tripodHeadBrand',
+        'tripodBowl',
+        'tripodTypes',
+        'tripodSpreader',
+        'sliderBowl',
+        'lenses'
+    ]);
     const infoEntries = Object.entries(projectInfo)
-        .filter(([k, v]) => v && k !== 'projectName');
+        .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
