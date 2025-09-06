@@ -7484,14 +7484,14 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         });
     });
 
-    const miscUnique = [...new Set(misc)].map(addArriKNumber);
-    const monitoringSupportUnique = [...new Set(monitoringSupport)].map(addArriKNumber);
-    const riggingUnique = [...new Set(rigging)].map(addArriKNumber);
+    const miscUnique = [...new Set(misc)];
+    const monitoringSupportUnique = [...new Set(monitoringSupport)];
+    const riggingUnique = [...new Set(rigging)];
     for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
     return {
-        cameraSupport: [...new Set(cameraSupport)].map(addArriKNumber),
-        chargers: chargers.map(addArriKNumber),
-        fizCables: [...new Set(fizCables)].map(addArriKNumber),
+        cameraSupport: [...new Set(cameraSupport)],
+        chargers,
+        fizCables: [...new Set(fizCables)],
         misc: miscUnique,
         monitoringSupport: monitoringSupportUnique,
         rigging: riggingUnique
@@ -7607,13 +7607,6 @@ function generateGearListHtml(info = {}) {
         selectedNames.viewfinder = "";
     }
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories({ hasMotor, videoDistPrefs });
-    for (const key of Object.keys(selectedNames)) {
-        if (Array.isArray(selectedNames[key])) {
-            selectedNames[key] = selectedNames[key].map(addArriKNumber);
-        } else {
-            selectedNames[key] = addArriKNumber(selectedNames[key]);
-        }
-    }
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8 to 1/4');
     for (let i = 0; i < 2; i++) riggingAcc.push('Noga Arm');
@@ -7652,14 +7645,14 @@ function generateGearListHtml(info = {}) {
         ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
         : [];
     const selectedLensNames = info.lenses
-        ? info.lenses.split(',').map(s => addArriKNumber(s.trim())).filter(Boolean)
+        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
         : [];
     const maxLensFront = selectedLensNames.reduce((max, name) => {
         const lens = devices.lenses && devices.lenses[name];
         return Math.max(max, lens && lens.frontDiameterMm || 0);
     }, 0);
     const filterSelections = info.filter
-        ? info.filter.split(',').map(s => addArriKNumber(s.trim())).filter(Boolean)
+        ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
     if (info.mattebox) {
         const matteboxes = devices.accessories?.matteboxes || {};
@@ -7831,7 +7824,7 @@ function generateGearListHtml(info = {}) {
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
-        arr.filter(Boolean).forEach(item => {
+        arr.filter(Boolean).map(addArriKNumber).forEach(item => {
             const match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
             const base = match ? match[1].trim() : item.trim();
             const ctx = match && match[2] ? match[2].trim() : '';
@@ -7861,7 +7854,7 @@ function generateGearListHtml(info = {}) {
     const cameraSupportText = formatItems(cameraSupportItems);
     let cageSelectHtml = '';
     if (compatibleCages.length) {
-        const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(c)}</option>`).join('');
+        const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(addArriKNumber(c))}</option>`).join('');
         cageSelectHtml = `1x <select id="gearListCage">${options}</select>`;
     }
     addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
@@ -7905,12 +7898,13 @@ function generateGearListHtml(info = {}) {
     addRow('Media', mediaItems);
     const lensDisplayNames = selectedLensNames.map(name => {
         const lens = devices.lenses && devices.lenses[name];
-        if (!lens) return name;
+        const base = addArriKNumber(name);
+        if (!lens) return base;
         const attrs = [];
         if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
         if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm front`);
         if (lens.tStop) attrs.push(`T${lens.tStop}`);
-        return attrs.length ? `${name} (${attrs.join(', ')})` : name;
+        return attrs.length ? `${base} (${attrs.join(', ')})` : base;
     });
     addRow('Lens', formatItems(lensDisplayNames));
     const lensSupportItems = [];
@@ -7944,7 +7938,7 @@ function generateGearListHtml(info = {}) {
     if (selectedNames.battery) {
         let count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
         if (!count || isNaN(count)) count = 1;
-        const safeBatt = escapeHtml(selectedNames.battery);
+        const safeBatt = escapeHtml(addArriKNumber(selectedNames.battery));
         batteryItems = `${count}x ${safeBatt}`;
         const mount = devices.batteries?.[batterySelect && batterySelect.value]?.mount_type;
         if (mount === 'V-Mount' || mount === 'B-Mount') {
@@ -7968,10 +7962,10 @@ function generateGearListHtml(info = {}) {
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     if (selectedNames.viewfinder) {
-        monitoringItems += `1x <strong>Viewfinder</strong> - ${escapeHtml(selectedNames.viewfinder)}`;
+        monitoringItems += `1x <strong>Viewfinder</strong> - ${escapeHtml(addArriKNumber(selectedNames.viewfinder))}`;
     }
     if (selectedNames.monitor) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(addArriKNumber(selectedNames.monitor))} - incl. Sunhood`;
     }
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
@@ -7979,7 +7973,7 @@ function generateGearListHtml(info = {}) {
             .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
         const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
@@ -7989,7 +7983,7 @@ function generateGearListHtml(info = {}) {
             .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
         const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Handheld Monitor</strong> - <select id="gearListDopMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
@@ -7999,7 +7993,7 @@ function generateGearListHtml(info = {}) {
             .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
         const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
@@ -8008,11 +8002,11 @@ function generateGearListHtml(info = {}) {
     }
     const monitoringGear = [];
     if (selectedNames.video) {
-        monitoringGear.push(`Wireless Transmitter - ${selectedNames.video}`);
+        monitoringGear.push(`Wireless Transmitter - ${addArriKNumber(selectedNames.video)}`);
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
             receiverLabels.forEach(label => {
-                monitoringGear.push(`Wireless Receiver - ${rxName} (${label})`);
+                monitoringGear.push(`Wireless Receiver - ${addArriKNumber(rxName)} (${label})`);
             });
         }
     }
@@ -8061,7 +8055,7 @@ function generateGearListHtml(info = {}) {
         const stabiliser = devices && devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
         const opts = stabiliser && Array.isArray(stabiliser.options) ? stabiliser.options : [];
         const options = ['no further stabilisation', ...opts];
-        const optsHtml = options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
+        const optsHtml = options.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(addArriKNumber(o))}</option>`).join('');
         easyrigSelectHtml = `1x Easyrig 5 Vario <select id="gearListEasyrig">${optsHtml}</select>`;
     }
     if (hasGimbal) {
@@ -8081,7 +8075,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push('jib counter weights');
     }
     if (scenarios.includes('Slider')) {
-        const options = ['', '75er bowl', '100er bowl', '150er bowl', 'Mitchell Mount'].map(o => `<option value="${escapeHtml(o)}"${o === info.sliderBowl ? ' selected' : ''}>${escapeHtml(o)}</option>`).join('');
+        const options = ['', '75er bowl', '100er bowl', '150er bowl', 'Mitchell Mount'].map(o => `<option value="${escapeHtml(o)}"${o === info.sliderBowl ? ' selected' : ''}>${escapeHtml(addArriKNumber(o))}</option>`).join('');
         sliderSelectHtml = `1x Prosup Tango Roller <select id="gearListSliderBowl">${options}</select>`;
         gripItems.push('Avenger Combo Stand 10 A1010CS 64-100 cm black');
         gripItems.push('Avenger Combo Stand 10 A1010CS 64-100 cm black');
@@ -8225,7 +8219,7 @@ function generateGearListHtml(info = {}) {
     }
     const needsRainProtection = ['Outdoor', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s));
     if (needsRainProtection && selectedNames.camera) {
-        miscItems.push(`Rain Cover "${selectedNames.camera}"`);
+        miscItems.push(`Rain Cover "${addArriKNumber(selectedNames.camera)}"`);
     }
     const needsUmbrellas = needsRainProtection || scenarios.includes('Extreme heat');
     if (needsUmbrellas) {
