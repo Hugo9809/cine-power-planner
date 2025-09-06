@@ -696,6 +696,15 @@ function updateViewfinderSettingsVisibility() {
       }
     }
   }
+  if (viewfinderExtensionRow) {
+    const extSelect = document.getElementById('viewfinderExtension');
+    if (hasViewfinder) {
+      viewfinderExtensionRow.classList.remove('hidden');
+    } else {
+      viewfinderExtensionRow.classList.add('hidden');
+      if (extSelect) extSelect.value = '';
+    }
+  }
 }
 
 
@@ -1502,6 +1511,7 @@ const tripodTypesSelect = document.getElementById("tripodTypes");
 const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
+const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
 
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
@@ -7298,6 +7308,7 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
         mattebox: val('mattebox'),
+        viewfinderExtension: val('viewfinderExtension'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
         videoDistribution: multi('videoDistribution'),
@@ -7405,6 +7416,9 @@ function generateGearListHtml(info = {}) {
     const handleSelections = info.cameraHandle
         ? info.cameraHandle.split(',').map(r => r.trim()).filter(Boolean)
         : [];
+    if (info.viewfinderExtension) {
+        supportAccNoCages.push(info.viewfinderExtension);
+    }
     const monitoringSettings = info.monitoringSettings
         ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -7493,6 +7507,7 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: 'Required Scenarios',
         cameraHandle: 'Camera Handle',
         mattebox: 'Mattebox',
+        viewfinderExtension: 'Viewfinder Extension',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
@@ -7514,6 +7529,7 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: '🌄',
         cameraHandle: '🛠️',
         mattebox: '🎬',
+        viewfinderExtension: '🔭',
         gimbal: '🌀',
         monitoringSupport: '🧰',
         monitoring: '📡',
@@ -8742,8 +8758,7 @@ const scenarioIcons = {
   'Extreme rain': '🌧️',
   'Extreme heat': '🔥',
   'Rain Machine': '🌧️',
-  'Slow Motion': '🐌',
-  'Viewfinder Extension': '🔭'
+  'Slow Motion': '🐌'
 };
 
 function updateRequiredScenariosSummary() {

@@ -1788,6 +1788,41 @@ describe('script.js functions', () => {
     });
   });
 
+  test('viewfinder extension selector visibility toggles with camera viewfinder', () => {
+    const camSel = document.getElementById('cameraSelect');
+    const row = document.getElementById('viewfinderExtensionRow');
+    const extSel = document.getElementById('viewfinderExtension');
+
+    devices.cameras.CamWithVF = { viewfinder: [{}] };
+    devices.cameras.CamNoVF = { viewfinder: [] };
+    const optWith = new Option('CamWithVF', 'CamWithVF');
+    const optWithout = new Option('CamNoVF', 'CamNoVF');
+    camSel.appendChild(optWith);
+    camSel.appendChild(optWithout);
+
+    camSel.value = 'CamWithVF';
+    script.updateBatteryPlateVisibility();
+    expect(row.classList.contains('hidden')).toBe(false);
+
+    extSel.value = 'ARRI VEB-3 Viewfinder Extension Bracket';
+    camSel.value = 'CamNoVF';
+    script.updateBatteryPlateVisibility();
+    expect(row.classList.contains('hidden')).toBe(true);
+    expect(extSel.value).toBe('');
+  });
+
+  test('selecting viewfinder extension adds bracket to camera support', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ viewfinderExtension: 'ARRI VEB-3 Viewfinder Extension Bracket' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[cameraSupportIndex + 1];
+    expect(itemsRow.textContent).toContain('ARRI VEB-3 Viewfinder Extension Bracket');
+  });
+
   test('Carts and Transportation category includes default items', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml();
