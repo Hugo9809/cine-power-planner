@@ -11,8 +11,8 @@ const {
     saveSessionState,
     loadFeedback,
     saveFeedback,
-    saveGearList,
-    loadGearList,
+    saveProject,
+    loadProject,
     clearAllData,
     exportAllData,
     importAllData,
@@ -22,7 +22,7 @@ const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_KEY = 'cameraPowerPlanner_setups';
 const SESSION_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_KEY = 'cameraPowerPlanner_feedback';
-const GEARLIST_KEY = 'cameraPowerPlanner_gearList';
+const PROJECT_KEY = 'cameraPowerPlanner_project';
 
 const validDeviceData = {
   cameras: {},
@@ -257,13 +257,13 @@ describe('clearAllData', () => {
     saveDeviceData(validDeviceData);
     saveSetups({ A: { foo: 1 } });
     saveFeedback({ note: 'hi' });
-    saveGearList('<ul></ul>');
+    saveProject({ gearList: '<ul></ul>' });
     saveSessionState({ camera: 'CamA' });
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
     expect(localStorage.getItem(FEEDBACK_KEY)).toBeNull();
-    expect(localStorage.getItem(GEARLIST_KEY)).toBeNull();
+    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
     expect(localStorage.getItem(SESSION_KEY)).toBeNull();
   });
 });
@@ -279,13 +279,13 @@ describe('export/import all data', () => {
     saveSetups({ A: { foo: 1 } });
     saveSessionState({ camera: 'CamA' });
     saveFeedback({ note: 'hi' });
-    saveGearList('<ul></ul>');
+    saveProject({ gearList: '<ul></ul>' });
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
-      gearList: '<ul></ul>'
+      project: { gearList: '<ul></ul>', projectInfo: null }
     });
   });
 
@@ -295,14 +295,14 @@ describe('export/import all data', () => {
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
-      gearList: '<ol></ol>'
+      project: { gearList: '<ol></ol>' }
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
     expect(loadSetups()).toEqual({ A: { foo: 1 } });
     expect(loadSessionState()).toEqual({ camera: 'CamA' });
     expect(loadFeedback()).toEqual({ note: 'hi' });
-    expect(loadGearList()).toBe('<ol></ol>');
+    expect(loadProject()).toEqual({ gearList: '<ol></ol>', projectInfo: null });
   });
 });
 

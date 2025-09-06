@@ -5,7 +5,7 @@ const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
-const GEARLIST_STORAGE_KEY = 'cameraPowerPlanner_gearList';
+const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, this returns null.
@@ -267,33 +267,53 @@ function renameSetup(oldName, newName) {
   });
 }
 
-// --- Gear List Storage ---
-function loadGearList() {
-  return (
-    loadJSONFromStorage(
-      SAFE_LOCAL_STORAGE,
-      GEARLIST_STORAGE_KEY,
-      "Error loading gear list from localStorage:",
-      "",
-    ) || ""
-  );
+// --- Project Storage ---
+function normalizeProject(data) {
+  if (typeof data === "string") {
+    return { gearList: data, projectInfo: null };
+  }
+  if (isPlainObject(data)) {
+    // New format { gearList, projectInfo }
+    if (Object.prototype.hasOwnProperty.call(data, "gearList") || Object.prototype.hasOwnProperty.call(data, "projectInfo")) {
+      return {
+        gearList: typeof data.gearList === "object" || typeof data.gearList === "string" ? data.gearList : "",
+        projectInfo: isPlainObject(data.projectInfo) ? data.projectInfo : null,
+      };
+    }
+    // Legacy format { projectHtml, gearHtml }
+    if (Object.prototype.hasOwnProperty.call(data, "projectHtml") || Object.prototype.hasOwnProperty.call(data, "gearHtml")) {
+      return { gearList: { projectHtml: data.projectHtml || "", gearHtml: data.gearHtml || "" }, projectInfo: null };
+    }
+  }
+  return null;
 }
 
-function saveGearList(html) {
+function loadProject() {
+  const parsed = loadJSONFromStorage(
+    SAFE_LOCAL_STORAGE,
+    PROJECT_STORAGE_KEY,
+    "Error loading project from localStorage:",
+  );
+  return normalizeProject(parsed);
+}
+
+function saveProject(project) {
+  if (!isPlainObject(project)) return;
+  const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
   saveJSONToStorage(
     SAFE_LOCAL_STORAGE,
-    GEARLIST_STORAGE_KEY,
-    html,
-    "Error saving gear list to localStorage:",
-    "Gear list saved to localStorage.",
+    PROJECT_STORAGE_KEY,
+    normalized,
+    "Error saving project to localStorage:",
+    "Project saved to localStorage.",
   );
 }
 
-function deleteGearList() {
+function deleteProject() {
   deleteFromStorage(
     SAFE_LOCAL_STORAGE,
-    GEARLIST_STORAGE_KEY,
-    "Error deleting gear list from localStorage:",
+    PROJECT_STORAGE_KEY,
+    "Error deleting project from localStorage:",
   );
 }
 
@@ -326,7 +346,7 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, GEARLIST_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
@@ -341,7 +361,7 @@ function exportAllData() {
     setups: loadSetups(),
     session: loadSessionState(),
     feedback: loadFeedback(),
-    gearList: loadGearList(),
+    project: loadProject(),
   };
 }
 
@@ -359,8 +379,11 @@ function importAllData(allData) {
     if (allData.feedback) {
       saveFeedback(allData.feedback);
     }
-    if (typeof allData.gearList === "string") {
-      saveGearList(allData.gearList);
+    if (allData.project) {
+      saveProject(allData.project);
+    } else if (typeof allData.gearList === "string") {
+      // Legacy export format stored just the gear list HTML
+      saveProject({ gearList: allData.gearList });
     }
   }
 }
@@ -375,9 +398,9 @@ if (typeof module !== "undefined" && module.exports) {
     loadSetup,
     deleteSetup,
     renameSetup,
-    loadGearList,
-    saveGearList,
-    deleteGearList,
+    loadProject,
+    saveProject,
+    deleteProject,
     loadSessionState,
     saveSessionState,
     loadFeedback,
