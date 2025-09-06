@@ -246,7 +246,11 @@ function extractTypeAndNotes(segment) {
  * @returns {Array<{type: string, notes?: string}>|null} Parsed representation.
  */
 function parsePowerInput(str) {
-  if (!str) return null;
+  // Gracefully handle non-string inputs. Consumers may accidentally pass
+  // numbers or other types, which previously caused a runtime error when the
+  // value was fed into string helpers like `trim`. Treat such inputs as
+  // unparsable instead of throwing.
+  if (typeof str !== "string" || !str) return null;
   if (powerInputCache.has(str)) {
     // Return a fresh copy of the cached array so callers can mutate the
     // result without affecting subsequent lookups.
