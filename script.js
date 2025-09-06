@@ -7959,6 +7959,7 @@ function generateGearListHtml(info = {}) {
             counts[base].ctxCounts[ctx] = (counts[base].ctxCounts[ctx] || 0) + 1;
         });
         return Object.entries(counts)
+            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
             .map(([base, { total, ctxCounts }]) => {
                 const ctxKeys = Object.keys(ctxCounts);
                 const hasContext = ctxKeys.some(c => c);
