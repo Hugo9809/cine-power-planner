@@ -667,17 +667,39 @@ describe('script.js functions', () => {
     expect(saved.gearList).toContain('<table class="gear-table">');
   });
 
-  test('project requirements form data saved with gear list', () => {
+  test('entire project form is saved with gear list', () => {
     global.saveProject = jest.fn();
     document.getElementById('projectName').value = 'Proj';
     const codecSel = document.getElementById('codec');
     codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
     codecSel.value = 'ProRes';
+    const lensSel = document.getElementById('lenses');
+    lensSel.innerHTML = '<option value="LensA">LensA</option>';
+    lensSel.options[0].selected = true;
+    const videoSel = document.getElementById('videoDistribution');
+    if (videoSel.options.length) videoSel.options[0].selected = true;
+    document.getElementById('tripodHeadBrand').value = 'OConnor';
+    document.getElementById('tripodBowl').value = '100mm bowl';
+    const vfSel = document.getElementById('viewfinderSettings');
+    vfSel.options[0].selected = true;
+    const frameSel = document.getElementById('frameGuides');
+    frameSel.options[0].selected = true;
+    const aspectMaskSel = document.getElementById('aspectMaskOpacity');
+    aspectMaskSel.options[0].selected = true;
     const form = document.getElementById('projectForm');
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][0];
-    expect(saved.projectInfo.projectName).toBe('Proj');
-    expect(saved.projectInfo.codec).toBe('ProRes');
+    const expectedKeys = [
+      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+    ];
+    expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
+    expect(saved.projectInfo.lenses).toBe('LensA');
+    expect(saved.projectInfo.videoDistribution).toContain('Directors Monitor 5');
+    expect(saved.projectInfo.tripodHeadBrand).toBe('OConnor');
+    expect(saved.projectInfo.tripodBowl).toBe('100mm bowl');
+    expect(saved.projectInfo.viewfinderSettings).toBe('Viewfinder Clean Feed');
+    expect(saved.projectInfo.frameGuides).toBe('Frame Guide: Center Dot');
+    expect(saved.projectInfo.aspectMaskOpacity).toBe('Aspect Mask Opacity 100%');
   });
 
   test('project requirements form saved with project', () => {
@@ -685,16 +707,17 @@ describe('script.js functions', () => {
     global.saveSetups = jest.fn((data) => Object.assign(stored, data));
     global.saveProject = jest.fn();
     document.getElementById('projectName').value = 'Proj';
-    const codecSel = document.getElementById('codec');
-    codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
-    codecSel.value = 'ProRes';
+    const lensSel = document.getElementById('lenses');
+    lensSel.innerHTML = '<option value="LensA">LensA</option>';
+    lensSel.options[0].selected = true;
     const form = document.getElementById('projectForm');
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const nameInput = document.getElementById('setupName');
     nameInput.value = 'Setup1';
     nameInput.dispatchEvent(new Event('input', { bubbles: true }));
     document.getElementById('saveSetupBtn').click();
-    expect(stored.Setup1.projectInfo.codec).toBe('ProRes');
+    expect(stored.Setup1.projectInfo.projectName).toBe('Proj');
+    expect(stored.Setup1.projectInfo.lenses).toBe('LensA');
   });
 
   test('changing device selection triggers gear list save', () => {

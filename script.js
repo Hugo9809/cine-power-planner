@@ -7710,14 +7710,10 @@ function collectProjectFormData() {
     const val = name => (projectForm.querySelector(`[name="${name}"]`)?.value || '').trim();
     const multi = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
         .map(o => o.value).join(', ');
-    const multiVals = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
-        .map(o => o.value);
     const range = (start, end) => [val(start), val(end)].filter(Boolean).join(' to ');
-    const monitoringSelections = [
-        ...multiVals('viewfinderSettings'),
-        ...multiVals('frameGuides'),
-        ...multiVals('aspectMaskOpacity')
-    ].join(', ');
+    const viewfinderSettings = multi('viewfinderSettings');
+    const frameGuides = multi('frameGuides');
+    const aspectMaskOpacity = multi('aspectMaskOpacity');
     return {
         projectName: val('projectName'),
         dop: val('dop'),
@@ -7736,7 +7732,9 @@ function collectProjectFormData() {
         viewfinderEyeLeatherColor: val('viewfinderEyeLeatherColor'),
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
-        monitoringSettings: monitoringSelections,
+        viewfinderSettings,
+        frameGuides,
+        aspectMaskOpacity,
         videoDistribution: multi('videoDistribution'),
         monitoringConfiguration: val('monitoringConfiguration'),
         monitorUserButtons: multi('monitorUserButtons'),
@@ -7789,6 +7787,9 @@ function populateProjectForm(info) {
     setVal('viewfinderEyeLeatherColor', info.viewfinderEyeLeatherColor);
     setVal('mattebox', info.mattebox);
     setMulti('gimbal', info.gimbal);
+    setMulti('viewfinderSettings', info.viewfinderSettings);
+    setMulti('frameGuides', info.frameGuides);
+    setMulti('aspectMaskOpacity', info.aspectMaskOpacity);
     setMulti('videoDistribution', info.videoDistribution);
     setVal('monitoringConfiguration', info.monitoringConfiguration);
     setMulti('monitorUserButtons', info.monitorUserButtons);
@@ -7911,9 +7912,11 @@ function generateGearListHtml(info = {}) {
     const viewfinderExtSelections = info.viewfinderExtension
         ? info.viewfinderExtension.split(',').map(r => r.trim()).filter(Boolean)
         : [];
-    const monitoringSettings = info.monitoringSettings
-        ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
+    const monitoringSettings = [
+        ...(info.viewfinderSettings ? info.viewfinderSettings.split(',').map(s => s.trim()) : []),
+        ...(info.frameGuides ? info.frameGuides.split(',').map(s => s.trim()) : []),
+        ...(info.aspectMaskOpacity ? info.aspectMaskOpacity.split(',').map(s => s.trim()) : []),
+    ].filter(Boolean);
     const selectedLensNames = info.lenses
         ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -8054,22 +8057,9 @@ function generateGearListHtml(info = {}) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
     const projectInfo = { ...info };
-    delete projectInfo.lenses;
-    delete projectInfo.filter;
-    delete projectInfo.mattebox;
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
-    if (!info.monitoringConfiguration || info.monitoringConfiguration === 'Viewfinder and Onboard') {
-        delete projectInfo.monitoringConfiguration;
-    }
-    delete projectInfo.monitoringSettings;
-    delete projectInfo.monitoring;
-    delete projectInfo.videoDistribution;
-    delete projectInfo.tripodHeadBrand;
-    delete projectInfo.tripodBowl;
-    delete projectInfo.tripodTypes;
-    delete projectInfo.tripodSpreader;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         dop: 'DoP',
@@ -8083,16 +8073,29 @@ function generateGearListHtml(info = {}) {
         sensorMode: 'Sensor Mode',
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
+        cameraHandle: 'Camera Handle',
+        viewfinderExtension: 'Viewfinder Extension',
+        viewfinderEyeLeatherColor: 'Viewfinder Eye Leather Color',
+        mattebox: 'Mattebox',
         gimbal: 'Gimbal',
+        viewfinderSettings: 'Viewfinder Settings',
+        frameGuides: 'Frame Guides',
+        aspectMaskOpacity: 'Aspect Mask Opacity',
+        videoDistribution: 'Video Distribution',
         monitoringSupport: 'Monitoring support',
         monitoringConfiguration: 'Monitoring configuration',
         monitorUserButtons: 'Onboard Monitor User Buttons',
         cameraUserButtons: 'Camera User Buttons',
-        viewfinderUserButtons: 'Viewfinder User Buttons'
+        viewfinderUserButtons: 'Viewfinder User Buttons',
+        tripodHeadBrand: 'Tripod Head Brand',
+        tripodBowl: 'Tripod Bowl',
+        tripodTypes: 'Tripod Types',
+        tripodSpreader: 'Tripod Spreader',
+        sliderBowl: 'Slider Bowl',
+        filter: 'Filter'
     };
     const infoEntries = Object.entries(projectInfo)
-        .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl'
-            && k !== 'cameraHandle' && k !== 'viewfinderExtension');
+        .filter(([k, v]) => v && k !== 'projectName');
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
