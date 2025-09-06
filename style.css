@@ -716,8 +716,22 @@ button:disabled {
 }
 
 .power-bar .segment {
+  position: relative;
+  z-index: 1;
   height: 100%;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.75em;
+  overflow: hidden;
+}
+
+.power-bar .segment span {
+  position: relative;
+  z-index: 3;
+  padding: 0 2px;
 }
 
 .power-bar .camera { background-color: #4caf50; }
@@ -726,6 +740,33 @@ button:disabled {
 .power-bar .motors { background-color: #9c27b0; }
 .power-bar .controllers { background-color: #ff5722; }
 .power-bar .distance { background-color: #795548; }
+
+.power-bar .over-usage {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(244, 67, 54, 0.4);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.power-bar .limit-line {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background: #000;
+  z-index: 4;
+}
+
+#powerDiagram.over .power-bar {
+  border-color: red;
+}
+
+#powerDiagram.over .limit-line {
+  background: red;
+}
 
 #maxPowerText {
   margin-top: 4px;
