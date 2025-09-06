@@ -1369,6 +1369,13 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('2x D-Tap Splitter');
   });
 
+  test('viewfinder extension adds bracket to rigging list', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ viewfinderExtension: 'ARRI VEB-3 Viewfinder Extension Bracket' });
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('ARRI VEB-3 Viewfinder Extension Bracket');
+  });
+
   test.each(['Trinity', 'Steadicam'])(
     '%s scenario adds D-Tap rigging accessories',
     (scenario) => {
@@ -1683,6 +1690,24 @@ describe('script.js functions', () => {
     script.updateRequiredScenariosSummary();
     expect(remoteOpt.hidden).toBe(true);
     expect(remoteOpt.selected).toBe(false);
+  });
+
+  test('viewfinder extension selector is shown only for cameras with a viewfinder', () => {
+    devices.cameras = {
+      CamWithVF: { viewfinder: [{}] },
+      CamNoVF: { viewfinder: [] }
+    };
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamWithVF">CamWithVF</option><option value="CamNoVF">CamNoVF</option>';
+    const row = document.getElementById('viewfinderExtensionRow');
+
+    camSel.value = 'CamNoVF';
+    script.updateBatteryPlateVisibility();
+    expect(row.classList.contains('hidden')).toBe(true);
+
+    camSel.value = 'CamWithVF';
+    script.updateBatteryPlateVisibility();
+    expect(row.classList.contains('hidden')).toBe(false);
   });
 
   test('selecting Dolly adds SmallHD Ultra 7 monitor when none selected', () => {

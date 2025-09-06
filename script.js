@@ -678,6 +678,7 @@ function updateBatteryPlateVisibility() {
     else batteryPlateSelect.value = '';
   }
   updateViewfinderSettingsVisibility();
+  updateViewfinderExtensionVisibility();
 }
 
 function updateViewfinderSettingsVisibility() {
@@ -698,6 +699,19 @@ function updateViewfinderSettingsVisibility() {
   }
 }
 
+
+function updateViewfinderExtensionVisibility() {
+  const cam = devices?.cameras?.[cameraSelect?.value];
+  const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
+  if (viewfinderExtensionRow) {
+    if (hasViewfinder) {
+      viewfinderExtensionRow.classList.remove('hidden');
+    } else {
+      viewfinderExtensionRow.classList.add('hidden');
+      if (viewfinderExtensionSelect) viewfinderExtensionSelect.value = '';
+    }
+  }
+}
 
 function updateBatteryLabel() {
   const label = document.getElementById('batteryLabel');
@@ -1501,6 +1515,8 @@ const tripodTypesSelect = document.getElementById("tripodTypes");
 const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
+const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
+const viewfinderExtensionSelect = document.getElementById("viewfinderExtension");
 
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
@@ -7296,6 +7312,7 @@ function collectProjectFormData() {
         lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
+        viewfinderExtension: val('viewfinderExtension'),
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
@@ -7382,6 +7399,9 @@ function generateGearListHtml(info = {}) {
     riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
     for (let i = 0; i < 3; i++) riggingAcc.push('stud 5/8" with male 3/8" and 1/4"');
     for (let i = 0; i < 2; i++) riggingAcc.push('D-Tap Splitter');
+    if (info.viewfinderExtension) {
+        riggingAcc.push(info.viewfinderExtension);
+    }
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
     if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
@@ -8741,8 +8761,7 @@ const scenarioIcons = {
   'Extreme rain': '🌧️',
   'Extreme heat': '🔥',
   'Rain Machine': '🌧️',
-  'Slow Motion': '🐌',
-  'Viewfinder Extension': '🔭'
+  'Slow Motion': '🐌'
 };
 
 function updateRequiredScenariosSummary() {
