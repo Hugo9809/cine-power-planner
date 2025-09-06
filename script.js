@@ -9122,6 +9122,7 @@ function populateUserButtonDropdowns() {
       opt.textContent = fn;
       sel.appendChild(opt);
     });
+    sel.size = functions.length;
   });
 }
 
