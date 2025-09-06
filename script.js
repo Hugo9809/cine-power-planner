@@ -8054,16 +8054,15 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = [];
-    const addV98 = () => {
-        const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
-        monitoringBatteryItems.push(`3x ${escapeHtml(bebob98)}`);
-    };
-    handheldPrefs.forEach(() => addV98());
+    const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
+    handheldPrefs.forEach(() => {
+        monitoringBatteryItems.push(bebob98, bebob98, bebob98);
+    });
     if (hasMotor) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
-        monitoringBatteryItems.push(`3x ${escapeHtml(bebob150)}`);
+        monitoringBatteryItems.push(bebob150, bebob150, bebob150);
     }
-    addRow('Monitoring Batteries', monitoringBatteryItems.join('<br>'));
+    addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     const monitorSizes = [];
