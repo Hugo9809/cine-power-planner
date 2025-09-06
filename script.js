@@ -8449,9 +8449,9 @@ function generateGearListHtml(info = {}) {
     const eyeLeatherColor = info.viewfinderEyeLeatherColor || 'rot';
     const baseConsumables = [
         { name: 'Kimtech Wipes', count: 1 },
-        { name: 'Lasso Rot 24mm', count: 1 },
-        { name: 'Lasso Blau 24mm', count: 1 },
-        { name: 'Sprigs rot 1/4“', count: 1, noScale: true },
+        { name: 'Lasso Red 24mm', count: 1 },
+        { name: 'Lasso Blue 24mm', count: 1 },
+        { name: 'Sprigs Red 1/4"', count: 1, noScale: true },
         { name: 'Klappenstift', count: 2, klappen: true }
     ];
     if (hasViewfinder) {
