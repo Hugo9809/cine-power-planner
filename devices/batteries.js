@@ -312,6 +312,27 @@ const batteryData = {
     "dtapA": 12,
     "mount_type": "V-Mount"
   },
+  "FXLion Nano One (V-Mount)": {
+    "capacity": 50,
+    "pinA": 8,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 330
+  },
+  "FXLion Nano Two (V-Mount)": {
+    "capacity": 98,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 545
+  },
+  "FXLion Nano Three (V-Mount)": {
+    "capacity": 150,
+    "pinA": 12,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 795
+  },
   "IDX Imicro-98 (V-Mount)": {
     "capacity": 97,
     "pinA": 10,
