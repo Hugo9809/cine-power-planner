@@ -472,18 +472,27 @@ button {
   margin: 5px;
   cursor: pointer;
   font-size: 0.85em; /* Adjusted font size to make buttons smaller */
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
 }
 button:hover {
   background-color: var(--accent-color);
   color: var(--inverse-text-color);
   border-color: var(--accent-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
 }
 button:active {
   background-color: var(--accent-color);
   color: var(--inverse-text-color);
   border-color: var(--accent-color);
   filter: brightness(0.9);
+  transform: translateY(0);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
 }
 button:disabled {
   background-color: var(--control-disabled-bg);
