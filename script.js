@@ -5143,16 +5143,27 @@ function attachDiagramPopups(map) {
       connectors + infoHtml;
 
     const show = e => {
+      const pointer = e.touches && e.touches[0] ? e.touches[0] : e;
       popup.innerHTML = html;
       popup.style.display = 'block';
       const rect = setupDiagramContainer.getBoundingClientRect();
-      popup.style.left = `${e.clientX - rect.left + 10}px`;
-      popup.style.top = `${e.clientY - rect.top + 10}px`;
+      popup.style.left = `${pointer.clientX - rect.left + 10}px`;
+      popup.style.top = `${pointer.clientY - rect.top + 10}px`;
     };
     const hide = () => { popup.style.display = 'none'; };
     node.addEventListener('mousemove', show);
     node.addEventListener('mouseout', hide);
+    node.addEventListener('touchstart', show);
   });
+
+  if (!setupDiagramContainer.dataset.popupOutsideListeners) {
+    const hideOnOutside = e => {
+      if (!e.target.closest('.diagram-node')) popup.style.display = 'none';
+    };
+    setupDiagramContainer.addEventListener('click', hideOnOutside);
+    setupDiagramContainer.addEventListener('touchstart', hideOnOutside);
+    setupDiagramContainer.dataset.popupOutsideListeners = 'true';
+  }
 }
 
 function enableDiagramInteractions() {
