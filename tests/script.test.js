@@ -1455,7 +1455,7 @@ describe('script.js functions', () => {
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
     expect(html).toContain('1x <strong>Onboard Monitor</strong> - 7&quot; - MonA - incl. Sunhood');
-    expect(html).toContain('Wireless Transmitter</strong> - 7&quot; - VidA');
+    expect(html).toContain('Wireless Transmitter</strong>');
     expect(html).not.toContain('MonA, VidA');
   });
 
@@ -1566,6 +1566,40 @@ describe('script.js functions', () => {
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x DoP handheld, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x DoP handheld, 1x Spare)');
+  });
+
+  test('Directors monitor 15-21 inch adds dropdown to gear list', () => {
+    const { generateGearListHtml } = script;
+    global.devices.directorMonitors = {
+      MonBig: { screenSizeInches: 17 },
+      MonHuge: { screenSizeInches: 19 },
+      MonSmall: { screenSizeInches: 13 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 15-21 inch' });
+    expect(html).toContain('<select id="gearListDirectorsMonitor15to21"');
+    expect(html).toContain('Directors Monitor');
+  });
+
+  test('Combo monitor 15-21 inch adds dropdown to gear list', () => {
+    const { generateGearListHtml } = script;
+    global.devices.directorMonitors = {
+      MonBig: { screenSizeInches: 17 },
+      MonHuge: { screenSizeInches: 19 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Combo Monitor 15-21 inch' });
+    expect(html).toContain('<select id="gearListComboMonitor15to21"');
+    expect(html).toContain('Combo Monitor');
+  });
+
+  test('iOS video option adds device to gear list', () => {
+    const { generateGearListHtml } = script;
+    global.devices.iosVideo = {
+      'Teradek Serv': {},
+      'Teradek Serv + Link': {}
+    };
+    const html = generateGearListHtml({ videoDistribution: 'IOS Video (Teradek Serv + Link)' });
+    expect(html).toContain('<select id="gearListIosVideo"');
+    expect(html).toContain('Teradek Serv + Link');
   });
 
   test('multiple handheld monitors merge grip items', () => {
@@ -2658,19 +2692,19 @@ describe('script.js functions', () => {
     expect(configSel.value).toBe('Onboard Only');
   });
 
-  test('Directors handheld monitor appears under monitoring in project requirements', () => {
+  test('Directors handheld monitor excluded from project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain('<span class="req-label">Monitoring</span>');
-    expect(html).toContain('<span class="req-value">Directors Monitor 7" handheld</span>');
+    expect(html).not.toContain('<span class="req-label">Monitoring</span>');
+    expect(html).not.toContain('<span class="req-value">Directors Monitor 7" handheld</span>');
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">Directors Monitor 7" handheld</span>');
   });
 
-  test('iOS video option appears under monitoring in project requirements', () => {
+  test('iOS video option excluded from project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ videoDistribution: 'IOS Video (Teradek Serv + Link)' });
-    expect(html).toContain('<span class="req-label">Monitoring</span>');
-    expect(html).toContain('<span class="req-value">IOS Video (Teradek Serv + Link)</span>');
+    expect(html).not.toContain('<span class="req-label">Monitoring</span>');
+    expect(html).not.toContain('<span class="req-value">IOS Video (Teradek Serv + Link)</span>');
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
   });
 

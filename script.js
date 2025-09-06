@@ -7815,9 +7815,7 @@ function generateGearListHtml(info = {}) {
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
-    if (videoDistPrefs.length) {
-        projectInfo.monitoring = videoDistPrefs.join(', ');
-    }
+    // video distribution selections are used for gear list generation only
     if (!info.monitoringConfiguration) delete projectInfo.monitoringConfiguration;
     delete projectInfo.monitoringSettings;
     delete projectInfo.videoDistribution;
@@ -7840,7 +7838,6 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: 'Required Scenarios',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
-        monitoring: 'Monitoring',
         monitoringConfiguration: 'Monitoring configuration',
         monitorUserButtons: 'Onboard Monitor User Buttons',
         cameraUserButtons: 'Camera User Buttons',
@@ -8017,6 +8014,40 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Handheld Monitor</strong> - ${size}&quot; - <select id="gearList${idSuffix}Monitor${size}">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
         monitorSizes.push(size);
     });
+    if (videoDistPrefs.includes('Directors Monitor 15-21 inch')) {
+        const monitorsDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
+        const names = Object.keys(monitorsDb)
+            .filter(n => {
+                const sz = monitorsDb[n].screenSizeInches;
+                return sz >= 15 && sz <= 21 && n !== 'None';
+            })
+            .sort(localeSort);
+        const opts = names
+            .map(n => `<option value="${escapeHtml(n)}">${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Monitor</strong> - <select id="gearListDirectorsMonitor15to21">${opts}</select>`;
+    }
+    if (videoDistPrefs.includes('Combo Monitor 15-21 inch')) {
+        const monitorsDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
+        const names = Object.keys(monitorsDb)
+            .filter(n => {
+                const sz = monitorsDb[n].screenSizeInches;
+                return sz >= 15 && sz <= 21 && n !== 'None';
+            })
+            .sort(localeSort);
+        const opts = names
+            .map(n => `<option value="${escapeHtml(n)}">${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Combo Monitor</strong> - <select id="gearListComboMonitor15to21">${opts}</select>`;
+    }
+    if (videoDistPrefs.includes('IOS Video (Teradek Serv + Link)')) {
+        const iosDb = devices && devices.iosVideo ? devices.iosVideo : {};
+        const names = Object.keys(iosDb).sort(localeSort);
+        const opts = names
+            .map(n => `<option value="${escapeHtml(n)}"${n === 'Teradek Serv + Link' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>iOS Video</strong> - <select id="gearListIosVideo">${opts}</select>`;
+    }
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
         monitorSizes.push(7);
