@@ -3,5 +3,6 @@ module.exports = {
   setupFiles: ['jest-localstorage-mock'],
   moduleNameMapper: {
     '^lz-string$': '<rootDir>/tests/__mocks__/lz-string.js'
-  }
+  },
+  workerIdleMemoryLimit: '1GB'
 };
