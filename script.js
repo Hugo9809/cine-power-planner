@@ -5649,6 +5649,7 @@ saveSetupBtn.addEventListener("click", () => {
   storeSetups(setups);
   populateSetupSelect();
   setupSelect.value = setupName; // Select the newly saved setup
+  saveCurrentSession(); // Persist selection so refreshes restore this setup
   loadedSetupState = getCurrentSetupState();
   checkSetupChanged();
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
