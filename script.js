@@ -1,5 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
-/* global texts, categoryNames, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -984,15 +984,20 @@ function checkArriCompatibility() {
   }
 }
 
+let gearItemTranslations = {};
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
   try {
     const translations = require('./translations.js');
     window.texts = translations.texts;
     window.categoryNames = translations.categoryNames;
+    window.gearItems = translations.gearItems;
+    gearItemTranslations = translations.gearItems || {};
   } catch (e) {
     console.warn('Failed to load translations', e);
   }
+} else {
+  gearItemTranslations = typeof gearItems !== 'undefined' ? gearItems : {};
 }
 
 
@@ -8029,8 +8034,10 @@ function generateGearListHtml(info = {}) {
                     if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                 }
                 const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
-                const name = `${base}${ctxStr}`;
-                return `<span class="gear-item" data-gear-name="${escapeHtml(name)}">${total}x ${escapeHtml(name)}</span>`;
+                const translatedBase = gearItemTranslations[currentLang]?.[base] || base;
+                const displayName = `${translatedBase}${ctxStr}`;
+                const dataName = `${base}${ctxStr}`;
+                return `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}">${total}x ${escapeHtml(displayName)}</span>`;
             })
             .join('<br>');
     };
@@ -8341,7 +8348,7 @@ function generateGearListHtml(info = {}) {
     });
     const standCount = gripItems.filter(item => /\bstand\b/i.test(item) && !/wheel/i.test(item)).length;
     if (standCount) {
-        gripItems.push(...Array(standCount * 3).fill('Tennisball'));
+        gripItems.push(...Array(standCount * 3).fill('tennis ball'));
     }
     const maglinerCount = cartsTransportationItems.filter(item => /Magliner/i.test(item)).length;
     if (maglinerCount) {

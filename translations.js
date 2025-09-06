@@ -1863,6 +1863,14 @@ const texts = {
   }
 };
 
+const gearItems = {
+  en: { 'tennis ball': 'tennis ball' },
+  it: { 'tennis ball': 'palla da tennis' },
+  es: { 'tennis ball': 'pelota de tenis' },
+  fr: { 'tennis ball': 'balle de tennis' },
+  de: { 'tennis ball': 'Tennisball' }
+};
+
 // Mapping for category values to display names (singular for form dropdown)
 const categoryNames = {
   en: {
@@ -1942,4 +1950,4 @@ const categoryNames = {
   },
 };
 
-if (typeof module !== 'undefined' && module.exports) { module.exports = { texts, categoryNames }; }
+if (typeof module !== 'undefined' && module.exports) { module.exports = { texts, categoryNames, gearItems }; }
