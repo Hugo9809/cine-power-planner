@@ -2191,6 +2191,13 @@ describe('script.js functions', () => {
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
   });
 
+  test('project requirements form includes Gaffers 7" Monitor option', () => {
+    setupDom(true);
+    const sel = document.getElementById('videoDistribution');
+    const values = Array.from(sel.options).map(o => o.value);
+    expect(values).toContain('Gaffers 7" Monitor');
+  });
+
   test('sensor mode appears in project requirements when provided', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ sensorMode: 'S35 3:2' });

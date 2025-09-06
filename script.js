@@ -7670,8 +7670,12 @@ function generateGearListHtml(info = {}) {
     }
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
-        const sevenInchNames = Object.keys(monitorsDb).filter(n => monitorsDb[n].screenSizeInches === 7).sort(localeSort);
-        const opts = sevenInchNames.map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`).join('');
+        const sevenInchNames = Object.keys(monitorsDb)
+            .filter(n => monitorsDb[n].screenSizeInches === 7)
+            .sort(localeSort);
+        const opts = sevenInchNames
+            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+            .join('');
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
     if (hasMotor) {
