@@ -199,10 +199,20 @@ function saveSetups(setups) {
   );
 }
 
-function saveSetup(name, setup) {
+function updateSetups(callback) {
   const setups = loadSetups();
-  setups[name] = setup;
-  saveSetups(setups);
+  const { result, changed = true } = callback(setups) || {};
+  if (changed) {
+    saveSetups(setups);
+  }
+  return result;
+}
+
+function saveSetup(name, setup) {
+  updateSetups((setups) => {
+    setups[name] = setup;
+    return { changed: true };
+  });
 }
 
 function loadSetup(name) {
@@ -211,33 +221,37 @@ function loadSetup(name) {
 }
 
 function deleteSetup(name) {
-  const setups = loadSetups();
-  delete setups[name];
-  saveSetups(setups);
+  updateSetups((setups) => {
+    if (Object.prototype.hasOwnProperty.call(setups, name)) {
+      delete setups[name];
+      return { changed: true };
+    }
+    return { changed: false };
+  });
 }
 
 function renameSetup(oldName, newName) {
-  const setups = loadSetups();
-  if (!Object.prototype.hasOwnProperty.call(setups, oldName)) {
-    return null;
-  }
-  const sanitized = newName.trim();
-  // Guard against empty or whitespace-only names. Renaming to such a value
-  // would create an empty key in the setups object. In that case simply keep
-  // the original name.
-  if (!sanitized) {
-    return oldName;
-  }
-  if (oldName.trim().toLowerCase() === sanitized.toLowerCase()) {
-    return oldName;
-  }
-  const used = new Set(Object.keys(setups));
-  used.delete(oldName);
-  const target = generateUniqueName(sanitized, used);
-  setups[target] = setups[oldName];
-  delete setups[oldName];
-  saveSetups(setups);
-  return target;
+  return updateSetups((setups) => {
+    if (!Object.prototype.hasOwnProperty.call(setups, oldName)) {
+      return { result: null, changed: false };
+    }
+    const sanitized = newName.trim();
+    // Guard against empty or whitespace-only names. Renaming to such a value
+    // would create an empty key in the setups object. In that case simply keep
+    // the original name.
+    if (!sanitized) {
+      return { result: oldName, changed: false };
+    }
+    if (oldName.trim().toLowerCase() === sanitized.toLowerCase()) {
+      return { result: oldName, changed: false };
+    }
+    const used = new Set(Object.keys(setups));
+    used.delete(oldName);
+    const target = generateUniqueName(sanitized, used);
+    setups[target] = setups[oldName];
+    delete setups[oldName];
+    return { result: target, changed: true };
+  });
 }
 
 // --- Gear List Storage ---
