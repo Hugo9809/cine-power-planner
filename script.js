@@ -7643,7 +7643,6 @@ function generateGearListHtml(info = {}) {
             .filter(Boolean),
         distance: distanceSelect && distanceSelect.value && distanceSelect.value !== 'None' ? getText(distanceSelect) : '',
         cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
-        batteryPlate: batteryPlateSelect && batteryPlateSelect.value && batteryPlateSelect.value !== 'None' ? getText(batteryPlateSelect) : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
     };
     const hasMotor = selectedNames.motors.length > 0;
@@ -7907,8 +7906,7 @@ function generateGearListHtml(info = {}) {
         rows.push(`<tr><td>${items}</td></tr>`);
     };
     addRow('Camera', formatItems([selectedNames.camera]));
-    const cameraSupportItems = [selectedNames.batteryPlate, ...supportAccNoCages];
-    const cameraSupportText = formatItems(cameraSupportItems);
+    const cameraSupportText = formatItems(supportAccNoCages);
     let cageSelectHtml = '';
     if (compatibleCages.length) {
         const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(addArriKNumber(c))}</option>`).join('');
