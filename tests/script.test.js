@@ -1452,7 +1452,7 @@ describe('script.js functions', () => {
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V98micro');
-    expect(html).toContain('C-Stand 20" (Directors handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Directors handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('2x Spigot (Directors handheld)');
@@ -1479,7 +1479,7 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListGaffersMonitor7"');
     expect(html).toContain('Gaffer Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
-    expect(html).toContain('C-Stand 20" (Gaffers handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Gaffers handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('2x Spigot (Gaffers handheld)');
@@ -1498,13 +1498,28 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListDopMonitor7"');
     expect(html).toContain('DoP Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
-    expect(html).toContain('C-Stand 20" (DoP handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (DoP handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('2x Spigot (DoP handheld)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC 0.3 m (DoP handheld)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (DoP handheld)');
+  });
+
+  test('multiple handheld monitors merge grip items', () => {
+    const { generateGearListHtml } = script;
+    global.devices.monitors = { 'SmallHD Ultra 7': { screenSizeInches: 7 } };
+    const html = generateGearListHtml({
+      videoDistribution: 'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
+    });
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain(
+      '3x Avenger C-Stand Sliding Leg 20" (Directors handheld, Gaffers handheld, DoP handheld)'
+    );
+    expect(gripSection).toContain(
+      '3x Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld, Gaffers handheld, DoP handheld)'
+    );
   });
 
   test('motor adds focus monitor and related accessories to gear list', () => {
@@ -2025,8 +2040,7 @@ describe('script.js functions', () => {
     expect(text).toContain('1x 100mm bowl Standard Tripod + Mid-Level Spreader');
     expect(text).toContain('1x 100mm bowl Frog Tripod + Mid-Level Spreader');
     expect(text).toContain('1x 100mm bowl Hi-Head');
-    expect(text).toContain('1x Sandsack (for Frog Tripod)');
-    expect(text).toContain('1x Sandsack (for Hi-Head)');
+    expect(text).toContain('2x Sandsack (for Frog Tripod, for Hi-Head)');
   });
 
   test('Easyrig scenario adds stabiliser with dropdown options', () => {

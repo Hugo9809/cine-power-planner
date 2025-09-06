@@ -7735,12 +7735,24 @@ function generateGearListHtml(info = {}) {
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
-        arr.filter(Boolean).forEach(n => {
-            const key = n.trim();
-            counts[key] = (counts[key] || 0) + 1;
+        arr.filter(Boolean).forEach(item => {
+            const match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+            const base = match ? match[1].trim() : item.trim();
+            const ctx = match && match[2] ? match[2].trim() : '';
+            if (!counts[base]) {
+                counts[base] = { count: 0, ctxs: [] };
+            }
+            counts[base].count++;
+            if (ctx && !counts[base].ctxs.includes(ctx)) {
+                counts[base].ctxs.push(ctx);
+            }
         });
         return Object.entries(counts)
-            .map(([n, c]) => `<span class="gear-item" data-gear-name="${escapeHtml(n)}">${c}x ${escapeHtml(n)}</span>`)
+            .map(([base, { count, ctxs }]) => {
+                const ctxStr = ctxs.length ? ` (${ctxs.join(', ')})` : '';
+                const name = `${base}${ctxStr}`;
+                return `<span class="gear-item" data-gear-name="${escapeHtml(name)}">${count}x ${escapeHtml(name)}</span>`;
+            })
             .join('<br>');
     };
     const rows = [];
@@ -7921,19 +7933,19 @@ function generateGearListHtml(info = {}) {
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
-        gripItems.push('C-Stand 20" (Directors handheld)');
+        gripItems.push('Avenger C-Stand Sliding Leg 20" (Directors handheld)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
         riggingAcc.push('Spigot (Directors handheld)');
         riggingAcc.push('Spigot (Directors handheld)');
     }
     if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
-        gripItems.push('C-Stand 20" (Gaffers handheld)');
+        gripItems.push('Avenger C-Stand Sliding Leg 20" (Gaffers handheld)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
         riggingAcc.push('Spigot (Gaffers handheld)');
         riggingAcc.push('Spigot (Gaffers handheld)');
     }
     if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
-        gripItems.push('C-Stand 20" (DoP handheld)');
+        gripItems.push('Avenger C-Stand Sliding Leg 20" (DoP handheld)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
         riggingAcc.push('Spigot (DoP handheld)');
         riggingAcc.push('Spigot (DoP handheld)');
