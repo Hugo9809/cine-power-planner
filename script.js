@@ -6911,6 +6911,11 @@ shareSetupBtn.addEventListener('click', () => {
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value
   };
+  const project = typeof loadProject === 'function' ? loadProject() : null;
+  if (project) {
+    if (project.gearList) currentSetup.gearList = project.gearList;
+    if (project.projectInfo) currentSetup.projectInfo = project.projectInfo;
+  }
   const deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
     currentSetup.changedDevices = deviceChanges;
@@ -6922,6 +6927,10 @@ shareSetupBtn.addEventListener('click', () => {
   }
   const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(currentSetup));
   const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
+  if (link.length > 2000) {
+    alert(texts[currentLang].shareLinkTooLong || 'Shared link is too long.');
+    return;
+  }
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(link)
       .then(() => alert(texts[currentLang].shareLinkCopied))
@@ -9069,6 +9078,21 @@ function applySharedSetup(shared) {
       const fb = loadFeedbackSafe();
       fb[key] = (fb[key] || []).concat(decoded.feedback);
       saveFeedbackSafe(fb);
+    }
+    if (decoded.projectInfo) {
+      currentProjectInfo = decoded.projectInfo;
+      if (projectForm) populateProjectForm(currentProjectInfo);
+    }
+    if (decoded.gearList) {
+      displayGearAndRequirements(decoded.gearList);
+      ensureGearListActions();
+      bindGearListCageListener();
+      bindGearListEasyrigListener();
+      bindGearListSliderBowlListener();
+      bindGearListDirectorsMonitorListener();
+    }
+    if (decoded.gearList || decoded.projectInfo) {
+      saveProject({ gearList: decoded.gearList || '', projectInfo: decoded.projectInfo || null });
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);

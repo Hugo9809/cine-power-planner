@@ -4641,6 +4641,37 @@ describe('script.js functions', () => {
     expect(encoded.length).toBeLessThan(base64.length);
   });
 
+  test('shareSetupBtn includes gear list and project info', () => {
+    const gearHtml = '<h3>Gear List</h3><table class="gear-table"><tr><td>CamA</td></tr></table>';
+    global.loadProject = jest.fn(() => ({ gearList: gearHtml, projectInfo: { notes: 'shoot' } }));
+    const btn = document.getElementById('shareSetupBtn');
+    btn.click();
+    const link = navigator.clipboard.writeText.mock.calls[0][0];
+    const encoded = new URL(link).searchParams.get('shared');
+    const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
+    expect(decoded.gearList).toBe(gearHtml);
+    expect(decoded.projectInfo.notes).toBe('shoot');
+  });
+
+  test('shareSetupBtn link stays under 2000 chars with gear list', () => {
+    const gearHtml = '<ul>' + 'x'.repeat(500) + '</ul>';
+    global.loadProject = jest.fn(() => ({ gearList: gearHtml, projectInfo: null }));
+    const btn = document.getElementById('shareSetupBtn');
+    btn.click();
+    const link = navigator.clipboard.writeText.mock.calls[0][0];
+    expect(link.length).toBeLessThan(2000);
+  });
+
+  test('applySharedSetup restores gear list and project info', () => {
+    const gearHtml = '<h3>Gear List</h3><table class="gear-table"><tr><td>CamA</td></tr></table>';
+    const data = { gearList: gearHtml, projectInfo: { notes: 'shoot' } };
+    global.saveProject = jest.fn();
+    script.applySharedSetup(LZString.compressToEncodedURIComponent(JSON.stringify(data)));
+    const gearOut = document.getElementById('gearListOutput');
+    expect(gearOut.innerHTML).toContain('Gear List');
+    expect(global.saveProject).toHaveBeenCalledWith({ gearList: gearHtml, projectInfo: { notes: 'shoot' } });
+  });
+
   test('applySharedSetupFromUrl restores setup name', () => {
     const data = { setupName: 'Shared Setup' };
     const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(data));
