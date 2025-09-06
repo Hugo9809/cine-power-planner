@@ -7519,6 +7519,14 @@ function generateGearListHtml(info = {}) {
                 if (name === 'ARRI LMB 4x5 Pro Set') {
                     filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
                     filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+                } else if (name === 'ARRI LMB 4x5 15mm LWS Set 3-Stage') {
+                    filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
+                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+                    filterSelections.push('ARRI LMB 4x5 Side Flags');
+                    filterSelections.push('ARRI LMB Flag Holders');
+                    filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
+                    filterSelections.push('ARRI LMB Accessory Adapter');
+                    filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
                 } else if (name === 'ARRI LMB 4x5 Clamp-On (3-Stage)') {
                     filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
                     filterSelections.push('ARRI LMB 4x5 Side Flags');
