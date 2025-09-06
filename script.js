@@ -5556,7 +5556,10 @@ deleteSetupBtn.addEventListener("click", () => {
     alert(texts[currentLang].alertNoSetupSelected);
     return;
   }
-  if (confirm(texts[currentLang].confirmDeleteSetup.replace("{name}", setupName))) {
+  if (
+    confirm(texts[currentLang].confirmDeleteSetup.replace("{name}", setupName)) &&
+    confirm(texts[currentLang].confirmDeleteSetupAgain)
+  ) {
     let setups = getSetups();
     delete setups[setupName];
     storeSetups(setups);
