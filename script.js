@@ -5130,6 +5130,11 @@ function enableDiagramInteractions() {
   let scale = 1;
   let panning = false;
   let panStart = { x: 0, y: 0 };
+  const getPos = e => {
+    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  };
   const apply = () => {
     root.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
   };
@@ -5154,14 +5159,18 @@ function enableDiagramInteractions() {
   }
   const onSvgMouseDown = e => {
     if (e.target.closest('.diagram-node')) return;
+    const pos = getPos(e);
     panning = true;
-    panStart = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+    panStart = { x: pos.x - pan.x, y: pos.y - pan.y };
+    if (e.touches) e.preventDefault();
   };
   const onPanMove = e => {
     if (!panning) return;
-    pan.x = e.clientX - panStart.x;
-    pan.y = e.clientY - panStart.y;
+    const pos = getPos(e);
+    pan.x = pos.x - panStart.x;
+    pan.y = pos.y - panStart.y;
     apply();
+    if (e.touches) e.preventDefault();
   };
   const stopPanning = () => { panning = false; };
 
@@ -5173,15 +5182,18 @@ function enableDiagramInteractions() {
     if (!node) return;
     dragId = node.getAttribute('data-node');
     dragNode = node;
-    dragStart = { x: e.clientX, y: e.clientY };
+    const pos = getPos(e);
+    dragStart = { x: pos.x, y: pos.y };
+    if (e.touches) e.preventDefault();
     e.stopPropagation();
   };
   const onDragMove = e => {
     if (!dragId) return;
     const start = lastDiagramPositions[dragId];
     if (!start) return;
-    const dx = (e.clientX - dragStart.x) / scale;
-    const dy = (e.clientY - dragStart.y) / scale;
+    const pos = getPos(e);
+    const dx = (pos.x - dragStart.x) / scale;
+    const dy = (pos.y - dragStart.y) / scale;
     let newX = start.x + dx;
     let newY = start.y + dy;
     if (gridSnap) {
@@ -5192,13 +5204,15 @@ function enableDiagramInteractions() {
     const tx = newX - start.x;
     const ty = newY - start.y;
     if (dragNode) dragNode.setAttribute('transform', `translate(${tx},${ty})`);
+    if (e.touches) e.preventDefault();
   };
   const onDragEnd = e => {
     if (!dragId) return;
     const start = lastDiagramPositions[dragId];
     if (start) {
-      const dx = (e.clientX - dragStart.x) / scale;
-      const dy = (e.clientY - dragStart.y) / scale;
+      const pos = getPos(e);
+      const dx = (pos.x - dragStart.x) / scale;
+      const dy = (pos.y - dragStart.y) / scale;
       let newX = start.x + dx;
       let newY = start.y + dy;
       if (gridSnap) {
@@ -5211,22 +5225,35 @@ function enableDiagramInteractions() {
     dragId = null;
     dragNode = null;
     renderSetupDiagram();
+    if (e.touches) e.preventDefault();
   };
 
   svg.addEventListener('mousedown', onSvgMouseDown);
+  svg.addEventListener('touchstart', onSvgMouseDown, { passive: false });
   window.addEventListener('mousemove', onPanMove);
+  window.addEventListener('touchmove', onPanMove, { passive: false });
   window.addEventListener('mouseup', stopPanning);
+  window.addEventListener('touchend', stopPanning);
   svg.addEventListener('mousedown', onDragStart);
+  svg.addEventListener('touchstart', onDragStart, { passive: false });
   window.addEventListener('mousemove', onDragMove);
+  window.addEventListener('touchmove', onDragMove, { passive: false });
   window.addEventListener('mouseup', onDragEnd);
+  window.addEventListener('touchend', onDragEnd);
 
   cleanupDiagramInteractions = () => {
     svg.removeEventListener('mousedown', onSvgMouseDown);
+    svg.removeEventListener('touchstart', onSvgMouseDown);
     window.removeEventListener('mousemove', onPanMove);
+    window.removeEventListener('touchmove', onPanMove);
     window.removeEventListener('mouseup', stopPanning);
+    window.removeEventListener('touchend', stopPanning);
     svg.removeEventListener('mousedown', onDragStart);
+    svg.removeEventListener('touchstart', onDragStart);
     window.removeEventListener('mousemove', onDragMove);
+    window.removeEventListener('touchmove', onDragMove);
     window.removeEventListener('mouseup', onDragEnd);
+    window.removeEventListener('touchend', onDragEnd);
   };
 }
 

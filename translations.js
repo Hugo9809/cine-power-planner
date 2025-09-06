@@ -370,7 +370,7 @@ const texts = {
       "Close the device database editor and return to normal mode.",
     zoomInLabel: "Zoom in",
     zoomOutLabel: "Zoom out",
-    diagramMoveHint: "Move nodes with drag and drop.",
+    diagramMoveHint: "Drag nodes to rearrange; drag empty space to pan.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   it: {
@@ -715,7 +715,7 @@ const texts = {
     hideDeviceManagerHelp: "Nascondi l'editor del database dei dispositivi.",
     zoomInLabel: "Ingrandisci",
     zoomOutLabel: "Rimpicciolisci",
-    diagramMoveHint: "Trascina i nodi per spostarli.",
+    diagramMoveHint: "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma.",
   },
   es: {
     appTitle: "Planificador de Consumo de Energía de Cámaras",
@@ -1074,7 +1074,7 @@ const texts = {
     hideDeviceManagerHelp: "Oculta el editor de la base de datos de dispositivos.",
     zoomInLabel: "Acercar",
     zoomOutLabel: "Alejar",
-    diagramMoveHint: "Mueve los nodos arrastrándolos.",
+    diagramMoveHint: "Mueve los nodos arrastrándolos. Arrastra un espacio vacío para desplazar el diagrama.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   fr: {
@@ -1436,7 +1436,7 @@ const texts = {
     hideDeviceManagerHelp: "Masque l'éditeur de la base de données des appareils.",
     zoomInLabel: "Zoom avant",
     zoomOutLabel: "Zoom arrière",
-    diagramMoveHint: "Déplacez les nœuds par glisser-déposer.",
+    diagramMoveHint: "Déplacez les nœuds par glisser-déposer. Faites glisser un espace vide pour déplacer le diagramme.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   de: {
@@ -1795,7 +1795,7 @@ const texts = {
     hideDeviceManagerHelp: "Blendet den Gerätedatenbank-Editor aus.",
     zoomInLabel: "Hineinzoomen",
     zoomOutLabel: "Herauszoomen",
-    diagramMoveHint: "Knoten per Drag & Drop verschieben.",
+    diagramMoveHint: "Knoten per Drag & Drop verschieben. Leeren Bereich ziehen, um das Diagramm zu verschieben.",
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   }
 };
