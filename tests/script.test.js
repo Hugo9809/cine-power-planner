@@ -3546,6 +3546,38 @@ describe('script.js functions', () => {
     expect(root.getAttribute('transform')).toBe('translate(0,0) scale(1)');
   });
 
+  test('reset view clears manual node positions', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const node = document.querySelector('#diagramArea .diagram-node[data-node="battery"]');
+    const rect = node.querySelector('rect');
+    const origX = parseFloat(rect.getAttribute('x'));
+    const origY = parseFloat(rect.getAttribute('y'));
+
+    node.dispatchEvent(new MouseEvent('mousedown', { clientX: 0, clientY: 0, bubbles: true }));
+    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 13, clientY: 27, bubbles: true }));
+    window.dispatchEvent(new MouseEvent('mouseup', { clientX: 13, clientY: 27, bubbles: true }));
+
+    let rect2 = document.querySelector('#diagramArea .diagram-node[data-node="battery"] rect');
+    expect(parseFloat(rect2.getAttribute('x'))).toBeCloseTo(origX + 13);
+    expect(parseFloat(rect2.getAttribute('y'))).toBeCloseTo(origY + 27);
+
+    const resetBtn = document.getElementById('resetView');
+    resetBtn.click();
+
+    rect2 = document.querySelector('#diagramArea .diagram-node[data-node="battery"] rect');
+    expect(parseFloat(rect2.getAttribute('x'))).toBeCloseTo(origX);
+    expect(parseFloat(rect2.getAttribute('y'))).toBeCloseTo(origY);
+  });
+
   test('help dialog toggles with keyboard and overlay click', () => {
     const helpDialog = document.getElementById('helpDialog');
     const helpSearch = document.getElementById('helpSearch');
