@@ -8030,7 +8030,9 @@ function generateGearListHtml(info = {}) {
     if (videoDistPrefs.length) {
         projectInfo.monitoring = videoDistPrefs.join(', ');
     }
-    if (!info.monitoringConfiguration) delete projectInfo.monitoringConfiguration;
+    if (!info.monitoringConfiguration || info.monitoringConfiguration === 'Viewfinder and Onboard') {
+        delete projectInfo.monitoringConfiguration;
+    }
     delete projectInfo.monitoringSettings;
     delete projectInfo.videoDistribution;
     delete projectInfo.tripodHeadBrand;
