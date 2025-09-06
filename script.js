@@ -1,5 +1,5 @@
 // script.js – Main logic for the Camera Power Planner app
-/* global texts, categoryNames, loadSessionState, saveSessionState, loadGearList, saveGearList, deleteGearList */
+/* global texts, categoryNames, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -5739,8 +5739,8 @@ setupSelect.addEventListener("change", (event) => {
       projectRequirementsOutput.innerHTML = '';
       projectRequirementsOutput.classList.add('hidden');
     }
-    if (typeof deleteGearList === 'function') {
-      deleteGearList();
+    if (typeof deleteProject === 'function') {
+      deleteProject();
     }
   } else {
     let setups = getSetups();
@@ -5769,12 +5769,12 @@ setupSelect.addEventListener("change", (event) => {
       bindGearListEasyrigListener();
       bindGearListSliderBowlListener();
       bindGearListDirectorsMonitorListener();
-          if (typeof saveGearList === 'function') {
-            saveGearList({ projectInfo: currentProjectInfo, gearList: setup.gearList });
+          if (typeof saveProject === 'function') {
+            saveProject({ projectInfo: currentProjectInfo, gearList: setup.gearList });
           }
         } else {
-          if (typeof deleteGearList === 'function') {
-            deleteGearList();
+          if (typeof deleteProject === 'function') {
+            deleteProject();
           }
         }
       }
@@ -8461,8 +8461,8 @@ function saveCurrentGearList() {
     if (!html) return;
     const info = projectForm ? collectProjectFormData() : {};
     currentProjectInfo = Object.values(info).some(v => v) ? info : null;
-    if (typeof saveGearList === 'function') {
-        saveGearList({ projectInfo: currentProjectInfo, gearList: html });
+    if (typeof saveProject === 'function') {
+        saveProject({ projectInfo: currentProjectInfo, gearList: html });
     }
     const setupName = (setupSelect && setupSelect.value) || (setupNameInput && setupNameInput.value.trim());
     if (setupName) {
@@ -8526,8 +8526,8 @@ function deleteCurrentGearList() {
         projectRequirementsOutput.innerHTML = '';
         projectRequirementsOutput.classList.add('hidden');
     }
-    if (typeof deleteGearList === 'function') {
-        deleteGearList();
+    if (typeof deleteProject === 'function') {
+        deleteProject();
     }
     const setupName = setupSelect && setupSelect.value;
     if (setupName) {
@@ -8751,13 +8751,13 @@ function restoreSessionState() {
     }
   }
   if (gearListOutput || projectRequirementsOutput) {
-    const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
-    if (storedGearList) {
-      if (typeof storedGearList === 'object' && storedGearList.projectInfo) {
-        currentProjectInfo = storedGearList.projectInfo;
+    const storedProject = typeof loadProject === 'function' ? loadProject() : null;
+    if (storedProject && (storedProject.gearList || storedProject.projectInfo)) {
+      if (storedProject.projectInfo) {
+        currentProjectInfo = storedProject.projectInfo;
         if (projectForm) populateProjectForm(currentProjectInfo);
       }
-      displayGearAndRequirements(storedGearList);
+      displayGearAndRequirements(storedProject.gearList);
       if (gearListOutput) {
         ensureGearListActions();
         bindGearListCageListener();
@@ -8765,8 +8765,8 @@ function restoreSessionState() {
         bindGearListSliderBowlListener();
         bindGearListDirectorsMonitorListener();
       }
-    } else if (!state && typeof deleteGearList === 'function') {
-      deleteGearList();
+    } else if (!state && typeof deleteProject === 'function') {
+      deleteProject();
     }
   }
 }

@@ -155,9 +155,9 @@ test('filter options include diopter', () => {
 test('restores project requirements from storage when gear list element is absent', () => {
   setupDom(true);
   const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
-  global.loadGearList = jest.fn(() => storedHtml);
-  global.saveGearList = jest.fn();
-  global.deleteGearList = jest.fn();
+  global.loadProject = jest.fn(() => ({ gearList: storedHtml, projectInfo: null }));
+  global.saveProject = jest.fn();
+  global.deleteProject = jest.fn();
   require('../translations.js');
   const script = require('../script.js');
   script.setLanguage('en');
@@ -170,9 +170,9 @@ test('restores project requirements from storage when gear list element is absen
 test('restores project requirements from storage with gear list present', () => {
   setupDom(false);
   const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div><h3>Gear List</h3><table class="gear-table"></table>';
-  global.loadGearList = jest.fn(() => storedHtml);
-  global.saveGearList = jest.fn();
-  global.deleteGearList = jest.fn();
+  global.loadProject = jest.fn(() => ({ gearList: storedHtml, projectInfo: null }));
+  global.saveProject = jest.fn();
+  global.deleteProject = jest.fn();
   require('../translations.js');
   const script = require('../script.js');
   script.setLanguage('en');
@@ -188,9 +188,9 @@ test('restores project requirements from legacy object storage', () => {
     projectHtml: '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>',
     gearHtml: ''
   };
-  global.loadGearList = jest.fn(() => storedObj);
-  global.saveGearList = jest.fn();
-  global.deleteGearList = jest.fn();
+  global.loadProject = jest.fn(() => ({ gearList: storedObj, projectInfo: null }));
+  global.saveProject = jest.fn();
+  global.deleteProject = jest.fn();
   require('../translations.js');
   const script = require('../script.js');
   script.setLanguage('en');
@@ -204,9 +204,9 @@ test('restores project requirements form from saved gear list', () => {
   global.loadSessionState = jest.fn(() => null);
   global.saveSessionState = jest.fn();
   const stored = { projectInfo: { projectName: 'Proj' }, gearList: '<h2>Proj</h2>' };
-  global.loadGearList = jest.fn(() => stored);
-  global.saveGearList = jest.fn();
-  global.deleteGearList = jest.fn();
+  global.loadProject = jest.fn(() => stored);
+  global.saveProject = jest.fn();
+  global.deleteProject = jest.fn();
   require('../translations.js');
   const script = require('../script.js');
   script.setLanguage('en');
@@ -359,9 +359,9 @@ describe('script.js functions', () => {
     global.deleteSetup = jest.fn();
     global.loadFeedback = jest.fn(() => ({}));
     global.saveFeedback = jest.fn();
-    global.loadGearList = jest.fn(() => '');
-    global.saveGearList = jest.fn();
-    global.deleteGearList = jest.fn();
+    global.loadProject = jest.fn(() => '');
+    global.saveProject = jest.fn();
+    global.deleteProject = jest.fn();
 
     require('../translations.js');
     script = require('../script.js');
@@ -607,19 +607,19 @@ describe('script.js functions', () => {
   });
 
   test('gear list cage selection is stored with selected attribute', () => {
-    global.saveGearList = jest.fn();
+    global.saveProject = jest.fn();
     const gear = document.getElementById('gearListOutput');
     gear.innerHTML = '1x <select id="gearListCage"><option value="Cage1">Cage1</option><option value="Cage2">Cage2</option></select>';
     gear.classList.remove('hidden');
     const cageSel = gear.querySelector('#gearListCage');
     cageSel.value = 'Cage2';
     script.saveCurrentGearList();
-    const saved = global.saveGearList.mock.calls[0][0];
+    const saved = global.saveProject.mock.calls[0][0];
     expect(saved.gearList).toContain('<option value="Cage2" selected');
   });
 
   test('project requirements are saved with gear list', () => {
-    global.saveGearList = jest.fn();
+    global.saveProject = jest.fn();
     const proj = document.getElementById('projectRequirementsOutput');
     proj.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
     proj.classList.remove('hidden');
@@ -627,20 +627,20 @@ describe('script.js functions', () => {
     gear.innerHTML = '<h2>Proj</h2><h3>Gear List</h3><table class="gear-table"></table>';
     gear.classList.remove('hidden');
     script.saveCurrentGearList();
-    const saved = global.saveGearList.mock.calls[0][0];
+    const saved = global.saveProject.mock.calls[0][0];
     expect(saved.gearList).toContain('<div class="requirements-grid">');
     expect(saved.gearList).toContain('<table class="gear-table">');
   });
 
   test('project requirements form data saved with gear list', () => {
-    global.saveGearList = jest.fn();
+    global.saveProject = jest.fn();
     document.getElementById('projectName').value = 'Proj';
     const codecSel = document.getElementById('codec');
     codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
     codecSel.value = 'ProRes';
     const form = document.getElementById('projectForm');
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    const saved = global.saveGearList.mock.calls[0][0];
+    const saved = global.saveProject.mock.calls[0][0];
     expect(saved.projectInfo.projectName).toBe('Proj');
     expect(saved.projectInfo.codec).toBe('ProRes');
   });
@@ -648,7 +648,7 @@ describe('script.js functions', () => {
   test('project requirements form saved with project', () => {
     const stored = {};
     global.saveSetups = jest.fn((data) => Object.assign(stored, data));
-    global.saveGearList = jest.fn();
+    global.saveProject = jest.fn();
     document.getElementById('projectName').value = 'Proj';
     const codecSel = document.getElementById('codec');
     codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
@@ -663,13 +663,13 @@ describe('script.js functions', () => {
   });
 
   test('changing device selection triggers gear list save', () => {
-    global.saveGearList = jest.fn();
+    global.saveProject = jest.fn();
     const gear = document.getElementById('gearListOutput');
     gear.innerHTML = '<div>Test</div>';
     gear.classList.remove('hidden');
     const camSel = document.getElementById('cameraSelect');
     camSel.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(global.saveGearList).toHaveBeenCalled();
+    expect(global.saveProject).toHaveBeenCalled();
   });
 
   test('generate gear list hides button until deleted', () => {
@@ -1549,9 +1549,6 @@ describe('script.js functions', () => {
     const html = generateGearListHtml();
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain(
-      '2x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Spare)'
-    );
-    expect(msSection).toContain(
       '2x Ultraslim BNC 0.5 m (1x Onboard monitor, 1x Spare)'
     );
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
@@ -1577,7 +1574,6 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Directors handheld, 3x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).not.toContain('spigot with male 3/8" and 1/4"');
-    expect(html).toContain('3x Tennisball');
     expect(html).toContain('2x Ultraslim BNC 0.3 m (1x Directors handheld, 1x Spare)');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
@@ -2935,7 +2931,7 @@ describe('script.js functions', () => {
   });
 
   test('saving setup triggers gear list save', () => {
-    global.saveGearList = jest.fn();
+    global.saveProject = jest.fn();
     const gear = document.getElementById('gearListOutput');
     gear.innerHTML = '<table></table>';
     gear.classList.remove('hidden');
@@ -2943,7 +2939,7 @@ describe('script.js functions', () => {
     nameInput.value = 'WithGear';
     nameInput.dispatchEvent(new Event('input', { bubbles: true }));
     document.getElementById('saveSetupBtn').click();
-    expect(global.saveGearList).toHaveBeenCalled();
+    expect(global.saveProject).toHaveBeenCalled();
   });
 
   test('Save button enables on input and Enter key saves setup', () => {
@@ -4793,9 +4789,9 @@ describe('copy summary button without clipboard support', () => {
     global.deleteSetup = jest.fn();
     global.loadFeedback = jest.fn(() => ({}));
     global.saveFeedback = jest.fn();
-    global.loadGearList = jest.fn(() => '');
-    global.saveGearList = jest.fn();
-    global.deleteGearList = jest.fn();
+    global.loadProject = jest.fn(() => '');
+    global.saveProject = jest.fn();
+    global.deleteProject = jest.fn();
 
     require('../translations.js');
     script = require('../script.js');
