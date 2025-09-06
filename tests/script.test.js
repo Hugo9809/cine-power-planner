@@ -1085,6 +1085,28 @@ describe('script.js functions', () => {
     expect(optionsB).not.toContain('VBatt');
   });
 
+  test('hotswap dropdown hides options below required current', () => {
+    global.devices.batteryHotswaps = {
+      SwapHi: { capacity: 50, pinA: 20, mount_type: 'V-Mount' },
+      SwapLo: { capacity: 20, pinA: 5, mount_type: 'V-Mount' }
+    };
+    global.devices.cameras.CamA.powerDrawWatts = 120;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    script.updateBatteryOptions();
+    script.updateCalculations();
+    const hsSel = document.getElementById('batteryHotswapSelect');
+    const visible = Array.from(hsSel.options).filter(o => !o.hidden).map(o => o.value);
+    expect(visible).toContain('SwapHi');
+    expect(visible).not.toContain('SwapLo');
+  });
+
   test('filter inputs disable autocomplete and spellcheck', () => {
     const ids = [
       'cameraListFilter', 'viewfinderListFilter', 'monitorListFilter', 'videoListFilter',

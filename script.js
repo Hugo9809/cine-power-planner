@@ -489,6 +489,29 @@ function getHotswapsByMount(mountType) {
   return out;
 }
 
+function filterHotswapsByCurrent(requiredCurrent) {
+  if (!hotswapSelect) return;
+  const currentValue = hotswapSelect.value;
+  let hasValid = false;
+  Array.from(hotswapSelect.options).forEach(opt => {
+    if (opt.value === "None") {
+      opt.hidden = false;
+      opt.disabled = false;
+      if (currentValue === opt.value) hasValid = true;
+      return;
+    }
+    const info = devices.batteryHotswaps && devices.batteryHotswaps[opt.value];
+    const ok = info && typeof info.pinA === "number" && info.pinA >= requiredCurrent;
+    opt.hidden = !ok;
+    opt.disabled = !ok;
+    if (ok && currentValue === opt.value) hasValid = true;
+  });
+  if (!hasValid) {
+    const first = Array.from(hotswapSelect.options).find(o => !o.hidden);
+    if (first) hotswapSelect.value = first.value;
+  }
+}
+
 function getSelectedPlate() {
   const camName = cameraSelect.value;
   const hasB = isNativeBMountCamera(camName);
@@ -4133,6 +4156,7 @@ function updateCalculations() {
   );
   totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+  filterHotswapsByCurrent(totalCurrentLow);
 
 // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
 let hours = null;
