@@ -811,6 +811,29 @@ button:disabled {
 #diagramLegend .video { background: #369; }
 #diagramLegend .fiz { background: #090; }
 
+#powerDiagramLegend {
+  margin-top: 0.25em;
+  font-size: 12px;
+}
+#powerDiagramLegend span {
+  margin: 0 6px;
+  display: inline-flex;
+  align-items: center;
+}
+#powerDiagramLegend .swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 4px;
+  display: inline-block;
+}
+#powerDiagramLegend .camera { background-color: #4caf50; }
+#powerDiagramLegend .monitor { background-color: #2196f3; }
+#powerDiagramLegend .video { background-color: #ffc107; }
+#powerDiagramLegend .motors { background-color: #9c27b0; }
+#powerDiagramLegend .controllers { background-color: #ff5722; }
+#powerDiagramLegend .distance { background-color: #795548; }
+
 .diagram-controls {
   margin-top: 0.5em;
   display: flex;

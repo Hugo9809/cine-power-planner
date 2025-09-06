@@ -1695,17 +1695,20 @@ const hotswapWarnElem     = document.getElementById("hotswapWarning");
 const powerDiagramElem    = document.getElementById("powerDiagram");
 const powerDiagramBarElem = document.getElementById("powerDiagramBar");
 const maxPowerTextElem    = document.getElementById("maxPowerText");
+const powerDiagramLegendElem = document.getElementById("powerDiagramLegend");
 
 function drawPowerDiagram(availableWatt, segments) {
-  if (!powerDiagramElem || !powerDiagramBarElem || !maxPowerTextElem) return;
+  if (!powerDiagramElem || !powerDiagramBarElem || !maxPowerTextElem || !powerDiagramLegendElem) return;
   if (!availableWatt || availableWatt <= 0) {
     powerDiagramElem.classList.add("hidden");
     powerDiagramBarElem.innerHTML = "";
+    powerDiagramLegendElem.innerHTML = "";
     maxPowerTextElem.textContent = "";
     return;
   }
   powerDiagramElem.classList.remove("hidden");
   powerDiagramBarElem.innerHTML = "";
+  powerDiagramLegendElem.innerHTML = "";
   const MAX_WIDTH = 300;
   const total = segments.reduce((sum, s) => sum + s.power, 0);
   const scale = MAX_WIDTH / Math.max(availableWatt, total);
@@ -1718,10 +1721,14 @@ function drawPowerDiagram(availableWatt, segments) {
     div.className = `segment ${seg.className}`;
     div.style.width = `${width}px`;
     div.setAttribute("title", `${seg.label} ${seg.power.toFixed(1)} W`);
-    const span = document.createElement("span");
-    span.textContent = seg.label.replace(/:$/, "");
-    div.appendChild(span);
     powerDiagramBarElem.appendChild(div);
+
+    const legendItem = document.createElement("span");
+    const swatch = document.createElement("span");
+    swatch.className = `swatch ${seg.className}`;
+    legendItem.appendChild(swatch);
+    legendItem.appendChild(document.createTextNode(seg.label.replace(/:$/, "")));
+    powerDiagramLegendElem.appendChild(legendItem);
   });
 
   if (total > availableWatt) {
