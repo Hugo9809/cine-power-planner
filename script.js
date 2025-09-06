@@ -8587,30 +8587,29 @@ function autoSaveCurrentSetup() {
 
 function restoreSessionState() {
   const state = loadSession();
-  if (!state) {
-    return;
+  if (state) {
+    if (setupNameInput) {
+      setupNameInput.value = state.setupName || '';
+      setupNameInput.dispatchEvent(new Event('input'));
+    }
+    if (cameraSelect && state.camera) cameraSelect.value = state.camera;
+    updateBatteryPlateVisibility();
+    if (batteryPlateSelect && state.batteryPlate) batteryPlateSelect.value = state.batteryPlate;
+    updateBatteryOptions();
+    if (monitorSelect && state.monitor) monitorSelect.value = state.monitor;
+    if (videoSelect && state.video) videoSelect.value = state.video;
+    if (cageSelect && state.cage) cageSelect.value = state.cage;
+    if (distanceSelect && state.distance) distanceSelect.value = state.distance;
+    if (Array.isArray(state.motors)) {
+      state.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
+    }
+    if (Array.isArray(state.controllers)) {
+      state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
+    }
+    if (batterySelect && state.battery) batterySelect.value = state.battery;
+    setSliderBowlValue(state.sliderBowl);
+    if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
   }
-  if (setupNameInput) {
-    setupNameInput.value = state.setupName || '';
-    setupNameInput.dispatchEvent(new Event('input'));
-  }
-  if (cameraSelect && state.camera) cameraSelect.value = state.camera;
-  updateBatteryPlateVisibility();
-  if (batteryPlateSelect && state.batteryPlate) batteryPlateSelect.value = state.batteryPlate;
-  updateBatteryOptions();
-  if (monitorSelect && state.monitor) monitorSelect.value = state.monitor;
-  if (videoSelect && state.video) videoSelect.value = state.video;
-  if (cageSelect && state.cage) cageSelect.value = state.cage;
-  if (distanceSelect && state.distance) distanceSelect.value = state.distance;
-  if (Array.isArray(state.motors)) {
-    state.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
-  }
-  if (Array.isArray(state.controllers)) {
-    state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
-  }
-  if (batterySelect && state.battery) batterySelect.value = state.battery;
-  setSliderBowlValue(state.sliderBowl);
-  if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
   if (gearListOutput || projectRequirementsOutput) {
     const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
     if (storedGearList) {
