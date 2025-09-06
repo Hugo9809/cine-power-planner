@@ -5178,9 +5178,21 @@ function attachDiagramPopups(map) {
       const pointer = e.touches && e.touches[0] ? e.touches[0] : e;
       popup.innerHTML = html;
       popup.style.display = 'block';
+
       const rect = setupDiagramContainer.getBoundingClientRect();
-      popup.style.left = `${pointer.clientX - rect.left + 10}px`;
-      popup.style.top = `${pointer.clientY - rect.top + 10}px`;
+      const relX = pointer.clientX - rect.left;
+      const relY = pointer.clientY - rect.top;
+      const offset = 10;
+      const popupWidth = popup.offsetWidth;
+
+      // Open the popup to the left if it would otherwise overflow the container
+      let left = relX + offset;
+      if (relX + popupWidth + offset > rect.width) {
+        left = Math.max(0, relX - popupWidth - offset);
+      }
+
+      popup.style.left = `${left}px`;
+      popup.style.top = `${relY + offset}px`;
     };
     const hide = () => { popup.style.display = 'none'; };
     node.addEventListener('mousemove', show);
