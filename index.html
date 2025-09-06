@@ -158,6 +158,12 @@
         <select id="batterySelect" aria-labelledby="batteryLabel"></select>
       </div>
     </div>
+    <div class="form-row" id="batteryHotswapRow">
+      <label for="batteryHotswapSelect" id="batteryHotswapLabel">Battery Hotswap:</label>
+      <div class="select-wrapper">
+        <select id="batteryHotswapSelect" aria-labelledby="batteryHotswapLabel"></select>
+      </div>
+    </div>
   </section>
 
   <section id="results">
@@ -172,6 +178,7 @@
     <p><strong><span id="batteryCountLabel">Batteries for 10h shoot (incl. spare):</span></strong> <span id="batteryCount">–</span></p>
     <p id="pinWarning" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
     <p id="dtapWarning" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
+    <p id="hotswapWarning" role="status" aria-live="polite" aria-describedby="batteryHotswapLabel"></p>
     <div id="temperatureNote"></div>
     <button id="runtimeFeedbackBtn" type="button">Submit User Runtime Feedback</button>
     <div class="button-row">

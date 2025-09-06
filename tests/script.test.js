@@ -84,6 +84,10 @@ function setupDom(removeGear) {
     batteries: {
       BattA: { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' }
     },
+    batteryHotswaps: {
+      SwapHi: { capacity: 50, pinA: 20, mount_type: 'V-Mount' },
+      SwapLo: { capacity: 20, pinA: 5, mount_type: 'V-Mount' }
+    },
     accessories: {
       powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
       cages: cagesData,
@@ -424,6 +428,7 @@ describe('script.js functions', () => {
     expect(document.getElementById('dtapWarning').textContent)
       .toBe(texts.en.dtapOk.replace('{max}', '5'));
   });
+
 
   test('copy summary button is placed before generate gear list button', () => {
     const copyBtn = document.getElementById('copySummaryBtn');
@@ -1963,6 +1968,20 @@ describe('script.js functions', () => {
     expect(csSection).not.toContain('Hotswap Plate');
     expect(csSection).not.toContain('data-gear-name="B-Mount"');
     expect(battSection).toContain('1x Hotswap Plate B-Mount');
+  });
+
+  test('gear list includes selected hotswap device', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('batterySelect', 'BattA');
+    addOpt('batteryHotswapSelect', 'SwapHi');
+    const html = generateGearListHtml();
+    const battSection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
+    expect(battSection).toContain('1x SwapHi');
   });
 
   test('gear list lists media cards and USB-C readers', () => {
