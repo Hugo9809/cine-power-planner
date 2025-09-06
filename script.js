@@ -1696,6 +1696,7 @@ function ensureEditProjectButton() {
     btn = document.createElement('button');
     btn.id = 'editProjectBtn';
     btn.addEventListener('click', () => {
+      populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
       populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
       populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
       projectDialog.showModal();
@@ -6514,6 +6515,7 @@ generateGearListBtn.addEventListener('click', () => {
         alertPinExceeded();
         return;
     }
+    populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
     populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
     projectDialog.showModal();
@@ -8142,6 +8144,7 @@ function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden')) return;
 
     if (projectForm) {
+        populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
         populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
         populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
         const info = collectProjectFormData();
@@ -8259,6 +8262,8 @@ if (cameraSelect) {
   cameraSelect.addEventListener('change', () => {
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
+    populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
   });
 }
 if (monitoringConfigurationSelect) {
@@ -8923,6 +8928,10 @@ function populateCameraPropertyDropdown(selectId, property, selected = '') {
   }
 }
 
+function populateRecordingResolutionDropdown(selected = '') {
+  populateCameraPropertyDropdown('recordingResolution', 'resolutions', selected);
+}
+
 function populateSensorModeDropdown(selected = '') {
   populateCameraPropertyDropdown('sensorMode', 'sensorModes', selected);
 }
@@ -8993,6 +9002,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveCurrentGearList,
     populateLensDropdown,
     populateCameraPropertyDropdown,
+    populateRecordingResolutionDropdown,
     populateSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
