@@ -2013,7 +2013,7 @@ const diagramIcons = {
   camera: "\uD83C\uDFA5", // 🎥 camera
   monitor: "\uD83D\uDDA5\uFE0F", // 🖥️ monitor
   viewfinder: "\uD83D\uDC41\uFE0F", // 👁️ viewfinder
-  video: "\uD83D\uDCE1", // 📡 wireless video
+  video: "\uD83D\uDDA5\uFE0F", // 🖥️ monitor
   motors: "\u2699\uFE0F", // ⚙️ lens motor
   controllers: "\uD83C\uDFAE", // 🎮 game controller
   handle: "\uD83C\uDFAE", // 🎮 handle/grip (same icon as controller)
