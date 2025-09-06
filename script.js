@@ -83,6 +83,17 @@ function storeSession(state) {
   }
 }
 
+function memoizeNormalization(fn) {
+  const cache = new Map();
+  return value => {
+    if (!value) return '';
+    const str = String(value).trim();
+    const key = str.toLowerCase();
+    if (!cache.has(key)) cache.set(key, fn(str, key));
+    return cache.get(key);
+  };
+}
+
 const VIDEO_TYPE_PATTERNS = [
   { needles: ['12g'], value: '12G-SDI' },
   { needles: ['6g'], value: '6G-SDI' },
@@ -98,19 +109,12 @@ const VIDEO_TYPE_PATTERNS = [
   { needles: ['dp'], value: 'DisplayPort' }
 ];
 
-// Cache normalized video type lookups to avoid repeated pattern scans
-const videoTypeCache = new Map();
-function normalizeVideoType(type) {
-  if (!type) return '';
-  const key = String(type).toLowerCase();
-  if (!videoTypeCache.has(key)) {
-    const match = VIDEO_TYPE_PATTERNS.find(({ needles }) =>
-      needles.every(n => key.includes(n))
-    );
-    videoTypeCache.set(key, match ? match.value : '');
-  }
-  return videoTypeCache.get(key);
-}
+const normalizeVideoType = memoizeNormalization((_, key) => {
+  const match = VIDEO_TYPE_PATTERNS.find(({ needles }) =>
+    needles.every(n => key.includes(n))
+  );
+  return match ? match.value : '';
+});
 
 const FIZ_CONNECTOR_MAP = {
   'lemo 4-pin (lbus)': 'LBUS (LEMO 4-pin)',
@@ -145,16 +149,11 @@ const FIZ_CONNECTOR_MAP = {
   'remote 8 pin': 'REMOTE B connector'
 };
 
-const createMapNormalizer = (map, cache) => type => {
-  if (!type) return '';
-  const trimmed = String(type).trim();
-  if (cache && cache.has(trimmed)) return cache.get(trimmed);
-  const normalized = map[trimmed.toLowerCase()] || trimmed;
-  if (cache) cache.set(trimmed, normalized);
-  return normalized;
-};
+function createMapNormalizer(map) {
+  return memoizeNormalization((str, key) => map[key] || str);
+}
 
-const normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP, new Map());
+const normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP);
 
 const VIEWFINDER_TYPE_MAP = {
   'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
@@ -205,9 +204,7 @@ const POWER_PORT_TYPE_MAP = {
   '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
 };
 
-// Cache power port normalization to reduce repeated string operations
-const powerPortCache = new Map();
-const mapPowerPortOne = createMapNormalizer(POWER_PORT_TYPE_MAP, powerPortCache);
+const mapPowerPortOne = createMapNormalizer(POWER_PORT_TYPE_MAP);
 
 function normalizePowerPortType(type) {
   if (!type) return [];
