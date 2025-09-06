@@ -7489,12 +7489,6 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         const hasLemo2 = Array.isArray(powerType)
             ? powerType.includes('LEMO 2-pin')
             : powerType === 'LEMO 2-pin';
-        if (hasLemo2) {
-            monitoringSupport.push(
-                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`,
-                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`
-            );
-        }
         const cameraData = devices.cameras[cameraSelect.value];
         const camVideo = (cameraData?.videoOutputs || []).map(v => v.type?.toUpperCase());
         const monVideo = (onboardMonitor.videoInputs || []).map(v => v.type?.toUpperCase());
@@ -7509,6 +7503,12 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
             monitoringSupport.push(
                 `Ultraslim HDMI 0.5 m (${monitorLabel})`,
                 `Ultraslim HDMI 0.5 m (${monitorLabel})`
+            );
+        }
+        if (hasLemo2) {
+            monitoringSupport.push(
+                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`,
+                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`
             );
         }
     }
@@ -7543,8 +7543,9 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
 
     const miscUnique = [...new Set(misc)];
     const monitoringSupportList = monitoringSupport.slice();
-    const riggingUnique = [...new Set(rigging)];
     for (let i = 0; i < 4; i++) monitoringSupportList.push('BNC Connector');
+    sortMonitoringSupport(monitoringSupportList);
+    const riggingUnique = [...new Set(rigging)];
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
@@ -7553,6 +7554,27 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         monitoringSupport: monitoringSupportList,
         rigging: riggingUnique
     };
+}
+
+function sortMonitoringSupport(arr) {
+    const getLength = item => {
+        const m = item.match(/(\d+(?:[.,]\d+)?)\s*m/i);
+        return m ? parseFloat(m[1].replace(',', '.')) : Infinity;
+    };
+    const getCategory = item => {
+        const lower = item.toLowerCase();
+        if (/d-tap|mini xlr/.test(lower)) return 3;
+        if (/bnc connector/.test(lower)) return 1;
+        if (/bnc|hdmi/.test(lower)) return 0;
+        return 2;
+    };
+    arr.sort((a, b) => {
+        const catDiff = getCategory(a) - getCategory(b);
+        if (catDiff) return catDiff;
+        const lenDiff = getLength(a) - getLength(b);
+        if (lenDiff) return lenDiff;
+        return a.localeCompare(b);
+    });
 }
 
 function collectProjectFormData() {
@@ -7859,28 +7881,28 @@ function generateGearListHtml(info = {}) {
     }
     const addMonitorCables = label => {
         monitoringSupportAcc.push(
-            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
-            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
             `Ultraslim BNC 0.3 m (${label})`,
-            `Ultraslim BNC 0.3 m (${label})`
+            `Ultraslim BNC 0.3 m (${label})`,
+            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
+            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`
         );
     };
     handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
     const addLargeMonitorCables = label => {
         monitoringSupportAcc.push(
-            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
-            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
             `Ultraslim BNC 0.5 m (${label})`,
-            `Ultraslim BNC 0.5 m (${label})`
+            `Ultraslim BNC 0.5 m (${label})`,
+            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
+            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`
         );
     };
     largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
     if (hasMotor) {
         monitoringSupportAcc.push(
-            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
-            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
             'Ultraslim BNC 0.3 m (Focus)',
-            'Ultraslim BNC 0.3 m (Focus)'
+            'Ultraslim BNC 0.3 m (Focus)',
+            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
+            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)'
         );
     }
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
@@ -8153,6 +8175,7 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + gearHtml;
     }
     addRow('Monitoring', monitoringItems);
+    sortMonitoringSupport(monitoringSupportAcc);
     const monitoringSupportHardware = formatItems(monitoringSupportAcc);
     const monitoringSupportItems = monitoringSupportHardware;
     addRow('Monitoring support', monitoringSupportItems);
