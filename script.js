@@ -8224,9 +8224,9 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Satz Paganinis');
         gripItems.push('sand bag');
         gripItems.push('sand bag');
-        gripItems.push('Bodenmatte');
-        gripItems.push('Bodenmatte');
-        gripItems.push('Bodenmatte');
+        gripItems.push('cable matt');
+        gripItems.push('cable matt');
+        gripItems.push('cable matt');
     }
     if (scenarios.includes('Slider') && scenarios.includes('Undersling mode')) {
         gripItems.push('Tango Beam');

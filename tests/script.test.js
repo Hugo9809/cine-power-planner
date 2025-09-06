@@ -2286,7 +2286,7 @@ describe('script.js functions', () => {
     expect(text).toContain('2x Apple Box Set / Bühnenkisten Set');
     expect(text).toContain('1x Satz Paganinis');
     expect(text).toContain('2x sand bag');
-    expect(text).toContain('3x Bodenmatte');
+    expect(text).toContain('3x cable matt');
     expect(text).toContain('12x Tennisball');
   });
 
