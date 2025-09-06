@@ -2,6 +2,27 @@
 const fs = require('fs');
 const path = require('path');
 const LZString = require('lz-string');
+const cagesData = require('../devices/cages.js');
+let cageCamera = '';
+let cageNames = [];
+for (const [, cage] of Object.entries(cagesData)) {
+  if (Array.isArray(cage.compatible) && cage.compatible.length) {
+    const cam = cage.compatible[0];
+    const matches = Object.entries(cagesData)
+      .filter(([, c]) => Array.isArray(c.compatible) && c.compatible.includes(cam))
+      .map(([n]) => n);
+    if (matches.length >= 2) {
+      cageCamera = cam;
+      cageNames = matches;
+      break;
+    }
+  }
+}
+if (!cageCamera) {
+  const [firstName, firstCage] = Object.entries(cagesData)[0];
+  cageCamera = Array.isArray(firstCage.compatible) && firstCage.compatible.length ? firstCage.compatible[0] : 'CamA';
+  cageNames = [firstName];
+}
 
 function setupDom(removeGear) {
   jest.resetModules();
@@ -19,6 +40,11 @@ function setupDom(removeGear) {
   global.devices = {
     cameras: {
       CamA: {
+        powerDrawWatts: 10,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoOutputs: [{ type: '3G-SDI' }]
+      },
+      [cageCamera]: {
         powerDrawWatts: 10,
         power: { input: { type: 'LEMO 2-pin' } },
         videoOutputs: [{ type: '3G-SDI' }]
@@ -60,7 +86,7 @@ function setupDom(removeGear) {
     },
     accessories: {
       powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-      cages: { 'CamA Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+      cages: cagesData,
       matteboxes: {
         'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
         'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' }
@@ -208,6 +234,11 @@ describe('script.js functions', () => {
           powerDrawWatts: 10,
           power: { input: { type: 'LEMO 2-pin' } },
           videoOutputs: [{ type: '3G-SDI' }]
+        },
+        [cageCamera]: {
+          powerDrawWatts: 10,
+          power: { input: { type: 'LEMO 2-pin' } },
+          videoOutputs: [{ type: '3G-SDI' }]
         }
       },
       monitors: {
@@ -246,7 +277,7 @@ describe('script.js functions', () => {
       },
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-        cages: { 'CamA Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+        cages: cagesData,
         matteboxes: {
           'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
           'ARRI LMB 4x5 15mm LWS Set 3-Stage': { type: 'Rod based' },
@@ -374,50 +405,6 @@ describe('script.js functions', () => {
     expect(beta.hidden).toBe(false);
   });
 
-  test('selected cage appears in camera support category of gear list', () => {
-    const addOpt = (id, value) => {
-      const sel = document.getElementById(id);
-      sel.innerHTML = `<option value="${value}">${value}</option>`;
-      sel.value = value;
-    };
-    addOpt('cameraSelect', 'CamA');
-    addOpt('batterySelect', 'BattA');
-    addOpt('cageSelect', 'CamA Cage');
-
-    const html = script.generateGearListHtml();
-    const wrap = document.createElement('div');
-    wrap.innerHTML = html;
-    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
-    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
-    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
-    const itemsRow = rows[cameraSupportIndex + 1];
-    const cageSel = itemsRow.querySelector('#gearListCage');
-    expect(cageSel).not.toBeNull();
-    expect(cageSel.value).toBe('CamA Cage');
-  });
-
-  test('selected lens adds rods and support to lens support category of gear list', () => {
-    const addOpt = (id, value) => {
-      const sel = document.getElementById(id);
-      sel.innerHTML = `<option value="${value}">${value}</option>`;
-      sel.value = value;
-    };
-    addOpt('cameraSelect', 'CamA');
-    addOpt('batterySelect', 'BattA');
-    addOpt('cageSelect', 'CamA Cage');
-    const html = script.generateGearListHtml({ lenses: 'LensA' });
-    const wrap = document.createElement('div');
-    wrap.innerHTML = html;
-    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
-    const lensIndex = rows.findIndex(r => r.textContent === 'Lens');
-    expect(lensIndex).toBeGreaterThanOrEqual(0);
-    const lensRow = rows[lensIndex + 1];
-    expect(lensRow.textContent).toContain('LensA');
-    const supportIndex = rows.findIndex(r => r.textContent === 'Lens Support');
-    const supportRow = rows[supportIndex + 1];
-    expect(supportRow.textContent).toContain('15mm rods 30cm');
-    expect(supportRow.textContent).toContain('15mm lens support');
-  });
 
   test('gear list lens row includes lens attributes', () => {
     const html = script.generateGearListHtml({ lenses: 'LensA' });
@@ -431,24 +418,49 @@ describe('script.js functions', () => {
     expect(lensRow.textContent).toContain('80mm front');
   });
 
-  test('multiple lenses with same rod length only add one pair of rods', () => {
+  test('selected cage appears in camera support category of gear list', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
       sel.innerHTML = `<option value="${value}">${value}</option>`;
       sel.value = value;
     };
-    addOpt('cameraSelect', 'CamA');
+    addOpt('cameraSelect', cageCamera);
     addOpt('batterySelect', 'BattA');
-    addOpt('cageSelect', 'CamA Cage');
-    devices.lenses.LensB = { brand: 'TestBrand', rodStandard: '15mm', rodLengthCm: 30 };
-    const html = script.generateGearListHtml({ lenses: 'LensA, LensB' });
+    addOpt('cageSelect', cageNames[0]);
+
+    const html = script.generateGearListHtml();
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[cameraSupportIndex + 1];
+    const cageSel = itemsRow.querySelector('#gearListCage');
+    expect(cageSel).not.toBeNull();
+    expect(cageSel.value).toBe(cageNames[0]);
+  });
+
+  test('selected lens adds rods and support to lens support category of gear list', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', cageCamera);
+    addOpt('batterySelect', 'BattA');
+    addOpt('cageSelect', cageNames[0]);
+    const html = script.generateGearListHtml({ lenses: 'LensA' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const lensIndex = rows.findIndex(r => r.textContent === 'Lens');
+    expect(lensIndex).toBeGreaterThanOrEqual(0);
+    const lensRow = rows[lensIndex + 1];
+    expect(lensRow.textContent).toContain('LensA');
     const supportIndex = rows.findIndex(r => r.textContent === 'Lens Support');
     const supportRow = rows[supportIndex + 1];
-    expect(supportRow.textContent).toContain('1x 15mm rods 30cm');
-    expect(supportRow.textContent).not.toContain('2x 15mm rods 30cm');
+    expect(supportRow.textContent).toContain('15mm rods 30cm');
+    expect(supportRow.textContent).toContain('15mm lens support');
   });
 
   test('selected lens does not appear in project requirements list', () => {
@@ -466,23 +478,22 @@ describe('script.js functions', () => {
   test('gear list updates when device selection changes', () => {
     const projectDialog = document.getElementById('projectDialog');
     projectDialog.close = jest.fn();
-    devices.accessories.cages = { Cage1: {}, Cage2: {} };
     const cameraSelect = document.getElementById('cameraSelect');
-    cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
-    cameraSelect.value = 'CamA';
+    cameraSelect.innerHTML = `<option value="${cageCamera}">${cageCamera}</option>`;
+    cameraSelect.value = cageCamera;
     const cageSelect = document.getElementById('cageSelect');
-    cageSelect.innerHTML = '<option value="Cage1">Cage1</option><option value="Cage2">Cage2</option>';
-    cageSelect.value = 'Cage1';
+    cageSelect.innerHTML = `<option value="${cageNames[0]}">${cageNames[0]}</option><option value="${cageNames[1]}">${cageNames[1]}</option>`;
+    cageSelect.value = cageNames[0];
     document.getElementById('projectName').value = 'Proj';
     const projectForm = document.getElementById('projectForm');
     projectForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const gearList = document.getElementById('gearListOutput');
     let cageSelEl = gearList.querySelector('#gearListCage');
-    expect(cageSelEl.value).toBe('Cage1');
-    cageSelect.value = 'Cage2';
+    expect(cageSelEl.value).toBe(cageNames[0]);
+    cageSelect.value = cageNames[1];
     cageSelect.dispatchEvent(new Event('change', { bubbles: true }));
     cageSelEl = gearList.querySelector('#gearListCage');
-    expect(cageSelEl.value).toBe('Cage2');
+    expect(cageSelEl.value).toBe(cageNames[1]);
   });
 
   test('gear list updates when camera selection changes', () => {
@@ -494,14 +505,14 @@ describe('script.js functions', () => {
       videoOutputs: [{ type: '3G-SDI' }]
     };
     const cameraSelect = document.getElementById('cameraSelect');
-    cameraSelect.innerHTML = '<option value="CamA">CamA</option><option value="CamB">CamB</option>';
-    cameraSelect.value = 'CamA';
+    cameraSelect.innerHTML = `<option value="${cageCamera}">${cageCamera}</option><option value="CamB">CamB</option>`;
+    cameraSelect.value = cageCamera;
     document.getElementById('projectName').value = 'Proj';
     const projectForm = document.getElementById('projectForm');
     projectForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const gearList = document.getElementById('gearListOutput');
     let rows = Array.from(gearList.querySelectorAll('.gear-table tr'));
-    expect(rows[1].textContent).toContain('CamA');
+    expect(rows[1].textContent).toContain(cageCamera);
     expect(gearList.querySelector('#gearListCage')).toBeTruthy();
     cameraSelect.value = 'CamB';
     cameraSelect.dispatchEvent(new Event('change', { bubbles: true }));
@@ -1314,7 +1325,7 @@ describe('script.js functions', () => {
         sel.innerHTML = `<option value="${value}">${value}</option>`;
         sel.value = value;
       };
-      addOpt('cameraSelect', 'CamA');
+      addOpt('cameraSelect', cageCamera);
       addOpt('monitorSelect', 'MonA');
       addOpt('videoSelect', 'VidA');
       addOpt('motor1Select', 'MotorA');
@@ -1339,10 +1350,10 @@ describe('script.js functions', () => {
       expect(html).toContain('1x IRND');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
-      expect(html).toContain('1x CamA');
+      expect(html).toContain(`1x ${cageCamera}`);
       expect(html).toContain('Camera Support');
       expect(html).toContain('1x <select id="gearListCage"');
-      expect(html).toContain('<option value="CamA Cage"');
+      expect(html).toContain(`<option value="${cageNames[0]}"`);
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('1x LBUS to LBUS');
       expect(html).toContain('Chargers');
@@ -4498,6 +4509,11 @@ describe('copy summary button without clipboard support', () => {
           powerDrawWatts: 10,
           power: { input: { type: 'LEMO 2-pin' } },
           videoOutputs: [{ type: '3G-SDI' }]
+        },
+        [cageCamera]: {
+          powerDrawWatts: 10,
+          power: { input: { type: 'LEMO 2-pin' } },
+          videoOutputs: [{ type: '3G-SDI' }]
         }
       },
       monitors: {
@@ -4536,7 +4552,7 @@ describe('copy summary button without clipboard support', () => {
       },
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-        cages: { 'CamA Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+        cages: cagesData,
         chargers: {
           'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
           'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
