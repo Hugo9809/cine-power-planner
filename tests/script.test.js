@@ -3422,6 +3422,35 @@ describe('script.js functions', () => {
     expect(popup.innerHTML).toContain('FIZ Port: LBUS');
   });
 
+  test('diagram popup opens to the left near right edge', () => {
+    global.devices.fiz.controllers.ControllerA.fizConnectors = [{ type: 'LBUS' }];
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const container = document.getElementById('diagramArea');
+    const originalRect = container.getBoundingClientRect;
+    container.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200 });
+    const popup = document.getElementById('diagramPopup');
+    Object.defineProperty(popup, 'offsetWidth', { configurable: true, get: () => 100 });
+
+    const node = container.querySelector('.diagram-node[data-node="controller0"]');
+    node.dispatchEvent(new MouseEvent('mousemove', { clientX: 190, clientY: 10 }));
+
+    expect(popup.style.left).toBe('80px');
+
+    container.getBoundingClientRect = originalRect;
+    delete popup.offsetWidth;
+  });
+
   test('grid snap toggle snaps nodes to grid', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
