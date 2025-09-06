@@ -8561,7 +8561,10 @@ function saveCurrentSession() {
 function restoreSessionState() {
   const state = loadSession();
   if (!state) return;
-  if (setupNameInput) setupNameInput.value = state.setupName || '';
+  if (setupNameInput) {
+    setupNameInput.value = state.setupName || '';
+    setupNameInput.dispatchEvent(new Event('input'));
+  }
   if (cameraSelect && state.camera) cameraSelect.value = state.camera;
   updateBatteryPlateVisibility();
   if (batteryPlateSelect && state.batteryPlate) batteryPlateSelect.value = state.batteryPlate;
@@ -8587,7 +8590,10 @@ function applySharedSetup(shared) {
     if (decoded.changedDevices) {
       applyDeviceChanges(decoded.changedDevices);
     }
-    if (setupNameInput && decoded.setupName) setupNameInput.value = decoded.setupName;
+    if (setupNameInput && decoded.setupName) {
+      setupNameInput.value = decoded.setupName;
+      setupNameInput.dispatchEvent(new Event('input'));
+    }
     if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
     updateBatteryPlateVisibility();
     if (batteryPlateSelect && decoded.batteryPlate) batteryPlateSelect.value = decoded.batteryPlate;
