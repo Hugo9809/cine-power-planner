@@ -1,0 +1,329 @@
+{
+  "accessories": {
+    "batteries": {
+      "attributes": [
+        "capacity",
+        "mount",
+        "weight_g"
+      ]
+    },
+    "cables": {
+      "cables": {
+        "attributes": [
+          "brand",
+          "compatibleCameras",
+          "compatibleControllers",
+          "compatibleDevices",
+          "connectors",
+          "from",
+          "kNumber",
+          "lengthM",
+          "notes",
+          "orientation",
+          "to",
+          "type",
+          "useCase"
+        ]
+      },
+      "power": {
+        "attributes": [
+          "from",
+          "lengthM",
+          "to"
+        ]
+      },
+      "video": {
+        "attributes": [
+          "lengthM",
+          "notes",
+          "type"
+        ]
+      }
+    },
+    "cages": {
+      "attributes": [
+        "batteryMount",
+        "brand",
+        "compatible",
+        "handle_extension_compatible",
+        "kNumber",
+        "material",
+        "mounting_points",
+        "notes",
+        "rodStandard",
+        "side_plates",
+        "top_handle_included",
+        "verified_source",
+        "weight_g"
+      ]
+    },
+    "cameraStabiliser": {
+      "attributes": [
+        "brand",
+        "options"
+      ]
+    },
+    "cameraSupport": {
+      "attributes": [
+        "brand",
+        "compatible",
+        "diameterMm",
+        "kNumber",
+        "lengthMm",
+        "rodStandard"
+      ]
+    },
+    "carts": {
+      "attributes": [
+        "brand"
+      ]
+    },
+    "chargers": {
+      "attributes": [
+        "chargingSpeedAmps",
+        "mount",
+        "slots"
+      ]
+    },
+    "filters": {
+      "attributes": [
+        "brand",
+        "kNumber"
+      ]
+    },
+    "grip": {
+      "attributes": [
+        "brand"
+      ]
+    },
+    "lenses": {
+      "attributes": [
+        "brand",
+        "clampOn",
+        "frontDiameterMm",
+        "lensType",
+        "mount",
+        "needsLensSupport",
+        "rodLengthCm",
+        "rodStandard",
+        "tStop"
+      ]
+    },
+    "matteboxes": {
+      "attributes": [
+        "brand",
+        "compatible",
+        "diameterMm",
+        "kNumber",
+        "stages",
+        "type"
+      ]
+    },
+    "media": {
+      "attributes": [
+        "brand",
+        "capacityGb",
+        "capacityTb",
+        "interface",
+        "kNumber",
+        "model"
+      ]
+    },
+    "powerPlates": {
+      "attributes": [
+        "brand",
+        "kNumber",
+        "mount"
+      ]
+    },
+    "rigging": {
+      "attributes": [
+        "brand"
+      ]
+    },
+    "sliders": {
+      "attributes": [
+        "brand"
+      ]
+    },
+    "tripodHeads": {
+      "attributes": [
+        "bowlSizeMm",
+        "brand",
+        "material"
+      ]
+    },
+    "tripods": {
+      "attributes": [
+        "bowlSizeMm",
+        "brand",
+        "material",
+        "spreader"
+      ]
+    },
+    "videoAssist": {
+      "attributes": [
+        "brand",
+        "screenSizeInches"
+      ]
+    }
+  },
+  "batteries": {
+    "attributes": [
+      "capacity",
+      "dtapA",
+      "mount_type",
+      "pinA",
+      "weight_g"
+    ]
+  },
+  "cameras": {
+    "attributes": [
+      "fizConnectors",
+      "lensMount",
+      "power",
+      "powerDrawWatts",
+      "recordingCodecs",
+      "recordingMedia",
+      "resolutions",
+      "sensorModes",
+      "timecode",
+      "videoOutputs",
+      "viewfinder",
+      "weight_g"
+    ]
+  },
+  "directorMonitors": {
+    "attributes": [
+      "brightnessNits",
+      "power",
+      "powerDrawWatts",
+      "screenSizeInches",
+      "videoInputs",
+      "videoOutputs",
+      "wirelessTx"
+    ]
+  },
+  "filterOptions": {
+    "attributes": []
+  },
+  "fiz": {
+    "controllers": {
+      "attributes": [
+        "battery_type",
+        "connectivity",
+        "fizConnectors",
+        "internalController",
+        "notes",
+        "powerDrawWatts",
+        "power_source"
+      ]
+    },
+    "distance": {
+      "attributes": [
+        "accuracy",
+        "connection_compatibility",
+        "fizConnectors",
+        "measurement_method",
+        "measurement_range",
+        "notes",
+        "output_display",
+        "powerDrawWatts"
+      ]
+    },
+    "handUnits": {
+      "attributes": [
+        "battery_type",
+        "connectivity",
+        "fizConnectors",
+        "internalController",
+        "notes",
+        "powerDrawWatts",
+        "power_source"
+      ]
+    },
+    "motors": {
+      "attributes": [
+        "fizConnector",
+        "fizConnectors",
+        "gearTypes",
+        "internalController",
+        "notes",
+        "powerDrawWatts",
+        "torqueNm"
+      ]
+    }
+  },
+  "iosVideo": {
+    "attributes": [
+      "frequency",
+      "latencyMs",
+      "notes",
+      "power",
+      "powerDrawWatts",
+      "videoInputs",
+      "videoOutputs"
+    ]
+  },
+  "lenses": {
+    "attributes": [
+      "brand",
+      "clampOn",
+      "frontDiameterMm",
+      "lensType",
+      "mount",
+      "needsLensSupport",
+      "rodLengthCm",
+      "rodStandard",
+      "tStop"
+    ]
+  },
+  "monitors": {
+    "attributes": [
+      "audioInput",
+      "audioIo",
+      "audioOutput",
+      "bluetooth",
+      "brightnessNits",
+      "latencyMs",
+      "power",
+      "powerDrawWatts",
+      "screenSizeInches",
+      "videoInputs",
+      "videoOutputs",
+      "wireless",
+      "wirelessRX",
+      "wirelessTx"
+    ]
+  },
+  "video": {
+    "attributes": [
+      "frequency",
+      "latencyMs",
+      "power",
+      "powerDrawWatts",
+      "videoInputs",
+      "videoOutputs"
+    ]
+  },
+  "viewfinders": {
+    "attributes": [
+      "brand",
+      "compatible",
+      "isPersonalGear",
+      "kNumber",
+      "listOfOrigin",
+      "model"
+    ]
+  },
+  "wirelessReceivers": {
+    "attributes": [
+      "frequency",
+      "latencyMs",
+      "power",
+      "powerDrawWatts",
+      "videoInputs",
+      "videoOutputs"
+    ]
+  }
+}
