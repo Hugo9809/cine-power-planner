@@ -291,6 +291,32 @@ const gear = {
         { "type": "3G-SDI", "notes": "2x out" }
       ]
     },
+    "SWIT K21": {
+      "brand": "SWIT",
+      "model": "K21",
+      "screenSizeInches": 21.5,
+      "brightnessNits": 1500,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "AC" },
+          { "type": "XLR" },
+          { "type": "V-Mount" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI", "notes": "2x in" },
+        { "type": "HDMI 1.4" },
+        { "type": "USB-A" },
+        { "type": "USB-C" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "2x loop" },
+        { "type": "HDMI", "notes": "loop" }
+      ]
+    },
     "Sony PVM-X1800": {
       "brand": "Sony",
       "model": "PVM-X1800",
@@ -329,6 +355,23 @@ const gear = {
       ],
       "videoOutputs": []
     },
+    "Sony PVM-4300": {
+      "brand": "Sony",
+      "model": "PVM-4300",
+      "screenSizeInches": 43,
+      "brightnessNits": null,
+      "powerDrawWatts": null,
+      "power": {
+        "input": { "type": "AC" },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "RGB" },
+        { "type": "Composite" }
+      ],
+      "videoOutputs": []
+    },
     "Flanders Scientific DM242": {
       "brand": "Flanders Scientific",
       "model": "DM242",
@@ -364,6 +407,27 @@ const gear = {
         { "type": "3G-SDI" }
       ],
       "videoOutputs": []
+    },
+    "Flanders Scientific XMP270": {
+      "brand": "Flanders Scientific",
+      "model": "XMP270",
+      "screenSizeInches": 26.5,
+      "brightnessNits": 1000,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "XLR 4-pin", "notes": "24V DC" },
+          { "type": "V-Mount", "notes": "optional plate" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "12G-SDI", "notes": "4x" }
+      ],
+      "videoOutputs": [
+        { "type": "12G-SDI", "notes": "4x loop" }
+      ]
     },
     "Tarion BM120-4KS": {
       "brand": "Tarion",
