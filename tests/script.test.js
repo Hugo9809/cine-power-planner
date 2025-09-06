@@ -671,7 +671,7 @@ describe('script.js functions', () => {
     addOpt('cameraSelect', 'CamA');
     addOpt('batterySelect', 'BattA');
     document.getElementById('batteryCount').textContent = '9';
-    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor handheld' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
@@ -1505,8 +1505,8 @@ describe('script.js functions', () => {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain('<select id="gearListDirectorsMonitor7"');
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor handheld' });
+    expect(html).toContain('<select id="gearListDirectorsMonitor"');
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V98micro');
@@ -1534,8 +1534,8 @@ describe('script.js functions', () => {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'Gaffers Monitor 7" handheld' });
-    expect(html).toContain('<select id="gearListGaffersMonitor7"');
+    const html = generateGearListHtml({ videoDistribution: 'Gaffers Monitor handheld' });
+    expect(html).toContain('<select id="gearListGaffersMonitor"');
     expect(html).toContain('Gaffer Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Gaffers handheld)');
@@ -1554,8 +1554,8 @@ describe('script.js functions', () => {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'DoP Monitor 7" handheld' });
-    expect(html).toContain('<select id="gearListDopMonitor7"');
+    const html = generateGearListHtml({ videoDistribution: 'DoP Monitor handheld' });
+    expect(html).toContain('<select id="gearListDopMonitor"');
     expect(html).toContain('DoP Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x DoP handheld)');
@@ -1572,7 +1572,7 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = { 'SmallHD Ultra 7': { screenSizeInches: 7 } };
     const html = generateGearListHtml({
-      videoDistribution: 'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
+      videoDistribution: 'Directors Monitor handheld, Gaffers Monitor handheld, DoP Monitor handheld'
     });
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain(
@@ -1606,7 +1606,7 @@ describe('script.js functions', () => {
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({
       videoDistribution:
-        'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
+        'Directors Monitor handheld, Gaffers Monitor handheld, DoP Monitor handheld'
     });
     expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
@@ -1633,10 +1633,10 @@ describe('script.js functions', () => {
     expect(options).toContain('Mon RXTX');
     expect(options).toContain('Mon Plain');
     expect(options).not.toContain('Mon RX');
-    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor handheld' });
     const selectHtml = html.slice(
-      html.indexOf('<select id="gearListDirectorsMonitor7"'),
-      html.indexOf('</select>', html.indexOf('<select id="gearListDirectorsMonitor7"'))
+      html.indexOf('<select id="gearListDirectorsMonitor"'),
+      html.indexOf('</select>', html.indexOf('<select id="gearListDirectorsMonitor"'))
     );
     expect(selectHtml).toContain('Mon RX');
     expect(selectHtml).toContain('Mon RXTX');
@@ -1738,7 +1738,7 @@ describe('script.js functions', () => {
     };
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
-    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor handheld' });
     expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Directors handheld, 1x Focus)');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (3x Spare)');
@@ -1972,17 +1972,17 @@ describe('script.js functions', () => {
 
     const values = () => Array.from(videoSel.options).map(o => o.value);
 
-    expect(values()).not.toContain('DoP Monitor 7" handheld');
+    expect(values()).not.toContain('DoP Monitor handheld');
     expect(values()).not.toContain('DoP Monitor 15-21"');
 
     select.querySelector('option[value="Steadicam"]').selected = true;
     script.updateRequiredScenariosSummary();
-    expect(values()).toContain('DoP Monitor 7" handheld');
+    expect(values()).toContain('DoP Monitor handheld');
     expect(values()).toContain('DoP Monitor 15-21"');
 
     select.querySelector('option[value="Steadicam"]').selected = false;
     script.updateRequiredScenariosSummary();
-    expect(values()).not.toContain('DoP Monitor 7" handheld');
+    expect(values()).not.toContain('DoP Monitor handheld');
     expect(values()).not.toContain('DoP Monitor 15-21"');
   });
 
@@ -2660,10 +2660,10 @@ describe('script.js functions', () => {
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor handheld' });
     expect(html).toContain('<span class="req-label">Monitoring</span>');
-    expect(html).toContain('<span class="req-value">Directors Monitor 7" handheld</span>');
-    expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">Directors Monitor 7" handheld</span>');
+    expect(html).toContain('<span class="req-value">Directors Monitor handheld</span>');
+    expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">Directors Monitor handheld</span>');
   });
 
   test('iOS video option appears under monitoring in project requirements', () => {
@@ -2674,11 +2674,11 @@ describe('script.js functions', () => {
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
   });
 
-  test('project requirements form includes Gaffers Monitor 7" handheld option', () => {
+  test('project requirements form includes Gaffers Monitor handheld option', () => {
     setupDom(true);
     const sel = document.getElementById('videoDistribution');
     const values = Array.from(sel.options).map(o => o.value);
-    expect(values).toContain('Gaffers Monitor 7" handheld');
+    expect(values).toContain('Gaffers Monitor handheld');
   });
 
   test('sensor mode appears in project requirements when provided', () => {
