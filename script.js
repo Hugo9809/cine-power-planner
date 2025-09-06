@@ -5235,6 +5235,8 @@ function enableDiagramInteractions() {
       pan = { x: 0, y: 0 };
       scale = 1;
       apply();
+      manualPositions = {};
+      renderSetupDiagram();
     };
   }
   const onSvgMouseDown = e => {
