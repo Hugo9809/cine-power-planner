@@ -8686,20 +8686,25 @@ function getCurrentGearListHtml() {
 
 function saveCurrentGearList() {
     const html = getCurrentGearListHtml();
-    if (!html) return;
     const info = projectForm ? collectProjectFormData() : {};
     currentProjectInfo = Object.values(info).some(v => v) ? info : null;
+
     if (typeof saveProject === 'function') {
         saveProject({ projectInfo: currentProjectInfo, gearList: html });
     }
-    const setupName = (setupSelect && setupSelect.value) || (setupNameInput && setupNameInput.value.trim());
+
+    const setupName = (setupSelect && setupSelect.value) ||
+        (setupNameInput && setupNameInput.value.trim());
     if (setupName) {
         const setups = getSetups();
-        const setup = setups[setupName] || {};
-        setup.gearList = html;
-        setup.projectInfo = currentProjectInfo;
-        setups[setupName] = setup;
-        storeSetups(setups);
+        const existing = setups[setupName];
+        if (html || existing) {
+            const setup = existing || {};
+            if (html) setup.gearList = html;
+            setup.projectInfo = currentProjectInfo;
+            setups[setupName] = setup;
+            storeSetups(setups);
+        }
     }
 }
 
