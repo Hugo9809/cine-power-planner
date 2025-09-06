@@ -100,6 +100,29 @@ const gear = {
         { "type": "12G-SDI" }
       ]
     },
+    "SmallHD Cine 24\" 4K High-Bright Monitor": {
+      "brand": "SmallHD",
+      "model": "Cine 24",
+      "screenSizeInches": 24,
+      "brightnessNits": 1350,
+      "powerDrawWatts": 110,
+      "power": {
+        "input": {
+          "voltageRange": "12-34",
+          "type": "XLR 3-pin"
+        },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "HDMI" },
+        { "type": "12G-SDI" }
+      ],
+      "videoOutputs": [
+        { "type": "HDMI" },
+        { "type": "12G-SDI" }
+      ]
+    },
     "Sony PVM-A170 17\" OLED": {
       "screenSizeInches": 17,
       "brightnessNits": 250,
