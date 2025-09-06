@@ -1699,6 +1699,30 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x Spare Disc (Schulz Sprayoff Micro)');
   });
 
+  test('Clamp On mattebox adds LMB 4x5 accessories and adapters', () => {
+    const { generateGearListHtml } = script;
+    devices.lenses['ZEISS High Speed MK III 18mm T1.3'] = { frontDiameterMm: 80 };
+    devices.lenses['ARRI/ZEISS Ultra Prime 16mm T1.9'] = { frontDiameterMm: 95 };
+    const lenses = 'ZEISS High Speed MK III 18mm T1.3, ARRI/ZEISS Ultra Prime 16mm T1.9';
+    const html = generateGearListHtml({ mattebox: 'Clamp On', lenses });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const matteIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    expect(matteIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[matteIdx + 1];
+    const text = itemsRow.textContent;
+    expect(text).toContain('1x ARRI LMB 4x5 Clamp-On (3-Stage)');
+    expect(text).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
+    expect(text).toContain('1x ARRI LMB 4x5 Side Flags');
+    expect(text).toContain('1x ARRI LMB Flag Holders');
+    expect(text).toContain('1x ARRI LMB 4x5 Set of Mattes spherical');
+    expect(text).toContain('1x ARRI LMB Accessory Adapter');
+    expect(text).toContain('1x ARRI LMB 4x5 Clamp Adapter Set Pro');
+    expect(text).toContain('1x ARRI LMB 4x5 Clamp Adapter 80mm');
+    expect(text).toContain('1x ARRI LMB 4x5 Clamp Adapter 95mm');
+  });
+
   test('updateRequiredScenariosSummary creates a box for each selection', () => {
     const select = document.getElementById('requiredScenarios');
     select.querySelector('option[value="Indoor"]').selected = true;

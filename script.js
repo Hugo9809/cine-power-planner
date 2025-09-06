@@ -7672,6 +7672,7 @@ function generateGearListHtml(info = {}) {
     const lensSupportItems = [];
     const requiredRodTypes = new Set();
     const addedRodPairs = new Set();
+    const uniqueFrontDiameters = new Set();
     selectedLensNames.forEach(name => {
         const lens = devices.lenses && devices.lenses[name];
         if (!lens) return;
@@ -7686,6 +7687,7 @@ function generateGearListHtml(info = {}) {
         if (lens.needsLensSupport) {
             lensSupportItems.push(`${rodType} lens support`);
         }
+        if (lens.frontDiameterMm) uniqueFrontDiameters.add(lens.frontDiameterMm);
     });
     const cageRodType = devices.accessories?.cages?.[selectedNames.cage]?.rodStandard;
     requiredRodTypes.forEach(rt => {
@@ -7694,6 +7696,18 @@ function generateGearListHtml(info = {}) {
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
+    if (info.mattebox === 'Clamp On') {
+        filterSelections.push('ARRI LMB 4x5 Clamp-On (3-Stage)');
+        filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+        filterSelections.push('ARRI LMB 4x5 Side Flags');
+        filterSelections.push('ARRI LMB Flag Holders');
+        filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
+        filterSelections.push('ARRI LMB Accessory Adapter');
+        filterSelections.push('ARRI LMB 4x5 Clamp Adapter Set Pro');
+        uniqueFrontDiameters.forEach(d => {
+            filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${d}mm`);
+        });
+    }
     addRow('Matte box + filter', formatItems(filterSelections));
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';

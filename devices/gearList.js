@@ -373,13 +373,29 @@ const gear = {
         "stages": 3,
         "type": "Clamp-On"
       },
-      "ARRI Tray Catcher": {
+      "ARRI LMB 4x5 / LMB-6 Tray Catcher": {
         "brand": "ARRI",
         "kNumber": "K2.66202.0",
         "compatible": [
           "LMB 4x5",
           "LMB-6"
         ]
+      },
+      "ARRI LMB 4x5 Side Flags": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013750"
+      },
+      "ARRI LMB Flag Holders": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013825"
+      },
+      "ARRI LMB 4x5 Set of Mattes spherical": {
+        "brand": "ARRI",
+        "kNumber": "K2.0000069"
+      },
+      "ARRI LMB 4x5 Clamp Adapter Set Pro": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015133"
       },
       "ARRI Diopter Frame 138mm": {
         "brand": "ARRI",
