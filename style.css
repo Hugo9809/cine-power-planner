@@ -16,6 +16,7 @@
   --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   --border-radius: 5px;
   --page-padding: 20px;
+  --link-color: var(--accent-color);
 }
 @media (max-width: 600px) {
   :root {
@@ -24,6 +25,7 @@
 }
 body.pink-mode {
   --accent-color: #ff69b4;
+  --link-color: #ff69b4;
 }
 
 html,
@@ -177,6 +179,20 @@ h3 {
 /* Paragraph text */
 p {
   line-height: 1.4em;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:visited {
+  color: var(--link-color);
+}
+
+a:hover,
+a:focus {
+  text-decoration: underline;
 }
 
 /* Form layout */
@@ -1091,6 +1107,7 @@ html.dark-mode,
   --panel-bg: #1c1c1e;
   --panel-border: #333;
   --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --link-color: #7ec8ff;
 }
 
 html.dark-mode,
@@ -1114,6 +1131,10 @@ body.dark-mode.pink-mode h3 {
 }
 body.dark-mode.pink-mode h2 {
   border-bottom: 2px solid var(--accent-color);
+}
+
+body.dark-mode.pink-mode {
+  --link-color: #ff9dd8;
 }
 .dark-mode section,
 .dark-mode .device-category,
