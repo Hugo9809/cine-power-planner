@@ -1762,6 +1762,7 @@ const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
 const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+let skipNextGearListRefresh = false;
 
 function setEditProjectBtnText() {
   const btn = document.getElementById('editProjectBtn');
@@ -1911,6 +1912,7 @@ if (gearListOutput || projectRequirementsOutput) {
   const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
   if (storedGearList) {
     displayGearAndRequirements(storedGearList);
+    skipNextGearListRefresh = true;
     if (gearListOutput) {
       ensureGearListActions();
       bindGearListCageListener();
@@ -5773,6 +5775,7 @@ setupSelect.addEventListener("change", (event) => {
       updateBatteryOptions();
       if (gearListOutput) {
         displayGearAndRequirements(setup.gearList || '');
+        skipNextGearListRefresh = true;
         if (setup.gearList) {
           ensureGearListActions();
       bindGearListCageListener();
@@ -8403,6 +8406,7 @@ function handleImportGearList(e) {
             const obj = JSON.parse(ev.target.result);
             if (obj && obj.gearList) {
             displayGearAndRequirements(obj.gearList);
+            skipNextGearListRefresh = true;
             ensureGearListActions();
             bindGearListCageListener();
             bindGearListEasyrigListener();
@@ -8544,6 +8548,10 @@ function bindGearListDirectorsMonitorListener() {
 
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden')) return;
+    if (skipNextGearListRefresh) {
+        skipNextGearListRefresh = false;
+        return;
+    }
 
     if (projectForm) {
         populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
@@ -9490,6 +9498,7 @@ if (typeof module !== "undefined" && module.exports) {
     autoSaveCurrentSetup,
     displayGearAndRequirements,
     ensureGearListActions,
+    refreshGearListIfVisible,
     populateLensDropdown,
     populateCameraPropertyDropdown,
     populateRecordingResolutionDropdown,

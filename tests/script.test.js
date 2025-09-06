@@ -612,6 +612,20 @@ describe('script.js functions', () => {
     expect(global.saveGearList).toHaveBeenCalled();
   });
 
+  test('restored gear list persists through initial refresh', () => {
+    const savedHtml = '<h3>Gear List</h3><table class="gear-table"><tr><td>SavedCam</td></tr></table>';
+    require('../translations.js');
+    global.loadGearList = jest.fn(() => savedHtml);
+    global.saveGearList = jest.fn();
+    const script = require('../script.js');
+    const gear = document.getElementById('gearListOutput');
+    expect(gear.innerHTML).toContain('SavedCam');
+    expect(global.saveGearList).not.toHaveBeenCalled();
+    script.refreshGearListIfVisible();
+    expect(global.saveGearList).toHaveBeenCalled();
+    expect(gear.innerHTML).not.toContain('SavedCam');
+  });
+
   test('generate gear list hides button until deleted', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
