@@ -319,6 +319,9 @@ if (require.main === module) {
   normalizeCollection(devices.cameras, normalizeCamera);
   normalizeCollection(devices.monitors, normalizeMonitor);
   normalizeCollection(devices.video, normalizeVideoDevice);
+  normalizeCollection(devices.directorMonitors, normalizeMonitor);
+  normalizeCollection(devices.iosVideo, normalizeVideoDevice);
+  normalizeCollection(devices.wirelessReceivers, normalizeVideoDevice);
   normalizeCollection(devices.fiz.motors, normalizeFiz);
   normalizeCollection(devices.fiz.controllers, normalizeFiz);
   normalizeCollection(devices.fiz.distance, normalizeFiz);
