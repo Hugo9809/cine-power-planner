@@ -1083,6 +1083,39 @@ describe('script.js functions', () => {
     expect(optionsB).not.toContain('VBatt');
   });
 
+  test('FXLion hotswap only visible for FXLion Nano batteries', () => {
+    global.devices.cameras.VCam = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] }
+    };
+    global.devices.batteries.Other = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
+    global.devices.batteries['FXLion Nano Two (V-Mount)'] = {
+      capacity: 98, pinA: 10, dtapA: 10, mount_type: 'V-Mount'
+    };
+    global.devices.batteryHotswaps = {
+      'FX-Lion NANO Dual V-Mount Hot-Swap Plate': { capacity: 0, pinA: 8, mount_type: 'V-Mount' },
+      'Other Swap': { capacity: 0, pinA: 10, mount_type: 'V-Mount' }
+    };
+
+    const camSel = document.getElementById('cameraSelect');
+    const battSel = document.getElementById('batterySelect');
+    const swapSel = document.getElementById('batteryHotswapSelect');
+
+    camSel.innerHTML = '<option value="VCam">VCam</option>';
+    camSel.value = 'VCam';
+    script.updateBatteryOptions();
+
+    battSel.value = 'Other';
+    script.updateBatteryOptions();
+    let options = Array.from(swapSel.options).map(o => o.value);
+    expect(options).not.toContain('FX-Lion NANO Dual V-Mount Hot-Swap Plate');
+
+    battSel.value = 'FXLion Nano Two (V-Mount)';
+    script.updateBatteryOptions();
+    options = Array.from(swapSel.options).map(o => o.value);
+    expect(options).toContain('FX-Lion NANO Dual V-Mount Hot-Swap Plate');
+  });
+
   test('filter inputs disable autocomplete and spellcheck', () => {
     const ids = [
       'cameraListFilter', 'viewfinderListFilter', 'monitorListFilter', 'videoListFilter',

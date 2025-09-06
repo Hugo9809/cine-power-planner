@@ -788,24 +788,30 @@ function updateBatteryOptions() {
   const plate = getSelectedPlate();
   const camName = cameraSelect.value;
   const supportsB = supportsBMountCamera(camName);
+  let swaps;
   if (plate === 'B-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('B-Mount'), true);
-    populateSelect(hotswapSelect, getHotswapsByMount('B-Mount'), true);
+    swaps = getHotswapsByMount('B-Mount');
   } else if (plate === 'V-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('V-Mount'), true);
-    populateSelect(hotswapSelect, getHotswapsByMount('V-Mount'), true);
+    swaps = getHotswapsByMount('V-Mount');
   } else {
     let bats = devices.batteries;
     if (!supportsB) {
       bats = Object.fromEntries(Object.entries(bats).filter(([, b]) => b.mount_type !== 'B-Mount'));
     }
     populateSelect(batterySelect, bats, true);
-    let swaps = devices.batteryHotswaps || {};
+    swaps = devices.batteryHotswaps || {};
     if (!supportsB) {
       swaps = Object.fromEntries(Object.entries(swaps).filter(([, b]) => b.mount_type !== 'B-Mount'));
     }
-    populateSelect(hotswapSelect, swaps, true);
   }
+  if (!/FXLion Nano/i.test(current)) {
+    swaps = Object.fromEntries(
+      Object.entries(swaps).filter(([name]) => name !== 'FX-Lion NANO Dual V-Mount Hot-Swap Plate')
+    );
+  }
+  populateSelect(hotswapSelect, swaps, true);
   if (Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
   }
@@ -9154,6 +9160,7 @@ if (monitorSelect) {
   monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
 }
 if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
+if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
 if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
