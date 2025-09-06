@@ -7923,14 +7923,21 @@ function generateGearListHtml(info = {}) {
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
     }
+    const monitoringGear = [];
     if (selectedNames.video) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
+        monitoringGear.push(`Wireless Transmitter - ${selectedNames.video}`);
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
             receiverLabels.forEach(label => {
-                monitoringItems += `<br>1x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)} (${label})`;
+                monitoringGear.push(`Wireless Receiver - ${rxName} (${label})`);
             });
         }
+    }
+    if (monitoringGear.length) {
+        const gearHtml = formatItems(monitoringGear)
+            .replace(/>(\d+x )Wireless Transmitter/g, '>$1<strong>Wireless Transmitter</strong>')
+            .replace(/>(\d+x )Wireless Receiver/g, '>$1<strong>Wireless Receiver</strong>');
+        monitoringItems += (monitoringItems ? '<br>' : '') + gearHtml;
     }
     addRow('Monitoring', monitoringItems);
     const monitoringSupportHardware = formatItems(monitoringSupportAcc);
