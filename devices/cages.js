@@ -36,7 +36,7 @@ const cageData = {
       "Blackmagic BMPCC 6K"
     ],
     "material": "aluminum",
-    "weight_g": null,
+    "weight_g": 300,
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16",
@@ -87,7 +87,7 @@ const cageData = {
     "verified_source": "https://tilta.com/shop/full-camera-cage-for-sony-fx3-fx30-v2/",
     "handle_extension_compatible": true
   },
-  "SmallRig Camera Cage for Sony FX6 (3186)": {
+  "SmallRig Top Plate for Sony FX6 (3186)": {
     "brand": "SmallRig",
     "compatible": [
       "Sony FX6"
@@ -584,7 +584,7 @@ const cageData = {
     "compatible": [
       "Nikon Z9"
     ],
-    "material": "aluminum alloy",
+    "material": "aluminum, steel",
     "weight_g": 264.5,
     "mounting_points": [
       "cold shoe",
@@ -611,7 +611,7 @@ const cageData = {
       "locating points",
       "NATO rail"
     ],
-    "top_handle_included": false,
+    "top_handle_included": true,
     "side_plates": true,
     "notes": "Premium expansion-ready kit for Nikon Z9.",
     "verified_source": "https://tilta.com/shop/camera-cage-for-nikon-z9-pro-kit-black/?srsltid=AfmBOoqSdzCbI--UMAiS65Dnygi3YAMivLea388wni80d57WiYc-xIa5",
@@ -826,10 +826,10 @@ const cageData = {
     "material": null,
     "weight_g": null,
     "mounting_points": [
-      "15 mm LWS (19 mm)",
+      "19mm Studio",
       "ARRI locating",
-      "1/4\"-20",
-      "3/8\"-16"
+      "3/8\"-16",
+      "1/4\"-20"
     ],
     "top_handle_included": false,
     "side_plates": true,
@@ -894,7 +894,7 @@ const cageData = {
     "verified_source": "https://kondorblue.com/products/canon-r5c-cage",
     "handle_extension_compatible": true
   },
-  "Tilta Camera Cage Rig for Canon C200 (ES-T20)": {
+  "Tilta Camera Cage Rig for Canon C200 (ES-T26-A)": {
     "brand": "Tilta",
     "compatible": [
       "Canon C200"
@@ -995,7 +995,7 @@ const cageData = {
       "Nikon Z8"
     ],
     "material": "aluminum",
-    "weight_g": 293,
+    "weight_g": 203,
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16 ARRI locating",
@@ -1027,13 +1027,13 @@ const cageData = {
     "verified_source": "https://tilta.com/shop/fujifilm-gfx100-cage/",
     "handle_extension_compatible": true
   },
-  "SmallRig Full Camera Cage for Fujifilm X-T5 (3928)": {
+  "SmallRig Cage for Fujifilm X-T5 (4135)": {
     "brand": "SmallRig",
     "compatible": [
       "Fujifilm X-T5"
     ],
     "material": "aluminum",
-    "weight_g": 129,
+    "weight_g": 158,
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16",
@@ -1043,7 +1043,7 @@ const cageData = {
     "top_handle_included": false,
     "side_plates": true,
     "notes": "Slim X-T5 cage with Arca-Swiss bottom and cold shoe.",
-    "verified_source": "https://www.smallrig.com/smallrig-cage-for-fujifilm-x-t5-3928.html",
+    "verified_source": "https://www.bhphotovideo.com/c/product/1747241-REG/smallrig_4135_full_cage_for_fujifilm.html",
     "handle_extension_compatible": true
   },
   "Bright Tangerine V-RAPTOR XL Cage Kit": {
@@ -1152,8 +1152,8 @@ const cageData = {
     "compatible": [
       "Panasonic S1H"
     ],
-    "material": null,
-    "weight_g": null,
+    "material": "aluminum",
+    "weight_g": 243,
     "mounting_points": [
       "1/4\"-20",
       "ARRI 3/8\"-16",
@@ -1257,7 +1257,7 @@ const cageData = {
       "Canon EOS R3"
     ],
     "material": "aluminum",
-    "weight_g": 283,
+    "weight_g": 209,
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16 locating",
@@ -1295,7 +1295,7 @@ const cageData = {
       "Canon EOS R50"
     ],
     "material": "aluminum",
-    "weight_g": 121,
+    "weight_g": 129,
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16",
@@ -1308,7 +1308,7 @@ const cageData = {
     "verified_source": "https://www.smallrig.com/smallrig-cage-for-canon-eos-r50-4236.html",
     "handle_extension_compatible": true
   },
-  "SmallRig Camera Cage for Sony ZV-E1 (4135)": {
+  "SmallRig Cage for Sony ZV-E1 (4256)": {
     "brand": "SmallRig",
     "compatible": [
       "Sony ZV-E1"
@@ -1324,10 +1324,10 @@ const cageData = {
     "top_handle_included": false,
     "side_plates": true,
     "notes": "Form-fitting cage for ZV-E1 with Arca quick release.",
-    "verified_source": "https://www.smallrig.com/smallrig-camera-cage-for-sony-zv-e1-4135.html",
+    "verified_source": "https://www.smallrig.com/SmallRig-Cage-for-Sony-ZV-E1-4256.html",
     "handle_extension_compatible": true
   },
-  "SmallRig Camera Cage for Sony ZV-E10 (3529)": {
+  "SmallRig Camera Cage for Sony ZV-E10 (3531B)": {
     "brand": "SmallRig",
     "compatible": [
       "Sony ZV-E10"
