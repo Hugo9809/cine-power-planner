@@ -17,3 +17,10 @@ test('normalizeData CLI --help', () => {
   expect(stdout).toMatch(/-h, --help\s+Show this help message/);
   expect(status).toBe(0);
 });
+
+test('unifyPorts CLI --help', () => {
+  const { stdout, status } = run('unifyPorts.js');
+  expect(stdout).toMatch(/Usage: node unifyPorts\.js \[--help\]/);
+  expect(stdout).toMatch(/-h, --help\s+Show this help message/);
+  expect(status).toBe(0);
+});
