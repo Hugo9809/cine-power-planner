@@ -979,12 +979,15 @@
           <option value="60">60</option>
         </select>
       </div>
+      <h3 id="lensesHeading">Lenses</h3>
       <div class="form-row">
         <label for="lenses" id="lensesLabel">Lenses:</label>
         <div class="select-wrapper">
           <select id="lenses" name="lenses" multiple size="10" aria-labelledby="lensesLabel"></select>
         </div>
       </div>
+
+      <h3 id="riggingHeading">Rigging</h3>
       <div class="form-row">
         <label for="requiredScenarios">What required scenarios do we have for this shoot?</label>
         <select id="requiredScenarios" name="requiredScenarios" multiple size="25">
@@ -1031,6 +1034,8 @@
           <option value="ARRI VEB-3 Viewfinder Extension Bracket">Yes</option>
         </select>
       </div>
+
+      <h3 id="matteboxFilterHeading">Mattebox and Filter</h3>
       <div class="form-row">
         <label for="mattebox">Mattebox:</label>
         <select id="mattebox" name="mattebox">
@@ -1040,6 +1045,11 @@
           <option value="Swing Away">Swing Away</option>
         </select>
       </div>
+      <div class="form-row">
+        <label for="filter">Filter:</label>
+        <select id="filter" name="filter" multiple size="10"></select>
+      </div>
+
       <h3 id="monitoringHeading">Monitoring</h3>
       <div class="form-row">
         <label for="monitoringConfiguration">Camera Monitoring Configuration:</label>
@@ -1086,6 +1096,7 @@
           <option value="IOS Video (Teradek Serv + Link)">IOS Video (Teradek Serv + Link)</option>
         </select>
       </div>
+      <h3 id="userButtonsHeading">User Buttons</h3>
       <div class="form-row">
         <label for="monitorUserButtons">Onboard Monitor User Buttons:</label>
         <select id="monitorUserButtons" name="monitorUserButtons" multiple></select>
@@ -1098,8 +1109,9 @@
         <label for="viewfinderUserButtons">Viewfinder User Buttons:</label>
         <select id="viewfinderUserButtons" name="viewfinderUserButtons" multiple></select>
       </div>
+
+      <h3 id="tripodPreferencesHeading" class="hidden">Tripod Preferences</h3>
       <div class="form-row hidden" id="tripodPreferencesRow">
-        <strong>Tripod Preferences:</strong>
         <label for="tripodHeadBrand">Head Brand:</label>
         <select id="tripodHeadBrand" name="tripodHeadBrand">
           <option value=""></option>
@@ -1128,10 +1140,6 @@
           <option value="Mid-Level Spreader">Mid-Level Spreader</option>
           <option value="Ground Spreader">Ground Spreader</option>
         </select>
-      </div>
-      <div class="form-row">
-        <label for="filter">Filter:</label>
-        <select id="filter" name="filter" multiple size="10"></select>
       </div>
       <menu>
         <button type="reset" id="projectCancel">Cancel</button>
