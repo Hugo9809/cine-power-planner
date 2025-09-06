@@ -22,6 +22,7 @@ try {
   }
 }
 
+
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js');
@@ -5806,6 +5807,7 @@ checkSetupChanged();
 // long-lived and would keep Node's event loop active in tests or server-side
 // rendering scenarios. Calling `unref()` (when available) allows the process to
 // exit naturally without waiting for the timeout to fire.
+const isNodeEnv = typeof process !== 'undefined' && process.versions && process.versions.node;
 const backupTimer = setTimeout(() => {
   if (!setupSelect || setupSelect.value) return;
   const pad = (n) => String(n).padStart(2, "0");
@@ -5820,7 +5822,7 @@ const backupTimer = setTimeout(() => {
   if (setupNameInput) setupNameInput.value = backupName;
   loadedSetupState = getCurrentSetupState();
   checkSetupChanged();
-}, 5 * 60 * 1000);
+}, isNodeEnv ? 0 : 5 * 60 * 1000);
 if (typeof backupTimer.unref === 'function') {
   backupTimer.unref();
 }
