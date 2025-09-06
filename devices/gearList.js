@@ -215,6 +215,156 @@ const gear = {
         { "type": "HDMI" }
       ]
     },
+    "SWIT BM-U175": {
+      "brand": "SWIT",
+      "model": "BM-U175",
+      "screenSizeInches": 17.3,
+      "brightnessNits": 300,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "XLR 4-pin" },
+          { "type": "AC" },
+          { "type": "V-Mount" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "12G-SDI", "notes": "4x" },
+        { "type": "HDMI 2.0" },
+        { "type": "SFP Fiber", "notes": "optional" }
+      ],
+      "videoOutputs": [
+        { "type": "12G-SDI", "notes": "4x" }
+      ]
+    },
+    "SWIT S-1173F": {
+      "brand": "SWIT",
+      "model": "S-1173F",
+      "screenSizeInches": 17.3,
+      "brightnessNits": null,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "XLR 4-pin" },
+          { "type": "V-Mount" },
+          { "type": "Gold Mount" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI", "notes": "2x" },
+        { "type": "HDMI" },
+        { "type": "Y/Pb/Pr" },
+        { "type": "VGA" },
+        { "type": "CVBS" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "loop" },
+        { "type": "HDMI", "notes": "loop" }
+      ]
+    },
+    "SWIT K15": {
+      "brand": "SWIT",
+      "model": "K15",
+      "screenSizeInches": 15.4,
+      "brightnessNits": 1500,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "AC" },
+          { "type": "XLR" },
+          { "type": "V-Mount" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI", "notes": "2x in" },
+        { "type": "HDMI 1.4" },
+        { "type": "USB-A" },
+        { "type": "USB-C" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "2x out" }
+      ]
+    },
+    "Sony PVM-X1800": {
+      "brand": "Sony",
+      "model": "PVM-X1800",
+      "screenSizeInches": 18.4,
+      "brightnessNits": null,
+      "powerDrawWatts": null,
+      "power": {
+        "input": { "type": "AC" },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "SDI" },
+        { "type": "HDMI" }
+      ],
+      "videoOutputs": []
+    },
+    "Sony LMD-A170": {
+      "brand": "Sony",
+      "model": "LMD-A170",
+      "screenSizeInches": 17,
+      "brightnessNits": null,
+      "powerDrawWatts": null,
+      "power": {
+        "input": [
+          { "type": "AC" },
+          { "type": "DC" }
+        ],
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI" },
+        { "type": "HDMI" },
+        { "type": "Composite/Component" }
+      ],
+      "videoOutputs": []
+    },
+    "Flanders Scientific DM242": {
+      "brand": "Flanders Scientific",
+      "model": "DM242",
+      "screenSizeInches": 24,
+      "brightnessNits": 400,
+      "powerDrawWatts": null,
+      "power": {
+        "input": { "type": "AC" },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI", "notes": "2x" },
+        { "type": "DisplayPort" },
+        { "type": "DVI-D" }
+      ],
+      "videoOutputs": [
+        { "type": "3G-SDI", "notes": "2x" }
+      ]
+    },
+    "Flanders Scientific DM170": {
+      "brand": "Flanders Scientific",
+      "model": "DM170",
+      "screenSizeInches": 17,
+      "brightnessNits": null,
+      "powerDrawWatts": null,
+      "power": {
+        "input": { "type": "AC" },
+        "output": null
+      },
+      "wirelessTx": false,
+      "videoInputs": [
+        { "type": "3G-SDI" }
+      ],
+      "videoOutputs": []
+    },
     "Tarion BM120-4KS": {
       "brand": "Tarion",
       "model": "BM120-4KS",
