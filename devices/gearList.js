@@ -78,6 +78,8 @@ const gear = {
       ]
     },
     "Atomos Sumo 19SE": {
+      "brand": "Atomos",
+      "model": "Sumo 19SE",
       "screenSizeInches": 19,
       "brightnessNits": 1200,
       "powerDrawWatts": 75,
@@ -429,6 +431,16 @@ const gear = {
         "brand": "ARRI",
         "kNumber": "K2.0013740",
         "diameterMm": 138
+      },
+      "Tilta Mirage": {
+        "brand": "Tilta",
+        "stages": 1,
+        "type": "Clamp-On"
+      },
+      "Tilta MB-T12": {
+        "brand": "Tilta",
+        "stages": 3,
+        "type": "Rod based"
       }
     },
     "filters": {
@@ -2590,6 +2602,26 @@ const gear = {
       },
       "Sachtler FSB 8 Head": {
         "brand": "Sachtler",
+        "bowlSizeMm": 75,
+        "material": "Aluminum"
+      },
+      "Sachtler Cine 30": {
+        "brand": "Sachtler",
+        "bowlSizeMm": 150,
+        "material": "Aluminum"
+      },
+      "Sachtler Video 20 S1": {
+        "brand": "Sachtler",
+        "bowlSizeMm": 100,
+        "material": "Aluminum"
+      },
+      "OConnor Ultimate 1040": {
+        "brand": "OConnor",
+        "bowlSizeMm": 100,
+        "material": "Aluminum"
+      },
+      "Manfrotto Nitrotech 608": {
+        "brand": "Manfrotto",
         "bowlSizeMm": 75,
         "material": "Aluminum"
       }
