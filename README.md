@@ -42,6 +42,8 @@ language on first load, and you can switch languages in the top right corner:
 
 ## Recent Updates
 
+- **Persistent diagram popups on touch** – tapping a node on touch devices keeps its popup visible until another node is selected.
+- **Aggregated wireless receiver entries** – similar receiver models are grouped to streamline gear selection.
 - **Interactive project diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits or press **P** to switch quickly.
 - **Searchable help dialog and hover hints** – open with ?, H, F1 or Ctrl+/ (even while typing), filter topics instantly, press / or Ctrl+F to jump to the search box, browse the built-in FAQ, and hover over any button, field, dropdown or header for a quick explanation.
