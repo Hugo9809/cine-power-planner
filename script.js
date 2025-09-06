@@ -7830,16 +7830,30 @@ function generateGearListHtml(info = {}) {
             const base = match ? match[1].trim() : item.trim();
             const ctx = match && match[2] ? match[2].trim() : '';
             if (!counts[base]) {
-                counts[base] = { count: 0, ctxs: [] };
+                counts[base] = { count: 0, ctxCounts: {} };
             }
             counts[base].count++;
-            if (ctx && !counts[base].ctxs.includes(ctx)) {
-                counts[base].ctxs.push(ctx);
-            }
+            counts[base].ctxCounts[ctx] = (counts[base].ctxCounts[ctx] || 0) + 1;
         });
         return Object.entries(counts)
-            .map(([base, { count, ctxs }]) => {
-                const ctxStr = ctxs.length ? ` (${ctxs.join(', ')})` : '';
+            .map(([base, { count, ctxCounts }]) => {
+                const ctxEntries = Object.entries(ctxCounts).filter(([ctx]) => ctx);
+                if (!ctxEntries.length) {
+                    return `<span class="gear-item" data-gear-name="${escapeHtml(base)}">${count}x ${escapeHtml(base)}</span>`;
+                }
+                let parts = [];
+                let spareCount = 0;
+                ctxEntries.forEach(([ctx, c]) => {
+                    if (/^spare$/i.test(ctx)) {
+                        spareCount += c;
+                    } else {
+                        parts.push(`1x ${ctx}`);
+                        if (c > 1) spareCount += c - 1;
+                    }
+                });
+                if (ctxCounts['']) spareCount += ctxCounts[''];
+                if (spareCount > 0) parts.push(`${spareCount}x Spare`);
+                const ctxStr = ` (${parts.join(', ')})`;
                 const name = `${base}${ctxStr}`;
                 return `<span class="gear-item" data-gear-name="${escapeHtml(name)}">${count}x ${escapeHtml(name)}</span>`;
             })
