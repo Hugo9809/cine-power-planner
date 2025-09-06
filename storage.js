@@ -6,6 +6,22 @@ const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const GEARLIST_STORAGE_KEY = 'cameraPowerPlanner_gearList';
 
+// Safely detect usable localStorage. Some environments (like private browsing)
+// may block access and throw errors. If unavailable, this returns null.
+const SAFE_LOCAL_STORAGE = (() => {
+  try {
+    if (typeof window !== 'undefined' && 'localStorage' in window) {
+      const testKey = '__storage_test__';
+      window.localStorage.setItem(testKey, '1');
+      window.localStorage.removeItem(testKey);
+      return window.localStorage;
+    }
+  } catch (e) {
+    console.warn('localStorage is unavailable:', e);
+  }
+  return null;
+})();
+
 // Helper to check for plain objects
 function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
@@ -13,6 +29,7 @@ function isPlainObject(val) {
 
 // Generic helpers for storage access
 function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
+  if (!storage) return defaultValue;
   try {
     const raw = storage.getItem(key);
     return raw ? JSON.parse(raw) : defaultValue;
@@ -23,6 +40,7 @@ function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
 }
 
 function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
+  if (!storage) return;
   try {
     storage.setItem(key, JSON.stringify(value));
     if (successMessage) {
@@ -54,27 +72,27 @@ function generateUniqueName(base, usedNames) {
 // full app reloads.
 function loadSessionState() {
   return loadJSONFromStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     SESSION_STATE_KEY,
-    "Error loading session state from localStorage:"
+    "Error loading session state from localStorage:",
   );
 }
 
 function saveSessionState(state) {
   saveJSONToStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     SESSION_STATE_KEY,
     state,
-    "Error saving session state to localStorage:"
+    "Error saving session state to localStorage:",
   );
 }
 
 // --- Device Data Storage ---
 function loadDeviceData() {
   const parsedData = loadJSONFromStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     DEVICE_STORAGE_KEY,
-    "Error loading device data from localStorage:"
+    "Error loading device data from localStorage:",
   );
   if (parsedData) {
     // Validate that top-level categories exist and are non-null objects
@@ -100,11 +118,11 @@ function loadDeviceData() {
 
 function saveDeviceData(deviceData) {
   saveJSONToStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     DEVICE_STORAGE_KEY,
     deviceData,
     "Error saving device data to localStorage:",
-    "Device data saved to localStorage."
+    "Device data saved to localStorage.",
   );
 }
 
@@ -128,24 +146,24 @@ function normalizeSetups(rawData) {
 
 function loadSetups() {
   const parsedData = loadJSONFromStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     SETUP_STORAGE_KEY,
-    "Error loading setups from localStorage:"
+    "Error loading setups from localStorage:",
   );
   const setups = normalizeSetups(parsedData);
-  if (parsedData && Array.isArray(parsedData)) {
-    localStorage.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
+  if (parsedData && Array.isArray(parsedData) && SAFE_LOCAL_STORAGE) {
+    SAFE_LOCAL_STORAGE.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
   }
   return setups;
 }
 
 function saveSetups(setups) {
   saveJSONToStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     SETUP_STORAGE_KEY,
     setups,
     "Error saving setups to localStorage:",
-    "Setups saved to localStorage."
+    "Setups saved to localStorage.",
   );
 }
 
@@ -192,27 +210,30 @@ function renameSetup(oldName, newName) {
 
 // --- Gear List Storage ---
 function loadGearList() {
-  return loadJSONFromStorage(
-    localStorage,
-    GEARLIST_STORAGE_KEY,
-    "Error loading gear list from localStorage:",
-    ""
-  ) || "";
+  return (
+    loadJSONFromStorage(
+      SAFE_LOCAL_STORAGE,
+      GEARLIST_STORAGE_KEY,
+      "Error loading gear list from localStorage:",
+      "",
+    ) || ""
+  );
 }
 
 function saveGearList(html) {
   saveJSONToStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     GEARLIST_STORAGE_KEY,
     html,
     "Error saving gear list to localStorage:",
-    "Gear list saved to localStorage."
+    "Gear list saved to localStorage.",
   );
 }
 
 function deleteGearList() {
+  if (!SAFE_LOCAL_STORAGE) return;
   try {
-    localStorage.removeItem(GEARLIST_STORAGE_KEY);
+    SAFE_LOCAL_STORAGE.removeItem(GEARLIST_STORAGE_KEY);
   } catch (e) {
     console.error("Error deleting gear list from localStorage:", e);
   }
@@ -221,9 +242,9 @@ function deleteGearList() {
 // --- User Feedback Storage ---
 function loadFeedback() {
   const parsed = loadJSONFromStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     FEEDBACK_STORAGE_KEY,
-    "Error loading feedback from localStorage:"
+    "Error loading feedback from localStorage:",
   );
   if (isPlainObject(parsed)) {
     return parsed;
@@ -233,22 +254,24 @@ function loadFeedback() {
 
 function saveFeedback(feedback) {
   saveJSONToStorage(
-    localStorage,
+    SAFE_LOCAL_STORAGE,
     FEEDBACK_STORAGE_KEY,
     feedback,
     "Error saving feedback to localStorage:",
-    "Feedback saved to localStorage."
+    "Feedback saved to localStorage.",
   );
 }
 
 // --- Clear All Stored Data ---
 function clearAllData() {
   try {
-    localStorage.removeItem(DEVICE_STORAGE_KEY);
-    localStorage.removeItem(SETUP_STORAGE_KEY);
-    localStorage.removeItem(FEEDBACK_STORAGE_KEY);
-    localStorage.removeItem(GEARLIST_STORAGE_KEY);
-    localStorage.removeItem(SESSION_STATE_KEY);
+    if (SAFE_LOCAL_STORAGE) {
+      SAFE_LOCAL_STORAGE.removeItem(DEVICE_STORAGE_KEY);
+      SAFE_LOCAL_STORAGE.removeItem(SETUP_STORAGE_KEY);
+      SAFE_LOCAL_STORAGE.removeItem(FEEDBACK_STORAGE_KEY);
+      SAFE_LOCAL_STORAGE.removeItem(GEARLIST_STORAGE_KEY);
+      SAFE_LOCAL_STORAGE.removeItem(SESSION_STATE_KEY);
+    }
     if (typeof sessionStorage !== 'undefined') {
       sessionStorage.removeItem(SESSION_STATE_KEY);
     }
@@ -304,6 +327,6 @@ if (typeof module !== "undefined" && module.exports) {
     saveFeedback,
     clearAllData,
     exportAllData,
-    importAllData
+    importAllData,
   };
 }
