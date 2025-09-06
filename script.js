@@ -699,19 +699,24 @@ function updateBatteryPlateVisibility() {
   const hasV = isNativeVMountCamera(camName);
   if (hasB && hasV) {
     batteryPlateRow.style.display = '';
-    if (batteryPlateSelect.options.length === 0) {
-      ['V-Mount', 'B-Mount'].forEach(pt => {
+    const existing = Array.from(batteryPlateSelect.options).map(o => o.value);
+    ['V-Mount', 'B-Mount'].forEach(pt => {
+      if (!existing.includes(pt)) {
         const opt = document.createElement('option');
         opt.value = pt;
         opt.textContent = pt;
         batteryPlateSelect.appendChild(opt);
-      });
-    }
+      }
+    });
+    Array.from(batteryPlateSelect.options).forEach(o => {
+      if (!['V-Mount', 'B-Mount'].includes(o.value)) o.remove();
+    });
     if (!['V-Mount', 'B-Mount'].includes(batteryPlateSelect.value)) {
       batteryPlateSelect.value = 'V-Mount';
     }
   } else {
     batteryPlateRow.style.display = 'none';
+    batteryPlateSelect.innerHTML = '';
     if (hasB) batteryPlateSelect.value = 'B-Mount';
     else if (hasV) batteryPlateSelect.value = 'V-Mount';
     else batteryPlateSelect.value = '';

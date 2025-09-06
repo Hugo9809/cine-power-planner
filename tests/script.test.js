@@ -1085,6 +1085,35 @@ describe('script.js functions', () => {
     expect(optionsB).not.toContain('VBatt');
   });
 
+  test('Alexa Mini LF offers B-Mount after switching from V-only camera', () => {
+    global.devices.cameras['Arri Alexa Mini'] = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] }
+    };
+    global.devices.cameras['Arri Alexa Mini LF'] = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [
+        { type: 'B-Mount', mount: 'native' },
+        { type: 'V-Mount', mount: 'native' }
+      ] }
+    };
+
+    const camSel = document.getElementById('cameraSelect');
+    const plateSel = document.getElementById('batteryPlateSelect');
+
+    camSel.innerHTML = '<option value="Arri Alexa Mini">Arri Alexa Mini</option>' +
+      '<option value="Arri Alexa Mini LF">Arri Alexa Mini LF</option>';
+    camSel.value = 'Arri Alexa Mini';
+    script.updateBatteryPlateVisibility();
+    expect(plateSel.options.length).toBe(0);
+
+    camSel.value = 'Arri Alexa Mini LF';
+    script.updateBatteryPlateVisibility();
+    const opts = Array.from(plateSel.options).map(o => o.value);
+    expect(opts).toContain('B-Mount');
+    expect(opts).toContain('V-Mount');
+  });
+
   test('filter inputs disable autocomplete and spellcheck', () => {
     const ids = [
       'cameraListFilter', 'viewfinderListFilter', 'monitorListFilter', 'videoListFilter',
