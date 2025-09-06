@@ -481,6 +481,14 @@ function getBatteriesByMount(mountType) {
   return out;
 }
 
+function getHotswapsByMount(mountType) {
+  const out = {};
+  for (const [name, info] of Object.entries(devices.batteryHotswaps || {})) {
+    if (info && info.mount_type === mountType) out[name] = info;
+  }
+  return out;
+}
+
 function getSelectedPlate() {
   const camName = cameraSelect.value;
   const hasB = isNativeBMountCamera(camName);
@@ -777,22 +785,33 @@ function updateBatteryLabel() {
 
 function updateBatteryOptions() {
   const current = batterySelect.value;
+  const currentSwap = hotswapSelect.value;
   const plate = getSelectedPlate();
   const camName = cameraSelect.value;
   const supportsB = supportsBMountCamera(camName);
   if (plate === 'B-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('B-Mount'), true);
+    populateSelect(hotswapSelect, getHotswapsByMount('B-Mount'), true);
   } else if (plate === 'V-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('V-Mount'), true);
+    populateSelect(hotswapSelect, getHotswapsByMount('V-Mount'), true);
   } else {
     let bats = devices.batteries;
     if (!supportsB) {
       bats = Object.fromEntries(Object.entries(bats).filter(([, b]) => b.mount_type !== 'B-Mount'));
     }
     populateSelect(batterySelect, bats, true);
+    let swaps = devices.batteryHotswaps || {};
+    if (!supportsB) {
+      swaps = Object.fromEntries(Object.entries(swaps).filter(([, b]) => b.mount_type !== 'B-Mount'));
+    }
+    populateSelect(hotswapSelect, swaps, true);
   }
   if (Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
+  }
+  if (Array.from(hotswapSelect.options).some(o => o.value === currentSwap)) {
+    hotswapSelect.value = currentSwap;
   }
   updateBatteryLabel();
 }
@@ -1171,6 +1190,12 @@ function setLanguage(lang) {
   batteryPlateLabelElem.textContent = texts[lang].batteryPlateLabel;
   batteryPlateLabelElem.setAttribute("data-help", texts[lang].batteryPlateSelectHelp);
 
+  const batteryHotswapLabelElem = document.getElementById("batteryHotswapLabel");
+  if (batteryHotswapLabelElem) {
+    batteryHotswapLabelElem.textContent = texts[lang].batteryHotswapLabel;
+    batteryHotswapLabelElem.setAttribute("data-help", texts[lang].batteryHotswapSelectHelp);
+  }
+
   updateBatteryLabel();
   // FIZ legend and labels
   const fizLegendElem = document.getElementById("fizLegend");
@@ -1234,6 +1259,8 @@ function setLanguage(lang) {
     pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
   if (dtapWarnElem)
     dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
+  if (hotswapWarnElem)
+    hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   const fb = renderFeedbackTable(getCurrentSetupKey());
@@ -1567,6 +1594,7 @@ const controllerSelects = [
 ];
 const distanceSelect = document.getElementById("distanceSelect");
 const batterySelect  = document.getElementById("batterySelect");
+const hotswapSelect  = document.getElementById("batteryHotswapSelect");
 const lensSelect     = document.getElementById("lenses");
 const requiredScenariosSelect = document.getElementById("requiredScenarios");
 const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
@@ -1644,6 +1672,7 @@ const runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
 const batteryCountElem    = document.getElementById("batteryCount");
 const pinWarnElem         = document.getElementById("pinWarning");
 const dtapWarnElem        = document.getElementById("dtapWarning");
+const hotswapWarnElem     = document.getElementById("hotswapWarning");
 
 const setupSelect     = document.getElementById("setupSelect");
 const setupNameInput  = document.getElementById("setupName");
@@ -1932,6 +1961,7 @@ function getCurrentSetupState() {
     distance: distanceSelect.value,
     batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value,
+    batteryHotswap: hotswapSelect.value,
     sliderBowl: getSliderBowlValue(),
     projectInfo
   };
@@ -3827,11 +3857,12 @@ motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
 populateSelect(batterySelect, devices.batteries, true);
+populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
 updateBatteryPlateVisibility();
 updateBatteryOptions();
 
 // Enable search inside dropdowns
-[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, lensSelect]
+[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect]
   .forEach(sel => attachSelectSearch(sel));
 motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
@@ -4045,12 +4076,35 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
   pinWarnElem.style.color = "";
   dtapWarnElem.textContent = "";
   dtapWarnElem.style.color = "";
+  if (hotswapWarnElem) {
+    hotswapWarnElem.textContent = "";
+    hotswapWarnElem.style.color = "";
+  }
   lastRuntimeHours = null;
 } else {
     const battData = devices.batteries[battery];
-    const capacityWh = battData.capacity;
-    const maxPinA = battData.pinA;
+    const hsName = hotswapSelect.value;
+    const hsData = devices.batteryHotswaps && devices.batteryHotswaps[hsName];
+    const capacityWh = battData.capacity + (hsData?.capacity || 0);
+    let maxPinA = battData.pinA;
     const maxDtapA = battData.dtapA;
+    if (hsData && typeof hsData.pinA === 'number') {
+      if (hsData.pinA < maxPinA) {
+        hotswapWarnElem.textContent = texts[currentLang].warnHotswapLower
+          .replace("{max}", hsData.pinA)
+          .replace("{batt}", battData.pinA);
+        hotswapWarnElem.style.color = "orange";
+        maxPinA = hsData.pinA;
+      } else {
+        hotswapWarnElem.textContent = "";
+        hotswapWarnElem.style.color = "";
+      }
+    } else {
+      if (hotswapWarnElem) {
+        hotswapWarnElem.textContent = "";
+        hotswapWarnElem.style.color = "";
+      }
+    }
     totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
     totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
     if (totalWatt === 0) {
@@ -4303,8 +4357,9 @@ function getCurrentSetupKey() {
   const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
   const distance = distanceSelect.value || '';
   const battery = batterySelect.value || '';
+  const hotswap = hotswapSelect.value || '';
   const plate = getSelectedPlate() || '';
-  return [camera, monitor, video, cage, motors, controllers, distance, battery, plate].join('|');
+  return [camera, monitor, video, cage, motors, controllers, distance, battery, hotswap, plate].join('|');
 }
 
 function deleteFeedbackEntry(key, index) {
@@ -4558,6 +4613,7 @@ function getDeviceChanges() {
   compare('monitors', window.defaultDevices.monitors || {}, devices.monitors || {});
   compare('video', window.defaultDevices.video || {}, devices.video || {});
   compare('batteries', window.defaultDevices.batteries || {}, devices.batteries || {});
+  compare('batteryHotswaps', window.defaultDevices.batteryHotswaps || {}, devices.batteryHotswaps || {});
   ['motors', 'controllers', 'distance'].forEach(sub => {
     const defCat = window.defaultDevices.fiz ? (window.defaultDevices.fiz[sub] || {}) : {};
     const curCat = devices.fiz ? (devices.fiz[sub] || {}) : {};
@@ -5676,7 +5732,7 @@ deleteSetupBtn.addEventListener("click", () => {
     populateSetupSelect();
     setupNameInput.value = ""; // Clear setup name input
     // Reset dropdowns to "None" or first option after deleting current setup
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
         sel.value = "None";
@@ -5705,7 +5761,7 @@ clearSetupBtn.addEventListener("click", () => {
     }
     setupSelect.value = "";
     setupNameInput.value = "";
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect].forEach(sel => {
       if (!sel) return;
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
@@ -5730,7 +5786,7 @@ setupSelect.addEventListener("change", (event) => {
   if (setupName === "") { // "-- New Setup --" selected
     setupNameInput.value = "";
     // Reset all dropdowns to "None" or first option
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect].forEach(sel => {
+    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
         sel.value = "None";
@@ -5771,6 +5827,7 @@ setupSelect.addEventListener("change", (event) => {
       setup.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
+      hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
       setSliderBowlValue(setup.sliderBowl || '');
       updateBatteryOptions();
       if (gearListOutput) {
@@ -6779,7 +6836,8 @@ shareSetupBtn.addEventListener('click', () => {
     controllers: controllerSelects.map(sel => sel.value),
     distance: distanceSelect.value,
     batteryPlate: batteryPlateSelect.value,
-    battery: batterySelect.value
+    battery: batterySelect.value,
+    batteryHotswap: hotswapSelect.value
   };
   const deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
@@ -7123,6 +7181,7 @@ function generatePrintableOverview() {
     motorSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_motors', 'fiz', 'motors'));
     controllerSelects.forEach(sel => processSelectForOverview(sel, 'category_fiz_controllers', 'fiz', 'controllers'));
     processSelectForOverview(batterySelect, 'category_batteries', 'batteries'); // Handle battery separately for capacity
+    processSelectForOverview(hotswapSelect, 'category_batteryHotswaps', 'batteryHotswaps');
 
       sectionOrder.forEach(key => {
           const heading = t[key] || key;
@@ -8074,6 +8133,10 @@ function generateGearListHtml(info = {}) {
         if (mount === 'V-Mount' || mount === 'B-Mount') {
             batteryItems += `<br>1x Hotswap Plate ${mount}`;
         }
+        const swapName = hotswapSelect && hotswapSelect.value && hotswapSelect.value !== 'None' ? getText(hotswapSelect) : '';
+        if (swapName) {
+            batteryItems += `<br>1x ${escapeHtml(swapName)}`;
+        }
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = [];
@@ -8705,6 +8768,7 @@ function saveCurrentSession() {
     distance: distanceSelect ? distanceSelect.value : '',
     batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
     battery: batterySelect ? batterySelect.value : '',
+    batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
     sliderBowl: getSliderBowlValue(),
     projectInfo: currentProjectInfo
   };
@@ -8752,6 +8816,7 @@ function restoreSessionState() {
       state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
     }
     if (batterySelect && state.battery) batterySelect.value = state.battery;
+    if (hotswapSelect && state.batteryHotswap) hotswapSelect.value = state.batteryHotswap;
     setSliderBowlValue(state.sliderBowl);
     if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
     if (state.projectInfo) {
@@ -8816,6 +8881,7 @@ function applySharedSetup(shared) {
       decoded.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
     }
     if (batterySelect && decoded.battery) batterySelect.value = decoded.battery;
+    if (hotswapSelect && decoded.batteryHotswap) hotswapSelect.value = decoded.batteryHotswap;
     saveCurrentSession();
     if (Array.isArray(decoded.feedback) && decoded.feedback.length) {
       const key = getCurrentSetupKey();
@@ -8842,7 +8908,7 @@ function applySharedSetupFromUrl() {
 // --- EVENT LISTENERS FÜR NEUBERECHNUNG ---
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 if (cameraSelect) {
   cameraSelect.addEventListener('change', () => {
@@ -8859,28 +8925,29 @@ if (monitorSelect) {
   monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
 }
 if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
+if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect, setupSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect, setupSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 if (setupNameInput) setupNameInput.addEventListener("input", checkSetupChanged);
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });

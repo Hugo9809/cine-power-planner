@@ -67,6 +67,7 @@ const texts = {
     batteryLabel: "V-Mount Battery:",
     batteryBMountLabel: "B-Mount Battery:",
     batteryPlateLabel: "Battery Plate:",
+    batteryHotswapLabel: "Battery Hotswap:",
     lensesLabel: "Lenses:",
 
     fizLegend: "FIZ (Follow Focus) Systems",
@@ -105,6 +106,7 @@ const texts = {
 
     pinWarningHelp: "Alerts if current exceeds what the battery pins can supply.",
     dtapWarningHelp: "Alerts if current exceeds what the D-Tap port can supply.",
+    hotswapWarningHelp: "Alerts if the selected hotswap restricts available current.",
     methodPinsOnly: "pins only!",
     methodPinsAndDTap: "both pins and D-Tap",
     methodInfinite: "infinite",
@@ -120,6 +122,7 @@ const texts = {
     warnPinNear: "Note: current draw is close to the main output limit ({current}A of {max}A).",
     warnDTapExceeded: "WARNING: current draw ({current}A) exceeds the battery's D-Tap output ({max}A)!",
     warnDTapNear: "Note: current draw uses over 80% of the D-Tap capacity ({current}A of {max}A).",
+    warnHotswapLower: "WARNING: hotswap current limit ({max}A) is lower than battery ({batt}A).",
 
     incompatibleFIZWarning: "WARNING: incompatible FIZ brands selected.",
     missingFIZControllerWarning: "ERROR: FIZ motors require a controller with LBUS/CAM connection.",
@@ -140,6 +143,7 @@ const texts = {
     category_fiz_distance: "FIZ Distance",
     category_fiz_cables: "FIZ Cables",
     category_batteries: "V-Mount Batteries",
+    category_batteryHotswaps: "Battery Hotswap",
     category_accessory_batteries: "Accessory Batteries",
     category_cables: "Cables",
     category_camera_support: "Camera Support",
@@ -361,6 +365,7 @@ const texts = {
     distanceSelectHelp: "Choose an optional distance or range-finder sensor.",
     batterySelectHelp: "Choose the battery model that will power the entire rig.",
     batteryPlateSelectHelp: "Choose the battery plate or adapter that connects the battery to the camera.",
+    batteryHotswapSelectHelp: "Select the hot-swap buffer that keeps power during battery changes.",
     clearSetupHelp: "Reset the planner by removing every selected device.",
     runtimeFeedbackBtnHelp:
       "Open a form where you can submit real-world runtime data for this configuration.",
@@ -443,6 +448,7 @@ const texts = {
     batteryLabel: "Batteria a V-Mount:",
     batteryBMountLabel: "Batteria B-Mount:",
     batteryPlateLabel: "Piastra batteria:",
+    batteryHotswapLabel: "Hotswap batteria:",
     lensesLabel: "Obiettivi:",
     fizLegend: "Sistemi FIZ (Follow Focus)",
     fizMotorsLabel: "Motori FIZ:",
@@ -478,6 +484,7 @@ const texts = {
     weightingHeading: "Ripartizione ponderata della durata",
     pinWarningHelp: "Avvisa se la corrente supera quella fornibile dai pin della batteria.",
     dtapWarningHelp: "Avvisa se la corrente supera quella fornibile dalla porta D-Tap.",
+    hotswapWarningHelp: "Avvisa se l'hotswap limita la corrente disponibile.",
     methodPinsOnly: "solo pin!",
     methodPinsAndDTap: "sia pin che D-Tap",
     methodInfinite: "infinito",
@@ -487,6 +494,7 @@ const texts = {
     warnPinNearLevel: "nota",
     warnDTapExceededLevel: "avvertimento",
     warnDTapNearLevel: "nota",
+    warnHotswapLower: "ATTENZIONE: il limite di corrente dell'hotswap ({max}A) è inferiore a quello della batteria ({batt}A).",
     warnPinExceeded: "ATTENZIONE: l'assorbimento ({current}A a ~12V) supera la portata principale della batteria ({max}A)!",
     warnPinNear: "Nota: l'assorbimento è vicino al limite principale ({current}A di {max}A).",
     warnDTapExceeded: "ATTENZIONE: l'assorbimento ({current}A) supera l'uscita D-Tap della batteria ({max}A)!",
@@ -509,6 +517,7 @@ const texts = {
     category_fiz_distance: "Distanza FIZ",
     category_fiz_cables: "Cavi FIZ",
     category_batteries: "Batterie a V-Mount",
+    category_batteryHotswaps: "Hotswap batteria",
     category_accessory_batteries: "Batterie accessorie",
     category_cables: "Cavi",
     category_camera_support: "Supporto camera",
@@ -715,6 +724,7 @@ const texts = {
     distanceSelectHelp: "Seleziona un sensore di distanza per la tua configurazione.",
     batterySelectHelp: "Seleziona la batteria che alimenta la configurazione.",
     batteryPlateSelectHelp: "Seleziona la piastra o l'adattatore della batteria.",
+    batteryHotswapSelectHelp: "Seleziona l'unità di hotswap che mantiene l'alimentazione durante il cambio batteria.",
     clearSetupHelp:
       "Rimuove tutti i dispositivi dalla configurazione corrente.",
     runtimeFeedbackBtnHelp:
@@ -797,6 +807,7 @@ const texts = {
     batteryLabel: "Batería V-Mount:",
     batteryBMountLabel: "Batería B-Mount:",
     batteryPlateLabel: "Placa de Batería:",
+    batteryHotswapLabel: "Hotswap de batería:",
     lensesLabel: "Lentes:",
 
     fizLegend: "Sistemas FIZ (Follow Focus)",
@@ -833,6 +844,7 @@ const texts = {
     weightingHeading: "Desglose ponderado de la autonomía",
     pinWarningHelp: "Advierte si la corriente supera lo que pueden entregar los pines de la batería.",
     dtapWarningHelp: "Advierte si la corriente supera lo que puede entregar el puerto D-Tap.",
+    hotswapWarningHelp: "Advierte si el hotswap limita la corriente disponible.",
     methodPinsOnly: "solo pines!",
     methodPinsAndDTap: "pines y D-Tap",
     methodInfinite: "infinito",
@@ -843,11 +855,11 @@ const texts = {
     warnPinNearLevel: "nota",
     warnDTapExceededLevel: "advertencia",
     warnDTapNearLevel: "nota",
-
     warnPinExceeded: "ADVERTENCIA: la corriente ({current}A a ~12V) supera el límite principal ({max}A)!",
     warnPinNear: "Nota: la corriente está cerca del límite ({current}A de {max}A).",
     warnDTapExceeded: "ADVERTENCIA: la corriente ({current}A) supera la salida D-Tap ({max}A)!",
     warnDTapNear: "Nota: la corriente usa más del 80% de la capacidad D-Tap ({current}A de {max}A).",
+    warnHotswapLower: "ADVERTENCIA: el límite de corriente del hotswap ({max}A) es inferior al de la batería ({batt}A).",
 
     incompatibleFIZWarning: "ADVERTENCIA: se seleccionaron marcas FIZ incompatibles.",
     missingFIZControllerWarning: "ERROR: los motores FIZ requieren un controlador con LBUS/CAM.",
@@ -868,6 +880,7 @@ const texts = {
     category_fiz_distance: "Distancia FIZ",
     category_fiz_cables: "Cables FIZ",
     category_batteries: "Baterías V-Mount",
+    category_batteryHotswaps: "Hotswap de batería",
     category_accessory_batteries: "Baterías de accesorios",
     category_cables: "Cables",
     category_camera_support: "Soporte de cámara",
@@ -1082,6 +1095,7 @@ const texts = {
     distanceSelectHelp: "Selecciona un sensor de distancia para tu configuración.",
     batterySelectHelp: "Selecciona la batería que alimenta la configuración.",
     batteryPlateSelectHelp: "Selecciona la placa o adaptador de batería.",
+    batteryHotswapSelectHelp: "Selecciona el módulo de hotswap que mantiene la alimentación durante el cambio de baterías.",
     clearSetupHelp:
       "Borra todos los dispositivos de la configuración actual.",
     runtimeFeedbackBtnHelp:
@@ -1165,6 +1179,7 @@ const texts = {
     batteryLabel: "Batterie V-Mount:",
     batteryBMountLabel: "Batterie B-Mount:",
     batteryPlateLabel: "Plaque Batterie:",
+    batteryHotswapLabel: "Hotswap de batterie:",
     lensesLabel: "Objectifs:",
 
     fizLegend: "Systèmes FIZ",
@@ -1201,6 +1216,7 @@ const texts = {
     weightingHeading: "Répartition de la pondération de la durée d'utilisation",
     pinWarningHelp: "Avertit si le courant dépasse ce que peuvent fournir les broches de la batterie.",
     dtapWarningHelp: "Avertit si le courant dépasse ce que peut fournir le port D‑Tap.",
+    hotswapWarningHelp: "Avertit si le module hotswap limite le courant disponible.",
     methodPinsOnly: "broches seulement!",
     methodPinsAndDTap: "broches et D-Tap",
     methodInfinite: "infini",
@@ -1211,11 +1227,11 @@ const texts = {
     warnPinNearLevel: "remarque",
     warnDTapExceededLevel: "attention",
     warnDTapNearLevel: "remarque",
-
     warnPinExceeded: "ATTENTION: le courant ({current}A à ~12V) dépasse la limite principale ({max}A)!",
     warnPinNear: "Remarque : le courant est proche de la limite ({current}A sur {max}A).",
     warnDTapExceeded: "ATTENTION: le courant ({current}A) dépasse la sortie D-Tap ({max}A)!",
     warnDTapNear: "Remarque : le courant utilise plus de 80% de la capacité D-Tap ({current}A sur {max}A).",
+    warnHotswapLower: "ATTENTION : la limite de courant du hotswap ({max}A) est inférieure à celle de la batterie ({batt}A).",
 
     incompatibleFIZWarning: "ATTENTION : des marques FIZ incompatibles sont sélectionnées.",
     missingFIZControllerWarning: "ERREUR : les moteurs FIZ nécessitent un contrôleur LBUS/CAM.",
@@ -1236,6 +1252,7 @@ const texts = {
     category_fiz_distance: "Distance FIZ",
     category_fiz_cables: "Câbles FIZ",
     category_batteries: "Batteries V-Mount",
+    category_batteryHotswaps: "Hotswap de batterie",
     category_accessory_batteries: "Batteries accessoires",
     category_cables: "Câbles",
     category_camera_support: "Support caméra",
@@ -1452,6 +1469,7 @@ const texts = {
     batterySelectHelp: "Sélectionnez la batterie qui alimente la configuration.",
     batteryPlateSelectHelp:
       "Sélectionnez la plaque ou l'adaptateur de batterie utilisé.",
+    batteryHotswapSelectHelp: "Sélectionnez le module hotswap qui maintient l'alimentation lors du changement de batterie.",
     clearSetupHelp:
       "Efface tous les appareils de la configuration actuelle.",
     runtimeFeedbackBtnHelp:
@@ -1535,6 +1553,7 @@ const texts = {
     batteryLabel: "V-Mount Akku:",
     batteryBMountLabel: "B-Mount Akku:",
     batteryPlateLabel: "Akkuschacht:",
+    batteryHotswapLabel: "Akku-Hotswap:",
     lensesLabel: "Objektive:",
 
     fizLegend: "FIZ (Follow Focus) Systeme",
@@ -1571,6 +1590,7 @@ const texts = {
     weightingHeading: "Aufschlüsselung der Laufzeitgewichtung",
     pinWarningHelp: "Warnt, wenn der Strom die Belastbarkeit der Akkupins überschreitet.",
     dtapWarningHelp: "Warnt, wenn der Strom die Belastbarkeit der D‑Tap‑Buchse überschreitet.",
+    hotswapWarningHelp: "Warnt, wenn das Hotswap-Modul den verfügbaren Strom begrenzt.",
     methodPinsOnly: "nur Pins!",
     methodPinsAndDTap: "Pins und D-Tap",
     methodInfinite: "unendlich",
@@ -1586,6 +1606,7 @@ const texts = {
     warnPinNear: "Hinweis: Strombedarf kommt nahe an die Pin-Grenze ({current}A von {max}A).",
     warnDTapExceeded: "WARNUNG: Strombedarf ({current}A) übersteigt die D-Tap-Leistung ({max}A) des Akkus!",
     warnDTapNear: "Hinweis: Strombedarf nutzt über 80% der D-Tap Kapazität ({current}A von {max}A).",
+    warnHotswapLower: "WARNUNG: Stromlimit des Hotswap-Moduls ({max}A) liegt unter dem des Akkus ({batt}A).",
 
     incompatibleFIZWarning: "WARNUNG: Inkompatible FIZ-Marken ausgewählt.",
     missingFIZControllerWarning: "FEHLER: FIZ-Motoren benötigen einen Controller mit LBUS/CAM.",
@@ -1606,6 +1627,7 @@ const texts = {
     category_fiz_distance: "FIZ Distanz",
     category_fiz_cables: "FIZ-Kabel",
     category_batteries: "V-Mount Akkus",
+    category_batteryHotswaps: "Akku-Hotswap",
     category_accessory_batteries: "Zubehör-Akkus",
     category_cables: "Kabel",
     category_camera_support: "Kamera-Support",
@@ -1819,6 +1841,7 @@ const texts = {
     distanceSelectHelp: "Wähle einen Abstandssensor für dein Setup.",
     batterySelectHelp: "Wähle den Akku, der das Setup versorgt.",
     batteryPlateSelectHelp: "Wähle die Batterieplatte oder den Adapter aus.",
+    batteryHotswapSelectHelp: "Wähle das Hotswap-Modul, das beim Akkutausch weiter mit Strom versorgt.",
     clearSetupHelp:
       "Entfernt alle Geräte aus der aktuellen Konfiguration.",
     runtimeFeedbackBtnHelp:
