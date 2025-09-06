@@ -7288,17 +7288,18 @@ function collectAccessories() {
     }
 
     const powerCableDb = acc.cables?.power || {};
-    const gatherPower = (data, target = misc) => {
+    const gatherPower = (data, target = misc, includeExcluded = false) => {
         const input = data?.power?.input?.type;
         const types = Array.isArray(input) ? input : input ? [input] : [];
         types.forEach(t => {
             for (const [name, cable] of Object.entries(powerCableDb)) {
-                if (cable.to === t && !excludedCables.has(name)) target.push(name);
+                const isExcluded = excludedCables.has(name);
+                if (cable.to === t && (!isExcluded || includeExcluded)) target.push(name);
             }
         });
     };
     gatherPower(devices.cameras[cameraSelect.value]);
-    gatherPower(devices.monitors[monitorSelect.value], monitoringSupport);
+    gatherPower(devices.monitors[monitorSelect.value], monitoringSupport, true);
     gatherPower(devices.video[videoSelect.value]);
     if (videoSelect.value) {
         const rxName = videoSelect.value.replace(/ TX\b/, ' RX');

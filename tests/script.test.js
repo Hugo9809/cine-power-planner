@@ -1403,6 +1403,22 @@ describe('script.js functions', () => {
     expect(html).not.toContain('MonA, VidA');
   });
 
+  test('onboard monitor adds power cable to monitoring support', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    const html = generateGearListHtml();
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).toContain('1x D-Tap to LEMO 2-pin');
+    const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
+    expect(miscSection).not.toContain('D-Tap to LEMO 2-pin');
+  });
+
   test('Directors handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {
