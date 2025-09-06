@@ -7472,8 +7472,34 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         });
     };
     gatherPower(devices.cameras[cameraSelect.value]);
-    gatherPower(devices.monitors[monitorSelect.value], monitoringSupport, true);
     gatherPower(devices.video[videoSelect.value]);
+    const onboardMonitor = devices.monitors[monitorSelect.value];
+    if (onboardMonitor) {
+        const monitorLabel = 'Onboard monitor';
+        const powerType = onboardMonitor?.power?.input?.type;
+        if (powerType === 'LEMO 2-pin') {
+            monitoringSupport.push(
+                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`,
+                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`
+            );
+        }
+        const cameraData = devices.cameras[cameraSelect.value];
+        const camVideo = (cameraData?.videoOutputs || []).map(v => v.type?.toUpperCase());
+        const monVideo = (onboardMonitor.videoInputs || []).map(v => v.type?.toUpperCase());
+        const hasSDI = camVideo.some(t => t && t.includes('SDI')) && monVideo.some(t => t && t.includes('SDI'));
+        const hasHDMI = camVideo.includes('HDMI') && monVideo.includes('HDMI');
+        if (hasSDI) {
+            monitoringSupport.push(
+                `Ultraslim BNC 0.5 m (${monitorLabel})`,
+                `Ultraslim BNC 0.5 m (${monitorLabel})`
+            );
+        } else if (hasHDMI) {
+            monitoringSupport.push(
+                `Ultraslim HDMI 0.5 m (${monitorLabel})`,
+                `Ultraslim HDMI 0.5 m (${monitorLabel})`
+            );
+        }
+    }
     if (videoSelect.value) {
         const rxName = videoSelect.value.replace(/ TX\b/, ' RX');
         if (devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
