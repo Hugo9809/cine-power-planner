@@ -1,4 +1,5 @@
 // storage.js - Handles reading from and writing to localStorage.
+/* global texts, currentLang */
 
 const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
@@ -18,6 +19,7 @@ const SAFE_LOCAL_STORAGE = (() => {
     }
   } catch (e) {
     console.warn('localStorage is unavailable:', e);
+    alertStorageError();
   }
   return null;
 })();
@@ -25,6 +27,23 @@ const SAFE_LOCAL_STORAGE = (() => {
 // Helper to check for plain objects
 function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
+}
+
+function alertStorageError() {
+  if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
+  let msg = 'Storage error: Unable to access local data. Changes may not be saved.';
+  try {
+    if (typeof texts !== 'undefined') {
+      const lang = typeof currentLang !== 'undefined' && texts[currentLang]
+        ? currentLang
+        : 'en';
+      msg = texts[lang]?.alertStorageError || msg;
+    }
+  } catch (err) {
+    void err;
+    // ignore and fall back to default
+  }
+  window.alert(msg);
 }
 
 // Generic helpers for storage access
@@ -35,6 +54,7 @@ function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
     return raw ? JSON.parse(raw) : defaultValue;
   } catch (e) {
     console.error(errorMessage, e);
+    alertStorageError();
     return defaultValue;
   }
 }
@@ -48,6 +68,7 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
     }
   } catch (e) {
     console.error(errorMessage, e);
+    alertStorageError();
   }
 }
 
@@ -236,6 +257,7 @@ function deleteGearList() {
     SAFE_LOCAL_STORAGE.removeItem(GEARLIST_STORAGE_KEY);
   } catch (e) {
     console.error("Error deleting gear list from localStorage:", e);
+    alertStorageError();
   }
 }
 
@@ -278,6 +300,7 @@ function clearAllData() {
     console.log("All planner data cleared from storage.");
   } catch (e) {
     console.error("Error clearing storage:", e);
+    alertStorageError();
   }
 }
 

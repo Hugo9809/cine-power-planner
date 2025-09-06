@@ -236,6 +236,7 @@ const texts = {
     alertImportError: "Failed to import database. Invalid file or data format.",
     confirmExportAndRevert: "Are you sure you want to export the current database AND then revert to the default database? This will overwrite your current saved data with the original defaults.",
     alertExportAndRevertSuccess: "Database exported and reverted to defaults successfully.",
+    alertStorageError: "Storage error: Unable to access local data. Changes may not be saved.",
 
     placeholder_deviceName: "Device name",
     placeholder_watt: "e.g. 12.5",
@@ -596,6 +597,7 @@ const texts = {
     alertImportError: "Impossibile importare il database. File o formato dati non valido.",
     confirmExportAndRevert: "Sei sicuro di voler esportare il database corrente e quindi tornare al database predefinito? Ciò sovrascriverà i tuoi dati salvati attuali con le impostazioni predefinite originali.",
     alertExportAndRevertSuccess: "Database esportato e ripristinato in predefiniti.",
+    alertStorageError: "Errore di archiviazione: impossibile accedere ai dati locali. Le modifiche potrebbero non essere salvate.",
     placeholder_deviceName: "Nome del dispositivo",
     placeholder_watt: "es. 12.5",
     placeholder_capacity: "es. 98",
@@ -948,6 +950,7 @@ const texts = {
     alertImportError: "Error al importar la base de datos.",
     confirmExportAndRevert: "¿Seguro que deseas exportar y restaurar la base de datos por defecto?",
     alertExportAndRevertSuccess: "Base de datos exportada y restablecida.",
+    alertStorageError: "Error de almacenamiento: no se pudo acceder a los datos locales. Es posible que los cambios no se guarden.",
 
     placeholder_deviceName: "Nombre del dispositivo",
     placeholder_watt: "ej. 12.5",
@@ -1308,6 +1311,7 @@ const texts = {
     alertImportError: "Échec de l'importation de la base.",
     confirmExportAndRevert: "Exporter puis rétablir la base par défaut ?",
     alertExportAndRevertSuccess: "Base exportée et réinitialisée.",
+    alertStorageError: "Erreur de stockage : accès aux données locales impossible. Les modifications peuvent ne pas être enregistrées.",
 
     placeholder_deviceName: "Nom de l'appareil",
     placeholder_watt: "ex. 12.5",
@@ -1670,6 +1674,7 @@ const texts = {
     alertImportError: "Fehler beim Import der Datenbank. Ungültige Datei oder Datenformat.",
     confirmExportAndRevert: "Möchten Sie die aktuelle Datenbank exportieren UND dann auf die Standarddatenbank zurücksetzen? Dies wird Ihre aktuell gespeicherten Daten mit den ursprünglichen Standardwerten überschreiben.",
     alertExportAndRevertSuccess: "Datenbank exportiert und erfolgreich auf Standardwerte zurückgesetzt.",
+    alertStorageError: "Speicherfehler: Auf lokale Daten konnte nicht zugegriffen werden. Änderungen werden möglicherweise nicht gespeichert.",
 
     placeholder_deviceName: "Gerätename",
     placeholder_watt: "z.B. 12.5",
