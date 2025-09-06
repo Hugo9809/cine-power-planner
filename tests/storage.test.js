@@ -18,11 +18,11 @@ const {
     importAllData,
 } = require('../storage');
 
-const DEVICE_KEY = 'cameraPowerPlanner_devices';
-const SETUP_KEY = 'cameraPowerPlanner_setups';
-const SESSION_KEY = 'cameraPowerPlanner_session';
-const FEEDBACK_KEY = 'cameraPowerPlanner_feedback';
-const PROJECT_KEY = 'cameraPowerPlanner_project';
+const DEVICE_KEY = 'cineList_devices';
+const SETUP_KEY = 'cineList_setups';
+const SESSION_KEY = 'cineList_session';
+const FEEDBACK_KEY = 'cineList_feedback';
+const PROJECT_KEY = 'cineList_project';
 
 const validDeviceData = {
   cameras: {},

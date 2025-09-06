@@ -1,8 +1,8 @@
-# Camera Power Planner
+# Cine List
 
-![Camera Power Planner icon](icon.svg)
+![Cine List icon](icon.svg)
 
-Camera Power Planner is a standalone web app for planning professional camera
+Cine List is a standalone web app for planning professional camera
 rigs powered by V‑Mount or B‑Mount batteries. It calculates total power draw,
 checks that batteries can safely deliver the required output, and estimates how
 long your project will run. The tool runs entirely in the browser and even works
@@ -118,7 +118,7 @@ Set up a development environment:
 
 ## Install as an App
 
-Camera Power Planner is a Progressive Web App and can be installed for quick
+Cine List is a Progressive Web App and can be installed for quick
 access:
 
 1. Open `index.html` in a supported browser.
@@ -131,7 +131,7 @@ access:
 
 ## Browser Support
 
-Camera Power Planner relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.
+Cine List relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.
 
 ## Development
 

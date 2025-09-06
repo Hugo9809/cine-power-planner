@@ -1,11 +1,11 @@
 // storage.js - Handles reading from and writing to localStorage.
 /* global texts, currentLang */
 
-const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
-const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
-const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
-const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
-const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
+const DEVICE_STORAGE_KEY = 'cineList_devices';
+const SETUP_STORAGE_KEY = 'cineList_setups';
+const SESSION_STATE_KEY = 'cineList_session';
+const FEEDBACK_STORAGE_KEY = 'cineList_feedback';
+const PROJECT_STORAGE_KEY = 'cineList_project';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, this returns null.

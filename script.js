@@ -1,4 +1,4 @@
-// script.js – Main logic for the Camera Power Planner app
+// script.js – Main logic for the Cine List app
 /* global texts, categoryNames, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
@@ -5698,10 +5698,10 @@ clearSetupBtn.addEventListener("click", () => {
     confirm(texts[currentLang].confirmClearSetupAgain)
   ) {
     if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('cameraPowerPlanner_session');
+        localStorage.removeItem('cineList_session');
     }
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem('cameraPowerPlanner_session');
+        sessionStorage.removeItem('cineList_session');
     }
     setupSelect.value = "";
     setupNameInput.value = "";
@@ -6550,7 +6550,7 @@ if (exportAndRevertBtn) {
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {
         // Step 2: Remove saved database and reload page so device files are re-read
-        localStorage.removeItem('cameraPowerPlanner_devices');
+        localStorage.removeItem('cineList_devices');
         alert(texts[currentLang].alertExportAndRevertSuccess);
         location.reload();
       }, 500); // 500ms delay
@@ -6935,7 +6935,7 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     Object.entries(entry).forEach(([k, v]) => {
       lines.push(`${k}: ${v}`);
     });
-    const subject = encodeURIComponent('Camera Power Planner Runtime Feedback');
+    const subject = encodeURIComponent('Cine List Runtime Feedback');
     const body = encodeURIComponent(lines.join('\n'));
     window.location.href = `mailto:info@lucazanner.de?subject=${subject}&body=${body}`;
     closeDialog(feedbackDialog);

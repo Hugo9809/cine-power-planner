@@ -1,4 +1,4 @@
-# 🎥 Pianificatore del Consumo della Fotocamera
+# 🎥 Cine List
 
 Questo strumento basato sul browser aiuta a pianificare configurazioni professionali alimentate da batterie V‑Mount. Calcola **consumo totale**, **corrente** (a 14,4 V e 12 V) e **durata stimata della batteria**, verificando che la batteria possa fornire in sicurezza la potenza richiesta.
 ---
