@@ -2224,15 +2224,80 @@ describe('script.js functions', () => {
     expect(miscText).toContain('10x Feet Warmers');
   });
 
-  test('Winter shooting days add hair dryer to miscellaneous', () => {
+  test('Winter outdoor shooting adds hair dryer and heater for Venice', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ shootingDays: '2024-01-10 to 2024-01-12' });
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    devices.cameras['Sony Venice 2'] = { powerDrawWatts: 10, power: { input: { type: 'LEMO 2-pin' } }, videoOutputs: [] };
+    addOpt('cameraSelect', 'Sony Venice 2');
+    const html = generateGearListHtml({ shootingDays: '2024-01-10 to 2024-01-12', requiredScenarios: 'Outdoor' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
     const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
     const miscText = rows[miscIdx + 1].textContent;
     expect(miscText).toContain('1x Hair Dryer');
+    expect(miscText).toContain('1x Denz C0100072 Shut-Eye Heater für Sony');
+  });
+
+  test('Winter indoor shooting does not add hair dryer or heater', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    devices.cameras['Sony Venice 2'] = { powerDrawWatts: 10, power: { input: { type: 'LEMO 2-pin' } }, videoOutputs: [] };
+    addOpt('cameraSelect', 'Sony Venice 2');
+    const html = generateGearListHtml({ shootingDays: '2024-01-10 to 2024-01-12' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1] ? rows[miscIdx + 1].textContent : '';
+    expect(miscText).not.toContain('Hair Dryer');
+    expect(miscText).not.toContain('Denz C0100072 Shut-Eye Heater für Sony');
+  });
+
+  test('Cold weather adds viewfinder heater for Venice cameras', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    devices.cameras['Sony Venice 2'] = { powerDrawWatts: 10, power: { input: { type: 'LEMO 2-pin' } }, videoOutputs: [] };
+    addOpt('cameraSelect', 'Sony Venice 2');
+    const html = generateGearListHtml({ requiredScenarios: 'Extreme cold (snow)' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('1x Hair Dryer');
+    expect(miscText).toContain('1x Denz C0100072 Shut-Eye Heater für Sony');
+  });
+
+  test('Cold weather adds viewfinder heater for Alexa Mini', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    devices.cameras['Arri Alexa Mini'] = { powerDrawWatts: 10, power: { input: { type: 'LEMO 2-pin' } }, videoOutputs: [] };
+    addOpt('cameraSelect', 'Arri Alexa Mini');
+    const html = generateGearListHtml({ requiredScenarios: 'Extreme cold (snow)' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
+    const miscText = rows[miscIdx + 1].textContent;
+    expect(miscText).toContain('1x Hair Dryer');
+    expect(miscText).toContain('1x Arri K2.0003898 Heated Eyecup HE-7 for the MVF-1');
   });
 
   test('Outdoor scenario calculates CapIt sizes for large monitors', () => {
