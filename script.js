@@ -7554,6 +7554,11 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
             if (Array.isArray(videoDistPrefs)) {
                 const handheldCount = videoDistPrefs.filter(v => /Monitor(?: \d+")? handheld$/.test(v)).length;
                 monCount += handheldCount * 3;
+                const largeCount = videoDistPrefs.filter(v => {
+                    const m = v.match(/Monitor (\d+(?:\.\d+)?)/);
+                    return m && parseFloat(m[1]) > 10 && !/handheld$/.test(v);
+                }).length;
+                monCount += largeCount * 2;
             }
             if (hasMotor) monCount += 3;
             const total = camCount + monCount;
@@ -8201,17 +8206,6 @@ function generateGearListHtml(info = {}) {
         }
     }
     addRow('Camera Batteries', batteryItems);
-    let monitoringBatteryItems = [];
-    const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
-    handheldPrefs.forEach(() => {
-        monitoringBatteryItems.push(bebob98, bebob98, bebob98);
-    });
-    if (hasMotor) {
-        const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
-        monitoringBatteryItems.push(bebob150, bebob150, bebob150);
-    }
-    addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
-    addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     const monitorSizes = [];
     if (selectedNames.viewfinder) {
@@ -8288,6 +8282,22 @@ function generateGearListHtml(info = {}) {
             .replace(/&amp;quot;/g, '&quot;');
         monitoringItems += (monitoringItems ? '<br>' : '') + gearHtml;
     }
+    let monitoringBatteryItems = [];
+    const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
+    handheldPrefs.forEach(() => {
+        monitoringBatteryItems.push(bebob98, bebob98, bebob98);
+    });
+    if (hasMotor) {
+        const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
+        monitoringBatteryItems.push(bebob150, bebob150, bebob150);
+    }
+    const bebob290 = Object.keys(devices.batteries || {}).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
+    const monitorsAbove10 = monitorSizes.filter(s => s > 10).length;
+    for (let i = 0; i < monitorsAbove10; i++) {
+        monitoringBatteryItems.push(bebob290, bebob290);
+    }
+    addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
+    addRow('Chargers', formatItems(chargersAcc));
     addRow('Monitoring', monitoringItems);
     const monitoringSupportHardware = formatItems(monitoringSupportAcc);
     const monitoringSupportItems = monitoringSupportHardware;
