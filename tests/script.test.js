@@ -1586,6 +1586,20 @@ describe('script.js functions', () => {
     expect(miscSection).not.toContain('Ultraslim BNC 0.5 m');
   });
 
+  test('onboard monitor adds ULCS arm to rigging', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('monitorSelect', 'MonA');
+    const html = generateGearListHtml();
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('1x ULCS Arm mit 3/8" und 1/4" double (1x Onboard monitor)');
+  });
+
   test('Directors 7" handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {

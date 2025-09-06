@@ -7511,6 +7511,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
                 `Ultraslim HDMI 0.5 m (${monitorLabel})`
             );
         }
+        rigging.push(`ULCS Arm mit 3/8" und 1/4" double (${monitorLabel})`);
     }
     if (videoSelect.value) {
         const rxName = videoSelect.value.replace(/ TX\b/, ' RX');
