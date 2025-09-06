@@ -7632,8 +7632,8 @@ function generateGearListHtml(info = {}) {
         : [];
     const handheldPrefs = videoDistPrefs
         .map(p => {
-            const m = p.match(/^(Directors|Gaffers|DoP) Monitor (\d+)" handheld$/);
-            return m ? { role: m[1], size: parseFloat(m[2]) } : null;
+            const m = p.match(/^(Directors|Gaffers|DoP) Monitor (?:(\d+)" )?handheld$/);
+            return m ? { role: m[1], size: m[2] ? parseFloat(m[2]) : undefined } : null;
         })
         .filter(Boolean);
     if (["Arri Alexa Mini", "Arri Amira"].includes(selectedNames.camera)) {
@@ -8008,14 +8008,22 @@ function generateGearListHtml(info = {}) {
     handheldPrefs.forEach(({ role, size }) => {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
         const names = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === size && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
+            .filter(n => (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
+        let defaultName = names.includes('SmallHD Ultra 7') ? 'SmallHD Ultra 7' : names[0];
+        if (size) {
+            const sized = names.find(n => monitorsDb[n].screenSizeInches === size);
+            if (sized) defaultName = sized;
+        }
         const opts = names
-            .map(n => `<option value="${escapeHtml(n)}"${size === 7 && n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+            .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
         const idSuffix = role === 'DoP' ? 'Dop' : role;
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Handheld Monitor</strong> - ${size}&quot; - <select id="gearList${idSuffix}Monitor${size}">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-        monitorSizes.push(size);
+        const selectedSize = devices && devices.monitors && devices.monitors[defaultName]
+            ? devices.monitors[defaultName].screenSizeInches
+            : '';
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Handheld Monitor</strong> - <span id="monitorSize${idSuffix}">${selectedSize}&quot;</span> - <select id="gearList${idSuffix}Monitor">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        monitorSizes.push(selectedSize);
     });
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
@@ -8512,10 +8520,15 @@ function bindGearListSliderBowlListener() {
 
 function bindGearListDirectorsMonitorListener() {
     if (!gearListOutput) return;
-    ['#gearListDirectorsMonitor7', '#gearListDopMonitor7', '#gearListGaffersMonitor7'].forEach(id => {
-        const sel = gearListOutput.querySelector(id);
+    ['Directors', 'Dop', 'Gaffers'].forEach(role => {
+        const sel = gearListOutput.querySelector(`#gearList${role}Monitor`);
         if (sel) {
             sel.addEventListener('change', () => {
+                const monitorInfo = devices && devices.monitors && devices.monitors[sel.value];
+                const span = gearListOutput.querySelector(`#monitorSize${role}`);
+                if (span && monitorInfo && monitorInfo.screenSizeInches) {
+                    span.textContent = `${monitorInfo.screenSizeInches}"`;
+                }
                 saveCurrentGearList();
             });
         }
@@ -9264,8 +9277,7 @@ function updateRequiredScenariosSummary() {
         opt.remove();
       }
     };
-    ensureOption('DoP Monitor 5" handheld');
-    ensureOption('DoP Monitor 7" handheld');
+    ensureOption('DoP Monitor handheld');
     ensureOption('DoP Monitor 15-21"');
   }
   selected.forEach(val => {
