@@ -2928,6 +2928,17 @@ describe('script.js functions', () => {
     expect(configSel.value).toBe('Onboard Only');
   });
 
+  test('default monitoring configuration omitted from project requirements', () => {
+    const { generateGearListHtml } = script;
+    const defaultHtml = generateGearListHtml({ monitoringConfiguration: 'Viewfinder and Onboard' });
+    expect(defaultHtml).not.toContain('<span class="req-label">Monitoring configuration</span>');
+    expect(defaultHtml).not.toContain('<span class="req-value">Viewfinder and Onboard</span>');
+
+    const customHtml = generateGearListHtml({ monitoringConfiguration: 'Onboard Only' });
+    expect(customHtml).toContain('<span class="req-label">Monitoring configuration</span>');
+    expect(customHtml).toContain('<span class="req-value">Onboard Only</span>');
+  });
+
   test('iOS video option appears under monitoring in project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ videoDistribution: 'IOS Video (Teradek Serv + Link)' });
