@@ -535,6 +535,10 @@ const gear = {
           "type": "3G-SDI",
           "lengthM": 0.5
         },
+        "Ultraslim HDMI 0.5 m": {
+          "type": "HDMI",
+          "lengthM": 0.5
+        },
         "BNC Cable 0.5 m": {
           "type": "3G-SDI",
           "lengthM": 0.5
@@ -605,6 +609,17 @@ const gear = {
         },
         "D-Tap to Lemo-2-pin Cable 0,3m": {
           "lengthM": 0.3,
+          "connectors": [
+            "D-Tap",
+            "LEMO 2-pin"
+          ],
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ]
+        },
+        "D-Tap to Lemo-2-pin Cable 0,5m": {
+          "lengthM": 0.5,
           "connectors": [
             "D-Tap",
             "LEMO 2-pin"

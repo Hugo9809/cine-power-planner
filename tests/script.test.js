@@ -1472,9 +1472,15 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     const html = generateGearListHtml();
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('1x D-Tap to LEMO 2-pin');
+    expect(msSection).toContain(
+      '2x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Spare)'
+    );
+    expect(msSection).toContain(
+      '2x Ultraslim BNC 0.5 m (1x Onboard monitor, 1x Spare)'
+    );
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-    expect(miscSection).not.toContain('D-Tap to LEMO 2-pin');
+    expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,5m');
+    expect(miscSection).not.toContain('Ultraslim BNC 0.5 m');
   });
 
   test('Directors handheld monitor adds dropdown, batteries and grip items', () => {
