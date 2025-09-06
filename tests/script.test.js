@@ -3388,6 +3388,26 @@ describe('script.js functions', () => {
     expect(popup.innerHTML).toContain('Power: 2 W');
   });
 
+  test('diagram popup appears on click events', () => {
+    global.devices.fiz.controllers.ControllerA.fizConnectors = [{ type: 'LBUS' }];
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const node = document.querySelector('#diagramArea .diagram-node[data-node="controller0"]');
+    node.dispatchEvent(new MouseEvent('click', { clientX: 0, clientY: 0 }));
+    const popup = document.getElementById('diagramPopup');
+    expect(popup.innerHTML).toContain('FIZ Port: LBUS');
+  });
+
   test('grid snap toggle snaps nodes to grid', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
