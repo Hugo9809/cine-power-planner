@@ -5,11 +5,11 @@ Dieses browserbasierte Tool hilft beim Planen professioneller Kamera-Setups mit 
 ---
 
 ## 🌍 Sprachen
-- 🇬🇧 English
+- 🇬🇧 [English](README.en.md)
 - 🇩🇪 Deutsch (Standard)
-- 🇪🇸 Español
-- 🇮🇹 Italiano
-- 🇫🇷 Français
+- 🇪🇸 [Español](README.es.md)
+- 🇮🇹 [Italiano](README.it.md)
+- 🇫🇷 [Français](README.fr.md)
 
 Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Besuch gespeichert.
 

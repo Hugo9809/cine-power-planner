@@ -5,10 +5,10 @@ Cet outil fonctionnant dans le navigateur aide à planifier des configurations p
 ---
 
 ## 🌍 Langues
-- 🇬🇧 English
-- 🇩🇪 Deutsch
-- 🇪🇸 Español
-- 🇮🇹 Italiano
+- 🇬🇧 [English](README.en.md)
+- 🇩🇪 [Deutsch](README.de.md)
+- 🇪🇸 [Español](README.es.md)
+- 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 Français (par défaut si le navigateur est en français)
 
 La langue se change en haut à droite et est mémorisée pour la prochaine visite.
