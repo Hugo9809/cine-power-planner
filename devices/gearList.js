@@ -1287,6 +1287,28 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "spherical"
         },
+        "Canon CN-E Flex Zoom 14-35mm T1.7": {
+          "brand": "Canon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.7,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Canon CN-E Flex Zoom 31.5-95mm T1.7": {
+          "brand": "Canon",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.7,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
         "Angénieux Ultra Compact FF 37-102mm T2.9": {
           "brand": "Angénieux",
           "frontDiameterMm": 114,
@@ -1317,6 +1339,28 @@ const gear = {
           "mount": "PL",
           "rodStandard": "19mm",
           "rodLengthCm": 60,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Angénieux Type EZ-3 45-165mm T2.3-3.0 (S35)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Angénieux Type EZ-3 68-250mm T3.5-4.5 (FF)": {
+          "brand": "Angénieux",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 3.5,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
           "needsLensSupport": true,
           "lensType": "spherical"
         },
@@ -1712,6 +1756,126 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "spherical"
         },
+        "ZEISS Nano Prime 18mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Nano Prime 24mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Nano Prime 35mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Nano Prime 50mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Nano Prime 75mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Nano Prime 100mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 18mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 21mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 25mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 29mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 35mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 40mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
         "ZEISS Supreme Prime Radiance 50mm T1.5": {
           "brand": "ZEISS",
           "frontDiameterMm": 95,
@@ -1722,7 +1886,37 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "ZEISS Supreme Prime Radiance 65mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
         "ZEISS Supreme Prime Radiance 85mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 100mm T1.5": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.5,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "ZEISS Supreme Prime Radiance 135mm T1.5": {
           "brand": "ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
@@ -1858,6 +2052,72 @@ const gear = {
           "frontDiameterMm": 110,
           "clampOn": true,
           "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S8/i FF 25mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S8/i FF 32mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S8/i FF 40mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S8/i FF 50mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S8/i FF 75mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Cooke S8/i FF 100mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
           "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
@@ -2007,6 +2267,28 @@ const gear = {
           "frontDiameterMm": 30,
           "clampOn": true,
           "tStop": 8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Laowa Ranger 28-75mm T2.9": {
+          "brand": "Laowa",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "Laowa Ranger 75-180mm T2.9": {
+          "brand": "Laowa",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
