@@ -7967,7 +7967,10 @@ function generateGearListHtml(info = {}) {
         monitoringItems += `1x <strong>Viewfinder</strong> - ${escapeHtml(addArriKNumber(selectedNames.viewfinder))}`;
     }
     if (selectedNames.monitor) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(addArriKNumber(selectedNames.monitor))} - incl. Sunhood`;
+        const monitorSizeRaw = devices?.monitors?.[monitorSelect?.value]?.screenSizeInches;
+        const monitorSizeStr = `${monitorSizeRaw ? Math.round(monitorSizeRaw) : 7}"`;
+        const monitorSizeHtml = escapeHtml(monitorSizeStr);
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${monitorSizeHtml} - ${escapeHtml(addArriKNumber(selectedNames.monitor))} - incl. Sunhood`;
     }
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
@@ -7977,7 +7980,7 @@ function generateGearListHtml(info = {}) {
         const opts = sevenInchNames
             .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - 7&quot; - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
     if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
@@ -7987,7 +7990,7 @@ function generateGearListHtml(info = {}) {
         const opts = sevenInchNames
             .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Handheld Monitor</strong> - <select id="gearListDopMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Handheld Monitor</strong> - 7&quot; - <select id="gearListDopMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
     if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
@@ -7997,18 +8000,20 @@ function generateGearListHtml(info = {}) {
         const opts = sevenInchNames
             .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - 7&quot; - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
     }
     const monitoringGear = [];
     if (selectedNames.video) {
-        monitoringGear.push(`Wireless Transmitter - ${addArriKNumber(selectedNames.video)}`);
+        const monitorSizeRaw = devices?.monitors?.[monitorSelect?.value]?.screenSizeInches;
+        const monitorSizeStr = `${monitorSizeRaw ? Math.round(monitorSizeRaw) : 7}"`;
+        monitoringGear.push(`Wireless Transmitter - ${monitorSizeStr} - ${addArriKNumber(selectedNames.video)}`);
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
             receiverLabels.forEach(label => {
-                monitoringGear.push(`Wireless Receiver - ${addArriKNumber(rxName)} (${label})`);
+                monitoringGear.push(`Wireless Receiver - ${monitorSizeStr} - ${addArriKNumber(rxName)} (${label})`);
             });
         }
     }

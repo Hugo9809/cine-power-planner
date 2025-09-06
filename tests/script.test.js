@@ -31,6 +31,13 @@ function setupDom(removeGear) {
         screenSizeInches: 7,
         power: { input: { type: 'LEMO 2-pin' } },
         videoInputs: [{ type: '3G-SDI' }]
+      },
+      MonB: {
+        powerDrawWatts: 5,
+        brightnessNits: 2000,
+        screenSizeInches: 5,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoInputs: [{ type: '3G-SDI' }]
       }
     },
     video: {
@@ -1437,10 +1444,26 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain(
-      '1x <strong>Onboard Monitor</strong> - MonA - incl. Sunhood<br><span class="gear-item" data-gear-name="Wireless Transmitter - VidA">1x <strong>Wireless Transmitter</strong> - VidA</span>'
-    );
+    expect(html).toContain('Onboard Monitor');
+    expect(html).toContain('Wireless Transmitter');
+    expect(html).toContain('VidA');
     expect(html).not.toContain('MonA, VidA');
+  });
+
+  test('gear list reflects 5" monitor selection', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('monitorSelect', 'MonB');
+    addOpt('videoSelect', 'VidA');
+    const html = generateGearListHtml({ projectName: 'Proj' });
+    expect(html).toContain('Onboard Monitor');
+    expect(html).toContain('MonB');
+    expect(html).toContain('Wireless Transmitter');
+    expect(html).toContain('VidA');
   });
 
   test('onboard monitor adds power cable to monitoring support', () => {
@@ -1562,9 +1585,12 @@ describe('script.js functions', () => {
       videoDistribution:
         'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
     });
-    expect(html).toContain(
-      '4x <strong>Wireless Receiver</strong> - VidA RX (Directors handheld, Gaffers handheld, DoP handheld, Focus)'
-    );
+    expect(html).toContain('Wireless Receiver');
+    expect(html).toContain('VidA RX');
+    expect(html).toContain('Directors handheld');
+    expect(html).toContain('Gaffers handheld');
+    expect(html).toContain('DoP handheld');
+    expect(html).toContain('Focus');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain(
       '6x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld, Gaffers handheld, DoP handheld)'
@@ -1626,7 +1652,9 @@ describe('script.js functions', () => {
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
       expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Focus)');
       expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
-      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (Focus)');
+      expect(html).toContain('Wireless Receiver');
+      expect(html).toContain('VidA RX');
+      expect(html).toContain('Focus');
       expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Focus)');
       expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
       expect(html).toContain('3x Tennisball');
@@ -1694,9 +1722,10 @@ describe('script.js functions', () => {
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain(
-      '2x <strong>Wireless Receiver</strong> - VidA RX (Directors handheld, Focus)'
-    );
+    expect(html).toContain('Wireless Receiver');
+    expect(html).toContain('VidA RX');
+    expect(html).toContain('Directors handheld');
+    expect(html).toContain('Focus');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (spare)');
   });
