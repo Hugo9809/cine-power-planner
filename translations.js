@@ -128,6 +128,7 @@ const texts = {
     arriCLMNoUMC4Warning: "WARNING: No FIZ controller present. Select a UMC-4 for a complete project. CLM-4/5 are not compatible with RIA-1, cforce RF or Master Grips.",
     distanceControllerWarning: "WARNING: Distance units require UMC-4, RIA-1 or cforce RF.",
     masterGripWirelessWarning: "WARNING: Master Grip has no wireless capability. Use RIA-1, UMC-4 or cforce RF for wireless control.",
+    amiraCforceRemoteWarning: "ERROR: AMIRA with cforce Mini/Plus requires RIA-1, cforce RF, or UMC-4 for remote focus. Master Grips only allow local operator focus.",
 
     category_cameras: "Cameras",
     category_viewfinders: "Viewfinders",
@@ -497,6 +498,7 @@ const texts = {
     arriCLMNoUMC4Warning: "ATTENZIONE: nessun controller FIZ presente. Seleziona un UMC-4 per una configurazione completa. CLM-4/5 non sono compatibili con RIA-1, CFORCE RF o impugnature principali.",
     distanceControllerWarning: "ATTENZIONE: le unità di distanza richiedono UMC-4, RIA-1 o CFORCE RF.",
     masterGripWirelessWarning: "ATTENZIONE: Master Grip non ha capacità wireless. Utilizzare RIA-1, UMC-4 o CFORCE RF per il controllo wireless.",
+    amiraCforceRemoteWarning: "ERRORE: AMIRA con cforce Mini/Plus richiede RIA-1, cforce RF o UMC-4 per il fuoco remoto. I Master Grip consentono solo il fuoco locale dall'operatore.",
     category_cameras: "Telecamere",
     category_viewfinders: "Mirini",
     category_monitors: "Monitor",
@@ -854,6 +856,7 @@ const texts = {
     arriCLMNoUMC4Warning: "ADVERTENCIA: no hay un controlador FIZ compatible. Seleccione un UMC-4 para una configuración completa. Los CLM-4 y CLM-5 no son compatibles con RIA-1, cforce RF ni Master Grips.",
     distanceControllerWarning: "ADVERTENCIA: las unidades de distancia requieren UMC-4, RIA-1 o cforce RF.",
     masterGripWirelessWarning: "ADVERTENCIA: Master Grip no tiene capacidad inalámbrica. Se necesita un controlador RIA-1, UMC-4 o cforce RF para usarlo de forma inalámbrica.",
+    amiraCforceRemoteWarning: "ERROR: AMIRA con cforce Mini/Plus requiere RIA-1, cforce RF o UMC-4 para enfoque remoto. Los Master Grip solo permiten enfoque local del operador.",
 
     category_cameras: "Cámaras",
     category_viewfinders: "Visores",
@@ -1221,6 +1224,7 @@ const texts = {
     arriCLMNoUMC4Warning: "ATTENTION : aucun contrôleur FIZ compatible n'est sélectionné. Choisissez un UMC-4 pour un ensemble complet. Les CLM-4 et CLM-5 ne sont pas compatibles avec le RIA-1, le cforce RF ou les Master Grips.",
     distanceControllerWarning: "ATTENTION : les unités de distance requièrent un UMC-4, un RIA-1 ou un cforce RF.",
     masterGripWirelessWarning: "ATTENTION : le Master Grip n'a pas de fonction sans fil. Utilisez un RIA-1, un UMC-4 ou un cforce RF pour un fonctionnement sans fil.",
+    amiraCforceRemoteWarning: "ERREUR : l'AMIRA avec cforce Mini/Plus requiert un RIA-1, un cforce RF ou un UMC-4 pour la mise au point à distance. Les Master Grips ne permettent qu'une mise au point locale par l'opérateur.",
 
     category_cameras: "Caméras",
     category_viewfinders: "Viseurs",
@@ -1590,6 +1594,7 @@ const texts = {
     arriCLMNoUMC4Warning: "WARNUNG: Kein kompatibler FIZ-Controller vorhanden. Wähle einen UMC-4 für ein vollständiges Setup. CLM-4/5 sind nicht mit RIA-1, cforce RF oder Master Grips kompatibel.",
     distanceControllerWarning: "WARNUNG: Distanzgeräte werden nur von UMC-4, RIA-1 oder cforce RF unterstützt.",
     masterGripWirelessWarning: "WARNUNG: Der Master Grip verfügt über keine Funkfunktion. Verwenden Sie einen RIA-1-, UMC-4- oder cforce-RF-Controller für den drahtlosen Betrieb.",
+    amiraCforceRemoteWarning: "FEHLER: AMIRA mit cforce Mini/Plus benötigt RIA-1, cforce RF oder UMC-4 für Fernfokus. Master Grips ermöglichen nur lokale Bedienerfokussierung.",
 
     category_cameras: "Kameras",
     category_viewfinders: "Sucher",
