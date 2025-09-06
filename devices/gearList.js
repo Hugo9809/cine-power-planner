@@ -2071,6 +2071,177 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 25mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 27mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 32mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 35mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 40mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 50mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 65mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIGMA Aizu Prime Line 75mm T1.3 LF": {
+          "brand": "SIGMA",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.3,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "NiSi AUREUS Prime 18mm T1.4": {
+          "brand": "NiSi",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "NiSi AUREUS Prime 24mm T1.4": {
+          "brand": "NiSi",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "NiSi AUREUS Prime 35mm T1.4": {
+          "brand": "NiSi",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "NiSi AUREUS Prime 50mm T1.4": {
+          "brand": "NiSi",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "NiSi AUREUS Prime 85mm T1.4": {
+          "brand": "NiSi",
+          "frontDiameterMm": 80,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIRUI Vision Prime 1 24mm T1.4": {
+          "brand": "SIRUI",
+          "frontDiameterMm": 72,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIRUI Vision Prime 1 35mm T1.4": {
+          "brand": "SIRUI",
+          "frontDiameterMm": 72,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "SIRUI Vision Prime 1 50mm T1.4": {
+          "brand": "SIRUI",
+          "frontDiameterMm": 72,
+          "clampOn": true,
+          "tStop": 1.4,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "Tokina Cinema Vista-P 180mm T1.9": {
+          "brand": "Tokina Cinema",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical"
         }
     },
 
