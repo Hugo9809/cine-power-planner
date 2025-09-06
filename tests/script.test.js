@@ -41,7 +41,8 @@ function setupDom(removeGear) {
       }
     },
     lenses: {
-      LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110 }
+      LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110 },
+      LensBig: { frontDiameterMm: 110 }
     },
     fiz: {
       motors: {
@@ -225,9 +226,10 @@ describe('script.js functions', () => {
           videoInputs: [{ type: '3G-SDI' }]
         }
       },
-      lenses: {
-        LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110 }
-      },
+        lenses: {
+          LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110 },
+          LensBig: { frontDiameterMm: 110 }
+        },
       fiz: {
         motors: {
           MotorA: { powerDrawWatts: 2, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], power: { input: { type: 'LEMO 2-pin' } } }
@@ -352,13 +354,13 @@ describe('script.js functions', () => {
     const sel = document.getElementById('lenses');
     sel.innerHTML = '<option value="Existing">Existing</option>';
     script.populateLensDropdown();
-    expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA', 'LensBig']);
     expect(sel.options[0].textContent).toContain('LensA');
     expect(sel.options[0].textContent).toContain('110g');
     expect(sel.options[0].textContent).toContain('80mm front');
     // Call again to ensure no duplication occurs
     script.populateLensDropdown();
-    expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA']);
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA', 'LensBig']);
   });
 
   test('lens selector supports in-select search', () => {
@@ -2055,6 +2057,49 @@ describe('script.js functions', () => {
     const text = itemsRow.textContent;
     expect(text).toContain('1x DJI Ronin 2');
     expect(text).toContain('1x DJI Ronin RS4 Pro Combo');
+  });
+
+  test('RS4 Pro with small lens adds Mirage filters', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    const html = generateGearListHtml({ requiredScenarios: 'Gimbal', gimbal: 'DJI Ronin RS4 Pro Combo', lenses: 'LensA' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const filterIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    const filterRow = rows[filterIdx + 1];
+    const text = filterRow.textContent;
+    expect(text).toContain('Tilta Mirage VND Kit');
+    expect(text).toContain('Tilta 95 mm Polarizer Filter für Tilta Mirage');
+    expect(text).toContain('Vaxis 95 mm IRND Filter 0.3 + 0.6 + 0.9 + 1.2 Filter');
+    expect(text).toContain('Vaxis 95mm Black Mist 1/4 + 1/8 Filter');
+    expect(text).not.toContain('Arri KK.0038066 Flexible Sunshade Side Flag Holders Set');
+  });
+
+  test('Large lens forces Ronin 2 and adds sunshade', () => {
+    const { generateGearListHtml } = script;
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    const html = generateGearListHtml({ requiredScenarios: 'Gimbal', lenses: 'LensBig' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const gripText = rows[gripIdx + 1].textContent;
+    expect(gripText).toContain('1x DJI Ronin 2');
+    expect(gripText).not.toContain('DJI Ronin RS4 Pro Combo');
+    const filterIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    const filterText = rows[filterIdx + 1].textContent;
+    expect(filterText).toContain('Arri KK.0038066 Flexible Sunshade Side Flag Holders Set');
   });
 
   test('Outdoor scenario adds weather protection gear and consumables for small monitor', () => {
@@ -4147,7 +4192,8 @@ describe('copy summary button without clipboard support', () => {
         }
       },
       lenses: {
-        LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true }
+        LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true },
+        LensBig: { frontDiameterMm: 110 }
       },
       fiz: {
         motors: {

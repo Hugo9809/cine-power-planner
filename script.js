@@ -7488,6 +7488,7 @@ function generateGearListHtml(info = {}) {
     const scenarios = info.requiredScenarios
         ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    const hasGimbal = scenarios.includes('Gimbal');
     if (scenarios.includes('Trinity') || scenarios.includes('Steadicam')) {
         for (let i = 0; i < 2; i++) {
             riggingAcc.push('D-Tap Splitter');
@@ -7506,6 +7507,13 @@ function generateGearListHtml(info = {}) {
     const videoDistPrefs = info.videoDistribution
         ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    const selectedLensNames = info.lenses
+        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+    const maxLensFront = selectedLensNames.reduce((max, name) => {
+        const lens = devices.lenses && devices.lenses[name];
+        return Math.max(max, lens && lens.frontDiameterMm || 0);
+    }, 0);
     const filterSelections = info.filter
         ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -7528,6 +7536,32 @@ function generateGearListHtml(info = {}) {
         filterSelections.push('Fischer RS to D-Tap cable 0,5m');
         filterSelections.push('Fischer RS to D-Tap cable 0,5m');
         filterSelections.push('Spare Disc (Schulz Sprayoff Micro)');
+    }
+    let gimbalSelectionsFinal = [];
+    let selectedGimbal = '';
+    if (hasGimbal) {
+        const gimbalSelections = info.gimbal
+            ? info.gimbal.split(',').map(s => s.trim()).filter(Boolean)
+            : [];
+        const bigLens = maxLensFront > 95;
+        if (gimbalSelections.length) {
+            gimbalSelectionsFinal = gimbalSelections.map(g => (/Ronin RS4 Pro/i.test(g) && bigLens ? 'DJI Ronin 2' : g));
+            if (gimbalSelectionsFinal.length === 1) selectedGimbal = gimbalSelectionsFinal[0];
+        } else {
+            const cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
+            const weight = cam && cam.weight_g;
+            const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
+            selectedGimbal = bigLens ? 'DJI Ronin 2' : (isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
+            gimbalSelectionsFinal = [selectedGimbal];
+        }
+        if (/Ronin RS4 Pro/i.test(selectedGimbal) && maxLensFront <= 95) {
+            filterSelections.push('Tilta Mirage VND Kit');
+            filterSelections.push('Tilta 95 mm Polarizer Filter für Tilta Mirage');
+            filterSelections.push('Vaxis 95 mm IRND Filter 0.3 + 0.6 + 0.9 + 1.2 Filter');
+            filterSelections.push('Vaxis 95mm Black Mist 1/4 + 1/8 Filter');
+        } else {
+            filterSelections.push('Arri KK.0038066 Flexible Sunshade Side Flag Holders Set');
+        }
     }
     const receiverLabels = [];
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) receiverLabels.push('Directors handheld');
@@ -7689,9 +7723,6 @@ function generateGearListHtml(info = {}) {
             .join('<br>');
     }
     addRow('Media', mediaItems);
-    const selectedLensNames = info.lenses
-        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
     const lensDisplayNames = selectedLensNames.map(name => {
         const lens = devices.lenses && devices.lenses[name];
         if (!lens) return name;
@@ -7817,7 +7848,6 @@ function generateGearListHtml(info = {}) {
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
-    const hasGimbal = scenarios.includes('Gimbal');
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         gripItems.push('C-Stand 20" (Directors handheld)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
@@ -7848,17 +7878,7 @@ function generateGearListHtml(info = {}) {
         easyrigSelectHtml = `1x Easyrig 5 Vario <select id="gearListEasyrig">${optsHtml}</select>`;
     }
     if (hasGimbal) {
-        const gimbalSelections = info.gimbal
-            ? info.gimbal.split(',').map(s => s.trim()).filter(Boolean)
-            : [];
-        if (gimbalSelections.length) {
-            gripItems.push(...gimbalSelections);
-        } else {
-            const cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
-            const weight = cam && cam.weight_g;
-            const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
-            gripItems.push(isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
-        }
+        gripItems.push(...gimbalSelectionsFinal);
     }
     const frictionArmCount = hasGimbal ? 2 : 1;
     gripItems.push(...Array(frictionArmCount).fill('Manfrotto 244N Friktion Arm'));
