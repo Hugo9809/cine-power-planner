@@ -877,7 +877,7 @@ const gear = {
           "type": "3G-SDI",
           "lengthM": 0.3
         },
-        "Ultraslim BNC 0.5 m": {
+        "Ultraslim BNC Cable 0.5 m": {
           "type": "3G-SDI",
           "lengthM": 0.5
         },

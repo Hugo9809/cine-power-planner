@@ -7647,8 +7647,8 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         const hasHDMI = camVideo.includes('HDMI') && monVideo.includes('HDMI');
         if (hasSDI) {
             monitoringSupport.push(
-                `Ultraslim BNC 0.5 m (${monitorLabel})`,
-                `Ultraslim BNC 0.5 m (${monitorLabel})`
+                `Ultraslim BNC Cable 0.5 m (${monitorLabel})`,
+                `Ultraslim BNC Cable 0.5 m (${monitorLabel})`
             );
         } else if (hasHDMI) {
             monitoringSupport.push(
@@ -8019,8 +8019,8 @@ function generateGearListHtml(info = {}) {
         monitoringSupportAcc.push(
             `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
             `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
-            `Ultraslim BNC 0.5 m (${label})`,
-            `Ultraslim BNC 0.5 m (${label})`
+            `Ultraslim BNC Cable 0.5 m (${label})`,
+            `Ultraslim BNC Cable 0.5 m (${label})`
         );
     };
     largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
@@ -8492,7 +8492,7 @@ function generateGearListHtml(info = {}) {
         'D-Tap to LEMO 2-pin',
         'HDMI Cable',
         'BNC SDI Cable',
-        'Ultraslim BNC 0.5 m'
+        'Ultraslim BNC Cable 0.5 m'
     ]);
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     const consumables = [];

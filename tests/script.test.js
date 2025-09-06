@@ -1627,11 +1627,11 @@ describe('script.js functions', () => {
     const html = generateGearListHtml();
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain(
-      '2x Ultraslim BNC 0.5 m (1x Onboard monitor, 1x Spare)'
+      '2x Ultraslim BNC Cable 0.5 m (1x Onboard monitor, 1x Spare)'
     );
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
     expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,5m');
-    expect(miscSection).not.toContain('Ultraslim BNC 0.5 m');
+    expect(miscSection).not.toContain('Ultraslim BNC Cable 0.5 m');
   });
 
   test('onboard monitor adds ULCS arm to rigging', () => {
@@ -1759,8 +1759,8 @@ describe('script.js functions', () => {
     expect(html).toContain('Directors Monitor');
     expect(html).toContain('2x Bebob V290RM-Cine (2x Directors 15-21")');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
-    expect(msSection).toContain('4x Ultraslim BNC 0.5 m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x Directors 15-21", 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC Cable 0.5 m (1x Directors 15-21", 1x Spare)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('D-Tap Splitter (1x Directors 15-21"');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
