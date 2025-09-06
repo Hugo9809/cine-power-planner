@@ -1697,7 +1697,7 @@ describe('script.js functions', () => {
     expect(battSection).toContain('1x Hotswap Plate B-Mount');
   });
 
-  test('gear list lists 4x media cards with usable size', () => {
+  test('gear list lists media cards and USB-C readers', () => {
     const { generateGearListHtml } = script;
     devices.cameras.CamA.recordingMedia = [{ type: 'CFast 2.0' }];
     const addOpt = (id, value) => {
@@ -1708,6 +1708,7 @@ describe('script.js functions', () => {
     addOpt('cameraSelect', 'CamA');
     const html = generateGearListHtml();
     expect(html).toContain('4x 512GB CFast 2.0');
+    expect(html).toContain('2x CFast 2.0 reader with USB-C');
   });
 
   test('gear list uses first recording media when multiple types', () => {

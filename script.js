@@ -7865,7 +7865,7 @@ function generateGearListHtml(info = {}) {
                     if (match) size = match[1].toUpperCase();
                 }
                 if (!size) size = sizeMap[type] || '512GB';
-                return `4x ${escapeHtml(size)} ${escapeHtml(type)}`;
+                return `4x ${escapeHtml(size)} ${escapeHtml(type)}<br>2x ${escapeHtml(type)} reader with USB-C`;
             })
             .filter(Boolean)
             .join('<br>');
