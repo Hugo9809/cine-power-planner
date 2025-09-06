@@ -7499,7 +7499,12 @@ function generateGearListHtml(info = {}) {
         filterSelections.push('Fischer RS to D-Tap cable 0,5m');
         filterSelections.push('Spare Disc (Schulz Sprayoff Micro)');
     }
-    const receiverCount = (videoDistPrefs.includes('Directors Monitor 7" handheld') ? 1 : 0) + (hasMotor ? 1 : 0);
+    const receiverLabels = [];
+    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) receiverLabels.push('Directors handheld');
+    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) receiverLabels.push('Gaffers handheld');
+    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) receiverLabels.push('DoP handheld');
+    if (hasMotor) receiverLabels.push('Focus');
+    const receiverCount = receiverLabels.length;
     if (selectedNames.video) {
         monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
@@ -7510,20 +7515,23 @@ function generateGearListHtml(info = {}) {
             }
         }
     }
-    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
+    const addMonitorCables = label => {
         monitoringSupportAcc.push(
-            'D-Tap to Lemo-2-pin Cable 0,3m',
-            'D-Tap to Lemo-2-pin Cable 0,3m',
-            'Ultraslim BNC 0.3 m',
-            'Ultraslim BNC 0.3 m'
+            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
+            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
+            `Ultraslim BNC 0.3 m (${label})`,
+            `Ultraslim BNC 0.3 m (${label})`
         );
-    }
+    };
+    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) addMonitorCables('Directors handheld');
+    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) addMonitorCables('Gaffers handheld');
+    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) addMonitorCables('DoP handheld');
     if (hasMotor) {
         monitoringSupportAcc.push(
-            'D-Tap to Mini XLR 3-pin Cable 0,3m',
-            'D-Tap to Mini XLR 3-pin Cable 0,3m',
-            'Ultraslim BNC 0.3 m',
-            'Ultraslim BNC 0.3 m'
+            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
+            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
+            'Ultraslim BNC 0.3 m (Focus)',
+            'Ultraslim BNC 0.3 m (Focus)'
         );
     }
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
@@ -7701,10 +7709,13 @@ function generateGearListHtml(info = {}) {
     }
     addRow('Camera Batteries', batteryItems);
     let monitoringBatteryItems = [];
-    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
+    const addV98 = () => {
         const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
         monitoringBatteryItems.push(`3x ${escapeHtml(bebob98)}`);
-    }
+    };
+    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) addV98();
+    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) addV98();
+    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) addV98();
     if (hasMotor) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
         monitoringBatteryItems.push(`3x ${escapeHtml(bebob150)}`);
@@ -7728,6 +7739,26 @@ function generateGearListHtml(info = {}) {
             .join('');
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
     }
+    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
+        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
+        const sevenInchNames = Object.keys(monitorsDb)
+            .filter(n => monitorsDb[n].screenSizeInches === 7)
+            .sort(localeSort);
+        const opts = sevenInchNames
+            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Handheld Monitor</strong> - <select id="gearListDopMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+    }
+    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
+        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
+        const sevenInchNames = Object.keys(monitorsDb)
+            .filter(n => monitorsDb[n].screenSizeInches === 7)
+            .sort(localeSort);
+        const opts = sevenInchNames
+            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+            .join('');
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+    }
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
     }
@@ -7735,8 +7766,9 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Wireless Transmitter</strong> - ${escapeHtml(selectedNames.video)}`;
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
-            const receivers = receiverCount || 1;
-            monitoringItems += `<br>${receivers}x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)}`;
+            receiverLabels.forEach(label => {
+                monitoringItems += `<br>1x <strong>Wireless Receiver</strong> - ${escapeHtml(rxName)} (${label})`;
+            });
         }
     }
     addRow('Monitoring', monitoringItems);
@@ -7754,14 +7786,26 @@ function generateGearListHtml(info = {}) {
     let easyrigSelectHtml = '';
     const hasGimbal = scenarios.includes('Gimbal');
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
-        gripItems.push('C-Stand 20"');
-        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
-        riggingAcc.push('Spigot');
-        riggingAcc.push('Spigot');
+        gripItems.push('C-Stand 20" (Directors handheld)');
+        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
+        riggingAcc.push('Spigot (Directors handheld)');
+        riggingAcc.push('Spigot (Directors handheld)');
+    }
+    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
+        gripItems.push('C-Stand 20" (Gaffers handheld)');
+        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
+        riggingAcc.push('Spigot (Gaffers handheld)');
+        riggingAcc.push('Spigot (Gaffers handheld)');
+    }
+    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
+        gripItems.push('C-Stand 20" (DoP handheld)');
+        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
+        riggingAcc.push('Spigot (DoP handheld)');
+        riggingAcc.push('Spigot (DoP handheld)');
     }
     if (hasMotor) {
-        gripItems.push('Avenger C-Stand Sliding Leg 20"');
-        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter');
+        gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
+        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
     }
     if (scenarios.includes('Easyrig')) {
         const stabiliser = devices && devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
@@ -8203,12 +8247,14 @@ function bindGearListSliderBowlListener() {
 
 function bindGearListDirectorsMonitorListener() {
     if (!gearListOutput) return;
-    const sel = gearListOutput.querySelector('#gearListDirectorsMonitor7');
-    if (sel) {
-        sel.addEventListener('change', () => {
-            saveCurrentGearList();
-        });
-    }
+    ['#gearListDirectorsMonitor7', '#gearListDopMonitor7', '#gearListGaffersMonitor7'].forEach(id => {
+        const sel = gearListOutput.querySelector(id);
+        if (sel) {
+            sel.addEventListener('change', () => {
+                saveCurrentGearList();
+            });
+        }
+    });
 }
 
 

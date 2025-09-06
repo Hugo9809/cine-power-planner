@@ -1356,10 +1356,10 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('PRCD-S (Portable Residual Current Device-Safety)');
       expect(miscSection).not.toContain('Power Three Way Splitter');
       expect(html).not.toContain('BNC SDI Cable');
-      expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
-      expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
-      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
-      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m');
+        expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Focus)');
+        expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
+        expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Focus)');
+        expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
       expect(html).not.toContain('Ultraslim BNC 0.5 m');
       expect(html).not.toContain('HDMI Cable');
     });
@@ -1430,21 +1430,59 @@ describe('script.js functions', () => {
     expect(html).toContain('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V98micro');
-    expect(html).toContain('C-Stand 20"');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
+    expect(html).toContain('C-Stand 20" (Directors handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('2x Spigot');
+    expect(rigSection).toContain('2x Spigot (Directors handheld)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).not.toContain('Spigot');
     expect(html).toContain('3x Tennisball');
-    expect(html).toContain('2x Ultraslim BNC 0.3 m');
-    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
+    expect(html).toContain('2x Ultraslim BNC 0.3 m (Directors handheld)');
+    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m');
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Directors handheld)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld)');
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
-    expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m');
+    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Directors handheld)');
+  expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld)');
+  });
+
+  test('Gaffers handheld monitor adds dropdown, batteries and grip items', () => {
+    const { generateGearListHtml } = script;
+    global.devices.monitors = {
+      'SmallHD Ultra 7': { screenSizeInches: 7 },
+      MonA: { screenSizeInches: 7 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Gaffers Monitor 7" handheld' });
+    expect(html).toContain('<select id="gearListGaffersMonitor7"');
+    expect(html).toContain('Gaffer Handheld Monitor');
+    expect(html).toContain('3x Bebob V98micro');
+    expect(html).toContain('C-Stand 20" (Gaffers handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('2x Spigot (Gaffers handheld)');
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Gaffers handheld)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (Gaffers handheld)');
+  });
+
+  test('DoP handheld monitor adds dropdown, batteries and grip items', () => {
+    const { generateGearListHtml } = script;
+    global.devices.monitors = {
+      'SmallHD Ultra 7': { screenSizeInches: 7 },
+      MonA: { screenSizeInches: 7 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'DoP Monitor 7" handheld' });
+    expect(html).toContain('<select id="gearListDopMonitor7"');
+    expect(html).toContain('DoP Handheld Monitor');
+    expect(html).toContain('3x Bebob V98micro');
+    expect(html).toContain('C-Stand 20" (DoP handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('2x Spigot (DoP handheld)');
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (DoP handheld)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (DoP handheld)');
   });
 
   test('motor adds focus monitor and related accessories to gear list', () => {
@@ -1468,14 +1506,14 @@ describe('script.js functions', () => {
     expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V150micro');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m');
-    expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m');
+    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (Focus)');
+    expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m');
-      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m');
-      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX');
-      expect(html).toContain('Avenger C-Stand Sliding Leg 20"');
-      expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter');
+      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Focus)');
+      expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
+      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (Focus)');
+      expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Focus)');
+      expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
       expect(html).toContain('3x Tennisball');
     expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (spare)');
   });
@@ -1541,7 +1579,8 @@ describe('script.js functions', () => {
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain('2x <strong>Wireless Receiver</strong> - VidA RX');
+    expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (Focus)');
+    expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (Directors handheld)');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (spare)');
   });
