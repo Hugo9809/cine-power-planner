@@ -7831,18 +7831,25 @@ function generateGearListHtml(info = {}) {
             const base = match ? match[1].trim() : item.trim();
             const ctx = match && match[2] ? match[2].trim() : '';
             if (!counts[base]) {
-                counts[base] = { count: 0, ctxs: [] };
+                counts[base] = { total: 0, ctxCounts: {} };
             }
-            counts[base].count++;
-            if (ctx && !counts[base].ctxs.includes(ctx)) {
-                counts[base].ctxs.push(ctx);
-            }
+            counts[base].total++;
+            counts[base].ctxCounts[ctx] = (counts[base].ctxCounts[ctx] || 0) + 1;
         });
         return Object.entries(counts)
-            .map(([base, { count, ctxs }]) => {
-                const ctxStr = ctxs.length ? ` (${ctxs.join(', ')})` : '';
+            .map(([base, { total, ctxCounts }]) => {
+                const ctxKeys = Object.keys(ctxCounts);
+                const hasContext = ctxKeys.some(c => c);
+                let ctxParts = [];
+                if (hasContext) {
+                    const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
+                    const spareCount = total - realContexts.length;
+                    ctxParts = realContexts.map(c => `1x ${c}`);
+                    if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
+                }
+                const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
                 const name = `${base}${ctxStr}`;
-                return `<span class="gear-item" data-gear-name="${escapeHtml(name)}">${count}x ${escapeHtml(name)}</span>`;
+                return `<span class="gear-item" data-gear-name="${escapeHtml(name)}">${total}x ${escapeHtml(name)}</span>`;
             })
             .join('<br>');
     };
