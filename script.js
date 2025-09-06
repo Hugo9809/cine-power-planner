@@ -98,6 +98,24 @@ function storeSession(state) {
   }
 }
 
+function openDialog(dialog) {
+  if (!dialog) return;
+  if (typeof dialog.showModal === 'function') {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute('open', '');
+  }
+}
+
+function closeDialog(dialog) {
+  if (!dialog) return;
+  if (typeof dialog.close === 'function') {
+    dialog.close();
+  } else {
+    dialog.removeAttribute('open');
+  }
+}
+
 function memoizeNormalization(fn) {
   const cache = new Map();
   return value => {
@@ -1770,7 +1788,7 @@ function ensureEditProjectButton() {
       populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
       populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
       populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
-      projectDialog.showModal();
+      openDialog(projectDialog);
     });
   }
   const title = container.querySelector('h2');
@@ -6705,12 +6723,12 @@ generateGearListBtn.addEventListener('click', () => {
     populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
     populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
-    projectDialog.showModal();
+    openDialog(projectDialog);
 });
 
 if (projectCancelBtn) {
     projectCancelBtn.addEventListener('click', () => {
-        projectDialog.close();
+        closeDialog(projectDialog);
     });
 }
 
@@ -6732,7 +6750,7 @@ if (projectForm) {
         bindGearListSliderBowlListener();
         bindGearListDirectorsMonitorListener();
         saveCurrentGearList();
-        projectDialog.close();
+        closeDialog(projectDialog);
     });
 }
 
@@ -6838,11 +6856,11 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
       fbDistance.innerHTML = distanceSelect.innerHTML;
       fbDistance.value = distanceSelect.value || '';
     }
-    feedbackDialog.showModal();
+    openDialog(feedbackDialog);
   });
 
   feedbackCancelBtn.addEventListener('click', () => {
-    feedbackDialog.close();
+    closeDialog(feedbackDialog);
   });
 
   if (feedbackUseLocationBtn) {
@@ -6908,7 +6926,7 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     const subject = encodeURIComponent('Camera Power Planner Runtime Feedback');
     const body = encodeURIComponent(lines.join('\n'));
     window.location.href = `mailto:info@lucazanner.de?subject=${subject}&body=${body}`;
-    feedbackDialog.close();
+    closeDialog(feedbackDialog);
     updateCalculations();
   });
 }
@@ -7298,17 +7316,13 @@ function generatePrintableOverview() {
     const closeBtn = overviewDialog.querySelector('#closeOverviewBtn');
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
-            overviewDialog.close();
+            closeDialog(overviewDialog);
         });
     }
-    if (typeof overviewDialog.showModal === 'function') {
-        overviewDialog.showModal();
-    } else {
-        overviewDialog.setAttribute('open', '');
-    }
+    openDialog(overviewDialog);
 
     const closeAfterPrint = () => {
-        overviewDialog.close();
+        closeDialog(overviewDialog);
     };
     if (typeof window.matchMedia === 'function') {
         const mql = window.matchMedia('print');
