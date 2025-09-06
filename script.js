@@ -675,6 +675,7 @@ function updateBatteryPlateVisibility() {
     else batteryPlateSelect.value = '';
   }
   updateViewfinderSettingsVisibility();
+  updateViewfinderExtensionVisibility();
 }
 
 function updateViewfinderSettingsVisibility() {
@@ -690,6 +691,22 @@ function updateViewfinderSettingsVisibility() {
       const vfSelect = document.getElementById('viewfinderSettings');
       if (vfSelect) {
         Array.from(vfSelect.options).forEach(o => { o.selected = false; });
+      }
+    }
+  }
+}
+
+function updateViewfinderExtensionVisibility() {
+  const cam = devices?.cameras?.[cameraSelect?.value];
+  const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
+  if (viewfinderExtensionRow) {
+    if (hasViewfinder) {
+      viewfinderExtensionRow.classList.remove('hidden');
+    } else {
+      viewfinderExtensionRow.classList.add('hidden');
+      const vfExtSel = document.getElementById('viewfinderExtension');
+      if (vfExtSel) {
+        Array.from(vfExtSel.options).forEach(o => { o.selected = false; });
       }
     }
   }
@@ -1499,6 +1516,7 @@ const tripodTypesSelect = document.getElementById("tripodTypes");
 const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
+const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
 
 const projectFieldIcons = {
   dop: '👤',
@@ -1512,6 +1530,7 @@ const projectFieldIcons = {
   sensorMode: '🔍',
   requiredScenarios: '🌄',
   cameraHandle: '🛠️',
+  viewfinderExtension: '🔭',
   mattebox: '🎬',
   gimbal: '🌀',
   monitoringSupport: '🧰',
@@ -7324,6 +7343,7 @@ function collectProjectFormData() {
         lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
+        viewfinderExtension: multi('viewfinderExtension'),
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
@@ -7432,6 +7452,9 @@ function generateGearListHtml(info = {}) {
     const handleSelections = info.cameraHandle
         ? info.cameraHandle.split(',').map(r => r.trim()).filter(Boolean)
         : [];
+    const viewfinderExtSelections = info.viewfinderExtension
+        ? info.viewfinderExtension.split(',').map(r => r.trim()).filter(Boolean)
+        : [];
     const monitoringSettings = info.monitoringSettings
         ? info.monitoringSettings.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -7441,6 +7464,7 @@ function generateGearListHtml(info = {}) {
     const filterSelections = info.filter
         ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    viewfinderExtSelections.forEach(vf => supportAccNoCages.push(vf));
     if (scenarios.includes('Rain Machine') || scenarios.includes('Extreme rain')) {
         filterSelections.push('Schulz Sprayoff Micro');
         filterSelections.push('Fischer RS to D-Tap cable 0,5m');
@@ -7519,6 +7543,7 @@ function generateGearListHtml(info = {}) {
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
         cameraHandle: 'Camera Handle',
+        viewfinderExtension: 'Viewfinder Extension',
         mattebox: 'Mattebox',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
@@ -8755,8 +8780,7 @@ const scenarioIcons = {
   'Extreme rain': '🌧️',
   'Extreme heat': '🔥',
   'Rain Machine': '🌧️',
-  'Slow Motion': '🐌',
-  'Viewfinder Extension': '🔭'
+  'Slow Motion': '🐌'
 };
 
 function updateSelectIconBoxes(sel) {
@@ -8887,6 +8911,7 @@ function initApp() {
     tripodBowlSelect.addEventListener('change', updateTripodOptions);
   }
   updateTripodOptions();
+  updateViewfinderExtensionVisibility();
   updateCalculations();
   applyFilters();
 }
@@ -9064,5 +9089,6 @@ if (typeof module !== "undefined" && module.exports) {
     populateSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
+    updateViewfinderExtensionVisibility,
   };
 }
