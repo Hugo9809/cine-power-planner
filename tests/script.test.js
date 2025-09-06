@@ -593,7 +593,9 @@ describe('script.js functions', () => {
     const genBtn = document.getElementById('generateGearListBtn');
     expect(genBtn.classList.contains('hidden')).toBe(true);
     expect(document.getElementById('editProjectBtn')).not.toBeNull();
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
     document.getElementById('deleteGearListBtn').click();
+    confirmSpy.mockRestore();
     expect(genBtn.classList.contains('hidden')).toBe(false);
     expect(document.getElementById('editProjectBtn')).toBeNull();
   });
