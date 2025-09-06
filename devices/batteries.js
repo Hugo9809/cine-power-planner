@@ -333,6 +333,76 @@ const batteryData = {
     "mount_type": "V-Mount",
     "weight_g": 795
   },
+  "FXLion Nano ONE Wireless (V-Mount)": {
+    "capacity": 50,
+    "pinA": 8,
+    "dtapA": 5,
+    "mount_type": "V-Mount",
+    "weight_g": 330
+  },
+  "FXLion Nano TWO Wireless (V-Mount)": {
+    "capacity": 98,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 540
+  },
+  "FXLion Nano THREE Wireless (V-Mount)": {
+    "capacity": 150,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 773
+  },
+  "FXLion BP-M98 Square Battery (V-Mount)": {
+    "capacity": 98,
+    "pinA": 7,
+    "dtapA": 8,
+    "mount_type": "V-Mount",
+    "weight_g": 650
+  },
+  "FXLion BP-M150 Square Battery (V-Mount)": {
+    "capacity": 148,
+    "pinA": 8,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 790
+  },
+  "FXLion BP-M200 Square Battery (V-Mount)": {
+    "capacity": 198,
+    "pinA": 12,
+    "dtapA": 12,
+    "mount_type": "V-Mount",
+    "weight_g": 1040
+  },
+  "FXLion BP-M300 High Power Square Battery (V-Mount)": {
+    "capacity": 300,
+    "pinA": 18,
+    "dtapA": 18,
+    "mount_type": "V-Mount",
+    "weight_g": 1700
+  },
+  "FXLion BP-HP600 High Power Waterproof Battery (V-Mount)": {
+    "capacity": 559,
+    "pinA": 30,
+    "dtapA": 10,
+    "mount_type": "V-Mount",
+    "weight_g": 2784
+  },
+  "FXLion BP-7S230 26V Battery (V-Mount)": {
+    "capacity": 230,
+    "pinA": 15,
+    "dtapA": 15,
+    "mount_type": "V-Mount",
+    "weight_g": 1180
+  },
+  "FXLion BP-7S270 26V Battery (V-Mount)": {
+    "capacity": 270,
+    "pinA": 15,
+    "dtapA": 15,
+    "mount_type": "V-Mount",
+    "weight_g": 1190
+  },
   "IDX Imicro-98 (V-Mount)": {
     "capacity": 97,
     "pinA": 10,
