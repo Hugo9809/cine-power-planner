@@ -8123,6 +8123,14 @@ function generateGearListHtml(info = {}) {
                         const spareCount = total - usedCount;
                         ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
                         if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
+                    } else if (base.startsWith('Bebob ')) {
+                        const realEntries = Object.entries(ctxCounts)
+                            .filter(([c]) => c && c.toLowerCase() !== 'spare')
+                            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                        const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
+                        const spareCount = total - usedCount;
+                        ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
+                        if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                     } else {
                         const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
                         const spareCount = total - realContexts.length;
@@ -8321,18 +8329,17 @@ function generateGearListHtml(info = {}) {
     }
     let monitoringBatteryItems = [];
     const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
-    handheldPrefs.forEach(() => {
-        monitoringBatteryItems.push(bebob98, bebob98, bebob98);
+    handheldPrefs.forEach(p => {
+        for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob98} (${p.role} handheld)`);
     });
     if (hasMotor) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
-        monitoringBatteryItems.push(bebob150, bebob150, bebob150);
+        for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob150} (Focus)`);
     }
     const bebob290 = Object.keys(devices.batteries || {}).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
-    const monitorsAbove10 = monitorSizes.filter(s => s > 10).length;
-    for (let i = 0; i < monitorsAbove10; i++) {
-        monitoringBatteryItems.push(bebob290, bebob290);
-    }
+    largeMonitorPrefs.forEach(p => {
+        monitoringBatteryItems.push(`${bebob290} (${p.role} 15-21")`, `${bebob290} (${p.role} 15-21")`);
+    });
     addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
     addRow('Chargers', formatItems(chargersAcc));
     addRow('Monitoring', monitoringItems);
