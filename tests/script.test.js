@@ -2072,6 +2072,18 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x Spare Disc (1x Schulz Sprayoff Micro)');
   });
 
+  test('Studio scenario adds Camera Power Supply to power section', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Studio' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const powerIdx = rows.findIndex(r => r.textContent === 'Power');
+    expect(powerIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[powerIdx + 1];
+    expect(itemsRow.textContent).toContain('1x Camera Power Supply');
+  });
+
   test('Swing Away mattebox adds LMB 4x5 Pro Set and accessories to gear list', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ mattebox: 'Swing Away' });
