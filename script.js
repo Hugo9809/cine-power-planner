@@ -718,7 +718,6 @@ function updateBatteryPlateVisibility() {
   }
   updateViewfinderSettingsVisibility();
   updateViewfinderExtensionVisibility();
-  updateEyeLeatherColorVisibility();
   updateMonitoringConfigurationOptions();
 }
 
@@ -771,19 +770,6 @@ function updateViewfinderExtensionVisibility() {
     }
   }
 }
-
-function updateEyeLeatherColorVisibility() {
-  const cam = devices?.cameras?.[cameraSelect?.value];
-  const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
-  if (eyeLeatherColorRow) {
-    if (hasViewfinder) {
-      eyeLeatherColorRow.classList.remove('hidden');
-    } else {
-      eyeLeatherColorRow.classList.add('hidden');
-    }
-  }
-}
-
 
 function updateBatteryLabel() {
   const label = document.getElementById('batteryLabel');
@@ -1627,7 +1613,6 @@ const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
-const eyeLeatherColorRow = document.getElementById("eyeLeatherColorRow");
 
 const projectFieldIcons = {
   dop: '👤',
@@ -5924,6 +5909,7 @@ setupSelect.addEventListener("change", (event) => {
       bindGearListCageListener();
       bindGearListEasyrigListener();
       bindGearListSliderBowlListener();
+      bindGearListEyeLeatherListener();
       bindGearListDirectorsMonitorListener();
           if (typeof saveProject === 'function') {
             saveProject({ projectInfo: currentProjectInfo, gearList: setup.gearList });
@@ -6902,6 +6888,7 @@ if (projectForm) {
         bindGearListCageListener();
         bindGearListEasyrigListener();
         bindGearListSliderBowlListener();
+        bindGearListEyeLeatherListener();
         bindGearListDirectorsMonitorListener();
         saveCurrentGearList();
         closeDialog(projectDialog);
@@ -7733,7 +7720,6 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
         viewfinderExtension: val('viewfinderExtension'),
-        viewfinderEyeLeatherColor: val('viewfinderEyeLeatherColor'),
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
@@ -7786,7 +7772,6 @@ function populateProjectForm(info) {
     setMulti('requiredScenarios', info.requiredScenarios);
     setMulti('cameraHandle', info.cameraHandle);
     setVal('viewfinderExtension', info.viewfinderExtension);
-    setVal('viewfinderEyeLeatherColor', info.viewfinderEyeLeatherColor);
     setVal('mattebox', info.mattebox);
     setMulti('gimbal', info.gimbal);
     setMulti('videoDistribution', info.videoDistribution);
@@ -8500,7 +8485,11 @@ function generateGearListHtml(info = {}) {
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     const consumables = [];
     const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
-    const eyeLeatherColor = info.viewfinderEyeLeatherColor || 'rot';
+    let eyeLeatherColor = 'rot';
+    if (gearListOutput) {
+        const sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
+        if (sel && sel.value) eyeLeatherColor = sel.value;
+    }
     const baseConsumables = [
         { name: 'Kimtech Wipes', count: 1 },
         { name: 'Lasso Red 24mm', count: 1 },
@@ -8508,9 +8497,7 @@ function generateGearListHtml(info = {}) {
         { name: 'Sprigs Red 1/4"', count: 1, noScale: true },
         { name: 'Klappenstift', count: 2, klappen: true }
     ];
-    if (hasViewfinder) {
-        baseConsumables.splice(baseConsumables.length - 1, 0, { name: `Bluestar eye leather made of microfiber oval, large ${eyeLeatherColor}`, count: 2 });
-    }
+    let eyeLeatherCount = hasViewfinder ? 2 : 0;
     let shootDays = 0;
     let isWinterShoot = false;
     if (info.shootingDays) {
@@ -8553,6 +8540,7 @@ function generateGearListHtml(info = {}) {
         }
         for (let i = 0; i < count; i++) consumables.push(item.name);
     }
+    if (eyeLeatherCount) eyeLeatherCount *= multiplier;
     const needsRainProtection = ['Outdoor', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s));
     if (needsRainProtection && selectedNames.camera) {
         miscItems.push(`Rain Cover "${addArriKNumber(selectedNames.camera)}"`);
@@ -8593,8 +8581,27 @@ function generateGearListHtml(info = {}) {
         for (let i = 0; i < warmersCount; i++) miscItems.push('Hand Warmers');
         for (let i = 0; i < warmersCount; i++) miscItems.push('Feet Warmers');
     }
+    let eyeLeatherHtml = '';
+    if (eyeLeatherCount) {
+        const colors = [
+            ['rot', 'Rot'],
+            ['blau', 'Blau'],
+            ['natur', 'Natur'],
+            ['grün', 'Grün'],
+            ['lila', 'Lila'],
+            ['orange', 'Orange'],
+            ['grau', 'Grau'],
+            ['gelb', 'Gelb'],
+            ['jaguar', 'Jaguar'],
+            ['killer bee', 'Killer Bee'],
+            ['green rabbit', 'Green Rabbit'],
+            ['schwarz', 'Schwarz']
+        ];
+        const options = colors.map(([val, label]) => `<option value="${val}"${val === eyeLeatherColor ? ' selected' : ''}>${label}</option>`).join('');
+        eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large">${eyeLeatherCount}x Bluestar eye leather made of microfiber oval, large <select id="gearListEyeLeatherColor">${options}</select></span>`;
+    }
     addRow('Miscellaneous', formatItems(miscItems));
-    addRow('Consumables', formatItems(consumables));
+    addRow('Consumables', [eyeLeatherHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
     body += '<h3>Gear List</h3><table class="gear-table">' + rows.join('') + '</table>';
@@ -8678,6 +8685,18 @@ function getCurrentGearListHtml() {
                 }
             });
         }
+        const eyeSel = clone.querySelector('#gearListEyeLeatherColor');
+        if (eyeSel) {
+            const originalSel = gearListOutput.querySelector('#gearListEyeLeatherColor');
+            const val = originalSel ? originalSel.value : eyeSel.value;
+            Array.from(eyeSel.options).forEach(opt => {
+                if (opt.value === val) {
+                    opt.setAttribute('selected', '');
+                } else {
+                    opt.removeAttribute('selected');
+                }
+            });
+        }
         gearHtml = clone.innerHTML.trim();
     }
 
@@ -8733,6 +8752,7 @@ function handleImportGearList(e) {
             bindGearListCageListener();
             bindGearListEasyrigListener();
             bindGearListSliderBowlListener();
+            bindGearListEyeLeatherListener();
             bindGearListDirectorsMonitorListener();
             saveCurrentGearList();
             }
@@ -8856,6 +8876,16 @@ function bindGearListSliderBowlListener() {
     }
 }
 
+function bindGearListEyeLeatherListener() {
+    if (!gearListOutput) return;
+    const sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
+    if (sel) {
+        sel.addEventListener('change', () => {
+            saveCurrentGearList();
+        });
+    }
+}
+
 function bindGearListDirectorsMonitorListener() {
     if (!gearListOutput) return;
     ['Directors', 'Dop', 'Gaffers', 'Focus'].forEach(role => {
@@ -8896,6 +8926,7 @@ function refreshGearListIfVisible() {
     bindGearListCageListener();
     bindGearListEasyrigListener();
     bindGearListSliderBowlListener();
+    bindGearListEyeLeatherListener();
     bindGearListDirectorsMonitorListener();
     saveCurrentGearList();
 }
@@ -8995,6 +9026,7 @@ function restoreSessionState() {
         bindGearListCageListener();
         bindGearListEasyrigListener();
         bindGearListSliderBowlListener();
+        bindGearListEyeLeatherListener();
         bindGearListDirectorsMonitorListener();
       }
     } else if (!state && typeof deleteProject === 'function') {
@@ -9687,7 +9719,6 @@ function initApp() {
   }
   updateTripodOptions();
   updateViewfinderExtensionVisibility();
-  updateEyeLeatherColorVisibility();
   updateCalculations();
   applyFilters();
 }
