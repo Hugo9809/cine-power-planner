@@ -8258,7 +8258,7 @@ function generateGearListHtml(info = {}) {
         'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
         ...Array(10).fill('Securing Straps (25mm wide)'),
         'Loading Ramp (pair, 420kg)',
-        ...Array(20).fill('Airliner Ösen')
+        ...Array(20).fill('Ring Fitting for Airline Rails')
     ];
     const gripItems = [];
     let needsStandardTripod = false;
