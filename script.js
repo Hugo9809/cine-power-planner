@@ -8958,7 +8958,8 @@ if (helpButton && helpDialog) {
       hoverHelpTooltip.setAttribute('hidden', '');
       return;
     }
-    hoverHelpTooltip.textContent = text.slice(0, 200);
+    // Show the full help text instead of truncating at 200 characters
+    hoverHelpTooltip.textContent = text;
     const rect = el.getBoundingClientRect();
     hoverHelpTooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
     hoverHelpTooltip.style.left = `${rect.left + window.scrollX}px`;
