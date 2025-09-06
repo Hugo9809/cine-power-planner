@@ -864,6 +864,18 @@ function checkFizController() {
   const camName = cameraSelect.value;
   const cam = devices.cameras[camName];
 
+  const isAmira = /Arri Amira/i.test(camName);
+  const onlyCforceMiniPlus = motors.length > 0 && motors.every(n => {
+    const lower = n.toLowerCase();
+    return ((lower.includes('cforce mini') && !lower.includes('rf')) || lower.includes('cforce plus'));
+  });
+  const hasRemoteController = controllers.some(n => /ria-1|umc-4|cforce.*rf/i.test(n)) || motors.some(n => /cforce.*rf/i.test(n));
+  if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
+    compatElem.textContent = texts[currentLang].amiraCforceRemoteWarning;
+    compatElem.style.color = 'red';
+    return;
+  }
+
   const cameraHasLBUS = Array.isArray(cam?.fizConnectors) &&
     cam.fizConnectors.some(fc => /LBUS/i.test(fc.type));
   let hasController = cameraHasLBUS && /arri/i.test(camName);
