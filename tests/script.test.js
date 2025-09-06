@@ -2148,6 +2148,7 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       cameraHandle: 'Hand Grips, L-Handle',
+      viewfinderExtension: 'ARRI VEB-3 Viewfinder Extension Bracket',
       mattebox: 'Rod based',
       monitoringSettings: 'Viewfinder Clean Feed, Surround View',
       monitorUserButtons: 'Toggle LUT',
@@ -2158,6 +2159,8 @@ describe('script.js functions', () => {
     expect(html).toContain('<span class="req-value">Hand Grips, L-Handle</span>');
     expect(html).toContain('<span class="req-label">Mattebox</span>');
     expect(html).toContain('<span class="req-value">Rod based</span>');
+    expect(html).toContain('<span class="req-label">Viewfinder Extension</span>');
+    expect(html).toContain('<span class="req-value">ARRI VEB-3 Viewfinder Extension Bracket</span>');
     expect(html).toContain('<span class="req-label">Monitoring support</span>');
     expect(html).toContain('<span class="req-value">Viewfinder Clean Feed, Surround View</span>');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
@@ -2173,6 +2176,27 @@ describe('script.js functions', () => {
     expect(html).toContain('<span class="req-label">Viewfinder User Buttons</span>');
     expect(html).toContain('<span class="req-value">Peaking</span>');
     expect(html).toContain('<td>Rigging</td>');
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const csIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    const csRow = rows[csIndex + 1];
+    expect(csRow.textContent).toContain('ARRI VEB-3 Viewfinder Extension Bracket');
+  });
+
+  test('viewfinder extension selector visible only when camera has viewfinder', () => {
+    const { updateViewfinderExtensionVisibility } = script;
+    const camSel = document.getElementById('cameraSelect');
+    const row = document.getElementById('viewfinderExtensionRow');
+    camSel.innerHTML = '<option value="NoVF">NoVF</option><option value="WithVF">WithVF</option>';
+    devices.cameras.NoVF = { powerDrawWatts: 10 };
+    devices.cameras.WithVF = { powerDrawWatts: 10, viewfinder: [{ type: 'EVF' }] };
+    camSel.value = 'NoVF';
+    updateViewfinderExtensionVisibility();
+    expect(row.classList.contains('hidden')).toBe(true);
+    camSel.value = 'WithVF';
+    updateViewfinderExtensionVisibility();
+    expect(row.classList.contains('hidden')).toBe(false);
   });
 
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
