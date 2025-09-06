@@ -2701,6 +2701,10 @@ describe('script.js functions', () => {
 
   test('base consumables added with correct counts for short shoot', () => {
     const { generateGearListHtml } = script;
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option>';
+    camSel.value = 'CamA';
+    devices.cameras.CamA.viewfinder = ['VF'];
     const html = generateGearListHtml({ shootingDays: '2024-05-01 to 2024-05-05' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
@@ -2711,18 +2715,22 @@ describe('script.js functions', () => {
     expect(consumText).toContain('1x Lasso Rot 24mm');
     expect(consumText).toContain('1x Lasso Blau 24mm');
     expect(consumText).toContain('1x Sprigs rot 1/4“');
-    expect(consumText).toContain('2x Augenleder Large Oval Farbe rot');
+    expect(consumText).toContain('2x Bluestar eye leather made of microfiber oval, large rot');
     expect(consumText).toContain('2x Klappenstift');
   });
 
   test('consumables scale with shooting days and special rules', () => {
     const { generateGearListHtml } = script;
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option>';
+    camSel.value = 'CamA';
+    devices.cameras.CamA.viewfinder = ['VF'];
     const scenarios = [
-      ['2024-05-01 to 2024-05-10', '2x Kimtech Wipes', '4x Klappenstift', '4x Augenleder Large Oval Farbe rot'],
-      ['2024-05-01 to 2024-05-16', '3x Kimtech Wipes', '4x Klappenstift', '6x Augenleder Large Oval Farbe rot'],
-      ['2024-05-01 to 2024-05-22', '4x Kimtech Wipes', '8x Klappenstift', '8x Augenleder Large Oval Farbe rot']
+      ['2024-05-01 to 2024-05-10', '2x Kimtech Wipes', '4x Klappenstift', '4x Bluestar eye leather made of microfiber oval, large rot'],
+      ['2024-05-01 to 2024-05-16', '3x Kimtech Wipes', '4x Klappenstift', '6x Bluestar eye leather made of microfiber oval, large rot'],
+      ['2024-05-01 to 2024-05-22', '4x Kimtech Wipes', '8x Klappenstift', '8x Bluestar eye leather made of microfiber oval, large rot']
     ];
-    scenarios.forEach(([range, wipes, klappen, augen]) => {
+    scenarios.forEach(([range, wipes, klappen, eye]) => {
       const html = generateGearListHtml({ shootingDays: range });
       const wrap = document.createElement('div');
       wrap.innerHTML = html;
@@ -2732,8 +2740,23 @@ describe('script.js functions', () => {
       expect(consumText).toContain(wipes);
       expect(consumText).toContain('1x Sprigs rot 1/4“');
       expect(consumText).toContain(klappen);
-      expect(consumText).toContain(augen);
+      expect(consumText).toContain(eye);
     });
+  });
+
+  test('eye leather excluded when camera has no viewfinder', () => {
+    const { generateGearListHtml } = script;
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="CamA">CamA</option>';
+    camSel.value = 'CamA';
+    delete devices.cameras.CamA.viewfinder;
+    const html = generateGearListHtml({});
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
+    const consumText = rows[consumIdx + 1].textContent;
+    expect(consumText).not.toContain('Bluestar eye leather made of microfiber oval, large');
   });
 
   test('camera handle and viewfinder extension excluded from project requirements', () => {
