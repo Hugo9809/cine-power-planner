@@ -320,7 +320,7 @@ if (require.main === module) {
         '  node unifyPorts.js\n' +
         '  node unifyPorts.js --help\n' +
         '\nOptions:\n' +
-        '  -h, --help  Show this help message.'
+        '  -h, --help  Show this help message and exit.'
     );
     process.exit(0);
   }

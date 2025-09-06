@@ -393,7 +393,7 @@ if (require.main === module) {
         '  npm run normalize\n' +
         '  node normalizeData.js --help\n' +
         '\nOptions:\n' +
-        '  -h, --help  Show this help message.'
+        '  -h, --help  Show this help message and exit.'
     );
     process.exit(0);
   }
