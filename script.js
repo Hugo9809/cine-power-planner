@@ -1906,6 +1906,8 @@ let currentProjectInfo = null;
 let loadedSetupState = null;
 
 function getCurrentSetupState() {
+  const info = projectForm ? collectProjectFormData() : {};
+  const projectInfo = Object.values(info).some(v => v) ? info : null;
   return {
     camera: cameraSelect.value,
     monitor: monitorSelect.value,
@@ -1916,7 +1918,8 @@ function getCurrentSetupState() {
     distance: distanceSelect.value,
     batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value,
-    sliderBowl: getSliderBowlValue()
+    sliderBowl: getSliderBowlValue(),
+    projectInfo
   };
 }
 
@@ -5754,6 +5757,8 @@ setupSelect.addEventListener("change", (event) => {
       updateBatteryOptions();
       if (gearListOutput) {
         displayGearAndRequirements(setup.gearList || '');
+        currentProjectInfo = setup.projectInfo || null;
+        if (currentProjectInfo) populateProjectForm(currentProjectInfo);
         if (setup.gearList) {
           ensureGearListActions();
       bindGearListCageListener();
@@ -5761,7 +5766,7 @@ setupSelect.addEventListener("change", (event) => {
       bindGearListSliderBowlListener();
       bindGearListDirectorsMonitorListener();
           if (typeof saveGearList === 'function') {
-            saveGearList(setup.gearList);
+            saveGearList({ projectInfo: currentProjectInfo, gearList: setup.gearList });
           }
         } else {
           if (typeof deleteGearList === 'function') {
@@ -7573,6 +7578,56 @@ function collectProjectFormData() {
     };
 }
 
+function populateProjectForm(info) {
+    if (!projectForm || !info) return;
+    const setVal = (name, value) => {
+        const field = projectForm.querySelector(`[name="${name}"]`);
+        if (field) field.value = value || '';
+    };
+    const setMulti = (name, values) => {
+        const field = projectForm.querySelector(`[name="${name}"]`);
+        if (!field) return;
+        const arr = Array.isArray(values) ? values : (values ? values.split(',').map(v => v.trim()) : []);
+        Array.from(field.options).forEach(opt => {
+            opt.selected = arr.includes(opt.value);
+        });
+    };
+
+    populateRecordingResolutionDropdown(info.recordingResolution);
+    populateSensorModeDropdown(info.sensorMode);
+    populateCodecDropdown(info.codec);
+
+    setVal('projectName', info.projectName);
+    setVal('dop', info.dop);
+    const [prepStart, prepEnd] = (info.prepDays || '').split(' to ');
+    setVal('prepStart', prepStart);
+    setVal('prepEnd', prepEnd);
+    const [shootStart, shootEnd] = (info.shootingDays || '').split(' to ');
+    setVal('shootStart', shootStart);
+    setVal('shootEnd', shootEnd);
+    setVal('deliveryResolution', info.deliveryResolution);
+    setMulti('aspectRatio', info.aspectRatio);
+    setVal('baseFrameRate', info.baseFrameRate);
+    setVal('sensorMode', info.sensorMode);
+    setMulti('lenses', info.lenses);
+    setMulti('requiredScenarios', info.requiredScenarios);
+    setMulti('cameraHandle', info.cameraHandle);
+    setVal('viewfinderExtension', info.viewfinderExtension);
+    setVal('mattebox', info.mattebox);
+    setMulti('gimbal', info.gimbal);
+    setMulti('videoDistribution', info.videoDistribution);
+    setVal('monitoringConfiguration', info.monitoringConfiguration);
+    setMulti('monitorUserButtons', info.monitorUserButtons);
+    setMulti('cameraUserButtons', info.cameraUserButtons);
+    setMulti('viewfinderUserButtons', info.viewfinderUserButtons);
+    setVal('tripodHeadBrand', info.tripodHeadBrand);
+    setVal('tripodBowl', info.tripodBowl);
+    setMulti('tripodTypes', info.tripodTypes);
+    setVal('tripodSpreader', info.tripodSpreader);
+    setSliderBowlValue(info.sliderBowl || '');
+    setMulti('filter', info.filter);
+}
+
 function ensureZoomRemoteSetup(info) {
     if (!info || !info.tripodPreferences || !info.tripodPreferences.includes('Zoom Remote handle')) return;
     let motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
@@ -8397,14 +8452,17 @@ function getCurrentGearListHtml() {
 function saveCurrentGearList() {
     const html = getCurrentGearListHtml();
     if (!html) return;
+    const info = projectForm ? collectProjectFormData() : {};
+    currentProjectInfo = Object.values(info).some(v => v) ? info : null;
     if (typeof saveGearList === 'function') {
-        saveGearList(html);
+        saveGearList({ projectInfo: currentProjectInfo, gearList: html });
     }
     const setupName = (setupSelect && setupSelect.value) || (setupNameInput && setupNameInput.value.trim());
     if (setupName) {
         const setups = getSetups();
         const setup = setups[setupName] || {};
         setup.gearList = html;
+        setup.projectInfo = currentProjectInfo;
         setups[setupName] = setup;
         storeSetups(setups);
     }
@@ -8413,7 +8471,9 @@ function saveCurrentGearList() {
 function exportCurrentGearList() {
     const html = getCurrentGearListHtml();
     if (!html) return;
-    const blob = new Blob([JSON.stringify({ gearList: html })], { type: 'application/json' });
+    const info = projectForm ? collectProjectFormData() : {};
+    const proj = Object.values(info).some(v => v) ? info : null;
+    const blob = new Blob([JSON.stringify({ projectInfo: proj, gearList: html })], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = 'gear-list.json';
@@ -8432,6 +8492,8 @@ function handleImportGearList(e) {
             const obj = JSON.parse(ev.target.result);
             if (obj && obj.gearList) {
             displayGearAndRequirements(obj.gearList);
+            currentProjectInfo = obj.projectInfo || null;
+            if (currentProjectInfo) populateProjectForm(currentProjectInfo);
             ensureGearListActions();
             bindGearListCageListener();
             bindGearListEasyrigListener();
@@ -8465,6 +8527,7 @@ function deleteCurrentGearList() {
         const setups = getSetups();
         if (setups[setupName]) {
             delete setups[setupName].gearList;
+            delete setups[setupName].projectInfo;
             storeSetups(setups);
         }
     }
@@ -8604,6 +8667,8 @@ function refreshGearListIfVisible() {
 
 // --- SESSION STATE HANDLING ---
 function saveCurrentSession() {
+  const info = projectForm ? collectProjectFormData() : {};
+  currentProjectInfo = Object.values(info).some(v => v) ? info : null;
   const state = {
     setupName: setupNameInput ? setupNameInput.value : '',
     setupSelect: setupSelect ? setupSelect.value : '',
@@ -8616,7 +8681,8 @@ function saveCurrentSession() {
     distance: distanceSelect ? distanceSelect.value : '',
     batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
     battery: batterySelect ? batterySelect.value : '',
-    sliderBowl: getSliderBowlValue()
+    sliderBowl: getSliderBowlValue(),
+    projectInfo: currentProjectInfo
   };
   storeSession(state);
   // Persist the current gear list and project requirements alongside the
@@ -8663,6 +8729,10 @@ function restoreSessionState() {
     if (batterySelect && state.battery) batterySelect.value = state.battery;
     setSliderBowlValue(state.sliderBowl);
     if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
+    if (state.projectInfo) {
+      currentProjectInfo = state.projectInfo;
+      if (projectForm) populateProjectForm(currentProjectInfo);
+    }
   } else {
     if (gearListOutput) {
       gearListOutput.innerHTML = '';
@@ -8676,6 +8746,10 @@ function restoreSessionState() {
   if (gearListOutput || projectRequirementsOutput) {
     const storedGearList = typeof loadGearList === 'function' ? loadGearList() : '';
     if (storedGearList) {
+      if (typeof storedGearList === 'object' && storedGearList.projectInfo) {
+        currentProjectInfo = storedGearList.projectInfo;
+        if (projectForm) populateProjectForm(currentProjectInfo);
+      }
       displayGearAndRequirements(storedGearList);
       if (gearListOutput) {
         ensureGearListActions();
