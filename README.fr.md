@@ -1,4 +1,4 @@
-# 🎥 Planificateur de Consommation Caméra
+# 🎥 Cine List
 
 Cet outil fonctionnant dans le navigateur aide à planifier des configurations professionnelles alimentées par des batteries V‑Mount. Il calcule la **consommation totale**, le **courant** (à 14,4 V et 12 V) et l'**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise.
 

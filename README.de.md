@@ -1,4 +1,4 @@
-# 🎥 Kamera-Stromverbrauchs-Planer
+# 🎥 Cine List
 
 Dieses browserbasierte Tool hilft beim Planen professioneller Kamera-Setups mit V‑Mount-Akkus. Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowie die **geschätzte Akkulaufzeit** und prüft, ob der Akku genügend Leistung liefert.
 
