@@ -2850,6 +2850,22 @@ describe('script.js functions', () => {
     expect(saveSpy).toHaveBeenCalled();
   });
 
+  test('saving a setup updates session state selection', () => {
+    global.loadSetups.mockReturnValue({});
+    global.saveSetups.mockImplementation(data => {
+      global.loadSetups.mockReturnValue(data);
+    });
+    global.loadSessionState = jest.fn(() => null);
+    global.saveSessionState = jest.fn();
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'SessSetup';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('saveSetupBtn').click();
+    const calls = global.saveSessionState.mock.calls;
+    const state = calls[calls.length - 1][0];
+    expect(state.setupSelect).toBe('SessSetup');
+  });
+
   test('Deleting a setup requires confirmation', () => {
     const deleteBtn = document.getElementById('deleteSetupBtn');
     const sel = document.getElementById('setupSelect');
