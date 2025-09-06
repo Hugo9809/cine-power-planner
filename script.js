@@ -5769,6 +5769,9 @@ setupSelect.addEventListener("change", (event) => {
     }
     loadedSetupState = getCurrentSetupState();
   }
+  if (saveSetupBtn) {
+    saveSetupBtn.disabled = !setupNameInput.value.trim();
+  }
   updateCalculations();
   checkSetupChanged();
 });
