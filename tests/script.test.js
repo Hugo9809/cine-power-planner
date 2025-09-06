@@ -2539,7 +2539,7 @@ describe('script.js functions', () => {
     });
   });
 
-  test('camera handle appears but mattebox excluded from project requirements', () => {
+  test('camera handle and viewfinder extension excluded from project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       cameraHandle: 'Hand Grips, L-Handle',
@@ -2550,12 +2550,12 @@ describe('script.js functions', () => {
       cameraUserButtons: 'False Color',
       viewfinderUserButtons: 'Peaking'
     });
-    expect(html).toContain('<span class="req-label">Camera Handle</span>');
-    expect(html).toContain('<span class="req-value">Hand Grips, L-Handle</span>');
+    expect(html).not.toContain('<span class="req-label">Camera Handle</span>');
+    expect(html).not.toContain('<span class="req-value">Hand Grips, L-Handle</span>');
     expect(html).not.toContain('<span class="req-label">Mattebox</span>');
     expect(html).not.toContain('<span class="req-value">Rod based</span>');
-    expect(html).toContain('<span class="req-label">Viewfinder Extension</span>');
-    expect(html).toContain('<span class="req-value">ARRI VEB-3 Viewfinder Extension Bracket</span>');
+    expect(html).not.toContain('<span class="req-label">Viewfinder Extension</span>');
+    expect(html).not.toContain('<span class="req-value">ARRI VEB-3 Viewfinder Extension Bracket</span>');
     expect(html).toContain('<span class="req-label">Monitoring support</span>');
     expect(html).toContain('<span class="req-value">Viewfinder Clean Feed, Surround View</span>');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));

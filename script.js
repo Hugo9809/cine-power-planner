@@ -7826,8 +7826,6 @@ function generateGearListHtml(info = {}) {
         sensorMode: 'Sensor Mode',
         lenses: 'Lenses',
         requiredScenarios: 'Required Scenarios',
-        cameraHandle: 'Camera Handle',
-        viewfinderExtension: 'Viewfinder Extension',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
@@ -7837,7 +7835,8 @@ function generateGearListHtml(info = {}) {
         viewfinderUserButtons: 'Viewfinder User Buttons'
     };
     const infoEntries = Object.entries(projectInfo)
-        .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
+        .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl'
+            && k !== 'cameraHandle' && k !== 'viewfinderExtension');
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
