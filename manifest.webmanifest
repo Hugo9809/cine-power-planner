@@ -1,6 +1,6 @@
 {
-  "name": "Camera Power Planner",
-  "short_name": "Power Planner",
+  "name": "Cine List",
+  "short_name": "Cine List",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#1a1a1a",

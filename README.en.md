@@ -1,4 +1,4 @@
-# 🎥 Camera Power Consumption Planner
+# 🎥 Cine List
 
 This browser based tool helps plan professional camera projects powered by V‑Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
 
