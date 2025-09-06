@@ -2768,9 +2768,9 @@ describe('script.js functions', () => {
     const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
     const consumText = rows[consumIdx + 1].textContent;
     expect(consumText).toContain('1x Kimtech Wipes');
-    expect(consumText).toContain('1x Lasso Rot 24mm');
-    expect(consumText).toContain('1x Lasso Blau 24mm');
-    expect(consumText).toContain('1x Sprigs rot 1/4“');
+    expect(consumText).toContain('1x Lasso Red 24mm');
+    expect(consumText).toContain('1x Lasso Blue 24mm');
+    expect(consumText).toContain('1x Sprigs Red 1/4"');
     expect(consumText).toContain('2x Bluestar eye leather made of microfiber oval, large rot');
     expect(consumText).toContain('2x Klappenstift');
   });
@@ -2794,7 +2794,7 @@ describe('script.js functions', () => {
       const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
       const consumText = rows[consumIdx + 1].textContent;
       expect(consumText).toContain(wipes);
-      expect(consumText).toContain('1x Sprigs rot 1/4“');
+      expect(consumText).toContain('1x Sprigs Red 1/4"');
       expect(consumText).toContain(klappen);
       expect(consumText).toContain(eye);
     });
