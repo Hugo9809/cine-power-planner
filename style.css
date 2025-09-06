@@ -354,6 +354,10 @@ a:focus {
   margin-right: 0.3em;
 }
 
+.btn-icon {
+  margin-right: 0.3em;
+}
+
 #hoverHelpTooltip {
   position: absolute;
   z-index: 1000;
