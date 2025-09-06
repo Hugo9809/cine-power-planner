@@ -1573,6 +1573,23 @@ describe('script.js functions', () => {
   expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
   });
 
+  test('Directors 5" handheld monitor adds dropdown, batteries and grip items', () => {
+    const { generateGearListHtml } = script;
+    global.devices.monitors = {
+      'SmallHD Ultra 7': { screenSizeInches: 7 },
+      MonA: { screenSizeInches: 5 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 5" handheld' });
+    expect(html).toContain('<select id="gearListDirectorsMonitor"');
+    expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
+    expect(html).toContain('3x Bebob V98micro');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Directors handheld)');
+    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Directors handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld)');
+    const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
+    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Directors handheld, 3x Spare)');
+  });
+
   test('Gaffers 7" handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {
@@ -2730,10 +2747,13 @@ describe('script.js functions', () => {
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
   });
 
-  test('project requirements form includes Gaffers Monitor 7" handheld option', () => {
+  test('project requirements form includes handheld monitor size options', () => {
     setupDom(true);
     const sel = document.getElementById('videoDistribution');
     const values = Array.from(sel.options).map(o => o.value);
+    expect(values).toContain('Directors Monitor 5" handheld');
+    expect(values).toContain('Directors Monitor 7" handheld');
+    expect(values).toContain('Gaffers Monitor 5" handheld');
     expect(values).toContain('Gaffers Monitor 7" handheld');
   });
 
