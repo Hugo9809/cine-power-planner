@@ -7959,8 +7959,14 @@ function generateGearListHtml(info = {}) {
         consumables.push('Magliner Rain Cover Transparent');
     }
     const needsHairDryer = isWinterShoot || scenarios.includes('Extreme cold (snow)');
+    const needsHandAndFeetWarmers = scenarios.includes('Extreme cold (snow)');
     if (needsHairDryer) {
         miscItems.push('Hair Dryer');
+    }
+    if (needsHandAndFeetWarmers) {
+        const warmersCount = Math.max(shootDays, 1) * 2;
+        for (let i = 0; i < warmersCount; i++) miscItems.push('Hand Warmers');
+        for (let i = 0; i < warmersCount; i++) miscItems.push('Feet Warmers');
     }
     addRow('Miscellaneous', formatItems(miscItems));
     addRow('Consumables', formatItems(consumables));
