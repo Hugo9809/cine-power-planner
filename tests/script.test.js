@@ -1568,6 +1568,21 @@ describe('script.js functions', () => {
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x DoP handheld, 1x Spare)');
   });
 
+  test('merges monitoring batteries across multiple handheld monitors', () => {
+    setupDom();
+    script = require('../script.js');
+    const { generateGearListHtml } = script;
+    const videoDistribution = [
+      'Directors Monitor handheld',
+      'Gaffers Monitor handheld',
+      'DoP Monitor handheld',
+      'Directors Monitor handheld'
+    ].join(', ');
+    const html = generateGearListHtml({ videoDistribution });
+    expect(html).toContain('12x Bebob V98micro');
+    expect(html).not.toContain('3x Bebob V98micro');
+  });
+
   test('Directors 15-21" monitor adds dropdown and accessories', () => {
     const { generateGearListHtml } = script;
     global.devices.directorMonitors = {
