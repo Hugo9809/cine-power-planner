@@ -1,5 +1,6 @@
 const {
   normalizeMonitor,
+  normalizeVideoPorts,
   parsePowerInput,
   normalizeVideoDevice,
   cleanVoltageRange,
@@ -143,5 +144,27 @@ describe('normalizeFiz', () => {
 describe('cleanPort', () => {
   it('handles primitive values without throwing', () => {
     expect(() => cleanPort('USB-C')).not.toThrow();
+  });
+});
+
+describe('normalizeVideoPorts', () => {
+  it('preserves additional port properties', () => {
+    const device = {
+      videoInputs: [
+        { portType: 'HDMI', notes: '1.4', extra: 'keep' },
+        'SDI'
+      ],
+      videoOutputs: [
+        { type: 'USB-C', notes: 'Alt mode' }
+      ]
+    };
+    normalizeVideoPorts(device);
+    expect(device.videoInputs).toEqual([
+      { type: 'HDMI', notes: '1.4', extra: 'keep' },
+      { type: 'SDI' }
+    ]);
+    expect(device.videoOutputs).toEqual([
+      { type: 'USB-C', notes: 'Alt mode' }
+    ]);
   });
 });

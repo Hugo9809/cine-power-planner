@@ -126,7 +126,11 @@ function cleanPorts(...ports) {
 
 function normalizePortList(list) {
   return list.map(p => {
-    const portObj = { type: p.portType || p.type || p };
+    // Preserve all existing properties on the port definition instead of
+    // throwing them away. The previous implementation only kept the type and
+    // silently discarded fields like `notes` or custom metadata which are used
+    // elsewhere in the application.
+    const portObj = (p && typeof p === 'object') ? { ...p } : { type: p };
     cleanPort(portObj);
     return portObj;
   });
