@@ -1437,9 +1437,9 @@ describe('script.js functions', () => {
     addOpt('monitorSelect', 'MonA');
     addOpt('videoSelect', 'VidA');
     const html = generateGearListHtml({ projectName: 'Proj' });
-    expect(html).toContain(
-      '1x <strong>Onboard Monitor</strong> - MonA - incl. Sunhood<br><span class="gear-item" data-gear-name="Wireless Transmitter - VidA">1x <strong>Wireless Transmitter</strong> - VidA</span>'
-    );
+    expect(html).toMatch(/1x <strong>Onboard Monitor<\/strong> - (?:7&quot;|7") - MonA - incl\. Sunhood/);
+    expect(html).toMatch(/<strong>Wireless Transmitter<\/strong> - (?:7&quot;|7") - VidA/);
+    expect(html).toContain('- incl. Sunhood<br><span');
     expect(html).not.toContain('MonA, VidA');
   });
 
@@ -1562,9 +1562,7 @@ describe('script.js functions', () => {
       videoDistribution:
         'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
     });
-    expect(html).toContain(
-      '4x <strong>Wireless Receiver</strong> - VidA RX (Directors handheld, Gaffers handheld, DoP handheld, Focus)'
-    );
+    expect(html).toMatch(/4x <strong>Wireless Receiver<\/strong> - (?:7&quot;|7") - VidA RX \(Directors handheld, Gaffers handheld, DoP handheld, Focus\)/);
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain(
       '6x D-Tap to Lemo-2-pin Cable 0,3m (Directors handheld, Gaffers handheld, DoP handheld)'
@@ -1626,7 +1624,7 @@ describe('script.js functions', () => {
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
       expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (Focus)');
       expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)');
-      expect(html).toContain('1x <strong>Wireless Receiver</strong> - VidA RX (Focus)');
+      expect(html).toMatch(/1x <strong>Wireless Receiver<\/strong> - (?:7&quot;|7") - VidA RX \(Focus\)/);
       expect(html).toContain('Avenger C-Stand Sliding Leg 20" (Focus)');
       expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
       expect(html).toContain('3x Tennisball');
@@ -1694,9 +1692,7 @@ describe('script.js functions', () => {
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain(
-      '2x <strong>Wireless Receiver</strong> - VidA RX (Directors handheld, Focus)'
-    );
+    expect(html).toMatch(/2x <strong>Wireless Receiver<\/strong> - (?:7&quot;|7") - VidA RX \(Directors handheld, Focus\)/);
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (spare)');
   });
