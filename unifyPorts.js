@@ -12,6 +12,7 @@ const IO_WORDS_REGEX = /\b(?:INPUT|OUTPUT)\b/gi;
 const LEMO_2PIN_REGEX = /lemo\s*2\s*-?\s*pin/i;
 const DTAP_REGEX = /d[\s-]?tap/i;
 const USB_TYPEC_REGEX = /usb\s*type[-\s]?c/i;
+const CONNECTOR_PORT_REGEX = /\b(?:connector|port)\b/gi;
 const MULTISPACE_REGEX = /\s+/g;
 
 const VOLTAGE_DC_REGEX = /DC/gi;
@@ -40,6 +41,7 @@ function cleanTypeName(name) {
   if (LEMO_2PIN_REGEX.test(t)) t = "LEMO 2-pin";
   else if (DTAP_REGEX.test(t)) t = "D-Tap";
   else if (USB_TYPEC_REGEX.test(t)) t = "USB-C";
+  t = t.replace(CONNECTOR_PORT_REGEX, "").trim();
   t = t.replace(MULTISPACE_REGEX, " ");
   typeNameCache.set(key, t);
   return t;

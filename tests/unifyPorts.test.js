@@ -27,6 +27,10 @@ describe('cleanTypeName', () => {
     expect(cleanTypeName('HDMI Input OUTPUT')).toBe('HDMI');
     expect(cleanTypeName('SDI IN/OUT')).toBe('SDI IN/OUT');
   });
+  it('removes trailing connector and port descriptors', () => {
+    expect(cleanTypeName('USB-C connector')).toBe('USB-C');
+    expect(cleanTypeName('HDMI port')).toBe('HDMI');
+  });
 });
 
 describe('normalizeMonitor', () => {
