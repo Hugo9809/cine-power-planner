@@ -706,7 +706,7 @@ function updateViewfinderExtensionVisibility() {
       viewfinderExtensionRow.classList.add('hidden');
       const vfExtSel = document.getElementById('viewfinderExtension');
       if (vfExtSel) {
-        Array.from(vfExtSel.options).forEach(o => { o.selected = false; });
+        vfExtSel.value = '';
       }
     }
   }
@@ -7371,7 +7371,7 @@ function collectProjectFormData() {
         lenses: multi('lenses'),
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
-        viewfinderExtension: multi('viewfinderExtension'),
+        viewfinderExtension: val('viewfinderExtension'),
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
