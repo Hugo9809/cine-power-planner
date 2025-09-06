@@ -7428,7 +7428,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
             if (!Number.isFinite(camCount)) camCount = batterySelect.value ? 1 : 0;
             let monCount = 0;
             if (Array.isArray(videoDistPrefs)) {
-                const handheldCount = videoDistPrefs.filter(v => v.endsWith('Monitor 7" handheld')).length;
+                const handheldCount = videoDistPrefs.filter(v => /Monitor \d+" handheld$/.test(v)).length;
                 monCount += handheldCount * 3;
             }
             if (hasMotor) monCount += 3;
@@ -7647,6 +7647,12 @@ function generateGearListHtml(info = {}) {
     const videoDistPrefs = info.videoDistribution
         ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    const handheldPrefs = videoDistPrefs
+        .map(p => {
+            const m = p.match(/^(Directors|Gaffers|DoP) Monitor (\d+)" handheld$/);
+            return m ? { role: m[1], size: parseFloat(m[2]) } : null;
+        })
+        .filter(Boolean);
     if (["Arri Alexa Mini", "Arri Amira"].includes(selectedNames.camera)) {
         selectedNames.viewfinder = "ARRI K2.75004.0 MVF-1 Viewfinder";
     } else {
@@ -7771,9 +7777,7 @@ function generateGearListHtml(info = {}) {
         }
     }
     const receiverLabels = [];
-    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) receiverLabels.push('Directors handheld');
-    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) receiverLabels.push('Gaffers handheld');
-    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) receiverLabels.push('DoP handheld');
+    handheldPrefs.forEach(p => receiverLabels.push(`${p.role} handheld`));
     if (hasMotor) receiverLabels.push('Focus');
     const receiverCount = receiverLabels.length;
     if (selectedNames.video) {
@@ -7794,9 +7798,7 @@ function generateGearListHtml(info = {}) {
             `Ultraslim BNC 0.3 m (${label})`
         );
     };
-    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) addMonitorCables('Directors handheld');
-    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) addMonitorCables('Gaffers handheld');
-    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) addMonitorCables('DoP handheld');
+    handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
     if (hasMotor) {
         monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
@@ -8003,9 +8005,7 @@ function generateGearListHtml(info = {}) {
         const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
         monitoringBatteryItems.push(`3x ${escapeHtml(bebob98)}`);
     };
-    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) addV98();
-    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) addV98();
-    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) addV98();
+    handheldPrefs.forEach(() => addV98());
     if (hasMotor) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
         monitoringBatteryItems.push(`3x ${escapeHtml(bebob150)}`);
@@ -8013,52 +8013,40 @@ function generateGearListHtml(info = {}) {
     addRow('Monitoring Batteries', monitoringBatteryItems.join('<br>'));
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
+    const monitorSizes = [];
     if (selectedNames.viewfinder) {
         monitoringItems += `1x <strong>Viewfinder</strong> - ${escapeHtml(addArriKNumber(selectedNames.viewfinder))}`;
     }
     if (selectedNames.monitor) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(addArriKNumber(selectedNames.monitor))} - incl. Sunhood`;
+        const size = devices?.monitors?.[selectedNames.monitor]?.screenSizeInches;
+        if (size) monitorSizes.push(size);
+        const sizeHtml = size ? `${size}&quot; - ` : '';
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${sizeHtml}${escapeHtml(addArriKNumber(selectedNames.monitor))} - incl. Sunhood`;
     }
-    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
+    handheldPrefs.forEach(({ role, size }) => {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
-        const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
+        const names = Object.keys(monitorsDb)
+            .filter(n => monitorsDb[n].screenSizeInches === size && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
-        const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+        const opts = names
+            .map(n => `<option value="${escapeHtml(n)}"${size === 7 && n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-    }
-    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
-        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
-        const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
-            .sort(localeSort);
-        const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
-            .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Handheld Monitor</strong> - <select id="gearListDopMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-    }
-    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
-        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
-        const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
-            .sort(localeSort);
-        const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
-            .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-    }
+        const idSuffix = role === 'DoP' ? 'Dop' : role;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Handheld Monitor</strong> - ${size}&quot; - <select id="gearList${idSuffix}Monitor${size}">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        monitorSizes.push(size);
+    });
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
+        monitorSizes.push(7);
     }
     const monitoringGear = [];
+    const wirelessSize = monitorSizes.includes(5) ? 5 : 7;
     if (selectedNames.video) {
-        monitoringGear.push(`Wireless Transmitter - ${addArriKNumber(selectedNames.video)}`);
+        monitoringGear.push(`Wireless Transmitter - ${wirelessSize}&quot; - ${addArriKNumber(selectedNames.video)}`);
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
             receiverLabels.forEach(label => {
-                monitoringGear.push(`Wireless Receiver - ${addArriKNumber(rxName)} (${label})`);
+                monitoringGear.push(`Wireless Receiver - ${wirelessSize}&quot; - ${addArriKNumber(rxName)} (${label})`);
             });
         }
     }
@@ -8081,24 +8069,12 @@ function generateGearListHtml(info = {}) {
     const gripItems = [];
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
-    if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
-        gripItems.push('Avenger C-Stand Sliding Leg 20" (Directors handheld)');
-        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
-        riggingAcc.push('spigot with male 3/8" and 1/4" (Directors handheld)');
-        riggingAcc.push('spigot with male 3/8" and 1/4" (Directors handheld)');
-    }
-    if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
-        gripItems.push('Avenger C-Stand Sliding Leg 20" (Gaffers handheld)');
-        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
-        riggingAcc.push('spigot with male 3/8" and 1/4" (Gaffers handheld)');
-        riggingAcc.push('spigot with male 3/8" and 1/4" (Gaffers handheld)');
-    }
-    if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
-        gripItems.push('Avenger C-Stand Sliding Leg 20" (DoP handheld)');
-        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
-        riggingAcc.push('spigot with male 3/8" and 1/4" (DoP handheld)');
-        riggingAcc.push('spigot with male 3/8" and 1/4" (DoP handheld)');
-    }
+    handheldPrefs.forEach(p => {
+        gripItems.push(`Avenger C-Stand Sliding Leg 20" (${p.role} handheld)`);
+        gripItems.push(`Lite-Tite Swivel Aluminium Umbrella Adapter (${p.role} handheld)`);
+        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
+        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
+    });
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
@@ -9255,6 +9231,7 @@ function updateRequiredScenariosSummary() {
         opt.remove();
       }
     };
+    ensureOption('DoP Monitor 5" handheld');
     ensureOption('DoP Monitor 7" handheld');
     ensureOption('DoP Monitor 15-21"');
   }
