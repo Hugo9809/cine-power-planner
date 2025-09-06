@@ -5154,6 +5154,7 @@ function attachDiagramPopups(map) {
     node.addEventListener('mousemove', show);
     node.addEventListener('mouseout', hide);
     node.addEventListener('touchstart', show);
+    node.addEventListener('click', show);
   });
 
   if (!setupDiagramContainer.dataset.popupOutsideListeners) {
