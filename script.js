@@ -8092,7 +8092,6 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Steelfingers Wheel C-Stand 3er Set (${p.role} handheld)`);
         gripItems.push(`Lite-Tite Swivel Aluminium Umbrella Adapter (${p.role} handheld)`);
         riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
-        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
     });
     largeMonitorPrefs.forEach(p => {
         gripItems.push(`Matthews Monitor Stand II (249562) (${p.role} 15-21")`);
