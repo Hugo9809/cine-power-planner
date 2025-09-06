@@ -1546,6 +1546,7 @@ const projectFieldIcons = {
   baseFrameRate: '⏱️',
   sensorMode: '🔍',
   requiredScenarios: '🌄',
+  lenses: '💎',
   cameraHandle: '🛠️',
   viewfinderExtension: '🔭',
   mattebox: '🎬',
