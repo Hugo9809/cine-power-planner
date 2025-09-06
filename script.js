@@ -43,6 +43,14 @@ if (typeof window !== 'undefined') {
   setupOfflineIndicator();
 }
 
+// Simple HTML escaping helper available early for bootstrap code
+const escapeDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
+function escapeHtml(str) {
+  if (!escapeDiv) return String(str);
+  escapeDiv.textContent = str;
+  return escapeDiv.innerHTML;
+}
+
 // Use a Set for O(1) lookups when validating video output types
 const VIDEO_OUTPUT_TYPES = new Set([
   '3G-SDI',
@@ -5444,13 +5452,6 @@ function createDeviceDetailsList(deviceData) {
 
   return list;
 }
-
-const escapeDiv = document.createElement('div');
-function escapeHtml(str) {
-  escapeDiv.textContent = str;
-  return escapeDiv.innerHTML;
-}
-
 function formatDateString(val) {
   if (!val) return '';
   const d = new Date(val);
