@@ -7636,6 +7636,12 @@ function generateGearListHtml(info = {}) {
             return m ? { role: m[1], size: parseFloat(m[2]) } : null;
         })
         .filter(Boolean);
+    const largeMonitorPrefs = videoDistPrefs
+        .map(p => {
+            const m = p.match(/^(Directors|Combo|DoP) Monitor 15-21"$/);
+            return m ? { role: m[1] } : null;
+        })
+        .filter(Boolean);
     if (["Arri Alexa Mini", "Arri Amira"].includes(selectedNames.camera)) {
         selectedNames.viewfinder = "ARRI K2.75004.0 MVF-1 Viewfinder";
     } else {
@@ -7761,6 +7767,7 @@ function generateGearListHtml(info = {}) {
     }
     const receiverLabels = [];
     handheldPrefs.forEach(p => receiverLabels.push(`${p.role} handheld`));
+    largeMonitorPrefs.forEach(p => receiverLabels.push(`${p.role} 15-21"`));
     if (hasMotor) receiverLabels.push('Focus');
     const receiverCount = receiverLabels.length;
     if (selectedNames.video) {
@@ -7782,6 +7789,15 @@ function generateGearListHtml(info = {}) {
         );
     };
     handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
+    const addLargeMonitorCables = label => {
+        monitoringSupportAcc.push(
+            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
+            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
+            `Ultraslim BNC 0.5 m (${label})`,
+            `Ultraslim BNC 0.5 m (${label})`
+        );
+    };
+    largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
     if (hasMotor) {
         monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
@@ -8017,6 +8033,18 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Handheld Monitor</strong> - ${size}&quot; - <select id="gearList${idSuffix}Monitor${size}">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
         monitorSizes.push(size);
     });
+    largeMonitorPrefs.forEach(({ role }) => {
+        const dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
+        const names = Object.keys(dirDb).filter(n => n !== 'None').sort(localeSort);
+        const defaultName = 'SmallHD Cine 24" 4K High-Bright Monitor';
+        const opts = names
+            .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        const idSuffix = role === 'DoP' ? 'Dop' : role;
+        const size = dirDb[defaultName]?.screenSizeInches || '';
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Monitor</strong> - ${size}&quot; - <select id="gearList${idSuffix}Monitor15">${opts}</select> incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
+        if (size) monitorSizes.push(size);
+    });
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
         monitorSizes.push(7);
@@ -8057,6 +8085,18 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Lite-Tite Swivel Aluminium Umbrella Adapter (${p.role} handheld)`);
         riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
         riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
+    });
+    largeMonitorPrefs.forEach(p => {
+        gripItems.push(`Matthews Monitor Stand II (249562) (${p.role} 15-21")`);
+        gripItems.push(`Avenger C590 Conka Bonka Stativ-Verlängerungen Set (${p.role} 15-21")`);
+        gripItems.push(`Impact Baby to Junior Receiver Adapter (${p.role} 15-21")`);
+        gripItems.push(`Matthews BIG F'ING Monitor Rollen Set (3 Stück) (${p.role} 15-21")`);
+        riggingAcc.push(`ULCS Bracket with 1/4 to 1/4 (${p.role} 15-21")`);
+        riggingAcc.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
+        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
+        riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
+        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
+        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
     });
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');

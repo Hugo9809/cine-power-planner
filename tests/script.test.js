@@ -1568,6 +1568,22 @@ describe('script.js functions', () => {
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x DoP handheld, 1x Spare)');
   });
 
+  test('Directors 15-21" monitor adds dropdown and accessories', () => {
+    const { generateGearListHtml } = script;
+    global.devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      Other: { screenSizeInches: 17 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 15-21"' });
+    expect(html).toContain('<select id="gearListDirectorsMonitor15"');
+    expect(html).toContain('Directors Monitor');
+    const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
+    expect(msSection).toContain('D-Tap to Lemo-2-pin Cable 0,5m');
+    expect(msSection).toContain('Directors 15-21"');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Directors 15-21")');
+  });
+
   test('multiple handheld monitors merge grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = { 'SmallHD Ultra 7': { screenSizeInches: 7 } };
