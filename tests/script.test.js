@@ -166,6 +166,21 @@ test('restores project requirements from legacy object storage', () => {
   expect(projOut.innerHTML).toContain('Project Requirements');
 });
 
+test('monitor select excludes RX-only monitors', () => {
+  setupDom(true);
+  global.devices.monitors = {
+    MonTX: { screenSizeInches: 7, wirelessTx: true },
+    MonRX: { screenSizeInches: 7, wirelessRX: true },
+    MonBoth: { screenSizeInches: 7, wirelessTx: true, wirelessRX: true }
+  };
+  require('../translations.js');
+  require('../script.js');
+  const opts = Array.from(document.getElementById('monitorSelect').options).map(o => o.value);
+  expect(opts).toContain('MonTX');
+  expect(opts).toContain('MonBoth');
+  expect(opts).not.toContain('MonRX');
+});
+
 describe('auto backup', () => {
   test('creates backup after 10 minutes when no project selected', () => {
     setupDom(false);
@@ -1520,6 +1535,19 @@ describe('script.js functions', () => {
     expect(gripSection).toContain(
       '3x Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld, Gaffers handheld, DoP handheld)'
     );
+  });
+
+  test('handheld monitor dropdown excludes TX-only monitors', () => {
+    global.devices.monitors = {
+      MonTX: { screenSizeInches: 7, wirelessTx: true },
+      MonRX: { screenSizeInches: 7, wirelessRX: true },
+      MonBoth: { screenSizeInches: 7, wirelessTx: true, wirelessRX: true }
+    };
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    expect(html).toContain('MonRX');
+    expect(html).toContain('MonBoth');
+    expect(html).not.toContain('MonTX');
   });
 
   test('motor adds focus monitor and related accessories to gear list', () => {

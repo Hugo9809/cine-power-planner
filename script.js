@@ -3773,7 +3773,10 @@ function applyFilters() {
 
 // Initialize device selection dropdowns
 populateSelect(cameraSelect, devices.cameras, true);
-populateSelect(monitorSelect, devices.monitors, true);
+const monitorsForSelection = Object.fromEntries(
+  Object.entries(devices.monitors || {}).filter(([, data]) => !(data.wirelessRX && !data.wirelessTx))
+);
+populateSelect(monitorSelect, monitorsForSelection, true);
 populateSelect(videoSelect, devices.video, true);
 if (cageSelect) populateSelect(cageSelect, devices.accessories?.cages || {}, true);
 motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
@@ -7891,35 +7894,38 @@ function generateGearListHtml(info = {}) {
         monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Onboard Monitor</strong> - ${escapeHtml(selectedNames.monitor)} - incl. Sunhood`;
     }
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
-        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
-        const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7)
-            .sort(localeSort);
-        const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
-            .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-    }
+    const monitorsDb = devices && devices.monitors ? devices.monitors : {};
+    const sevenInchNames = Object.keys(monitorsDb)
+        .filter(n => monitorsDb[n].screenSizeInches === 7)
+        .filter(n => !(monitorsDb[n].wirelessTx && !monitorsDb[n].wirelessRX))
+        .sort(localeSort);
+    const opts = sevenInchNames
+        .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+        .join('');
+    monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Directors Handheld Monitor</strong> - <select id="gearListDirectorsMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+  }
     if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
-        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
-        const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7)
-            .sort(localeSort);
-        const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
-            .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Handheld Monitor</strong> - <select id="gearListDopMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-    }
+    const monitorsDb = devices && devices.monitors ? devices.monitors : {};
+    const sevenInchNames = Object.keys(monitorsDb)
+        .filter(n => monitorsDb[n].screenSizeInches === 7)
+        .filter(n => !(monitorsDb[n].wirelessTx && !monitorsDb[n].wirelessRX))
+        .sort(localeSort);
+    const opts = sevenInchNames
+        .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+        .join('');
+    monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>DoP Handheld Monitor</strong> - <select id="gearListDopMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+  }
     if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
-        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
-        const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7)
-            .sort(localeSort);
-        const opts = sevenInchNames
-            .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
-            .join('');
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-    }
+    const monitorsDb = devices && devices.monitors ? devices.monitors : {};
+    const sevenInchNames = Object.keys(monitorsDb)
+        .filter(n => monitorsDb[n].screenSizeInches === 7)
+        .filter(n => !(monitorsDb[n].wirelessTx && !monitorsDb[n].wirelessRX))
+        .sort(localeSort);
+    const opts = sevenInchNames
+        .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
+        .join('');
+    monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>Gaffer Handheld Monitor</strong> - <select id="gearListGaffersMonitor7">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+  }
     if (hasMotor) {
         monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
     }
