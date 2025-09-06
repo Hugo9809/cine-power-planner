@@ -673,11 +673,16 @@ describe('script.js functions', () => {
     const codecSel = document.getElementById('codec');
     codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
     codecSel.value = 'ProRes';
+    const videoSel = document.getElementById('videoDistribution');
+    videoSel.innerHTML = '<option value="IOS Video (Teradek Serv + Link)">IOS Video (Teradek Serv + Link)</option>';
+    videoSel.value = 'IOS Video (Teradek Serv + Link)';
     const form = document.getElementById('projectForm');
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][0];
     expect(saved.projectInfo.projectName).toBe('Proj');
     expect(saved.projectInfo.codec).toBe('ProRes');
+    expect(saved.projectInfo.videoDistribution).toBe('IOS Video (Teradek Serv + Link)');
+    expect(saved.projectInfo.monitoring).toBe('IOS Video (Teradek Serv + Link)');
   });
 
   test('project requirements form saved with project', () => {
@@ -2928,12 +2933,11 @@ describe('script.js functions', () => {
     expect(configSel.value).toBe('Onboard Only');
   });
 
-  test('iOS video option appears under monitoring in project requirements', () => {
+  test('iOS video option excluded from project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ videoDistribution: 'IOS Video (Teradek Serv + Link)' });
-    expect(html).toContain('<span class="req-label">Monitoring</span>');
-    expect(html).toContain('<span class="req-value">IOS Video (Teradek Serv + Link)</span>');
-    expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
+    expect(html).not.toContain('<span class="req-label">Monitoring</span>');
+    expect(html).not.toContain('<span class="req-value">IOS Video (Teradek Serv + Link)</span>');
   });
 
   test('project requirements form includes handheld monitor size options', () => {

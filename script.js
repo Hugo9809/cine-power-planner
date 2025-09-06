@@ -7707,6 +7707,7 @@ function collectProjectFormData() {
         ...multiVals('frameGuides'),
         ...multiVals('aspectMaskOpacity')
     ].join(', ');
+    const videoDist = multi('videoDistribution');
     return {
         projectName: val('projectName'),
         dop: val('dop'),
@@ -7726,7 +7727,8 @@ function collectProjectFormData() {
         mattebox: val('mattebox'),
         gimbal: multi('gimbal'),
         monitoringSettings: monitoringSelections,
-        videoDistribution: multi('videoDistribution'),
+        videoDistribution: videoDist,
+        monitoring: videoDist,
         monitoringConfiguration: val('monitoringConfiguration'),
         monitorUserButtons: multi('monitorUserButtons'),
         cameraUserButtons: multi('cameraUserButtons'),
@@ -8049,11 +8051,9 @@ function generateGearListHtml(info = {}) {
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
-    if (videoDistPrefs.length) {
-        projectInfo.monitoring = videoDistPrefs.join(', ');
-    }
     if (!info.monitoringConfiguration) delete projectInfo.monitoringConfiguration;
     delete projectInfo.monitoringSettings;
+    delete projectInfo.monitoring;
     delete projectInfo.videoDistribution;
     delete projectInfo.tripodHeadBrand;
     delete projectInfo.tripodBowl;
