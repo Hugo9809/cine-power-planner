@@ -1551,7 +1551,7 @@ const projectFieldIcons = {
   mattebox: '🎬',
   gimbal: '🌀',
   monitoringSupport: '🧰',
-  monitoring: '📡',
+  monitoring: '🖥️',
   monitoringConfiguration: '🎛️',
   monitorUserButtons: '🔘',
   cameraUserButtons: '🔘',
