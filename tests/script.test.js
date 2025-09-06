@@ -1721,6 +1721,28 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
   });
 
+  test('Clamp On mattebox adds LMB 4x5 Clamp-On set and accessories to gear list', () => {
+    const { generateGearListHtml } = script;
+    devices.lenses.LensB = { brand: 'TestBrand', frontDiameterMm: 95 };
+    const html = generateGearListHtml({ mattebox: 'Clamp On', lenses: 'LensA, LensB' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const matteIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    expect(matteIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[matteIdx + 1];
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Clamp-On (3-Stage)');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Side Flags');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB Flag Holders');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Set of Mattes spherical');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB Accessory Adapter');
+    expect(itemsRow.textContent).toContain('1x ARRI Anti-Reflection Frame 4x5.65');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Clamp Adapter Set Pro');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Clamp Adapter 80mm');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Clamp Adapter 95mm');
+  });
+
   test('updateRequiredScenariosSummary creates a box for each selection', () => {
     const select = document.getElementById('requiredScenarios');
     select.querySelector('option[value="Indoor"]').selected = true;

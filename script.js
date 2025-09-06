@@ -7512,11 +7512,27 @@ function generateGearListHtml(info = {}) {
     if (info.mattebox) {
         const matteboxes = devices.accessories?.matteboxes || {};
         for (const [name, mb] of Object.entries(matteboxes)) {
-            if (mb.type && mb.type.toLowerCase() === info.mattebox.toLowerCase()) {
+            const normalize = s => s.replace(/[-\s]/g, '').toLowerCase();
+            if (mb.type && normalize(mb.type) === normalize(info.mattebox)) {
                 filterSelections.unshift(name);
                 if (name === 'ARRI LMB 4x5 Pro Set') {
                     filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
                     filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+                } else if (name === 'ARRI LMB 4x5 Clamp-On (3-Stage)') {
+                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+                    filterSelections.push('ARRI LMB 4x5 Side Flags');
+                    filterSelections.push('ARRI LMB Flag Holders');
+                    filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
+                    filterSelections.push('ARRI LMB Accessory Adapter');
+                    filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
+                    filterSelections.push('ARRI LMB 4x5 Clamp Adapter Set Pro');
+                    const lensNames = info.lenses
+                        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
+                        : [];
+                    const diameters = [...new Set(lensNames
+                        .map(n => devices.lenses && devices.lenses[n] && devices.lenses[n].frontDiameterMm)
+                        .filter(Boolean))];
+                    diameters.forEach(d => filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${d}mm`));
                 }
                 break;
             }
