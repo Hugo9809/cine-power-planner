@@ -1541,6 +1541,7 @@ const requiredScenariosSummary = document.getElementById("requiredScenariosSumma
 const remoteHeadOption = requiredScenariosSelect ?
   requiredScenariosSelect.querySelector('option[value="Remote Head"]') : null;
 const tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
+const tripodPreferencesHeading = document.getElementById("tripodPreferencesHeading");
 const tripodHeadBrandSelect = document.getElementById("tripodHeadBrand");
 const tripodBowlSelect = document.getElementById("tripodBowl");
 const tripodTypesSelect = document.getElementById("tripodTypes");
@@ -9219,8 +9220,10 @@ function updateRequiredScenariosSummary() {
   if (tripodPreferencesRow) {
     if (selected.includes('Tripod')) {
       tripodPreferencesRow.classList.remove('hidden');
+      if (tripodPreferencesHeading) tripodPreferencesHeading.classList.remove('hidden');
     } else {
       tripodPreferencesRow.classList.add('hidden');
+      if (tripodPreferencesHeading) tripodPreferencesHeading.classList.add('hidden');
       if (tripodHeadBrandSelect) tripodHeadBrandSelect.value = '';
       if (tripodBowlSelect) tripodBowlSelect.value = '';
       if (tripodTypesSelect) Array.from(tripodTypesSelect.options).forEach(o => { o.selected = false; });
