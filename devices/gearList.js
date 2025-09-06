@@ -350,6 +350,10 @@ const gear = {
         "brand": "ARRI",
         "kNumber": "K2.0024574"
       },
+      "ARRI K2.0019797 HEX-3": {
+        "brand": "ARRI",
+        "kNumber": "K2.0019797"
+      },
       "ARRI Handle Extension HEX-4": {
         "brand": "ARRI",
         "kNumber": "K2.0019798"

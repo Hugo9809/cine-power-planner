@@ -1864,18 +1864,28 @@ describe('script.js functions', () => {
     expect(text).not.toContain('2x SHAPE Telescopic Handle ARRI Rosette Kit 12"');
   });
 
-  test('Handle extension or L-Handle adds handle extension set', () => {
+  test('Handle extension adds HEX-3', () => {
     const { generateGearListHtml } = script;
-    ['Handle Extension', 'L-Handle'].forEach(rig => {
-      const html = generateGearListHtml({ cameraHandle: rig });
-      const wrap = document.createElement('div');
-      wrap.innerHTML = html;
-      const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
-      const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
-      expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
-      const itemsRow = rows[cameraSupportIndex + 1];
-      expect(itemsRow.textContent).toContain('ARRI KK.0037820 Handle Extension Set');
-    });
+    const html = generateGearListHtml({ cameraHandle: 'Handle Extension' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[cameraSupportIndex + 1];
+    expect(itemsRow.textContent).toContain('ARRI K2.0019797 HEX-3');
+  });
+
+  test('L-Handle adds handle extension set', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ cameraHandle: 'L-Handle' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const cameraSupportIndex = rows.findIndex(r => r.textContent === 'Camera Support');
+    expect(cameraSupportIndex).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[cameraSupportIndex + 1];
+    expect(itemsRow.textContent).toContain('ARRI KK.0037820 Handle Extension Set');
   });
 
   test('Carts and Transportation category includes default items', () => {
