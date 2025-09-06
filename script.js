@@ -7820,6 +7820,10 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Super Clamp');
         riggingAcc.push('Spigot');
     }
+    if (['Extreme heat', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s))) {
+        gripItems.push('Large Umbrella');
+        gripItems.push('Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
+    }
     const tripodTypes = info.tripodTypes ? info.tripodTypes.split(',').map(s => s.trim()).filter(Boolean) : [];
     const bowlType = info.tripodBowl;
     const spreader = info.tripodSpreader;
