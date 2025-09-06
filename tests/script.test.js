@@ -3422,6 +3422,38 @@ describe('script.js functions', () => {
     expect(popup.innerHTML).toContain('FIZ Port: LBUS');
   });
 
+  test('diagram popup remains after tap on touch device until outside tap', () => {
+    global.devices.fiz.controllers.ControllerA.fizConnectors = [{ type: 'LBUS' }];
+
+    // Simulate touch-capable device
+    Object.defineProperty(navigator, 'maxTouchPoints', { value: 1, configurable: true });
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const node = document.querySelector('#diagramArea .diagram-node[data-node="controller0"]');
+    node.dispatchEvent(new MouseEvent('click', { clientX: 0, clientY: 0 }));
+
+    // Simulate moving pointer away; popup should remain
+    node.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+    const popup = document.getElementById('diagramPopup');
+    expect(popup.style.display).toBe('block');
+
+    // Clicking outside hides the popup
+    document.getElementById('diagramArea').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(popup.style.display).toBe('none');
+
+    delete navigator.maxTouchPoints;
+  });
+
   test('diagram popup opens to the left near right edge', () => {
     global.devices.fiz.controllers.ControllerA.fizConnectors = [{ type: 'LBUS' }];
 
