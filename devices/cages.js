@@ -1,13 +1,6 @@
 /* global registerDevice */
 (() => {
 const cageData = {
-  "Universal Cage": {
-    "compatible": [
-      "Arri Alexa Mini",
-      "Arri Alexa Mini LF"
-    ],
-    "handle_extension_compatible": true
-  },
   "Tilta Full Camera Cage for BMPCC 6K Pro/G2 (TA-T11-FCC)": {
     "brand": "Tilta",
     "compatible": [
