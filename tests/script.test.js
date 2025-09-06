@@ -1502,9 +1502,9 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('PRCD-S (1x Portable Residual Current Device-Safety, 2x Spare)');
       expect(miscSection).not.toContain('Power Three Way Splitter');
       expect(html).not.toContain('BNC SDI Cable');
-        expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+        expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Focus, 1x Spare)');
         expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
-        expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+        expect(miscSection).not.toContain('Ultraslim BNC Cable 0.3 m (1x Focus, 1x Spare)');
         expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       expect(html).not.toContain('HDMI Cable');
     });
@@ -1604,13 +1604,13 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Directors handheld, 3x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).not.toContain('spigot with male 3/8" and 1/4"');
-    expect(html).toContain('2x Ultraslim BNC 0.3 m (1x Directors handheld, 1x Spare)');
+    expect(html).toContain('2x Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Spare)');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Directors handheld, 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-    expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Directors handheld, 1x Spare)');
+    expect(miscSection).not.toContain('Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Spare)');
   expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
   });
 
@@ -1647,7 +1647,7 @@ describe('script.js functions', () => {
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Gaffers handheld, 3x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Gaffers handheld, 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Gaffers handheld, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Gaffers handheld, 1x Spare)');
   });
 
@@ -1667,7 +1667,7 @@ describe('script.js functions', () => {
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x DoP handheld, 3x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x DoP handheld, 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x DoP handheld, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x DoP handheld, 1x Spare)');
   });
 
@@ -1782,7 +1782,7 @@ describe('script.js functions', () => {
       '6x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 3x Spare)'
     );
     expect(msSection).toContain(
-      '8x Ultraslim BNC 0.3 m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus, 4x Spare)'
+      '8x Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus, 4x Spare)'
     );
     expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
   });
@@ -1833,10 +1833,10 @@ describe('script.js functions', () => {
     expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V150micro');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Focus, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-      expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
+      expect(miscSection).not.toContain('Ultraslim BNC Cable 0.3 m (1x Focus, 1x Spare)');
       expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Focus)');
       expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Focus)');

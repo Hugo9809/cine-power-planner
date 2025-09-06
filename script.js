@@ -7861,8 +7861,8 @@ function generateGearListHtml(info = {}) {
         monitoringSupportAcc.push(
             `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
             `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
-            `Ultraslim BNC 0.3 m (${label})`,
-            `Ultraslim BNC 0.3 m (${label})`
+            `Ultraslim BNC Cable 0.3 m (${label})`,
+            `Ultraslim BNC Cable 0.3 m (${label})`
         );
     };
     handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
@@ -7879,8 +7879,8 @@ function generateGearListHtml(info = {}) {
         monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
-            'Ultraslim BNC 0.3 m (Focus)',
-            'Ultraslim BNC 0.3 m (Focus)'
+            'Ultraslim BNC Cable 0.3 m (Focus)',
+            'Ultraslim BNC Cable 0.3 m (Focus)'
         );
     }
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';

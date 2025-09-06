@@ -809,7 +809,7 @@ const gear = {
         "HDMI Cable": {
           "type": "HDMI"
         },
-        "Ultraslim BNC 0.3 m": {
+        "Ultraslim BNC Cable 0.3 m": {
           "type": "3G-SDI",
           "lengthM": 0.3
         },
