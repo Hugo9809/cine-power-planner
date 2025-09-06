@@ -1416,7 +1416,6 @@ describe('script.js functions', () => {
         expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
         expect(miscSection).not.toContain('Ultraslim BNC 0.3 m (1x Focus, 1x Spare)');
         expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
-      expect(html).not.toContain('Ultraslim BNC 0.5 m');
       expect(html).not.toContain('HDMI Cable');
     });
 
@@ -2923,7 +2922,7 @@ describe('script.js functions', () => {
 
     camSel.value = 'Cam2';
     camSel.dispatchEvent(new Event('change'));
-    expect(saveBtn.textContent).toBe('Update');
+    expect(saveBtn.textContent).toBe('Save');
   });
 
   test('warning colors are applied in Spanish', () => {

@@ -8608,6 +8608,21 @@ function saveCurrentSession() {
   storeSession(state);
 }
 
+function autoSaveCurrentSetup() {
+  if (!setupNameInput) return;
+  const name = setupNameInput.value.trim();
+  if (!name) return;
+  const currentSetup = { ...getCurrentSetupState(), gearList: getCurrentGearListHtml() };
+  const setups = getSetups();
+  setups[name] = currentSetup;
+  storeSetups(setups);
+  populateSetupSelect();
+  if (setupSelect) setupSelect.value = name;
+  saveCurrentSession();
+  loadedSetupState = getCurrentSetupState();
+  checkSetupChanged();
+}
+
 function restoreSessionState() {
   const state = loadSession();
   if (!state) return;
@@ -8722,6 +8737,12 @@ controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveC
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
 if (setupNameInput) setupNameInput.addEventListener("input", checkSetupChanged);
+
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, batteryPlateSelect]
+  .forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
+motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
+controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
+if (setupNameInput) setupNameInput.addEventListener("change", autoSaveCurrentSetup);
 
 // Enable Save button only when a setup name is entered and allow Enter to save
 if (setupNameInput && saveSetupBtn) {
@@ -9486,6 +9507,7 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentSetupKey,
     renderFeedbackTable,
     saveCurrentGearList,
+    autoSaveCurrentSetup,
     displayGearAndRequirements,
     ensureGearListActions,
     populateLensDropdown,
