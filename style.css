@@ -873,6 +873,7 @@ button:disabled {
 #setupDiagram svg {
   width: 100%;
   height: auto;
+  touch-action: none;
 }
 
 #setupDiagram .node-box {
