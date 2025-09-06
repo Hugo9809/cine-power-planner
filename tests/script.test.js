@@ -1763,6 +1763,7 @@ describe('script.js functions', () => {
     let csSection = html.slice(html.indexOf('Camera Support'), html.indexOf('Lens Support'));
     let battSection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
     expect(csSection).not.toContain('Hotswap Plate');
+    expect(csSection).not.toContain('data-gear-name="V-Mount"');
     expect(battSection).toContain('1x Hotswap Plate V-Mount');
     // B-Mount battery
     devices.batteries.BattB = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
@@ -1771,6 +1772,7 @@ describe('script.js functions', () => {
     csSection = html.slice(html.indexOf('Camera Support'), html.indexOf('Lens Support'));
     battSection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
     expect(csSection).not.toContain('Hotswap Plate');
+    expect(csSection).not.toContain('data-gear-name="B-Mount"');
     expect(battSection).toContain('1x Hotswap Plate B-Mount');
   });
 
