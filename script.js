@@ -8172,8 +8172,6 @@ function generateGearListHtml(info = {}) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
         monitoringBatteryItems.push(bebob150, bebob150, bebob150);
     }
-    addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
-    addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     const monitorSizes = [];
     if (selectedNames.viewfinder) {
@@ -8232,6 +8230,13 @@ function generateGearListHtml(info = {}) {
             `1x <strong>Focus Monitor</strong> - <span id="monitorSizeFocus">${selectedSize}&quot;</span> - <select id="gearListFocusMonitor">${opts}</select> incl Directors cage, shoulder strap, sunhood, rigging for teradeks`;
         if (selectedSize) monitorSizes.push(selectedSize);
     }
+    const monitorsAbove10 = monitorSizes.filter(s => s > 10).length;
+    if (monitorsAbove10) {
+        const bebob290 = Object.keys(devices.batteries || {}).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
+        for (let i = 0; i < monitorsAbove10; i++) monitoringBatteryItems.push(bebob290, bebob290);
+    }
+    addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
+    addRow('Chargers', formatItems(chargersAcc));
     const monitoringGear = [];
     const wirelessSize = monitorSizes.includes(5) ? 5 : 7;
     if (selectedNames.video) {

@@ -1734,6 +1734,7 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 15-21"' });
     expect(html).toContain('<select id="gearListDirectorsMonitor15"');
     expect(html).toContain('Directors Monitor');
+    expect(html).toContain('2x Bebob V290RM-Cine');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
     expect(msSection).toContain('4x Ultraslim BNC 0.5 m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
@@ -1769,10 +1770,21 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ videoDistribution: 'DoP Monitor 15-21"' });
     expect(html).toContain('<select id="gearListDopMonitor15"');
     expect(html).toContain('DoP Monitor');
+    expect(html).toContain('2x Bebob V290RM-Cine');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x DoP 15-21", 2x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x DoP 15-21")');
+  });
+
+  test('adds 2x Bebob V290RM-Cine per monitor above 10"', () => {
+    const { generateGearListHtml } = script;
+    global.devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      Other: { screenSizeInches: 17 }
+    };
+    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 15-21", DoP Monitor 15-21"' });
+    expect(html).toContain('4x Bebob V290RM-Cine');
   });
 
   test('multiple handheld monitors merge grip items', () => {
