@@ -101,6 +101,7 @@ User-submitted battery runtimes are combined using a weighted average to better 
 - **Save Gear List** stores the current list with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
+- Gear list forms use fork buttons to duplicate your entries instantly.
 
 ## Getting Started
 

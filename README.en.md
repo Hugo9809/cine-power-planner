@@ -46,6 +46,7 @@ The app automatically uses your browser language on first load, and you can swit
 - **Save Gear List** stores the current list with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
+- Gear list forms use fork buttons to duplicate your entries instantly.
 
 ### 📦 Device Categories
 - **Camera** (1)
