@@ -2441,7 +2441,7 @@ describe('script.js functions', () => {
     });
   });
 
-  test('camera handle and mattebox appear in project requirements', () => {
+  test('camera handle appears but mattebox excluded from project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       cameraHandle: 'Hand Grips, L-Handle',
@@ -2454,8 +2454,8 @@ describe('script.js functions', () => {
     });
     expect(html).toContain('<span class="req-label">Camera Handle</span>');
     expect(html).toContain('<span class="req-value">Hand Grips, L-Handle</span>');
-    expect(html).toContain('<span class="req-label">Mattebox</span>');
-    expect(html).toContain('<span class="req-value">Rod based</span>');
+    expect(html).not.toContain('<span class="req-label">Mattebox</span>');
+    expect(html).not.toContain('<span class="req-value">Rod based</span>');
     expect(html).toContain('<span class="req-label">Viewfinder Extension</span>');
     expect(html).toContain('<span class="req-value">ARRI VEB-3 Viewfinder Extension Bracket</span>');
     expect(html).toContain('<span class="req-label">Monitoring support</span>');
@@ -2479,6 +2479,9 @@ describe('script.js functions', () => {
     const csIndex = rows.findIndex(r => r.textContent === 'Camera Support');
     const csRow = rows[csIndex + 1];
     expect(csRow.textContent).toContain('ARRI VEB-3 Viewfinder Extension Bracket');
+    const mbIndex = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    const mbRow = rows[mbIndex + 1];
+    expect(mbRow.textContent).toContain('ARRI LMB 4x5 15mm LWS Set 3-Stage');
   });
 
   test('viewfinder extension selector visible only when camera has viewfinder', () => {
