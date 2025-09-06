@@ -1572,6 +1572,26 @@ describe('script.js functions', () => {
     global.devices.monitors.MonA.screenSizeInches = originalSize;
   });
 
+  test('gear list sorts items alphabetically within categories', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({});
+    const order = [
+      'Power Cable 10 m',
+      'Power Cable 5 m',
+      'Power Cable Drum 25-50 m',
+      'Power Strip',
+      'Power Three Way Splitter',
+      'PRCD-S'
+    ];
+    let lastIndex = -1;
+    for (const item of order) {
+      const idx = html.indexOf(item);
+      expect(idx).toBeGreaterThan(-1);
+      expect(idx).toBeGreaterThan(lastIndex);
+      lastIndex = idx;
+    }
+  });
+
   test('onboard monitor adds power cable to monitoring support', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
