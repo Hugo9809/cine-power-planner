@@ -723,6 +723,7 @@ button:disabled {
   display: flex;
   justify-content: center;
   gap: 0.5em;
+  flex-wrap: wrap;
 }
 
 .diagram-controls button {
@@ -731,6 +732,12 @@ button:disabled {
 
 .diagram-controls button.active {
   background: #ddd;
+}
+
+@media (max-width: 600px) {
+  .diagram-controls button {
+    flex: 1 0 calc(50% - 0.5em);
+  }
 }
 
 #diagramHint {
