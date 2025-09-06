@@ -8043,7 +8043,8 @@ function generateGearListHtml(info = {}) {
     if (monitoringGear.length) {
         const gearHtml = formatItems(monitoringGear)
             .replace(/>(\d+x )Wireless Transmitter/g, '>$1<strong>Wireless Transmitter</strong>')
-            .replace(/>(\d+x )Wireless Receiver/g, '>$1<strong>Wireless Receiver</strong>');
+            .replace(/>(\d+x )Wireless Receiver/g, '>$1<strong>Wireless Receiver</strong>')
+            .replace(/&amp;quot;/g, '&quot;');
         monitoringItems += (monitoringItems ? '<br>' : '') + gearHtml;
     }
     addRow('Monitoring', monitoringItems);
