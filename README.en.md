@@ -79,7 +79,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Drag nodes to rearrange the layout, zoom with the buttons and download the diagram as SVG or JPG
 - Hover or tap devices to see popup details
 - Uses [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji:
-  🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
+  🔋 battery, 🎥 camera, 🖥️ monitor, 🖥️ video, ⚙️ motor,
   🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
 
 ### 🧮 Runtime data weighting

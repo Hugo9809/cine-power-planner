@@ -66,7 +66,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - Knoten lassen sich frei verschieben, per Buttons zoomen und als SVG oder JPG herunterladen
 - Popup-Boxen zeigen Gerätedetails
 - Verwendet [OpenMoji](https://openmoji.org/)-Symbole, falls online, sonst Emoji:
-  🔋 Akku, 🎥 Kamera, 🖥️ Monitor, 📡 Video, ⚙️ Motor,
+  🔋 Akku, 🎥 Kamera, 🖥️ Monitor, 🖥️ Video, ⚙️ Motor,
   🎮 Controller, 📐 Distanz, 🎮 Griff und 🔌 Akkuschacht
 
 ### 🔍 Suche & Filter

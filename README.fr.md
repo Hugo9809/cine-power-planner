@@ -66,7 +66,7 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 - Faites glisser les nœuds pour les disposer, utilisez les boutons de zoom et téléchargez le diagramme en SVG ou JPG
 - Des info‑bulles détaillées apparaissent au survol
 - Utilise les icônes [OpenMoji](https://openmoji.org/) en ligne, sinon des emoji :
-  🔋 batterie, 🎥 caméra, 🖥️ moniteur, 📡 vidéo, ⚙️ moteur,
+  🔋 batterie, 🎥 caméra, 🖥️ moniteur, 🖥️ vidéo, ⚙️ moteur,
   🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie
 
 ### 🔍 Recherche et Filtres

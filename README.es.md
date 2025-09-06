@@ -66,7 +66,7 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 - Arrastra los nodos para ordenarlos, usa los botones para acercar/alejar y descarga el diagrama en SVG o JPG
 - Las ventanas emergentes muestran detalles de cada dispositivo
 - Utiliza iconos de [OpenMoji](https://openmoji.org/) cuando hay conexión y pasa a emoji si no están disponibles:
-  🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 vídeo, ⚙️ motor,
+  🔋 batería, 🎥 cámara, 🖥️ monitor, 🖥️ vídeo, ⚙️ motor,
   🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería
 
 ### 🔍 Búsqueda y Filtros

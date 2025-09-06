@@ -65,7 +65,7 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 - Trascina i nodi per spostarli, usa i pulsanti di zoom e scarica il diagramma in formato SVG o JPG
 - Le finestre popup mostrano dettagli sui dispositivi
 - Usa le icone colorate di [OpenMoji](https://openmoji.org/) quando sei online, passando agli emoji se non possono essere caricate:
-  🔋 batteria, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motore,
+  🔋 batteria, 🎥 camera, 🖥️ monitor, 🖥️ video, ⚙️ motore,
   🎮 controller, 📐 distanza, 🎮 impugnatura e 🔌 piastra batteria
 
 ### 🔍 Ricerca e filtri
