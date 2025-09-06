@@ -4238,6 +4238,49 @@ describe('monitor wireless metadata', () => {
     expect(span.getAttribute('data-help')).toContain('Power: 10 W');
   });
 
+  test('gear list items expose descriptive hover help', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const cameraSelect = document.getElementById('cameraSelect');
+    cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
+    cameraSelect.value = 'CamA';
+    const html = script.generateGearListHtml();
+    script.displayGearAndRequirements(html);
+    const item = document.querySelector('.gear-item[data-gear-name="CamA"]');
+    expect(item.getAttribute('data-help')).toContain('Power: 10 W');
+  });
+
+  test('project requirements boxes expose descriptive hover help', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const html = script.generateGearListHtml({ codec: 'ProRes' });
+    script.displayGearAndRequirements(html);
+    const box = document.querySelector('.requirement-box');
+    expect(box.getAttribute('data-help')).toBe('Codec: ProRes');
+  });
+
+  test('gear list action buttons expose descriptive hover help', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const html = script.generateGearListHtml({ projectName: 'Proj' });
+    script.displayGearAndRequirements(html);
+    script.ensureGearListActions();
+    const saveBtn = document.getElementById('saveGearListBtn');
+    const exportBtn = document.getElementById('exportGearListBtn');
+    const importBtn = document.getElementById('importGearListBtn');
+    const deleteBtn = document.getElementById('deleteGearListBtn');
+    expect(saveBtn.getAttribute('data-help')).toBe(texts.en.saveGearListBtnHelp);
+    expect(exportBtn.getAttribute('data-help')).toBe(texts.en.exportGearListBtnHelp);
+    expect(importBtn.getAttribute('data-help')).toBe(texts.en.importGearListBtnHelp);
+    expect(deleteBtn.getAttribute('data-help')).toBe(texts.en.deleteGearListBtnHelp);
+  });
+
   test('detail toggle responds to keyboard events', () => {
     const detailToggle = document.querySelector('#device-manager .detail-toggle');
     const details = detailToggle.closest('li').querySelector('.device-details');

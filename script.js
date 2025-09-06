@@ -1814,6 +1814,13 @@ function displayGearAndRequirements(html) {
     if (projectHtml) {
       projectRequirementsOutput.innerHTML = projectHtml;
       projectRequirementsOutput.classList.remove('hidden');
+      projectRequirementsOutput.querySelectorAll('.requirement-box').forEach(box => {
+        const label = box.querySelector('.req-label')?.textContent || '';
+        const value = box.querySelector('.req-value')?.textContent || '';
+        const desc = value ? `${label}: ${value}` : label;
+        box.setAttribute('title', desc);
+        box.setAttribute('data-help', desc);
+      });
     } else {
       projectRequirementsOutput.innerHTML = '';
       projectRequirementsOutput.classList.add('hidden');
@@ -1822,6 +1829,31 @@ function displayGearAndRequirements(html) {
   if (gearListOutput) {
     gearListOutput.innerHTML = gearHtml;
     gearListOutput.classList.remove('hidden');
+    const findDevice = name => {
+      for (const cat of Object.values(devices)) {
+        if (cat && typeof cat === 'object') {
+          if (cat[name]) return cat[name];
+          for (const sub of Object.values(cat)) {
+            if (sub && sub[name]) return sub[name];
+          }
+        }
+      }
+      return null;
+    };
+    gearListOutput.querySelectorAll('.gear-item').forEach(span => {
+      const name = span.getAttribute('data-gear-name');
+      const info = findDevice(name);
+      let desc = '';
+      if (info) {
+        let summary = generateConnectorSummary(info);
+        summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+        if (info.notes) summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
+        desc = summary;
+      }
+      if (!desc) desc = name;
+      span.setAttribute('title', desc);
+      span.setAttribute('data-help', desc);
+    });
   }
   updateGearListButtonVisibility();
 }
@@ -7684,7 +7716,7 @@ function generateGearListHtml(info = {}) {
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && k !== 'sliderBowl');
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
-        infoEntries.map(([k, v]) => `<div class="requirement-box"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
+        infoEntries.map(([k, v]) => `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
@@ -7693,7 +7725,7 @@ function generateGearListHtml(info = {}) {
             counts[key] = (counts[key] || 0) + 1;
         });
         return Object.entries(counts)
-            .map(([n, c]) => `${c}x ${escapeHtml(n)}`)
+            .map(([n, c]) => `<span class="gear-item" data-gear-name="${escapeHtml(n)}">${c}x ${escapeHtml(n)}</span>`)
             .join('<br>');
     };
     const rows = [];
@@ -8288,10 +8320,22 @@ function ensureGearListActions() {
     const exportBtn = document.getElementById('exportGearListBtn');
     const importBtn = document.getElementById('importGearListBtn');
     const deleteBtn = document.getElementById('deleteGearListBtn');
+    const saveHelp = texts[currentLang].saveGearListBtnHelp || texts[currentLang].saveGearListBtn;
+    const exportHelp = texts[currentLang].exportGearListBtnHelp || texts[currentLang].exportGearListBtn;
+    const importHelp = texts[currentLang].importGearListBtnHelp || texts[currentLang].importGearListBtn;
+    const deleteHelp = texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn;
     saveBtn.textContent = texts[currentLang].saveGearListBtn;
+    saveBtn.setAttribute('title', saveHelp);
+    saveBtn.setAttribute('data-help', saveHelp);
     exportBtn.textContent = texts[currentLang].exportGearListBtn;
+    exportBtn.setAttribute('title', exportHelp);
+    exportBtn.setAttribute('data-help', exportHelp);
     importBtn.textContent = texts[currentLang].importGearListBtn;
+    importBtn.setAttribute('title', importHelp);
+    importBtn.setAttribute('data-help', importHelp);
     deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
+    deleteBtn.setAttribute('title', deleteHelp);
+    deleteBtn.setAttribute('data-help', deleteHelp);
 }
 
 function bindGearListCageListener() {
@@ -9257,6 +9301,8 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentSetupKey,
     renderFeedbackTable,
     saveCurrentGearList,
+    displayGearAndRequirements,
+    ensureGearListActions,
     populateLensDropdown,
     populateCameraPropertyDropdown,
     populateRecordingResolutionDropdown,
