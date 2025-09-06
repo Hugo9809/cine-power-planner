@@ -60,6 +60,10 @@ function setupDom(removeGear) {
     accessories: {
       powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
       cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+      matteboxes: {
+        'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
+        'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' }
+      },
       chargers: {
         'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
         'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
@@ -241,6 +245,10 @@ describe('script.js functions', () => {
       accessories: {
         powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
         cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+        matteboxes: {
+          'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
+          'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' }
+        },
         chargers: {
           'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
           'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
@@ -1697,6 +1705,20 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x Schulz Sprayoff Micro');
     expect(itemsRow.textContent).toContain('2x Fischer RS to D-Tap cable 0,5m');
     expect(itemsRow.textContent).toContain('1x Spare Disc (Schulz Sprayoff Micro)');
+  });
+
+  test('Swing Away mattebox adds LMB 4x5 Pro Set and accessories to gear list', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ mattebox: 'Swing Away' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const matteIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    expect(matteIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[matteIdx + 1];
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Pro Set');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 19mm Studio Rod Adapter');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
   });
 
   test('updateRequiredScenariosSummary creates a box for each selection', () => {

@@ -7492,6 +7492,19 @@ function generateGearListHtml(info = {}) {
     const filterSelections = info.filter
         ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    if (info.mattebox) {
+        const matteboxes = devices.accessories?.matteboxes || {};
+        for (const [name, mb] of Object.entries(matteboxes)) {
+            if (mb.type && mb.type.toLowerCase() === info.mattebox.toLowerCase()) {
+                filterSelections.unshift(name);
+                if (name === 'ARRI LMB 4x5 Pro Set') {
+                    filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
+                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+                }
+                break;
+            }
+        }
+    }
     viewfinderExtSelections.forEach(vf => supportAccNoCages.push(vf));
     if (scenarios.includes('Rain Machine') || scenarios.includes('Extreme rain')) {
         filterSelections.push('Schulz Sprayoff Micro');
