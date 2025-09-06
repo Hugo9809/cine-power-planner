@@ -1856,7 +1856,7 @@ describe('script.js functions', () => {
       expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Focus)');
       expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Focus)');
       expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Focus)');
-      expect(html).toContain('3x Tennisball');
+      expect(html).toContain('3x tennis ball');
     expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (2x Spare)');
   });
 
@@ -2287,7 +2287,7 @@ describe('script.js functions', () => {
     expect(text).toContain('1x Satz Paganinis');
     expect(text).toContain('2x sand bag');
     expect(text).toContain('3x Bodenmatte');
-    expect(text).toContain('12x Tennisball');
+    expect(text).toContain('12x tennis ball');
   });
 
   test('Slider with undersling mode adds Tango Beam regardless of order', () => {
