@@ -7302,9 +7302,9 @@ function collectProjectFormData() {
         monitoringSettings: monitoringSelections,
         videoDistribution: multi('videoDistribution'),
         monitoringConfiguration: val('monitoringConfiguration'),
-        monitorUserButtons: val('monitorUserButtons'),
-        cameraUserButtons: val('cameraUserButtons'),
-        viewfinderUserButtons: val('viewfinderUserButtons'),
+        monitorUserButtons: multi('monitorUserButtons'),
+        cameraUserButtons: multi('cameraUserButtons'),
+        viewfinderUserButtons: multi('viewfinderUserButtons'),
         tripodHeadBrand: val('tripodHeadBrand'),
         tripodBowl: val('tripodBowl'),
         tripodTypes: multi('tripodTypes'),
@@ -8832,6 +8832,7 @@ function initApp() {
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
+  populateUserButtonDropdowns();
   document.querySelectorAll('#projectForm select')
     .forEach(sel => attachSelectSearch(sel));
   setLanguage(currentLang);
@@ -8946,6 +8947,31 @@ function populateFilterDropdown() {
       filterSelect.appendChild(opt);
     });
   }
+}
+
+function populateUserButtonDropdowns() {
+  const functions = [
+    'Toggle LUT',
+    'False Color',
+    'Peaking',
+    'Anamorphic Desqueeze',
+    'Surround View',
+    '1:1 Zoom',
+    'Playback',
+    'Record',
+    'Zoom',
+    'Frame Lines'
+  ];
+  ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    functions.forEach(fn => {
+      const opt = document.createElement('option');
+      opt.value = fn;
+      opt.textContent = fn;
+      sel.appendChild(opt);
+    });
+  });
 }
 
 if (document.readyState === "loading") {

@@ -322,13 +322,15 @@ describe('script.js functions', () => {
     expect(copyBtn.nextElementSibling).toBe(generateBtn);
   });
 
-  test('project form includes user buttons inputs', () => {
-    const monitorInput = document.getElementById('monitorUserButtons');
-    const cameraInput = document.getElementById('cameraUserButtons');
-    const viewfinderInput = document.getElementById('viewfinderUserButtons');
-    expect(monitorInput).not.toBeNull();
-    expect(cameraInput).not.toBeNull();
-    expect(viewfinderInput).not.toBeNull();
+  test('project form includes user buttons multiselects', () => {
+    ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
+      const sel = document.getElementById(id);
+      expect(sel).not.toBeNull();
+      expect(sel.tagName).toBe('SELECT');
+      expect(sel.multiple).toBe(true);
+      const values = Array.from(sel.options).map(o => o.value);
+      expect(values).toEqual(expect.arrayContaining(['Toggle LUT', 'False Color', 'Peaking']));
+    });
   });
 
   test('new device form includes cable category option', () => {
