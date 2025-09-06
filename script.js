@@ -1904,6 +1904,7 @@ function setSliderBowlValue(val) {
 
 let currentProjectInfo = null;
 let loadedSetupState = null;
+let restoringSession = false;
 
 function getCurrentSetupState() {
   const info = projectForm ? collectProjectFormData() : {};
@@ -8674,6 +8675,7 @@ function refreshGearListIfVisible() {
 
 // --- SESSION STATE HANDLING ---
 function saveCurrentSession() {
+  if (restoringSession) return;
   const info = projectForm ? collectProjectFormData() : {};
   currentProjectInfo = Object.values(info).some(v => v) ? info : null;
   const state = {
@@ -8713,6 +8715,7 @@ function autoSaveCurrentSetup() {
 }
 
 function restoreSessionState() {
+  restoringSession = true;
   const state = loadSession();
   if (state) {
     if (setupNameInput) {
@@ -8769,6 +8772,8 @@ function restoreSessionState() {
       deleteProject();
     }
   }
+  restoringSession = false;
+  saveCurrentSession();
 }
 
 function applySharedSetup(shared) {

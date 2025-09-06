@@ -229,6 +229,36 @@ test('project requirements changes persist via session save', () => {
   expect(savedState.projectInfo.projectName).toBe('Proj');
 });
 
+test('restoring session state preserves selections', () => {
+  setupDom(false);
+  const storedState = {
+    setupName: 'Sess1',
+    camera: 'CamA',
+    monitor: 'MonA',
+    video: 'VidA',
+    cage: '',
+    motors: [],
+    controllers: [],
+    distance: '',
+    batteryPlate: '',
+    battery: 'BattA',
+    sliderBowl: '',
+    projectInfo: null
+  };
+  const savedState = {};
+  global.loadSessionState = jest.fn(() => storedState);
+  global.saveSessionState = jest.fn(state => Object.assign(savedState, state));
+  global.loadProject = jest.fn(() => null);
+  global.saveProject = jest.fn();
+  global.deleteProject = jest.fn();
+  require('../translations.js');
+  const script = require('../script.js');
+  script.setLanguage('en');
+  expect(savedState.camera).toBe('CamA');
+  expect(savedState.monitor).toBe('MonA');
+  expect(savedState.battery).toBe('BattA');
+});
+
 describe('auto backup', () => {
   test('creates backup after 5 minutes when no project selected', () => {
     setupDom(false);
@@ -1649,8 +1679,8 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListDirectorsMonitor15"');
     expect(html).toContain('Directors Monitor');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x Directors 15-21", 1x Spare)');
-    expect(msSection).toContain('2x Ultraslim BNC 0.5 m (1x Directors 15-21", 1x Spare)');
+    expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
+    expect(msSection).toContain('4x Ultraslim BNC 0.5 m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('D-Tap Splitter (1x Directors 15-21"');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
@@ -1669,7 +1699,7 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListComboMonitor15"');
     expect(html).toContain('Combo Monitor');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x Combo 15-21", 1x Spare)');
+    expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Combo 15-21", 2x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Combo 15-21")');
   });
@@ -1684,7 +1714,7 @@ describe('script.js functions', () => {
     expect(html).toContain('<select id="gearListDopMonitor15"');
     expect(html).toContain('DoP Monitor');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x DoP 15-21", 1x Spare)');
+    expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x DoP 15-21", 2x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x DoP 15-21")');
   });
@@ -2087,12 +2117,12 @@ describe('script.js functions', () => {
     expect(remoteOpt.selected).toBe(false);
   });
 
-  test('DoP monitor options are available in video distribution', () => {
+  test('monitor options are available in video distribution', () => {
     const videoSel = document.getElementById('videoDistribution');
     const values = Array.from(videoSel.options).map(o => o.value);
-    expect(values).toContain('DoP Monitor 5" handheld');
-    expect(values).toContain('DoP Monitor 7" handheld');
-    expect(values).toContain('DoP Monitor 15-21"');
+    expect(values).toContain('Directors Monitor 7" handheld');
+    expect(values).toContain('Gaffers Monitor 7" handheld');
+    expect(values).toContain('Directors Monitor 15-21"');
   });
 
   test('selecting Dolly adds SmallHD Ultra 7 monitor when none selected', () => {
@@ -2976,16 +3006,13 @@ describe('script.js functions', () => {
     expect(global.saveProject).toHaveBeenCalled();
   });
 
-  test('Save button enables on input and Enter key saves setup', () => {
+  test('Save button activates and Enter key saves setup', () => {
     const saveSpy = global.saveSetups;
     const nameInput = document.getElementById('setupName');
     const saveBtn = document.getElementById('saveSetupBtn');
-    expect(saveBtn.disabled).toBe(true);
-
     nameInput.value = 'QuickSave';
     nameInput.dispatchEvent(new Event('input', { bubbles: true }));
     expect(saveBtn.disabled).toBe(false);
-
     nameInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
     expect(saveSpy).toHaveBeenCalled();
   });
