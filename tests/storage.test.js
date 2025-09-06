@@ -46,32 +46,41 @@ describe('device data storage', () => {
     expect(loadDeviceData()).toEqual(validDeviceData);
   });
 
-  test('loadDeviceData returns null when structure invalid', () => {
-    localStorage.setItem(DEVICE_KEY, JSON.stringify({cameras:{}}));
-    expect(loadDeviceData()).toBeNull();
+  test('loadDeviceData adds missing categories for legacy data', () => {
+    const legacy = { cameras: {}, monitors: {} };
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(legacy));
+    const result = loadDeviceData();
+    const expected = {
+      cameras: {},
+      monitors: {},
+      video: {},
+      batteries: {},
+      fiz: { motors: {}, controllers: {}, distance: {} }
+    };
+    expect(result).toEqual(expected);
+    expect(JSON.parse(localStorage.getItem(DEVICE_KEY))).toEqual(expected);
   });
 
-  test('loadDeviceData returns null when any category is null', () => {
+  test('loadDeviceData replaces non-object categories with empty objects', () => {
     const corrupted = {
       cameras: null,
+      monitors: [],
+      video: 5,
+      batteries: 'x',
+      fiz: { motors: [], controllers: null }
+    };
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(corrupted));
+    expect(loadDeviceData()).toEqual({
+      cameras: {},
       monitors: {},
       video: {},
       batteries: {},
       fiz: { motors: {}, controllers: {}, distance: {} }
-    };
-    localStorage.setItem(DEVICE_KEY, JSON.stringify(corrupted));
-    expect(loadDeviceData()).toBeNull();
+    });
   });
 
-  test('loadDeviceData returns null when any category is an array', () => {
-    const corrupted = {
-      cameras: [],
-      monitors: {},
-      video: {},
-      batteries: {},
-      fiz: { motors: {}, controllers: {}, distance: {} }
-    };
-    localStorage.setItem(DEVICE_KEY, JSON.stringify(corrupted));
+  test('loadDeviceData returns null for primitive data', () => {
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(5));
     expect(loadDeviceData()).toBeNull();
   });
 });
@@ -290,4 +299,9 @@ describe('export/import all data', () => {
     expect(loadSessionState()).toEqual({ camera: 'CamA' });
     expect(loadFeedback()).toEqual({ note: 'hi' });
   });
+});
+
+afterAll(() => {
+  localStorage.clear();
+  sessionStorage.clear();
 });

@@ -126,26 +126,39 @@ function loadDeviceData() {
     DEVICE_STORAGE_KEY,
     "Error loading device data from localStorage:",
   );
-  if (parsedData) {
-    // Validate that top-level categories exist and are non-null objects
-    const isValid =
-      isPlainObject(parsedData) &&
-      isPlainObject(parsedData.cameras) &&
-      isPlainObject(parsedData.monitors) &&
-      isPlainObject(parsedData.video) &&
-      isPlainObject(parsedData.batteries) &&
-      isPlainObject(parsedData.fiz) && // Check fiz is an object
-      isPlainObject(parsedData.fiz.motors) && // Check nested fiz categories
-      isPlainObject(parsedData.fiz.controllers) &&
-      isPlainObject(parsedData.fiz.distance);
-
-    if (isValid) {
-      console.log("Device data loaded from localStorage.");
-      return parsedData;
-    }
-    console.warn("Invalid device data structure in localStorage. Reverting to default.");
+  if (!isPlainObject(parsedData)) {
+    return null;
   }
-  return null; // Return null to indicate that default should be used
+
+  const data = { ...parsedData };
+  let changed = false;
+
+  function ensureObject(target, key) {
+    if (!isPlainObject(target[key])) {
+      target[key] = {};
+      changed = true;
+    }
+  }
+
+  ensureObject(data, "cameras");
+  ensureObject(data, "monitors");
+  ensureObject(data, "video");
+  ensureObject(data, "batteries");
+
+  if (!isPlainObject(data.fiz)) {
+    data.fiz = {};
+    changed = true;
+  }
+  ensureObject(data.fiz, "motors");
+  ensureObject(data.fiz, "controllers");
+  ensureObject(data.fiz, "distance");
+
+  if (changed && SAFE_LOCAL_STORAGE) {
+    SAFE_LOCAL_STORAGE.setItem(DEVICE_STORAGE_KEY, JSON.stringify(data));
+  }
+
+  console.log("Device data loaded from localStorage.");
+  return data;
 }
 
 function saveDeviceData(deviceData) {
