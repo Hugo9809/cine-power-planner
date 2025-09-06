@@ -975,6 +975,27 @@ const monitorData = {
       { "type": "3G-SDI" }
     ]
   },
+  "TVLogic VFM-058W": {
+    "screenSizeInches": 5.5,
+    "brightnessNits": 450,
+    "powerDrawWatts": 9,
+    "power": {
+      "input": {
+        "voltageRange": "6.8-12",
+        "type": "DC Barrel / D-Tap"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "videoInputs": [
+      { "type": "HDMI" },
+      { "type": "3G-SDI" }
+    ],
+    "videoOutputs": [
+      { "type": "HDMI" },
+      { "type": "3G-SDI" }
+    ]
+  },
   "SmallHD 703 UltraBright": {
     "screenSizeInches": 7,
     "brightnessNits": 2200,
