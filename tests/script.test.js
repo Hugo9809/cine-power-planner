@@ -2746,14 +2746,18 @@ describe('script.js functions', () => {
       .mockReturnValueOnce({});
     global.saveSetups.mockClear();
 
-    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
+    const confirmSpy = jest.spyOn(window, 'confirm');
 
+    confirmSpy.mockReturnValueOnce(false);
     deleteBtn.click();
-    expect(confirmSpy).toHaveBeenCalled();
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
     expect(global.saveSetups).not.toHaveBeenCalled();
 
-    confirmSpy.mockReturnValue(true);
+    global.saveSetups.mockClear();
+    confirmSpy.mockReset();
+    confirmSpy.mockReturnValueOnce(true).mockReturnValueOnce(true);
     deleteBtn.click();
+    expect(confirmSpy).toHaveBeenCalledTimes(2);
     expect(global.saveSetups).toHaveBeenCalledWith({});
 
     confirmSpy.mockRestore();
