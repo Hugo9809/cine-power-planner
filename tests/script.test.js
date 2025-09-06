@@ -1511,6 +1511,7 @@ describe('script.js functions', () => {
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V98micro');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Directors handheld)');
+    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Directors handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (1x Directors handheld, 4x Spare)');
@@ -1538,6 +1539,7 @@ describe('script.js functions', () => {
     expect(html).toContain('Gaffer Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Gaffers handheld)');
+    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Gaffers handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Gaffers handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (1x Gaffers handheld, 4x Spare)');
@@ -1557,6 +1559,7 @@ describe('script.js functions', () => {
     expect(html).toContain('DoP Handheld Monitor');
     expect(html).toContain('3x Bebob V98micro');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x DoP handheld)');
+    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x DoP handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x DoP handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('5x spigot with male 3/8" and 1/4" (1x DoP handheld, 4x Spare)');
@@ -1574,6 +1577,9 @@ describe('script.js functions', () => {
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain(
       '3x Avenger C-Stand Sliding Leg 20" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
+    );
+    expect(gripSection).toContain(
+      '3x Steelfingers Wheel C-Stand 3er Set (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
     );
     expect(gripSection).toContain(
       '3x Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
@@ -1666,6 +1672,7 @@ describe('script.js functions', () => {
       expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Focus)');
       expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Focus)');
+      expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Focus)');
       expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Focus)');
       expect(html).toContain('3x Tennisball');
     expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (2x Spare)');
