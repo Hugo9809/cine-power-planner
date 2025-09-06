@@ -131,6 +131,13 @@ function setupDom(removeGear) {
   global.saveFeedback = jest.fn();
 }
 
+test('cage data includes cage-specific attributes', () => {
+  setupDom(false);
+  const cage = devices.accessories.cages[cageNames[0]];
+  expect(cage.brand).toBeDefined();
+  expect(cage.powerDrawWatts).toBeUndefined();
+});
+
 test('Easyrig stabiliser data exposes attachments', () => {
   const gear = require('../devices/gearList.js');
   const stabiliser = gear.accessories.cameraStabiliser['Easyrig 5 Vario'];
