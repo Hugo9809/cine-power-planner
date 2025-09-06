@@ -12,6 +12,7 @@ const {
     loadFeedback,
     saveFeedback,
     saveGearList,
+    loadGearList,
     clearAllData,
     exportAllData,
     importAllData,
@@ -278,11 +279,13 @@ describe('export/import all data', () => {
     saveSetups({ A: { foo: 1 } });
     saveSessionState({ camera: 'CamA' });
     saveFeedback({ note: 'hi' });
+    saveGearList('<ul></ul>');
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
-      feedback: { note: 'hi' }
+      feedback: { note: 'hi' },
+      gearList: '<ul></ul>'
     });
   });
 
@@ -291,13 +294,15 @@ describe('export/import all data', () => {
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
-      feedback: { note: 'hi' }
+      feedback: { note: 'hi' },
+      gearList: '<ol></ol>'
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
     expect(loadSetups()).toEqual({ A: { foo: 1 } });
     expect(loadSessionState()).toEqual({ camera: 'CamA' });
     expect(loadFeedback()).toEqual({ note: 'hi' });
+    expect(loadGearList()).toBe('<ol></ol>');
   });
 });
 

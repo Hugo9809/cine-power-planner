@@ -341,6 +341,7 @@ function exportAllData() {
     setups: loadSetups(),
     session: loadSessionState(),
     feedback: loadFeedback(),
+    gearList: loadGearList(),
   };
 }
 
@@ -357,6 +358,9 @@ function importAllData(allData) {
     }
     if (allData.feedback) {
       saveFeedback(allData.feedback);
+    }
+    if (typeof allData.gearList === "string") {
+      saveGearList(allData.gearList);
     }
   }
 }
