@@ -4305,6 +4305,16 @@ describe('script.js functions', () => {
     expect(nameInput.value).toBe('Shared Setup');
   });
 
+  test('Save button enables after applying shared setup', () => {
+    const data = { setupName: 'Shared Setup' };
+    const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(data));
+    window.history.pushState({}, '', `/?shared=${encoded}`);
+    const saveBtn = document.getElementById('saveSetupBtn');
+    expect(saveBtn.disabled).toBe(true);
+    script.applySharedSetupFromUrl();
+    expect(saveBtn.disabled).toBe(false);
+  });
+
   test('applySharedSetupFromUrl applies device changes and feedback', () => {
     const payload = {
       camera: 'CamB',
