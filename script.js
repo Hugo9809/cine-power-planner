@@ -7570,7 +7570,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         if (hasLemo2) {
             monitoringSupport.push(
                 `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`,
-                'D-Tap to Lemo-2-pin Cable 0,5m'
+                `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`
             );
         }
         const cameraData = devices.cameras[cameraSelect.value];
@@ -7581,12 +7581,12 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         if (hasSDI) {
             monitoringSupport.push(
                 `Ultraslim BNC 0.5 m (${monitorLabel})`,
-                'Ultraslim BNC 0.5 m'
+                `Ultraslim BNC 0.5 m (${monitorLabel})`
             );
         } else if (hasHDMI) {
             monitoringSupport.push(
                 `Ultraslim HDMI 0.5 m (${monitorLabel})`,
-                'Ultraslim HDMI 0.5 m'
+                `Ultraslim HDMI 0.5 m (${monitorLabel})`
             );
         }
         rigging.push(`ULCS Arm mit 3/8" und 1/4" double (${monitorLabel})`);
@@ -7941,27 +7941,27 @@ function generateGearListHtml(info = {}) {
     const addMonitorCables = label => {
         monitoringSupportAcc.push(
             `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
-            'D-Tap to Lemo-2-pin Cable 0,3m',
+            `D-Tap to Lemo-2-pin Cable 0,3m (${label})`,
             `Ultraslim BNC Cable 0.3 m (${label})`,
-            'Ultraslim BNC Cable 0.3 m'
+            `Ultraslim BNC Cable 0.3 m (${label})`
         );
     };
     handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
     const addLargeMonitorCables = label => {
         monitoringSupportAcc.push(
             `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
-            'D-Tap to Lemo-2-pin Cable 0,5m',
+            `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
             `Ultraslim BNC 0.5 m (${label})`,
-            'Ultraslim BNC 0.5 m'
+            `Ultraslim BNC 0.5 m (${label})`
         );
     };
     largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
     if (hasMotor) {
         monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
-            'D-Tap to Mini XLR 3-pin Cable 0,3m',
+            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
             'Ultraslim BNC Cable 0.3 m (Focus)',
-            'Ultraslim BNC Cable 0.3 m'
+            'Ultraslim BNC Cable 0.3 m (Focus)'
         );
     }
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
@@ -8042,14 +8042,14 @@ function generateGearListHtml(info = {}) {
             .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
             .map(([base, { total, ctxCounts }]) => {
                 const ctxKeys = Object.keys(ctxCounts);
-                const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
-                const hasContext = realContexts.length > 0 || ctxKeys.some(c => c && c.toLowerCase() === 'spare');
-                const realCount = realContexts.reduce((sum, c) => sum + ctxCounts[c], 0);
-                const spareCount = hasContext ? total - realCount : 0;
-                const ctxParts = [
-                    ...realContexts.map(c => `${ctxCounts[c]}x ${c}`),
-                    ...(spareCount > 0 ? [`${spareCount}x Spare`] : [])
-                ];
+                const hasContext = ctxKeys.some(c => c);
+                let ctxParts = [];
+                if (hasContext) {
+                    const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
+                    const spareCount = total - realContexts.length;
+                    ctxParts = realContexts.map(c => `1x ${c}`);
+                    if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
+                }
                 const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
                 const translatedBase = gearItemTranslations[currentLang]?.[base] || base;
                 const displayName = `${translatedBase}${ctxStr}`;
@@ -8163,31 +8163,34 @@ function generateGearListHtml(info = {}) {
         }
     }
     addRow('Camera Batteries', batteryItems);
-    let monitoringBatteryItems = [];
+    const monitoringBatteryCounts = {};
+    const addBattery = (name, ctx, count) => {
+        const base = addArriKNumber(name);
+        if (!monitoringBatteryCounts[base]) {
+            monitoringBatteryCounts[base] = { total: 0, ctxCounts: {} };
+        }
+        monitoringBatteryCounts[base].total += count;
+        monitoringBatteryCounts[base].ctxCounts[ctx] = (monitoringBatteryCounts[base].ctxCounts[ctx] || 0) + count;
+    };
     const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
-    handheldPrefs.forEach(({ role }) => {
-        monitoringBatteryItems.push(
-            `${bebob98} (${role} handheld)`,
-            `${bebob98} (${role} handheld)`,
-            `${bebob98} (${role} handheld)`
-        );
-    });
-    largeMonitorPrefs.forEach(({ role }) => {
-        monitoringBatteryItems.push(
-            `${bebob98} (${role} 15-21")`,
-            `${bebob98} (${role} 15-21")`,
-            `${bebob98} (${role} 15-21")`
-        );
-    });
+    handheldPrefs.forEach(({ role }) => addBattery(bebob98, `${role} handheld`, 3));
+    largeMonitorPrefs.forEach(({ role }) => addBattery(bebob98, `${role} 15-21"`, 3));
     if (hasMotor) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
-        monitoringBatteryItems.push(
-            `${bebob150} (Focus)`,
-            `${bebob150} (Focus)`,
-            `${bebob150} (Focus)`
-        );
+        addBattery(bebob150, 'Focus', 3);
     }
-    addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
+    const monitoringBatteryItems = Object.entries(monitoringBatteryCounts)
+        .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+        .map(([base, { total, ctxCounts }]) => {
+            const ctxParts = Object.entries(ctxCounts).map(([ctx, c]) => `${c}x ${ctx}`);
+            const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
+            const translatedBase = gearItemTranslations[currentLang]?.[base] || base;
+            const displayName = `${translatedBase}${ctxStr}`;
+            const dataName = `${base}${ctxStr}`;
+            return `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}">${total}x ${escapeHtml(displayName)}</span>`;
+        })
+        .join('<br>');
+    addRow('Monitoring Batteries', monitoringBatteryItems);
     addRow('Chargers', formatItems(chargersAcc));
     let monitoringItems = '';
     const monitorSizes = [];
@@ -8271,8 +8274,7 @@ function generateGearListHtml(info = {}) {
     addRow('Monitoring support', monitoringSupportItems);
     const cartsTransportationItems = [
         'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
-        'Securing Straps (25mm wide)',
-        ...Array(9).fill('Securing Straps'),
+        ...Array(10).fill('Securing Straps (25mm wide)'),
         'Loading Ramp (pair, 420kg)',
         ...Array(20).fill('Ring Fitting for Airline Rails')
     ];
@@ -8295,7 +8297,8 @@ function generateGearListHtml(info = {}) {
         riggingAcc.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
         riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
         riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
-        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`, 'D-Tap Splitter');
+        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
+        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
     });
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
@@ -8408,8 +8411,7 @@ function generateGearListHtml(info = {}) {
         ...Array(2).fill('Power Cable 10 m'),
         ...Array(2).fill('Power Cable 5 m'),
         ...Array(3).fill('Power Strip'),
-        'PRCD-S (Portable Residual Current Device-Safety)',
-        ...Array(2).fill('PRCD-S'),
+        ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
         ...Array(3).fill('Power Three Way Splitter')
     ];
     addRow('Power', formatItems(powerItems));
