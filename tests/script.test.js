@@ -2253,7 +2253,7 @@ describe('script.js functions', () => {
     expect(itemsText).toContain('1x Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung');
     expect(itemsText).toContain('10x Securing Straps (1x 25mm wide, 9x Spare)');
     expect(itemsText).toContain('1x Loading Ramp (1x pair, 420kg)');
-    expect(itemsText).toContain('20x Airliner Ösen');
+    expect(itemsText).toContain('20x Ring Fitting for Airline Rails');
   });
 
   test('Magliner adds wooden wedges to grip section', () => {
