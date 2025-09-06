@@ -7585,7 +7585,7 @@ function generateGearListHtml(info = {}) {
     for (let i = 0; i < 2; i++) riggingAcc.push('Mini Magic Arm');
     for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
     riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
-    for (let i = 0; i < 3; i++) riggingAcc.push('stud 5/8" with male 3/8" and 1/4"');
+    for (let i = 0; i < 3; i++) riggingAcc.push('spigot with male 3/8" and 1/4"');
     for (let i = 0; i < 2; i++) riggingAcc.push('D-Tap Splitter');
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
@@ -8006,20 +8006,20 @@ function generateGearListHtml(info = {}) {
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Directors handheld)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Directors handheld)');
-        riggingAcc.push('Spigot (Directors handheld)');
-        riggingAcc.push('Spigot (Directors handheld)');
+        riggingAcc.push('spigot with male 3/8" and 1/4" (Directors handheld)');
+        riggingAcc.push('spigot with male 3/8" and 1/4" (Directors handheld)');
     }
     if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Gaffers handheld)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Gaffers handheld)');
-        riggingAcc.push('Spigot (Gaffers handheld)');
-        riggingAcc.push('Spigot (Gaffers handheld)');
+        riggingAcc.push('spigot with male 3/8" and 1/4" (Gaffers handheld)');
+        riggingAcc.push('spigot with male 3/8" and 1/4" (Gaffers handheld)');
     }
     if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (DoP handheld)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (DoP handheld)');
-        riggingAcc.push('Spigot (DoP handheld)');
-        riggingAcc.push('Spigot (DoP handheld)');
+        riggingAcc.push('spigot with male 3/8" and 1/4" (DoP handheld)');
+        riggingAcc.push('spigot with male 3/8" and 1/4" (DoP handheld)');
     }
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
@@ -8040,7 +8040,7 @@ function generateGearListHtml(info = {}) {
     if (hasGimbal) {
         gripItems.push('Super Clamp');
         gripItems.push('Gobo Head');
-        gripItems.push('spigot');
+        gripItems.push('spigot with male 3/8" and 1/4"');
     }
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
@@ -8070,7 +8070,7 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Outdoor')) {
         gripItems.push('Super Clamp');
         gripItems.push('Super Clamp');
-        riggingAcc.push('Spigot');
+        riggingAcc.push('spigot with male 3/8" and 1/4"');
     }
     if (['Extreme heat', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s))) {
         gripItems.push('Large Umbrella');
