@@ -8276,7 +8276,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Impact Baby to Junior Receiver Adapter (${p.role} 15-21")`);
         gripItems.push(`Matthews BIG F'ING Monitor Rollen Set (3 Stück) (${p.role} 15-21")`);
         riggingAcc.push(`ULCS Bracket with 1/4 to 1/4 (${p.role} 15-21")`);
-        riggingAcc.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
+        gripItems.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
         riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
         riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
@@ -8300,7 +8300,6 @@ function generateGearListHtml(info = {}) {
     const frictionArmCount = hasGimbal ? 2 : 1;
     gripItems.push(...Array(frictionArmCount).fill('Manfrotto 244N Friktion Arm'));
     if (hasGimbal) {
-        gripItems.push('Super Clamp');
         gripItems.push('Gobo Head');
         gripItems.push('spigot with male 3/8" and 1/4"');
     }
@@ -8331,8 +8330,6 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Tango Beam');
     }
     if (scenarios.includes('Outdoor')) {
-        gripItems.push('Super Clamp');
-        gripItems.push('Super Clamp');
         riggingAcc.push('spigot with male 3/8" and 1/4"');
     }
     if (['Extreme heat', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s))) {

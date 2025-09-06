@@ -1775,6 +1775,17 @@ describe('script.js functions', () => {
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x DoP 15-21")');
   });
 
+  test('multiple 15-21" monitors add Manfrotto clamps to grip', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({
+      videoDistribution: 'Directors Monitor 15-21", Combo Monitor 15-21", DoP Monitor 15-21"'
+    });
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain(
+      '3x Manfrotto 635 Quick-Action Super Clamp (1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21")'
+    );
+  });
+
   test('multiple handheld monitors merge grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = { 'SmallHD Ultra 7': { screenSizeInches: 7 } };
@@ -2453,10 +2464,9 @@ describe('script.js functions', () => {
     const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
     const itemsRow = rows[gripIdx + 1];
     const text = itemsRow.textContent;
-    expect(text).toContain('2x Manfrotto 244N Friktion Arm');
-    expect(text).toContain('1x Super Clamp');
-    expect(text).toContain('1x Gobo Head');
-    expect(text).toContain('1x spigot with male 3/8" and 1/4"');
+      expect(text).toContain('2x Manfrotto 244N Friktion Arm');
+      expect(text).toContain('1x Gobo Head');
+      expect(text).toContain('1x spigot with male 3/8" and 1/4"');
   });
 
   test('Gimbal selector adds specified devices', () => {
@@ -2543,12 +2553,11 @@ describe('script.js functions', () => {
     expect(miscText).toContain('Rain Cover "CamA"');
     expect(miscText).toContain('1x Umbrella for Focus Monitor');
     expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
-    expect(gripText).toContain('2x Super Clamp');
-    expect(rigText).toContain('4x spigot with male 3/8" and 1/4"');
-    expect(gripText).not.toContain('Large Umbrella');
-    expect(gripText).not.toContain('Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
-    expect(miscText).not.toContain('Super Clamp');
-    expect(miscText).not.toContain('spigot with male 3/8" and 1/4"');
+      expect(rigText).toContain('4x spigot with male 3/8" and 1/4"');
+      expect(gripText).not.toContain('Large Umbrella');
+      expect(gripText).not.toContain('Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
+      expect(miscText).not.toContain('Manfrotto 635 Quick-Action Super Clamp');
+      expect(miscText).not.toContain('spigot with male 3/8" and 1/4"');
     const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
     const consumText = rows[consumIdx + 1].textContent;
     expect(consumText).toContain('2x CapIt Large');
