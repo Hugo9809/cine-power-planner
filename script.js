@@ -1829,15 +1829,17 @@ function splitGearListHtml(html) {
     html = html.gearList || '';
   }
   const doc = new DOMParser().parseFromString(html, 'text/html');
-  const title = doc.querySelector('h2');
-  const h3s = doc.querySelectorAll('h3');
-  const reqHeading = h3s[0];
-  const gearHeading = h3s.length > 1 ? h3s[1] : h3s[0];
+  const titleHtml = doc.querySelector('h2')?.outerHTML || '';
   const reqGrid = doc.querySelector('.requirements-grid');
+  const projectHeading = reqGrid ? reqGrid.previousElementSibling : doc.querySelector('h3');
+  const projectHtml = reqGrid
+    ? titleHtml + (projectHeading ? projectHeading.outerHTML : '') + reqGrid.outerHTML
+    : '';
   const table = doc.querySelector('.gear-table');
-  const titleHtml = title ? title.outerHTML : '';
-  const projectHtml = reqHeading && reqGrid ? titleHtml + reqHeading.outerHTML + reqGrid.outerHTML : '';
-  const gearHtml = table ? titleHtml + (gearHeading ? gearHeading.outerHTML : '') + table.outerHTML : '';
+  const gearHeading = table ? table.previousElementSibling : null;
+  const gearHtml = table
+    ? titleHtml + (gearHeading ? gearHeading.outerHTML : '') + table.outerHTML
+    : '';
   return { projectHtml, gearHtml };
 }
 
@@ -8586,17 +8588,6 @@ function autoSaveCurrentSetup() {
 function restoreSessionState() {
   const state = loadSession();
   if (!state) {
-    if (gearListOutput) {
-      gearListOutput.innerHTML = '';
-      gearListOutput.classList.add('hidden');
-    }
-    if (projectRequirementsOutput) {
-      projectRequirementsOutput.innerHTML = '';
-      projectRequirementsOutput.classList.add('hidden');
-    }
-    if (typeof deleteGearList === 'function') {
-      deleteGearList();
-    }
     return;
   }
   if (setupNameInput) {
