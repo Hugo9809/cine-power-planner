@@ -3931,6 +3931,22 @@ describe('script.js functions', () => {
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
 
+  test('hover help displays long descriptions without truncation', () => {
+    const hoverHelpButton = document.getElementById('hoverHelpButton');
+    hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    const longText = 'x'.repeat(500);
+    const dummy = document.createElement('button');
+    dummy.setAttribute('data-help', longText);
+    document.body.appendChild(dummy);
+
+    dummy.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+    const tooltip = document.getElementById('hoverHelpTooltip');
+    expect(tooltip.textContent).toBe(longText);
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+
   test('saved setups label has descriptive hover help', () => {
     const label = document.getElementById('savedSetupsLabel');
     expect(label.getAttribute('data-help')).toBe(texts.en.setupSelectHelp);

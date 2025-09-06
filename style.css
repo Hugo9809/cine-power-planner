@@ -363,7 +363,8 @@ a:focus {
   border-radius: 4px;
   font-size: 0.8rem;
   pointer-events: none;
-  max-width: 200px;
+  /* Allow longer hover help descriptions */
+  max-width: 320px;
   white-space: normal;
 }
 
