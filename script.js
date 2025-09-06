@@ -7751,7 +7751,7 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Trinity') || scenarios.includes('Steadicam')) {
         for (let i = 0; i < 2; i++) {
             riggingAcc.push('D-Tap Splitter');
-            riggingAcc.push('D-Tap Extension 50 cm');
+            riggingAcc.push('D-Tap Extension 50 cm (to reach power on Steadicam/Trinity rigs)');
         }
     }
     const handleSelections = info.cameraHandle

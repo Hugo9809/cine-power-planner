@@ -1530,7 +1530,7 @@ describe('script.js functions', () => {
       const html = generateGearListHtml({ requiredScenarios: scenario });
       const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
       expect(rigSection).toContain('4x D-Tap Splitter');
-      expect(rigSection).toContain('2x D-Tap Extension 50 cm');
+      expect(rigSection).toContain('2x D-Tap Extension 50 cm (1x to reach power on Steadicam/Trinity rigs, 1x Spare)');
     }
   );
 
