@@ -383,6 +383,12 @@ const gear = {
         "stages": 3,
         "type": "Swing Away"
       },
+      "ARRI LMB 4x5 15mm LWS Set 3-Stage": {
+        "brand": "ARRI",
+        "kNumber": "KK.0015176",
+        "stages": 3,
+        "type": "Rod based"
+      },
       "ARRI LMB 19mm Studio Rod Adapter": {
         "brand": "ARRI",
         "kNumber": "K2.0013432"
@@ -403,6 +409,22 @@ const gear = {
       "ARRI LMB Accessory Adapter": {
         "brand": "ARRI",
         "kNumber": "K2.0013014"
+      },
+      "ARRI LMB 4x5 Side Flags": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013750"
+      },
+      "ARRI LMB Flag Holders": {
+        "brand": "ARRI",
+        "kNumber": "K2.0013825"
+      },
+      "ARRI LMB 4x5 Set of Mattes spherical": {
+        "brand": "ARRI",
+        "kNumber": "K2.0000069"
+      },
+      "ARRI Anti-Reflection Frame 4x5.65 in": {
+        "brand": "ARRI",
+        "kNumber": "K2.0008133"
       }
     },
     "filters": {

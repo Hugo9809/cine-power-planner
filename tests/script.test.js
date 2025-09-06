@@ -62,7 +62,8 @@ function setupDom(removeGear) {
       cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
       matteboxes: {
         'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
-        'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' }
+        'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' },
+        'ARRI LMB 4x5 15mm LWS Set 3-Stage': { type: 'Rod based' }
       },
       chargers: {
         'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
@@ -242,14 +243,15 @@ describe('script.js functions', () => {
       batteries: {
         BattA: { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' }
       },
-      accessories: {
-        powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
-        cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
-        matteboxes: {
-          'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
-          'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' }
-        },
-        chargers: {
+        accessories: {
+          powerPlates: { 'Generic V-Mount Plate': { mount: 'V-Mount' } },
+          cages: { 'Universal Cage': { compatible: ['CamA'], rodStandard: '15mm' } },
+          matteboxes: {
+            'ARRI LMB 4x5 Pro Set': { type: 'Swing Away' },
+            'ARRI LMB 4x5 Clamp-On (3-Stage)': { type: 'Clamp-On' },
+            'ARRI LMB 4x5 15mm LWS Set 3-Stage': { type: 'Rod based' }
+          },
+          chargers: {
           'Single V-Mount Charger': { mount: 'V-Mount', slots: 1, chargingSpeedAmps: 3 },
           'Dual V-Mount Charger': { mount: 'V-Mount', slots: 2, chargingSpeedAmps: 2 },
           'Quad V-Mount Charger': { mount: 'V-Mount', slots: 4, chargingSpeedAmps: 2 }
@@ -1719,6 +1721,25 @@ describe('script.js functions', () => {
     expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Pro Set');
     expect(itemsRow.textContent).toContain('1x ARRI LMB 19mm Studio Rod Adapter');
     expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
+  });
+
+  test('Rod based mattebox adds LMB 4x5 15mm LWS Set and accessories to gear list', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ mattebox: 'Rod based' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const matteIdx = rows.findIndex(r => r.textContent === 'Matte box + filter');
+    expect(matteIdx).toBeGreaterThanOrEqual(0);
+    const itemsRow = rows[matteIdx + 1];
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 15mm LWS Set 3-Stage');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 19mm Studio Rod Adapter');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 / LMB-6 Tray Catcher');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Side Flags');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB Flag Holders');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB 4x5 Set of Mattes spherical');
+    expect(itemsRow.textContent).toContain('1x ARRI LMB Accessory Adapter');
+    expect(itemsRow.textContent).toContain('1x ARRI Anti-Reflection Frame 4x5.65 in');
   });
 
   test('updateRequiredScenariosSummary creates a box for each selection', () => {
