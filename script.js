@@ -1549,7 +1549,6 @@ const projectFieldIcons = {
   lenses: '💎',
   cameraHandle: '🛠️',
   viewfinderExtension: '🔭',
-  mattebox: '🎬',
   gimbal: '🌀',
   monitoringSupport: '🧰',
   monitoring: '🖥️',
@@ -7705,6 +7704,7 @@ function generateGearListHtml(info = {}) {
     const projectInfo = { ...info };
     delete projectInfo.lenses;
     delete projectInfo.filter;
+    delete projectInfo.mattebox;
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
@@ -7733,7 +7733,6 @@ function generateGearListHtml(info = {}) {
         requiredScenarios: 'Required Scenarios',
         cameraHandle: 'Camera Handle',
         viewfinderExtension: 'Viewfinder Extension',
-        mattebox: 'Mattebox',
         gimbal: 'Gimbal',
         monitoringSupport: 'Monitoring support',
         monitoring: 'Monitoring',
