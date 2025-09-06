@@ -1,4 +1,4 @@
-// storage.js - Handles reading from and writing to localStorage.
+// storage.js - Handles reading from and writing to Web Storage.
 /* global texts, currentLang */
 
 const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
@@ -7,18 +7,29 @@ const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const GEARLIST_STORAGE_KEY = 'cameraPowerPlanner_gearList';
 
-// Safely detect usable localStorage. Some environments (like private browsing)
-// may block access and throw errors. If unavailable, this returns null.
-const SAFE_LOCAL_STORAGE = (() => {
+// Safely detect usable storage. Prefer localStorage but fall back to
+// sessionStorage so selections persist even when localStorage is blocked
+// (e.g. in private browsing).
+const SAFE_STORAGE = (() => {
   try {
-    if (typeof window !== 'undefined' && 'localStorage' in window) {
-      const testKey = '__storage_test__';
-      window.localStorage.setItem(testKey, '1');
-      window.localStorage.removeItem(testKey);
-      return window.localStorage;
+    if (typeof window !== 'undefined') {
+      for (const type of ['localStorage', 'sessionStorage']) {
+        try {
+          const storage = window[type];
+          if (storage) {
+            const testKey = '__storage_test__';
+            storage.setItem(testKey, '1');
+            storage.removeItem(testKey);
+            return storage;
+          }
+        } catch (e) {
+          console.warn(`${type} is unavailable:`, e);
+        }
+      }
+      alertStorageError();
     }
   } catch (e) {
-    console.warn('localStorage is unavailable:', e);
+    console.warn('Storage is unavailable:', e);
     alertStorageError();
   }
   return null;
@@ -100,31 +111,31 @@ function generateUniqueName(base, usedNames) {
 }
 
 // --- Session State Storage ---
-// Store the current session (unsaved setup) in localStorage so it survives
+// Store the current session (unsaved setup) in storage so it survives
 // full app reloads.
 function loadSessionState() {
   return loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     SESSION_STATE_KEY,
-    "Error loading session state from localStorage:",
+    "Error loading session state from storage:",
   );
 }
 
 function saveSessionState(state) {
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     SESSION_STATE_KEY,
     state,
-    "Error saving session state to localStorage:",
+    "Error saving session state to storage:",
   );
 }
 
 // --- Device Data Storage ---
 function loadDeviceData() {
   const parsedData = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     DEVICE_STORAGE_KEY,
-    "Error loading device data from localStorage:",
+    "Error loading device data from storage:",
   );
   if (!isPlainObject(parsedData)) {
     return null;
@@ -153,21 +164,21 @@ function loadDeviceData() {
   ensureObject(data.fiz, "controllers");
   ensureObject(data.fiz, "distance");
 
-  if (changed && SAFE_LOCAL_STORAGE) {
-    SAFE_LOCAL_STORAGE.setItem(DEVICE_STORAGE_KEY, JSON.stringify(data));
+  if (changed && SAFE_STORAGE) {
+    SAFE_STORAGE.setItem(DEVICE_STORAGE_KEY, JSON.stringify(data));
   }
 
-  console.log("Device data loaded from localStorage.");
+  console.log("Device data loaded from storage.");
   return data;
 }
 
 function saveDeviceData(deviceData) {
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     DEVICE_STORAGE_KEY,
     deviceData,
-    "Error saving device data to localStorage:",
-    "Device data saved to localStorage.",
+    "Error saving device data to storage:",
+    "Device data saved to storage.",
   );
 }
 
@@ -191,24 +202,24 @@ function normalizeSetups(rawData) {
 
 function loadSetups() {
   const parsedData = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     SETUP_STORAGE_KEY,
-    "Error loading setups from localStorage:",
+    "Error loading setups from storage:",
   );
   const setups = normalizeSetups(parsedData);
-  if (parsedData && Array.isArray(parsedData) && SAFE_LOCAL_STORAGE) {
-    SAFE_LOCAL_STORAGE.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
+  if (parsedData && Array.isArray(parsedData) && SAFE_STORAGE) {
+    SAFE_STORAGE.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
   }
   return setups;
 }
 
 function saveSetups(setups) {
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     SETUP_STORAGE_KEY,
     setups,
-    "Error saving setups to localStorage:",
-    "Setups saved to localStorage.",
+    "Error saving setups to storage:",
+    "Setups saved to storage.",
   );
 }
 
@@ -271,9 +282,9 @@ function renameSetup(oldName, newName) {
 function loadGearList() {
   return (
     loadJSONFromStorage(
-      SAFE_LOCAL_STORAGE,
+      SAFE_STORAGE,
       GEARLIST_STORAGE_KEY,
-      "Error loading gear list from localStorage:",
+      "Error loading gear list from storage:",
       "",
     ) || ""
   );
@@ -281,28 +292,28 @@ function loadGearList() {
 
 function saveGearList(html) {
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     GEARLIST_STORAGE_KEY,
     html,
-    "Error saving gear list to localStorage:",
-    "Gear list saved to localStorage.",
+    "Error saving gear list to storage:",
+    "Gear list saved to storage.",
   );
 }
 
 function deleteGearList() {
   deleteFromStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     GEARLIST_STORAGE_KEY,
-    "Error deleting gear list from localStorage:",
+    "Error deleting gear list from storage:",
   );
 }
 
 // --- User Feedback Storage ---
 function loadFeedback() {
   const parsed = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     FEEDBACK_STORAGE_KEY,
-    "Error loading feedback from localStorage:",
+    "Error loading feedback from storage:",
   );
   if (isPlainObject(parsed)) {
     return parsed;
@@ -312,22 +323,22 @@ function loadFeedback() {
 
 function saveFeedback(feedback) {
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    SAFE_STORAGE,
     FEEDBACK_STORAGE_KEY,
     feedback,
-    "Error saving feedback to localStorage:",
-    "Feedback saved to localStorage.",
+    "Error saving feedback to storage:",
+    "Feedback saved to storage.",
   );
 }
 
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
-  deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, GEARLIST_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
+  deleteFromStorage(SAFE_STORAGE, DEVICE_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_STORAGE, SETUP_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_STORAGE, FEEDBACK_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_STORAGE, GEARLIST_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
