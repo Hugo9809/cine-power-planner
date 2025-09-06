@@ -508,12 +508,12 @@ const cameraData = {
     ],
     "fizConnectors": [
       {
-        "type": "Hirose 12-pin",
-        "notes": "For ENG type zoom lenses (FIZ control)"
+        "type": "EXT LEMO 7-pin",
+        "notes": "For electronic lens data and control"
       },
       {
         "type": "Hirose 12-pin",
-        "notes": "For electronic lens data and control"
+        "notes": "For ENG type zoom lenses (FIZ control)"
       }
     ],
     "recordingMedia": [
