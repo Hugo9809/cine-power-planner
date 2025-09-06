@@ -3668,6 +3668,14 @@ function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
     });
 }
 
+function populateMonitorSelect() {
+  const filtered = Object.fromEntries(
+    Object.entries(devices.monitors || {})
+      .filter(([, data]) => !(data.wirelessRX && !data.wirelessTx))
+  );
+  populateSelect(monitorSelect, filtered, true);
+}
+
 function filterSelect(selectElem, filterValue) {
   const text = filterValue.toLowerCase();
   Array.from(selectElem.options).forEach(opt => {
@@ -3781,7 +3789,7 @@ function applyFilters() {
 
 // Initialize device selection dropdowns
 populateSelect(cameraSelect, devices.cameras, true);
-populateSelect(monitorSelect, devices.monitors, true);
+populateMonitorSelect();
 populateSelect(videoSelect, devices.video, true);
 if (cageSelect) populateSelect(cageSelect, devices.accessories?.cages || {}, true);
 motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
@@ -4569,7 +4577,7 @@ function applyDeviceChanges(changes) {
 
   // Re-populate dropdowns to include any newly added devices
   populateSelect(cameraSelect, devices.cameras, true);
-  populateSelect(monitorSelect, devices.monitors, true);
+  populateMonitorSelect();
   populateSelect(videoSelect, devices.video, true);
   motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
   controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
@@ -5996,7 +6004,7 @@ deviceManagerSection.addEventListener("click", (event) => {
       refreshDeviceLists();
       // Re-populate all dropdowns and update calculations
       populateSelect(cameraSelect, devices.cameras, true);
-      populateSelect(monitorSelect, devices.monitors, true);
+      populateMonitorSelect();
       populateSelect(videoSelect, devices.video, true);
       motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
       controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
@@ -6433,7 +6441,7 @@ addDeviceBtn.addEventListener("click", () => {
   refreshDeviceLists();
   // Re-populate all dropdowns to include the new/updated device
   populateSelect(cameraSelect, devices.cameras, true);
-  populateSelect(monitorSelect, devices.monitors, true);
+  populateMonitorSelect();
   populateSelect(videoSelect, devices.video, true);
   motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
   controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
@@ -6533,7 +6541,7 @@ importFileInput.addEventListener("change", (event) => {
         refreshDeviceLists(); // Update device manager lists
         // Re-populate all dropdowns and update calculations
         populateSelect(cameraSelect, devices.cameras, true);
-        populateSelect(monitorSelect, devices.monitors, true);
+        populateMonitorSelect();
         populateSelect(videoSelect, devices.video, true);
         motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
         controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
@@ -7944,7 +7952,7 @@ function generateGearListHtml(info = {}) {
     if (videoDistPrefs.includes('Directors Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
         const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7)
+            .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
         const opts = sevenInchNames
             .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
@@ -7954,7 +7962,7 @@ function generateGearListHtml(info = {}) {
     if (videoDistPrefs.includes('DoP Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
         const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7)
+            .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
         const opts = sevenInchNames
             .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)
@@ -7964,7 +7972,7 @@ function generateGearListHtml(info = {}) {
     if (videoDistPrefs.includes('Gaffers Monitor 7" handheld')) {
         const monitorsDb = devices && devices.monitors ? devices.monitors : {};
         const sevenInchNames = Object.keys(monitorsDb)
-            .filter(n => monitorsDb[n].screenSizeInches === 7)
+            .filter(n => monitorsDb[n].screenSizeInches === 7 && (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
         const opts = sevenInchNames
             .map(n => `<option value="${escapeHtml(n)}"${n === 'SmallHD Ultra 7' ? ' selected' : ''}>${escapeHtml(n)}</option>`)

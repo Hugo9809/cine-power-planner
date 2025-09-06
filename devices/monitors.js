@@ -60,6 +60,37 @@ const monitorData = {
       }
     ]
   },
+  "SmallHD Ultra 7 Bolt 6 RX": {
+    "screenSizeInches": 7,
+    "brightnessNits": 2300,
+    "powerDrawWatts": 55,
+    "power": {
+      "input": {
+        "voltageRange": "10-34",
+        "type": "LEMO 2-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "wirelessRX": true,
+    "latencyMs": "< 1ms",
+    "videoInputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "12G-SDI"
+      }
+    ],
+    "videoOutputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "12G-SDI"
+      }
+    ]
+  },
   "SmallHD Cine 7": {
     "screenSizeInches": 7,
     "brightnessNits": 1800,
@@ -119,6 +150,37 @@ const monitorData = {
       }
     ]
   },
+  "SmallHD Cine 7 Bolt 4K RX": {
+    "screenSizeInches": 7,
+    "brightnessNits": 1800,
+    "powerDrawWatts": 50,
+    "power": {
+      "input": {
+        "voltageRange": "10-34",
+        "type": "LEMO 2-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "wirelessRX": true,
+    "latencyMs": "< 1ms",
+    "videoInputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ],
+    "videoOutputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ]
+  },
   "SmallHD Indie 7": {
     "screenSizeInches": 7,
     "brightnessNits": 1000,
@@ -160,6 +222,37 @@ const monitorData = {
       "output": null
     },
     "wirelessTx": true,
+    "latencyMs": "< 1ms",
+    "videoInputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ],
+    "videoOutputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ]
+  },
+  "SmallHD Indie 7 Bolt 4K RX": {
+    "screenSizeInches": 7,
+    "brightnessNits": 1000,
+    "powerDrawWatts": 37.3,
+    "power": {
+      "input": {
+        "voltageRange": "10-34",
+        "type": "LEMO 2-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "wirelessRX": true,
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
@@ -259,6 +352,37 @@ const monitorData = {
       }
     ]
   },
+  "SmallHD Ultra 5 Bolt 6 RX": {
+    "screenSizeInches": 5,
+    "brightnessNits": 3000,
+    "powerDrawWatts": 50,
+    "power": {
+      "input": {
+        "voltageRange": "10-34",
+        "type": "LEMO 2-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "wirelessRX": true,
+    "latencyMs": "< 1ms",
+    "videoInputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ],
+    "videoOutputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ]
+  },
   "SmallHD Cine 5": {
     "screenSizeInches": 5,
     "brightnessNits": 2000,
@@ -300,6 +424,37 @@ const monitorData = {
       "output": null
     },
     "wirelessTx": true,
+    "latencyMs": "< 1ms",
+    "videoInputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ],
+    "videoOutputs": [
+      {
+        "type": "HDMI"
+      },
+      {
+        "type": "3G-SDI"
+      }
+    ]
+  },
+  "SmallHD Cine 5 Bolt 6 RX": {
+    "screenSizeInches": 5,
+    "brightnessNits": 2000,
+    "powerDrawWatts": 44,
+    "power": {
+      "input": {
+        "voltageRange": "10-34",
+        "type": "LEMO 2-pin"
+      },
+      "output": null
+    },
+    "wirelessTx": false,
+    "wirelessRX": true,
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
@@ -381,6 +536,7 @@ const monitorData = {
       "output": null
     },
     "wirelessTx": true,
+    "wirelessRX": true,
     "latencyMs": "50ms",
     "videoInputs": [
       {
@@ -411,6 +567,7 @@ const monitorData = {
       "output": null
     },
     "wirelessTx": true,
+    "wirelessRX": true,
     "latencyMs": "50ms",
     "videoInputs": [
       {
@@ -438,6 +595,7 @@ const monitorData = {
       "output": null
     },
     "wirelessTx": true,
+    "wirelessRX": true,
     "latencyMs": "< 80ms",
     "audioOutput": {
       "portType": "3.5mm Headphone Jack"
