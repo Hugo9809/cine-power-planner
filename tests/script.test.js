@@ -214,6 +214,21 @@ test('restores project requirements form from saved gear list', () => {
   expect(projName.value).toBe('Proj');
 });
 
+test('project requirements changes persist via session save', () => {
+  setupDom(false);
+  global.loadSessionState = jest.fn(() => null);
+  const savedState = {};
+  global.saveSessionState = jest.fn(state => Object.assign(savedState, state));
+  global.saveGearList = jest.fn();
+  require('../translations.js');
+  const script = require('../script.js');
+  script.setLanguage('en');
+  const nameInput = document.getElementById('projectName');
+  nameInput.value = 'Proj';
+  nameInput.dispatchEvent(new Event('change', { bubbles: true }));
+  expect(savedState.projectInfo.projectName).toBe('Proj');
+});
+
 describe('auto backup', () => {
   test('creates backup after 5 minutes when no project selected', () => {
     setupDom(false);

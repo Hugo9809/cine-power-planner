@@ -1977,6 +1977,10 @@ if (projectForm) {
         sel.addEventListener('change', () => updateSelectIconBoxes(sel));
         updateSelectIconBoxes(sel);
     });
+
+    projectForm.querySelectorAll('input, textarea, select').forEach(el => {
+        el.addEventListener('change', saveCurrentSession);
+    });
 }
 
 let manualPositions = {};
