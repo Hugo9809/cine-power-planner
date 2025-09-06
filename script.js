@@ -8039,10 +8039,17 @@ function generateGearListHtml(info = {}) {
         for (let i = 0; i < 10; i++) consumables.push('Duschhaube');
         consumables.push('Magliner Rain Cover Transparent');
     }
-    const needsHairDryer = isWinterShoot || scenarios.includes('Extreme cold (snow)');
+    const needsHairDryer =
+        (isWinterShoot && scenarios.includes('Outdoor')) ||
+        scenarios.includes('Extreme cold (snow)');
     const needsHandAndFeetWarmers = scenarios.includes('Extreme cold (snow)');
     if (needsHairDryer) {
         miscItems.push('Hair Dryer');
+        if (["Sony Venice 2", "Sony Venice"].includes(selectedNames.camera)) {
+            miscItems.push('Denz C0100072 Shut-Eye Heater für Sony');
+        } else if (["Arri Alexa Mini", "Arri Amira"].includes(selectedNames.camera)) {
+            miscItems.push('Arri K2.0003898 Heated Eyecup HE-7 for the MVF-1');
+        }
     }
     if (needsHandAndFeetWarmers) {
         const warmersCount = Math.max(shootDays, 1) * 2;
