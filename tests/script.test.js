@@ -2799,12 +2799,16 @@ describe('script.js functions', () => {
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
     const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
-    const consumText = rows[consumIdx + 1].textContent;
+    const consumRow = rows[consumIdx + 1];
+    const consumText = consumRow.textContent;
     expect(consumText).toContain('1x Kimtech Wipes');
     expect(consumText).toContain('1x Lasso Red 24mm');
     expect(consumText).toContain('1x Lasso Blue 24mm');
     expect(consumText).toContain('1x Sprigs Red 1/4"');
-    expect(consumText).toContain('2x Bluestar eye leather made of microfiber oval, large rot');
+    const eyeSel = consumRow.querySelector('#gearListEyeLeatherColor');
+    expect(eyeSel).not.toBeNull();
+    expect(eyeSel.value).toBe('rot');
+    expect(eyeSel.parentElement.textContent).toContain('2x Bluestar eye leather made of microfiber oval, large');
     expect(consumText).toContain('2x Klappenstift');
   });
 
@@ -2815,21 +2819,24 @@ describe('script.js functions', () => {
     camSel.value = 'CamA';
     devices.cameras.CamA.viewfinder = ['VF'];
     const scenarios = [
-      ['2024-05-01 to 2024-05-10', '2x Kimtech Wipes', '4x Klappenstift', '4x Bluestar eye leather made of microfiber oval, large rot'],
-      ['2024-05-01 to 2024-05-16', '3x Kimtech Wipes', '4x Klappenstift', '6x Bluestar eye leather made of microfiber oval, large rot'],
-      ['2024-05-01 to 2024-05-22', '4x Kimtech Wipes', '8x Klappenstift', '8x Bluestar eye leather made of microfiber oval, large rot']
+      ['2024-05-01 to 2024-05-10', '2x Kimtech Wipes', '4x Klappenstift', 4],
+      ['2024-05-01 to 2024-05-16', '3x Kimtech Wipes', '4x Klappenstift', 6],
+      ['2024-05-01 to 2024-05-22', '4x Kimtech Wipes', '8x Klappenstift', 8]
     ];
-    scenarios.forEach(([range, wipes, klappen, eye]) => {
+    scenarios.forEach(([range, wipes, klappen, eyeCount]) => {
       const html = generateGearListHtml({ shootingDays: range });
       const wrap = document.createElement('div');
       wrap.innerHTML = html;
       const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
       const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
-      const consumText = rows[consumIdx + 1].textContent;
+      const consumRow = rows[consumIdx + 1];
+      const consumText = consumRow.textContent;
       expect(consumText).toContain(wipes);
       expect(consumText).toContain('1x Sprigs Red 1/4"');
       expect(consumText).toContain(klappen);
-      expect(consumText).toContain(eye);
+      const eyeSel = consumRow.querySelector('#gearListEyeLeatherColor');
+      expect(eyeSel.value).toBe('rot');
+      expect(eyeSel.parentElement.textContent).toContain(`${eyeCount}x Bluestar eye leather made of microfiber oval, large`);
     });
   });
 
@@ -2842,10 +2849,7 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({});
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
-    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
-    const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');
-    const consumText = rows[consumIdx + 1].textContent;
-    expect(consumText).not.toContain('Bluestar eye leather made of microfiber oval, large');
+    expect(wrap.querySelector('#gearListEyeLeatherColor')).toBeNull();
   });
 
   test('camera handle and viewfinder extension excluded from project requirements', () => {
