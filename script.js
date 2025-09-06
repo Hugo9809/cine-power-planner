@@ -7538,7 +7538,10 @@ function generateGearListHtml(info = {}) {
     if (handleSelections.includes('Hand Grips')) {
         addHandle();
     }
-    if (handleSelections.includes('Handle Extension') || handleSelections.includes('L-Handle')) {
+    if (handleSelections.includes('Handle Extension')) {
+        supportAccNoCages.push('ARRI K2.0019797 HEX-3');
+    }
+    if (handleSelections.includes('L-Handle')) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
     const projectInfo = { ...info };
