@@ -375,7 +375,7 @@ const texts = {
   },
   it: {
     appTitle: "Pianificatore di alimentazione della fotocamera",
-    tagline: "Pianifica il tuo rig cinematografico e calcola il consumo di energia e l'autonomia delle batterie.",
+    tagline: "Pianifica la tua configurazione cinematografica e calcola il consumo energetico e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Offline",
     setupManageHeading: "Gestisci la configurazione",
@@ -388,7 +388,7 @@ const texts = {
     setupManageHeadingHelp:
       "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
     deviceSelectionHeadingHelp:
-      "Scegli fotocamere, monitor e accessori per il tuo rig.",
+      "Scegli fotocamere, monitor e accessori per la tua configurazione.",
     resultsHeadingHelp:
       "Vedi il consumo di energia, la durata stimata e il numero di batterie.",
     deviceManagerHeadingHelp:
@@ -719,7 +719,7 @@ const texts = {
   },
   es: {
     appTitle: "Planificador de Consumo de Energía de Cámaras",
-    tagline: "Planifica tu rig cinematográfico y calcula el consumo de energía y la autonomía de las baterías.",
+    tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
 
@@ -1079,7 +1079,7 @@ const texts = {
   },
   fr: {
     appTitle: "Planificateur de Consommation Caméra",
-    tagline: "Planifiez votre rig de cinéma et calculez la consommation et l'autonomie des batteries.",
+    tagline: "Planifiez votre équipement de tournage et calculez la consommation énergétique et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
 
@@ -1441,7 +1441,7 @@ const texts = {
   },
   de: {
     appTitle: "Kamera Stromverbrauchs Planer",
-    tagline: "Plane dein Film-Rig und berechne Stromverbrauch und Akkulaufzeit.",
+    tagline: "Plane dein Film-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",
 
@@ -1455,7 +1455,7 @@ const texts = {
     setupManageHeadingHelp:
       "Gespeicherte Setups verwalten: Konfigurationen speichern, laden oder löschen.",
     deviceSelectionHeadingHelp:
-      "Wähle Kameras, Monitore und Zubehör für dein Rig.",
+      "Wähle Kameras, Monitore und Zubehör für dein Setup.",
     resultsHeadingHelp:
       "Zeigt Stromverbrauch, geschätzte Laufzeit und benötigte Akkus.",
     deviceManagerHeadingHelp:
