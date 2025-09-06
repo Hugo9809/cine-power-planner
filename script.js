@@ -5194,10 +5194,15 @@ function attachDiagramPopups(map) {
       popup.style.top = `${relY + offset}px`;
     };
     const hide = () => { popup.style.display = 'none'; };
-    node.addEventListener('mousemove', show);
-    node.addEventListener('mouseout', hide);
-    node.addEventListener('touchstart', show);
-    node.addEventListener('click', show);
+    const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
+    if (isTouchDevice) {
+      node.addEventListener('touchstart', show);
+      node.addEventListener('click', show);
+    } else {
+      node.addEventListener('mousemove', show);
+      node.addEventListener('mouseout', hide);
+      node.addEventListener('click', show);
+    }
   });
 
   if (!setupDiagramContainer.dataset.popupOutsideListeners) {
