@@ -1570,7 +1570,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
   }
   if (resetViewBtn) {
-    resetViewBtn.textContent = texts[lang].resetViewBtn;
+    resetViewBtn.innerHTML = `<span class="btn-icon" aria-hidden="true">🔄</span>${texts[lang].resetViewBtn}`;
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
