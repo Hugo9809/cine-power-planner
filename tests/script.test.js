@@ -2320,6 +2320,40 @@ describe('script.js functions', () => {
     expect(row.classList.contains('hidden')).toBe(false);
   });
 
+  test('viewfinder only option visible only with viewfinder and no monitor', () => {
+    const { updateMonitoringConfigurationOptions } = script;
+    const camSel = document.getElementById('cameraSelect');
+    const monitorSel = document.getElementById('monitorSelect');
+    const configSel = document.getElementById('monitoringConfiguration');
+    camSel.innerHTML = '<option value="NoVF">NoVF</option><option value="WithVF">WithVF</option>';
+    monitorSel.innerHTML = '<option value=""></option><option value="MonA">MonA</option>';
+    devices.cameras.NoVF = { powerDrawWatts: 10 };
+    devices.cameras.WithVF = { powerDrawWatts: 10, viewfinder: [{ type: 'EVF' }] };
+    devices.monitors.MonA = { powerDrawWatts: 5 };
+
+    camSel.value = 'WithVF';
+    monitorSel.value = '';
+    configSel.value = 'Viewfinder only';
+    updateMonitoringConfigurationOptions();
+    let opt = Array.from(configSel.options).find(o => o.value === 'Viewfinder only');
+    expect(opt.hidden).toBe(false);
+    expect(configSel.value).toBe('Viewfinder only');
+
+    monitorSel.value = 'MonA';
+    updateMonitoringConfigurationOptions();
+    opt = Array.from(configSel.options).find(o => o.value === 'Viewfinder only');
+    expect(opt.hidden).toBe(true);
+    expect(configSel.value).toBe('Viewfinder and Onboard');
+
+    camSel.value = 'NoVF';
+    monitorSel.value = '';
+    configSel.value = 'Viewfinder only';
+    updateMonitoringConfigurationOptions();
+    opt = Array.from(configSel.options).find(o => o.value === 'Viewfinder only');
+    expect(opt.hidden).toBe(true);
+    expect(configSel.value).toBe('Onboard Only');
+  });
+
   test('Directors handheld monitor appears under monitoring in project requirements', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });

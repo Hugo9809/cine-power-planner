@@ -676,6 +676,7 @@ function updateBatteryPlateVisibility() {
   }
   updateViewfinderSettingsVisibility();
   updateViewfinderExtensionVisibility();
+  updateMonitoringConfigurationOptions();
 }
 
 function updateViewfinderSettingsVisibility() {
@@ -694,6 +695,22 @@ function updateViewfinderSettingsVisibility() {
       }
     }
   }
+}
+
+function updateMonitoringConfigurationOptions() {
+  if (!monitoringConfigurationSelect) return;
+  const cam = devices?.cameras?.[cameraSelect?.value];
+  const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
+  const monitorSelected = monitorSelect && monitorSelect.value && monitorSelect.value !== 'None';
+  const vfOnlyOption = Array.from(monitoringConfigurationSelect.options || [])
+    .find(o => o.value === 'Viewfinder only');
+  if (!vfOnlyOption) return;
+  const show = hasViewfinder && !monitorSelected;
+  vfOnlyOption.hidden = !show;
+  if (!show && monitoringConfigurationSelect.value === 'Viewfinder only') {
+    monitoringConfigurationSelect.value = hasViewfinder ? 'Viewfinder and Onboard' : 'Onboard Only';
+  }
+  updateViewfinderSettingsVisibility();
 }
 
 function updateViewfinderExtensionVisibility() {
@@ -8400,6 +8417,9 @@ if (cameraSelect) {
 if (monitoringConfigurationSelect) {
   monitoringConfigurationSelect.addEventListener('change', updateViewfinderSettingsVisibility);
 }
+if (monitorSelect) {
+  monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
+}
 if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatteryOptions);
 
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
@@ -9188,6 +9208,7 @@ if (typeof module !== "undefined" && module.exports) {
     populateSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
+    updateMonitoringConfigurationOptions,
     updateViewfinderExtensionVisibility,
   };
 }
