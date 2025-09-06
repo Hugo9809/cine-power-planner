@@ -1869,7 +1869,8 @@ describe('script.js functions', () => {
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml();
-    expect(html).toContain('Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
+    expect(html).toContain('<strong>Focus Monitor</strong> - <span id="monitorSizeFocus">7&quot;</span> - <select id="gearListFocusMonitor">');
+    expect(html).toContain('incl Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V150micro');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Focus, 1x Spare)');

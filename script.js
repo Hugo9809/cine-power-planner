@@ -8203,8 +8203,18 @@ function generateGearListHtml(info = {}) {
         if (size) monitorSizes.push(size);
     });
     if (hasMotor) {
-        monitoringItems += (monitoringItems ? '<br>' : '') + '1x <strong>Focus Monitor</strong> - 7&quot; - TV Logic F7HS incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
-        monitorSizes.push(7);
+        const monitorsDb = devices && devices.monitors ? devices.monitors : {};
+        const names = Object.keys(monitorsDb)
+            .filter(n => (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
+            .sort(localeSort);
+        const defaultName = names.includes('TV Logic F7HS') ? 'TV Logic F7HS' : names[0];
+        const opts = names
+            .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+            .join('');
+        const selectedSize = monitorsDb[defaultName]?.screenSizeInches || '';
+        monitoringItems += (monitoringItems ? '<br>' : '') +
+            `1x <strong>Focus Monitor</strong> - <span id="monitorSizeFocus">${selectedSize}&quot;</span> - <select id="gearListFocusMonitor">${opts}</select> incl Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        if (selectedSize) monitorSizes.push(selectedSize);
     }
     const monitoringGear = [];
     const wirelessSize = monitorSizes.includes(5) ? 5 : 7;
@@ -8506,6 +8516,20 @@ function getCurrentGearListHtml() {
         if (editBtn) editBtn.remove();
         const t = clone.querySelector('h2');
         if (t) t.remove();
+        ['Directors', 'Dop', 'Gaffers', 'Focus'].forEach(role => {
+            const sel = clone.querySelector(`#gearList${role}Monitor`);
+            if (sel) {
+                const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor`);
+                const val = originalSel ? originalSel.value : sel.value;
+                Array.from(sel.options).forEach(opt => {
+                    if (opt.value === val) {
+                        opt.setAttribute('selected', '');
+                    } else {
+                        opt.removeAttribute('selected');
+                    }
+                });
+            }
+        });
         const cageSel = clone.querySelector('#gearListCage');
         if (cageSel) {
             const originalSel = gearListOutput.querySelector('#gearListCage');
@@ -8722,7 +8746,7 @@ function bindGearListSliderBowlListener() {
 
 function bindGearListDirectorsMonitorListener() {
     if (!gearListOutput) return;
-    ['Directors', 'Dop', 'Gaffers'].forEach(role => {
+    ['Directors', 'Dop', 'Gaffers', 'Focus'].forEach(role => {
         const sel = gearListOutput.querySelector(`#gearList${role}Monitor`);
         if (sel) {
             sel.addEventListener('change', () => {
