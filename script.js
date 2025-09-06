@@ -8294,6 +8294,9 @@ function generateGearListHtml(info = {}) {
         ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
         ...Array(3).fill('Power Three Way Splitter')
     ];
+    if (scenarios.includes('Studio')) {
+        powerItems.push('Camera Power Supply');
+    }
     addRow('Power', formatItems(powerItems));
     addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
     addRow('Carts and Transportation', formatItems(cartsTransportationItems));
