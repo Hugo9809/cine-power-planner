@@ -8234,6 +8234,7 @@ function generateGearListHtml(info = {}) {
         ...Array(20).fill('Airliner Ösen')
     ];
     const gripItems = [];
+    let needsStandardTripod = false;
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
     handheldPrefs.forEach(p => {
@@ -8281,6 +8282,7 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Jib')) {
         gripItems.push('Pro Sup EJIb-Arm');
         gripItems.push('jib counter weights');
+        needsStandardTripod = true;
     }
     if (scenarios.includes('Slider')) {
         const options = ['', '75er bowl', '100er bowl', '150er bowl', 'Mitchell Mount'].map(o => `<option value="${escapeHtml(o)}"${o === info.sliderBowl ? ' selected' : ''}>${escapeHtml(addArriKNumber(o))}</option>`).join('');
@@ -8346,6 +8348,9 @@ function generateGearListHtml(info = {}) {
             gripItems.push('sand bag (for Hi-Head)');
         }
     });
+    if (needsStandardTripod && !gripItems.some(item => /Standard Tripod/.test(item))) {
+        gripItems.push('Standard Tripod');
+    }
     const standCount = gripItems.filter(item => /\bstand\b/i.test(item) && !/wheel/i.test(item)).length;
     if (standCount) {
         gripItems.push(...Array(standCount * 3).fill('tennis ball'));
