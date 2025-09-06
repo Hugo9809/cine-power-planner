@@ -2842,6 +2842,18 @@ describe('script.js functions', () => {
     expect(saved.WithGear.gearList).toContain('<table>');
   });
 
+  test('saving setup triggers gear list save', () => {
+    global.saveGearList = jest.fn();
+    const gear = document.getElementById('gearListOutput');
+    gear.innerHTML = '<table></table>';
+    gear.classList.remove('hidden');
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'WithGear';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+    document.getElementById('saveSetupBtn').click();
+    expect(global.saveGearList).toHaveBeenCalled();
+  });
+
   test('Save button enables on input and Enter key saves setup', () => {
     const saveSpy = global.saveSetups;
     const nameInput = document.getElementById('setupName');

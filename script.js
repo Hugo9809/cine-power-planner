@@ -5651,6 +5651,9 @@ saveSetupBtn.addEventListener("click", () => {
   setupSelect.value = setupName; // Select the newly saved setup
   loadedSetupState = getCurrentSetupState();
   checkSetupChanged();
+  // Ensure the current gear list is persisted with the project so it can be
+  // restored even without a manual "Save Gear List" action.
+  saveCurrentGearList();
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
 });
 
