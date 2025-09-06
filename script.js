@@ -7421,7 +7421,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
             if (!Number.isFinite(camCount)) camCount = batterySelect.value ? 1 : 0;
             let monCount = 0;
             if (Array.isArray(videoDistPrefs)) {
-                const handheldCount = videoDistPrefs.filter(v => /Monitor \d+" handheld$/.test(v)).length;
+                const handheldCount = videoDistPrefs.filter(v => /Monitor(?: \d+")? handheld$/.test(v)).length;
                 monCount += handheldCount * 3;
             }
             if (hasMotor) monCount += 3;
@@ -7471,7 +7471,10 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     if (onboardMonitor) {
         const monitorLabel = 'Onboard monitor';
         const powerType = onboardMonitor?.power?.input?.type;
-        if (powerType === 'LEMO 2-pin') {
+        const hasLemo2 = Array.isArray(powerType)
+            ? powerType.includes('LEMO 2-pin')
+            : powerType === 'LEMO 2-pin';
+        if (hasLemo2) {
             monitoringSupport.push(
                 `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`,
                 `D-Tap to Lemo-2-pin Cable 0,5m (${monitorLabel})`
@@ -7524,15 +7527,15 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     });
 
     const miscUnique = [...new Set(misc)];
-    const monitoringSupportUnique = [...new Set(monitoringSupport)];
+    const monitoringSupportList = monitoringSupport.slice();
     const riggingUnique = [...new Set(rigging)];
-    for (let i = 0; i < 4; i++) monitoringSupportUnique.push('BNC Connector');
+    for (let i = 0; i < 4; i++) monitoringSupportList.push('BNC Connector');
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
         fizCables: [...new Set(fizCables)],
         misc: miscUnique,
-        monitoringSupport: monitoringSupportUnique,
+        monitoringSupport: monitoringSupportList,
         rigging: riggingUnique
     };
 }
@@ -8093,10 +8096,11 @@ function generateGearListHtml(info = {}) {
             .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
         const idSuffix = role === 'DoP' ? 'Dop' : role;
+        const labelRole = role.replace(/s$/, '');
         const selectedSize = devices && devices.monitors && devices.monitors[defaultName]
             ? devices.monitors[defaultName].screenSizeInches
             : '';
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Handheld Monitor</strong> - <span id="monitorSize${idSuffix}">${selectedSize}&quot;</span> - <select id="gearList${idSuffix}Monitor">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${labelRole} Handheld Monitor</strong> - <span id="monitorSize${idSuffix}">${selectedSize}&quot;</span> - <select id="gearList${idSuffix}Monitor">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
         monitorSizes.push(selectedSize);
     });
     largeMonitorPrefs.forEach(({ role }) => {
@@ -8256,7 +8260,7 @@ function generateGearListHtml(info = {}) {
             gripItems.push('sand bag (for Hi-Head)');
         }
     });
-    const standCount = gripItems.filter(item => /\bstand\b/i.test(item)).length;
+    const standCount = gripItems.filter(item => /\bstand\b/i.test(item) && !/wheel/i.test(item)).length;
     if (standCount) {
         gripItems.push(...Array(standCount * 3).fill('Tennisball'));
     }
