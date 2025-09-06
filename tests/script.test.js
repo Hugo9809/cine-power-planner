@@ -2349,7 +2349,7 @@ describe('script.js functions', () => {
     expect(text).toContain('2x Avenger Combo Stand 20 A1020B 110-198 cm black');
     expect(text).toContain('2x Apple Box Set / Bühnenkisten Set');
     expect(text).toContain('1x Paganini set');
-    expect(text).toContain('2x sand bag');
+    expect(text).toContain('2x sand bag (2x for Slider)');
     expect(text).toContain('3x cable mat');
     expect(text).toContain('12x tennis ball');
   });
@@ -2365,6 +2365,17 @@ describe('script.js functions', () => {
       const itemsRow = rows[gripIdx + 1];
       expect(itemsRow.textContent).toContain('Tango Beam');
     });
+  });
+
+  test('Slider with Frog Tripod and Hi-Head counts sand bags per context', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Slider', tripodTypes: 'Frog Tripod, Hi-Head' });
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
+    const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
+    const text = rows[gripIdx + 1].textContent;
+    expect(text).toContain('4x sand bag (1x for Frog Tripod, 1x for Hi-Head, 2x for Slider)');
   });
 
   test('Jib scenario adds EJib Arm, counter weights, and tripod legs', () => {

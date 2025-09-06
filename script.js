@@ -8112,10 +8112,20 @@ function generateGearListHtml(info = {}) {
                 const hasContext = ctxKeys.some(c => c);
                 let ctxParts = [];
                 if (hasContext) {
-                    const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
-                    const spareCount = total - realContexts.length;
-                    ctxParts = realContexts.map(c => `1x ${c}`);
-                    if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
+                    if (base === 'sand bag') {
+                        const realEntries = Object.entries(ctxCounts)
+                            .filter(([c]) => c && c.toLowerCase() !== 'spare')
+                            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                        const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
+                        const spareCount = total - usedCount;
+                        ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
+                        if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
+                    } else {
+                        const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
+                        const spareCount = total - realContexts.length;
+                        ctxParts = realContexts.map(c => `1x ${c}`);
+                        if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
+                    }
                 }
                 const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
                 const translatedBase = gearItemTranslations[currentLang]?.[base] || base;
@@ -8392,8 +8402,8 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Paganini set');
-        gripItems.push('sand bag');
-        gripItems.push('sand bag');
+        gripItems.push('sand bag (for Slider)');
+        gripItems.push('sand bag (for Slider)');
         gripItems.push('cable mat');
         gripItems.push('cable mat');
         gripItems.push('cable mat');
