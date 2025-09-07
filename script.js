@@ -2398,7 +2398,6 @@ function checkSetupChanged() {
 const projectDialog = document.getElementById("projectDialog");
 const projectForm = document.getElementById("projectForm");
 const filterSelectElem = document.getElementById('filter');
-const filterDetails = document.getElementById('filterDetails');
 const matteboxSelect = document.getElementById('mattebox');
 const projectCancelBtn = document.getElementById("projectCancel");
 const feedbackDialog = document.getElementById("feedbackDialog");
@@ -8090,74 +8089,6 @@ function ensureZoomRemoteSetup(info) {
     if (typeof saveCurrentSession === 'function') saveCurrentSession();
 }
 
-function expandFilterSelections(filters = []) {
-    const items = [];
-    const parseVals = v => v ? v.split('|').map(s => s.trim()).filter(Boolean) : [];
-    filters.forEach(f => {
-        if (!f) return;
-        const [type, rawSize = '4x5.65', rawVals = ''] = f.split(':').map(s => s.trim());
-        const size = rawSize.replace(',', '.');
-        const values = parseVals(rawVals);
-        switch (type) {
-            case 'Clear':
-                items.push(`${size} Clear Filter`);
-                break;
-            case 'IRND': {
-                const dens = values.length ? values : ['0.3', '1.2'];
-                dens.forEach(d => items.push(`${size} IRND Filter ${d}`));
-                break;
-            }
-            case 'Diopter': {
-                const diops = values.length ? values : ['+1/2', '+1', '+2', '+4'];
-                items.push('ARRI diopter frame');
-                diops.forEach(d => items.push(`Schneider CF DIOPTER FULL ${d} GEN2`));
-                break;
-            }
-            case 'Pol':
-                items.push(`${size} Pol Filter`);
-                break;
-            case 'Rota-Pol':
-                if (size === '95mm') {
-                    items.push('Tilta 95mm Polarizer Filter für Tilta Mirage');
-                } else if (size === '6x6') {
-                    items.push('ARRI K2.0017086 Rota Pola Filter Frame');
-                } else if (size === '4x5.65' || !size) {
-                    items.push('ARRI K2.0009434 Rota Pola Filter Frame');
-                }
-                break;
-            case 'ND Grad HE': {
-                const dens = values.length ? values : [
-                    '0.3 HE Horizontal',
-                    '0.6 HE Horizontal',
-                    '0.9 HE Horizontal'
-                ];
-                dens.forEach(d => items.push(`${size} ND Grad HE Filter ${d}`));
-                items.push('ARRI LMB 4x5 Pro Set');
-                items.push('ARRI LMB 19mm Studio Rod Adapter');
-                items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                break;
-            }
-            case 'ND Grad SE': {
-                const dens = values.length ? values : [
-                    '0.3 SE Horizontal',
-                    '0.6 SE Horizontal',
-                    '0.9 SE Horizontal'
-                ];
-                dens.forEach(d => items.push(`${size} ND Grad SE Filter ${d}`));
-                items.push('ARRI LMB 4x5 Pro Set');
-                items.push('ARRI LMB 19mm Studio Rod Adapter');
-                items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                break;
-            }
-            default: {
-                const strengths = values.length ? values : ['1/2', '1/4', '1/8'];
-                items.push(`${size} ${type} Filter Set ${strengths.join(' + ')}`);
-            }
-        }
-    });
-    return items;
-}
-
 function generateGearListHtml(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
@@ -8246,12 +8177,11 @@ function generateGearListHtml(info = {}) {
         const lens = devices.lenses && devices.lenses[name];
         return Math.max(max, lens && lens.frontDiameterMm || 0);
     }, 0);
-    const filterTokens = info.filter
-        ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
-    const filterTypes = filterTokens.map(f => f.split(':')[0].trim());
+    const parsedFilters = parseFilterTokens(info.filter);
+    const filterTypes = parsedFilters.map(f => f.type);
     const needsSwingAway = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
-    let filterSelections = expandFilterSelections(filterTokens);
+    let filterSelections = collectFilterAccessories(parsedFilters);
+    const filterSelectHtml = buildFilterSelectHtml(parsedFilters);
     if (info.mattebox && !needsSwingAway) {
         const matteboxes = devices.accessories?.matteboxes || {};
         for (const [name, mb] of Object.entries(matteboxes)) {
@@ -8595,7 +8525,7 @@ function generateGearListHtml(info = {}) {
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
-    addRow('Matte box + filter', formatItems(filterSelections));
+    addRow('Matte box + filter', [filterSelectHtml, formatItems(filterSelections)].filter(Boolean).join('<br>'));
     addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
     if (selectedNames.battery) {
@@ -10398,7 +10328,28 @@ function populateFilterDropdown() {
 
 const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
 
-function createFilterSizeSelect(type) {
+function getFilterValueConfig(type) {
+  switch (type) {
+    case 'IRND':
+      return { opts: ['0.3','0.6','0.9','1.2','1.5','1.8','2.1','2.5'], defaults: ['0.3','1.2'] };
+    case 'Diopter':
+      return { opts: ['+1/4','+1/2','+1','+2','+3','+4'], defaults: ['+1/2','+1','+2','+4'] };
+    case 'ND Grad HE':
+      return {
+        opts: ['0.3 HE Vertical','0.6 HE Vertical','0.9 HE Vertical','1.2 HE Vertical','0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal','1.2 HE Horizontal'],
+        defaults: ['0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal']
+      };
+    case 'ND Grad SE':
+      return {
+        opts: ['0.3 SE Vertical','0.6 SE Vertical','0.9 SE Vertical','1.2 SE Vertical','0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal','1.2 SE Horizontal'],
+        defaults: ['0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal']
+      };
+    default:
+      return { opts: ['1','1/2','1/4','1/8','1/16'], defaults: ['1/2','1/4','1/8'] };
+  }
+}
+
+function createFilterSizeSelect(type, selected = '4x5.65') {
   const sel = document.createElement('select');
   sel.id = `filter-size-${filterId(type)}`;
   let sizes = ['4x4', '4x5.65', '6x6', '95mm'];
@@ -10407,44 +10358,23 @@ function createFilterSizeSelect(type) {
     const o = document.createElement('option');
     o.value = s;
     o.textContent = s;
-    if (s === '4x5.65') o.selected = true;
+    if (s === selected) o.selected = true;
     sel.appendChild(o);
   });
   return sel;
 }
 
-function createFilterValueSelect(type) {
+function createFilterValueSelect(type, selected = []) {
   const sel = document.createElement('select');
   sel.id = `filter-values-${filterId(type)}`;
   sel.multiple = true;
-  let opts = [], defaults = [];
-  switch (type) {
-    case 'IRND':
-      opts = ['0.3','0.6','0.9','1.2','1.5','1.8','2.1','2.5'];
-      defaults = ['0.3','1.2'];
-      break;
-    case 'Diopter':
-      opts = ['+1/4','+1/2','+1','+2','+3','+4'];
-      defaults = ['+1/2','+1','+2','+4'];
-      break;
-    case 'ND Grad HE':
-      opts = ['0.3 HE Vertical','0.6 HE Vertical','0.9 HE Vertical','1.2 HE Vertical','0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal','1.2 HE Horizontal'];
-      defaults = ['0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal'];
-      break;
-    case 'ND Grad SE':
-      opts = ['0.3 SE Vertical','0.6 SE Vertical','0.9 SE Vertical','1.2 SE Vertical','0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal','1.2 SE Horizontal'];
-      defaults = ['0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal'];
-      break;
-    default:
-      opts = ['1','1/2','1/4','1/8','1/16'];
-      defaults = ['1/2','1/4','1/8'];
-      break;
-  }
+  const { opts, defaults } = getFilterValueConfig(type);
+  const selectedVals = selected.length ? selected : defaults;
   opts.forEach(o => {
     const opt = document.createElement('option');
     opt.value = o;
     opt.textContent = o;
-    if (defaults.includes(o)) opt.selected = true;
+    if (selectedVals.includes(o)) opt.selected = true;
     sel.appendChild(opt);
   });
   sel.size = opts.length;
@@ -10452,20 +10382,10 @@ function createFilterValueSelect(type) {
 }
 
 function renderFilterDetails() {
-  if (!filterSelectElem || !filterDetails) return;
-  filterDetails.innerHTML = '';
-  const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
-  selected.forEach(type => {
-    const wrap = document.createElement('div');
-    wrap.className = 'filter-detail';
-    wrap.dataset.type = type;
-    wrap.appendChild(createFilterSizeSelect(type));
-    if (!['Clear','Pol','Rota-Pol'].includes(type)) {
-      wrap.appendChild(createFilterValueSelect(type));
-    }
-    filterDetails.appendChild(wrap);
-  });
+  if (!filterSelectElem) return;
+  // No more rendering in project requirements; keep matte box logic only
   if (matteboxSelect) {
+    const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
     const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
     if (needsSwing) matteboxSelect.value = 'Swing Away';
   }
@@ -10478,7 +10398,10 @@ function collectFilterSelections() {
     const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
     const size = sizeSel ? sizeSel.value : '4x5.65';
     const valSel = document.getElementById(`filter-values-${filterId(type)}`);
-    const vals = valSel ? Array.from(valSel.selectedOptions).map(o => o.value) : [];
+    let vals = valSel ? Array.from(valSel.selectedOptions).map(o => o.value) : [];
+    if (!valSel || vals.length === 0) {
+      vals = getFilterValueConfig(type).defaults;
+    }
     return `${type}:${size}${vals.length ? ':' + vals.join('|') : ''}`;
   });
   return tokens.join(',');
@@ -10490,6 +10413,85 @@ function parseFilterTokens(str) {
     const [type, size = '4x5.65', vals = ''] = s.split(':').map(p => p.trim());
     return { type, size, values: vals ? vals.split('|').map(v => v.trim()) : [] };
   }).filter(t => t.type);
+}
+
+function buildFilterSelectHtml(filters = []) {
+  const parts = [];
+  filters.forEach(({ type, size = '4x5.65', values = [] }) => {
+    switch (type) {
+      case 'Diopter': {
+        const valSel = createFilterValueSelect(type, values);
+        parts.push('<span class="gear-item" data-gear-name="ARRI diopter frame">1x ARRI diopter frame</span>');
+        parts.push(`<span class="gear-item" data-gear-name="Schneider CF DIOPTER FULL GEN2">1x Schneider CF DIOPTER FULL ${valSel.outerHTML} GEN2</span>`);
+        break;
+      }
+      case 'Clear': {
+        const sizeSel = createFilterSizeSelect(type, size);
+        parts.push(`<span class="gear-item" data-gear-name="Clear Filter">1x ${sizeSel.outerHTML} Clear Filter</span>`);
+        break;
+      }
+      case 'IRND': {
+        const sizeSel = createFilterSizeSelect(type, size);
+        const valSel = createFilterValueSelect(type, values);
+        parts.push(`<span class="gear-item" data-gear-name="IRND Filter">1x ${sizeSel.outerHTML} IRND Filter ${valSel.outerHTML}</span>`);
+        break;
+      }
+      case 'Pol': {
+        const sizeSel = createFilterSizeSelect(type, size);
+        parts.push(`<span class="gear-item" data-gear-name="Pol Filter">1x ${sizeSel.outerHTML} Pol Filter</span>`);
+        break;
+      }
+      case 'Rota-Pol': {
+        const sizeSel = createFilterSizeSelect(type, size);
+        parts.push(`<span class="gear-item" data-gear-name="Rota Pola Filter Frame">1x ${sizeSel.outerHTML} Rota Pola Filter Frame</span>`);
+        break;
+      }
+      case 'ND Grad HE': {
+        const sizeSel = createFilterSizeSelect(type, size);
+        const valSel = createFilterValueSelect(type, values);
+        parts.push(`<span class="gear-item" data-gear-name="ND Grad HE Filter">1x ${sizeSel.outerHTML} ND Grad HE Filter ${valSel.outerHTML}</span>`);
+        break;
+      }
+      case 'ND Grad SE': {
+        const sizeSel = createFilterSizeSelect(type, size);
+        const valSel = createFilterValueSelect(type, values);
+        parts.push(`<span class="gear-item" data-gear-name="ND Grad SE Filter">1x ${sizeSel.outerHTML} ND Grad SE Filter ${valSel.outerHTML}</span>`);
+        break;
+      }
+      default: {
+        const sizeSel = createFilterSizeSelect(type, size);
+        const valSel = createFilterValueSelect(type, values);
+        parts.push(`<span class="gear-item" data-gear-name="${type} Filter Set">1x ${sizeSel.outerHTML} ${type} Filter Set ${valSel.outerHTML}</span>`);
+      }
+    }
+  });
+  return parts.join('<br>');
+}
+
+function collectFilterAccessories(filters = []) {
+  const items = [];
+  filters.forEach(({ type, size }) => {
+    switch (type) {
+      case 'ND Grad HE':
+      case 'ND Grad SE':
+        items.push('ARRI LMB 4x5 Pro Set');
+        items.push('ARRI LMB 19mm Studio Rod Adapter');
+        items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+        break;
+      case 'Rota-Pol':
+        if (size === '95mm') {
+          items.push('Tilta 95mm Polarizer Filter für Tilta Mirage');
+        } else if (size === '6x6') {
+          items.push('ARRI K2.0017086 Rota Pola Filter Frame');
+        } else {
+          items.push('ARRI K2.0009434 Rota Pola Filter Frame');
+        }
+        break;
+      default:
+        break;
+    }
+  });
+  return items;
 }
 
 function populateUserButtonDropdowns() {
