@@ -169,7 +169,7 @@ textarea:focus-visible {
 }
 h1, h2, h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--accent-color);
 }
 h1 {
@@ -599,7 +599,7 @@ button:disabled {
 
 .device-category h4 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--accent-color);
   margin-top: 0;
   margin-bottom: 10px;
@@ -1580,7 +1580,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--accent-color);
 }
 #overviewDialogContent h1 {
@@ -1647,7 +1647,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 #overviewDialogContent .device-category h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 700;
+  font-weight: 400;
   margin-top: 0;
   margin-bottom: 5px;
   border-bottom: 1px solid #eee;
