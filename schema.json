@@ -177,6 +177,13 @@
       "weight_g"
     ]
   },
+  "batteryHotswaps": {
+    "attributes": [
+      "capacity",
+      "mount_type",
+      "pinA"
+    ]
+  },
   "cameras": {
     "attributes": [
       "fizConnectors",
@@ -195,7 +202,9 @@
   },
   "directorMonitors": {
     "attributes": [
+      "brand",
       "brightnessNits",
+      "model",
       "power",
       "powerDrawWatts",
       "screenSizeInches",

@@ -26,6 +26,8 @@ const gear = {
   },
   "directorMonitors": {
     "Directors Monitor 17\" (SmallHD/FSI)": {
+      "brand": "SmallHD/FSI",
+      "model": "Directors Monitor 17\"",
       "screenSizeInches": 17,
       "brightnessNits": 1000,
       "powerDrawWatts": 45,
@@ -52,6 +54,8 @@ const gear = {
       ]
     },
     "Directors Monitor 13\" (SmallHD/FSI)": {
+      "brand": "SmallHD/FSI",
+      "model": "Directors Monitor 13\"",
       "screenSizeInches": 13,
       "brightnessNits": 1000,
       "powerDrawWatts": 30,
@@ -124,6 +128,8 @@ const gear = {
       ]
     },
     "Sony PVM-A170 17\" OLED": {
+      "brand": "Sony",
+      "model": "PVM-A170",
       "screenSizeInches": 17,
       "brightnessNits": 250,
       "powerDrawWatts": 54,
