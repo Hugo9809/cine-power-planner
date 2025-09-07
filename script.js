@@ -2273,7 +2273,9 @@ function getEasyrigValue() {
 }
 function setEasyrigValue(val) {
   const sel = getEasyrigSelect();
-  if (sel) sel.value = val;
+  if (sel && val && Array.from(sel.options).some(opt => opt.value === val)) {
+    sel.value = val;
+  }
 }
 
 let currentProjectInfo = null;
@@ -6208,6 +6210,7 @@ setupSelect.addEventListener("change", (event) => {
       batterySelect.value = setup.battery;
       hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
       setSliderBowlValue(setup.sliderBowl || '');
+      setEasyrigValue(setup.easyrig || '');
       updateBatteryOptions();
       if (gearListOutput) {
         displayGearAndRequirements(setup.gearList || '');
@@ -7936,6 +7939,7 @@ function populateProjectForm(info) {
     setMulti('tripodTypes', info.tripodTypes);
     setVal('tripodSpreader', info.tripodSpreader);
     setSliderBowlValue(info.sliderBowl || '');
+    setEasyrigValue(info.easyrig || '');
     setMulti('filter', info.filter);
 }
 
