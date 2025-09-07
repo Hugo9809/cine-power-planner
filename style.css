@@ -439,6 +439,25 @@ select {
   appearance: none;
 }
 
+input:hover,
+select:hover,
+textarea:hover {
+  background-color: var(--control-hover-bg);
+}
+
+input:active,
+select:active,
+textarea:active {
+  background-color: var(--control-active-bg);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: var(--control-disabled-bg);
+  cursor: not-allowed;
+}
+
 .clear-input-btn {
   margin-left: 4px;
   background: transparent;
