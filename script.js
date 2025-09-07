@@ -1805,7 +1805,7 @@ const powerDiagramBarElem = document.getElementById("powerDiagramBar");
 const maxPowerTextElem    = document.getElementById("maxPowerText");
 const powerDiagramLegendElem = document.getElementById("powerDiagramLegend");
 
-function drawPowerDiagram(availableWatt, segments) {
+function drawPowerDiagram(availableWatt, segments, maxPinA) {
   if (!powerDiagramElem || !powerDiagramBarElem || !maxPowerTextElem || !powerDiagramLegendElem) return;
   if (!availableWatt || availableWatt <= 0) {
     powerDiagramElem.classList.add("hidden");
@@ -1849,6 +1849,12 @@ function drawPowerDiagram(availableWatt, segments) {
   const limit = document.createElement("div");
   limit.className = "limit-line";
   limit.style.left = `${limitPos}px`;
+  if (typeof maxPinA === 'number' && maxPinA > 0) {
+    const label = document.createElement("span");
+    label.className = "limit-label";
+    label.textContent = `${texts[currentLang].pinLabel} ${maxPinA} A`;
+    limit.appendChild(label);
+  }
   powerDiagramBarElem.appendChild(limit);
 
   powerDiagramElem.classList.toggle("over", total > availableWatt);
@@ -4413,7 +4419,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     hotswapWarnElem.style.color = "";
   }
   lastRuntimeHours = null;
-  drawPowerDiagram(0, segments);
+  drawPowerDiagram(0, segments, 0);
 } else {
     const battData = devices.batteries[battery];
     const hsName = hotswapSelect.value;
@@ -4439,7 +4445,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     }
   }
     const availableWatt = maxPinA * lowV;
-    drawPowerDiagram(availableWatt, segments);
+    drawPowerDiagram(availableWatt, segments, maxPinA);
     totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
     totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
     if (totalWatt === 0) {
