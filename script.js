@@ -1879,6 +1879,41 @@ const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
 const shareLinkMessage = document.getElementById("shareLinkMessage");
 const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
+const sharedKeyMap = {
+  setupName: "s",
+  camera: "c",
+  monitor: "m",
+  video: "v",
+  cage: "g",
+  motors: "o",
+  controllers: "r",
+  distance: "d",
+  batteryPlate: "p",
+  battery: "b",
+  batteryHotswap: "h",
+  projectInfo: "i",
+  gearSelectors: "e",
+  changedDevices: "x",
+  feedback: "f"
+};
+
+function encodeSharedSetup(setup) {
+  const out = {};
+  Object.keys(sharedKeyMap).forEach(key => {
+    if (setup[key] != null) out[sharedKeyMap[key]] = setup[key];
+  });
+  return out;
+}
+
+function decodeSharedSetup(setup) {
+  if (setup.setupName || setup.camera) return setup;
+  const out = {};
+  Object.keys(sharedKeyMap).forEach(key => {
+    const short = sharedKeyMap[key];
+    if (setup[short] != null) out[key] = setup[short];
+  });
+  return out;
+}
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const cameraListElem  = document.getElementById("cameraList");
@@ -7389,7 +7424,9 @@ shareSetupBtn.addEventListener('click', () => {
   if (feedback.length) {
     currentSetup.feedback = feedback;
   }
-  const encoded = LZString.compressToEncodedURIComponent(JSON.stringify(currentSetup));
+  const encoded = LZString.compressToEncodedURIComponent(
+    JSON.stringify(encodeSharedSetup(currentSetup))
+  );
   const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
   if (link.length > 2000) {
     alert(texts[currentLang].shareLinkTooLong || 'Shared link is too long.');
@@ -9477,7 +9514,9 @@ function restoreSessionState() {
 
 function applySharedSetup(shared) {
   try {
-    const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
+    const decoded = decodeSharedSetup(
+      JSON.parse(LZString.decompressFromEncodedURIComponent(shared))
+    );
     if (decoded.changedDevices) {
       applyDeviceChanges(decoded.changedDevices);
     }
@@ -10488,6 +10527,8 @@ if (typeof module !== "undefined" && module.exports) {
     generatePrintableOverview,
     generateGearListHtml,
     ensureZoomRemoteSetup,
+    encodeSharedSetup,
+    decodeSharedSetup,
     applySharedSetupFromUrl,
     applySharedSetup,
     updateBatteryPlateVisibility,
