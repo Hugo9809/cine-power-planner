@@ -5056,19 +5056,43 @@ describe('monitor wireless metadata', () => {
     expect(document.getElementById('videoFrequency').value).toBe('5GHz');
   });
 
-  test('editing accessory charger preserves existing attributes', () => {
+  test('editing accessory charger updates fields', () => {
     const addDeviceBtn = document.getElementById('addDeviceBtn');
-    document.getElementById('newCategory').value = 'accessories.chargers';
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'accessories.chargers';
+    catSelect.dispatchEvent(new Event('change'));
     document.getElementById('newName').value = 'Single V-Mount Charger';
-    document.getElementById('newWatt').value = '30';
+    document.getElementById('newWatt').value = '40';
+    document.getElementById('attr-mount').value = 'Gold-Mount';
+    document.getElementById('attr-slots').value = '2';
+    document.getElementById('attr-chargingSpeedAmps').value = '4';
     addDeviceBtn.dataset.mode = 'edit';
     addDeviceBtn.dataset.originalName = 'Single V-Mount Charger';
     addDeviceBtn.click();
     expect(devices.accessories.chargers['Single V-Mount Charger']).toEqual({
+      mount: 'Gold-Mount',
+      slots: 2,
+      chargingSpeedAmps: 4,
+      powerDrawWatts: 40
+    });
+  });
+
+  test('adding accessory charger stores attributes', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'accessories.chargers';
+    catSelect.dispatchEvent(new Event('change'));
+    document.getElementById('newName').value = 'Triple Charger';
+    document.getElementById('newWatt').value = '60';
+    document.getElementById('attr-mount').value = 'V-Mount';
+    document.getElementById('attr-slots').value = '3';
+    document.getElementById('attr-chargingSpeedAmps').value = '2';
+    addDeviceBtn.click();
+    expect(devices.accessories.chargers['Triple Charger']).toEqual({
       mount: 'V-Mount',
-      slots: 1,
-      chargingSpeedAmps: 3,
-      powerDrawWatts: 30
+      slots: 3,
+      chargingSpeedAmps: 2,
+      powerDrawWatts: 60
     });
   });
 

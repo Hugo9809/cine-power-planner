@@ -22,6 +22,16 @@ try {
   }
 }
 
+let deviceSchema;
+try {
+  deviceSchema = require('./schema.json');
+} catch {
+  if (typeof fetch === 'function') {
+    fetch('schema.json').then(r => r.json()).then(d => { deviceSchema = d; });
+  } else {
+    deviceSchema = {};
+  }
+}
 
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -1885,6 +1895,7 @@ const subcategoryFieldDiv = document.getElementById("subcategoryField");
 const newNameInput    = document.getElementById("newName");
 const newWattInput    = document.getElementById("newWatt");
 const wattFieldDiv    = document.getElementById("wattField");
+const dynamicFieldsDiv = document.getElementById("dynamicFields");
 const cameraFieldsDiv = document.getElementById("cameraFields");
 const cameraWattInput = document.getElementById("cameraWatt");
 const cameraVoltageInput = document.getElementById("cameraVoltage");
@@ -1971,6 +1982,64 @@ const exportOutput    = document.getElementById("exportOutput");
 const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const skipLink       = document.getElementById("skipLink");
+
+function getSchemaAttributesForCategory(category) {
+  if (!deviceSchema) return [];
+  const parts = category.split('.');
+  let node = deviceSchema;
+  for (const p of parts) {
+    node = node && node[p];
+    if (!node) return [];
+  }
+  return Array.isArray(node.attributes) ? node.attributes : [];
+}
+
+function clearDynamicFields() {
+  if (!dynamicFieldsDiv) return;
+  dynamicFieldsDiv.innerHTML = '';
+  dynamicFieldsDiv.style.display = 'none';
+}
+
+function buildDynamicFields(category, data = {}) {
+  if (!dynamicFieldsDiv) return;
+  const attrs = getSchemaAttributesForCategory(category);
+  dynamicFieldsDiv.innerHTML = '';
+  if (!attrs.length) {
+    dynamicFieldsDiv.style.display = 'none';
+    return;
+  }
+  dynamicFieldsDiv.style.display = 'block';
+  for (const attr of attrs) {
+    const row = document.createElement('div');
+    row.className = 'form-row';
+    const label = document.createElement('label');
+    label.setAttribute('for', `attr-${attr}`);
+    label.textContent = `${attr}:`;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = `attr-${attr}`;
+    input.value = data && data[attr] !== undefined ? data[attr] : '';
+    row.appendChild(label);
+    row.appendChild(input);
+    dynamicFieldsDiv.appendChild(row);
+  }
+}
+
+function collectDynamicFieldValues(category) {
+  const attrs = getSchemaAttributesForCategory(category);
+  const result = {};
+  for (const attr of attrs) {
+    const el = document.getElementById(`attr-${attr}`);
+    if (el) {
+      const val = el.value.trim();
+      if (val !== '') {
+        const num = Number(val);
+        result[attr] = isNaN(num) ? val : num;
+      }
+    }
+  }
+  return result;
+}
 const languageSelect  = document.getElementById("languageSelect");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
 const darkModeToggle  = document.getElementById("darkModeToggle");
@@ -6242,6 +6311,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   motorFieldsDiv.style.display = "none";
   controllerFieldsDiv.style.display = "none";
   distanceFieldsDiv.style.display = "none";
+  clearDynamicFields();
 
   if (type === "batteries") {
     wattFieldDiv.style.display = "none";
@@ -6343,9 +6413,11 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     }
     newSubcategorySelect.value = subcategory || '';
     newSubcategorySelect.disabled = true;
+    buildDynamicFields(`accessories.cables.${subcategory}`, deviceData);
   } else {
     const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
     newWattInput.value = watt || '';
+    buildDynamicFields(categoryKey, deviceData);
   }
 }
 
@@ -6454,6 +6526,7 @@ deviceManagerSection.addEventListener('keydown', (event) => {
 newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
   placeWattField(val);
+  clearDynamicFields();
   subcategoryFieldDiv.style.display = "none";
   newSubcategorySelect.innerHTML = "";
   newSubcategorySelect.disabled = false;
@@ -6557,6 +6630,9 @@ newCategorySelect.addEventListener("change", () => {
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
       newSubcategorySelect.appendChild(opt);
     }
+    if (newSubcategorySelect.value) {
+      buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`);
+    }
   } else {
     wattFieldDiv.style.display = "block";
     batteryFieldsDiv.style.display = "none";
@@ -6567,6 +6643,7 @@ newCategorySelect.addEventListener("change", () => {
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
+    buildDynamicFields(val);
   }
   newWattInput.value = "";
   newCapacityInput.value = "";
@@ -6632,6 +6709,12 @@ newCategorySelect.addEventListener("change", () => {
   newNameInput.value = ""; // Clear name to avoid accidental update
   cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
   cancelEditBtn.style.display = "none";
+});
+
+newSubcategorySelect.addEventListener('change', () => {
+  if (newCategorySelect.value === 'accessories.cables') {
+    buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`);
+  }
 });
 
 function resetDeviceForm() {
@@ -6720,7 +6803,8 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && (name !== originalName || subcategory !== originalSubcategory)) {
       delete devices.accessories.cables[originalSubcategory][originalName];
     }
-    targetCategory[name] = existing;
+    const attrs = collectDynamicFieldValues(`accessories.cables.${subcategory}`);
+    targetCategory[name] = { ...existing, ...attrs };
   } else if (category === "cameras") {
     const watt = parseFloat(cameraWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -6894,17 +6978,12 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    const existing = isEditing ? targetCategory[originalName] : undefined;
+    const existing = isEditing ? targetCategory[originalName] : {};
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
-    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
-      targetCategory[name] = { ...existing, powerDrawWatts: watt };
-    } else if (existing !== undefined && typeof existing !== 'object') {
-      targetCategory[name] = watt;
-    } else {
-      targetCategory[name] = { powerDrawWatts: watt };
-    }
+    const attrs = collectDynamicFieldValues(category);
+    targetCategory[name] = { ...existing, ...attrs, powerDrawWatts: watt };
   }
 
   // After adding/updating, reset form and refresh lists
