@@ -264,6 +264,7 @@
   },
   "iosVideo": {
     "attributes": [
+      "brand",
       "frequency",
       "latencyMs",
       "notes",
@@ -292,6 +293,7 @@
       "audioIo",
       "audioOutput",
       "bluetooth",
+      "brand",
       "brightnessNits",
       "latencyMs",
       "power",
@@ -306,6 +308,7 @@
   },
   "video": {
     "attributes": [
+      "brand",
       "frequency",
       "latencyMs",
       "power",
@@ -326,6 +329,7 @@
   },
   "wirelessReceivers": {
     "attributes": [
+      "brand",
       "frequency",
       "latencyMs",
       "power",
