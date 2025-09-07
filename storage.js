@@ -131,17 +131,23 @@ function loadWithMigration(
 
 // Generate a unique name by appending numeric suffixes if needed
 // Comparisons are case-insensitive and ignore surrounding whitespace.
-function generateUniqueName(base, usedNames) {
+// Optionally accepts a set of normalized names to avoid recomputing the
+// normalised lookup on each call when generating many names in a loop.
+function generateUniqueName(base, usedNames, normalizedNames) {
   const trimmedBase = base.trim();
   let name = trimmedBase;
   let suffix = 2;
-  const normalized = new Set([...usedNames].map((n) => n.trim().toLowerCase()));
-  let candidate = name.toLowerCase();
+
+  const normalized = normalizedNames || new Set(
+    [...usedNames].map((n) => n.trim().toLowerCase()),
+  );
+  let candidate = trimmedBase.toLowerCase();
   while (normalized.has(candidate)) {
     name = `${trimmedBase} (${suffix++})`;
     candidate = name.toLowerCase();
   }
   usedNames.add(name);
+  normalized.add(candidate);
   return name;
 }
 
@@ -227,13 +233,15 @@ function normalizeSetups(rawData) {
   if (Array.isArray(rawData)) {
     const obj = {};
     const used = new Set();
-    rawData.forEach((item, idx) => {
+    const normalized = new Set();
+    for (let idx = 0; idx < rawData.length; idx += 1) {
+      const item = rawData[idx];
       if (isPlainObject(item)) {
         const base = item.name || item.setupName || `Setup ${idx + 1}`;
-        const key = generateUniqueName(base, used);
+        const key = generateUniqueName(base, used, normalized);
         obj[key] = item;
       }
-    });
+    }
     return obj;
   }
   return isPlainObject(rawData) ? rawData : {};
