@@ -318,6 +318,11 @@ a:focus {
   color: var(--text-color);
 }
 
+.help-content p,
+.help-content li {
+  line-height: 1.6;
+}
+
 
 #helpSearchContainer {
   position: relative;
