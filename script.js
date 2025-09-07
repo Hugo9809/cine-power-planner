@@ -10107,7 +10107,6 @@ function updateRequiredScenariosSummary() {
         videoDistributionSelect.appendChild(opt);
       }
     };
-    ensureOption('DoP Monitor 5" handheld');
     ensureOption('DoP Monitor 7" handheld');
     ensureOption('DoP Monitor 15-21"');
   }

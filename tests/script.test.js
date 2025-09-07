@@ -1867,13 +1867,13 @@ describe('script.js functions', () => {
   expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (1x Director handheld, 1x Spare)');
   });
 
-  test('Director 5" handheld monitor adds dropdown, batteries and grip items', () => {
+  test('Director 7" handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 5 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'Director Monitor 5" handheld' });
+    const html = generateGearListHtml({ videoDistribution: 'Director Monitor 7" handheld' });
     expect(html).toContain('<select id="gearListDirectorMonitor"');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V98micro (3x Director handheld)');
@@ -3248,14 +3248,16 @@ describe('script.js functions', () => {
     expect(html).not.toContain('<span class="req-value">IRND</span>');
   });
 
-  test('project requirements form includes handheld monitor size options', () => {
+  test('project requirements form includes handheld monitor 7" options', () => {
     setupDom(true);
     const sel = document.getElementById('videoDistribution');
     const values = Array.from(sel.options).map(o => o.value);
-    expect(values).toContain('Director Monitor 5" handheld');
     expect(values).toContain('Director Monitor 7" handheld');
-    expect(values).toContain('Gaffer Monitor 5" handheld');
     expect(values).toContain('Gaffer Monitor 7" handheld');
+    expect(values).toContain('DoP Monitor 7" handheld');
+    expect(values).not.toContain('Director Monitor 5" handheld');
+    expect(values).not.toContain('Gaffer Monitor 5" handheld');
+    expect(values).not.toContain('DoP Monitor 5" handheld');
   });
 
   test('sensor mode appears in project requirements when provided', () => {
