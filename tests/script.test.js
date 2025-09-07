@@ -4529,6 +4529,19 @@ describe('script.js functions', () => {
     document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
   });
 
+  test('hover help shows descriptions for entire sections', () => {
+    const hoverHelpButton = document.getElementById('hoverHelpButton');
+    const section = document.getElementById('setup-manager');
+
+    hoverHelpButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    section.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+
+    const tooltip = document.getElementById('hoverHelpTooltip');
+    expect(tooltip.textContent).toBe(texts.en.setupManageHeadingHelp);
+
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
+
   test('saved setups label has descriptive hover help', () => {
     const label = document.getElementById('savedSetupsLabel');
     expect(label.getAttribute('data-help')).toBe(texts.en.setupSelectHelp);

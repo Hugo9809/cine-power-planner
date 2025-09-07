@@ -1182,13 +1182,27 @@ function setLanguage(lang) {
     "data-help",
     texts[lang].setupManageHeadingHelp
   );
+  const setupManagerSection = document.getElementById("setup-manager");
+  if (setupManagerSection)
+    setupManagerSection.setAttribute(
+      "data-help",
+      texts[lang].setupManageHeadingHelp
+    );
 
-  const deviceSelectionHeadingElem = document.getElementById("deviceSelectionHeading");
+  const deviceSelectionHeadingElem = document.getElementById(
+    "deviceSelectionHeading"
+  );
   deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
   deviceSelectionHeadingElem.setAttribute(
     "data-help",
     texts[lang].deviceSelectionHeadingHelp
   );
+  const setupConfigSection = document.getElementById("setup-config");
+  if (setupConfigSection)
+    setupConfigSection.setAttribute(
+      "data-help",
+      texts[lang].deviceSelectionHeadingHelp
+    );
 
   const resultsHeadingElem = document.getElementById("resultsHeading");
   resultsHeadingElem.textContent = texts[lang].resultsHeading; // Fixed typo here
@@ -1196,20 +1210,39 @@ function setLanguage(lang) {
     "data-help",
     texts[lang].resultsHeadingHelp
   );
+  const resultsSection = document.getElementById("results");
+  if (resultsSection)
+    resultsSection.setAttribute("data-help", texts[lang].resultsHeadingHelp);
 
-  const deviceManagerHeadingElem = document.getElementById("deviceManagerHeading");
+  const deviceManagerHeadingElem = document.getElementById(
+    "deviceManagerHeading"
+  );
   deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
   deviceManagerHeadingElem.setAttribute(
     "data-help",
     texts[lang].deviceManagerHeadingHelp
   );
+  const deviceManagerSection = document.getElementById("device-manager");
+  if (deviceManagerSection)
+    deviceManagerSection.setAttribute(
+      "data-help",
+      texts[lang].deviceManagerHeadingHelp
+    );
 
-  const batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
+  const batteryComparisonHeadingElem = document.getElementById(
+    "batteryComparisonHeading"
+  );
   batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
   batteryComparisonHeadingElem.setAttribute(
     "data-help",
     texts[lang].batteryComparisonHeadingHelp
   );
+  const batteryComparisonSection = document.getElementById("batteryComparison");
+  if (batteryComparisonSection)
+    batteryComparisonSection.setAttribute(
+      "data-help",
+      texts[lang].batteryComparisonHeadingHelp
+    );
 
   const setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
   setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
@@ -1217,6 +1250,12 @@ function setLanguage(lang) {
     "data-help",
     texts[lang].setupDiagramHeadingHelp
   );
+  const setupDiagramSection = document.getElementById("setupDiagram");
+  if (setupDiagramSection)
+    setupDiagramSection.setAttribute(
+      "data-help",
+      texts[lang].setupDiagramHeadingHelp
+    );
   // Setup manager labels and buttons
   const savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
   savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
@@ -9789,8 +9828,7 @@ if (helpButton && helpDialog) {
     const el = e.target.closest(
       '[data-help], [aria-label], [title], [aria-labelledby], [alt]'
     );
-    // Ignore non-descriptive elements such as generic sections
-    if (!el || el.tagName === 'SECTION') {
+    if (!el) {
       hoverHelpTooltip.setAttribute('hidden', '');
       return;
     }
