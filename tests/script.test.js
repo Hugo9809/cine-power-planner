@@ -163,6 +163,16 @@ test('filter options include diopter', () => {
   expect(gear.filterOptions).toContain('Diopter');
 });
 
+test('camera support list renders camera support devices', () => {
+  setupDom(false);
+  devices.accessories.cameraSupport = { SupportA: {} };
+  require('../translations.js');
+  require('../script.js');
+  const listHtml = document.getElementById('cameraSupportList').innerHTML;
+  expect(listHtml).toContain('SupportA');
+  expect(listHtml).not.toContain(cageNames[0]);
+});
+
 test('restores project requirements from storage when gear list element is absent', () => {
   setupDom(true);
   const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
@@ -469,6 +479,12 @@ describe('script.js functions', () => {
     const select = document.getElementById('newCategory');
     const hasHotswap = Array.from(select.options).some(o => o.value === 'batteryHotswaps');
     expect(hasHotswap).toBe(true);
+  });
+
+  test('new device form includes camera support category option', () => {
+    const select = document.getElementById('newCategory');
+    const hasSupport = Array.from(select.options).some(o => o.value === 'accessories.cameraSupport');
+    expect(hasSupport).toBe(true);
   });
 
   test('populateLensDropdown fills lens list without duplicates and adds attributes', () => {
