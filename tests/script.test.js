@@ -6,7 +6,14 @@ global.TextEncoder = global.TextEncoder || UtilTextEncoder;
 global.TextDecoder = global.TextDecoder || UtilTextDecoder;
 const { JSDOM } = require('jsdom');
 const LZString = require('lz-string');
-const cagesData = require('../devices/cages.js');
+// Use a minimal cage fixture to keep memory usage low during tests. Only the
+// properties needed for the assertions are included.
+const cagesData = {
+  CageOne: { brand: 'BrandA', compatible: ['CamA'] },
+  CageTwo: { brand: 'BrandB', compatible: ['CamA'] }
+};
+const cageCamera = 'CamA';
+const cageNames = Object.keys(cagesData);
 
 // Read and cache the body of index.html once to avoid repeated disk access and
 // parsing in every test. This reduces memory churn and speeds up test setup.
@@ -14,26 +21,6 @@ const htmlBody = fs
   .readFileSync(path.join(__dirname, '../index.html'), 'utf8')
   .split('<body>')[1]
   .split('</body>')[0];
-let cageCamera = '';
-let cageNames = [];
-for (const [, cage] of Object.entries(cagesData)) {
-  if (Array.isArray(cage.compatible) && cage.compatible.length) {
-    const cam = cage.compatible[0];
-    const matches = Object.entries(cagesData)
-      .filter(([, c]) => Array.isArray(c.compatible) && c.compatible.includes(cam))
-      .map(([n]) => n);
-    if (matches.length >= 2) {
-      cageCamera = cam;
-      cageNames = matches;
-      break;
-    }
-  }
-}
-if (!cageCamera) {
-  const [firstName, firstCage] = Object.entries(cagesData)[0];
-  cageCamera = Array.isArray(firstCage.compatible) && firstCage.compatible.length ? firstCage.compatible[0] : 'CamA';
-  cageNames = [firstName];
-}
 
 function setupDom(removeGear) {
   jest.resetModules();
