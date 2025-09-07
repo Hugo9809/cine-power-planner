@@ -9482,6 +9482,10 @@ function autoSaveCurrentSetup() {
   checkSetupChanged();
 }
 
+function setSelectValue(select, value) {
+  if (select && value) select.value = value;
+}
+
 function restoreSessionState() {
   restoringSession = true;
   const state = loadSession();
@@ -9490,23 +9494,23 @@ function restoreSessionState() {
       setupNameInput.value = state.setupName || '';
       setupNameInput.dispatchEvent(new Event('input'));
     }
-    if (cameraSelect && state.camera) cameraSelect.value = state.camera;
+    setSelectValue(cameraSelect, state.camera);
     updateBatteryPlateVisibility();
-    if (batteryPlateSelect && state.batteryPlate) batteryPlateSelect.value = state.batteryPlate;
+    setSelectValue(batteryPlateSelect, state.batteryPlate);
     updateBatteryOptions();
-    if (monitorSelect && state.monitor) monitorSelect.value = state.monitor;
-    if (videoSelect && state.video) videoSelect.value = state.video;
-    if (cageSelect && state.cage) cageSelect.value = state.cage;
-    if (distanceSelect && state.distance) distanceSelect.value = state.distance;
+    setSelectValue(monitorSelect, state.monitor);
+    setSelectValue(videoSelect, state.video);
+    setSelectValue(cageSelect, state.cage);
+    setSelectValue(distanceSelect, state.distance);
     if (Array.isArray(state.motors)) {
       state.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
     }
     if (Array.isArray(state.controllers)) {
       state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
     }
-    if (batterySelect && state.battery) batterySelect.value = state.battery;
-    if (hotswapSelect && state.batteryHotswap) hotswapSelect.value = state.batteryHotswap;
-    if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
+    setSelectValue(batterySelect, state.battery);
+    setSelectValue(hotswapSelect, state.batteryHotswap);
+    setSelectValue(setupSelect, state.setupSelect);
     if (state.projectInfo) {
       currentProjectInfo = state.projectInfo;
       if (projectForm) populateProjectForm(currentProjectInfo);
@@ -9558,22 +9562,22 @@ function applySharedSetup(shared) {
       setupNameInput.value = decoded.setupName;
       setupNameInput.dispatchEvent(new Event('input'));
     }
-    if (cameraSelect && decoded.camera) cameraSelect.value = decoded.camera;
+    setSelectValue(cameraSelect, decoded.camera);
     updateBatteryPlateVisibility();
-    if (batteryPlateSelect && decoded.batteryPlate) batteryPlateSelect.value = decoded.batteryPlate;
+    setSelectValue(batteryPlateSelect, decoded.batteryPlate);
     updateBatteryOptions();
-    if (monitorSelect && decoded.monitor) monitorSelect.value = decoded.monitor;
-    if (videoSelect && decoded.video) videoSelect.value = decoded.video;
-    if (cageSelect && decoded.cage) cageSelect.value = decoded.cage;
-    if (distanceSelect && decoded.distance) distanceSelect.value = decoded.distance;
+    setSelectValue(monitorSelect, decoded.monitor);
+    setSelectValue(videoSelect, decoded.video);
+    setSelectValue(cageSelect, decoded.cage);
+    setSelectValue(distanceSelect, decoded.distance);
     if (Array.isArray(decoded.motors)) {
       decoded.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
     }
     if (Array.isArray(decoded.controllers)) {
       decoded.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
     }
-    if (batterySelect && decoded.battery) batterySelect.value = decoded.battery;
-    if (hotswapSelect && decoded.batteryHotswap) hotswapSelect.value = decoded.batteryHotswap;
+    setSelectValue(batterySelect, decoded.battery);
+    setSelectValue(hotswapSelect, decoded.batteryHotswap);
     saveCurrentSession();
     if (Array.isArray(decoded.feedback) && decoded.feedback.length) {
       const key = getCurrentSetupKey();
