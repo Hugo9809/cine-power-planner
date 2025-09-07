@@ -50,7 +50,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
   font-size: 0.85em;
   cursor: pointer;
   border-radius: var(--border-radius);
-  border: 1px solid var(--control-border);
+  border: none;
   background: var(--control-bg);
   color: var(--control-text);
   margin: 5px;
@@ -127,7 +127,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
   h1, h2, h3 { color: var(--inverse-text-color); }
   h2 { border-bottom: 2px solid var(--inverse-text-color); }
   th { background-color: var(--control-bg); font-weight: 700; }
-  .print-btn, .back-btn { background: var(--control-bg); color: var(--text-color); border-color: var(--panel-border); }
+  .print-btn, .back-btn { background: var(--control-bg); color: var(--text-color); }
   .device-category { background: var(--panel-bg); border-color: var(--panel-border); box-shadow: var(--panel-shadow); }
   .device-category h3 { border-bottom: 1px solid var(--inverse-text-color); color: var(--inverse-text-color); }
   .device-block { background: rgba(255,255,255,0.1); border-color: var(--control-border); box-shadow: var(--panel-shadow); }

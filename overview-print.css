@@ -176,13 +176,13 @@ table, th, td {
 #overviewDialogContent select {
   background: var(--surface-color) !important;
   color: var(--text-color) !important;
-  border: 1px solid var(--text-color) !important;
+  border: none !important;
 }
 
 #overviewDialogContent .diagram-controls button {
   background: var(--surface-color) !important;
   color: var(--text-color) !important;
-  border: 1px solid var(--text-color) !important;
+  border: none !important;
 }
 
 .power-conn {
