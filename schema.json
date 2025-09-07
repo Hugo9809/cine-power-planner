@@ -210,41 +210,40 @@
   "fiz": {
     "controllers": {
       "attributes": [
-        "battery_type",
+        "batteryType",
         "connectivity",
         "fizConnectors",
         "internalController",
         "notes",
         "powerDrawWatts",
-        "power_source"
+        "powerSource"
       ]
     },
     "distance": {
       "attributes": [
         "accuracy",
-        "connection_compatibility",
+        "connectionCompatibility",
         "fizConnectors",
-        "measurement_method",
-        "measurement_range",
+        "measurementMethod",
+        "measurementRange",
         "notes",
-        "output_display",
+        "outputDisplay",
         "powerDrawWatts"
       ]
     },
     "handUnits": {
       "attributes": [
-        "battery_type",
+        "batteryType",
         "connectivity",
         "fizConnectors",
         "internalController",
         "notes",
         "powerDrawWatts",
-        "power_source"
+        "powerSource"
       ]
     },
     "motors": {
       "attributes": [
-        "fizConnector",
         "fizConnectors",
         "gearTypes",
         "internalController",

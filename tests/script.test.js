@@ -3713,7 +3713,7 @@ describe('script.js functions', () => {
     global.devices.fiz.controllers.InternalCtrl = {
       powerDrawWatts: 1,
       fizConnector: 'LEMO 4-pin',
-      power_source: 'Internal Battery'
+      powerSource: 'Internal Battery'
     };
     global.devices.fiz.motors.PowerMotor = {
       powerDrawWatts: 2,
@@ -4636,7 +4636,7 @@ describe('script.js functions', () => {
       wirelessTx: true,
       internalController: true,
       torqueNm: 0.5,
-      power_source: 'battery'
+      powerSource: 'battery'
     };
     const html = script.generateConnectorSummary(data);
     expect(html).toContain('<span class="info-box power-conn">⚡ Power: 5 W</span>');

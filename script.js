@@ -680,7 +680,7 @@ function isArri(name) {
 function fizNeedsPower(name) {
   const d = devices.fiz?.controllers?.[name] || devices.fiz?.motors?.[name];
   if (!d) return false;
-  const ps = String(d.power_source || '').toLowerCase();
+  const ps = String(d.powerSource || '').toLowerCase();
   if (ps.includes('internal battery') && !ps.includes('external')) return false;
   return true;
 }
@@ -2416,7 +2416,7 @@ function getAllControllerConnectors() {
 function getAllControllerPowerSources() {
   const types = new Set();
   Object.values(devices.fiz?.controllers || {}).forEach(c => {
-    if (c && c.power_source) types.add(c.power_source);
+    if (c && c.powerSource) types.add(c.powerSource);
   });
   return Array.from(types).filter(Boolean).sort(localeSort);
 }
@@ -2424,7 +2424,7 @@ function getAllControllerPowerSources() {
 function getAllControllerBatteryTypes() {
   const types = new Set();
   Object.values(devices.fiz?.controllers || {}).forEach(c => {
-    if (c && c.battery_type) types.add(c.battery_type);
+    if (c && c.batteryType) types.add(c.batteryType);
   });
   return Array.from(types).filter(Boolean).sort(localeSort);
 }
@@ -2509,7 +2509,7 @@ function updateControllerConnectivityOptions() {
 function getAllDistanceConnections() {
   const types = new Set();
   Object.values(devices.fiz?.distance || {}).forEach(d => {
-    if (d && d.connection_compatibility) types.add(d.connection_compatibility);
+    if (d && d.connectionCompatibility) types.add(d.connectionCompatibility);
   });
   return Array.from(types).filter(Boolean).sort(localeSort);
 }
@@ -2517,7 +2517,7 @@ function getAllDistanceConnections() {
 function getAllDistanceMethods() {
   const types = new Set();
   Object.values(devices.fiz?.distance || {}).forEach(d => {
-    if (d && d.measurement_method) types.add(d.measurement_method);
+    if (d && d.measurementMethod) types.add(d.measurementMethod);
   });
   return Array.from(types).filter(Boolean).sort(localeSort);
 }
@@ -2525,7 +2525,7 @@ function getAllDistanceMethods() {
 function getAllDistanceDisplays() {
   const types = new Set();
   Object.values(devices.fiz?.distance || {}).forEach(d => {
-    if (d && d.output_display) types.add(d.output_display);
+    if (d && d.outputDisplay) types.add(d.outputDisplay);
   });
   return Array.from(types).filter(Boolean).sort(localeSort);
 }
@@ -5714,8 +5714,8 @@ function humanizeKey(key) {
     brightnessNits: 'Brightness (nits)',
     torqueNm: 'Torque (Nm)',
     internalController: 'Internal Controller',
-    power_source: 'Power Source',
-    battery_type: 'Battery Type',
+    powerSource: 'Power Source',
+    batteryType: 'Battery Type',
     connectivity: 'Connectivity'
   };
   if (map[key]) return map[key];
@@ -6175,8 +6175,8 @@ function inferDeviceCategory(key, data) {
   if (key === "viewfinders" || key.includes("viewfinder")) return "viewfinders";
   if (key === "video" || key === "wirelessReceivers" || key === "iosVideo" || data.videoInputs || data.videoOutputs || data.frequency !== undefined) return "video";
   if (key === "fiz.motors" || data.torqueNm !== undefined || data.gearTypes) return "fiz.motors";
-  if (key === "fiz.controllers" || data.power_source || data.battery_type || data.connectivity) return "fiz.controllers";
-  if (key === "fiz.distance" || data.measurement_method || data.connection_compatibility || data.measurement_range || data.accuracy) return "fiz.distance";
+  if (key === "fiz.controllers" || data.powerSource || data.batteryType || data.connectivity) return "fiz.controllers";
+  if (key === "fiz.distance" || data.measurementMethod || data.connectionCompatibility || data.measurementRange || data.accuracy) return "fiz.distance";
   return "generic";
 }
 
@@ -6266,18 +6266,18 @@ function populateDeviceForm(categoryKey, deviceData) {
       ? deviceData.fizConnectors.map(fc => fc.type).join(', ')
       : (deviceData.fizConnector || '');
     controllerConnectorInput.value = cc;
-    controllerPowerInput.value = deviceData.power_source || '';
-    controllerBatteryInput.value = deviceData.battery_type || '';
+    controllerPowerInput.value = deviceData.powerSource || '';
+    controllerBatteryInput.value = deviceData.batteryType || '';
     controllerConnectivityInput.value = deviceData.connectivity || '';
     controllerNotesInput.value = deviceData.notes || '';
   } else if (type === "fiz.distance") {
     distanceFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
-    distanceConnectionInput.value = deviceData.connection_compatibility || '';
-    distanceMethodInput.value = deviceData.measurement_method || '';
-    distanceRangeInput.value = deviceData.measurement_range || '';
+    distanceConnectionInput.value = deviceData.connectionCompatibility || '';
+    distanceMethodInput.value = deviceData.measurementMethod || '';
+    distanceRangeInput.value = deviceData.measurementRange || '';
     distanceAccuracyInput.value = deviceData.accuracy || '';
-    distanceOutputInput.value = deviceData.output_display || '';
+    distanceOutputInput.value = deviceData.outputDisplay || '';
     distanceNotesInput.value = deviceData.notes || '';
   } else {
     const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
@@ -6736,8 +6736,8 @@ addDeviceBtn.addEventListener("click", () => {
     targetCategory[name] = {
       powerDrawWatts: watt,
       fizConnector: controllerConnectorInput.value,
-      power_source: controllerPowerInput.value,
-      battery_type: controllerBatteryInput.value,
+      powerSource: controllerPowerInput.value,
+      batteryType: controllerBatteryInput.value,
       connectivity: controllerConnectivityInput.value,
       notes: controllerNotesInput.value
     };
@@ -6752,11 +6752,11 @@ addDeviceBtn.addEventListener("click", () => {
     }
     targetCategory[name] = {
       powerDrawWatts: watt,
-      connection_compatibility: distanceConnectionInput.value,
-      measurement_method: distanceMethodInput.value,
-      measurement_range: distanceRangeInput.value,
+      connectionCompatibility: distanceConnectionInput.value,
+      measurementMethod: distanceMethodInput.value,
+      measurementRange: distanceRangeInput.value,
       accuracy: distanceAccuracyInput.value,
-      output_display: distanceOutputInput.value,
+      outputDisplay: distanceOutputInput.value,
       notes: distanceNotesInput.value
     };
   } else {
@@ -7324,8 +7324,8 @@ function generateConnectorSummary(device) {
     if (typeof device.torqueNm === 'number') {
         specHtml += `<span class="info-box fiz-conn">⚙️ Torque: ${device.torqueNm} Nm</span>`;
     }
-    if (device.power_source) {
-        specHtml += `<span class="info-box power-conn">🔌 Power Source: ${escapeHtml(String(device.power_source))}</span>`;
+    if (device.powerSource) {
+        specHtml += `<span class="info-box power-conn">🔌 Power Source: ${escapeHtml(String(device.powerSource))}</span>`;
     }
 
     let extraHtml = '';
