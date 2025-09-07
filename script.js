@@ -8267,7 +8267,11 @@ function generateGearListHtml(info = {}) {
         let defaultName = names.includes('SmallHD Ultra 7') ? 'SmallHD Ultra 7' : names[0];
         if (size) {
             const sized = names.find(n => monitorsDb[n].screenSizeInches === size);
-            if (sized) defaultName = sized;
+            if (size === 7 && names.includes('SmallHD Ultra 7')) {
+                defaultName = 'SmallHD Ultra 7';
+            } else if (sized) {
+                defaultName = sized;
+            }
         }
         const opts = names
             .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
