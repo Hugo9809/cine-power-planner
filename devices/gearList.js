@@ -807,17 +807,23 @@ const gear = {
       "Sony NP-F970": {
         "capacity": 47,
         "mount_type": "NP-F",
-        "weight_g": 225
+        "weight_g": 225,
+        "pinA": 6,
+        "pinV": 7.2
       },
       "Sony NP-F750": {
         "capacity": 33,
         "mount_type": "NP-F",
-        "weight_g": 220
+        "weight_g": 220,
+        "pinA": 4,
+        "pinV": 7.2
       },
       "Sony NP-F550": {
         "capacity": 16,
         "mount_type": "NP-F",
-        "weight_g": 110
+        "weight_g": 110,
+        "pinA": 2,
+        "pinV": 7.2
       }
     },
     "chargers": {
