@@ -10555,7 +10555,7 @@ function buildFilterSelectHtml(filters = []) {
     switch (type) {
       case 'Diopter': {
         const valSel = createFilterValueSelect(type, values);
-        parts.push('<span class="gear-item filter-item" data-gear-name="ARRI diopter frame">1x ARRI diopter frame</span>');
+        parts.push('<span class="gear-item filter-item" data-gear-name="ARRI Diopter Frame 138mm">1x ARRI Diopter Frame 138mm</span>');
         parts.push(`<span class="gear-item filter-item" data-gear-name="Schneider CF DIOPTER FULL GEN2">1x Schneider CF DIOPTER FULL ${valSel.outerHTML} GEN2</span>`);
         break;
       }
@@ -10577,7 +10577,14 @@ function buildFilterSelectHtml(filters = []) {
       }
       case 'Rota-Pol': {
         const sizeSel = createFilterSizeSelect(type, size);
-        parts.push(`<span class="gear-item filter-item" data-gear-name="Rota Pola Filter Frame">1x ${sizeSel.outerHTML} Rota Pola Filter Frame</span>`);
+        let name = 'ARRI Rota Pola Filter Frame';
+        if (size === '6x6') {
+          name = 'ARRI Rota Pola Filter Frame (6x6)';
+        } else if (size === '95mm') {
+          name = 'Tilta 95mm Polarizer Filter for Tilta Mirage';
+        }
+        const displayName = name;
+        parts.push(`<span class="gear-item filter-item" data-gear-name="${name}">1x ${sizeSel.outerHTML} ${displayName}</span>`);
         break;
       }
       case 'ND Grad HE': {
@@ -10604,22 +10611,13 @@ function buildFilterSelectHtml(filters = []) {
 
 function collectFilterAccessories(filters = []) {
   const items = [];
-  filters.forEach(({ type, size }) => {
+  filters.forEach(({ type }) => {
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
         items.push('ARRI LMB 4x5 Pro Set');
         items.push('ARRI LMB 19mm Studio Rod Adapter');
         items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-        break;
-      case 'Rota-Pol':
-        if (size === '95mm') {
-          items.push('Tilta 95mm Polarizer Filter für Tilta Mirage');
-        } else if (size === '6x6') {
-          items.push('ARRI K2.0017086 Rota Pola Filter Frame');
-        } else {
-          items.push('ARRI K2.0009434 Rota Pola Filter Frame');
-        }
         break;
       default:
         break;
