@@ -8496,24 +8496,17 @@ function generateGearListHtml(info = {}) {
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
-    const toTitleCase = str => {
-        const smallWords = new Set(['and', 'for', 'of', 'the', 'to', 'a', 'an', 'in', 'on', 'with', 'at', 'm', 'cm', 'mm', 'kg']);
-        const words = str.split(' ');
-        return words.map((word, i) => {
-            const match = word.match(/^([^A-Za-z0-9]*)([A-Za-z0-9]+)([^A-Za-z0-9]*)$/);
-            if (!match) return word;
-            const [, pre, core, post] = match;
-            const lower = core.toLowerCase();
-            let transformed;
-            if (smallWords.has(lower) && i !== 0) {
-                transformed = lower;
-            } else if (core === core.toUpperCase()) {
-                transformed = core;
-            } else {
-                transformed = lower.charAt(0).toUpperCase() + lower.slice(1);
-            }
-            return pre + transformed + post;
-        }).join(' ');
+    const capitalizeWords = str => {
+        return String(str)
+            .split(' ')
+            .map(word => {
+                const match = word.match(/^([^A-Za-z0-9]*)([A-Za-z0-9]+)([^A-Za-z0-9]*)$/);
+                if (!match) return word;
+                const [, pre, core, post] = match;
+                const lower = core.toLowerCase();
+                return pre + lower.charAt(0).toUpperCase() + lower.slice(1) + post;
+            })
+            .join(' ');
     };
     const formatItems = arr => {
         const counts = {};
@@ -8540,7 +8533,7 @@ function generateGearListHtml(info = {}) {
                             .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                         const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                         const spareCount = total - usedCount;
-                        ctxParts = realEntries.map(([c, count]) => `${count}x ${toTitleCase(c)}`);
+                        ctxParts = realEntries.map(([c, count]) => `${count}x ${capitalizeWords(c)}`);
                         if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                     } else if (base.startsWith('Bebob ')) {
                         const realEntries = Object.entries(ctxCounts)
@@ -8548,18 +8541,18 @@ function generateGearListHtml(info = {}) {
                             .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                         const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                         const spareCount = total - usedCount;
-                        ctxParts = realEntries.map(([c, count]) => `${count}x ${toTitleCase(c)}`);
+                        ctxParts = realEntries.map(([c, count]) => `${count}x ${capitalizeWords(c)}`);
                         if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                     } else {
                         const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
                         const spareCount = total - realContexts.length;
-                        ctxParts = realContexts.map(c => `1x ${toTitleCase(c)}`);
+                        ctxParts = realContexts.map(c => `1x ${capitalizeWords(c)}`);
                         if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                     }
                 }
                 const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
                 const translatedBase = gearItemTranslations[currentLang]?.[base] || base;
-                const displayName = `${toTitleCase(translatedBase)}${ctxStr}`;
+                const displayName = `${capitalizeWords(translatedBase)}${ctxStr}`;
                 const dataName = `${base}${ctxStr}`;
                 return `<span class="gear-item" data-gear-name="${escapeHtml(dataName)}">${total}x ${escapeHtml(displayName)}</span>`;
             })
