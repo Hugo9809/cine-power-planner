@@ -753,16 +753,14 @@ describe('script.js functions', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][1];
     const expectedKeys = [
-      'projectName','productionCompany','rentalHouse','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+      'projectName','productionCompany','rentalHouse','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','videoDistribution','monitoringConfiguration','monitoringSupport','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
     expect(saved.projectInfo.videoDistribution).toContain('Director Monitor 5');
     expect(saved.projectInfo.tripodHeadBrand).toBe('OConnor');
     expect(saved.projectInfo.tripodBowl).toBe('100mm bowl');
-    expect(saved.projectInfo.viewfinderSettings).toBe('Viewfinder Clean Feed');
-    expect(saved.projectInfo.frameGuides).toBe('Frame Guide: Center Dot');
-    expect(saved.projectInfo.aspectMaskOpacity).toBe('Aspect Mask Opacity 100%');
+    expect(saved.projectInfo.monitoringSupport).toBe('Viewfinder Clean Feed, Frame Guide: Center Dot, Aspect Mask Opacity 100%');
     expect(saved.projectInfo.viewfinderEyeLeatherColor).toBe('Red');
   });
 
@@ -5510,7 +5508,7 @@ describe('monitor wireless metadata', () => {
     expect(value.getAttribute('data-help')).toContain('Codec: ProRes');
   });
 
-  test('project requirement boxes show icons for viewfinder settings, frame guides and aspect mask', () => {
+  test('project requirement boxes consolidate monitoring settings under monitoring support icon', () => {
     setupDom();
     require('../translations.js');
     const script = require('../script.js');
@@ -5523,7 +5521,7 @@ describe('monitor wireless metadata', () => {
     script.displayGearAndRequirements(html);
     const boxes = document.querySelectorAll('.requirement-box .req-icon');
     const icons = Array.from(boxes).map(el => el.textContent);
-    expect(icons).toEqual(['⚙️', '🎯', '🔲']);
+    expect(icons).toEqual(['🧰']);
   });
 
   test('gear list action buttons expose descriptive hover help', () => {

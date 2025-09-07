@@ -1782,9 +1782,6 @@ const projectFieldIcons = {
   cameraHandle: '🛠️',
   viewfinderExtension: '🔭',
   gimbal: '🌀',
-  viewfinderSettings: '⚙️',
-  frameGuides: '🎯',
-  aspectMaskOpacity: '🔲',
   monitoringSupport: '🧰',
   monitoringConfiguration: '🎛️',
   monitorUserButtons: '🔘',
@@ -8420,6 +8417,9 @@ function generateGearListHtml(info = {}) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
     delete projectInfo.monitoringSettings;
+    delete projectInfo.viewfinderSettings;
+    delete projectInfo.frameGuides;
+    delete projectInfo.aspectMaskOpacity;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
         productionCompany: 'Production Company',
@@ -8446,9 +8446,6 @@ function generateGearListHtml(info = {}) {
         viewfinderEyeLeatherColor: 'Viewfinder Eye Leather Color',
         mattebox: 'Mattebox',
         gimbal: 'Gimbal',
-        viewfinderSettings: 'Viewfinder Settings',
-        frameGuides: 'Frame Guides',
-        aspectMaskOpacity: 'Aspect Mask Opacity',
         videoDistribution: 'Video Distribution',
         monitoringSupport: 'Monitoring support',
         monitoringConfiguration: 'Monitoring configuration',
@@ -8474,7 +8471,10 @@ function generateGearListHtml(info = {}) {
         'tripodTypes',
         'tripodSpreader',
         'sliderBowl',
-        'lenses'
+        'lenses',
+        'viewfinderSettings',
+        'frameGuides',
+        'aspectMaskOpacity'
     ]);
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
