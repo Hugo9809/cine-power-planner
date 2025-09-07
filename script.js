@@ -2110,6 +2110,13 @@ function describeRequirement(field, value) {
     if (val) parts.push('Includes selected gimbal and support accessories.');
   } else if (field === 'filter') {
     if (val) parts.push('Adds selected filters to gear list.');
+  } else if (field === 'codec') {
+    if (val) parts.push('Notes chosen codec for post-production reference.');
+  } else if (field === 'monitoringConfiguration') {
+    if (val)
+      parts.push('Adds default monitors and cable sets for each role.');
+  } else if (field === 'videoDistribution') {
+    if (val) parts.push('Includes distribution hardware for the selected method.');
   }
   return parts.join(' ');
 }
@@ -2139,27 +2146,34 @@ function displayGearAndRequirements(html) {
     gearListOutput.innerHTML = gearHtml;
     gearListOutput.classList.remove('hidden');
     const findDevice = name => {
-      for (const cat of Object.values(devices)) {
+      for (const [catName, cat] of Object.entries(devices)) {
         if (cat && typeof cat === 'object') {
-          if (cat[name]) return cat[name];
+          if (cat[name]) return { info: cat[name], category: catName };
           for (const sub of Object.values(cat)) {
-            if (sub && sub[name]) return sub[name];
+            if (sub && sub[name]) return { info: sub[name], category: catName };
           }
         }
       }
-      return null;
+      return { info: null, category: '' };
     };
     gearListOutput.querySelectorAll('.gear-item').forEach(span => {
       const name = span.getAttribute('data-gear-name');
-      const info = findDevice(name);
-      let desc = '';
+      const { info, category } = findDevice(name);
+      const countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
+      const count = countMatch ? `${countMatch[1]}x ` : '';
+      const parts = [];
+      parts.push(`${count}${name}`.trim());
+      if (category) parts.push(`Category: ${category}`);
       if (info) {
         let summary = generateConnectorSummary(info);
-        summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
-        if (info.notes) summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
-        desc = summary;
+        summary = summary
+          ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+          : '';
+        if (info.notes)
+          summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
+        if (summary) parts.push(summary);
       }
-      if (!desc) desc = name;
+      const desc = parts.join(' – ');
       span.setAttribute('title', desc);
       span.setAttribute('data-help', desc);
     });
