@@ -10606,7 +10606,7 @@ function buildFilterSelectHtml(filters = []) {
       }
     }
   });
-  return parts.join(' ');
+  return parts.join('<br>');
 }
 
 function collectFilterAccessories(filters = []) {

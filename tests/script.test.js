@@ -1738,6 +1738,19 @@ describe('script.js functions', () => {
     expect(vals).toEqual(expect.arrayContaining(['1/2', '1/4', '1/8']));
   });
 
+  test('multiple filters render on separate lines', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'IRND,Pol' });
+    const dom = new JSDOM(html);
+    const rows = [...dom.window.document.querySelectorAll('#gearListOutput table tr')];
+    const idx = rows.findIndex(r => r.textContent.trim() === 'Matte box + filter');
+    const filterRow = rows[idx + 1];
+    const cellHtml = filterRow.querySelector('td').innerHTML;
+    expect(cellHtml).toMatch(/filter-item[^>]*>.*?<\/span><br><span class="gear-item filter-item"/);
+  });
+
   test('diopter filter includes frame and default strengths', () => {
     setupDom(false);
     require('../translations.js');
