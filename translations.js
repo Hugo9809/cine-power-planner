@@ -310,10 +310,14 @@ const texts = {
     exportGearListBtn: "Export Gear List",
     importGearListBtn: "Import Gear List",
     deleteGearListBtn: "Delete Gear List",
-    saveGearListBtnHelp: "Store the current gear list with the project.",
-    exportGearListBtnHelp: "Download the gear list as a JSON file.",
-    importGearListBtnHelp: "Load a gear list from a JSON file.",
-    deleteGearListBtnHelp: "Remove the saved gear list.",
+    saveGearListBtnHelp:
+      "Store the current gear list with the project so it reloads automatically and prints in overviews.",
+    exportGearListBtnHelp:
+      "Download the saved gear list and project notes as a JSON file.",
+    importGearListBtnHelp:
+      "Load a gear list from a JSON file, replacing the current table.",
+    deleteGearListBtnHelp:
+      "Remove the saved gear list from this project and hide the table.",
     confirmDeleteGearList: "Delete gear list?",
     alertNoSetupsToExport: "There are no saved projects to export.",
     alertImportSetupsSuccess: "Successfully imported {num_setups} projects.",
@@ -355,7 +359,7 @@ const texts = {
     generateOverviewHelp:
       "Generate a print-ready summary of any saved project, including power and connection details.",
     generateGearListHelp:
-      "Generate a table combining selected gear with project requirements. Field choices like lenses, scenarios or monitoring preferences automatically add related accessories and notes.",
+      "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
     shareSetupHelp:
       "Copy a unique link representing the current project that others can open to load the same configuration.",
     applySharedLinkHelp:
@@ -679,10 +683,14 @@ const texts = {
     exportGearListBtn: "Esporta elenco attrezzatura",
     importGearListBtn: "Importa elenco attrezzatura",
     deleteGearListBtn: "Elimina elenco attrezzatura",
-    saveGearListBtnHelp: "Salva l'elenco attrezzatura corrente con il progetto.",
-    exportGearListBtnHelp: "Scarica l'elenco attrezzatura come file JSON.",
-    importGearListBtnHelp: "Carica un elenco attrezzatura da un file JSON.",
-    deleteGearListBtnHelp: "Rimuovi l'elenco attrezzatura salvato.",
+    saveGearListBtnHelp:
+      "Salva l'elenco attrezzatura corrente con il progetto così da ricaricarlo e stamparlo nelle panoramiche.",
+    exportGearListBtnHelp:
+      "Scarica l'elenco attrezzatura salvato e le note del progetto come file JSON.",
+    importGearListBtnHelp:
+      "Carica un elenco attrezzatura da un file JSON sostituendo la tabella corrente.",
+    deleteGearListBtnHelp:
+      "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
     alertNoSetupsToExport: "Non ci sono configurazioni salvate per l'esportazione.",
     alertImportSetupsSuccess: "Importate correttamente {num_setups} configurazioni.",
@@ -719,7 +727,7 @@ const texts = {
     generateOverviewHelp:
       "Crea un riepilogo stampabile delle configurazioni salvate.",
     generateGearListHelp:
-      "Genera una tabella che combina l'attrezzatura selezionata con i requisiti del progetto. Le scelte del modulo (lenti, scenari, preferenze di monitoraggio, ecc.) aggiungono automaticamente accessori e note correlate.",
+      "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
     shareSetupHelp:
       "Copia un link che rappresenta la configurazione corrente.",
     applySharedLinkHelp: "Carica la configurazione dal link condiviso.",
@@ -1053,10 +1061,14 @@ const texts = {
     exportGearListBtn: "Exportar lista de equipo",
     importGearListBtn: "Importar lista de equipo",
     deleteGearListBtn: "Eliminar lista de equipo",
-    saveGearListBtnHelp: "Guarda la lista de equipo actual con el proyecto.",
-    exportGearListBtnHelp: "Descarga la lista de equipo como archivo JSON.",
-    importGearListBtnHelp: "Carga una lista de equipo desde un archivo JSON.",
-    deleteGearListBtnHelp: "Elimina la lista de equipo guardada.",
+    saveGearListBtnHelp:
+      "Guarda la lista de equipo actual con el proyecto para que se recargue y aparezca en los resúmenes.",
+    exportGearListBtnHelp:
+      "Descarga la lista de equipo guardada y las notas del proyecto como archivo JSON.",
+    importGearListBtnHelp:
+      "Carga una lista de equipo desde un archivo JSON reemplazando la tabla actual.",
+    deleteGearListBtnHelp:
+      "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
     alertNoSetupsToExport: "No hay configuraciones para exportar.",
     alertImportSetupsSuccess: "{num_setups} configuraciones importadas.",
@@ -1094,7 +1106,7 @@ const texts = {
     generateOverviewHelp:
       "Crea un resumen imprimible de las configuraciones guardadas.",
     generateGearListHelp:
-      "Genera una tabla que combina el equipo seleccionado con los requisitos del proyecto. Las opciones del formulario (lentes, escenarios, preferencias de monitoreo, etc.) agregan automáticamente accesorios y notas relacionadas.",
+      "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
     shareSetupHelp:
       "Copia un enlace que representa la configuración actual.",
     applySharedLinkHelp: "Carga la configuración desde el enlace compartido.",
@@ -1429,10 +1441,14 @@ const texts = {
     exportGearListBtn: "Exporter la liste du matériel",
     importGearListBtn: "Importer la liste du matériel",
     deleteGearListBtn: "Supprimer la liste du matériel",
-    saveGearListBtnHelp: "Enregistre la liste du matériel actuelle avec le projet.",
-    exportGearListBtnHelp: "Télécharge la liste du matériel au format JSON.",
-    importGearListBtnHelp: "Charge une liste du matériel depuis un fichier JSON.",
-    deleteGearListBtnHelp: "Supprime la liste du matériel enregistrée.",
+    saveGearListBtnHelp:
+      "Enregistre la liste du matériel actuelle avec le projet afin qu'elle se recharge et s'imprime dans les aperçus.",
+    exportGearListBtnHelp:
+      "Télécharge la liste du matériel enregistrée et les notes du projet au format JSON.",
+    importGearListBtnHelp:
+      "Charge une liste du matériel depuis un fichier JSON en remplaçant la table actuelle.",
+    deleteGearListBtnHelp:
+      "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
     alertNoSetupsToExport: "Aucune configuration à exporter.",
     alertImportSetupsSuccess: "{num_setups} configurations importées.",
@@ -1470,7 +1486,7 @@ const texts = {
     generateOverviewHelp:
       "Crée un aperçu imprimable des configurations enregistrées.",
     generateGearListHelp:
-      "Génère un tableau combinant le matériel sélectionné et les exigences du projet. Les choix du formulaire (objectifs, scénarios, préférences de monitoring, etc.) ajoutent automatiquement les accessoires et remarques associés.",
+      "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
     shareSetupHelp:
       "Copie un lien représentant la configuration actuelle.",
     applySharedLinkHelp: "Charge la configuration depuis le lien partagé.",
@@ -1808,10 +1824,14 @@ const texts = {
     exportGearListBtn: "Gear-Liste exportieren",
     importGearListBtn: "Gear-Liste importieren",
     deleteGearListBtn: "Gear-Liste löschen",
-    saveGearListBtnHelp: "Speichert die aktuelle Gear-Liste im Projekt.",
-    exportGearListBtnHelp: "Lädt die Gear-Liste als JSON-Datei herunter.",
-    importGearListBtnHelp: "Lädt eine Gear-Liste aus einer JSON-Datei.",
-    deleteGearListBtnHelp: "Entfernt die gespeicherte Gear-Liste.",
+    saveGearListBtnHelp:
+      "Speichert die aktuelle Gear-Liste im Projekt, damit sie automatisch geladen und in Übersichten gedruckt wird.",
+    exportGearListBtnHelp:
+      "Lädt die gespeicherte Gear-Liste und Projektnotizen als JSON-Datei herunter.",
+    importGearListBtnHelp:
+      "Lädt eine Gear-Liste aus einer JSON-Datei und ersetzt damit die aktuelle Tabelle.",
+    deleteGearListBtnHelp:
+      "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
     confirmDeleteGearList: "Gear-Liste löschen?",
     alertNoSetupsToExport: "Es gibt keine gespeicherten Setups zum Exportieren.",
     alertImportSetupsSuccess: "{num_setups} Setups erfolgreich importiert.",
@@ -1848,7 +1868,7 @@ const texts = {
     generateOverviewHelp:
       "Erstellt eine druckbare Übersicht der gespeicherten Konfigurationen.",
     generateGearListHelp:
-      "Erstellt eine Tabelle, die ausgewähltes Equipment mit den Projektanforderungen kombiniert. Formulareinträge wie Objektive, Szenarien oder Monitoring-Einstellungen fügen automatisch passende Zubehörteile und Hinweise hinzu.",
+      "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp:
       "Kopiert einen Link, der die aktuelle Konfiguration repräsentiert.",
     applySharedLinkHelp: "Lädt die Konfiguration aus dem geteilten Link.",
