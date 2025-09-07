@@ -9,8 +9,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -38,8 +37,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
@@ -68,8 +66,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "wirelessRX": true,
@@ -99,8 +96,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -128,8 +124,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
@@ -158,8 +153,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "wirelessRX": true,
@@ -189,8 +183,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -218,8 +211,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
@@ -248,8 +240,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "wirelessRX": true,
@@ -279,8 +270,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -301,8 +291,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -330,8 +319,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
@@ -360,8 +348,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "wirelessRX": true,
@@ -391,8 +378,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -420,8 +406,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
@@ -450,8 +435,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "wirelessRX": true,
@@ -481,8 +465,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -510,8 +493,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -532,8 +514,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-16",
         "type": "DC Barrel / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "wirelessRX": true,
@@ -563,8 +544,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-16",
         "type": "DC Barrel"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "wirelessRX": true,
@@ -591,8 +571,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-16",
         "type": "DC Barrel / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": true,
     "wirelessRX": true,
@@ -622,8 +601,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-24",
         "type": "4-pin Aviation / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "bluetooth": {
@@ -654,8 +632,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-24",
         "type": "4-pin Aviation / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -683,8 +660,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-24",
         "type": "4-pin Aviation / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "wireless": {
@@ -715,8 +691,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-24",
         "type": "4-pin Aviation / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -741,8 +716,7 @@ const monitorData = {
       "input": {
         "voltageRange": "6-16",
         "type": "DC Barrel / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -770,8 +744,7 @@ const monitorData = {
       "input": {
         "voltageRange": "6-16",
         "type": "DC Barrel / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -799,8 +772,7 @@ const monitorData = {
       "input": {
         "voltageRange": "6-16",
         "type": "DC Barrel / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -824,8 +796,7 @@ const monitorData = {
       "input": {
         "voltageRange": "6-16",
         "type": "DC Barrel / NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -853,8 +824,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-18",
         "type": "NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -885,8 +855,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-18",
         "type": "NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -911,8 +880,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-18",
         "type": "NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -937,8 +905,7 @@ const monitorData = {
       "input": {
         "voltageRange": "7-18",
         "type": "NP-F"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "audioOutput": {
@@ -963,8 +930,7 @@ const monitorData = {
       "input": {
         "voltageRange": "12",
         "type": "Mini XLR 3-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -983,8 +949,7 @@ const monitorData = {
       "input": {
         "voltageRange": "6.8-12",
         "type": "DC Barrel / D-Tap"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -1004,8 +969,7 @@ const monitorData = {
       "input": {
         "voltageRange": "10-34",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -1030,8 +994,7 @@ const monitorData = {
       "input": {
         "voltageRange": "12-24",
         "type": "Mini XLR 3-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -1050,8 +1013,7 @@ const monitorData = {
       "input": {
         "voltageRange": "6-17",
         "type": "LEMO 2-pin"
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [
@@ -1068,8 +1030,7 @@ const monitorData = {
       "input": {
         "voltageRange": "",
         "type": ""
-      },
-      "output": null
+      }
     },
     "wirelessTx": false,
     "videoInputs": [],
