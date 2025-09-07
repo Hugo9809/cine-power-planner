@@ -9554,7 +9554,7 @@ function restoreSessionState() {
     }
   }
   if (gearListOutput || projectRequirementsOutput) {
-    const projectName = setupSelect ? setupSelect.value : '';
+    const projectName = getCurrentProjectName();
     const storedProject = typeof loadProject === 'function' ? loadProject(projectName) : null;
     if (storedProject && (storedProject.gearList || storedProject.projectInfo)) {
       currentProjectInfo = storedProject.projectInfo || null;
