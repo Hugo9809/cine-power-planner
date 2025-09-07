@@ -113,18 +113,38 @@ function storeSession(state) {
 }
 
 /**
+ * Toggle a dialog element's visibility, gracefully handling browsers that do
+ * not support the dialog `showModal` or `close` APIs. When those methods are
+ * unavailable the function falls back to manipulating the `open` attribute
+ * directly.
+ *
+ * @param {HTMLDialogElement} dialog - The dialog to operate on.
+ * @param {boolean} shouldOpen - Whether the dialog should be opened or
+ *   closed.
+ */
+function toggleDialog(dialog, shouldOpen) {
+  if (!dialog) return;
+  if (shouldOpen) {
+    if (typeof dialog.showModal === 'function') {
+      dialog.showModal();
+    } else {
+      dialog.setAttribute('open', '');
+    }
+  } else if (typeof dialog.close === 'function') {
+    dialog.close();
+  } else {
+    dialog.removeAttribute('open');
+  }
+}
+
+/**
  * Open a dialog element, falling back to setting the `open` attribute when
  * the `showModal` method is unavailable.
  *
  * @param {HTMLDialogElement} dialog - The dialog to open.
  */
 function openDialog(dialog) {
-  if (!dialog) return;
-  if (typeof dialog.showModal === 'function') {
-    dialog.showModal();
-  } else {
-    dialog.setAttribute('open', '');
-  }
+  toggleDialog(dialog, true);
 }
 
 /**
@@ -134,12 +154,7 @@ function openDialog(dialog) {
  * @param {HTMLDialogElement} dialog - The dialog to close.
  */
 function closeDialog(dialog) {
-  if (!dialog) return;
-  if (typeof dialog.close === 'function') {
-    dialog.close();
-  } else {
-    dialog.removeAttribute('open');
-  }
+  toggleDialog(dialog, false);
 }
 
 /**
