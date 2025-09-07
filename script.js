@@ -145,7 +145,7 @@ const VIDEO_OUTPUT_TYPES = new Set([
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 const localeSort = (a, b) => collator.compare(a, b);
 
-const DEFAULT_FILTER_SIZE = '4x5,65';
+const DEFAULT_FILTER_SIZE = '4x5.65';
 
 // Labels for B-Mount support are defined in translations.js using the keys
 // batteryBMountLabel, totalCurrent336Label and totalCurrent216Label.

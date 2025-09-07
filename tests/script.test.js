@@ -14,7 +14,7 @@ const cagesData = {
 const cageCamera = 'CamA';
 const cageNames = Object.keys(cagesData);
 
-const DEFAULT_FILTER_SIZE = '4x5,65';
+const DEFAULT_FILTER_SIZE = '4x5.65';
 
 // Read and cache the body of index.html once via shared helper to avoid
 // duplicate disk access across test suites. This keeps memory usage low and
