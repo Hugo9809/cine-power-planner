@@ -1966,6 +1966,7 @@ const batteryPlateSelect = document.getElementById("batteryPlateSelect");
 const newCapacityInput = document.getElementById("newCapacity");
 const newPinAInput    = document.getElementById("newPinA");
 const newDtapAInput   = document.getElementById("newDtapA");
+const dtapRow         = newDtapAInput ? newDtapAInput.parentElement : null;
 const addDeviceBtn    = document.getElementById("addDeviceBtn");
 const cancelEditBtn  = document.getElementById("cancelEditBtn");
 const exportBtn       = document.getElementById("exportDataBtn");
@@ -6231,7 +6232,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     batteryFieldsDiv.style.display = "block";
     newCapacityInput.value = deviceData.capacity || '';
     newPinAInput.value = deviceData.pinA || '';
-    newDtapAInput.value = deviceData.dtapA || '';
+    if (dtapRow) dtapRow.style.display = categoryKey === "batteryHotswaps" ? "none" : "";
+    newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : (deviceData.dtapA || '');
   } else if (type === "cameras") {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "block";
@@ -6439,7 +6441,8 @@ newCategorySelect.addEventListener("change", () => {
   subcategoryFieldDiv.style.display = "none";
   newSubcategorySelect.innerHTML = "";
   newSubcategorySelect.disabled = false;
-  if (val === "batteries" || val === "accessories.batteries") {
+  if (dtapRow) dtapRow.style.display = "";
+  if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
@@ -6449,6 +6452,7 @@ newCategorySelect.addEventListener("change", () => {
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
     batteryFieldsDiv.style.display = "block";
+    if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
   } else if (val === "cameras") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
@@ -6670,19 +6674,29 @@ addDeviceBtn.addEventListener("click", () => {
     return;
   }
 
-  if (category === "batteries" || category === "accessories.batteries") {
+  if (category === "batteries" || category === "accessories.batteries" || category === "batteryHotswaps") {
     const capacity = parseFloat(newCapacityInput.value);
     const pinA = parseFloat(newPinAInput.value);
-    const dtapA = parseFloat(newDtapAInput.value);
-    if (isNaN(capacity) || isNaN(pinA) || isNaN(dtapA) || capacity <= 0 || pinA <= 0 || dtapA < 0) {
+    const dtapA = category === "batteryHotswaps" ? undefined : parseFloat(newDtapAInput.value);
+    if (
+      isNaN(capacity) ||
+      isNaN(pinA) ||
+      capacity <= 0 ||
+      pinA <= 0 ||
+      (category !== "batteryHotswaps" && (isNaN(dtapA) || dtapA < 0))
+    ) {
       alert(texts[currentLang].alertDeviceFields);
       return;
     }
-    // Delete original name entry if name changed during edit
+    const existing = isEditing ? targetCategory[originalName] : {};
     if (isEditing && name !== originalName) {
-        delete targetCategory[originalName];
+      delete targetCategory[originalName];
     }
-    targetCategory[name] = { capacity: capacity, pinA: pinA, dtapA: dtapA };
+    if (category === "batteryHotswaps") {
+      targetCategory[name] = { ...existing, capacity: capacity, pinA: pinA };
+    } else {
+      targetCategory[name] = { capacity: capacity, pinA: pinA, dtapA: dtapA };
+    }
   } else if (category === "accessories.cables") {
     const existing = isEditing
       ? devices.accessories.cables[originalSubcategory][originalName] || {}

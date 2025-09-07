@@ -4941,6 +4941,24 @@ describe('monitor wireless metadata', () => {
     expect(devices.accessories.batteries.AccBatA).toEqual({ capacity: 30, pinA: 8, dtapA: 2 });
   });
 
+  test('editing battery hotswap updates fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    devices.batteryHotswaps = { SwapA: { capacity: 20, pinA: 10, mount_type: 'V-Mount' } };
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'batteryHotswaps';
+    catSelect.dispatchEvent(new Event('change'));
+    expect(document.getElementById('newDtapA').parentElement.style.display).toBe('none');
+    document.getElementById('newName').value = 'SwapA';
+    document.getElementById('newCapacity').value = '25';
+    document.getElementById('newPinA').value = '12';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'SwapA';
+    addDeviceBtn.click();
+
+    expect(devices.batteryHotswaps.SwapA).toEqual({ capacity: 25, pinA: 12, mount_type: 'V-Mount' });
+  });
+
   test('editing viewfinder updates its fields', () => {
     const addDeviceBtn = document.getElementById('addDeviceBtn');
     devices.viewfinders = { ViewA: { powerDrawWatts: 5 } };
