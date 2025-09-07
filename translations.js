@@ -1900,9 +1900,9 @@ const texts = {
 
 const gearItems = {
   en: { 'tennis ball': 'tennis ball', 'Clapper Stick': 'Clapper Stick' },
-  it: { 'tennis ball': 'palla da tennis', 'Clapper Stick': 'Clapper Stick' },
-  es: { 'tennis ball': 'pelota de tenis', 'Clapper Stick': 'Clapper Stick' },
-  fr: { 'tennis ball': 'balle de tennis', 'Clapper Stick': 'Clapper Stick' },
+  it: { 'tennis ball': 'palla da tennis', 'Clapper Stick': 'clachette' },
+  es: { 'tennis ball': 'pelota de tenis', 'Clapper Stick': 'palillo de la claqueta' },
+  fr: { 'tennis ball': 'balle de tennis', 'Clapper Stick': 'baguette du clap' },
   de: { 'tennis ball': 'Tennisball', 'Clapper Stick': 'Klappenstift' }
 };
 
