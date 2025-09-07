@@ -5070,6 +5070,8 @@ describe('copy summary button without clipboard support', () => {
 
     delete navigator.clipboard;
 
+    document.execCommand = jest.fn(() => { throw new Error('execCommand not supported'); });
+
     const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
     const body = html.split('<body>')[1].split('</body>')[0];
     document.body.innerHTML = body;
@@ -5173,9 +5175,11 @@ describe('copy summary button without clipboard support', () => {
     script.setLanguage('en');
   });
 
-  test('copy summary button disabled when clipboard unsupported', () => {
+  test('copy summary button falls back to prompt when clipboard unsupported', () => {
     const btn = document.getElementById('copySummaryBtn');
-    expect(btn.disabled).toBe(true);
-    expect(btn.textContent).toBe(texts.en.copySummaryUnsupported);
+    expect(btn.disabled).toBe(false);
+    expect(btn.textContent).toBe(texts.en.copySummaryBtn);
+    btn.click();
+    expect(global.prompt).toHaveBeenCalled();
   });
 });

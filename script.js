@@ -72,6 +72,47 @@ function escapeHtml(str) {
   return escapeDiv.innerHTML;
 }
 
+/**
+ * Copy text to the system clipboard with fallbacks for older browsers.
+ *
+ * Uses the modern Clipboard API when available and falls back to the legacy
+ * `document.execCommand('copy')` approach otherwise. The promise rejects when
+ * copying fails in all supported mechanisms.
+ *
+ * @param {string} text - The text to copy.
+ * @returns {Promise<void>} Resolves when the text has been copied.
+ */
+function copyTextToClipboard(text) {
+  if (navigator?.clipboard?.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  return new Promise((resolve, reject) => {
+    if (!globalThis.document) {
+      reject(new Error('No document available'));
+      return;
+    }
+    const textarea = globalThis.document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'absolute';
+    textarea.style.left = '-9999px';
+    globalThis.document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      const successful = globalThis.document.execCommand('copy');
+      globalThis.document.body.removeChild(textarea);
+      if (successful) {
+        resolve();
+      } else {
+        reject(new Error('execCommand failed'));
+      }
+    } catch (err) {
+      globalThis.document.body.removeChild(textarea);
+      reject(err);
+    }
+  });
+}
+
 // Use a Set for O(1) lookups when validating video output types
 const VIDEO_OUTPUT_TYPES = new Set([
   '3G-SDI',
@@ -1221,17 +1262,10 @@ function setLanguage(lang) {
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-  if (navigator.clipboard) {
-    copySummaryBtn.textContent = texts[lang].copySummaryBtn;
-    copySummaryBtn.removeAttribute("disabled");
-    copySummaryBtn.setAttribute("title", texts[lang].copySummaryBtn);
-    copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryBtnHelp);
-  } else {
-    copySummaryBtn.textContent = texts[lang].copySummaryUnsupported;
-    copySummaryBtn.setAttribute("title", texts[lang].copySummaryUnsupported);
-    copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryUnsupported);
-    copySummaryBtn.setAttribute("disabled", "");
-  }
+  copySummaryBtn.textContent = texts[lang].copySummaryBtn;
+  copySummaryBtn.removeAttribute("disabled");
+  copySummaryBtn.setAttribute("title", texts[lang].copySummaryBtn);
+  copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryBtnHelp);
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -7015,13 +7049,9 @@ shareSetupBtn.addEventListener('click', () => {
     alert(texts[currentLang].shareLinkTooLong || 'Shared link is too long.');
     return;
   }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(link)
-      .then(() => alert(texts[currentLang].shareLinkCopied))
-      .catch(() => prompt(texts[currentLang].shareSetupPrompt, link));
-  } else {
-    prompt(texts[currentLang].shareSetupPrompt, link);
-  }
+  copyTextToClipboard(link)
+    .then(() => alert(texts[currentLang].shareLinkCopied))
+    .catch(() => prompt(texts[currentLang].shareSetupPrompt, link));
 });
 
 if (applySharedLinkBtn && sharedLinkInput) {
@@ -7045,28 +7075,27 @@ if (applySharedLinkBtn && sharedLinkInput) {
 }
 
 if (copySummaryBtn) {
-  if (typeof navigator !== 'undefined' && navigator.clipboard) {
-    copySummaryBtn.addEventListener('click', () => {
-      const lines = [
-        `${texts[currentLang].totalPowerLabel} ${totalPowerElem.textContent} W`,
-        `${texts[currentLang].totalCurrent144Label} ${totalCurrent144Elem.textContent} A`,
-        `${texts[currentLang].totalCurrent12Label} ${totalCurrent12Elem.textContent} A`,
-        `${texts[currentLang].batteryLifeLabel} ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}`,
-        `${texts[currentLang].batteryCountLabel} ${batteryCountElem.textContent}`
-      ];
-      navigator.clipboard.writeText(lines.join('\n')).then(() => {
-        copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
-        const resetTimer = setTimeout(() => {
-          copySummaryBtn.textContent = texts[currentLang].copySummaryBtn;
-        }, 2000);
-        if (typeof resetTimer.unref === 'function') {
-          resetTimer.unref();
-        }
-      });
+  copySummaryBtn.addEventListener('click', () => {
+    const lines = [
+      `${texts[currentLang].totalPowerLabel} ${totalPowerElem.textContent} W`,
+      `${texts[currentLang].totalCurrent144Label} ${totalCurrent144Elem.textContent} A`,
+      `${texts[currentLang].totalCurrent12Label} ${totalCurrent12Elem.textContent} A`,
+      `${texts[currentLang].batteryLifeLabel} ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}`,
+      `${texts[currentLang].batteryCountLabel} ${batteryCountElem.textContent}`
+    ];
+    const summary = lines.join('\n');
+    copyTextToClipboard(summary).then(() => {
+      copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
+      const resetTimer = setTimeout(() => {
+        copySummaryBtn.textContent = texts[currentLang].copySummaryBtn;
+      }, 2000);
+      if (typeof resetTimer.unref === 'function') {
+        resetTimer.unref();
+      }
+    }).catch(() => {
+      prompt(texts[currentLang].copySummaryBtn, summary);
     });
-  } else {
-    copySummaryBtn.setAttribute('disabled', '');
-  }
+  });
 }
 
 // Open feedback dialog and handle submission
