@@ -1691,11 +1691,17 @@ describe('script.js functions', () => {
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
     const html = generateGearListHtml({ filter: 'IRND:6x6:0.6|1.8,BPM:4x4:1|1/16,Pol:95mm' });
-    const filterSection = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
-    expect(filterSection).toContain('6x6 IRND Filter 0.6');
-    expect(filterSection).toContain('6x6 IRND Filter 1.8');
-    expect(filterSection).toContain('4x4 BPM Filter Set 1 + 1/16');
-    expect(filterSection).toContain('95mm Pol Filter');
+    const dom = new JSDOM(html);
+    const sizeIRND = dom.window.document.getElementById('filter-size-IRND');
+    expect(sizeIRND.value).toBe('6x6');
+    const valsIRND = [...dom.window.document.getElementById('filter-values-IRND').selectedOptions].map(o => o.value);
+    expect(valsIRND).toEqual(expect.arrayContaining(['0.6', '1.8']));
+    const sizeBPM = dom.window.document.getElementById('filter-size-BPM');
+    expect(sizeBPM.value).toBe('4x4');
+    const valsBPM = [...dom.window.document.getElementById('filter-values-BPM').selectedOptions].map(o => o.value);
+    expect(valsBPM).toEqual(expect.arrayContaining(['1', '1/16']));
+    const sizePol = dom.window.document.getElementById('filter-size-Pol');
+    expect(sizePol.value).toBe('95mm');
   });
 
   test('clear filter uses default size', () => {
@@ -1703,8 +1709,9 @@ describe('script.js functions', () => {
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
     const html = generateGearListHtml({ filter: 'Clear' });
-    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
-    expect(section).toContain('4x5.65 Clear Filter');
+    const dom = new JSDOM(html);
+    const sizeSel = dom.window.document.getElementById('filter-size-Clear');
+    expect(sizeSel.value).toBe('4x5.65');
   });
 
   test('pol filter uses default size', () => {
@@ -1712,8 +1719,9 @@ describe('script.js functions', () => {
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
     const html = generateGearListHtml({ filter: 'Pol' });
-    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
-    expect(section).toContain('4x5.65 Pol Filter');
+    const dom = new JSDOM(html);
+    const sizeSel = dom.window.document.getElementById('filter-size-Pol');
+    expect(sizeSel.value).toBe('4x5.65');
   });
 
   test('default filter set includes 1/2, 1/4 and 1/8', () => {
@@ -1721,8 +1729,10 @@ describe('script.js functions', () => {
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
     const html = generateGearListHtml({ filter: 'BPM' });
-    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
-    expect(section).toContain('4x5.65 BPM Filter Set 1/2 + 1/4 + 1/8');
+    const dom = new JSDOM(html);
+    const valSel = dom.window.document.getElementById('filter-values-BPM');
+    const vals = [...valSel.selectedOptions].map(o => o.value);
+    expect(vals).toEqual(expect.arrayContaining(['1/2', '1/4', '1/8']));
   });
 
   test('diopter filter includes frame and default strengths', () => {
@@ -1730,12 +1740,12 @@ describe('script.js functions', () => {
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
     const html = generateGearListHtml({ filter: 'Diopter' });
-    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
-    expect(section).toContain('ARRI diopter frame');
-    expect(section).toContain('Schneider CF DIOPTER FULL +1/2 GEN2');
-    expect(section).toContain('Schneider CF DIOPTER FULL +1 GEN2');
-    expect(section).toContain('Schneider CF DIOPTER FULL +2 GEN2');
-    expect(section).toContain('Schneider CF DIOPTER FULL +4 GEN2');
+    const dom = new JSDOM(html);
+    const frame = dom.window.document.querySelector('[data-gear-name="ARRI diopter frame"]');
+    expect(frame).not.toBeNull();
+    const valSel = dom.window.document.getElementById('filter-values-Diopter');
+    const vals = [...valSel.selectedOptions].map(o => o.value);
+    expect(vals).toEqual(expect.arrayContaining(['+1/2', '+1', '+2', '+4']));
   });
 
   test('collectProjectFormData builds default filter token', () => {
@@ -1753,16 +1763,19 @@ describe('script.js functions', () => {
   test('collectProjectFormData handles custom filter selections', () => {
     setupDom(false);
     require('../translations.js');
-    const { collectProjectFormData } = require('../script.js');
+    const { collectProjectFormData, generateGearListHtml, displayGearAndRequirements } = require('../script.js');
     const filterSelect = document.getElementById('filter');
     const opt = [...filterSelect.options].find(o => o.value === 'IRND');
     opt.selected = true;
     filterSelect.dispatchEvent(new window.Event('change'));
+    let info = collectProjectFormData();
+    const html = generateGearListHtml(info);
+    displayGearAndRequirements(html);
     const sizeSel = document.getElementById('filter-size-IRND');
     sizeSel.value = '6x6';
     const valSel = document.getElementById('filter-values-IRND');
     [...valSel.options].forEach(o => { o.selected = ['0.6','1.8'].includes(o.value); });
-    const info = collectProjectFormData();
+    info = collectProjectFormData();
     expect(info.filter).toBe('IRND:6x6:0.6|1.8');
   });
 
@@ -1771,21 +1784,29 @@ describe('script.js functions', () => {
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
     const html = generateGearListHtml({ filter: 'ND Grad HE,ND Grad SE', mattebox: 'ARRI LMB 4x5 Clamp-On (3-Stage)' });
+    const dom = new JSDOM(html);
+    const sizeHE = dom.window.document.getElementById('filter-size-ND_Grad_HE');
+    expect(sizeHE.value).toBe('4x5.65');
+    const valHE = [...dom.window.document.getElementById('filter-values-ND_Grad_HE').selectedOptions].map(o => o.value);
+    expect(valHE).toEqual(expect.arrayContaining(['0.3 HE Horizontal']));
+    const sizeSE = dom.window.document.getElementById('filter-size-ND_Grad_SE');
+    expect(sizeSE.value).toBe('4x5.65');
+    const valSE = [...dom.window.document.getElementById('filter-values-ND_Grad_SE').selectedOptions].map(o => o.value);
+    expect(valSE).toEqual(expect.arrayContaining(['0.3 SE Horizontal']));
     const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
-    expect(section).toContain('4x5.65 ND Grad HE Filter 0.3 HE Horizontal');
-    expect(section).toContain('4x5.65 ND Grad SE Filter 0.3 SE Horizontal');
     expect(section).toContain('ARRI LMB 4x5 Pro Set');
     expect(section).not.toContain('ARRI LMB 4x5 Clamp-On (3-Stage)');
   });
 
-  test('Rota-Pol frame depends on selected size', () => {
+  test('Rota-Pol filter provides size dropdown', () => {
     setupDom(false);
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
-    const html = generateGearListHtml({ filter: 'Rota-Pol:6x6,Rota-Pol:95mm' });
-    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
-    expect(section).toContain('ARRI K2.0017086 Rota Pola Filter Frame');
-    expect(section).toContain('Tilta 95mm Polarizer Filter für Tilta Mirage');
+    const html = generateGearListHtml({ filter: 'Rota-Pol:6x6' });
+    const dom = new JSDOM(html);
+    const sel = dom.window.document.getElementById('filter-size-Rota_Pol');
+    const opts = [...sel.options].map(o => o.value);
+    expect(opts).toEqual(expect.arrayContaining(['4x5.65', '6x6', '95mm']));
   });
 
   test('standard rigging accessories are always included', () => {
