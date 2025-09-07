@@ -3047,6 +3047,8 @@ const gear = {
 
 // Expose lenses at the top level for easier access
 gear.lenses = gear.accessories.lenses;
+// Remove lenses from accessories to avoid duplicate entries
+delete gear.accessories.lenses;
 
   if (typeof registerDevice === 'function') {
   registerDevice('viewfinders', gear.viewfinders);
