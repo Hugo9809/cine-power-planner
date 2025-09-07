@@ -2260,6 +2260,17 @@ function setSliderBowlValue(val) {
   const sel = getSliderBowlSelect();
   if (sel) sel.value = val;
 }
+function getEasyrigSelect() {
+  return gearListOutput ? gearListOutput.querySelector('#gearListEasyrig') : null;
+}
+function getEasyrigValue() {
+  const sel = getEasyrigSelect();
+  return sel ? sel.value : '';
+}
+function setEasyrigValue(val) {
+  const sel = getEasyrigSelect();
+  if (sel) sel.value = val;
+}
 
 let currentProjectInfo = null;
 let loadedSetupState = null;
@@ -2280,6 +2291,7 @@ function getCurrentSetupState() {
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value,
     sliderBowl: getSliderBowlValue(),
+    easyrig: getEasyrigValue(),
     projectInfo
   };
 }
@@ -9341,6 +9353,8 @@ function bindGearListEasyrigListener() {
     if (sel) {
         sel.addEventListener('change', () => {
             saveCurrentGearList();
+            saveCurrentSession();
+            checkSetupChanged();
         });
     }
 }
@@ -9447,6 +9461,7 @@ function saveCurrentSession() {
     battery: batterySelect ? batterySelect.value : '',
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
     sliderBowl: getSliderBowlValue(),
+    easyrig: getEasyrigValue(),
     projectInfo: currentProjectInfo
   };
   storeSession(state);
@@ -9495,6 +9510,7 @@ function restoreSessionState() {
     if (batterySelect && state.battery) batterySelect.value = state.battery;
     if (hotswapSelect && state.batteryHotswap) hotswapSelect.value = state.batteryHotswap;
     setSliderBowlValue(state.sliderBowl);
+    setEasyrigValue(state.easyrig);
     if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
     if (state.projectInfo) {
       currentProjectInfo = state.projectInfo;
@@ -10458,8 +10474,11 @@ if (typeof module !== "undefined" && module.exports) {
     renderFeedbackTable,
     saveCurrentGearList,
     autoSaveCurrentSetup,
+    saveCurrentSession,
+    restoreSessionState,
     displayGearAndRequirements,
     ensureGearListActions,
+    bindGearListEasyrigListener,
     populateLensDropdown,
     populateCameraPropertyDropdown,
     populateRecordingResolutionDropdown,

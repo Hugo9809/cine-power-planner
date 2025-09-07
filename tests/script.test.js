@@ -2630,6 +2630,30 @@ describe('script.js functions', () => {
     ]);
   });
 
+  test('selected further stabilisation persists through session restore', () => {
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn();
+    global.saveProject = jest.fn();
+    const { generateGearListHtml, displayGearAndRequirements, ensureGearListActions, bindGearListEasyrigListener, restoreSessionState } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    displayGearAndRequirements(html);
+    ensureGearListActions();
+    bindGearListEasyrigListener();
+    const sel = document.querySelector('#gearListEasyrig');
+    sel.value = 'FlowCine Serene Spring Arm';
+    sel.dispatchEvent(new Event('change'));
+    // capture stored state
+    const state = global.saveSessionState.mock.calls.pop()[0];
+    expect(state.easyrig).toBe('FlowCine Serene Spring Arm');
+    const savedHtml = global.saveProject.mock.calls.pop()[0].gearList;
+    // Simulate reload using captured state and saved gear list
+    global.loadSessionState.mockReturnValue(state);
+    global.loadProject = jest.fn(() => ({ gearList: savedHtml }));
+    document.getElementById('gearListOutput').innerHTML = '';
+    restoreSessionState();
+    expect(document.querySelector('#gearListEasyrig').value).toBe('FlowCine Serene Spring Arm');
+  });
+
   test('Grip section always includes a friction arm', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
