@@ -707,7 +707,7 @@ describe('script.js functions', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][0];
     const expectedKeys = [
-      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
@@ -717,6 +717,7 @@ describe('script.js functions', () => {
     expect(saved.projectInfo.viewfinderSettings).toBe('Viewfinder Clean Feed');
     expect(saved.projectInfo.frameGuides).toBe('Frame Guide: Center Dot');
     expect(saved.projectInfo.aspectMaskOpacity).toBe('Aspect Mask Opacity 100%');
+    expect(saved.projectInfo.viewfinderEyeLeatherColor).toBe('Red');
   });
 
   test('project requirements form saved with project', () => {
@@ -735,6 +736,7 @@ describe('script.js functions', () => {
     document.getElementById('saveSetupBtn').click();
     expect(stored.Setup1.projectInfo.projectName).toBe('Proj');
     expect(stored.Setup1.projectInfo.lenses).toBe('LensA');
+    expect(stored.Setup1.projectInfo.viewfinderEyeLeatherColor).toBe('Red');
   });
 
   test('changing device selection triggers gear list save', () => {

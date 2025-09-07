@@ -7893,6 +7893,7 @@ function populateProjectForm(info) {
     setMulti('requiredScenarios', info.requiredScenarios);
     setMulti('cameraHandle', info.cameraHandle);
     setVal('viewfinderExtension', info.viewfinderExtension);
+    setVal('viewfinderEyeLeatherColor', info.viewfinderEyeLeatherColor);
     setVal('mattebox', info.mattebox);
     setMulti('gimbal', info.gimbal);
     setMulti('viewfinderSettings', info.viewfinderSettings);
