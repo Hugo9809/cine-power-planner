@@ -7393,6 +7393,7 @@ if (projectForm) {
 }
 
 shareSetupBtn.addEventListener('click', () => {
+  saveCurrentGearList();
   const setupName = getCurrentProjectName();
   const currentSetup = {
     setupName,
@@ -7407,9 +7408,13 @@ shareSetupBtn.addEventListener('click', () => {
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value
   };
-  const project = typeof loadProject === 'function' ? loadProject(setupName) : null;
-  if (project && project.projectInfo) {
-    currentSetup.projectInfo = project.projectInfo;
+  if (currentProjectInfo) {
+    currentSetup.projectInfo = currentProjectInfo;
+  } else {
+    const project = typeof loadProject === 'function' ? loadProject(setupName) : null;
+    if (project && project.projectInfo) {
+      currentSetup.projectInfo = project.projectInfo;
+    }
   }
   const gearSelectors = getGearListSelectors();
   if (Object.keys(gearSelectors).length) {
