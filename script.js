@@ -9196,6 +9196,11 @@ function deleteCurrentGearList() {
     updateGearListButtonVisibility();
 }
 
+function confirmSaveCurrentGearList() {
+    if (!confirm(texts[currentLang].confirmSaveGearList)) return;
+    saveCurrentGearList();
+}
+
 function ensureGearListActions() {
     if (!gearListOutput) return;
     let actions = document.getElementById('gearListActions');
@@ -9218,7 +9223,7 @@ function ensureGearListActions() {
         deleteBtn.id = 'deleteGearListBtn';
         actions.append(saveBtn, exportBtn, importBtn, importInput, deleteBtn);
         gearListOutput.appendChild(actions);
-        saveBtn.addEventListener('click', saveCurrentGearList);
+        saveBtn.addEventListener('click', confirmSaveCurrentGearList);
         exportBtn.addEventListener('click', exportCurrentGearList);
         importBtn.addEventListener('click', () => importInput.click());
         importInput.addEventListener('change', handleImportGearList);

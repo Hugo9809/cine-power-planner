@@ -5372,6 +5372,28 @@ describe('monitor wireless metadata', () => {
     expect(deleteBtn.getAttribute('data-help')).toBe(texts.en.deleteGearListBtnHelp);
   });
 
+  test('saving gear list via button requires confirmation', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const html = script.generateGearListHtml({ projectName: 'Proj' });
+    script.displayGearAndRequirements(html);
+    script.ensureGearListActions();
+    const confirmSpy = jest.spyOn(window, 'confirm');
+    const saveSpy = jest.spyOn(script, 'saveCurrentGearList');
+    confirmSpy.mockReturnValueOnce(false).mockReturnValueOnce(true);
+    const btn = document.getElementById('saveGearListBtn');
+    btn.click();
+    expect(confirmSpy).toHaveBeenCalledTimes(1);
+    expect(saveSpy).not.toHaveBeenCalled();
+    btn.click();
+    expect(confirmSpy).toHaveBeenCalledTimes(2);
+    expect(saveSpy).toHaveBeenCalledTimes(1);
+    confirmSpy.mockRestore();
+    saveSpy.mockRestore();
+  });
+
   test('detail toggle responds to keyboard events', () => {
     const detailToggle = document.querySelector('#device-manager .detail-toggle');
     const details = detailToggle.closest('li').querySelector('.device-details');
