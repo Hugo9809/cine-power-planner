@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine List app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -8280,6 +8280,18 @@ function generateGearListHtml(info = {}) {
             })
             .join('<br>');
     };
+    const ensureItems = (arr, categoryPath) => {
+        if (typeof registerDevice !== 'function') return;
+        const entries = {};
+        arr.filter(Boolean).forEach(item => {
+            const match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+            const base = match ? match[1].trim() : item.trim();
+            entries[base] = entries[base] || {};
+        });
+        if (Object.keys(entries).length) {
+            registerDevice(categoryPath, entries);
+        }
+    };
     const rows = [];
     const addRow = (cat, items) => {
         rows.push(`<tr class="category-row"><td>${cat}</td></tr>`);
@@ -8484,6 +8496,7 @@ function generateGearListHtml(info = {}) {
     addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
     addRow('Chargers', formatItems(chargersAcc));
     addRow('Monitoring', monitoringItems);
+    ensureItems(monitoringSupportAcc, 'accessories.monitoringSupport');
     const monitoringSupportHardware = formatItems(monitoringSupportAcc);
     const monitoringSupportItems = monitoringSupportHardware;
     addRow('Monitoring support', monitoringSupportItems);
@@ -8493,6 +8506,7 @@ function generateGearListHtml(info = {}) {
         'Loading Ramp (pair, 420kg)',
         ...Array(20).fill('Ring Fitting for Airline Rails')
     ];
+    ensureItems(cartsTransportationItems, 'accessories.carts');
     const gripItems = [];
     let needsStandardTripod = false;
     let sliderSelectHtml = '';
@@ -8616,6 +8630,8 @@ function generateGearListHtml(info = {}) {
     if (maglinerCount) {
         gripItems.push(...Array(maglinerCount * 2).fill('Wooden wedge'));
     }
+    ensureItems(riggingAcc, 'accessories.rigging');
+    ensureItems(gripItems, 'accessories.grip');
     const riggingItems = formatItems(riggingAcc);
     addRow('Rigging', riggingItems);
     const powerItems = [
@@ -8629,6 +8645,7 @@ function generateGearListHtml(info = {}) {
     if (scenarios.includes('Studio')) {
         powerItems.push('Camera Power Supply');
     }
+    ensureItems(powerItems, 'accessories.power');
     addRow('Power', formatItems(powerItems));
     addRow('Grip', [sliderSelectHtml, formatItems(gripItems), easyrigSelectHtml].filter(Boolean).join('<br>'));
     addRow('Carts and Transportation', formatItems(cartsTransportationItems));
