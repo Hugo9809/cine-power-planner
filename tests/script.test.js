@@ -2823,6 +2823,29 @@ describe('script.js functions', () => {
     expect(document.querySelector('#gearListEasyrig').value).toBe('FlowCine Serene Spring Arm');
   });
 
+  test('gear list remains visible after session reload with only setup name', () => {
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn();
+    global.saveProject = jest.fn();
+    const { generateGearListHtml, displayGearAndRequirements, ensureGearListActions, saveCurrentSession, restoreSessionState } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    displayGearAndRequirements(html);
+    ensureGearListActions();
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'Proj1';
+    nameInput.dispatchEvent(new Event('input'));
+    saveCurrentSession();
+    const state = global.saveSessionState.mock.calls.pop()[0];
+    global.loadSessionState.mockReturnValue(state);
+    global.loadProject = jest.fn(name => (name === 'Proj1' ? { gearList: html } : null));
+    const out = document.getElementById('gearListOutput');
+    out.innerHTML = '';
+    out.classList.add('hidden');
+    restoreSessionState();
+    expect(global.loadProject).toHaveBeenCalledWith('Proj1');
+    expect(out.classList.contains('hidden')).toBe(false);
+  });
+
   test('loading a different project replaces gear list and requirements', () => {
     setupDom(false);
     const buildHtml = (name) => `\
