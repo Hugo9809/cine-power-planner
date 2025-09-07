@@ -21,10 +21,10 @@ const wirelessReceiversData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
@@ -49,10 +49,10 @@ const wirelessReceiversData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
@@ -77,10 +77,10 @@ const wirelessReceiversData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
@@ -105,10 +105,10 @@ const wirelessReceiversData = {
           "notes": "7-17V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
@@ -163,10 +163,10 @@ const wirelessReceiversData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
@@ -208,10 +208,10 @@ const wirelessReceiversData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }

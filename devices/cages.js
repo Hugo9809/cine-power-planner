@@ -759,7 +759,7 @@ const cageData = {
     ],
     "top_handle_included": true,
     "side_plates": true,
-    "notes": "Complete rig with shoulder support, EVF bracket, power module (Gold mount or V-mount), 15 mm rod support and modular plates.",
+    "notes": "Complete rig with shoulder support, EVF bracket, power module (Gold-Mount or V-Mount), 15 mm rod support and modular plates.",
     "verified_source": "https://www.adorama.com/iaest65.html",
     "handle_extension_compatible": true
   },
@@ -777,7 +777,7 @@ const cageData = {
       "ARRI rosette",
       "shoulder pad",
       "VCT-14 dovetail",
-      "Gold mount battery plate",
+      "Gold-Mount battery plate",
       "power outputs",
       "EVF support",
       "quick-release top handle",
@@ -1174,7 +1174,7 @@ const cageData = {
       "3/8\"-16",
       "15 mm LWS rods",
       "lens support",
-      "V-mount/Gold Mount interfaces"
+      "V-Mount/Gold-Mount interfaces"
     ],
     "top_handle_included": false,
     "side_plates": true,
