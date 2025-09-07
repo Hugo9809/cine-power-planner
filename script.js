@@ -48,8 +48,8 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
  */
 function setupOfflineIndicator() {
   const offlineIndicator = document.getElementById('offlineIndicator');
+  if (!offlineIndicator) return;
   const updateOnlineStatus = () => {
-    if (!offlineIndicator) return;
     offlineIndicator.style.display = navigator.onLine ? 'none' : 'block';
   };
   window.addEventListener('online', updateOnlineStatus);
@@ -110,15 +110,15 @@ function copyTextToClipboard(text) {
     textarea.select();
     try {
       const successful = globalThis.document.execCommand('copy');
-      globalThis.document.body.removeChild(textarea);
       if (successful) {
         resolve();
       } else {
         reject(new Error('execCommand failed'));
       }
     } catch (err) {
-      globalThis.document.body.removeChild(textarea);
       reject(err);
+    } finally {
+      globalThis.document.body.removeChild(textarea);
     }
   });
 }
