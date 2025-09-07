@@ -8143,8 +8143,8 @@ function generateGearListHtml(info = {}) {
         selectedNames.viewfinder = "";
     }
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories({ hasMotor, videoDistPrefs });
-    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4 to 1/4');
-    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8 to 1/4');
+    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4" to 1/4"');
+    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8" to 1/4"');
     for (let i = 0; i < 2; i++) riggingAcc.push('Noga Arm');
     for (let i = 0; i < 2; i++) riggingAcc.push('Mini Magic Arm');
     for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
@@ -8676,7 +8676,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Avenger C590 Conka Bonka Stativ-Verlängerungen Set (${p.role} 15-21")`);
         gripItems.push(`Impact Baby to Junior Receiver Adapter (${p.role} 15-21")`);
         gripItems.push(`Matthews BIG F'ING Monitor Wheel Set (3 pieces) (${p.role} 15-21")`);
-        riggingAcc.push(`ULCS Bracket with 1/4 to 1/4 (${p.role} 15-21")`);
+        riggingAcc.push(`ULCS Bracket with 1/4" to 1/4" (${p.role} 15-21")`);
         gripItems.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
         riggingAcc.push(`Spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
         riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
