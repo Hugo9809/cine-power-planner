@@ -2259,64 +2259,71 @@ function displayGearAndRequirements(html) {
     }
   }
   if (gearListOutput) {
-    gearListOutput.innerHTML = gearHtml;
-    gearListOutput.classList.remove('hidden');
-    const findDevice = name => {
-      for (const [catName, cat] of Object.entries(devices)) {
-        if (cat && typeof cat === 'object') {
-          if (cat[name]) return { info: cat[name], category: catName };
-          for (const sub of Object.values(cat)) {
-            if (sub && sub[name]) return { info: sub[name], category: catName };
+    if (gearHtml) {
+      gearListOutput.innerHTML = gearHtml;
+      gearListOutput.classList.remove('hidden');
+      const findDevice = name => {
+        for (const [catName, cat] of Object.entries(devices)) {
+          if (cat && typeof cat === 'object') {
+            if (cat[name]) return { info: cat[name], category: catName };
+            for (const sub of Object.values(cat)) {
+              if (sub && sub[name]) return { info: sub[name], category: catName };
+            }
           }
         }
-      }
-      return { info: null, category: '' };
-    };
-    gearListOutput.querySelectorAll('.gear-item').forEach(span => {
-      const name = span.getAttribute('data-gear-name');
-      const { info, category } = findDevice(name);
-      const countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
-      const count = countMatch ? `${countMatch[1]}x ` : '';
-      const parts = [];
-      parts.push(`${count}${name}`.trim());
-      if (category) parts.push(`Category: ${category}`);
-      if (info) {
-        let summary = generateConnectorSummary(info);
-        summary = summary
-          ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
-          : '';
-        if (info.notes)
-          summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
-        if (summary) parts.push(summary);
-      }
-      const desc = parts.join(' – ');
-      span.setAttribute('title', desc);
-      span.setAttribute('data-help', desc);
-      span.querySelectorAll('select').forEach(sel => {
+        return { info: null, category: '' };
+      };
+      gearListOutput.querySelectorAll('.gear-item').forEach(span => {
+        const name = span.getAttribute('data-gear-name');
+        const { info, category } = findDevice(name);
+        const countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
+        const count = countMatch ? `${countMatch[1]}x ` : '';
+        const parts = [];
+        parts.push(`${count}${name}`.trim());
+        if (category) parts.push(`Category: ${category}`);
+        if (info) {
+          let summary = generateConnectorSummary(info);
+          summary = summary
+            ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+            : '';
+          if (info.notes)
+            summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
+          if (summary) parts.push(summary);
+        }
+        const desc = parts.join(' – ');
+        span.setAttribute('title', desc);
+        span.setAttribute('data-help', desc);
+        span.querySelectorAll('select').forEach(sel => {
+          sel.setAttribute('title', desc);
+          sel.setAttribute('data-help', desc);
+        });
+      });
+      // Standalone selects (not wrapped in .gear-item) still need descriptive help
+      gearListOutput.querySelectorAll('select').forEach(sel => {
+        if (sel.getAttribute('data-help')) return;
+        const selected = sel.selectedOptions && sel.selectedOptions[0];
+        const name = selected ? selected.textContent.trim() : sel.value;
+        const { info, category } = findDevice(name);
+        const parts = [];
+        parts.push(`1x ${name}`.trim());
+        if (category) parts.push(`Category: ${category}`);
+        if (info) {
+          let summary = generateConnectorSummary(info);
+          summary = summary
+            ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+            : '';
+          if (info.notes)
+            summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
+          if (summary) parts.push(summary);
+        }
+        const desc = parts.join(' – ');
         sel.setAttribute('title', desc);
         sel.setAttribute('data-help', desc);
       });
-    });
-    // Standalone selects (not wrapped in .gear-item) still need descriptive help
-    gearListOutput.querySelectorAll('select').forEach(sel => {
-      if (sel.getAttribute('data-help')) return;
-      const selected = sel.selectedOptions && sel.selectedOptions[0];
-      const name = selected ? selected.textContent.trim() : sel.value;
-      const { info, category } = findDevice(name);
-      const parts = [];
-      parts.push(`1x ${name}`.trim());
-      if (category) parts.push(`Category: ${category}`);
-      if (info) {
-        let summary = generateConnectorSummary(info);
-        summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
-        if (info.notes)
-          summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
-        if (summary) parts.push(summary);
-      }
-      const desc = parts.join(' – ');
-      sel.setAttribute('title', desc);
-      sel.setAttribute('data-help', desc);
-    });
+    } else {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+    }
   }
   if (loadedSetupState) {
     setSliderBowlValue(loadedSetupState.sliderBowl || '');
@@ -6293,7 +6300,7 @@ setupSelect.addEventListener("change", (event) => {
       if (gearListOutput) {
         displayGearAndRequirements(setup.gearList || '');
         currentProjectInfo = setup.projectInfo || null;
-        if (currentProjectInfo) populateProjectForm(currentProjectInfo);
+        populateProjectForm(currentProjectInfo || {});
         if (setup.gearList) {
           ensureGearListActions();
       bindGearListCageListener();
@@ -7980,8 +7987,8 @@ function collectProjectFormData() {
     };
 }
 
-function populateProjectForm(info) {
-    if (!projectForm || !info) return;
+function populateProjectForm(info = {}) {
+    if (!projectForm) return;
     const setVal = (name, value) => {
         const field = projectForm.querySelector(`[name="${name}"]`);
         if (field) field.value = value || '';
@@ -9198,7 +9205,7 @@ function handleImportGearList(e) {
             if (obj && obj.gearList) {
             displayGearAndRequirements(obj.gearList);
             currentProjectInfo = obj.projectInfo || null;
-            if (currentProjectInfo) populateProjectForm(currentProjectInfo);
+            populateProjectForm(currentProjectInfo || {});
             ensureGearListActions();
             bindGearListCageListener();
             bindGearListEasyrigListener();
@@ -9480,10 +9487,8 @@ function restoreSessionState() {
     setSelectValue(batterySelect, state.battery);
     setSelectValue(hotswapSelect, state.batteryHotswap);
     setSelectValue(setupSelect, state.setupSelect);
-    if (state.projectInfo) {
-      currentProjectInfo = state.projectInfo;
-      if (projectForm) populateProjectForm(currentProjectInfo);
-    }
+    currentProjectInfo = state.projectInfo || null;
+    if (projectForm) populateProjectForm(currentProjectInfo || {});
   } else {
     if (gearListOutput) {
       gearListOutput.innerHTML = '';
@@ -9498,10 +9503,8 @@ function restoreSessionState() {
     const projectName = setupSelect ? setupSelect.value : '';
     const storedProject = typeof loadProject === 'function' ? loadProject(projectName) : null;
     if (storedProject && (storedProject.gearList || storedProject.projectInfo)) {
-      if (storedProject.projectInfo) {
-        currentProjectInfo = storedProject.projectInfo;
-        if (projectForm) populateProjectForm(currentProjectInfo);
-      }
+      currentProjectInfo = storedProject.projectInfo || null;
+      if (projectForm) populateProjectForm(currentProjectInfo || {});
       displayGearAndRequirements(storedProject.gearList);
       if (gearListOutput) {
         ensureGearListActions();
@@ -9557,10 +9560,8 @@ function applySharedSetup(shared) {
       fb[key] = (fb[key] || []).concat(decoded.feedback);
       saveFeedbackSafe(fb);
     }
-    if (decoded.projectInfo) {
-      currentProjectInfo = decoded.projectInfo;
-      if (projectForm) populateProjectForm(currentProjectInfo);
-    }
+    currentProjectInfo = decoded.projectInfo || null;
+    if (projectForm) populateProjectForm(currentProjectInfo || {});
     let gearDisplayed = false;
     if (decoded.gearList) {
       displayGearAndRequirements(decoded.gearList);
