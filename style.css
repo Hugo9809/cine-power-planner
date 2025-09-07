@@ -1786,6 +1786,22 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   width: auto;
 }
 
+#gearListOutput .filter-values-container {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+#gearListOutput .filter-value-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+#gearListOutput .filter-values-container select {
+  display: none;
+}
+
 @media (max-width: 600px) {
   #gearListOutput,
   #projectRequirementsOutput {

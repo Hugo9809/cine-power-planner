@@ -9187,7 +9187,9 @@ function getGearListSelectors() {
     if (!gearListOutput) return {};
     const selectors = {};
     gearListOutput.querySelectorAll('select[id]').forEach(sel => {
-        selectors[sel.id] = sel.value;
+        selectors[sel.id] = sel.multiple
+            ? Array.from(sel.selectedOptions).map(o => o.value)
+            : sel.value;
     });
     return selectors;
 }
@@ -9196,7 +9198,17 @@ function applyGearListSelectors(selectors) {
     if (!gearListOutput || !selectors) return;
     Object.entries(selectors).forEach(([id, value]) => {
         const sel = gearListOutput.querySelector(`#${id}`);
-        if (sel) sel.value = value;
+        if (sel) {
+            if (sel.multiple) {
+                const vals = Array.isArray(value) ? value : [value];
+                Array.from(sel.options).forEach(opt => {
+                    opt.selected = vals.includes(opt.value);
+                });
+                sel.dispatchEvent(new Event('change'));
+            } else {
+                sel.value = value;
+            }
+        }
     });
 }
 
@@ -10511,8 +10523,35 @@ function createFilterValueSelect(type, selected = []) {
     if (selectedVals.includes(o)) opt.selected = true;
     sel.appendChild(opt);
   });
+  // Hidden select holds the values; checkboxes provide the UI
   sel.size = opts.length;
-  return sel;
+  sel.style.display = 'none';
+  const container = document.createElement('span');
+  container.className = 'filter-values-container';
+  opts.forEach(o => {
+    const lbl = document.createElement('label');
+    lbl.className = 'filter-value-option';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.value = o;
+    cb.checked = selectedVals.includes(o);
+    cb.addEventListener('change', () => {
+      const opt = Array.from(sel.options).find(opt => opt.value === o);
+      if (opt) opt.selected = cb.checked;
+      sel.dispatchEvent(new Event('change'));
+    });
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(o));
+    container.appendChild(lbl);
+  });
+  sel.addEventListener('change', () => {
+    Array.from(container.querySelectorAll('input[type="checkbox"]')).forEach(cb => {
+      const opt = Array.from(sel.options).find(opt => opt.value === cb.value);
+      cb.checked = !!opt && opt.selected;
+    });
+  });
+  container.appendChild(sel);
+  return container;
 }
 
 function renderFilterDetails() {
