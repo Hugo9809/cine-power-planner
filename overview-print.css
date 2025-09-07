@@ -7,58 +7,62 @@
 
 body,
 body.dark-mode {
-  background: #fff;
-  color: #000;
+  --surface-color: #fff;
+  --text-color: #000;
   font-family: 'Ubuntu', sans-serif;
   font-weight: 300;
   font-size: 12pt;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
+  background: var(--surface-color);
+  color: var(--text-color);
 }
 #overviewDialogContent,
 #overviewDialogContent.dark-mode {
-  background: #fff !important;
-  color: #000 !important;
+  --surface-color: #fff;
+  --text-color: #000;
   --panel-bg: #f9f9f9;
   --panel-border: #ddd;
   --control-bg: #e8e8e8;
   --control-text: #333;
+  background: var(--surface-color) !important;
+  color: var(--text-color) !important;
 }
 
 /* Ensure setup diagram uses light theme when printing */
 #overviewDialogContent #setupDiagram .node-box,
 #overviewDialogContent #setupDiagram .node-box.first-fiz {
-  fill: #e8f0fe;
+  fill: var(--diagram-node-fill);
   stroke: none;
 }
 #overviewDialogContent #setupDiagram text {
-  fill: #000;
+  fill: var(--text-color);
   font-family: 'Ubuntu', sans-serif;
 }
 #overviewDialogContent #setupDiagram line,
 #overviewDialogContent #setupDiagram path.edge-path {
-  stroke: #333;
+  stroke: var(--control-text);
 }
 #overviewDialogContent #setupDiagram path.power {
-  stroke: #d33;
+  stroke: var(--power-color);
 }
 #overviewDialogContent #setupDiagram path.video {
-  stroke: #369;
+  stroke: var(--video-color);
 }
 #overviewDialogContent #setupDiagram path.fiz {
-  stroke: #090;
+  stroke: var(--fiz-color);
 }
 #overviewDialogContent #setupDiagram .conn.red {
-  fill: #d33;
+  fill: var(--power-color);
 }
 #overviewDialogContent #setupDiagram .conn.blue {
-  fill: #369;
+  fill: var(--video-color);
 }
 #overviewDialogContent #setupDiagram .conn.green {
-  fill: #090;
+  fill: var(--fiz-color);
 }
 #overviewDialogContent #setupDiagram marker polygon {
-  fill: #333;
+  fill: var(--control-text);
 }
 
 #overviewDialogContent h1,
@@ -66,7 +70,7 @@ body.dark-mode {
 #overviewDialogContent h3 {
   font-family: 'Ubuntu', sans-serif;
   font-weight: 700;
-  border-color: #000 !important;
+  border-color: var(--text-color) !important;
 }
 
 h1 {
@@ -110,24 +114,24 @@ table, th, td {
 }
 #overviewDialogContent section,
 #overviewDialogContent #diagramArea {
-  background: #fff !important;
-  border-color: #000;
+  background: var(--surface-color) !important;
+  border-color: var(--text-color);
   box-shadow: none;
 }
 #overviewDialogContent th {
-  background-color: #e0e0e0 !important;
+  background-color: var(--control-bg) !important;
   font-weight: 700;
 }
 #overviewDialogContent tr {
-  background-color: #fff !important;
+  background-color: var(--surface-color) !important;
 }
 #overviewDialogContent tr:nth-child(even) {
-  background-color: #f9f9f9 !important;
+  background-color: var(--panel-bg) !important;
 }
 
 .requirement-box {
-  background: #fff;
-  border: 1px solid #000;
+  background: var(--surface-color);
+  border: 1px solid var(--text-color);
   box-shadow: none;
 }
 #overviewDialogContent .gear-table td {
@@ -150,44 +154,44 @@ table, th, td {
 
 .device-block,
 .device-category {
-  border: 1px solid #000;
+  border: 1px solid var(--text-color);
   box-shadow: none;
 }
 
 #overviewDialogContent .barContainer {
-  background: #fff !important;
+  background: var(--surface-color) !important;
 }
 
 #overviewDialogContent .selectedBatteryRow {
-  background: #e6f7ff !important;
+  background: var(--selected-row-bg) !important;
 }
 
 #overviewDialogContent select {
-  background: #fff !important;
-  color: #000 !important;
-  border: 1px solid #000 !important;
+  background: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--text-color) !important;
 }
 
 #overviewDialogContent .diagram-controls button {
-  background: #fff !important;
-  color: #000 !important;
-  border: 1px solid #000 !important;
+  background: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--text-color) !important;
 }
 
 .power-conn {
-  border: 1px solid #000;
+  border: 1px solid var(--text-color);
 }
 
 .fiz-conn {
-  border: 1px dashed #000;
+  border: 1px dashed var(--text-color);
 }
 
 .video-conn {
-  border: 1px dotted #000;
+  border: 1px dotted var(--text-color);
 }
 
 .neutral-conn {
-  border: 1px double #000;
+  border: 1px double var(--text-color);
 }
 
 .warning {
