@@ -660,6 +660,45 @@ const wirelessReceiversData = {
         }
       ]
     }
+  },
+  "ARRI WVR-1 RX": {
+    "powerDrawWatts": 7,
+    "videoInputs": [],
+    "videoOutputs": [
+      { "type": "3G-SDI" },
+      { "type": "3G-SDI" }
+    ],
+    "frequency": "5 GHz",
+    "latencyMs": "< 1ms",
+    "power": {
+      "input": {
+        "type": "LEMO 2-pin",
+        "notes": "10.5-34V"
+      },
+      "output": {
+        "type": "LEMO 2-pin",
+        "notes": "12V, max 2.0A"
+      }
+    }
+  },
+  "ARRI WVR-1s RX": {
+    "powerDrawWatts": 7,
+    "videoInputs": [],
+    "videoOutputs": [
+      { "type": "3G-SDI" }
+    ],
+    "frequency": "5 GHz",
+    "latencyMs": "< 1ms",
+    "power": {
+      "input": {
+        "type": "LEMO 2-pin",
+        "notes": "10.5-34V"
+      },
+      "output": {
+        "type": "LEMO 2-pin",
+        "notes": "12V, max 2.0A"
+      }
+    }
   }
 };
 if (typeof registerDevice === 'function') {
