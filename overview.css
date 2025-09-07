@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap');
 
+button:focus,
+select:focus,
+button:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
 body { font-family: 'Ubuntu', sans-serif; font-weight: 300; margin: 25px; color: var(--control-text); font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 @media (max-width: 600px) {
   body { margin: 10px; }
