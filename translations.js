@@ -1884,11 +1884,11 @@ const texts = {
 };
 
 const gearItems = {
-  en: { 'tennis ball': 'tennis ball' },
-  it: { 'tennis ball': 'palla da tennis' },
-  es: { 'tennis ball': 'pelota de tenis' },
-  fr: { 'tennis ball': 'balle de tennis' },
-  de: { 'tennis ball': 'Tennisball' }
+  en: { 'tennis ball': 'tennis ball', 'Clapper Stick': 'Clapper Stick' },
+  it: { 'tennis ball': 'palla da tennis', 'Clapper Stick': 'Clapper Stick' },
+  es: { 'tennis ball': 'pelota de tenis', 'Clapper Stick': 'Clapper Stick' },
+  fr: { 'tennis ball': 'balle de tennis', 'Clapper Stick': 'Clapper Stick' },
+  de: { 'tennis ball': 'Tennisball', 'Clapper Stick': 'Klappenstift' }
 };
 
 // Mapping for category values to display names (singular for form dropdown)

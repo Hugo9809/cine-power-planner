@@ -1701,6 +1701,7 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('4x Cine Quick Release');
     expect(rigSection).toContain('1x SmallRig - Super lightweight 15mm RailBlock');
     expect(rigSection).toContain('3x spigot with male 3/8" and 1/4"');
+    expect(rigSection).toContain('2x Clapper Stick');
     expect(rigSection).toContain('2x D-Tap Splitter');
   });
 
@@ -3006,7 +3007,7 @@ describe('script.js functions', () => {
     expect(eyeSel).not.toBeNull();
     expect(eyeSel.value).toBe('rot');
     expect(eyeSel.parentElement.textContent).toContain('2x Bluestar eye leather made of microfiber oval, large');
-    expect(consumText).toContain('2x Klappenstift');
+    expect(consumText).toContain('2x Clapper Stick');
   });
 
   test('consumables scale with shooting days and special rules', () => {
@@ -3016,11 +3017,11 @@ describe('script.js functions', () => {
     camSel.value = 'CamA';
     devices.cameras.CamA.viewfinder = ['VF'];
     const scenarios = [
-      ['2024-05-01 to 2024-05-10', '2x Kimtech Wipes', '4x Klappenstift', 4],
-      ['2024-05-01 to 2024-05-16', '3x Kimtech Wipes', '4x Klappenstift', 6],
-      ['2024-05-01 to 2024-05-22', '4x Kimtech Wipes', '8x Klappenstift', 8]
+      ['2024-05-01 to 2024-05-10', '2x Kimtech Wipes', '4x Clapper Stick', 4],
+      ['2024-05-01 to 2024-05-16', '3x Kimtech Wipes', '4x Clapper Stick', 6],
+      ['2024-05-01 to 2024-05-22', '4x Kimtech Wipes', '8x Clapper Stick', 8]
     ];
-    scenarios.forEach(([range, wipes, klappen, eyeCount]) => {
+    scenarios.forEach(([range, wipes, clapper, eyeCount]) => {
       const html = generateGearListHtml({ shootingDays: range });
       const wrap = document.createElement('div');
       wrap.innerHTML = html;
@@ -3030,7 +3031,7 @@ describe('script.js functions', () => {
       const consumText = consumRow.textContent;
       expect(consumText).toContain(wipes);
       expect(consumText).toContain('1x Sprigs Red 1/4"');
-      expect(consumText).toContain(klappen);
+      expect(consumText).toContain(clapper);
       const eyeSel = consumRow.querySelector('#gearListEyeLeatherColor');
       expect(eyeSel.value).toBe('rot');
       expect(eyeSel.parentElement.textContent).toContain(`${eyeCount}x Bluestar eye leather made of microfiber oval, large`);
