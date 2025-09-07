@@ -8,7 +8,11 @@ const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
-// may block access and throw errors. If unavailable, this returns null.
+// may block access and throw errors. If unavailable, fall back to a simple
+// in-memory store so that the application can still function within the
+// current session. Data stored in this fallback is ephemeral and will be lost
+// on reload, but it avoids runtime errors and provides a best-effort storage
+// layer when `localStorage` cannot be used.
 const SAFE_LOCAL_STORAGE = (() => {
   try {
     if (typeof window !== 'undefined' && 'localStorage' in window) {
@@ -21,7 +25,25 @@ const SAFE_LOCAL_STORAGE = (() => {
     console.warn('localStorage is unavailable:', e);
     alertStorageError();
   }
-  return null;
+
+  // Fallback: minimal in-memory storage implementation
+  let memoryStore = {};
+  return {
+    getItem(key) {
+      return Object.prototype.hasOwnProperty.call(memoryStore, key)
+        ? memoryStore[key]
+        : null;
+    },
+    setItem(key, value) {
+      memoryStore[key] = String(value);
+    },
+    removeItem(key) {
+      delete memoryStore[key];
+    },
+    clear() {
+      memoryStore = {};
+    },
+  };
 })();
 
 // Helper to check for plain objects
