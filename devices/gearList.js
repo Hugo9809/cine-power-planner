@@ -785,9 +785,19 @@ const gear = {
       }
     },
     "filters": {
-      "ARRI Rota Pola Filter Holder": {
+      "ARRI K2.0009434 Rota Pola Filter Frame": {
         "brand": "ARRI",
         "kNumber": "K2.0009434"
+      },
+      "ARRI K2.0017086 Rota Pola Filter Frame": {
+        "brand": "ARRI",
+        "kNumber": "K2.0017086"
+      },
+      "Tilta 95mm Polarizer Filter für Tilta Mirage": {
+        "brand": "Tilta"
+      },
+      "Schneider CF DIOPTER FULL GEN2": {
+        "brand": "Schneider"
       }
     },
     "rigging": {

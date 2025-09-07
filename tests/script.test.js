@@ -1741,7 +1741,7 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = require('../script.js');
     const html = generateGearListHtml({ filter: 'Diopter' });
     const dom = new JSDOM(html);
-    const frame = dom.window.document.querySelector('[data-gear-name="ARRI diopter frame"]');
+    const frame = dom.window.document.querySelector('[data-gear-name="ARRI Diopter Frame 138mm"]');
     expect(frame).not.toBeNull();
     const valSel = dom.window.document.getElementById('filter-values-Diopter');
     const vals = [...valSel.selectedOptions].map(o => o.value);
@@ -1798,7 +1798,7 @@ describe('script.js functions', () => {
     expect(section).not.toContain('ARRI LMB 4x5 Clamp-On (3-Stage)');
   });
 
-  test('Rota-Pol filter provides size dropdown', () => {
+  test('Rota-Pol filter provides size dropdown and correct frame', () => {
     setupDom(false);
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
@@ -1807,6 +1807,8 @@ describe('script.js functions', () => {
     const sel = dom.window.document.getElementById('filter-size-Rota_Pol');
     const opts = [...sel.options].map(o => o.value);
     expect(opts).toEqual(expect.arrayContaining(['4x5.65', '6x6', '95mm']));
+    const frame = dom.window.document.querySelector('[data-gear-name="ARRI K2.0017086 Rota Pola Filter Frame"]');
+    expect(frame).not.toBeNull();
   });
 
   test('standard rigging accessories are always included', () => {
