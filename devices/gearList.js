@@ -176,7 +176,7 @@ const gear = {
         "input": [
           { "type": "XLR 4-pin" },
           { "type": "V-Mount" },
-          { "type": "Gold Mount" }
+          { "type": "Gold-Mount" }
         ],
         "output": null
       },
@@ -249,7 +249,7 @@ const gear = {
         "input": [
           { "type": "XLR 4-pin" },
           { "type": "V-Mount" },
-          { "type": "Gold Mount" }
+          { "type": "Gold-Mount" }
         ],
         "output": null
       },

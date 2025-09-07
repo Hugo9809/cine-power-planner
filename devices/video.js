@@ -52,10 +52,10 @@ const videoData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
@@ -87,10 +87,10 @@ const videoData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
@@ -146,10 +146,10 @@ const videoData = {
           "notes": "6-28V"
         },
         {
-          "type": "Gold-mount"
+          "type": "Gold-Mount"
         },
         {
-          "type": "V-mount"
+          "type": "V-Mount"
         }
       ]
     }
