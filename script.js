@@ -6765,10 +6765,17 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
+    const existing = isEditing ? targetCategory[originalName] : undefined;
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
-    targetCategory[name] = { powerDrawWatts: watt };
+    if (existing && typeof existing === 'object' && !Array.isArray(existing)) {
+      targetCategory[name] = { ...existing, powerDrawWatts: watt };
+    } else if (existing !== undefined && typeof existing !== 'object') {
+      targetCategory[name] = watt;
+    } else {
+      targetCategory[name] = { powerDrawWatts: watt };
+    }
   }
 
   // After adding/updating, reset form and refresh lists
