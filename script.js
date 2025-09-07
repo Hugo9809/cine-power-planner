@@ -5833,7 +5833,8 @@ deleteSetupBtn.addEventListener("click", () => {
     if (sbSel) sbSel.value = '';
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-    updateCalculations(); // Recalculate after clearing setup
+    updateCalculations(); // Recalculate after deleting setup
+    alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
   }
 });
 
@@ -6393,8 +6394,15 @@ newCategorySelect.addEventListener("change", () => {
 function resetDeviceForm() {
   newCategorySelect.disabled = false;
   cancelEditBtn.style.display = "none";
-  // Trigger change handler to reset fields and button text
-  newCategorySelect.dispatchEvent(new Event('change'));
+  // Trigger change handler to reset fields and button text, guarding against
+  // missing DOM elements in test environments.
+  if (newCategorySelect.isConnected) {
+    try {
+      newCategorySelect.dispatchEvent(new Event('change'));
+    } catch (err) {
+      console.warn('resetDeviceForm dispatch failed', err);
+    }
+  }
 }
 
 
