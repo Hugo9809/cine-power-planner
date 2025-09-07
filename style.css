@@ -19,6 +19,7 @@
   --border-radius: 5px;
   --page-padding: 20px;
   --gap-size: 10px;
+  --button-size: 32px;
   --link-color: var(--accent-color);
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
@@ -532,10 +533,14 @@ button {
   color: var(--control-text);
   border: none;
   border-radius: var(--border-radius);
-  padding: 5px 10px; /* Adjusted padding to make buttons smaller */
+  padding: 0 10px;
   margin: 5px;
   cursor: pointer;
-  font-size: 0.85em; /* Adjusted font size to make buttons smaller */
+  font-size: 0.85em;
+  min-height: var(--button-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition:
     background-color 0.2s,
     color 0.2s,
@@ -719,7 +724,7 @@ button:disabled {
 
 #topBar select,
 #topBar button {
-  height: 32px;
+  height: var(--button-size);
   margin: 0;
 }
 
@@ -729,11 +734,8 @@ button:disabled {
 }
 
 #topBar button {
-  min-width: 32px;
-  width: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  min-width: var(--button-size);
+  width: var(--button-size);
   padding: 0;
   border-radius: 50%;
 }
@@ -913,7 +915,8 @@ button:disabled {
 }
 
 .diagram-controls button {
-  min-width: 32px;
+  min-width: var(--button-size);
+  min-height: var(--button-size);
 }
 
 .diagram-controls button.active {
