@@ -7399,7 +7399,7 @@ if (projectForm) {
     });
 }
 
-shareSetupBtn.addEventListener('click', () => {
+shareSetupBtn.addEventListener('click', async () => {
   saveCurrentGearList();
   const setupName = getCurrentProjectName();
   const currentSetup = {
@@ -7457,9 +7457,12 @@ shareSetupBtn.addEventListener('click', () => {
       setTimeout(() => shareLinkMessage.classList.add('hidden'), 4000);
     }
   };
-  copyTextToClipboard(link)
-    .then(() => showMessage(texts[currentLang].shareLinkCopied))
-    .catch(() => showMessage(texts[currentLang].shareSetupPrompt));
+  try {
+    await copyTextToClipboard(link);
+    showMessage(texts[currentLang].shareLinkCopied);
+  } catch {
+    showMessage(texts[currentLang].shareSetupPrompt);
+  }
 });
 
 if (applySharedLinkBtn && sharedLinkInput) {
