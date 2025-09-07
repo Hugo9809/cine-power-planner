@@ -1657,8 +1657,8 @@ describe('script.js functions', () => {
       });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
-      expect(html).toContain('<span class="req-label">DoP</span>');
-      expect(html).toContain('<span class="req-value">DopName (123)</span>');
+      expect(html).toContain('<span class="req-label">Crew</span>');
+      expect(html).toContain('<span class="req-value">DoP: DopName (123)</span>');
       expect(html).toContain('<span class="req-label">Required Scenarios</span>');
       expect(html).toContain('<span class="req-value">Handheld, Slider</span>');
       expect(html).not.toContain('Filter: IRND');

@@ -1762,13 +1762,7 @@ const crewRoles = [
 const projectFieldIcons = {
   productionCompany: '🏢',
   rentalHouse: '🏬',
-  dop: '👤',
-  productionManager: '👔',
-  cameraOperator: '🎥',
-  bCameraOperator: '🎥',
-  firstAc: '🎚️',
-  secondAc: '🎚️',
-  videoOperator: '📡',
+  crew: '👥',
   prepDays: '📅',
   shootingDays: '🎬',
   deliveryResolution: '📺',
@@ -8399,21 +8393,12 @@ function generateGearListHtml(info = {}) {
     }
     const projectInfo = { ...info };
     if (Array.isArray(info.people)) {
-        const roleMap = {
-            'DoP': 'dop',
-            'Production Manager': 'productionManager',
-            'Camera Operator': 'cameraOperator',
-            'B-Camera Operator': 'bCameraOperator',
-            '1st AC': 'firstAc',
-            '2nd AC': 'secondAc',
-            'Video Operator': 'videoOperator'
-        };
-        info.people.forEach(p => {
-            const key = roleMap[p.role];
-            if (key && p.name) {
-                projectInfo[key] = p.phone ? `${p.name} (${p.phone})` : p.name;
-            }
-        });
+        const crewEntries = info.people
+            .filter(p => p.role && p.name)
+            .map(p => p.phone ? `${p.role}: ${p.name} (${p.phone})` : `${p.role}: ${p.name}`);
+        if (crewEntries.length) {
+            projectInfo.crew = crewEntries.join(', ');
+        }
     }
     delete projectInfo.people;
     if (monitoringSettings.length) {
@@ -8424,13 +8409,7 @@ function generateGearListHtml(info = {}) {
     const labels = {
         productionCompany: 'Production Company',
         rentalHouse: 'Rental House',
-        dop: 'DoP',
-        productionManager: 'Production Manager',
-        cameraOperator: 'Camera Operator',
-        bCameraOperator: 'B-Camera Operator',
-        firstAc: '1st AC',
-        secondAc: '2nd AC',
-        videoOperator: 'Video Operator',
+        crew: 'Crew',
         prepDays: 'Prep Days',
         shootingDays: 'Shooting Days',
         deliveryResolution: 'Delivery Resolution',
