@@ -4587,15 +4587,11 @@ describe('script.js functions', () => {
   test('section headings expose descriptive hover help', () => {
     const setupHeading = document.getElementById('setupManageHeading');
     const resultsHeading = document.getElementById('resultsHeading');
-    const actionsHeading = document.getElementById('setupActionsHeading');
     expect(setupHeading.getAttribute('data-help')).toBe(
       texts.en.setupManageHeadingHelp
     );
     expect(resultsHeading.getAttribute('data-help')).toBe(
       texts.en.resultsHeadingHelp
-    );
-    expect(actionsHeading.getAttribute('data-help')).toBe(
-      texts.en.setupActionsHeadingHelp
     );
   });
 

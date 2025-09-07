@@ -300,9 +300,6 @@ const texts = {
     alertInvalidCameraJSON: "Invalid JSON for camera details",
 
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
-    setupActionsHeading: "Project Actions",
-    setupActionsHeadingHelp:
-      "Export, import or share saved projects.",
     exportSetupsBtn: "Export All Projects",
     importSetupsBtn: "Import Projects",
     generateOverviewBtn: "Generate Overview",
@@ -675,9 +672,6 @@ const texts = {
     alertDeviceWatt: "Inserisci un valore Watt valido.",
     alertDeviceName: "Il nome del dispositivo non può essere vuoto.",
     alertInvalidCameraJSON: "JSON non valido per i dettagli della fotocamera",
-    setupActionsHeading: "Azioni di configurazione",
-    setupActionsHeadingHelp:
-      "Esporta, importa o condividi le configurazioni.",
     exportSetupsBtn: "Esporta tutte le configurazioni",
     importSetupsBtn: "Importa configurazioni",
     generateOverviewBtn: "Genera panoramica",
@@ -1055,9 +1049,6 @@ const texts = {
     alertDeviceName: "El nombre no puede estar vacío.",
     alertInvalidCameraJSON: "JSON de cámara no válido",
 
-    setupActionsHeading: "Acciones de Configuración",
-    setupActionsHeadingHelp:
-      "Exportar, importar o compartir configuraciones.",
     exportSetupsBtn: "Exportar todas las configuraciones",
     importSetupsBtn: "Importar configuraciones",
     generateOverviewBtn: "Generar resumen",
@@ -1437,9 +1428,6 @@ const texts = {
     alertDeviceName: "Le nom de l'appareil ne peut être vide.",
     alertInvalidCameraJSON: "JSON caméra invalide",
 
-    setupActionsHeading: "Actions de Configuration",
-    setupActionsHeadingHelp:
-      "Exporter, importer ou partager des configurations.",
     exportSetupsBtn: "Exporter toutes les configurations",
     importSetupsBtn: "Importer des configurations",
     generateOverviewBtn: "Générer un résumé",
@@ -1822,9 +1810,6 @@ const texts = {
     alertDeviceName: "Der Gerätename darf nicht leer sein.",
     alertInvalidCameraJSON: "Ungültiges JSON für Kameradetails",
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
-    setupActionsHeading: "Setup-Aktionen",
-    setupActionsHeadingHelp:
-      "Setups exportieren, importieren oder teilen.",
     exportSetupsBtn: "Alle Setups exportieren",
     importSetupsBtn: "Setups importieren",
     generateOverviewBtn: "Übersicht erstellen",

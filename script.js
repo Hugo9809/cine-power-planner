@@ -1238,12 +1238,6 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  const setupActionsHeadingElem = document.getElementById("setupActionsHeading");
-  setupActionsHeadingElem.textContent = texts[lang].setupActionsHeading;
-  setupActionsHeadingElem.setAttribute(
-    "data-help",
-    texts[lang].setupActionsHeadingHelp
-  );
   deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
@@ -1661,14 +1655,6 @@ function setLanguage(lang) {
   }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
-  const setupActionsHeadingElem2 = document.getElementById("setupActionsHeading");
-  if (setupActionsHeadingElem2) {
-    setupActionsHeadingElem2.textContent = texts[lang].setupActionsHeading;
-    setupActionsHeadingElem2.setAttribute(
-      "data-help",
-      texts[lang].setupActionsHeadingHelp
-    );
-  }
   document.getElementById("exportSetupsBtn").textContent = texts[lang].exportSetupsBtn;
   document.getElementById("importSetupsBtn").textContent = texts[lang].importSetupsBtn;
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
