@@ -749,7 +749,8 @@ button:disabled {
   padding-left: 0;
 }
 #breakdownList li {
-  margin: 3px 0;
+  margin: 6px 0;
+  line-height: 1.6;
 }
 
 /* Power diagram */
