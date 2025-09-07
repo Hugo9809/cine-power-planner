@@ -7998,7 +7998,7 @@ function generateGearListHtml(info = {}) {
     for (let i = 0; i < 2; i++) riggingAcc.push('Mini Magic Arm');
     for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
     riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
-    for (let i = 0; i < 3; i++) riggingAcc.push('spigot with male 3/8" and 1/4"');
+    for (let i = 0; i < 3; i++) riggingAcc.push('Spigot with male 3/8" and 1/4"');
     for (let i = 0; i < 2; i++) riggingAcc.push('Clapper Stick');
     for (let i = 0; i < 2; i++) riggingAcc.push('D-Tap Splitter');
     const cagesDb = devices.accessories?.cages || {};
@@ -8501,7 +8501,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Avenger C-Stand Sliding Leg 20" (${p.role} handheld)`);
         gripItems.push(`Steelfingers Wheel C-Stand 3er Set (${p.role} handheld)`);
         gripItems.push(`Lite-Tite Swivel Aluminium Umbrella Adapter (${p.role} handheld)`);
-        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
+        riggingAcc.push(`Spigot with male 3/8" and 1/4" (${p.role} handheld)`);
     });
     largeMonitorPrefs.forEach(p => {
         gripItems.push(`Matthews Monitor Stand II (249562) (${p.role} 15-21")`);
@@ -8510,7 +8510,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Matthews BIG F'ING Monitor Wheel Set (3 pieces) (${p.role} 15-21")`);
         riggingAcc.push(`ULCS Bracket with 1/4 to 1/4 (${p.role} 15-21")`);
         gripItems.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
-        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
+        riggingAcc.push(`Spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
         riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
@@ -8534,13 +8534,13 @@ function generateGearListHtml(info = {}) {
     gripItems.push(...Array(frictionArmCount).fill('Manfrotto 244N Friktion Arm'));
     if (hasGimbal) {
         gripItems.push('Avenger D200B Grip Head');
-        gripItems.push('spigot with male 3/8" and 1/4"');
+        gripItems.push('Spigot with male 3/8" and 1/4"');
     }
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
     if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
     if (scenarios.includes('Jib')) {
         gripItems.push('Pro Sup EJIb-Arm');
-        gripItems.push('jib counter weights');
+        gripItems.push('Jib counter weights');
         needsStandardTripod = true;
     }
     if (scenarios.includes('Slider')) {
@@ -8553,17 +8553,17 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Paganini set');
-        gripItems.push('sand bag (Slider)');
-        gripItems.push('sand bag (Slider)');
-        gripItems.push('cable mat');
-        gripItems.push('cable mat');
-        gripItems.push('cable mat');
+        gripItems.push('Sand bag (Slider)');
+        gripItems.push('Sand bag (Slider)');
+        gripItems.push('Cable mat');
+        gripItems.push('Cable mat');
+        gripItems.push('Cable mat');
     }
     if (scenarios.includes('Slider') && scenarios.includes('Undersling mode')) {
         gripItems.push('Tango Beam');
     }
     if (scenarios.includes('Outdoor')) {
-        riggingAcc.push('spigot with male 3/8" and 1/4" (Focus Umbrella)');
+        riggingAcc.push('Spigot with male 3/8" and 1/4" (Focus Umbrella)');
     }
     if (['Extreme heat', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s))) {
         gripItems.push('Large Umbrella');
@@ -8599,10 +8599,10 @@ function generateGearListHtml(info = {}) {
             gripItems.push(base);
         }
         if (t === 'Frog Tripod') {
-            gripItems.push('sand bag (Frog Tripod)');
+            gripItems.push('Sand bag (Frog Tripod)');
         }
         if (t === 'Hi-Head') {
-            gripItems.push('sand bag (Hi-Head)');
+            gripItems.push('Sand bag (Hi-Head)');
         }
     });
     if (needsStandardTripod && !gripItems.some(item => /Standard Tripod/.test(item))) {
@@ -8610,7 +8610,7 @@ function generateGearListHtml(info = {}) {
     }
     const standCount = gripItems.filter(item => /\bstand\b/i.test(item) && !/wheel/i.test(item)).length;
     if (standCount) {
-        gripItems.push(...Array(standCount * 3).fill('tennis ball'));
+        gripItems.push(...Array(standCount * 3).fill('Tennis ball'));
     }
     const maglinerCount = cartsTransportationItems.filter(item => /Magliner/i.test(item)).length;
     if (maglinerCount) {
