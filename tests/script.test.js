@@ -1731,6 +1731,34 @@ describe('script.js functions', () => {
     expect(section).toContain('Schneider CF DIOPTER FULL +4 GEN2');
   });
 
+  test('collectProjectFormData builds default filter token', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { collectProjectFormData } = require('../script.js');
+    const filterSelect = document.getElementById('filter');
+    const opt = [...filterSelect.options].find(o => o.value === 'BPM');
+    opt.selected = true;
+    filterSelect.dispatchEvent(new window.Event('change'));
+    const info = collectProjectFormData();
+    expect(info.filter).toBe('BPM:4x5.65:1/2|1/4|1/8');
+  });
+
+  test('collectProjectFormData handles custom filter selections', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { collectProjectFormData } = require('../script.js');
+    const filterSelect = document.getElementById('filter');
+    const opt = [...filterSelect.options].find(o => o.value === 'IRND');
+    opt.selected = true;
+    filterSelect.dispatchEvent(new window.Event('change'));
+    const sizeSel = document.getElementById('filter-size-IRND');
+    sizeSel.value = '6x6';
+    const valSel = document.getElementById('filter-values-IRND');
+    [...valSel.options].forEach(o => { o.selected = ['0.6','1.8'].includes(o.value); });
+    const info = collectProjectFormData();
+    expect(info.filter).toBe('IRND:6x6:0.6|1.8');
+  });
+
   test('ND Grad filters force swing-away matte box', () => {
     setupDom(false);
     require('../translations.js');
