@@ -8493,6 +8493,7 @@ function generateGearListHtml(info = {}) {
         'mattebox',
         'videoDistribution',
         'monitoringConfiguration',
+        'filter',
         'tripodHeadBrand',
         'tripodBowl',
         'tripodTypes',
