@@ -2632,8 +2632,8 @@ describe('script.js functions', () => {
     // capture stored state
     const state = global.saveSessionState.mock.calls.pop()[0];
     expect(state.easyrig).toBe('FlowCine Serene Spring Arm');
-    const savedHtml = global.saveProject.mock.calls.pop()[0].gearList;
-    // Simulate reload using captured state and saved gear list
+    const savedHtml = html; // original HTML without updated selection
+    // Simulate reload using captured state and stale gear list
     global.loadSessionState.mockReturnValue(state);
     global.loadProject = jest.fn(() => ({ gearList: savedHtml }));
     document.getElementById('gearListOutput').innerHTML = '';
