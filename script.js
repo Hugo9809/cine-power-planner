@@ -2047,6 +2047,50 @@ function splitGearListHtml(html) {
   return { projectHtml, gearHtml };
 }
 
+function describeRequirement(field, value) {
+  const val = value || '';
+  const parts = [];
+  if (field === 'requiredScenarios') {
+    const scenarios = val.split(',').map(s => s.trim());
+    if (scenarios.includes('Rain Machine') || scenarios.includes('Extreme rain')) {
+      parts.push('Adds rain deflector and cables for rain use.');
+    }
+    if (scenarios.includes('Trinity') || scenarios.includes('Steadicam')) {
+      parts.push('Includes D-Tap splitters and extension cables for Steadicam/Trinity rigs.');
+    }
+    if (scenarios.includes('Gimbal')) {
+      parts.push('Adds gimbal rigging and power accessories.');
+    }
+  } else if (field === 'mattebox') {
+    const v = val.toLowerCase();
+    if (v.includes('swing')) {
+      parts.push('Adds ARRI LMB 4x5 Pro Set and accessories.');
+    } else if (v.includes('rod')) {
+      parts.push('Adds ARRI LMB 4x5 15mm LWS Set and accessories.');
+    } else if (v.includes('clamp')) {
+      parts.push('Adds ARRI LMB 4x5 Clamp-On Set with adapter rings.');
+    }
+  } else if (field === 'cameraHandle') {
+    const selections = val.split(',').map(s => s.trim());
+    if (selections.includes('Hand Grips')) {
+      parts.push('Adds SHAPE Telescopic Handle kit.');
+    }
+    if (selections.includes('Handle Extension')) {
+      parts.push('Adds ARRI HEX-3 handle extension.');
+    }
+    if (selections.includes('L-Handle')) {
+      parts.push('Adds ARRI Handle Extension Set.');
+    }
+  } else if (field === 'viewfinderExtension') {
+    if (val) parts.push('Adds viewfinder extension to support accessories.');
+  } else if (field === 'gimbal') {
+    if (val) parts.push('Includes selected gimbal and support accessories.');
+  } else if (field === 'filter') {
+    if (val) parts.push('Adds selected filters to gear list.');
+  }
+  return parts.join(' ');
+}
+
 function displayGearAndRequirements(html) {
   const { projectHtml, gearHtml } = splitGearListHtml(html);
   if (projectRequirementsOutput) {
@@ -2056,7 +2100,10 @@ function displayGearAndRequirements(html) {
       projectRequirementsOutput.querySelectorAll('.requirement-box').forEach(box => {
         const label = box.querySelector('.req-label')?.textContent || '';
         const value = box.querySelector('.req-value')?.textContent || '';
-        const desc = value ? `${label}: ${value}` : label;
+        const field = box.getAttribute('data-field') || '';
+        const baseDesc = value ? `${label}: ${value}` : label;
+        const logic = describeRequirement(field, value);
+        const desc = logic ? `${baseDesc} – ${logic}` : baseDesc;
         box.setAttribute('title', desc);
         box.setAttribute('data-help', desc);
       });

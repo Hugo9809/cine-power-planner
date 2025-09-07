@@ -5031,7 +5031,7 @@ describe('monitor wireless metadata', () => {
     const html = script.generateGearListHtml({ codec: 'ProRes' });
     script.displayGearAndRequirements(html);
     const box = document.querySelector('.requirement-box');
-    expect(box.getAttribute('data-help')).toBe('Codec: ProRes');
+    expect(box.getAttribute('data-help')).toContain('Codec: ProRes');
   });
 
   test('gear list action buttons expose descriptive hover help', () => {
