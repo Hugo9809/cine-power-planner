@@ -810,6 +810,7 @@ describe('script.js functions', () => {
     expect(document.getElementById('editProjectBtn')).not.toBeNull();
     const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
     document.getElementById('deleteGearListBtn').click();
+    expect(confirmSpy).toHaveBeenCalledTimes(2);
     confirmSpy.mockRestore();
     expect(genBtn.classList.contains('hidden')).toBe(false);
     expect(document.getElementById('editProjectBtn')).toBeNull();

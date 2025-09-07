@@ -9150,6 +9150,7 @@ function handleImportGearList(e) {
 
 function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearList)) return;
+    if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return;
     if (gearListOutput) {
         gearListOutput.innerHTML = '';
         gearListOutput.classList.add('hidden');
