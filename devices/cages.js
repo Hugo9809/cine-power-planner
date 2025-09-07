@@ -169,7 +169,7 @@ const cageData = {
     "verified_source": "https://www.smallrigreseller.com/smallrig-full-cage-for-sony-alpha-7-iv-alpha-7s-iii-alpha-1-3667.html",
     "handle_extension_compatible": true
   },
-  "ARRI Pro Set for Sony a7S II": {
+  "Arri Sony a7S II Pro Set": {
     "brand": "ARRI",
     "compatible": [
       "Sony A7S II"
@@ -344,15 +344,21 @@ const cageData = {
     "verified_source": "https://tilta.com/shop/camera-cage-for-red-v-raptor-basic-kit/?srsltid=AfmBOoq6NUGSlJqJv_fIuAE5L9KivRh1vJH5PbpxcquI_HljSX0mjhjx",
     "handle_extension_compatible": true
   },
-  "ARRI Cage Support Kit for ALEXA Mini LF": {
+  "Arri K0.0049871 ALEXA Mini LF Production Set 19": {
     "brand": "ARRI",
+    "kNumber": "K0.0049871",
     "compatible": [
       "Arri Alexa Mini",
       "Arri Alexa Mini LF"
     ],
+    "rodStandard": [
+      "15mm",
+      "19mm"
+    ],
     "material": null,
     "weight_g": null,
     "mounting_points": [
+      "19mm Studio",
       "15mm LWS",
       "ARRI locating",
       "3/8\"-16",
@@ -360,19 +366,33 @@ const cageData = {
     ],
     "top_handle_included": true,
     "side_plates": true,
-    "notes": "ARRI PCA kit including cage plates, top handle, and 15mm support.",
+    "notes": "ARRI PCA kit including cage plates, top handle, and both 15mm LWS and 19mm Studio rod support.",
     "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories",
     "handle_extension_compatible": true
   },
-  "ARRI Studio 19mm Set ALEXA Mini (V-Mount)": {
+  "Arri KK.0015124 Studio 19mm Set ALEXA Mini V-Mount": {
     "brand": "ARRI",
     "compatible": [
       "Arri Alexa Mini",
       "Arri Alexa Mini LF"
     ],
     "kNumber": "KK.0015124",
-    "rodStandard": "19mm",
+    "rodStandard": [
+      "15mm",
+      "19mm"
+    ],
     "batteryMount": "V-Mount",
+    "mounting_points": [
+      "19mm Studio",
+      "15mm LWS",
+      "ARRI locating",
+      "3/8\"-16",
+      "1/4\"-20"
+    ],
+    "top_handle_included": true,
+    "side_plates": true,
+    "notes": "ARRI studio set with both 15mm LWS and 19mm Studio rod support.",
+    "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories",
     "handle_extension_compatible": true
   },
   "Wooden Camera Cage Kit for ARRI ALEXA Mini / Mini LF": {
@@ -452,7 +472,7 @@ const cageData = {
     "verified_source": "https://www.shapewlb.com/",
     "handle_extension_compatible": true
   },
-  "ARRI Pro Camera Accessories Kit for RED DSMC2": {
+  "Arri RED DSMC2 Pro Camera Accessories Kit": {
     "brand": "ARRI",
     "compatible": [
       "RED DSMC2",
@@ -811,26 +831,31 @@ const cageData = {
     "verified_source": "https://www.bhphotovideo.com/c/product/1775459-REG/tilta_es_t09_a_camera_cage_for_dji.html",
     "handle_extension_compatible": true
   },
-  "ARRI Alexa 35 Production Support Set (19 mm)": {
+  "Arri ALEXA 35 Production Support Set (19mm)": {
     "brand": "ARRI",
     "compatible": [
       "Arri Alexa 35"
+    ],
+    "rodStandard": [
+      "15mm",
+      "19mm"
     ],
     "material": null,
     "weight_g": null,
     "mounting_points": [
       "19mm Studio",
+      "15mm LWS",
       "ARRI locating",
       "3/8\"-16",
       "1/4\"-20"
     ],
     "top_handle_included": false,
     "side_plates": true,
-    "notes": "ARRI Production Support for Alexa 35, includes top/side/bottom support components (19 mm).",
+    "notes": "ARRI Production Support for Alexa 35, includes top/side/bottom support components and both 15mm LWS and 19mm Studio rod support.",
     "verified_source": "https://www.arri.com/en/camera-systems/mechanical-accessories/camera-support-systems/support-systems-for-arri-cameras/support-systems-for-alexa-35",
     "handle_extension_compatible": true
   },
-  "ARRI Alexa 35 Lightweight Expansion Set": {
+  "Arri ALEXA 35 Lightweight Expansion Set": {
     "brand": "ARRI",
     "compatible": [
       "Arri Alexa 35"
@@ -1059,8 +1084,9 @@ const cageData = {
     "verified_source": "https://www.brighttangerine.com/product/v-raptor-xl-cage/",
     "handle_extension_compatible": true
   },
-  "ARRI PCA Kit for Amira": {
+  "Arri KK.0019637 Cine Pro Set for AMIRA": {
     "brand": "ARRI",
+    "kNumber": "KK.0019637",
     "compatible": [
       "Arri Amira"
     ],
@@ -1470,26 +1496,32 @@ const cageData = {
     "verified_source": "https://woodencamera.com/products/unified-camera-cage-for-red-ranger",
     "handle_extension_compatible": true
   },
-  "ARRI Alexa 35 Production Expansion Set (19mm)": {
+  "Arri K0.0043086 ALEXA 35 Production Expansion Set (19mm)": {
     "brand": "ARRI",
+    "kNumber": "K0.0043086",
     "compatible": [
       "Arri Alexa 35"
+    ],
+    "rodStandard": [
+      "15mm",
+      "19mm"
     ],
     "material": null,
     "weight_g": null,
     "mounting_points": [
       "19mm Studio",
+      "15mm LWS",
       "ARRI locating",
       "3/8\"-16",
       "1/4\"-20"
     ],
     "top_handle_included": true,
     "side_plates": true,
-    "notes": "Production cage set for ALEXA 35 with 19mm studio rod support.",
+    "notes": "Production cage set for ALEXA 35 with both 15mm LWS and 19mm Studio rod support.",
     "verified_source": "https://www.arri.com/",
     "handle_extension_compatible": true
   },
-  "ARRI PCA Support Kit for Alexa LF": {
+  "Arri ALEXA LF PCA Support Kit": {
     "brand": "ARRI",
     "compatible": [
       "Arri Alexa LF"
@@ -1543,7 +1575,7 @@ const cageData = {
     "verified_source": "https://www.smallrig.com/smallrig-osmo-x5-cage-1889.html",
     "handle_extension_compatible": true
   },
-  "ARRI Pro Cine Set for Sony Venice 1/2": {
+  "Arri KK.0043759 Cine Pro Set for Sony Venice 1/2": {
     "brand": "ARRI",
     "kNumber": "KK.0043759",
     "compatible": [
