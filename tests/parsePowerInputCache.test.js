@@ -1,3 +1,4 @@
+jest.mock('../data.js', () => ({}));
 const { parsePowerInput } = require('../unifyPorts.js');
 
 describe('parsePowerInput cache', () => {

@@ -6,27 +6,13 @@ global.TextEncoder = global.TextEncoder || UtilTextEncoder;
 global.TextDecoder = global.TextDecoder || UtilTextDecoder;
 const { JSDOM } = require('jsdom');
 const LZString = require('lz-string');
-const cagesData = require('../devices/cages.js');
-let cageCamera = '';
-let cageNames = [];
-for (const [, cage] of Object.entries(cagesData)) {
-  if (Array.isArray(cage.compatible) && cage.compatible.length) {
-    const cam = cage.compatible[0];
-    const matches = Object.entries(cagesData)
-      .filter(([, c]) => Array.isArray(c.compatible) && c.compatible.includes(cam))
-      .map(([n]) => n);
-    if (matches.length >= 2) {
-      cageCamera = cam;
-      cageNames = matches;
-      break;
-    }
-  }
-}
-if (!cageCamera) {
-  const [firstName, firstCage] = Object.entries(cagesData)[0];
-  cageCamera = Array.isArray(firstCage.compatible) && firstCage.compatible.length ? firstCage.compatible[0] : 'CamA';
-  cageNames = [firstName];
-}
+// Use a small, purpose-built cage dataset to keep memory usage low during tests
+const cagesData = {
+  CageA: { brand: 'TestBrand', compatible: ['CamA'] },
+  CageB: { brand: 'TestBrand', compatible: ['CamA'] }
+};
+const cageCamera = 'CamA';
+const cageNames = Object.keys(cagesData);
 
 function setupDom(removeGear) {
   jest.resetModules();
@@ -4836,12 +4822,12 @@ describe('script.js functions', () => {
 
 describe('monitor wireless metadata', () => {
   test('SmallHD Ultra 7 has wirelessTx set to false', () => {
-    const devices = require('../data.js');
-    expect(devices.monitors['SmallHD Ultra 7'].wirelessTx).toBe(false);
+    const monitors = require('../devices/monitors.js');
+    expect(monitors['SmallHD Ultra 7'].wirelessTx).toBe(false);
   });
 
   test('wirelessTx monitors include latency information', () => {
-    const monitors = require('../data.js').monitors;
+    const monitors = require('../devices/monitors.js');
     Object.values(monitors).forEach((monitor) => {
       if (monitor.wirelessTx) {
         expect(monitor.latencyMs).toBeDefined();
@@ -4850,7 +4836,7 @@ describe('monitor wireless metadata', () => {
   });
 
   test('latency values are set for key wireless monitors', () => {
-    const monitors = require('../data.js').monitors;
+    const monitors = require('../devices/monitors.js');
     expect(monitors['SmallHD Cine 7 Bolt 4K TX'].latencyMs).toBe('< 1ms');
     expect(monitors['Hollyland Pyro 7 (RX/TX)'].latencyMs).toBe('50ms');
     expect(monitors['Hollyland Mars M1 Enhanced (RX/TX)'].wirelessTx).toBe(true);

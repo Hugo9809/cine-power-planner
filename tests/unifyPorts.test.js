@@ -1,3 +1,4 @@
+jest.mock('../data.js', () => ({}));
 const {
   normalizeMonitor,
   normalizeVideoPorts,

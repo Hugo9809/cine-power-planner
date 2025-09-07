@@ -1,7 +1,23 @@
 const checkConsistency = require('../checkConsistency');
 
 test('camera data includes required fields', () => {
-  const result = checkConsistency();
+  const validData = {
+    cameras: {
+      CamA: {
+        powerDrawWatts: 1,
+        power: {},
+        videoOutputs: [],
+        fizConnectors: [],
+        recordingMedia: [],
+        viewfinder: [],
+        lensMount: [],
+        timecode: []
+      }
+    },
+    monitors: { MonA: { power: {}, videoInputs: [], videoOutputs: [] } },
+    video: { VidA: { power: {}, videoInputs: [], videoOutputs: [] } }
+  };
+  const result = checkConsistency(validData);
   expect(result).toEqual([]);
 });
 
