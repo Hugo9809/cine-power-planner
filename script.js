@@ -2367,7 +2367,7 @@ const diagramCssLight = `
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
 .node-icon{font-size:20px;}
-.conn{stroke:#333;stroke-width:1px;}
+.conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
 .conn.green{fill:#090;}
