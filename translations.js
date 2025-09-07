@@ -318,6 +318,7 @@ const texts = {
     deleteGearListBtnHelp:
       "Remove the saved gear list from this project and hide the table.",
     confirmDeleteGearList: "Delete gear list?",
+    confirmDeleteGearListAgain: "This will permanently delete the gear list. Are you sure?",
     alertNoSetupsToExport: "There are no saved projects to export.",
     alertImportSetupsSuccess: "Successfully imported {num_setups} projects.",
     alertImportSetupsError: "Error: Could not import projects. The file may be invalid or corrupted.",
@@ -691,6 +692,7 @@ const texts = {
     deleteGearListBtnHelp:
       "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
+    confirmDeleteGearListAgain: "Questo eliminerà definitivamente l'elenco attrezzatura. Sei sicuro?",
     alertNoSetupsToExport: "Non ci sono configurazioni salvate per l'esportazione.",
     alertImportSetupsSuccess: "Importate correttamente {num_setups} configurazioni.",
     alertImportSetupsError: "Errore: non è stato in grado di importare configurazioni. Il file può essere non valido o corrotto.",
@@ -1069,6 +1071,7 @@ const texts = {
     deleteGearListBtnHelp:
       "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
+    confirmDeleteGearListAgain: "Esto eliminará permanentemente la lista de equipo. ¿Estás seguro?",
     alertNoSetupsToExport: "No hay configuraciones para exportar.",
     alertImportSetupsSuccess: "{num_setups} configuraciones importadas.",
     alertImportSetupsError: "Error: no se pudieron importar las configuraciones.",
@@ -1449,6 +1452,7 @@ const texts = {
     deleteGearListBtnHelp:
       "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
+    confirmDeleteGearListAgain: "Cela supprimera définitivement la liste du matériel. Êtes-vous sûr ?",
     alertNoSetupsToExport: "Aucune configuration à exporter.",
     alertImportSetupsSuccess: "{num_setups} configurations importées.",
     alertImportSetupsError: "Erreur : import impossible.",
@@ -1832,6 +1836,7 @@ const texts = {
     deleteGearListBtnHelp:
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
     confirmDeleteGearList: "Gear-Liste löschen?",
+    confirmDeleteGearListAgain: "Dies wird die Gear-Liste dauerhaft löschen. Bist du sicher?",
     alertNoSetupsToExport: "Es gibt keine gespeicherten Setups zum Exportieren.",
     alertImportSetupsSuccess: "{num_setups} Setups erfolgreich importiert.",
     alertImportSetupsError: "Fehler: Setups konnten nicht importiert werden. Die Datei ist möglicherweise ungültig oder beschädigt.",
