@@ -5013,6 +5013,22 @@ describe('monitor wireless metadata', () => {
     expect(document.getElementById('videoFrequency').value).toBe('5GHz');
   });
 
+  test('editing accessory charger preserves existing attributes', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    document.getElementById('newCategory').value = 'accessories.chargers';
+    document.getElementById('newName').value = 'Single V-Mount Charger';
+    document.getElementById('newWatt').value = '30';
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'Single V-Mount Charger';
+    addDeviceBtn.click();
+    expect(devices.accessories.chargers['Single V-Mount Charger']).toEqual({
+      mount: 'V-Mount',
+      slots: 1,
+      chargingSpeedAmps: 3,
+      powerDrawWatts: 30
+    });
+  });
+
   test('runtime feedback dialog pre-fills resolution and codec', () => {
     const cam = devices.cameras.CamA;
     cam.resolutions = ['1920x1080'];
