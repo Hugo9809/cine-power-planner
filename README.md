@@ -100,8 +100,27 @@ User-submitted battery runtimes are combined using a weighted average to better 
 
 ## Gear List
 
-- Click **Generate Gear List** to compile selected gear and project requirements.
-- **Save Gear List** stores the current list with the project.
+The planner expands your selections into a detailed packing table:
+
+- Click **Generate Gear List** to compile chosen gear and project requirements into a categorized table.
+- The list refreshes automatically whenever device selections or project details change.
+- Entries are grouped by category (camera, lens, power, monitoring, rigging, grip, consumables, etc.) and duplicates are merged with a count.
+- Required cables, rigging and accessories are added automatically for monitors, motors, gimbals and weather scenarios.
+- Scenario selections inject matching gear (for example, *Handheld* + *Easyrig* adds a telescopic handle; *Gimbal* supplies the selected gimbal, friction arms and sunshades; *Outdoor* adds spigots, umbrellas and CapIt rain covers).
+- Lens choices note front diameter, weight, minimum focus and rod requirements, and add lens supports and matte box components with warnings for incompatible rod standards.
+- Battery rows reflect counts from the power calculator and include a hotswap plate or the selected hotswap device when needed.
+- Monitoring preferences provide default monitors for each role and bundle cable sets for every screen.
+- The **Project Requirements** form feeds the list:
+  - **Project Name** and **DoP** appear in the heading of the printed requirements.
+  - **Prep Days** and **Shooting Days** supply schedule notes and, when paired with outdoor scenarios, suggest weather gear.
+  - **Required Scenarios** append matching rigging, gimbals and weather protection.
+  - **Camera Handle** and **Viewfinder Extension** insert the chosen handle parts or extension brackets.
+  - **Matte Box** and **Filter** choices inject the selected system with any needed trays, clamp adapters or filters.
+  - **Monitoring Configuration**, **Video Distribution** and **Viewfinder** settings add monitors, cables and overlays for each role.
+  - **User Button** selections and **Tripod Preferences** are listed for quick reference.
+- Items are sorted alphabetically within their category and each exposes a tooltip on hover.
+- The gear list appears in printable overviews and shared setup links so collaborators see the full context.
+- **Save Gear List** stores the current table with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
 - Gear list forms use fork buttons to duplicate your entries instantly.
