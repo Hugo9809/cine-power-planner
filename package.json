@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "check-consistency": "node checkConsistency.js",
     "normalize": "node normalizeData.js",
-    "test": "npm run lint && npm run check-consistency && node --max-old-space-size=4096 node_modules/.bin/jest --runInBand"
+    "test": "npm run lint && npm run check-consistency && node --max-old-space-size=8192 node_modules/.bin/jest --runInBand"
   },
   "keywords": [],
   "author": "",
