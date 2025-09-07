@@ -5902,7 +5902,7 @@ function refreshDeviceLists() {
   renderDeviceList("batteries", batteryListElem);
   renderDeviceList("accessories.batteries", accessoryBatteryListElem);
   renderDeviceList("accessories.cables", cableListElem);
-  renderDeviceList("accessories.cages", cameraSupportListElem);
+  renderDeviceList("accessories.cameraSupport", cameraSupportListElem);
   renderDeviceList("accessories.chargers", chargerListElem);
 
   filterDeviceList(cameraListElem, cameraListFilterInput.value);

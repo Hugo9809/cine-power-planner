@@ -1911,6 +1911,7 @@ const categoryNames = {
     "accessories.batteries": "Accessory Battery",
     "accessories.cables": "Cable",
     "accessories.cages": "Camera Cage",
+    "accessories.cameraSupport": "Camera Support",
     "accessories.chargers": "Charger"
   },
   it: {
@@ -1926,6 +1927,7 @@ const categoryNames = {
     "accessories.batteries": "Batteria per accessori",
     "accessories.cables": "Cavo",
     "accessories.cages": "Gabbia",
+    "accessories.cameraSupport": "Supporto camera",
     "accessories.chargers": "Caricatore"
   },
   es: {
@@ -1941,6 +1943,7 @@ const categoryNames = {
     "accessories.batteries": "Batería para accesorios",
     "accessories.cables": "Cable",
     "accessories.cages": "Jaula de cámara",
+    "accessories.cameraSupport": "Soporte de cámara",
     "accessories.chargers": "Cargador"
   },
   fr: {
@@ -1956,6 +1959,7 @@ const categoryNames = {
     "accessories.batteries": "Batterie accessoire",
     "accessories.cables": "Câble",
     "accessories.cages": "Cage",
+    "accessories.cameraSupport": "Support caméra",
     "accessories.chargers": "Chargeur"
   },
   de: {
@@ -1971,6 +1975,7 @@ const categoryNames = {
     "accessories.batteries": "Zubehör-Akku",
     "accessories.cables": "Kabel",
     "accessories.cages": "Cage",
+    "accessories.cameraSupport": "Kamera-Support",
     "accessories.chargers": "Ladegerät"
   },
 };
