@@ -7,6 +7,13 @@ global.TextDecoder = global.TextDecoder || UtilTextDecoder;
 const { JSDOM } = require('jsdom');
 const LZString = require('lz-string');
 const cagesData = require('../devices/cages.js');
+
+// Read and cache the body of index.html once to avoid repeated disk access and
+// parsing in every test. This reduces memory churn and speeds up test setup.
+const htmlBody = fs
+  .readFileSync(path.join(__dirname, '../index.html'), 'utf8')
+  .split('<body>')[1]
+  .split('</body>')[0];
 let cageCamera = '';
 let cageNames = [];
 for (const [, cage] of Object.entries(cagesData)) {
@@ -33,10 +40,8 @@ function setupDom(removeGear) {
   global.alert = jest.fn();
   global.prompt = jest.fn();
 
-  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-  const body = html.split('<body>')[1].split('</body>')[0];
-
-  const dom = new JSDOM(`<!doctype html><html><head></head><body>${body}</body></html>`);
+  // Use the cached HTML body instead of reading from disk each time.
+  const dom = new JSDOM(`<!doctype html><html><head></head><body>${htmlBody}</body></html>`);
   global.window = dom.window;
   global.document = dom.window.document;
   global.navigator = dom.window.navigator;
