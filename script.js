@@ -8379,11 +8379,13 @@ function generateGearListHtml(info = {}) {
         const lens = devices.lenses && devices.lenses[name];
         return Math.max(max, lens && lens.frontDiameterMm || 0);
     }, 0);
-    const filterTypes = info.filter
+    const filterTokens = info.filter
         ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
-    let filterSelections = expandFilterSelections(filterTypes);
-    if (info.mattebox) {
+    const filterTypes = filterTokens.map(f => f.split(':')[0].trim());
+    const needsSwingAway = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
+    let filterSelections = expandFilterSelections(filterTokens);
+    if (info.mattebox && !needsSwingAway) {
         const matteboxes = devices.accessories?.matteboxes || {};
         for (const [name, mb] of Object.entries(matteboxes)) {
             const normalize = s => s.replace(/[-\s]/g, '').toLowerCase();

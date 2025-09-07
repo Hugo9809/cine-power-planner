@@ -1690,6 +1690,41 @@ describe('script.js functions', () => {
     expect(filterSection).toContain('95mm Pol Filter');
   });
 
+  test('diopter filter includes frame and default strengths', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'Diopter' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('ARRI diopter frame');
+    expect(section).toContain('Schneider CF DIOPTER FULL +1/2 GEN2');
+    expect(section).toContain('Schneider CF DIOPTER FULL +1 GEN2');
+    expect(section).toContain('Schneider CF DIOPTER FULL +2 GEN2');
+    expect(section).toContain('Schneider CF DIOPTER FULL +4 GEN2');
+  });
+
+  test('ND Grad filters force swing-away matte box', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'ND Grad HE,ND Grad SE', mattebox: 'ARRI LMB 4x5 Clamp-On (3-Stage)' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('4x5.65 ND Grad HE Filter 0.3 HE Horizontal');
+    expect(section).toContain('4x5.65 ND Grad SE Filter 0.3 SE Horizontal');
+    expect(section).toContain('ARRI LMB 4x5 Pro Set');
+    expect(section).not.toContain('ARRI LMB 4x5 Clamp-On (3-Stage)');
+  });
+
+  test('Rota-Pol frame depends on selected size', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'Rota-Pol:6x6,Rota-Pol:95mm' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('ARRI K2.0017086 Rota Pola Filter Frame');
+    expect(section).toContain('Tilta 95mm Polarizer Filter für Tilta Mirage');
+  });
+
   test('standard rigging accessories are always included', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({});
