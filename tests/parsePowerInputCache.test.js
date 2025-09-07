@@ -13,4 +13,8 @@ describe('parsePowerInput cache', () => {
     // call string methods on the value. It should now safely return null.
     expect(parsePowerInput(123)).toBeNull();
   });
+
+  test('returns null for whitespace-only input', () => {
+    expect(parsePowerInput('   ')).toBeNull();
+  });
 });

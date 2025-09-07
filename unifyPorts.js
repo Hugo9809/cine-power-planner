@@ -255,16 +255,20 @@ function parsePowerInput(str) {
   // Gracefully handle non-string inputs. Consumers may accidentally pass
   // numbers or other types, which previously caused a runtime error when the
   // value was fed into string helpers like `trim`. Treat such inputs as
-  // unparsable instead of throwing.
-  if (typeof str !== "string" || !str) return null;
-  if (powerInputCache.has(str)) {
+  // unparsable instead of throwing. Similarly, empty or whitespace-only
+  // strings should be considered invalid and yield `null`.
+  if (typeof str !== "string") return null;
+  const normalized = str.trim();
+  if (!normalized) return null;
+
+  if (powerInputCache.has(normalized)) {
     // Return a fresh copy of the cached array so callers can mutate the
     // result without affecting subsequent lookups.
-    const cached = powerInputCache.get(str);
+    const cached = powerInputCache.get(normalized);
     return cached.map(obj => ({ ...obj }));
   }
 
-  const arr = splitOutside(str)
+  const arr = splitOutside(normalized)
     .map(p => p.trim())
     .filter(Boolean)
     .map(segment => {
@@ -276,7 +280,7 @@ function parsePowerInput(str) {
 
   // Store a defensive copy to keep the cached data immutable.
   powerInputCache.set(
-    str,
+    normalized,
     arr.map(obj => ({ ...obj }))
   );
   return arr;
