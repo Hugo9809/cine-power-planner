@@ -2351,6 +2351,9 @@ function checkSetupChanged() {
 
 const projectDialog = document.getElementById("projectDialog");
 const projectForm = document.getElementById("projectForm");
+const filterSelectElem = document.getElementById('filter');
+const filterDetails = document.getElementById('filterDetails');
+const matteboxSelect = document.getElementById('mattebox');
 const projectCancelBtn = document.getElementById("projectCancel");
 const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
@@ -7889,6 +7892,11 @@ function collectProjectFormData() {
     const viewfinderSettings = multi('viewfinderSettings');
     const frameGuides = multi('frameGuides');
     const aspectMaskOpacity = multi('aspectMaskOpacity');
+    const filterStr = collectFilterSelections();
+    const filterTypes = filterStr ? filterStr.split(',').map(s => s.split(':')[0]) : [];
+    const matteboxVal = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE')
+        ? 'Swing Away'
+        : val('mattebox');
     return {
         projectName: val('projectName'),
         dop: val('dop'),
@@ -7905,7 +7913,7 @@ function collectProjectFormData() {
         cameraHandle: multi('cameraHandle'),
         viewfinderExtension: val('viewfinderExtension'),
         viewfinderEyeLeatherColor: val('viewfinderEyeLeatherColor'),
-        mattebox: val('mattebox'),
+        mattebox: matteboxVal,
         gimbal: multi('gimbal'),
         viewfinderSettings,
         frameGuides,
@@ -7920,7 +7928,7 @@ function collectProjectFormData() {
         tripodTypes: multi('tripodTypes'),
         tripodSpreader: val('tripodSpreader'),
         sliderBowl: getSliderBowlValue(),
-        filter: multi('filter')
+        filter: filterStr
     };
 }
 
@@ -7976,7 +7984,20 @@ function populateProjectForm(info) {
     setVal('tripodSpreader', info.tripodSpreader);
     setSliderBowlValue(info.sliderBowl || '');
     setEasyrigValue(info.easyrig || '');
-    setMulti('filter', info.filter);
+    const filterTokens = parseFilterTokens(info.filter);
+    setMulti('filter', filterTokens.map(t => t.type));
+    renderFilterDetails();
+    filterTokens.forEach(({ type, size, values }) => {
+        const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
+        if (sizeSel) sizeSel.value = size;
+        const valSel = document.getElementById(`filter-values-${filterId(type)}`);
+        if (valSel) {
+            const arr = Array.isArray(values) ? values : [];
+            Array.from(valSel.options).forEach(opt => {
+                opt.selected = arr.includes(opt.value);
+            });
+        }
+    });
 }
 
 function ensureZoomRemoteSetup(info) {
@@ -10189,6 +10210,10 @@ function initApp() {
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
+  if (filterSelectElem) {
+    filterSelectElem.addEventListener('change', renderFilterDetails);
+    renderFilterDetails();
+  }
   populateUserButtonDropdowns();
   document.querySelectorAll('#projectForm select')
     .forEach(sel => attachSelectSearch(sel));
@@ -10300,20 +10325,115 @@ function populateCodecDropdown(selected = '') {
 }
 
 function populateFilterDropdown() {
-  const filterSelect = document.getElementById('filter');
-  if (filterSelect && devices && Array.isArray(devices.filterOptions)) {
-    if (!filterSelect.multiple) {
+  if (filterSelectElem && devices && Array.isArray(devices.filterOptions)) {
+    if (!filterSelectElem.multiple) {
       const emptyOpt = document.createElement('option');
       emptyOpt.value = '';
-      filterSelect.appendChild(emptyOpt);
+      filterSelectElem.appendChild(emptyOpt);
     }
     devices.filterOptions.forEach(f => {
       const opt = document.createElement('option');
       opt.value = f;
       opt.textContent = f;
-      filterSelect.appendChild(opt);
+      filterSelectElem.appendChild(opt);
     });
   }
+}
+
+const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
+
+function createFilterSizeSelect(type) {
+  const sel = document.createElement('select');
+  sel.id = `filter-size-${filterId(type)}`;
+  let sizes = ['4x4', '4x5.65', '6x6', '95mm'];
+  if (type === 'Rota-Pol') sizes = ['4x5.65', '6x6', '95mm'];
+  sizes.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s;
+    o.textContent = s;
+    if (s === '4x5.65') o.selected = true;
+    sel.appendChild(o);
+  });
+  return sel;
+}
+
+function createFilterValueSelect(type) {
+  const sel = document.createElement('select');
+  sel.id = `filter-values-${filterId(type)}`;
+  sel.multiple = true;
+  let opts = [], defaults = [];
+  switch (type) {
+    case 'IRND':
+      opts = ['0.3','0.6','0.9','1.2','1.5','1.8','2.1','2.5'];
+      defaults = ['0.3','1.2'];
+      break;
+    case 'Diopter':
+      opts = ['+1/4','+1/2','+1','+2','+3','+4'];
+      defaults = ['+1/2','+1','+2','+4'];
+      break;
+    case 'ND Grad HE':
+      opts = ['0.3 HE Vertical','0.6 HE Vertical','0.9 HE Vertical','1.2 HE Vertical','0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal','1.2 HE Horizontal'];
+      defaults = ['0.3 HE Horizontal','0.6 HE Horizontal','0.9 HE Horizontal'];
+      break;
+    case 'ND Grad SE':
+      opts = ['0.3 SE Vertical','0.6 SE Vertical','0.9 SE Vertical','1.2 SE Vertical','0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal','1.2 SE Horizontal'];
+      defaults = ['0.3 SE Horizontal','0.6 SE Horizontal','0.9 SE Horizontal'];
+      break;
+    default:
+      opts = ['1','1/2','1/4','1/8','1/16'];
+      defaults = ['1/2','1/4','1/8'];
+      break;
+  }
+  opts.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o;
+    opt.textContent = o;
+    if (defaults.includes(o)) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.size = opts.length;
+  return sel;
+}
+
+function renderFilterDetails() {
+  if (!filterSelectElem || !filterDetails) return;
+  filterDetails.innerHTML = '';
+  const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
+  selected.forEach(type => {
+    const wrap = document.createElement('div');
+    wrap.className = 'filter-detail';
+    wrap.dataset.type = type;
+    wrap.appendChild(createFilterSizeSelect(type));
+    if (!['Clear','Pol','Rota-Pol'].includes(type)) {
+      wrap.appendChild(createFilterValueSelect(type));
+    }
+    filterDetails.appendChild(wrap);
+  });
+  if (matteboxSelect) {
+    const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
+    if (needsSwing) matteboxSelect.value = 'Swing Away';
+  }
+}
+
+function collectFilterSelections() {
+  if (!filterSelectElem) return '';
+  const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
+  const tokens = selected.map(type => {
+    const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
+    const size = sizeSel ? sizeSel.value : '4x5.65';
+    const valSel = document.getElementById(`filter-values-${filterId(type)}`);
+    const vals = valSel ? Array.from(valSel.selectedOptions).map(o => o.value) : [];
+    return `${type}:${size}${vals.length ? ':' + vals.join('|') : ''}`;
+  });
+  return tokens.join(',');
+}
+
+function parseFilterTokens(str) {
+  if (!str) return [];
+  return str.split(',').map(s => {
+    const [type, size = '4x5.65', vals = ''] = s.split(':').map(p => p.trim());
+    return { type, size, values: vals ? vals.split('|').map(v => v.trim()) : [] };
+  }).filter(t => t.type);
 }
 
 function populateUserButtonDropdowns() {
@@ -10402,5 +10522,10 @@ if (typeof module !== "undefined" && module.exports) {
     updateMonitoringConfigurationOptions,
     updateViewfinderExtensionVisibility,
     scenarioIcons,
+    collectProjectFormData,
+    populateProjectForm,
+    renderFilterDetails,
+    collectFilterSelections,
+    parseFilterTokens,
   };
 }
