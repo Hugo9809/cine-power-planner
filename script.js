@@ -8226,46 +8226,66 @@ function ensureZoomRemoteSetup(info) {
 
 function expandFilterSelections(filters = []) {
     const items = [];
+    const parseVals = v => v ? v.split('|').map(s => s.trim()).filter(Boolean) : [];
     filters.forEach(f => {
-        switch (f) {
+        if (!f) return;
+        const [type, size = '4x5.65', rawVals = ''] = f.split(':').map(s => s.trim());
+        const values = parseVals(rawVals);
+        switch (type) {
             case 'Clear':
-                items.push('4x5.65 Clear Filter');
+                items.push(`${size} Clear Filter`);
                 break;
-            case 'IRND':
-                items.push('4x5.65 IRND Filter 0.3');
-                items.push('4x5.65 IRND Filter 1.2');
+            case 'IRND': {
+                const dens = values.length ? values : ['0.3', '1.2'];
+                dens.forEach(d => items.push(`${size} IRND Filter ${d}`));
                 break;
-            case 'Diopter':
+            }
+            case 'Diopter': {
+                const diops = values.length ? values : ['+1/2', '+1', '+2', '+4'];
                 items.push('ARRI diopter frame');
-                items.push('Schneider CF DIOPTER FULL +1/2 GEN2');
-                items.push('Schneider CF DIOPTER FULL +1 GEN2');
-                items.push('Schneider CF DIOPTER FULL +2 GEN2');
-                items.push('Schneider CF DIOPTER FULL +4 GEN2');
+                diops.forEach(d => items.push(`Schneider CF DIOPTER FULL ${d} GEN2`));
                 break;
+            }
             case 'Pol':
-                items.push('4x5.65 Pol Filter');
+                items.push(`${size} Pol Filter`);
                 break;
             case 'Rota-Pol':
-                items.push('ARRI K2.0009434 Rota Pola Filter Frame');
+                if (size === '95mm') {
+                    items.push('Tilta 95mm Polarizer Filter für Tilta Mirage');
+                } else if (size === '6x6') {
+                    items.push('ARRI K2.0017086 Rota Pola Filter Frame');
+                } else if (size === '4x5.65' || !size) {
+                    items.push('ARRI K2.0009434 Rota Pola Filter Frame');
+                }
                 break;
-            case 'ND Grad HE':
-                items.push('4x5.65 ND Grad HE Filter 0.3 HE Horizontal');
-                items.push('4x5.65 ND Grad HE Filter 0.6 HE Horizontal');
-                items.push('4x5.65 ND Grad HE Filter 0.9 HE Horizontal');
+            case 'ND Grad HE': {
+                const dens = values.length ? values : [
+                    '0.3 HE Horizontal',
+                    '0.6 HE Horizontal',
+                    '0.9 HE Horizontal'
+                ];
+                dens.forEach(d => items.push(`${size} ND Grad HE Filter ${d}`));
                 items.push('ARRI LMB 4x5 Pro Set');
                 items.push('ARRI LMB 19mm Studio Rod Adapter');
                 items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
                 break;
-            case 'ND Grad SE':
-                items.push('4x5.65 ND Grad SE Filter 0.3 SE Horizontal');
-                items.push('4x5.65 ND Grad SE Filter 0.6 SE Horizontal');
-                items.push('4x5.65 ND Grad SE Filter 0.9 SE Horizontal');
+            }
+            case 'ND Grad SE': {
+                const dens = values.length ? values : [
+                    '0.3 SE Horizontal',
+                    '0.6 SE Horizontal',
+                    '0.9 SE Horizontal'
+                ];
+                dens.forEach(d => items.push(`${size} ND Grad SE Filter ${d}`));
                 items.push('ARRI LMB 4x5 Pro Set');
                 items.push('ARRI LMB 19mm Studio Rod Adapter');
                 items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
                 break;
-            default:
-                items.push(`4x5.65 ${f} Filter Set 1/2 + 1/4 + 1/8`);
+            }
+            default: {
+                const strengths = values.length ? values : ['1/2', '1/4', '1/8'];
+                items.push(`${size} ${type} Filter Set ${strengths.join(' + ')}`);
+            }
         }
     });
     return items;

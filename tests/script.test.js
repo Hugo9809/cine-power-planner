@@ -1678,6 +1678,18 @@ describe('script.js functions', () => {
       expect(html).not.toContain('HDMI Cable');
     });
 
+  test('custom filter selections override defaults', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'IRND:6x6:0.6|1.8,BPM:4x4:1|1/16,Pol:95mm' });
+    const filterSection = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(filterSection).toContain('6x6 IRND Filter 0.6');
+    expect(filterSection).toContain('6x6 IRND Filter 1.8');
+    expect(filterSection).toContain('4x4 BPM Filter Set 1 + 1/16');
+    expect(filterSection).toContain('95mm Pol Filter');
+  });
+
   test('standard rigging accessories are always included', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({});
