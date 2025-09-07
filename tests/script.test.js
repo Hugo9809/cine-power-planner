@@ -1785,8 +1785,8 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({});
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('2x ULCS Bracket with 1/4 to 1/4');
-    expect(rigSection).toContain('2x ULCS Bracket with 3/8 to 1/4');
+    expect(rigSection).toContain('2x ULCS Bracket with 1/4" to 1/4"');
+    expect(rigSection).toContain('2x ULCS Bracket with 3/8" to 1/4"');
     expect(rigSection).toContain('2x Noga Arm');
     expect(rigSection).toContain('2x Mini Magic Arm');
     expect(rigSection).toContain('4x Cine Quick Release');
