@@ -28,15 +28,16 @@ if (!cageCamera) {
   cageNames = [firstName];
 }
 
+const bodyTemplate = fs
+  .readFileSync(path.join(__dirname, '../index.html'), 'utf8')
+  .split('<body>')[1]
+  .split('</body>')[0];
+
 function setupDom(removeGear) {
   jest.resetModules();
   global.alert = jest.fn();
   global.prompt = jest.fn();
-
-  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-  const body = html.split('<body>')[1].split('</body>')[0];
-
-  const dom = new JSDOM(`<!doctype html><html><head></head><body>${body}</body></html>`);
+  const dom = new JSDOM(`<!doctype html><html><head></head><body>${bodyTemplate}</body></html>`);
   global.window = dom.window;
   global.document = dom.window.document;
   global.navigator = dom.window.navigator;
@@ -306,10 +307,7 @@ describe('script.js functions', () => {
     global.alert = jest.fn();
     global.prompt = jest.fn();
     Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
     document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.devices = {
@@ -1236,10 +1234,7 @@ describe('script.js functions', () => {
     global.alert = jest.fn();
     global.prompt = jest.fn();
     Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
     document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.loadDeviceData = jest.fn(() => null);
@@ -1265,10 +1260,7 @@ describe('script.js functions', () => {
 
   test('unifyDevices normalizes videoOutputs', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: {
@@ -1305,10 +1297,7 @@ describe('script.js functions', () => {
 
   test('unifyDevices filters unsupported videoOutputs', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: {
@@ -1346,10 +1335,7 @@ describe('script.js functions', () => {
 
   test('unifyDevices normalizes recordingMedia', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: {
@@ -3357,10 +3343,7 @@ describe('script.js functions', () => {
 
   test('missing FIZ controller shows error', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'Hirose 12-pin' }] } },
@@ -3440,10 +3423,7 @@ describe('script.js functions', () => {
 
   test('ARRI camera with LBUS avoids distance warning', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: { 'ArriCam': { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] } },
@@ -3482,10 +3462,7 @@ describe('script.js functions', () => {
 
   test('Master Grip only controller triggers wireless warning', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (4-pin Lemo)' }] } },
@@ -3525,10 +3502,7 @@ describe('script.js functions', () => {
 
   test('Master Grip with cforce RF motor has no wireless warning', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (4-pin Lemo)' }] } },
@@ -3568,10 +3542,7 @@ describe('script.js functions', () => {
 
   test('cforce RF motor placed before Master Grip', () => {
     jest.resetModules();
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
 
     global.devices = {
       cameras: { CamA: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] } },
@@ -5014,10 +4985,7 @@ describe('copy summary button without clipboard support', () => {
     global.prompt = jest.fn();
 
     delete navigator.clipboard;
-
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = bodyTemplate;
     document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.devices = {
