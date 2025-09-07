@@ -681,39 +681,43 @@
         <section data-help-section id="gearListHelp">
           <h3><span class="help-icon" aria-hidden="true">📋</span>Gear List</h3>
             <ul>
-              <li>The <strong>Generate Gear List</strong> button compiles selected gear and project requirements into a table.</li>
-              <li>Once generated, the list refreshes automatically when device selections or project requirements change.</li>
-              <li>Items are grouped by category (camera, lens, power, monitoring, accessories) with duplicates merged and counted.</li>
-              <li>The generator auto-adds required cables, rigging and accessories for monitors, motors, gimbals and weather scenarios.</li>
-              <li>Scenario selections inject related gear:
+              <li>The <strong>Generate Gear List</strong> button expands every selected device and project detail into a rich table grouped by category and quantity.</li>
+              <li>Any change to devices, lenses, batteries or project information rebuilds the list so it always reflects the current configuration.</li>
+              <li>The generator assembles the table step&nbsp;by&nbsp;step:
+                <ol>
+                  <li>Each chosen device is cloned so accessories and rules can be applied without altering the source data.</li>
+                  <li>Default accessories such as power cables or mounting brackets are attached according to each device definition.</li>
+                  <li>Scenario rules from <em>Required Scenarios</em> inject rigging and weather protection.</li>
+                  <li>Entries from the <em>Project Requirements</em> form contribute additional hardware and notes.</li>
+                  <li>An internal slug (manufacturer&nbsp;+&nbsp;model) is generated; matching slugs are merged and their quantities summed.</li>
+                  <li>Lines are sorted into Camera, Lens, Power, Monitoring and Accessories sections and then alphabetically.</li>
+                  <li>Tooltips list weight, dimensions and other metadata for quick reference.</li>
+                </ol>
+              </li>
+              <li>Accessory packs ensure common dependencies are covered:
                 <ul>
-                  <li><strong>Handheld + Easyrig</strong> adds a telescopic handle for stable support.</li>
-                  <li><strong>Gimbal</strong> supplies the chosen gimbal and required filters or sunshades.</li>
-                  <li><strong>Outdoor</strong> adds spigots, umbrellas and CapIt rain covers for monitor protection.</li>
+                  <li><strong>Handheld + Easyrig</strong> adds a telescopic handle, shoulder rig and compatible quick‑release plates.</li>
+                  <li><strong>Gimbal</strong> supplies the selected gimbal, balancing accessories, power feed cables and any required filters or sunshades.</li>
+                  <li><strong>Outdoor</strong> adds spigots, umbrellas, CapIt rain covers and water‑resistant cable wraps for monitor protection.</li>
+                  <li><strong>Vehicle</strong> or <strong>Steadicam</strong> scenarios append suction mounts, hard‑mount plates or isolation arms where defined.</li>
                 </ul>
               </li>
-              <li>Lens choices append front diameter, weight and rod requirements, add lens supports and matte box components, and warn about incompatible rod standards.</li>
-              <li>Battery entries reflect counts from the power calculator and include hotswap plates or selected hotswap devices when needed.</li>
-              <li>Monitoring preferences provide default monitors for each role (Director, DoP, etc.) and include cable sets for every screen.</li>
-              <li>The Project Requirements form feeds the list:
+              <li>Lens selections append front diameter, weight and rod requirements, introduce lens supports and matte box hardware, and warn about incompatible rod standards or filter trays.</li>
+              <li>Battery entries mirror counts from the power calculator; if draw exceeds safe limits the list adds hotswap plates or the selected hotswap device.</li>
+              <li>Monitoring preferences contribute default screens for each role (Director, DoP, Focus Puller, Client), matching video transmitters and pre‑bundled cable sets.</li>
+              <li>The <strong>Project Requirements</strong> form acts as a template for the list. Each field adds context and gear:
                 <ul>
-                  <li><strong>Project Name</strong> and <strong>DoP</strong> appear in the heading of the printed requirements.</li>
-                  <li><strong>Prep</strong> and <strong>Shooting Days</strong> supply schedule notes and drive weather gear suggestions when combined with outdoor scenarios.</li>
-                  <li><strong>Lenses</strong> contribute front diameter, weight and rod data, add lens supports and matte box adapters.</li>
-                  <li><strong>Required Scenarios</strong> append matching rigging, gimbals and weather protection for each selection.</li>
-                  <li><strong>Camera Handle</strong> and <strong>Viewfinder Extension</strong> insert the chosen handle parts or extension brackets.</li>
-                  <li><strong>Mattebox</strong> and <strong>Filter</strong> choices inject the selected system with any needed trays, clamp adapters or filters.</li>
-                  <li><strong>Monitoring Configuration</strong>, <strong>Video Distribution</strong> and <strong>Viewfinder Settings</strong> add monitors, cables and overlays for each role.</li>
-                  <li><strong>User Button</strong> selections and <strong>Tripod Preferences</strong> are listed for quick reference.</li>
+                  <li><strong>Project Name</strong>, <strong>DoP</strong>, <strong>Prep</strong> and <strong>Shooting Days</strong> populate the printed header and can trigger weather gear with outdoor scenarios.</li>
+                  <li><strong>Required Scenarios</strong> toggle accessory packs as described above.</li>
+                  <li><strong>Camera Handle</strong>, <strong>Viewfinder Extension</strong> and <strong>User Button Layouts</strong> supply matching handles, VF extensions and notes for operators.</li>
+                  <li><strong>Matte Box</strong> and <strong>Filter Set</strong> selections insert filter trays, donuts, adapters and storage cases.</li>
+                  <li><strong>Monitoring Configuration</strong> and <strong>Video Distribution</strong> choices attach wireless links, splitters, antennas and channel‑assignment notes.</li>
+                  <li><strong>Viewfinder Settings</strong> and <strong>Tripod Preferences</strong> add EVF mounts, extension brackets, tripod heads, spreaders and counterbalance details.</li>
                 </ul>
               </li>
-              <li>All items are sorted alphabetically within their category for clarity.</li>
-              <li>Each item exposes a tooltip on hover with a brief description or specification.</li>
-              <li>The gear list is included in printable overviews and shared setup links so collaborators see the full context.</li>
-              <li>The <strong>Save Gear List</strong> button stores the current list with the project.</li>
-              <li>The <strong>Export Gear List</strong> button downloads a JSON file, and <strong>Import Gear List</strong> restores it.</li>
-              <li>The <strong>Delete Gear List</strong> button removes the saved list and hides the output.</li>
-              <li>Gear list forms use fork buttons to duplicate your entries instantly.</li>
+              <li>The resulting gear list appears in printable overviews and shared setup links so collaborators see full context.</li>
+              <li>The <strong>Save Gear List</strong> button stores the current list with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
+              <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
             </ul>
           </section>
         <section data-help-section id="powerCalculator">
