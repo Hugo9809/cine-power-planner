@@ -1,6 +1,5 @@
 /* global texts devices */
-const fs = require('fs');
-const path = require('path');
+const { getHtmlBody } = require('./domUtils');
 const { TextEncoder: UtilTextEncoder, TextDecoder: UtilTextDecoder } = require('util');
 global.TextEncoder = global.TextEncoder || UtilTextEncoder;
 global.TextDecoder = global.TextDecoder || UtilTextDecoder;
@@ -15,12 +14,10 @@ const cagesData = {
 const cageCamera = 'CamA';
 const cageNames = Object.keys(cagesData);
 
-// Read and cache the body of index.html once to avoid repeated disk access and
-// parsing in every test. This reduces memory churn and speeds up test setup.
-const htmlBody = fs
-  .readFileSync(path.join(__dirname, '../index.html'), 'utf8')
-  .split('<body>')[1]
-  .split('</body>')[0];
+// Read and cache the body of index.html once via shared helper to avoid
+// duplicate disk access across test suites. This keeps memory usage low and
+// speeds up setup when multiple tests need the DOM skeleton.
+const htmlBody = getHtmlBody();
 
 function setupDom(removeGear) {
   jest.resetModules();
@@ -324,9 +321,7 @@ describe('script.js functions', () => {
     global.prompt = jest.fn();
     Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
     document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.devices = {
@@ -1344,9 +1339,7 @@ describe('script.js functions', () => {
     global.prompt = jest.fn();
     Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
     document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.loadDeviceData = jest.fn(() => null);
@@ -1373,9 +1366,7 @@ describe('script.js functions', () => {
   test('unifyDevices normalizes videoOutputs', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: {
@@ -1413,9 +1404,7 @@ describe('script.js functions', () => {
   test('unifyDevices filters unsupported videoOutputs', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: {
@@ -1454,9 +1443,7 @@ describe('script.js functions', () => {
   test('unifyDevices normalizes recordingMedia', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: {
@@ -3518,9 +3505,7 @@ describe('script.js functions', () => {
   test('missing FIZ controller shows error', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'Hirose 12-pin' }] } },
@@ -3601,9 +3586,7 @@ describe('script.js functions', () => {
   test('ARRI camera with LBUS avoids distance warning', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: { 'ArriCam': { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] } },
@@ -3643,9 +3626,7 @@ describe('script.js functions', () => {
   test('Master Grip only controller triggers wireless warning', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (4-pin Lemo)' }] } },
@@ -3686,9 +3667,7 @@ describe('script.js functions', () => {
   test('Master Grip with cforce RF motor has no wireless warning', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: { CamX: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (4-pin Lemo)' }] } },
@@ -3729,9 +3708,7 @@ describe('script.js functions', () => {
   test('cforce RF motor placed before Master Grip', () => {
     jest.resetModules();
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
 
     global.devices = {
       cameras: { CamA: { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] } },
@@ -5239,9 +5216,7 @@ describe('copy summary button without clipboard support', () => {
 
     document.execCommand = jest.fn(() => { throw new Error('execCommand not supported'); });
 
-    const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-    const body = html.split('<body>')[1].split('</body>')[0];
-    document.body.innerHTML = body;
+    document.body.innerHTML = getHtmlBody();
     document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
 
     global.devices = {
