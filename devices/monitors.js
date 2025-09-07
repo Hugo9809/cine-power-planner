@@ -8,24 +8,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "12G-SDI"
+        "portType": "12G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "12G-SDI"
+        "portType": "12G-SDI"
       }
     ]
   },
@@ -36,25 +36,25 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "12G-SDI"
+        "portType": "12G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "12G-SDI"
+        "portType": "12G-SDI"
       }
     ]
   },
@@ -65,7 +65,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
@@ -73,18 +73,18 @@ const monitorData = {
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "12G-SDI"
+        "portType": "12G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "12G-SDI"
+        "portType": "12G-SDI"
       }
     ]
   },
@@ -95,24 +95,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -123,25 +123,25 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -152,7 +152,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
@@ -160,18 +160,18 @@ const monitorData = {
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -182,24 +182,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -210,25 +210,25 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -239,7 +239,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
@@ -247,18 +247,18 @@ const monitorData = {
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -269,7 +269,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
@@ -278,7 +278,7 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": []
@@ -290,24 +290,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -318,25 +318,25 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -347,7 +347,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
@@ -355,18 +355,18 @@ const monitorData = {
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -377,24 +377,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -405,25 +405,25 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": true,
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -434,7 +434,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
@@ -442,18 +442,18 @@ const monitorData = {
     "latencyMs": "< 1ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -464,24 +464,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -492,7 +492,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
@@ -501,7 +501,7 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": []
@@ -513,7 +513,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "type": "DC Barrel / NP-F"
+        "portType": "DC Barrel / NP-F"
       }
     },
     "wirelessTx": true,
@@ -521,18 +521,18 @@ const monitorData = {
     "latencyMs": "50ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -543,7 +543,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "type": "DC Barrel"
+        "portType": "DC Barrel"
       }
     },
     "wirelessTx": true,
@@ -551,15 +551,15 @@ const monitorData = {
     "latencyMs": "50ms",
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -570,7 +570,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-16",
-        "type": "DC Barrel / NP-F"
+        "portType": "DC Barrel / NP-F"
       }
     },
     "wirelessTx": true,
@@ -581,15 +581,15 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -600,7 +600,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "type": "4-pin Aviation / NP-F"
+        "portType": "4-pin Aviation / NP-F"
       }
     },
     "wirelessTx": false,
@@ -609,18 +609,18 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -631,7 +631,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "type": "4-pin Aviation / NP-F"
+        "portType": "4-pin Aviation / NP-F"
       }
     },
     "wirelessTx": false,
@@ -643,12 +643,12 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -659,7 +659,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "type": "4-pin Aviation / NP-F"
+        "portType": "4-pin Aviation / NP-F"
       }
     },
     "wirelessTx": false,
@@ -668,18 +668,18 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -690,7 +690,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-24",
-        "type": "4-pin Aviation / NP-F"
+        "portType": "4-pin Aviation / NP-F"
       }
     },
     "wirelessTx": false,
@@ -699,12 +699,12 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -715,7 +715,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "type": "DC Barrel / NP-F"
+        "portType": "DC Barrel / NP-F"
       }
     },
     "wirelessTx": false,
@@ -727,12 +727,12 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -743,7 +743,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "type": "DC Barrel / NP-F"
+        "portType": "DC Barrel / NP-F"
       }
     },
     "wirelessTx": false,
@@ -755,12 +755,12 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -771,7 +771,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "type": "DC Barrel / NP-F"
+        "portType": "DC Barrel / NP-F"
       }
     },
     "wirelessTx": false,
@@ -780,10 +780,10 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": []
@@ -795,24 +795,24 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-16",
-        "type": "DC Barrel / NP-F"
+        "portType": "DC Barrel / NP-F"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -823,7 +823,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "type": "NP-F"
+        "portType": "NP-F"
       }
     },
     "wirelessTx": false,
@@ -832,18 +832,18 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -854,7 +854,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "type": "NP-F"
+        "portType": "NP-F"
       }
     },
     "wirelessTx": false,
@@ -863,12 +863,12 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -879,7 +879,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "type": "NP-F"
+        "portType": "NP-F"
       }
     },
     "wirelessTx": false,
@@ -888,12 +888,12 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -904,7 +904,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "7-18",
-        "type": "NP-F"
+        "portType": "NP-F"
       }
     },
     "wirelessTx": false,
@@ -913,12 +913,12 @@ const monitorData = {
     },
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       }
     ]
   },
@@ -929,16 +929,16 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "12",
-        "type": "Mini XLR 3-pin"
+        "portType": "Mini XLR 3-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "type": "HDMI" },
-      { "type": "3G-SDI" }
+      { "portType": "HDMI" },
+      { "portType": "3G-SDI" }
     ],
     "videoOutputs": [
-      { "type": "3G-SDI" }
+      { "portType": "3G-SDI" }
     ]
   },
   "TVLogic VFM-058W": {
@@ -948,17 +948,17 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6.8-12",
-        "type": "DC Barrel / D-Tap"
+        "portType": "DC Barrel / D-Tap"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "type": "HDMI" },
-      { "type": "3G-SDI" }
+      { "portType": "HDMI" },
+      { "portType": "3G-SDI" }
     ],
     "videoOutputs": [
-      { "type": "HDMI" },
-      { "type": "3G-SDI" }
+      { "portType": "HDMI" },
+      { "portType": "3G-SDI" }
     ]
   },
   "SmallHD 703 UltraBright": {
@@ -968,21 +968,21 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "10-34",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
       {
-        "type": "HDMI"
+        "portType": "HDMI"
       },
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ],
     "videoOutputs": [
       {
-        "type": "3G-SDI"
+        "portType": "3G-SDI"
       }
     ]
   },
@@ -993,16 +993,16 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "12-24",
-        "type": "Mini XLR 3-pin"
+        "portType": "Mini XLR 3-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "type": "HDMI" },
-      { "type": "3G-SDI" }
+      { "portType": "HDMI" },
+      { "portType": "3G-SDI" }
     ],
     "videoOutputs": [
-      { "type": "3G-SDI" }
+      { "portType": "3G-SDI" }
     ]
   },
   "TVLogic F-7H mkII": {
@@ -1012,16 +1012,16 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "6-17",
-        "type": "LEMO 2-pin"
+        "portType": "LEMO 2-pin"
       }
     },
     "wirelessTx": false,
     "videoInputs": [
-      { "type": "HDMI" },
-      { "type": "3G-SDI" }
+      { "portType": "HDMI" },
+      { "portType": "3G-SDI" }
     ],
     "videoOutputs": [
-      { "type": "3G-SDI" }
+      { "portType": "3G-SDI" }
     ]
   },
   "None": {
@@ -1029,7 +1029,7 @@ const monitorData = {
     "power": {
       "input": {
         "voltageRange": "",
-        "type": ""
+        "portType": ""
       }
     },
     "wirelessTx": false,
