@@ -9444,18 +9444,34 @@ if (gridSnapToggleBtn) {
 }
 
 if (helpButton && helpDialog) {
+  // --- Help dialog and hover help -----------------------------------------
+  // Provides a modal help dialog with live filtering and a "hover for help"
+  // mode that exposes descriptions for interface controls. The following
+  // functions manage searching, opening/closing the dialog and tooltip-based
+  // hover help.
+  // Search and filtering for the help dialog. Every keystroke scans both
+  // high-level sections and individual FAQ items, restoring their original
+  // markup, highlighting matches and hiding entries that do not include the
+  // query. A message is shown if nothing matches and the clear button is
+  // toggled based on the presence of a query.
   const filterHelp = () => {
+    // Bail out early if the search input is missing
     if (!helpSearch) return;
     const query = helpSearch.value.trim().toLowerCase();
+    // Treat sections and FAQ items uniformly so the same logic can filter both
     const sections = Array.from(
       helpDialog.querySelectorAll('[data-help-section]')
     );
     const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
     const elements = sections.concat(items);
     let anyVisible = false;
+    // Prepare a regex to wrap matches in <mark>; escape to avoid breaking on
+    // special characters in the query.
     const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = query ? new RegExp(`(${escapeRegExp(query)})`, 'ig') : null;
     elements.forEach(el => {
+      // Save original HTML once so that repeated filtering doesn't permanently
+      // insert <mark> tags; restore it before applying a new highlight.
       if (!el.dataset.origHtml) {
         el.dataset.origHtml = el.innerHTML;
       } else {
@@ -9464,15 +9480,18 @@ if (helpButton && helpDialog) {
       const text = el.textContent.toLowerCase();
       if (!query || text.includes(query)) {
         if (query && regex) {
+          // Highlight the matching text while preserving the rest of the content
           el.innerHTML = el.innerHTML.replace(regex, '<mark>$1</mark>');
         }
         el.removeAttribute('hidden');
         anyVisible = true;
       } else {
+        // Hide entries that do not match
         el.setAttribute('hidden', '');
       }
     });
     if (helpNoResults) {
+      // Show or hide the "no results" indicator
       if (anyVisible) {
         helpNoResults.setAttribute('hidden', '');
       } else {
@@ -9480,6 +9499,7 @@ if (helpButton && helpDialog) {
       }
     }
     if (helpSearchClear) {
+      // Only show the clear button when there is text in the search box
       if (query) {
         helpSearchClear.removeAttribute('hidden');
       } else {
@@ -9488,22 +9508,27 @@ if (helpButton && helpDialog) {
     }
   };
 
+  // Display the help dialog. The search box is reset so stale filter state
+  // doesn't persist between openings, and focus is moved to the search field
+  // for immediate typing.
   const openHelp = () => {
     helpDialog.removeAttribute('hidden');
     if (helpSearch) {
       helpSearch.value = '';
-      filterHelp();
+      filterHelp(); // ensure all sections are visible again
       helpSearch.focus();
     } else {
       helpDialog.focus();
     }
   };
 
+  // Hide the dialog and return focus to the button that opened it
   const closeHelp = () => {
     helpDialog.setAttribute('hidden', '');
     helpButton.focus();
   };
 
+  // Convenience helper for toggling the dialog open or closed
   const toggleHelp = () => {
     if (helpDialog.hasAttribute('hidden')) {
       openHelp();
@@ -9512,9 +9537,13 @@ if (helpButton && helpDialog) {
     }
   };
 
+  // Hover help mode displays a tooltip describing whichever element the user
+  // points at. It is triggered from a button inside the dialog and uses the
+  // same data-help/aria-* attributes that power the dialog content.
   let hoverHelpActive = false;
   let hoverHelpTooltip;
 
+  // Exit hover-help mode and clean up tooltip/cursor state
   const stopHoverHelp = () => {
     hoverHelpActive = false;
     if (hoverHelpTooltip) {
@@ -9525,6 +9554,8 @@ if (helpButton && helpDialog) {
     document.body.classList.remove('hover-help-active');
   };
 
+  // Start hover-help mode: close the dialog, create the tooltip element and
+  // switch the cursor to the standard help cursor.
   const startHoverHelp = () => {
     hoverHelpActive = true;
     closeHelp();
@@ -9537,10 +9568,13 @@ if (helpButton && helpDialog) {
   };
 
   document.addEventListener('mouseover', e => {
+    // When hover-help is active, locate the nearest element with descriptive
+    // attributes and show its text content in a custom tooltip.
     if (!hoverHelpActive || !hoverHelpTooltip) return;
     const el = e.target.closest(
       '[data-help], [aria-label], [title], [aria-labelledby], [alt]'
     );
+    // Ignore non-descriptive elements such as generic sections
     if (!el || el.tagName === 'SECTION') {
       hoverHelpTooltip.setAttribute('hidden', '');
       return;
@@ -9550,6 +9584,7 @@ if (helpButton && helpDialog) {
       el.getAttribute('aria-label') ||
       el.getAttribute('title');
     if (!text) {
+      // Fallback to a linked label if aria-labelledby is used
       const labelled = el.getAttribute('aria-labelledby');
       if (labelled) {
         const labelEl = document.getElementById(labelled);
@@ -9586,6 +9621,7 @@ if (helpButton && helpDialog) {
   );
 
   document.addEventListener('click', e => {
+    // Any click while in hover-help mode exits the mode and removes the tooltip
     if (hoverHelpActive) {
       e.preventDefault();
       stopHoverHelp();
@@ -9593,12 +9629,14 @@ if (helpButton && helpDialog) {
   });
 
   if (hoverHelpButton) {
+    // Dedicated button inside the dialog to enable hover-help mode
     hoverHelpButton.addEventListener('click', e => {
       e.stopPropagation();
-      startHoverHelp();
+      startHoverHelp(); // activate tooltip mode
     });
   }
 
+  // Wire up button clicks and search field interactions
   helpButton.addEventListener('click', toggleHelp);
   if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
   if (helpSearch) helpSearch.addEventListener('input', filterHelp);
@@ -9613,26 +9651,32 @@ if (helpButton && helpDialog) {
   document.addEventListener('keydown', e => {
     const tag = document.activeElement.tagName;
     const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
+    // Keyboard shortcuts controlling the help dialog and hover-help mode
     if (hoverHelpActive && e.key === 'Escape') {
+      // Escape exits hover-help mode
       stopHoverHelp();
     } else if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {
+      // Escape closes the help dialog
       closeHelp();
     } else if (
       e.key === 'F1' ||
       ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
     ) {
+      // F1 or Ctrl+/ toggles the dialog even while typing
       e.preventDefault();
       toggleHelp();
     } else if (
       e.key === '?' ||
       (e.key.toLowerCase() === 'h' && !isTextField)
     ) {
+      // Plain ? or H opens the dialog when not typing in a field
       e.preventDefault();
       toggleHelp();
     } else if (
       !helpDialog.hasAttribute('hidden') &&
       ((e.key === '/' && !isTextField) || (e.key.toLowerCase() === 'f' && (e.ctrlKey || e.metaKey)))
     ) {
+      // When the dialog is open, / or Ctrl+F moves focus to the search box
       e.preventDefault();
       if (helpSearch) helpSearch.focus();
     } else if (e.key.toLowerCase() === 'd' && !isTextField) {
@@ -9660,6 +9704,7 @@ if (helpButton && helpDialog) {
   });
 
   helpDialog.addEventListener('click', e => {
+    // Clicking the semi-transparent backdrop (not the dialog content) closes it
     if (e.target === helpDialog) closeHelp();
   });
 }
