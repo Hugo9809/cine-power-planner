@@ -9896,8 +9896,9 @@ const scenarioIcons = {
   'Extreme cold (snow)': '❄️',
   'Extreme rain': '🌧️',
   'Extreme heat': '🔥',
-  'Rain Machine': '🌧️',
-  'Slow Motion': '🐌'
+  'Rain Machine': '🚿',
+  'Slow Motion': '🐌',
+  'Battery Belt': '🔋'
 };
 
 function updateSelectIconBoxes(sel) {
@@ -10216,5 +10217,6 @@ if (typeof module !== "undefined" && module.exports) {
     updateRequiredScenariosSummary,
     updateMonitoringConfigurationOptions,
     updateViewfinderExtensionVisibility,
+    scenarioIcons,
   };
 }

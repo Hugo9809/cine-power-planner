@@ -2345,6 +2345,19 @@ describe('script.js functions', () => {
     expect(boxes[2].textContent).toContain('Extreme cold (snow)');
   });
 
+  test('each Required scenario has a unique icon', () => {
+    const script = require('../script.js');
+    const select = document.getElementById('requiredScenarios');
+    const icons = new Set();
+    Array.from(select.options).forEach(opt => {
+      const icon = script.scenarioIcons[opt.value];
+      expect(icon).toBeDefined();
+      expect(icon).not.toBe('📌');
+      expect(icons.has(icon)).toBe(false);
+      icons.add(icon);
+    });
+  });
+
   test('tripod preferences selector is shown only when Tripod scenario is selected', () => {
     const select = document.getElementById('requiredScenarios');
     const tripodRow = document.getElementById('tripodPreferencesRow');
