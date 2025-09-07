@@ -7359,9 +7359,12 @@ shareSetupBtn.addEventListener('click', () => {
     batteryHotswap: hotswapSelect.value
   };
   const project = typeof loadProject === 'function' ? loadProject() : null;
-  if (project) {
-    if (project.gearList) currentSetup.gearList = project.gearList;
-    if (project.projectInfo) currentSetup.projectInfo = project.projectInfo;
+  if (project && project.projectInfo) {
+    currentSetup.projectInfo = project.projectInfo;
+  }
+  const gearSelectors = getGearListSelectors();
+  if (Object.keys(gearSelectors).length) {
+    currentSetup.gearSelectors = gearSelectors;
   }
   const deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
@@ -9056,6 +9059,23 @@ function getCurrentGearListHtml() {
     return `${titleHtml}${projHtml}${gearHtml}`.trim();
 }
 
+function getGearListSelectors() {
+    if (!gearListOutput) return {};
+    const selectors = {};
+    gearListOutput.querySelectorAll('select[id]').forEach(sel => {
+        selectors[sel.id] = sel.value;
+    });
+    return selectors;
+}
+
+function applyGearListSelectors(selectors) {
+    if (!gearListOutput || !selectors) return;
+    Object.entries(selectors).forEach(([id, value]) => {
+        const sel = gearListOutput.querySelector(`#${id}`);
+        if (sel) sel.value = value;
+    });
+}
+
 function saveCurrentGearList() {
     const html = getCurrentGearListHtml();
     const info = projectForm ? collectProjectFormData() : {};
@@ -9458,6 +9478,7 @@ function applySharedSetup(shared) {
       currentProjectInfo = decoded.projectInfo;
       if (projectForm) populateProjectForm(currentProjectInfo);
     }
+    let gearDisplayed = false;
     if (decoded.gearList) {
       displayGearAndRequirements(decoded.gearList);
       ensureGearListActions();
@@ -9466,9 +9487,23 @@ function applySharedSetup(shared) {
       bindGearListSliderBowlListener();
       bindGearListProGaffTapeListener();
       bindGearListDirectorMonitorListener();
+      gearDisplayed = true;
+    } else if (decoded.projectInfo || decoded.gearSelectors) {
+      const html = generateGearListHtml(decoded.projectInfo || {});
+      displayGearAndRequirements(html);
+      ensureGearListActions();
+      bindGearListCageListener();
+      bindGearListEasyrigListener();
+      bindGearListSliderBowlListener();
+      bindGearListProGaffTapeListener();
+      bindGearListDirectorMonitorListener();
+      gearDisplayed = true;
     }
-    if (decoded.gearList || decoded.projectInfo) {
-      saveProject({ gearList: decoded.gearList || '', projectInfo: decoded.projectInfo || null });
+    if (decoded.gearSelectors && gearDisplayed) {
+      applyGearListSelectors(decoded.gearSelectors);
+    }
+    if (decoded.projectInfo || decoded.gearSelectors || decoded.gearList) {
+      saveProject({ gearList: getCurrentGearListHtml(), projectInfo: decoded.projectInfo || null });
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);
@@ -10344,6 +10379,8 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentSetupKey,
     renderFeedbackTable,
     saveCurrentGearList,
+    getGearListSelectors,
+    applyGearListSelectors,
     autoSaveCurrentSetup,
     saveCurrentSession,
     restoreSessionState,
