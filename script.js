@@ -1877,6 +1877,7 @@ const clearSetupBtn   = document.getElementById("clearSetupBtn");
 const shareSetupBtn   = document.getElementById("shareSetupBtn");
 const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
+const shareLinkMessage = document.getElementById("shareLinkMessage");
 const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
@@ -7338,9 +7339,22 @@ shareSetupBtn.addEventListener('click', () => {
     alert(texts[currentLang].shareLinkTooLong || 'Shared link is too long.');
     return;
   }
+  if (sharedLinkInput && sharedLinkRow) {
+    sharedLinkInput.value = link;
+    sharedLinkRow.classList.remove('hidden');
+    sharedLinkInput.focus();
+    sharedLinkInput.select();
+  }
+  const showMessage = msg => {
+    if (shareLinkMessage) {
+      shareLinkMessage.textContent = msg;
+      shareLinkMessage.classList.remove('hidden');
+      setTimeout(() => shareLinkMessage.classList.add('hidden'), 4000);
+    }
+  };
   copyTextToClipboard(link)
-    .then(() => alert(texts[currentLang].shareLinkCopied))
-    .catch(() => prompt(texts[currentLang].shareSetupPrompt, link));
+    .then(() => showMessage(texts[currentLang].shareLinkCopied))
+    .catch(() => showMessage(texts[currentLang].shareSetupPrompt));
 });
 
 if (applySharedLinkBtn && sharedLinkInput) {
