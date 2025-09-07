@@ -4,6 +4,7 @@
       "attributes": [
         "capacity",
         "mount_type",
+        "pinA",
         "weight_g"
       ]
     },
