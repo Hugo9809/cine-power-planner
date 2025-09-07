@@ -8183,7 +8183,6 @@ function generateGearListHtml(info = {}) {
     for (let i = 0; i < 2; i++) riggingAcc.push('Mini Magic Arm');
     for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
     riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
-    for (let i = 0; i < 3; i++) riggingAcc.push('spigot with male 3/8" and 1/4"');
     for (let i = 0; i < 2; i++) riggingAcc.push('D-Tap Splitter');
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
@@ -8677,6 +8676,14 @@ function generateGearListHtml(info = {}) {
         ...Array(20).fill('Ring Fitting for Airline Rails')
     ];
     const gripItems = [];
+    // Include spigots under Grip
+    gripItems.push('spigot with male 3/8" and 1/4" (Directors handheld)');
+    gripItems.push('spigot with male 3/8" and 1/4" (Gaffers handheld)');
+    gripItems.push('spigot with male 3/8" and 1/4" (DoP handheld)');
+    gripItems.push('spigot with male 3/8" and 1/4" (Directors 15-21")');
+    gripItems.push('spigot with male 3/8" and 1/4" (Combo 15-21")');
+    gripItems.push('spigot with male 3/8" and 1/4" (DoP 15-21")');
+    for (let i = 0; i < 4; i++) gripItems.push('spigot with male 3/8" and 1/4"');
     let needsStandardTripod = false;
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
@@ -8684,7 +8691,6 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Avenger C-Stand Sliding Leg 20" (${p.role} handheld)`);
         gripItems.push(`Steelfingers Wheel C-Stand 3er Set (${p.role} handheld)`);
         gripItems.push(`Lite-Tite Swivel Aluminium Umbrella Adapter (${p.role} handheld)`);
-        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} handheld)`);
     });
     largeMonitorPrefs.forEach(p => {
         gripItems.push(`Matthews Monitor Stand II (249562) (${p.role} 15-21")`);
@@ -8693,7 +8699,6 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Matthews BIG F'ING Monitor Rollen Set (3 Stück) (${p.role} 15-21")`);
         riggingAcc.push(`ULCS Bracket with 1/4 to 1/4 (${p.role} 15-21")`);
         gripItems.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
-        riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
         riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
@@ -8746,7 +8751,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Tango Beam');
     }
     if (scenarios.includes('Outdoor')) {
-        riggingAcc.push('spigot with male 3/8" and 1/4" (Focus Umbrella)');
+        gripItems.push('spigot with male 3/8" and 1/4" (Focus Umbrella)');
     }
     if (['Extreme heat', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s))) {
         gripItems.push('Large Umbrella');

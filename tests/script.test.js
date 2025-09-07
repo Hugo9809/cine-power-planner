@@ -1700,8 +1700,12 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('2x Mini Magic Arm');
     expect(rigSection).toContain('4x Cine Quick Release');
     expect(rigSection).toContain('1x SmallRig - Super lightweight 15mm RailBlock');
-    expect(rigSection).toContain('3x spigot with male 3/8" and 1/4"');
+    expect(rigSection).not.toContain('spigot with male 3/8" and 1/4"');
     expect(rigSection).toContain('2x D-Tap Splitter');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain(
+      '10x spigot with male 3/8" and 1/4" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21", 4x Spare)'
+    );
   });
 
   test.each(['Trinity', 'Steadicam'])(
@@ -1818,9 +1822,11 @@ describe('script.js functions', () => {
     expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Directors handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Directors handheld, 3x Spare)');
+    expect(rigSection).not.toContain('spigot with male 3/8" and 1/4"');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
-    expect(gripSection).not.toContain('spigot with male 3/8" and 1/4"');
+    expect(gripSection).toContain(
+      '10x spigot with male 3/8" and 1/4" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21", 4x Spare)'
+    );
     expect(html).toContain('2x Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Spare)');
     expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
@@ -1845,7 +1851,11 @@ describe('script.js functions', () => {
     expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Directors handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Directors handheld, 3x Spare)');
+    expect(rigSection).not.toContain('spigot with male 3/8" and 1/4"');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain(
+      '10x spigot with male 3/8" and 1/4" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21", 4x Spare)'
+    );
   });
 
   test('Gaffers 7" handheld monitor adds dropdown, batteries and grip items', () => {
@@ -1864,7 +1874,11 @@ describe('script.js functions', () => {
     expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Gaffers handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Gaffers handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Gaffers handheld, 3x Spare)');
+    expect(rigSection).not.toContain('spigot with male 3/8" and 1/4"');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain(
+      '10x spigot with male 3/8" and 1/4" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21", 4x Spare)'
+    );
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Gaffers handheld, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Gaffers handheld, 1x Spare)');
@@ -1886,7 +1900,11 @@ describe('script.js functions', () => {
     expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x DoP handheld)');
     expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x DoP handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x DoP handheld, 3x Spare)');
+    expect(rigSection).not.toContain('spigot with male 3/8" and 1/4"');
+    const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
+    expect(gripSection).toContain(
+      '10x spigot with male 3/8" and 1/4" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21", 4x Spare)'
+    );
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x DoP handheld, 1x Spare)');
     expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x DoP handheld, 1x Spare)');
@@ -2663,7 +2681,9 @@ describe('script.js functions', () => {
     const text = itemsRow.textContent;
       expect(text).toContain('2x Manfrotto 244N Friktion Arm');
       expect(text).toContain('1x Avenger D200B Grip Head');
-      expect(text).toContain('1x spigot with male 3/8" and 1/4"');
+      expect(text).toContain(
+        '11x spigot with male 3/8" and 1/4" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21", 5x Spare)'
+      );
   });
 
   test('Gimbal selector adds specified devices', () => {
@@ -2743,14 +2763,14 @@ describe('script.js functions', () => {
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
     const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
     const gripText = rows[gripIdx + 1].textContent;
-    const rigIdx = rows.findIndex(r => r.textContent === 'Rigging');
-    const rigText = rows[rigIdx + 1].textContent;
     const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
     const miscText = rows[miscIdx + 1].textContent;
     expect(miscText).toContain('Rain Cover "CamA"');
     expect(miscText).toContain('1x Umbrella for Focus Monitor');
     expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
-      expect(rigText).toContain('4x spigot with male 3/8" and 1/4" (1x Focus Umbrella, 3x Spare)');
+      expect(gripText).toContain(
+        '11x spigot with male 3/8" and 1/4" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21", 1x Focus Umbrella, 4x Spare)'
+      );
       expect(gripText).not.toContain('Large Umbrella');
       expect(gripText).not.toContain('Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
       expect(miscText).not.toContain('Manfrotto 635 Quick-Action Super Clamp');
