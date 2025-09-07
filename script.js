@@ -2001,7 +2001,7 @@ function getSchemaAttributesForCategory(category) {
 function clearDynamicFields() {
   if (!dynamicFieldsDiv) return;
   dynamicFieldsDiv.innerHTML = '';
-  dynamicFieldsDiv.style.display = 'none';
+  dynamicFieldsDiv.hidden = true;
 }
 
 function buildDynamicFields(category, data = {}) {
@@ -2009,10 +2009,10 @@ function buildDynamicFields(category, data = {}) {
   const attrs = getSchemaAttributesForCategory(category);
   dynamicFieldsDiv.innerHTML = '';
   if (!attrs.length) {
-    dynamicFieldsDiv.style.display = 'none';
+    dynamicFieldsDiv.hidden = true;
     return;
   }
-  dynamicFieldsDiv.style.display = 'block';
+  dynamicFieldsDiv.hidden = false;
   for (const attr of attrs) {
     const row = document.createElement('div');
     row.className = 'form-row';
@@ -6462,7 +6462,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     distanceNotesInput.value = deviceData.notes || '';
   } else if (type === "accessories.cables") {
     wattFieldDiv.style.display = "none";
-    subcategoryFieldDiv.style.display = "block";
+    subcategoryFieldDiv.hidden = false;
     const subcats = Object.keys(devices.accessories?.cables || {});
     newSubcategorySelect.innerHTML = '';
     for (const sc of subcats) {
@@ -6587,7 +6587,7 @@ newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
   placeWattField(val);
   clearDynamicFields();
-  subcategoryFieldDiv.style.display = "none";
+  subcategoryFieldDiv.hidden = true;
   newSubcategorySelect.innerHTML = "";
   newSubcategorySelect.disabled = false;
   if (dtapRow) dtapRow.style.display = "";
@@ -6682,7 +6682,7 @@ newCategorySelect.addEventListener("change", () => {
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
-    subcategoryFieldDiv.style.display = "block";
+    subcategoryFieldDiv.hidden = false;
     const subcats = Object.keys(devices.accessories?.cables || {});
     for (const sc of subcats) {
       const opt = document.createElement('option');
