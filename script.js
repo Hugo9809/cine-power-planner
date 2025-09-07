@@ -1895,7 +1895,9 @@ const sharedKeyMap = {
   battery: "b",
   batteryHotswap: "h",
   projectInfo: "i",
+  projectHtml: "q",
   gearSelectors: "e",
+  gearList: "l",
   changedDevices: "x",
   feedback: "f"
 };
@@ -7429,6 +7431,16 @@ shareSetupBtn.addEventListener('click', async () => {
   if (Object.keys(gearSelectors).length) {
     currentSetup.gearSelectors = gearSelectors;
   }
+  const combinedHtml = getCurrentGearListHtml();
+  if (combinedHtml) {
+    const { projectHtml, gearHtml } = splitGearListHtml(combinedHtml);
+    if (projectHtml) currentSetup.projectHtml = projectHtml;
+    if (gearHtml) {
+      currentSetup.gearList = projectHtml
+        ? gearHtml.replace(/<h2[^>]*>.*?<\/h2>/, '')
+        : gearHtml;
+    }
+  }
   const deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
     currentSetup.changedDevices = deviceChanges;
@@ -9499,8 +9511,9 @@ function applySharedSetup(shared) {
     currentProjectInfo = decoded.projectInfo || null;
     if (projectForm) populateProjectForm(currentProjectInfo || {});
     let gearDisplayed = false;
-    if (decoded.gearList) {
-      displayGearAndRequirements(decoded.gearList);
+    const combinedHtml = (decoded.projectHtml || '') + (decoded.gearList || '');
+    if (combinedHtml) {
+      displayGearAndRequirements(combinedHtml);
       ensureGearListActions();
       bindGearListCageListener();
       bindGearListEasyrigListener();
