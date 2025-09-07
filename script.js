@@ -2351,7 +2351,7 @@ let cleanupDiagramInteractions = null;
 
 // CSS used when exporting the setup diagram
 const diagramCssLight = `
-.node-box{fill:#e8f0fe;stroke:none;}
+.node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
 .node-icon{font-size:20px;}
@@ -2369,7 +2369,7 @@ path.fiz{stroke:#090;}
 .diagram-placeholder{font-style:italic;color:#666;margin:0;}
 `;
 const diagramCssDark = `
-.node-box{fill:#333;stroke:none;}
+.node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
 text{fill:#fff;font-family:system-ui,sans-serif;}
