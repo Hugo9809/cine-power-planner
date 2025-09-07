@@ -5051,6 +5051,8 @@ describe('script.js functions', () => {
     const gearOut = document.getElementById('gearListOutput');
     gearOut.innerHTML = '<select id="gearListCage"><option value="CageA">CageA</option></select>';
     gearOut.querySelector('select').value = 'CageA';
+    const projOut = document.getElementById('projectRequirementsOutput');
+    projOut.innerHTML = '<h3>Project Requirements</h3><div class="requirements-grid"></div>';
     global.loadProject = jest.fn(() => ({ projectInfo: { notes: 'shoot' } }));
     const btn = document.getElementById('shareSetupBtn');
     btn.click();
@@ -5059,7 +5061,8 @@ describe('script.js functions', () => {
     const decoded = script.decodeSharedSetup(
       JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
     );
-    expect(decoded.gearList).toBeUndefined();
+    expect(decoded.gearList).toContain('gearListCage');
+    expect(decoded.projectHtml).toContain('Project Requirements');
     expect(decoded.gearSelectors.gearListCage).toBe('CageA');
     expect(decoded.projectInfo.notes).toBe('shoot');
   });
@@ -5091,8 +5094,9 @@ describe('script.js functions', () => {
   });
 
   test('applySharedSetup applies gear selectors and project info', () => {
+    const projectHtml = '<h2>T</h2><h3>Project Requirements</h3><div class="requirements-grid"></div>';
     const gearHtml = '<h3>Gear List</h3><select id="gearListCage"><option value="A">A</option><option value="B">B</option></select>';
-    const data = { gearList: gearHtml, gearSelectors: { gearListCage: 'B' }, projectInfo: { notes: 'shoot' } };
+    const data = { projectHtml, gearList: gearHtml, gearSelectors: { gearListCage: 'B' }, projectInfo: { notes: 'shoot' } };
     global.saveProject = jest.fn();
     script.applySharedSetup(LZString.compressToEncodedURIComponent(JSON.stringify(data)));
     const gearOut = document.getElementById('gearListOutput');
