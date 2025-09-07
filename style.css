@@ -1779,6 +1779,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+  margin-right: 0.5rem;
 }
 
 #gearListOutput .filter-item select {
