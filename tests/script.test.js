@@ -749,7 +749,7 @@ describe('script.js functions', () => {
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
-    expect(saved.projectInfo.videoDistribution).toContain('Directors Monitor 5');
+    expect(saved.projectInfo.videoDistribution).toContain('Director Monitor 5');
     expect(saved.projectInfo.tripodHeadBrand).toBe('OConnor');
     expect(saved.projectInfo.tripodBowl).toBe('100mm bowl');
     expect(saved.projectInfo.viewfinderSettings).toBe('Viewfinder Clean Feed');
@@ -846,7 +846,7 @@ describe('script.js functions', () => {
     addOpt('cameraSelect', 'CamA');
     addOpt('batterySelect', 'BattA');
     document.getElementById('batteryCount').textContent = '9';
-    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const html = script.generateGearListHtml({ videoDistribution: 'Director Monitor 7" handheld' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
@@ -1789,73 +1789,73 @@ describe('script.js functions', () => {
     expect(rigSection).toContain('1x ULCS Arm mit 3/8" und 1/4" double (1x Onboard monitor)');
   });
 
-  test('Directors 7" handheld monitor adds dropdown, batteries and grip items', () => {
+  test('Director 7" handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain('<select id="gearListDirectorsMonitor"');
+    const html = generateGearListHtml({ videoDistribution: 'Director Monitor 7" handheld' });
+    expect(html).toContain('<select id="gearListDirectorMonitor"');
     expect(html).toContain('SmallHD Ultra 7');
     const docDir = new DOMParser().parseFromString(html, 'text/html');
-    expect(docDir.getElementById('gearListDirectorsMonitor').value).toBe('SmallHD Ultra 7');
+    expect(docDir.getElementById('gearListDirectorMonitor').value).toBe('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
-    expect(html).toContain('3x Bebob V98micro (3x Directors handheld)');
-    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Directors handheld)');
-    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Directors handheld)');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld)');
+    expect(html).toContain('3x Bebob V98micro (3x Director handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Director handheld)');
+    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Director handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Director handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Directors handheld, 3x Spare)');
+    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Director handheld, 3x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).not.toContain('spigot with male 3/8" and 1/4"');
-    expect(html).toContain('2x Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Spare)');
-    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
+    expect(html).toContain('2x Ultraslim BNC Cable 0.3 m (1x Director handheld, 1x Spare)');
+    expect(html).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Director handheld, 1x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Spare)');
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Director handheld, 1x Spare)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Director handheld, 1x Spare)');
     const miscSection = html.slice(html.indexOf('Miscellaneous'), html.indexOf('Consumables'));
-    expect(miscSection).not.toContain('Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Spare)');
-  expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Spare)');
+    expect(miscSection).not.toContain('Ultraslim BNC Cable 0.3 m (1x Director handheld, 1x Spare)');
+  expect(miscSection).not.toContain('D-Tap to Lemo-2-pin Cable 0,3m (1x Director handheld, 1x Spare)');
   });
 
-  test('Directors 5" handheld monitor adds dropdown, batteries and grip items', () => {
+  test('Director 5" handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 5 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 5" handheld' });
-    expect(html).toContain('<select id="gearListDirectorsMonitor"');
+    const html = generateGearListHtml({ videoDistribution: 'Director Monitor 5" handheld' });
+    expect(html).toContain('<select id="gearListDirectorMonitor"');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
-    expect(html).toContain('3x Bebob V98micro (3x Directors handheld)');
-    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Directors handheld)');
-    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Directors handheld)');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld)');
+    expect(html).toContain('3x Bebob V98micro (3x Director handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Director handheld)');
+    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Director handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Director handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Directors handheld, 3x Spare)');
+    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Director handheld, 3x Spare)');
   });
 
-  test('Gaffers 7" handheld monitor adds dropdown, batteries and grip items', () => {
+  test('Gaffer 7" handheld monitor adds dropdown, batteries and grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = {
       'SmallHD Ultra 7': { screenSizeInches: 7 },
       MonA: { screenSizeInches: 7 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'Gaffers Monitor 7" handheld' });
-    expect(html).toContain('<select id="gearListGaffersMonitor"');
+    const html = generateGearListHtml({ videoDistribution: 'Gaffer Monitor 7" handheld' });
+    expect(html).toContain('<select id="gearListGafferMonitor"');
     expect(html).toContain('Gaffer Handheld Monitor');
     const docGaf = new DOMParser().parseFromString(html, 'text/html');
-    expect(docGaf.getElementById('gearListGaffersMonitor').value).toBe('SmallHD Ultra 7');
-    expect(html).toContain('3x Bebob V98micro (3x Gaffers handheld)');
-    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Gaffers handheld)');
-    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Gaffers handheld)');
-    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Gaffers handheld)');
+    expect(docGaf.getElementById('gearListGafferMonitor').value).toBe('SmallHD Ultra 7');
+    expect(html).toContain('3x Bebob V98micro (3x Gaffer handheld)');
+    expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Gaffer handheld)');
+    expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Gaffer handheld)');
+    expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Gaffer handheld)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Gaffers handheld, 3x Spare)');
+    expect(rigSection).toContain('4x spigot with male 3/8" and 1/4" (1x Gaffer handheld, 3x Spare)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Gaffers handheld, 1x Spare)');
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Gaffers handheld, 1x Spare)');
+    expect(msSection).toContain('2x Ultraslim BNC Cable 0.3 m (1x Gaffer handheld, 1x Spare)');
+    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,3m (1x Gaffer handheld, 1x Spare)');
   });
 
   test('DoP 7" handheld monitor adds dropdown, batteries and grip items', () => {
@@ -1885,37 +1885,37 @@ describe('script.js functions', () => {
     script = require('../script.js');
     const { generateGearListHtml } = script;
     const videoDistribution = [
-      'Directors Monitor handheld',
-      'Gaffers Monitor handheld',
+      'Director Monitor handheld',
+      'Gaffer Monitor handheld',
       'DoP Monitor handheld',
-      'Directors Monitor handheld'
+      'Director Monitor handheld'
     ].join(', ');
     const html = generateGearListHtml({ videoDistribution });
-    expect(html).toContain('12x Bebob V98micro (6x Directors handheld, 3x DoP handheld, 3x Gaffers handheld)');
+    expect(html).toContain('12x Bebob V98micro (6x Director handheld, 3x DoP handheld, 3x Gaffer handheld)');
     expect(html).not.toContain('3x Bebob V98micro');
   });
 
-  test('Directors 15-21" monitor adds dropdown and accessories', () => {
+  test('Director 15-21" monitor adds dropdown and accessories', () => {
     const { generateGearListHtml } = script;
     global.devices.directorMonitors = {
       'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
       Other: { screenSizeInches: 17 }
     };
-    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 15-21"' });
-    expect(html).toContain('<select id="gearListDirectorsMonitor15"');
-    expect(html).toContain('Directors Monitor');
-    expect(html).toContain('2x Bebob V290RM-Cine (2x Directors 15-21")');
+    const html = generateGearListHtml({ videoDistribution: 'Director Monitor 15-21"' });
+    expect(html).toContain('<select id="gearListDirectorMonitor15"');
+    expect(html).toContain('Director Monitor');
+    expect(html).toContain('2x Bebob V290RM-Cine (2x Director 15-21")');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
-    expect(msSection).toContain('4x Ultraslim BNC Cable 0.5 m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
+    expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Director 15-21", 2x Spare)');
+    expect(msSection).toContain('4x Ultraslim BNC Cable 0.5 m (1x Onboard monitor, 1x Director 15-21", 2x Spare)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
-    expect(rigSection).toContain('D-Tap Splitter (1x Directors 15-21"');
+    expect(rigSection).toContain('D-Tap Splitter (1x Director 15-21"');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
-    expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Directors 15-21")');
-    expect(gripSection).toContain('Avenger C590 Conka Bonka Stativ-Verlängerungen Set (1x Directors 15-21")');
-    expect(gripSection).toContain('Impact Baby to Junior Receiver Adapter (1x Directors 15-21")');
+    expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Director 15-21")');
+    expect(gripSection).toContain('Avenger C590 Conka Bonka Stativ-Verlängerungen Set (1x Director 15-21")');
+    expect(gripSection).toContain('Impact Baby to Junior Receiver Adapter (1x Director 15-21")');
     expect(gripSection).toContain(
-      'Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x Directors 15-21")'
+      'Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x Director 15-21")'
     );
   });
 
@@ -1956,14 +1956,14 @@ describe('script.js functions', () => {
   test('multiple 15-21" monitors add Manfrotto clamps to grip', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
-      videoDistribution: 'Directors Monitor 15-21", Combo Monitor 15-21", DoP Monitor 15-21"'
+      videoDistribution: 'Director Monitor 15-21", Combo Monitor 15-21", DoP Monitor 15-21"'
     });
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain(
-      '3x Manfrotto 635 Quick-Action Super Clamp (1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21")'
+      '3x Manfrotto 635 Quick-Action Super Clamp (1x Director 15-21", 1x Combo 15-21", 1x DoP 15-21")'
     );
     expect(gripSection).toContain(
-      '3x Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21")'
+      '3x Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x Director 15-21", 1x Combo 15-21", 1x DoP 15-21")'
     );
   });
 
@@ -1971,10 +1971,10 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     const html = generateGearListHtml({
       videoDistribution:
-        'Directors Monitor 15-21", Directors Monitor 15-21", Combo Monitor 15-21", DoP Monitor 15-21"'
+        'Director Monitor 15-21", Director Monitor 15-21", Combo Monitor 15-21", DoP Monitor 15-21"'
     });
     expect(html).toContain(
-      '8x Bebob V290RM-Cine (2x Combo 15-21", 4x Directors 15-21", 2x DoP 15-21")'
+      '8x Bebob V290RM-Cine (2x Combo 15-21", 4x Director 15-21", 2x DoP 15-21")'
     );
   });
 
@@ -1982,17 +1982,17 @@ describe('script.js functions', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = { 'SmallHD Ultra 7': { screenSizeInches: 7 } };
     const html = generateGearListHtml({
-      videoDistribution: 'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
+      videoDistribution: 'Director Monitor 7" handheld, Gaffer Monitor 7" handheld, DoP Monitor 7" handheld'
     });
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain(
-      '3x Avenger C-Stand Sliding Leg 20" (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
+      '3x Avenger C-Stand Sliding Leg 20" (1x Director handheld, 1x Gaffer handheld, 1x DoP handheld)'
     );
     expect(gripSection).toContain(
-      '3x Steelfingers Wheel C-Stand 3er Set (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
+      '3x Steelfingers Wheel C-Stand 3er Set (1x Director handheld, 1x Gaffer handheld, 1x DoP handheld)'
     );
     expect(gripSection).toContain(
-      '3x Lite-Tite Swivel Aluminium Umbrella Adapter (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld)'
+      '3x Lite-Tite Swivel Aluminium Umbrella Adapter (1x Director handheld, 1x Gaffer handheld, 1x DoP handheld)'
     );
   });
 
@@ -2016,15 +2016,15 @@ describe('script.js functions', () => {
     addOpt('videoSelect', 'VidA TX');
     const html = generateGearListHtml({
       videoDistribution:
-        'Directors Monitor 7" handheld, Gaffers Monitor 7" handheld, DoP Monitor 7" handheld'
+        'Director Monitor 7" handheld, Gaffer Monitor 7" handheld, DoP Monitor 7" handheld'
     });
-    expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus)');
+    expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Director handheld, 1x Gaffer handheld, 1x DoP handheld, 1x Focus)');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
     expect(msSection).toContain(
-      '6x D-Tap to Lemo-2-pin Cable 0,3m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 3x Spare)'
+      '6x D-Tap to Lemo-2-pin Cable 0,3m (1x Director handheld, 1x Gaffer handheld, 1x DoP handheld, 3x Spare)'
     );
     expect(msSection).toContain(
-      '8x Ultraslim BNC Cable 0.3 m (1x Directors handheld, 1x Gaffers handheld, 1x DoP handheld, 1x Focus, 4x Spare)'
+      '8x Ultraslim BNC Cable 0.3 m (1x Director handheld, 1x Gaffer handheld, 1x DoP handheld, 1x Focus, 4x Spare)'
     );
     expect(msSection).toContain('2x D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
   });
@@ -2043,10 +2043,10 @@ describe('script.js functions', () => {
     expect(options).toContain('Mon RXTX');
     expect(options).toContain('Mon Plain');
     expect(options).not.toContain('Mon RX');
-    const html = script.generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
+    const html = script.generateGearListHtml({ videoDistribution: 'Director Monitor 7" handheld' });
     const selectHtml = html.slice(
-      html.indexOf('<select id="gearListDirectorsMonitor"'),
-      html.indexOf('</select>', html.indexOf('<select id="gearListDirectorsMonitor"'))
+      html.indexOf('<select id="gearListDirectorMonitor"'),
+      html.indexOf('</select>', html.indexOf('<select id="gearListDirectorMonitor"'))
     );
     expect(selectHtml).toContain('Mon RX');
     expect(selectHtml).toContain('Mon RXTX');
@@ -2149,8 +2149,8 @@ describe('script.js functions', () => {
     };
     addOpt('motor1Select', 'MotorA');
     addOpt('videoSelect', 'VidA TX');
-    const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
-    expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Directors handheld, 1x Focus)');
+    const html = generateGearListHtml({ videoDistribution: 'Director Monitor 7" handheld' });
+    expect(html).toContain('Wireless Receiver</strong> - 7&quot; - VidA RX (1x Director handheld, 1x Focus)');
     const msSection = html.slice(html.indexOf('Monitoring support'), html.indexOf('Power'));
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (3x Spare)');
   });
@@ -2396,9 +2396,9 @@ describe('script.js functions', () => {
   test('monitor options are available in video distribution', () => {
     const videoSel = document.getElementById('videoDistribution');
     const values = Array.from(videoSel.options).map(o => o.value);
-    expect(values).toContain('Directors Monitor 7" handheld');
-    expect(values).toContain('Gaffers Monitor 7" handheld');
-    expect(values).toContain('Directors Monitor 15-21"');
+    expect(values).toContain('Director Monitor 7" handheld');
+    expect(values).toContain('Gaffer Monitor 7" handheld');
+    expect(values).toContain('Director Monitor 15-21"');
   });
 
   test('selecting Dolly adds SmallHD Ultra 7 monitor when none selected', () => {
@@ -3191,10 +3191,10 @@ describe('script.js functions', () => {
     setupDom(true);
     const sel = document.getElementById('videoDistribution');
     const values = Array.from(sel.options).map(o => o.value);
-    expect(values).toContain('Directors Monitor 5" handheld');
-    expect(values).toContain('Directors Monitor 7" handheld');
-    expect(values).toContain('Gaffers Monitor 5" handheld');
-    expect(values).toContain('Gaffers Monitor 7" handheld');
+    expect(values).toContain('Director Monitor 5" handheld');
+    expect(values).toContain('Director Monitor 7" handheld');
+    expect(values).toContain('Gaffer Monitor 5" handheld');
+    expect(values).toContain('Gaffer Monitor 7" handheld');
   });
 
   test('sensor mode appears in project requirements when provided', () => {

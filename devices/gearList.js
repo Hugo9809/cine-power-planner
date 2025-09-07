@@ -25,9 +25,9 @@ const gear = {
     }
   },
   "directorMonitors": {
-    "Directors Monitor 17\" (SmallHD/FSI)": {
+    "Director Monitor 17\" (SmallHD/FSI)": {
       "brand": "SmallHD/FSI",
-      "model": "Directors Monitor 17\"",
+      "model": "Director Monitor 17\"",
       "screenSizeInches": 17,
       "brightnessNits": 1000,
       "powerDrawWatts": 45,
@@ -53,9 +53,9 @@ const gear = {
         }
       ]
     },
-    "Directors Monitor 13\" (SmallHD/FSI)": {
+    "Director Monitor 13\" (SmallHD/FSI)": {
       "brand": "SmallHD/FSI",
-      "model": "Directors Monitor 13\"",
+      "model": "Director Monitor 13\"",
       "screenSizeInches": 13,
       "brightnessNits": 1000,
       "powerDrawWatts": 30,
