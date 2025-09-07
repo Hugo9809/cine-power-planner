@@ -315,6 +315,45 @@ describe('export/import all data', () => {
   });
 });
 
+describe('storage fallbacks', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.alert = jest.fn();
+  });
+
+  test('falls back to sessionStorage when localStorage unavailable', () => {
+    const realWindowLocal = Object.getOwnPropertyDescriptor(window, 'localStorage');
+    const realGlobalLocal = global.localStorage;
+    Object.defineProperty(window, 'localStorage', { configurable: true, value: undefined });
+    delete global.localStorage;
+    const storage = require('../storage');
+    storage.saveDeviceData(validDeviceData);
+    expect(sessionStorage.getItem(DEVICE_KEY)).toBe(JSON.stringify(validDeviceData));
+    Object.defineProperty(window, 'localStorage', realWindowLocal);
+    global.localStorage = realGlobalLocal;
+  });
+
+  test('falls back to in-memory storage when all web storage unavailable', () => {
+    const realWindowLocal = Object.getOwnPropertyDescriptor(window, 'localStorage');
+    const realWindowSession = Object.getOwnPropertyDescriptor(window, 'sessionStorage');
+    const realGlobalLocal = global.localStorage;
+    const realGlobalSession = global.sessionStorage;
+    Object.defineProperty(window, 'localStorage', { configurable: true, value: undefined });
+    Object.defineProperty(window, 'sessionStorage', { configurable: true, value: undefined });
+    delete global.localStorage;
+    delete global.sessionStorage;
+    const storage = require('../storage');
+    storage.saveDeviceData(validDeviceData);
+    expect(storage.loadDeviceData()).toEqual(validDeviceData);
+    Object.defineProperty(window, 'localStorage', realWindowLocal);
+    Object.defineProperty(window, 'sessionStorage', realWindowSession);
+    global.localStorage = realGlobalLocal;
+    global.sessionStorage = realGlobalSession;
+  });
+});
+
 afterAll(() => {
   localStorage.clear();
   sessionStorage.clear();

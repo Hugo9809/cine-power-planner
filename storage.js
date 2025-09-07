@@ -7,21 +7,60 @@ const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 
-// Safely detect usable localStorage. Some environments (like private browsing)
-// may block access and throw errors. If unavailable, this returns null.
+// Create an in-memory fallback implementing the subset of the Storage API we
+// rely on. This keeps the app functional when no persistent storage is
+// available (e.g. in private browsing modes) while clearly warning the user
+// that data will not be saved across sessions.
+function createMemoryStorage() {
+  const store = {};
+  return {
+    getItem: (key) => (Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null),
+    setItem: (key, value) => {
+      store[key] = String(value);
+    },
+    removeItem: (key) => {
+      delete store[key];
+    },
+    clear: () => {
+      Object.keys(store).forEach((k) => delete store[k]);
+    },
+  };
+}
+
+// Safely detect usable storage. Some environments (like private browsing) may
+// block access and throw errors. If localStorage is unavailable, fall back to
+// sessionStorage or an in-memory store.
 const SAFE_LOCAL_STORAGE = (() => {
+  if (typeof window === 'undefined') {
+    return createMemoryStorage();
+  }
+
+  const testKey = '__storage_test__';
   try {
-    if (typeof window !== 'undefined' && 'localStorage' in window) {
-      const testKey = '__storage_test__';
+    if ('localStorage' in window) {
       window.localStorage.setItem(testKey, '1');
       window.localStorage.removeItem(testKey);
       return window.localStorage;
     }
   } catch (e) {
     console.warn('localStorage is unavailable:', e);
-    alertStorageError();
   }
-  return null;
+
+  try {
+    if ('sessionStorage' in window) {
+      window.sessionStorage.setItem(testKey, '1');
+      window.sessionStorage.removeItem(testKey);
+      console.warn('Falling back to sessionStorage. Data may be lost on tab close.');
+      alertStorageError();
+      return window.sessionStorage;
+    }
+  } catch (e) {
+    console.warn('sessionStorage is unavailable:', e);
+  }
+
+  console.warn('Falling back to in-memory storage. Data will not persist across sessions.');
+  alertStorageError();
+  return createMemoryStorage();
 })();
 
 // Helper to check for plain objects
@@ -111,7 +150,7 @@ function loadSessionState() {
   if (state !== null) {
     return state;
   }
-  if (typeof sessionStorage !== 'undefined') {
+  if (typeof sessionStorage !== 'undefined' && SAFE_LOCAL_STORAGE !== sessionStorage) {
     const migrated = loadJSONFromStorage(
       sessionStorage,
       SESSION_STATE_KEY,
