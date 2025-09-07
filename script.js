@@ -8916,7 +8916,7 @@ function generateGearListHtml(info = {}) {
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     const consumables = [];
     const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
-    let eyeLeatherColor = 'rot';
+    let eyeLeatherColor = 'red';
     const gaffTapeSelections = [
         { id: 1, color: 'red', width: '24mm' },
         { id: 2, color: 'blue', width: '24mm' }
@@ -9045,18 +9045,18 @@ function generateGearListHtml(info = {}) {
     let eyeLeatherHtml = '';
     if (eyeLeatherCount) {
         const colors = [
-            ['rot', 'Rot'],
-            ['blau', 'Blau'],
-            ['natur', 'Natur'],
-            ['grün', 'Grün'],
-            ['lila', 'Lila'],
+            ['red', 'Red'],
+            ['blue', 'Blue'],
+            ['natural', 'Natural'],
+            ['green', 'Green'],
+            ['purple', 'Purple'],
             ['orange', 'Orange'],
-            ['grau', 'Grau'],
-            ['gelb', 'Gelb'],
+            ['gray', 'Gray'],
+            ['yellow', 'Yellow'],
             ['jaguar', 'Jaguar'],
             ['killer bee', 'Killer Bee'],
             ['green rabbit', 'Green Rabbit'],
-            ['schwarz', 'Schwarz']
+            ['black', 'Black']
         ];
         const options = colors.map(([val, label]) => `<option value="${val}"${val === eyeLeatherColor ? ' selected' : ''}>${label}</option>`).join('');
         eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large">${eyeLeatherCount}x Bluestar eye leather made of microfiber oval, large <select id="gearListEyeLeatherColor">${options}</select></span>`;
