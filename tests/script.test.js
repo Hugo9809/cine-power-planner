@@ -1116,6 +1116,31 @@ describe('script.js functions', () => {
     expect(options).toContain('FX-Lion NANO Dual V-Mount Hot-Swap Plate');
   });
 
+  test('hotswap dropdown hides swaps below current draw', () => {
+    const camSel = document.getElementById('cameraSelect');
+    const battSel = document.getElementById('batterySelect');
+    const swapSel = document.getElementById('batteryHotswapSelect');
+
+    // Ensure battery can handle high current
+    devices.batteries.BattA.pinA = 50;
+    devices.batteries.BattA.dtapA = 50;
+
+    camSel.value = 'CamA';
+    battSel.value = 'BattA';
+
+    // High power draw removes low-amp hotswap
+    devices.cameras.CamA.powerDrawWatts = 150;
+    script.updateCalculations();
+    let options = Array.from(swapSel.options).map(o => o.value);
+    expect(options).not.toContain('SwapLo');
+
+    // Lower power draw brings it back
+    devices.cameras.CamA.powerDrawWatts = 10;
+    script.updateCalculations();
+    options = Array.from(swapSel.options).map(o => o.value);
+    expect(options).toContain('SwapLo');
+  });
+
   test('filter inputs disable autocomplete and spellcheck', () => {
     const ids = [
       'cameraListFilter', 'viewfinderListFilter', 'monitorListFilter', 'videoListFilter',

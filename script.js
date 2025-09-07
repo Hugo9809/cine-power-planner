@@ -811,6 +811,15 @@ function updateBatteryOptions() {
       Object.entries(swaps).filter(([name]) => name !== 'FX-Lion NANO Dual V-Mount Hot-Swap Plate')
     );
   }
+
+  // Filter out hotswaps that cannot supply the required current
+  const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
+  if (isFinite(totalCurrentLow) && totalCurrentLow > 0) {
+    swaps = Object.fromEntries(
+      Object.entries(swaps).filter(([, info]) => typeof info.pinA !== 'number' || info.pinA >= totalCurrentLow)
+    );
+  }
+
   populateSelect(hotswapSelect, swaps, true);
   if (Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
@@ -4024,7 +4033,7 @@ function updateCalculations() {
   const motors      = motorSelects.map(sel => sel.value);
   const controllers = controllerSelects.map(sel => sel.value);
   const distance    = distanceSelect.value;
-  const battery     = batterySelect.value;
+  let battery       = batterySelect.value;
 
   // Calculate total power consumption (W)
   let cameraW = 0;
@@ -4139,6 +4148,10 @@ function updateCalculations() {
   );
   totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+
+  // Update battery and hotswap options based on current draw
+  updateBatteryOptions();
+  battery = batterySelect.value;
 
 // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
 let hours = null;
