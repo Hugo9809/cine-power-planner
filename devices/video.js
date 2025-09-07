@@ -796,6 +796,28 @@ const videoData = {
       ]
     }
   },
+  "ARRI WVT-1 TX": {
+    "powerDrawWatts": 7,
+    "videoInputs": [
+      {
+        "type": "3G-SDI"
+      }
+    ],
+    "videoOutputs": [
+      {
+        "type": "3G-SDI",
+        "notes": "loop"
+      }
+    ],
+    "frequency": "5 GHz",
+    "latencyMs": "< 1ms",
+    "power": {
+      "input": {
+        "type": "LEMO 2-pin",
+        "notes": "10.5-34V"
+      }
+    }
+  },
   "None": {
     "powerDrawWatts": 0,
     "power": {
