@@ -355,7 +355,7 @@ const texts = {
     generateOverviewHelp:
       "Generate a print-ready summary of any saved project, including power and connection details.",
     generateGearListHelp:
-      "Show selected gear and project requirements in a list.",
+      "Generate a table combining selected gear with project requirements. Field choices like lenses, scenarios or monitoring preferences automatically add related accessories and notes.",
     shareSetupHelp:
       "Copy a unique link representing the current project that others can open to load the same configuration.",
     applySharedLinkHelp:
@@ -719,7 +719,7 @@ const texts = {
     generateOverviewHelp:
       "Crea un riepilogo stampabile delle configurazioni salvate.",
     generateGearListHelp:
-      "Mostra l'elenco dell'attrezzatura selezionata e i requisiti del progetto.",
+      "Genera una tabella che combina l'attrezzatura selezionata con i requisiti del progetto. Le scelte del modulo (lenti, scenari, preferenze di monitoraggio, ecc.) aggiungono automaticamente accessori e note correlate.",
     shareSetupHelp:
       "Copia un link che rappresenta la configurazione corrente.",
     applySharedLinkHelp: "Carica la configurazione dal link condiviso.",
@@ -1094,7 +1094,7 @@ const texts = {
     generateOverviewHelp:
       "Crea un resumen imprimible de las configuraciones guardadas.",
     generateGearListHelp:
-      "Muestra la lista del equipo seleccionado y los requisitos del proyecto.",
+      "Genera una tabla que combina el equipo seleccionado con los requisitos del proyecto. Las opciones del formulario (lentes, escenarios, preferencias de monitoreo, etc.) agregan automáticamente accesorios y notas relacionadas.",
     shareSetupHelp:
       "Copia un enlace que representa la configuración actual.",
     applySharedLinkHelp: "Carga la configuración desde el enlace compartido.",
@@ -1470,7 +1470,7 @@ const texts = {
     generateOverviewHelp:
       "Crée un aperçu imprimable des configurations enregistrées.",
     generateGearListHelp:
-      "Affiche la liste du matériel sélectionné et les exigences du projet.",
+      "Génère un tableau combinant le matériel sélectionné et les exigences du projet. Les choix du formulaire (objectifs, scénarios, préférences de monitoring, etc.) ajoutent automatiquement les accessoires et remarques associés.",
     shareSetupHelp:
       "Copie un lien représentant la configuration actuelle.",
     applySharedLinkHelp: "Charge la configuration depuis le lien partagé.",
@@ -1848,7 +1848,7 @@ const texts = {
     generateOverviewHelp:
       "Erstellt eine druckbare Übersicht der gespeicherten Konfigurationen.",
     generateGearListHelp:
-      "Zeigt die Liste der ausgewählten Geräte und die Projektanforderungen.",
+      "Erstellt eine Tabelle, die ausgewähltes Equipment mit den Projektanforderungen kombiniert. Formulareinträge wie Objektive, Szenarien oder Monitoring-Einstellungen fügen automatisch passende Zubehörteile und Hinweise hinzu.",
     shareSetupHelp:
       "Kopiert einen Link, der die aktuelle Konfiguration repräsentiert.",
     applySharedLinkHelp: "Lädt die Konfiguration aus dem geteilten Link.",
