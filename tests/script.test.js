@@ -1688,6 +1688,8 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ videoDistribution: 'Directors Monitor 7" handheld' });
     expect(html).toContain('<select id="gearListDirectorsMonitor"');
     expect(html).toContain('SmallHD Ultra 7');
+    const docDir = new DOMParser().parseFromString(html, 'text/html');
+    expect(docDir.getElementById('gearListDirectorsMonitor').value).toBe('SmallHD Ultra 7');
     expect(html).toContain('Directors cage, shoulder strap, sunhood, rigging for teradeks');
     expect(html).toContain('3x Bebob V98micro (3x Directors handheld)');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Directors handheld)');
@@ -1733,6 +1735,8 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ videoDistribution: 'Gaffers Monitor 7" handheld' });
     expect(html).toContain('<select id="gearListGaffersMonitor"');
     expect(html).toContain('Gaffer Handheld Monitor');
+    const docGaf = new DOMParser().parseFromString(html, 'text/html');
+    expect(docGaf.getElementById('gearListGaffersMonitor').value).toBe('SmallHD Ultra 7');
     expect(html).toContain('3x Bebob V98micro (3x Gaffers handheld)');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x Gaffers handheld)');
     expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x Gaffers handheld)');
@@ -1753,6 +1757,8 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ videoDistribution: 'DoP Monitor 7" handheld' });
     expect(html).toContain('<select id="gearListDopMonitor"');
     expect(html).toContain('DoP Handheld Monitor');
+    const docDop = new DOMParser().parseFromString(html, 'text/html');
+    expect(docDop.getElementById('gearListDopMonitor').value).toBe('SmallHD Ultra 7');
     expect(html).toContain('3x Bebob V98micro (3x DoP handheld)');
     expect(html).toContain('Avenger C-Stand Sliding Leg 20" (1x DoP handheld)');
     expect(html).toContain('Steelfingers Wheel C-Stand 3er Set (1x DoP handheld)');
