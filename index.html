@@ -14,8 +14,8 @@
   <meta name="theme-color" content="#f9f9f9" />
   <meta name="application-name" content="Cine List" />
   <meta name="apple-mobile-web-app-title" content="Cine List" />
-  <!-- Enables features that rely on eval(); revisit if security requirements change -->
-  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';" />
+  <meta name="referrer" content="no-referrer" />
   <meta name="color-scheme" content="light dark" />
   <title>Cine List</title>
   <link rel="stylesheet" href="style.css" />
@@ -248,7 +248,7 @@
         <option value="accessories.chargers">Charger</option>
       </select>
     </div>
-    <div class="form-row" id="subcategoryField" style="display:none;">
+    <div class="form-row" id="subcategoryField" hidden>
       <label for="newSubcategory" id="subcategoryLabel">Subcategory:</label>
       <select id="newSubcategory"></select>
     </div>
@@ -260,7 +260,7 @@
       <label for="newWatt" id="consumptionLabel">Consumption (W):</label>
       <input type="number" id="newWatt" step="0.1" placeholder="e.g. 12.5" aria-labelledby="consumptionLabel" />
     </div>
-    <div id="dynamicFields" style="display:none;"></div>
+    <div id="dynamicFields" hidden></div>
     <div id="cameraFields" class="hidden">
       <div class="camera-subsection">
         <h4 id="powerInputsHeading">Power Inputs</h4>
