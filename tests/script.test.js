@@ -1969,6 +1969,17 @@ describe('script.js functions', () => {
     );
   });
 
+  test('merges monitoring batteries across multiple 15-21" monitors', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({
+      videoDistribution:
+        'Directors Monitor 15-21", Directors Monitor 15-21", Combo Monitor 15-21", DoP Monitor 15-21"'
+    });
+    expect(html).toContain(
+      '8x Bebob V290RM-Cine (2x Combo 15-21", 4x Directors 15-21", 2x DoP 15-21")'
+    );
+  });
+
   test('multiple handheld monitors merge grip items', () => {
     const { generateGearListHtml } = script;
     global.devices.monitors = { 'SmallHD Ultra 7': { screenSizeInches: 7 } };
