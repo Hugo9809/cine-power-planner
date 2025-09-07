@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap');
 
 button:focus,
 select:focus,
@@ -76,7 +76,7 @@ body.dark-mode {
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   border-color: var(--text-color) !important;
 }
 
@@ -127,7 +127,7 @@ table, th, td {
 }
 #overviewDialogContent th {
   background-color: var(--control-bg) !important;
-  font-weight: 700;
+  font-weight: 400;
 }
 #overviewDialogContent tr {
   background-color: var(--surface-color) !important;
@@ -154,7 +154,7 @@ table, th, td {
 #overviewDialogContent .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: 700;
+  font-weight: 400;
   color: var(--accent-color);
 }
 

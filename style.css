@@ -168,7 +168,7 @@ textarea:focus-visible {
 }
 h1, h2, h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--accent-color);
 }
 h1 {
@@ -588,7 +588,7 @@ button:disabled {
 
 .device-category h4 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--accent-color);
   margin-top: 0;
   margin-bottom: 10px;
@@ -992,6 +992,7 @@ button:disabled {
   text-align: left;
   padding: 2px 6px 2px 0;
   white-space: nowrap;
+  font-weight: 400;
 }
 .port-table td {
   padding: 2px 0;
@@ -1141,6 +1142,7 @@ button:disabled {
 
 #batteryComparison th {
   background-color: #ffffff;
+  font-weight: 400;
 }
 
 /* User runtime feedback table */
@@ -1165,6 +1167,7 @@ button:disabled {
 
 #userFeedbackTable th {
   background-color: #ffffff;
+  font-weight: 400;
 }
 
 body:not(.light-mode) #userFeedbackTable th {
@@ -1533,7 +1536,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   margin-bottom: 5px;
 }
 .requirement-box .req-label {
-  font-weight: 700;
+  font-weight: 400;
   display: block;
 }
 .requirement-box .req-value {
@@ -1564,7 +1567,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--accent-color);
 }
 #overviewDialogContent h1 {
@@ -1597,7 +1600,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 #overviewDialogContent th {
   background-color: var(--control-bg);
-  font-weight: 700;
+  font-weight: 400;
 }
 #overviewDialogContent tr:nth-child(even) {
   background-color: var(--panel-bg);
@@ -1631,7 +1634,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 #overviewDialogContent .device-category h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 700;
+  font-weight: 400;
   margin-top: 0;
   margin-bottom: 5px;
   border-bottom: 1px solid #eee;
@@ -1695,7 +1698,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: bold;
+  font-weight: 400;
   color: var(--accent-color);
 }
 
@@ -1723,7 +1726,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 #overviewDialogContent .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: bold;
+  font-weight: 400;
   color: var(--accent-color);
 }
 
