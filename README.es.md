@@ -102,6 +102,15 @@ El idioma puede cambiarse en la esquina superior derecha y se recuerda para la p
 5. **Guardar y cargar configuraciones:** nombrar y exportar/importar configuraciones, además de generar un resumen imprimible
 6. **Gestionar lista de dispositivos:** “Editar datos de dispositivos…” abre el editor para modificarlos o restablecer la base
 
+## 📡 Uso sin conexión y almacenamiento de datos
+
+Al servirse mediante HTTP(S), la aplicación instala un service worker que
+almacena en caché todos los archivos para que funcione sin conexión y se
+actualice en segundo plano. Los proyectos, las autonomías enviadas y las
+preferencias (idioma, tema, modo rosa y listas guardadas) se guardan en el
+`localStorage` del navegador. Al borrar los datos del sitio en el navegador se
+elimina toda la información almacenada.
+
 ---
 
 ## 🗂️ Estructura de Archivos

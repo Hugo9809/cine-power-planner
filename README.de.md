@@ -102,6 +102,15 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 5. **Setups speichern & laden:** Setups benennen, exportieren/importieren und eine druckbare Übersicht erzeugen
 6. **Geräteliste verwalten:** „Gerätedaten bearbeiten…“ öffnet den Editor zum Anpassen oder Zurücksetzen
 
+## 📡 Offline-Nutzung & Datenspeicherung
+
+Wird die App über HTTP(S) bereitgestellt, installiert sie einen Service Worker,
+der alle Dateien für die Offline-Nutzung zwischenspeichert und im Hintergrund
+aktualisiert. Projekte, Laufzeitmeldungen und Einstellungen (Sprache, Theme,
+Pinkmodus und gespeicherte Listen) werden im `localStorage` deines Browsers
+gespeichert. Über die Seiteneinstellungen des Browsers lassen sich alle
+gespeicherten Daten löschen.
+
 ---
 
 ## 🗂️ Dateistruktur
