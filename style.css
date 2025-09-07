@@ -699,6 +699,17 @@ button:disabled {
   margin: 0;
 }
 
+#topBar .branding {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#topBar #logo {
+  width: 32px;
+  height: 32px;
+}
+
 #topBar .controls {
   display: flex;
   gap: 5px;
