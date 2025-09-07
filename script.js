@@ -5806,10 +5806,14 @@ function enableDiagramInteractions() {
 
 function updateDiagramLegend() {
   if (!diagramLegend) return;
-  diagramLegend.innerHTML =
-    `<span><span class="swatch power"></span>${texts[currentLang].diagramLegendPower}</span>` +
-    `<span><span class="swatch video"></span>${texts[currentLang].diagramLegendVideo}</span>` +
-    `<span><span class="swatch fiz"></span>${texts[currentLang].diagramLegendFIZ}</span>`;
+  const legendItems = [
+    { cls: 'power', text: texts[currentLang].diagramLegendPower },
+    { cls: 'video', text: texts[currentLang].diagramLegendVideo },
+    { cls: 'fiz', text: texts[currentLang].diagramLegendFIZ }
+  ];
+  diagramLegend.innerHTML = legendItems
+    .map(({ cls, text }) => `<span><span class="swatch ${cls}"></span>${text}</span>`)
+    .join('');
 }
 
 // Convert a camelCase or underscore key to a human friendly label
