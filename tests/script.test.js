@@ -4986,7 +4986,7 @@ describe('script.js functions', () => {
     expect(svg).toContain('.node-box{fill:#f0f0f0');
   });
 
-  test('shareSetupBtn encodes setup name in link', () => {
+  test('shareSetupBtn copies link to clipboard with encoded setup name', () => {
     const nameInput = document.getElementById('setupName');
     nameInput.value = 'My Setup';
     const btn = document.getElementById('shareSetupBtn');
