@@ -155,6 +155,7 @@ const texts = {
 
     addDeviceHeading: "Add New Device",
     categoryLabel: "Category:",
+    subcategoryLabel: "Subcategory:",
     deviceNameLabel: "Name:",
     consumptionLabel: "Consumption (W):",
     capacityLabel: "Capacity (Wh):",
@@ -531,6 +532,7 @@ const texts = {
     category_chargers: "Caricatori",
     addDeviceHeading: "Aggiungi nuovo dispositivo",
     categoryLabel: "Categoria:",
+    subcategoryLabel: "Sottocategoria:",
     deviceNameLabel: "Nome:",
     consumptionLabel: "Consumo (W):",
     capacityLabel: "Capacità (Wh):",
@@ -899,6 +901,7 @@ const texts = {
 
     addDeviceHeading: "Añadir Nuevo Dispositivo",
     categoryLabel: "Categoría:",
+    subcategoryLabel: "Subcategoría:",
     deviceNameLabel: "Nombre:",
     consumptionLabel: "Consumo (W):",
     capacityLabel: "Capacidad (Wh):",
@@ -1275,6 +1278,7 @@ const texts = {
 
     addDeviceHeading: "Ajouter un Nouvel Appareil",
     categoryLabel: "Catégorie:",
+    subcategoryLabel: "Sous-catégorie:",
     deviceNameLabel: "Nom:",
     consumptionLabel: "Consommation (W):",
     capacityLabel: "Capacité (Wh):",
@@ -1654,6 +1658,7 @@ const texts = {
 
     addDeviceHeading: "Neues Gerät hinzufügen",
     categoryLabel: "Kategorie:",
+    subcategoryLabel: "Unterkategorie:",
     deviceNameLabel: "Name:",
     consumptionLabel: "Verbrauch (W):",
     capacityLabel: "Kapazität (Wh):",
