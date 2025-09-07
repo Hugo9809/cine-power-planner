@@ -802,22 +802,33 @@ button:disabled {
   pointer-events: none;
 }
 
+
 .power-bar .limit-line {
   position: absolute;
   top: -4px;
   bottom: -4px;
   width: 2px;
-  background: #000;
+  background: red;
   z-index: 4;
+  overflow: visible;
+}
+
+.power-bar .limit-line .limit-label {
+  position: absolute;
+  top: -1.2em;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: red;
+  font-size: 0.75em;
+  padding: 0 2px;
+  white-space: nowrap;
 }
 
 #powerDiagram.over .power-bar {
   border-color: red;
 }
 
-#powerDiagram.over .limit-line {
-  background: red;
-}
 
 #maxPowerText {
   margin-top: 4px;
