@@ -1083,6 +1083,39 @@ describe('script.js functions', () => {
     expect(optionsB).not.toContain('VBatt');
   });
 
+  test('Alexa Mini LF offers B-Mount batteries', () => {
+    setupDom(false);
+    require('../translations.js');
+    const script = require('../script.js');
+    global.devices.cameras['Arri Alexa Mini LF'] = {
+      powerDrawWatts: 89,
+      power: {
+        batteryPlateSupport: [
+          { type: 'V-Mount', mount: 'native' },
+          { type: 'B-Mount', mount: 'native' }
+        ]
+      }
+    };
+    global.devices.batteries['Bebob B90cine'] = {
+      capacity: 86,
+      pinA: 20,
+      dtapA: 5,
+      mount_type: 'B-Mount'
+    };
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="Arri Alexa Mini LF">Arri Alexa Mini LF</option>';
+    camSel.value = 'Arri Alexa Mini LF';
+    script.updateBatteryPlateVisibility();
+    const plateSel = document.getElementById('batteryPlateSelect');
+    const plateOpts = Array.from(plateSel.options).map(o => o.value);
+    expect(plateOpts).toContain('B-Mount');
+    plateSel.value = 'B-Mount';
+    script.updateBatteryOptions();
+    const battSel = document.getElementById('batterySelect');
+    const battOpts = Array.from(battSel.options).map(o => o.value);
+    expect(battOpts).toContain('Bebob B90cine');
+  });
+
   test('FXLion hotswap only visible for FXLion Nano batteries', () => {
     global.devices.cameras.VCam = {
       powerDrawWatts: 10,
