@@ -105,6 +105,10 @@ describe('parsePowerInput', () => {
     expect(parsePowerInput(123)).toBeNull();
   });
 
+  it('returns null when no connectors are found', () => {
+    expect(parsePowerInput(' / ')).toBeNull();
+  });
+
   it('returns a fresh copy on repeated calls', () => {
     const first = parsePowerInput('D-Tap');
     first[0].type = 'Changed';

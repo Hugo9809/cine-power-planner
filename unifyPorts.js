@@ -268,15 +268,17 @@ function parsePowerInput(str) {
     return cached.map(obj => ({ ...obj }));
   }
 
-  const arr = splitOutside(normalized)
+  const segments = splitOutside(normalized)
     .map(p => p.trim())
-    .filter(Boolean)
-    .map(segment => {
-      const { type, notes } = extractTypeAndNotes(segment);
-      const obj = { type: cleanTypeName(type) };
-      if (notes) obj.notes = notes;
-      return obj;
-    });
+    .filter(Boolean);
+  if (segments.length === 0) return null;
+
+  const arr = segments.map(segment => {
+    const { type, notes } = extractTypeAndNotes(segment);
+    const obj = { type: cleanTypeName(type) };
+    if (notes) obj.notes = notes;
+    return obj;
+  });
 
   // Store a defensive copy to keep the cached data immutable.
   powerInputCache.set(
