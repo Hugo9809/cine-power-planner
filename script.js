@@ -8819,8 +8819,8 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Apple Box Set / Bühnenkisten Set');
         gripItems.push('Paganini set');
-        gripItems.push('sand bag (for Slider)');
-        gripItems.push('sand bag (for Slider)');
+        gripItems.push('sand bag (Slider)');
+        gripItems.push('sand bag (Slider)');
         gripItems.push('cable mat');
         gripItems.push('cable mat');
         gripItems.push('cable mat');
@@ -8865,10 +8865,10 @@ function generateGearListHtml(info = {}) {
             gripItems.push(base);
         }
         if (t === 'Frog Tripod') {
-            gripItems.push('sand bag (for Frog Tripod)');
+            gripItems.push('sand bag (Frog Tripod)');
         }
         if (t === 'Hi-Head') {
-            gripItems.push('sand bag (for Hi-Head)');
+            gripItems.push('sand bag (Hi-Head)');
         }
     });
     if (needsStandardTripod && !gripItems.some(item => /Standard Tripod/.test(item))) {
