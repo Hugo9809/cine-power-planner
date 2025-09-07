@@ -108,6 +108,12 @@ describe('utility function tests', () => {
     expect(normalizePowerPortType('/ LEMO 8-PIN (BAT)')).toEqual(['Bat LEMO 8-pin']);
   });
 
+  test('normalizePowerPortType strips trademark symbols', () => {
+    const { normalizePowerPortType } = utils;
+    expect(normalizePowerPortType('usb type-c®')).toEqual(['USB-C']);
+    expect(normalizePowerPortType('usb-c™')).toEqual(['USB-C']);
+  });
+
   test('normalizeVideoType recognizes DisplayPort variants', () => {
     const { normalizeVideoType } = utils;
     expect(normalizeVideoType('DisplayPort')).toBe('DisplayPort');
