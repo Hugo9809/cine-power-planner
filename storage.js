@@ -83,6 +83,30 @@ function deleteFromStorage(storage, key, errorMessage) {
   }
 }
 
+// Attempt to load JSON from a primary storage. If missing, try a fallback
+// storage and migrate the data to the primary one. Useful for gradually moving
+// keys from sessionStorage to localStorage.
+function loadWithMigration(
+  primary,
+  fallback,
+  key,
+  primaryLoadMsg,
+  fallbackLoadMsg,
+  saveMsg,
+  deleteMsg
+) {
+  const value = loadJSONFromStorage(primary, key, primaryLoadMsg);
+  if (value !== null) return value;
+  if (!fallback) return null;
+  const migrated = loadJSONFromStorage(fallback, key, fallbackLoadMsg);
+  if (migrated !== null) {
+    saveJSONToStorage(primary, key, migrated, saveMsg);
+    deleteFromStorage(fallback, key, deleteMsg);
+    return migrated;
+  }
+  return null;
+}
+
 // Generate a unique name by appending numeric suffixes if needed
 // Comparisons are case-insensitive and ignore surrounding whitespace.
 function generateUniqueName(base, usedNames) {
@@ -103,36 +127,15 @@ function generateUniqueName(base, usedNames) {
 // Store the current session (unsaved setup) in localStorage so it survives
 // full app reloads.
 function loadSessionState() {
-  const state = loadJSONFromStorage(
+  return loadWithMigration(
     SAFE_LOCAL_STORAGE,
+    typeof sessionStorage !== 'undefined' ? sessionStorage : null,
     SESSION_STATE_KEY,
     "Error loading session state from localStorage:",
+    "Error loading session state from sessionStorage:",
+    "Error saving session state to localStorage:",
+    "Error deleting session state from sessionStorage:",
   );
-  if (state !== null) {
-    return state;
-  }
-  if (typeof sessionStorage !== 'undefined') {
-    const migrated = loadJSONFromStorage(
-      sessionStorage,
-      SESSION_STATE_KEY,
-      "Error loading session state from sessionStorage:",
-    );
-    if (migrated !== null) {
-      saveJSONToStorage(
-        SAFE_LOCAL_STORAGE,
-        SESSION_STATE_KEY,
-        migrated,
-        "Error saving session state to localStorage:",
-      );
-      deleteFromStorage(
-        sessionStorage,
-        SESSION_STATE_KEY,
-        "Error deleting session state from sessionStorage:",
-      );
-      return migrated;
-    }
-  }
-  return null;
 }
 
 function saveSessionState(state) {
