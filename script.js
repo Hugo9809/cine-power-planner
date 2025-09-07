@@ -6108,6 +6108,7 @@ setupSelect.addEventListener("change", (event) => {
       bindGearListEasyrigListener();
       bindGearListSliderBowlListener();
       bindGearListEyeLeatherListener();
+      bindGearListProGaffTapeListener();
       bindGearListDirectorsMonitorListener();
           if (typeof saveProject === 'function') {
             saveProject({ projectInfo: currentProjectInfo, gearList: setup.gearList });
@@ -7182,6 +7183,7 @@ if (projectForm) {
         bindGearListEasyrigListener();
         bindGearListSliderBowlListener();
         bindGearListEyeLeatherListener();
+        bindGearListProGaffTapeListener();
         bindGearListDirectorsMonitorListener();
         saveCurrentGearList();
         closeDialog(projectDialog);
@@ -8810,14 +8812,22 @@ function generateGearListHtml(info = {}) {
     const consumables = [];
     const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
     let eyeLeatherColor = 'rot';
+    const gaffTapeSelections = [
+        { id: 1, color: 'red', width: '24mm' },
+        { id: 2, color: 'blue', width: '24mm' }
+    ];
     if (gearListOutput) {
         const sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
         if (sel && sel.value) eyeLeatherColor = sel.value;
+        gaffTapeSelections.forEach(({ id }, idx) => {
+            const cSel = gearListOutput.querySelector(`#gearListProGaffColor${id}`);
+            const wSel = gearListOutput.querySelector(`#gearListProGaffWidth${id}`);
+            if (cSel && cSel.value) gaffTapeSelections[idx].color = cSel.value;
+            if (wSel && wSel.value) gaffTapeSelections[idx].width = wSel.value;
+        });
     }
     const baseConsumables = [
         { name: 'Kimtech Wipes', count: 1 },
-        { name: 'Lasso Red 24mm', count: 1 },
-        { name: 'Lasso Blue 24mm', count: 1 },
         { name: 'Sprigs Red 1/4"', count: 1, noScale: true },
         { name: 'Klappenstift', count: 2, klappen: true }
     ];
@@ -8905,6 +8915,28 @@ function generateGearListHtml(info = {}) {
         for (let i = 0; i < warmersCount; i++) miscItems.push('Hand Warmers');
         for (let i = 0; i < warmersCount; i++) miscItems.push('Feet Warmers');
     }
+    const gaffColors = [
+        ['red', 'Red'],
+        ['blue', 'Blue'],
+        ['green', 'Green'],
+        ['yellow', 'Yellow'],
+        ['black', 'Black'],
+        ['pink', 'Pink'],
+        ['orange', 'Orange'],
+        ['violette', 'Violette'],
+        ['white', 'White']
+    ];
+    const gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
+    const proGaffCount = multiplier;
+    const proGaffHtml = gaffTapeSelections.map(({ id, color, width }) => {
+        const colorOpts = gaffColors
+            .map(([val, label]) => `<option value="${val}"${val === color ? ' selected' : ''}>${label}</option>`)
+            .join('');
+        const widthOpts = gaffWidths
+            .map(val => `<option value="${val}"${val === width ? ' selected' : ''}>${val}</option>`)
+            .join('');
+        return `<span class="gear-item" data-gear-name="Pro Gaff Tape">${proGaffCount}x Pro Gaff Tape <select id="gearListProGaffColor${id}">${colorOpts}</select> <select id="gearListProGaffWidth${id}">${widthOpts}</select></span>`;
+    }).join('<br>');
     let eyeLeatherHtml = '';
     if (eyeLeatherCount) {
         const colors = [
@@ -8925,7 +8957,7 @@ function generateGearListHtml(info = {}) {
         eyeLeatherHtml = `<span class="gear-item" data-gear-name="Bluestar eye leather made of microfiber oval, large">${eyeLeatherCount}x Bluestar eye leather made of microfiber oval, large <select id="gearListEyeLeatherColor">${options}</select></span>`;
     }
     addRow('Miscellaneous', formatItems(miscItems));
-    addRow('Consumables', [eyeLeatherHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
+    addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
     body += '<h3>Gear List</h3><table class="gear-table">' + rows.join('') + '</table>';
@@ -9021,6 +9053,32 @@ function getCurrentGearListHtml() {
                 }
             });
         }
+        [1, 2].forEach(i => {
+            const colorSel = clone.querySelector(`#gearListProGaffColor${i}`);
+            if (colorSel) {
+                const originalSel = gearListOutput.querySelector(`#gearListProGaffColor${i}`);
+                const val = originalSel ? originalSel.value : colorSel.value;
+                Array.from(colorSel.options).forEach(opt => {
+                    if (opt.value === val) {
+                        opt.setAttribute('selected', '');
+                    } else {
+                        opt.removeAttribute('selected');
+                    }
+                });
+            }
+            const widthSel = clone.querySelector(`#gearListProGaffWidth${i}`);
+            if (widthSel) {
+                const originalSel = gearListOutput.querySelector(`#gearListProGaffWidth${i}`);
+                const val = originalSel ? originalSel.value : widthSel.value;
+                Array.from(widthSel.options).forEach(opt => {
+                    if (opt.value === val) {
+                        opt.setAttribute('selected', '');
+                    } else {
+                        opt.removeAttribute('selected');
+                    }
+                });
+            }
+        });
         gearHtml = clone.innerHTML.trim();
     }
 
@@ -9082,6 +9140,7 @@ function handleImportGearList(e) {
             bindGearListEasyrigListener();
             bindGearListSliderBowlListener();
             bindGearListEyeLeatherListener();
+            bindGearListProGaffTapeListener();
             bindGearListDirectorsMonitorListener();
             saveCurrentGearList();
             }
@@ -9215,6 +9274,21 @@ function bindGearListEyeLeatherListener() {
     }
 }
 
+function bindGearListProGaffTapeListener() {
+    if (!gearListOutput) return;
+    [1, 2].forEach(i => {
+        const colorSel = gearListOutput.querySelector(`#gearListProGaffColor${i}`);
+        const widthSel = gearListOutput.querySelector(`#gearListProGaffWidth${i}`);
+        [colorSel, widthSel].forEach(sel => {
+            if (sel) {
+                sel.addEventListener('change', () => {
+                    saveCurrentGearList();
+                });
+            }
+        });
+    });
+}
+
 function bindGearListDirectorsMonitorListener() {
     if (!gearListOutput) return;
     ['Directors', 'Dop', 'Gaffers', 'Focus'].forEach(role => {
@@ -9256,6 +9330,7 @@ function refreshGearListIfVisible() {
     bindGearListEasyrigListener();
     bindGearListSliderBowlListener();
     bindGearListEyeLeatherListener();
+    bindGearListProGaffTapeListener();
     bindGearListDirectorsMonitorListener();
     saveCurrentGearList();
 }
@@ -9356,6 +9431,7 @@ function restoreSessionState() {
         bindGearListEasyrigListener();
         bindGearListSliderBowlListener();
         bindGearListEyeLeatherListener();
+        bindGearListProGaffTapeListener();
         bindGearListDirectorsMonitorListener();
       }
     } else if (!state && typeof deleteProject === 'function') {
@@ -9409,6 +9485,7 @@ function applySharedSetup(shared) {
       bindGearListCageListener();
       bindGearListEasyrigListener();
       bindGearListSliderBowlListener();
+      bindGearListProGaffTapeListener();
       bindGearListDirectorsMonitorListener();
     }
     if (decoded.gearList || decoded.projectInfo) {
