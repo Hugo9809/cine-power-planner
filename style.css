@@ -1059,8 +1059,7 @@ button:disabled {
   font-size: 20px;
 }
 #setupDiagram .conn {
-  stroke: var(--control-text);
-  stroke-width: 1px;
+  stroke: none;
 }
 #setupDiagram .conn.red { fill: var(--power-color); }
 #setupDiagram .conn.blue { fill: var(--video-color); }
