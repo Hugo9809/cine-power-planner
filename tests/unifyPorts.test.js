@@ -6,7 +6,8 @@ const {
   cleanVoltageRange,
   normalizeFiz,
   cleanTypeName,
-  cleanPort
+  cleanPort,
+  splitOutside
 } = require('../unifyPorts.js');
 
 describe('cleanVoltageRange', () => {
@@ -98,6 +99,38 @@ describe('parsePowerInput', () => {
     expect(parsePowerInput(input)).toEqual([
       { type: 'LEMO' }
     ]);
+  });
+
+  it('returns null for non-string input', () => {
+    expect(parsePowerInput(123)).toBeNull();
+  });
+
+  it('returns a fresh copy on repeated calls', () => {
+    const first = parsePowerInput('D-Tap');
+    first[0].type = 'Changed';
+    const second = parsePowerInput('D-Tap');
+    expect(second).toEqual([{ type: 'D-Tap' }]);
+  });
+});
+
+describe('splitOutside', () => {
+  it('ignores delimiters inside parentheses', () => {
+    const input = 'A (B/C) / D';
+    expect(splitOutside(input)).toEqual(['A (B/C) ', ' D']);
+  });
+
+  it('ignores delimiters inside quotes', () => {
+    const input = 'A "B/C" / D';
+    expect(splitOutside(input)).toEqual(['A "B/C" ', ' D']);
+  });
+
+  it('handles nested parentheses', () => {
+    const input = 'A (B (C/D)) / E';
+    expect(splitOutside(input)).toEqual(['A (B (C/D)) ', ' E']);
+  });
+
+  it('returns original string when delimiter is absent', () => {
+    expect(splitOutside('LEMO')).toEqual(['LEMO']);
   });
 });
 
