@@ -8224,6 +8224,53 @@ function ensureZoomRemoteSetup(info) {
     if (typeof saveCurrentSession === 'function') saveCurrentSession();
 }
 
+function expandFilterSelections(filters = []) {
+    const items = [];
+    filters.forEach(f => {
+        switch (f) {
+            case 'Clear':
+                items.push('4x5.65 Clear Filter');
+                break;
+            case 'IRND':
+                items.push('4x5.65 IRND Filter 0.3');
+                items.push('4x5.65 IRND Filter 1.2');
+                break;
+            case 'Diopter':
+                items.push('ARRI diopter frame');
+                items.push('Schneider CF DIOPTER FULL +1/2 GEN2');
+                items.push('Schneider CF DIOPTER FULL +1 GEN2');
+                items.push('Schneider CF DIOPTER FULL +2 GEN2');
+                items.push('Schneider CF DIOPTER FULL +4 GEN2');
+                break;
+            case 'Pol':
+                items.push('4x5.65 Pol Filter');
+                break;
+            case 'Rota-Pol':
+                items.push('ARRI K2.0009434 Rota Pola Filter Frame');
+                break;
+            case 'ND Grad HE':
+                items.push('4x5.65 ND Grad HE Filter 0.3 HE Horizontal');
+                items.push('4x5.65 ND Grad HE Filter 0.6 HE Horizontal');
+                items.push('4x5.65 ND Grad HE Filter 0.9 HE Horizontal');
+                items.push('ARRI LMB 4x5 Pro Set');
+                items.push('ARRI LMB 19mm Studio Rod Adapter');
+                items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+                break;
+            case 'ND Grad SE':
+                items.push('4x5.65 ND Grad SE Filter 0.3 SE Horizontal');
+                items.push('4x5.65 ND Grad SE Filter 0.6 SE Horizontal');
+                items.push('4x5.65 ND Grad SE Filter 0.9 SE Horizontal');
+                items.push('ARRI LMB 4x5 Pro Set');
+                items.push('ARRI LMB 19mm Studio Rod Adapter');
+                items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
+                break;
+            default:
+                items.push(`4x5.65 ${f} Filter Set 1/2 + 1/4 + 1/8`);
+        }
+    });
+    return items;
+}
+
 function generateGearListHtml(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
@@ -8312,9 +8359,10 @@ function generateGearListHtml(info = {}) {
         const lens = devices.lenses && devices.lenses[name];
         return Math.max(max, lens && lens.frontDiameterMm || 0);
     }, 0);
-    const filterSelections = info.filter
+    const filterTypes = info.filter
         ? info.filter.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    let filterSelections = expandFilterSelections(filterTypes);
     if (info.mattebox) {
         const matteboxes = devices.accessories?.matteboxes || {};
         for (const [name, mb] of Object.entries(matteboxes)) {

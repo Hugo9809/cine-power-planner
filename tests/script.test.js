@@ -1628,7 +1628,8 @@ describe('script.js functions', () => {
       expect(html).toContain('<span class="req-value">Handheld, Slider</span>');
       expect(html).not.toContain('Filter: IRND');
       expect(html).toContain('Matte box + filter');
-      expect(html).toContain('1x IRND');
+      expect(html).toContain('4x5.65 IRND Filter 0.3');
+      expect(html).toContain('4x5.65 IRND Filter 1.2');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain(`1x ${cageCamera}`);
