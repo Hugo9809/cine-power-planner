@@ -2279,6 +2279,10 @@ function displayGearAndRequirements(html) {
       sel.setAttribute('data-help', desc);
     });
   }
+  if (loadedSetupState) {
+    setSliderBowlValue(loadedSetupState.sliderBowl || '');
+    setEasyrigValue(loadedSetupState.easyrig || '');
+  }
   updateGearListButtonVisibility();
 }
 function getSliderBowlSelect() {
@@ -2297,7 +2301,8 @@ function getEasyrigSelect() {
 }
 function getEasyrigValue() {
   const sel = getEasyrigSelect();
-  return sel ? sel.value : '';
+  if (sel) return sel.value;
+  return loadedSetupState && loadedSetupState.easyrig ? loadedSetupState.easyrig : '';
 }
 function setEasyrigValue(val) {
   const sel = getEasyrigSelect();
@@ -9378,6 +9383,7 @@ function setSelectValue(select, value) {
 function restoreSessionState() {
   restoringSession = true;
   const state = loadSession();
+  loadedSetupState = state || null;
   if (state) {
     if (setupNameInput) {
       setupNameInput.value = state.setupName || '';
