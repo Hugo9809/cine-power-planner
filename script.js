@@ -9500,8 +9500,6 @@ function restoreSessionState() {
     }
     if (batterySelect && state.battery) batterySelect.value = state.battery;
     if (hotswapSelect && state.batteryHotswap) hotswapSelect.value = state.batteryHotswap;
-    setSliderBowlValue(state.sliderBowl);
-    setEasyrigValue(state.easyrig);
     if (setupSelect && state.setupSelect) setupSelect.value = state.setupSelect;
     if (state.projectInfo) {
       currentProjectInfo = state.projectInfo;
@@ -9533,6 +9531,8 @@ function restoreSessionState() {
         bindGearListEyeLeatherListener();
         bindGearListProGaffTapeListener();
         bindGearListDirectorsMonitorListener();
+        setSliderBowlValue(state && state.sliderBowl);
+        setEasyrigValue(state && state.easyrig);
       }
     } else if (!state && typeof deleteProject === 'function') {
       deleteProject();
