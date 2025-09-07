@@ -10599,7 +10599,7 @@ function buildFilterSelectHtml(filters = []) {
       }
     }
   });
-  return parts.join('<br>');
+  return parts.join(' ');
 }
 
 function collectFilterAccessories(filters = []) {
