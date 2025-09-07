@@ -3,7 +3,7 @@
     "batteries": {
       "attributes": [
         "capacity",
-        "mount",
+        "mount_type",
         "weight_g"
       ]
     },

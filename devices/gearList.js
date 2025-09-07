@@ -800,17 +800,17 @@ const gear = {
     "batteries": {
       "Sony NP-F970": {
         "capacity": 47,
-        "mount": "NP-F",
+        "mount_type": "NP-F",
         "weight_g": 225
       },
       "Sony NP-F750": {
         "capacity": 33,
-        "mount": "NP-F",
+        "mount_type": "NP-F",
         "weight_g": 220
       },
       "Sony NP-F550": {
         "capacity": 16,
-        "mount": "NP-F",
+        "mount_type": "NP-F",
         "weight_g": 110
       }
     },
