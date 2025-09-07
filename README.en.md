@@ -16,6 +16,7 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
+- Unique icons for required scenarios to distinguish project requirements.
 - Interactive project diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
 - Playful pink accent theme that persists between visits.
 - Searchable help dialog with step-by-step sections and a FAQ; open with ?, H, F1 or Ctrl+/.

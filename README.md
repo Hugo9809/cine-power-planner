@@ -44,6 +44,7 @@ Contributions for additional languages are welcome. To add a translation, includ
 
 ## Recent Updates
 
+- **Unique icons for required scenarios** – each required scenario now shows its own icon for quick recognition.
 - **Persistent diagram popups on touch** – tapping a node on touch devices keeps its popup visible until another node is selected.
 - **Aggregated wireless receiver entries** – similar receiver models are grouped to streamline gear selection.
 - **Interactive project diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
