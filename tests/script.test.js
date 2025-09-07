@@ -459,6 +459,16 @@ describe('script.js functions', () => {
     expect(hasCable).toBe(true);
   });
 
+  test('cable category shows subcategories', () => {
+    const categorySelect = document.getElementById('newCategory');
+    categorySelect.value = 'accessories.cables';
+    categorySelect.dispatchEvent(new Event('change'));
+    const subSel = document.getElementById('newSubcategory');
+    expect(subSel).not.toBeNull();
+    const values = Array.from(subSel.options).map(o => o.value);
+    expect(values).toEqual(expect.arrayContaining(['power', 'video', 'cables']));
+  });
+
   test('new device form includes wireless receiver category option', () => {
     const select = document.getElementById('newCategory');
     const hasWirelessRx = Array.from(select.options).some(o => o.value === 'wirelessReceivers');
