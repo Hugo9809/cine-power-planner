@@ -459,6 +459,18 @@ describe('script.js functions', () => {
     expect(hasCable).toBe(true);
   });
 
+  test('new device form includes wireless receiver category option', () => {
+    const select = document.getElementById('newCategory');
+    const hasWirelessRx = Array.from(select.options).some(o => o.value === 'wirelessReceivers');
+    expect(hasWirelessRx).toBe(true);
+  });
+
+  test('new device form includes battery hotswap category option', () => {
+    const select = document.getElementById('newCategory');
+    const hasHotswap = Array.from(select.options).some(o => o.value === 'batteryHotswaps');
+    expect(hasHotswap).toBe(true);
+  });
+
   test('populateLensDropdown fills lens list without duplicates and adds attributes', () => {
     const sel = document.getElementById('lenses');
     sel.innerHTML = '<option value="Existing">Existing</option>';
