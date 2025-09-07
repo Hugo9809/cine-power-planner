@@ -2662,7 +2662,7 @@ describe('script.js functions', () => {
     const itemsRow = rows[gripIdx + 1];
     const text = itemsRow.textContent;
       expect(text).toContain('2x Manfrotto 244N Friktion Arm');
-      expect(text).toContain('1x Gobo Head');
+      expect(text).toContain('1x Avenger D200B Grip Head');
       expect(text).toContain('1x spigot with male 3/8" and 1/4"');
   });
 

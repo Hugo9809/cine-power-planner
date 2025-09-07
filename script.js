@@ -8716,7 +8716,7 @@ function generateGearListHtml(info = {}) {
     const frictionArmCount = hasGimbal ? 2 : 1;
     gripItems.push(...Array(frictionArmCount).fill('Manfrotto 244N Friktion Arm'));
     if (hasGimbal) {
-        gripItems.push('Gobo Head');
+        gripItems.push('Avenger D200B Grip Head');
         gripItems.push('spigot with male 3/8" and 1/4"');
     }
     if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
