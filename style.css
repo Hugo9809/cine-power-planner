@@ -1541,6 +1541,11 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   margin-top: 4px;
 }
 
+/* Let project scenarios span the full row for clarity */
+.requirement-box[data-field="requiredScenarios"] {
+  flex: 1 1 100%;
+}
+
 /* Overview dialog */
 #overviewDialog {
   width: 90%;
