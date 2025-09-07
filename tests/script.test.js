@@ -3016,7 +3016,7 @@ describe('script.js functions', () => {
     expect(gaff2Color.parentElement.textContent).toContain('1x Pro Gaff Tape');
     const eyeSel = consumRow.querySelector('#gearListEyeLeatherColor');
     expect(eyeSel).not.toBeNull();
-    expect(eyeSel.value).toBe('rot');
+    expect(eyeSel.value).toBe('red');
     expect(eyeSel.parentElement.textContent).toContain('2x Bluestar eye leather made of microfiber oval, large');
     expect(consumText).toContain('2x Clapper Stick');
   });
@@ -3044,7 +3044,7 @@ describe('script.js functions', () => {
       expect(consumText).toContain('1x Sprigs Red 1/4"');
       expect(consumText).toContain(clapper);
       const eyeSel = consumRow.querySelector('#gearListEyeLeatherColor');
-      expect(eyeSel.value).toBe('rot');
+      expect(eyeSel.value).toBe('red');
       expect(eyeSel.parentElement.textContent).toContain(`${eyeCount}x Bluestar eye leather made of microfiber oval, large`);
     });
   });
