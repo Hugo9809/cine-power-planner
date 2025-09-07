@@ -1628,7 +1628,8 @@ describe('script.js functions', () => {
       expect(html).toContain('<span class="req-value">Handheld, Slider</span>');
       expect(html).not.toContain('Filter: IRND');
       expect(html).toContain('Matte box + filter');
-      expect(html).toContain('1x IRND');
+      expect(html).toContain('4x5.65 IRND Filter 0.3');
+      expect(html).toContain('4x5.65 IRND Filter 1.2');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain(`1x ${cageCamera}`);
@@ -1676,6 +1677,53 @@ describe('script.js functions', () => {
         expect(miscSection).not.toContain('D-Tap to Mini XLR 3-pin Cable 0,3m (1x Focus, 1x Spare)');
       expect(html).not.toContain('HDMI Cable');
     });
+
+  test('custom filter selections override defaults', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'IRND:6x6:0.6|1.8,BPM:4x4:1|1/16,Pol:95mm' });
+    const filterSection = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(filterSection).toContain('6x6 IRND Filter 0.6');
+    expect(filterSection).toContain('6x6 IRND Filter 1.8');
+    expect(filterSection).toContain('4x4 BPM Filter Set 1 + 1/16');
+    expect(filterSection).toContain('95mm Pol Filter');
+  });
+
+  test('diopter filter includes frame and default strengths', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'Diopter' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('ARRI diopter frame');
+    expect(section).toContain('Schneider CF DIOPTER FULL +1/2 GEN2');
+    expect(section).toContain('Schneider CF DIOPTER FULL +1 GEN2');
+    expect(section).toContain('Schneider CF DIOPTER FULL +2 GEN2');
+    expect(section).toContain('Schneider CF DIOPTER FULL +4 GEN2');
+  });
+
+  test('ND Grad filters force swing-away matte box', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'ND Grad HE,ND Grad SE', mattebox: 'ARRI LMB 4x5 Clamp-On (3-Stage)' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('4x5.65 ND Grad HE Filter 0.3 HE Horizontal');
+    expect(section).toContain('4x5.65 ND Grad SE Filter 0.3 SE Horizontal');
+    expect(section).toContain('ARRI LMB 4x5 Pro Set');
+    expect(section).not.toContain('ARRI LMB 4x5 Clamp-On (3-Stage)');
+  });
+
+  test('Rota-Pol frame depends on selected size', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'Rota-Pol:6x6,Rota-Pol:95mm' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('ARRI K2.0017086 Rota Pola Filter Frame');
+    expect(section).toContain('Tilta 95mm Polarizer Filter für Tilta Mirage');
+  });
 
   test('standard rigging accessories are always included', () => {
     const { generateGearListHtml } = script;
