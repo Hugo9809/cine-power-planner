@@ -4247,14 +4247,13 @@ describe('script.js functions', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
 
-    // open with question mark while typing
+    // typing question mark in a field should not open help
     const input = document.createElement('input');
     document.body.appendChild(input);
     input.focus();
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }));
-    expect(helpDialog.hasAttribute('hidden')).toBe(false);
-    expect(input.value).toBe('');
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    const qmEvent = new KeyboardEvent('keydown', { key: '?', bubbles: true, cancelable: true });
+    const qmResult = input.dispatchEvent(qmEvent);
+    expect(qmResult).toBe(true);
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
     document.body.removeChild(input);
 

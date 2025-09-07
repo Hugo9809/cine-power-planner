@@ -9634,7 +9634,7 @@ if (helpButton && helpDialog) {
       e.preventDefault();
       toggleHelp();
     } else if (
-      e.key === '?' ||
+      (e.key === '?' && !isTextField) ||
       (e.key.toLowerCase() === 'h' && !isTextField)
     ) {
       e.preventDefault();
