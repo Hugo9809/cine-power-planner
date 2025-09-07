@@ -1,4 +1,5 @@
 /* global registerDevice */
+(() => {
 const gear = {
   "viewfinders": {
     "ARRI K2.75004.0 MVF-1 Viewfinder": {
@@ -3048,15 +3049,19 @@ const gear = {
 // Expose lenses at the top level for easier access
 gear.lenses = gear.accessories.lenses;
 
-  if (typeof registerDevice === 'function') {
-  registerDevice('viewfinders', gear.viewfinders);
-  registerDevice('directorMonitors', gear.directorMonitors);
-  registerDevice('iosVideo', gear.iosVideo);
-  registerDevice('videoAssist', gear.videoAssist);
-  registerDevice('media', gear.media);
-  registerDevice('lenses', gear.lenses);
-  registerDevice('accessories', gear.accessories);
-  registerDevice('filterOptions', gear.filterOptions);
+const categories = {
+  viewfinders: gear.viewfinders,
+  directorMonitors: gear.directorMonitors,
+  iosVideo: gear.iosVideo,
+  videoAssist: gear.videoAssist,
+  media: gear.media,
+  lenses: gear.lenses,
+  accessories: gear.accessories,
+  filterOptions: gear.filterOptions
+};
+
+if (typeof registerDevice === 'function') {
+  Object.entries(categories).forEach(([name, data]) => registerDevice(name, data));
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = gear;
   }
@@ -3064,12 +3069,12 @@ gear.lenses = gear.accessories.lenses;
   module.exports = gear;
 } else {
   globalThis.devices = globalThis.devices || {};
-  globalThis.devices.viewfinders = gear.viewfinders;
-  globalThis.devices.directorMonitors = gear.directorMonitors;
-  globalThis.devices.iosVideo = gear.iosVideo;
-  globalThis.devices.videoAssist = gear.videoAssist;
-  globalThis.devices.media = gear.media;
-  globalThis.devices.lenses = gear.lenses;
-  globalThis.devices.accessories = Object.assign(globalThis.devices.accessories || {}, gear.accessories);
-  globalThis.devices.filterOptions = gear.filterOptions;
+  Object.entries(categories).forEach(([name, data]) => {
+    if (name === 'accessories') {
+      globalThis.devices.accessories = Object.assign(globalThis.devices.accessories || {}, data);
+    } else {
+      globalThis.devices[name] = data;
+    }
+  });
 }
+})();
