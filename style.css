@@ -648,7 +648,8 @@ button:disabled {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
-  background: var(--surface-color);
+  background: linear-gradient(to bottom, var(--surface-color), var(--panel-bg));
+  border-bottom: 1px solid var(--panel-border);
   box-shadow: var(--panel-shadow);
   z-index: 100;
 }
@@ -684,6 +685,22 @@ button:disabled {
   justify-content: center;
   padding: 0;
   border-radius: 50%;
+}
+
+#topBar button:hover {
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
+  border-color: var(--control-border);
+  box-shadow: none;
+  transform: none;
+}
+
+#topBar button:active {
+  background-color: var(--control-active-bg);
+  color: var(--control-text);
+  border-color: var(--control-border);
+  box-shadow: none;
+  transform: none;
 }
 
 #helpButton {
