@@ -8489,8 +8489,14 @@ function generateGearListHtml(info = {}) {
         if (!lens) return base;
         const attrs = [];
         if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
-        if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm front`);
-        if (lens.tStop) attrs.push(`T${lens.tStop}`);
+        if (lens.clampOn) {
+            if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
+            else attrs.push('clamp-on');
+        } else if (lens.clampOn === false) {
+            attrs.push('no clamp-on');
+        }
+        const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
+        if (minFocus) attrs.push(`${minFocus}m min focus`);
         return attrs.length ? `${base} (${attrs.join(', ')})` : base;
     });
     addRow('Lens', formatItems(lensDisplayNames));
@@ -10128,8 +10134,14 @@ function populateLensDropdown() {
     const lens = lensData[name] || {};
     const attrs = [];
     if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
-    if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm front`);
-    if (lens.tStop) attrs.push(`T${lens.tStop}`);
+    if (lens.clampOn) {
+      if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
+      else attrs.push('clamp-on');
+    } else if (lens.clampOn === false) {
+      attrs.push('no clamp-on');
+    }
+    const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
+    if (minFocus) attrs.push(`${minFocus}m min focus`);
     opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
     lensSelect.appendChild(opt);
   });

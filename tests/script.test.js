@@ -359,7 +359,7 @@ describe('script.js functions', () => {
         }
       },
         lenses: {
-          LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110 },
+          LensA: { brand: 'TestBrand', tStop: 2.0, rodStandard: '15mm', rodLengthCm: 30, needsLensSupport: true, frontDiameterMm: 80, weight_g: 110, clampOn: true, minFocusMeters: 0.35 },
           LensBig: { frontDiameterMm: 110 }
         },
       fiz: {
@@ -519,7 +519,8 @@ describe('script.js functions', () => {
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA', 'LensBig']);
     expect(sel.options[0].textContent).toContain('LensA');
     expect(sel.options[0].textContent).toContain('110g');
-    expect(sel.options[0].textContent).toContain('80mm front');
+    expect(sel.options[0].textContent).toContain('80mm clamp-on');
+    expect(sel.options[0].textContent).toContain('0.35m min focus');
     // Call again to ensure no duplication occurs
     script.populateLensDropdown();
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['LensA', 'LensBig']);
@@ -545,7 +546,8 @@ describe('script.js functions', () => {
     const lensRow = rows[lensIndex + 1];
     expect(lensRow.textContent).toContain('LensA');
     expect(lensRow.textContent).toContain('110g');
-    expect(lensRow.textContent).toContain('80mm front');
+    expect(lensRow.textContent).toContain('80mm clamp-on');
+    expect(lensRow.textContent).toContain('0.35m min focus');
   });
 
   test('selected cage appears in camera support category of gear list', () => {
