@@ -88,7 +88,11 @@ User-submitted battery runtimes are combined using a weighted average to better 
 
 1. Download or clone this repository.
 2. Open `index.html` in a modern browser.
-3. (Optional) Serve the folder over HTTP to enable the service worker and other Progressive Web App features. You can use any static file server, for example:
+3. (Optional) Serve the folder over HTTP to enable the service worker and other Progressive Web App features. Run:
+   ```bash
+   npm start
+   ```
+   or use any static file server, for example:
    ```bash
    npx http-server
    # or

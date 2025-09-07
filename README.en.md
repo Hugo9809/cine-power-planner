@@ -136,7 +136,7 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## ▶️ How to Use
-1. **Launch App:** Open `index.html` in any modern browser – no server required
+1. **Launch App:** Open `index.html` in any modern browser – no server required. For Progressive Web App features, run `npm start` to serve the folder.
 2. **Select Devices:** Choose devices from each category using the dropdowns
 3. **View Calculations:** See total draw, current and runtime when a battery is selected
 4. **Check Output Limits:** Status indicators show if the battery output is exceeded
@@ -174,16 +174,20 @@ Requires Node.js 18 or later.
    ```bash
    npm install
    ```
-2. Lint the code:
+2. Start a local server:
+   ```bash
+   npm start
+   ```
+3. Lint the code:
    ```bash
    npm run lint
    ```
-3. Run tests:
+4. Run tests:
    ```bash
    npm test
    ```
 
-4. Update device data after edits:
+5. Update device data after edits:
    ```bash
    npm run normalize
    npm run check-consistency
