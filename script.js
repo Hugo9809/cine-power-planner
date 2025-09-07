@@ -1893,6 +1893,10 @@ const accessoryBatteryListElem = document.getElementById("accessoryBatteryList")
 const cableListElem = document.getElementById("cableList");
 const cameraSupportListElem = document.getElementById("cameraSupportList");
 const chargerListElem       = document.getElementById("chargerList");
+function getCurrentProjectName() {
+  return (setupSelect && setupSelect.value) ||
+    (setupNameInput && setupNameInput.value.trim()) || '';
+}
 const newCategorySelect  = document.getElementById("newCategory");
 const newSubcategorySelect = document.getElementById("newSubcategory");
 const subcategoryFieldDiv = document.getElementById("subcategoryField");
@@ -6145,6 +6149,9 @@ deleteSetupBtn.addEventListener("click", () => {
     let setups = getSetups();
     delete setups[setupName];
     storeSetups(setups);
+    if (typeof deleteProject === 'function') {
+      deleteProject(setupName);
+    }
     populateSetupSelect();
     setupNameInput.value = ""; // Clear setup name input
     // Reset dropdowns to "None" or first option after deleting current setup
@@ -6227,7 +6234,7 @@ setupSelect.addEventListener("change", (event) => {
       projectRequirementsOutput.classList.add('hidden');
     }
     if (typeof deleteProject === 'function') {
-      deleteProject();
+      deleteProject("");
     }
   } else {
     let setups = getSetups();
@@ -6261,11 +6268,11 @@ setupSelect.addEventListener("change", (event) => {
       bindGearListProGaffTapeListener();
       bindGearListDirectorMonitorListener();
           if (typeof saveProject === 'function') {
-            saveProject({ projectInfo: currentProjectInfo, gearList: setup.gearList });
+            saveProject(setupName, { projectInfo: currentProjectInfo, gearList: setup.gearList });
           }
         } else {
           if (typeof deleteProject === 'function') {
-            deleteProject();
+            deleteProject(setupName);
           }
         }
       }
@@ -7351,8 +7358,7 @@ if (projectForm) {
 }
 
 shareSetupBtn.addEventListener('click', () => {
-  const setupName = (setupNameInput && setupNameInput.value.trim()) ||
-    (setupSelect && setupSelect.value) || '';
+  const setupName = getCurrentProjectName();
   const currentSetup = {
     setupName,
     camera: cameraSelect.value,
@@ -7366,7 +7372,7 @@ shareSetupBtn.addEventListener('click', () => {
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value
   };
-  const project = typeof loadProject === 'function' ? loadProject() : null;
+  const project = typeof loadProject === 'function' ? loadProject(setupName) : null;
   if (project && project.projectInfo) {
     currentSetup.projectInfo = project.projectInfo;
   }
@@ -9107,21 +9113,19 @@ function saveCurrentGearList() {
     const html = getCurrentGearListHtml();
     const info = projectForm ? collectProjectFormData() : {};
     currentProjectInfo = Object.values(info).some(v => v) ? info : null;
-
+    const projectName = getCurrentProjectName();
     if (typeof saveProject === 'function') {
-        saveProject({ projectInfo: currentProjectInfo, gearList: html });
+        saveProject(projectName, { projectInfo: currentProjectInfo, gearList: html });
     }
 
-    const setupName = (setupSelect && setupSelect.value) ||
-        (setupNameInput && setupNameInput.value.trim());
-    if (setupName) {
+    if (projectName) {
         const setups = getSetups();
-        const existing = setups[setupName];
+        const existing = setups[projectName];
         if (html || existing) {
             const setup = existing || {};
             if (html) setup.gearList = html;
             setup.projectInfo = currentProjectInfo;
-            setups[setupName] = setup;
+            setups[projectName] = setup;
             storeSetups(setups);
         }
     }
@@ -9182,9 +9186,9 @@ function deleteCurrentGearList() {
         projectRequirementsOutput.classList.add('hidden');
     }
     if (typeof deleteProject === 'function') {
-        deleteProject();
+        deleteProject(getCurrentProjectName());
     }
-    const setupName = setupSelect && setupSelect.value;
+    const setupName = getCurrentProjectName();
     if (setupName) {
         const setups = getSetups();
         if (setups[setupName]) {
@@ -9444,7 +9448,8 @@ function restoreSessionState() {
     }
   }
   if (gearListOutput || projectRequirementsOutput) {
-    const storedProject = typeof loadProject === 'function' ? loadProject() : null;
+    const projectName = setupSelect ? setupSelect.value : '';
+    const storedProject = typeof loadProject === 'function' ? loadProject(projectName) : null;
     if (storedProject && (storedProject.gearList || storedProject.projectInfo)) {
       if (storedProject.projectInfo) {
         currentProjectInfo = storedProject.projectInfo;
@@ -9463,7 +9468,7 @@ function restoreSessionState() {
         setEasyrigValue(state && state.easyrig);
       }
     } else if (!state && typeof deleteProject === 'function') {
-      deleteProject();
+      deleteProject('');
     }
   }
   restoringSession = false;
@@ -9532,7 +9537,7 @@ function applySharedSetup(shared) {
       applyGearListSelectors(decoded.gearSelectors);
     }
     if (decoded.projectInfo || decoded.gearSelectors || decoded.gearList) {
-      saveProject({ gearList: getCurrentGearListHtml(), projectInfo: decoded.projectInfo || null });
+      saveProject(getCurrentProjectName(), { gearList: getCurrentGearListHtml(), projectInfo: decoded.projectInfo || null });
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);

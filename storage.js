@@ -346,33 +346,73 @@ function normalizeProject(data) {
   return null;
 }
 
-function loadProject() {
+function loadProject(name) {
   const parsed = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     PROJECT_STORAGE_KEY,
     "Error loading project from localStorage:",
+    {},
   );
-  return normalizeProject(parsed);
+  // Legacy single-project format
+  if (Object.prototype.hasOwnProperty.call(parsed || {}, "gearList") ||
+      Object.prototype.hasOwnProperty.call(parsed || {}, "projectInfo") ||
+      Object.prototype.hasOwnProperty.call(parsed || {}, "projectHtml") ||
+      typeof parsed === "string") {
+    const legacy = normalizeProject(parsed);
+    if (name === undefined || name === "") return legacy;
+    return null;
+  }
+  if (!isPlainObject(parsed)) return name === undefined ? {} : null;
+  if (name === undefined) {
+    const all = {};
+    Object.entries(parsed).forEach(([k, v]) => {
+      const norm = normalizeProject(v);
+      if (norm) all[k] = norm;
+    });
+    return all;
+  }
+  return normalizeProject(parsed[name]);
 }
 
-function saveProject(project) {
+function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
+  const all = loadProject();
+  all[name || ""] = normalized;
   saveJSONToStorage(
     SAFE_LOCAL_STORAGE,
     PROJECT_STORAGE_KEY,
-    normalized,
+    all,
     "Error saving project to localStorage:",
     "Project saved to localStorage.",
   );
 }
 
-function deleteProject() {
-  deleteFromStorage(
-    SAFE_LOCAL_STORAGE,
-    PROJECT_STORAGE_KEY,
-    "Error deleting project from localStorage:",
-  );
+function deleteProject(name) {
+  if (name === undefined) {
+    deleteFromStorage(
+      SAFE_LOCAL_STORAGE,
+      PROJECT_STORAGE_KEY,
+      "Error deleting project from localStorage:",
+    );
+    return;
+  }
+  const all = loadProject();
+  delete all[name || ""];
+  if (Object.keys(all).length === 0) {
+    deleteFromStorage(
+      SAFE_LOCAL_STORAGE,
+      PROJECT_STORAGE_KEY,
+      "Error deleting project from localStorage:",
+    );
+  } else {
+    saveJSONToStorage(
+      SAFE_LOCAL_STORAGE,
+      PROJECT_STORAGE_KEY,
+      all,
+      "Error saving project to localStorage:",
+    );
+  }
 }
 
 // --- User Feedback Storage ---
@@ -438,10 +478,12 @@ function importAllData(allData) {
       saveFeedback(allData.feedback);
     }
     if (allData.project) {
-      saveProject(allData.project);
+      Object.entries(allData.project).forEach(([name, proj]) => {
+        saveProject(name, proj);
+      });
     } else if (typeof allData.gearList === "string") {
       // Legacy export format stored just the gear list HTML
-      saveProject({ gearList: allData.gearList });
+      saveProject("", { gearList: allData.gearList });
     }
   }
 }
