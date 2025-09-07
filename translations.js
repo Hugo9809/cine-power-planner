@@ -317,6 +317,7 @@ const texts = {
       "Load a gear list from a JSON file, replacing the current table.",
     deleteGearListBtnHelp:
       "Remove the saved gear list from this project and hide the table.",
+    confirmSaveGearList: "Save gear list?",
     confirmDeleteGearList: "Delete gear list?",
     confirmDeleteGearListAgain: "This will permanently delete the gear list. Are you sure?",
     alertNoSetupsToExport: "There are no saved projects to export.",
@@ -691,6 +692,7 @@ const texts = {
       "Carica un elenco attrezzatura da un file JSON sostituendo la tabella corrente.",
     deleteGearListBtnHelp:
       "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
+    confirmSaveGearList: "Salvare l'elenco attrezzatura?",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
     confirmDeleteGearListAgain: "Questo eliminerà definitivamente l'elenco attrezzatura. Sei sicuro?",
     alertNoSetupsToExport: "Non ci sono configurazioni salvate per l'esportazione.",
@@ -1070,6 +1072,7 @@ const texts = {
       "Carga una lista de equipo desde un archivo JSON reemplazando la tabla actual.",
     deleteGearListBtnHelp:
       "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
+    confirmSaveGearList: "¿Guardar lista de equipo?",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
     confirmDeleteGearListAgain: "Esto eliminará permanentemente la lista de equipo. ¿Estás seguro?",
     alertNoSetupsToExport: "No hay configuraciones para exportar.",
@@ -1451,6 +1454,7 @@ const texts = {
       "Charge une liste du matériel depuis un fichier JSON en remplaçant la table actuelle.",
     deleteGearListBtnHelp:
       "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
+    confirmSaveGearList: "Enregistrer la liste du matériel ?",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
     confirmDeleteGearListAgain: "Cela supprimera définitivement la liste du matériel. Êtes-vous sûr ?",
     alertNoSetupsToExport: "Aucune configuration à exporter.",
@@ -1835,6 +1839,7 @@ const texts = {
       "Lädt eine Gear-Liste aus einer JSON-Datei und ersetzt damit die aktuelle Tabelle.",
     deleteGearListBtnHelp:
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
+    confirmSaveGearList: "Gear-Liste speichern?",
     confirmDeleteGearList: "Gear-Liste löschen?",
     confirmDeleteGearListAgain: "Dies wird die Gear-Liste dauerhaft löschen. Bist du sicher?",
     alertNoSetupsToExport: "Es gibt keine gespeicherten Setups zum Exportieren.",
