@@ -2827,13 +2827,14 @@ function createViewfinderVideoInputRow(value = '') {
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
   removeBtn.addEventListener('click', () => {
-    if (viewfinderVideoInputsContainer.children.length > 1) row.remove();
+    if (viewfinderVideoInputsContainer && viewfinderVideoInputsContainer.children.length > 1) row.remove();
   });
   row.appendChild(removeBtn);
   return row;
 }
 
 function setViewfinderVideoInputs(list) {
+  if (!viewfinderVideoInputsContainer) return;
   viewfinderVideoInputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -2847,6 +2848,7 @@ function setViewfinderVideoInputs(list) {
 }
 
 function getViewfinderVideoInputs() {
+  if (!viewfinderVideoInputsContainer) return [];
   return Array.from(viewfinderVideoInputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
@@ -7718,9 +7720,9 @@ function generatePrintableOverview() {
             ${resultsHtml}
             ${warningHtml}
 
-            ${gearListHtmlWithBreak}
-
             ${diagramSectionHtmlWithBreak}
+
+            ${gearListHtmlWithBreak}
             ${batteryTableHtmlWithBreak}
         </div>
     `;
