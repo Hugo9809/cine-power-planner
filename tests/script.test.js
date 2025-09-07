@@ -4960,7 +4960,9 @@ describe('script.js functions', () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
     const link = navigator.clipboard.writeText.mock.calls[0][0];
     const encoded = new URL(link).searchParams.get('shared');
-    const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
+    const decoded = script.decodeSharedSetup(
+      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
+    );
     expect(decoded.setupName).toBe('My Setup');
   });
 
@@ -4989,20 +4991,26 @@ describe('script.js functions', () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
     const link = navigator.clipboard.writeText.mock.calls[0][0];
     const encoded = new URL(link).searchParams.get('shared');
-    const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
+    const decoded = script.decodeSharedSetup(
+      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
+    );
     expect(decoded.changedDevices.cameras.CamA.powerDrawWatts).toBe(20);
     expect(decoded.feedback[0].runtime).toBe('1h');
   });
 
-  test('shareSetupBtn generates shorter encoded link than base64', () => {
+  test('shareSetupBtn shortens link with compact keys', () => {
     const btn = document.getElementById('shareSetupBtn');
     btn.click();
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
     const link = navigator.clipboard.writeText.mock.calls[0][0];
     const encoded = new URL(link).searchParams.get('shared');
-    const decodedObj = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
-    const base64 = Buffer.from(JSON.stringify(decodedObj)).toString('base64');
-    expect(encoded.length).toBeLessThan(base64.length);
+    const decodedObj = script.decodeSharedSetup(
+      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
+    );
+    const longEncoded = LZString.compressToEncodedURIComponent(
+      JSON.stringify(decodedObj)
+    );
+    expect(encoded.length).toBeLessThan(longEncoded.length);
   });
 
   test('shareSetupBtn includes gear selectors and project info', () => {
@@ -5014,7 +5022,9 @@ describe('script.js functions', () => {
     btn.click();
     const link = navigator.clipboard.writeText.mock.calls[0][0];
     const encoded = new URL(link).searchParams.get('shared');
-    const decoded = JSON.parse(LZString.decompressFromEncodedURIComponent(encoded));
+    const decoded = script.decodeSharedSetup(
+      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
+    );
     expect(decoded.gearList).toBeUndefined();
     expect(decoded.gearSelectors.gearListCage).toBe('CageA');
     expect(decoded.projectInfo.notes).toBe('shoot');
