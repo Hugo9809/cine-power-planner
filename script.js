@@ -8019,7 +8019,8 @@ function expandFilterSelections(filters = []) {
     const parseVals = v => v ? v.split('|').map(s => s.trim()).filter(Boolean) : [];
     filters.forEach(f => {
         if (!f) return;
-        const [type, size = '4x5.65', rawVals = ''] = f.split(':').map(s => s.trim());
+        const [type, rawSize = '4x5.65', rawVals = ''] = f.split(':').map(s => s.trim());
+        const size = rawSize.replace(',', '.');
         const values = parseVals(rawVals);
         switch (type) {
             case 'Clear':

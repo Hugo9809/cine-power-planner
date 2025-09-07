@@ -1690,6 +1690,33 @@ describe('script.js functions', () => {
     expect(filterSection).toContain('95mm Pol Filter');
   });
 
+  test('clear filter uses default size', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'Clear' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('4x5.65 Clear Filter');
+  });
+
+  test('pol filter uses default size', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'Pol' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('4x5.65 Pol Filter');
+  });
+
+  test('default filter set includes 1/2, 1/4 and 1/8', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const html = generateGearListHtml({ filter: 'BPM' });
+    const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
+    expect(section).toContain('4x5.65 BPM Filter Set 1/2 + 1/4 + 1/8');
+  });
+
   test('diopter filter includes frame and default strengths', () => {
     setupDom(false);
     require('../translations.js');
