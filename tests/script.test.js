@@ -158,6 +158,21 @@ test('Easyrig stabiliser data exposes attachments', () => {
   ]);
 });
 
+test('default FIZ devices remain when stored data lacks them', () => {
+  setupDom(false);
+  const defaultMotors = Object.keys(devices.fiz.motors);
+  // Stored data missing FIZ entries
+  global.loadDeviceData = jest.fn(() => ({
+    cameras: {},
+    monitors: {},
+    video: {},
+    batteries: {},
+    fiz: { motors: {}, controllers: {}, distance: {} }
+  }));
+  require('../script.js');
+  expect(Object.keys(devices.fiz.motors)).toEqual(defaultMotors);
+});
+
 test('filter options include diopter', () => {
   const gear = require('../devices/gearList.js');
   expect(gear.filterOptions).toContain('Diopter');

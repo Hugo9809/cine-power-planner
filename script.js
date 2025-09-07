@@ -546,7 +546,25 @@ if (window.defaultDevices === undefined) {
 // Load any saved device data from localStorage
 let storedDevices = loadDeviceData();
 if (storedDevices) {
-  devices = storedDevices;
+  // Merge stored devices with the defaults so that categories missing
+  // from saved data (e.g. FIZ) fall back to the built-in definitions.
+  const merged = JSON.parse(JSON.stringify(window.defaultDevices));
+  for (const [key, value] of Object.entries(storedDevices)) {
+    if (key === 'fiz' && value && typeof value === 'object') {
+      merged.fiz = merged.fiz || {};
+      for (const [sub, subVal] of Object.entries(value)) {
+        merged.fiz[sub] = {
+          ...(merged.fiz[sub] || {}),
+          ...(subVal || {}),
+        };
+      }
+    } else if (merged[key] && typeof merged[key] === 'object') {
+      merged[key] = { ...merged[key], ...(value || {}) };
+    } else {
+      merged[key] = value;
+    }
+  }
+  devices = merged;
 }
 unifyDevices(devices);
 
