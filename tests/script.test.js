@@ -824,6 +824,31 @@ describe('script.js functions', () => {
     expect(document.getElementById('editProjectBtn')).toBeNull();
   });
 
+  test('creating gear list after deletion clears project requirements', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    script.updateCalculations();
+    document.getElementById('projectName').value = 'Proj';
+    const codecSel = document.getElementById('codec');
+    codecSel.innerHTML = '<option value="ProRes">ProRes</option>';
+    codecSel.value = 'ProRes';
+    const html = script.generateGearListHtml(script.collectProjectFormData());
+    script.displayGearAndRequirements(html);
+    script.ensureGearListActions();
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+    document.getElementById('deleteGearListBtn').click();
+    confirmSpy.mockRestore();
+    expect(document.getElementById('projectName').value).toBe('');
+    expect(codecSel.value).toBe('');
+    const html2 = script.generateGearListHtml(script.collectProjectFormData());
+    expect(html2).not.toContain('Project Requirements');
+  });
+
   test('suggests chargers based on total batteries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);

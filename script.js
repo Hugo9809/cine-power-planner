@@ -9300,6 +9300,25 @@ function deleteCurrentGearList() {
         projectRequirementsOutput.innerHTML = '';
         projectRequirementsOutput.classList.add('hidden');
     }
+    currentProjectInfo = null;
+    if (projectForm) populateProjectForm({});
+    storeSession({
+        setupName: setupNameInput ? setupNameInput.value : '',
+        setupSelect: setupSelect ? setupSelect.value : '',
+        camera: cameraSelect ? cameraSelect.value : '',
+        monitor: monitorSelect ? monitorSelect.value : '',
+        video: videoSelect ? videoSelect.value : '',
+        cage: cageSelect ? cageSelect.value : '',
+        motors: motorSelects.map(sel => sel ? sel.value : ''),
+        controllers: controllerSelects.map(sel => sel ? sel.value : ''),
+        distance: distanceSelect ? distanceSelect.value : '',
+        batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
+        battery: batterySelect ? batterySelect.value : '',
+        batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
+        sliderBowl: getSliderBowlValue(),
+        easyrig: getEasyrigValue(),
+        projectInfo: null
+    });
     if (typeof deleteProject === 'function') {
         deleteProject(getCurrentProjectName());
     }
