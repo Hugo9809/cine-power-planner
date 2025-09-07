@@ -1185,6 +1185,10 @@ function setLanguage(lang) {
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
   if (offlineElem) offlineElem.textContent = texts[lang].offlineIndicator;
+  const impressumElem = document.getElementById("impressumLink");
+  if (impressumElem) impressumElem.textContent = texts[lang].impressum;
+  const privacyElem = document.getElementById("privacyLink");
+  if (privacyElem) privacyElem.textContent = texts[lang].privacy;
   // Section headings with descriptive hover help
   const setupManageHeadingElem = document.getElementById("setupManageHeading");
   setupManageHeadingElem.textContent = texts[lang].setupManageHeading;

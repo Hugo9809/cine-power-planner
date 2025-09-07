@@ -3,6 +3,8 @@ const CACHE_NAME = 'camera-power-planner-v12';
 const ASSETS = [
   './',
   './index.html',
+  './impressum.html',
+  './datenschutz.html',
   './style.css',
   './overview.css',
   './overview-print.css',
