@@ -46,7 +46,23 @@ function buildSchema(node) {
   return typeof node;
 }
 
-const schema = buildSchema(devices);
-fs.writeFileSync('schema.json', JSON.stringify(schema, null, 2));
-console.log('schema.json generated');
-
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(
+      'Usage: node generateSchema.js [--help]\n' +
+        '\nGenerates schema.json from data.js.\n' +
+        '\nExamples:\n' +
+        '  node generateSchema.js\n' +
+        '  node generateSchema.js --help\n' +
+        '\nOptions:\n' +
+        '  -h, --help  Show this help message and exit.'
+    );
+    process.exit(0);
+  }
+  const schema = buildSchema(devices);
+  fs.writeFileSync('schema.json', JSON.stringify(schema, null, 2));
+  console.log('schema.json generated');
+} else {
+  module.exports = { buildSchema, isDeviceObject, isDeviceMap };
+}
