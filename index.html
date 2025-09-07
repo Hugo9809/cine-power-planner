@@ -40,7 +40,7 @@
       </select>
       <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
       <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode" aria-pressed="false">🐴</button>
-      <button id="helpButton" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">?</button>
+      <button id="helpButton" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">?</button>
       <button id="reloadButton" title="Force reload" aria-label="Force reload">🔄</button>
     </nav>
   </header>
@@ -902,9 +902,9 @@
     </div>
   </div>
 
-  <dialog id="projectDialog">
+  <dialog id="projectDialog" aria-labelledby="projectDialogHeading">
     <form id="projectForm" method="dialog">
-      <h3>Project Requirements</h3>
+      <h3 id="projectDialogHeading">Project Requirements</h3>
       <div class="form-row">
         <label for="projectName">Project Name:</label>
         <input type="text" id="projectName" name="projectName" />
@@ -1180,9 +1180,9 @@
     </form>
   </dialog>
 
-  <dialog id="feedbackDialog">
+  <dialog id="feedbackDialog" aria-labelledby="feedbackDialogHeading">
     <form id="feedbackForm" method="dialog">
-      <h3>User Runtime Feedback</h3>
+      <h3 id="feedbackDialogHeading">User Runtime Feedback</h3>
 
       <fieldset>
         <legend>📋 Basic Info</legend>
