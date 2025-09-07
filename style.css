@@ -1053,7 +1053,7 @@ button:disabled {
   stroke-width: 2px;
 }
 
-#setupDiagram path.edge-path {
+#setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) {
   stroke: var(--control-text);
   stroke-width: 2px;
   fill: none;
@@ -1291,7 +1291,7 @@ body.dark-mode.pink-mode {
 .dark-mode #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
 .dark-mode #setupDiagram text { fill: var(--inverse-text-color); }
 .dark-mode #setupDiagram line { stroke: var(--inverse-text-color); }
-.dark-mode #setupDiagram path.edge-path { stroke: var(--inverse-text-color); }
+.dark-mode #setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) { stroke: var(--inverse-text-color); }
 .dark-mode #setupDiagram marker polygon { fill: var(--inverse-text-color); }
 .dark-mode #setupDiagram .diagram-placeholder { color: #bbb; }
 .dark-mode .help-content {
@@ -1362,7 +1362,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   body:not(.light-mode) #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
   body:not(.light-mode) #setupDiagram text { fill: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram line { stroke: var(--inverse-text-color); }
-  body:not(.light-mode) #setupDiagram path.edge-path { stroke: var(--inverse-text-color); }
+  body:not(.light-mode) #setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) { stroke: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram marker polygon { fill: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram .diagram-placeholder { color: #bbb; }
   body:not(.light-mode) #diagramArea.grid-snap {
