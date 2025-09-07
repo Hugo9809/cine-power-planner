@@ -690,7 +690,7 @@ describe('script.js functions', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][0];
     const expectedKeys = [
-      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
@@ -2002,30 +2002,20 @@ describe('script.js functions', () => {
     expect(html).toContain('6x BattA');
   });
 
-  test('gear list adds hotswap plate only in battery section', () => {
+  test('gear list does not include hotswap plate by default', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
       sel.innerHTML = `<option value="${value}">${value}</option>`;
       sel.value = value;
     };
-    // V-Mount battery
     addOpt('batterySelect', 'BattA');
     let html = generateGearListHtml();
-    let csSection = html.slice(html.indexOf('Camera Support'), html.indexOf('Lens Support'));
-    let battSection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
-    expect(csSection).not.toContain('Hotswap Plate');
-    expect(csSection).not.toContain('data-gear-name="V-Mount"');
-    expect(battSection).toContain('1x Hotswap Plate V-Mount');
-    // B-Mount battery
+    expect(html).not.toContain('Hotswap Plate');
     devices.batteries.BattB = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'B-Mount' };
     addOpt('batterySelect', 'BattB');
     html = generateGearListHtml();
-    csSection = html.slice(html.indexOf('Camera Support'), html.indexOf('Lens Support'));
-    battSection = html.slice(html.indexOf('Camera Batteries'), html.indexOf('Monitoring Batteries'));
-    expect(csSection).not.toContain('Hotswap Plate');
-    expect(csSection).not.toContain('data-gear-name="B-Mount"');
-    expect(battSection).toContain('1x Hotswap Plate B-Mount');
+    expect(html).not.toContain('Hotswap Plate');
   });
 
   test('gear list includes selected hotswap device', () => {

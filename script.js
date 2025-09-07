@@ -8238,10 +8238,6 @@ function generateGearListHtml(info = {}) {
         if (!count || isNaN(count)) count = 1;
         const safeBatt = escapeHtml(addArriKNumber(selectedNames.battery));
         batteryItems = `${count}x ${safeBatt}`;
-        const mount = devices.batteries?.[batterySelect && batterySelect.value]?.mount_type;
-        if (mount === 'V-Mount' || mount === 'B-Mount') {
-            batteryItems += `<br>1x Hotswap Plate ${mount}`;
-        }
         const swapName = hotswapSelect && hotswapSelect.value && hotswapSelect.value !== 'None' ? getText(hotswapSelect) : '';
         if (swapName) {
             batteryItems += `<br>1x ${escapeHtml(swapName)}`;
