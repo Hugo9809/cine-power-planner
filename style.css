@@ -19,7 +19,7 @@
   --page-padding: 20px;
   --gap-size: 10px;
   --link-color: var(--accent-color);
-  --diagram-node-fill: #e8f0fe;
+  --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
   --fiz-color: #090;
@@ -1251,7 +1251,7 @@ html.dark-mode,
   --panel-border: #333;
   --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   --link-color: #7ec8ff;
-  --diagram-node-fill: #333;
+  --diagram-node-fill: #444;
   --power-color: #ff6666;
   --video-color: #7ec8ff;
   --fiz-color: #6f6;
@@ -1338,7 +1338,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     --panel-border: #333;
     --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     --link-color: #7ec8ff;
-    --diagram-node-fill: #333;
+    --diagram-node-fill: #444;
     --power-color: #ff6666;
     --video-color: #7ec8ff;
     --fiz-color: #6f6;

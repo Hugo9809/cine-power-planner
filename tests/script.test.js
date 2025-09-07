@@ -4811,7 +4811,7 @@ describe('script.js functions', () => {
     script.renderSetupDiagram();
     const svg = script.exportDiagramSvg();
     expect(svg).not.toContain('prefers-color-scheme: dark');
-    expect(svg).toContain('.node-box{fill:#e8f0fe');
+    expect(svg).toContain('.node-box{fill:#f0f0f0');
   });
 
   test('shareSetupBtn encodes setup name in link', () => {
