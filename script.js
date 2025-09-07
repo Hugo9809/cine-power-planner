@@ -1813,6 +1813,8 @@ const addDeviceForm = wattFieldDiv.parentNode;
 function placeWattField(category, data) {
   const isVideoLike =
     category === "video" ||
+    category === "wirelessReceivers" ||
+    category === "iosVideo" ||
     (data && (data.videoInputs || data.videoOutputs || data.frequency));
   if (isVideoLike) {
     videoFieldsDiv.insertBefore(wattFieldDiv, videoFieldsDiv.firstChild);
@@ -6031,7 +6033,7 @@ function inferDeviceCategory(key, data) {
   if (key === "cameras" || data.recordingMedia || data.lensMount || data.power?.batteryPlateSupport) return "cameras";
   if (key === "monitors" || (data.screenSizeInches !== undefined && !key.includes("viewfinder"))) return "monitors";
   if (key === "viewfinders" || key.includes("viewfinder")) return "viewfinders";
-  if (key === "video" || data.videoInputs || data.videoOutputs || data.frequency !== undefined) return "video";
+  if (key === "video" || key === "wirelessReceivers" || key === "iosVideo" || data.videoInputs || data.videoOutputs || data.frequency !== undefined) return "video";
   if (key === "fiz.motors" || data.torqueNm !== undefined || data.gearTypes) return "fiz.motors";
   if (key === "fiz.controllers" || data.power_source || data.battery_type || data.connectivity) return "fiz.controllers";
   if (key === "fiz.distance" || data.measurement_method || data.connection_compatibility || data.measurement_range || data.accuracy) return "fiz.distance";
@@ -6277,7 +6279,7 @@ newCategorySelect.addEventListener("change", () => {
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
-  } else if (val === "video") {
+  } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
     wattFieldDiv.style.display = "block";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
@@ -6541,7 +6543,7 @@ addDeviceBtn.addEventListener("click", () => {
       wirelessTx: viewfinderWirelessTxInput.checked,
       latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
-  } else if (category === "video") {
+  } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
