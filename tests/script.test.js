@@ -1,6 +1,10 @@
 /* global texts devices */
 const fs = require('fs');
 const path = require('path');
+const { TextEncoder: UtilTextEncoder, TextDecoder: UtilTextDecoder } = require('util');
+global.TextEncoder = global.TextEncoder || UtilTextEncoder;
+global.TextDecoder = global.TextDecoder || UtilTextDecoder;
+const { JSDOM } = require('jsdom');
 const LZString = require('lz-string');
 const cagesData = require('../devices/cages.js');
 let cageCamera = '';
@@ -28,10 +32,21 @@ function setupDom(removeGear) {
   jest.resetModules();
   global.alert = jest.fn();
   global.prompt = jest.fn();
-  Object.assign(navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
+
   const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
   const body = html.split('<body>')[1].split('</body>')[0];
-  document.body.innerHTML = body;
+
+  const dom = new JSDOM(`<!doctype html><html><head></head><body>${body}</body></html>`);
+  global.window = dom.window;
+  global.document = dom.window.document;
+  global.navigator = dom.window.navigator;
+  Object.assign(global.navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
+  for (const key of Object.getOwnPropertyNames(dom.window)) {
+    if (!(key in global)) {
+      global[key] = dom.window[key];
+    }
+  }
+
   if (removeGear) {
     const gearEl = document.getElementById('gearListOutput');
     if (gearEl) gearEl.remove();
