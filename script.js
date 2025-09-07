@@ -5087,6 +5087,16 @@ function renderSetupDiagram() {
   const controllerIds = controllers.map((_, idx) => `controller${idx}`);
   const motorIds = motors.map((_, idx) => `motor${idx}`);
 
+  // Precompute maps for fast lookup instead of repeated indexOf calls
+  const controllerNameMap = new Map();
+  controllerIds.forEach((id, idx) => {
+    controllerNameMap.set(id, inlineControllers[idx] || controllers[idx]);
+  });
+  const motorNameMap = new Map();
+  motorIds.forEach((id, idx) => {
+    motorNameMap.set(id, motors[idx]);
+  });
+
   const hasMainCtrl = controllers.some(n => controllerPriority(n) === 0);
   let useMotorFirst = (!hasMainCtrl && hasInternalMotor) ||
     (!controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0);
@@ -5269,11 +5279,9 @@ function renderSetupDiagram() {
     }
     let firstName = null;
     if (first.startsWith('controller')) {
-      const idx = controllerIds.indexOf(first);
-      firstName = inlineControllers[idx] || controllers[idx];
+      firstName = controllerNameMap.get(first);
     } else if (first.startsWith('motor')) {
-      const idx = motorIds.indexOf(first);
-      firstName = motors[idx];
+      firstName = motorNameMap.get(first);
     }
     const port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
     const camPort = cameraFizPort(camName, port, firstName);
@@ -5287,10 +5295,10 @@ function renderSetupDiagram() {
     const a = chain[i];
     const b = chain[i + 1];
     let fromName = null, toName = null;
-    if (a.startsWith('controller')) fromName = inlineControllers[controllerIds.indexOf(a)] || controllers[controllerIds.indexOf(a)];
-    else if (a.startsWith('motor')) fromName = motors[motorIds.indexOf(a)];
-    if (b.startsWith('controller')) toName = inlineControllers[controllerIds.indexOf(b)] || controllers[controllerIds.indexOf(b)];
-    else if (b.startsWith('motor')) toName = motors[motorIds.indexOf(b)];
+    if (a.startsWith('controller')) fromName = controllerNameMap.get(a);
+    else if (a.startsWith('motor')) fromName = motorNameMap.get(a);
+    if (b.startsWith('controller')) toName = controllerNameMap.get(b);
+    else if (b.startsWith('motor')) toName = motorNameMap.get(b);
     pushEdge({ from: a, to: b, label: formatConnLabel(fizPort(fromName), fizPort(toName)), noArrow: true }, 'fiz');
   }
 
