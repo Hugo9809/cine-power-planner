@@ -112,6 +112,11 @@ script.js        # Lógica de la aplicación
 data.js          # Base de datos por defecto
 storage.js       # Utilidades de LocalStorage
 README.*.md      # Documentación en distintos idiomas
+checkConsistency.js  # verifica que los datos de los dispositivos tengan todos los campos
+normalizeData.js     # limpia las entradas y unifica los conectores
+generateSchema.js    # genera schema.json a partir de los datos
+unifyPorts.js        # unifica nombres de puertos heredados
+tests/               # suite de pruebas de Jest
 ```
 Las fuentes se cargan desde Google Fonts en `index.html`.
 Una vez almacenadas las fuentes en caché, la aplicación puede usarse totalmente sin conexión.
@@ -130,6 +135,14 @@ Se requiere Node.js 18 o posterior.
    ```bash
    npm test
    ```
+   El comando también ejecuta el lint y las comprobaciones de consistencia.
+
+4. Tras modificar los datos de los dispositivos, limpiar y verificar la base de datos:
+   ```bash
+   npm run normalize
+   npm run check-consistency
+   ```
+   `npm run normalize` limpia las entradas y unifica los nombres de conectores. `npm run check-consistency` comprueba que todos los campos obligatorios estén presentes. Ambos comandos aceptan `--help` para más opciones.
 
 ## 🤝 Contribuir
 ¡Las contribuciones son bienvenidas! Abre un issue o envía un pull request en GitHub.

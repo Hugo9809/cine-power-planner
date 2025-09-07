@@ -111,6 +111,11 @@ script.js        # Logica dell'applicazione
 data.js          # Elenco dispositivi predefinito
 storage.js       # Funzioni di LocalStorage
 README.*.md      # Documentazione in diverse lingue
+checkConsistency.js  # verifica che ogni dispositivo abbia i campi obbligatori
+normalizeData.js     # pulisce le voci e uniforma i connettori
+generateSchema.js    # genera schema.json dai dati
+unifyPorts.js        # uniforma i nomi dei connettori obsoleti
+tests/               # suite di test Jest
 ```
 I font vengono caricati tramite Google Fonts in `index.html`.
 Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'applicazione funziona interamente offline.
@@ -129,6 +134,14 @@ Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'appli
    ```bash
    npm test
    ```
+   Il comando esegue anche il lint e le verifiche di consistenza.
+
+4. Dopo aver modificato i dati dei dispositivi, pulire e verificare il database:
+   ```bash
+   npm run normalize
+   npm run check-consistency
+   ```
+   `npm run normalize` pulisce le voci e uniforma i nomi dei connettori. `npm run check-consistency` garantisce che tutti i campi obbligatori siano presenti. Entrambi i comandi accettano `--help` per ulteriori dettagli.
 
 ## 🤝 Contribuire
 Sono benvenuti i contributi! Apri una issue o invia una pull request su GitHub.

@@ -112,6 +112,11 @@ script.js        # Logik & Interaktion
 data.js          # Standard-Datenbank
 storage.js       # Hilfsfunktionen für LocalStorage
 README.*.md      # Dokumentation in verschiedenen Sprachen
+checkConsistency.js  # prüft Pflichtfelder in den Gerätedaten
+normalizeData.js     # bereinigt Einträge und vereinheitlicht Anschlüsse
+generateSchema.js    # erzeugt schema.json aus den Daten
+unifyPorts.js        # vereinheitlicht ältere Anschlussbezeichnungen
+tests/               # Jest-Test-Suite
 ```
 Schriftarten werden über Google Fonts in `index.html` geladen.
 Nach dem ersten Laden mit Internetverbindung kann die Anwendung komplett offline genutzt werden.
@@ -130,6 +135,14 @@ Erfordert Node.js 18 oder neuer.
    ```bash
    npm test
    ```
+   Der Befehl führt auch Linting und Konsistenzprüfungen aus.
+
+4. Nach Änderungen an den Gerätedaten bereinigen und prüfen:
+   ```bash
+   npm run normalize
+   npm run check-consistency
+   ```
+   `npm run normalize` bereinigt Einträge und vereinheitlicht Anschlussnamen. `npm run check-consistency` stellt sicher, dass alle Pflichtfelder vorhanden sind. Beide Befehle unterstützen `--help` für weitere Infos.
 
 ## 🤝 Mitwirken
 Beiträge sind willkommen! Öffne gerne ein Issue oder sende einen Pull Request auf GitHub.

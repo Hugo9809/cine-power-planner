@@ -164,6 +164,11 @@ script.js        # Application logic
 data.js          # Default device list
 storage.js       # LocalStorage helpers
 README.*.md      # Documentation in different languages
+checkConsistency.js  # Verifies required fields in device data
+normalizeData.js     # Cleans entries and unifies connector names
+generateSchema.js    # Rebuilds schema.json from data.js
+unifyPorts.js        # Harmonizes legacy port names
+tests/               # Jest test suite
 ```
 Fonts are loaded via Google Fonts links in `index.html`.
 After the fonts are cached on first load, the application works entirely offline.
@@ -182,13 +187,14 @@ Requires Node.js 18 or later.
    ```bash
    npm test
    ```
+   The `npm test` command also runs the linter and data consistency checks.
 
 4. Update device data after edits:
    ```bash
    npm run normalize
    npm run check-consistency
    ```
-   Append `--help` to either command for usage details.
+   `npm run normalize` tidies device entries and unifies connector names. `npm run check-consistency` ensures all required fields are present. Append `--help` to either command for usage details.
 
 ## 🤝 Contributing
 Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
