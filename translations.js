@@ -6,6 +6,8 @@ const texts = {
     tagline: "Plan your film rig and calculate power consumption & battery life.",
     skipToContent: "Skip to content",
     offlineIndicator: "Offline",
+    impressum: "Imprint",
+    privacy: "Privacy Policy",
 
     setupManageHeading: "Manage Project",
     deviceSelectionHeading: "Device Selection",
@@ -399,6 +401,8 @@ const texts = {
     tagline: "Pianifica la tua configurazione cinematografica e calcola il consumo energetico e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Offline",
+    impressum: "Note legali",
+    privacy: "Informativa sulla privacy",
     setupManageHeading: "Gestisci la configurazione",
     deviceSelectionHeading: "Selezione del dispositivo",
     overviewDeviceSelectionHeading: "Dispositivi della Configurazione della Camera",
@@ -764,6 +768,8 @@ const texts = {
     tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
+    impressum: "Aviso legal",
+    privacy: "Política de privacidad",
 
     setupManageHeading: "Gestionar Configuración",
     deviceSelectionHeading: "Selección de Dispositivos",
@@ -1144,6 +1150,8 @@ const texts = {
     tagline: "Planifiez votre équipement de tournage et calculez la consommation énergétique et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
+    impressum: "Mentions légales",
+    privacy: "Politique de confidentialité",
 
     setupManageHeading: "Gérer la Configuration",
     deviceSelectionHeading: "Sélection des Appareils",
@@ -1526,6 +1534,8 @@ const texts = {
     tagline: "Plane dein Film-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",
+    impressum: "Impressum",
+    privacy: "Datenschutz",
 
     setupManageHeading: "Setup verwalten",
     deviceSelectionHeading: "Geräte-Auswahl",

@@ -5,6 +5,10 @@ describe('service worker configuration', () => {
     expect(ASSETS).toEqual(expect.arrayContaining(['./overview.css', './overview-print.css']));
   });
 
+  test('caches legal pages for offline usage', () => {
+    expect(ASSETS).toEqual(expect.arrayContaining(['./impressum.html', './datenschutz.html']));
+  });
+
   test('exposes a cache name', () => {
     expect(typeof CACHE_NAME).toBe('string');
     expect(CACHE_NAME).not.toBe('');

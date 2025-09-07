@@ -204,6 +204,16 @@ a:focus {
   text-decoration: underline;
 }
 
+footer {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 0.9em;
+}
+
+footer a {
+  margin: 0 0.5em;
+}
+
 /* Form layout */
 .form-row {
   display: flex;
