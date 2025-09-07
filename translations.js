@@ -672,7 +672,7 @@ const texts = {
       "Esporta, importa o condividi le configurazioni.",
     exportSetupsBtn: "Esporta tutte le configurazioni",
     importSetupsBtn: "Importa configurazioni",
-    generateOverviewBtn: "Generare panoramica",
+    generateOverviewBtn: "Genera panoramica",
     generateGearListBtn: "Genera elenco attrezzatura e requisiti del progetto",
     editProjectBtn: "Modifica requisiti del progetto",
     saveGearListBtn: "Salva elenco attrezzatura",
