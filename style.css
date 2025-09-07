@@ -1,5 +1,6 @@
 /* General styles */
 :root {
+  color-scheme: light dark;
   --accent-color: #001589;
   --background-color: #f9f9f9;
   --surface-color: #ffffff;
@@ -687,20 +688,11 @@ button:disabled {
   border-radius: 50%;
 }
 
-#topBar button:hover {
-  background-color: var(--control-hover-bg);
-  color: var(--control-text);
-  border-color: var(--control-border);
-  box-shadow: none;
-  transform: none;
-}
-
+#topBar button:hover,
 #topBar button:active {
-  background-color: var(--control-active-bg);
-  color: var(--control-text);
-  border-color: var(--control-border);
-  box-shadow: none;
-  transform: none;
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
 }
 
 #helpButton {
@@ -1212,6 +1204,7 @@ body.pink-mode #userFeedbackTable th {
 
 html.dark-mode,
 .dark-mode {
+  color-scheme: dark light;
   --background-color: #1c1c1e;
   --surface-color: #1c1c1e;
   --text-color: #f0f0f0;
