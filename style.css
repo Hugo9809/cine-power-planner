@@ -1096,10 +1096,12 @@ button:disabled {
   stroke-width: 2px;
 }
 
-#setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) {
-  stroke: var(--control-text);
+#setupDiagram path.edge-path {
   stroke-width: 2px;
   fill: none;
+}
+#setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) {
+  stroke: var(--control-text);
 }
 #setupDiagram path.power {
   stroke: var(--power-color);
