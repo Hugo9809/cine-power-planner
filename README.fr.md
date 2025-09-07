@@ -102,6 +102,15 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 5. **Enregistrer et charger des configurations :** nommer et exporter/importer les configurations et générer un aperçu imprimable
 6. **Gérer la liste des appareils :** « Éditer les données… » ouvre l'éditeur pour modifier ou réinitialiser
 
+## 📡 Utilisation hors ligne et stockage des données
+
+Servie via HTTP(S), l'application installe un service worker qui met en cache
+tous les fichiers afin que Cine List fonctionne hors ligne et se mette à jour en
+arrière-plan. Les projets, rapports d'autonomie et préférences (langue, thème,
+mode rose et listes enregistrées) sont stockés dans le `localStorage` du
+navigateur. Effacer les données du site dans le navigateur supprime toutes les
+informations sauvegardées.
+
 ---
 
 ## 🗂️ Arborescence

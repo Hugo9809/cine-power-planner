@@ -131,6 +131,15 @@ access:
 3. Launch the app from your applications list. The installed version works
    offline and updates automatically.
 
+## Offline Use and Data Storage
+
+When served over HTTP(S), Cine List installs a service worker that caches all
+files so the planner runs entirely offline and pulls updates in the
+background. Projects, runtime submissions and preferences (language, theme,
+pink mode and saved gear lists) are stored locally via `localStorage` in your
+browser. Clearing the site's data in your browser removes all saved
+information.
+
 ## Browser Support
 
 Cine List relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.

@@ -101,6 +101,15 @@ Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata p
 5. **Salva e carica le configurazioni:** dai un nome alla configurazione, salvala, esportala/importala e genera una panoramica stampabile
 6. **Gestisci la lista dei dispositivi:** clicca su “Modifica dati dispositivi…” per aprire l'editor, modificare i dispositivi o ripristinare i valori predefiniti
 
+## 📡 Uso offline e conservazione dei dati
+
+Quando viene servita via HTTP(S), l'app installa un service worker che memorizza
+in cache tutti i file affinché Cine List funzioni senza connessione e si
+aggiorni in background. I progetti, i report di autonomia e le preferenze
+(lingua, tema, modalità rosa e liste salvate) vengono salvati nel `localStorage`
+del browser. Cancellando i dati del sito nel browser si rimuovono tutte le
+informazioni memorizzate.
+
 ---
 
 ## 🗂️ Struttura dei file
