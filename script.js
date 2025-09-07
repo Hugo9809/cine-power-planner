@@ -29,6 +29,13 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 }
 
+/**
+ * Initialize the offline status indicator.
+ *
+ * Looks for an element with the id `offlineIndicator` and toggles its
+ * visibility based on the browser's online state. If the element is not
+ * found, the function quietly does nothing.
+ */
 function setupOfflineIndicator() {
   const offlineIndicator = document.getElementById('offlineIndicator');
   const updateOnlineStatus = () => {
@@ -44,11 +51,17 @@ if (typeof window !== 'undefined') {
   setupOfflineIndicator();
 }
 
-// Simple HTML escaping helper available early for bootstrap code
-// Avoid referencing `document` at load time to prevent ReferenceErrors in
-// environments where it exists as an uninitialised `let` binding (observed in Safari).
-// Lazily obtain a <div> only when the helper is first called, using `globalThis.document`
-// which safely returns `undefined` when no DOM is present.
+/**
+ * Escape a string for safe insertion into HTML.
+ *
+ * The helper delays touching the DOM until first use to avoid
+ * ReferenceErrors in environments where `document` is defined as an
+ * uninitialised `let` binding (e.g. Safari). When no DOM is present the
+ * original string is returned unchanged.
+ *
+ * @param {string} str - Text that may contain HTML characters.
+ * @returns {string} The escaped string.
+ */
 let escapeDiv;
 function escapeHtml(str) {
   if (!escapeDiv && typeof globalThis !== 'undefined' && globalThis.document) {
@@ -99,6 +112,12 @@ function storeSession(state) {
   }
 }
 
+/**
+ * Open a dialog element, falling back to setting the `open` attribute when
+ * the `showModal` method is unavailable.
+ *
+ * @param {HTMLDialogElement} dialog - The dialog to open.
+ */
 function openDialog(dialog) {
   if (!dialog) return;
   if (typeof dialog.showModal === 'function') {
@@ -108,6 +127,12 @@ function openDialog(dialog) {
   }
 }
 
+/**
+ * Close a dialog element, removing the `open` attribute if the `close`
+ * method is not supported.
+ *
+ * @param {HTMLDialogElement} dialog - The dialog to close.
+ */
 function closeDialog(dialog) {
   if (!dialog) return;
   if (typeof dialog.close === 'function') {
@@ -117,6 +142,18 @@ function closeDialog(dialog) {
   }
 }
 
+/**
+ * Memoize a normalisation function for repeated lookups.
+ *
+ * The provided function receives both the original trimmed string and a
+ * lowercase key. Results are cached to avoid recomputing normalisations for
+ * the same input.
+ *
+ * @param {(value: string, key: string) => string} fn - Function that performs
+ *   normalisation.
+ * @returns {(value: string) => string} Wrapped function with memoisation and
+ *   empty-string fallback for falsy inputs.
+ */
 function memoizeNormalization(fn) {
   const cache = new Map();
   return value => {
