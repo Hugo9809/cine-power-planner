@@ -1,12 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+const { getHtmlBody } = require('./domUtils');
 
 let utils;
 
 beforeAll(() => {
-  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-  const body = html.split('<body>')[1].split('</body>')[0];
-  document.body.innerHTML = body;
+  document.body.innerHTML = getHtmlBody();
 
   global.devices = {
     cameras: {},
