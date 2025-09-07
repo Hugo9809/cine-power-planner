@@ -18,6 +18,11 @@
   --border-radius: 5px;
   --page-padding: 20px;
   --link-color: var(--accent-color);
+  --diagram-node-fill: #e8f0fe;
+  --power-color: #d33;
+  --video-color: #369;
+  --fiz-color: #090;
+  --selected-row-bg: #e6f7ff;
 }
 @media (max-width: 600px) {
   :root {
@@ -821,9 +826,9 @@ button:disabled {
   margin-right: 4px;
   display: inline-block;
 }
-#diagramLegend .power { background: #d33; }
-#diagramLegend .video { background: #369; }
-#diagramLegend .fiz { background: #090; }
+#diagramLegend .power { background: var(--power-color); }
+#diagramLegend .video { background: var(--video-color); }
+#diagramLegend .fiz { background: var(--fiz-color); }
 
 #powerDiagramLegend {
   margin-top: 0.25em;
@@ -882,7 +887,7 @@ button:disabled {
   position: absolute;
   pointer-events: none;
   background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #333;
+  border: 1px solid var(--control-text);
   font-size: 12px;
   padding: 6px 10px;
   border-radius: 6px;
@@ -1014,7 +1019,7 @@ button:disabled {
 }
 
 #setupDiagram .node-box {
-  fill: #e8f0fe;
+  fill: var(--diagram-node-fill);
   stroke: none;
 }
 #setupDiagram .node-box.first-fiz {
@@ -1031,12 +1036,12 @@ button:disabled {
   font-size: 20px;
 }
 #setupDiagram .conn {
-  stroke: #333;
+  stroke: var(--control-text);
   stroke-width: 1px;
 }
-#setupDiagram .conn.red { fill: #d33; }
-#setupDiagram .conn.blue { fill: #369; }
-#setupDiagram .conn.green { fill: #090; }
+#setupDiagram .conn.red { fill: var(--power-color); }
+#setupDiagram .conn.blue { fill: var(--video-color); }
+#setupDiagram .conn.green { fill: var(--fiz-color); }
 
 #setupDiagram .edge-label {
   font-size: 10px;
@@ -1044,23 +1049,23 @@ button:disabled {
 }
 
 #setupDiagram line {
-  stroke: #333;
+  stroke: var(--control-text);
   stroke-width: 2px;
 }
 
 #setupDiagram path.edge-path {
-  stroke: #333;
+  stroke: var(--control-text);
   stroke-width: 2px;
   fill: none;
 }
 #setupDiagram path.power {
-  stroke: #d33;
+  stroke: var(--power-color);
 }
 #setupDiagram path.video {
-  stroke: #369;
+  stroke: var(--video-color);
 }
 #setupDiagram path.fiz {
-  stroke: #090;
+  stroke: var(--fiz-color);
 }
 
 #setupDiagram .diagram-placeholder {
@@ -1203,7 +1208,7 @@ body.pink-mode #userFeedbackTable th {
 }
 
 .selectedBatteryRow {
-    background-color: #e6f7ff; /* Light blue background for selected row */
+    background-color: var(--selected-row-bg); /* Light blue background for selected row */
     font-weight: bold;
 }
 
@@ -1223,6 +1228,11 @@ html.dark-mode,
   --panel-border: #333;
   --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   --link-color: #7ec8ff;
+  --diagram-node-fill: #333;
+  --power-color: #ff6666;
+  --video-color: #7ec8ff;
+  --fiz-color: #6f6;
+  --selected-row-bg: #003366;
 }
 
 html.dark-mode,
@@ -1262,7 +1272,6 @@ body.dark-mode.pink-mode {
 .dark-mode legend { color: var(--inverse-text-color); }
 .dark-mode #batteryComparison th { background-color: #333; }
 .dark-mode .barContainer { background-color: #333; }
-.dark-mode .selectedBatteryRow { background-color: #003366; }
 .dark-mode .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
 .dark-mode #diagramHint { color: #ccc; }
 .dark-mode .diagram-popup {
@@ -1279,21 +1288,10 @@ body.dark-mode.pink-mode {
 .dark-mode .video-conn { background-color: rgba(33, 150, 243, 0.3); }
 .dark-mode .neutral-conn { background-color: rgba(158, 158, 158, 0.3); }
 .dark-mode .tray-box { background-color: rgba(255,255,255,0.1); }
-.dark-mode #setupDiagram .node-box { fill: #333; stroke: none; }
-.dark-mode #setupDiagram .node-box.first-fiz { stroke: none; }
 .dark-mode #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
 .dark-mode #setupDiagram text { fill: var(--inverse-text-color); }
 .dark-mode #setupDiagram line { stroke: var(--inverse-text-color); }
 .dark-mode #setupDiagram path.edge-path { stroke: var(--inverse-text-color); }
-.dark-mode #setupDiagram path.power { stroke: #ff6666; }
-.dark-mode #setupDiagram path.video { stroke: #7ec8ff; }
-.dark-mode #setupDiagram path.fiz { stroke: #6f6; }
-.dark-mode #setupDiagram .conn.red { fill: #ff6666; }
-.dark-mode #setupDiagram .conn.blue { fill: #7ec8ff; }
-.dark-mode #setupDiagram .conn.green { fill: #6f6; }
-.dark-mode #diagramLegend .power { background: #ff6666; }
-.dark-mode #diagramLegend .video { background: #7ec8ff; }
-.dark-mode #diagramLegend .fiz { background: #6f6; }
 .dark-mode #setupDiagram marker polygon { fill: var(--inverse-text-color); }
 .dark-mode #setupDiagram .diagram-placeholder { color: #bbb; }
 .dark-mode .help-content {
@@ -1313,6 +1311,15 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     --control-hover-bg: #444;
     --control-active-bg: #555;
     --control-disabled-bg: #555;
+    --panel-bg: #1c1c1e;
+    --panel-border: #333;
+    --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    --link-color: #7ec8ff;
+    --diagram-node-fill: #333;
+    --power-color: #ff6666;
+    --video-color: #7ec8ff;
+    --fiz-color: #6f6;
+    --selected-row-bg: #003366;
     background-color: var(--background-color);
     color: var(--text-color);
   }
@@ -1336,7 +1343,6 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   body:not(.light-mode) legend { color: var(--inverse-text-color); }
   body:not(.light-mode) #batteryComparison th { background-color: #333; }
   body:not(.light-mode) .barContainer { background-color: #333; }
-  body:not(.light-mode) .selectedBatteryRow { background-color: #003366; }
   body:not(.light-mode) .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
   body:not(.light-mode) #diagramHint { color: #ccc; }
   body:not(.light-mode) .diagram-popup {
@@ -1353,21 +1359,10 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   body:not(.light-mode) .video-conn { background-color: rgba(33, 150, 243, 0.3); }
   body:not(.light-mode) .neutral-conn { background-color: rgba(158, 158, 158, 0.3); }
   body:not(.light-mode) .tray-box { background-color: rgba(255,255,255,0.1); }
-  body:not(.light-mode) #setupDiagram .node-box { fill: #333; stroke: none; }
-  body:not(.light-mode) #setupDiagram .node-box.first-fiz { stroke: none; }
   body:not(.light-mode) #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
   body:not(.light-mode) #setupDiagram text { fill: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram line { stroke: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram path.edge-path { stroke: var(--inverse-text-color); }
-  body:not(.light-mode) #setupDiagram path.power { stroke: #ff6666; }
-  body:not(.light-mode) #setupDiagram path.video { stroke: #7ec8ff; }
-  body:not(.light-mode) #setupDiagram path.fiz { stroke: #6f6; }
-  body:not(.light-mode) #setupDiagram .conn.red { fill: #ff6666; }
-  body:not(.light-mode) #setupDiagram .conn.blue { fill: #7ec8ff; }
-  body:not(.light-mode) #setupDiagram .conn.green { fill: #6f6; }
-  body:not(.light-mode) #diagramLegend .power { background: #ff6666; }
-  body:not(.light-mode) #diagramLegend .video { background: #7ec8ff; }
-  body:not(.light-mode) #diagramLegend .fiz { background: #6f6; }
   body:not(.light-mode) #setupDiagram marker polygon { fill: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram .diagram-placeholder { color: #bbb; }
   body:not(.light-mode) #diagramArea.grid-snap {
