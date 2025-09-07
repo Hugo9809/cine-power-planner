@@ -6203,7 +6203,7 @@ setupSelect.addEventListener("change", (event) => {
       bindGearListSliderBowlListener();
       bindGearListEyeLeatherListener();
       bindGearListProGaffTapeListener();
-      bindGearListDirectorsMonitorListener();
+      bindGearListDirectorMonitorListener();
           if (typeof saveProject === 'function') {
             saveProject({ projectInfo: currentProjectInfo, gearList: setup.gearList });
           }
@@ -7288,7 +7288,7 @@ if (projectForm) {
         bindGearListSliderBowlListener();
         bindGearListEyeLeatherListener();
         bindGearListProGaffTapeListener();
-        bindGearListDirectorsMonitorListener();
+        bindGearListDirectorMonitorListener();
         saveCurrentGearList();
         closeDialog(projectDialog);
     });
@@ -8252,13 +8252,13 @@ function generateGearListHtml(info = {}) {
         : [];
     const handheldPrefs = videoDistPrefs
         .map(p => {
-            const m = p.match(/^(Directors|Gaffers|DoP) Monitor (?:(\d+)" )?handheld$/);
+            const m = p.match(/^(Director|Gaffer|DoP) Monitor (?:(\d+)" )?handheld$/);
             return m ? { role: m[1], size: m[2] ? parseFloat(m[2]) : undefined } : null;
         })
         .filter(Boolean);
     const largeMonitorPrefs = videoDistPrefs
         .map(p => {
-            const m = p.match(/^(Directors|Combo|DoP) Monitor 15-21"$/);
+            const m = p.match(/^(Director|Combo|DoP) Monitor 15-21"$/);
             return m ? { role: m[1] } : null;
         })
         .filter(Boolean);
@@ -9097,7 +9097,7 @@ function getCurrentGearListHtml() {
         if (editBtn) editBtn.remove();
         const t = clone.querySelector('h2');
         if (t) t.remove();
-        ['Directors', 'Dop', 'Gaffers', 'Focus'].forEach(role => {
+        ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(role => {
             const sel = clone.querySelector(`#gearList${role}Monitor`);
             if (sel) {
                 const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor`);
@@ -9247,7 +9247,7 @@ function handleImportGearList(e) {
             bindGearListSliderBowlListener();
             bindGearListEyeLeatherListener();
             bindGearListProGaffTapeListener();
-            bindGearListDirectorsMonitorListener();
+            bindGearListDirectorMonitorListener();
             saveCurrentGearList();
             }
         } catch {
@@ -9397,9 +9397,9 @@ function bindGearListProGaffTapeListener() {
     });
 }
 
-function bindGearListDirectorsMonitorListener() {
+function bindGearListDirectorMonitorListener() {
     if (!gearListOutput) return;
-    ['Directors', 'Dop', 'Gaffers', 'Focus'].forEach(role => {
+    ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(role => {
         const sel = gearListOutput.querySelector(`#gearList${role}Monitor`);
         if (sel) {
             sel.addEventListener('change', () => {
@@ -9439,7 +9439,7 @@ function refreshGearListIfVisible() {
     bindGearListSliderBowlListener();
     bindGearListEyeLeatherListener();
     bindGearListProGaffTapeListener();
-    bindGearListDirectorsMonitorListener();
+    bindGearListDirectorMonitorListener();
     saveCurrentGearList();
 }
 
@@ -9544,7 +9544,7 @@ function restoreSessionState() {
         bindGearListSliderBowlListener();
         bindGearListEyeLeatherListener();
         bindGearListProGaffTapeListener();
-        bindGearListDirectorsMonitorListener();
+        bindGearListDirectorMonitorListener();
         setSliderBowlValue(state && state.sliderBowl);
         setEasyrigValue(state && state.easyrig);
       }
@@ -9600,7 +9600,7 @@ function applySharedSetup(shared) {
       bindGearListEasyrigListener();
       bindGearListSliderBowlListener();
       bindGearListProGaffTapeListener();
-      bindGearListDirectorsMonitorListener();
+      bindGearListDirectorMonitorListener();
     }
     if (decoded.gearList || decoded.projectInfo) {
       saveProject({ gearList: decoded.gearList || '', projectInfo: decoded.projectInfo || null });
