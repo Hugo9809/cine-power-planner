@@ -1914,6 +1914,9 @@ describe('script.js functions', () => {
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Directors 15-21")');
     expect(gripSection).toContain('Avenger C590 Conka Bonka Stativ-Verlängerungen Set (1x Directors 15-21")');
     expect(gripSection).toContain('Impact Baby to Junior Receiver Adapter (1x Directors 15-21")');
+    expect(gripSection).toContain(
+      'Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x Directors 15-21")'
+    );
   });
 
   test('Combo 15-21" monitor adds dropdown and accessories', () => {
@@ -1930,6 +1933,7 @@ describe('script.js functions', () => {
     expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Combo 15-21", 2x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x Combo 15-21")');
+    expect(gripSection).toContain('Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x Combo 15-21")');
   });
 
   test('DoP 15-21" monitor adds dropdown and accessories', () => {
@@ -1946,6 +1950,7 @@ describe('script.js functions', () => {
     expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x DoP 15-21", 2x Spare)');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain('Matthews Monitor Stand II (249562) (1x DoP 15-21")');
+    expect(gripSection).toContain('Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x DoP 15-21")');
   });
 
   test('multiple 15-21" monitors add Manfrotto clamps to grip', () => {
@@ -1956,6 +1961,9 @@ describe('script.js functions', () => {
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
     expect(gripSection).toContain(
       '3x Manfrotto 635 Quick-Action Super Clamp (1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21")'
+    );
+    expect(gripSection).toContain(
+      '3x Matthews BIG F\'ING Monitor Wheel Set (3 pieces) (1x Directors 15-21", 1x Combo 15-21", 1x DoP 15-21")'
     );
   });
 
