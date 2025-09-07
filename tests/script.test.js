@@ -5013,6 +5013,124 @@ describe('monitor wireless metadata', () => {
     expect(document.getElementById('videoFrequency').value).toBe('5GHz');
   });
 
+  test('editing battery updates its fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'batteries';
+    catSelect.dispatchEvent(new Event('change'));
+    document.getElementById('newName').value = 'BattA';
+    document.getElementById('newCapacity').value = '120';
+    document.getElementById('newPinA').value = '8';
+    document.getElementById('newDtapA').value = '2';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'BattA';
+    addDeviceBtn.click();
+
+    expect(devices.batteries.BattA).toEqual({ capacity: 120, pinA: 8, dtapA: 2 });
+  });
+
+  test('editing camera updates power fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'cameras';
+    catSelect.dispatchEvent(new Event('change'));
+    document.getElementById('newName').value = 'CamA';
+    document.getElementById('cameraWatt').value = '15';
+    document.getElementById('cameraVoltage').value = '11-17V';
+    document.getElementById('cameraPortType').value = 'LEMO 2-pin';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'CamA';
+    addDeviceBtn.click();
+
+    expect(devices.cameras.CamA.powerDrawWatts).toBe(15);
+    expect(devices.cameras.CamA.power.input.voltageRange).toBe('11-17V');
+  });
+
+  test('editing FIZ motor updates its fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'fiz.motors';
+    catSelect.dispatchEvent(new Event('change'));
+    document.getElementById('newName').value = 'MotorA';
+    document.getElementById('newWatt').value = '4';
+    document.getElementById('motorConnector').value = 'NewCon';
+    document.getElementById('motorInternal').checked = true;
+    document.getElementById('motorTorque').value = '1.5';
+    document.getElementById('motorGearTypes').value = '0.8';
+    document.getElementById('motorNotes').value = 'Updated';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'MotorA';
+    addDeviceBtn.click();
+
+    expect(devices.fiz.motors.MotorA).toEqual({
+      powerDrawWatts: 4,
+      fizConnector: 'NewCon',
+      internalController: true,
+      torqueNm: 1.5,
+      gearTypes: ['0.8'],
+      notes: 'Updated'
+    });
+  });
+
+  test('editing FIZ controller updates its fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'fiz.controllers';
+    catSelect.dispatchEvent(new Event('change'));
+    document.getElementById('newName').value = 'ControllerA';
+    document.getElementById('newWatt').value = '3';
+    document.getElementById('controllerConnector').value = 'Bus';
+    document.getElementById('controllerPower').value = 'battery';
+    document.getElementById('controllerBattery').value = 'NP-F';
+    document.getElementById('controllerConnectivity').value = 'Bluetooth';
+    document.getElementById('controllerNotes').value = 'Updated';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'ControllerA';
+    addDeviceBtn.click();
+
+    expect(devices.fiz.controllers.ControllerA).toEqual({
+      powerDrawWatts: 3,
+      fizConnector: 'Bus',
+      powerSource: 'battery',
+      batteryType: 'NP-F',
+      connectivity: 'Bluetooth',
+      notes: 'Updated'
+    });
+  });
+
+  test('editing FIZ distance device updates its fields', () => {
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    const catSelect = document.getElementById('newCategory');
+    catSelect.value = 'fiz.distance';
+    catSelect.dispatchEvent(new Event('change'));
+    document.getElementById('newName').value = 'DistA';
+    document.getElementById('newWatt').value = '2';
+    document.getElementById('distanceConnection').value = 'Serial';
+    document.getElementById('distanceMethod').value = 'Lidar';
+    document.getElementById('distanceRange').value = '10m';
+    document.getElementById('distanceAccuracy').value = '1cm';
+    document.getElementById('distanceOutput').value = 'OLED';
+    document.getElementById('distanceNotes').value = 'Updated';
+
+    addDeviceBtn.dataset.mode = 'edit';
+    addDeviceBtn.dataset.originalName = 'DistA';
+    addDeviceBtn.click();
+
+    expect(devices.fiz.distance.DistA).toEqual({
+      powerDrawWatts: 2,
+      connectionCompatibility: 'Serial',
+      measurementMethod: 'Lidar',
+      measurementRange: '10m',
+      accuracy: '1cm',
+      outputDisplay: 'OLED',
+      notes: 'Updated'
+    });
+  });
+
   test('runtime feedback dialog pre-fills resolution and codec', () => {
     const cam = devices.cameras.CamA;
     cam.resolutions = ['1920x1080'];
