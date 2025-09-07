@@ -1731,6 +1731,7 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ filter: 'BPM' });
     const dom = new JSDOM(html);
     const valSel = dom.window.document.getElementById('filter-values-BPM');
+    expect(valSel.multiple).toBe(true);
     const vals = [...valSel.selectedOptions].map(o => o.value);
     expect(vals).toEqual(expect.arrayContaining(['1/2', '1/4', '1/8']));
   });
@@ -1744,6 +1745,7 @@ describe('script.js functions', () => {
     const frame = dom.window.document.querySelector('[data-gear-name="ARRI diopter frame"]');
     expect(frame).not.toBeNull();
     const valSel = dom.window.document.getElementById('filter-values-Diopter');
+    expect(valSel.multiple).toBe(true);
     const vals = [...valSel.selectedOptions].map(o => o.value);
     expect(vals).toEqual(expect.arrayContaining(['+1/2', '+1', '+2', '+4']));
   });

@@ -10478,7 +10478,10 @@ function createFilterSizeSelect(type, selected = '4x5.65') {
 function createFilterValueSelect(type, selected = []) {
   const sel = document.createElement('select');
   sel.id = `filter-values-${filterId(type)}`;
+  // Allow selecting multiple strengths for a given filter
+  // Use both the property and attribute to ensure HTML serialization
   sel.multiple = true;
+  sel.setAttribute('multiple', '');
   const { opts, defaults } = getFilterValueConfig(type);
   const selectedVals = selected.length ? selected : defaults;
   opts.forEach(o => {
