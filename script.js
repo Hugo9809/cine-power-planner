@@ -9228,7 +9228,14 @@ function exportCurrentGearList() {
     const blob = new Blob([JSON.stringify({ projectInfo: proj, gearList: html })], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'gear-list.json';
+
+    const pad = n => String(n).padStart(2, '0');
+    const now = new Date();
+    const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const namePart = (getCurrentProjectName() || 'gear-list')
+        .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
+    a.download = `${datePart}_${namePart}_gear-list.json`;
+
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -9253,6 +9260,11 @@ function handleImportGearList(e) {
             bindGearListEyeLeatherListener();
             bindGearListProGaffTapeListener();
             bindGearListDirectorMonitorListener();
+            if (setupNameInput) {
+                const base = file.name.replace(/\.json$/i, '');
+                setupNameInput.value = base;
+                setupNameInput.dispatchEvent(new Event('input'));
+            }
             saveCurrentGearList();
             }
         } catch {
@@ -9851,13 +9863,19 @@ if (downloadDiagramBtn) {
     if (!source) return;
 
     navigator.clipboard.writeText(source).catch(() => {});
+    const pad = n => String(n).padStart(2, '0');
+    const now = new Date();
+    const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const namePart = (getCurrentProjectName() || 'setup')
+        .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
+    const baseName = `${datePart}_${namePart}_diagram`;
 
     const saveSvg = () => {
       const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'setup-diagram.svg';
+      a.download = `${baseName}.svg`;
       a.click();
       URL.revokeObjectURL(url);
     };
@@ -9874,7 +9892,7 @@ if (downloadDiagramBtn) {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'setup-diagram.jpg';
+          a.download = `${baseName}.jpg`;
           a.click();
           URL.revokeObjectURL(url);
         }, 'image/jpeg', 0.95);

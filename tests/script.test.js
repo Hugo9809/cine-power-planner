@@ -5501,6 +5501,119 @@ describe('monitor wireless metadata', () => {
     saveSpy.mockRestore();
   });
 
+  test('export gear list file name includes timestamp and project name', () => {
+    setupDom();
+    require('../translations.js');
+    jest.useFakeTimers().setSystemTime(new Date('2024-01-02T03:04:00Z'));
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const html = script.generateGearListHtml({ projectName: 'Proj' });
+    script.displayGearAndRequirements(html);
+    document.getElementById('setupName').value = 'Test Proj';
+    script.ensureGearListActions();
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
+    global.URL.revokeObjectURL = jest.fn();
+    const origCreate = document.createElement.bind(document);
+    let anchor;
+    document.createElement = (tag) => {
+      const el = origCreate(tag);
+      if (tag === 'a') {
+        anchor = el;
+        el.click = jest.fn();
+      }
+      return el;
+    };
+    document.getElementById('exportGearListBtn').click();
+    expect(anchor.download).toBe('2024-01-02_03-04_Test-Proj_gear-list.json');
+    document.createElement = origCreate;
+    jest.useRealTimers();
+  });
+
+  test('import gear list sets setup name from file name', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const html = script.generateGearListHtml({ projectName: 'Proj' });
+    script.displayGearAndRequirements(html);
+    script.ensureGearListActions();
+    const data = JSON.stringify({ projectInfo: { projectName: 'Proj' }, gearList: '<table></table>' });
+    const RealFileReader = global.FileReader;
+    global.FileReader = class { constructor(){ this.onload = null; } readAsText(){ this.onload({ target: { result: data } }); } };
+    const file = { name: '2024-01-02_03-04_Proj_gear-list.json' };
+    const input = document.getElementById('importGearListInput');
+    Object.defineProperty(input, 'files', { value: [file], configurable: true });
+    jest.spyOn(script, 'saveCurrentGearList').mockImplementation(() => {});
+    input.dispatchEvent(new window.Event('change'));
+    expect(document.getElementById('setupName').value).toBe('2024-01-02_03-04_Proj_gear-list');
+    global.FileReader = RealFileReader;
+  });
+
+  test('download diagram SVG file name includes timestamp and project name', () => {
+    setupDom();
+    require('../translations.js');
+    jest.useFakeTimers().setSystemTime(new Date('2024-01-02T03:04:00Z'));
+    const script = require('../script.js');
+    script.setLanguage('en');
+    document.getElementById('setupName').value = 'Test Proj';
+    const area = document.getElementById('diagramArea');
+    area.innerHTML = '<svg></svg>';
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
+    global.URL.revokeObjectURL = jest.fn();
+    const origCreate = document.createElement.bind(document);
+    let anchor;
+    document.createElement = (tag) => {
+      const el = origCreate(tag);
+      if (tag === 'a') {
+        anchor = el;
+        el.click = jest.fn();
+      }
+      return el;
+    };
+    document.getElementById('downloadDiagram').click();
+    expect(anchor.download).toBe('2024-01-02_03-04_Test-Proj_diagram.svg');
+    document.createElement = origCreate;
+    jest.useRealTimers();
+  });
+
+  test('download diagram JPG file name includes timestamp and project name', () => {
+    setupDom();
+    require('../translations.js');
+    jest.useFakeTimers().setSystemTime(new Date('2024-01-02T03:04:00Z'));
+    const script = require('../script.js');
+    script.setLanguage('en');
+    document.getElementById('setupName').value = 'Test Proj';
+    const area = document.getElementById('diagramArea');
+    area.innerHTML = '<svg></svg>';
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
+    global.URL.revokeObjectURL = jest.fn();
+    const origCreate = document.createElement.bind(document);
+    let anchor;
+    document.createElement = (tag) => {
+      const el = origCreate(tag);
+      if (tag === 'a') {
+        anchor = el;
+        el.click = jest.fn();
+      }
+      if (tag === 'canvas') {
+        el.getContext = () => ({ drawImage: jest.fn() });
+        el.toBlob = cb => cb(new Blob(['']));
+      }
+      return el;
+    };
+    const OrigImage = global.Image;
+    global.Image = class {
+      set onload(fn) { this._onload = fn; }
+      set src(val) { if (this._onload) this._onload(); }
+    };
+    const btn = document.getElementById('downloadDiagram');
+    btn.dispatchEvent(new window.MouseEvent('click', { shiftKey: true }));
+    expect(anchor.download).toBe('2024-01-02_03-04_Test-Proj_diagram.jpg');
+    document.createElement = origCreate;
+    global.Image = OrigImage;
+    jest.useRealTimers();
+  });
+
   test('detail toggle responds to keyboard events', () => {
     const detailToggle = document.querySelector('#device-manager .detail-toggle');
     const details = detailToggle.closest('li').querySelector('.device-details');
