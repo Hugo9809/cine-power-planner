@@ -10478,11 +10478,13 @@ function getFilterValueConfig(type) {
   }
 }
 
-function createFilterSizeSelect(type, selected = '4x5.65') {
+const DEFAULT_FILTER_SIZE = '4x5.65';
+
+function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE) {
   const sel = document.createElement('select');
   sel.id = `filter-size-${filterId(type)}`;
-  let sizes = ['4x4', '4x5.65', '6x6', '95mm'];
-  if (type === 'Rota-Pol') sizes = ['4x5.65', '6x6', '95mm'];
+  let sizes = [DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
+  if (type === 'Rota-Pol') sizes = [DEFAULT_FILTER_SIZE, '6x6', '95mm'];
   sizes.forEach(s => {
     const o = document.createElement('option');
     o.value = s;
@@ -10528,7 +10530,7 @@ function collectFilterSelections() {
   const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
   const tokens = selected.map(type => {
     const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
-    const size = sizeSel ? sizeSel.value : '4x5.65';
+    const size = sizeSel ? sizeSel.value : DEFAULT_FILTER_SIZE;
     const valSel = document.getElementById(`filter-values-${filterId(type)}`);
     let vals = valSel ? Array.from(valSel.selectedOptions).map(o => o.value) : [];
     if (!valSel || vals.length === 0) {
@@ -10542,14 +10544,14 @@ function collectFilterSelections() {
 function parseFilterTokens(str) {
   if (!str) return [];
   return str.split(',').map(s => {
-    const [type, size = '4x5.65', vals = ''] = s.split(':').map(p => p.trim());
+    const [type, size = DEFAULT_FILTER_SIZE, vals = ''] = s.split(':').map(p => p.trim());
     return { type, size, values: vals ? vals.split('|').map(v => v.trim()) : [] };
   }).filter(t => t.type);
 }
 
 function buildFilterSelectHtml(filters = []) {
   const parts = [];
-  filters.forEach(({ type, size = '4x5.65', values = [] }) => {
+  filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values = [] }) => {
     switch (type) {
       case 'Diopter': {
         const valSel = createFilterValueSelect(type, values);
@@ -10719,5 +10721,6 @@ if (typeof module !== "undefined" && module.exports) {
     renderFilterDetails,
     collectFilterSelections,
     parseFilterTokens,
+    DEFAULT_FILTER_SIZE,
   };
 }
