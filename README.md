@@ -40,6 +40,8 @@ language on first load, and you can switch languages in the top right corner:
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
+Contributions for additional languages are welcome. To add a translation, include a `README.<lang>.md` file and the necessary translation strings in your pull request.
+
 ## Recent Updates
 
 - **Persistent diagram popups on touch** – tapping a node on touch devices keeps its popup visible until another node is selected.
