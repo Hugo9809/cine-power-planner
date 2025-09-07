@@ -28,19 +28,33 @@ if (!cageCamera) {
   cageNames = [firstName];
 }
 
+let dom;
+
 function setupDom(removeGear) {
   jest.resetModules();
+
+  // Close any previously created JSDOM instance to avoid leaking resources
+  // across tests.
+  if (dom) {
+    dom.window.close();
+  }
+
   global.alert = jest.fn();
   global.prompt = jest.fn();
 
   const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
   const body = html.split('<body>')[1].split('</body>')[0];
 
-  const dom = new JSDOM(`<!doctype html><html><head></head><body>${body}</body></html>`);
+  dom = new JSDOM(`<!doctype html><html><head></head><body>${body}</body></html>`);
   global.window = dom.window;
   global.document = dom.window.document;
   global.navigator = dom.window.navigator;
   Object.assign(global.navigator, { clipboard: { writeText: jest.fn().mockResolvedValue() } });
+  global.localStorage = {
+    getItem: jest.fn(() => null),
+    setItem: jest.fn(),
+    removeItem: jest.fn()
+  };
   for (const key of Object.getOwnPropertyNames(dom.window)) {
     if (!(key in global)) {
       global[key] = dom.window[key];
@@ -52,6 +66,7 @@ function setupDom(removeGear) {
     if (gearEl) gearEl.remove();
   }
   document.head.innerHTML = '<meta name="theme-color" content="#ffffff">';
+
   global.devices = {
     cameras: {
       CamA: {
