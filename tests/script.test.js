@@ -5178,6 +5178,21 @@ describe('monitor wireless metadata', () => {
     expect(item.getAttribute('data-help')).toContain('Power: 10 W');
   });
 
+  test('gear list selects expose descriptive hover help', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const cameraSelect = document.getElementById('cameraSelect');
+    cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
+    cameraSelect.value = 'CamA';
+    const html = script.generateGearListHtml();
+    script.displayGearAndRequirements(html);
+    const sel = document.getElementById('gearListCage');
+    expect(sel).not.toBeNull();
+    expect(sel.getAttribute('data-help')).toContain('CageOne');
+  });
+
   test('project requirements boxes expose descriptive hover help', () => {
     setupDom();
     require('../translations.js');
@@ -5187,6 +5202,19 @@ describe('monitor wireless metadata', () => {
     script.displayGearAndRequirements(html);
     const box = document.querySelector('.requirement-box');
     expect(box.getAttribute('data-help')).toContain('Codec: ProRes');
+  });
+
+  test('project requirements children expose descriptive hover help', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const html = script.generateGearListHtml({ codec: 'ProRes' });
+    script.displayGearAndRequirements(html);
+    const label = document.querySelector('.requirement-box .req-label');
+    const value = document.querySelector('.requirement-box .req-value');
+    expect(label.getAttribute('data-help')).toContain('Codec: ProRes');
+    expect(value.getAttribute('data-help')).toContain('Codec: ProRes');
   });
 
   test('gear list action buttons expose descriptive hover help', () => {

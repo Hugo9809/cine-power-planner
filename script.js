@@ -2209,6 +2209,10 @@ function displayGearAndRequirements(html) {
         const desc = logic ? `${baseDesc} – ${logic}` : baseDesc;
         box.setAttribute('title', desc);
         box.setAttribute('data-help', desc);
+        box.querySelectorAll('.req-label, .req-value').forEach(el => {
+          el.setAttribute('title', desc);
+          el.setAttribute('data-help', desc);
+        });
       });
     } else {
       projectRequirementsOutput.innerHTML = '';
@@ -2249,6 +2253,30 @@ function displayGearAndRequirements(html) {
       const desc = parts.join(' – ');
       span.setAttribute('title', desc);
       span.setAttribute('data-help', desc);
+      span.querySelectorAll('select').forEach(sel => {
+        sel.setAttribute('title', desc);
+        sel.setAttribute('data-help', desc);
+      });
+    });
+    // Standalone selects (not wrapped in .gear-item) still need descriptive help
+    gearListOutput.querySelectorAll('select').forEach(sel => {
+      if (sel.getAttribute('data-help')) return;
+      const selected = sel.selectedOptions && sel.selectedOptions[0];
+      const name = selected ? selected.textContent.trim() : sel.value;
+      const { info, category } = findDevice(name);
+      const parts = [];
+      parts.push(`1x ${name}`.trim());
+      if (category) parts.push(`Category: ${category}`);
+      if (info) {
+        let summary = generateConnectorSummary(info);
+        summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+        if (info.notes)
+          summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
+        if (summary) parts.push(summary);
+      }
+      const desc = parts.join(' – ');
+      sel.setAttribute('title', desc);
+      sel.setAttribute('data-help', desc);
     });
   }
   updateGearListButtonVisibility();
