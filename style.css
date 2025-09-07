@@ -17,6 +17,7 @@
   --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   --border-radius: 5px;
   --page-padding: 20px;
+  --gap-size: 10px;
   --link-color: var(--accent-color);
   --diagram-node-fill: #e8f0fe;
   --power-color: #d33;
@@ -32,6 +33,10 @@
 body.pink-mode {
   --accent-color: #ff69b4;
   --link-color: #ff69b4;
+}
+
+html {
+  font-size: clamp(14px, 1vw + 12px, 18px);
 }
 
 html,
@@ -53,7 +58,7 @@ body {
   margin: 0;
   background-color: var(--background-color);
   color: var(--text-color);
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 
 main {
@@ -206,6 +211,7 @@ a:focus {
   display: flex;
   align-items: center;
   margin: 5px 0;
+  gap: var(--gap-size);
   flex-wrap: wrap; /* allow inputs to wrap on smaller screens */
 }
 .form-row label {
@@ -216,7 +222,6 @@ a:focus {
 .form-row select,
 .form-row input {
   flex: 1;
-  margin: 5px 5px 0 0;
   min-width: 0; /* allow shrinking inside flex container */
 }
 
@@ -228,11 +233,10 @@ a:focus {
   .form-row label {
     flex: 1 0 100%;
     min-width: unset;
-    margin-bottom: 5px;
   }
   .form-row select,
   .form-row input {
-    margin: 5px 0 0 0;
+    margin: 0;
   }
 }
 
@@ -249,10 +253,10 @@ a:focus {
 /* Align add/remove buttons in form rows with input fields */
 .form-row > button {
   align-self: flex-end;
-  margin: 5px 0 0 0;
+  margin-top: 5px;
 }
 .form-row > button + button {
-  margin-left: 5px;
+  margin-left: 0;
 }
 
 /* Small wrapper to show labels even when a value is present */
