@@ -8746,7 +8746,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Tango Beam');
     }
     if (scenarios.includes('Outdoor')) {
-        riggingAcc.push('spigot with male 3/8" and 1/4"');
+        riggingAcc.push('spigot with male 3/8" and 1/4" (Focus Umbrella)');
     }
     if (['Extreme heat', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s))) {
         gripItems.push('Large Umbrella');
