@@ -688,7 +688,7 @@ describe('script.js functions', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][0];
     const expectedKeys = [
-      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
@@ -698,6 +698,7 @@ describe('script.js functions', () => {
     expect(saved.projectInfo.viewfinderSettings).toBe('Viewfinder Clean Feed');
     expect(saved.projectInfo.frameGuides).toBe('Frame Guide: Center Dot');
     expect(saved.projectInfo.aspectMaskOpacity).toBe('Aspect Mask Opacity 100%');
+    expect(saved.projectInfo.viewfinderEyeLeatherColor).toBe('Red');
   });
 
   test('project requirements form saved with project', () => {
@@ -716,6 +717,7 @@ describe('script.js functions', () => {
     document.getElementById('saveSetupBtn').click();
     expect(stored.Setup1.projectInfo.projectName).toBe('Proj');
     expect(stored.Setup1.projectInfo.lenses).toBe('LensA');
+    expect(stored.Setup1.projectInfo.viewfinderEyeLeatherColor).toBe('Red');
   });
 
   test('changing device selection triggers gear list save', () => {
@@ -1790,8 +1792,8 @@ describe('script.js functions', () => {
     expect(html).toContain('Directors Monitor');
     expect(html).toContain('2x Bebob V290RM-Cine (2x Directors 15-21")');
     const msSection = html.slice(html.indexOf('<td>Monitoring support</td>'), html.indexOf('Power'));
-    expect(msSection).toContain('2x D-Tap to Lemo-2-pin Cable 0,5m (1x Directors 15-21", 1x Spare)');
-    expect(msSection).toContain('2x Ultraslim BNC Cable 0.5 m (1x Directors 15-21", 1x Spare)');
+    expect(msSection).toContain('4x D-Tap to Lemo-2-pin Cable 0,5m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
+    expect(msSection).toContain('4x Ultraslim BNC Cable 0.5 m (1x Onboard monitor, 1x Directors 15-21", 2x Spare)');
     const rigSection = html.slice(html.indexOf('Rigging'), html.indexOf('Power'));
     expect(rigSection).toContain('D-Tap Splitter (1x Directors 15-21"');
     const gripSection = html.slice(html.indexOf('Grip'), html.indexOf('Carts and Transportation'));
