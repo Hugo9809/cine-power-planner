@@ -2759,7 +2759,7 @@ describe('script.js functions', () => {
     const rigText = rows[rigIdx + 1].textContent;
     const miscIdx = rows.findIndex(r => r.textContent === 'Miscellaneous');
     const miscText = rows[miscIdx + 1].textContent;
-    expect(miscText).toContain('Rain Cover "CamA"');
+    expect(miscText).toContain('Rain Cover CamA');
     expect(miscText).toContain('1x Umbrella for Focus Monitor');
     expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
       expect(rigText).toContain('4x spigot with male 3/8" and 1/4" (1x Focus Umbrella, 3x Spare)');
@@ -2795,7 +2795,7 @@ describe('script.js functions', () => {
     const miscText = rows[miscIdx + 1].textContent;
     expect(gripText).toContain('1x Large Umbrella');
     expect(gripText).toContain('1x Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
-    expect(miscText).toContain('Rain Cover "CamA"');
+    expect(miscText).toContain('Rain Cover CamA');
     expect(miscText).toContain('1x Umbrella for Focus Monitor');
     expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
     const consumIdx = rows.findIndex(r => r.textContent === 'Consumables');

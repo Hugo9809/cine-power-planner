@@ -8973,7 +8973,7 @@ function generateGearListHtml(info = {}) {
     if (eyeLeatherCount) eyeLeatherCount *= multiplier;
     const needsRainProtection = ['Outdoor', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s));
     if (needsRainProtection && selectedNames.camera) {
-        miscItems.push(`Rain Cover "${addArriKNumber(selectedNames.camera)}"`);
+        miscItems.push(`Rain Cover ${addArriKNumber(selectedNames.camera)}`);
     }
     const needsUmbrellas = needsRainProtection || scenarios.includes('Extreme heat');
     if (needsUmbrellas) {
