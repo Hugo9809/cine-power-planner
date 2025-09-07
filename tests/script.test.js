@@ -2750,7 +2750,7 @@ describe('script.js functions', () => {
     expect(miscText).toContain('Rain Cover "CamA"');
     expect(miscText).toContain('1x Umbrella for Focus Monitor');
     expect(miscText).toContain('1x Umbrella Magliner incl Mounting to Magliner');
-      expect(rigText).toContain('4x spigot with male 3/8" and 1/4"');
+      expect(rigText).toContain('4x spigot with male 3/8" and 1/4" (1x Focus Umbrella, 3x Spare)');
       expect(gripText).not.toContain('Large Umbrella');
       expect(gripText).not.toContain('Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
       expect(miscText).not.toContain('Manfrotto 635 Quick-Action Super Clamp');
