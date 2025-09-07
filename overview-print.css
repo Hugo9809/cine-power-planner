@@ -76,7 +76,7 @@ body.dark-mode {
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   border-color: var(--text-color) !important;
 }
 
