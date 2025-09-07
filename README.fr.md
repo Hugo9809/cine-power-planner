@@ -112,6 +112,11 @@ script.js        # Logique de l'application
 data.js          # Base par défaut
 storage.js       # Fonctions LocalStorage
 README.*.md      # Documentation en plusieurs langues
+checkConsistency.js  # vérifie que chaque appareil possède les champs requis
+normalizeData.js     # nettoie les entrées et uniformise les connecteurs
+generateSchema.js    # génère schema.json à partir des données
+unifyPorts.js        # harmonise les noms de ports hérités
+tests/               # suite de tests Jest
 ```
 Les polices sont chargées via Google Fonts dans `index.html`.
 Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
@@ -130,6 +135,14 @@ Nécessite Node.js 18 ou version ultérieure.
    ```bash
    npm test
    ```
+   Le script exécute aussi le lint et les vérifications de cohérence.
+
+4. Après avoir modifié les données des appareils, nettoyer et vérifier la base :
+   ```bash
+   npm run normalize
+   npm run check-consistency
+   ```
+   `npm run normalize` nettoie les entrées et uniformise les noms de connecteurs. `npm run check-consistency` vérifie que tous les champs obligatoires sont présents. Ajoutez `--help` à l’un ou l’autre pour afficher l’aide.
 
 ## 🤝 Contribuer
 Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à proposer une pull request sur GitHub.

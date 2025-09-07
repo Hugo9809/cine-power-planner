@@ -148,6 +148,11 @@ script.js        # Application logic
 devices/         # Default device lists by category
 storage.js       # LocalStorage helpers
 README.*.md      # Documentation in different languages
+checkConsistency.js  # Validates device data
+normalizeData.js     # Cleans and unifies device entries
+generateSchema.js    # Regenerates schema.json from data
+unifyPorts.js        # Harmonizes connector names
+tests/               # Jest test suite
 ```
 
 ### Install dependencies and run tests
@@ -156,10 +161,11 @@ Requires Node.js 18 or later.
 
 ```bash
 npm install
+npm run lint     # run ESLint alone
 npm test
 ```
 
-The `npm test` command runs ESLint, data consistency checks and Jest tests.
+`npm run lint` executes ESLint without running tests. The `npm test` command then runs ESLint, data consistency checks and Jest tests.
 
 ### Update device data
 
