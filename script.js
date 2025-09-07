@@ -121,7 +121,9 @@ function memoizeNormalization(fn) {
   const cache = new Map();
   return value => {
     if (!value) return '';
-    const str = String(value).trim();
+    const str = String(value)
+      .replace(/[™®]/g, '')
+      .trim();
     const key = str.toLowerCase();
     if (!cache.has(key)) cache.set(key, fn(str, key));
     return cache.get(key);
@@ -172,7 +174,7 @@ const FIZ_CONNECTOR_MAP = {
   'lens terminal 12-pin jack': 'Hirose 12-pin',
   'lens terminal': 'Hirose 12-pin',
   'usb type-c': 'USB-C',
-  'usb type-c®': 'USB-C',
+  'usb-c': 'USB-C',
   'usb-c (usb 3.2 / 3.1 gen 1)': 'USB-C',
   'usb-c / gigabit ethernet (via adapter)': 'USB-C',
   'active ef mount': 'Active EF mount',
@@ -229,10 +231,11 @@ const POWER_PORT_TYPE_MAP = {
   'xlr 4-pin (main input)': 'XLR 4-pin',
   'xlr-type 4 pin (male) / square-shaped 5 pin connector (battery)': 'XLR 4-pin / Square 5-pin',
   '12-pin molex connector (at battery plate rear) / 4-pin xlr (external power)': 'Molex 12-pin / XLR 4-pin',
-  'usb-c (power delivery) / battery slot': 'Battery Slot / USB-C PD',
-  'battery slot / usb type-c®': 'Battery Slot / USB-C',
-  'battery slot / usb-c': 'Battery Slot / USB-C',
-  'battery slot / usb-c pd': 'Battery Slot / USB-C PD',
+  'battery slot': 'Battery Slot',
+  'usb-c': 'USB-C',
+  'usb type-c': 'USB-C',
+  'usb-c pd': 'USB-C PD',
+  'usb-c (power delivery)': 'USB-C PD',
   'dc input': 'DC IN',
   'weipu sf610/s2 (12vdc) input': 'Weipu SF610/S2',
   '6-pin 1b dc-in / tb50 battery mount': '6-pin 1B DC-IN / TB50'
