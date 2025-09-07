@@ -3172,6 +3172,13 @@ describe('script.js functions', () => {
     expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
   });
 
+  test('filter selection is not included in project requirements', () => {
+    const { generateGearListHtml } = script;
+    const html = generateGearListHtml({ filter: 'IRND' });
+    expect(html).not.toContain('<span class="req-label">Filter</span>');
+    expect(html).not.toContain('<span class="req-value">IRND</span>');
+  });
+
   test('project requirements form includes handheld monitor size options', () => {
     setupDom(true);
     const sel = document.getElementById('videoDistribution');
