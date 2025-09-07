@@ -694,6 +694,7 @@ function connectionLabel(outType, inType) {
 
 
 function updateBatteryPlateVisibility() {
+  if (!cameraSelect) return;
   const camName = cameraSelect.value;
   const hasB = isNativeBMountCamera(camName);
   const hasV = isNativeVMountCamera(camName);
@@ -783,6 +784,7 @@ function updateBatteryLabel() {
 }
 
 function updateBatteryOptions() {
+  if (!batterySelect || !hotswapSelect || !cameraSelect) return;
   const current = batterySelect.value;
   const currentSwap = hotswapSelect.value;
   const plate = getSelectedPlate();
@@ -1604,13 +1606,13 @@ const motorSelects    = [
   document.getElementById("motor2Select"),
   document.getElementById("motor3Select"),
   document.getElementById("motor4Select")
-];
+].filter(Boolean);
 const controllerSelects = [
   document.getElementById("controller1Select"),
   document.getElementById("controller2Select"),
   document.getElementById("controller3Select"),
   document.getElementById("controller4Select")
-];
+].filter(Boolean);
 const distanceSelect = document.getElementById("distanceSelect");
 const batterySelect  = document.getElementById("batterySelect");
 const hotswapSelect  = document.getElementById("batteryHotswapSelect");
@@ -1806,8 +1808,11 @@ const videoVideoInputsContainer = document.getElementById("videoVideoInputsConta
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 const videoFrequencyInput = document.getElementById("videoFrequency");
 const videoLatencyInput = document.getElementById("videoLatency");
-const addDeviceForm = wattFieldDiv.parentNode;
+const addDeviceForm = wattFieldDiv ? wattFieldDiv.parentNode : null;
 function placeWattField(category, data) {
+  if (!wattFieldDiv || !addDeviceForm || !videoFieldsDiv || !cameraFieldsDiv) {
+    return;
+  }
   const isVideoLike =
     category === "video" ||
     (data && (data.videoInputs || data.videoOutputs || data.frequency));
@@ -2506,6 +2511,7 @@ function createVideoOutputRow(value = '') {
 }
 
 function setVideoOutputs(list) {
+  if (!videoOutputsContainer) return;
   videoOutputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -2519,6 +2525,7 @@ function setVideoOutputs(list) {
 }
 
 function getVideoOutputs() {
+  if (!videoOutputsContainer) return [];
   return Array.from(videoOutputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(vo => vo.type && vo.type !== 'None');
@@ -2561,6 +2568,7 @@ function createMonitorVideoInputRow(value = '') {
 }
 
 function setMonitorVideoInputs(list) {
+  if (!monitorVideoInputsContainer) return;
   monitorVideoInputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -2574,6 +2582,7 @@ function setMonitorVideoInputs(list) {
 }
 
 function getMonitorVideoInputs() {
+  if (!monitorVideoInputsContainer) return [];
   return Array.from(monitorVideoInputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
@@ -2616,6 +2625,7 @@ function createMonitorVideoOutputRow(value = '') {
 }
 
 function setMonitorVideoOutputs(list) {
+  if (!monitorVideoOutputsContainer) return;
   monitorVideoOutputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -2629,6 +2639,7 @@ function setMonitorVideoOutputs(list) {
 }
 
 function getMonitorVideoOutputs() {
+  if (!monitorVideoOutputsContainer) return [];
   return Array.from(monitorVideoOutputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
@@ -2671,6 +2682,7 @@ function createViewfinderVideoInputRow(value = '') {
 }
 
 function setViewfinderVideoInputs(list) {
+  if (!viewfinderVideoInputsContainer) return;
   viewfinderVideoInputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -2684,6 +2696,7 @@ function setViewfinderVideoInputs(list) {
 }
 
 function getViewfinderVideoInputs() {
+  if (!viewfinderVideoInputsContainer) return [];
   return Array.from(viewfinderVideoInputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
@@ -2726,6 +2739,7 @@ function createViewfinderVideoOutputRow(value = '') {
 }
 
 function setViewfinderVideoOutputs(list) {
+  if (!viewfinderVideoOutputsContainer) return;
   viewfinderVideoOutputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -2739,6 +2753,7 @@ function setViewfinderVideoOutputs(list) {
 }
 
 function getViewfinderVideoOutputs() {
+  if (!viewfinderVideoOutputsContainer) return [];
   return Array.from(viewfinderVideoOutputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
@@ -2784,6 +2799,7 @@ function createVideoInputRow(value = '') {
 }
 
 function setVideoInputs(list) {
+  if (!videoVideoInputsContainer) return;
   videoVideoInputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -2797,6 +2813,7 @@ function setVideoInputs(list) {
 }
 
 function getVideoInputs() {
+  if (!videoVideoInputsContainer) return [];
   return Array.from(videoVideoInputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
@@ -2837,6 +2854,7 @@ function createVideoIOOutputRow(value = '') {
 }
 
 function setVideoOutputsIO(list) {
+  if (!videoVideoOutputsContainer) return;
   videoVideoOutputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -2850,6 +2868,7 @@ function setVideoOutputsIO(list) {
 }
 
 function getVideoOutputsIO() {
+  if (!videoVideoOutputsContainer) return [];
   return Array.from(videoVideoOutputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
@@ -2891,6 +2910,7 @@ function createFizConnectorRow(value = '') {
 }
 
 function setFizConnectors(list) {
+  if (!fizConnectorContainer) return;
   fizConnectorContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -2904,6 +2924,7 @@ function setFizConnectors(list) {
 }
 
 function getFizConnectors() {
+  if (!fizConnectorContainer) return [];
   return Array.from(fizConnectorContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(fc => fc.type && fc.type !== 'None');
@@ -2994,6 +3015,7 @@ function createRecordingMediaRow(type = '', notes = '') {
 }
 
 function setRecordingMedia(list) {
+  if (!cameraMediaContainer) return;
   cameraMediaContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -3007,6 +3029,7 @@ function setRecordingMedia(list) {
 }
 
 function getRecordingMedia() {
+  if (!cameraMediaContainer) return [];
   return Array.from(cameraMediaContainer.querySelectorAll('.form-row'))
     .map(row => {
       const [sel, notesInput] = row.querySelectorAll('select, input');
@@ -3066,16 +3089,18 @@ let powerPortOptions = getAllPowerPortTypes();
 
 function updatePowerPortOptions() {
   powerPortOptions = getAllPowerPortTypes();
-  const current = cameraPortTypeInput.value;
-  cameraPortTypeInput.innerHTML = '';
-  addEmptyOption(cameraPortTypeInput);
-  powerPortOptions.forEach(optVal => {
-    const opt = document.createElement('option');
-    opt.value = optVal;
-    opt.textContent = optVal;
-    cameraPortTypeInput.appendChild(opt);
-  });
-  if (powerPortOptions.includes(current)) cameraPortTypeInput.value = current;
+  if (cameraPortTypeInput) {
+    const current = cameraPortTypeInput.value;
+    cameraPortTypeInput.innerHTML = '';
+    addEmptyOption(cameraPortTypeInput);
+    powerPortOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      cameraPortTypeInput.appendChild(opt);
+    });
+    if (powerPortOptions.includes(current)) cameraPortTypeInput.value = current;
+  }
 
   if (monitorPortTypeInput) {
     const curMon = monitorPortTypeInput.value;
@@ -3185,6 +3210,7 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
 }
 
 function setBatteryPlates(list) {
+  if (!batteryPlatesContainer) return;
   batteryPlatesContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -3198,6 +3224,7 @@ function setBatteryPlates(list) {
 }
 
 function getBatteryPlates() {
+  if (!batteryPlatesContainer) return [];
   return Array.from(batteryPlatesContainer.querySelectorAll('.form-row'))
     .map(row => {
       const [typeSel, mountSel, notesInput] = row.querySelectorAll('select, input');
@@ -3314,6 +3341,7 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
 }
 
 function setViewfinders(list) {
+  if (!viewfinderContainer) return;
   viewfinderContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -3327,6 +3355,7 @@ function setViewfinders(list) {
 }
 
 function getViewfinders() {
+  if (!viewfinderContainer) return [];
   return Array.from(viewfinderContainer.querySelectorAll('.form-row'))
     .map(row => {
       const [typeSelect, resInput, connSelect, notesInput] = row.querySelectorAll('select, input');
@@ -3430,6 +3459,7 @@ function createLensMountRow(type = '', mount = 'native') {
 }
 
 function setLensMounts(list) {
+  if (!lensMountContainer) return;
   lensMountContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -3443,6 +3473,7 @@ function setLensMounts(list) {
 }
 
 function getLensMounts() {
+  if (!lensMountContainer) return [];
   return Array.from(lensMountContainer.querySelectorAll('.form-row'))
     .map(row => {
       const [typeSel, mountSel] = row.querySelectorAll('select');
@@ -3637,6 +3668,7 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 }
 
 function setPowerDistribution(list) {
+  if (!powerDistContainer) return;
   powerDistContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -3650,6 +3682,7 @@ function setPowerDistribution(list) {
 }
 
 function getPowerDistribution() {
+  if (!powerDistContainer) return [];
   return Array.from(powerDistContainer.querySelectorAll('.form-row'))
     .map(row => {
       const [typeSel, voltSel, currSel, wattInput, notesInput] = row.querySelectorAll('select, input');
@@ -3748,6 +3781,7 @@ function createTimecodeRow(type = '', notes = '') {
 }
 
 function setTimecodes(list) {
+  if (!timecodeContainer) return;
   timecodeContainer.innerHTML = '';
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
@@ -3761,6 +3795,7 @@ function setTimecodes(list) {
 }
 
 function getTimecodes() {
+  if (!timecodeContainer) return [];
   return Array.from(timecodeContainer.querySelectorAll('.form-row'))
     .map(row => {
       const [typeSel, notesInput] = row.querySelectorAll('select, input');
@@ -3821,7 +3856,8 @@ function filterSelect(selectElem, filterValue) {
 }
 
 function filterDeviceList(listElem, filterValue) {
-  const text = filterValue.toLowerCase();
+  if (!listElem) return;
+  const text = String(filterValue || '').toLowerCase();
   Array.from(listElem.querySelectorAll('li')).forEach(li => {
     const nameSpan = li.querySelector('.device-summary span');
     const name = nameSpan ? nameSpan.textContent.toLowerCase() : '';
@@ -3906,19 +3942,19 @@ function addInputClearButton(inputElem, callback) {
 }
 
 function applyFilters() {
-  filterDeviceList(cameraListElem, cameraListFilterInput.value);
-  filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
-  filterDeviceList(monitorListElem, monitorListFilterInput.value);
-  filterDeviceList(videoListElem, videoListFilterInput.value);
-  filterDeviceList(motorListElem, motorListFilterInput.value);
-  filterDeviceList(controllerListElem, controllerListFilterInput.value);
-  filterDeviceList(distanceListElem, distanceListFilterInput.value);
-  filterDeviceList(batteryListElem, batteryListFilterInput.value);
-  filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value);
-  filterDeviceList(cableListElem, cableListFilterInput.value);
-  filterDeviceList(fizCableListElem, fizCableListFilterInput.value);
-  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
-  filterDeviceList(chargerListElem, chargerListFilterInput.value);
+  filterDeviceList(cameraListElem, cameraListFilterInput?.value);
+  filterDeviceList(viewfinderListElem, viewfinderListFilterInput?.value);
+  filterDeviceList(monitorListElem, monitorListFilterInput?.value);
+  filterDeviceList(videoListElem, videoListFilterInput?.value);
+  filterDeviceList(motorListElem, motorListFilterInput?.value);
+  filterDeviceList(controllerListElem, controllerListFilterInput?.value);
+  filterDeviceList(distanceListElem, distanceListFilterInput?.value);
+  filterDeviceList(batteryListElem, batteryListFilterInput?.value);
+  filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput?.value);
+  filterDeviceList(cableListElem, cableListFilterInput?.value);
+  filterDeviceList(fizCableListElem, fizCableListFilterInput?.value);
+  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput?.value);
+  filterDeviceList(chargerListElem, chargerListFilterInput?.value);
 }
 
 // Initialize device selection dropdowns
@@ -3936,6 +3972,7 @@ updateBatteryOptions();
 
 // Enable search inside dropdowns
 [cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect]
+  .filter(Boolean)
   .forEach(sel => attachSelectSearch(sel));
 motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
@@ -3976,22 +4013,26 @@ updateDistanceDisplayOptions();
 // Set default selections for dropdowns
 
 // Kamera: Wenn Option „None“ existiert, dann setze sie – sonst erste Option
-const noneCameraOption = Array.from(cameraSelect.options).find(opt => opt.value === "None");
-if (noneCameraOption) {
-  cameraSelect.value = "None";
-} else {
-  cameraSelect.selectedIndex = 0;
+if (cameraSelect) {
+  const noneCameraOption = Array.from(cameraSelect.options).find(opt => opt.value === "None");
+  if (noneCameraOption) {
+    cameraSelect.value = "None";
+  } else if (cameraSelect.options.length) {
+    cameraSelect.selectedIndex = 0;
+  }
 }
 
 // Für die anderen Dropdowns
-[monitorSelect, videoSelect, distanceSelect, batterySelect].forEach(sel => {
-  const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
-  if (noneOption) {
-    sel.value = "None";
-  } else {
-    sel.selectedIndex = 0;
-  }
-});
+[monitorSelect, videoSelect, distanceSelect, batterySelect]
+  .filter(Boolean)
+  .forEach(sel => {
+    const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
+    if (noneOption) {
+      sel.value = "None";
+    } else if (sel.options.length) {
+      sel.selectedIndex = 0;
+    }
+  });
 
 // FIZ Dropdowns
 motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
@@ -5649,6 +5690,7 @@ function formatDateString(val) {
 
 // Helper to render existing devices in the manager section
 function renderDeviceList(categoryKey, ulElement) {
+  if (!ulElement) return;
   ulElement.innerHTML = "";
   let categoryDevices = devices[categoryKey];
   // Handle nested FIZ categories
@@ -5730,19 +5772,19 @@ function refreshDeviceLists() {
   renderDeviceList("accessories.cages", cameraSupportListElem);
   renderDeviceList("accessories.chargers", chargerListElem);
 
-  filterDeviceList(cameraListElem, cameraListFilterInput.value);
-  filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
-  filterDeviceList(monitorListElem, monitorListFilterInput.value);
-  filterDeviceList(videoListElem, videoListFilterInput.value);
-  filterDeviceList(motorListElem, motorListFilterInput.value);
-  filterDeviceList(controllerListElem, controllerListFilterInput.value);
-  filterDeviceList(distanceListElem, distanceListFilterInput.value);
-  filterDeviceList(fizCableListElem, fizCableListFilterInput.value);
-  filterDeviceList(batteryListElem, batteryListFilterInput.value);
-  filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value);
-  filterDeviceList(cableListElem, cableListFilterInput.value);
-  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
-  filterDeviceList(chargerListElem, chargerListFilterInput.value);
+  filterDeviceList(cameraListElem, cameraListFilterInput?.value);
+  filterDeviceList(viewfinderListElem, viewfinderListFilterInput?.value);
+  filterDeviceList(monitorListElem, monitorListFilterInput?.value);
+  filterDeviceList(videoListElem, videoListFilterInput?.value);
+  filterDeviceList(motorListElem, motorListFilterInput?.value);
+  filterDeviceList(controllerListElem, controllerListFilterInput?.value);
+  filterDeviceList(distanceListElem, distanceListFilterInput?.value);
+  filterDeviceList(fizCableListElem, fizCableListFilterInput?.value);
+  filterDeviceList(batteryListElem, batteryListFilterInput?.value);
+  filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput?.value);
+  filterDeviceList(cableListElem, cableListFilterInput?.value);
+  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput?.value);
+  filterDeviceList(chargerListElem, chargerListFilterInput?.value);
 }
 
 // Initial render of device lists
@@ -5751,9 +5793,11 @@ refreshDeviceLists();
 // --- EVENT LISTENERS ---
 
 // Language selection
-languageSelect.addEventListener("change", (event) => {
-  setLanguage(event.target.value);
-});
+if (languageSelect) {
+  languageSelect.addEventListener("change", (event) => {
+    setLanguage(event.target.value);
+  });
+}
 
 if (skipLink) {
   skipLink.addEventListener("click", () => {
@@ -5766,22 +5810,22 @@ if (skipLink) {
 
 
 
-bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
-bindFilterInput(viewfinderListFilterInput, () => filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value));
-bindFilterInput(monitorListFilterInput, () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
-bindFilterInput(videoListFilterInput, () => filterDeviceList(videoListElem, videoListFilterInput.value));
-bindFilterInput(motorListFilterInput, () => filterDeviceList(motorListElem, motorListFilterInput.value));
-bindFilterInput(controllerListFilterInput, () => filterDeviceList(controllerListElem, controllerListFilterInput.value));
-bindFilterInput(distanceListFilterInput, () => filterDeviceList(distanceListElem, distanceListFilterInput.value));
-bindFilterInput(batteryListFilterInput, () => filterDeviceList(batteryListElem, batteryListFilterInput.value));
-bindFilterInput(accessoryBatteryListFilterInput, () => filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value));
-bindFilterInput(cableListFilterInput, () => filterDeviceList(cableListElem, cableListFilterInput.value));
-bindFilterInput(fizCableListFilterInput, () => filterDeviceList(fizCableListElem, fizCableListFilterInput.value));
-bindFilterInput(cameraSupportListFilterInput, () => filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value));
-bindFilterInput(chargerListFilterInput, () => filterDeviceList(chargerListElem, chargerListFilterInput.value));
+bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, cameraListFilterInput?.value));
+bindFilterInput(viewfinderListFilterInput, () => filterDeviceList(viewfinderListElem, viewfinderListFilterInput?.value));
+bindFilterInput(monitorListFilterInput, () => filterDeviceList(monitorListElem, monitorListFilterInput?.value));
+bindFilterInput(videoListFilterInput, () => filterDeviceList(videoListElem, videoListFilterInput?.value));
+bindFilterInput(motorListFilterInput, () => filterDeviceList(motorListElem, motorListFilterInput?.value));
+bindFilterInput(controllerListFilterInput, () => filterDeviceList(controllerListElem, controllerListFilterInput?.value));
+bindFilterInput(distanceListFilterInput, () => filterDeviceList(distanceListElem, distanceListFilterInput?.value));
+bindFilterInput(batteryListFilterInput, () => filterDeviceList(batteryListElem, batteryListFilterInput?.value));
+bindFilterInput(accessoryBatteryListFilterInput, () => filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput?.value));
+bindFilterInput(cableListFilterInput, () => filterDeviceList(cableListElem, cableListFilterInput?.value));
+bindFilterInput(fizCableListFilterInput, () => filterDeviceList(fizCableListElem, fizCableListFilterInput?.value));
+bindFilterInput(cameraSupportListFilterInput, () => filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput?.value));
+bindFilterInput(chargerListFilterInput, () => filterDeviceList(chargerListElem, chargerListFilterInput?.value));
 
 // Setup management
-saveSetupBtn.addEventListener("click", () => {
+if (saveSetupBtn) saveSetupBtn.addEventListener("click", () => {
   const setupName = setupNameInput.value.trim();
   if (!setupName) {
     alert(texts[currentLang].alertSetupName);
@@ -5805,7 +5849,7 @@ saveSetupBtn.addEventListener("click", () => {
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
 });
 
-deleteSetupBtn.addEventListener("click", () => {
+if (deleteSetupBtn) deleteSetupBtn.addEventListener("click", () => {
   const setupName = setupSelect.value;
   if (!setupName) {
     alert(texts[currentLang].alertNoSetupSelected);
@@ -5837,7 +5881,7 @@ deleteSetupBtn.addEventListener("click", () => {
   }
 });
 
-clearSetupBtn.addEventListener("click", () => {
+if (clearSetupBtn) clearSetupBtn.addEventListener("click", () => {
   if (
     confirm(texts[currentLang].confirmClearSetup) &&
     confirm(texts[currentLang].confirmClearSetupAgain)
@@ -5870,7 +5914,7 @@ clearSetupBtn.addEventListener("click", () => {
 });
 
 
-setupSelect.addEventListener("change", (event) => {
+if (setupSelect) setupSelect.addEventListener("change", (event) => {
   const setupName = event.target.value;
   if (setupName === "") { // "-- New Setup --" selected
     setupNameInput.value = "";
@@ -5951,6 +5995,7 @@ setupSelect.addEventListener("change", (event) => {
 
 
 function populateSetupSelect() {
+  if (!setupSelect) return;
   const setups = getSetups();
   setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
   for (const name in setups) {
@@ -6141,7 +6186,7 @@ function populateDeviceForm(categoryKey, deviceData) {
 }
 
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
-deviceManagerSection.addEventListener("click", (event) => {
+if (deviceManagerSection) deviceManagerSection.addEventListener("click", (event) => {
   if (event.target.classList.contains("detail-toggle")) {
     toggleDeviceDetails(event.target);
   } else if (event.target.classList.contains("edit-btn")) {
@@ -6160,7 +6205,9 @@ deviceManagerSection.addEventListener("click", (event) => {
     newCategorySelect.value = categoryKey;
     newCategorySelect.disabled = true; // Prevent changing category during edit
     // Trigger change handler so fields are cleared
-    newCategorySelect.dispatchEvent(new Event('change'));
+    if (newCategorySelect && newCategorySelect.isConnected) {
+      newCategorySelect.dispatchEvent(new Event('change'));
+    }
     // After the change handler runs, restore the device name for editing
     newNameInput.value = name;
 
@@ -6223,7 +6270,7 @@ deviceManagerSection.addEventListener("click", (event) => {
   }
 });
 
-deviceManagerSection.addEventListener('keydown', (event) => {
+if (deviceManagerSection) deviceManagerSection.addEventListener('keydown', (event) => {
   if (event.target.classList.contains('detail-toggle') && (event.key === 'Enter' || event.key === ' ')) {
     event.preventDefault();
     toggleDeviceDetails(event.target);
@@ -6231,7 +6278,7 @@ deviceManagerSection.addEventListener('keydown', (event) => {
 });
 
 // Category selection in add device form
-newCategorySelect.addEventListener("change", () => {
+if (newCategorySelect) newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
   placeWattField(val);
   if (val === "batteries" || val === "accessories.batteries") {
@@ -6393,11 +6440,14 @@ newCategorySelect.addEventListener("change", () => {
 function resetDeviceForm() {
   newCategorySelect.disabled = false;
   cancelEditBtn.style.display = "none";
-  // Trigger change handler to reset fields and button text
-  newCategorySelect.dispatchEvent(new Event('change'));
+  // Trigger change handler to reset fields and button text if element is present
+  if (newCategorySelect && newCategorySelect.isConnected) {
+    newCategorySelect.dispatchEvent(new Event('change'));
+  }
 }
 
 
+if (addDeviceBtn) {
 // Add/Update device logic
 addDeviceBtn.addEventListener("click", () => {
   const name = newNameInput.value.trim();
@@ -6781,12 +6831,12 @@ importFileInput.addEventListener("change", (event) => {
   reader.readAsText(file);
   event.target.value = ''; // Clear the file input for re-selection of the same file
 });
-
+} // end addDeviceBtn block
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
 // Export all saved setups to a JSON file
-exportSetupsBtn.addEventListener('click', () => {
+if (exportSetupsBtn) exportSetupsBtn.addEventListener('click', () => {
     const setupsToExport = getSetups();
     if (Object.keys(setupsToExport).length === 0) {
         alert(texts[currentLang].alertNoSetupsToExport);
@@ -6805,12 +6855,12 @@ exportSetupsBtn.addEventListener('click', () => {
 });
 
 // Trigger file input when "Import Setups" is clicked
-importSetupsBtn.addEventListener('click', () => {
-    importSetupsInput.click();
+if (importSetupsBtn) importSetupsBtn.addEventListener('click', () => {
+    importSetupsInput?.click();
 });
 
 // Handle the file import for setups
-importSetupsInput.addEventListener('change', (event) => {
+if (importSetupsInput) importSetupsInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
