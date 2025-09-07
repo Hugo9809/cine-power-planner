@@ -5030,6 +5030,21 @@ describe('script.js functions', () => {
     expect(decoded.projectInfo.notes).toBe('shoot');
   });
 
+  test('shareSetupBtn includes current project requirements', () => {
+    document.getElementById('setupName').value = 'Proj';
+    document.getElementById('dop').value = 'Alice';
+    global.loadProject = jest.fn(() => null);
+    global.saveProject = jest.fn();
+    const btn = document.getElementById('shareSetupBtn');
+    btn.click();
+    const link = navigator.clipboard.writeText.mock.calls[0][0];
+    const encoded = new URL(link).searchParams.get('shared');
+    const decoded = script.decodeSharedSetup(
+      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
+    );
+    expect(decoded.projectInfo.dop).toBe('Alice');
+  });
+
   test('shareSetupBtn link stays under 2000 chars with selectors', () => {
     const gearOut = document.getElementById('gearListOutput');
     gearOut.innerHTML = '<select id="gearListCage"><option value="' + 'x'.repeat(500) + '"></option></select>';
