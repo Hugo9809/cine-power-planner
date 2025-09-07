@@ -1491,10 +1491,12 @@ function setLanguage(lang) {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
     toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
     toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
+    toggleDeviceBtn.setAttribute("aria-expanded", "false");
   } else {
     toggleDeviceBtn.textContent = texts[lang].hideDeviceManager;
     toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
     toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
+    toggleDeviceBtn.setAttribute("aria-expanded", "true");
   }
   // Update newCategory select option texts
   Array.from(newCategorySelect.options).forEach(opt => {
@@ -1624,6 +1626,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
+    gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
   }
   if (resetViewBtn) {
     resetViewBtn.innerHTML = `<span class="btn-icon" aria-hidden="true">🔄</span>${texts[lang].resetViewBtn}`;
@@ -1861,8 +1864,9 @@ const videoVideoInputsContainer = document.getElementById("videoVideoInputsConta
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 const videoFrequencyInput = document.getElementById("videoFrequency");
 const videoLatencyInput = document.getElementById("videoLatency");
-const addDeviceForm = wattFieldDiv.parentNode;
+const addDeviceForm = wattFieldDiv ? wattFieldDiv.parentNode : null;
 function placeWattField(category, data) {
+  if (!wattFieldDiv || !addDeviceForm) return;
   const isVideoLike =
     category === "video" ||
     category === "wirelessReceivers" ||
@@ -6053,6 +6057,7 @@ if (toggleDeviceBtn) {
       toggleDeviceBtn.textContent = texts[currentLang].hideDeviceManager;
       toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
       toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
+      toggleDeviceBtn.setAttribute('aria-expanded', 'true');
       refreshDeviceLists(); // Refresh lists when shown
       updateCalculations(); // Ensure calculations are up to date
     } else {
@@ -6060,6 +6065,7 @@ if (toggleDeviceBtn) {
       toggleDeviceBtn.textContent = texts[currentLang].toggleDeviceManager;
       toggleDeviceBtn.setAttribute('title', texts[currentLang].toggleDeviceManager);
       toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
+      toggleDeviceBtn.setAttribute('aria-expanded', 'false');
     }
   });
 }
@@ -9462,6 +9468,7 @@ if (gridSnapToggleBtn) {
   gridSnapToggleBtn.addEventListener('click', () => {
     gridSnap = !gridSnap;
     gridSnapToggleBtn.classList.toggle('active', gridSnap);
+    gridSnapToggleBtn.setAttribute('aria-pressed', gridSnap ? 'true' : 'false');
     if (setupDiagramContainer) {
       setupDiagramContainer.classList.toggle('grid-snap', gridSnap);
     }

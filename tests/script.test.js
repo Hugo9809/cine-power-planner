@@ -4065,10 +4065,12 @@ describe('script.js functions', () => {
     script.renderSetupDiagram();
 
     const gridBtn = document.getElementById('gridSnapToggle');
+    expect(gridBtn.getAttribute('aria-pressed')).toBe('false');
     gridBtn.click();
 
     const area = document.getElementById('diagramArea');
     expect(gridBtn.classList.contains('active')).toBe(true);
+    expect(gridBtn.getAttribute('aria-pressed')).toBe('true');
     expect(area.classList.contains('grid-snap')).toBe(true);
 
     const node = document.querySelector('#diagramArea .diagram-node[data-node="battery"]');
@@ -4977,16 +4979,19 @@ describe('monitor wireless metadata', () => {
     // Initially hidden with "Edit" label
     expect(deviceManager.classList.contains('hidden')).toBe(true);
     expect(toggleBtn.textContent).toBe(texts.en.toggleDeviceManager);
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
 
     // Show device manager
     toggleBtn.click();
     expect(deviceManager.classList.contains('hidden')).toBe(false);
     expect(toggleBtn.textContent).toBe(texts.en.hideDeviceManager);
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('true');
 
     // Hide device manager again
     toggleBtn.click();
     expect(deviceManager.classList.contains('hidden')).toBe(true);
     expect(toggleBtn.textContent).toBe(texts.en.toggleDeviceManager);
+    expect(toggleBtn.getAttribute('aria-expanded')).toBe('false');
   });
 
   test('device manager lists include hover descriptions', () => {
