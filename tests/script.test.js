@@ -1636,8 +1636,8 @@ describe('script.js functions', () => {
       expect(html).toContain('<span class="req-value">Handheld, Slider</span>');
       expect(html).not.toContain('Filter: IRND');
       expect(html).toContain('Matte box + filter');
-      expect(html).toContain('4x5.65 IRND Filter 0.3');
-      expect(html).toContain('4x5.65 IRND Filter 1.2');
+      expect(html).toContain('4x5,65 IRND Filter 0.3');
+      expect(html).toContain('4x5,65 IRND Filter 1.2');
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain(`1x ${cageCamera}`);
@@ -1711,7 +1711,7 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ filter: 'Clear' });
     const dom = new JSDOM(html);
     const sizeSel = dom.window.document.getElementById('filter-size-Clear');
-    expect(sizeSel.value).toBe('4x5.65');
+    expect(sizeSel.value).toBe('4x5,65');
   });
 
   test('pol filter uses default size', () => {
@@ -1721,7 +1721,7 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ filter: 'Pol' });
     const dom = new JSDOM(html);
     const sizeSel = dom.window.document.getElementById('filter-size-Pol');
-    expect(sizeSel.value).toBe('4x5.65');
+    expect(sizeSel.value).toBe('4x5,65');
   });
 
   test('default filter set includes 1/2, 1/4 and 1/8', () => {
@@ -1757,7 +1757,7 @@ describe('script.js functions', () => {
     opt.selected = true;
     filterSelect.dispatchEvent(new window.Event('change'));
     const info = collectProjectFormData();
-    expect(info.filter).toBe('BPM:4x5.65:1/2|1/4|1/8');
+    expect(info.filter).toBe('BPM:4x5,65:1/2|1/4|1/8');
   });
 
   test('collectProjectFormData handles custom filter selections', () => {
@@ -1786,11 +1786,11 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ filter: 'ND Grad HE,ND Grad SE', mattebox: 'ARRI LMB 4x5 Clamp-On (3-Stage)' });
     const dom = new JSDOM(html);
     const sizeHE = dom.window.document.getElementById('filter-size-ND_Grad_HE');
-    expect(sizeHE.value).toBe('4x5.65');
+    expect(sizeHE.value).toBe('4x5,65');
     const valHE = [...dom.window.document.getElementById('filter-values-ND_Grad_HE').selectedOptions].map(o => o.value);
     expect(valHE).toEqual(expect.arrayContaining(['0.3 HE Horizontal']));
     const sizeSE = dom.window.document.getElementById('filter-size-ND_Grad_SE');
-    expect(sizeSE.value).toBe('4x5.65');
+    expect(sizeSE.value).toBe('4x5,65');
     const valSE = [...dom.window.document.getElementById('filter-values-ND_Grad_SE').selectedOptions].map(o => o.value);
     expect(valSE).toEqual(expect.arrayContaining(['0.3 SE Horizontal']));
     const section = html.slice(html.indexOf('Matte box + filter'), html.indexOf('LDS (FIZ)'));
@@ -1806,7 +1806,7 @@ describe('script.js functions', () => {
     const dom = new JSDOM(html);
     const sel = dom.window.document.getElementById('filter-size-Rota_Pol');
     const opts = [...sel.options].map(o => o.value);
-    expect(opts).toEqual(expect.arrayContaining(['4x5.65', '6x6', '95mm']));
+    expect(opts).toEqual(expect.arrayContaining(['4x5,65', '6x6', '95mm']));
   });
 
   test('standard rigging accessories are always included', () => {
