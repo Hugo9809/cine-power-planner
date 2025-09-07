@@ -1364,6 +1364,7 @@ describe('script.js functions', () => {
     Object.defineProperty(navigator, 'languages', { value: ['fr-FR'], configurable: true });
 
     require('../translations.js');
+    require('../translations.js');
     require('../script.js');
 
     expect(document.documentElement.lang).toBe('fr');
@@ -2795,6 +2796,39 @@ describe('script.js functions', () => {
     displayGearAndRequirements(html2);
     bindGearListEasyrigListener();
     expect(document.querySelector('#gearListEasyrig').value).toBe('FlowCine Serene Spring Arm');
+  });
+
+  test('loading a different project replaces gear list and requirements', () => {
+    setupDom(false);
+    const buildHtml = (name) => `\
+<h2>Gear List</h2>
+<h3>Project Requirements</h3>
+<div class="requirements-grid"><div class="requirement-box"><span class="req-label">Project Name</span><span class="req-value">${name}</span></div></div>
+<h3>Gear List</h3>
+<table class="gear-table"><tr><td>${name} item</td></tr></table>`;
+    global.loadSetups.mockReturnValue({
+      Proj1: { gearList: buildHtml('Proj1'), projectInfo: { projectName: 'Proj1' } },
+      Proj2: { gearList: buildHtml('Proj2'), projectInfo: { projectName: 'Proj2' } }
+    });
+    global.loadProject = jest.fn(() => null);
+    global.saveProject = jest.fn();
+    global.deleteProject = jest.fn();
+    require('../script.js');
+    const setupSelect = document.getElementById('setupSelect');
+    setupSelect.value = 'Proj1';
+    setupSelect.dispatchEvent(new Event('change'));
+    const gearOut = document.getElementById('gearListOutput');
+    const reqOut = document.getElementById('projectRequirementsOutput');
+    expect(gearOut.innerHTML).toContain('Proj1 item');
+    expect(reqOut.innerHTML).toContain('Proj1');
+    expect(document.querySelector('[name="projectName"]').value).toBe('Proj1');
+    setupSelect.value = 'Proj2';
+    setupSelect.dispatchEvent(new Event('change'));
+    expect(gearOut.innerHTML).toContain('Proj2 item');
+    expect(gearOut.innerHTML).not.toContain('Proj1 item');
+    expect(reqOut.innerHTML).toContain('Proj2');
+    expect(reqOut.innerHTML).not.toContain('Proj1');
+    expect(document.querySelector('[name="projectName"]').value).toBe('Proj2');
   });
 
   test('Grip section always includes a friction arm', () => {
