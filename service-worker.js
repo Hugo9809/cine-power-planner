@@ -1,11 +1,20 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'camera-power-planner-v11';
+const CACHE_NAME = 'camera-power-planner-v12';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './overview.css',
   './overview-print.css',
+  './fonts.css',
+  './Ubuntu/Ubuntu-Bold.ttf',
+  './Ubuntu/Ubuntu-BoldItalic.ttf',
+  './Ubuntu/Ubuntu-Italic.ttf',
+  './Ubuntu/Ubuntu-Light.ttf',
+  './Ubuntu/Ubuntu-LightItalic.ttf',
+  './Ubuntu/Ubuntu-Medium.ttf',
+  './Ubuntu/Ubuntu-MediumItalic.ttf',
+  './Ubuntu/Ubuntu-Regular.ttf',
   './script.js',
   './devices/index.js',
   './devices/cameras.js',
