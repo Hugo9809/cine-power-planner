@@ -8512,9 +8512,10 @@ function generateGearListHtml(info = {}) {
             lensSupportItems.push(`${rodType} lens support`);
         }
     });
-    const cageRodType = devices.accessories?.cages?.[selectedNames.cage]?.rodStandard;
+    const cageRod = devices.accessories?.cages?.[selectedNames.cage]?.rodStandard;
+    const cageRodTypes = cageRod ? (Array.isArray(cageRod) ? cageRod : [cageRod]) : [];
     requiredRodTypes.forEach(rt => {
-        if (cageRodType && cageRodType !== rt) {
+        if (cageRodTypes.length && !cageRodTypes.includes(rt)) {
             lensSupportItems.push(`⚠️ cage incompatible with ${rt} rods`);
         }
     });
