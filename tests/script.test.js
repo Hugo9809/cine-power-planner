@@ -5419,6 +5419,22 @@ describe('monitor wireless metadata', () => {
     expect(value.getAttribute('data-help')).toContain('Codec: ProRes');
   });
 
+  test('project requirement boxes show icons for viewfinder settings, frame guides and aspect mask', () => {
+    setupDom();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const html = script.generateGearListHtml({
+      viewfinderSettings: 'Viewfinder Clean Feed, Surround View',
+      frameGuides: 'Frame Guides: Center Cross',
+      aspectMaskOpacity: 'AM Opacity 75%'
+    });
+    script.displayGearAndRequirements(html);
+    const boxes = document.querySelectorAll('.requirement-box .req-icon');
+    const icons = Array.from(boxes).map(el => el.textContent);
+    expect(icons).toEqual(['⚙️', '🎯', '🔲']);
+  });
+
   test('gear list action buttons expose descriptive hover help', () => {
     setupDom();
     require('../translations.js');
