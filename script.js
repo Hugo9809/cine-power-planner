@@ -8773,7 +8773,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push(`Matthews Monitor Stand II (249562) (${p.role} 15-21")`);
         gripItems.push(`Avenger C590 Conka Bonka Stativ-Verlängerungen Set (${p.role} 15-21")`);
         gripItems.push(`Impact Baby to Junior Receiver Adapter (${p.role} 15-21")`);
-        gripItems.push(`Matthews BIG F'ING Monitor Rollen Set (3 Stück) (${p.role} 15-21")`);
+        gripItems.push(`Matthews BIG F'ING Monitor Wheel Set (3 pieces) (${p.role} 15-21")`);
         riggingAcc.push(`ULCS Bracket with 1/4 to 1/4 (${p.role} 15-21")`);
         gripItems.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
         riggingAcc.push(`spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
