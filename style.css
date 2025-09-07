@@ -37,7 +37,7 @@ body.pink-mode {
 }
 
 html {
-  font-size: clamp(14px, 1vw + 12px, 18px);
+  font-size: clamp(14px, 1vw + 10px, 16px);
 }
 
 html,
