@@ -751,7 +751,7 @@ describe('script.js functions', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][1];
     const expectedKeys = [
-      'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+      'projectName','productionCompany','rentalHouse','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
@@ -1624,14 +1624,14 @@ describe('script.js functions', () => {
       document.getElementById('batteryCount').textContent = '1';
       const html = generateGearListHtml({
         projectName: 'Proj',
-        dop: 'DopName',
+        people: [{ role: 'DoP', name: 'DopName', phone: '123' }],
         requiredScenarios: 'Handheld, Slider',
         filter: 'IRND'
       });
       expect(html).toContain('<h2>Proj</h2>');
       expect(html).toContain('<h3>Project Requirements</h3>');
       expect(html).toContain('<span class="req-label">DoP</span>');
-      expect(html).toContain('<span class="req-value">DopName</span>');
+      expect(html).toContain('<span class="req-value">DopName (123)</span>');
       expect(html).toContain('<span class="req-label">Required Scenarios</span>');
       expect(html).toContain('<span class="req-value">Handheld, Slider</span>');
       expect(html).not.toContain('Filter: IRND');
@@ -5090,7 +5090,8 @@ describe('script.js functions', () => {
 
   test('shareSetupBtn includes current project requirements', () => {
     document.getElementById('setupName').value = 'Proj';
-    document.getElementById('dop').value = 'Alice';
+    const crew = document.getElementById('crewContainer');
+    crew.innerHTML = '<div class="person-row"><select><option value="DoP" selected>DoP</option></select><input class="person-name" value="Alice"/><input class="person-phone" value="555"/></div>';
     global.loadProject = jest.fn(() => null);
     global.saveProject = jest.fn();
     const btn = document.getElementById('shareSetupBtn');
@@ -5100,7 +5101,7 @@ describe('script.js functions', () => {
     const decoded = script.decodeSharedSetup(
       JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
     );
-    expect(decoded.projectInfo.dop).toBe('Alice');
+    expect(decoded.projectInfo.people[0]).toEqual({ role: 'DoP', name: 'Alice', phone: '555' });
   });
 
   test('shareSetupBtn link stays under 2000 chars with selectors', () => {

@@ -1744,9 +1744,29 @@ const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
+const crewContainer = document.getElementById("crewContainer");
+const addPersonBtn = document.getElementById("addPersonBtn");
+
+const crewRoles = [
+  'DoP',
+  'Production Manager',
+  'Camera Operator',
+  'B-Camera Operator',
+  '1st AC',
+  '2nd AC',
+  'Video Operator'
+];
 
 const projectFieldIcons = {
+  productionCompany: '🏢',
+  rentalHouse: '🏬',
   dop: '👤',
+  productionManager: '👔',
+  cameraOperator: '🎥',
+  bCameraOperator: '🎥',
+  firstAc: '🎚️',
+  secondAc: '🎚️',
+  videoOperator: '📡',
   prepDays: '📅',
   shootingDays: '🎬',
   deliveryResolution: '📺',
@@ -1769,6 +1789,40 @@ const projectFieldIcons = {
   cameraUserButtons: '🔘',
   viewfinderUserButtons: '🔘'
 };
+
+function createCrewRow(data = {}) {
+  if (!crewContainer) return;
+  const row = document.createElement('div');
+  row.className = 'person-row';
+  const roleSel = document.createElement('select');
+  crewRoles.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r;
+    opt.textContent = r;
+    roleSel.appendChild(opt);
+  });
+  if (data.role) roleSel.value = data.role;
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.placeholder = 'Name';
+  nameInput.className = 'person-name';
+  nameInput.value = data.name || '';
+  const phoneInput = document.createElement('input');
+  phoneInput.type = 'tel';
+  phoneInput.placeholder = 'Phone';
+  phoneInput.className = 'person-phone';
+  phoneInput.value = data.phone || '';
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => row.remove());
+  row.append(roleSel, nameInput, phoneInput, removeBtn);
+  crewContainer.appendChild(row);
+}
+
+if (addPersonBtn) {
+  addPersonBtn.addEventListener('click', () => createCrewRow());
+}
 
 function updateTripodOptions() {
   const headBrand = tripodHeadBrandSelect ? tripodHeadBrandSelect.value : '';
@@ -7969,9 +8023,16 @@ function collectProjectFormData() {
     const matteboxVal = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE')
         ? 'Swing Away'
         : val('mattebox');
+    const people = Array.from(crewContainer?.querySelectorAll('.person-row') || []).map(row => ({
+        role: row.querySelector('select')?.value,
+        name: row.querySelector('.person-name')?.value.trim(),
+        phone: row.querySelector('.person-phone')?.value.trim()
+    })).filter(p => p.role && p.name);
     return {
         projectName: val('projectName'),
-        dop: val('dop'),
+        productionCompany: val('productionCompany'),
+        rentalHouse: val('rentalHouse'),
+        ...(people.length ? { people } : {}),
         prepDays: range('prepStart','prepEnd'),
         shootingDays: range('shootStart','shootEnd'),
         deliveryResolution: val('deliveryResolution'),
@@ -8024,7 +8085,12 @@ function populateProjectForm(info = {}) {
     populateCodecDropdown(info.codec);
 
     setVal('projectName', info.projectName);
-    setVal('dop', info.dop);
+    setVal('productionCompany', info.productionCompany);
+    setVal('rentalHouse', info.rentalHouse);
+    if (crewContainer) {
+        crewContainer.innerHTML = '';
+        (info.people || []).forEach(p => createCrewRow(p));
+    }
     const [prepStart, prepEnd] = (info.prepDays || '').split(' to ');
     setVal('prepStart', prepStart);
     setVal('prepEnd', prepEnd);
@@ -8330,13 +8396,39 @@ function generateGearListHtml(info = {}) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
     const projectInfo = { ...info };
+    if (Array.isArray(info.people)) {
+        const roleMap = {
+            'DoP': 'dop',
+            'Production Manager': 'productionManager',
+            'Camera Operator': 'cameraOperator',
+            'B-Camera Operator': 'bCameraOperator',
+            '1st AC': 'firstAc',
+            '2nd AC': 'secondAc',
+            'Video Operator': 'videoOperator'
+        };
+        info.people.forEach(p => {
+            const key = roleMap[p.role];
+            if (key && p.name) {
+                projectInfo[key] = p.phone ? `${p.name} (${p.phone})` : p.name;
+            }
+        });
+    }
+    delete projectInfo.people;
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
     delete projectInfo.monitoringSettings;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
     const labels = {
+        productionCompany: 'Production Company',
+        rentalHouse: 'Rental House',
         dop: 'DoP',
+        productionManager: 'Production Manager',
+        cameraOperator: 'Camera Operator',
+        bCameraOperator: 'B-Camera Operator',
+        firstAc: '1st AC',
+        secondAc: '2nd AC',
+        videoOperator: 'Video Operator',
         prepDays: 'Prep Days',
         shootingDays: 'Shooting Days',
         deliveryResolution: 'Delivery Resolution',
