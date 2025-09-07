@@ -256,6 +256,19 @@ describe('feedback storage', () => {
   });
 });
 
+describe('project storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('saveProject stores data per project name', () => {
+    saveProject('A', { gearList: '<ul>A</ul>' });
+    saveProject('B', { gearList: '<ul>B</ul>' });
+    expect(loadProject('A')).toEqual({ gearList: '<ul>A</ul>', projectInfo: null });
+    expect(loadProject('B')).toEqual({ gearList: '<ul>B</ul>', projectInfo: null });
+  });
+});
+
 describe('clearAllData', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -266,7 +279,7 @@ describe('clearAllData', () => {
     saveDeviceData(validDeviceData);
     saveSetups({ A: { foo: 1 } });
     saveFeedback({ note: 'hi' });
-    saveProject({ gearList: '<ul></ul>' });
+    saveProject('Proj', { gearList: '<ul></ul>' });
     saveSessionState({ camera: 'CamA' });
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
@@ -288,13 +301,13 @@ describe('export/import all data', () => {
     saveSetups({ A: { foo: 1 } });
     saveSessionState({ camera: 'CamA' });
     saveFeedback({ note: 'hi' });
-    saveProject({ gearList: '<ul></ul>' });
+    saveProject('Proj', { gearList: '<ul></ul>' });
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
-      project: { gearList: '<ul></ul>', projectInfo: null }
+      project: { Proj: { gearList: '<ul></ul>', projectInfo: null } }
     });
   });
 
@@ -304,14 +317,14 @@ describe('export/import all data', () => {
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
-      project: { gearList: '<ol></ol>' }
+      project: { Proj: { gearList: '<ol></ol>' } }
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
     expect(loadSetups()).toEqual({ A: { foo: 1 } });
     expect(loadSessionState()).toEqual({ camera: 'CamA' });
     expect(loadFeedback()).toEqual({ note: 'hi' });
-    expect(loadProject()).toEqual({ gearList: '<ol></ol>', projectInfo: null });
+    expect(loadProject('Proj')).toEqual({ gearList: '<ol></ol>', projectInfo: null });
   });
 });
 

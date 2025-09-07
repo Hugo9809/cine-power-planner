@@ -24,6 +24,7 @@ function setupDom(removeGear) {
   global.alert = jest.fn();
   global.prompt = jest.fn();
 
+
   // Use the cached HTML body instead of reading from disk each time.
   const dom = new JSDOM(`<!doctype html><html><head></head><body>${htmlBody}</body></html>`);
   global.window = dom.window;
@@ -138,6 +139,11 @@ function setupDom(removeGear) {
   global.loadFeedback = jest.fn(() => ({}));
   global.saveFeedback = jest.fn();
 }
+
+afterEach(() => {
+  if (global.localStorage) global.localStorage.clear();
+  if (global.sessionStorage) global.sessionStorage.clear();
+});
 
 test('cage data includes cage-specific attributes', () => {
   setupDom(false);
@@ -704,7 +710,7 @@ describe('script.js functions', () => {
     const cageSel = gear.querySelector('#gearListCage');
     cageSel.value = 'Cage2';
     script.saveCurrentGearList();
-    const saved = global.saveProject.mock.calls[0][0];
+    const saved = global.saveProject.mock.calls[0][1];
     expect(saved.gearList).toContain('<option value="Cage2" selected');
   });
 
@@ -717,7 +723,7 @@ describe('script.js functions', () => {
     gear.innerHTML = '<h2>Proj</h2><h3>Gear List</h3><table class="gear-table"></table>';
     gear.classList.remove('hidden');
     script.saveCurrentGearList();
-    const saved = global.saveProject.mock.calls[0][0];
+    const saved = global.saveProject.mock.calls[0][1];
     expect(saved.gearList).toContain('<div class="requirements-grid">');
     expect(saved.gearList).toContain('<table class="gear-table">');
   });
@@ -743,7 +749,7 @@ describe('script.js functions', () => {
     aspectMaskSel.options[0].selected = true;
     const form = document.getElementById('projectForm');
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    const saved = global.saveProject.mock.calls[0][0];
+    const saved = global.saveProject.mock.calls[0][1];
     const expectedKeys = [
       'projectName','dop','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','viewfinderSettings','frameGuides','aspectMaskOpacity','videoDistribution','monitoringConfiguration','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
     ];
@@ -5033,7 +5039,7 @@ describe('script.js functions', () => {
     const gearOut = document.getElementById('gearListOutput');
     const sel = gearOut.querySelector('#gearListCage');
     expect(sel.value).toBe('B');
-    expect(global.saveProject).toHaveBeenCalledWith({ gearList: expect.stringContaining('gearListCage'), projectInfo: { notes: 'shoot' } });
+    expect(global.saveProject).toHaveBeenCalledWith('', { gearList: expect.stringContaining('gearListCage'), projectInfo: { notes: 'shoot' } });
   });
 
   test('applySharedSetupFromUrl restores setup name', () => {
