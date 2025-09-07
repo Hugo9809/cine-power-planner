@@ -8169,6 +8169,7 @@ function generateGearListHtml(info = {}) {
     for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
     riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
     for (let i = 0; i < 3; i++) riggingAcc.push('spigot with male 3/8" and 1/4"');
+    for (let i = 0; i < 2; i++) riggingAcc.push('Clapper Stick');
     for (let i = 0; i < 2; i++) riggingAcc.push('D-Tap Splitter');
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
@@ -8819,7 +8820,7 @@ function generateGearListHtml(info = {}) {
         { name: 'Lasso Red 24mm', count: 1 },
         { name: 'Lasso Blue 24mm', count: 1 },
         { name: 'Sprigs Red 1/4"', count: 1, noScale: true },
-        { name: 'Klappenstift', count: 2, klappen: true }
+        { name: 'Clapper Stick', count: 2, klappen: true }
     ];
     let eyeLeatherCount = hasViewfinder ? 2 : 0;
     let shootDays = 0;
