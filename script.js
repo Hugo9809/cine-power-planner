@@ -5170,6 +5170,8 @@ function applyDeviceChanges(changes) {
 function renderSetupDiagram() {
   if (!setupDiagramContainer) return;
 
+  const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
+
   const camName = cameraSelect.value;
   const cam = devices.cameras[camName];
   const monitorName = monitorSelect.value;
@@ -5732,6 +5734,15 @@ function renderSetupDiagram() {
   setupDiagramContainer.appendChild(popup);
   setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
 
+  const svgEl = setupDiagramContainer.querySelector('svg');
+  if (svgEl) {
+    svgEl.style.width = '100%';
+    if (!isTouchDevice) {
+      const MAX_AUTO_SCALE = 3;
+      svgEl.style.maxWidth = `${viewWidth * MAX_AUTO_SCALE}px`;
+    }
+  }
+
   lastDiagramPositions = JSON.parse(JSON.stringify(pos));
 
   attachDiagramPopups(nodeMap);
@@ -5823,6 +5834,8 @@ function enableDiagramInteractions() {
   if (cleanupDiagramInteractions) cleanupDiagramInteractions();
 
   const root = svg.querySelector('#diagramRoot') || svg;
+  const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
+  const MAX_SCALE = isTouchDevice ? Infinity : 3;
   let pan = { x: 0, y: 0 };
   let scale = 1;
   let panning = false;
@@ -5833,6 +5846,7 @@ function enableDiagramInteractions() {
     return { x: e.clientX, y: e.clientY };
   };
   const apply = () => {
+    if (scale > MAX_SCALE) scale = MAX_SCALE;
     root.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
   };
   if (zoomInBtn) {

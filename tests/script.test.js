@@ -4518,6 +4518,63 @@ describe('script.js functions', () => {
     expect(endY).toBeCloseTo(snap(startY + 27 / scale));
   });
 
+  test('desktop zoom is limited to max scale', () => {
+    Object.defineProperty(navigator, 'maxTouchPoints', { value: 0, configurable: true });
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const zoomBtn = document.getElementById('zoomIn');
+    const svg = document.querySelector('#diagramArea svg');
+
+    for (let i = 0; i < 20; i++) {
+      zoomBtn.click();
+    }
+
+    const root = svg.querySelector('#diagramRoot') || svg;
+    expect(root.getAttribute('transform')).toBe('translate(0,0) scale(3)');
+  });
+
+  test('diagram auto scaling is capped on desktop', () => {
+    Object.defineProperty(navigator, 'maxTouchPoints', { value: 0, configurable: true });
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const svg = document.querySelector('#diagramArea svg');
+    expect(svg.style.maxWidth).toBe('1500px');
+  });
+
+  test('touch devices do not cap diagram auto scaling', () => {
+    Object.defineProperty(navigator, 'maxTouchPoints', { value: 1, configurable: true });
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+
+    script.renderSetupDiagram();
+
+    const svg = document.querySelector('#diagramArea svg');
+    expect(svg.style.maxWidth).toBe('');
+
+    Object.defineProperty(navigator, 'maxTouchPoints', { value: 0, configurable: true });
+  });
+
   test('reset view restores default pan and zoom', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
