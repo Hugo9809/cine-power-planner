@@ -5311,8 +5311,8 @@ function renderSetupDiagram() {
   }
 
   // Determine node heights and widths based on label length so text fits inside
-  const DEFAULT_NODE_H = 80;
-  const DEFAULT_NODE_W = 160;
+  const DEFAULT_NODE_H = 120;
+  const DEFAULT_NODE_W = 120;
   const nodeHeights = {};
   const nodeWidths = {};
   nodes.forEach(id => {
