@@ -1516,6 +1516,27 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   body:not(.light-mode).pink-mode .help-content { border-color: var(--accent-color); }
 }
 
+/* Accent color handling for tables */
+body.light-mode #batteryComparison th,
+body.light-mode #batteryComparison td {
+  border-color: var(--accent-color);
+}
+body.light-mode #batteryComparison th {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+body.pink-mode:not(.light-mode) #batteryComparison th,
+body.pink-mode:not(.light-mode) #batteryComparison td,
+body.pink-mode:not(.light-mode) #userFeedbackTable th,
+body.pink-mode:not(.light-mode) #userFeedbackTable td {
+  border-color: var(--accent-color);
+}
+body.pink-mode:not(.light-mode) #batteryComparison th,
+body.pink-mode:not(.light-mode) #userFeedbackTable th {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+
 /* Responsive layout adjustments */
 @media (max-width: 768px) {
   #featureSearch {
