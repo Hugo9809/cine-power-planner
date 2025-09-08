@@ -1967,6 +1967,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   background: var(--surface-color);
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   padding: var(--page-padding);
+  padding-left: calc(var(--page-padding) + 10px);
   z-index: 200;
   transition: transform 0.3s ease;
   transform: translateX(100%);
