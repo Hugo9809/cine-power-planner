@@ -758,6 +758,16 @@ button:disabled {
   color: var(--inverse-text-color);
 }
 
+@supports (padding: env(safe-area-inset-top)) {
+  #topBar {
+    padding:
+      calc(5px + env(safe-area-inset-top))
+      calc(20px + env(safe-area-inset-right))
+      5px
+      calc(20px + env(safe-area-inset-left));
+  }
+}
+
 #helpButton {
   padding: 0 4px;
   font-size: 1em;
