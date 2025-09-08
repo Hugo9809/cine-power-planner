@@ -257,7 +257,7 @@ footer a {
 
 @supports (-webkit-touch-callout: none) {
   select,
-  input,
+  input:not([type="checkbox"]):not([type="radio"]),
   textarea {
     background-image: none;
     -webkit-appearance: none;
