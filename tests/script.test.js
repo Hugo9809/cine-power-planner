@@ -4734,6 +4734,23 @@ describe('script.js functions', () => {
     expect(helpNoResults.hasAttribute('hidden')).toBe(true);
   });
 
+  test('help search ignores case and spaces', () => {
+    const helpSearch = document.getElementById('helpSearch');
+    const gearListHelp = document.getElementById('gearListHelp');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }));
+
+    helpSearch.value = 'gearlist';
+    helpSearch.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(gearListHelp.hasAttribute('hidden')).toBe(false);
+    expect(gearListHelp.querySelector('mark')).not.toBeNull();
+
+    helpSearch.value = 'Gear List';
+    helpSearch.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(gearListHelp.hasAttribute('hidden')).toBe(false);
+    expect(gearListHelp.querySelector('mark')).not.toBeNull();
+  });
+
   test('help clear button resets search', () => {
     const helpDialog = document.getElementById('helpDialog');
     const helpSearch = document.getElementById('helpSearch');
