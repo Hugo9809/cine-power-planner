@@ -1783,8 +1783,10 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 #overviewDialogContent.dark-mode h1,
 #overviewDialogContent.dark-mode h2,
 #overviewDialogContent.dark-mode h3 {
-  color: var(--inverse-text-color);
-  border-color: var(--inverse-text-color);
+  color: var(--accent-color);
+}
+#overviewDialogContent.dark-mode h2 {
+  border-bottom: 2px solid var(--accent-color);
 }
 #overviewDialogContent.dark-mode th {
   background-color: var(--control-bg);
@@ -1826,14 +1828,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 .dark-mode .gear-table td {
-  border-top: 1px solid var(--inverse-text-color);
-  border-bottom: 1px solid var(--inverse-text-color);
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
 }
 
 .dark-mode .gear-table .category-row td {
-  border-top: 1px solid var(--inverse-text-color);
-  border-bottom: 1px solid var(--inverse-text-color);
-  color: var(--inverse-text-color);
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  color: var(--accent-color);
 }
 
 #overviewDialogContent .gear-table td {
@@ -1854,14 +1856,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 #overviewDialogContent.dark-mode .gear-table td {
-  border-top: 1px solid var(--inverse-text-color);
-  border-bottom: 1px solid var(--inverse-text-color);
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
 }
 
 #overviewDialogContent.dark-mode .gear-table .category-row td {
-  border-top: 1px solid var(--inverse-text-color);
-  border-bottom: 1px solid var(--inverse-text-color);
-  color: var(--inverse-text-color);
+  border-top: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
+  color: var(--accent-color);
 }
 
 #gearListOutput,
@@ -1873,6 +1875,16 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border-radius: var(--border-radius);
   margin-top: 10px;
   overflow-x: auto;
+}
+
+#gearListOutput h1,
+#gearListOutput h2,
+#gearListOutput h3 {
+  color: var(--accent-color);
+}
+
+#gearListOutput h2 {
+  border-bottom: 2px solid var(--accent-color);
 }
 
 #gearListOutput .filter-item {
