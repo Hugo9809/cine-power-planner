@@ -8128,13 +8128,15 @@ function collectProjectFormData() {
 
 function populateProjectForm(info = {}) {
     if (!projectForm) return;
+    projectForm.reset();
     const setVal = (name, value) => {
+        if (value === undefined) return;
         const field = projectForm.querySelector(`[name="${name}"]`);
-        if (field) field.value = value || '';
+        if (field) field.value = value;
     };
     const setMulti = (name, values) => {
         const field = projectForm.querySelector(`[name="${name}"]`);
-        if (!field) return;
+        if (!field || values === undefined) return;
         const arr = Array.isArray(values) ? values : (values ? values.split(',').map(v => v.trim()) : []);
         Array.from(field.options).forEach(opt => {
             opt.selected = arr.includes(opt.value);

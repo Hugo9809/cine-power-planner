@@ -847,6 +847,27 @@ describe('script.js functions', () => {
     expect(html2).not.toContain('Project Requirements');
   });
 
+  test('deleting gear list restores default monitoring configuration', () => {
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    addOpt('batterySelect', 'BattA');
+    script.updateCalculations();
+    document.getElementById('projectName').value = 'Proj';
+    const monitoringSel = document.getElementById('monitoringConfiguration');
+    monitoringSel.value = 'Onboard Only';
+    const html = script.generateGearListHtml(script.collectProjectFormData());
+    script.displayGearAndRequirements(html);
+    script.ensureGearListActions();
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+    document.getElementById('deleteGearListBtn').click();
+    confirmSpy.mockRestore();
+    expect(monitoringSel.value).toBe('Viewfinder only');
+  });
+
   test('suggests chargers based on total batteries', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
