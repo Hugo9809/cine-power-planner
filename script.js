@@ -10697,7 +10697,7 @@ function getFilterValueConfig(type) {
 function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE) {
   const sel = document.createElement('select');
   sel.id = `filter-size-${filterId(type)}`;
-  let sizes = ['4x4', DEFAULT_FILTER_SIZE, '6x6', '95mm'];
+  let sizes = [DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
   if (type === 'Rota-Pol') sizes = [DEFAULT_FILTER_SIZE, '6x6', '95mm'];
   sizes.forEach(s => {
     const o = document.createElement('option');
