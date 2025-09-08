@@ -3088,6 +3088,31 @@ describe('script.js functions', () => {
     expect(out.classList.contains('hidden')).toBe(false);
   });
 
+  test('generate gear list button stays hidden after restoring saved list', () => {
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn();
+    global.saveProject = jest.fn();
+    const { generateGearListHtml, displayGearAndRequirements, ensureGearListActions, saveCurrentSession, restoreSessionState } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    displayGearAndRequirements(html);
+    ensureGearListActions();
+    const nameInput = document.getElementById('setupName');
+    nameInput.value = 'Proj1';
+    nameInput.dispatchEvent(new Event('input'));
+    saveCurrentSession();
+    const state = global.saveSessionState.mock.calls.pop()[0];
+    global.loadSessionState.mockReturnValue(state);
+    global.loadProject = jest.fn(name => (name === 'Proj1' ? { gearList: html } : null));
+    const out = document.getElementById('gearListOutput');
+    out.innerHTML = '';
+    out.classList.add('hidden');
+    const btn = document.getElementById('generateGearListBtn');
+    btn.classList.remove('hidden');
+    restoreSessionState();
+    expect(out.classList.contains('hidden')).toBe(false);
+    expect(btn.classList.contains('hidden')).toBe(true);
+  });
+
   test('gear list auto-saves session state for reloads', () => {
     global.saveSessionState = jest.fn();
     global.loadSessionState = jest.fn();

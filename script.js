@@ -9824,6 +9824,8 @@ function restoreSessionState() {
           setSliderBowlValue(state.sliderBowl);
           setEasyrigValue(state.easyrig);
         }
+        // Ensure the generator button reflects the restored gear list state
+        updateGearListButtonVisibility();
       }
     }
   }
