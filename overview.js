@@ -193,7 +193,7 @@ function generatePrintableOverview() {
     const overviewHtml = `
         <div id="overviewDialogContent">
             <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
-            <button onclick="window.print()" class="print-btn">${t.printBtn}</button>
+            <button id="printOverviewBtn" class="print-btn">${t.printBtn}</button>
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
             <p><em>Generated on: ${dateTimeString}</em></p>
@@ -230,6 +230,12 @@ function generatePrintableOverview() {
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             closeDialog(overviewDialog);
+        });
+    }
+    const printBtn = overviewDialog.querySelector('#printOverviewBtn');
+    if (printBtn) {
+        printBtn.addEventListener('click', () => {
+            window.print();
         });
     }
     openDialog(overviewDialog);
