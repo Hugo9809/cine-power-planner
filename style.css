@@ -1890,6 +1890,12 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   gap: 0.25rem;
 }
 
+#gearListOutput .filter-value-option input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+}
+
 #gearListOutput .filter-values-container select {
   display: none;
 }
