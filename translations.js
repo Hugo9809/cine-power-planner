@@ -41,6 +41,8 @@ const texts = {
     featureSearchLabel: "Search features, devices and help",
     featureSearchHelp:
       "Type to jump to features or devices or open related help topics.",
+    featureSearchClear: "Clear search",
+    featureSearchClearHelp: "Clear the search box and show all results again.",
     darkModeHelp:
       "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
     pinkModeHelp:
@@ -439,6 +441,8 @@ const texts = {
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
       "Digita per andare alle funzionalità o ai dispositivi o aprire le guide correlate.",
+    featureSearchClear: "Cancella ricerca",
+    featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati.",
     darkModeHelp:
       "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
@@ -811,6 +815,8 @@ const texts = {
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
       "Escribe para ir a las funciones o a los dispositivos o ver los temas de ayuda relacionados.",
+    featureSearchClear: "Borrar búsqueda",
+    featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo.",
     darkModeHelp:
       "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
@@ -1197,6 +1203,8 @@ const texts = {
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l'aide",
     featureSearchHelp:
       "Tapez pour accéder aux fonctionnalités ou appareils ou ouvrir les sujets d'aide associés.",
+    featureSearchClear: "Effacer la recherche",
+    featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats.",
     darkModeHelp:
       "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
     pinkModeHelp:
@@ -1585,6 +1593,8 @@ const texts = {
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
     featureSearchHelp:
       "Tippen, um zu Funktionen oder Geräten zu springen oder passende Hilfethemen zu öffnen.",
+    featureSearchClear: "Suche löschen",
+    featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen.",
     darkModeHelp:
       "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:

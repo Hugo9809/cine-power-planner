@@ -1659,6 +1659,14 @@ function setLanguage(lang) {
       texts[lang].featureSearchHelp || texts[lang].featureSearchLabel
     );
   }
+  if (featureSearchClear) {
+    featureSearchClear.setAttribute("title", texts[lang].featureSearchClear);
+    featureSearchClear.setAttribute("aria-label", texts[lang].featureSearchClear);
+    featureSearchClear.setAttribute(
+      "data-help",
+      texts[lang].featureSearchClearHelp || texts[lang].featureSearchClear
+    );
+  }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
@@ -2193,6 +2201,7 @@ const helpNoResults   = document.getElementById("helpNoResults");
 const helpSearchClear = document.getElementById("helpSearchClear");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
 const featureSearch   = document.getElementById("featureSearch");
+const featureSearchClear = document.getElementById("featureSearchClear");
 const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
 const deviceMap       = new Map();
@@ -10272,10 +10281,30 @@ if (helpButton && helpDialog) {
     featureSearch.addEventListener('change', handle);
     featureSearch.addEventListener('input', () => {
       featureSearch.showPicker?.();
+      if (featureSearchClear) {
+        if (featureSearch.value) {
+          featureSearchClear.removeAttribute('hidden');
+        } else {
+          featureSearchClear.setAttribute('hidden', '');
+        }
+      }
     });
     featureSearch.addEventListener('keydown', e => {
       if (e.key === 'Enter') handle();
     });
+  }
+
+  if (featureSearchClear) {
+    featureSearchClear.addEventListener('click', () => {
+      if (featureSearch) {
+        featureSearch.value = '';
+        featureSearchClear.setAttribute('hidden', '');
+        featureSearch.focus();
+      }
+    });
+    if (featureSearch && featureSearch.value) {
+      featureSearchClear.removeAttribute('hidden');
+    }
   }
 
   // Wire up button clicks and search field interactions

@@ -35,7 +35,10 @@
     </div>
     <button id="menuToggle" aria-label="Menu" aria-expanded="false">☰</button>
     <div class="feature-search">
-      <input type="search" id="featureSearch" list="featureList" placeholder="Search features or devices..." aria-label="Search features, devices and help" />
+      <div id="featureSearchContainer">
+        <input type="search" id="featureSearch" list="featureList" placeholder="Search features or devices..." aria-label="Search features, devices and help" />
+        <button id="featureSearchClear" type="button" aria-label="Clear search" title="Clear search" hidden>&times;</button>
+      </div>
       <datalist id="featureList"></datalist>
     </div>
     <nav class="controls" aria-label="Main controls">
