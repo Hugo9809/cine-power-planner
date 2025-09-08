@@ -10234,6 +10234,9 @@ if (helpButton && helpDialog) {
   if (featureSearch) {
     const handle = () => runFeatureSearch(featureSearch.value);
     featureSearch.addEventListener('change', handle);
+    featureSearch.addEventListener('input', () => {
+      featureSearch.showPicker?.();
+    });
     featureSearch.addEventListener('keydown', e => {
       if (e.key === 'Enter') handle();
     });
