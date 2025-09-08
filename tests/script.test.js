@@ -1032,6 +1032,23 @@ describe('script.js functions', () => {
     expect(helpDialog.hasAttribute('hidden')).toBe(false);
   });
 
+  test('opening help closes side menu', () => {
+    const menu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('menuOverlay');
+    const toggle = document.getElementById('menuToggle');
+    menu.classList.add('open');
+    menu.removeAttribute('hidden');
+    overlay.classList.remove('hidden');
+    toggle.setAttribute('aria-expanded', 'true');
+
+    document.getElementById('helpButton').click();
+
+    expect(menu.classList.contains('open')).toBe(false);
+    expect(menu.hasAttribute('hidden')).toBe(true);
+    expect(overlay.classList.contains('hidden')).toBe(true);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+  });
+
   test('weighs high-resolution entries by camera power share', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
