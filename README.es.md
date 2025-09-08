@@ -11,7 +11,7 @@ Esta herramienta en el navegador ayuda a planificar configuraciones profesionale
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-El idioma puede cambiarse en la esquina superior derecha y se recuerda para la próxima visita.
+Puedes cambiar el idioma en la esquina superior derecha y se recuerda para la próxima visita.
 
 ---
 

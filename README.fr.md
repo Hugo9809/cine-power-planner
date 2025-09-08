@@ -11,7 +11,7 @@ Cet outil fonctionnant dans le navigateur aide à planifier des configurations p
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 Français (par défaut si le navigateur est en français)
 
-La langue se change en haut à droite et est mémorisée pour la prochaine visite.
+Vous pouvez changer la langue en haut à droite; la préférence est mémorisée pour la prochaine visite.
 
 ---
 

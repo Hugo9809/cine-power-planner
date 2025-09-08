@@ -5,7 +5,7 @@ This browser based tool helps plan professional camera projects powered by V‑M
 ---
 
 ## 🌍 Languages
-- 🇬🇧 [English](README.en.md) (default)
+- 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)

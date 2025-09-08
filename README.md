@@ -71,7 +71,7 @@ See the language-specific README files for full details.
 - Save, load, share and clear projects (project requirements included); import/export them as JSON, and generate gear lists and printable overviews.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
-- Automatically selects your browser language on first load, lets you switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
+- Uses your browser's language on first load (falls back to English), lets you switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
 - Works completely offline and offers a searchable help dialog with hover help for every button, field, dropdown and header.
 
 ## Runtime Data Weighting

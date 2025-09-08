@@ -10,7 +10,7 @@ Questo strumento basato sul browser aiuta a pianificare configurazioni professio
 - 🇮🇹 Italiano (predefinito se il browser è in italiano)
 - 🇫🇷 [Français](README.fr.md)
 
-Puoi cambiare lingua nell'angolo in alto a destra. La scelta viene memorizzata per la prossima visita.
+Puoi cambiare la lingua nell'angolo in alto a destra e la scelta viene memorizzata per la prossima visita.
 
 ---
 
