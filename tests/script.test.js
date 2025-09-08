@@ -1935,6 +1935,29 @@ describe('script.js functions', () => {
     expect(info.filter).toBe('IRND:6x6:0.6|1.8');
   });
 
+  test('filter strength selection persists without gear list', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { collectProjectFormData, generateGearListHtml, displayGearAndRequirements, saveCurrentSession } = require('../script.js');
+    const filterSelect = document.getElementById('filter');
+    const opt = [...filterSelect.options].find(o => o.value === 'IRND');
+    opt.selected = true;
+    filterSelect.dispatchEvent(new window.Event('change'));
+    let info = collectProjectFormData();
+    const html = generateGearListHtml(info);
+    displayGearAndRequirements(html);
+    const sizeSel = document.getElementById('filter-size-IRND');
+    sizeSel.value = '6x6';
+    const valSel = document.getElementById('filter-values-IRND');
+    [...valSel.options].forEach(o => { o.selected = ['0.6','1.8'].includes(o.value); });
+    saveCurrentSession();
+    const gearOut = document.getElementById('gearListOutput');
+    gearOut.innerHTML = '';
+    gearOut.classList.add('hidden');
+    info = collectProjectFormData();
+    expect(info.filter).toBe('IRND:6x6:0.6|1.8');
+  });
+
   test('ND Grad filters force swing-away matte box', () => {
     setupDom(false);
     require('../translations.js');
