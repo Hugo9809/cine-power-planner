@@ -1833,7 +1833,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 #gearListOutput .filter-item select {
