@@ -3035,6 +3035,28 @@ describe('script.js functions', () => {
     expect(out.classList.contains('hidden')).toBe(false);
   });
 
+  test('gear list auto-saves session state for reloads', () => {
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn();
+    const { generateGearListHtml, displayGearAndRequirements, ensureGearListActions, refreshGearListIfVisible, restoreSessionState } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    displayGearAndRequirements(html);
+    ensureGearListActions();
+    const sel = document.getElementById('setupSelect');
+    sel.innerHTML = '<option value="">New</option><option value="Proj1">Proj1</option>';
+    sel.value = 'Proj1';
+    refreshGearListIfVisible();
+    const state = global.saveSessionState.mock.calls.pop()[0];
+    global.loadSessionState.mockReturnValue(state);
+    global.loadProject = jest.fn(name => (name === 'Proj1' ? { gearList: html } : null));
+    const out = document.getElementById('gearListOutput');
+    out.innerHTML = '';
+    out.classList.add('hidden');
+    restoreSessionState();
+    expect(global.loadProject).toHaveBeenCalledWith('Proj1');
+    expect(out.classList.contains('hidden')).toBe(false);
+  });
+
   test('stored project without session state restores gear list visibility', () => {
     setupDom(false);
     global.saveSessionState = jest.fn();
