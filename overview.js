@@ -124,15 +124,14 @@ function generatePrintableOverview() {
             if (canPin) pinsCandidates.push({ name: battName, hours, method });
             else dtapCandidates.push({ name: battName, hours, method });
         }
-        const getMethodLabel = m => {
-            if (m === 'both pins and D-Tap') return 'pins & D-Tap';
-            if (m === 'pins') return 'pins';
-            return 'D-Tap';
+        const getMethodLabel = method => {
+            if (method === 'pins') return `<span style="color:#FF9800;">${t.methodPinsOnly}</span>`;
+            if (method === 'both pins and D-Tap') return `<span style="color:#4CAF50;">${t.methodPinsAndDTap}</span>`;
+            if (method === 'infinite') return `<span style="color:#007bff;">${t.methodInfinite}</span>`;
+            return method === 'dtap' ? 'D-Tap' : method;
         };
-        const getBarClass = m => {
-            if (m === 'both pins and D-Tap') return 'dual';
-            if (m === 'pins') return 'pins';
-            return 'dtap';
+        const getBarClass = method => {
+            return method === 'pins' ? 'bar bar-pins-only' : 'bar';
         };
         pinsCandidates.sort((a, b) => b.hours - a.hours);
         dtapCandidates.sort((a, b) => b.hours - a.hours);
