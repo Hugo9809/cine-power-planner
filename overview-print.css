@@ -124,7 +124,7 @@ table, th, td {
 #overviewDialogContent #diagramArea {
   background: var(--surface-color) !important;
   border-color: var(--text-color);
-  box-shadow: none;
+  box-shadow: var(--panel-shadow);
 }
 #overviewDialogContent th {
   background-color: var(--control-bg) !important;
@@ -140,7 +140,7 @@ table, th, td {
 .requirement-box {
   background: var(--surface-color);
   border: 1px solid var(--text-color);
-  box-shadow: none;
+  box-shadow: var(--panel-shadow);
 }
 #overviewDialogContent .gear-table td {
   padding: 4px 0;
@@ -163,7 +163,7 @@ table, th, td {
 .device-block,
 .device-category {
   border: 1px solid var(--text-color);
-  box-shadow: none;
+  box-shadow: var(--panel-shadow);
 }
 
 #overviewDialogContent .barContainer {
