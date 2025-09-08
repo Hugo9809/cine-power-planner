@@ -2001,11 +2001,11 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 .dark-mode #sideMenu ul {
-  border-color: var(--inverse-text-color);
+  border-color: var(--accent-color);
 }
 
 .dark-mode #sideMenu li + li {
-  border-color: var(--inverse-text-color);
+  border-color: var(--accent-color);
 }
 
 #menuOverlay {
