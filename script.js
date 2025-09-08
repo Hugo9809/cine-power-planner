@@ -103,7 +103,17 @@ function setupSideMenu() {
   });
 
   overlay.addEventListener('click', closeSideMenu);
-  menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeSideMenu));
+  menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', event => {
+      const hash = link.getAttribute('href');
+      if (hash && hash.startsWith('#')) {
+        event.preventDefault();
+        document.querySelector(hash)?.scrollIntoView();
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+      closeSideMenu();
+    });
+  });
 }
 
 function setupResponsiveControls() {
