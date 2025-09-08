@@ -9996,7 +9996,8 @@ if (helpButton && helpDialog) {
   const filterHelp = () => {
     // Bail out early if the search input is missing
     if (!helpSearch) return;
-    const query = helpSearch.value.trim().toLowerCase();
+    const rawQuery = helpSearch.value.trim();
+    const query = rawQuery.replace(/\s+/g, '').toLowerCase();
     // Treat sections and FAQ items uniformly so the same logic can filter both
     const sections = Array.from(
       helpDialog.querySelectorAll('[data-help-section]')
@@ -10007,7 +10008,12 @@ if (helpButton && helpDialog) {
     // Prepare a regex to wrap matches in <mark>; escape to avoid breaking on
     // special characters in the query.
     const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = query ? new RegExp(`(${escapeRegExp(query)})`, 'ig') : null;
+    const regex = rawQuery
+      ? new RegExp(
+          `(${escapeRegExp(rawQuery.replace(/\s+/g, '')).split('').join('\\s*')})`,
+          'ig'
+        )
+      : null;
     elements.forEach(el => {
       // Save original HTML once so that repeated filtering doesn't permanently
       // insert <mark> tags; restore it before applying a new highlight.
@@ -10016,7 +10022,7 @@ if (helpButton && helpDialog) {
       } else {
         el.innerHTML = el.dataset.origHtml;
       }
-      const text = el.textContent.toLowerCase();
+      const text = el.textContent.toLowerCase().replace(/\s+/g, '');
       if (!query || text.includes(query)) {
         if (query && regex) {
           // Highlight the matching text while preserving the rest of the content
