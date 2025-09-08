@@ -1558,14 +1558,18 @@ describe('script.js functions', () => {
   test('applyPinkMode toggles class and aria-pressed', () => {
     const { applyPinkMode } = script;
     const toggle = document.getElementById('pinkModeToggle');
+    const logo = document.getElementById('logo');
+    expect(logo.getAttribute('src')).toBe('icon.svg');
     applyPinkMode(true);
     expect(document.body.classList.contains('pink-mode')).toBe(true);
     expect(toggle.textContent).toBe('🦄');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(logo.getAttribute('src')).toBe('icon-pink.svg');
     applyPinkMode(false);
     expect(document.body.classList.contains('pink-mode')).toBe(false);
     expect(toggle.textContent).toBe('🐴');
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    expect(logo.getAttribute('src')).toBe('icon.svg');
   });
 
   test('generatePrintableOverview includes diagram and device blocks', () => {
