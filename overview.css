@@ -93,6 +93,18 @@ th { background-color: var(--control-bg); font-weight: 700; }
   border-bottom: 1px solid #eee;
   padding-bottom: 3px;
 }
+
+@media (max-width: 600px) {
+  .device-category-container {
+    flex-direction: column;
+  }
+  .device-category {
+    flex: 1 1 100%;
+  }
+  .device-block-grid.two-column {
+    grid-template-columns: 1fr;
+  }
+}
 .category-icon { margin-right: 4px; }
 .connector-summary { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
 .connector-block { padding: 2px 4px; border-radius: 4px; margin: 2px 2px 0 0; font-size: 0.85em; }
