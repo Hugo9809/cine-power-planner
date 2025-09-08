@@ -4554,7 +4554,11 @@ describe('script.js functions', () => {
     script.renderSetupDiagram();
 
     const svg = document.querySelector('#diagramArea svg');
-    expect(svg.style.maxWidth).toBe('1500px');
+    const bodyFontSize = parseFloat(getComputedStyle(document.body).fontSize);
+    const viewBox = svg.getAttribute('viewBox').split(' ');
+    const viewWidth = parseFloat(viewBox[2]);
+    const expected = viewWidth * (bodyFontSize / 12);
+    expect(parseFloat(svg.style.maxWidth)).toBeCloseTo(expected);
   });
 
   test('touch devices do not cap diagram auto scaling', () => {

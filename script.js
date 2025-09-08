@@ -5738,8 +5738,10 @@ function renderSetupDiagram() {
   if (svgEl) {
     svgEl.style.width = '100%';
     if (!isTouchDevice) {
-      const MAX_AUTO_SCALE = 3;
-      svgEl.style.maxWidth = `${viewWidth * MAX_AUTO_SCALE}px`;
+      const bodyFontSize = parseFloat(getComputedStyle(document.body).fontSize) || 16;
+      const MAX_NODE_FONT = 12; // largest base font size used in diagram text
+      const maxAutoScale = bodyFontSize / MAX_NODE_FONT;
+      svgEl.style.maxWidth = `${viewWidth * maxAutoScale}px`;
     }
   }
 
