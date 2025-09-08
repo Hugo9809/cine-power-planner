@@ -2546,11 +2546,14 @@ function getSliderBowlSelect() {
 }
 function getSliderBowlValue() {
   const sel = getSliderBowlSelect();
-  return sel ? sel.value : '';
+  if (sel) return sel.value;
+  return loadedSetupState && loadedSetupState.sliderBowl ? loadedSetupState.sliderBowl : '';
 }
 function setSliderBowlValue(val) {
   const sel = getSliderBowlSelect();
-  if (sel) sel.value = val;
+  if (sel && val && Array.from(sel.options).some(opt => opt.value === val)) {
+    sel.value = val;
+  }
 }
 function getEasyrigSelect() {
   return gearListOutput ? gearListOutput.querySelector('#gearListEasyrig') : null;
@@ -2581,6 +2584,8 @@ function getCurrentProjectInfo() {
 
 function getCurrentSetupState() {
   const info = projectForm ? collectProjectFormData() : {};
+  info.sliderBowl = getSliderBowlValue();
+  info.easyrig = getEasyrigValue();
   const projectInfo = Object.values(info).some(v => v) ? info : null;
   return {
     camera: cameraSelect.value,
@@ -2593,8 +2598,8 @@ function getCurrentSetupState() {
     batteryPlate: batteryPlateSelect.value,
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value,
-    sliderBowl: getSliderBowlValue(),
-    easyrig: getEasyrigValue(),
+    sliderBowl: info.sliderBowl,
+    easyrig: info.easyrig,
     projectInfo
   };
 }
@@ -6527,8 +6532,8 @@ setupSelect.addEventListener("change", (event) => {
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
       if (cageSelect) cageSelect.value = setup.cage || cageSelect.value;
-      setup.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
-      setup.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
+      (setup.motors || []).forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
+      (setup.controllers || []).forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
       hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
@@ -9398,6 +9403,8 @@ function applyGearListSelectors(selectors) {
 function saveCurrentGearList() {
     const html = getCurrentGearListHtml();
     const info = projectForm ? collectProjectFormData() : {};
+    info.sliderBowl = getSliderBowlValue();
+    info.easyrig = getEasyrigValue();
     currentProjectInfo = Object.values(info).some(v => v) ? info : null;
     const projectName = getCurrentProjectName();
     if (typeof saveProject === 'function') {
@@ -9421,6 +9428,8 @@ function exportCurrentGearList() {
     const html = getCurrentGearListHtml();
     if (!html) return;
     const info = projectForm ? collectProjectFormData() : {};
+    info.sliderBowl = getSliderBowlValue();
+    info.easyrig = getEasyrigValue();
     const proj = Object.values(info).some(v => v) ? info : null;
     const blob = new Blob([JSON.stringify({ projectInfo: proj, gearList: html })], { type: 'application/json' });
     const a = document.createElement('a');
@@ -9677,6 +9686,11 @@ function refreshGearListIfVisible() {
         populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
         populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
         const info = collectProjectFormData();
+        info.sliderBowl = getSliderBowlValue();
+        info.easyrig = getEasyrigValue();
+        currentProjectInfo = Object.values(info).some(v => v) ? info : null;
+    } else {
+        const info = { sliderBowl: getSliderBowlValue(), easyrig: getEasyrigValue() };
         currentProjectInfo = Object.values(info).some(v => v) ? info : null;
     }
 
@@ -9703,6 +9717,8 @@ function refreshGearListIfVisible() {
 function saveCurrentSession() {
   if (restoringSession) return;
   const info = projectForm ? collectProjectFormData() : {};
+  info.sliderBowl = getSliderBowlValue();
+  info.easyrig = getEasyrigValue();
   currentProjectInfo = Object.values(info).some(v => v) ? info : null;
   const state = {
     setupName: setupNameInput ? setupNameInput.value : '',
@@ -9717,8 +9733,8 @@ function saveCurrentSession() {
     batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
     battery: batterySelect ? batterySelect.value : '',
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
-    sliderBowl: getSliderBowlValue(),
-    easyrig: getEasyrigValue(),
+    sliderBowl: info.sliderBowl,
+    easyrig: info.easyrig,
     projectInfo: currentProjectInfo
   };
   storeSession(state);

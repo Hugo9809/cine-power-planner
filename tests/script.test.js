@@ -730,6 +730,36 @@ describe('script.js functions', () => {
     expect(saved.gearList).toContain('<table class="gear-table">');
   });
 
+  test('slider bowl selection saved with project info', () => {
+    const reqSel = document.getElementById('requiredScenarios');
+    Array.from(reqSel.options).find(o => o.value === 'Slider').selected = true;
+    const form = document.getElementById('projectForm');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    global.saveProject.mockClear();
+    const bowlSel = document.getElementById('gearListSliderBowl');
+    bowlSel.value = '100er bowl';
+    bowlSel.dispatchEvent(new Event('change', { bubbles: true }));
+    const saved = global.saveProject.mock.calls[0][1];
+    expect(saved.projectInfo.sliderBowl).toBe('100er bowl');
+  });
+
+  test('slider bowl selection not shown in project summary', () => {
+    global.saveProject = jest.fn();
+    const reqSel = document.getElementById('requiredScenarios');
+    Array.from(reqSel.options).find(o => o.value === 'Slider').selected = true;
+    const form = document.getElementById('projectForm');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const bowlSel = document.getElementById('gearListSliderBowl');
+    bowlSel.value = '100er bowl';
+    bowlSel.dispatchEvent(new Event('change', { bubbles: true }));
+    const savedHtml = global.saveProject.mock.calls[0][1].gearList;
+    const wrap = document.createElement('div');
+    wrap.innerHTML = savedHtml;
+    const reqGrid = wrap.querySelector('.requirements-grid');
+    expect(reqGrid.textContent).not.toContain('Slider Bowl');
+    expect(reqGrid.textContent).not.toContain('100er bowl');
+  });
+
   test('entire project form is saved with gear list', () => {
     global.saveProject = jest.fn();
     document.getElementById('projectName').value = 'Proj';
