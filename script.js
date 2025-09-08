@@ -918,8 +918,20 @@ function updateMonitoringConfigurationOptions() {
   if (!vfOnlyOption) return;
   const show = hasViewfinder && !monitorSelected;
   vfOnlyOption.hidden = !show;
-  if (!show && monitoringConfigurationSelect.value === 'Viewfinder only') {
+  if (monitoringConfigurationUserChanged) {
+    if (!show && monitoringConfigurationSelect.value === 'Viewfinder only') {
+      monitoringConfigurationSelect.value = hasViewfinder ? 'Viewfinder and Onboard' : 'Onboard Only';
+    }
+    updateViewfinderSettingsVisibility();
+    return;
+  }
+
+  if (monitorSelected) {
     monitoringConfigurationSelect.value = hasViewfinder ? 'Viewfinder and Onboard' : 'Onboard Only';
+  } else if (!hasViewfinder) {
+    monitoringConfigurationSelect.value = 'Onboard Only';
+  } else {
+    monitoringConfigurationSelect.value = 'Viewfinder only';
   }
   updateViewfinderSettingsVisibility();
 }
@@ -1793,6 +1805,8 @@ const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
 const crewContainer = document.getElementById("crewContainer");
 const addPersonBtn = document.getElementById("addPersonBtn");
+
+let monitoringConfigurationUserChanged = false;
 
 const crewRoles = [
   'DoP',
@@ -9790,7 +9804,10 @@ if (cameraSelect) {
   });
 }
 if (monitoringConfigurationSelect) {
-  monitoringConfigurationSelect.addEventListener('change', updateViewfinderSettingsVisibility);
+  monitoringConfigurationSelect.addEventListener('change', () => {
+    monitoringConfigurationUserChanged = true;
+    updateViewfinderSettingsVisibility();
+  });
 }
 if (monitorSelect) {
   monitorSelect.addEventListener('change', updateMonitoringConfigurationOptions);
