@@ -6524,27 +6524,29 @@ setupSelect.addEventListener("change", (event) => {
       setSliderBowlValue(setup.sliderBowl || '');
       setEasyrigValue(setup.easyrig || '');
       updateBatteryOptions();
+      const storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
+      const html = setup.gearList || storedProject?.gearList || '';
+      currentProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
       if (gearListOutput) {
-        displayGearAndRequirements(setup.gearList || '');
-        currentProjectInfo = setup.projectInfo || null;
+        displayGearAndRequirements(html);
         populateProjectForm(currentProjectInfo || {});
-        if (setup.gearList) {
+        if (html) {
           ensureGearListActions();
-      bindGearListCageListener();
-      bindGearListEasyrigListener();
-      bindGearListSliderBowlListener();
-      bindGearListEyeLeatherListener();
-      bindGearListProGaffTapeListener();
-      bindGearListDirectorMonitorListener();
-          if (typeof saveProject === 'function') {
-            saveProject(setupName, { projectInfo: currentProjectInfo, gearList: setup.gearList });
-          }
-        } else {
-          if (typeof deleteProject === 'function') {
-            deleteProject(setupName);
-          }
+          bindGearListCageListener();
+          bindGearListEasyrigListener();
+          bindGearListSliderBowlListener();
+          bindGearListEyeLeatherListener();
+          bindGearListProGaffTapeListener();
+          bindGearListDirectorMonitorListener();
+        }
+        if (typeof saveProject === 'function') {
+          saveProject(setupName, { projectInfo: currentProjectInfo, gearList: html });
         }
       }
+    } else {
+      currentProjectInfo = null;
+      if (projectForm) populateProjectForm({});
+      displayGearAndRequirements('');
     }
     loadedSetupState = getCurrentSetupState();
   }
@@ -9484,18 +9486,6 @@ function deleteCurrentGearList() {
         easyrig: getEasyrigValue(),
         projectInfo: null
     });
-    if (typeof deleteProject === 'function') {
-        deleteProject(getCurrentProjectName());
-    }
-    const setupName = getCurrentProjectName();
-    if (setupName) {
-        const setups = getSetups();
-        if (setups[setupName]) {
-            delete setups[setupName].gearList;
-            delete setups[setupName].projectInfo;
-            storeSetups(setups);
-        }
-    }
     updateGearListButtonVisibility();
 }
 
