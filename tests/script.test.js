@@ -2981,6 +2981,39 @@ describe('script.js functions', () => {
     expect(out.classList.contains('hidden')).toBe(false);
   });
 
+  test('stored project without session state restores gear list visibility', () => {
+    setupDom(false);
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn(() => null);
+    global.saveProject = jest.fn();
+    global.loadProject = jest.fn(() => null);
+    require('../translations.js');
+    const { restoreSessionState } = require('../script.js');
+    const storedHtml = '<h2>Gear List</h2><h3>Project Requirements</h3><div class="requirements-grid"></div><h3>Gear List</h3><table class="gear-table"><tr><td>Item</td></tr></table>';
+    global.loadProject.mockReturnValue({ gearList: storedHtml });
+    const out = document.getElementById('gearListOutput');
+    out.innerHTML = '';
+    out.classList.add('hidden');
+    restoreSessionState();
+    expect(out.classList.contains('hidden')).toBe(false);
+  });
+
+  test('projects without gear list keep section hidden on restore', () => {
+    setupDom(false);
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn(() => null);
+    global.saveProject = jest.fn();
+    const stored = { projectInfo: { projectName: 'Proj1' }, gearList: '' };
+    global.loadProject = jest.fn(() => stored);
+    require('../translations.js');
+    const { restoreSessionState } = require('../script.js');
+    const out = document.getElementById('gearListOutput');
+    out.innerHTML = '';
+    out.classList.remove('hidden');
+    restoreSessionState();
+    expect(out.classList.contains('hidden')).toBe(true);
+  });
+
   test('tripod bowl selection persists through session restore when project store lacks it', () => {
     setupDom(false);
     global.saveSessionState = jest.fn();
