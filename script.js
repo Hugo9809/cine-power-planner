@@ -2173,13 +2173,16 @@ function populateFeatureSearch() {
   if (!featureList) return;
   featureMap.clear();
   featureList.innerHTML = '';
-  document.querySelectorAll('h2[id], legend[id]').forEach(el => {
-    const name = el.textContent.trim();
-    featureMap.set(name.toLowerCase(), el);
-    const opt = document.createElement('option');
-    opt.value = name;
-    featureList.appendChild(opt);
-  });
+  document
+    .querySelectorAll('h2[id], legend[id], h3[id]')
+    .forEach(el => {
+      if (helpDialog && helpDialog.contains(el)) return;
+      const name = el.textContent.trim();
+      featureMap.set(name.toLowerCase(), el);
+      const opt = document.createElement('option');
+      opt.value = name;
+      featureList.appendChild(opt);
+    });
   if (helpDialog) {
     helpDialog.querySelectorAll('[data-help-section] > h3').forEach(h => {
       const opt = document.createElement('option');
