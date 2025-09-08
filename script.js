@@ -2037,6 +2037,7 @@ const shareSetupBtn   = document.getElementById("shareSetupBtn");
 const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
 const shareLinkMessage = document.getElementById("shareLinkMessage");
+let lastSetupName = setupSelect ? setupSelect.value : '';
 const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const sharedKeyMap = {
   setupName: "s",
@@ -6470,6 +6471,12 @@ clearSetupBtn.addEventListener("click", () => {
 
 setupSelect.addEventListener("change", (event) => {
   const setupName = event.target.value;
+  if (lastSetupName && typeof saveProject === 'function') {
+    saveProject(lastSetupName, {
+      projectInfo: currentProjectInfo,
+      gearList: getCurrentGearListHtml()
+    });
+  }
   if (setupName === "") { // "-- New Setup --" selected
     setupNameInput.value = "";
     // Reset all dropdowns to "None" or first option
@@ -6496,9 +6503,8 @@ setupSelect.addEventListener("change", (event) => {
       projectRequirementsOutput.innerHTML = '';
       projectRequirementsOutput.classList.add('hidden');
     }
-    if (typeof deleteProject === 'function') {
-      deleteProject("");
-    }
+    currentProjectInfo = null;
+    if (projectForm) populateProjectForm({});
   } else {
     let setups = getSetups();
     const setup = setups[setupName];
@@ -6547,6 +6553,7 @@ setupSelect.addEventListener("change", (event) => {
   }
   updateCalculations();
   checkSetupChanged();
+  lastSetupName = setupName;
 });
 
 
@@ -9788,10 +9795,9 @@ function restoreSessionState() {
           setEasyrigValue(state.easyrig);
         }
       }
-    } else if (!state && typeof deleteProject === 'function') {
-      deleteProject('');
     }
   }
+  lastSetupName = setupSelect ? setupSelect.value : '';
   restoringSession = false;
   saveCurrentSession();
 }
