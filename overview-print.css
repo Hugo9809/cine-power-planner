@@ -79,6 +79,7 @@ body.dark-mode {
   font-family: 'Ubuntu', sans-serif;
   font-weight: 400;
   border-color: var(--text-color) !important;
+  color: var(--text-color) !important;
 }
 
 h1 {
