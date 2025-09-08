@@ -3485,6 +3485,29 @@ describe('script.js functions', () => {
     expect(configSel.value).toBe('Onboard Only');
   });
 
+  test('monitoring configuration defaults based on camera and monitor', () => {
+    const { updateMonitoringConfigurationOptions } = script;
+    const camSel = document.getElementById('cameraSelect');
+    const monitorSel = document.getElementById('monitorSelect');
+    const configSel = document.getElementById('monitoringConfiguration');
+    camSel.innerHTML = '<option value="NoVF">NoVF</option><option value="WithVF">WithVF</option>';
+    monitorSel.innerHTML = '<option value=""></option><option value="MonA">MonA</option>';
+    devices.cameras.NoVF = { powerDrawWatts: 10 };
+    devices.cameras.WithVF = { powerDrawWatts: 10, viewfinder: [{ type: 'EVF' }] };
+    devices.monitors.MonA = { powerDrawWatts: 5 };
+
+    camSel.value = 'WithVF';
+    monitorSel.value = 'MonA';
+    configSel.value = 'Onboard Only';
+    updateMonitoringConfigurationOptions();
+    expect(configSel.value).toBe('Viewfinder and Onboard');
+
+    camSel.value = 'NoVF';
+    configSel.value = 'Viewfinder and Onboard';
+    updateMonitoringConfigurationOptions();
+    expect(configSel.value).toBe('Onboard Only');
+  });
+
   test('default monitoring configuration omitted from project requirements', () => {
     const { generateGearListHtml } = script;
     const defaultHtml = generateGearListHtml({ monitoringConfiguration: 'Viewfinder and Onboard' });
