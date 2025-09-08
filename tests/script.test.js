@@ -4811,6 +4811,19 @@ describe('script.js functions', () => {
     expect(options).toContain('Add New Device');
   });
 
+  test('feature search selects devices', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const cameraSelect = document.getElementById('cameraSelect');
+    const featureList = document.getElementById('featureList');
+    const options = [...featureList.querySelectorAll('option')].map(o => o.value);
+    expect(options).toContain('Sony FX3');
+    featureSearch.value = 'Sony FX3';
+    featureSearch.dispatchEvent(new Event('change'));
+    expect(cameraSelect.value).toBe('Sony FX3');
+  });
+
   test('help button title shows keyboard shortcut and localizes', () => {
     const helpButton = document.getElementById('helpButton');
     script.setLanguage('en');

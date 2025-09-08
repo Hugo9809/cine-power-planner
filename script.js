@@ -2159,6 +2159,7 @@ const hoverHelpButton = document.getElementById("hoverHelpButton");
 const featureSearch   = document.getElementById("featureSearch");
 const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
+const deviceMap       = new Map();
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -2172,6 +2173,7 @@ const projectRequirementsOutput = document.getElementById("projectRequirementsOu
 function populateFeatureSearch() {
   if (!featureList) return;
   featureMap.clear();
+  deviceMap.clear();
   featureList.innerHTML = '';
   document
     .querySelectorAll('h2[id], legend[id], h3[id]')
@@ -2190,6 +2192,20 @@ function populateFeatureSearch() {
       featureList.appendChild(opt);
     });
   }
+
+  document.querySelectorAll('select').forEach(sel => {
+    sel.querySelectorAll('option').forEach(opt => {
+      const name = opt.textContent.trim();
+      if (!name || opt.value === 'None') return;
+      const key = name.toLowerCase();
+      if (!deviceMap.has(key)) {
+        deviceMap.set(key, { select: sel, value: opt.value });
+        const dlOpt = document.createElement('option');
+        dlOpt.value = name;
+        featureList.appendChild(dlOpt);
+      }
+    });
+  });
 }
 
 function setEditProjectBtnText() {
@@ -10191,7 +10207,16 @@ if (helpButton && helpDialog) {
     const lower = value.toLowerCase();
     const isHelp = lower.endsWith(' (help)');
     const clean = isHelp ? value.slice(0, -7).trim() : value;
-    const featureEl = featureMap.get(clean.toLowerCase());
+    const cleanLower = clean.toLowerCase();
+    const device = deviceMap.get(cleanLower);
+    if (device && !isHelp) {
+      device.select.value = device.value;
+      device.select.dispatchEvent(new Event('change', { bubbles: true }));
+      device.select.scrollIntoView({ behavior: 'smooth' });
+      device.select.focus?.();
+      return;
+    }
+    const featureEl = featureMap.get(cleanLower);
     if (featureEl && !isHelp) {
       featureEl.scrollIntoView({ behavior: 'smooth' });
       featureEl.focus?.();
