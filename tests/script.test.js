@@ -1858,6 +1858,21 @@ describe('script.js functions', () => {
     expect(sizeSel).not.toBeNull();
   });
 
+  test('filter checkbox toggles hidden select', () => {
+    setupDom(false);
+    require('../translations.js');
+    const script = require('../script.js');
+    const html = script.generateGearListHtml({ filter: 'IRND' });
+    script.displayGearAndRequirements(html);
+    script.ensureGearListActions();
+    const cb = document.querySelector('.filter-values-container input[value="0.6"]');
+    const sel = document.getElementById('filter-values-IRND');
+    expect([...sel.selectedOptions].map(o => o.value)).not.toContain('0.6');
+    cb.checked = true;
+    cb.dispatchEvent(new Event('change', { bubbles: true }));
+    expect([...sel.selectedOptions].map(o => o.value)).toContain('0.6');
+  });
+
   test('diopter filter includes frame and default strengths', () => {
     setupDom(false);
     require('../translations.js');

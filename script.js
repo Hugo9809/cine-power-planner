@@ -9499,6 +9499,25 @@ function ensureGearListActions() {
     deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
     deleteBtn.setAttribute('title', deleteHelp);
     deleteBtn.setAttribute('data-help', deleteHelp);
+
+    if (!gearListOutput._filterListenerBound) {
+        gearListOutput.addEventListener('change', e => {
+            const cb = e.target;
+            if (cb.matches('.filter-values-container input[type="checkbox"]')) {
+                const container = cb.closest('.filter-values-container');
+                const sel = container && container.querySelector('select');
+                if (sel) {
+                    const opt = Array.from(sel.options).find(opt => opt.value === cb.value);
+                    if (opt) opt.selected = cb.checked;
+                    sel.dispatchEvent(new Event('change'));
+                }
+                saveCurrentGearList();
+                saveCurrentSession();
+                checkSetupChanged();
+            }
+        });
+        gearListOutput._filterListenerBound = true;
+    }
 }
 
 function bindGearListCageListener() {
