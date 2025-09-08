@@ -1969,8 +1969,8 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   width: 250px;
   background: var(--surface-color);
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
-  padding: var(--page-padding);
-  padding-left: calc(var(--page-padding) + 10px);
+  padding: calc(var(--page-padding) + 10px);
+  padding-left: calc(var(--page-padding) + 20px);
   z-index: 200;
   transition: transform 0.3s ease;
   transform: translateX(100%);
@@ -2025,10 +2025,10 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 @supports (padding: env(safe-area-inset-top)) {
   #sideMenu {
     padding:
-      calc(var(--page-padding) + env(safe-area-inset-top))
-      calc(var(--page-padding) + env(safe-area-inset-right))
-      calc(var(--page-padding) + env(safe-area-inset-bottom))
-      calc(var(--page-padding) + env(safe-area-inset-left));
+      calc(var(--page-padding) + 10px + env(safe-area-inset-top))
+      calc(var(--page-padding) + 10px + env(safe-area-inset-right))
+      calc(var(--page-padding) + 10px + env(safe-area-inset-bottom))
+      calc(var(--page-padding) + 20px + env(safe-area-inset-left));
   }
 }
 
