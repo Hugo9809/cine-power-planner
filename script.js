@@ -10838,12 +10838,21 @@ function renderFilterDetails() {
 function collectFilterSelections() {
   if (!filterSelectElem) return '';
   const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
+  const existing = currentProjectInfo && currentProjectInfo.filter
+    ? parseFilterTokens(currentProjectInfo.filter)
+    : [];
+  const existingMap = Object.fromEntries(existing.map(t => [t.type, t]));
   const tokens = selected.map(type => {
     const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
-    const size = sizeSel ? sizeSel.value : DEFAULT_FILTER_SIZE;
     const valSel = document.getElementById(`filter-values-${filterId(type)}`);
-    let vals = valSel ? Array.from(valSel.selectedOptions).map(o => o.value) : [];
-    if (!valSel || vals.length === 0) {
+    const prev = existingMap[type] || {};
+    const size = sizeSel ? sizeSel.value : (prev.size || DEFAULT_FILTER_SIZE);
+    let vals;
+    if (valSel) {
+      vals = Array.from(valSel.selectedOptions).map(o => o.value);
+    } else if (Array.isArray(prev.values) && prev.values.length) {
+      vals = prev.values;
+    } else {
       vals = getFilterValueConfig(type).defaults;
     }
     return `${type}:${size}${vals.length ? ':' + vals.join('|') : ''}`;
