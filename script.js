@@ -9763,8 +9763,10 @@ function restoreSessionState() {
         bindGearListEyeLeatherListener();
         bindGearListProGaffTapeListener();
         bindGearListDirectorMonitorListener();
-        setSliderBowlValue(state && state.sliderBowl);
-        setEasyrigValue(state && state.easyrig);
+        if (state) {
+          setSliderBowlValue(state.sliderBowl);
+          setEasyrigValue(state.easyrig);
+        }
       }
     } else if (!state && typeof deleteProject === 'function') {
       deleteProject('');

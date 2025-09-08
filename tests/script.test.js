@@ -2995,6 +2995,31 @@ describe('script.js functions', () => {
     expect(bowlSel.value).toBe('100mm bowl');
   });
 
+  test('slider bowl selection persists through project reload when session state is absent', () => {
+    setupDom(false);
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn(() => null);
+    const sliderHtml = `
+      <h2>Gear List</h2>
+      <h3>Project Requirements</h3>
+      <div class="requirements-grid"></div>
+      <h3>Gear List</h3>
+      <table class="gear-table">
+        <tr><td><span class="gear-item">1x Prosup Tango Roller <select id="gearListSliderBowl">
+          <option value=""></option>
+          <option value="75er bowl" selected>75er bowl</option>
+          <option value="100er bowl">100er bowl</option>
+          <option value="150er bowl">150er bowl</option>
+          <option value="Mitchell Mount">Mitchell Mount</option>
+        </select></span></td></tr>
+      </table>`;
+    global.loadProject = jest.fn(() => ({ gearList: sliderHtml }));
+    require('../translations.js');
+    require('../script.js');
+    const sel = document.getElementById('gearListSliderBowl');
+    expect(sel.value).toBe('75er bowl');
+  });
+
   test('loading a different project replaces gear list and requirements', () => {
     setupDom(false);
     const buildHtml = (name) => `\
