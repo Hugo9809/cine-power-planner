@@ -5,13 +5,13 @@ This browser based tool helps plan professional camera projects powered by V‑M
 ---
 
 ## 🌍 Languages
-- 🇬🇧 [English](README.en.md) (default)
+- 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-The app defaults to English on first load, and you can switch the language in the top right corner. The choice is remembered for your next visit.
+The app automatically uses your browser language on first load, and you can switch the language in the top right corner. The choice is remembered for your next visit.
 
 ---
 

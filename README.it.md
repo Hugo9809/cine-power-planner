@@ -4,13 +4,13 @@ Questo strumento basato sul browser aiuta a pianificare configurazioni professio
 ---
 
 ## 🌍 Lingue
-- 🇬🇧 [English](README.en.md) (predefinito)
+- 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
-- 🇮🇹 Italiano
+- 🇮🇹 Italiano (predefinito se il browser è in italiano)
 - 🇫🇷 [Français](README.fr.md)
 
-La lingua predefinita è l'inglese. Puoi cambiarla nell'angolo in alto a destra e la scelta viene memorizzata per la prossima visita.
+Puoi cambiare la lingua nell'angolo in alto a destra e la scelta viene memorizzata per la prossima visita.
 
 ---
 
