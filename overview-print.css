@@ -210,11 +210,6 @@ table, th, td {
 
 #overviewDialogContent .device-category {
   flex: 1 1 100%;
-  page-break-after: always;
-}
-
-#overviewDialogContent .device-category:last-child {
-  page-break-after: auto;
 }
 
 #overviewDialogContent .device-block-grid.two-column {

@@ -200,8 +200,6 @@ function generatePrintableOverview() {
             <h2>${t.overviewDeviceSelectionHeading || t.deviceSelectionHeading}</h2>
             ${deviceListHtml}
 
-            <div class="page-break"></div>
-
             <h2>${t.resultsHeading}</h2>
             ${resultsHtml}
             ${warningHtml}
