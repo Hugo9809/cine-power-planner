@@ -2137,6 +2137,7 @@ function collectDynamicFieldValues(category) {
 }
 const languageSelect  = document.getElementById("languageSelect");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
+const logo = document.getElementById("logo");
 const darkModeToggle  = document.getElementById("darkModeToggle");
 const helpButton      = document.getElementById("helpButton");
 const reloadButton    = document.getElementById("reloadButton");
@@ -9807,12 +9808,18 @@ if (darkModeToggle) {
 function applyPinkMode(enabled) {
   if (enabled) {
     document.body.classList.add("pink-mode");
+    if (logo) {
+      logo.src = "icon-pink.svg";
+    }
     if (pinkModeToggle) {
       pinkModeToggle.textContent = "🦄";
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
   } else {
     document.body.classList.remove("pink-mode");
+    if (logo) {
+      logo.src = "icon.svg";
+    }
     if (pinkModeToggle) {
       pinkModeToggle.textContent = "🐴";
       pinkModeToggle.setAttribute("aria-pressed", "false");

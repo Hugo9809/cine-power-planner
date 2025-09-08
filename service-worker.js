@@ -32,6 +32,7 @@ const ASSETS = [
   './normalizeData.js',
   './unifyPorts.js',
   './icon.svg',
+  './icon-pink.svg',
   './icon.png',
   './manifest.webmanifest',
   './lz-string.min.js'

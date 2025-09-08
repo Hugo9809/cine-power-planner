@@ -1558,12 +1558,15 @@ describe('script.js functions', () => {
   test('applyPinkMode toggles class and aria-pressed', () => {
     const { applyPinkMode } = script;
     const toggle = document.getElementById('pinkModeToggle');
+    const logo = document.getElementById('logo');
     applyPinkMode(true);
     expect(document.body.classList.contains('pink-mode')).toBe(true);
+    expect(logo.getAttribute('src')).toBe('icon-pink.svg');
     expect(toggle.textContent).toBe('🦄');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
     applyPinkMode(false);
     expect(document.body.classList.contains('pink-mode')).toBe(false);
+    expect(logo.getAttribute('src')).toBe('icon.svg');
     expect(toggle.textContent).toBe('🐴');
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
   });
