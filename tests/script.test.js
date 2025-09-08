@@ -4805,6 +4805,12 @@ describe('script.js functions', () => {
     expect(helpSearchClear.getAttribute('title')).toBe(texts.de.helpSearchClear);
   });
 
+  test('feature search includes cross links to section headings', () => {
+    const featureList = document.getElementById('featureList');
+    const options = [...featureList.querySelectorAll('option')].map(o => o.value);
+    expect(options).toContain('Add New Device');
+  });
+
   test('help button title shows keyboard shortcut and localizes', () => {
     const helpButton = document.getElementById('helpButton');
     script.setLanguage('en');
