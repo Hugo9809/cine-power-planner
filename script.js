@@ -69,6 +69,20 @@ if (typeof window !== 'undefined') {
 }
 
 /**
+ * Close the sidebar menu if it is open.
+ */
+function closeSideMenu() {
+  const menu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('menuOverlay');
+  const toggle = document.getElementById('menuToggle');
+  if (!menu || !overlay || !toggle) return;
+  menu.classList.remove('open');
+  menu.setAttribute('hidden', '');
+  overlay.classList.add('hidden');
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
+/**
  * Initialize sidebar menu toggle.
  */
 function setupSideMenu() {
@@ -77,27 +91,19 @@ function setupSideMenu() {
   const overlay = document.getElementById('menuOverlay');
   if (!toggle || !menu || !overlay) return;
 
-  const closeMenu = () => {
-    menu.classList.remove('open');
-    menu.setAttribute('hidden', '');
-    overlay.classList.add('hidden');
-    toggle.setAttribute('aria-expanded', 'false');
-  };
-
   toggle.addEventListener('click', () => {
     const isOpen = menu.classList.toggle('open');
     if (isOpen) {
       menu.removeAttribute('hidden');
       overlay.classList.remove('hidden');
+      toggle.setAttribute('aria-expanded', 'true');
     } else {
-      menu.setAttribute('hidden', '');
-      overlay.classList.add('hidden');
+      closeSideMenu();
     }
-    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   });
 
-  overlay.addEventListener('click', closeMenu);
-  menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  overlay.addEventListener('click', closeSideMenu);
+  menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeSideMenu));
 }
 
 function setupResponsiveControls() {
@@ -10201,6 +10207,7 @@ if (helpButton && helpDialog) {
   // doesn't persist between openings, and focus is moved to the search field
   // for immediate typing.
   const openHelp = () => {
+    closeSideMenu();
     helpDialog.removeAttribute('hidden');
     if (helpSearch) {
       helpSearch.value = '';
