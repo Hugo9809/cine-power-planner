@@ -2431,8 +2431,6 @@ function describeRequirement(field, value) {
     if (val && val !== 'no further stabilisation') {
       parts.push('Adds selected stabiliser to gear list.');
     }
-  } else if (field === 'filter') {
-    if (val) parts.push('Adds selected filters to gear list.');
   } else if (field === 'codec') {
     if (val) parts.push('Notes chosen codec for post-production reference.');
   } else if (field === 'monitoringConfiguration') {
@@ -8638,8 +8636,7 @@ function generateGearListHtml(info = {}) {
         tripodTypes: 'Tripod Types',
         tripodSpreader: 'Tripod Spreader',
         sliderBowl: 'Slider Bowl',
-        easyrig: 'Further Stabilisation',
-        filter: 'Filter'
+        easyrig: 'Further Stabilisation'
     };
     const excludedFields = new Set([
         'cameraHandle',
@@ -8656,22 +8653,11 @@ function generateGearListHtml(info = {}) {
         'lenses',
         'viewfinderSettings',
         'frameGuides',
-        'aspectMaskOpacity'
+        'aspectMaskOpacity',
+        'filter'
     ]);
-    const formatFilterSelections = str =>
-        parseFilterTokens(str)
-            .map(({ type, size, values }) => {
-                const sizePart = size ? ` (${size})` : '';
-                const valPart = values.length ? `: ${values.join(', ')}` : '';
-                return `${type}${sizePart}${valPart}`;
-            })
-            .join(', ');
     const infoEntries = Object.entries(projectInfo)
-        .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k))
-        .map(([k, v]) => {
-            if (k === 'filter') v = formatFilterSelections(v);
-            return [k, v];
-        });
+        .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => {
             const value = escapeHtml(v).replace(/\n/g, '<br>');
