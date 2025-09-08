@@ -8257,6 +8257,7 @@ function collectProjectFormData() {
         tripodSpreader: val('tripodSpreader'),
         sliderBowl: getSliderBowlValue(),
         easyrig: getEasyrigValue(),
+        focusMonitor: gearListOutput?.querySelector('#gearListFocusMonitor')?.value || '',
         filter: filterStr
     };
 }
@@ -8633,6 +8634,7 @@ function generateGearListHtml(info = {}) {
         videoDistribution: 'Video Distribution',
         monitoringSupport: 'Monitoring support',
         monitoringConfiguration: 'Monitoring configuration',
+        focusMonitor: 'Focus Monitor',
         monitorUserButtons: 'Onboard Monitor User Buttons',
         cameraUserButtons: 'Camera User Buttons',
         viewfinderUserButtons: 'Viewfinder User Buttons',
@@ -8649,6 +8651,7 @@ function generateGearListHtml(info = {}) {
         'mattebox',
         'videoDistribution',
         'monitoringConfiguration',
+        'focusMonitor',
         'tripodHeadBrand',
         'tripodBowl',
         'tripodTypes',
