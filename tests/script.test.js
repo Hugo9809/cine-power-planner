@@ -753,7 +753,7 @@ describe('script.js functions', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][1];
     const expectedKeys = [
-      'projectName','productionCompany','rentalHouse','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','videoDistribution','monitoringConfiguration','monitoringSupport','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+      'projectName','productionCompany','rentalHouse','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','videoDistribution','monitoringConfiguration','focusMonitor','monitoringSupport','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
@@ -2441,6 +2441,35 @@ describe('script.js functions', () => {
       expect(html).toContain('Lite-Tite Swivel Aluminium Umbrella Adapter (1x Focus)');
       expect(html).toContain('3x Tennis ball');
     expect(msSection).toContain('2x Antenna 5,8GHz 5dBi Long (2x Spare)');
+  });
+
+  test('focus monitor selection saved to project info', () => {
+    setupDom(false);
+    require('../script.js');
+    global.saveProject = jest.fn();
+    global.devices.video = {
+      'VidA TX': {
+        powerDrawWatts: 3,
+        power: { input: { type: 'LEMO 2-pin' } },
+        videoInputs: [{ type: '3G-SDI' }]
+      }
+    };
+    global.devices.wirelessReceivers = { 'VidA RX': {} };
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('motor1Select', 'MotorA');
+    addOpt('videoSelect', 'VidA TX');
+    document.getElementById('projectName').value = 'Proj';
+    const form = document.getElementById('projectForm');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const sel = document.getElementById('gearListFocusMonitor');
+    sel.value = 'MonA';
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    const saved = global.saveProject.mock.calls.pop()[1];
+    expect(saved.projectInfo.focusMonitor).toBe('MonA');
   });
 
   test('zoom remote adds second motor and controller for Arri brand', () => {
