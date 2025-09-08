@@ -722,6 +722,19 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+#topBar .feature-search {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+#featureSearch {
+  width: 100%;
+  max-width: 300px;
+  padding: 2px 6px;
+  height: var(--button-size);
+}
+
 #topBar select,
 #topBar button {
   height: var(--button-size);

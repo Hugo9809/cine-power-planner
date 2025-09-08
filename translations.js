@@ -37,6 +37,10 @@ const texts = {
     existingDevicesHeading: "Existing Devices",
     darkModeLabel: "Toggle dark mode",
     pinkModeLabel: "Toggle pink mode",
+    featureSearchPlaceholder: "Search features...",
+    featureSearchLabel: "Search features and help",
+    featureSearchHelp:
+      "Type to jump to features or open related help topics.",
     darkModeHelp:
       "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
     pinkModeHelp:
@@ -431,6 +435,10 @@ const texts = {
     existingDevicesHeading: "Dispositivi esistenti",
     darkModeLabel: "Attiva modalità scura",
     pinkModeLabel: "Attiva modalità rosa",
+    featureSearchPlaceholder: "Cerca funzionalità...",
+    featureSearchLabel: "Cerca funzionalità e aiuto",
+    featureSearchHelp:
+      "Digita per andare alle funzionalità o aprire le guide correlate.",
     darkModeHelp:
       "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
@@ -799,6 +807,10 @@ const texts = {
     existingDevicesHeading: "Dispositivos Existentes",
     darkModeLabel: "Alternar modo oscuro",
     pinkModeLabel: "Alternar modo rosa",
+    featureSearchPlaceholder: "Buscar funciones...",
+    featureSearchLabel: "Buscar funciones y ayuda",
+    featureSearchHelp:
+      "Escribe para ir a las funciones o ver los temas de ayuda relacionados.",
     darkModeHelp:
       "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
@@ -1181,6 +1193,10 @@ const texts = {
     existingDevicesHeading: "Appareils Existants",
     darkModeLabel: "Basculer en mode sombre",
     pinkModeLabel: "Basculer en mode rose",
+    featureSearchPlaceholder: "Rechercher des fonctionnalités...",
+    featureSearchLabel: "Rechercher des fonctionnalités et l'aide",
+    featureSearchHelp:
+      "Tapez pour accéder aux fonctionnalités ou ouvrir les rubriques d'aide associées.",
     darkModeHelp:
       "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
     pinkModeHelp:
@@ -1565,6 +1581,10 @@ const texts = {
     existingDevicesHeading: "Vorhandene Geräte",
     darkModeLabel: "Dunkelmodus umschalten",
     pinkModeLabel: "Pinkmodus umschalten",
+    featureSearchPlaceholder: "Funktionen durchsuchen...",
+    featureSearchLabel: "Funktionen und Hilfe durchsuchen",
+    featureSearchHelp:
+      "Tippe, um zu Funktionen zu springen oder passende Hilfethemen zu öffnen.",
     darkModeHelp:
       "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:

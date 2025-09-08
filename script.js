@@ -1615,6 +1615,14 @@ function setLanguage(lang) {
       texts[lang].reloadAppHelp || texts[lang].reloadAppLabel
     );
   }
+  if (featureSearch) {
+    featureSearch.setAttribute("placeholder", texts[lang].featureSearchPlaceholder);
+    featureSearch.setAttribute("aria-label", texts[lang].featureSearchLabel);
+    featureSearch.setAttribute(
+      "data-help",
+      texts[lang].featureSearchHelp || texts[lang].featureSearchLabel
+    );
+  }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
@@ -1709,6 +1717,7 @@ function setLanguage(lang) {
   }
   ensureGearListActions();
   updateDiagramLegend();
+  populateFeatureSearch();
 }
 
 // Reference elements (DOM Elements)
@@ -2146,6 +2155,9 @@ const helpSearch      = document.getElementById("helpSearch");
 const helpNoResults   = document.getElementById("helpNoResults");
 const helpSearchClear = document.getElementById("helpSearchClear");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
+const featureSearch   = document.getElementById("featureSearch");
+const featureList     = document.getElementById("featureList");
+const featureMap      = new Map();
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -2155,6 +2167,26 @@ const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
 const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+
+function populateFeatureSearch() {
+  if (!featureList) return;
+  featureMap.clear();
+  featureList.innerHTML = '';
+  document.querySelectorAll('h2[id], legend[id]').forEach(el => {
+    const name = el.textContent.trim();
+    featureMap.set(name.toLowerCase(), el);
+    const opt = document.createElement('option');
+    opt.value = name;
+    featureList.appendChild(opt);
+  });
+  if (helpDialog) {
+    helpDialog.querySelectorAll('[data-help-section] > h3').forEach(h => {
+      const opt = document.createElement('option');
+      opt.value = `${h.textContent.trim()} (help)`;
+      featureList.appendChild(opt);
+    });
+  }
+}
 
 function setEditProjectBtnText() {
   const btn = document.getElementById('editProjectBtn');
@@ -10131,6 +10163,34 @@ if (helpButton && helpDialog) {
     hoverHelpButton.addEventListener('click', e => {
       e.stopPropagation();
       startHoverHelp(); // activate tooltip mode
+    });
+  }
+
+  const runFeatureSearch = query => {
+    if (!query) return;
+    const value = query.trim();
+    if (!value) return;
+    const lower = value.toLowerCase();
+    const isHelp = lower.endsWith(' (help)');
+    const clean = isHelp ? value.slice(0, -7).trim() : value;
+    const featureEl = featureMap.get(clean.toLowerCase());
+    if (featureEl && !isHelp) {
+      featureEl.scrollIntoView({ behavior: 'smooth' });
+      featureEl.focus?.();
+      return;
+    }
+    openHelp();
+    if (helpSearch) {
+      helpSearch.value = clean;
+      filterHelp();
+    }
+  };
+
+  if (featureSearch) {
+    const handle = () => runFeatureSearch(featureSearch.value);
+    featureSearch.addEventListener('change', handle);
+    featureSearch.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handle();
     });
   }
 
