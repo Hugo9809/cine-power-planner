@@ -1636,6 +1636,23 @@ describe('script.js functions', () => {
     expect(html).toContain('CamA');
   });
 
+  test('print button triggers window.print', () => {
+    const { generatePrintableOverview } = script;
+    window.print = jest.fn();
+    document.getElementById('setupName').value = 'Test';
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', 'CamA');
+    script.updateCalculations();
+    generatePrintableOverview();
+    const btn = document.getElementById('printOverviewBtn');
+    btn.click();
+    expect(window.print).toHaveBeenCalled();
+  });
+
   test('generateGearListHtml returns table with categories and accessories', () => {
       const { generateGearListHtml } = script;
       const addOpt = (id, value) => {
