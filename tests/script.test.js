@@ -730,6 +730,20 @@ describe('script.js functions', () => {
     expect(saved.gearList).toContain('<table class="gear-table">');
   });
 
+  test('slider bowl selection saved in project info', () => {
+    global.saveProject = jest.fn();
+    const proj = document.getElementById('projectRequirementsOutput');
+    proj.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"></div>';
+    proj.classList.remove('hidden');
+    const gear = document.getElementById('gearListOutput');
+    gear.innerHTML = '<h2>Proj</h2><h3>Gear List</h3><table class="gear-table"><tr><td><span class="gear-item">1x Prosup Tango Roller <select id="gearListSliderBowl"><option value=""></option><option value="75er bowl">75er bowl</option><option value="100er bowl">100er bowl</option></select></span></td></tr></table>';
+    gear.classList.remove('hidden');
+    gear.querySelector('#gearListSliderBowl').value = '100er bowl';
+    script.saveCurrentGearList();
+    const saved = global.saveProject.mock.calls[0][1];
+    expect(saved.projectInfo.sliderBowl).toBe('100er bowl');
+  });
+
   test('entire project form is saved with gear list', () => {
     global.saveProject = jest.fn();
     document.getElementById('projectName').value = 'Proj';
@@ -2841,6 +2855,9 @@ describe('script.js functions', () => {
     const html = generateGearListHtml({ requiredScenarios: 'Slider', sliderBowl: '75er bowl' });
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
+    const reqBox = wrap.querySelector('[data-field="sliderBowl"]');
+    expect(reqBox).not.toBeNull();
+    expect(reqBox.querySelector('.req-value').textContent).toBe('75er bowl');
     const rows = Array.from(wrap.querySelectorAll('.gear-table tr'));
     const gripIdx = rows.findIndex(r => r.textContent === 'Grip');
     const itemsRow = rows[gripIdx + 1];
