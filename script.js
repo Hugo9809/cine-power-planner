@@ -7628,7 +7628,10 @@ if (projectForm) {
         bindGearListEyeLeatherListener();
         bindGearListProGaffTapeListener();
         bindGearListDirectorMonitorListener();
-        saveCurrentGearList();
+        // Persist the generated gear list and current project name so that
+        // a page reload can restore the visible gear list without requiring
+        // any additional user action.
+        saveCurrentSession();
         closeDialog(projectDialog);
     });
 }
@@ -9687,7 +9690,9 @@ function refreshGearListIfVisible() {
     bindGearListEyeLeatherListener();
     bindGearListProGaffTapeListener();
     bindGearListDirectorMonitorListener();
-    saveCurrentGearList();
+    // Ensure both the gear list HTML and the associated session state are
+    // saved whenever the visible list is refreshed so reloads keep it visible.
+    saveCurrentSession();
 }
 
 // --- SESSION STATE HANDLING ---
