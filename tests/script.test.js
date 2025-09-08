@@ -2981,6 +2981,20 @@ describe('script.js functions', () => {
     expect(out.classList.contains('hidden')).toBe(false);
   });
 
+  test('tripod bowl selection persists through session restore when project store lacks it', () => {
+    setupDom(false);
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn(() => ({
+      setupName: 'Proj1',
+      projectInfo: { requiredScenarios: 'Tripod', tripodBowl: '100mm bowl' }
+    }));
+    global.loadProject = jest.fn(() => ({ gearList: '', projectInfo: { tripodBowl: '' } }));
+    require('../translations.js');
+    require('../script.js');
+    const bowlSel = document.getElementById('tripodBowl');
+    expect(bowlSel.value).toBe('100mm bowl');
+  });
+
   test('loading a different project replaces gear list and requirements', () => {
     setupDom(false);
     const buildHtml = (name) => `\
