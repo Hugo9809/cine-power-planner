@@ -731,6 +731,8 @@ button:disabled {
 #topBar select {
   font-size: 1em;
   padding: 2px 4px;
+  text-align: center;
+  text-align-last: center;
 }
 
 #topBar button {
