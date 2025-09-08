@@ -2245,6 +2245,7 @@ const featureSearchClear = document.getElementById("featureSearchClear");
 const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
 const deviceMap       = new Map();
+const searchKey       = str => str.toLowerCase().replace(/\s+/g, '');
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -2265,7 +2266,7 @@ function populateFeatureSearch() {
     .forEach(el => {
       if (helpDialog && helpDialog.contains(el)) return;
       const name = el.textContent.trim();
-      featureMap.set(name.toLowerCase(), el);
+      featureMap.set(searchKey(name), el);
       const opt = document.createElement('option');
       opt.value = name;
       featureList.appendChild(opt);
@@ -2282,7 +2283,7 @@ function populateFeatureSearch() {
     sel.querySelectorAll('option').forEach(opt => {
       const name = opt.textContent.trim();
       if (!name || opt.value === 'None') return;
-      const key = name.toLowerCase();
+      const key = searchKey(name);
       if (!deviceMap.has(key)) {
         deviceMap.set(key, { select: sel, value: opt.value });
         const dlOpt = document.createElement('option');
@@ -10332,8 +10333,8 @@ if (helpButton && helpDialog) {
     const lower = value.toLowerCase();
     const isHelp = lower.endsWith(' (help)');
     const clean = isHelp ? value.slice(0, -7).trim() : value;
-    const cleanLower = clean.toLowerCase();
-    const device = deviceMap.get(cleanLower);
+    const cleanKey = searchKey(clean);
+    const device = deviceMap.get(cleanKey);
     if (device && !isHelp) {
       device.select.value = device.value;
       device.select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -10341,7 +10342,7 @@ if (helpButton && helpDialog) {
       device.select.focus?.();
       return;
     }
-    const featureEl = featureMap.get(cleanLower);
+    const featureEl = featureMap.get(cleanKey);
     if (featureEl && !isHelp) {
       featureEl.scrollIntoView({ behavior: 'smooth' });
       featureEl.focus?.();
