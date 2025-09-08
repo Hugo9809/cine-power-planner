@@ -2981,6 +2981,38 @@ describe('script.js functions', () => {
     expect(out.classList.contains('hidden')).toBe(false);
   });
 
+  test('gear list restored from storage when session state missing', () => {
+    setupDom(false);
+    const storedHtml = '<h2>Proj</h2><h3>Gear List</h3><table class="gear-table"></table>';
+    global.loadSessionState = jest.fn(() => null);
+    global.saveSessionState = jest.fn();
+    global.loadProject = jest.fn(() => ({ gearList: storedHtml, projectInfo: null }));
+    global.saveProject = jest.fn();
+    global.deleteProject = jest.fn();
+    const { restoreSessionState } = require('../script.js');
+    const out = document.getElementById('gearListOutput');
+    out.classList.add('hidden');
+    restoreSessionState();
+    expect(global.loadProject).toHaveBeenCalled();
+    expect(out.classList.contains('hidden')).toBe(false);
+  });
+
+  test('gear list remains hidden when stored project lacks gear section', () => {
+    setupDom(false);
+    const storedHtml = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"></div>';
+    global.loadSessionState = jest.fn(() => null);
+    global.saveSessionState = jest.fn();
+    global.loadProject = jest.fn(() => ({ gearList: storedHtml, projectInfo: null }));
+    global.saveProject = jest.fn();
+    global.deleteProject = jest.fn();
+    const { restoreSessionState } = require('../script.js');
+    const out = document.getElementById('gearListOutput');
+    out.classList.add('hidden');
+    restoreSessionState();
+    expect(global.loadProject).toHaveBeenCalled();
+    expect(out.classList.contains('hidden')).toBe(true);
+  });
+
   test('loading a different project replaces gear list and requirements', () => {
     setupDom(false);
     const buildHtml = (name) => `\

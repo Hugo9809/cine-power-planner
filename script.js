@@ -9721,6 +9721,9 @@ function restoreSessionState() {
       currentProjectInfo = storedProject.projectInfo || null;
       if (projectForm) populateProjectForm(currentProjectInfo || {});
       displayGearAndRequirements(storedProject.gearList);
+      if (gearListOutput && storedProject.gearList && gearListOutput.innerHTML.trim()) {
+        gearListOutput.classList.remove('hidden');
+      }
       if (gearListOutput) {
         ensureGearListActions();
         bindGearListCageListener();
