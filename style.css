@@ -740,10 +740,13 @@ button:disabled {
 
 #sideMenu .controls {
   margin-bottom: 20px;
+  flex-wrap: nowrap;
 }
 
 #sideMenu .controls select {
-  flex: 1 1 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-bottom: 0;
 }
 
 #sideMenu .controls button {
