@@ -1813,7 +1813,10 @@ describe('script.js functions', () => {
     const idx = rows.findIndex(r => r.textContent.trim() === 'Matte box + filter');
     const filterRow = rows[idx + 1];
     const cellHtml = filterRow.querySelector('td').innerHTML;
-    expect(cellHtml).toMatch(/filter-item[^>]*>.*?<\/span><br><span class="gear-item filter-item"/);
+    const parts = cellHtml.split('<br>');
+    expect(parts.length).toBeGreaterThan(1);
+    expect(parts[0]).toMatch(/class="gear-item filter-item"/);
+    expect(parts[1]).toMatch(/class="gear-item filter-item"/);
   });
 
   test('diopter filter includes frame and default strengths', () => {

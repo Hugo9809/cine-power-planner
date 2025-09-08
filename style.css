@@ -1836,6 +1836,16 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   margin-bottom: 0.25rem;
 }
 
+#gearListOutput .filter-item .filter-label {
+  white-space: nowrap;
+}
+
+#gearListOutput .filter-item .filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
 #gearListOutput .filter-item select {
   width: auto;
 }
@@ -1876,6 +1886,12 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   #projectRequirementsOutput td {
     white-space: normal;
     overflow-wrap: anywhere;
+  }
+  #gearListOutput .filter-item {
+    flex-wrap: wrap;
+  }
+  #gearListOutput .filter-item .filter-label {
+    flex-basis: 100%;
   }
 }
 
