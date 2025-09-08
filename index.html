@@ -33,6 +33,7 @@
       <img src="icon.svg" alt="" id="logo" />
       <h1 id="mainTitle">Cine List</h1>
     </div>
+    <button id="menuToggle" aria-label="Menu" aria-expanded="false">☰</button>
     <div class="feature-search">
       <input type="search" id="featureSearch" list="featureList" placeholder="Search features or devices..." aria-label="Search features, devices and help" />
       <datalist id="featureList"></datalist>
@@ -51,6 +52,17 @@
       <button id="reloadButton" title="Force reload" aria-label="Force reload">🔄</button>
     </nav>
   </header>
+
+  <nav id="sideMenu" class="side-menu" aria-label="Sidebar navigation" hidden>
+    <ul>
+      <li><a href="#setup-manager">Manage Project</a></li>
+      <li><a href="#setup-config">Device Selection</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#setupDiagram">Setup Diagram</a></li>
+      <li><a href="#device-manager">Device Manager</a></li>
+    </ul>
+  </nav>
+  <div id="menuOverlay" class="hidden"></div>
 
   <main id="mainContent" tabindex="-1">
 

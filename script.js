@@ -69,6 +69,42 @@ if (typeof window !== 'undefined') {
 }
 
 /**
+ * Initialize sidebar menu for small screens.
+ */
+function setupMobileMenu() {
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('menuOverlay');
+  if (!toggle || !menu || !overlay) return;
+
+  const closeMenu = () => {
+    menu.classList.remove('open');
+    menu.setAttribute('hidden', '');
+    overlay.classList.add('hidden');
+    toggle.setAttribute('aria-expanded', 'false');
+  };
+
+  toggle.addEventListener('click', () => {
+    const isOpen = menu.classList.toggle('open');
+    if (isOpen) {
+      menu.removeAttribute('hidden');
+      overlay.classList.remove('hidden');
+    } else {
+      menu.setAttribute('hidden', '');
+      overlay.classList.add('hidden');
+    }
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  overlay.addEventListener('click', closeMenu);
+  menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+}
+
+if (typeof window !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', setupMobileMenu);
+}
+
+/**
  * Escape a string for safe insertion into HTML.
  *
  * The helper delays touching the DOM until first use to avoid
