@@ -3083,7 +3083,71 @@ describe('script.js functions', () => {
     expect(gearOut.innerHTML).not.toContain('Proj1 item');
     expect(reqOut.innerHTML).toContain('Proj2');
     expect(reqOut.innerHTML).not.toContain('Proj1');
-    expect(document.querySelector('[name="projectName"]').value).toBe('Proj2');
+  expect(document.querySelector('[name="projectName"]').value).toBe('Proj2');
+  });
+
+  test('switching projects preserves stored data and clears form for new project', () => {
+    setupDom(false);
+    const projectData = {
+      Proj1: '<h2>Proj1</h2><h3>Gear List</h3><table class="gear-table"><tr><td>P1</td></tr></table>',
+      Proj2: '<h2>Proj2</h2><h3>Gear List</h3><table class="gear-table"><tr><td>P2</td></tr></table>'
+    };
+    const storedSetups = {
+      Proj1: { gearList: projectData.Proj1, projectInfo: { projectName: 'Proj1' }, motors: [], controllers: [] },
+      Proj2: { gearList: projectData.Proj2, projectInfo: { projectName: 'Proj2' }, motors: [], controllers: [] },
+      Proj3: { motors: [], controllers: [] }
+    };
+    global.loadSetups = jest.fn(() => storedSetups);
+    global.loadProject = jest.fn();
+    global.saveProject = jest.fn();
+    require('../translations.js');
+    require('../script.js');
+    const setupSelect = document.getElementById('setupSelect');
+    const gearOut = document.getElementById('gearListOutput');
+    const projNameInput = document.getElementById('projectName');
+
+    setupSelect.value = 'Proj1';
+    setupSelect.dispatchEvent(new Event('change'));
+    expect(gearOut.classList.contains('hidden')).toBe(false);
+    expect(projNameInput.value).toBe('Proj1');
+
+    setupSelect.value = 'Proj2';
+    setupSelect.dispatchEvent(new Event('change'));
+    expect(global.saveProject).toHaveBeenCalledWith('Proj1', expect.objectContaining({
+      projectInfo: { projectName: 'Proj1' }
+    }));
+    expect(gearOut.classList.contains('hidden')).toBe(false);
+    expect(projNameInput.value).toBe('Proj2');
+
+    setupSelect.value = '';
+    setupSelect.dispatchEvent(new Event('change'));
+    expect(global.saveProject).toHaveBeenCalledWith('Proj2', expect.objectContaining({
+      projectInfo: { projectName: 'Proj2' }
+    }));
+    expect(gearOut.innerHTML).toBe('');
+    expect(gearOut.classList.contains('hidden')).toBe(true);
+    expect(projNameInput.value).toBe('');
+
+    setupSelect.value = 'Proj1';
+    setupSelect.dispatchEvent(new Event('change'));
+    expect(gearOut.classList.contains('hidden')).toBe(false);
+    expect(projNameInput.value).toBe('Proj1');
+  });
+
+  test('reloading restores selected project gear list and requirements', () => {
+    setupDom(false);
+    const html = '<h2>Proj1</h2><h3>Gear List</h3><table class="gear-table"><tr><td>P1</td></tr></table>';
+    global.loadSetups = jest.fn(() => ({ Proj1: { gearList: html, projectInfo: { projectName: 'Proj1' }, motors: [], controllers: [] } }));
+    global.loadProject = jest.fn(() => ({ gearList: html, projectInfo: { projectName: 'Proj1' } }));
+    global.saveProject = jest.fn();
+    global.loadSessionState = jest.fn(() => ({ setupSelect: 'Proj1' }));
+    global.saveSessionState = jest.fn();
+    require('../translations.js');
+    require('../script.js');
+    const gearOut = document.getElementById('gearListOutput');
+    const projNameInput = document.getElementById('projectName');
+    expect(gearOut.classList.contains('hidden')).toBe(false);
+    expect(projNameInput.value).toBe('Proj1');
   });
 
   test('Grip section always includes a friction arm', () => {
