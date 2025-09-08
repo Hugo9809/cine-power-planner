@@ -1364,7 +1364,7 @@ describe('script.js functions', () => {
     expect(document.getElementById('offlineIndicator').textContent).toBe(texts.es.offlineIndicator);
   });
 
-  test('defaults to browser language when no preference saved', () => {
+  test('defaults to English when no preference saved', () => {
     jest.resetModules();
 
     global.alert = jest.fn();
@@ -1392,8 +1392,8 @@ describe('script.js functions', () => {
     require('../translations.js');
     require('../script.js');
 
-    expect(document.documentElement.lang).toBe('fr');
-    expect(localStorage.getItem('language')).toBe('fr');
+    expect(document.documentElement.lang).toBe('en');
+    expect(localStorage.getItem('language')).toBe('en');
   });
 
   test('unifyDevices normalizes videoOutputs', () => {

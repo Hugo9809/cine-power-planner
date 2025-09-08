@@ -5,13 +5,13 @@ Cet outil fonctionnant dans le navigateur aide à planifier des configurations p
 ---
 
 ## 🌍 Langues
-- 🇬🇧 [English](README.en.md)
+- 🇬🇧 [English](README.en.md) (par défaut)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
-- 🇫🇷 Français (par défaut si le navigateur est en français)
+- 🇫🇷 Français
 
-La langue se change en haut à droite et est mémorisée pour la prochaine visite.
+La langue par défaut est l'anglais. Vous pouvez la changer en haut à droite; la préférence est mémorisée pour la prochaine visite.
 
 ---
 

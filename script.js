@@ -1156,17 +1156,6 @@ try {
   const supported = ["en", "de", "es", "fr", "it"];
   if (savedLang && supported.includes(savedLang)) {
     currentLang = savedLang;
-  } else if (typeof navigator !== "undefined") {
-    const navLangs = Array.isArray(navigator.languages)
-      ? navigator.languages
-      : [navigator.language];
-    for (const lang of navLangs) {
-      const short = String(lang).slice(0, 2).toLowerCase();
-      if (supported.includes(short)) {
-        currentLang = short;
-        break;
-      }
-    }
   }
 } catch (e) {
   console.warn("Could not load language from localStorage", e);
