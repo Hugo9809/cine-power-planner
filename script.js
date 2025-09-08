@@ -9748,8 +9748,12 @@ function restoreSessionState() {
     const projectName = getCurrentProjectName();
     const storedProject = typeof loadProject === 'function' ? loadProject(projectName) : null;
     if (storedProject && (storedProject.gearList || storedProject.projectInfo)) {
-      currentProjectInfo = storedProject.projectInfo || null;
-      if (projectForm) populateProjectForm(currentProjectInfo || {});
+      const mergedInfo = {
+        ...(storedProject.projectInfo || {}),
+        ...(currentProjectInfo || {})
+      };
+      currentProjectInfo = mergedInfo;
+      if (projectForm) populateProjectForm(currentProjectInfo);
       displayGearAndRequirements(storedProject.gearList);
       if (gearListOutput) {
         ensureGearListActions();
