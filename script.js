@@ -2473,6 +2473,7 @@ function displayGearAndRequirements(html) {
     if (gearHtml) {
       gearListOutput.innerHTML = gearHtml;
       gearListOutput.classList.remove('hidden');
+      applyFilterSelectionsToGearList();
       const findDevice = name => {
         for (const [catName, cat] of Object.entries(devices)) {
           if (cat && typeof cat === 'object') {
@@ -2571,6 +2572,14 @@ function setEasyrigValue(val) {
 let currentProjectInfo = null;
 let loadedSetupState = null;
 let restoringSession = false;
+
+function setCurrentProjectInfo(info) {
+  currentProjectInfo = info;
+}
+
+function getCurrentProjectInfo() {
+  return currentProjectInfo;
+}
 
 function getCurrentSetupState() {
   const info = projectForm ? collectProjectFormData() : {};
@@ -9579,6 +9588,14 @@ function ensureGearListActions() {
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
+            } else if (cb.id && cb.id.startsWith('filter-size-')) {
+                saveCurrentGearList();
+                saveCurrentSession();
+                checkSetupChanged();
+            } else if (cb.id && cb.id.startsWith('filter-values-')) {
+                saveCurrentGearList();
+                saveCurrentSession();
+                checkSetupChanged();
             }
         });
         gearListOutput._filterListenerBound = true;
@@ -10641,6 +10658,11 @@ function initApp() {
   populateFilterDropdown();
   if (filterSelectElem) {
     filterSelectElem.addEventListener('change', renderFilterDetails);
+    filterSelectElem.addEventListener('change', () => {
+      saveCurrentSession();
+      saveCurrentGearList();
+      checkSetupChanged();
+    });
     renderFilterDetails();
   }
   populateUserButtonDropdowns();
@@ -10897,6 +10919,28 @@ function parseFilterTokens(str) {
   }).filter(t => t.type);
 }
 
+function applyFilterSelectionsToGearList(info = currentProjectInfo) {
+  if (!info || !info.filter || !gearListOutput) return;
+  const tokens = parseFilterTokens(info.filter);
+  tokens.forEach(({ type, size, values }) => {
+    const sizeSel = gearListOutput.querySelector(`#filter-size-${filterId(type)}`);
+    if (sizeSel) sizeSel.value = size;
+    const valSel = gearListOutput.querySelector(`#filter-values-${filterId(type)}`);
+    if (valSel) {
+      const arr = Array.isArray(values) ? values : [];
+      Array.from(valSel.options).forEach(opt => {
+        opt.selected = arr.includes(opt.value);
+      });
+      const container = valSel.closest('.filter-values-container');
+      if (container) {
+        Array.from(container.querySelectorAll('input[type="checkbox"]')).forEach(cb => {
+          cb.checked = arr.includes(cb.value);
+        });
+      }
+    }
+  });
+}
+
 function buildFilterSelectHtml(filters = []) {
   const parts = [];
   const itemHtml = (gearName, label, sizeHtml = '', controlsHtml = '') =>
@@ -11069,5 +11113,8 @@ if (typeof module !== "undefined" && module.exports) {
     renderFilterDetails,
     collectFilterSelections,
     parseFilterTokens,
+    applyFilterSelectionsToGearList,
+    setCurrentProjectInfo,
+    getCurrentProjectInfo,
   };
 }
