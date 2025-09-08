@@ -3012,6 +3012,16 @@ describe('script.js functions', () => {
     expect(proj.projectInfo.easyrig).toBe('Easyrig - STABIL G3');
   });
 
+  test('further stabilisation is hidden from project requirements summary', () => {
+    setupDom();
+    require('../translations.js');
+    const { generateGearListHtml, displayGearAndRequirements } = require('../script.js');
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig', easyrig: 'FlowCine Serene Spring Arm' });
+    displayGearAndRequirements(html);
+    const projOut = document.getElementById('projectRequirementsOutput');
+    expect(projOut.querySelector('[data-field="easyrig"]')).toBeNull();
+  });
+
   test('gear list remains visible after session reload with only setup name', () => {
     global.saveSessionState = jest.fn();
     global.loadSessionState = jest.fn();

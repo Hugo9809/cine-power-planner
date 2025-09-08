@@ -8643,6 +8643,7 @@ function generateGearListHtml(info = {}) {
         'tripodTypes',
         'tripodSpreader',
         'sliderBowl',
+        'easyrig',
         'lenses',
         'viewfinderSettings',
         'frameGuides',
