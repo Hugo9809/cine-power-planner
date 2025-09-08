@@ -70,7 +70,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
   border: 1px solid var(--control-text);
   border-radius: 6px;
   padding: 6px 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  box-shadow: none;
   font-size: 12px;
 }
 .device-block strong { display: block; margin-bottom: 4px; }
@@ -83,7 +83,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
   margin-bottom: 10px;
   flex: 1 1 calc((100% - 20px) / 3);
   box-sizing: border-box;
-  box-shadow: var(--panel-shadow);
+  box-shadow: none;
 }
 .device-category h3 {
   font-family: 'Ubuntu', sans-serif;
@@ -129,9 +129,9 @@ th { background-color: var(--control-bg); font-weight: 700; }
   h2 { border-bottom: 2px solid var(--inverse-text-color); }
   th { background-color: var(--control-bg); font-weight: 700; }
   .print-btn, .back-btn { background: var(--control-bg); color: var(--text-color); }
-  .device-category { background: var(--panel-bg); border-color: var(--panel-border); box-shadow: var(--panel-shadow); }
+  .device-category { background: var(--panel-bg); border-color: var(--panel-border); box-shadow: none; }
   .device-category h3 { border-bottom: 1px solid var(--inverse-text-color); color: var(--inverse-text-color); }
-  .device-block { background: rgba(255,255,255,0.1); border-color: var(--control-border); box-shadow: var(--panel-shadow); }
+  .device-block { background: rgba(255,255,255,0.1); border-color: var(--control-border); box-shadow: none; }
   .connector-block, .info-box { background-color: rgba(255,255,255,0.1); }
   .power-conn { background-color: rgba(244,67,54,0.3); }
   .fiz-conn { background-color: rgba(76,175,80,0.3); }
