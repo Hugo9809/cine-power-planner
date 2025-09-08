@@ -8635,7 +8635,6 @@ function generateGearListHtml(info = {}) {
         'mattebox',
         'videoDistribution',
         'monitoringConfiguration',
-        'filter',
         'tripodHeadBrand',
         'tripodBowl',
         'tripodTypes',
@@ -8646,8 +8645,20 @@ function generateGearListHtml(info = {}) {
         'frameGuides',
         'aspectMaskOpacity'
     ]);
+    const formatFilterSelections = str =>
+        parseFilterTokens(str)
+            .map(({ type, size, values }) => {
+                const sizePart = size ? ` (${size})` : '';
+                const valPart = values.length ? `: ${values.join(', ')}` : '';
+                return `${type}${sizePart}${valPart}`;
+            })
+            .join(', ');
     const infoEntries = Object.entries(projectInfo)
-        .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
+        .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k))
+        .map(([k, v]) => {
+            if (k === 'filter') v = formatFilterSelections(v);
+            return [k, v];
+        });
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => {
             const value = escapeHtml(v).replace(/\n/g, '<br>');
