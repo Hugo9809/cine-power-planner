@@ -4841,6 +4841,15 @@ describe('script.js functions', () => {
     expect(cameraSelect.value).toBe('Sony FX3');
   });
 
+  test('feature search shows predictions on input', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    featureSearch.showPicker = jest.fn();
+    featureSearch.dispatchEvent(new Event('input'));
+    expect(featureSearch.showPicker).toHaveBeenCalled();
+  });
+
   test('help button title shows keyboard shortcut and localizes', () => {
     const helpButton = document.getElementById('helpButton');
     script.setLanguage('en');
