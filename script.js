@@ -69,9 +69,9 @@ if (typeof window !== 'undefined') {
 }
 
 /**
- * Initialize sidebar menu for small screens.
+ * Initialize sidebar menu toggle.
  */
-function setupMobileMenu() {
+function setupSideMenu() {
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
@@ -100,8 +100,34 @@ function setupMobileMenu() {
   menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
 }
 
+function setupResponsiveControls() {
+  const topBar = document.getElementById('topBar');
+  const featureSearch = topBar?.querySelector('.feature-search');
+  const controls = topBar?.querySelector('.controls');
+  const sidebarControls = document.querySelector('#sideMenu .sidebar-controls');
+  if (!topBar || !featureSearch || !controls || !sidebarControls) return;
+
+  const mql = window.matchMedia('(max-width: 768px)');
+
+  const relocate = () => {
+    if (mql.matches) {
+      sidebarControls.appendChild(featureSearch);
+      sidebarControls.appendChild(controls);
+    } else {
+      topBar.appendChild(featureSearch);
+      topBar.appendChild(controls);
+    }
+  };
+
+  mql.addEventListener('change', relocate);
+  relocate();
+}
+
 if (typeof window !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', setupMobileMenu);
+  document.addEventListener('DOMContentLoaded', () => {
+    setupSideMenu();
+    setupResponsiveControls();
+  });
 }
 
 /**
@@ -136,7 +162,7 @@ function escapeHtml(str) {
  * @returns {Promise<void>} Resolves when the text has been copied.
  */
 function copyTextToClipboard(text) {
-  if (navigator?.clipboard?.writeText) {
+  if (navigator?.clipboard?.writeText && globalThis.isSecureContext) {
     return navigator.clipboard.writeText(text);
   }
   return new Promise((resolve, reject) => {
@@ -7683,6 +7709,10 @@ if (copySummaryBtn) {
       `${texts[currentLang].batteryCountLabel} ${batteryCountElem.textContent}`
     ];
     const summary = lines.join('\n');
+    if (!navigator?.clipboard?.writeText || !globalThis.isSecureContext) {
+      prompt(texts[currentLang].copySummaryBtn, summary);
+      return;
+    }
     copyTextToClipboard(summary).then(() => {
       copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
       const resetTimer = setTimeout(() => {
