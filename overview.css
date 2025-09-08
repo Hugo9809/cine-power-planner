@@ -119,6 +119,10 @@ th { background-color: var(--control-bg); font-weight: 700; }
   .diagram-controls button {
     flex: 1 0 calc(50% - 0.5em);
   }
+  .diagram-controls #zoomOut,
+  .diagram-controls #zoomIn {
+    flex: 0 0 var(--button-size);
+  }
 }
 #diagramArea { border: 1px solid var(--panel-border); padding: 10px; margin-top: 10px; border-radius: 4px; }
 .no-break { break-inside: avoid; page-break-inside: avoid; }

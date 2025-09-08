@@ -939,6 +939,10 @@ button:disabled {
   .diagram-controls button {
     flex: 1 0 calc(50% - 0.5em);
   }
+  .diagram-controls #zoomOut,
+  .diagram-controls #zoomIn {
+    flex: 0 0 var(--button-size);
+  }
 }
 
 #diagramHint {
