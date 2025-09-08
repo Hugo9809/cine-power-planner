@@ -10707,28 +10707,30 @@ function parseFilterTokens(str) {
 
 function buildFilterSelectHtml(filters = []) {
   const parts = [];
+  const itemHtml = (gearName, label, sizeHtml = '', controlsHtml = '') =>
+    `<span class="gear-item filter-item" data-gear-name="${gearName}"><span class="filter-header"><span class="filter-label">1x ${label}</span>${sizeHtml ? ` ${sizeHtml}` : ''}</span>${controlsHtml ? `<span class="filter-controls">${controlsHtml}</span>` : ''}</span>`;
   filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values = [] }) => {
     switch (type) {
       case 'Diopter': {
         const valSel = createFilterValueSelect(type, values);
-        parts.push('<span class="gear-item filter-item" data-gear-name="ARRI Diopter Frame 138mm">1x ARRI Diopter Frame 138mm</span>');
-        parts.push(`<span class="gear-item filter-item" data-gear-name="Schneider CF DIOPTER FULL GEN2">1x Schneider CF DIOPTER FULL ${valSel.outerHTML} GEN2</span>`);
+        parts.push(itemHtml('ARRI Diopter Frame 138mm', 'ARRI Diopter Frame 138mm'));
+        parts.push(itemHtml('Schneider CF DIOPTER FULL GEN2', 'Schneider CF DIOPTER FULL GEN2', '', valSel.outerHTML));
         break;
       }
       case 'Clear': {
         const sizeSel = createFilterSizeSelect(type, size);
-        parts.push(`<span class="gear-item filter-item" data-gear-name="Clear Filter">1x ${sizeSel.outerHTML} Clear Filter</span>`);
+        parts.push(itemHtml('Clear Filter', 'Clear Filter', sizeSel.outerHTML));
         break;
       }
       case 'IRND': {
         const sizeSel = createFilterSizeSelect(type, size);
         const valSel = createFilterValueSelect(type, values);
-        parts.push(`<span class="gear-item filter-item" data-gear-name="IRND Filter">1x ${sizeSel.outerHTML} IRND Filter ${valSel.outerHTML}</span>`);
+        parts.push(itemHtml('IRND Filter', 'IRND Filter', sizeSel.outerHTML, valSel.outerHTML));
         break;
       }
       case 'Pol': {
         const sizeSel = createFilterSizeSelect(type, size);
-        parts.push(`<span class="gear-item filter-item" data-gear-name="Pol Filter">1x ${sizeSel.outerHTML} Pol Filter</span>`);
+        parts.push(itemHtml('Pol Filter', 'Pol Filter', sizeSel.outerHTML));
         break;
       }
       case 'Rota-Pol': {
@@ -10740,25 +10742,25 @@ function buildFilterSelectHtml(filters = []) {
           name = 'Tilta 95mm Polarizer Filter for Tilta Mirage';
         }
         const displayName = name;
-        parts.push(`<span class="gear-item filter-item" data-gear-name="${name}">1x ${sizeSel.outerHTML} ${displayName}</span>`);
+        parts.push(itemHtml(name, displayName, sizeSel.outerHTML));
         break;
       }
       case 'ND Grad HE': {
         const sizeSel = createFilterSizeSelect(type, size);
         const valSel = createFilterValueSelect(type, values);
-        parts.push(`<span class="gear-item filter-item" data-gear-name="ND Grad HE Filter">1x ${sizeSel.outerHTML} ND Grad HE Filter ${valSel.outerHTML}</span>`);
+        parts.push(itemHtml('ND Grad HE Filter', 'ND Grad HE Filter', sizeSel.outerHTML, valSel.outerHTML));
         break;
       }
       case 'ND Grad SE': {
         const sizeSel = createFilterSizeSelect(type, size);
         const valSel = createFilterValueSelect(type, values);
-        parts.push(`<span class="gear-item filter-item" data-gear-name="ND Grad SE Filter">1x ${sizeSel.outerHTML} ND Grad SE Filter ${valSel.outerHTML}</span>`);
+        parts.push(itemHtml('ND Grad SE Filter', 'ND Grad SE Filter', sizeSel.outerHTML, valSel.outerHTML));
         break;
       }
       default: {
         const sizeSel = createFilterSizeSelect(type, size);
         const valSel = createFilterValueSelect(type, values);
-        parts.push(`<span class="gear-item filter-item" data-gear-name="${type} Filter Set">1x ${sizeSel.outerHTML} ${type} Filter Set ${valSel.outerHTML}</span>`);
+        parts.push(itemHtml(`${type} Filter Set`, `${type} Filter Set`, sizeSel.outerHTML, valSel.outerHTML));
       }
     }
   });
