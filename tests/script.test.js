@@ -1958,6 +1958,49 @@ describe('script.js functions', () => {
     expect(info.filter).toBe('IRND:6x6:0.6|1.8');
   });
 
+  test('filter config auto-saves to project info', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { collectProjectFormData, generateGearListHtml, displayGearAndRequirements, ensureGearListActions } = require('../script.js');
+    const filterSelect = document.getElementById('filter');
+    const opt = [...filterSelect.options].find(o => o.value === 'IRND');
+    opt.selected = true;
+    filterSelect.dispatchEvent(new window.Event('change'));
+    let info = collectProjectFormData();
+    const html = generateGearListHtml(info);
+    displayGearAndRequirements(html);
+    ensureGearListActions();
+    const sizeSel = document.getElementById('filter-size-IRND');
+    sizeSel.value = '6x6';
+    sizeSel.dispatchEvent(new window.Event('change', { bubbles: true }));
+    const valSel = document.getElementById('filter-values-IRND');
+    [...valSel.options].forEach(o => { o.selected = ['0.6','1.8'].includes(o.value); });
+    valSel.dispatchEvent(new window.Event('change', { bubbles: true }));
+    const gearOut = document.getElementById('gearListOutput');
+    gearOut.innerHTML = '';
+    gearOut.classList.add('hidden');
+    info = collectProjectFormData();
+    expect(info.filter).toBe('IRND:6x6:0.6|1.8');
+  });
+
+  test('gear list restores filter checkboxes from project info', () => {
+    setupDom(false);
+    require('../translations.js');
+    const { generateGearListHtml, displayGearAndRequirements, setCurrentProjectInfo } = require('../script.js');
+    const info = { filter: 'IRND:6x6:0.6|1.8' };
+    setCurrentProjectInfo(info);
+    let html = generateGearListHtml(info);
+    html = html.replace(/\schecked(="")?/g, '').replace(/\sselected(="")?/g, '');
+    displayGearAndRequirements(html);
+    const gearOut = document.getElementById('gearListOutput');
+    const sizeSel = gearOut.querySelector('#filter-size-IRND');
+    const cb06 = gearOut.querySelector('.filter-values-container input[value="0.6"]');
+    const cb18 = gearOut.querySelector('.filter-values-container input[value="1.8"]');
+    expect(sizeSel.value).toBe('6x6');
+    expect(cb06.checked).toBe(true);
+    expect(cb18.checked).toBe(true);
+  });
+
   test('ND Grad filters force swing-away matte box', () => {
     setupDom(false);
     require('../translations.js');
