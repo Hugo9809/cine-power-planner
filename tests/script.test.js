@@ -4849,14 +4849,20 @@ describe('script.js functions', () => {
     NodeList.prototype[Symbol.iterator] = originalIterator;
   });
 
-  test('help search controls are localized', () => {
+  test('search controls are localized', () => {
     const helpSearch = document.getElementById('helpSearch');
     const helpSearchClear = document.getElementById('helpSearchClear');
+    const featureSearch = document.getElementById('featureSearch');
+    const featureSearchClear = document.getElementById('featureSearchClear');
     script.setLanguage('de');
     expect(helpSearch.getAttribute('placeholder')).toBe(texts.de.helpSearchPlaceholder);
     expect(helpSearch.getAttribute('aria-label')).toBe(texts.de.helpSearchLabel);
     expect(helpSearchClear.getAttribute('aria-label')).toBe(texts.de.helpSearchClear);
     expect(helpSearchClear.getAttribute('title')).toBe(texts.de.helpSearchClear);
+    expect(featureSearch.getAttribute('placeholder')).toBe(texts.de.featureSearchPlaceholder);
+    expect(featureSearch.getAttribute('aria-label')).toBe(texts.de.featureSearchLabel);
+    expect(featureSearchClear.getAttribute('aria-label')).toBe(texts.de.featureSearchClear);
+    expect(featureSearchClear.getAttribute('title')).toBe(texts.de.featureSearchClear);
   });
 
   test('feature search includes cross links to section headings', () => {
@@ -4885,6 +4891,20 @@ describe('script.js functions', () => {
     featureSearch.showPicker = jest.fn();
     featureSearch.dispatchEvent(new Event('input'));
     expect(featureSearch.showPicker).toHaveBeenCalled();
+  });
+
+  test('feature clear button resets search', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const featureSearchClear = document.getElementById('featureSearchClear');
+    featureSearch.value = 'sony';
+    featureSearch.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(featureSearchClear.hasAttribute('hidden')).toBe(false);
+    featureSearchClear.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(featureSearch.value).toBe('');
+    expect(featureSearchClear.hasAttribute('hidden')).toBe(true);
+    expect(document.activeElement).toBe(featureSearch);
   });
 
   test('help button title shows keyboard shortcut and localizes', () => {
