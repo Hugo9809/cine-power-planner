@@ -67,7 +67,7 @@ body {
 main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--page-padding);
+  padding: calc(var(--page-padding) / 2) var(--page-padding) var(--page-padding);
 }
 
 section,
@@ -81,7 +81,7 @@ textarea {
 @supports (padding: env(safe-area-inset-top)) {
   main {
     padding:
-      calc(env(safe-area-inset-top) + var(--page-padding))
+      calc(env(safe-area-inset-top) + var(--page-padding) / 2)
       calc(env(safe-area-inset-right) + var(--page-padding))
       calc(env(safe-area-inset-bottom) + var(--page-padding))
       calc(env(safe-area-inset-left) + var(--page-padding));
