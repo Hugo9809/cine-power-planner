@@ -1,4 +1,4 @@
-const { buildSchema, isDeviceObject, isDeviceMap } = require('../generateSchema');
+const { buildSchema, isDeviceObject, isDeviceMap } = require('../scripts/generateSchema.js');
 
 describe('generateSchema utilities', () => {
   test('isDeviceObject identifies flat objects', () => {

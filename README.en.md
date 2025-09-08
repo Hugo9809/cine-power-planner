@@ -128,7 +128,7 @@ The generator turns your selections into a categorized packing list:
 ### 🛠 Device Database Editor
 - Add, edit or delete devices in all categories
 - Import or export the full database as JSON
-- Revert to the default database from `data.js`
+- Revert to the default database from `data/data.js`
 
 ### 🌓 Dark Mode
 - Toggle via the moon button next to the language selector.
@@ -159,7 +159,7 @@ The generator turns your selections into a categorized packing list:
 ---
 
 ## ▶️ How to Use
-1. **Launch App:** Open `index.html` in any modern browser – no server required
+1. **Launch App:** Open `public/index.html` in any modern browser – no server required
 2. **Select Devices:** Choose devices from each category using the dropdowns
 3. **View Calculations:** See total draw, current and runtime when a battery is selected
 4. **Check Output Limits:** Status indicators show if the battery output is exceeded
@@ -189,19 +189,19 @@ browser removes all stored information.
 
 ## 🗂️ File Structure
 ```bash
-index.html       # Main HTML layout
-style.css        # Styles and layout
-script.js        # Application logic
-data.js          # Default device list
-storage.js       # LocalStorage helpers
+public/index.html       # Main HTML layout
+public/styles/style.css        # Styles and layout
+public/js/script.js        # Application logic
+data/data.js          # Default device list
+public/js/storage.js       # LocalStorage helpers
 README.*.md      # Documentation in different languages
-checkConsistency.js  # Verifies required fields in device data
-normalizeData.js     # Cleans entries and unifies connector names
-generateSchema.js    # Rebuilds schema.json from data.js
-unifyPorts.js        # Harmonizes legacy port names
+scripts/checkConsistency.js  # Verifies required fields in device data
+scripts/normalizeData.js     # Cleans entries and unifies connector names
+scripts/generateSchema.js    # Rebuilds schema.json from data/data.js
+scripts/unifyPorts.js        # Harmonizes legacy port names
 tests/               # Jest test suite
 ```
-Fonts are loaded via Google Fonts links in `index.html`.
+Fonts are loaded via Google Fonts links in `public/index.html`.
 After the fonts are cached on first load, the application works entirely offline.
 
 ## 🛠️ Development

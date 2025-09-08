@@ -24,7 +24,7 @@ try {
 
 let deviceSchema;
 try {
-  deviceSchema = require('./schema.json');
+  deviceSchema = require('../schema.json');
 } catch {
   if (typeof fetch === 'function') {
     fetch('schema.json').then(r => r.json()).then(d => { deviceSchema = d; });

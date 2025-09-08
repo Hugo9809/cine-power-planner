@@ -1,5 +1,6 @@
 const fs = require('fs');
-let devices = require('./data.js');
+const path = require('path');
+let devices = require('../data/data.js');
 
 // Caches for expensive normalization steps to avoid repeated regex work
 const typeNameCache = new Map();
@@ -341,7 +342,7 @@ if (require.main === module) {
   normalizeCollection(devices.fiz.distance, normalizeFiz);
   deepClean(devices);
   fs.writeFileSync(
-    'data.js',
+    path.join(__dirname, '../data/data.js'),
     'let devices=' +
       JSON.stringify(devices, null, 2) +
       ';\nif (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n'

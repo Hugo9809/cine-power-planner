@@ -1,4 +1,4 @@
-const checkConsistency = require('../checkConsistency');
+const checkConsistency = require('../scripts/checkConsistency.js');
 
 test('camera data includes required fields', () => {
   const result = checkConsistency();

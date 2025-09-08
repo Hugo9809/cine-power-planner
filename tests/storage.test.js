@@ -16,7 +16,7 @@ const {
     clearAllData,
     exportAllData,
     importAllData,
-} = require('../storage');
+} = require('../public/js/storage.js');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_KEY = 'cameraPowerPlanner_setups';

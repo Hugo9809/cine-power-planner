@@ -1,5 +1,6 @@
 const fs = require('fs');
-const devices = require('./data');
+const path = require('path');
+const devices = require('../data/data');
 
 function isDeviceObject(obj) {
   return Object.values(obj).some((v) => v === null || typeof v !== 'object' || Array.isArray(v));
@@ -61,7 +62,7 @@ if (require.main === module) {
     process.exit(0);
   }
   const schema = buildSchema(devices);
-  fs.writeFileSync('schema.json', JSON.stringify(schema, null, 2));
+  fs.writeFileSync(path.join(__dirname, '../public/schema.json'), JSON.stringify(schema, null, 2));
   console.log('schema.json generated');
 } else {
   module.exports = { buildSchema, isDeviceObject, isDeviceMap };

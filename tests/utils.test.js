@@ -21,8 +21,8 @@ beforeAll(() => {
   global.loadSetup = jest.fn();
   global.deleteSetup = jest.fn();
 
-  require('../translations.js');
-  utils = require('../script.js');
+  require('../public/js/translations.js');
+  utils = require('../public/js/script.js');
 });
 
 describe('utility function tests', () => {

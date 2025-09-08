@@ -1,4 +1,4 @@
-function checkConsistency(devices = require('./data.js')) {
+function checkConsistency(devices = require('../data/data.js')) {
   const rules = {
     cameras: [
       'powerDrawWatts',

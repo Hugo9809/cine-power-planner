@@ -76,7 +76,7 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 ### 🛠 Base de Données des Appareils
 - Ajouter, modifier ou supprimer des appareils de chaque catégorie
 - Importer ou exporter la base complète au format JSON
-- Réinitialiser avec la base par défaut de `data.js`
+- Réinitialiser avec la base par défaut de `data/data.js`
 
 ### 🌓 Mode Sombre
 - Bouton lune pour activer/désactiver le mode sombre
@@ -95,7 +95,7 @@ La langue se change en haut à droite et est mémorisée pour la prochaine visit
 ---
 
 ## ▶️ Utilisation
-1. **Lancer l'application :** ouvrir `index.html` dans un navigateur moderne
+1. **Lancer l'application :** ouvrir `public/index.html` dans un navigateur moderne
 2. **Sélectionner les appareils :** choisir dans chaque catégorie via les menus déroulants
 3. **Voir les calculs :** consommation, courant et autonomie apparaissent lorsqu'une batterie est sélectionnée
 4. **Vérifier les limites :** des messages indiquent si la sortie de la batterie est dépassée
@@ -115,19 +115,19 @@ informations sauvegardées.
 
 ## 🗂️ Arborescence
 ```bash
-index.html       # Page principale
-style.css        # Styles et mise en page
-script.js        # Logique de l'application
-data.js          # Base par défaut
-storage.js       # Fonctions LocalStorage
+public/index.html       # Page principale
+public/styles/style.css        # Styles et mise en page
+public/js/script.js        # Logique de l'application
+data/data.js          # Base par défaut
+public/js/storage.js       # Fonctions LocalStorage
 README.*.md      # Documentation en plusieurs langues
-checkConsistency.js  # vérifie que chaque appareil possède les champs requis
-normalizeData.js     # nettoie les entrées et uniformise les connecteurs
-generateSchema.js    # génère schema.json à partir des données
-unifyPorts.js        # harmonise les noms de ports hérités
+scripts/checkConsistency.js  # vérifie que chaque appareil possède les champs requis
+scripts/normalizeData.js     # nettoie les entrées et uniformise les connecteurs
+scripts/generateSchema.js    # génère schema.json à partir des données
+scripts/unifyPorts.js        # harmonise les noms de ports hérités
 tests/               # suite de tests Jest
 ```
-Les polices sont chargées via Google Fonts dans `index.html`.
+Les polices sont chargées via Google Fonts dans `public/index.html`.
 Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
 
 ## 🛠️ Développement

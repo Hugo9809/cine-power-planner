@@ -1,4 +1,4 @@
-const devices = require('../devices');
+const devices = require('../public/js/devices');
 
 test('lenses are only exposed at top level', () => {
   expect(devices.lenses).toBeDefined();

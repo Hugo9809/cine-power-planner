@@ -155,7 +155,7 @@ test('cage data includes cage-specific attributes', () => {
 });
 
 test('Easyrig stabiliser data exposes attachments', () => {
-  const gear = require('../devices/gearList.js');
+  const gear = require('../public/js/devices/gearList.js');
   const stabiliser = gear.accessories.cameraStabiliser['Easyrig 5 Vario'];
   expect(stabiliser.options).toEqual([
     'FlowCine Serene Spring Arm',
@@ -174,20 +174,20 @@ test('default FIZ devices remain when stored data lacks them', () => {
     batteries: {},
     fiz: { motors: {}, controllers: {}, distance: {} }
   }));
-  require('../script.js');
+  require('../public/js/script.js');
   expect(Object.keys(devices.fiz.motors)).toEqual(defaultMotors);
 });
 
 test('filter options include diopter', () => {
-  const gear = require('../devices/gearList.js');
+  const gear = require('../public/js/devices/gearList.js');
   expect(gear.filterOptions).toContain('Diopter');
 });
 
 test('camera support list renders camera support devices', () => {
   setupDom(false);
   devices.accessories.cameraSupport = { SupportA: {} };
-  require('../translations.js');
-  require('../script.js');
+  require('../public/js/translations.js');
+  require('../public/js/script.js');
   const listHtml = document.getElementById('cameraSupportList').innerHTML;
   expect(listHtml).toContain('SupportA');
   expect(listHtml).not.toContain(cageNames[0]);
@@ -199,8 +199,8 @@ test('restores project requirements from storage when gear list element is absen
   global.loadProject = jest.fn(() => ({ gearList: storedHtml, projectInfo: null }));
   global.saveProject = jest.fn();
   global.deleteProject = jest.fn();
-  require('../translations.js');
-  const script = require('../script.js');
+  require('../public/js/translations.js');
+  const script = require('../public/js/script.js');
   script.displayGearAndRequirements(storedHtml);
   const projOut = document.getElementById('projectRequirementsOutput');
   expect(projOut.classList.contains('hidden')).toBe(false);
@@ -213,8 +213,8 @@ test('restores project requirements from storage with gear list present', () => 
   global.loadProject = jest.fn(() => ({ gearList: storedHtml, projectInfo: null }));
   global.saveProject = jest.fn();
   global.deleteProject = jest.fn();
-  require('../translations.js');
-  const script = require('../script.js');
+  require('../public/js/translations.js');
+  const script = require('../public/js/script.js');
   script.displayGearAndRequirements(storedHtml);
   const projOut = document.getElementById('projectRequirementsOutput');
   expect(projOut.classList.contains('hidden')).toBe(false);
@@ -230,8 +230,8 @@ test('restores project requirements from legacy object storage', () => {
   global.loadProject = jest.fn(() => ({ gearList: storedObj, projectInfo: null }));
   global.saveProject = jest.fn();
   global.deleteProject = jest.fn();
-  require('../translations.js');
-  const script = require('../script.js');
+  require('../public/js/translations.js');
+  const script = require('../public/js/script.js');
   script.setLanguage('en');
   const projOut = document.getElementById('projectRequirementsOutput');
   expect(projOut.classList.contains('hidden')).toBe(false);
@@ -246,8 +246,8 @@ test('restores project requirements form from saved gear list', () => {
   global.loadProject = jest.fn(() => stored);
   global.saveProject = jest.fn();
   global.deleteProject = jest.fn();
-  require('../translations.js');
-  const script = require('../script.js');
+  require('../public/js/translations.js');
+  const script = require('../public/js/script.js');
   script.setLanguage('en');
   const projName = document.getElementById('projectName');
   expect(projName.value).toBe('Proj');
@@ -259,8 +259,8 @@ test('project requirements changes persist via session save', () => {
   const savedState = {};
   global.saveSessionState = jest.fn(state => Object.assign(savedState, state));
   global.saveGearList = jest.fn();
-  require('../translations.js');
-  const script = require('../script.js');
+  require('../public/js/translations.js');
+  const script = require('../public/js/script.js');
   script.setLanguage('en');
   const nameInput = document.getElementById('projectName');
   nameInput.value = 'Proj';
@@ -290,8 +290,8 @@ test('restoring session state preserves selections', () => {
   global.loadProject = jest.fn(() => null);
   global.saveProject = jest.fn();
   global.deleteProject = jest.fn();
-  require('../translations.js');
-  const script = require('../script.js');
+  require('../public/js/translations.js');
+  const script = require('../public/js/script.js');
   script.setLanguage('en');
   expect(savedState.camera).toBe('CamA');
   expect(savedState.monitor).toBe('MonA');
@@ -305,8 +305,8 @@ describe('auto backup', () => {
     global.loadSetups = jest.fn(() => stored);
     global.saveSetups = jest.fn((data) => Object.assign(stored, data));
     jest.useFakeTimers();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     jest.advanceTimersByTime(5 * 60 * 1000);
     expect(global.saveSetups).toHaveBeenCalled();
@@ -430,8 +430,8 @@ describe('script.js functions', () => {
     global.saveProject = jest.fn();
     global.deleteProject = jest.fn();
 
-    require('../translations.js');
-    script = require('../script.js');
+    require('../public/js/translations.js');
+    script = require('../public/js/script.js');
     script.setLanguage('en');
     script.setLanguage('en');
   });
@@ -1178,8 +1178,8 @@ describe('script.js functions', () => {
 
   test('Alexa Mini LF offers B-Mount batteries', () => {
     setupDom(false);
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     global.devices.cameras['Arri Alexa Mini LF'] = {
       powerDrawWatts: 89,
       power: {
@@ -1390,9 +1390,9 @@ describe('script.js functions', () => {
     Object.defineProperty(navigator, 'language', { value: 'fr-FR', configurable: true });
     Object.defineProperty(navigator, 'languages', { value: ['fr-FR'], configurable: true });
 
-    require('../translations.js');
-    require('../translations.js');
-    require('../script.js');
+    require('../public/js/translations.js');
+    require('../public/js/translations.js');
+    require('../public/js/script.js');
 
     expect(document.documentElement.lang).toBe('fr');
     expect(localStorage.getItem('language')).toBe('fr');
@@ -1427,7 +1427,7 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    script = require('../script.js');
+    script = require('../public/js/script.js');
 
     expect(global.devices.cameras.CamB.videoOutputs).toEqual([
       { type: '12G-SDI', notes: '' },
@@ -1466,7 +1466,7 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    script = require('../script.js');
+    script = require('../public/js/script.js');
 
     expect(global.devices.cameras.CamC.videoOutputs).toEqual([
       { type: 'Micro HDMI', notes: '' },
@@ -1501,7 +1501,7 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    script = require('../script.js');
+    script = require('../public/js/script.js');
 
     expect(global.devices.cameras.CamD.recordingMedia).toEqual([
       { type: 'SD Card', notes: 'UHS-II' },
@@ -1715,8 +1715,8 @@ describe('script.js functions', () => {
 
   test('custom filter selections override defaults', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'IRND:6x6:0.6|1.8,BPM:4x4:1|1/16,Pol:95mm' });
     const dom = new JSDOM(html);
     const sizeIRND = dom.window.document.getElementById('filter-size-IRND');
@@ -1733,8 +1733,8 @@ describe('script.js functions', () => {
 
   test('clear filter uses default size', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'Clear' });
     const dom = new JSDOM(html);
     const sizeSel = dom.window.document.getElementById('filter-size-Clear');
@@ -1743,8 +1743,8 @@ describe('script.js functions', () => {
 
   test('pol filter uses default size', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'Pol' });
     const dom = new JSDOM(html);
     const sizeSel = dom.window.document.getElementById('filter-size-Pol');
@@ -1753,8 +1753,8 @@ describe('script.js functions', () => {
 
   test('default filter set includes 1/2, 1/4 and 1/8', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'BPM' });
     const dom = new JSDOM(html);
     const valSel = dom.window.document.getElementById('filter-values-BPM');
@@ -1765,8 +1765,8 @@ describe('script.js functions', () => {
 
   test('multiple filters render on separate lines', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'IRND,Pol' });
     const dom = new JSDOM(html);
     const rows = [...dom.window.document.querySelectorAll('#gearListOutput table tr')];
@@ -1778,8 +1778,8 @@ describe('script.js functions', () => {
 
   test('diopter filter includes frame and default strengths', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'Diopter' });
     const dom = new JSDOM(html);
     const frame = dom.window.document.querySelector('[data-gear-name="ARRI diopter frame"]');
@@ -1792,8 +1792,8 @@ describe('script.js functions', () => {
 
   test('collectProjectFormData builds default filter token', () => {
     setupDom(false);
-    require('../translations.js');
-    const { collectProjectFormData } = require('../script.js');
+    require('../public/js/translations.js');
+    const { collectProjectFormData } = require('../public/js/script.js');
     const filterSelect = document.getElementById('filter');
     const opt = [...filterSelect.options].find(o => o.value === 'BPM');
     opt.selected = true;
@@ -1804,8 +1804,8 @@ describe('script.js functions', () => {
 
   test('collectProjectFormData handles custom filter selections', () => {
     setupDom(false);
-    require('../translations.js');
-    const { collectProjectFormData, generateGearListHtml, displayGearAndRequirements } = require('../script.js');
+    require('../public/js/translations.js');
+    const { collectProjectFormData, generateGearListHtml, displayGearAndRequirements } = require('../public/js/script.js');
     const filterSelect = document.getElementById('filter');
     const opt = [...filterSelect.options].find(o => o.value === 'IRND');
     opt.selected = true;
@@ -1823,8 +1823,8 @@ describe('script.js functions', () => {
 
   test('ND Grad filters force swing-away matte box', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'ND Grad HE,ND Grad SE', mattebox: 'ARRI LMB 4x5 Clamp-On (3-Stage)' });
     const dom = new JSDOM(html);
     const sizeHE = dom.window.document.getElementById('filter-size-ND_Grad_HE');
@@ -1842,8 +1842,8 @@ describe('script.js functions', () => {
 
   test('Rota-Pol filter provides size dropdown', () => {
     setupDom(false);
-    require('../translations.js');
-    const { generateGearListHtml } = require('../script.js');
+    require('../public/js/translations.js');
+    const { generateGearListHtml } = require('../public/js/script.js');
     const html = generateGearListHtml({ filter: 'Rota-Pol:6x6' });
     const dom = new JSDOM(html);
     const sel = dom.window.document.getElementById('filter-size-Rota_Pol');
@@ -2056,7 +2056,7 @@ describe('script.js functions', () => {
 
   test('merges monitoring batteries across multiple handheld monitors', () => {
     setupDom();
-    script = require('../script.js');
+    script = require('../public/js/script.js');
     const { generateGearListHtml } = script;
     const videoDistribution = [
       'Director Monitor handheld',
@@ -2211,7 +2211,7 @@ describe('script.js functions', () => {
       'Mon RXTX': { screenSizeInches: 7, wirelessTx: true, wirelessRX: true },
       'Mon Plain': { screenSizeInches: 7 }
     };
-    const script = require('../script.js');
+    const script = require('../public/js/script.js');
     const options = Array.from(document.getElementById('monitorSelect').options).map(o => o.value);
     expect(options).toContain('Mon TX');
     expect(options).toContain('Mon RXTX');
@@ -2520,7 +2520,7 @@ describe('script.js functions', () => {
   });
 
   test('each Required scenario has a unique icon', () => {
-    const script = require('../script.js');
+    const script = require('../public/js/script.js');
     const select = document.getElementById('requiredScenarios');
     const icons = new Set();
     Array.from(select.options).forEach(opt => {
@@ -2899,7 +2899,7 @@ describe('script.js functions', () => {
     global.loadProject = jest.fn(() => null);
     global.saveProject = jest.fn();
     global.deleteProject = jest.fn();
-    require('../script.js');
+    require('../public/js/script.js');
     const setupSelect = document.getElementById('setupSelect');
     setupSelect.value = 'Proj1';
     setupSelect.dispatchEvent(new Event('change'));
@@ -3812,8 +3812,8 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    require('../translations.js');
-    script = require('../script.js');
+    require('../public/js/translations.js');
+    script = require('../public/js/script.js');
 
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -3893,8 +3893,8 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    require('../translations.js');
-    const localScript = require('../script.js');
+    require('../public/js/translations.js');
+    const localScript = require('../public/js/script.js');
 
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -3933,8 +3933,8 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    require('../translations.js');
-    const localScript = require('../script.js');
+    require('../public/js/translations.js');
+    const localScript = require('../public/js/script.js');
 
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -3974,8 +3974,8 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    require('../translations.js');
-    const localScript = require('../script.js');
+    require('../public/js/translations.js');
+    const localScript = require('../public/js/script.js');
 
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -4015,8 +4015,8 @@ describe('script.js functions', () => {
     global.loadSetup = jest.fn();
     global.deleteSetup = jest.fn();
 
-    require('../translations.js');
-    const localScript = require('../script.js');
+    require('../public/js/translations.js');
+    const localScript = require('../public/js/script.js');
 
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
@@ -5233,12 +5233,12 @@ describe('script.js functions', () => {
 
 describe('monitor wireless metadata', () => {
   test('SmallHD Ultra 7 has wirelessTx set to false', () => {
-    const devices = require('../data.js');
+    const devices = require('../data/data.js');
     expect(devices.monitors['SmallHD Ultra 7'].wirelessTx).toBe(false);
   });
 
   test('wirelessTx monitors include latency information', () => {
-    const monitors = require('../data.js').monitors;
+    const monitors = require('../data/data.js').monitors;
     Object.values(monitors).forEach((monitor) => {
       if (monitor.wirelessTx) {
         expect(monitor.latencyMs).toBeDefined();
@@ -5247,7 +5247,7 @@ describe('monitor wireless metadata', () => {
   });
 
   test('latency values are set for key wireless monitors', () => {
-    const monitors = require('../data.js').monitors;
+    const monitors = require('../data/data.js').monitors;
     expect(monitors['SmallHD Cine 7 Bolt 4K TX'].latencyMs).toBe('< 1ms');
     expect(monitors['Hollyland Pyro 7 (RX/TX)'].latencyMs).toBe('50ms');
     expect(monitors['Hollyland Mars M1 Enhanced (RX/TX)'].wirelessTx).toBe(true);
@@ -5459,8 +5459,8 @@ describe('monitor wireless metadata', () => {
 
   test('gear list items expose descriptive hover help', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const cameraSelect = document.getElementById('cameraSelect');
     cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
@@ -5473,8 +5473,8 @@ describe('monitor wireless metadata', () => {
 
   test('gear list selects expose descriptive hover help', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const cameraSelect = document.getElementById('cameraSelect');
     cameraSelect.innerHTML = '<option value="CamA">CamA</option>';
@@ -5488,8 +5488,8 @@ describe('monitor wireless metadata', () => {
 
   test('project requirements boxes expose descriptive hover help', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const html = script.generateGearListHtml({ codec: 'ProRes' });
     script.displayGearAndRequirements(html);
@@ -5499,8 +5499,8 @@ describe('monitor wireless metadata', () => {
 
   test('project requirements children expose descriptive hover help', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const html = script.generateGearListHtml({ codec: 'ProRes' });
     script.displayGearAndRequirements(html);
@@ -5512,8 +5512,8 @@ describe('monitor wireless metadata', () => {
 
   test('project requirement boxes show icons for viewfinder settings, frame guides and aspect mask', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const html = script.generateGearListHtml({
       viewfinderSettings: 'Viewfinder Clean Feed, Surround View',
@@ -5528,8 +5528,8 @@ describe('monitor wireless metadata', () => {
 
   test('gear list action buttons expose descriptive hover help', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const html = script.generateGearListHtml({ projectName: 'Proj' });
     script.displayGearAndRequirements(html);
@@ -5546,8 +5546,8 @@ describe('monitor wireless metadata', () => {
 
   test('saving gear list via button requires confirmation', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const html = script.generateGearListHtml({ projectName: 'Proj' });
     script.displayGearAndRequirements(html);
@@ -5568,9 +5568,9 @@ describe('monitor wireless metadata', () => {
 
   test('export gear list file name includes timestamp and project name', () => {
     setupDom();
-    require('../translations.js');
+    require('../public/js/translations.js');
     jest.useFakeTimers().setSystemTime(new Date('2024-01-02T03:04:00Z'));
-    const script = require('../script.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const html = script.generateGearListHtml({ projectName: 'Proj' });
     script.displayGearAndRequirements(html);
@@ -5596,8 +5596,8 @@ describe('monitor wireless metadata', () => {
 
   test('import gear list sets setup name from file name', () => {
     setupDom();
-    require('../translations.js');
-    const script = require('../script.js');
+    require('../public/js/translations.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     const html = script.generateGearListHtml({ projectName: 'Proj' });
     script.displayGearAndRequirements(html);
@@ -5616,9 +5616,9 @@ describe('monitor wireless metadata', () => {
 
   test('download diagram SVG file name includes timestamp and project name', () => {
     setupDom();
-    require('../translations.js');
+    require('../public/js/translations.js');
     jest.useFakeTimers().setSystemTime(new Date('2024-01-02T03:04:00Z'));
-    const script = require('../script.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     document.getElementById('setupName').value = 'Test Proj';
     const area = document.getElementById('diagramArea');
@@ -5643,9 +5643,9 @@ describe('monitor wireless metadata', () => {
 
   test('download diagram JPG file name includes timestamp and project name', () => {
     setupDom();
-    require('../translations.js');
+    require('../public/js/translations.js');
     jest.useFakeTimers().setSystemTime(new Date('2024-01-02T03:04:00Z'));
-    const script = require('../script.js');
+    const script = require('../public/js/script.js');
     script.setLanguage('en');
     document.getElementById('setupName').value = 'Test Proj';
     const area = document.getElementById('diagramArea');
@@ -5808,8 +5808,8 @@ describe('copy summary button without clipboard support', () => {
     global.saveProject = jest.fn();
     global.deleteProject = jest.fn();
 
-    require('../translations.js');
-    script = require('../script.js');
+    require('../public/js/translations.js');
+    script = require('../public/js/script.js');
     script.setLanguage('en');
   });
 

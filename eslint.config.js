@@ -5,7 +5,7 @@ module.exports = [
   js.configs.recommended,
   {
     files: ['**/*.js'],
-    ignores: ['node_modules/**'],
+    ignores: ['node_modules/**', 'public/js/lz-string.min.js', 'public/js/globalthis-polyfill.js'],
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'script',
@@ -19,7 +19,7 @@ module.exports = [
     },
   },
   {
-    files: ['script.js'],
+    files: ['public/js/script.js'],
     languageOptions: {
       globals: {
         devices: 'writable',
