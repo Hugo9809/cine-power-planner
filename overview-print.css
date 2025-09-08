@@ -142,7 +142,9 @@ table, th, td {
   border: 1px solid var(--text-color);
   box-shadow: var(--panel-shadow);
 }
-#overviewDialogContent .gear-table td {
+#overviewDialogContent .gear-table td,
+#overviewDialogContent.dark-mode .gear-table td,
+body:not(.light-mode) .gear-table td {
   padding: 4px 0;
   border-left: none;
   border-right: none;
@@ -152,7 +154,9 @@ table, th, td {
   line-height: 1.4em;
 }
 
-#overviewDialogContent .gear-table .category-row td {
+#overviewDialogContent .gear-table .category-row td,
+#overviewDialogContent.dark-mode .gear-table .category-row td,
+body:not(.light-mode) .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   font-weight: 700;
