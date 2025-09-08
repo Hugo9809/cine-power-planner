@@ -9755,6 +9755,9 @@ function restoreSessionState() {
       currentProjectInfo = mergedInfo;
       if (projectForm) populateProjectForm(currentProjectInfo);
       displayGearAndRequirements(storedProject.gearList);
+      if (gearListOutput && storedProject.gearList) {
+        gearListOutput.classList.remove('hidden');
+      }
       if (gearListOutput) {
         ensureGearListActions();
         bindGearListCageListener();
