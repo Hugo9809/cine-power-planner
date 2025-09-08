@@ -747,7 +747,7 @@ button:disabled {
 }
 
 #sideMenu .controls button {
-  flex: 1;
+  flex: 0 0 var(--button-size);
 }
 
 #featureSearchContainer {
@@ -1961,15 +1961,15 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 #sideMenu {
   position: fixed;
   top: 0;
-  left: 0;
+  right: 0;
   height: 100%;
   width: 250px;
   background: var(--surface-color);
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
   padding: var(--page-padding);
   z-index: 200;
   transition: transform 0.3s ease;
-  transform: translateX(-100%);
+  transform: translateX(100%);
 }
 
 #sideMenu.open {
