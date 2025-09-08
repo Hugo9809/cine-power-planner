@@ -1,15 +1,14 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'camera-power-planner-v14';
+const CACHE_NAME = 'camera-power-planner-v15';
 const ASSETS = [
   './',
   './index.html',
   './impressum.html',
   './datenschutz.html',
-  './style.css',
-  './overview.css',
-  './overview-print.css',
-  './overview.js',
-  './fonts.css',
+  './styles/style.css',
+  './styles/overview.css',
+  './styles/overview-print.css',
+  './styles/fonts.css',
   './Ubuntu/Ubuntu-Bold.ttf',
   './Ubuntu/Ubuntu-BoldItalic.ttf',
   './Ubuntu/Ubuntu-Italic.ttf',
@@ -18,23 +17,25 @@ const ASSETS = [
   './Ubuntu/Ubuntu-Medium.ttf',
   './Ubuntu/Ubuntu-MediumItalic.ttf',
   './Ubuntu/Ubuntu-Regular.ttf',
-  './script.js',
+  './js/script.js',
+  './js/overview.js',
+  './js/storage.js',
+  './js/lz-string.min.js',
   './devices/index.js',
   './devices/cameras.js',
   './devices/monitors.js',
   './devices/video.js',
   './devices/fiz.js',
   './devices/batteries.js',
+  './devices/batteryHotswaps.js',
   './devices/cages.js',
   './devices/gearList.js',
+  './devices/wirelessReceivers.js',
   './translations.js',
-  './storage.js',
-  './normalizeData.js',
-  './unifyPorts.js',
+  './schema.json',
   './icon.svg',
   './icon.png',
-  './manifest.webmanifest',
-  './lz-string.min.js'
+  './manifest.webmanifest'
 ];
 
 if (typeof self !== 'undefined') {

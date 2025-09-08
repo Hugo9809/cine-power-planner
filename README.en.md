@@ -189,19 +189,19 @@ browser removes all stored information.
 
 ## 🗂️ File Structure
 ```bash
-index.html       # Main HTML layout
-style.css        # Styles and layout
-script.js        # Application logic
-data.js          # Default device list
-storage.js       # LocalStorage helpers
-README.*.md      # Documentation in different languages
-checkConsistency.js  # Verifies required fields in device data
-normalizeData.js     # Cleans entries and unifies connector names
-generateSchema.js    # Rebuilds schema.json from data.js
-unifyPorts.js        # Harmonizes legacy port names
-tests/               # Jest test suite
+public/index.html          # Main HTML layout
+public/styles/style.css    # Styles and layout
+public/js/script.js        # Application logic
+data/data.js               # Default device list
+public/js/storage.js       # LocalStorage helpers
+README.*.md                # Documentation in different languages
+scripts/checkConsistency.js  # Verifies required fields in device data
+scripts/normalizeData.js     # Cleans entries and unifies connector names
+scripts/generateSchema.js    # Rebuilds schema.json from data
+scripts/unifyPorts.js        # Harmonizes legacy port names
+tests/                       # Jest test suite
 ```
-Fonts are loaded via Google Fonts links in `index.html`.
+Fonts are bundled locally in `public/Ubuntu` and referenced via `public/styles/fonts.css`.
 After the fonts are cached on first load, the application works entirely offline.
 
 ## 🛠️ Development

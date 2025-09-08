@@ -1,4 +1,4 @@
-function checkConsistency(devices = require('./data.js')) {
+function checkConsistency(devices = require('../data/data.js')) {
   const rules = {
     cameras: [
       'powerDrawWatts',
@@ -31,12 +31,12 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node checkConsistency.js [--help]\n' +
+      'Usage: node scripts/checkConsistency.js [--help]\n' +
         '\nChecks that device entries contain required fields.\n' +
         'Exits with code 1 when missing fields are found.\n' +
         '\nExamples:\n' +
         '  npm run check-consistency\n' +
-        '  node checkConsistency.js --help\n' +
+        '  node scripts/checkConsistency.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'
     );

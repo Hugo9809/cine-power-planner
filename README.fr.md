@@ -115,20 +115,20 @@ informations sauvegardées.
 
 ## 🗂️ Arborescence
 ```bash
-index.html       # Page principale
-style.css        # Styles et mise en page
-script.js        # Logique de l'application
-data.js          # Base par défaut
-storage.js       # Fonctions LocalStorage
-README.*.md      # Documentation en plusieurs langues
-checkConsistency.js  # vérifie que chaque appareil possède les champs requis
-normalizeData.js     # nettoie les entrées et uniformise les connecteurs
-generateSchema.js    # génère schema.json à partir des données
-unifyPorts.js        # harmonise les noms de ports hérités
-tests/               # suite de tests Jest
+public/index.html          # Page principale
+public/styles/style.css    # Styles et mise en page
+public/js/script.js        # Logique de l'application
+data/data.js               # Base par défaut
+public/js/storage.js       # Fonctions LocalStorage
+README.*.md                # Documentation en plusieurs langues
+scripts/checkConsistency.js  # vérifie que chaque appareil possède les champs requis
+scripts/normalizeData.js     # nettoie les entrées et uniformise les connecteurs
+scripts/generateSchema.js    # génère schema.json à partir des données
+scripts/unifyPorts.js        # harmonise les noms de ports hérités
+tests/                       # suite de tests Jest
 ```
-Les polices sont chargées via Google Fonts dans `index.html`.
-Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
+Les polices sont fournies localement dans `public/Ubuntu` et référencées via `public/styles/fonts.css`.
+Une fois chargées, l'application fonctionne entièrement hors ligne.
 
 ## 🛠️ Développement
 Nécessite Node.js 18 ou version ultérieure.

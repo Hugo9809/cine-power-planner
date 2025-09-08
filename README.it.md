@@ -114,20 +114,20 @@ informazioni memorizzate.
 
 ## 🗂️ Struttura dei file
 ```bash
-index.html       # Layout HTML principale
-style.css        # Stili e layout
-script.js        # Logica dell'applicazione
-data.js          # Elenco dispositivi predefinito
-storage.js       # Funzioni di LocalStorage
-README.*.md      # Documentazione in diverse lingue
-checkConsistency.js  # verifica che ogni dispositivo abbia i campi obbligatori
-normalizeData.js     # pulisce le voci e uniforma i connettori
-generateSchema.js    # genera schema.json dai dati
-unifyPorts.js        # uniforma i nomi dei connettori obsoleti
-tests/               # suite di test Jest
+public/index.html          # Layout HTML principale
+public/styles/style.css    # Stili e layout
+public/js/script.js        # Logica dell'applicazione
+data/data.js               # Elenco dispositivi predefinito
+public/js/storage.js       # Funzioni di LocalStorage
+README.*.md                # Documentazione in diverse lingue
+scripts/checkConsistency.js  # verifica che ogni dispositivo abbia i campi obbligatori
+scripts/normalizeData.js     # pulisce le voci e uniforma i connettori
+scripts/generateSchema.js    # genera schema.json dai dati
+scripts/unifyPorts.js        # uniforma i nomi dei connettori obsoleti
+tests/                       # suite di test Jest
 ```
-I font vengono caricati tramite Google Fonts in `index.html`.
-Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'applicazione funziona interamente offline.
+I font sono inclusi localmente in `public/Ubuntu` e referenziati tramite `public/styles/fonts.css`.
+Dopo il primo caricamento, l'applicazione funziona interamente offline.
 
 ## 🛠️ Sviluppo
 È necessario Node.js 18 o successivo.

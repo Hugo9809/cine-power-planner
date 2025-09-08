@@ -115,20 +115,20 @@ gespeicherten Daten löschen.
 
 ## 🗂️ Dateistruktur
 ```bash
-index.html       # Hauptseite
-style.css        # Styles und Layout
-script.js        # Logik & Interaktion
-data.js          # Standard-Datenbank
-storage.js       # Hilfsfunktionen für LocalStorage
-README.*.md      # Dokumentation in verschiedenen Sprachen
-checkConsistency.js  # prüft Pflichtfelder in den Gerätedaten
-normalizeData.js     # bereinigt Einträge und vereinheitlicht Anschlüsse
-generateSchema.js    # erzeugt schema.json aus den Daten
-unifyPorts.js        # vereinheitlicht ältere Anschlussbezeichnungen
-tests/               # Jest-Test-Suite
+public/index.html          # Hauptseite
+public/styles/style.css    # Styles und Layout
+public/js/script.js        # Logik & Interaktion
+data/data.js               # Standard-Datenbank
+public/js/storage.js       # Hilfsfunktionen für LocalStorage
+README.*.md                # Dokumentation in verschiedenen Sprachen
+scripts/checkConsistency.js  # prüft Pflichtfelder in den Gerätedaten
+scripts/normalizeData.js     # bereinigt Einträge und vereinheitlicht Anschlüsse
+scripts/generateSchema.js    # erzeugt schema.json aus den Daten
+scripts/unifyPorts.js        # vereinheitlicht ältere Anschlussbezeichnungen
+tests/                       # Jest-Test-Suite
 ```
-Schriftarten werden über Google Fonts in `index.html` geladen.
-Nach dem ersten Laden mit Internetverbindung kann die Anwendung komplett offline genutzt werden.
+Schriftarten liegen lokal in `public/Ubuntu` und werden über `public/styles/fonts.css` eingebunden.
+Nach dem ersten Laden kann die Anwendung komplett offline genutzt werden.
 
 ## 🛠️ Entwicklung
 Erfordert Node.js 18 oder neuer.

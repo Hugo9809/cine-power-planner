@@ -115,20 +115,20 @@ elimina toda la información almacenada.
 
 ## 🗂️ Estructura de Archivos
 ```bash
-index.html       # Página principal
-style.css        # Estilos y diseño
-script.js        # Lógica de la aplicación
-data.js          # Base de datos por defecto
-storage.js       # Utilidades de LocalStorage
-README.*.md      # Documentación en distintos idiomas
-checkConsistency.js  # verifica que los datos de los dispositivos tengan todos los campos
-normalizeData.js     # limpia las entradas y unifica los conectores
-generateSchema.js    # genera schema.json a partir de los datos
-unifyPorts.js        # unifica nombres de puertos heredados
-tests/               # suite de pruebas de Jest
+public/index.html          # Página principal
+public/styles/style.css    # Estilos y diseño
+public/js/script.js        # Lógica de la aplicación
+data/data.js               # Base de datos por defecto
+public/js/storage.js       # Utilidades de LocalStorage
+README.*.md                # Documentación en distintos idiomas
+scripts/checkConsistency.js  # verifica que los datos de los dispositivos tengan todos los campos
+scripts/normalizeData.js     # limpia las entradas y unifica los conectores
+scripts/generateSchema.js    # genera schema.json a partir de los datos
+scripts/unifyPorts.js        # unifica nombres de puertos heredados
+tests/                       # suite de pruebas de Jest
 ```
-Las fuentes se cargan desde Google Fonts en `index.html`.
-Una vez almacenadas las fuentes en caché, la aplicación puede usarse totalmente sin conexión.
+Las fuentes están incluidas localmente en `public/Ubuntu` y se enlazan mediante `public/styles/fonts.css`.
+Una vez almacenadas en caché, la aplicación puede usarse totalmente sin conexión.
 
 ## 🛠️ Desarrollo
 Se requiere Node.js 18 o posterior.

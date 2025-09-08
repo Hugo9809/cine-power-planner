@@ -171,17 +171,17 @@ After cloning the repository, you can inspect or modify the code base.
 ### File Structure
 
 ```
-index.html       # Main HTML layout
-style.css        # Styles and layout
-script.js        # Application logic
-devices/         # Default device lists by category
-storage.js       # LocalStorage helpers
-README.*.md      # Documentation in different languages
-checkConsistency.js  # Validates device data
-normalizeData.js     # Cleans and unifies device entries
-generateSchema.js    # Regenerates schema.json from data
-unifyPorts.js        # Harmonizes connector names
-tests/               # Jest test suite
+public/index.html          # Main HTML layout
+public/styles/style.css    # Styles and layout
+public/js/script.js        # Application logic
+public/devices/            # Default device lists by category
+public/js/storage.js       # LocalStorage helpers
+README.*.md                # Documentation in different languages
+scripts/checkConsistency.js  # Validates device data
+scripts/normalizeData.js     # Cleans and unifies device entries
+scripts/generateSchema.js    # Regenerates schema.json from data
+scripts/unifyPorts.js        # Harmonizes connector names
+tests/                       # Jest test suite
 ```
 
 ### Install dependencies and run tests

@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-let devices = require('./data.js');
+let devices = require('../data/data.js');
 
 function forEachCamera(cb) {
   const cameras = devices.cameras;
@@ -367,7 +367,7 @@ function save() {
     JSON.stringify(devices, null, 2) +
     ';\n' +
     'if (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n';
-  const filePath = path.join(__dirname, 'data.js');
+  const filePath = path.join(__dirname, '../data/data.js');
   fs.writeFileSync(filePath, content);
 }
 
@@ -387,11 +387,11 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node normalizeData.js [--help]\n' +
-        '\nCleans and expands device data, then overwrites data.js with the result.\n' +
+      'Usage: node scripts/normalizeData.js [--help]\n' +
+        '\nCleans and expands device data, then overwrites data/data.js with the result.\n' +
         '\nExamples:\n' +
         '  npm run normalize\n' +
-        '  node normalizeData.js --help\n' +
+        '  node scripts/normalizeData.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'
     );
