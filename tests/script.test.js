@@ -1753,6 +1753,32 @@ describe('script.js functions', () => {
       expect(html).not.toContain('HDMI Cable');
     });
 
+  test('renders multiple crew members on separate lines in project requirements summary', () => {
+    setupDom();
+    require('../translations.js');
+    const { generateGearListHtml } = require('../script.js');
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+    addOpt('cameraSelect', cageCamera);
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    addOpt('batterySelect', 'BattA');
+    document.getElementById('batteryCount').textContent = '1';
+    const html = generateGearListHtml({
+      people: [
+        { role: 'DoP', name: 'Alice', phone: '111' },
+        { role: 'AC', name: 'Bob', phone: '222' }
+      ]
+    });
+    expect(html).toContain('<span class="req-value">DoP: Alice (111)<br>AC: Bob (222)</span>');
+  });
+
   test('custom filter selections override defaults', () => {
     setupDom(false);
     require('../translations.js');

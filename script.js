@@ -8500,7 +8500,7 @@ function generateGearListHtml(info = {}) {
             .filter(p => p.role && p.name)
             .map(p => p.phone ? `${p.role}: ${p.name} (${p.phone})` : `${p.role}: ${p.name}`);
         if (crewEntries.length) {
-            projectInfo.crew = crewEntries.join(', ');
+            projectInfo.crew = crewEntries.join('\n');
         }
     }
     delete projectInfo.people;
@@ -8564,7 +8564,10 @@ function generateGearListHtml(info = {}) {
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
-        infoEntries.map(([k, v]) => `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${escapeHtml(v)}</span></div>`).join('') + '</div>' : '';
+        infoEntries.map(([k, v]) => {
+            const value = escapeHtml(v).replace(/\n/g, '<br>');
+            return `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${value}</span></div>`;
+        }).join('') + '</div>' : '';
     const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
