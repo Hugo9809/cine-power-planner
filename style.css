@@ -15,7 +15,7 @@
   --control-disabled-bg: #cccccc;
   --panel-bg: #f9f9f9;
   --panel-border: #ddd;
-  --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   --border-radius: 5px;
   --page-padding: 20px;
   --gap-size: 10px;
@@ -523,7 +523,7 @@ section {
 }
 
 section:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -550,7 +550,7 @@ button {
 button:hover {
   background-color: var(--accent-color);
   color: var(--inverse-text-color);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
 }
 button:active {
@@ -558,7 +558,7 @@ button:active {
   color: var(--inverse-text-color);
   filter: brightness(0.9);
   transform: translateY(0);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 button:disabled {
   background-color: var(--control-disabled-bg);
@@ -589,7 +589,7 @@ button:disabled {
 }
 
 .device-category:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -960,7 +960,7 @@ button:disabled {
   font-size: 12px;
   padding: 6px 10px;
   border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 10;
   max-width: 320px;
   overflow: auto;
@@ -1157,7 +1157,7 @@ button:disabled {
 }
 
 #batteryComparison:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 #batteryTableContainer {
@@ -1296,7 +1296,7 @@ html.dark-mode,
   --control-disabled-bg: #555;
   --panel-bg: #1c1c1e;
   --panel-border: #333;
-  --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   --link-color: #7ec8ff;
   --diagram-node-fill: #444;
   --power-color: #ff6666;
@@ -1336,7 +1336,7 @@ body.dark-mode.pink-mode {
 .dark-mode #batteryComparison {
   background-color: #1c1c1e;
   border-color: #333;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--panel-shadow);
 }
 .dark-mode fieldset { border-color: var(--inverse-text-color); }
 .dark-mode legend { color: var(--inverse-text-color); }
@@ -1348,7 +1348,7 @@ body.dark-mode.pink-mode {
   background: rgba(51, 51, 51, 0.95);
   color: var(--inverse-text-color);
   border-color: #888;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
 }
 .dark-mode .connector-block,
 .dark-mode .info-box { background-color: rgba(255,255,255,0.1); }
@@ -1383,7 +1383,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     --control-disabled-bg: #555;
     --panel-bg: #1c1c1e;
     --panel-border: #333;
-    --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    --panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     --link-color: #7ec8ff;
     --diagram-node-fill: #444;
     --power-color: #ff6666;
@@ -1419,7 +1419,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     background: rgba(51, 51, 51, 0.95);
     color: var(--inverse-text-color);
     border-color: #888;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
   }
   body:not(.light-mode) .connector-block,
   body:not(.light-mode) .info-box { background-color: rgba(255,255,255,0.1); }
@@ -1662,7 +1662,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border: 1px solid var(--control-text);
   border-radius: 6px;
   padding: 6px 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--panel-shadow);
   font-size: 12px;
 }
 #overviewDialogContent .device-block strong {
