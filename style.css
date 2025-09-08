@@ -1828,14 +1828,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 .dark-mode .gear-table td {
-  border-top: 1px solid var(--accent-color);
-  border-bottom: 1px solid var(--accent-color);
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
 }
 
 .dark-mode .gear-table .category-row td {
-  border-top: 1px solid var(--accent-color);
-  border-bottom: 1px solid var(--accent-color);
-  color: var(--accent-color);
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+  color: var(--inverse-text-color);
 }
 
 #overviewDialogContent .gear-table td {
@@ -1856,14 +1856,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 }
 
 #overviewDialogContent.dark-mode .gear-table td {
-  border-top: 1px solid var(--accent-color);
-  border-bottom: 1px solid var(--accent-color);
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
 }
 
 #overviewDialogContent.dark-mode .gear-table .category-row td {
-  border-top: 1px solid var(--accent-color);
-  border-bottom: 1px solid var(--accent-color);
-  color: var(--accent-color);
+  border-top: 1px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
+  color: var(--inverse-text-color);
 }
 
 #gearListOutput,
@@ -1885,6 +1885,20 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 
 #gearListOutput h2 {
   border-bottom: 2px solid var(--accent-color);
+}
+
+.dark-mode #gearListOutput h1,
+.dark-mode #gearListOutput h2,
+.dark-mode #gearListOutput h3,
+#gearListOutput.dark-mode h1,
+#gearListOutput.dark-mode h2,
+#gearListOutput.dark-mode h3 {
+  color: var(--inverse-text-color);
+}
+
+.dark-mode #gearListOutput h2,
+#gearListOutput.dark-mode h2 {
+  border-bottom: 2px solid var(--inverse-text-color);
 }
 
 #gearListOutput .filter-item {
