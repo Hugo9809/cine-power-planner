@@ -22,7 +22,7 @@ beforeAll(() => {
   global.deleteSetup = jest.fn();
 
   require('../translations.js');
-  utils = require('../script.js');
+  utils = require('../public/js/script.js');
 });
 
 describe('utility function tests', () => {

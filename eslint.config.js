@@ -19,7 +19,7 @@ module.exports = [
     },
   },
   {
-    files: ['script.js'],
+    files: ['public/js/script.js'],
     languageOptions: {
       globals: {
         devices: 'writable',

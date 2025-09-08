@@ -94,7 +94,7 @@ Puoi cambiare la lingua nell'angolo in alto a destra e la scelta viene memorizza
 ---
 
 ## ▶️ Come usare
-1. **Avvia l'app:** apri `index.html` in un qualsiasi browser moderno – non serve alcun server
+1. **Avvia l'app:** apri `public/index.html` in un qualsiasi browser moderno – non serve alcun server
 2. **Seleziona i dispositivi:** scegli i dispositivi in ogni categoria usando i menu a discesa
 3. **Vedi i calcoli:** quando selezioni una batteria compaiono consumo totale, corrente e autonomia
 4. **Verifica i limiti di uscita:** gli indicatori mostrano se l'uscita della batteria viene superata
@@ -114,19 +114,22 @@ informazioni memorizzate.
 
 ## 🗂️ Struttura dei file
 ```bash
-index.html       # Layout HTML principale
-style.css        # Stili e layout
-script.js        # Logica dell'applicazione
-data.js          # Elenco dispositivi predefinito
-storage.js       # Funzioni di LocalStorage
-README.*.md      # Documentazione in diverse lingue
-checkConsistency.js  # verifica che ogni dispositivo abbia i campi obbligatori
-normalizeData.js     # pulisce le voci e uniforma i connettori
-generateSchema.js    # genera schema.json dai dati
-unifyPorts.js        # uniforma i nomi dei connettori obsoleti
-tests/               # suite di test Jest
+public/              # Risorse web statiche
+  index.html         # Layout HTML principale
+  js/
+    script.js        # Logica dell'applicazione
+  styles/            # Stili e layout
+devices/             # Elenco dispositivi predefinito
+data/data.js         # Esporta i dispositivi
+storage.js           # Funzioni di LocalStorage
+README.*.md          # Documentazione in diverse lingue
+scripts/checkConsistency.js  # verifica che ogni dispositivo abbia i campi obbligatori
+scripts/normalizeData.js     # pulisce le voci e uniforma i connettori
+scripts/generateSchema.js    # genera schema.json dai dati
+scripts/unifyPorts.js        # uniforma i nomi dei connettori obsoleti
+tests/                       # suite di test Jest
 ```
-I font vengono caricati tramite Google Fonts in `index.html`.
+I font vengono caricati tramite Google Fonts in `public/index.html`.
 Dopo che i font sono stati memorizzati nella cache al primo caricamento, l'applicazione funziona interamente offline.
 
 ## 🛠️ Sviluppo

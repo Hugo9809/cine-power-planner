@@ -1,5 +1,5 @@
 const fs = require('fs');
-let devices = require('./data.js');
+let devices = require('../data/data.js');
 
 // Caches for expensive normalization steps to avoid repeated regex work
 const typeNameCache = new Map();
@@ -320,11 +320,11 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node unifyPorts.js [--help]\n' +
-        '\nNormalizes connector and port definitions in data.js and overwrites the file.\n' +
+      'Usage: node scripts/unifyPorts.js [--help]\n' +
+        '\nNormalizes connector and port definitions in data/data.js and overwrites the file.\n' +
         '\nExamples:\n' +
-        '  node unifyPorts.js\n' +
-        '  node unifyPorts.js --help\n' +
+        '  node scripts/unifyPorts.js\n' +
+        '  node scripts/unifyPorts.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'
     );
@@ -341,7 +341,7 @@ if (require.main === module) {
   normalizeCollection(devices.fiz.distance, normalizeFiz);
   deepClean(devices);
   fs.writeFileSync(
-    'data.js',
+    '../data/data.js',
     'let devices=' +
       JSON.stringify(devices, null, 2) +
       ';\nif (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n'

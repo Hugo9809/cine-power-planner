@@ -1,5 +1,5 @@
 const fs = require('fs');
-const devices = require('./data');
+const devices = require('../data/data.js');
 
 function isDeviceObject(obj) {
   return Object.values(obj).some((v) => v === null || typeof v !== 'object' || Array.isArray(v));
@@ -50,11 +50,11 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node generateSchema.js [--help]\n' +
-        '\nGenerates schema.json from data.js.\n' +
+      'Usage: node scripts/generateSchema.js [--help]\n' +
+        '\nGenerates schema.json from data/data.js.\n' +
         '\nExamples:\n' +
-        '  node generateSchema.js\n' +
-        '  node generateSchema.js --help\n' +
+        '  node scripts/generateSchema.js\n' +
+        '  node scripts/generateSchema.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'
     );

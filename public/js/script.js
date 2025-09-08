@@ -24,7 +24,7 @@ try {
 
 let deviceSchema;
 try {
-  deviceSchema = require('./schema.json');
+  deviceSchema = require('../../schema.json');
 } catch {
   if (typeof fetch === 'function') {
     fetch('schema.json').then(r => r.json()).then(d => { deviceSchema = d; });
@@ -1135,7 +1135,7 @@ let gearItemTranslations = {};
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
   try {
-    const translations = require('./translations.js');
+    const translations = require('../../translations.js');
     window.texts = translations.texts;
     window.categoryNames = translations.categoryNames;
     window.gearItems = translations.gearItems;

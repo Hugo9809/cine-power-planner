@@ -95,7 +95,7 @@ Vous pouvez changer la langue en haut à droite; la préférence est mémorisée
 ---
 
 ## ▶️ Utilisation
-1. **Lancer l'application :** ouvrir `index.html` dans un navigateur moderne
+1. **Lancer l'application :** ouvrir `public/index.html` dans un navigateur moderne
 2. **Sélectionner les appareils :** choisir dans chaque catégorie via les menus déroulants
 3. **Voir les calculs :** consommation, courant et autonomie apparaissent lorsqu'une batterie est sélectionnée
 4. **Vérifier les limites :** des messages indiquent si la sortie de la batterie est dépassée
@@ -115,19 +115,22 @@ informations sauvegardées.
 
 ## 🗂️ Arborescence
 ```bash
-index.html       # Page principale
-style.css        # Styles et mise en page
-script.js        # Logique de l'application
-data.js          # Base par défaut
-storage.js       # Fonctions LocalStorage
-README.*.md      # Documentation en plusieurs langues
-checkConsistency.js  # vérifie que chaque appareil possède les champs requis
-normalizeData.js     # nettoie les entrées et uniformise les connecteurs
-generateSchema.js    # génère schema.json à partir des données
-unifyPorts.js        # harmonise les noms de ports hérités
-tests/               # suite de tests Jest
+public/              # Ressources web statiques
+  index.html         # Page principale
+  js/
+    script.js        # Logique de l'application
+  styles/            # Styles et mise en page
+devices/             # Liste d'appareils par défaut
+data/data.js         # Point d'entrée des appareils
+storage.js           # Fonctions LocalStorage
+README.*.md          # Documentation en plusieurs langues
+scripts/checkConsistency.js  # vérifie que chaque appareil possède les champs requis
+scripts/normalizeData.js     # nettoie les entrées et uniformise les connecteurs
+scripts/generateSchema.js    # génère schema.json à partir des données
+scripts/unifyPorts.js        # harmonise les noms de ports hérités
+tests/                       # suite de tests Jest
 ```
-Les polices sont chargées via Google Fonts dans `index.html`.
+Les polices sont chargées via Google Fonts dans `public/index.html`.
 Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
 
 ## 🛠️ Développement

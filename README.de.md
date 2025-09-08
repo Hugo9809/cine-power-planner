@@ -95,7 +95,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 ---
 
 ## ▶️ Nutzung
-1. **App starten:** `index.html` in einem modernen Browser öffnen – kein Server nötig
+1. **App starten:** `public/index.html` in einem modernen Browser öffnen – kein Server nötig
 2. **Geräte wählen:** In jeder Kategorie passende Geräte auswählen
 3. **Berechnung ansehen:** Gesamtverbrauch, Stromstärke und Laufzeit werden angezeigt
 4. **Grenzen prüfen:** Hinweise zeigen, ob der Akku überlastet wird
@@ -115,19 +115,22 @@ gespeicherten Daten löschen.
 
 ## 🗂️ Dateistruktur
 ```bash
-index.html       # Hauptseite
-style.css        # Styles und Layout
-script.js        # Logik & Interaktion
-data.js          # Standard-Datenbank
-storage.js       # Hilfsfunktionen für LocalStorage
-README.*.md      # Dokumentation in verschiedenen Sprachen
-checkConsistency.js  # prüft Pflichtfelder in den Gerätedaten
-normalizeData.js     # bereinigt Einträge und vereinheitlicht Anschlüsse
-generateSchema.js    # erzeugt schema.json aus den Daten
-unifyPorts.js        # vereinheitlicht ältere Anschlussbezeichnungen
-tests/               # Jest-Test-Suite
+public/              # Statische Web-Assets
+  index.html         # Hauptseite
+  js/
+    script.js        # Logik & Interaktion
+  styles/            # Styles und Layout
+devices/             # Standard-Geräte nach Kategorie
+data/data.js         # Geräte-Export
+storage.js           # Hilfsfunktionen für LocalStorage
+README.*.md          # Dokumentation in verschiedenen Sprachen
+scripts/checkConsistency.js  # prüft Pflichtfelder in den Gerätedaten
+scripts/normalizeData.js     # bereinigt Einträge und vereinheitlicht Anschlüsse
+scripts/generateSchema.js    # erzeugt schema.json aus den Daten
+scripts/unifyPorts.js        # vereinheitlicht ältere Anschlussbezeichnungen
+tests/                       # Jest-Test-Suite
 ```
-Schriftarten werden über Google Fonts in `index.html` geladen.
+Schriftarten werden über Google Fonts in `public/index.html` geladen.
 Nach dem ersten Laden mit Internetverbindung kann die Anwendung komplett offline genutzt werden.
 
 ## 🛠️ Entwicklung

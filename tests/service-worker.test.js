@@ -1,8 +1,8 @@
-const { ASSETS, CACHE_NAME } = require('../service-worker.js');
+const { ASSETS, CACHE_NAME } = require('../public/service-worker.js');
 
 describe('service worker configuration', () => {
   test('caches overview assets for offline usage', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./overview.css', './overview-print.css', './overview.js']));
+    expect(ASSETS).toEqual(expect.arrayContaining(['./styles/overview.css', './styles/overview-print.css', './js/overview.js']));
   });
 
   test('caches legal pages for offline usage', () => {

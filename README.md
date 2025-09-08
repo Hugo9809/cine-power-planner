@@ -8,7 +8,7 @@ checks that batteries can safely deliver the required output, and estimates how
 long your project will run. The tool runs entirely in the browser and even works
 offline.
 
-No build step is required—open `index.html` in your browser and start planning
+No build step is required—open `public/index.html` in your browser and start planning
 immediately. Serving the repository over HTTP(S) installs a service worker so
 that future visits work offline and pick up updates automatically.
 
@@ -90,7 +90,7 @@ User-submitted battery runtimes are combined using a weighted average to better 
 ## Quick Start
 
 1. Download or clone this repository.
-2. Open `index.html` in a modern browser.
+2. Open `public/index.html` in a modern browser.
 3. (Optional) Serve the folder over HTTP to enable the service worker and other Progressive Web App features. You can use any static file server, for example:
    ```bash
    npx http-server
@@ -143,7 +143,7 @@ Set up a development environment:
 Cine List is a Progressive Web App and can be installed for quick
 access:
 
-1. Open `index.html` in a supported browser.
+1. Open `public/index.html` in a supported browser.
 2. Use the browser's **Install** or **Add to Home Screen** option.
    - **Chrome/Edge (desktop):** Click the install icon in the address bar.
    - **Android:** Open the browser menu and choose *Add to Home screen*.
@@ -171,17 +171,20 @@ After cloning the repository, you can inspect or modify the code base.
 ### File Structure
 
 ```
-index.html       # Main HTML layout
-style.css        # Styles and layout
-script.js        # Application logic
-devices/         # Default device lists by category
-storage.js       # LocalStorage helpers
-README.*.md      # Documentation in different languages
-checkConsistency.js  # Validates device data
-normalizeData.js     # Cleans and unifies device entries
-generateSchema.js    # Regenerates schema.json from data
-unifyPorts.js        # Harmonizes connector names
-tests/               # Jest test suite
+public/              # Static web assets
+  index.html         # Main HTML layout
+  js/
+    script.js        # Application logic
+  styles/            # Styles and layout
+devices/             # Default device lists by category
+data/data.js         # Entry point exporting devices
+storage.js           # LocalStorage helpers
+README.*.md          # Documentation in different languages
+scripts/checkConsistency.js  # Validates device data
+scripts/normalizeData.js     # Cleans and unifies device entries
+scripts/generateSchema.js    # Regenerates schema.json from data
+scripts/unifyPorts.js        # Harmonizes connector names
+tests/                       # Jest test suite
 ```
 
 ### Install dependencies and run tests
