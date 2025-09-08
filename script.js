@@ -2427,6 +2427,10 @@ function describeRequirement(field, value) {
     if (val) parts.push('Adds viewfinder extension to support accessories.');
   } else if (field === 'gimbal') {
     if (val) parts.push('Includes selected gimbal and support accessories.');
+  } else if (field === 'easyrig') {
+    if (val && val !== 'no further stabilisation') {
+      parts.push('Adds selected stabiliser to gear list.');
+    }
   } else if (field === 'filter') {
     if (val) parts.push('Adds selected filters to gear list.');
   } else if (field === 'codec') {
@@ -8237,6 +8241,7 @@ function collectProjectFormData() {
         tripodTypes: multi('tripodTypes'),
         tripodSpreader: val('tripodSpreader'),
         sliderBowl: getSliderBowlValue(),
+        easyrig: getEasyrigValue(),
         filter: filterStr
     };
 }
@@ -8621,6 +8626,7 @@ function generateGearListHtml(info = {}) {
         tripodTypes: 'Tripod Types',
         tripodSpreader: 'Tripod Spreader',
         sliderBowl: 'Slider Bowl',
+        easyrig: 'Further Stabilisation',
         filter: 'Filter'
     };
     const excludedFields = new Set([

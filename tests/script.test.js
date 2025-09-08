@@ -2998,6 +2998,20 @@ describe('script.js functions', () => {
     expect(document.querySelector('#gearListEasyrig').value).toBe('FlowCine Serene Spring Arm');
   });
 
+  test('selected further stabilisation is stored in project requirements', () => {
+    global.saveProject = jest.fn();
+    const { generateGearListHtml, displayGearAndRequirements, ensureGearListActions, bindGearListEasyrigListener } = script;
+    const html = generateGearListHtml({ requiredScenarios: 'Easyrig' });
+    displayGearAndRequirements(html);
+    ensureGearListActions();
+    bindGearListEasyrigListener();
+    const sel = document.querySelector('#gearListEasyrig');
+    sel.value = 'Easyrig - STABIL G3';
+    sel.dispatchEvent(new Event('change'));
+    const proj = global.saveProject.mock.calls.pop()[1];
+    expect(proj.projectInfo.easyrig).toBe('Easyrig - STABIL G3');
+  });
+
   test('gear list remains visible after session reload with only setup name', () => {
     global.saveSessionState = jest.fn();
     global.loadSessionState = jest.fn();
