@@ -32,6 +32,9 @@
   :root {
     --page-padding: 5px;
   }
+  h2 {
+    padding-bottom: 0.3em;
+  }
 }
 body.pink-mode {
   --accent-color: #ff69b4;
