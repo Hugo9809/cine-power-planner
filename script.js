@@ -9403,6 +9403,7 @@ function applyGearListSelectors(selectors) {
                 sel.dispatchEvent(new Event('change'));
             } else {
                 sel.value = value;
+                sel.dispatchEvent(new Event('change'));
             }
         }
     });

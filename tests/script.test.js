@@ -2568,6 +2568,46 @@ describe('script.js functions', () => {
     expect(msSection).toContain('3x Antenna 5,8GHz 5dBi Long (3x Spare)');
   });
 
+  test('director handheld monitor selection persists after reload', () => {
+    setupDom(false);
+    const script = require('../script.js');
+    const {
+      generateGearListHtml,
+      displayGearAndRequirements,
+      getGearListSelectors,
+      applyGearListSelectors,
+      bindGearListDirectorMonitorListener,
+    } = script;
+
+    // add alternate monitor option
+    devices.monitors.MonB = {
+      powerDrawWatts: 5,
+      screenSizeInches: 8,
+      power: { input: { type: 'LEMO 2-pin' } },
+      videoInputs: [{ type: '3G-SDI' }],
+    };
+
+    // initial render with default selection
+    let html = generateGearListHtml({ videoDistribution: 'Director Monitor 7" handheld' });
+    displayGearAndRequirements(html);
+    bindGearListDirectorMonitorListener();
+
+    const sel = document.getElementById('gearListDirectorMonitor');
+    sel.value = 'MonB';
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const selectors = getGearListSelectors();
+
+    // simulate reload by regenerating and reapplying selectors
+    html = generateGearListHtml({ videoDistribution: 'Director Monitor 7" handheld' });
+    displayGearAndRequirements(html);
+    bindGearListDirectorMonitorListener();
+    applyGearListSelectors(selectors);
+
+    expect(document.getElementById('gearListDirectorMonitor').value).toBe('MonB');
+    expect(document.getElementById('monitorSizeDirector').textContent).toBe('8"');
+  });
+
   test('gear list includes battery count in camera batteries row', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
