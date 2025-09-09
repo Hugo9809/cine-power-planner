@@ -10841,15 +10841,15 @@ function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE) {
   return sel;
 }
 
-function createFilterValueSelect(type, selected = []) {
+function createFilterValueSelect(type, selected) {
   const sel = document.createElement('select');
   sel.id = `filter-values-${filterId(type)}`;
   // Allow selecting multiple strengths for a given filter
   // Use both the property and attribute to ensure HTML serialization
   sel.multiple = true;
   sel.setAttribute('multiple', '');
-  const { opts, defaults } = getFilterValueConfig(type);
-  const selectedVals = selected.length ? selected : defaults;
+  const { opts } = getFilterValueConfig(type);
+  const selectedVals = Array.isArray(selected) ? selected : [];
   opts.forEach(o => {
     const opt = document.createElement('option');
     opt.value = o;
@@ -10916,9 +10916,9 @@ function collectFilterSelections() {
     } else if (Array.isArray(prev.values) && prev.values.length) {
       vals = prev.values;
     } else {
-      vals = getFilterValueConfig(type).defaults;
+      vals = [];
     }
-    return `${type}:${size}${vals.length ? ':' + vals.join('|') : ''}`;
+    return `${type}:${size}${vals && vals.length ? ':' + vals.join('|') : ''}`;
   });
   return tokens.join(',');
 }
@@ -10926,8 +10926,8 @@ function collectFilterSelections() {
 function parseFilterTokens(str) {
   if (!str) return [];
   return str.split(',').map(s => {
-    const [type, size = DEFAULT_FILTER_SIZE, vals = ''] = s.split(':').map(p => p.trim());
-    return { type, size, values: vals ? vals.split('|').map(v => v.trim()) : [] };
+    const [type, size = DEFAULT_FILTER_SIZE, vals] = s.split(':').map(p => p.trim());
+    return { type, size, values: vals ? vals.split('|').map(v => v.trim()) : undefined };
   }).filter(t => t.type);
 }
 
@@ -10957,7 +10957,7 @@ function buildFilterSelectHtml(filters = []) {
   const parts = [];
   const itemHtml = (gearName, label, sizeHtml = '', controlsHtml = '') =>
     `<span class="gear-item filter-item" data-gear-name="${gearName}"><span class="filter-header"><span class="filter-label">1x ${label}</span>${sizeHtml ? ` ${sizeHtml}` : ''}</span>${controlsHtml ? `<span class="filter-controls">${controlsHtml}</span>` : ''}</span>`;
-  filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values = [] }) => {
+  filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values }) => {
     switch (type) {
       case 'Diopter': {
         const valSel = createFilterValueSelect(type, values);

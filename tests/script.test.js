@@ -1750,8 +1750,10 @@ describe('script.js functions', () => {
       expect(html).toContain('<span class="req-value">Handheld, Slider</span>');
       expect(html).not.toContain('Filter: IRND');
       expect(html).toContain('Matte box + filter');
-      expect(html).toContain(`${DEFAULT_FILTER_SIZE} IRND Filter 0.3`);
-      expect(html).toContain(`${DEFAULT_FILTER_SIZE} IRND Filter 1.2`);
+      const dom = new JSDOM(html);
+      const valsIRND = dom.window.document.getElementById('filter-values-IRND');
+      expect(valsIRND).not.toBeNull();
+      expect([...valsIRND.selectedOptions]).toHaveLength(0);
       expect(html).toContain('<table class="gear-table">');
       expect(html).toContain('Camera');
       expect(html).toContain(`1x ${cageCamera}`);
@@ -1864,7 +1866,7 @@ describe('script.js functions', () => {
     expect(sizeSel.value).toBe(DEFAULT_FILTER_SIZE);
   });
 
-  test('default filter set includes 1/2, 1/4 and 1/8', () => {
+  test('default filter set has no strengths selected', () => {
     setupDom(false);
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
@@ -1873,7 +1875,7 @@ describe('script.js functions', () => {
     const valSel = dom.window.document.getElementById('filter-values-BPM');
     expect(valSel.multiple).toBe(true);
     const vals = [...valSel.selectedOptions].map(o => o.value);
-    expect(vals).toEqual(expect.arrayContaining(['1/2', '1/4', '1/8']));
+    expect(vals).toHaveLength(0);
   });
 
   test('multiple filters render on separate lines', () => {
@@ -1920,7 +1922,7 @@ describe('script.js functions', () => {
     expect([...sel.selectedOptions].map(o => o.value)).toContain('0.6');
   });
 
-  test('diopter filter includes frame and default strengths', () => {
+  test('diopter filter includes frame with no strengths selected by default', () => {
     setupDom(false);
     require('../translations.js');
     const { generateGearListHtml } = require('../script.js');
@@ -1931,10 +1933,10 @@ describe('script.js functions', () => {
     const valSel = dom.window.document.getElementById('filter-values-Diopter');
     expect(valSel.multiple).toBe(true);
     const vals = [...valSel.selectedOptions].map(o => o.value);
-    expect(vals).toEqual(expect.arrayContaining(['+1/2', '+1', '+2', '+4']));
+    expect(vals).toHaveLength(0);
   });
 
-  test('collectProjectFormData builds default filter token', () => {
+  test('collectProjectFormData builds filter token without strengths', () => {
     setupDom(false);
     require('../translations.js');
     const { collectProjectFormData } = require('../script.js');
@@ -1943,7 +1945,7 @@ describe('script.js functions', () => {
     opt.selected = true;
     filterSelect.dispatchEvent(new window.Event('change'));
     const info = collectProjectFormData();
-    expect(info.filter).toBe(`BPM:${DEFAULT_FILTER_SIZE}:1/2|1/4|1/8`);
+    expect(info.filter).toBe(`BPM:${DEFAULT_FILTER_SIZE}`);
   });
 
   test('collectProjectFormData handles custom filter selections', () => {
