@@ -4884,8 +4884,13 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     }
 
     // Sort by runtime (hours) descending within each group
-    pinsCandidates.sort((a, b) => b.hours - a.hours);
-    dtapCandidates.sort((a, b) => b.hours - a.hours);
+    // Ensure stable ordering: sort by runtime descending, then by name
+    const sortByHoursThenName = (a, b) => {
+      const diff = b.hours - a.hours;
+      return diff !== 0 ? diff : collator.compare(a.name, b.name);
+    };
+    pinsCandidates.sort(sortByHoursThenName);
+    dtapCandidates.sort(sortByHoursThenName);
 
     // Prepare table HTML
     let tableHtml = `<tr><th>${texts[currentLang].batteryTableLabel}</th><th>${texts[currentLang].runtimeLabel}</th><th></th></tr>`;
