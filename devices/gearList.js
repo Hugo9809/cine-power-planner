@@ -742,7 +742,11 @@ const gear = {
         "compatible": [
           "LMB 4x5",
           "LMB-6"
-        ]
+        ],
+        "traySize": "Accessory only (tray catcher)",
+        "topFlag": false,
+        "sideFlags": false,
+        "provenance": "Listed as accessory only, no flags [oai_citation:2‡250211_Equipmentliste_Aktenzeichen_XY_Betrug_.pdf](file-service://file-CSmKG9jmaC5YFTscUZTnmU)"
       },
       "ARRI LMB 4x5 Side Flags": {
         "brand": "ARRI",
@@ -773,15 +777,86 @@ const gear = {
         "kNumber": "K2.0013740",
         "diameterMm": 138
       },
-      "Tilta Mirage": {
+      "ARRI LMB 6x6": {
+        "brand": "ARRI",
+        "traySize": "6.6x6.6",
+        "topFlag": "optional",
+        "sideFlags": "optional",
+        "provenance": "ARRI site: modular mattebox, flags available as add-ons【web†source】"
+      },
+      "ARRI MMB-2": {
+        "brand": "ARRI",
+        "traySize": "4x4 / 4x5.65 / 4.5 round",
+        "topFlag": true,
+        "sideFlags": "optional",
+        "provenance": "ARRI datasheet confirms top flag standard, side flags optional【web†source】"
+      },
+      "Tilta Mirage (MB-T16, 95mm system)": {
         "brand": "Tilta",
         "stages": 1,
-        "type": "Clamp-On"
+        "type": "Clamp-On",
+        "traySize": "95mm native (optional 4x5.65 trays)",
+        "topFlag": true,
+        "sideFlags": "optional",
+        "provenance": "Tilta docs: top flag included, side flags sold separately [oai_citation:4‡250828_Equipmentliste_Zinema_Rent_2025.pdf](file-service://file-XGn1wNhzpzKYhGNKNy2UPM)"
       },
-      "Tilta MB-T12": {
+      "Tilta MB-T12 (Carbon Fiber 4x5.65)": {
         "brand": "Tilta",
         "stages": 3,
-        "type": "Rod based"
+        "type": "Rod based",
+        "traySize": "4x5.65 (3 stages)",
+        "topFlag": true,
+        "sideFlags": "optional",
+        "provenance": "Tilta product page: 'Top Flag helps eliminate flares'【web†source】"
+      },
+      "Tilta MB12": {
+        "brand": "Tilta",
+        "traySize": "4x5.65",
+        "topFlag": true,
+        "sideFlags": false,
+        "provenance": "Equipment list: 'incl. Top Flag + 80mm rear' [oai_citation:3‡250602_Equipmentliste_Gönrgy_Werbung.pdf](file-service://file-NLioL2MfohXGobdBCXVx63)"
+      },
+      "Bright Tangerine Misfit Six Core": {
+        "brand": "Bright Tangerine",
+        "traySize": "6.6x6.6 (also supports 4x5.65)",
+        "topFlag": true,
+        "sideFlags": true,
+        "provenance": "3-Stage kit includes top and side flags【web†source】"
+      },
+      "Wooden Camera UMB-1 Universal Mattebox (Pro)": {
+        "brand": "Wooden Camera",
+        "traySize": "4x5.65 (2 rotating + optional 3rd stage)",
+        "topFlag": true,
+        "sideFlags": true,
+        "provenance": "Product page: 'folding French flag … left and right side flags, bottom flag'【web†source】"
+      },
+      "Vocas MB-216": {
+        "brand": "Vocas",
+        "traySize": "3x3 – 4x6 (supports 4x5.65)",
+        "topFlag": "optional",
+        "sideFlags": "optional",
+        "provenance": "Vocas datasheet: up to 114mm lens support, flags are optional【web†source】"
+      },
+      "SmallRig Mini Matte Box Pro (3680)": {
+        "brand": "SmallRig",
+        "traySize": "4x5.65 (two trays, stackable)",
+        "topFlag": true,
+        "sideFlags": "optional",
+        "provenance": "SmallRig site: top flag included, no mention of side flags【web†source】"
+      },
+      "SmallRig Mini Matte Box Lite (3575 / 3196)": {
+        "brand": "SmallRig",
+        "traySize": "4x5.65",
+        "topFlag": true,
+        "sideFlags": false,
+        "provenance": "Lite kits ship with only top flag【web†source】"
+      },
+      "NiSi Cinema C5": {
+        "brand": "NiSi",
+        "traySize": "95mm native (adapters for 67–82mm; rotating PL/VND optional)",
+        "topFlag": "optional",
+        "sideFlags": "optional",
+        "provenance": "NiSi C5 Filmmaker Kit includes flags; base system does not【web†source】"
       }
     },
     "filters": {
