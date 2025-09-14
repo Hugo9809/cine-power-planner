@@ -7699,11 +7699,27 @@ importFileInput.addEventListener("change", (event) => {
 
 // Export all saved setups to a JSON file
 exportSetupsBtn.addEventListener('click', () => {
-    const setupsToExport = getSetups();
-    if (Object.keys(setupsToExport).length === 0) {
+    const setups = getSetups();
+    if (Object.keys(setups).length === 0) {
         alert(texts[currentLang].alertNoSetupsToExport);
         return;
     }
+
+    const projects = typeof loadProject === 'function' ? loadProject() : {};
+    const setupsToExport = {};
+    Object.entries(setups).forEach(([name, setup]) => {
+        setupsToExport[name] = { ...setup };
+        const proj = projects[name];
+        if (proj) {
+            if (Object.prototype.hasOwnProperty.call(proj, 'gearList')) {
+                setupsToExport[name].gearList = proj.gearList;
+            }
+            if (Object.prototype.hasOwnProperty.call(proj, 'projectInfo')) {
+                setupsToExport[name].projectInfo = proj.projectInfo;
+            }
+        }
+    });
+
     const dataStr = JSON.stringify(setupsToExport, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);

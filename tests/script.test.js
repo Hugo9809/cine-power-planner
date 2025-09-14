@@ -6378,6 +6378,34 @@ describe('monitor wireless metadata', () => {
     jest.useRealTimers();
   });
 
+  test('export all projects includes gear lists and requirements', async () => {
+    setupDom();
+    global.loadSetups = jest.fn(() => ({ Proj: { camera: 'CamA' } }));
+    global.saveSetups = jest.fn();
+    global.loadProject = jest.fn(() => ({ Proj: { gearList: '<ul>G</ul>', projectInfo: { projectName: 'Proj' } } }));
+    global.saveProject = jest.fn();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    let exportedBlob;
+    global.URL.createObjectURL = jest.fn((blob) => { exportedBlob = blob; return 'blob:url'; });
+    global.URL.revokeObjectURL = jest.fn();
+    const origCreate = document.createElement.bind(document);
+    document.createElement = (tag) => {
+      const el = origCreate(tag);
+      if (tag === 'a') {
+        el.click = jest.fn();
+      }
+      return el;
+    };
+    document.getElementById('exportSetupsBtn').click();
+    const text = await exportedBlob.text();
+    expect(JSON.parse(text)).toEqual({
+      Proj: { camera: 'CamA', gearList: '<ul>G</ul>', projectInfo: { projectName: 'Proj' } }
+    });
+    document.createElement = origCreate;
+  });
+
   test('import gear list sets setup name from file name', () => {
     setupDom();
     require('../translations.js');
