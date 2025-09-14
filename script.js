@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine List app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -2506,6 +2506,7 @@ function displayGearAndRequirements(html) {
         span.querySelectorAll('select').forEach(sel => {
           sel.setAttribute('title', desc);
           sel.setAttribute('data-help', desc);
+          initFavoritableSelect(sel);
         });
       });
       // Standalone selects (not wrapped in .gear-item) still need descriptive help
@@ -2529,6 +2530,7 @@ function displayGearAndRequirements(html) {
         const desc = parts.join(' – ');
         sel.setAttribute('title', desc);
         sel.setAttribute('data-help', desc);
+        initFavoritableSelect(sel);
       });
     } else {
       gearListOutput.innerHTML = '';
@@ -4337,35 +4339,99 @@ function getTimecodes() {
     .filter(tc => tc.type && tc.type !== 'None');
 }
 
-function clearTimecodes() {
-  setTimecodes([]);
-}
-
-
-// Populate dropdowns with device options
-function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
-  if (!selectElem) return;
-  // Ensure we always work with an object so Object.keys does not throw if
-  // `optionsObj` is passed as `null`.
-  const opts = optionsObj && typeof optionsObj === "object" ? optionsObj : {};
-  selectElem.innerHTML = "";
-  if (includeNone) {
-    const noneOpt = document.createElement("option");
-    noneOpt.value = "None";
-    const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
-    noneOpt.textContent = noneMap[currentLang] || "None";
-    selectElem.appendChild(noneOpt);
+  function clearTimecodes() {
+    setTimecodes([]);
   }
-  Object.keys(opts)
-    .filter(name => name !== "None")
-    .sort(localeSort)
-    .forEach(name => {
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      selectElem.appendChild(opt);
-    });
-}
+
+  function getFavoriteValues(id) {
+    const favs = loadFavorites();
+    return Array.isArray(favs[id]) ? favs[id] : [];
+  }
+
+  function applyFavoritesToSelect(selectElem) {
+    if (!selectElem || !selectElem.id) return;
+    const favVals = getFavoriteValues(selectElem.id);
+    if (!favVals.length) return;
+    const opts = Array.from(selectElem.options);
+    const noneOpt = opts.find(o => o.value === 'None');
+    const others = opts.filter(o => o !== noneOpt);
+    const favOpts = [];
+    const restOpts = [];
+    others.forEach(o => (favVals.includes(o.value) ? favOpts.push(o) : restOpts.push(o)));
+    favOpts.sort((a, b) => localeSort(a.textContent, b.textContent));
+    restOpts.sort((a, b) => localeSort(a.textContent, b.textContent));
+    selectElem.innerHTML = '';
+    if (noneOpt) selectElem.appendChild(noneOpt);
+    favOpts.forEach(o => selectElem.appendChild(o));
+    restOpts.forEach(o => selectElem.appendChild(o));
+  }
+
+  function updateFavoriteButton(selectElem) {
+    if (!selectElem || !selectElem._favButton) return;
+    const favVals = getFavoriteValues(selectElem.id);
+    const val = selectElem.value;
+    const isFav = favVals.includes(val);
+    selectElem._favButton.textContent = isFav ? '★' : '☆';
+    selectElem._favButton.classList.toggle('favorited', isFav);
+    selectElem._favButton.disabled = val === 'None';
+  }
+
+  function toggleFavorite(selectElem) {
+    if (!selectElem || !selectElem.id) return;
+    const val = selectElem.value;
+    if (val === 'None') return;
+    const favs = loadFavorites();
+    const list = Array.isArray(favs[selectElem.id]) ? favs[selectElem.id] : [];
+    const idx = list.indexOf(val);
+    if (idx === -1) list.push(val); else list.splice(idx, 1);
+    if (list.length) favs[selectElem.id] = list; else delete favs[selectElem.id];
+    saveFavorites(favs);
+    applyFavoritesToSelect(selectElem);
+    updateFavoriteButton(selectElem);
+  }
+
+  function initFavoritableSelect(selectElem) {
+    if (!selectElem || !selectElem.id || selectElem.multiple) return;
+    if (!selectElem._favInit) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'favorite-toggle';
+      btn.textContent = '☆';
+      btn.addEventListener('click', () => toggleFavorite(selectElem));
+      selectElem.insertAdjacentElement('afterend', btn);
+      selectElem._favButton = btn;
+      selectElem._favInit = true;
+      selectElem.addEventListener('change', () => updateFavoriteButton(selectElem));
+    }
+    applyFavoritesToSelect(selectElem);
+    updateFavoriteButton(selectElem);
+  }
+
+  // Populate dropdowns with device options
+  function populateSelect(selectElem, optionsObj = {}, includeNone = true) {
+    if (!selectElem) return;
+    // Ensure we always work with an object so Object.keys does not throw if
+    // `optionsObj` is passed as `null`.
+    const opts = optionsObj && typeof optionsObj === "object" ? optionsObj : {};
+    selectElem.innerHTML = "";
+    if (includeNone) {
+      const noneOpt = document.createElement("option");
+      noneOpt.value = "None";
+      const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
+      noneOpt.textContent = noneMap[currentLang] || "None";
+      selectElem.appendChild(noneOpt);
+    }
+    Object.keys(opts)
+      .filter(name => name !== "None")
+      .sort(localeSort)
+      .forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        selectElem.appendChild(opt);
+      });
+    initFavoritableSelect(selectElem);
+  }
 
 function populateMonitorSelect() {
   const filtered = Object.fromEntries(
@@ -11119,6 +11185,7 @@ if (typeof module !== "undefined" && module.exports) {
     displayGearAndRequirements,
     ensureGearListActions,
     bindGearListEasyrigListener,
+    populateSelect,
     populateLensDropdown,
     populateCameraPropertyDropdown,
     populateRecordingResolutionDropdown,

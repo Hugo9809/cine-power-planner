@@ -6,6 +6,7 @@ const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
+const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, fall back to a simple
@@ -415,6 +416,27 @@ function deleteProject(name) {
   }
 }
 
+// --- Favorites Storage ---
+function loadFavorites() {
+  const parsed = loadJSONFromStorage(
+    SAFE_LOCAL_STORAGE,
+    FAVORITES_STORAGE_KEY,
+    "Error loading favorites from localStorage:",
+    {},
+  );
+  return isPlainObject(parsed) ? parsed : {};
+}
+
+function saveFavorites(favs) {
+  if (!isPlainObject(favs)) return;
+  saveJSONToStorage(
+    SAFE_LOCAL_STORAGE,
+    FAVORITES_STORAGE_KEY,
+    favs,
+    "Error saving favorites to localStorage:",
+  );
+}
+
 // --- User Feedback Storage ---
 function loadFeedback() {
   const parsed = loadJSONFromStorage(
@@ -503,6 +525,8 @@ if (typeof module !== "undefined" && module.exports) {
     deleteProject,
     loadSessionState,
     saveSessionState,
+    loadFavorites,
+    saveFavorites,
     loadFeedback,
     saveFeedback,
     clearAllData,
