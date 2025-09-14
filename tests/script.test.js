@@ -3217,6 +3217,40 @@ describe('script.js functions', () => {
     expect(projOut.querySelector('[data-field="viewfinderEyeLeatherColor"]')).toBeNull();
   });
 
+  test('monitor and gaff tape fields hidden from project requirements summary', () => {
+    setupDom();
+    require('../translations.js');
+    const { generateGearListHtml, displayGearAndRequirements } = require('../script.js');
+    const html = generateGearListHtml({
+      directorMonitor: 'SmallHD Ultra 7',
+      dopMonitor: 'SmallHD Ultra 7',
+      gafferMonitor: 'SmallHD Ultra 7',
+      directorMonitor15: 'SmallHD Cine 24',
+      comboMonitor15: 'SmallHD Cine 24',
+      dopMonitor15: 'SmallHD Cine 24',
+      proGaffColor1: 'red',
+      proGaffWidth1: '24mm',
+      proGaffColor2: 'blue',
+      proGaffWidth2: '24mm'
+    });
+    displayGearAndRequirements(html);
+    const projOut = document.getElementById('projectRequirementsOutput');
+    [
+      'directorMonitor',
+      'dopMonitor',
+      'gafferMonitor',
+      'directorMonitor15',
+      'comboMonitor15',
+      'dopMonitor15',
+      'proGaffColor1',
+      'proGaffWidth1',
+      'proGaffColor2',
+      'proGaffWidth2'
+    ].forEach(field => {
+      expect(projOut.querySelector(`[data-field="${field}"]`)).toBeNull();
+    });
+  });
+
   test('gear list remains visible after session reload with only setup name', () => {
     global.saveSessionState = jest.fn();
     global.loadSessionState = jest.fn();
