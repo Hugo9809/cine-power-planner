@@ -1,4 +1,4 @@
-# 🎥 Cine List
+# 🎥 Power Planner
 
 This browser based tool helps plan professional camera projects powered by V‑Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
 
@@ -180,7 +180,7 @@ Once installed, the app launches from your home screen, works offline and update
 ## 📡 Offline Use & Data Storage
 
 Serving the app over HTTP(S) installs a service worker that caches every file
-so Cine List works fully offline and updates in the background. Projects,
+so Power Planner works fully offline and updates in the background. Projects,
 runtime submissions and preferences (language, theme, pink mode and saved gear
 lists) live in your browser's `localStorage`. Clearing the site's data in the
 browser removes all stored information.
