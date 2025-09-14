@@ -51,6 +51,7 @@
       </select>
       <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
       <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode" aria-pressed="false">🐴</button>
+      <button id="settingsButton" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsDialog" title="Settings">⚙️</button>
       <button id="helpButton" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">?</button>
       <button id="reloadButton" title="Force reload" aria-label="Force reload">🔄</button>
     </nav>
@@ -651,6 +652,34 @@
     |
     <a id="privacyLink" href="datenschutz.html">Datenschutz</a>
   </footer>
+
+  <div id="settingsDialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+    <div class="settings-content">
+      <h2 id="settingsTitle">Settings</h2>
+      <div class="form-row">
+        <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
+        <select id="settingsLanguage">
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="settingsDarkMode" id="settingsDarkModeLabel">Dark mode</label>
+        <input type="checkbox" id="settingsDarkMode" />
+      </div>
+      <div class="form-row">
+        <label for="accentColorInput" id="accentColorLabel">Accent color</label>
+        <input type="color" id="accentColorInput" value="#001589" />
+      </div>
+      <div class="button-row">
+        <button id="settingsSave">Save</button>
+        <button id="settingsCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
 
   <div id="helpDialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1" hidden>
     <div class="help-content">

@@ -303,6 +303,16 @@ footer a {
   z-index: 200;
 }
 
+#settingsDialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
 #feedbackDialog {
   border: 2px solid var(--accent-color);
   border-radius: var(--border-radius);
@@ -337,6 +347,10 @@ footer a {
   display: none;
 }
 
+#settingsDialog[hidden] {
+  display: none;
+}
+
 .help-content {
   background: var(--surface-color);
   border: 2px solid var(--accent-color);
@@ -344,6 +358,20 @@ footer a {
   max-height: 80vh;
   overflow-y: auto;
   color: var(--text-color);
+}
+
+.settings-content {
+  background: var(--surface-color);
+  border: 2px solid var(--accent-color);
+  padding: 20px;
+  color: var(--text-color);
+}
+
+.settings-content .button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .help-content p,
