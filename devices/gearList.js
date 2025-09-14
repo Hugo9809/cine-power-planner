@@ -2170,6 +2170,28 @@ const gear = {
           "needsLensSupport": true,
           "lensType": "spherical"
         },
+        "ZEISS Lightweight Zoom LWZ.3 15-30mm T2.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ZEISS Lightweight Zoom LWZ.3 21-100mm T2.9-3.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
         "ZEISS Nano Prime 18mm T1.5": {
           "brand": "ZEISS",
           "frontDiameterMm": 95,
