@@ -20,8 +20,10 @@ beforeAll(() => {
   global.saveSetup = jest.fn();
   global.loadSetup = jest.fn();
   global.deleteSetup = jest.fn();
-
+  
   require('../translations.js');
+  global.loadFavorites = jest.fn(() => ({}));
+  global.saveFavorites = jest.fn();
   utils = require('../script.js');
 });
 

@@ -140,6 +140,8 @@ function setupDom(removeGear) {
   global.deleteSetup = jest.fn();
   global.loadFeedback = jest.fn(() => ({}));
   global.saveFeedback = jest.fn();
+  global.loadFavorites = jest.fn(() => ({}));
+  global.saveFavorites = jest.fn();
 }
 
 afterEach(() => {
@@ -537,6 +539,21 @@ describe('script.js functions', () => {
     const [alpha, beta] = sel.options;
     expect(alpha.hidden).toBe(true);
     expect(beta.hidden).toBe(false);
+  });
+
+  test('favorited option moves to top', () => {
+    localStorage.clear();
+    const sel = document.createElement('select');
+    sel.id = 'favTest';
+    document.body.appendChild(sel);
+    script.populateSelect(sel, { Alpha: {}, Beta: {}, Gamma: {} }, true);
+    sel.value = 'Gamma';
+    const btn = sel.nextElementSibling;
+    btn.click();
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['None', 'Gamma', 'Alpha', 'Beta']);
+    // Re-populate to ensure persistence
+    script.populateSelect(sel, { Alpha: {}, Beta: {}, Gamma: {} }, true);
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['None', 'Gamma', 'Alpha', 'Beta']);
   });
 
 
