@@ -3001,6 +3001,282 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 12mm T2.8": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 16mm T2.8": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 21mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 25mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 35mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 40mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 50mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 75mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 90mm T2.8 Macro": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 100mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime 125mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Retro 16mm T2.8": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.8,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Retro 25mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Retro 35mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Retro 50mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Retro 75mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Retro 100mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Retro 125mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Cyber 35mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 86,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Cyber 50mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 86,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Cyber 75mm T2.1": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 86,
+          "clampOn": true,
+          "tStop": 2.1,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime II 18mm T1.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime II 24mm T1.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime II 35mm T1.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime II 50mm T1.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime II 85mm T1.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
+        },
+        "DZOFILM Vespid Prime II 105mm T1.9": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 77,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical"
         }
     },
 
