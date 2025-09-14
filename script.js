@@ -8676,7 +8676,17 @@ function generateGearListHtml(info = {}) {
         'frameGuides',
         'aspectMaskOpacity',
         'filter',
-        'viewfinderEyeLeatherColor'
+        'viewfinderEyeLeatherColor',
+        'directorMonitor',
+        'dopMonitor',
+        'gafferMonitor',
+        'directorMonitor15',
+        'comboMonitor15',
+        'dopMonitor15',
+        'proGaffColor1',
+        'proGaffWidth1',
+        'proGaffColor2',
+        'proGaffWidth2'
     ]);
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
