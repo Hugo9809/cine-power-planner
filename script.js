@@ -1343,7 +1343,6 @@ function setLanguage(lang) {
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
   sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
   applySharedLinkBtn.textContent = texts[lang].loadSharedLinkBtn;
-  if (sharedLinkInput) sharedLinkInput.placeholder = texts[lang].sharedLinkPlaceholder;
 
   // Descriptive hover help for setup management controls
   setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
@@ -7794,7 +7793,7 @@ if (projectForm) {
     });
 }
 
-shareSetupBtn.addEventListener('click', async () => {
+shareSetupBtn.addEventListener('click', () => {
   saveCurrentGearList();
   const setupName = getCurrentProjectName();
   const currentSetup = {
@@ -7841,52 +7840,38 @@ shareSetupBtn.addEventListener('click', async () => {
   if (feedback.length) {
     currentSetup.feedback = feedback;
   }
-  const encoded = LZString.compressToEncodedURIComponent(
-    JSON.stringify(encodeSharedSetup(currentSetup))
-  );
-  const link = `${window.location.origin}${window.location.pathname}?shared=${encoded}`;
-  if (link.length > 2000) {
-    alert(texts[currentLang].shareLinkTooLong || 'Shared link is too long.');
-    return;
-  }
-  if (sharedLinkInput && sharedLinkRow) {
-    sharedLinkInput.value = link;
-    sharedLinkRow.classList.remove('hidden');
-    sharedLinkInput.focus();
-    sharedLinkInput.select();
-  }
-  const showMessage = msg => {
-    if (shareLinkMessage) {
-      shareLinkMessage.textContent = msg;
-      shareLinkMessage.classList.remove('hidden');
-      setTimeout(() => shareLinkMessage.classList.add('hidden'), 4000);
-    }
-  };
-  try {
-    await copyTextToClipboard(link);
-    showMessage(texts[currentLang].shareLinkCopied);
-  } catch {
-    showMessage(texts[currentLang].shareSetupPrompt);
+  const json = JSON.stringify(currentSetup, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${setupName || 'project'}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  if (shareLinkMessage) {
+    shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
+    shareLinkMessage.classList.remove('hidden');
+    setTimeout(() => shareLinkMessage.classList.add('hidden'), 4000);
   }
 });
 
 if (applySharedLinkBtn && sharedLinkInput) {
   applySharedLinkBtn.addEventListener('click', () => {
-    const url = sharedLinkInput.value.trim();
-    if (!url) return;
-    let shared;
-    try {
-      const params = new URL(url, window.location.href).searchParams;
-      shared = params.get('shared');
-    } catch {
-      shared = null;
-    }
-    if (!shared) {
-      alert(texts[currentLang].invalidSharedLink);
-      return;
-    }
-    applySharedSetup(shared);
-    updateCalculations();
+    const file = sharedLinkInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        applySharedSetup(data);
+        updateCalculations();
+      } catch {
+        alert(texts[currentLang].invalidSharedLink);
+      }
+    };
+    reader.readAsText(file);
   });
 }
 
@@ -10040,7 +10025,7 @@ function restoreSessionState() {
 function applySharedSetup(shared) {
   try {
     const decoded = decodeSharedSetup(
-      JSON.parse(LZString.decompressFromEncodedURIComponent(shared))
+      typeof shared === 'string' ? JSON.parse(shared) : shared
     );
     if (decoded.changedDevices) {
       applyDeviceChanges(decoded.changedDevices);
@@ -10112,9 +10097,14 @@ function applySharedSetupFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const shared = params.get('shared');
   if (!shared) return;
-  applySharedSetup(shared);
-  if (window.history && window.history.replaceState) {
-    history.replaceState(null, '', window.location.pathname);
+  try {
+    const data = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
+    applySharedSetup(data);
+    if (window.history && window.history.replaceState) {
+      history.replaceState(null, '', window.location.pathname);
+    }
+  } catch (e) {
+    console.error('Failed to apply shared setup from URL', e);
   }
 }
 
@@ -10721,12 +10711,6 @@ if (helpButton && helpDialog) {
 // Initialize immediately if DOM is already loaded (e.g. when scripts are
 // injected after `DOMContentLoaded` fired). Otherwise wait for the event.
 
-function isRunningPWA() {
-  return (
-    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-    window.navigator.standalone === true
-  );
-}
 
 const scenarioIcons = {
   Indoor: '🏠',
@@ -10852,11 +10836,7 @@ function updateRequiredScenariosSummary() {
 
 function initApp() {
   if (sharedLinkRow) {
-    if (isRunningPWA()) {
-      sharedLinkRow.classList.remove('hidden');
-    } else {
-      sharedLinkRow.classList.add('hidden');
-    }
+    sharedLinkRow.classList.remove('hidden');
   }
   populateEnvironmentDropdowns();
   populateLensDropdown();
