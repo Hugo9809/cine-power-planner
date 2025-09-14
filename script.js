@@ -1,4 +1,4 @@
-// script.js – Main logic for the Cine List app
+// script.js – Main logic for the Power Planner app
 /* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
@@ -8007,7 +8007,7 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     Object.entries(entry).forEach(([k, v]) => {
       lines.push(`${k}: ${v}`);
     });
-    const subject = encodeURIComponent('Cine List Runtime Feedback');
+    const subject = encodeURIComponent('Power Planner Runtime Feedback');
     const body = encodeURIComponent(lines.join('\n'));
     window.location.href = `mailto:info@lucazanner.de?subject=${subject}&body=${body}`;
     closeDialog(feedbackDialog);
