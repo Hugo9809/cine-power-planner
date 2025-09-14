@@ -2150,6 +2150,21 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "ZEISS Compact Zoom CZ.2 15-30mm T2.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.55,
+          "weight_g": 2600,
+          "imageCircleMm": 43.3,
+          "lengthMm": 198,
+          "notes": "Full-frame coverage; T2.9–22. Source: ZEISS Cinema Zoom brochure (accessed 2025-09-14)."
+        },
         "ZEISS Compact Zoom CZ.2 28-80mm T2.9": {
           "brand": "ZEISS",
           "frontDiameterMm": 95,
@@ -2158,7 +2173,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.83,
+          "weight_g": 2500,
+          "imageCircleMm": 43.3,
+          "lengthMm": 196,
+          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Sources: ZEISS brochure (accessed 2025-09-14); internal list."
         },
         "ZEISS Compact Zoom CZ.2 70-200mm T2.9": {
           "brand": "ZEISS",
@@ -2168,7 +2188,27 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.52,
+          "weight_g": 2800,
+          "imageCircleMm": 43.3,
+          "lengthMm": 250,
+          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Source: ZEISS brochure (accessed 2025-09-14)."
+        },
+        "ZEISS Lightweight Zoom LWZ.3 21-100mm T2.9-3.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "weight_g": 2000,
+          "imageCircleMm": 31.1,
+          "lengthMm": 226,
+          "notes": "ANSI Super 35 coverage; 11 iris blades; T2.9–22; front Ø 114 mm. Source: ZEISS technical data (accessed 2025-09-14)."
         },
         "ZEISS Nano Prime 18mm T1.5": {
           "brand": "ZEISS",
@@ -2248,7 +2288,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 1500,
+          "imageCircleMm": 46.3,
+          "lengthMm": 119,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 25mm T1.5": {
           "brand": "ZEISS",
@@ -2298,7 +2343,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.45,
+          "weight_g": 1220,
+          "imageCircleMm": 46.3,
+          "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 65mm T1.5": {
           "brand": "ZEISS",
@@ -2318,7 +2367,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.84,
+          "weight_g": 1420,
+          "imageCircleMm": 46.3,
+          "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 100mm T1.5": {
           "brand": "ZEISS",
