@@ -1275,6 +1275,9 @@ function setLanguage(lang) {
   if (languageSelect) {
     languageSelect.value = lang;
   }
+  if (settingsLanguage) {
+    settingsLanguage.value = lang;
+  }
   // update html lang attribute for better persistence
   document.documentElement.lang = lang;
   // Document title and main heading share the same text
@@ -1697,6 +1700,20 @@ function setLanguage(lang) {
       texts[lang].pinkModeHelp || texts[lang].pinkModeLabel
     );
   }
+  if (settingsButton) {
+    settingsButton.setAttribute("title", texts[lang].settingsButton);
+    settingsButton.setAttribute("aria-label", texts[lang].settingsButton);
+  }
+  const settingsTitleElem = document.getElementById("settingsTitle");
+  if (settingsTitleElem) settingsTitleElem.textContent = texts[lang].settingsHeading;
+  const settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
+  if (settingsLanguageLabel) settingsLanguageLabel.textContent = texts[lang].languageSetting;
+  const settingsDarkLabel = document.getElementById("settingsDarkModeLabel");
+  if (settingsDarkLabel) settingsDarkLabel.textContent = texts[lang].darkModeSetting;
+  const accentLabel = document.getElementById("accentColorLabel");
+  if (accentLabel) accentLabel.textContent = texts[lang].accentColorSetting;
+  if (settingsSave) settingsSave.textContent = texts[lang].saveSettings;
+  if (settingsCancel) settingsCancel.textContent = texts[lang].cancelSettings;
   if (reloadButton) {
     reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
     reloadButton.setAttribute("aria-label", texts[lang].reloadAppLabel);
@@ -2332,6 +2349,13 @@ const helpSearch      = document.getElementById("helpSearch");
 const helpNoResults   = document.getElementById("helpNoResults");
 const helpSearchClear = document.getElementById("helpSearchClear");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
+const settingsButton  = document.getElementById("settingsButton");
+const settingsDialog  = document.getElementById("settingsDialog");
+const settingsLanguage = document.getElementById("settingsLanguage");
+const settingsDarkMode = document.getElementById("settingsDarkMode");
+const accentColorInput = document.getElementById("accentColorInput");
+const settingsSave    = document.getElementById("settingsSave");
+const settingsCancel  = document.getElementById("settingsCancel");
 const featureSearch   = document.getElementById("featureSearch");
 const featureSearchClear = document.getElementById("featureSearchClear");
 const featureList     = document.getElementById("featureList");
@@ -2347,6 +2371,19 @@ const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
 const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+
+// Load accent color from localStorage
+let accentColor = '#001589';
+try {
+  const storedAccent = localStorage.getItem('accentColor');
+  if (storedAccent) {
+    accentColor = storedAccent;
+    document.documentElement.style.setProperty('--accent-color', accentColor);
+    document.documentElement.style.setProperty('--link-color', accentColor);
+  }
+} catch (e) {
+  console.warn('Could not load accent color', e);
+}
 
 function populateFeatureSearch() {
   if (!featureList) return;
@@ -10283,6 +10320,59 @@ if (pinkModeToggle) {
   });
 }
 
+if (settingsButton && settingsDialog) {
+  settingsButton.addEventListener('click', () => {
+    if (settingsLanguage) settingsLanguage.value = currentLang;
+    if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
+    if (accentColorInput) {
+      const stored = localStorage.getItem('accentColor');
+      accentColorInput.value = stored || accentColor;
+    }
+    settingsDialog.removeAttribute('hidden');
+    const first = settingsDialog.querySelector('select, input');
+    if (first) first.focus();
+  });
+
+  if (settingsCancel) {
+    settingsCancel.addEventListener('click', () => {
+      settingsDialog.setAttribute('hidden', '');
+    });
+  }
+
+  if (settingsSave) {
+    settingsSave.addEventListener('click', () => {
+      if (settingsLanguage) {
+        setLanguage(settingsLanguage.value);
+      }
+      if (settingsDarkMode) {
+        const enabled = settingsDarkMode.checked;
+        applyDarkMode(enabled);
+        try {
+          localStorage.setItem('darkMode', enabled);
+        } catch (e) {
+          console.warn('Could not save dark mode preference', e);
+        }
+      }
+      if (accentColorInput) {
+        const color = accentColorInput.value;
+        document.documentElement.style.setProperty('--accent-color', color);
+        document.documentElement.style.setProperty('--link-color', color);
+        try {
+          localStorage.setItem('accentColor', color);
+        } catch (e) {
+          console.warn('Could not save accent color', e);
+        }
+        accentColor = color;
+      }
+      settingsDialog.setAttribute('hidden', '');
+    });
+  }
+
+  settingsDialog.addEventListener('click', e => {
+    if (e.target === settingsDialog) settingsDialog.setAttribute('hidden', '');
+  });
+}
+
 if (reloadButton) {
   reloadButton.addEventListener("click", async () => {
     try {
@@ -10666,6 +10756,10 @@ if (helpButton && helpDialog) {
     } else if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {
       // Escape closes the help dialog
       closeHelp();
+    } else if (
+      e.key === 'Escape' && settingsDialog && !settingsDialog.hasAttribute('hidden')
+    ) {
+      settingsDialog.setAttribute('hidden', '');
     } else if (
       e.key === 'F1' ||
       ((e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey))
