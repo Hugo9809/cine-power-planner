@@ -269,12 +269,18 @@ footer a {
 }
 
 /* Align add/remove buttons in form rows with input fields */
-.form-row > button {
+.form-row > button:not(.clear-input-btn):not(.favorite-toggle) {
   align-self: flex-end;
   margin-top: 5px;
 }
-.form-row > button + button {
+.form-row > button:not(.clear-input-btn):not(.favorite-toggle) + button:not(.clear-input-btn):not(.favorite-toggle) {
   margin-left: 0;
+}
+
+/* Ensure favorite star aligns with its select element */
+.select-wrapper .favorite-toggle {
+  align-self: center;
+  margin-top: 0;
 }
 
 /* Date range rows for prep and shooting days */
