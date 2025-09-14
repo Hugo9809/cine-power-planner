@@ -5,6 +5,7 @@ global.TextEncoder = global.TextEncoder || UtilTextEncoder;
 global.TextDecoder = global.TextDecoder || UtilTextDecoder;
 const { JSDOM } = require('jsdom');
 const LZString = require('lz-string');
+const chargerData = require('../devices/chargers.js');
 // Use a minimal cage fixture to keep memory usage low during tests. Only the
 // properties needed for the assertions are included.
 const cagesData = {
@@ -20,6 +21,12 @@ const DEFAULT_FILTER_SIZE = '4x5.65';
 // duplicate disk access across test suites. This keeps memory usage low and
 // speeds up setup when multiple tests need the DOM skeleton.
 const htmlBody = getHtmlBody();
+
+test('provides Gold-Mount charger dataset', () => {
+  expect(chargerData['Anton/Bauer LP4 Gold Mount Charger']).toEqual(
+    expect.objectContaining({ mount: 'Gold-Mount', slots: 4 })
+  );
+});
 
 function setupDom(removeGear) {
   jest.resetModules();
@@ -1333,6 +1340,39 @@ describe('script.js functions', () => {
     expect(battOpts).toContain('Bebob B90cine');
   });
 
+  test('Alexa Mini LF offers Gold-Mount batteries', () => {
+    setupDom(false);
+    require('../translations.js');
+    const script = require('../script.js');
+    global.devices.cameras['Arri Alexa Mini LF'] = {
+      powerDrawWatts: 89,
+      power: {
+        batteryPlateSupport: [
+          { type: 'V-Mount', mount: 'native' },
+          { type: 'Gold-Mount', mount: 'native' }
+        ]
+      }
+    };
+    global.devices.batteries.GBatt = {
+      capacity: 100,
+      pinA: 10,
+      dtapA: 5,
+      mount_type: 'Gold-Mount'
+    };
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="Arri Alexa Mini LF">Arri Alexa Mini LF</option>';
+    camSel.value = 'Arri Alexa Mini LF';
+    script.updateBatteryPlateVisibility();
+    const plateSel = document.getElementById('batteryPlateSelect');
+    const plateOpts = Array.from(plateSel.options).map(o => o.value);
+    expect(plateOpts).toContain('Gold-Mount');
+    plateSel.value = 'Gold-Mount';
+    script.updateBatteryOptions();
+    const battSel = document.getElementById('batterySelect');
+    const battOpts = Array.from(battSel.options).map(o => o.value);
+    expect(battOpts).toContain('GBatt');
+  });
+
   test('FXLion hotswap only visible for FXLion Nano batteries', () => {
     global.devices.cameras.VCam = {
       powerDrawWatts: 10,
@@ -1444,6 +1484,33 @@ describe('script.js functions', () => {
     expect(html).not.toContain('BBatt');
   });
 
+  test('battery comparison excludes Gold-Mount when camera lacks support', () => {
+    global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
+    global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
+    global.devices.batteries.GBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'Gold-Mount' };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+
+    addOpt('cameraSelect', 'NoPlateCam');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    script.updateBatteryPlateVisibility();
+    script.updateBatteryOptions();
+    document.getElementById('batterySelect').value = 'VBatt';
+    script.updateCalculations();
+
+    const html = document.getElementById('batteryComparison').innerHTML;
+    expect(html).toContain('VBatt');
+    expect(html).not.toContain('GBatt');
+  });
+
   test('overview battery comparison excludes B-Mount when camera lacks support', () => {
     global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
     global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
@@ -1472,6 +1539,36 @@ describe('script.js functions', () => {
     const html = dialog.innerHTML;
     expect(html).toContain('VBatt');
     expect(html).not.toContain('BBatt');
+  });
+
+  test('overview battery comparison excludes Gold-Mount when camera lacks support', () => {
+    global.devices.cameras.NoPlateCam = { powerDrawWatts: 10 };
+    global.devices.batteries.VBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'V-Mount' };
+    global.devices.batteries.GBatt = { capacity: 100, pinA: 10, dtapA: 5, mount_type: 'Gold-Mount' };
+
+    const addOpt = (id, value) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = `<option value="${value}">${value}</option>`;
+      sel.value = value;
+    };
+
+    addOpt('cameraSelect', 'NoPlateCam');
+    addOpt('monitorSelect', 'MonA');
+    addOpt('videoSelect', 'VidA');
+    addOpt('motor1Select', 'MotorA');
+    addOpt('controller1Select', 'ControllerA');
+    addOpt('distanceSelect', 'DistA');
+    script.updateBatteryPlateVisibility();
+    script.updateBatteryOptions();
+    document.getElementById('batterySelect').value = 'VBatt';
+    script.updateCalculations();
+
+    script.generatePrintableOverview();
+    const dialog = document.getElementById('overviewDialog');
+    expect(dialog.open).toBe(true);
+    const html = dialog.innerHTML;
+    expect(html).toContain('VBatt');
+    expect(html).not.toContain('GBatt');
   });
 
   test('setLanguage updates language and saves preference', () => {

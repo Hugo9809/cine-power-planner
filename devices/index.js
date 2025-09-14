@@ -24,6 +24,7 @@ if (typeof module !== 'undefined' && module.exports) {
   require('./fiz.js');
   require('./batteries.js');
   require('./batteryHotswaps.js');
+  require('./chargers.js');
   require('./cages.js');
   require('./gearList.js');
   require('./wirelessReceivers.js');

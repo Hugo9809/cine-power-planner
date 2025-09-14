@@ -1,4 +1,4 @@
-/* global setupNameInput, currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog */
+/* global setupNameInput, currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog */
 
 function generatePrintableOverview() {
     const setupName = setupNameInput.value;
@@ -90,11 +90,16 @@ function generatePrintableOverview() {
         const camName = cameraSelect.value;
         const plateFilter = getSelectedPlate();
         const supportsB = supportsBMountCamera(camName);
+        const supportsGold = supportsGoldMountCamera(camName);
         const bMountCam = plateFilter === 'B-Mount';
         let selectedCandidate = null;
         if (selectedBatteryName && selectedBatteryName !== 'None' && devices.batteries[selectedBatteryName]) {
             const selData = devices.batteries[selectedBatteryName];
-            if ((!plateFilter || selData.mount_type === plateFilter) && (supportsB || selData.mount_type !== 'B-Mount')) {
+            if (
+                (!plateFilter || selData.mount_type === plateFilter) &&
+                (supportsB || selData.mount_type !== 'B-Mount') &&
+                (supportsGold || selData.mount_type !== 'Gold-Mount')
+            ) {
                 const pinOK_sel = totalCurrentLow <= selData.pinA;
                 const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
                 if (pinOK_sel || dtapOK_sel) {
@@ -116,6 +121,7 @@ function generatePrintableOverview() {
             const battInfo = devices.batteries[battName];
             if (plateFilter && battInfo.mount_type !== plateFilter) continue;
             if (!plateFilter && !supportsB && battInfo.mount_type === 'B-Mount') continue;
+            if (!plateFilter && !supportsGold && battInfo.mount_type === 'Gold-Mount') continue;
             const canPin = totalCurrentLow <= battInfo.pinA;
             const canDTap = !bMountCam && totalCurrentLow <= battInfo.dtapA;
             if (!canPin && !canDTap) continue;

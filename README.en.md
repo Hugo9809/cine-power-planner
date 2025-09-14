@@ -1,6 +1,6 @@
 # 🎥 Cine Power Planner
 
-This browser based tool helps plan professional camera projects powered by V‑Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
+This browser based tool helps plan professional camera projects powered by V‑Mount, B‑Mount or Gold-Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
 
 ---
 
@@ -21,7 +21,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Playful pink accent theme that persists between visits.
 - Searchable help dialog with step-by-step sections and a FAQ; open with ?, H, F1 or Ctrl+/.
 - Contextual hover help for buttons, fields, dropdowns and headers.
-- Support for cameras with both V- and B-Mount battery plates.
+- Support for cameras with V-, B- or Gold-Mount battery plates.
 - Submit user runtime feedback with temperature for better estimates.
 - Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
 - Generate gear lists to compile selected gear and project requirements.

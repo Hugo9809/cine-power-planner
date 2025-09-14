@@ -1,6 +1,6 @@
 # 🎥 Cine Power Planner
 
-Cet outil fonctionnant dans le navigateur aide à planifier des configurations professionnelles alimentées par des batteries V‑Mount. Il calcule la **consommation totale**, le **courant** (à 14,4 V et 12 V) et l'**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise.
+Cet outil fonctionnant dans le navigateur aide à planifier des configurations professionnelles alimentées par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, le **courant** (à 14,4 V et 12 V) et l'**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise.
 
 ---
 
@@ -35,7 +35,7 @@ Vous pouvez changer la langue en haut à droite; la préférence est mémorisée
 - Importer et exporter les configurations en JSON
 - Générer un aperçu imprimable de toute configuration enregistrée
 - Fonctionne hors ligne : langue, mode sombre, configurations et données des appareils sont conservées
-- Sur les caméras compatibles, choisir une plaque **B‑Mount** ou **V‑Mount** ; la liste des batteries s'actualise automatiquement
+- Sur les caméras compatibles, choisir une plaque **B‑Mount**, **V‑Mount** ou **Gold-Mount** ; la liste des batteries s'actualise automatiquement
 
 ### 📦 Catégories d'Appareils
 - **Caméra** (1)
@@ -44,8 +44,8 @@ Vous pouvez changer la langue en haut à droite; la préférence est mémorisée
 - **Moteurs FIZ** (0–4)
 - **Contrôleurs FIZ** (0–4)
 - **Capteur de distance** (0–1)
-- **Plaque batterie** (uniquement pour les caméras acceptant V‑ ou B‑Mount)
-- **Batterie V‑Mount** (0–1)
+- **Plaque batterie** (uniquement pour les caméras acceptant V‑, B‑ ou Gold‑Mount)
+- **Batterie V‑/B‑/Gold‑Mount** (0–1)
 
 ### ⚙️ Calculs de Puissance
 - Consommation totale en watts

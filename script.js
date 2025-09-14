@@ -665,23 +665,30 @@ if (storedDevices) {
 }
 unifyDevices(devices);
 
-// Determine if a camera has a native B-Mount battery plate
-function isNativeBMountCamera(name) {
+function getSupportedBatteryPlates(name) {
   const cam = devices.cameras[name];
-  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
-  return cam.power.batteryPlateSupport.some(bp => bp.type === 'B-Mount' && bp.mount === 'native');
+  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
+  return cam.power.batteryPlateSupport.map(bp => bp.type);
 }
 
-function isNativeVMountCamera(name) {
+function getNativeBatteryPlates(name) {
   const cam = devices.cameras[name];
-  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
-  return cam.power.batteryPlateSupport.some(bp => bp.type === 'V-Mount' && bp.mount === 'native');
+  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
+  return cam.power.batteryPlateSupport
+    .filter(bp => bp.mount === 'native')
+    .map(bp => bp.type);
+}
+
+function supportsMountCamera(name, mountType) {
+  return getSupportedBatteryPlates(name).includes(mountType);
 }
 
 function supportsBMountCamera(name) {
-  const cam = devices.cameras[name];
-  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return false;
-  return cam.power.batteryPlateSupport.some(bp => bp.type === 'B-Mount');
+  return supportsMountCamera(name, 'B-Mount');
+}
+
+function supportsGoldMountCamera(name) {
+  return supportsMountCamera(name, 'Gold-Mount');
 }
 
 function getBatteriesByMount(mountType) {
@@ -702,14 +709,11 @@ function getHotswapsByMount(mountType) {
 
 function getSelectedPlate() {
   const camName = cameraSelect.value;
-  const hasB = isNativeBMountCamera(camName);
-  const hasV = isNativeVMountCamera(camName);
-  if (hasB && hasV) {
+  const nativePlates = getNativeBatteryPlates(camName);
+  if (nativePlates.length > 1) {
     return batteryPlateSelect.value;
-  } else if (hasB) {
-    return 'B-Mount';
-  } else if (hasV) {
-    return 'V-Mount';
+  } else if (nativePlates.length === 1) {
+    return nativePlates[0];
   }
   return null;
 }
@@ -906,26 +910,25 @@ function connectionLabel(outType, inType) {
 
 function updateBatteryPlateVisibility() {
   const camName = cameraSelect.value;
-  const hasB = isNativeBMountCamera(camName);
-  const hasV = isNativeVMountCamera(camName);
-  if (hasB && hasV) {
+  const nativePlates = getNativeBatteryPlates(camName);
+  if (nativePlates.length > 1) {
     batteryPlateRow.style.display = '';
-    if (batteryPlateSelect.options.length === 0) {
-      ['V-Mount', 'B-Mount'].forEach(pt => {
-        const opt = document.createElement('option');
-        opt.value = pt;
-        opt.textContent = pt;
-        batteryPlateSelect.appendChild(opt);
-      });
-    }
-    if (!['V-Mount', 'B-Mount'].includes(batteryPlateSelect.value)) {
-      batteryPlateSelect.value = 'V-Mount';
+    const current = batteryPlateSelect.value;
+    batteryPlateSelect.innerHTML = '';
+    nativePlates.forEach(pt => {
+      const opt = document.createElement('option');
+      opt.value = pt;
+      opt.textContent = pt;
+      batteryPlateSelect.appendChild(opt);
+    });
+    if (nativePlates.includes(current)) {
+      batteryPlateSelect.value = current;
+    } else {
+      batteryPlateSelect.value = nativePlates[0];
     }
   } else {
     batteryPlateRow.style.display = 'none';
-    if (hasB) batteryPlateSelect.value = 'B-Mount';
-    else if (hasV) batteryPlateSelect.value = 'V-Mount';
-    else batteryPlateSelect.value = '';
+    batteryPlateSelect.value = nativePlates[0] || '';
   }
   updateViewfinderSettingsVisibility();
   updateViewfinderExtensionVisibility();
@@ -1011,6 +1014,7 @@ function updateBatteryOptions() {
   const plate = getSelectedPlate();
   const camName = cameraSelect.value;
   const supportsB = supportsBMountCamera(camName);
+  const supportsGold = supportsGoldMountCamera(camName);
   let swaps;
   if (plate === 'B-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('B-Mount'), true);
@@ -1018,15 +1022,24 @@ function updateBatteryOptions() {
   } else if (plate === 'V-Mount') {
     populateSelect(batterySelect, getBatteriesByMount('V-Mount'), true);
     swaps = getHotswapsByMount('V-Mount');
+  } else if (plate === 'Gold-Mount') {
+    populateSelect(batterySelect, getBatteriesByMount('Gold-Mount'), true);
+    swaps = getHotswapsByMount('Gold-Mount');
   } else {
     let bats = devices.batteries;
     if (!supportsB) {
       bats = Object.fromEntries(Object.entries(bats).filter(([, b]) => b.mount_type !== 'B-Mount'));
     }
+    if (!supportsGold) {
+      bats = Object.fromEntries(Object.entries(bats).filter(([, b]) => b.mount_type !== 'Gold-Mount'));
+    }
     populateSelect(batterySelect, bats, true);
     swaps = devices.batteryHotswaps || {};
     if (!supportsB) {
       swaps = Object.fromEntries(Object.entries(swaps).filter(([, b]) => b.mount_type !== 'B-Mount'));
+    }
+    if (!supportsGold) {
+      swaps = Object.fromEntries(Object.entries(swaps).filter(([, b]) => b.mount_type !== 'Gold-Mount'));
     }
   }
   if (!/FXLion Nano/i.test(current)) {
@@ -5035,10 +5048,15 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     const camName = cameraSelect.value;
     const plateFilter = getSelectedPlate();
     const supportsB = supportsBMountCamera(camName);
+    const supportsGold = supportsGoldMountCamera(camName);
     let selectedCandidate = null;
     if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
       const selData = devices.batteries[selectedBatteryName];
-      if ((!plateFilter || selData.mount_type === plateFilter) && (supportsB || selData.mount_type !== 'B-Mount')) {
+      if (
+        (!plateFilter || selData.mount_type === plateFilter) &&
+        (supportsB || selData.mount_type !== 'B-Mount') &&
+        (supportsGold || selData.mount_type !== 'Gold-Mount')
+      ) {
         const pinOK_sel = totalCurrentLow <= selData.pinA;
         const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
         if (pinOK_sel || dtapOK_sel) {
@@ -5061,6 +5079,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       const battData = devices.batteries[battName];
       if (plateFilter && battData.mount_type !== plateFilter) continue;
       if (!plateFilter && !supportsB && battData.mount_type === 'B-Mount') continue;
+      if (!plateFilter && !supportsGold && battData.mount_type === 'Gold-Mount') continue;
       const canPin = totalCurrentLow <= battData.pinA;
       const canDTap = !bMountCam && totalCurrentLow <= battData.dtapA;
 
