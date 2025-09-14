@@ -1885,11 +1885,14 @@ const crewRoles = [
   'Production Manager',
   'Director',
   'Assistant Director',
+  'Production Assistant',
 
   // Camera
   'DoP',
   'Camera Operator',
   'B-Camera Operator',
+  'Steadicam Operator',
+  'Drone Operator',
   '1st AC',
   '2nd AC',
   'DIT',
@@ -1899,11 +1902,15 @@ const crewRoles = [
   'Key Gaffer',
   'Gaffer',
   'Best Boy Electric',
+  'Electrician',
+  'Rigging Gaffer',
 
   // Grip
   'Key Grip',
   'Best Boy Grip',
-  'Grip'
+  'Grip',
+  'Dolly Grip',
+  'Rigging Grip'
 ];
 
 const projectFieldIcons = {

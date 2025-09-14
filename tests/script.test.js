@@ -1887,9 +1887,12 @@ describe('script.js functions', () => {
       'Production Manager',
       'Director',
       'Assistant Director',
+      'Production Assistant',
       'DoP',
       'Camera Operator',
       'B-Camera Operator',
+      'Steadicam Operator',
+      'Drone Operator',
       '1st AC',
       '2nd AC',
       'DIT',
@@ -1897,9 +1900,13 @@ describe('script.js functions', () => {
       'Key Gaffer',
       'Gaffer',
       'Best Boy Electric',
+      'Electrician',
+      'Rigging Gaffer',
       'Key Grip',
       'Best Boy Grip',
-      'Grip'
+      'Grip',
+      'Dolly Grip',
+      'Rigging Grip'
     ]);
   });
 
