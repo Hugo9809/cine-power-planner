@@ -277,6 +277,36 @@ footer a {
   margin-left: 0;
 }
 
+/* Date range rows for prep and shooting days */
+.period-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-size);
+  flex-wrap: wrap;
+  margin-bottom: var(--gap-size);
+}
+.period-row input {
+  flex: 1;
+  min-width: 120px;
+}
+.period-row span {
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .period-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .period-row span {
+    display: none;
+  }
+  .period-row button {
+    align-self: flex-end;
+  }
+}
+
+
 /* Small wrapper to show labels even when a value is present */
 .field-with-label {
   display: flex;
