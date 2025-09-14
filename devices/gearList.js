@@ -912,38 +912,6 @@ const gear = {
         "pinV": 7.2
       }
     },
-    "chargers": {
-      "Single V-Mount Charger": {
-        "mount": "V-Mount",
-        "slots": 1,
-        "chargingSpeedAmps": 3
-      },
-      "Dual V-Mount Charger": {
-        "mount": "V-Mount",
-        "slots": 2,
-        "chargingSpeedAmps": 2
-      },
-      "Quad V-Mount Charger": {
-        "mount": "V-Mount",
-        "slots": 4,
-        "chargingSpeedAmps": 2
-      },
-      "Single B-Mount Charger": {
-        "mount": "B-Mount",
-        "slots": 1,
-        "chargingSpeedAmps": 3
-      },
-      "Dual B-Mount Charger": {
-        "mount": "B-Mount",
-        "slots": 2,
-        "chargingSpeedAmps": 2
-      },
-      "Quad B-Mount Charger": {
-        "mount": "B-Mount",
-        "slots": 4,
-        "chargingSpeedAmps": 2
-      }
-    },
     "cables": {
       "power": {
         "D-Tap to LEMO 2-pin": {
