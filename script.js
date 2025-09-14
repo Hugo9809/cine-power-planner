@@ -8667,7 +8667,8 @@ function generateGearListHtml(info = {}) {
         'viewfinderSettings',
         'frameGuides',
         'aspectMaskOpacity',
-        'filter'
+        'filter',
+        'viewfinderEyeLeatherColor'
     ]);
     const infoEntries = Object.entries(projectInfo)
         .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
