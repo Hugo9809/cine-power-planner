@@ -1843,6 +1843,31 @@ describe('script.js functions', () => {
       expect(html).not.toContain('HDMI Cable');
     });
 
+  test('crew roles are ordered by department and include lighting and grip', () => {
+    setupDom();
+    require('../translations.js');
+    const { crewRoles } = require('../script.js');
+    expect(crewRoles).toEqual([
+      'Producer',
+      'Production Manager',
+      'Director',
+      'Assistant Director',
+      'DoP',
+      'Camera Operator',
+      'B-Camera Operator',
+      '1st AC',
+      '2nd AC',
+      'DIT',
+      'Video Operator',
+      'Key Gaffer',
+      'Gaffer',
+      'Best Boy Electric',
+      'Key Grip',
+      'Best Boy Grip',
+      'Grip'
+    ]);
+  });
+
   test('renders multiple crew members on separate lines in project requirements summary', () => {
     setupDom();
     require('../translations.js');
