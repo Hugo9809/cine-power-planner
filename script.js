@@ -4516,7 +4516,14 @@ function getTimecodes() {
       btn.className = 'favorite-toggle';
       btn.textContent = '☆';
       btn.addEventListener('click', () => toggleFavorite(selectElem));
-      selectElem.insertAdjacentElement('afterend', btn);
+      let wrapper = selectElem.parentElement;
+      if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'select-wrapper';
+        selectElem.insertAdjacentElement('beforebegin', wrapper);
+        wrapper.appendChild(selectElem);
+      }
+      wrapper.appendChild(btn);
       selectElem._favButton = btn;
       selectElem._favInit = true;
       selectElem.addEventListener('change', () => updateFavoriteButton(selectElem));
