@@ -2150,6 +2150,16 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "ZEISS Compact Zoom CZ.2 15-30mm T2.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
         "ZEISS Compact Zoom CZ.2 28-80mm T2.9": {
           "brand": "ZEISS",
           "frontDiameterMm": 95,
@@ -2163,6 +2173,16 @@ const gear = {
         "ZEISS Compact Zoom CZ.2 70-200mm T2.9": {
           "brand": "ZEISS",
           "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical"
+        },
+        "ZEISS Lightweight Zoom LWZ.3 21-100mm T2.9-3.9": {
+          "brand": "ZEISS",
+          "frontDiameterMm": 114,
           "clampOn": true,
           "tStop": 2.9,
           "rodStandard": "15mm",
