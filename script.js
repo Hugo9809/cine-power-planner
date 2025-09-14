@@ -8245,7 +8245,7 @@ function collectProjectFormData() {
         requiredScenarios: multi('requiredScenarios'),
         cameraHandle: multi('cameraHandle'),
         viewfinderExtension: val('viewfinderExtension'),
-        viewfinderEyeLeatherColor: val('viewfinderEyeLeatherColor'),
+        viewfinderEyeLeatherColor: gearListOutput?.querySelector('#gearListEyeLeatherColor')?.value || val('viewfinderEyeLeatherColor'),
         mattebox: matteboxVal,
         gimbal: multi('gimbal'),
         viewfinderSettings,
@@ -8262,7 +8262,15 @@ function collectProjectFormData() {
         tripodSpreader: val('tripodSpreader'),
         sliderBowl: getSliderBowlValue(),
         easyrig: getEasyrigValue(),
+        ...(gearListOutput?.querySelector('#gearListDirectorMonitor')?.value ? { directorMonitor: gearListOutput.querySelector('#gearListDirectorMonitor').value } : {}),
+        ...(gearListOutput?.querySelector('#gearListDopMonitor')?.value ? { dopMonitor: gearListOutput.querySelector('#gearListDopMonitor').value } : {}),
+        ...(gearListOutput?.querySelector('#gearListGafferMonitor')?.value ? { gafferMonitor: gearListOutput.querySelector('#gearListGafferMonitor').value } : {}),
+        ...(gearListOutput?.querySelector('#gearListDirectorMonitor15')?.value ? { directorMonitor15: gearListOutput.querySelector('#gearListDirectorMonitor15').value } : {}),
+        ...(gearListOutput?.querySelector('#gearListComboMonitor15')?.value ? { comboMonitor15: gearListOutput.querySelector('#gearListComboMonitor15').value } : {}),
+        ...(gearListOutput?.querySelector('#gearListDopMonitor15')?.value ? { dopMonitor15: gearListOutput.querySelector('#gearListDopMonitor15').value } : {}),
         focusMonitor: gearListOutput?.querySelector('#gearListFocusMonitor')?.value || '',
+        ...(gearListOutput?.querySelector('#gearListProGaffColor1')?.value || gearListOutput?.querySelector('#gearListProGaffWidth1')?.value ? { proGaffColor1: gearListOutput.querySelector('#gearListProGaffColor1')?.value || '', proGaffWidth1: gearListOutput.querySelector('#gearListProGaffWidth1')?.value || '' } : {}),
+        ...(gearListOutput?.querySelector('#gearListProGaffColor2')?.value || gearListOutput?.querySelector('#gearListProGaffWidth2')?.value ? { proGaffColor2: gearListOutput.querySelector('#gearListProGaffColor2')?.value || '', proGaffWidth2: gearListOutput.querySelector('#gearListProGaffWidth2')?.value || '' } : {}),
         filter: filterStr
     };
 }
@@ -8863,8 +8871,11 @@ function generateGearListHtml(info = {}) {
         const names = Object.keys(monitorsDb)
             .filter(n => (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
-        let defaultName = names.includes('SmallHD Ultra 7') ? 'SmallHD Ultra 7' : names[0];
-        if (size) {
+        const infoKey = role === 'DoP' ? 'dopMonitor' : `${role.toLowerCase()}Monitor`;
+        let defaultName = info[infoKey] && names.includes(info[infoKey])
+            ? info[infoKey]
+            : names.includes('SmallHD Ultra 7') ? 'SmallHD Ultra 7' : names[0];
+        if (!info[infoKey] && size) {
             const sized = names.find(n => monitorsDb[n].screenSizeInches === size);
             if (size === 7 && names.includes('SmallHD Ultra 7')) {
                 defaultName = 'SmallHD Ultra 7';
@@ -8886,7 +8897,10 @@ function generateGearListHtml(info = {}) {
     largeMonitorPrefs.forEach(({ role }) => {
         const dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
         const names = Object.keys(dirDb).filter(n => n !== 'None').sort(localeSort);
-        const defaultName = 'SmallHD Cine 24" 4K High-Bright Monitor';
+        const infoKey = role === 'DoP' ? 'dopMonitor15' : role === 'Combo' ? 'comboMonitor15' : 'directorMonitor15';
+        let defaultName = info[infoKey] && names.includes(info[infoKey])
+            ? info[infoKey]
+            : 'SmallHD Cine 24" 4K High-Bright Monitor';
         const opts = names
             .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
@@ -8900,7 +8914,9 @@ function generateGearListHtml(info = {}) {
         const names = Object.keys(monitorsDb)
             .filter(n => (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
-        const defaultName = names.includes('TV Logic F7HS') ? 'TV Logic F7HS' : names[0];
+        const defaultName = info.focusMonitor && names.includes(info.focusMonitor)
+            ? info.focusMonitor
+            : names.includes('TV Logic F7HS') ? 'TV Logic F7HS' : names[0];
         const opts = names
             .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
             .join('');
@@ -9105,21 +9121,11 @@ function generateGearListHtml(info = {}) {
     const miscItems = [...miscAcc].filter(item => !miscExcluded.has(item));
     const consumables = [];
     const hasViewfinder = Array.isArray(cam?.viewfinder) && cam.viewfinder.length > 0;
-    let eyeLeatherColor = 'red';
+    let eyeLeatherColor = info.viewfinderEyeLeatherColor || 'red';
     const gaffTapeSelections = [
-        { id: 1, color: 'red', width: '24mm' },
-        { id: 2, color: 'blue', width: '24mm' }
+        { id: 1, color: info.proGaffColor1 || 'red', width: info.proGaffWidth1 || '24mm' },
+        { id: 2, color: info.proGaffColor2 || 'blue', width: info.proGaffWidth2 || '24mm' }
     ];
-    if (gearListOutput) {
-        const sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
-        if (sel && sel.value) eyeLeatherColor = sel.value;
-        gaffTapeSelections.forEach(({ id }, idx) => {
-            const cSel = gearListOutput.querySelector(`#gearListProGaffColor${id}`);
-            const wSel = gearListOutput.querySelector(`#gearListProGaffWidth${id}`);
-            if (cSel && cSel.value) gaffTapeSelections[idx].color = cSel.value;
-            if (wSel && wSel.value) gaffTapeSelections[idx].width = wSel.value;
-        });
-    }
     const baseConsumables = [
         { name: 'Kimtech Wipes', count: 1 },
         { name: 'Sprigs Red 1/4"', count: 1, noScale: true },

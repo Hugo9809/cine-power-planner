@@ -760,6 +760,47 @@ describe('script.js functions', () => {
     expect(reqGrid.textContent).not.toContain('100er bowl');
   });
 
+  test('director monitor selection persists after regenerating gear list', () => {
+    devices.monitors.MonB = {
+      powerDrawWatts: 5,
+      brightnessNits: 1000,
+      screenSizeInches: 7,
+      power: { input: { type: 'LEMO 2-pin' } },
+      videoInputs: [{ type: '3G-SDI' }]
+    };
+    const videoSel = document.getElementById('videoDistribution');
+    videoSel.innerHTML = '<option value="Director Monitor 7&quot; handheld">Director Monitor 7" handheld</option>';
+    videoSel.value = 'Director Monitor 7" handheld';
+    document.getElementById('projectName').value = 'Proj';
+    const form = document.getElementById('projectForm');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const gear = document.getElementById('gearListOutput');
+    const sel = gear.querySelector('#gearListDirectorMonitor');
+    const newVal = Array.from(sel.options).find(o => o.value !== sel.value).value;
+    sel.value = newVal;
+    script.saveCurrentGearList();
+    expect(script.getCurrentProjectInfo().directorMonitor).toBe(newVal);
+    gear.innerHTML = script.generateGearListHtml(script.getCurrentProjectInfo());
+    expect(gear.querySelector('#gearListDirectorMonitor').value).toBe(newVal);
+  });
+
+  test('pro gaff tape selection persists after regenerating gear list', () => {
+    const gear = document.getElementById('gearListOutput');
+    gear.innerHTML = script.generateGearListHtml({});
+    gear.classList.remove('hidden');
+    const colorSel = gear.querySelector('#gearListProGaffColor1');
+    const widthSel = gear.querySelector('#gearListProGaffWidth1');
+    colorSel.value = 'black';
+    widthSel.value = '48mm';
+    script.saveCurrentGearList();
+    const info = script.getCurrentProjectInfo();
+    expect(info.proGaffColor1).toBe('black');
+    expect(info.proGaffWidth1).toBe('48mm');
+    gear.innerHTML = script.generateGearListHtml(info);
+    expect(gear.querySelector('#gearListProGaffColor1').value).toBe('black');
+    expect(gear.querySelector('#gearListProGaffWidth1').value).toBe('48mm');
+  });
+
   test('entire project form is saved with gear list', () => {
     global.saveProject = jest.fn();
     document.getElementById('projectName').value = 'Proj';
@@ -783,7 +824,7 @@ describe('script.js functions', () => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const saved = global.saveProject.mock.calls[0][1];
     const expectedKeys = [
-      'projectName','productionCompany','rentalHouse','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','videoDistribution','monitoringConfiguration','focusMonitor','monitoringSupport','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter'
+      'projectName','productionCompany','rentalHouse','prepDays','shootingDays','deliveryResolution','recordingResolution','aspectRatio','codec','baseFrameRate','sensorMode','lenses','requiredScenarios','cameraHandle','viewfinderExtension','viewfinderEyeLeatherColor','mattebox','gimbal','videoDistribution','monitoringConfiguration','focusMonitor','monitoringSupport','monitorUserButtons','cameraUserButtons','viewfinderUserButtons','tripodHeadBrand','tripodBowl','tripodTypes','tripodSpreader','sliderBowl','filter','directorMonitor','proGaffColor1','proGaffWidth1','proGaffColor2','proGaffWidth2'
     ];
     expect(Object.keys(saved.projectInfo).sort()).toEqual(expectedKeys.sort());
     expect(saved.projectInfo.lenses).toBe('LensA');
