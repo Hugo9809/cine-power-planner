@@ -1855,6 +1855,10 @@ const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
 const crewContainer = document.getElementById("crewContainer");
 const addPersonBtn = document.getElementById("addPersonBtn");
+const prepContainer = document.getElementById("prepContainer");
+const addPrepBtn = document.getElementById("addPrepBtn");
+const shootContainer = document.getElementById("shootContainer");
+const addShootBtn = document.getElementById("addShootBtn");
 
 let monitoringConfigurationUserChanged = false;
 
@@ -1922,8 +1926,62 @@ function createCrewRow(data = {}) {
   crewContainer.appendChild(row);
 }
 
+function createPrepRow(data = {}) {
+  if (!prepContainer) return;
+  const row = document.createElement('div');
+  row.className = 'period-row';
+  const start = document.createElement('input');
+  start.type = 'date';
+  start.className = 'prep-start';
+  start.value = data.start || '';
+  start.setAttribute('aria-labelledby', 'prepLabel');
+  const span = document.createElement('span');
+  span.textContent = 'to';
+  const end = document.createElement('input');
+  end.type = 'date';
+  end.className = 'prep-end';
+  end.value = data.end || '';
+  end.setAttribute('aria-labelledby', 'prepLabel');
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => row.remove());
+  row.append(start, span, end, removeBtn);
+  prepContainer.appendChild(row);
+}
+
+function createShootRow(data = {}) {
+  if (!shootContainer) return;
+  const row = document.createElement('div');
+  row.className = 'period-row';
+  const start = document.createElement('input');
+  start.type = 'date';
+  start.className = 'shoot-start';
+  start.value = data.start || '';
+  start.setAttribute('aria-labelledby', 'shootLabel');
+  const span = document.createElement('span');
+  span.textContent = 'to';
+  const end = document.createElement('input');
+  end.type = 'date';
+  end.className = 'shoot-end';
+  end.value = data.end || '';
+  end.setAttribute('aria-labelledby', 'shootLabel');
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => row.remove());
+  row.append(start, span, end, removeBtn);
+  shootContainer.appendChild(row);
+}
+
 if (addPersonBtn) {
   addPersonBtn.addEventListener('click', () => createCrewRow());
+}
+if (addPrepBtn) {
+  addPrepBtn.addEventListener('click', () => createPrepRow());
+}
+if (addShootBtn) {
+  addShootBtn.addEventListener('click', () => createShootRow());
 }
 
 function updateTripodOptions() {
@@ -8214,7 +8272,6 @@ function collectProjectFormData() {
     const val = name => (projectForm.querySelector(`[name="${name}"]`)?.value || '').trim();
     const multi = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
         .map(o => o.value).join(', ');
-    const range = (start, end) => [val(start), val(end)].filter(Boolean).join(' to ');
     const viewfinderSettings = multi('viewfinderSettings');
     const frameGuides = multi('frameGuides');
     const aspectMaskOpacity = multi('aspectMaskOpacity');
@@ -8228,13 +8285,21 @@ function collectProjectFormData() {
         name: row.querySelector('.person-name')?.value.trim(),
         phone: row.querySelector('.person-phone')?.value.trim()
     })).filter(p => p.role && p.name);
+    const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
+        .map(row => {
+            const start = row.querySelector(startSel)?.value;
+            const end = row.querySelector(endSel)?.value;
+            return [start, end].filter(Boolean).join(' to ');
+        }).filter(Boolean);
+    const prepDays = collectRanges(prepContainer, '.prep-start', '.prep-end');
+    const shootingDays = collectRanges(shootContainer, '.shoot-start', '.shoot-end');
     return {
         projectName: val('projectName'),
         productionCompany: val('productionCompany'),
         rentalHouse: val('rentalHouse'),
         ...(people.length ? { people } : {}),
-        prepDays: range('prepStart','prepEnd'),
-        shootingDays: range('shootStart','shootEnd'),
+        prepDays,
+        shootingDays,
         deliveryResolution: val('deliveryResolution'),
         recordingResolution: val('recordingResolution'),
         aspectRatio: multi('aspectRatio'),
@@ -8303,12 +8368,28 @@ function populateProjectForm(info = {}) {
         crewContainer.innerHTML = '';
         (info.people || []).forEach(p => createCrewRow(p));
     }
-    const [prepStart, prepEnd] = (info.prepDays || '').split(' to ');
-    setVal('prepStart', prepStart);
-    setVal('prepEnd', prepEnd);
-    const [shootStart, shootEnd] = (info.shootingDays || '').split(' to ');
-    setVal('shootStart', shootStart);
-    setVal('shootEnd', shootEnd);
+    if (prepContainer) {
+        prepContainer.innerHTML = '';
+        const prepArr = Array.isArray(info.prepDays)
+            ? info.prepDays
+            : (info.prepDays ? String(info.prepDays).split('\n') : ['']);
+        if (!prepArr.length) prepArr.push('');
+        prepArr.forEach(r => {
+            const [start, end] = r.split(' to ');
+            createPrepRow({ start, end });
+        });
+    }
+    if (shootContainer) {
+        shootContainer.innerHTML = '';
+        const shootArr = Array.isArray(info.shootingDays)
+            ? info.shootingDays
+            : (info.shootingDays ? String(info.shootingDays).split('\n') : ['']);
+        if (!shootArr.length) shootArr.push('');
+        shootArr.forEach(r => {
+            const [start, end] = r.split(' to ');
+            createShootRow({ start, end });
+        });
+    }
     setVal('deliveryResolution', info.deliveryResolution);
     setMulti('aspectRatio', info.aspectRatio);
     setVal('baseFrameRate', info.baseFrameRate);
@@ -8617,6 +8698,12 @@ function generateGearListHtml(info = {}) {
         }
     }
     delete projectInfo.people;
+    if (Array.isArray(info.prepDays)) {
+        projectInfo.prepDays = info.prepDays.join('\n');
+    }
+    if (Array.isArray(info.shootingDays)) {
+        projectInfo.shootingDays = info.shootingDays.join('\n');
+    }
     if (monitoringSettings.length) {
         projectInfo.monitoringSupport = monitoringSettings.join(', ');
     }
@@ -9145,26 +9232,31 @@ function generateGearListHtml(info = {}) {
     let eyeLeatherCount = hasViewfinder ? 2 : 0;
     let shootDays = 0;
     let isWinterShoot = false;
-    if (info.shootingDays) {
-        const parts = info.shootingDays.split(' to ');
+    const shootRanges = Array.isArray(info.shootingDays)
+        ? info.shootingDays
+        : (info.shootingDays ? [info.shootingDays] : []);
+    const winterMonths = new Set([9, 10, 11, 0, 1, 2, 3, 4]);
+    shootRanges.forEach(r => {
+        const parts = r.split(' to ');
         if (parts.length === 2) {
             const start = new Date(parts[0]);
             const end = new Date(parts[1]);
             if (!isNaN(start) && !isNaN(end)) {
-                shootDays = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-                const winterMonths = new Set([9, 10, 11, 0, 1, 2, 3, 4]);
-                const m = new Date(start);
-                m.setHours(0, 0, 0, 0);
-                while (m <= end) {
-                    if (winterMonths.has(m.getMonth())) {
-                        isWinterShoot = true;
-                        break;
+                shootDays += Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                if (!isWinterShoot) {
+                    const m = new Date(start);
+                    m.setHours(0, 0, 0, 0);
+                    while (m <= end) {
+                        if (winterMonths.has(m.getMonth())) {
+                            isWinterShoot = true;
+                            break;
+                        }
+                        m.setMonth(m.getMonth() + 1);
                     }
-                    m.setMonth(m.getMonth() + 1);
                 }
             }
         }
-    }
+    });
     let multiplier = 1;
     if (shootDays > 21) {
         multiplier = 4;
