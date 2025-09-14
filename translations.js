@@ -2,7 +2,7 @@
 // Translation text for English, Italian, Spanish, French and German
 const texts = {
   en: {
-    appTitle: "Power Planner",
+    appTitle: "Cine Power Planner",
     tagline: "Plan your film rig and calculate power consumption & battery life.",
     skipToContent: "Skip to content",
     offlineIndicator: "Offline",
@@ -409,7 +409,7 @@ const texts = {
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   it: {
-    appTitle: "Power Planner",
+    appTitle: "Cine Power Planner",
     tagline: "Pianifica la tua configurazione cinematografica e calcola il consumo energetico e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Non in linea",
@@ -788,7 +788,7 @@ const texts = {
     diagramMoveHint: "Trascina i nodi per spostarli. Trascina uno spazio vuoto per spostare il diagramma.",
   },
   es: {
-    appTitle: "Power Planner",
+    appTitle: "Cine Power Planner",
     tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
@@ -1182,7 +1182,7 @@ const texts = {
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   fr: {
-    appTitle: "Power Planner",
+    appTitle: "Cine Power Planner",
     tagline: "Planifiez votre équipement de tournage et calculez la consommation énergétique et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
@@ -1578,7 +1578,7 @@ const texts = {
     // NEW TEXTS FOR SETUP MANAGEMENT END HERE
   },
   de: {
-    appTitle: "Power Planner",
+    appTitle: "Cine Power Planner",
     tagline: "Plane dein Film-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",
