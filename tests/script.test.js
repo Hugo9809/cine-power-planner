@@ -2093,6 +2093,34 @@ describe('script.js functions', () => {
     expect(section).not.toContain('ARRI LMB 4x5 Clamp-On (3-Stage)');
   });
 
+  test('collectProjectFormData captures multiple prep and shooting periods', () => {
+    setupDom();
+    require('../translations.js');
+    const { collectProjectFormData, populateProjectForm } = require('../script.js');
+    document.getElementById('addPrepBtn').click();
+    const prepRows = document.querySelectorAll('#prepContainer .period-row');
+    prepRows[0].querySelector('.prep-start').value = '2024-01-01';
+    prepRows[0].querySelector('.prep-end').value = '2024-01-03';
+    prepRows[1].querySelector('.prep-start').value = '2024-02-01';
+    prepRows[1].querySelector('.prep-end').value = '2024-02-02';
+    document.getElementById('addShootBtn').click();
+    const shootRows = document.querySelectorAll('#shootContainer .period-row');
+    shootRows[0].querySelector('.shoot-start').value = '2024-03-01';
+    shootRows[0].querySelector('.shoot-end').value = '2024-03-05';
+    shootRows[1].querySelector('.shoot-start').value = '2024-04-01';
+    shootRows[1].querySelector('.shoot-end').value = '2024-04-04';
+    const info = collectProjectFormData();
+    expect(info.prepDays).toEqual(['2024-01-01 to 2024-01-03', '2024-02-01 to 2024-02-02']);
+    expect(info.shootingDays).toEqual(['2024-03-01 to 2024-03-05', '2024-04-01 to 2024-04-04']);
+    populateProjectForm(info);
+    const repopPrepRows = document.querySelectorAll('#prepContainer .period-row');
+    expect(repopPrepRows).toHaveLength(2);
+    expect(repopPrepRows[1].querySelector('.prep-start').value).toBe('2024-02-01');
+    const repopShootRows = document.querySelectorAll('#shootContainer .period-row');
+    expect(repopShootRows).toHaveLength(2);
+    expect(repopShootRows[1].querySelector('.shoot-end').value).toBe('2024-04-04');
+  });
+
   test('Rota-Pol filter provides size dropdown', () => {
     setupDom(false);
     require('../translations.js');
