@@ -3124,6 +3124,16 @@ describe('script.js functions', () => {
     expect(projOut.querySelector('[data-field="easyrig"]')).toBeNull();
   });
 
+  test('viewfinder eye leather color hidden from project requirements summary', () => {
+    setupDom();
+    require('../translations.js');
+    const { generateGearListHtml, displayGearAndRequirements } = require('../script.js');
+    const html = generateGearListHtml({ viewfinderEyeLeatherColor: 'Red' });
+    displayGearAndRequirements(html);
+    const projOut = document.getElementById('projectRequirementsOutput');
+    expect(projOut.querySelector('[data-field="viewfinderEyeLeatherColor"]')).toBeNull();
+  });
+
   test('gear list remains visible after session reload with only setup name', () => {
     global.saveSessionState = jest.fn();
     global.loadSessionState = jest.fn();
