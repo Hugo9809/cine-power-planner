@@ -477,7 +477,7 @@ describe('script.js functions', () => {
       expect(sel.multiple).toBe(true);
       expect(sel.size).toBe(sel.options.length);
       const values = Array.from(sel.options).map(o => o.value);
-      expect(values).toEqual(expect.arrayContaining(['Toggle LUT', 'False Color', 'Peaking']));
+      expect(values).toEqual(expect.arrayContaining(['Toggle LUT', 'False Color', 'Peaking', 'Frame Grab']));
     });
   });
 

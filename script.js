@@ -11170,7 +11170,8 @@ function populateUserButtonDropdowns() {
     'Playback',
     'Record',
     'Zoom',
-    'Frame Lines'
+    'Frame Lines',
+    'Frame Grab'
   ];
   ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
     const sel = document.getElementById(id);
