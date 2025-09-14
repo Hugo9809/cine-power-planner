@@ -27,6 +27,7 @@
   --video-color: #369;
   --fiz-color: #090;
   --selected-row-bg: #e6f7ff;
+  --favorite-inactive-color: var(--control-text);
 }
 @media (max-width: 600px) {
   :root {
@@ -563,10 +564,14 @@ textarea:disabled {
   border: none;
   cursor: pointer;
   font-size: 1em;
+  color: var(--favorite-inactive-color);
+  transition: color 0.2s ease;
 }
-
+.favorite-toggle:hover {
+  color: var(--link-color);
+}
 .favorite-toggle.favorited {
-  color: var(--accent-color);
+  color: var(--link-color);
 }
 
 #setup-config .form-row:first-of-type {
@@ -1527,6 +1532,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     --panel-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     --panel-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.6);
     --link-color: #7ec8ff;
+    --favorite-inactive-color: #bbb;
     --diagram-node-fill: #444;
     --power-color: #ff6666;
     --video-color: #7ec8ff;
