@@ -1,8 +1,8 @@
-# Power Planner
+# Cine Power Planner
 
-![Power Planner icon](icon.svg)
+![Cine Power Planner icon](icon.svg)
 
-Power Planner is a standalone web app for planning professional camera
+Cine Power Planner is a standalone web app for planning professional camera
 rigs powered by V‑Mount or B‑Mount batteries. It calculates total power draw,
 checks that batteries can safely deliver the required output, and estimates how
 long your project will run. The tool runs entirely in the browser and even works
@@ -140,7 +140,7 @@ Set up a development environment:
 
 ## Install as an App
 
-Power Planner is a Progressive Web App and can be installed for quick
+Cine Power Planner is a Progressive Web App and can be installed for quick
 access:
 
 1. Open `index.html` in a supported browser.
@@ -153,7 +153,7 @@ access:
 
 ## Offline Use and Data Storage
 
-When served over HTTP(S), Power Planner installs a service worker that caches all
+When served over HTTP(S), Cine Power Planner installs a service worker that caches all
 files so the planner runs entirely offline and pulls updates in the
 background. Projects, runtime submissions and preferences (language, theme,
 pink mode and saved gear lists) are stored locally via `localStorage` in your
@@ -162,7 +162,7 @@ information.
 
 ## Browser Support
 
-Power Planner relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.
+Cine Power Planner relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.
 
 ## Development
 

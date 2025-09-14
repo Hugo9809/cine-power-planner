@@ -1,4 +1,4 @@
-# 🎥 Power Planner
+# 🎥 Cine Power Planner
 
 Cet outil fonctionnant dans le navigateur aide à planifier des configurations professionnelles alimentées par des batteries V‑Mount. Il calcule la **consommation totale**, le **courant** (à 14,4 V et 12 V) et l'**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise.
 
@@ -105,7 +105,7 @@ Vous pouvez changer la langue en haut à droite; la préférence est mémorisée
 ## 📡 Utilisation hors ligne et stockage des données
 
 Servie via HTTP(S), l'application installe un service worker qui met en cache
-tous les fichiers afin que Power Planner fonctionne hors ligne et se mette à jour en
+tous les fichiers afin que Cine Power Planner fonctionne hors ligne et se mette à jour en
 arrière-plan. Les projets, rapports d'autonomie et préférences (langue, thème,
 mode rose et listes enregistrées) sont stockés dans le `localStorage` du
 navigateur. Effacer les données du site dans le navigateur supprime toutes les

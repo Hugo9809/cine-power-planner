@@ -1,4 +1,4 @@
-# 🎥 Power Planner
+# 🎥 Cine Power Planner
 
 Questo strumento basato sul browser aiuta a pianificare configurazioni professionali alimentate da batterie V‑Mount. Calcola **consumo totale**, **corrente** (a 14,4 V e 12 V) e **durata stimata della batteria**, verificando che la batteria possa fornire in sicurezza la potenza richiesta.
 ---
@@ -104,7 +104,7 @@ Puoi cambiare la lingua nell'angolo in alto a destra e la scelta viene memorizza
 ## 📡 Uso offline e conservazione dei dati
 
 Quando viene servita via HTTP(S), l'app installa un service worker che memorizza
-in cache tutti i file affinché Power Planner funzioni senza connessione e si
+in cache tutti i file affinché Cine Power Planner funzioni senza connessione e si
 aggiorni in background. I progetti, i report di autonomia e le preferenze
 (lingua, tema, modalità rosa e liste salvate) vengono salvati nel `localStorage`
 del browser. Cancellando i dati del sito nel browser si rimuovono tutte le
