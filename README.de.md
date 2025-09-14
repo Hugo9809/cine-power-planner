@@ -1,6 +1,6 @@
 # 🎥 Cine Power Planner
 
-Dieses browserbasierte Tool hilft beim Planen professioneller Kamera-Setups mit V‑Mount-Akkus. Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowie die **geschätzte Akkulaufzeit** und prüft, ob der Akku genügend Leistung liefert.
+Dieses browserbasierte Tool hilft beim Planen professioneller Kamera-Setups mit V‑Mount-, B‑Mount- oder Gold-Mount-Akkus. Es berechnet **Stromverbrauch**, **Stromstärke** (bei 14,4 V und 12 V) sowie die **geschätzte Akkulaufzeit** und prüft, ob der Akku genügend Leistung liefert.
 
 ---
 
@@ -20,7 +20,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - Verspieltes pinkes Akzent-Thema, das zwischen Besuchen erhalten bleibt.
 - Durchsuchbarer Hilfedialog mit Schritt-für-Schritt-Anleitung und FAQ; kann mit ?, H, F1 oder Strg+/ geöffnet werden.
 - Kontextbezogene Hover-Hilfe für Schaltflächen, Felder, Dropdowns und Überschriften.
-- Unterstützung für Kameras mit V- und B-Mount-Akkuplatten.
+- Unterstützung für Kameras mit V-, B- oder Gold-Mount-Akkuplatten.
 - Nutzer-Laufzeit-Feedback mit Umgebungsdetails zur Verbesserung der Schätzungen.
 - Visuelles Laufzeit-Gewichtungs-Dashboard, das zeigt, wie Temperatur, Auflösung, Bildrate und Codec jeden Bericht beeinflussen, sortiert nach Gewicht mit genauen Prozentanteilen.
 
@@ -44,8 +44,8 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - **FIZ-Motoren** (0–4)
 - **FIZ-Controller** (0–4)
 - **Distanzsensor** (0–1)
-- **Akkuschacht** (nur bei Kameras mit V‑ oder B‑Mount)
-- **V‑Mount Akku** (0–1)
+- **Akkuschacht** (nur bei Kameras mit V‑, B‑ oder Gold‑Mount)
+- **V‑/B‑/Gold‑Mount Akku** (0–1)
 
 ### ⚙️ Leistungsberechnung
 - Gesamtverbrauch in Watt

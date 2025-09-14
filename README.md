@@ -3,7 +3,7 @@
 ![Cine Power Planner icon](icon.svg)
 
 Cine Power Planner is a standalone web app for planning professional camera
-rigs powered by V‑Mount or B‑Mount batteries. It calculates total power draw,
+rigs powered by V‑Mount, B‑Mount or Gold‑Mount batteries. It calculates total power draw,
 checks that batteries can safely deliver the required output, and estimates how
 long your project will run. The tool runs entirely in the browser and even works
 offline.
@@ -51,7 +51,7 @@ Contributions for additional languages are welcome. To add a translation, includ
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits or press **P** to switch quickly.
 - **Searchable help dialog and hover hints** – open with ?, H, F1 or Ctrl+/ (even while typing), filter topics instantly, press / or Ctrl+F to jump to the search box, browse the built-in FAQ, and hover over any button, field, dropdown or header for a quick explanation.
 - **Type-to-search dropdowns** – quickly narrow device lists by typing directly into any selector.
-- **Dual V‑/B‑Mount support** – choose between plate types on supported cameras and the battery list updates automatically.
+- **Multi-mount support** – choose between V‑, B‑ or Gold‑Mount plates on supported cameras and the battery list updates automatically.
 - **User runtime feedback** – submit real-world runtimes with environment details to refine estimates.
 - **Visual runtime weighting dashboard** – see how temperature, resolution, frame rate and codec affect each runtime report, now sorted by weight with exact share percentages.
 - **Gear list generator** – compile selected gear and project requirements with one click.
@@ -71,7 +71,7 @@ See the language-specific README files for full details.
 - Save, load, share and clear projects (project requirements included); import/export them as JSON, and generate gear lists and printable overviews.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
-- Uses your browser's language on first load (falls back to English), lets you switch languages, toggle dark or playful pink themes, and swap between V‑ and B‑Mount plates on supported cameras.
+- Uses your browser's language on first load (falls back to English), lets you switch languages, toggle dark or playful pink themes, and swap between V‑, B‑ and Gold‑Mount plates on supported cameras.
 - Works completely offline and offers a searchable help dialog with hover help for every button, field, dropdown and header.
 
 ## Runtime Data Weighting

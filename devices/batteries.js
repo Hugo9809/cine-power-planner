@@ -580,6 +580,102 @@ const batteryData = {
     "pinA": 12,
     "dtapA": 5,
     "mount_type": "V-Mount"
+  },
+  "Anton/Bauer Titon 90 (Gold-Mount)": {
+    "capacity": 92,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount"
+  },
+  "Anton/Bauer Titon 240 (Gold-Mount)": {
+    "capacity": 238,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount",
+    "weight_g": 1320
+  },
+  "Anton/Bauer Dionic XT 90 (Gold-Mount)": {
+    "capacity": 99,
+    "pinA": 12,
+    "dtapA": 12,
+    "mount_type": "Gold-Mount"
+  },
+  "Anton/Bauer Dionic 26V 240 (Gold-Mount)": {
+    "capacity": 240,
+    "pinA": 12,
+    "dtapA": 0,
+    "mount_type": "Gold-Mount"
+  },
+  "Anton/Bauer Titon Micro 90 (Gold-Mount)": {
+    "capacity": 94,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount"
+  },
+  "Core SWX Hypercore NEO 150 Mini (Gold-Mount)": {
+    "capacity": 147,
+    "pinA": 12,
+    "dtapA": 12,
+    "mount_type": "Gold-Mount",
+    "weight_g": 816
+  },
+  "Core SWX Helix Max 98 (Gold-Mount)": {
+    "capacity": 98,
+    "pinA": 20,
+    "dtapA": 20,
+    "mount_type": "Gold-Mount"
+  },
+  "Core SWX NANO Micro 98Wh (Gold-Mount)": {
+    "capacity": 98,
+    "pinA": 10,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount",
+    "weight_g": 544
+  },
+  "SWIT PB-S98A (Gold-Mount)": {
+    "capacity": 98,
+    "pinA": 12,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount"
+  },
+  "SWIT PB-H290A (Gold-Mount)": {
+    "capacity": 290,
+    "pinA": 18,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount"
+  },
+  "BLUESHAPE BG095HDmini (Gold-Mount)": {
+    "capacity": 95,
+    "pinA": 12,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount"
+  },
+  "BLUESHAPE BV190HDplus (Gold-Mount)": {
+    "capacity": 190,
+    "pinA": 20,
+    "dtapA": 12,
+    "mount_type": "Gold-Mount"
+  },
+  "bebob A98micro (Gold-Mount)": {
+    "capacity": 95,
+    "pinA": 10,
+    "dtapA": 5,
+    "mount_type": "Gold-Mount",
+    "weight_g": 550
+  },
+  "bebob A150 (Gold-Mount)": {
+    "capacity": 143,
+    "pinA": 16,
+    "dtapA": 5,
+    "mount_type": "Gold-Mount",
+    "weight_g": 820
+  },
+  "Dynacore DM-155A (Gold-Mount)": {
+    "capacity": 155,
+    "pinA": 12,
+    "dtapA": 10,
+    "mount_type": "Gold-Mount",
+    "weight_g": 820
   }
 };
 
