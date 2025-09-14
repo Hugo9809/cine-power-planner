@@ -1863,13 +1863,30 @@ const addShootBtn = document.getElementById("addShootBtn");
 let monitoringConfigurationUserChanged = false;
 
 const crewRoles = [
-  'DoP',
+  // Production
+  'Producer',
   'Production Manager',
+  'Director',
+  'Assistant Director',
+
+  // Camera
+  'DoP',
   'Camera Operator',
   'B-Camera Operator',
   '1st AC',
   '2nd AC',
-  'Video Operator'
+  'DIT',
+  'Video Operator',
+
+  // Lighting
+  'Key Gaffer',
+  'Gaffer',
+  'Best Boy Electric',
+
+  // Grip
+  'Key Grip',
+  'Best Boy Grip',
+  'Grip'
 ];
 
 const projectFieldIcons = {
@@ -11238,5 +11255,6 @@ if (typeof module !== "undefined" && module.exports) {
     applyFilterSelectionsToGearList,
     setCurrentProjectInfo,
     getCurrentProjectInfo,
+    crewRoles,
   };
 }
