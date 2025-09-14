@@ -118,7 +118,11 @@
         "diameterMm",
         "kNumber",
         "stages",
-        "type"
+        "type",
+        "traySize",
+        "topFlag",
+        "sideFlags",
+        "provenance"
       ]
     },
     "media": {
