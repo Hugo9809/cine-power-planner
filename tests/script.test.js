@@ -5892,21 +5892,21 @@ describe('script.js functions', () => {
     expect(svg).toContain('.node-box{fill:#f0f0f0');
   });
 
-  test('shareSetupBtn copies link to clipboard with encoded setup name', () => {
+  test('shareSetupBtn downloads JSON with setup name', async () => {
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
     const nameInput = document.getElementById('setupName');
     nameInput.value = 'My Setup';
     const btn = document.getElementById('shareSetupBtn');
     btn.click();
-    expect(navigator.clipboard.writeText).toHaveBeenCalled();
-    const link = navigator.clipboard.writeText.mock.calls[0][0];
-    const encoded = new URL(link).searchParams.get('shared');
-    const decoded = script.decodeSharedSetup(
-      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
-    );
-    expect(decoded.setupName).toBe('My Setup');
+    expect(URL.createObjectURL).toHaveBeenCalled();
+    const blob = URL.createObjectURL.mock.calls[0][0];
+    const text = await blob.text();
+    const data = JSON.parse(text);
+    expect(data.setupName).toBe('My Setup');
   });
 
-  test('shareSetupBtn includes device changes and feedback', () => {
+  test('shareSetupBtn includes device changes and feedback', async () => {
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
       sel.innerHTML = `<option value="${value}">${value}</option>`;
@@ -5920,84 +5920,48 @@ describe('script.js functions', () => {
     addOpt('distanceSelect', 'DistA');
     addOpt('batterySelect', 'BattA');
     addOpt('batteryPlateSelect', 'PlateX');
-    // modify device data
     devices.cameras.CamA.powerDrawWatts = 20;
     const key = script.getCurrentSetupKey();
     global.loadFeedback.mockReturnValue({ [key]: [{ runtime: '1h' }] });
-    const nameInput = document.getElementById('setupName');
-    nameInput.value = 'ShareAll';
-    const btn = document.getElementById('shareSetupBtn');
-    btn.click();
-    expect(navigator.clipboard.writeText).toHaveBeenCalled();
-    const link = navigator.clipboard.writeText.mock.calls[0][0];
-    const encoded = new URL(link).searchParams.get('shared');
-    const decoded = script.decodeSharedSetup(
-      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
-    );
-    expect(decoded.changedDevices.cameras.CamA.powerDrawWatts).toBe(20);
-    expect(decoded.feedback[0].runtime).toBe('1h');
+    document.getElementById('setupName').value = 'ShareAll';
+    document.getElementById('shareSetupBtn').click();
+    const blob = URL.createObjectURL.mock.calls[0][0];
+    const text = await blob.text();
+    const data = JSON.parse(text);
+    expect(data.changedDevices.cameras.CamA.powerDrawWatts).toBe(20);
+    expect(data.feedback[0].runtime).toBe('1h');
   });
 
-  test('shareSetupBtn shortens link with compact keys', () => {
-    const btn = document.getElementById('shareSetupBtn');
-    btn.click();
-    expect(navigator.clipboard.writeText).toHaveBeenCalled();
-    const link = navigator.clipboard.writeText.mock.calls[0][0];
-    const encoded = new URL(link).searchParams.get('shared');
-    const decodedObj = script.decodeSharedSetup(
-      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
-    );
-    const longEncoded = LZString.compressToEncodedURIComponent(
-      JSON.stringify(decodedObj)
-    );
-    expect(encoded.length).toBeLessThan(longEncoded.length);
-  });
-
-  test('shareSetupBtn includes gear selectors and project info', () => {
+  test('shareSetupBtn includes gear selectors and project info', async () => {
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
     const gearOut = document.getElementById('gearListOutput');
     gearOut.innerHTML = '<select id="gearListCage"><option value="CageA">CageA</option></select>';
     gearOut.querySelector('select').value = 'CageA';
     const projOut = document.getElementById('projectRequirementsOutput');
     projOut.innerHTML = '<h3>Project Requirements</h3><div class="requirements-grid"></div>';
     global.loadProject = jest.fn(() => ({ projectInfo: { notes: 'shoot' } }));
-    const btn = document.getElementById('shareSetupBtn');
-    btn.click();
-    const link = navigator.clipboard.writeText.mock.calls[0][0];
-    const encoded = new URL(link).searchParams.get('shared');
-    const decoded = script.decodeSharedSetup(
-      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
-    );
-    expect(decoded.gearList).toContain('gearListCage');
-    expect(decoded.projectHtml).toContain('Project Requirements');
-    expect(decoded.gearSelectors.gearListCage).toBe('CageA');
-    expect(decoded.projectInfo.notes).toBe('shoot');
+    document.getElementById('shareSetupBtn').click();
+    const blob = URL.createObjectURL.mock.calls[0][0];
+    const text = await blob.text();
+    const data = JSON.parse(text);
+    expect(data.gearList).toContain('gearListCage');
+    expect(data.projectHtml).toContain('Project Requirements');
+    expect(data.gearSelectors.gearListCage).toBe('CageA');
+    expect(data.projectInfo.notes).toBe('shoot');
   });
 
-  test('shareSetupBtn includes current project requirements', () => {
+  test('shareSetupBtn includes current project requirements', async () => {
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
     document.getElementById('setupName').value = 'Proj';
     const crew = document.getElementById('crewContainer');
     crew.innerHTML = '<div class="person-row"><select><option value="DoP" selected>DoP</option></select><input class="person-name" value="Alice"/><input class="person-phone" value="555"/></div>';
     global.loadProject = jest.fn(() => null);
     global.saveProject = jest.fn();
-    const btn = document.getElementById('shareSetupBtn');
-    btn.click();
-    const link = navigator.clipboard.writeText.mock.calls[0][0];
-    const encoded = new URL(link).searchParams.get('shared');
-    const decoded = script.decodeSharedSetup(
-      JSON.parse(LZString.decompressFromEncodedURIComponent(encoded))
-    );
-    expect(decoded.projectInfo.people[0]).toEqual({ role: 'DoP', name: 'Alice', phone: '555' });
-  });
-
-  test('shareSetupBtn link stays under 2000 chars with selectors', () => {
-    const gearOut = document.getElementById('gearListOutput');
-    gearOut.innerHTML = '<select id="gearListCage"><option value="' + 'x'.repeat(500) + '"></option></select>';
-    gearOut.querySelector('select').value = 'x'.repeat(500);
-    global.loadProject = jest.fn(() => ({ projectInfo: null }));
-    const btn = document.getElementById('shareSetupBtn');
-    btn.click();
-    const link = navigator.clipboard.writeText.mock.calls[0][0];
-    expect(link.length).toBeLessThan(2000);
+    document.getElementById('shareSetupBtn').click();
+    const blob = URL.createObjectURL.mock.calls[0][0];
+    const text = await blob.text();
+    const data = JSON.parse(text);
+    expect(data.projectInfo.people[0]).toEqual({ role: 'DoP', name: 'Alice', phone: '555' });
   });
 
   test('applySharedSetup applies gear selectors and project info', () => {
@@ -6005,7 +5969,7 @@ describe('script.js functions', () => {
     const gearHtml = '<h3>Gear List</h3><select id="gearListCage"><option value="A">A</option><option value="B">B</option></select>';
     const data = { projectHtml, gearList: gearHtml, gearSelectors: { gearListCage: 'B' }, projectInfo: { notes: 'shoot' } };
     global.saveProject = jest.fn();
-    script.applySharedSetup(LZString.compressToEncodedURIComponent(JSON.stringify(data)));
+    script.applySharedSetup(data);
     const gearOut = document.getElementById('gearListOutput');
     const sel = gearOut.querySelector('#gearListCage');
     expect(sel.value).toBe('B');
