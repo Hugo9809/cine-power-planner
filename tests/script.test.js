@@ -4133,10 +4133,10 @@ describe('script.js functions', () => {
 
   test('iOS video option is not included in project requirements', () => {
     const { generateGearListHtml } = script;
-    const html = generateGearListHtml({ videoDistribution: 'IOS Video (Teradek Serv + Link)' });
+    const html = generateGearListHtml({ videoDistribution: 'IOS Video' });
     expect(html).not.toContain('<span class="req-label">Monitoring</span>');
-    expect(html).not.toContain('<span class="req-value">IOS Video (Teradek Serv + Link)</span>');
-    expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video (Teradek Serv + Link)</span>');
+    expect(html).not.toContain('<span class="req-value">IOS Video</span>');
+    expect(html).not.toContain('<span class="req-label">Monitoring support</span><span class="req-value">IOS Video</span>');
   });
 
   test('filter selection is not included in project requirements', () => {
