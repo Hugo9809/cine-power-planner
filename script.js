@@ -10702,23 +10702,25 @@ if (restoreSettings && restoreSettingsInput) {
   });
 }
 
-if (reloadButton) {
-  reloadButton.addEventListener("click", async () => {
-    try {
-      if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(reg => reg.unregister()));
-      }
-      if (typeof caches !== "undefined") {
-        const keys = await caches.keys();
-        await Promise.all(keys.map(key => caches.delete(key)));
-      }
-    } catch (e) {
-      console.warn("Cache clear failed", e);
-    } finally {
-      window.location.reload(true);
+async function clearCachesAndReload() {
+  try {
+    if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.unregister()));
     }
-  });
+    if (typeof caches !== "undefined") {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(key => caches.delete(key)));
+    }
+  } catch (e) {
+    console.warn("Cache clear failed", e);
+  } finally {
+    window.location.reload(true);
+  }
+}
+
+if (reloadButton) {
+  reloadButton.addEventListener("click", clearCachesAndReload);
 }
 
 function exportDiagramSvg() {

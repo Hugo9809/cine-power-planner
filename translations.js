@@ -70,7 +70,7 @@ const texts = {
     cancelSettings: "Cancel",
 
     reloadAppLabel: "Force reload",
-    reloadAppHelp: "Clear cached files and reload to apply updates.",
+    reloadAppHelp: "Clear cached files and reload without removing saved data.",
 
     savedSetupsLabel: "Saved Projects:",
     newSetupOption: "-- New Project --",
