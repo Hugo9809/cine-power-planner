@@ -1418,6 +1418,32 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 }
 
 
+/* Temperature note table */
+#temperatureNote {
+  margin-top: 1em;
+  overflow-x: auto;
+}
+
+#temperatureNote table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5em;
+  min-width: 260px;
+}
+
+#temperatureNote th,
+#temperatureNote td {
+  padding: 6px 8px;
+  text-align: center;
+  border: 1px solid var(--panel-border);
+  font-variant-numeric: tabular-nums;
+}
+
+body:not(.light-mode) #temperatureNote th,
+body:not(.light-mode) #temperatureNote td {
+  border-color: #555;
+}
+
 /* Battery comparison section */
 #batteryComparison {
   background: var(--panel-bg); /* Match section background */
