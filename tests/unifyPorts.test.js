@@ -182,6 +182,14 @@ describe('cleanPort', () => {
   it('handles primitive values without throwing', () => {
     expect(() => cleanPort('USB-C')).not.toThrow();
   });
+  it('converts string entries inside arrays to objects', () => {
+    const arr = ['USB Type-C', { portType: 'HDMI port' }];
+    cleanPort(arr);
+    expect(arr).toEqual([
+      { type: 'USB-C' },
+      { type: 'HDMI' }
+    ]);
+  });
 });
 
 describe('normalizeVideoPorts', () => {

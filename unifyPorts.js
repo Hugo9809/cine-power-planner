@@ -99,7 +99,15 @@ function deepClean(obj) {
 function cleanPort(port) {
   if (!port) return;
   if (Array.isArray(port)) {
-    port.forEach(cleanPort);
+    // Convert primitive entries (e.g. strings) into port objects so that
+    // arrays can be normalized consistently. Recursively clean any newly
+    // created objects as well as existing ones.
+    port.forEach((p, i) => {
+      if (typeof p === 'string') {
+        port[i] = { type: cleanTypeName(p) };
+      }
+      cleanPort(port[i]);
+    });
     return;
   }
   // Guard against primitive values (e.g. strings) which would cause the
