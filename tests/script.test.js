@@ -2164,19 +2164,26 @@ describe('script.js functions', () => {
     const contrastCheck = document.getElementById('settingsHighContrast');
     const colorInput = document.getElementById('accentColorInput');
     const sizeSelect = document.getElementById('settingsFontSize');
+    expect(Array.from(sizeSelect.options).map((option) => option.value)).toEqual([
+      '12',
+      '14',
+      '16',
+      '18',
+      '20',
+    ]);
     const familySelect = document.getElementById('settingsFontFamily');
     langSelect.value = 'de';
     darkCheck.checked = true;
     contrastCheck.checked = true;
     colorInput.value = '#123456';
-    sizeSelect.value = '18';
+    sizeSelect.value = '20';
     familySelect.value = "'Arial', sans-serif";
     document.getElementById('settingsSave').click();
     expect(localStorage.getItem('language')).toBe('de');
     expect(localStorage.getItem('darkMode')).toBe('true');
     expect(localStorage.getItem('highContrast')).toBe('true');
     expect(localStorage.getItem('accentColor')).toBe('#123456');
-    expect(localStorage.getItem('fontSize')).toBe('18');
+    expect(localStorage.getItem('fontSize')).toBe('20');
     expect(localStorage.getItem('fontFamily')).toBe("'Arial', sans-serif");
     expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#ffffff');
     expect(document.body.style.getPropertyValue('--accent-color')).toBe('#ffffff');
