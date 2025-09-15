@@ -1000,16 +1000,53 @@ const gear = {
           "to": "Serial",
           "lengthM": 0.8
         },
-        "Cable CAM (7-pin) – LANC/D-Tap 0,5m": {
+        "Cable UDM – SERIAL (4p) 0,5m": {
           "brand": "ARRI",
-          "kNumber": "K2.0015757",
+          "kNumber": "K2.0025324",
+          "from": "SERIAL (LEMO 4-pin)",
+          "to": "Serial",
+          "lengthM": 0.5
+        },
+        "Cable CAM (7-pin) – LBUS 0,3m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0025027",
           "from": "CAM (7-pin)",
-          "to": "LANC + D-Tap",
+          "to": "LBUS (LEMO 4-pin)",
+          "lengthM": 0.3,
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power",
+            "Control"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Arri Alexa 35",
+            "Arri Alexa Mini LF"
+          ]
+        },
+        "Cable CAM (7-pin) – LBUS 0,5m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015760",
+          "from": "CAM (7-pin)",
+          "to": "LBUS (LEMO 4-pin)",
           "lengthM": 0.5,
           "orientation": "straight",
           "useCase": [
             "Run/Stop",
-            "Power"
+            "Power",
+            "Control"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Arri Alexa 35",
+            "Arri Alexa Mini LF"
           ]
         },
         "Cable CAM (7-pin) – EXT (16-pin) 0,8m": {
@@ -1021,49 +1058,292 @@ const gear = {
           "orientation": "straight",
           "useCase": [
             "Run/Stop",
-            "Power"
-          ]
-        },
-        "Cable CAM (7-pin) – EXT (6-pin)": {
-          "brand": "ARRI",
-          "kNumber": "K2.015756",
-          "lengthM": 0.6,
-          "connectors": [
-            "CAM (7-pin)",
-            "EXT (6-pin)"
+            "Power",
+            "Control"
           ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Arri Alexa Classic EV",
+            "Arri Alexa XT EV",
+            "Arri Alexa SXT EV"
+          ],
+          "notes": "Only for EV models, not ALEXA Plus."
+        },
+        "Cable CAM (7-pin) – EXT (6-pin) 0,6m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015756",
+          "from": "CAM (7-pin)",
+          "to": "EXT (6-pin)",
+          "lengthM": 0.6,
           "orientation": "straight",
           "useCase": [
             "Run/Stop",
-            "Tally"
-          ]
-        },
-        "Cable CAM (7-pin) – D-Tap": {
-          "brand": "ARRI",
-          "kNumber": "K2.0018813",
-          "lengthM": 0.6,
-          "connectors": [
-            "CAM (7-pin)",
-            "D-Tap"
+            "Power",
+            "Control"
           ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Arri Amira",
+            "Arri Alexa Mini"
+          ],
+          "notes": "For ALEXA Mini LF, use CAM-to-LBUS instead."
+        },
+        "Cable CAM (7-pin) – LCS (5-pin) 0,8m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0034580",
+          "from": "CAM (7-pin)",
+          "to": "LCS (5-pin)",
+          "lengthM": 0.8,
           "orientation": "straight",
           "useCase": [
-            "Power"
+            "Run/Stop",
+            "Power",
+            "Control"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Arri Alexa Plus",
+            "Arri Alexa XT Plus",
+            "Arri Alexa SXT Plus",
+            "Arri Alexa LF",
+            "Arri Alexa 65"
           ]
         },
-        "Cable CAM (7-pin) – LANC/D-Tap": {
+        "Cable CAM (7-pin) – RED CTRL/D-Tap 0,6m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015758",
+          "connectors": [
+            "CAM (7-pin)",
+            "RED CTRL + D-Tap"
+          ],
+          "lengthM": 0.6,
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power",
+            "Control"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "RED DSMC2 HELIUM 8K S35",
+            "RED DSMC2 MONSTRO 8K VV",
+            "RED Epic-W (Helium 8K S35)",
+            "RED Scarlet-W (Dragon Sensor)",
+            "RED Weapon (Helium 8K S35)",
+            "RED Weapon (Helium 8K VV)",
+            "RED Komodo 6k",
+            "RED Komodo X",
+            "RED V-RAPTOR 8K S35",
+            "RED V-RAPTOR 8K VV",
+            "RED V-RAPTOR X 8K S35",
+            "RED V-RAPTOR X 8K VV",
+            "RED V-RAPTOR XL 8K VV",
+            "RED V-RAPTOR XL 8K S35",
+            "RED V-RAPTOR X XL 8K S35",
+            "RED V-RAPTOR X XL 8K VV"
+          ],
+          "notes": "Supports run/stop/tally on WCU-4 & Hi-5. For DSMC3 (Komodo/V-RAPTOR), use module or breakout from 9p Lemo EXT to RED CTRL. Hi-5 advanced control requires RED Camera Control License."
+        },
+        "Cable CAM (7-pin) – LANC/D-Tap 0,6m": {
           "brand": "ARRI",
           "kNumber": "K2.0015757",
-          "lengthM": 0.6,
           "connectors": [
             "CAM (7-pin)",
             "LANC + D-Tap"
           ],
+          "lengthM": 0.6,
           "orientation": "straight",
           "useCase": [
             "Run/Stop",
             "Power"
-          ]
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Sony PXW-FX9",
+            "Sony PXW-FS7",
+            "Sony FX6",
+            "Sony FS5",
+            "Sony PXW-Z90",
+            "Sony HXR-NX80",
+            "Sony HXR-NX5",
+            "Sony HXR-NX5R",
+            "Canon EOS C300 Mark I",
+            "Canon EOS C300 Mark II",
+            "Canon EOS C300 Mark III",
+            "Canon EOS C500 Mark I",
+            "Canon EOS C500 Mark II",
+            "Canon EOS C400",
+            "Canon XF705",
+            "Canon XF405",
+            "Canon XF400",
+            "Canon XF305",
+            "Blackmagic URSA Mini Pro"
+          ],
+          "notes": "Requires a 2.5 mm LANC port (Remote A). Provides run/stop but no advanced camera control. Not compatible with Sony FX3 (uses Multi/Micro USB remote)."
+        },
+        "Cable CAM (7-pin) – Sony Venice/F55 CTRL/D-Tap 0,6m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0018814",
+          "connectors": [
+            "CAM (7-pin)",
+            "Sony CTRL + D-Tap"
+          ],
+          "lengthM": 0.6,
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Sony F5",
+            "Sony F55",
+            "Sony Venice"
+          ],
+          "notes": "Not compatible with Sony Venice 2 or Varicam."
+        },
+        "Cable CAM (7-pin) – Sony Remote (8-pin)/D-Tap 0,8m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0047268",
+          "connectors": [
+            "CAM (7-pin)",
+            "Sony Remote (8-pin) + D-Tap"
+          ],
+          "lengthM": 0.8,
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power",
+            "Control"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Sony Venice",
+            "Sony Venice 2"
+          ],
+          "notes": "Run/stop/tally on both; additional Hi-5 camera control with Sony Camera Control License."
+        },
+        "Cable CAM (7-pin) – RS (3-pin) 0,3m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015754",
+          "connectors": [
+            "CAM (7-pin)",
+            "ARRI RS (3-pin)"
+          ],
+          "lengthM": 0.3,
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Tally",
+            "Power"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Arri Alexa 35",
+            "Arri Alexa Mini LF",
+            "Arri Alexa Mini",
+            "Arri Amira",
+            "Arri Alexa Classic EV",
+            "Arri Alexa XT EV",
+            "Arri Alexa SXT EV",
+            "Arri Alexa Plus",
+            "Arri Alexa XT Plus",
+            "Arri Alexa SXT Plus",
+            "Arri Alexa LF",
+            "Arri Alexa 65"
+          ],
+          "notes": "Run/stop/tally on ARRI cameras with 3p Fischer. Can also power RIA-1 without a camera connection."
+        },
+        "Cable CAM (7-pin) – D-Tap 0,5m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0018813",
+          "connectors": [
+            "CAM (7-pin)",
+            "D-Tap"
+          ],
+          "lengthM": 0.5,
+          "orientation": "straight",
+          "useCase": [
+            "Power"
+          ],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "notes": "Use to power RIA-1 when no compatible camera control cable exists."
+        },
+        "Cable CAM (7-pin,f) – CAM (7-pin,m) 0,3m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0023832",
+          "connectors": [
+            "CAM (7-pin,f)",
+            "CAM (7-pin,m)"
+          ],
+          "lengthM": 0.3,
+          "orientation": "straight",
+          "useCase": [],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "notes": "Extension for any CAM cable."
+        },
+        "Cable CAM (7-pin) – ENG (12-pin) 0,3m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015759",
+          "connectors": [
+            "CAM (7-pin)",
+            "ENG (12-pin)"
+          ],
+          "lengthM": 0.3,
+          "orientation": "straight",
+          "useCase": [],
+          "compatibleControllers": [
+            "Arri RIA-1",
+            "Arri cforce mini RF"
+          ],
+          "compatibleCameras": [
+            "Sony Venice (LENS)",
+            "Sony Venice 2 (LENS)"
+          ],
+          "notes": "Injects lens metadata via LENS connector."
+        },
+        "Cable CineTape – SERIAL (4p) 0,8m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0044396",
+          "from": "SERIAL (LEMO 4-pin)",
+          "to": "Serial",
+          "lengthM": 0.8
+        },
+        "Cine RT to ARRI RIA-1 / ALEXA 35": {
+          "brand": "Focusbug",
+          "from": "SERIAL (LEMO 4-pin)",
+          "to": "Serial",
+          "lengthM": 0.8
         },
         "D-Tap to Lemo-2-pin Cable 0,3m": {
           "lengthM": 0.3,
