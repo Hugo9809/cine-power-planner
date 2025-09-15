@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -10482,12 +10482,15 @@ if (settingsButton && settingsDialog) {
 if (backupSettings) {
   backupSettings.addEventListener('click', () => {
     try {
-      const data = JSON.stringify({ ...localStorage });
-      const blob = new Blob([data], { type: 'application/json' });
+      const backup = {
+        settings: { ...localStorage },
+        data: typeof exportAllData === 'function' ? exportAllData() : {},
+      };
+      const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'settings-backup.json';
+      a.download = 'planner-backup.json';
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
@@ -10504,10 +10507,21 @@ if (restoreSettings && restoreSettingsInput) {
     const reader = new FileReader();
     reader.onload = e => {
       try {
-        const data = JSON.parse(e.target.result);
-        Object.entries(data).forEach(([k, v]) => {
-          localStorage.setItem(k, v);
-        });
+        const parsed = JSON.parse(e.target.result);
+        const settings = parsed && typeof parsed === 'object' && parsed.settings
+          ? parsed.settings
+          : parsed;
+        const data = parsed && typeof parsed === 'object' && parsed.data
+          ? parsed.data
+          : null;
+        if (settings && typeof settings === 'object') {
+          Object.entries(settings).forEach(([k, v]) => {
+            localStorage.setItem(k, v);
+          });
+        }
+        if (data && typeof importAllData === 'function') {
+          importAllData(data);
+        }
         applyDarkMode(localStorage.getItem('darkMode') === 'true');
         applyPinkMode(localStorage.getItem('pinkMode') === 'true');
         applyHighContrast(localStorage.getItem('highContrast') === 'true');
