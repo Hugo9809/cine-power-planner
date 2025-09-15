@@ -1951,6 +1951,26 @@ describe('script.js functions', () => {
     expect(dialog.hasAttribute('hidden')).toBe(true);
   });
 
+  test('uploaded logo is saved and included in printable overview', async () => {
+    setupDom(false);
+    const { generatePrintableOverview } = require('../script.js');
+    const settingsBtn = document.getElementById('settingsButton');
+    settingsBtn.click();
+    const fileInput = document.getElementById('settingsLogo');
+    const file = new File(['<svg xmlns="http://www.w3.org/2000/svg"></svg>'], 'logo.svg', { type: 'image/svg+xml' });
+    Object.defineProperty(fileInput, 'files', { value: [file] });
+    document.getElementById('settingsSave').click();
+    await new Promise(res => setTimeout(res, 0));
+    const stored = localStorage.getItem('customLogo');
+    expect(stored).toContain('data:image/svg+xml');
+    generatePrintableOverview();
+    const printLogo = document.getElementById('printLogo');
+    expect(printLogo).not.toBeNull();
+    expect(printLogo.getAttribute('src')).toBe(stored);
+    const content = document.getElementById('overviewDialogContent');
+    expect(content.classList.contains('logo-present')).toBe(true);
+  });
+
   test('accent color input updates body and root variables when pink mode off', () => {
     const { applyPinkMode } = script;
     applyPinkMode(false);
