@@ -31,7 +31,7 @@ body.dark-mode {
   --text-color: #000;
   --panel-bg: #f9f9f9;
   --panel-border: #ddd;
-  --control-bg: #e8e8e8;
+  --control-bg: #f0f0f0;
   --control-text: #333;
   background: var(--surface-color) !important;
   color: var(--text-color) !important;
