@@ -274,6 +274,9 @@ footer a {
   align-self: flex-end;
   margin-top: 5px;
 }
+#sharedLinkRow > button {
+  align-self: center;
+}
 .form-row > button:not(.clear-input-btn):not(.favorite-toggle) + button:not(.clear-input-btn):not(.favorite-toggle) {
   margin-left: 0;
 }
@@ -711,6 +714,9 @@ button {
     background-color 0.2s,
     color 0.2s,
     transform 0.2s;
+}
+#sharedLinkRow > button {
+  margin: 0 5px 5px 5px;
 }
 button:hover {
   background-color: var(--accent-color);
@@ -1790,6 +1796,10 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 
   .form-row > button {
     width: 100%;
+    margin: 5px 0 0 0;
+  }
+  #sharedLinkRow > button {
+    align-self: stretch;
     margin: 5px 0 0 0;
   }
 
