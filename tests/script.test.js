@@ -1224,6 +1224,26 @@ describe('script.js functions', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
   });
 
+  test('Escape closes side menu', () => {
+    setupDom(false);
+    require('../script.js');
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    const toggle = document.getElementById('menuToggle');
+    const menu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('menuOverlay');
+
+    toggle.click();
+    expect(toggle.getAttribute('aria-label')).toBe('Close menu');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+    expect(menu.classList.contains('open')).toBe(false);
+    expect(menu.hasAttribute('hidden')).toBe(true);
+    expect(overlay.classList.contains('hidden')).toBe(true);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(toggle.getAttribute('aria-label')).toBe('Menu');
+  });
+
   test('weighs high-resolution entries by camera power share', () => {
     const addOpt = (id, value) => {
       const sel = document.getElementById(id);
