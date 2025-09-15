@@ -87,7 +87,7 @@ The generator turns your selections into a categorized packing list:
 ### 📦 Device Categories
 - **Camera** (1)
 - **Monitor** (optional)
-- **Wireless Video** (optional)
+- **Wireless Transmitter** (optional)
 - **FIZ Motors** (0–4)
 - **FIZ Controllers** (0–4)
 - **Distance Sensor** (0–1)

@@ -39,7 +39,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 ### 📦 Gerätekategorien
 - **Kamera** (1)
 - **Monitor** (optional)
-- **Videofunk** (optional)
+- **Funk-Sender** (optional)
 - **FIZ-Motoren** (0–4)
 - **FIZ-Controller** (0–4)
 - **Distanzsensor** (0–1)

@@ -39,7 +39,7 @@ Puedes cambiar el idioma en la esquina superior derecha y se recuerda para la pr
 ### 📦 Categorías de Dispositivos
 - **Cámara** (1)
 - **Monitor** (opcional)
-- **Vídeo inalámbrico** (opcional)
+- **Transmisor inalámbrico** (opcional)
 - **Motores FIZ** (0–4)
 - **Controles FIZ** (0–4)
 - **Sensor de distancia** (0–1)
