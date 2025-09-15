@@ -574,13 +574,24 @@ textarea:disabled {
   cursor: pointer;
   font-size: 1em;
   color: var(--favorite-inactive-color);
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 .favorite-toggle:hover {
   color: var(--link-color);
+  background-color: transparent;
+}
+.favorite-toggle:active {
+  color: var(--link-color);
+  background-color: transparent;
 }
 .favorite-toggle.favorited {
-  color: var(--link-color);
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+.favorite-toggle.favorited:hover,
+.favorite-toggle.favorited:active {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
 }
 
 #setup-config .form-row:first-of-type {
