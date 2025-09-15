@@ -10575,9 +10575,14 @@ function showNotification(type, message) {
 
 function createSettingsBackup(notify = true) {
   try {
+    const settings = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      settings[key] = localStorage.getItem(key);
+    }
     const backup = {
       version: APP_VERSION,
-      settings: { ...localStorage },
+      settings,
       data: typeof exportAllData === 'function' ? exportAllData() : {},
     };
     const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
