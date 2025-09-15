@@ -168,6 +168,10 @@ body:not(.light-mode) .gear-table td {
   line-height: 1.4em;
 }
 
+#overviewDialogContent .gear-table .gear-item {
+  white-space: nowrap;
+}
+
 #overviewDialogContent .gear-table .category-row td,
 #overviewDialogContent.dark-mode .gear-table .category-row td,
 body:not(.light-mode) .gear-table .category-row td {
