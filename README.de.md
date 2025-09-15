@@ -32,7 +32,6 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 - Mehrere Setups speichern, laden oder löschen
 - Ein Setup per Link teilen oder die aktuelle Konfiguration zurücksetzen
 - Daten werden lokal im Browser gespeichert (`localStorage`)
-- Setups als JSON importieren und exportieren
 - Druckbare Übersicht für jedes gespeicherte Setup erstellen
 - Funktioniert komplett offline – Sprache, Dark Mode, Setups und Gerätedaten bleiben erhalten
 - Bei kompatiblen Kameras eine **B‑ oder V‑Mount-Platte** wählen; die Batterieliste passt sich automatisch an
@@ -99,7 +98,7 @@ Die Sprache kann oben rechts umgeschaltet werden und wird für den nächsten Bes
 2. **Geräte wählen:** In jeder Kategorie passende Geräte auswählen
 3. **Berechnung ansehen:** Gesamtverbrauch, Stromstärke und Laufzeit werden angezeigt
 4. **Grenzen prüfen:** Hinweise zeigen, ob der Akku überlastet wird
-5. **Setups speichern & laden:** Setups benennen, exportieren/importieren und eine druckbare Übersicht erzeugen
+5. **Setups speichern & laden:** Setups benennen und eine druckbare Übersicht erzeugen
 6. **Geräteliste verwalten:** „Gerätedaten bearbeiten…“ öffnet den Editor zum Anpassen oder Zurücksetzen
 
 ## 📡 Offline-Nutzung & Datenspeicherung

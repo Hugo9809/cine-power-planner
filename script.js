@@ -1362,12 +1362,6 @@ function setLanguage(lang) {
   saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
   saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
 
-  exportSetupsBtn.setAttribute("title", texts[lang].exportSetupsBtn);
-  exportSetupsBtn.setAttribute("data-help", texts[lang].exportSetupsHelp);
-
-  importSetupsBtn.setAttribute("title", texts[lang].importSetupsBtn);
-  importSetupsBtn.setAttribute("data-help", texts[lang].importSetupsHelp);
-
   generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
   generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
 
@@ -1805,8 +1799,6 @@ function setLanguage(lang) {
   }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
-  document.getElementById("exportSetupsBtn").textContent = texts[lang].exportSetupsBtn;
-  document.getElementById("importSetupsBtn").textContent = texts[lang].importSetupsBtn;
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
   document.getElementById("generateGearListBtn").textContent = texts[lang].generateGearListBtn;
   document.getElementById("shareSetupBtn").textContent = texts[lang].shareSetupBtn;
@@ -2953,9 +2945,6 @@ const accessoryBatteryListFilterInput = document.getElementById("accessoryBatter
 const cableListFilterInput = document.getElementById("cableListFilter");
 
 // NEW SETUP MANAGEMENT DOM ELEMENTS
-const exportSetupsBtn = document.getElementById('exportSetupsBtn');
-const importSetupsBtn = document.getElementById('importSetupsBtn');
-const importSetupsInput = document.getElementById('importSetupsInput');
 const generateOverviewBtn = document.getElementById('generateOverviewBtn');
 
 const videoOutputOptions = [
@@ -7803,76 +7792,6 @@ importFileInput.addEventListener("change", (event) => {
 
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
-
-// Export all saved setups to a JSON file
-exportSetupsBtn.addEventListener('click', () => {
-    const setups = getSetups();
-    if (Object.keys(setups).length === 0) {
-        alert(texts[currentLang].alertNoSetupsToExport);
-        return;
-    }
-
-    const projects = typeof loadProject === 'function' ? loadProject() : {};
-    const setupsToExport = {};
-    Object.entries(setups).forEach(([name, setup]) => {
-        setupsToExport[name] = { ...setup };
-        const proj = projects[name];
-        if (proj) {
-            if (Object.prototype.hasOwnProperty.call(proj, 'gearList')) {
-                setupsToExport[name].gearList = proj.gearList;
-            }
-            if (Object.prototype.hasOwnProperty.call(proj, 'projectInfo')) {
-                setupsToExport[name].projectInfo = proj.projectInfo;
-            }
-        }
-    });
-
-    const dataStr = JSON.stringify(setupsToExport, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'camera_power_setups.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-});
-
-// Trigger file input when "Import Setups" is clicked
-importSetupsBtn.addEventListener('click', () => {
-    importSetupsInput.click();
-});
-
-// Handle the file import for setups
-importSetupsInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const importedSetups = JSON.parse(e.target.result);
-            // Basic validation: must be a non-null object
-            if (importedSetups && typeof importedSetups === 'object' && !Array.isArray(importedSetups)) {
-                storeSetups(importedSetups);
-                populateSetupSelect(); // Refresh dropdown
-                alert(texts[currentLang].alertImportSetupsSuccess.replace("{num_setups}", Object.keys(importedSetups).length));
-                // Reset form to "-- New Setup --" by clearing selection and
-                // triggering the change handler that initializes a new setup
-                setupSelect.value = "";
-                setupSelect.dispatchEvent(new Event('change'));
-            } else {
-                throw new Error("Invalid format: not a valid setup object.");
-            }
-        } catch (error) {
-            console.error("Error parsing or importing setups:", error);
-            alert(texts[currentLang].alertImportSetupsError);
-        }
-    };
-    reader.readAsText(file);
-    event.target.value = ''; // Clear file input
-});
 
 // Generate a printable overview of the current selected setup in a new tab
 generateOverviewBtn.addEventListener('click', () => {

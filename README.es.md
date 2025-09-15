@@ -32,7 +32,6 @@ Puedes cambiar el idioma en la esquina superior derecha y se recuerda para la pr
 - Guardar, cargar y borrar múltiples configuraciones
 - Compartir una configuración mediante un enlace o limpiar la configuración actual
 - Todos los datos se guardan localmente mediante `localStorage`
-- Importar y exportar configuraciones en JSON
 - Generar un resumen imprimible de cualquier configuración guardada
 - Funciona totalmente sin conexión: idioma, modo oscuro, configuraciones y datos de dispositivos se conservan
 - En cámaras compatibles, elegir placa **B‑Mount**, **V‑Mount** o **Gold-Mount**; la lista de baterías se actualiza automáticamente
@@ -99,7 +98,7 @@ Puedes cambiar el idioma en la esquina superior derecha y se recuerda para la pr
 2. **Seleccionar dispositivos:** elegir en cada categoría desde los menús desplegables
 3. **Ver cálculos:** al seleccionar una batería se muestran consumo, corriente y autonomía
 4. **Comprobar límites:** los avisos indican si se sobrepasa la salida de la batería
-5. **Guardar y cargar configuraciones:** nombrar y exportar/importar configuraciones, además de generar un resumen imprimible
+5. **Guardar y cargar configuraciones:** nombrar las configuraciones y generar un resumen imprimible
 6. **Gestionar lista de dispositivos:** “Editar datos de dispositivos…” abre el editor para modificarlos o restablecer la base
 
 ## 📡 Uso sin conexión y almacenamiento de datos

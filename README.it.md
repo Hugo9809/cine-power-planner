@@ -31,7 +31,6 @@ Puoi cambiare la lingua nell'angolo in alto a destra e la scelta viene memorizza
 - Salvare, caricare ed eliminare più configurazioni di camera
 - Condividere una configurazione tramite link o azzerare la configurazione corrente
 - Tutti i dati sono memorizzati localmente tramite `localStorage`
-- Importare ed esportare le configurazioni in formato JSON
 - Generare una panoramica stampabile di qualsiasi configurazione salvata
 - Funziona completamente offline: lingua, modalità scura, configurazioni e dati dei dispositivi vengono conservati
 - Sulle fotocamere compatibili è possibile scegliere una piastra **B‑Mount**, **V‑Mount** o **Gold-Mount**; l'elenco delle batterie si adatta automaticamente
@@ -98,7 +97,7 @@ Puoi cambiare la lingua nell'angolo in alto a destra e la scelta viene memorizza
 2. **Seleziona i dispositivi:** scegli i dispositivi in ogni categoria usando i menu a discesa
 3. **Vedi i calcoli:** quando selezioni una batteria compaiono consumo totale, corrente e autonomia
 4. **Verifica i limiti di uscita:** gli indicatori mostrano se l'uscita della batteria viene superata
-5. **Salva e carica le configurazioni:** dai un nome alla configurazione, salvala, esportala/importala e genera una panoramica stampabile
+5. **Salva e carica le configurazioni:** dai un nome alla configurazione, salvala e genera una panoramica stampabile
 6. **Gestisci la lista dei dispositivi:** clicca su “Modifica dati dispositivi…” per aprire l'editor, modificare i dispositivi o ripristinare i valori predefiniti
 
 ## 📡 Uso offline e conservazione dei dati

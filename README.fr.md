@@ -32,7 +32,6 @@ Vous pouvez changer la langue en haut à droite; la préférence est mémorisée
 - Enregistrer, charger et supprimer plusieurs configurations
 - Partager une configuration via un lien ou effacer la configuration actuelle
 - Toutes les données sont stockées localement via `localStorage`
-- Importer et exporter les configurations en JSON
 - Générer un aperçu imprimable de toute configuration enregistrée
 - Fonctionne hors ligne : langue, mode sombre, configurations et données des appareils sont conservées
 - Sur les caméras compatibles, choisir une plaque **B‑Mount**, **V‑Mount** ou **Gold-Mount** ; la liste des batteries s'actualise automatiquement
@@ -99,7 +98,7 @@ Vous pouvez changer la langue en haut à droite; la préférence est mémorisée
 2. **Sélectionner les appareils :** choisir dans chaque catégorie via les menus déroulants
 3. **Voir les calculs :** consommation, courant et autonomie apparaissent lorsqu'une batterie est sélectionnée
 4. **Vérifier les limites :** des messages indiquent si la sortie de la batterie est dépassée
-5. **Enregistrer et charger des configurations :** nommer et exporter/importer les configurations et générer un aperçu imprimable
+5. **Enregistrer et charger des configurations :** nommer les configurations et générer un aperçu imprimable
 6. **Gérer la liste des appareils :** « Éditer les données… » ouvre l'éditeur pour modifier ou réinitialiser
 
 ## 📡 Utilisation hors ligne et stockage des données
