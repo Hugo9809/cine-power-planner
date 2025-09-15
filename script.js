@@ -2611,12 +2611,13 @@ function splitGearListHtml(html) {
   const title = doc.querySelector('h2');
   const h3s = doc.querySelectorAll('h3');
   const reqHeading = h3s[0];
-  const gearHeading = h3s.length > 1 ? h3s[1] : h3s[0];
   const reqGrid = doc.querySelector('.requirements-grid');
   const table = doc.querySelector('.gear-table');
   const titleHtml = title ? title.outerHTML : '';
   const projectHtml = reqHeading && reqGrid ? titleHtml + reqHeading.outerHTML + reqGrid.outerHTML : '';
-  const gearHtml = table ? titleHtml + (gearHeading ? gearHeading.outerHTML : '') + table.outerHTML : '';
+  const projectName = title ? title.textContent : '';
+  const gearHeadingHtml = projectName ? `<h2>Gear List: “${projectName}”</h2>` : '';
+  const gearHtml = table ? gearHeadingHtml + table.outerHTML : '';
   return { projectHtml, gearHtml };
 }
 
@@ -9598,9 +9599,8 @@ function generateGearListHtml(info = {}) {
 function getCurrentGearListHtml() {
     if (!gearListOutput && !projectRequirementsOutput) return '';
 
-    const titleElem = (projectRequirementsOutput && projectRequirementsOutput.querySelector('h2'))
-        || (gearListOutput && gearListOutput.querySelector('h2'));
-    const titleHtml = titleElem ? titleElem.outerHTML : '';
+    const projectName = getCurrentProjectName();
+    const titleHtml = projectName ? `<h2>${projectName}</h2>` : '';
 
     let projHtml = '';
     if (projectRequirementsOutput) {
@@ -9709,7 +9709,8 @@ function getCurrentGearListHtml() {
                 });
             }
         });
-        gearHtml = clone.innerHTML.trim();
+        const table = clone.querySelector('.gear-table');
+        gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
     }
 
     return `${titleHtml}${projHtml}${gearHtml}`.trim();

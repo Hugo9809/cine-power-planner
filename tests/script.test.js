@@ -833,7 +833,7 @@ describe('script.js functions', () => {
 
   test('camera change refreshes gear list without project info', () => {
     const gearList = document.getElementById('gearListOutput');
-    gearList.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr></table>';
+    gearList.innerHTML = '<h2>Gear List: “Proj”</h2><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr></table>';
     gearList.classList.remove('hidden');
     devices.cameras.CamB = {
       powerDrawWatts: 12,
@@ -897,7 +897,7 @@ describe('script.js functions', () => {
     proj.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
     proj.classList.remove('hidden');
     const gear = document.getElementById('gearListOutput');
-    gear.innerHTML = '<h2>Proj</h2><h3>Gear List</h3><table class="gear-table"></table>';
+    gear.innerHTML = '<h2>Gear List: “Proj”</h2><table class="gear-table"></table>';
     gear.classList.remove('hidden');
     script.saveCurrentGearList();
     const saved = global.saveProject.mock.calls[0][1];
@@ -2144,7 +2144,7 @@ describe('script.js functions', () => {
     projOut.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
     projOut.classList.remove('hidden');
     const gearOut = document.getElementById('gearListOutput');
-    gearOut.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr><tr><td><select id="gearListDirectorMonitor"><option value="MonA">MonA</option></select></td></tr></table>';
+    gearOut.innerHTML = '<h2>Gear List: “Proj”</h2><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr><tr><td><select id="gearListDirectorMonitor"><option value="MonA">MonA</option></select></td></tr></table>';
     gearOut.classList.remove('hidden');
 
     generatePrintableOverview();
@@ -6383,7 +6383,7 @@ describe('script.js functions', () => {
 
   test('applySharedSetup applies gear selectors and project info', () => {
     const projectHtml = '<h2>T</h2><h3>Project Requirements</h3><div class="requirements-grid"></div>';
-    const gearHtml = '<h3>Gear List</h3><select id="gearListCage"><option value="A">A</option><option value="B">B</option></select>';
+    const gearHtml = '<h2>Gear List: “T”</h2><select id="gearListCage"><option value="A">A</option><option value="B">B</option></select>';
     const data = { projectHtml, gearList: gearHtml, gearSelectors: { gearListCage: 'B' }, projectInfo: { notes: 'shoot' } };
     global.saveProject = jest.fn();
     script.applySharedSetup(data);
