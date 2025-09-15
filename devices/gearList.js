@@ -973,10 +973,56 @@ const gear = {
           "notes": "drum"
         }
       },
-      "cables": {
+      "fiz": {
         "LBUS to LBUS": {
           "from": "LBUS (LEMO 4-pin)",
           "to": "LBUS (LEMO 4-pin)"
+        },
+        "LBUS to LBUS 0,3m": {
+          "from": "LBUS (LEMO 4-pin)",
+          "to": "LBUS (LEMO 4-pin)",
+          "lengthM": 0.3
+        },
+        "LBUS to LBUS 0,4m": {
+          "from": "LBUS (LEMO 4-pin)",
+          "to": "LBUS (LEMO 4-pin)",
+          "lengthM": 0.4
+        },
+        "LBUS to LBUS 0,5m": {
+          "from": "LBUS (LEMO 4-pin)",
+          "to": "LBUS (LEMO 4-pin)",
+          "lengthM": 0.5
+        },
+        "Cable UDM – SERIAL (4p) 0,8m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0041172",
+          "from": "SERIAL (LEMO 4-pin)",
+          "to": "Serial",
+          "lengthM": 0.8
+        },
+        "Cable CAM (7-pin) – LANC/D-Tap 0,5m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015757",
+          "from": "CAM (7-pin)",
+          "to": "LANC + D-Tap",
+          "lengthM": 0.5,
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power"
+          ]
+        },
+        "Cable CAM (7-pin) – EXT (16-pin) 0,8m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0015755",
+          "from": "CAM (7-pin)",
+          "to": "EXT (16-pin)",
+          "lengthM": 0.8,
+          "orientation": "straight",
+          "useCase": [
+            "Run/Stop",
+            "Power"
+          ]
         },
         "Cable CAM (7-pin) – EXT (6-pin)": {
           "brand": "ARRI",
