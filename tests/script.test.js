@@ -1784,18 +1784,15 @@ describe('script.js functions', () => {
   test('applyPinkMode toggles class and aria-pressed', () => {
     const { applyPinkMode } = script;
     const toggle = document.getElementById('pinkModeToggle');
-    const logo = document.getElementById('logo');
-    expect(logo.getAttribute('src')).toBe('icon.svg');
     applyPinkMode(true);
     expect(document.body.classList.contains('pink-mode')).toBe(true);
     expect(toggle.textContent).toBe('🦄');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
-    expect(logo.getAttribute('src')).toBe('icon-pink.svg');
+    expect(getComputedStyle(document.body).getPropertyValue('--accent-color').trim()).toBe('#ff69b4');
     applyPinkMode(false);
     expect(document.body.classList.contains('pink-mode')).toBe(false);
     expect(toggle.textContent).toBe('🐴');
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
-    expect(logo.getAttribute('src')).toBe('icon.svg');
   });
 
   test('settings dialog saves preferences to localStorage', () => {
