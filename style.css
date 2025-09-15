@@ -1773,6 +1773,9 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     min-width: auto;
     margin-bottom: 4px;
   }
+  #setup-config .form-row label {
+    line-height: 1.4;
+  }
   .form-row select,
   .form-row input {
     margin: 5px 0 0 0;
