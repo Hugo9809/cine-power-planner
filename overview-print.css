@@ -208,6 +208,7 @@ body:not(.light-mode) .gear-table .category-row td {
   color: var(--text-color) !important;
   border: none !important;
   min-width: var(--button-size) !important;
+  height: var(--button-size) !important;
   min-height: var(--button-size) !important;
 }
 
