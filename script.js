@@ -9826,7 +9826,11 @@ function getCurrentGearListHtml() {
                 const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor`);
                 const val = originalSel ? originalSel.value : sel.value;
                 Array.from(sel.options).forEach(opt => {
-                    opt.selected = (opt.value === val);
+                    if (opt.value === val) {
+                        opt.setAttribute('selected', '');
+                    } else {
+                        opt.removeAttribute('selected');
+                    }
                 });
             }
         });
@@ -9836,7 +9840,11 @@ function getCurrentGearListHtml() {
                 const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor15`);
                 const val = originalSel ? originalSel.value : sel.value;
                 Array.from(sel.options).forEach(opt => {
-                    opt.selected = (opt.value === val);
+                    if (opt.value === val) {
+                        opt.setAttribute('selected', '');
+                    } else {
+                        opt.removeAttribute('selected');
+                    }
                 });
             }
         });
