@@ -10,7 +10,7 @@
       ]
     },
     "cables": {
-      "cables": {
+      "fiz": {
         "attributes": [
           "brand",
           "compatibleCameras",
@@ -82,9 +82,19 @@
     },
     "chargers": {
       "attributes": [
+        "chargeModes",
         "chargingSpeedAmps",
+        "dimensions_mm",
+        "inputConnector",
+        "inputVoltageV",
         "mount",
-        "slots"
+        "notes",
+        "outputs",
+        "perBayCurrentA",
+        "provenance",
+        "slots",
+        "totalPowerW",
+        "weight_g"
       ]
     },
     "filters": {
@@ -98,31 +108,18 @@
         "brand"
       ]
     },
-    "lenses": {
-      "attributes": [
-        "brand",
-        "clampOn",
-        "frontDiameterMm",
-        "lensType",
-        "mount",
-        "needsLensSupport",
-        "rodLengthCm",
-        "rodStandard",
-        "tStop"
-      ]
-    },
     "matteboxes": {
       "attributes": [
         "brand",
         "compatible",
         "diameterMm",
         "kNumber",
-        "stages",
-        "type",
-        "traySize",
-        "topFlag",
+        "provenance",
         "sideFlags",
-        "provenance"
+        "stages",
+        "topFlag",
+        "traySize",
+        "type"
       ]
     },
     "media": {
@@ -270,7 +267,6 @@
   },
   "iosVideo": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "notes",
@@ -285,12 +281,17 @@
       "brand",
       "clampOn",
       "frontDiameterMm",
+      "imageCircleMm",
+      "lengthMm",
       "lensType",
+      "minFocusMeters",
       "mount",
       "needsLensSupport",
+      "notes",
       "rodLengthCm",
       "rodStandard",
-      "tStop"
+      "tStop",
+      "weight_g"
     ]
   },
   "monitors": {
@@ -299,7 +300,6 @@
       "audioIo",
       "audioOutput",
       "bluetooth",
-      "brand",
       "brightnessNits",
       "latencyMs",
       "power",
@@ -314,7 +314,6 @@
   },
   "video": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "power",
@@ -335,7 +334,6 @@
   },
   "wirelessReceivers": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "power",
