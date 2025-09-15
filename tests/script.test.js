@@ -2266,7 +2266,7 @@ describe('script.js functions', () => {
       expect(html).toContain('1x <select id="gearListCage"');
       expect(html).toContain(`<option value="${cageNames[0]}"`);
       expect(html).toContain('LDS (FIZ)');
-      expect(html).toContain('1x LBUS to LBUS');
+      expect(html).toContain('1x LBUS to LBUS (1x MotorA ↔ ControllerA)');
       expect(html).toContain('Chargers');
       expect(html).toContain('1x Quad V-Mount Charger');
       expect(html).toContain('Monitoring support');
@@ -7200,14 +7200,16 @@ test('ARRI Alexa 35 setup suggests appropriate FIZ cables', () => {
   addOpt('batterySelect', 'BattA');
   const { fizCables } = collectAccessories({ hasMotor: true });
   expect(fizCables).toEqual(expect.arrayContaining([
-    'LBUS to LBUS 0,3m',
-    'Cable UDM – SERIAL (4p) 0,8m',
-    'LBUS to LBUS 0,5m',
+    'LBUS to LBUS 0,3m (Arri Cforce Mini ↔ Arri Master Grip single unit)',
+    'LBUS to LBUS 0,5m (Arri Cforce Mini ↔ Arri Master Grip single unit)',
+    'LBUS to LBUS 0,3m (for Arri Cforce Mini)',
+    'LBUS to LBUS 0,5m (for Arri Master Grip single unit)',
+    'Cable UDM – SERIAL (4p) 0,8m (for UDM-1 + LCube)',
     'LBUS to LBUS 0,3m (spare)',
     'LBUS to LBUS 0,5m (spare)',
     'Cable UDM – SERIAL (4p) 0,8m (spare)'
   ]));
-  expect(fizCables).toHaveLength(6);
+  expect(fizCables).toHaveLength(8);
 });
 
 test('cforce mini RF uses camera-specific CAM cable', () => {
@@ -7226,7 +7228,7 @@ test('cforce mini RF uses camera-specific CAM cable', () => {
   addOpt('batterySelect', 'BattA');
   const { fizCables } = collectAccessories({ hasMotor: true });
   expect(fizCables).toEqual(expect.arrayContaining([
-    'Cable CAM (7-pin) – EXT (6-pin) 0,6m',
+    'Cable CAM (7-pin) – EXT (6-pin) 0,6m (for Arri Amira)',
     'Cable CAM (7-pin) – EXT (6-pin) 0,6m (spare)'
   ]));
 });
