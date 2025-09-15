@@ -2135,17 +2135,18 @@ describe('script.js functions', () => {
     script.updateCalculations();
 
     const projOut = document.getElementById('projectRequirementsOutput');
-    projOut.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3>';
+    projOut.innerHTML = '<h2>Proj</h2><h3>Project Requirements</h3><div class="requirements-grid"><div class="requirement-box"><span class="req-label">Codec</span><span class="req-value">ProRes</span></div></div>';
     projOut.classList.remove('hidden');
     const gearOut = document.getElementById('gearListOutput');
-    gearOut.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr></table>';
+    gearOut.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr class="category-row"><td>Camera</td></tr><tr><td>CamA</td></tr><tr><td><select id="gearListDirectorMonitor"><option value="MonA">MonA</option></select></td></tr></table>';
     gearOut.classList.remove('hidden');
 
     generatePrintableOverview();
     const html = document.getElementById('overviewDialog').innerHTML;
-    expect(html).toContain('Project Requirements');
-    expect(html).toContain('Gear List');
-    expect(html).toContain('CamA');
+    expect(html).toContain('<section id="projectRequirementsOutput"');
+    expect(html).toContain('<div class="requirement-box"');
+    expect(html).toContain('<section id="gearListOutput"');
+    expect(html).toContain('<select id="gearListDirectorMonitor"');
   });
 
   test('print button triggers window.print', () => {

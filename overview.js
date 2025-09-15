@@ -1,4 +1,4 @@
-/* global setupNameInput, currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog */
+/* global setupNameInput, currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml */
 
 function generatePrintableOverview() {
     const setupName = setupNameInput.value;
@@ -190,11 +190,26 @@ function generatePrintableOverview() {
     const diagramSectionHtmlWithBreak = diagramSectionHtml ? `<div class="page-break"></div>${diagramSectionHtml}` : '';
     const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
 
-    let gearListHtml = getCurrentGearListHtml();
-    if (!gearListHtml && currentProjectInfo) {
-        gearListHtml = generateGearListHtml(currentProjectInfo);
+    let gearListCombined = getCurrentGearListHtml();
+    if (!gearListCombined && currentProjectInfo) {
+        gearListCombined = generateGearListHtml(currentProjectInfo);
     }
-    const gearListHtmlWithBreak = gearListHtml ? `<div class="page-break"></div>${gearListHtml}` : '';
+    let projectSectionHtml = '';
+    let gearSectionHtml = '';
+    if (gearListCombined) {
+        const parts = typeof splitGearListHtml === 'function'
+            ? splitGearListHtml(gearListCombined)
+            : { projectHtml: '', gearHtml: '' };
+        if (parts.projectHtml) {
+            projectSectionHtml = `<section id="projectRequirementsOutput">${parts.projectHtml}</section>`;
+        }
+        if (parts.gearHtml) {
+            gearSectionHtml = `<section id="gearListOutput">${parts.gearHtml}</section>`;
+        }
+    }
+    const gearListHtmlWithBreak = projectSectionHtml || gearSectionHtml
+        ? `<div class="page-break"></div>${projectSectionHtml}${gearSectionHtml}`
+        : '';
 
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
     const contentClass = customLogo ? 'logo-present' : '';

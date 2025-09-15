@@ -2604,6 +2604,11 @@ function splitGearListHtml(html) {
   return { projectHtml, gearHtml };
 }
 
+// Expose for modules like overview.js
+if (typeof global !== 'undefined') {
+  global.splitGearListHtml = splitGearListHtml;
+}
+
 function describeRequirement(field, value) {
   const val = value || '';
   const parts = [];
