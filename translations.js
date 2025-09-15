@@ -72,6 +72,10 @@ const texts = {
     reloadAppLabel: "Force reload",
     reloadAppHelp: "Clear cached files and reload without removing saved data.",
 
+    favoriteToggleLabel: "Toggle favorite",
+    favoriteToggleHelp:
+      "Mark the current selection as a favorite to pin it to the top of the list.",
+
     savedSetupsLabel: "Saved Projects:",
     newSetupOption: "-- New Project --",
     setupNameLabel: "Project Name:",
@@ -481,6 +485,10 @@ const texts = {
     cancelSettings: "Annulla",
     reloadAppLabel: "Ricarica",
     reloadAppHelp: "Svuota la cache e ricarica l'app senza eliminare i dati salvati.",
+
+    favoriteToggleLabel: "Preferito",
+    favoriteToggleHelp:
+      "Contrassegna la selezione corrente come preferita per fissarla in cima all'elenco.",
     savedSetupsLabel: "Configurazioni salvate:",
     newSetupOption: "-- Nuova configurazione --",
     setupNameLabel: "Nome di configurazione:",
@@ -867,6 +875,10 @@ const texts = {
     cancelSettings: "Cancelar",
     reloadAppLabel: "Recargar",
     reloadAppHelp: "Borra la caché y recarga la aplicación sin eliminar los datos guardados.",
+
+    favoriteToggleLabel: "Favorito",
+    favoriteToggleHelp:
+      "Marca la selección actual como favorita para fijarla al principio de la lista.",
     savedSetupsLabel: "Configuraciones guardadas:",
     newSetupOption: "-- Nueva Configuración --",
     setupNameLabel: "Nombre de Configuración:",
@@ -1267,6 +1279,10 @@ const texts = {
     cancelSettings: "Annuler",
     reloadAppLabel: "Recharger",
     reloadAppHelp: "Vider le cache et recharger l'application sans supprimer les données enregistrées.",
+
+    favoriteToggleLabel: "Favori",
+    favoriteToggleHelp:
+      "Marquez la sélection actuelle comme favori pour l'épingler en haut de la liste.",
     savedSetupsLabel: "Configurations enregistrées:",
     newSetupOption: "-- Nouvelle Configuration --",
     setupNameLabel: "Nom de la Configuration:",
@@ -1669,6 +1685,10 @@ const texts = {
     cancelSettings: "Abbrechen",
     reloadAppLabel: "Neu laden",
     reloadAppHelp: "Cache leeren und Anwendung neu laden, ohne gespeicherte Daten zu entfernen.",
+
+    favoriteToggleLabel: "Favorit",
+    favoriteToggleHelp:
+      "Markiere die aktuelle Auswahl als Favorit, um sie oben in der Liste zu halten.",
     savedSetupsLabel: "Gespeicherte Setups:",
     newSetupOption: "-- Neues Setup --",
     setupNameLabel: "Setup-Name:",

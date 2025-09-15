@@ -1864,6 +1864,14 @@ function setLanguage(lang) {
   if (diagramHint) {
     diagramHint.textContent = texts[lang].diagramMoveHint;
   }
+  document.querySelectorAll('.favorite-toggle').forEach(btn => {
+    btn.setAttribute('aria-label', texts[lang].favoriteToggleLabel);
+    btn.setAttribute('title', texts[lang].favoriteToggleLabel);
+    btn.setAttribute(
+      'data-help',
+      texts[lang].favoriteToggleHelp || texts[lang].favoriteToggleLabel
+    );
+  });
   ensureGearListActions();
   updateDiagramLegend();
   populateFeatureSearch();
@@ -4700,6 +4708,14 @@ function getTimecodes() {
       selectElem._favButton = btn;
       selectElem._favInit = true;
       selectElem.addEventListener('change', () => updateFavoriteButton(selectElem));
+    }
+    if (selectElem._favButton) {
+      selectElem._favButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
+      selectElem._favButton.setAttribute('title', texts[currentLang].favoriteToggleLabel);
+      selectElem._favButton.setAttribute(
+        'data-help',
+        texts[currentLang].favoriteToggleHelp || texts[currentLang].favoriteToggleLabel
+      );
     }
     applyFavoritesToSelect(selectElem);
     updateFavoriteButton(selectElem);
