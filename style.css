@@ -280,8 +280,12 @@ footer a {
 
 /* Ensure favorite star aligns with its select element */
 .select-wrapper .favorite-toggle {
-  align-self: center;
+  align-self: stretch;
   margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 /* Date range rows for prep and shooting days */
