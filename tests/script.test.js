@@ -399,7 +399,7 @@ describe('settings backup and restore', () => {
     localStorage.setItem('darkMode', 'true');
     localStorage.setItem('pinkMode', 'true');
     localStorage.setItem('highContrast', 'true');
-    localStorage.setItem('fontSize', '18');
+    localStorage.setItem('fontSize', '22');
     localStorage.setItem('fontFamily', 'Inter');
     localStorage.setItem('accentColor', '#123456');
 
@@ -422,7 +422,7 @@ describe('settings backup and restore', () => {
     expect(obj.settings.darkMode).toBe('true');
     expect(obj.settings.pinkMode).toBe('true');
     expect(obj.settings.highContrast).toBe('true');
-    expect(obj.settings.fontSize).toBe('18');
+    expect(obj.settings.fontSize).toBe('22');
     expect(obj.settings.fontFamily).toBe('Inter');
     expect(obj.settings.accentColor).toBe('#123456');
     expect(anchor.download).toBe('2024-05-01T12-34-56Z full app backup.json');
@@ -2101,18 +2101,20 @@ describe('script.js functions', () => {
     const colorInput = document.getElementById('accentColorInput');
     const sizeSelect = document.getElementById('settingsFontSize');
     const familySelect = document.getElementById('settingsFontFamily');
+    const sizeValues = Array.from(sizeSelect.options).map(opt => opt.value);
+    expect(sizeValues).toEqual(['10', '12', '14', '16', '18', '20', '22', '24']);
     langSelect.value = 'de';
     darkCheck.checked = true;
     contrastCheck.checked = true;
     colorInput.value = '#123456';
-    sizeSelect.value = '18';
+    sizeSelect.value = '10';
     familySelect.value = "'Arial', sans-serif";
     document.getElementById('settingsSave').click();
     expect(localStorage.getItem('language')).toBe('de');
     expect(localStorage.getItem('darkMode')).toBe('true');
     expect(localStorage.getItem('highContrast')).toBe('true');
     expect(localStorage.getItem('accentColor')).toBe('#123456');
-    expect(localStorage.getItem('fontSize')).toBe('18');
+    expect(localStorage.getItem('fontSize')).toBe('10');
     expect(localStorage.getItem('fontFamily')).toBe("'Arial', sans-serif");
     expect(document.body.classList.contains('high-contrast')).toBe(true);
     expect(document.documentElement.classList.contains('high-contrast')).toBe(true);
