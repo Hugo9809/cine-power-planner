@@ -94,10 +94,14 @@
     <h2 id="setupManageHeading">Manage Project</h2>
     <div class="form-row">
       <label for="setupSelect" id="savedSetupsLabel">Saved Projects:</label>
-      <select id="setupSelect" aria-labelledby="savedSetupsLabel">
-        <option value="">-- New Project --</option>
-      </select>
-      <button id="deleteSetupBtn" title="Delete selected project">Delete</button>
+      <div class="select-wrapper">
+        <select id="setupSelect" aria-labelledby="savedSetupsLabel">
+          <option value="">-- New Project --</option>
+        </select>
+      </div>
+      <button id="deleteSetupBtn" title="Delete selected project">
+        <span class="btn-icon" aria-hidden="true">🗑️</span>Delete
+      </button>
     </div>
     <div class="form-row">
       <label for="setupName" id="setupNameLabel">Project Name:</label>
