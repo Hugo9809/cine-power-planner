@@ -7,96 +7,96 @@ const batteryData = {
     "dtapA": 0,
     "mount_type": "N/A"
   },
-  "Bebob V45micro": {
+  "Bebob V45micro (V-Mount)": {
     "capacity": 43,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 330
   },
-  "Bebob V98micro": {
+  "Bebob V98micro (V-Mount)": {
     "capacity": 95,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 550
   },
-  "Bebob V150micro": {
+  "Bebob V150micro (V-Mount)": {
     "capacity": 143,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 770
   },
-  "Bebob V200micro": {
+  "Bebob V200micro (V-Mount)": {
     "capacity": 190,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 950
   },
-  "Bebob V240micro": {
+  "Bebob V240micro (V-Mount)": {
     "capacity": 238,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 1180
   },
-  "Bebob V90RM-Cine": {
+  "Bebob V90RM-Cine (V-Mount)": {
     "capacity": 85,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 820
   },
-  "Bebob V155RM-Cine": {
+  "Bebob V155RM-Cine (V-Mount)": {
     "capacity": 156,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 1000
   },
-  "Bebob V290RM-Cine": {
+  "Bebob V290RM-Cine (V-Mount)": {
     "capacity": 285,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 1390
   },
-  "Bebob B90cine": {
+  "Bebob B90cine (B-Mount)": {
     "capacity": 86,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "B-Mount",
     "weight_g": 622
   },
-  "Bebob B155cine": {
+  "Bebob B155cine (B-Mount)": {
     "capacity": 155,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "B-Mount",
     "weight_g": 1000
   },
-  "Bebob B290cine": {
+  "Bebob B290cine (B-Mount)": {
     "capacity": 294,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "B-Mount"
   },
-  "Bebob B480cine": {
+  "Bebob B480cine (B-Mount)": {
     "capacity": 475,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "B-Mount",
     "weight_g": 2360
   },
-  "Bebob B90cineML": {
+  "Bebob B90cineML (B-Mount)": {
     "capacity": 86,
     "pinA": 20,
     "dtapA": 5,
     "mount_type": "B-Mount"
   },
-  "Bebob B155cineML": {
+  "Bebob B155cineML (B-Mount)": {
     "capacity": 156,
     "pinA": 20,
     "dtapA": 5,
@@ -124,7 +124,7 @@ const batteryData = {
     "mount_type": "V-Mount",
     "weight_g": 713
   },
-  "Swit PB-M98S (Mini V-Mount)": {
+  "Swit PB-M98S (Mini V-Mount) (V-Mount)": {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 6,
@@ -519,63 +519,63 @@ const batteryData = {
     "mount_type": "V-Mount",
     "weight_g": 880
   },
-  "Hawk-Woods Mini V-Lok 50Wh": {
+  "Hawk-Woods Mini V-Lok 50Wh (V-Mount)": {
     "capacity": 50,
     "pinA": 6,
     "dtapA": 5,
     "mount_type": "V-Mount"
   },
-  "Hawk-Woods Mini V-Lok 98Wh": {
+  "Hawk-Woods Mini V-Lok 98Wh (V-Mount)": {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 500
   },
-  "Hawk-Woods Mini V-Lok 150Wh": {
+  "Hawk-Woods Mini V-Lok 150Wh (V-Mount)": {
     "capacity": 150,
     "pinA": 12,
     "dtapA": 5,
     "mount_type": "V-Mount",
     "weight_g": 710
   },
-  "Hawk-Woods Mini V-Lok 200Wh": {
+  "Hawk-Woods Mini V-Lok 200Wh (V-Mount)": {
     "capacity": 200,
     "pinA": 16,
     "dtapA": 5,
     "mount_type": "V-Mount"
   },
-  "Hawk-Woods Mini V-Lok 250Wh": {
+  "Hawk-Woods Mini V-Lok 250Wh (V-Mount)": {
     "capacity": 250,
     "pinA": 16,
     "dtapA": 5,
     "mount_type": "V-Mount"
   },
-  "Hawk-Woods V-Lok 95Wh (VL-95S)": {
+  "Hawk-Woods V-Lok 95Wh (VL-95S) (V-Mount)": {
     "capacity": 95,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount"
   },
-  "Hawk-Woods V-Lok 200Wh (VL-200S)": {
+  "Hawk-Woods V-Lok 200Wh (VL-200S) (V-Mount)": {
     "capacity": 200,
     "pinA": 16,
     "dtapA": 5,
     "mount_type": "V-Mount"
   },
-  "Hawk-Woods V-Lok 350Wh (VL-350N High Performance)": {
+  "Hawk-Woods V-Lok 350Wh (VL-350N High Performance) (V-Mount)": {
     "capacity": 350,
     "pinA": 15,
     "dtapA": 5,
     "mount_type": "V-Mount"
   },
-  "Hawk-Woods X-Lok 98Wh (XL-98)": {
+  "Hawk-Woods X-Lok 98Wh (XL-98) (V-Mount)": {
     "capacity": 98,
     "pinA": 10,
     "dtapA": 5,
     "mount_type": "V-Mount"
   },
-  "Hawk-Woods X-Lok 150Wh (XL-150)": {
+  "Hawk-Woods X-Lok 150Wh (XL-150) (V-Mount)": {
     "capacity": 150,
     "pinA": 12,
     "dtapA": 5,
