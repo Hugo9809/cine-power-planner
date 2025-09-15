@@ -2217,11 +2217,11 @@ describe('script.js functions', () => {
     document.getElementById('batteryCount').textContent = '1';
     const html = generateGearListHtml({
       people: [
-        { role: 'DoP', name: 'Alice', phone: '111' },
+        { role: 'DoP', name: 'Alice', phone: '111', email: 'alice@example.com' },
         { role: 'AC', name: 'Bob', phone: '222' }
       ]
     });
-    expect(html).toContain('<span class="req-value">DoP: Alice (111)<br>AC: Bob (222)</span>');
+    expect(html).toContain('<span class="req-value">DoP: Alice (111, alice@example.com)<br>AC: Bob (222)</span>');
   });
 
   test('custom filter selections override defaults', () => {
@@ -6249,14 +6249,14 @@ describe('script.js functions', () => {
     global.URL.createObjectURL = jest.fn(() => 'blob:url');
     document.getElementById('setupName').value = 'Proj';
     const crew = document.getElementById('crewContainer');
-    crew.innerHTML = '<div class="person-row"><select><option value="DoP" selected>DoP</option></select><input class="person-name" value="Alice"/><input class="person-phone" value="555"/></div>';
+    crew.innerHTML = '<div class="person-row"><select><option value="DoP" selected>DoP</option></select><input class="person-name" value="Alice"/><input class="person-phone" value="555"/><input class="person-email" value="alice@example.com"/></div>';
     global.loadProject = jest.fn(() => null);
     global.saveProject = jest.fn();
     document.getElementById('shareSetupBtn').click();
     const blob = URL.createObjectURL.mock.calls[0][0];
     const text = await blob.text();
     const data = JSON.parse(text);
-    expect(data.projectInfo.people[0]).toEqual({ role: 'DoP', name: 'Alice', phone: '555' });
+    expect(data.projectInfo.people[0]).toEqual({ role: 'DoP', name: 'Alice', phone: '555', email: 'alice@example.com' });
   });
 
   test('applySharedSetup applies gear selectors and project info', () => {

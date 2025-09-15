@@ -1980,11 +1980,16 @@ function createCrewRow(data = {}) {
   phoneInput.placeholder = 'Phone';
   phoneInput.className = 'person-phone';
   phoneInput.value = data.phone || '';
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.placeholder = 'Email';
+  emailInput.className = 'person-email';
+  emailInput.value = data.email || '';
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
   removeBtn.addEventListener('click', () => row.remove());
-  row.append(roleSel, nameInput, phoneInput, removeBtn);
+  row.append(roleSel, nameInput, phoneInput, emailInput, removeBtn);
   crewContainer.appendChild(row);
 }
 
@@ -8442,7 +8447,8 @@ function collectProjectFormData() {
     const people = Array.from(crewContainer?.querySelectorAll('.person-row') || []).map(row => ({
         role: row.querySelector('select')?.value,
         name: row.querySelector('.person-name')?.value.trim(),
-        phone: row.querySelector('.person-phone')?.value.trim()
+        phone: row.querySelector('.person-phone')?.value.trim(),
+        email: row.querySelector('.person-email')?.value?.trim()
     })).filter(p => p.role && p.name);
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {
@@ -8851,7 +8857,10 @@ function generateGearListHtml(info = {}) {
     if (Array.isArray(info.people)) {
         const crewEntries = info.people
             .filter(p => p.role && p.name)
-            .map(p => p.phone ? `${p.role}: ${p.name} (${p.phone})` : `${p.role}: ${p.name}`);
+            .map(p => {
+                const details = [p.phone, p.email].filter(Boolean).join(', ');
+                return details ? `${p.role}: ${p.name} (${details})` : `${p.role}: ${p.name}`;
+            });
         if (crewEntries.length) {
             projectInfo.crew = crewEntries.join('\n');
         }
