@@ -53,7 +53,8 @@ if (require.main === module) {
       'Usage: node generateSchema.js [--help]\n' +
         '\nGenerates schema.json from data.js.\n' +
         '\nExamples:\n' +
-        '  node generateSchema.js\n' +
+        '  npm run generate-schema\n' +
+        '  npm run generate-schema -- --help\n' +
         '  node generateSchema.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'

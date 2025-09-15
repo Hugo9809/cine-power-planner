@@ -36,6 +36,7 @@ if (require.main === module) {
         'Exits with code 1 when missing fields are found.\n' +
         '\nExamples:\n' +
         '  npm run check-consistency\n' +
+        '  npm run check-consistency -- --help\n' +
         '  node checkConsistency.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'
