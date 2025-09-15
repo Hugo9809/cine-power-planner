@@ -427,6 +427,31 @@ footer a {
   margin-top: auto;
 }
 
+@media (max-width: 600px) {
+  #settingsDialog {
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .settings-content {
+    width: 100vw;
+    height: 100vh;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding-bottom: 80px;
+  }
+
+  .settings-content .action-buttons {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface-color);
+    padding-top: 10px;
+    border-top: 1px solid var(--accent-color);
+    justify-content: space-between;
+  }
+}
+
 .help-content p,
 .help-content li {
   line-height: 1.6;
