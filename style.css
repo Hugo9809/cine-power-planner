@@ -505,10 +505,10 @@ body.hover-help-active * {
   position: relative;
 }
 
-/* Prevent long option text from widening selects on mobile */
+/* Ensure selects fill the available space next to the favorite star */
 .select-wrapper select {
   flex: 1;
-  width: auto;
+  width: 100%;
   max-width: 100%;
 }
 
