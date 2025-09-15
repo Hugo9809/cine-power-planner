@@ -24,7 +24,7 @@ The app automatically uses your browser language on first load, and you can swit
 - High contrast theme option for improved readability.
 - Device forms populate category fields dynamically based on schema attributes.
 - Revamped interface design with improved contrast and spacing for a cleaner experience on any device.
-- Simplified project sharing – export and import buttons were removed; share links now handle project transfer.
+- Simplified project sharing – download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices, then load it to restore the full setup.
 - Unique icons for required scenarios to distinguish project requirements.
 - Interactive project diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
 - Playful pink accent theme that persists between visits.
@@ -44,7 +44,7 @@ The app automatically uses your browser language on first load, and you can swit
 
 -### ✅ Project Management
 - Save, load and delete multiple camera projects (press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered)
-- Share a project via link or clear the current configuration
+- Download a JSON project file for sharing or backup, load it with the Shared Project picker or clear the current configuration
 - Data is stored locally via `localStorage`
 - Generate a printable overview for any saved project
 - Save project requirements along with each project
@@ -78,7 +78,7 @@ The generator turns your selections into a categorized packing list:
   - **Monitoring Configuration**, **Video Distribution** and **Viewfinder** settings add monitors, cables and overlays for each role.
   - **User Button** selections and **Tripod Preferences** are listed for quick reference.
 - Items inside each category are sorted alphabetically and display tooltips on hover.
-- The gear list is included in printable overviews and shared setup links.
+- The gear list is included in printable overviews and shared project files.
 - **Save Gear List** stores the current list with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
