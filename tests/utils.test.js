@@ -42,6 +42,8 @@ describe('utility function tests', () => {
     expect(detectBrand('Teradek Bolt')).toBe('teradek');
     expect(detectBrand('Unknown')).toBe('other');
     expect(detectBrand('None')).toBeNull();
+    expect(detectBrand('none')).toBeNull();
+    expect(detectBrand(' NONE ')).toBeNull();
     expect(detectBrand('')).toBeNull();
   });
 
