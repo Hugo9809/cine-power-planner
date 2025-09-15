@@ -1359,7 +1359,7 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  deleteSetupBtn.textContent = texts[lang].deleteSetupBtn;
+  deleteSetupBtn.innerHTML = `<span class="btn-icon" aria-hidden="true">🗑️</span>${texts[lang].deleteSetupBtn}`;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
