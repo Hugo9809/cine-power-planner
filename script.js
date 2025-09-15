@@ -11037,8 +11037,24 @@ function formatFullBackupFilename(date) {
   const safeDate = date instanceof Date && !Number.isNaN(date.valueOf())
     ? date
     : new Date();
-  const iso = safeDate.toISOString();
-  const safeIso = iso.replace(/[:]/g, '-').replace(/\.\d{3}Z$/, 'Z');
+  const pad = n => String(n).padStart(2, '0');
+  const year = safeDate.getFullYear();
+  const month = pad(safeDate.getMonth() + 1);
+  const day = pad(safeDate.getDate());
+  const hours = pad(safeDate.getHours());
+  const minutes = pad(safeDate.getMinutes());
+  const seconds = pad(safeDate.getSeconds());
+  const offsetMinutes = safeDate.getTimezoneOffset();
+  let offsetSuffix = 'Z';
+  if (offsetMinutes !== 0) {
+    const sign = offsetMinutes > 0 ? '-' : '+';
+    const abs = Math.abs(offsetMinutes);
+    const offsetHours = pad(Math.floor(abs / 60));
+    const offsetMins = pad(abs % 60);
+    offsetSuffix = `${sign}${offsetHours}:${offsetMins}`;
+  }
+  const iso = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSuffix}`;
+  const safeIso = iso.replace(/[:]/g, '-');
   return {
     iso,
     fileName: `${safeIso} full app backup.json`,
@@ -12217,5 +12233,6 @@ if (typeof module !== "undefined" && module.exports) {
     setCurrentProjectInfo,
     getCurrentProjectInfo,
     crewRoles,
+    formatFullBackupFilename,
   };
 }
