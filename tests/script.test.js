@@ -3179,6 +3179,40 @@ describe('script.js functions', () => {
     expect(gear.querySelector('#gearListDirectorMonitor15').value).toBe(newVal);
   });
 
+  test('director large monitor selection persists after reload', () => {
+    setupDom(false);
+    require('../translations.js');
+    const script = require('../script.js');
+    const {
+      generateGearListHtml,
+      displayGearAndRequirements,
+      bindGearListDirectorMonitorListener,
+      getCurrentGearListHtml,
+    } = script;
+
+    devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      MonB: { screenSizeInches: 17 },
+    };
+
+    let html = generateGearListHtml({ videoDistribution: 'Director Monitor 15-21"' });
+    displayGearAndRequirements(html);
+    bindGearListDirectorMonitorListener();
+
+    const sel = document.getElementById('gearListDirectorMonitor15');
+    const newVal = Array.from(sel.options).find(o => o.value !== sel.value).value;
+    sel.value = newVal;
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const savedHtml = getCurrentGearListHtml();
+
+    displayGearAndRequirements(savedHtml);
+    bindGearListDirectorMonitorListener();
+
+    expect(document.getElementById('gearListDirectorMonitor15').value).toBe(newVal);
+    expect(document.getElementById('monitorSizeDirector15').textContent).toBe(`${devices.directorMonitors[newVal].screenSizeInches}"`);
+  });
+
   test('gear list includes battery count in camera batteries row', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
