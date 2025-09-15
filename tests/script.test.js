@@ -590,6 +590,8 @@ describe('script.js functions', () => {
     global.loadProject = jest.fn(() => '');
     global.saveProject = jest.fn();
     global.deleteProject = jest.fn();
+    global.loadFavorites = jest.fn(() => ({}));
+    global.saveFavorites = jest.fn();
 
     require('../translations.js');
     script = require('../script.js');
@@ -3133,6 +3135,87 @@ describe('script.js functions', () => {
     html = generateGearListHtml();
     expect(html).toContain('1x Arri KK.0008824 cforce plus Basic Set');
     expect(html).toContain('1x ARRI K2.0009335 Cforce Plus Gear M0.8/32p, 60t');
+  });
+
+  test('UDM-1 distance adds basic sets to gear list', () => {
+    const { generateGearListHtml } = script;
+    devices.fiz.distance['UDM-1 + LCube'] = { powerDrawWatts: 6 };
+    const setSelect = (id, options) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = options;
+    };
+    setSelect('cameraSelect', '<option value="CamA">CamA</option>');
+    const cameraSel = document.getElementById('cameraSelect');
+    cameraSel.value = 'CamA';
+    setSelect('controller1Select', '<option value="None">None</option>');
+    const controllerSel = document.getElementById('controller1Select');
+    controllerSel.value = 'None';
+    setSelect('distanceSelect', [
+      '<option value="None">None</option>',
+      '<option value="UDM-1 + LCube">UDM-1 + LCube</option>'
+    ].join(''));
+    const distanceSel = document.getElementById('distanceSelect');
+    distanceSel.value = 'UDM-1 + LCube';
+
+    const html = generateGearListHtml();
+    expect(html).toContain('1x Arri KK.0005853 Ultrasonic Distance Measure UDM-1 Basic Set');
+    expect(html).toContain('1x Arri KK.0009001 LCUBE CUB-1 Basic Set');
+  });
+
+  test('UDM-1 distance omits LCube when RIA-1 is selected', () => {
+    const { generateGearListHtml } = script;
+    devices.fiz.distance['UDM-1 + LCube'] = { powerDrawWatts: 6 };
+    devices.fiz.controllers['Arri RIA-1'] = { powerDrawWatts: 2 };
+    const setSelect = (id, options) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = options;
+    };
+    setSelect('cameraSelect', '<option value="CamA">CamA</option>');
+    const cameraSel = document.getElementById('cameraSelect');
+    cameraSel.value = 'CamA';
+    setSelect('controller1Select', '<option value="Arri RIA-1">Arri RIA-1</option>');
+    const controllerSel = document.getElementById('controller1Select');
+    controllerSel.value = 'Arri RIA-1';
+    setSelect('distanceSelect', [
+      '<option value="None">None</option>',
+      '<option value="UDM-1 + LCube">UDM-1 + LCube</option>'
+    ].join(''));
+    const distanceSel = document.getElementById('distanceSelect');
+    distanceSel.value = 'UDM-1 + LCube';
+
+    const html = generateGearListHtml();
+    expect(html).toContain('1x Arri KK.0005853 Ultrasonic Distance Measure UDM-1 Basic Set');
+    expect(html).not.toContain('Arri KK.0009001 LCUBE CUB-1 Basic Set');
+  });
+
+  test('UDM-1 distance omits LCube when Alexa 35 is selected', () => {
+    const { generateGearListHtml } = script;
+    devices.fiz.distance['UDM-1 + LCube'] = { powerDrawWatts: 6 };
+    devices.cameras['Arri Alexa 35'] = {
+      powerDrawWatts: 10,
+      power: { input: { type: 'LEMO 2-pin' } },
+      videoOutputs: [{ type: '3G-SDI' }]
+    };
+    const setSelect = (id, options) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = options;
+    };
+    setSelect('cameraSelect', '<option value="Arri Alexa 35">Arri Alexa 35</option>');
+    const cameraSel = document.getElementById('cameraSelect');
+    cameraSel.value = 'Arri Alexa 35';
+    setSelect('controller1Select', '<option value="None">None</option>');
+    const controllerSel = document.getElementById('controller1Select');
+    controllerSel.value = 'None';
+    setSelect('distanceSelect', [
+      '<option value="None">None</option>',
+      '<option value="UDM-1 + LCube">UDM-1 + LCube</option>'
+    ].join(''));
+    const distanceSel = document.getElementById('distanceSelect');
+    distanceSel.value = 'UDM-1 + LCube';
+
+    const html = generateGearListHtml();
+    expect(html).toContain('1x Arri KK.0005853 Ultrasonic Distance Measure UDM-1 Basic Set');
+    expect(html).not.toContain('Arri KK.0009001 LCUBE CUB-1 Basic Set');
   });
 
   test('director handheld and focus monitor each get wireless receiver', () => {

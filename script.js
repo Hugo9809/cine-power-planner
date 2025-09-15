@@ -9386,7 +9386,28 @@ function generateGearListHtml(info = {}) {
         }
         return [name];
     });
-    addRow('LDS (FIZ)', formatItems([...motorItems, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
+    const distanceItems = [];
+    const distanceName = selectedNames.distance;
+    if (distanceName) {
+        const lowerName = distanceName.toLowerCase();
+        if (lowerName === 'udm-1 + lcube') {
+            distanceItems.push('Arri KK.0005853 Ultrasonic Distance Measure UDM-1 Basic Set');
+            const hasRiaController = selectedNames.controllers
+                .some(ctrl => /ria-1/i.test(ctrl));
+            const isAlexa35 = /alexa 35/i.test(selectedNames.camera || '');
+            if (!hasRiaController && !isAlexa35) {
+                distanceItems.push('Arri KK.0009001 LCUBE CUB-1 Basic Set');
+            }
+        } else {
+            distanceItems.push(distanceName);
+        }
+    }
+    addRow('LDS (FIZ)', formatItems([
+        ...motorItems,
+        ...selectedNames.controllers,
+        ...distanceItems,
+        ...fizCableAcc
+    ]));
     let batteryItems = '';
     if (selectedNames.battery) {
         let count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
