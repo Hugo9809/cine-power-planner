@@ -1881,32 +1881,45 @@ describe('script.js functions', () => {
     const { applyDarkMode } = script;
     const toggle = document.getElementById('darkModeToggle');
     const meta = document.querySelector('meta[name="theme-color"]');
+    const checkbox = document.getElementById('settingsDarkMode');
     applyDarkMode(true);
     expect(document.body.classList.contains('dark-mode')).toBe(true);
     expect(document.documentElement.classList.contains('dark-mode')).toBe(true);
     expect(toggle.textContent).toBe('☀️');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
     expect(meta.getAttribute('content')).toBe('#1c1c1e');
+    expect(checkbox.checked).toBe(true);
     applyDarkMode(false);
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(document.documentElement.classList.contains('dark-mode')).toBe(false);
     expect(toggle.textContent).toBe('🌙');
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
     expect(meta.getAttribute('content')).toBe('#ffffff');
+    expect(checkbox.checked).toBe(false);
   });
 
-  test('applyPinkMode toggles class and aria-pressed', () => {
+  test('applyPinkMode overrides accent color and disables input', () => {
     const { applyPinkMode } = script;
     const toggle = document.getElementById('pinkModeToggle');
+    const colorInput = document.getElementById('accentColorInput');
+    colorInput.value = '#123456';
+    colorInput.dispatchEvent(new Event('input'));
+    expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#123456');
     applyPinkMode(true);
     expect(document.body.classList.contains('pink-mode')).toBe(true);
     expect(toggle.textContent).toBe('🦄');
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(colorInput.disabled).toBe(true);
+    expect(getComputedStyle(document.body).getPropertyValue('--accent-color').trim()).toBe('#ff69b4');
+    colorInput.value = '#654321';
+    colorInput.dispatchEvent(new Event('input'));
     expect(getComputedStyle(document.body).getPropertyValue('--accent-color').trim()).toBe('#ff69b4');
     applyPinkMode(false);
     expect(document.body.classList.contains('pink-mode')).toBe(false);
     expect(toggle.textContent).toBe('🐴');
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    expect(colorInput.disabled).toBe(false);
+    expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#123456');
   });
 
   test('settings dialog saves preferences to localStorage', () => {
@@ -1938,9 +1951,9 @@ describe('script.js functions', () => {
     expect(dialog.hasAttribute('hidden')).toBe(true);
   });
 
-  test('accent color input updates body and root variables', () => {
+  test('accent color input updates body and root variables when pink mode off', () => {
     const { applyPinkMode } = script;
-    applyPinkMode(true);
+    applyPinkMode(false);
     const colorInput = document.getElementById('accentColorInput');
     colorInput.value = '#654321';
     colorInput.dispatchEvent(new Event('input'));
