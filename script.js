@@ -4594,7 +4594,7 @@ function getTimecodes() {
   }
 
   function initFavoritableSelect(selectElem) {
-    if (!selectElem || !selectElem.id || selectElem.multiple) return;
+    if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
     if (!selectElem._favInit) {
       const btn = document.createElement('button');
       btn.type = 'button';
