@@ -40,7 +40,7 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-const APP_VERSION = "1.0.0";
+const APP_VERSION = "1.0.1";
 
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
