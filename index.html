@@ -776,9 +776,9 @@
           <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Projects</h3>
           <ul>
             <li>Use <strong>Save</strong> to store the current configuration in your browser. Press Enter or Ctrl+S (⌘S on macOS) to save quickly; the Save button stays disabled until a name is entered.</li>
-            <li>Use the action buttons to import, export or delete projects.</li>
-            <li><strong>Share Project Link</strong> copies a URL for the current configuration.</li>
-            <li><strong>Clear Current Project</strong> removes all selected devices.</li>
+            <li><strong>Share Project</strong> downloads a JSON file containing your selections, project requirements, gear list, runtime feedback and any custom devices so you can back up or share the setup.</li>
+            <li>Select a JSON file in <strong>Shared Project</strong> and click <strong>Load</strong> to restore a shared configuration.</li>
+            <li>Use <strong>Delete</strong> to remove the saved entry or <strong>Clear Current Project</strong> to wipe the current selection without touching saved copies.</li>
             <li><strong>Generate Overview</strong> produces a printable summary of any saved project.</li>
             </ul>
           </section>
@@ -827,7 +827,7 @@
                   <li><strong>Viewfinder Settings</strong> and <strong>Tripod Preferences</strong> add EVF mounts, extension brackets, tripod heads, spreaders and counterbalance details.</li>
                 </ul>
               </li>
-              <li>The resulting gear list appears in printable overviews and shared setup links so collaborators see full context.</li>
+              <li>The resulting gear list appears in printable overviews and shared project files so collaborators see full context.</li>
               <li>The <strong>Save Gear List</strong> button stores the current list with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
               <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
             </ul>
@@ -977,8 +977,8 @@
             <p>Enter a name in the Project Name field and click Save. It will then appear in the Saved Projects list.</p>
           </details>
           <details class="faq-item">
-            <summary>Can I export my projects?</summary>
-            <p>Yes. Use the Export All Projects button to download a JSON file containing every saved project.</p>
+            <summary>How do I share or back up a project?</summary>
+            <p>Click <em>Share Project</em> to download a JSON file with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the <em>Shared Project</em> field and press <em>Load</em> to restore it.</p>
           </details>
           <details class="faq-item">
             <summary>How do I edit device data?</summary>
@@ -994,7 +994,7 @@
           </details>
           <details class="faq-item">
             <summary>Where are my projects saved?</summary>
-            <p>Projects and device edits are stored in your browser's <code>localStorage</code>. Use Export/Import to back them up or share them.</p>
+            <p>Projects and device edits are stored in your browser's <code>localStorage</code>. Use <em>Share Project</em> to download a setup file, and use the Device Database Editor's <em>Export</em>/<em>Import</em> buttons to back up custom gear.</p>
           </details>
           <details class="faq-item">
             <summary>Does the planner work offline?</summary>

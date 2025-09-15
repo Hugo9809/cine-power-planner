@@ -52,7 +52,7 @@ Contributions for additional languages are welcome. To add a translation, includ
 - **High contrast mode** – switch to a high contrast theme for improved readability.
 - **Dynamic device forms** – category fields populate automatically from the schema in new device forms.
 - **Refreshed interface design** – cleaner layout and improved contrast make the planner easier to use on desktop and mobile.
-- **Simplified project sharing** – export and import buttons were removed; share links now handle project transfer.
+- **Simplified project sharing** – download a single project file that bundles selections, requirements, gear lists, runtime feedback and custom devices, then load it to restore the full setup.
 - **Unique icons for required scenarios** – each required scenario now shows its own icon for quick recognition.
 - **Persistent diagram popups on touch** – tapping a node on touch devices keeps its popup visible until another node is selected.
 - **Interactive project diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
@@ -130,7 +130,7 @@ The planner expands your selections into a detailed packing table:
   - **Monitoring Configuration**, **Video Distribution** and **Viewfinder** settings add monitors, cables and overlays for each role.
   - **User Button** selections and **Tripod Preferences** are listed for quick reference.
 - Items are sorted alphabetically within their category and each exposes a tooltip on hover.
-- The gear list appears in printable overviews and shared setup links so collaborators see the full context.
+- The gear list appears in printable overviews and shared project files so collaborators see the full context.
 - **Save Gear List** stores the current table with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
