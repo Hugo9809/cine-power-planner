@@ -1805,14 +1805,18 @@ describe('script.js functions', () => {
     expect(dialog.hasAttribute('hidden')).toBe(false);
     const langSelect = document.getElementById('settingsLanguage');
     const darkCheck = document.getElementById('settingsDarkMode');
+    const contrastCheck = document.getElementById('settingsHighContrast');
     const colorInput = document.getElementById('accentColorInput');
     langSelect.value = 'de';
     darkCheck.checked = true;
+    contrastCheck.checked = true;
     colorInput.value = '#123456';
     document.getElementById('settingsSave').click();
     expect(localStorage.getItem('language')).toBe('de');
     expect(localStorage.getItem('darkMode')).toBe('true');
+    expect(localStorage.getItem('highContrast')).toBe('true');
     expect(localStorage.getItem('accentColor')).toBe('#123456');
+    expect(document.body.classList.contains('high-contrast')).toBe(true);
     expect(dialog.hasAttribute('hidden')).toBe(true);
   });
 

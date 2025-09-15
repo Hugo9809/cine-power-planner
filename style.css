@@ -1460,6 +1460,18 @@ html.dark-mode,
   --selected-row-bg: #003366;
 }
 
+body.high-contrast {
+  --background-color: #000;
+  --surface-color: #000;
+  --text-color: #fff;
+  --control-bg: #000;
+  --control-text: #fff;
+  --control-border: #fff;
+  --panel-bg: #000;
+  --panel-border: #fff;
+  --link-color: #0ff;
+}
+
 html.dark-mode,
 body.dark-mode {
   background-color: var(--background-color);

@@ -40,6 +40,8 @@ try {
   // overview generation not needed in test environments without module support
 }
 
+const APP_VERSION = "1.0.0";
+
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js');
@@ -1724,6 +1726,18 @@ function setLanguage(lang) {
   if (settingsDarkLabel) settingsDarkLabel.textContent = texts[lang].darkModeSetting;
   const accentLabel = document.getElementById("accentColorLabel");
   if (accentLabel) accentLabel.textContent = texts[lang].accentColorSetting;
+  const contrastLabel = document.getElementById("settingsHighContrastLabel");
+  if (contrastLabel) contrastLabel.textContent = texts[lang].highContrastSetting;
+  const accessibilityHeading = document.getElementById("accessibilityHeading");
+  if (accessibilityHeading) accessibilityHeading.textContent = texts[lang].accessibilityHeading;
+  const backupHeading = document.getElementById("backupHeading");
+  if (backupHeading) backupHeading.textContent = texts[lang].backupHeading;
+  if (backupSettings) backupSettings.textContent = texts[lang].backupSettings;
+  if (restoreSettings) restoreSettings.textContent = texts[lang].restoreSettings;
+  const aboutHeading = document.getElementById("aboutHeading");
+  if (aboutHeading) aboutHeading.textContent = texts[lang].aboutHeading;
+  if (aboutVersionElem) aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION}`;
+  if (supportLink) supportLink.textContent = texts[lang].supportLink;
   if (settingsSave) settingsSave.textContent = texts[lang].saveSettings;
   if (settingsCancel) settingsCancel.textContent = texts[lang].cancelSettings;
   if (reloadButton) {
@@ -2373,6 +2387,12 @@ const settingsDialog  = document.getElementById("settingsDialog");
 const settingsLanguage = document.getElementById("settingsLanguage");
 const settingsDarkMode = document.getElementById("settingsDarkMode");
 const accentColorInput = document.getElementById("accentColorInput");
+const settingsHighContrast = document.getElementById("settingsHighContrast");
+const backupSettings = document.getElementById("backupSettings");
+const restoreSettings = document.getElementById("restoreSettings");
+const restoreSettingsInput = document.getElementById("restoreSettingsInput");
+const aboutVersionElem = document.getElementById("aboutVersion");
+const supportLink = document.getElementById("supportLink");
 const settingsSave    = document.getElementById("settingsSave");
 const settingsCancel  = document.getElementById("settingsCancel");
 const featureSearch   = document.getElementById("featureSearch");
@@ -10331,6 +10351,22 @@ if (darkModeToggle) {
   });
 }
 
+function applyHighContrast(enabled) {
+  if (enabled) {
+    document.body.classList.add("high-contrast");
+  } else {
+    document.body.classList.remove("high-contrast");
+  }
+}
+
+let highContrastEnabled = false;
+try {
+  highContrastEnabled = localStorage.getItem("highContrast") === "true";
+} catch (e) {
+  console.warn("Could not load high contrast preference", e);
+}
+applyHighContrast(highContrastEnabled);
+
 // Pink mode handling
 function applyPinkMode(enabled) {
   if (enabled) {
@@ -10379,6 +10415,7 @@ if (settingsButton && settingsDialog) {
     prevAccentColor = accentColor;
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
+    if (settingsHighContrast) settingsHighContrast.checked = document.body.classList.contains('high-contrast');
     if (accentColorInput) {
       const stored = localStorage.getItem('accentColor');
       accentColorInput.value = stored || accentColor;
@@ -10409,6 +10446,15 @@ if (settingsButton && settingsDialog) {
           console.warn('Could not save dark mode preference', e);
         }
       }
+      if (settingsHighContrast) {
+        const enabled = settingsHighContrast.checked;
+        applyHighContrast(enabled);
+        try {
+          localStorage.setItem('highContrast', enabled);
+        } catch (e) {
+          console.warn('Could not save high contrast preference', e);
+        }
+      }
       if (accentColorInput) {
         const color = accentColorInput.value;
         document.documentElement.style.setProperty('--accent-color', color);
@@ -10430,6 +10476,56 @@ if (settingsButton && settingsDialog) {
       revertAccentColor();
       settingsDialog.setAttribute('hidden', '');
     }
+  });
+}
+
+if (backupSettings) {
+  backupSettings.addEventListener('click', () => {
+    try {
+      const data = JSON.stringify({ ...localStorage });
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'settings-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.warn('Backup failed', e);
+    }
+  });
+}
+
+if (restoreSettings && restoreSettingsInput) {
+  restoreSettings.addEventListener('click', () => restoreSettingsInput.click());
+  restoreSettingsInput.addEventListener('change', () => {
+    const file = restoreSettingsInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        Object.entries(data).forEach(([k, v]) => {
+          localStorage.setItem(k, v);
+        });
+        applyDarkMode(localStorage.getItem('darkMode') === 'true');
+        applyPinkMode(localStorage.getItem('pinkMode') === 'true');
+        applyHighContrast(localStorage.getItem('highContrast') === 'true');
+        const color = localStorage.getItem('accentColor');
+        if (color) {
+          document.documentElement.style.setProperty('--accent-color', color);
+          document.documentElement.style.setProperty('--link-color', color);
+          accentColor = color;
+          prevAccentColor = color;
+        }
+        const lang = localStorage.getItem('language');
+        if (lang) setLanguage(lang);
+        alert(texts[currentLang].restoreSuccess);
+      } catch (err) {
+        console.warn('Restore failed', err);
+      }
+    };
+    reader.readAsText(file);
   });
 }
 
@@ -11414,6 +11510,7 @@ if (typeof module !== "undefined" && module.exports) {
     getRecordingMedia,
     applyDarkMode,
     applyPinkMode,
+    applyHighContrast,
     generatePrintableOverview,
     generateGearListHtml,
     ensureZoomRemoteSetup,
