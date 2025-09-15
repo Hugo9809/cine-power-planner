@@ -3112,6 +3112,29 @@ describe('script.js functions', () => {
     expect(html).toContain('Tilta Nucleus-M Hand Grip (1x single)');
   });
 
+  test('cforce motors map to basic sets in gear list', () => {
+    const { generateGearListHtml } = script;
+    const sel = document.getElementById('motor1Select');
+    sel.innerHTML = [
+      '<option value="Arri cforce mini RF (KK.0040345)">Arri cforce mini RF (KK.0040345)</option>',
+      '<option value="Arri Cforce Mini">Arri Cforce Mini</option>',
+      '<option value="Arri Cforce Plus">Arri Cforce Plus</option>'
+    ].join('');
+
+    sel.value = 'Arri cforce mini RF (KK.0040345)';
+    let html = generateGearListHtml();
+    expect(html).toContain('1x ARRI KK.0040345 CFORCE MINI RF Basic Set 2');
+
+    sel.value = 'Arri Cforce Mini';
+    html = generateGearListHtml();
+    expect(html).toContain('1x ARRI KK.0040344 Cforce Mini Basic Set 2');
+
+    sel.value = 'Arri Cforce Plus';
+    html = generateGearListHtml();
+    expect(html).toContain('1x Arri KK.0008824 cforce plus Basic Set');
+    expect(html).toContain('1x ARRI K2.0009335 Cforce Plus Gear M0.8/32p, 60t');
+  });
+
   test('director handheld and focus monitor each get wireless receiver', () => {
     const { generateGearListHtml } = script;
     global.devices.video = {
