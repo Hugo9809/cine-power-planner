@@ -433,8 +433,11 @@ footer a {
 
 .settings-content .button-row {
   display: flex;
-  justify-content: flex-end;
   gap: 10px;
+}
+
+.settings-content .action-buttons {
+  justify-content: flex-end;
   margin-top: auto;
 }
 
