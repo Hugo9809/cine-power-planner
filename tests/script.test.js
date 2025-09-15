@@ -566,6 +566,20 @@ describe('script.js functions', () => {
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['None', 'Gamma', 'Alpha', 'Beta']);
   });
 
+  test('favorite star works for select nested in label', () => {
+    document.body.innerHTML = '<div class="form-row"><label>Foo:<select id="labelSel"></select></label></div>';
+    const sel = document.getElementById('labelSel');
+    script.populateSelect(sel, { Alpha: {}, Beta: {} }, true);
+    const label = document.querySelector('label');
+    const wrapper = label.nextElementSibling;
+    expect(wrapper.classList.contains('select-wrapper')).toBe(true);
+    const btn = wrapper.querySelector('.favorite-toggle');
+    expect(btn).not.toBeNull();
+    sel.value = 'Alpha';
+    btn.click();
+    expect(Array.from(sel.options).map(o => o.value)).toEqual(['None', 'Alpha', 'Beta']);
+  });
+
 
   test('gear list lens row includes lens attributes', () => {
     const html = script.generateGearListHtml({ lenses: 'LensA' });

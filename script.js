@@ -4572,10 +4572,18 @@ function getTimecodes() {
       btn.addEventListener('click', () => toggleFavorite(selectElem));
       let wrapper = selectElem.parentElement;
       if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
-        wrapper = document.createElement('div');
-        wrapper.className = 'select-wrapper';
-        selectElem.insertAdjacentElement('beforebegin', wrapper);
-        wrapper.appendChild(selectElem);
+        if (wrapper && wrapper.tagName === 'LABEL') {
+          const label = wrapper;
+          wrapper = document.createElement('div');
+          wrapper.className = 'select-wrapper';
+          label.parentElement.insertBefore(wrapper, label.nextSibling);
+          wrapper.appendChild(selectElem);
+        } else {
+          wrapper = document.createElement('div');
+          wrapper.className = 'select-wrapper';
+          selectElem.insertAdjacentElement('beforebegin', wrapper);
+          wrapper.appendChild(selectElem);
+        }
       }
       wrapper.appendChild(btn);
       selectElem._favButton = btn;
@@ -11112,7 +11120,10 @@ function initApp() {
   }
   populateUserButtonDropdowns();
   document.querySelectorAll('#projectForm select')
-    .forEach(sel => attachSelectSearch(sel));
+    .forEach(sel => {
+      attachSelectSearch(sel);
+      initFavoritableSelect(sel);
+    });
   setLanguage(currentLang);
   resetDeviceForm();
   restoreSessionState();
