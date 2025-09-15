@@ -23,6 +23,7 @@ that future visits work offline and pick up updates automatically.
 - [Getting Started](#getting-started)
 - [Install as an App](#install-as-an-app)
 - [Browser Support](#browser-support)
+- [Backup and Recovery](#backup-and-recovery)
 - [Development](#development)
 - [Feedback and Support](#feedback-and-support)
 - [Contributing](#contributing)
@@ -168,7 +169,27 @@ files so the planner runs entirely offline and pulls updates in the
 background. Projects, runtime submissions and preferences (language, theme,
 pink mode and saved gear lists) are stored locally via `localStorage` in your
 browser. Clearing the site's data in your browser removes all saved
-information.
+information. See [Backup and Recovery](#backup-and-recovery) for tips on keeping
+your data safe.
+
+## Backup and Recovery
+
+Cine Power Planner automatically guards against data loss and gives you manual
+controls to export your work:
+
+- **Saved project snapshots:** The project selector keeps every setup you save,
+  and the app creates timestamped `auto-backup-…` entries every 10 minutes while
+  it is open. These snapshots appear at the bottom of the list so you can revert
+  to a previous state without overwriting the active project.
+- **Full planner backups:** Open **Settings → Backup & Restore** and press
+  **Backup** to download `planner-backup.json`. The file includes saved
+  projects, custom devices, session state, runtime feedback and favorites via
+  the internal `exportAllData()` routine. Restoring the file automatically saves
+  a safety copy of your current data before importing the new settings and warns
+  when the file was produced with a different app version.
+- **Regular reminders:** While the planner is running, an hourly background job
+  triggers the same backup export so you always have a recent download prompt as
+  a reminder to archive your data.
 
 ## Browser Support
 
