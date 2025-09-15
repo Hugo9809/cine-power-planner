@@ -225,6 +225,20 @@ function copyTextToClipboard(text) {
   });
 }
 
+function safeRevokeObjectURL(url) {
+  if (!url) return;
+  const urlObj = typeof globalThis !== 'undefined' ? globalThis.URL : undefined;
+  const revoke = urlObj && typeof urlObj.revokeObjectURL === 'function'
+    ? urlObj.revokeObjectURL.bind(urlObj)
+    : null;
+  if (!revoke) return;
+  try {
+    revoke(url);
+  } catch (err) {
+    console.warn('revokeObjectURL failed', err);
+  }
+}
+
 // Use a Set for O(1) lookups when validating video output types
 const VIDEO_OUTPUT_TYPES = new Set([
   '3G-SDI',
@@ -2250,6 +2264,9 @@ const newNameInput    = document.getElementById("newName");
 const newWattInput    = document.getElementById("newWatt");
 const wattFieldDiv    = document.getElementById("wattField");
 const dynamicFieldsDiv = document.getElementById("dynamicFields");
+if (dynamicFieldsDiv) {
+  dynamicFieldsDiv.classList.add('dynamic-fields');
+}
 const cameraFieldsDiv = document.getElementById("cameraFields");
 const cameraWattInput = document.getElementById("cameraWatt");
 const cameraVoltageInput = document.getElementById("cameraVoltage");
@@ -2338,6 +2355,7 @@ const videoLatencyInput = document.getElementById("videoLatency");
 const addDeviceForm = wattFieldDiv ? wattFieldDiv.parentNode : null;
 function placeWattField(category, data) {
   if (!wattFieldDiv || !addDeviceForm) return;
+  const showPowerField = shouldShowPowerDraw(category, data);
   const isVideoLike =
     category === "video" ||
     category === "wirelessReceivers" ||
@@ -2348,6 +2366,7 @@ function placeWattField(category, data) {
   } else {
     addDeviceForm.insertBefore(wattFieldDiv, cameraFieldsDiv);
   }
+  wattFieldDiv.style.display = showPowerField ? '' : 'none';
 }
 const motorFieldsDiv = document.getElementById("motorFields");
 const motorConnectorInput = document.getElementById("motorConnector");
@@ -2397,14 +2416,122 @@ const categoryExcludedAttrs = {
   "accessories.batteries": ["capacity", "pinA"],
   cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
   monitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"],
+  directorMonitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
   viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
   video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
   wirelessReceivers: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
   iosVideo: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
   "fiz.motors": ["fizConnectors", "gearTypes", "internalController", "notes", "powerDrawWatts", "torqueNm"],
   "fiz.controllers": ["batteryType", "connectivity", "fizConnectors", "internalController", "notes", "powerDrawWatts", "powerSource"],
-  "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"]
+  "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"],
+  "fiz.handUnits": ["powerDrawWatts"]
 };
+
+const BOOLEAN_ATTR_HINTS = new Set([
+  "internalcontroller",
+  "wirelesstx",
+  "wirelessrx",
+  "wireless",
+  "bluetooth",
+  "clampon",
+  "needslenssupport",
+  "ispersonalgear",
+  "top_handle_included",
+  "handle_extension_compatible"
+]);
+
+const JSON_ATTR_HINTS = new Set([
+  "gearTypes",
+  "batteryPlateSupport",
+  "powerDistributionOutputs",
+  "videoOutputs",
+  "videoInputs",
+  "recordingMedia",
+  "lensMount",
+  "viewfinder",
+  "timecode",
+  "resolutions",
+  "sensorModes",
+  "options",
+  "modes",
+  "provenance",
+  "connectors",
+  "mounting_points",
+  "listoforigin",
+  "dimensions_mm",
+  "dimensions_cm",
+  "dimensions_in",
+  "chargemodes"
+].map(name => name.toLowerCase()));
+
+const MULTILINE_ATTR_PATTERNS = [/notes?$/i, /description$/i, /details$/i, /comment$/i, /quote$/i];
+
+function formatAttributeLabel(attr) {
+  if (!attr) return '';
+  const replaced = attr.replace(/[-_]+/g, ' ');
+  const spaced = replaced.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
+  return spaced.replace(/\b\w/g, ch => ch.toUpperCase());
+}
+
+function attributeId(attr) {
+  return `attr-${attr.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+}
+
+function inferFieldType(attr, value) {
+  const attrKey = attr.toLowerCase();
+  if (typeof value === 'boolean') return 'boolean';
+  if (
+    BOOLEAN_ATTR_HINTS.has(attrKey) ||
+    /^is[A-Z_]/.test(attr) ||
+    /^has[A-Z_]/.test(attr) ||
+    attrKey.startsWith('is_') ||
+    attrKey.startsWith('has_')
+  ) {
+    return 'boolean';
+  }
+  if (Array.isArray(value) || (value && typeof value === 'object')) {
+    return 'json';
+  }
+  if (JSON_ATTR_HINTS.has(attrKey)) {
+    return 'json';
+  }
+  if (
+    (typeof value === 'string' && value.includes('\n')) ||
+    MULTILINE_ATTR_PATTERNS.some(re => re.test(attr))
+  ) {
+    return 'textarea';
+  }
+  if (typeof value === 'number') {
+    return 'number';
+  }
+  return 'text';
+}
+
+function formatFieldValue(fieldType, value) {
+  if (value === undefined || value === null) return '';
+  if (fieldType === 'json') {
+    try {
+      return typeof value === 'string' ? value : JSON.stringify(value, null, 2);
+    } catch (err) {
+      console.warn('Unable to serialise JSON field', err);
+      return String(value);
+    }
+  }
+  if (fieldType === 'number') {
+    return Number.isFinite(value) ? String(value) : String(value ?? '');
+  }
+  return String(value);
+}
+
+function shouldShowPowerDraw(category, data) {
+  if (!category) return false;
+  if (!deviceSchema || Object.keys(deviceSchema).length === 0) return true;
+  const attrs = getSchemaAttributesForCategory(category);
+  if (attrs.includes('powerDrawWatts')) return true;
+  if (!attrs.length) return true;
+  if (data && Object.prototype.hasOwnProperty.call(data, 'powerDrawWatts')) return true;
+  return false;
+}
 
 function getSchemaAttributesForCategory(category) {
   if (!deviceSchema) return [];
@@ -2432,33 +2559,100 @@ function buildDynamicFields(category, data = {}, exclude = []) {
     return;
   }
   dynamicFieldsDiv.hidden = false;
+  const fragment = document.createDocumentFragment();
+  const grid = document.createElement('div');
+  grid.className = 'dynamic-field-grid';
+  fragment.appendChild(grid);
+
   for (const attr of attrs) {
+    const fieldValue = data && Object.prototype.hasOwnProperty.call(data, attr) ? data[attr] : undefined;
+    const fieldType = inferFieldType(attr, fieldValue);
     const row = document.createElement('div');
-    row.className = 'form-row';
-    const label = document.createElement('label');
-    label.setAttribute('for', `attr-${attr}`);
-    label.textContent = `${attr}:`;
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.id = `attr-${attr}`;
-    input.value = data && data[attr] !== undefined ? data[attr] : '';
-    row.appendChild(label);
-    row.appendChild(input);
-    dynamicFieldsDiv.appendChild(row);
+    row.className = 'dynamic-field';
+    const labelText = formatAttributeLabel(attr);
+    const id = attributeId(attr);
+
+    if (fieldType === 'boolean') {
+      const label = document.createElement('label');
+      label.className = 'dynamic-field__label dynamic-field__label--checkbox';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.id = id;
+      input.dataset.attr = attr;
+      input.dataset.fieldType = 'boolean';
+      input.checked = fieldValue === true;
+      input.setAttribute('aria-label', labelText);
+      label.appendChild(input);
+      const span = document.createElement('span');
+      span.textContent = labelText;
+      label.appendChild(span);
+      row.appendChild(label);
+    } else {
+      const label = document.createElement('label');
+      label.className = 'dynamic-field__label';
+      label.setAttribute('for', id);
+      label.textContent = labelText;
+      row.appendChild(label);
+
+      const formattedValue = formatFieldValue(fieldType, fieldValue);
+      let control;
+      if (fieldType === 'textarea' || fieldType === 'json') {
+        control = document.createElement('textarea');
+        control.rows = Math.min(8, Math.max(3, formattedValue.split('\n').length + 1));
+        if (fieldType === 'json') {
+          control.spellcheck = false;
+        }
+        if (fieldType === 'json') {
+          control.classList.add('dynamic-field__control--json');
+          control.placeholder = '[\n  "Value"\n]';
+        }
+      } else {
+        control = document.createElement('input');
+        control.type = fieldType === 'number' ? 'number' : 'text';
+        if (fieldType === 'number') {
+          control.step = 'any';
+          control.inputMode = 'decimal';
+        }
+      }
+      control.id = id;
+      control.dataset.attr = attr;
+      control.dataset.fieldType = fieldType;
+      control.classList.add('dynamic-field__control');
+      control.value = formattedValue;
+      row.appendChild(control);
+    }
+
+    grid.appendChild(row);
   }
+
+  dynamicFieldsDiv.appendChild(fragment);
 }
 
 function collectDynamicFieldValues(category, exclude = []) {
   const attrs = getSchemaAttributesForCategory(category).filter(a => !exclude.includes(a));
   const result = {};
   for (const attr of attrs) {
-    const el = document.getElementById(`attr-${attr}`);
-    if (el) {
-      const val = el.value.trim();
-      if (val !== '') {
-        const num = Number(val);
-        result[attr] = isNaN(num) ? val : num;
+    const el = dynamicFieldsDiv && dynamicFieldsDiv.querySelector(`[data-attr="${attr}"]`);
+    if (!el) continue;
+    const fieldType = el.dataset.fieldType;
+    if (fieldType === 'boolean') {
+      result[attr] = el.checked;
+      continue;
+    }
+    const raw = 'value' in el ? el.value.trim() : '';
+    if (raw === '') continue;
+    if (fieldType === 'number') {
+      const num = Number(raw);
+      result[attr] = Number.isNaN(num) ? raw : num;
+    } else if (fieldType === 'json') {
+      try {
+        result[attr] = JSON.parse(raw);
+      } catch (err) {
+        console.warn(`Invalid JSON for ${attr}:`, err);
+        result[attr] = raw;
       }
+    } else {
+      result[attr] = raw;
     }
   }
   return result;
@@ -7122,7 +7316,7 @@ function inferDeviceCategory(key, data) {
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
-  wattFieldDiv.style.display = "block";
+  wattFieldDiv.style.display = shouldShowPowerDraw(categoryKey, deviceData) ? '' : 'none';
   batteryFieldsDiv.style.display = "none";
   cameraFieldsDiv.style.display = "none";
   monitorFieldsDiv.style.display = "none";
@@ -7158,6 +7352,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setTimecodes(deviceData.timecode || []);
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
+    wattFieldDiv.style.display = "none";
     monitorFieldsDiv.style.display = "block";
     monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
     monitorBrightnessInput.value = deviceData.brightnessNits || '';
@@ -7175,6 +7370,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       deviceData.audioOutput || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "viewfinders") {
+    wattFieldDiv.style.display = "none";
     viewfinderFieldsDiv.style.display = "block";
     viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
     viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
@@ -7354,6 +7550,7 @@ deviceManagerSection.addEventListener('keydown', (event) => {
 newCategorySelect.addEventListener("change", () => {
   const val = newCategorySelect.value;
   placeWattField(val);
+  const showWattField = shouldShowPowerDraw(val);
   clearDynamicFields();
   subcategoryFieldDiv.hidden = true;
   newSubcategorySelect.innerHTML = "";
@@ -7401,7 +7598,7 @@ newCategorySelect.addEventListener("change", () => {
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
   } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
-    wattFieldDiv.style.display = "block";
+    wattFieldDiv.style.display = showWattField ? "" : "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
@@ -7411,7 +7608,7 @@ newCategorySelect.addEventListener("change", () => {
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
   } else if (val === "fiz.motors") {
-    wattFieldDiv.style.display = "block";
+    wattFieldDiv.style.display = showWattField ? "" : "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
@@ -7421,7 +7618,7 @@ newCategorySelect.addEventListener("change", () => {
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
   } else if (val === "fiz.controllers") {
-    wattFieldDiv.style.display = "block";
+    wattFieldDiv.style.display = showWattField ? "" : "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
@@ -7431,7 +7628,7 @@ newCategorySelect.addEventListener("change", () => {
     controllerFieldsDiv.style.display = "block";
     distanceFieldsDiv.style.display = "none";
   } else if (val === "fiz.distance") {
-    wattFieldDiv.style.display = "block";
+    wattFieldDiv.style.display = showWattField ? "" : "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
@@ -7462,7 +7659,7 @@ newCategorySelect.addEventListener("change", () => {
       buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
     }
   } else {
-    wattFieldDiv.style.display = "block";
+    wattFieldDiv.style.display = showWattField ? "" : "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
     monitorFieldsDiv.style.display = "none";
@@ -7878,7 +8075,7 @@ exportBtn.addEventListener("click", () => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  safeRevokeObjectURL(url);
 });
 
 const exportAndRevertBtn = document.getElementById('exportAndRevertBtn'); 
@@ -7898,7 +8095,7 @@ if (exportAndRevertBtn) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      safeRevokeObjectURL(url);
 
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {
@@ -8126,7 +8323,7 @@ shareSetupBtn.addEventListener('click', () => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  safeRevokeObjectURL(url);
   if (shareLinkMessage) {
     shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
     shareLinkMessage.classList.remove('hidden');
@@ -10132,7 +10329,7 @@ function exportCurrentGearList() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
+    safeRevokeObjectURL(a.href);
 }
 
 function handleImportGearList(e) {
@@ -10989,7 +11186,7 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     a.href = url;
     a.download = fileName;
     a.click();
-    URL.revokeObjectURL(url);
+    safeRevokeObjectURL(url);
     if (shouldNotify) {
       showNotification('success', 'Full app backup downloaded');
     }
@@ -11121,7 +11318,7 @@ if (downloadDiagramBtn) {
       a.href = url;
       a.download = `${baseName}.svg`;
       a.click();
-      URL.revokeObjectURL(url);
+      safeRevokeObjectURL(url);
     };
 
     if (e.shiftKey) {
@@ -11138,7 +11335,7 @@ if (downloadDiagramBtn) {
           a.href = url;
           a.download = `${baseName}.jpg`;
           a.click();
-          URL.revokeObjectURL(url);
+          safeRevokeObjectURL(url);
         }, 'image/jpeg', 0.95);
       };
       img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);

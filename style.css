@@ -251,6 +251,75 @@ footer a {
   min-width: 0; /* allow shrinking inside flex container */
 }
 
+.dynamic-fields {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--surface-color);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--panel-shadow);
+}
+
+.dynamic-fields[hidden] {
+  display: none !important;
+}
+
+.dynamic-field-grid {
+  display: grid;
+  gap: var(--gap-size);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.dynamic-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dynamic-field__label {
+  font-weight: 600;
+  font-size: 0.95em;
+  color: var(--text-color);
+}
+
+.dynamic-field__label--checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dynamic-field__label--checkbox input {
+  margin: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.dynamic-field__control {
+  font: inherit;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
+  resize: vertical;
+}
+
+.dynamic-field__control:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 1px;
+}
+
+.dynamic-field__control--json {
+  font-family: 'Ubuntu Mono', 'Fira Code', 'Source Code Pro', monospace;
+  min-height: 6rem;
+}
+
+@media (max-width: 600px) {
+  .dynamic-field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 600px) {
   .form-row {
     flex-direction: column;
