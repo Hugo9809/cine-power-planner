@@ -418,6 +418,50 @@ describe('export/import all data', () => {
     expect(loadProject('OldProj')).toEqual({ gearList: '<ul></ul>', projectInfo: null });
   });
 
+  test('importAllData merges project map without overwriting existing entries', () => {
+    saveProject('Existing', { gearList: '<ul>Existing</ul>' });
+    saveProject('Duplicate', { gearList: '<ul>Original</ul>' });
+    const data = {
+      project: {
+        Duplicate: { gearList: '<ul>Replacement</ul>', projectInfo: { projectName: 'Dup' } },
+        Fresh: { gearList: '<ul>Fresh</ul>', projectInfo: { projectName: 'Fresh' } }
+      }
+    };
+    importAllData(data);
+    const projects = loadProject();
+    expect(projects.Duplicate).toEqual({ gearList: '<ul>Original</ul>', projectInfo: null });
+    const duplicateKeys = Object.keys(projects).filter((name) => name.toLowerCase().startsWith('duplicate'));
+    expect(duplicateKeys.length).toBe(2);
+    const importedDuplicate = duplicateKeys.find((name) => name !== 'Duplicate');
+    expect(importedDuplicate).toBeTruthy();
+    expect(projects[importedDuplicate]).toEqual({ gearList: '<ul>Replacement</ul>', projectInfo: { projectName: 'Dup' } });
+    expect(projects.Fresh).toEqual({ gearList: '<ul>Fresh</ul>', projectInfo: { projectName: 'Fresh' } });
+    expect(projects.Existing).toEqual({ gearList: '<ul>Existing</ul>', projectInfo: null });
+  });
+
+  test('importAllData merges legacy project arrays without replacing existing ones', () => {
+    saveProject('Legacy', { gearList: '<ul>Old</ul>' });
+    const data = {
+      projects: [
+        { name: 'Legacy', gearList: '<ul>New</ul>' },
+        { gearList: '<ul>Unnamed</ul>' }
+      ]
+    };
+    importAllData(data);
+    const projects = loadProject();
+    expect(projects.Legacy).toEqual({ gearList: '<ul>Old</ul>', projectInfo: null });
+    const legacyKeys = Object.keys(projects).filter((name) => name.toLowerCase().startsWith('legacy'));
+    expect(legacyKeys.length).toBe(2);
+    const importedLegacy = legacyKeys.find((name) => name !== 'Legacy');
+    expect(importedLegacy).toBeTruthy();
+    expect(projects[importedLegacy]).toEqual({ gearList: '<ul>New</ul>', projectInfo: null });
+    const unnamedEntry = Object.entries(projects).find(([name, proj]) => {
+      return name !== 'Legacy' && proj.gearList === '<ul>Unnamed</ul>';
+    });
+    expect(unnamedEntry).toBeDefined();
+    expect(unnamedEntry[1]).toEqual({ gearList: '<ul>Unnamed</ul>', projectInfo: null });
+  });
+
   test('importAllData handles legacy single gearList', () => {
     const data = { gearList: '<p></p>' };
     importAllData(data);

@@ -7047,8 +7047,11 @@ if (typeof autoBackupInterval.unref === 'function') {
 }
 
 const hourlyBackupInterval = setInterval(() => {
-  const ok = createSettingsBackup(false);
-  showNotification(ok ? 'success' : 'error', ok ? 'Backup file created' : 'Backup file failed');
+  const fileName = createSettingsBackup(false);
+  showNotification(
+    fileName ? 'success' : 'error',
+    fileName ? `Full app backup downloaded (${fileName})` : 'Full app backup failed',
+  );
 }, 60 * 60 * 1000);
 if (typeof hourlyBackupInterval.unref === 'function') {
   hourlyBackupInterval.unref();
@@ -10940,8 +10943,23 @@ function showNotification(type, message) {
   }, 4000);
 }
 
-function createSettingsBackup(notify = true) {
+function formatFullBackupFilename(date) {
+  const safeDate = date instanceof Date && !Number.isNaN(date.valueOf())
+    ? date
+    : new Date();
+  const iso = safeDate.toISOString();
+  const safeIso = iso.replace(/[:]/g, '-').replace(/\.\d{3}Z$/, 'Z');
+  return {
+    iso,
+    fileName: `${safeIso} full app backup.json`,
+  };
+}
+
+function createSettingsBackup(notify = true, timestamp = new Date()) {
   try {
+    const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
+    const shouldNotify = isEvent ? true : Boolean(notify);
+    const { iso, fileName } = formatFullBackupFilename(timestamp);
     const settings = {};
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -10949,6 +10967,7 @@ function createSettingsBackup(notify = true) {
     }
     const backup = {
       version: APP_VERSION,
+      generatedAt: iso,
       settings,
       data: typeof exportAllData === 'function' ? exportAllData() : {},
     };
@@ -10956,19 +10975,19 @@ function createSettingsBackup(notify = true) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'planner-backup.json';
+    a.download = fileName;
     a.click();
     URL.revokeObjectURL(url);
-    if (notify) {
-      showNotification('success', 'Backup created');
+    if (shouldNotify) {
+      showNotification('success', 'Full app backup downloaded');
     }
-    return true;
+    return fileName;
   } catch (e) {
     console.warn('Backup failed', e);
     if (notify) {
       showNotification('error', 'Backup failed');
     }
-    return false;
+    return null;
   }
 }
 
