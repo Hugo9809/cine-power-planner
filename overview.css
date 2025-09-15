@@ -125,6 +125,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
 
 .diagram-controls button {
   min-width: var(--button-size);
+  height: var(--button-size);
   min-height: var(--button-size);
 }
 

@@ -710,6 +710,7 @@ button {
   margin: 5px;
   cursor: pointer;
   font-size: 0.85em;
+  height: var(--button-size);
   min-height: var(--button-size);
   display: inline-flex;
   align-items: center;
@@ -749,6 +750,7 @@ input[type="file"]::-webkit-file-upload-button {
   margin-right: 5px;
   cursor: pointer;
   font-size: 0.85em;
+  height: var(--button-size);
   min-height: var(--button-size);
   display: inline-flex;
   align-items: center;
@@ -1197,6 +1199,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 .diagram-controls button {
   min-width: var(--button-size);
+  height: var(--button-size);
   min-height: var(--button-size);
 }
 
