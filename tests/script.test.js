@@ -2131,6 +2131,16 @@ describe('script.js functions', () => {
     await new Promise(res => setTimeout(res, 0));
     const stored = localStorage.getItem('customLogo');
     expect(stored).toContain('data:image/svg+xml');
+    const preview = document.getElementById('settingsLogoPreview');
+    const previewImg = preview.querySelector('img');
+    expect(preview.hasAttribute('hidden')).toBe(false);
+    expect(previewImg).not.toBeNull();
+    expect(previewImg.getAttribute('src')).toBe(stored);
+    settingsBtn.click();
+    const reopenedImg = document.querySelector('#settingsLogoPreview img');
+    expect(reopenedImg).not.toBeNull();
+    expect(reopenedImg.getAttribute('src')).toBe(stored);
+    document.getElementById('settingsCancel').click();
     generatePrintableOverview();
     const printLogo = document.getElementById('printLogo');
     expect(printLogo).not.toBeNull();
@@ -2153,6 +2163,12 @@ describe('script.js functions', () => {
     const note = document.querySelector('#backupNotificationContainer div');
     expect(note).not.toBeNull();
     expect(note.textContent).toBe(texts.en.logoFormatError);
+    const preview = document.getElementById('settingsLogoPreview');
+    expect(preview.hasAttribute('hidden')).toBe(true);
+    expect(preview.querySelector('img')).toBeNull();
+    settingsBtn.click();
+    expect(document.querySelector('#settingsLogoPreview img')).toBeNull();
+    document.getElementById('settingsCancel').click();
   });
 
   test('accent color input updates body and root variables when pink mode off', () => {
