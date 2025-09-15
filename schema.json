@@ -27,6 +27,23 @@
           "useCase"
         ]
       },
+      "fiz": {
+        "attributes": [
+          "brand",
+          "compatibleCameras",
+          "compatibleControllers",
+          "compatibleDevices",
+          "connectors",
+          "from",
+          "kNumber",
+          "lengthM",
+          "notes",
+          "orientation",
+          "to",
+          "type",
+          "useCase"
+        ]
+      },
       "power": {
         "attributes": [
           "from",
@@ -82,9 +99,19 @@
     },
     "chargers": {
       "attributes": [
+        "chargeModes",
         "chargingSpeedAmps",
+        "dimensions_mm",
+        "inputConnector",
+        "inputVoltageV",
         "mount",
-        "slots"
+        "notes",
+        "outputs",
+        "perBayCurrentA",
+        "provenance",
+        "slots",
+        "totalPowerW",
+        "weight_g"
       ]
     },
     "filters": {
@@ -103,12 +130,17 @@
         "brand",
         "clampOn",
         "frontDiameterMm",
+        "imageCircleMm",
+        "lengthMm",
         "lensType",
+        "minFocusMeters",
         "mount",
         "needsLensSupport",
+        "notes",
         "rodLengthCm",
         "rodStandard",
-        "tStop"
+        "tStop",
+        "weight_g"
       ]
     },
     "matteboxes": {
@@ -117,12 +149,12 @@
         "compatible",
         "diameterMm",
         "kNumber",
-        "stages",
-        "type",
-        "traySize",
-        "topFlag",
+        "provenance",
         "sideFlags",
-        "provenance"
+        "stages",
+        "topFlag",
+        "traySize",
+        "type"
       ]
     },
     "media": {
@@ -285,21 +317,26 @@
       "brand",
       "clampOn",
       "frontDiameterMm",
+      "imageCircleMm",
+      "lengthMm",
       "lensType",
+      "minFocusMeters",
       "mount",
       "needsLensSupport",
+      "notes",
       "rodLengthCm",
       "rodStandard",
-      "tStop"
+      "tStop",
+      "weight_g"
     ]
   },
   "monitors": {
     "attributes": [
+      "brand",
       "audioInput",
       "audioIo",
       "audioOutput",
       "bluetooth",
-      "brand",
       "brightnessNits",
       "latencyMs",
       "power",
