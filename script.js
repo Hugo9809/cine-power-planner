@@ -8453,13 +8453,15 @@ function addArriKNumber(name) {
 
 function suggestArriFizCables() {
     const CABLE_LBUS_05 = 'LBUS to LBUS 0,5m';
-    const CABLE_UDM = 'Cable UDM – SERIAL (4p) 0,8m';
+    const CABLE_UDM_4P = 'Cable UDM – SERIAL (4p) 0,5m';
+    const CABLE_UDM_7P = 'Cable UDM – SERIAL (7p) 1,5m';
     const cables = [];
     const lbusLengths = [];
     const camSpare = [];
     const camera = cameraSelect?.value || '';
     const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
     const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    const usesUMC4 = controllers.some(name => /UMC-4/i.test(name));
     const distance = distanceSelect?.value || '';
     const motor = motors[0] || '';
     const hasMasterGrip = controllers.includes('Arri Master Grip (single unit)');
@@ -8524,8 +8526,10 @@ function suggestArriFizCables() {
         }
     }
     if (hasUDM) {
-        cables.push(CABLE_UDM);
-        if (!hasLCube) cables.push(`${CABLE_UDM} (spare)`);
+        const useSevenPin = usesUMC4 || hasLCube;
+        const udmCable = useSevenPin ? CABLE_UDM_7P : CABLE_UDM_4P;
+        cables.push(udmCable);
+        if (!hasLCube) cables.push(`${udmCable} (spare)`);
     }
     if (lbusLengths.length) {
         const shortest = Math.min(...lbusLengths);
