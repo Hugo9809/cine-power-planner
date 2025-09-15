@@ -16,7 +16,10 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
-- Clear local cache button to wipe saved projects and settings.
+- Accent and typography controls in Settings let you adjust the accent color, base font size and typeface alongside dark, pink and high contrast themes.
+- Force reload button clears cached service worker files so the offline app refreshes without deleting saved projects or devices.
+- Star icons in every selector pin favorite cameras, batteries and accessories to the top of the list and keep them in backups.
+- Clear local cache button wipes stored projects and settings.
 - Gear list and printable overview display the project name for quick reference.
 - Upload a custom logo for printed overviews and backups.
 - Backups include favorites and create an automatic backup before restore.
@@ -42,18 +45,31 @@ The app automatically uses your browser language on first load, and you can swit
 
 ## 🔧 Features
 
--### ✅ Project Management
-- Save, load and delete multiple camera projects (press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered)
-- Download a JSON project file for sharing or backup, load it with the Shared Project picker or clear the current configuration
-- Data is stored locally via `localStorage`
-- Generate a printable overview for any saved project
-- Save project requirements along with each project
-- Clear all saved data with a dedicated button
-- Upload a custom logo for printable overviews and backups
-- Backups include favorites and create an automatic backup before restore
-- Works fully offline – language, dark mode, projects and device data persist
-- Responsive layout adapts seamlessly across desktops, tablets and phones
-- Choose a **B‑Mount** or **V‑Mount** plate on supported cameras; the battery list adapts automatically
+### ✅ Project Management
+- Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
+- Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
+- Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices; load it through the Shared Project picker to restore everything in one step.
+- Data is stored locally via `localStorage` and favorites are preserved in backups; use the dedicated clear button if you need to wipe cached projects and device edits.
+- Generate printable overviews for any saved project and add a custom logo so exports and backups match your production branding.
+- Save project requirements along with each project so gear lists retain full context.
+- Works fully offline with the installed service worker—language, theme, device data and favorites persist between sessions.
+- Responsive layout adapts seamlessly across desktops, tablets and phones.
+- Choose **V‑Mount**, **B‑Mount** or **Gold‑Mount** plates on supported cameras; the battery list adapts automatically.
+
+### 🧭 Interface Overview
+- A skip link and offline indicator keep the layout accessible on keyboard and touch devices—the badge appears whenever the browser loses its connection.
+- The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result and tap × to clear the query.
+- Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup and restore tools.
+- The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
+- The Force reload button (🔄) clears cached service worker files so the offline app updates without deleting saved projects or custom devices.
+- On smaller screens a collapsible side menu mirrors every major section for quick navigation.
+
+### ♿ Customization & Accessibility
+- Theme preferences include dark mode, playful pink accents and a dedicated high contrast switch for improved readability.
+- Accent color, base font size and typeface changes apply instantly and persist in the browser, letting you match studio branding or accessibility needs.
+- Built-in keyboard shortcuts cover help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
+- Hover-help mode turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
+- Type-to-search inputs, focus-visible controls and star icons beside selectors let you filter long lists quickly and pin favourite devices to the top.
 
 ### 📋 Gear List
 The generator turns your selections into a categorized packing list:
@@ -66,6 +82,7 @@ The generator turns your selections into a categorized packing list:
   - *Handheld* + *Easyrig* inserts a telescopic handle for stable support.
   - *Gimbal* adds the selected gimbal, friction arms, spigots and sunshades or filter kits.
   - *Outdoor* supplies spigots, umbrellas and CapIt rain covers.
+  - *Vehicle* and *Steadicam* scenarios pack in mounts, isolation arms and suction gear where applicable.
 - Lens selections append front diameter, weight, rod data and minimum focus, add lens supports and matte box adapters, and warn about incompatible rod standards.
 - Battery rows mirror counts from the power calculator and include hotswap plates or chosen hotswap devices when required.
 - Monitoring preferences assign default monitors for each role (Director, DoP, Focus, etc.) with cable sets and wireless receivers.
@@ -113,6 +130,7 @@ The generator turns your selections into a categorized packing list:
 - Visualize power and video connections for the selected devices
 - Warns when FIZ brands are incompatible
 - Drag nodes to rearrange the layout, zoom with the buttons and download the diagram as SVG or JPG
+- Hold Shift while clicking Download to export a JPG snapshot instead of SVG
 - Hover or tap devices to see popup details
 - Uses [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji:
   🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
@@ -139,6 +157,7 @@ The generator turns your selections into a categorized packing list:
 - Filter device lists with a search box
 - Use the global search bar at the top to jump to features, devices or help topics; press Enter to navigate and × to clear.
 - Press '/' or Ctrl+F (⌘F on macOS) to focus the nearest search box instantly.
+- Click the star beside any selector to pin favourites so they stay at the top of the list and sync with backups.
 
 ### 🛠 Device Database Editor
 - Add, edit or delete devices in all categories
@@ -168,22 +187,15 @@ The generator turns your selections into a categorized packing list:
 
 ---
 
-## 🎨 Design
-- Clean layout with blue headings and grey input fields
-- Uses Google Fonts "Open Sans"
-- Responsive design adapts for small screens
-- Separate light and dark themes
-
----
-
 ## ▶️ How to Use
-1. **Launch App:** Open `index.html` in any modern browser – no server required
-2. **Select Devices:** Choose devices from each category using the dropdowns
-3. **View Calculations:** See total draw, current and runtime when a battery is selected
-4. **Check Output Limits:** Status indicators show if the battery output is exceeded
-5. **Save & Load Projects:** Name and save your project and generate a printable overview
-6. **Manage Device List:** Click “Edit Device Data…” to open the editor, modify devices or revert to the defaults
-7. **Submit Runtime Data (optional):** Use “Submit User Runtime Feedback” to share your results and improve estimates
+1. **Launch App:** Open `index.html` in any modern browser – no server required.
+2. **Explore the Top Bar:** Switch language, toggle dark or pink themes, open Settings for accent and typography options, and start the searchable help dialog with ? or Ctrl+/.
+3. **Select Devices:** Choose gear from each category using the dropdowns—type to filter, click the star to pin favourites and let scenario presets fill in accessories automatically.
+4. **View Calculations:** See total draw, current and runtime once a battery is selected; warnings highlight when output limits are exceeded.
+5. **Save & Share Projects:** Name and save your configuration, auto-backups capture snapshots, and the Share button exports a JSON bundle for collaborators.
+6. **Generate Gear Lists:** Press **Generate Gear List** to turn project requirements into a categorized packing list with tooltips and accessory packs.
+7. **Manage Device Data:** Click “Edit Device Data…” to open the database editor, modify devices, export/import JSON or revert to the defaults.
+8. **Submit Runtime Feedback:** Use “Submit User Runtime Feedback” to record field measurements and refine weighted estimates.
 
 ## 📱 Install as an App
 
@@ -219,31 +231,27 @@ generateSchema.js    # Rebuilds schema.json from data.js
 unifyPorts.js        # Harmonizes legacy port names
 tests/               # Jest test suite
 ```
-Fonts are loaded via Google Fonts links in `index.html`.
-After the fonts are cached on first load, the application works entirely offline.
+Fonts are bundled locally via `fonts.css`, so once the assets are cached the application works entirely offline.
 
 ## 🛠️ Development
-Requires Node.js 18 or later.
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Lint the code:
-   ```bash
-   npm run lint
-   ```
-3. Run tests:
-   ```bash
-   npm test
-   ```
-   The `npm test` command also runs the linter and data consistency checks.
+Requires Node.js 18 or later.
 
-4. Update device data after edits:
-   ```bash
-   npm run normalize
-   npm run check-consistency
-   ```
-   `npm run normalize` tidies device entries and unifies connector names. `npm run check-consistency` ensures all required fields are present. Append `--help` to either command for usage details.
+```bash
+npm install
+npm run lint     # run ESLint alone
+npm test         # runs linting, data checks and Jest tests
+```
+
+After editing device data, regenerate the normalized database:
+
+```bash
+npm run normalize
+npm run unify-ports
+npm run check-consistency
+npm run generate-schema
+```
+
+Add `--help` to any of the above scripts for usage details.
 
 ## 🤝 Contributing
 Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
