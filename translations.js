@@ -2027,7 +2027,15 @@ const categoryNames = {
     "accessories.cables": "Cable",
     "accessories.cages": "Camera Cage",
     "accessories.cameraSupport": "Camera Support",
-    "accessories.chargers": "Charger"
+    "accessories.chargers": "Charger",
+    "cages": "Camera Cage",
+    "chargers": "Charger",
+    "directorMonitors": "Director Monitor",
+    "iosVideo": "iOS Video",
+    "videoAssist": "Video Assist",
+    "media": "Recording Media",
+    "lenses": "Lens",
+    "filterOptions": "Filter Option"
   },
   it: {
     "cameras": "Camera",
@@ -2044,7 +2052,15 @@ const categoryNames = {
     "accessories.cables": "Cavo",
     "accessories.cages": "Gabbia",
     "accessories.cameraSupport": "Supporto camera",
-    "accessories.chargers": "Caricatore"
+    "accessories.chargers": "Caricatore",
+    "cages": "Gabbia",
+    "chargers": "Caricatore",
+    "directorMonitors": "Monitor regia",
+    "iosVideo": "Video iOS",
+    "videoAssist": "Video assist",
+    "media": "Supporto di registrazione",
+    "lenses": "Obiettivo",
+    "filterOptions": "Opzione filtro"
   },
   es: {
     "cameras": "Cámara",
@@ -2061,7 +2077,15 @@ const categoryNames = {
     "accessories.cables": "Cable",
     "accessories.cages": "Jaula de cámara",
     "accessories.cameraSupport": "Soporte de cámara",
-    "accessories.chargers": "Cargador"
+    "accessories.chargers": "Cargador",
+    "cages": "Jaula de cámara",
+    "chargers": "Cargador",
+    "directorMonitors": "Monitor de dirección",
+    "iosVideo": "Video iOS",
+    "videoAssist": "Asistente de vídeo",
+    "media": "Soporte de grabación",
+    "lenses": "Lente",
+    "filterOptions": "Opción de filtro"
   },
   fr: {
     "cameras": "Caméra",
@@ -2078,7 +2102,15 @@ const categoryNames = {
     "accessories.cables": "Câble",
     "accessories.cages": "Cage",
     "accessories.cameraSupport": "Support caméra",
-    "accessories.chargers": "Chargeur"
+    "accessories.chargers": "Chargeur",
+    "cages": "Cage",
+    "chargers": "Chargeur",
+    "directorMonitors": "Moniteur réalisateur",
+    "iosVideo": "Vidéo iOS",
+    "videoAssist": "Assistant vidéo",
+    "media": "Support d'enregistrement",
+    "lenses": "Objectif",
+    "filterOptions": "Option de filtre"
   },
   de: {
     "cameras": "Kamera",
@@ -2095,7 +2127,15 @@ const categoryNames = {
     "accessories.cables": "Kabel",
     "accessories.cages": "Cage",
     "accessories.cameraSupport": "Kamera-Support",
-    "accessories.chargers": "Ladegerät"
+    "accessories.chargers": "Ladegerät",
+    "cages": "Cage",
+    "chargers": "Ladegerät",
+    "directorMonitors": "Regie-Monitor",
+    "iosVideo": "iOS Video",
+    "videoAssist": "Video Assist",
+    "media": "Aufnahmemedium",
+    "lenses": "Objektiv",
+    "filterOptions": "Filteroption"
   },
 };
 

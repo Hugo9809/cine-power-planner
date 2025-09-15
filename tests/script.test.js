@@ -676,6 +676,37 @@ describe('script.js functions', () => {
     expect(hasSupport).toBe(true);
   });
 
+  test('new device form includes director monitor category option', () => {
+    setupDom(false);
+    global.devices = require('../data.js');
+    require('../translations.js');
+    require('../script.js');
+    const select = document.getElementById('newCategory');
+    const hasDirector = Array.from(select.options).some(o => o.value === 'directorMonitors');
+    expect(hasDirector).toBe(true);
+  });
+
+  test('new device form includes all categories from devices', () => {
+    setupDom(false);
+    global.devices = require('../data.js');
+    require('../translations.js');
+    require('../script.js');
+    const selectValues = Array.from(document.getElementById('newCategory').options).map(o => o.value);
+    const dev = require('../data.js');
+    const expected = new Set();
+    const add = (v) => expected.add(v);
+    for (const [key, obj] of Object.entries(dev)) {
+      if (key === 'accessories') {
+        for (const sub of Object.keys(obj)) add(`accessories.${sub}`);
+      } else if (key === 'fiz') {
+        for (const sub of Object.keys(obj)) add(`fiz.${sub}`);
+      } else if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+        add(key);
+      }
+    }
+    expect(selectValues).toEqual(expect.arrayContaining([...expected]));
+  });
+
   test('populateLensDropdown fills lens list without duplicates and adds attributes', () => {
     const sel = document.getElementById('lenses');
     sel.innerHTML = '<option value="Existing">Existing</option>';
