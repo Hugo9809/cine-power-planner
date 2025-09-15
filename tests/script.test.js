@@ -2114,9 +2114,35 @@ describe('script.js functions', () => {
     expect(localStorage.getItem('accentColor')).toBe('#123456');
     expect(localStorage.getItem('fontSize')).toBe('18');
     expect(localStorage.getItem('fontFamily')).toBe("'Arial', sans-serif");
+    expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#ffffff');
+    expect(document.body.style.getPropertyValue('--accent-color')).toBe('#ffffff');
+    expect(document.documentElement.style.getPropertyValue('--link-color')).toBe('');
+    expect(document.body.style.getPropertyValue('--link-color')).toBe('');
     expect(document.body.classList.contains('high-contrast')).toBe(true);
     expect(document.documentElement.classList.contains('high-contrast')).toBe(true);
     expect(dialog.hasAttribute('hidden')).toBe(true);
+  });
+
+  test('applyHighContrast forces white accent color and restores the saved choice', () => {
+    const { applyHighContrast } = script;
+    const settingsBtn = document.getElementById('settingsButton');
+    settingsBtn.click();
+    const colorInput = document.getElementById('accentColorInput');
+    colorInput.value = '#345678';
+    document.getElementById('settingsSave').click();
+    expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#345678');
+    expect(document.body.style.getPropertyValue('--accent-color')).toBe('#345678');
+    applyHighContrast(true);
+    expect(document.body.classList.contains('high-contrast')).toBe(true);
+    expect(getComputedStyle(document.body).getPropertyValue('--accent-color').trim()).toBe('#ffffff');
+    expect(document.documentElement.style.getPropertyValue('--link-color')).toBe('');
+    expect(document.body.style.getPropertyValue('--link-color')).toBe('');
+    applyHighContrast(false);
+    expect(document.body.classList.contains('high-contrast')).toBe(false);
+    expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#345678');
+    expect(document.body.style.getPropertyValue('--accent-color')).toBe('#345678');
+    expect(document.documentElement.style.getPropertyValue('--link-color')).toBe('#345678');
+    expect(document.body.style.getPropertyValue('--link-color')).toBe('#345678');
   });
 
   test('uploaded logo is saved and included in printable overview', async () => {

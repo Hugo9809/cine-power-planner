@@ -1682,6 +1682,7 @@ html.dark-mode,
 
 html.high-contrast,
 body.high-contrast {
+  --accent-color: #fff;
   --background-color: #000;
   --surface-color: #000;
   --text-color: #fff;
