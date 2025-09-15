@@ -131,7 +131,14 @@ function setupResponsiveControls() {
   const featureSearch = topBar?.querySelector('.feature-search');
   const controls = topBar?.querySelector('.controls');
   const sidebarControls = document.querySelector('#sideMenu .sidebar-controls');
-  if (!topBar || !featureSearch || !controls || !sidebarControls) return;
+  if (
+    !topBar ||
+    !featureSearch ||
+    !controls ||
+    !sidebarControls ||
+    typeof window.matchMedia !== 'function'
+  )
+    return;
 
   const mql = window.matchMedia('(max-width: 768px)');
 
