@@ -1865,6 +1865,7 @@ describe('script.js functions', () => {
     expect(localStorage.getItem('highContrast')).toBe('true');
     expect(localStorage.getItem('accentColor')).toBe('#123456');
     expect(document.body.classList.contains('high-contrast')).toBe(true);
+    expect(document.documentElement.classList.contains('high-contrast')).toBe(true);
     expect(dialog.hasAttribute('hidden')).toBe(true);
   });
 
