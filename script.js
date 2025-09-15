@@ -7057,23 +7057,35 @@ if (typeof hourlyBackupInterval.unref === 'function') {
   hourlyBackupInterval.unref();
 }
 
+function showDeviceManagerSection() {
+  if (!deviceManagerSection || !toggleDeviceBtn) return;
+  if (!deviceManagerSection.classList.contains('hidden')) return;
+  deviceManagerSection.classList.remove('hidden');
+  toggleDeviceBtn.textContent = texts[currentLang].hideDeviceManager;
+  toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
+  toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
+  toggleDeviceBtn.setAttribute('aria-expanded', 'true');
+  refreshDeviceLists();
+  updateCalculations();
+}
+
+function hideDeviceManagerSection() {
+  if (!deviceManagerSection || !toggleDeviceBtn) return;
+  if (deviceManagerSection.classList.contains('hidden')) return;
+  deviceManagerSection.classList.add('hidden');
+  toggleDeviceBtn.textContent = texts[currentLang].toggleDeviceManager;
+  toggleDeviceBtn.setAttribute('title', texts[currentLang].toggleDeviceManager);
+  toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
+  toggleDeviceBtn.setAttribute('aria-expanded', 'false');
+}
+
 // Toggle device manager visibility
 if (toggleDeviceBtn) {
-  toggleDeviceBtn.addEventListener("click", () => {
+  toggleDeviceBtn.addEventListener('click', () => {
     if (deviceManagerSection.classList.contains('hidden')) {
-      deviceManagerSection.classList.remove('hidden');
-      toggleDeviceBtn.textContent = texts[currentLang].hideDeviceManager;
-      toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
-      toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
-      toggleDeviceBtn.setAttribute('aria-expanded', 'true');
-      refreshDeviceLists(); // Refresh lists when shown
-      updateCalculations(); // Ensure calculations are up to date
+      showDeviceManagerSection();
     } else {
-      deviceManagerSection.classList.add('hidden');
-      toggleDeviceBtn.textContent = texts[currentLang].toggleDeviceManager;
-      toggleDeviceBtn.setAttribute('title', texts[currentLang].toggleDeviceManager);
-      toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
-      toggleDeviceBtn.setAttribute('aria-expanded', 'false');
+      hideDeviceManagerSection();
     }
   });
 }
@@ -11355,18 +11367,56 @@ if (helpButton && helpDialog) {
     const isHelp = lower.endsWith(' (help)');
     const clean = isHelp ? value.slice(0, -7).trim() : value;
     const cleanKey = searchKey(clean);
+
+    const focusFeature = element => {
+      if (!element) return;
+
+      const settingsSection = element.closest('#settingsDialog');
+      if (settingsSection && settingsSection.hasAttribute('hidden')) {
+        settingsButton?.click?.();
+      }
+
+      const dialog = element.closest('dialog');
+      if (dialog && !dialog.open) {
+        if (dialog.id === 'projectDialog') {
+          generateGearListBtn?.click?.();
+        } else if (dialog.id === 'feedbackDialog') {
+          runtimeFeedbackBtn?.click?.();
+        } else if (dialog.id === 'overviewDialog') {
+          generateOverviewBtn?.click?.();
+        } else {
+          openDialog(dialog);
+        }
+      }
+
+      const deviceManager = element.closest('#device-manager');
+      if (deviceManager) {
+        showDeviceManagerSection();
+      }
+
+      if (typeof element.scrollIntoView === 'function') {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      if (typeof element.focus === 'function') {
+        try {
+          element.focus({ preventScroll: true });
+        } catch {
+          element.focus();
+        }
+      }
+    };
+
     const device = deviceMap.get(cleanKey);
     if (device && !isHelp) {
       device.select.value = device.value;
       device.select.dispatchEvent(new Event('change', { bubbles: true }));
-      device.select.scrollIntoView({ behavior: 'smooth' });
-      device.select.focus?.();
+      focusFeature(device.select);
       return;
     }
     const featureEl = featureMap.get(cleanKey);
     if (featureEl && !isHelp) {
-      featureEl.scrollIntoView({ behavior: 'smooth' });
-      featureEl.focus?.();
+      focusFeature(featureEl);
       return;
     }
     openHelp();

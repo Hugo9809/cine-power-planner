@@ -6185,6 +6185,30 @@ describe('script.js functions', () => {
     expect(options).toContain('Add New Device');
   });
 
+  test('feature search opens settings dialog entries', () => {
+    setupDom(false);
+    require('../translations.js');
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const settingsDialog = document.getElementById('settingsDialog');
+    expect(settingsDialog.hasAttribute('hidden')).toBe(true);
+    featureSearch.value = 'Settings';
+    featureSearch.dispatchEvent(new Event('change'));
+    expect(settingsDialog.hasAttribute('hidden')).toBe(false);
+  });
+
+  test('feature search reveals device manager section', () => {
+    setupDom(false);
+    require('../translations.js');
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const deviceManager = document.getElementById('device-manager');
+    expect(deviceManager.classList.contains('hidden')).toBe(true);
+    featureSearch.value = 'Add New Device';
+    featureSearch.dispatchEvent(new Event('change'));
+    expect(deviceManager.classList.contains('hidden')).toBe(false);
+  });
+
   test('feature search selects devices', () => {
     setupDom(false);
     require('../script.js');
