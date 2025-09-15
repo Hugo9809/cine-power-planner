@@ -202,14 +202,22 @@ npm test
 
 ### Update device data
 
-Device definitions live in the files under `devices/`. After modifying these files, run the helper scripts to clean and verify the database:
+Device definitions live in the files under `devices/`. After modifying these files, run the helper scripts to clean, verify and regenerate the database:
 
 ```bash
 npm run normalize
+npm run unify-ports
 npm run check-consistency
+npm run generate-schema
 ```
 
-`npm run normalize` applies various cleanup routines to unify connector names and expand shorthand entries. `npm run check-consistency` confirms that required fields are present and raises an error if anything is missing. Append `--help` to either command for usage details.
+`npm run normalize` applies various cleanup routines to unify connector names and expand shorthand entries. `npm run unify-ports` standardizes connector and port labels. `npm run check-consistency` confirms that required fields are present and raises an error if anything is missing. Finally, `npm run generate-schema` rebuilds `schema.json` from the current data.
+
+Add `--help` to any of the above commands for detailed usage, for example:
+
+```bash
+npm run normalize -- --help
+```
 
 ## Feedback and Support
 

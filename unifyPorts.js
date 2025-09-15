@@ -331,7 +331,8 @@ if (require.main === module) {
       'Usage: node unifyPorts.js [--help]\n' +
         '\nNormalizes connector and port definitions in data.js and overwrites the file.\n' +
         '\nExamples:\n' +
-        '  node unifyPorts.js\n' +
+        '  npm run unify-ports\n' +
+        '  npm run unify-ports -- --help\n' +
         '  node unifyPorts.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'

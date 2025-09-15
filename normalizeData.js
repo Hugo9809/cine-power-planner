@@ -391,6 +391,7 @@ if (require.main === module) {
         '\nCleans and expands device data, then overwrites data.js with the result.\n' +
         '\nExamples:\n' +
         '  npm run normalize\n' +
+        '  npm run normalize -- --help\n' +
         '  node normalizeData.js --help\n' +
         '\nOptions:\n' +
         '  -h, --help  Show this help message and exit.'

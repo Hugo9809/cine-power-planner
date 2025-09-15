@@ -7,6 +7,8 @@
     "lint": "eslint .",
     "check-consistency": "node checkConsistency.js",
     "normalize": "node normalizeData.js",
+    "unify-ports": "node unifyPorts.js",
+    "generate-schema": "node generateSchema.js",
     "test": "npm run lint && npm run check-consistency && npm run test:jest",
     "test:jest": "npm run test:unit && npm run test:script",
     "test:unit": "jest --runInBand --testPathIgnorePatterns=tests/script.test.js",
