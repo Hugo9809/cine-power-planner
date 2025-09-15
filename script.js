@@ -1638,6 +1638,7 @@ function setLanguage(lang) {
     {input: cameraListFilterInput, label: texts[lang].category_cameras},
     {input: viewfinderListFilterInput, label: texts[lang].category_viewfinders},
     {input: monitorListFilterInput, label: texts[lang].category_monitors},
+    {input: directorMonitorListFilterInput, label: texts[lang].category_directorMonitors},
     {input: videoListFilterInput, label: texts[lang].category_video},
     {input: wirelessReceiverListFilterInput, label: texts[lang].category_wirelessReceivers},
     {input: motorListFilterInput, label: texts[lang].category_fiz_motors},
@@ -2219,6 +2220,7 @@ const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const cameraListElem  = document.getElementById("cameraList");
 const viewfinderListElem = document.getElementById("viewfinderList");
 const monitorListElem = document.getElementById("monitorList");
+const directorMonitorListElem = document.getElementById("directorMonitorList");
 const videoListElem   = document.getElementById("videoList");
 const wirelessReceiverListElem = document.getElementById("wirelessReceiverList");
 const motorListElem   = document.getElementById("motorList");
@@ -2971,6 +2973,7 @@ const overviewSectionIcons = {
   category_cameras: diagramIcons.camera,
   category_viewfinders: diagramIcons.viewfinder,
   category_monitors: diagramIcons.monitor,
+  category_directorMonitors: diagramIcons.monitor,
   category_video: diagramIcons.video,
   category_fiz_motors: diagramIcons.motors,
   category_fiz_controllers: diagramIcons.controllers,
@@ -2982,6 +2985,7 @@ const overviewSectionIcons = {
 const cameraListFilterInput = document.getElementById("cameraListFilter");
 const viewfinderListFilterInput = document.getElementById("viewfinderListFilter");
 const monitorListFilterInput = document.getElementById("monitorListFilter");
+const directorMonitorListFilterInput = document.getElementById("directorMonitorListFilter");
 const videoListFilterInput = document.getElementById("videoListFilter");
 const wirelessReceiverListFilterInput = document.getElementById("wirelessReceiverListFilter");
 const motorListFilterInput = document.getElementById("motorListFilter");
@@ -6665,6 +6669,7 @@ function refreshDeviceLists() {
   renderDeviceList("cameras", cameraListElem);
   renderDeviceList("viewfinders", viewfinderListElem);
   renderDeviceList("monitors", monitorListElem);
+  renderDeviceList("directorMonitors", directorMonitorListElem);
   renderDeviceList("video", videoListElem);
   renderDeviceList("wirelessReceivers", wirelessReceiverListElem);
   renderDeviceList("fiz.motors", motorListElem);
@@ -6681,6 +6686,7 @@ function refreshDeviceLists() {
   filterDeviceList(cameraListElem, cameraListFilterInput.value);
   filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
   filterDeviceList(monitorListElem, monitorListFilterInput.value);
+  filterDeviceList(directorMonitorListElem, directorMonitorListFilterInput.value);
   filterDeviceList(videoListElem, videoListFilterInput.value);
   filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value);
   filterDeviceList(motorListElem, motorListFilterInput.value);
@@ -6719,6 +6725,7 @@ if (skipLink) {
 bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
 bindFilterInput(viewfinderListFilterInput, () => filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value));
 bindFilterInput(monitorListFilterInput, () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
+bindFilterInput(directorMonitorListFilterInput, () => filterDeviceList(directorMonitorListElem, directorMonitorListFilterInput.value));
 bindFilterInput(videoListFilterInput, () => filterDeviceList(videoListElem, videoListFilterInput.value));
 bindFilterInput(wirelessReceiverListFilterInput, () => filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value));
 bindFilterInput(motorListFilterInput, () => filterDeviceList(motorListElem, motorListFilterInput.value));
@@ -7277,7 +7284,7 @@ newCategorySelect.addEventListener("change", () => {
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
-  } else if (val === "monitors") {
+  } else if (val === "monitors" || val === "directorMonitors") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
@@ -7816,7 +7823,7 @@ importFileInput.addEventListener("change", (event) => {
     try {
       const importedData = JSON.parse(e.target.result);
       // Basic validation: check if it has expected top-level keys
-      const expectedKeys = ["cameras", "viewfinders", "monitors", "video", "fiz", "batteries"];
+      const expectedKeys = ["cameras", "viewfinders", "monitors", "directorMonitors", "video", "fiz", "batteries"];
       const hasAllKeys = expectedKeys.every(key => Object.prototype.hasOwnProperty.call(importedData, key));
 
       if (hasAllKeys && typeof importedData.fiz === 'object' &&
