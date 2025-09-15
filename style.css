@@ -632,7 +632,8 @@ textarea:disabled {
   padding: 0;
   width: var(--button-size);
   height: var(--button-size);
-  background: none;
+  background-color: var(--control-bg);
+  border-radius: var(--border-radius);
   border: none;
   outline: none;
   cursor: pointer;
@@ -642,13 +643,18 @@ textarea:disabled {
   align-items: center;
   justify-content: center;
   line-height: 1;
-  transition: color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 .favorite-toggle:hover {
-  color: var(--link-color);
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  transform: translateY(-2px);
 }
 .favorite-toggle:active {
-  color: var(--link-color);
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  filter: brightness(0.9);
+  transform: translateY(0);
 }
 .favorite-toggle.favorited {
   background-color: var(--accent-color);
