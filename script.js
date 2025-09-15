@@ -225,6 +225,17 @@ function copyTextToClipboard(text) {
   });
 }
 
+function safeRevokeObjectURL(url) {
+  if (typeof URL === 'undefined' || typeof URL.revokeObjectURL !== 'function' || !url) {
+    return;
+  }
+  try {
+    URL.revokeObjectURL(url);
+  } catch {
+    // Ignore errors when the environment does not fully support blob URLs
+  }
+}
+
 // Use a Set for O(1) lookups when validating video output types
 const VIDEO_OUTPUT_TYPES = new Set([
   '3G-SDI',
@@ -7863,7 +7874,7 @@ exportBtn.addEventListener("click", () => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  safeRevokeObjectURL(url);
 });
 
 const exportAndRevertBtn = document.getElementById('exportAndRevertBtn'); 
@@ -7883,7 +7894,7 @@ if (exportAndRevertBtn) {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      safeRevokeObjectURL(url);
 
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {
@@ -8111,7 +8122,7 @@ shareSetupBtn.addEventListener('click', () => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  safeRevokeObjectURL(url);
   if (shareLinkMessage) {
     shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
     shareLinkMessage.classList.remove('hidden');
@@ -10117,7 +10128,7 @@ function exportCurrentGearList() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
+    safeRevokeObjectURL(a.href);
 }
 
 function handleImportGearList(e) {
@@ -10958,7 +10969,7 @@ function createSettingsBackup(notify = true) {
     a.href = url;
     a.download = 'planner-backup.json';
     a.click();
-    URL.revokeObjectURL(url);
+    safeRevokeObjectURL(url);
     if (notify) {
       showNotification('success', 'Backup created');
     }
@@ -11090,7 +11101,7 @@ if (downloadDiagramBtn) {
       a.href = url;
       a.download = `${baseName}.svg`;
       a.click();
-      URL.revokeObjectURL(url);
+      safeRevokeObjectURL(url);
     };
 
     if (e.shiftKey) {
@@ -11107,7 +11118,7 @@ if (downloadDiagramBtn) {
           a.href = url;
           a.download = `${baseName}.jpg`;
           a.click();
-          URL.revokeObjectURL(url);
+          safeRevokeObjectURL(url);
         }, 'image/jpeg', 0.95);
       };
       img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(source);

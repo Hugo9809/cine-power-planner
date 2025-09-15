@@ -746,311 +746,323 @@
       </div>
       <button id="hoverHelpButton" type="button">Hover for help</button>
       <p id="helpNoResults" aria-live="polite" hidden>No results found.</p>
+
       <div id="helpSections">
         <section data-help-section id="featuresOverview">
-          <h3><span class="help-icon" aria-hidden="true">✨</span>Features at a Glance</h3>
+          <h3><span class="help-icon" aria-hidden="true">✨</span>Cine Power Planner at a Glance</h3>
+          <p>The planner brings together power maths, crew logistics and deliverables so you can prep a production end-to-end without leaving the browser.</p>
           <ul>
-            <li>Plan complete camera rigs and compute power draw and battery life.</li>
-            <li>Save multiple projects, export or import them and print overviews.</li>
-            <li>Visualize power and video connections with an interactive diagram—drag to rearrange, pan, snap to grid, reset the view, zoom and download the layout.</li>
-            <li>Compare battery runtimes and check against safe output limits.</li>
-            <li>Customize the device database with your own gear.</li>
-            <li>Star frequently used devices to pin them at the top of dropdowns.</li>
-            <li>Generate categorized gear lists and printable project overviews with one click.</li>
-            <li>Refine runtime estimates with user feedback and a visual weighting dashboard.</li>
-            <li>Open a searchable help dialog with step-by-step guides and FAQ.</li>
-            <li>Switch languages, toggle dark or playful pink themes and work fully offline. Theme settings persist.</li>
-            <li>Force reload clears cached files and updates the app without deleting saved data.</li>
-            <li>Cameras with both V- and B-Mount plates let you swap battery types; the list updates automatically.</li>
+            <li><strong>Plan smarter rigs:</strong> combine cameras, monitoring, FIZ, plates, hotswaps and accessory batteries to see live power draw, runtime estimates and safety warnings. Optional battery comparisons rank every compatible pack.</li>
+            <li><strong>Turn selections into documents:</strong> save multiple projects, reopen them instantly and generate printable overviews, a categorized gear list and a downloadable project diagram.</li>
+            <li><strong>Capture production context:</strong> project requirements store schedules, crew contact details, imaging specs, scenario icons and monitoring notes so every export carries the same background info.</li>
+            <li><strong>Refine with real-world data:</strong> user runtime feedback and the weighting dashboard fold measured runtimes into the estimate while showing exactly how each report influences the average.</li>
+            <li><strong>Personalise the workspace:</strong> switch languages, toggle dark, pink or high-contrast themes, pick an accent colour, font family and font size, upload a custom logo for PDFs and work fully offline.</li>
+            <li><strong>Stay in control of data:</strong> edit the device database with schema-guided forms, star favourites to pin them to the top of dropdowns, back up or restore your entire workspace and use Force reload to refresh cached files without losing saved projects.</li>
           </ul>
         </section>
         <section data-help-section id="gettingStarted">
-          <h3><span class="help-icon" aria-hidden="true">🚀</span>Getting Started</h3>
+          <h3><span class="help-icon" aria-hidden="true">🚀</span>Getting Started Workflow</h3>
           <ol>
-            <li>Select a camera, monitor and other devices from the dropdown menus.</li>
-            <li>Use the search boxes inside each dropdown to quickly filter the lists.</li>
-            <li>Choose a battery to update total draw and estimated runtime.</li>
+            <li><strong>Name your project.</strong> Start with the default “New Project” entry or pick a saved setup, then fill in <em>Project Name</em> so quick-save (Enter or Ctrl+S/⌘S) becomes available.</li>
+            <li><strong>Choose the core devices.</strong> Pick a camera and monitor, then add wireless video and FIZ gear as needed. Every dropdown supports type-to-filter search and stars to pin favourite options.</li>
+            <li><strong>Round out the rig.</strong> Attach distance sensors, plates, batteries, hotswap units and accessory batteries. Camera-specific plate choices automatically unlock compatible battery families.</li>
+            <li><strong>Review the results.</strong> Select a battery to populate power draw, runtime, battery counts, safety warnings and the optional comparison table. Use <em>Copy Summary</em> to share the figures in chat or email.</li>
+            <li><strong>Add context and save.</strong> Open <em>Project Requirements</em> to record schedules, crew, imaging specs and rigging scenarios, then click <em>Save</em>. Your selections, requirements, gear list, feedback and custom devices all travel together in the project file.</li>
+            <li><strong>Double-check outputs.</strong> Glance at the project diagram for connector conflicts, review the gear list filters and generate the printable overview before handing the build to other departments.</li>
           </ol>
+          <p><strong>Pro tip:</strong> auto backups fire every ten minutes, so if you experiment with alternate builds you can always revert by loading the latest <em>auto-backup</em> entry from the Saved Projects dropdown.</p>
         </section>
         <section data-help-section id="managingSetups">
-          <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Projects</h3>
+          <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Projects &amp; Backups</h3>
           <ul>
-            <li>Use <strong>Save</strong> to store the current configuration in your browser. Press Enter or Ctrl+S (⌘S on macOS) to save quickly; the Save button stays disabled until a name is entered.</li>
-            <li><strong>Share Project</strong> downloads a JSON file containing your selections, project requirements, gear list, runtime feedback and any custom devices so you can back up or share the setup.</li>
-            <li>Select a JSON file in <strong>Shared Project</strong> and click <strong>Load</strong> to restore a shared configuration.</li>
-            <li>Use <strong>Delete</strong> to remove the saved entry or <strong>Clear Current Project</strong> to wipe the current selection without touching saved copies.</li>
-            <li><strong>Generate Overview</strong> produces a printable summary of any saved project.</li>
-            </ul>
-          </section>
-        <section data-help-section id="projectRequirementsHelp">
-          <h3><span class="help-icon" aria-hidden="true">🗒️</span>Project Requirements</h3>
-          <ul>
-            <li>Capture details like DoP, shooting dates, resolutions, codecs and more for each project.</li>
-            <li>Multi-select lists let you specify multiple scenarios, accessories or monitoring setups.</li>
-            <li>The information is saved with the project and included in printed overviews and gear lists.</li>
+            <li><strong>Save</strong> stores the current configuration locally. The button enables once a project name is entered and supports Enter or Ctrl+S/⌘S shortcuts.</li>
+            <li><strong>Share Project</strong> downloads a JSON bundle containing device picks, requirements, gear lists, runtime feedback, favourites and custom database entries. Keep a copy before loading a teammate’s file—auto backups run every ten minutes and appear at the bottom of the Saved Projects list if you need to roll back.</li>
+            <li><strong>Shared Project → Load</strong> restores a bundle you received from a teammate. Use <strong>Delete</strong> to remove obsolete saves or <strong>Clear Current Project</strong> to reset only the active workspace.</li>
+            <li><strong>Generate Overview</strong> produces a printable PDF-style summary complete with your uploaded logo, scenario icons and requirement details.</li>
+            <li><strong>Copy Summary</strong> grabs the current power breakdown and battery notes for quick reports or call sheets.</li>
+            <li>Visit <strong>Settings → Backup</strong> to export or restore the entire workspace, including preferences and device edits. All data lives in your browser—use your site data controls if you ever need a full wipe.</li>
+            <li>The <strong>Force reload</strong> (🔄) button clears cached files and reloads the latest version without touching saved projects.</li>
           </ul>
         </section>
-        <section data-help-section id="gearListHelp">
-          <h3><span class="help-icon" aria-hidden="true">📋</span>Gear List</h3>
-            <ul>
-              <li>The <strong>Generate Gear List</strong> button expands every selected device and project detail into a rich table grouped by category and quantity.</li>
-              <li>Any change to devices, lenses, batteries or project information rebuilds the list so it always reflects the current configuration.</li>
-              <li>The generator assembles the table step&nbsp;by&nbsp;step:
-                <ol>
-                  <li>Each chosen device is cloned so accessories and rules can be applied without altering the source data.</li>
-                  <li>Default accessories such as power cables or mounting brackets are attached according to each device definition.</li>
-                  <li>Scenario rules from <em>Required Scenarios</em> inject rigging and weather protection.</li>
-                  <li>Entries from the <em>Project Requirements</em> form contribute additional hardware and notes.</li>
-                  <li>An internal slug (manufacturer&nbsp;+&nbsp;model) is generated; matching slugs are merged and their quantities summed.</li>
-                  <li>Lines are sorted into Camera, Lens, Power, Monitoring and Accessories sections and then alphabetically.</li>
-                  <li>Tooltips list weight, dimensions and other metadata for quick reference.</li>
-                </ol>
-              </li>
-              <li>Accessory packs ensure common dependencies are covered:
-                <ul>
-                  <li><strong>Handheld + Easyrig</strong> adds a telescopic handle, shoulder rig and compatible quick‑release plates.</li>
-                  <li><strong>Gimbal</strong> supplies the selected gimbal, balancing accessories, power feed cables and any required filters or sunshades.</li>
-                  <li><strong>Outdoor</strong> adds spigots, umbrellas, CapIt rain covers and water‑resistant cable wraps for monitor protection.</li>
-                  <li><strong>Vehicle</strong> or <strong>Steadicam</strong> scenarios append suction mounts, hard‑mount plates or isolation arms where defined.</li>
-                </ul>
-              </li>
-              <li>Lens selections append front diameter, weight and rod requirements, introduce lens supports and matte box hardware, and warn about incompatible rod standards or filter trays.</li>
-              <li>Battery entries mirror counts from the power calculator; if draw exceeds safe limits the list adds hotswap plates or the selected hotswap device.</li>
-              <li>Monitoring preferences contribute default screens for each role (Director, DoP, Focus Puller, Client), matching video transmitters and pre‑bundled cable sets.</li>
-              <li>The <strong>Project Requirements</strong> form acts as a template for the list. Each field adds context and gear:
-                <ul>
-                  <li><strong>Project Name</strong>, <strong>DoP</strong>, <strong>Prep</strong> and <strong>Shooting Days</strong> populate the printed header and can trigger weather gear with outdoor scenarios.</li>
-                  <li><strong>Required Scenarios</strong> toggle accessory packs as described above.</li>
-                  <li><strong>Camera Handle</strong>, <strong>Viewfinder Extension</strong> and <strong>User Button Layouts</strong> supply matching handles, VF extensions and notes for operators.</li>
-                  <li><strong>Matte Box</strong> and <strong>Filter Set</strong> selections insert filter trays, donuts, adapters and storage cases.</li>
-                  <li><strong>Monitoring Configuration</strong> and <strong>Video Distribution</strong> choices attach wireless links, splitters, antennas and channel‑assignment notes.</li>
-                  <li><strong>Viewfinder Settings</strong> and <strong>Tripod Preferences</strong> add EVF mounts, extension brackets, tripod heads, spreaders and counterbalance details.</li>
-                </ul>
-              </li>
-              <li>The resulting gear list appears in printable overviews and shared project files so collaborators see full context.</li>
-              <li>The <strong>Save Gear List</strong> button stores the current list with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
-              <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
-            </ul>
-          </section>
-        <section data-help-section id="powerCalculator">
-          <h3><span class="help-icon" aria-hidden="true">⚡</span>Power Calculator</h3>
+        <section data-help-section id="collaborationWorkflows">
+          <h3><span class="help-icon" aria-hidden="true">🤝</span>Collaboration &amp; On-Set Workflow</h3>
+          <ol>
+            <li><strong>Pre-production:</strong> build a master project, fill in requirements and save it under a descriptive name. Use <em>Share Project</em> to hand the JSON bundle to other departments so everyone starts from the same baseline.</li>
+            <li><strong>Department hand-off:</strong> assistants load the bundle via <em>Shared Project → Load</em>, tweak device picks or monitoring setups for their tasks and save new versions (e.g. “Day 1 – Steadicam”). The original remains untouched.</li>
+            <li><strong>On set:</strong> focus pullers submit runtime feedback as batteries cycle. Their entries update the runtime average for the whole team and appear in the weighting dashboard immediately.</li>
+            <li><strong>Deliverables:</strong> at wrap, generate the overview PDF and gear list so production receives the latest requirements, crew notes and accessory breakdowns alongside power estimates.</li>
+            <li><strong>Archival:</strong> export a workspace backup after major shoots to capture device edits, preferences and stored feedback. The JSON can be imported on new machines to recreate the environment in minutes.</li>
+          </ol>
+          <p>Combining project saves with runtime feedback and backups lets multiple crew members collaborate without ever overwriting local work—the app merges contributions as long as everyone saves and exports regularly.</p>
+        </section>
+        <section data-help-section id="projectRequirementsHelp">
+          <h3><span class="help-icon" aria-hidden="true">🗒️</span>Project Requirements</h3>
+          <p>Capture every detail that influences rigging, paperwork and communication. Everything you enter travels with each save, flows into printable overviews, enriches the gear list generator and reappears when teammates import a shared project.</p>
           <ul>
-            <li>Select a battery to see estimated runtime, current draw and required batteries for a 10&nbsp;h shoot (incl. spare).</li>
-            <li>A temperature note helps account for runtime changes in hot or cold conditions.</li>
-            <li>Warnings appear if the configuration exceeds battery output limits.</li>
-            <li>The optional <strong>Battery Comparison</strong> panel shows runtimes for all batteries at once.</li>
+            <li><strong>Production basics &amp; contacts:</strong> log production companies, rental houses, DoPs and upload logos so exported PDFs are already branded. Crew entries store names, roles, email addresses and notes so the call list is always current.</li>
+            <li><strong>Imaging setup &amp; deliverables:</strong> select delivery and recording resolutions, sensor modes, codecs, aspect ratios and base frame rates. The dropdowns react to the camera you chose, so unavailable formats never appear.</li>
+            <li><strong>Lenses &amp; accessories:</strong> pick lens sets, matte boxes, filters and handle options. Duplicate buttons create quick variations (e.g. a hero and backup lens kit) without wiping the original data.</li>
+            <li><strong>Scenarios &amp; movement:</strong> choose required scenarios to surface rig-specific packs in the gear list. The summary panel on the right renders matching icons and nudges linked dropdowns (for example, Dolly days auto-add recommended monitors to the distribution list).</li>
+            <li><strong>Monitoring &amp; control:</strong> configure viewfinder settings, monitoring layouts, user button mappings and wireless video distribution so the camera department, village and client monitors are all accounted for.</li>
+            <li><strong>Tripod &amp; support:</strong> selecting Tripod reveals extra preferences for head brand, bowl size, support type and spreaders. Remove the scenario to hide the section and clear unused values automatically.</li>
+          </ul>
+          <p>The form is divided into focused blocks so you can log context as you build:</p>
+          <dl class="help-field-guide">
+            <dt>Crew &amp; scheduling</dt>
+            <dd>Use the <strong>+</strong> buttons beside Crew, Prep Days and Shooting Days to add as many rows as needed. Each row remembers labels and dates, and can be re-ordered with the drag handles that appear on focus.</dd>
+            <dt>Camera body metadata</dt>
+            <dd>Delivery, recording, sensor mode, codec and base frame-rate selectors pull real options from the selected camera. Changing the camera resets only incompatible fields so you retain what still applies.</dd>
+            <dt>Rigging logic</dt>
+            <dd>The scenario picker feeds the diagram and gear list while also unlocking conditional sections (Easyrig sizing, slider bowl selection, tripod configuration). Icon summaries double-check that speciality days are covered.</dd>
+            <dt>Monitoring presets</dt>
+            <dd>Monitoring configuration and frame guide choices sync with the gear list. Selecting certain options (like Viewfinder and Onboard) reveals nested choices for brightness, overlays and preferred accessories.</dd>
+            <dt>Saved state</dt>
+            <dd>All fields persist with each project file, backups and shared bundles. Importing another team’s JSON merges their requirements without overwriting your local presets.</dd>
+          </dl>
+          <p>Use the <em>Edit Project Requirements</em> button beside generated outputs to jump straight back to the form, tweak a single field and regenerate documents without rebuilding from scratch.</p>
+        </section>
+        <section data-help-section id="gearListHelp">
+          <h3><span class="help-icon" aria-hidden="true">📋</span>Gear List Generator</h3>
+          <p>The generator expands your selections into a production-ready packing list that stays synchronised with the project.</p>
+          <ul>
+            <li>Click <strong>Generate Gear List and Project Requirements</strong> in the results panel to compile a categorized table that merges devices, project requirements and scenario rules.</li>
+            <li>The builder works step-by-step:
+              <ol>
+                <li>Clone the selected devices so accessories and scenario logic can apply without changing the originals.</li>
+                <li>Add default power leads, cages, brackets and media defined in the device schema.</li>
+                <li>Apply scenario packs (Handheld + Easyrig, Vehicle, Gimbal, Outdoor, Steadicam, etc.) to ensure supporting gear travels with the rig.</li>
+                <li>Merge contributions from the <em>Project Requirements</em> form—crew, schedules, matte box choices, monitoring notes and tripod preferences become dedicated sections.</li>
+                <li>Generate slugs (manufacturer + model) to merge duplicates and sum their quantities automatically.</li>
+                <li>Group rows into Camera, Lens, Power, Monitoring, Accessories and Consumables, sort alphabetically and attach weight/dimension tooltips for reference.</li>
+              </ol>
+            </li>
+            <li>Lens selections contribute front diameters, rod spacing, minimum focus, supports and compatibility warnings.</li>
+            <li>Battery rows mirror the calculator’s counts and note when a hotswap plate is added to stay within safe draw limits.</li>
+            <li>Monitoring preferences create tailored bundles for Director, DoP, Focus Puller, Client and Video Village roles, complete with matched transmitters and cabling.</li>
+            <li>Use <strong>Save Gear List</strong> to keep the current output with the project, <strong>Export</strong>/<strong>Import</strong> to share JSON copies and <strong>Delete</strong> to return to the generator view.</li>
+            <li>Adjust dropdowns directly in the generated list to pick exact monitor SKUs, slider bowls, Easyrig sizes, tape colours and cage variants. Every change stores itself with the active project and is included when you export or share.</li>
+            <li>Filter packs expose checkbox grids for each strength and a separate size selector so you can pre-bake multiple ND, pol or diffusion values into one list without duplicating items manually.</li>
+            <li>The action bar at the bottom stays available even when scrolling; use it to quickly version deliverables (for example, one list for camera department and another for rentals) before saving under different project names.</li>
+          </ul>
+          <p>Whenever you reopen a saved project the planner restores the last generated gear list automatically, including any per-item selections you made. Generate a fresh list at any time to rebuild it with new device choices or updated requirements.</p>
+        </section>
+        <section data-help-section id="powerCalculator">
+          <h3><span class="help-icon" aria-hidden="true">⚡</span>Power &amp; Runtime Results</h3>
+          <ul>
+            <li>The breakdown list shows every device’s contribution—hover to reveal connector summaries and weighting info.</li>
+            <li><strong>Total Consumption</strong>, <strong>Total Current</strong> at 14.4 V (or 33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) update instantly when you change selections.</li>
+            <li><strong>Runtime</strong> displays the weighted average plus a note indicating whether measured data or manufacturer specs are driving the estimate.</li>
+            <li><strong>Batteries for a 10 h shoot</strong> calculates minimum quantities plus a spare so you can plan charging rotations.</li>
+            <li>Warnings flag when main pins, D‑Taps or selected hotswap units exceed safe output. When available, the planner suggests switching plates or enabling hotswap.</li>
+            <li>The optional <strong>Battery Comparison</strong> table ranks every compatible pack by estimated runtime for side-by-side planning.</li>
+            <li><strong>Temperature notes</strong> remind you to adjust expectations in extreme weather, and the <strong>Copy Summary</strong> button exports the numbers as formatted text.</li>
+            <li>The stacked <strong>Power Diagram</strong> appears once a battery is chosen. Segments are colour-coded by device, a vertical line marks the safe output for the plate and the caption beneath summarises the available wattage.</li>
+            <li>Pin, D‑Tap and hotswap alerts display precise draw figures so you know whether to redistribute loads, introduce a hotswap plate or select a battery with higher continuous current.</li>
+            <li>The runtime label shows how many user submissions are folded into the average once at least three feedback entries exist. Remove outliers from the weighting table to recalc in real time.</li>
+            <li>Battery Comparison hides itself automatically when only one compatible pack exists—change plates, enable hotswap or switch mounts to refresh the recommendation list.</li>
           </ul>
         </section>
         <section data-help-section id="calculationDetails">
-          <h3><span class="help-icon" aria-hidden="true">🧮</span>Calculation Details</h3>
+          <h3><span class="help-icon" aria-hidden="true">🧮</span>How Calculations Work</h3>
           <ul>
-            <li>Each device contributes its power draw in watts to <em>Total Consumption</em>.</li>
-            <li>Current at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) equals total watts divided by voltage.</li>
-            <li>Runtime&nbsp;=&nbsp;battery capacity (Wh)&nbsp;÷&nbsp;total consumption.</li>
-            <li>
-              User-submitted runtimes are adjusted for temperature and weighted before
-              averaging:
+            <li>Device power draw in watts is summed to form total consumption.</li>
+            <li>Current draw divides that wattage by the relevant system voltage (14.4 V/12 V for V‑Mount, 33.6 V/21.6 V for B‑Mount).</li>
+            <li>Battery runtime = capacity (Wh) ÷ total consumption. Values are rounded to two decimals for clarity.</li>
+            <li>User runtime feedback entries are normalised before averaging:
               <ul>
-                <li>Temperature: ×2 at ≤−20 °C, ×1.6 at ≤−10 °C, ×1.25 at ≤0 °C.</li>
-                <li>Resolution: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1; lower scales with 1080p.</li>
-                <li>Frame rate scales linearly from 24 fps (e.g. 48 fps = ×2).</li>
-                <li>Wi‑Fi adds 10 %; monitor entries below spec are weighted by their brightness ratio.</li>
-                <li>
-                  Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1;
-                  ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7.
-                </li>
-                <li>The final weight reflects each device's share of total power draw.</li>
+                <li>Temperature weighting scales from ×1 at 25 °C up to ×2 at −20 °C.</li>
+                <li>Resolution, frame rate, codec, Wi‑Fi usage and monitor brightness adjust each report to reflect load differences.</li>
+                <li>The final weight tracks how much power each matching device contributes so similar builds have the loudest voice.</li>
               </ul>
             </li>
-            <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
+            <li>The weighting dashboard underneath the results orders submissions by influence and displays each entry’s share percentage.</li>
+            <li>If no feedback is available the planner falls back to manufacturer specifications.</li>
           </ul>
         </section>
         <section data-help-section id="runtimeFeedbackHelp">
           <h3><span class="help-icon" aria-hidden="true">📝</span>User Runtime Feedback</h3>
           <ul>
-            <li>Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.</li>
-            <li>Include temperature for more accurate weighting.</li>
-            <li>Your entries are stored locally and refine the runtime estimate.</li>
+            <li>Use <strong>Submit User Runtime Feedback</strong> to log measured runtimes directly from set. Existing selections pre-fill camera, monitor, wireless video and battery fields.</li>
+            <li>Record contextual data—location, temperature, charging behaviour, lens, controllers, monitor brightness and Wi‑Fi status—to make comparisons meaningful.</li>
+            <li>Entries stay in your browser, influence the runtime average automatically and can be exported with the project bundle.</li>
+            <li>The weighting dashboard reveals how your submission impacts the estimate so you can validate anomalies quickly.</li>
+            <li>Select <strong>Use Current Location</strong> to capture GPS co-ordinates when the browser allows it; the app stores the location with the feedback but hides it from the visible table for privacy.</li>
+            <li>You need at least three entries for the weighted average to take over from manufacturer specs. Remove outliers with the <em>Delete</em> button next to each row to re-run the calculation.</li>
+            <li>All feedback syncs with project saves, shared bundles and workspace backups, so multiple focus pullers can contribute data throughout a shoot without overwriting one another.</li>
           </ul>
         </section>
         <section data-help-section id="setupDiagramHelp">
           <h3><span class="help-icon" aria-hidden="true">🗺️</span>Project Diagram</h3>
           <ul>
-            <li>Visualizes power and video connections between selected devices.</li>
-            <li>Drag nodes to rearrange the layout; use +/– buttons to zoom.</li>
-            <li>Drag empty space to pan the diagram.</li>
-            <li>Enable <strong>Snap to Grid</strong> to align items precisely.</li>
-            <li>Click <strong>Reset View</strong> to restore the default layout and zoom.</li>
-            <li>Export the diagram as SVG or JPG via the <em>Download</em> button.</li>
-            <li>Icons denote device types and warn when FIZ brands are incompatible.</li>
-            <li>Hover or tap devices to see popup details; on touch devices, tapping a node keeps its popup until another is selected.</li>
+            <li>Visualises power and video connections with icons for cameras, batteries, monitors, controllers and sensors. Scenario icons highlight special rigging requirements.</li>
+            <li>Drag nodes to rearrange, drag empty space to pan and use +/− to zoom. <strong>Snap to Grid</strong> locks items to tidy spacing.</li>
+            <li><strong>Reset View</strong> recentres and resizes the diagram; <strong>Download Diagram</strong> exports SVG or JPG versions for decks.</li>
+            <li>Hover or tap devices to see connector popovers. Incompatible FIZ ecosystems trigger warnings above the diagram.</li>
           </ul>
         </section>
         <section data-help-section id="deviceEditorHelp">
           <h3><span class="help-icon" aria-hidden="true">🛠️</span>Device Database Editor</h3>
           <ul>
-            <li>Open with <em>Edit Device Data…</em> to add, modify or remove devices.</li>
-            <li>Changes are stored locally; use <em>Export</em> and <em>Import</em> to share databases.</li>
-            <li><em>Revert</em> restores defaults from the files in <code>devices/</code>.</li>
+            <li>Open <em>Edit Device Data…</em> to add, duplicate or remove entries. Forms adapt to each category, revealing only relevant schema fields.</li>
+            <li>Import JSON files from teammates, export your own library and use <em>Export and Revert</em> to restore the shipped defaults.</li>
+            <li>Changes apply instantly across selectors, gear lists and diagrams. Remember to include custom devices when sharing project backups.</li>
+            <li>Camera entries expose dedicated panels for power inputs, battery plates, power distribution, video outputs, FIZ connectors and media so compatibility checks stay accurate.</li>
+            <li>Battery, hotswap and accessory forms accept decimal watt draws; the planner uses those values for runtime maths and to flag overloads in the results view.</li>
+            <li>All edits live inside your browser storage. Export before clearing cache or moving machines so your curated database and favourites survive.</li>
           </ul>
         </section>
         <section data-help-section id="deviceCategoriesHelp">
           <h3><span class="help-icon" aria-hidden="true">📁</span>Device Categories</h3>
+          <p>Main selectors support:</p>
           <ul>
-            <li><strong>Camera</strong> (1)</li>
+            <li><strong>Camera</strong></li>
             <li><strong>Monitor</strong> (optional)</li>
             <li><strong>Wireless Video</strong> (optional)</li>
-            <li><strong>FIZ Motors</strong> (0–4)</li>
-            <li><strong>FIZ Controllers</strong> (0–4)</li>
-            <li><strong>Distance Sensor</strong> (0–1)</li>
-            <li><strong>Battery Plate</strong> (on supported cameras)</li>
-            <li><strong>V‑ or B‑Mount Battery</strong> (0–1)</li>
+            <li><strong>FIZ Motors</strong> (up to four)</li>
+            <li><strong>FIZ Controllers</strong> (up to four)</li>
+            <li><strong>Distance Sensor</strong> (optional)</li>
+            <li><strong>Battery Plate</strong> (only when the camera accepts swappable plates)</li>
+            <li><strong>Main Battery</strong> (V‑Mount, B‑Mount or Gold Mount)</li>
+            <li><strong>Battery Hotswap</strong> and <strong>Accessory Battery</strong> selectors when relevant hardware is available.</li>
           </ul>
-          <p>The number in parentheses shows how many of that type you can select.</p>
+          <p>Additional accessory categories surface in the gear list so rigging, charging and cabling stay accounted for.</p>
+        </section>
+        <section data-help-section id="deviceSelectionDeepDive">
+          <h3><span class="help-icon" aria-hidden="true">🔌</span>Device Selection &amp; Compatibility</h3>
+          <ul>
+            <li>Camera choices drive the rest of the interface—battery plates, hotswap units and compatible batteries only appear when the body supports them, and selecting a new camera revalidates FIZ connectors, viewfinder options and media.</li>
+            <li>Mixing brands across motors, controllers and distance sensors triggers compatibility checks. Warnings appear above the project diagram when a controller is missing, an ARRI ecosystem is incomplete or DJI gear is combined with third-party motors.</li>
+            <li>The calculator keeps a hidden cage selector in sync to match accessories in the gear list. Changing the cage from the generated list updates the main dropdown and recalculates totals.</li>
+            <li>Battery, hotswap and accessory battery dropdowns automatically filter to mounts and voltage ranges supported by the camera and plate, preventing incompatible combinations from ever showing up.</li>
+            <li>Scenario selections (e.g. Dolly, Tripod, Outdoor) can auto-suggest monitors and accessories through the requirements form, ensuring downstream sections stay aligned with the plan.</li>
+          </ul>
         </section>
         <section data-help-section id="searchFiltering">
-          <h3><span class="help-icon" aria-hidden="true">🔍</span>Search & Filtering</h3>
+          <h3><span class="help-icon" aria-hidden="true">🔍</span>Search, Shortcuts &amp; Favourites</h3>
           <ul>
-            <li>Every dropdown and list can be filtered via its search box.</li>
-            <li>The help dialog itself is searchable using the field at the top.</li>
-            <li>The global search bar jumps to features, device selectors or help topics; press Enter to navigate and × to clear.</li>
-            <li>Click the star beside a dropdown to mark favorites; pinned items move to the top and persist between sessions.</li>
-            <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to focus the nearest search box.</li>
-            <li>Use the × button in any search field to reset the query and show all items.</li>
+            <li>Type in any dropdown or list filter to narrow results instantly. Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (⌘+F on macOS) to focus the nearest search box.</li>
+            <li>The global search field across the top understands feature headings, device names and help topics; press Enter to jump directly to the result and × to clear.</li>
+            <li>Star frequently used devices to pin them to the top of their dropdowns—favourites are saved per project and included in backups.</li>
+            <li>The help dialog search filters sections and FAQ entries live, highlighting matches with <code>&lt;mark&gt;</code> tags for quick scanning.</li>
+            <li>While filtering a dropdown, press <kbd>Backspace</kbd> to broaden the results or <kbd>Escape</kbd> to reset the search entirely. The same inline filtering works in the Project Requirements form.</li>
           </ul>
         </section>
         <section data-help-section id="helpDialogHelp">
-          <h3><span class="help-icon" aria-hidden="true">❓</span>Help Dialog</h3>
+          <h3><span class="help-icon" aria-hidden="true">❓</span>Using the Help Dialog</h3>
           <ul>
-            <li>Open with the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> (works even while typing).</li>
-            <li>Use the search field to filter topics; the query resets when closed.</li>
-            <li>Click the × button to clear the search and show all topics again.</li>
-            <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to jump to the search box.</li>
-            <li>Close the dialog with <kbd>Escape</kbd> or by clicking outside.</li>
+            <li>Open help with the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> even while typing elsewhere.</li>
+            <li>The search field filters content as you type; clear it with the × button or press Esc to close the dialog entirely.</li>
+            <li>Select <strong>Hover for help</strong> to turn the cursor into a tooltip explorer that reads the interface’s contextual descriptions.</li>
+            <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> inside the dialog to refocus the search box at any time.</li>
           </ul>
         </section>
         <section data-help-section id="hoverHelp">
-          <h3><span class="help-icon" aria-hidden="true">🖱️</span>Hover Help</h3>
+          <h3><span class="help-icon" aria-hidden="true">🖱️</span>Hover Help Mode</h3>
           <ul>
-            <li>Activate tooltip mode with <strong>Hover for help</strong> in the help dialog.</li>
-            <li>Move the cursor over buttons, fields, dropdowns or headers to see brief explanations.</li>
-            <li>Click anywhere or press <kbd>Escape</kbd> to exit.</li>
+            <li>After enabling <strong>Hover for help</strong>, move the pointer across buttons, dropdowns and headers to read their <code>data-help</code> descriptions.</li>
+            <li>Click anywhere or press <kbd>Escape</kbd> to exit hover mode. The dialog closes automatically once hover help starts so you can explore the UI.</li>
           </ul>
         </section>
         <section data-help-section id="languageHelp">
-          <h3><span class="help-icon" aria-hidden="true">🌐</span>Language</h3>
+          <h3><span class="help-icon" aria-hidden="true">🌐</span>Language &amp; Localisation</h3>
           <ul>
-            <li>Use the dropdown in the top right to switch languages.</li>
-            <li>Your choice is remembered for the next visit.</li>
+            <li>Switch languages from the toolbar or inside Settings. The planner remembers your preference for future visits.</li>
+            <li>Saved projects keep their labels no matter which language is active, so you can collaborate across teams.</li>
           </ul>
         </section>
-        <section data-help-section id="darkModeHelp">
-          <h3><span class="help-icon" aria-hidden="true">🌓</span>Dark Mode</h3>
+        <section data-help-section id="appearanceHelp">
+          <h3><span class="help-icon" aria-hidden="true">🎨</span>Appearance &amp; Accessibility</h3>
           <ul>
-            <li>Click the moon button or press <kbd>D</kbd> to toggle dark mode.</li>
-            <li>The setting persists between visits.</li>
-          </ul>
-        </section>
-        <section data-help-section id="pinkModeHelp">
-          <h3><span class="help-icon" aria-hidden="true">🦄</span>Pink Mode</h3>
-          <ul>
-            <li>Click the horse button for a pink unicorn theme that accents buttons and headings.</li>
-            <li>The setting persists between visits and works in light or dark mode.</li>
-            <li>Press <kbd>P</kbd> to toggle pink mode.</li>
+            <li>Toggle <strong>Dark Mode</strong> from the moon button (or press <kbd>D</kbd>) and <strong>Pink Mode</strong> from the unicorn button (or press <kbd>P</kbd>). Both settings persist between sessions.</li>
+            <li>Enable <strong>High Contrast</strong> in Settings for bolder colours and thicker outlines that meet accessibility guidelines.</li>
+            <li>Use the accent colour picker plus font size and font family selectors to match studio style guides or accessibility requirements.</li>
+            <li>Upload an SVG logo in Settings to brand printable overviews and backup exports.</li>
           </ul>
         </section>
         <section data-help-section id="shortcuts">
           <h3><span class="help-icon" aria-hidden="true">⌨️</span>Keyboard Shortcuts</h3>
           <ul>
-            <li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> – toggle help</li>
-            <li><kbd>Escape</kbd> – close dialogs</li>
+            <li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> – toggle the help dialog</li>
+            <li><kbd>Escape</kbd> – close dialogs or exit hover-help mode</li>
             <li><kbd>D</kbd> – toggle dark mode</li>
             <li><kbd>P</kbd> – toggle pink mode</li>
-            <li><kbd>Enter</kbd> or <kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd> on macOS) – save project</li>
-            <li>Type in dropdowns to filter options</li>
+            <li><kbd>Enter</kbd> or <kbd>Ctrl</kbd>+<kbd>S</kbd> (⌘+S) – save the current project</li>
+            <li><kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (⌘+F) – focus the nearest search field</li>
+          </ul>
+        </section>
+        <section data-help-section id="offlineHelp">
+          <h3><span class="help-icon" aria-hidden="true">📡</span>Offline, Updates &amp; Installation</h3>
+          <ul>
+            <li>The service worker caches everything after your first visit so the planner runs entirely offline. An indicator at the top lets you know when you reconnect.</li>
+            <li>Click <strong>Force reload</strong> to refresh cached files while keeping saved projects, requirements and custom devices intact.</li>
+            <li>Install the app as a Progressive Web App from Chrome/Edge (Install icon), Android (Add to Home Screen) or iOS/iPadOS Safari (Share → Add to Home Screen). Installed copies update automatically.</li>
           </ul>
         </section>
         <section data-help-section id="faq">
           <h3><span class="help-icon" aria-hidden="true">❓</span>FAQ</h3>
           <details class="faq-item">
-            <summary>How do I save a project?</summary>
-            <p>Enter a name in the Project Name field and click Save. It will then appear in the Saved Projects list.</p>
+            <summary>How do I save or duplicate a project?</summary>
+            <p>Enter a name, click <em>Save</em> and the project joins the Saved Projects dropdown. Use the dropdown to duplicate: load an existing project, rename it and press <em>Save</em> again.</p>
           </details>
           <details class="faq-item">
-            <summary>How do I share or back up a project?</summary>
-            <p>Click <em>Share Project</em> to download a JSON file with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the <em>Shared Project</em> field and press <em>Load</em> to restore it.</p>
+            <summary>What is included when I share or back up a project?</summary>
+            <p><em>Share Project</em> downloads a JSON bundle containing device selections, favourites, project requirements, runtime feedback, gear lists and any custom devices. Workspace backups from Settings include preferences and appearance tweaks as well.</p>
           </details>
           <details class="faq-item">
-            <summary>How do I edit device data?</summary>
-            <p>Click the <em>Edit Device Data…</em> button to open the database editor where you can add, change or remove devices.</p>
+            <summary>How can I brand the printable overview?</summary>
+            <p>Open Settings, upload an SVG logo and generate the overview. The logo is cached locally and embedded into PDFs, project bundles and backups.</p>
           </details>
           <details class="faq-item">
             <summary>How is battery runtime calculated?</summary>
-            <p>The app divides the selected battery's capacity (in watt-hours) by the total power consumption of your devices. For example, a 98&nbsp;Wh battery powering a 24&nbsp;W project is estimated to run for about 4&nbsp;hours.</p>
+            <p>The planner divides battery capacity (Wh) by total consumption and then blends in weighted runtime feedback when available. Temperature, codec and frame rate differences are normalised before averaging.</p>
           </details>
           <details class="faq-item">
-            <summary>What do the warning colors mean?</summary>
-            <p>Orange messages indicate the project is nearing the battery's output limit. Red warnings mean the estimated current exceeds the safe rating and could damage the battery.</p>
+            <summary>What do the warning colours mean?</summary>
+            <p>Orange messages indicate the configuration is nearing the safe output for a battery pin or D-Tap. Red warnings mean the draw exceeds the rating and you should switch batteries, add a hotswap or reduce the load.</p>
           </details>
           <details class="faq-item">
-            <summary>Where are my projects saved?</summary>
-            <p>Projects and device edits are stored in your browser's <code>localStorage</code>. Use <em>Share Project</em> to download a setup file, and use the Device Database Editor's <em>Export</em>/<em>Import</em> buttons to back up custom gear.</p>
+            <summary>Can I work offline?</summary>
+            <p>Yes. Once cached, the planner, device database and fonts all run offline. Saved data lives in your browser until you clear it.</p>
           </details>
           <details class="faq-item">
-            <summary>Does the planner work offline?</summary>
-            <p>Yes. Once the fonts and database are cached on first load, all features continue to work without an internet connection.</p>
+            <summary>Where are my projects stored?</summary>
+            <p>Everything is stored locally in <code>localStorage</code>. Export backups regularly if you plan to clear browser data or move to a new machine.</p>
           </details>
           <details class="faq-item">
-            <summary>Can I install the planner as an app?</summary>
-            <p>You can install the planner like an app on most platforms:</p>
-            <ul>
-              <li><strong>Chrome/Edge (desktop):</strong> Click the install icon in the address bar.</li>
-              <li><strong>Android:</strong> Open the browser menu and choose <em>Add to Home Screen</em>.</li>
-              <li><strong>iOS/iPadOS Safari:</strong> Tap the <em>Share</em> button and select <em>Add to Home Screen</em>.</li>
-              <li>After installation it runs offline and updates automatically.</li>
-            </ul>
+            <summary>How do I reset the device database?</summary>
+            <p>Open the device editor, click <em>Export and Revert</em> to back up your changes and reload the defaults from the shipped files.</p>
           </details>
           <details class="faq-item">
-            <summary>How do I reset everything to the defaults?</summary>
-            <p>Open the device editor and choose <em>Export and Revert</em> to restore the default database. Delete projects individually using the Delete button.</p>
+            <summary>How do I update to the latest device packs?</summary>
+            <p>Use <strong>Force reload</strong> to refresh cached files. You can then import updated device JSON packs or merge them in the editor.</p>
           </details>
           <details class="faq-item">
-            <summary>How do I change the language?</summary>
-            <p>Use the dropdown in the top right to pick a language. The planner remembers your choice for the next visit.</p>
+            <summary>How do I print or share a summary?</summary>
+            <p>Save the project, click <em>Generate Overview</em> for a printable PDF-style sheet, or use <em>Copy Summary</em> to paste the numbers into email, chat or call sheets.</p>
           </details>
           <details class="faq-item">
-            <summary>How can I print a project overview?</summary>
-            <p>Save the project, then click <em>Generate Overview</em> and print from the dialog.</p>
+            <summary>Can I change fonts or accent colours?</summary>
+            <p>Yes. Head to Settings to pick a new accent colour, font family and font size. These preferences are stored locally and included in workspace backups.</p>
           </details>
           <details class="faq-item">
-            <summary>How do I compare different batteries?</summary>
-            <p>The Battery Comparison section shows estimated run time for all batteries once a configuration is calculated.</p>
+            <summary>How do I install the planner like an app?</summary>
+            <p>In Chrome or Edge click the install icon in the address bar. On Android choose <em>Add to Home Screen</em>. On iOS/iPadOS open Safari, tap <em>Share</em> and select <em>Add to Home Screen</em>.</p>
           </details>
           <details class="faq-item">
-            <summary>How do I import or export the device database?</summary>
-            <p>Open the Device Database Editor and use the <em>Export</em> button to download your current database as JSON. Use <em>Import</em> to load a JSON file and replace your local data.</p>
+            <summary>Why doesn’t the battery comparison table show up?</summary>
+            <p>The table appears only when the selected camera and plate have multiple compatible batteries. Pick a different plate, enable a hotswap unit or switch mounts to reveal more candidates.</p>
           </details>
           <details class="faq-item">
-            <summary>Can I edit or add devices?</summary>
-            <p>Yes. In the Device Database Editor you can create new devices, change existing ones or delete entries. The changes appear immediately in the dropdown menus.</p>
+            <summary>How are runtime feedback weights applied?</summary>
+            <p>Once at least three feedback entries exist for the same setup, the planner normalises each report for temperature, resolution, codec, Wi‑Fi usage and monitor brightness. Higher-power builds contribute a larger share of the average, and you can remove outliers from the weighting table at any time.</p>
           </details>
           <details class="faq-item">
-            <summary>What does the Project Diagram show?</summary>
-            <p>The diagram illustrates how power and video cables connect between your chosen devices. Drag the nodes to arrange them and use the buttons to zoom or download an image.</p>
-          </details>
-          <details class="faq-item">
-            <summary>Which device categories are available?</summary>
-            <p>Categories include Camera, Monitor, Wireless Video, FIZ Motors, FIZ Controllers, Distance Sensor, Battery Plate and V‑/B‑Mount Battery.</p>
-          </details>
-          <details class="faq-item">
-            <summary>How do I clear cached files or update the app?</summary>
-            <p>Use the <em>Force reload</em> button (🔄) in the top bar to clear cached files and reload without losing saved data.</p>
-          </details>
-          <details class="faq-item">
-            <summary>Where does the device data come from?</summary>
-            <p>The default database is defined in the files under <code>devices/</code> from manufacturer specifications. You can modify or replace them via the Device Database Editor.</p>
+            <summary>Where can I find auto backups?</summary>
+            <p>Auto backups are saved every ten minutes and named <code>auto-backup-YYYY-MM-DD-HH-MM</code>. They live at the bottom of the Saved Projects dropdown so you can reload an earlier state if an import or experiment goes wrong.</p>
           </details>
         </section>
+      </div>
+</div>
       </div>
     </div>
   </div>
