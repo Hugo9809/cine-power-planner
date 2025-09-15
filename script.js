@@ -9643,6 +9643,20 @@ function getCurrentGearListHtml() {
                 });
             }
         });
+        ['Director', 'Combo', 'Dop'].forEach(role => {
+            const sel = clone.querySelector(`#gearList${role}Monitor15`);
+            if (sel) {
+                const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor15`);
+                const val = originalSel ? originalSel.value : sel.value;
+                Array.from(sel.options).forEach(opt => {
+                    if (opt.value === val) {
+                        opt.setAttribute('selected', '');
+                    } else {
+                        opt.removeAttribute('selected');
+                    }
+                });
+            }
+        });
         const cageSel = clone.querySelector('#gearListCage');
         if (cageSel) {
             const originalSel = gearListOutput.querySelector('#gearListCage');
@@ -10025,6 +10039,8 @@ function bindGearListDirectorMonitorListener() {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
                 saveCurrentGearList();
+                saveCurrentSession();
+                checkSetupChanged();
             });
         }
     });
@@ -10038,6 +10054,8 @@ function bindGearListDirectorMonitorListener() {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
                 saveCurrentGearList();
+                saveCurrentSession();
+                checkSetupChanged();
             });
         }
     });

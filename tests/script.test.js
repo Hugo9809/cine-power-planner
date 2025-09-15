@@ -3179,6 +3179,50 @@ describe('script.js functions', () => {
     expect(gear.querySelector('#gearListDirectorMonitor15').value).toBe(newVal);
   });
 
+  test('director large monitor selection persists after reload', () => {
+    setupDom(false);
+    require('../translations.js');
+    global.saveSessionState = jest.fn();
+    global.loadSessionState = jest.fn();
+    global.saveProject = jest.fn();
+    const script = require('../script.js');
+    const {
+      generateGearListHtml,
+      displayGearAndRequirements,
+      bindGearListDirectorMonitorListener,
+      restoreSessionState,
+    } = script;
+
+    // provide large monitor options
+    devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      MonB: { screenSizeInches: 17 },
+    };
+
+    let html = generateGearListHtml({ videoDistribution: 'Director Monitor 15-21"' });
+    displayGearAndRequirements(html);
+    bindGearListDirectorMonitorListener();
+
+    const sel = document.getElementById('gearListDirectorMonitor15');
+    sel.value = 'MonB';
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const state = global.saveSessionState.mock.calls.pop()[0];
+    const savedProject = global.saveProject.mock.calls.pop()[1];
+    global.loadSessionState.mockReturnValue(state);
+    global.loadProject = jest.fn(() => savedProject);
+
+    const out = document.getElementById('gearListOutput');
+    out.innerHTML = '';
+    out.classList.add('hidden');
+
+    restoreSessionState();
+    bindGearListDirectorMonitorListener();
+
+    expect(document.getElementById('gearListDirectorMonitor15').value).toBe('MonB');
+    expect(document.getElementById('monitorSizeDirector15').textContent).toBe('17"');
+  });
+
   test('gear list includes battery count in camera batteries row', () => {
     const { generateGearListHtml } = script;
     const addOpt = (id, value) => {
