@@ -2389,6 +2389,15 @@ const accentColorInput = document.getElementById("accentColorInput");
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
 const settingsLogo = document.getElementById("settingsLogo");
+if (settingsLogo) {
+  settingsLogo.addEventListener('change', () => {
+    const file = settingsLogo.files && settingsLogo.files[0];
+    if (file && file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
+      showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+      settingsLogo.value = '';
+    }
+  });
+}
 const settingsHighContrast = document.getElementById("settingsHighContrast");
 const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
@@ -10496,15 +10505,19 @@ if (settingsButton && settingsDialog) {
       }
       if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
         const file = settingsLogo.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          try {
-            localStorage.setItem('customLogo', reader.result);
-          } catch (e) {
-            console.warn('Could not save custom logo', e);
-          }
-        };
-        reader.readAsDataURL(file);
+        if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              localStorage.setItem('customLogo', reader.result);
+            } catch (e) {
+              console.warn('Could not save custom logo', e);
+            }
+          };
+          reader.readAsDataURL(file);
+        } else {
+          showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+        }
       }
       settingsDialog.setAttribute('hidden', '');
     });
