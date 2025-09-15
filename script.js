@@ -2482,13 +2482,52 @@ const accentColorInput = document.getElementById("accentColorInput");
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
 const settingsLogo = document.getElementById("settingsLogo");
+const settingsLogoPreview = document.getElementById("settingsLogoPreview");
+
+function renderSettingsLogoPreview(dataUrl) {
+  if (!settingsLogoPreview) return;
+  if (dataUrl) {
+    settingsLogoPreview.textContent = '';
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    img.alt = '';
+    settingsLogoPreview.appendChild(img);
+    settingsLogoPreview.removeAttribute('hidden');
+  } else {
+    settingsLogoPreview.textContent = '';
+    settingsLogoPreview.setAttribute('hidden', '');
+  }
+}
+
+function loadStoredLogoPreview() {
+  if (!settingsLogoPreview || typeof localStorage === 'undefined') return;
+  let stored = null;
+  try {
+    stored = localStorage.getItem('customLogo');
+  } catch (e) {
+    console.warn('Could not load custom logo preview', e);
+  }
+  renderSettingsLogoPreview(stored);
+}
+
 if (settingsLogo) {
   settingsLogo.addEventListener('change', () => {
     const file = settingsLogo.files && settingsLogo.files[0];
-    if (file && file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
+    if (!file) {
+      loadStoredLogoPreview();
+      return;
+    }
+    if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
       showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
       settingsLogo.value = '';
+      loadStoredLogoPreview();
+      return;
     }
+    const reader = new FileReader();
+    reader.onload = () => {
+      renderSettingsLogoPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   });
 }
 const settingsHighContrast = document.getElementById("settingsHighContrast");
@@ -10817,6 +10856,7 @@ if (settingsButton && settingsDialog) {
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
+    if (settingsLogoPreview) loadStoredLogoPreview();
     settingsDialog.removeAttribute('hidden');
     // Focus the first control except the language selector to avoid opening it automatically
     const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
@@ -10826,6 +10866,8 @@ if (settingsButton && settingsDialog) {
   if (settingsCancel) {
     settingsCancel.addEventListener('click', () => {
       revertAccentColor();
+      if (settingsLogo) settingsLogo.value = '';
+      if (settingsLogoPreview) loadStoredLogoPreview();
       settingsDialog.setAttribute('hidden', '');
     });
   }
@@ -10894,10 +10936,13 @@ if (settingsButton && settingsDialog) {
             } catch (e) {
               console.warn('Could not save custom logo', e);
             }
+            renderSettingsLogoPreview(reader.result);
           };
           reader.readAsDataURL(file);
         } else {
           showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+          if (settingsLogo) settingsLogo.value = '';
+          loadStoredLogoPreview();
         }
       }
       settingsDialog.setAttribute('hidden', '');
@@ -10907,6 +10952,8 @@ if (settingsButton && settingsDialog) {
   settingsDialog.addEventListener('click', e => {
     if (e.target === settingsDialog) {
       revertAccentColor();
+      if (settingsLogo) settingsLogo.value = '';
+      if (settingsLogoPreview) loadStoredLogoPreview();
       settingsDialog.setAttribute('hidden', '');
     }
   });
@@ -11001,6 +11048,7 @@ if (restoreSettings && restoreSettingsInput) {
             localStorage.setItem(k, v);
           });
         }
+        loadStoredLogoPreview();
         if (data && typeof importAllData === 'function') {
           importAllData(data);
         }

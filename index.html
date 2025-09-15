@@ -14,7 +14,7 @@
   <meta name="theme-color" content="#f9f9f9" />
   <meta name="application-name" content="Cine Power Planner" />
   <meta name="apple-mobile-web-app-title" content="Cine Power Planner" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';" />
   <meta name="referrer" content="no-referrer" />
   <meta name="color-scheme" content="light dark" />
   <title>Cine Power Planner</title>
@@ -711,7 +711,10 @@
       </div>
       <div class="form-row">
         <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>
-        <input type="file" id="settingsLogo" accept="image/svg+xml" />
+        <div class="file-input-wrapper">
+          <input type="file" id="settingsLogo" accept="image/svg+xml" />
+          <div id="settingsLogoPreview" class="logo-preview" hidden aria-live="polite"></div>
+        </div>
       </div>
       <h3 id="accessibilityHeading">Accessibility</h3>
       <div class="form-row">
