@@ -75,6 +75,7 @@ See the language-specific README files for full details.
 - Customize the device database with your own gear.
 - Uses your browser's language on first load (falls back to English), lets you switch languages, toggle dark or playful pink themes, and swap between V‑, B‑ and Gold‑Mount plates on supported cameras.
 - Enjoy a responsive layout with an updated design that adapts to phones, tablets and desktops.
+- Jump to features, device selectors or help topics with the global search field; press Enter to navigate and × to clear the query.
 - Works completely offline and offers a searchable help dialog with hover help for every button, field, dropdown and header.
 
 ## Runtime Data Weighting

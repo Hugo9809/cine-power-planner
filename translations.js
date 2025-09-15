@@ -40,7 +40,7 @@ const texts = {
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
     featureSearchHelp:
-      "Type to jump to features or devices or open related help topics.",
+      "Type to jump to features, devices or help topics. Press Enter to navigate and use × to clear the query.",
     featureSearchClear: "Clear search",
     featureSearchClearHelp: "Clear the search box and show all results again.",
     darkModeHelp:
@@ -450,7 +450,7 @@ const texts = {
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
-      "Digita per andare alle funzionalità o ai dispositivi o aprire le guide correlate.",
+      "Digita per andare alle funzionalità, ai dispositivi o aprire gli argomenti di aiuto correlati. Premi Invio per navigare e × per cancellare la ricerca.",
     featureSearchClear: "Cancella ricerca",
     featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati.",
     darkModeHelp:
@@ -835,7 +835,7 @@ const texts = {
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
-      "Escribe para ir a las funciones o a los dispositivos o ver los temas de ayuda relacionados.",
+      "Escribe para ir a funciones, dispositivos o temas de ayuda relacionados. Pulsa Enter para navegar y × para limpiar la búsqueda.",
     featureSearchClear: "Borrar búsqueda",
     featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo.",
     darkModeHelp:
@@ -1234,7 +1234,7 @@ const texts = {
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l'aide",
     featureSearchHelp:
-      "Tapez pour accéder aux fonctionnalités ou appareils ou ouvrir les sujets d'aide associés.",
+      "Tapez pour accéder aux fonctionnalités, appareils ou sujets d'aide associés. Appuyez sur Entrée pour naviguer et sur × pour effacer la requête.",
     featureSearchClear: "Effacer la recherche",
     featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats.",
     darkModeHelp:
@@ -1635,7 +1635,7 @@ const texts = {
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
     featureSearchHelp:
-      "Tippen, um zu Funktionen oder Geräten zu springen oder passende Hilfethemen zu öffnen.",
+      "Tippen, um zu Funktionen, Geräten oder Hilfethemen zu springen. Mit Enter springen und mit × die Suche leeren.",
     featureSearchClear: "Suche löschen",
     featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen.",
     darkModeHelp:
