@@ -8463,7 +8463,8 @@ const formatFizCable = (name, context) => {
 
 function suggestArriFizCables() {
     const CABLE_LBUS_05 = 'LBUS to LBUS 0,5m';
-    const CABLE_UDM = 'Cable UDM – SERIAL (4p) 0,8m';
+    const CABLE_UDM_SERIAL_4P = 'Cable UDM – SERIAL (4p) 0,5m';
+    const CABLE_UDM_SERIAL_7P = 'Cable UDM – SERIAL (7p) 1,5m';
     const cables = [];
     const lbusLengths = [];
     const camSpare = [];
@@ -8541,8 +8542,12 @@ function suggestArriFizCables() {
         }
     }
     if (hasUDM) {
-        cables.push(formatFizCable(CABLE_UDM, distanceContext));
-        if (!hasLCube) cables.push(formatFizCable(CABLE_UDM, 'spare'));
+        if (hasLCube) {
+            cables.push(formatFizCable(CABLE_UDM_SERIAL_7P, distanceContext));
+        } else {
+            cables.push(formatFizCable(CABLE_UDM_SERIAL_4P, distanceContext));
+            cables.push(formatFizCable(CABLE_UDM_SERIAL_4P, 'spare'));
+        }
     }
     if (lbusLengths.length) {
         const shortest = Math.min(...lbusLengths);

@@ -7266,7 +7266,7 @@ test('ARRI Alexa 35 setup suggests appropriate FIZ cables', () => {
   devices.accessories.cables.fiz = {
     'LBUS to LBUS 0,3m': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' },
     'LBUS to LBUS 0,5m': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' },
-    'Cable UDM – SERIAL (4p) 0,8m': { from: 'SERIAL (LEMO 4-pin)', to: 'Serial' }
+    'Cable UDM – SERIAL (4p) 0,5m': { from: 'SERIAL (LEMO 4-pin)', to: 'Serial' }
   };
   const { collectAccessories } = require('../script.js');
   const addOpt = (id, value) => {
@@ -7287,12 +7287,45 @@ test('ARRI Alexa 35 setup suggests appropriate FIZ cables', () => {
     'LBUS to LBUS 0,5m (Arri Cforce Mini ↔ Arri Master Grip single unit)',
     'LBUS to LBUS 0,3m (for Arri Cforce Mini)',
     'LBUS to LBUS 0,5m (for Arri Master Grip single unit)',
-    'Cable UDM – SERIAL (4p) 0,8m (for UDM-1 + LCube)',
+    'Cable UDM – SERIAL (4p) 0,5m (for UDM-1 + LCube)',
     'LBUS to LBUS 0,3m (spare)',
     'LBUS to LBUS 0,5m (spare)',
-    'Cable UDM – SERIAL (4p) 0,8m (spare)'
+    'Cable UDM – SERIAL (4p) 0,5m (spare)'
   ]));
   expect(fizCables).toHaveLength(8);
+});
+
+test('UMC-4 setup suggests 7-pin serial cable for UDM-1 via LCube', () => {
+  setupDom(false);
+  devices.cameras['Arri Alexa Mini'] = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }, { type: 'Serial (LEMO 7-pin)' }] };
+  devices.fiz.motors['Arri Cforce Mini'] = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+  devices.fiz.controllers['Arri UMC-4'] = {
+    fizConnectors: [{ type: 'Serial (LEMO 7-pin)' }],
+    internalController: true
+  };
+  devices.fiz.distance['UDM-1 + LCube'] = { fizConnectors: [{ type: 'Serial' }] };
+  devices.accessories.cables.fiz = {
+    'Cable UDM – SERIAL (7p) 1,5m': { from: 'Serial (LEMO 7-pin)', to: 'Serial' }
+  };
+  const { collectAccessories } = require('../script.js');
+  const addOpt = (id, value) => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = `<option value="${value}">${value}</option>`;
+    sel.value = value;
+  };
+  addOpt('cameraSelect', 'Arri Alexa Mini');
+  addOpt('motor1Select', 'Arri Cforce Mini');
+  addOpt('controller1Select', 'Arri UMC-4');
+  addOpt('distanceSelect', 'UDM-1 + LCube');
+  addOpt('monitorSelect', 'None');
+  addOpt('videoSelect', 'None');
+  addOpt('batterySelect', 'BattA');
+  const { fizCables } = collectAccessories({ hasMotor: true });
+  expect(fizCables).toEqual(expect.arrayContaining([
+    'Cable UDM – SERIAL (7p) 1,5m (for UDM-1 + LCube)'
+  ]));
+  expect(fizCables).not.toContain('Cable UDM – SERIAL (7p) 1,5m (spare)');
+  expect(fizCables.some(cable => cable.includes('Cable UDM – SERIAL (4p)'))).toBe(false);
 });
 
 test('cforce mini RF uses camera-specific CAM cable', () => {
