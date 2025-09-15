@@ -993,12 +993,12 @@ const gear = {
           "to": "LBUS (LEMO 4-pin)",
           "lengthM": 0.5
         },
-        "Cable UDM – SERIAL (4p) 0,8m": {
+        "Cable UDM – SERIAL (7p) 1,5m": {
           "brand": "ARRI",
-          "kNumber": "K2.0041172",
-          "from": "SERIAL (LEMO 4-pin)",
+          "kNumber": "K2.65144.0",
+          "from": "Serial (LEMO 7-pin)",
           "to": "Serial",
-          "lengthM": 0.8
+          "lengthM": 1.5
         },
         "Cable UDM – SERIAL (4p) 0,5m": {
           "brand": "ARRI",
