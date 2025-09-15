@@ -482,6 +482,7 @@ function exportAllData() {
     session: loadSessionState(),
     feedback: loadFeedback(),
     project: loadProject(),
+    favorites: loadFavorites(),
   };
 }
 
@@ -498,6 +499,9 @@ function importAllData(allData) {
     }
     if (allData.feedback) {
       saveFeedback(allData.feedback);
+    }
+    if (allData.favorites) {
+      saveFavorites(allData.favorites);
     }
     if (allData.project) {
       Object.entries(allData.project).forEach(([name, proj]) => {

@@ -358,7 +358,7 @@ describe('settings backup and restore', () => {
     restoreInput.id = 'restoreSettingsInput';
     document.body.appendChild(restoreInput);
 
-    global.exportAllData = jest.fn(() => ({ foo: 'bar' }));
+    global.exportAllData = jest.fn(() => ({ foo: 'bar', favorites: { cat: ['A'] } }));
     global.importAllData = jest.fn();
 
     require('../translations.js');
@@ -372,11 +372,11 @@ describe('settings backup and restore', () => {
     document.createElement = jest.fn(tag => tag === 'a' ? anchor : origCreateElement(tag));
 
     backupBtn.dispatchEvent(new window.Event('click'));
-    expect(global.exportAllData).toHaveBeenCalled();
+    expect(global.exportAllData).toHaveBeenCalledTimes(1);
     const blob = global.URL.createObjectURL.mock.calls[0][0];
     const text = await blob.text();
     const obj = JSON.parse(text);
-    expect(obj.data).toEqual({ foo: 'bar' });
+    expect(obj.data).toEqual({ foo: 'bar', favorites: { cat: ['A'] } });
 
     document.createElement = origCreateElement;
 
@@ -389,7 +389,8 @@ describe('settings backup and restore', () => {
     Object.defineProperty(restoreInput, 'files', { value: [new Blob()] });
     restoreBtn.dispatchEvent(new window.Event('click'));
     restoreInput.dispatchEvent(new window.Event('change'));
-    expect(global.importAllData).toHaveBeenCalledWith({ foo: 'bar' });
+    expect(global.exportAllData).toHaveBeenCalledTimes(2);
+    expect(global.importAllData).toHaveBeenCalledWith({ foo: 'bar', favorites: { cat: ['A'] } });
     jest.useRealTimers();
   });
 });
