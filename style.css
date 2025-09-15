@@ -448,7 +448,8 @@ footer a {
     background: var(--surface-color);
     padding-top: 10px;
     border-top: 1px solid var(--accent-color);
-    justify-content: space-between;
+    justify-content: flex-end;
+    margin-top: 10px;
   }
 }
 
@@ -570,6 +571,12 @@ textarea {
   color: var(--control-text);
   border: none;
   border-radius: var(--border-radius);
+}
+
+/* Match input and select heights to standard buttons */
+input:not([type="checkbox"]),
+select {
+  height: var(--button-size);
 }
 
 select {
