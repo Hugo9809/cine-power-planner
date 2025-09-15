@@ -6918,7 +6918,13 @@ setupSelect.addEventListener("change", (event) => {
 function populateSetupSelect() {
   const setups = getSetups();
   setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
-  for (const name in setups) {
+  const names = Object.keys(setups).sort((a, b) => {
+    const autoA = a.startsWith('auto-backup-');
+    const autoB = b.startsWith('auto-backup-');
+    if (autoA !== autoB) return autoA ? 1 : -1; // Auto backups last
+    return localeSort(a, b);
+  });
+  for (const name of names) {
     const opt = document.createElement("option");
     opt.value = name;
     opt.textContent = name;
@@ -6936,7 +6942,9 @@ function autoBackup() {
   try {
     const pad = (n) => String(n).padStart(2, '0');
     const now = new Date();
-    const backupName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const baseName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const projectName = setupSelect.value ? `-${setupSelect.value}` : '';
+    const backupName = `${baseName}${projectName}`;
     const currentSetup = { ...getCurrentSetupState(), gearList: getCurrentGearListHtml() };
     const setups = getSetups();
     setups[backupName] = currentSetup;

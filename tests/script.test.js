@@ -311,24 +311,47 @@ test('restoring session state preserves selections', () => {
 });
 
 describe('auto backup', () => {
-  test('creates backup after 10 minutes without changing selection', () => {
+  test('creates backup with project name without changing selection', () => {
     setupDom(false);
-    const stored = {};
+    const stored = { Proj1: {} };
     global.loadSetups = jest.fn(() => stored);
     global.saveSetups = jest.fn((data) => Object.assign(stored, data));
     jest.useFakeTimers();
     require('../translations.js');
     const script = require('../script.js');
     script.setLanguage('en');
-    const prevVal = document.getElementById('setupSelect').value;
+    const selectEl = document.getElementById('setupSelect');
+    selectEl.value = 'Proj1';
+    const prevVal = selectEl.value;
     jest.advanceTimersByTime(10 * 60 * 1000);
     expect(global.saveSetups).toHaveBeenCalled();
     const names = Object.keys(stored);
-    expect(names.length).toBe(1);
-    const backupName = names[0];
+    expect(names.length).toBe(2);
+    const backupName = names.find((n) => n !== 'Proj1');
     expect(backupName.startsWith('auto-backup-')).toBe(true);
+    expect(backupName.endsWith('-Proj1')).toBe(true);
     expect(document.getElementById('setupSelect').value).toBe(prevVal);
+    const optionValues = Array.from(selectEl.options).map((o) => o.value);
+    expect(optionValues).toEqual(['', 'Proj1', backupName]);
     jest.useRealTimers();
+  });
+});
+
+describe('populateSetupSelect ordering', () => {
+  test('auto backups appear after user projects', () => {
+    setupDom(false);
+    const stored = {
+      'auto-backup-old': {},
+      B: {},
+      A: {},
+    };
+    global.loadSetups = jest.fn(() => stored);
+    global.saveSetups = jest.fn();
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    const optionValues = Array.from(document.querySelectorAll('#setupSelect option')).map((o) => o.value);
+    expect(optionValues).toEqual(['', 'A', 'B', 'auto-backup-old']);
   });
 });
 
