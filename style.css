@@ -1798,6 +1798,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     margin: 5px 0 0 0;
   }
 
+  .form-row .select-wrapper {
+    margin: 5px 0 0 0;
+  }
+
+  .form-row .select-wrapper select {
+    margin: 0;
+  }
+
   .form-row > button {
     width: 100%;
     margin: 5px 0 0 0;
