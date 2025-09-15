@@ -7165,9 +7165,9 @@ deviceManagerSection.addEventListener("click", (event) => {
 
     // Set form for editing
     newCategorySelect.value = categoryKey;
-    newCategorySelect.disabled = true; // Prevent changing category during edit
     // Trigger change handler so fields are cleared
     newCategorySelect.dispatchEvent(new Event('change'));
+    newCategorySelect.disabled = true; // Prevent changing category during edit
     // After the change handler runs, restore the device name for editing
     newNameInput.value = name;
 
