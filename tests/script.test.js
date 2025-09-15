@@ -1390,6 +1390,43 @@ describe('script.js functions', () => {
     expect(battOpts).toContain('GBatt');
   });
 
+  test('battery plate defaults to V-Mount when available', () => {
+    setupDom(false);
+    require('../translations.js');
+    const script = require('../script.js');
+    global.devices.cameras.BothCam = {
+      powerDrawWatts: 10,
+      power: {
+        batteryPlateSupport: [
+          { type: 'V-Mount', mount: 'native' },
+          { type: 'B-Mount', mount: 'native' }
+        ]
+      }
+    };
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="BothCam">BothCam</option>';
+    camSel.value = 'BothCam';
+    script.updateBatteryPlateVisibility();
+    const plateSel = document.getElementById('batteryPlateSelect');
+    expect(plateSel.value).toBe('V-Mount');
+  });
+
+  test('battery plate defaults to first available when V-Mount unsupported', () => {
+    setupDom(false);
+    require('../translations.js');
+    const script = require('../script.js');
+    global.devices.cameras.BOnly = {
+      powerDrawWatts: 10,
+      power: { batteryPlateSupport: [{ type: 'B-Mount', mount: 'native' }] }
+    };
+    const camSel = document.getElementById('cameraSelect');
+    camSel.innerHTML = '<option value="BOnly">BOnly</option>';
+    camSel.value = 'BOnly';
+    script.updateBatteryPlateVisibility();
+    const plateSel = document.getElementById('batteryPlateSelect');
+    expect(plateSel.value).toBe('B-Mount');
+  });
+
   test('FXLion hotswap only visible for FXLion Nano batteries', () => {
     global.devices.cameras.VCam = {
       powerDrawWatts: 10,

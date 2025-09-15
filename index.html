@@ -180,17 +180,18 @@
         <label for="controller4Select"></label>
         <select id="controller4Select" aria-label="Additional FIZ controller"></select>
       </div>
-    <div class="form-row">
-      <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
-      <div class="select-wrapper">
-        <select id="distanceSelect" aria-labelledby="distanceLabel"></select>
+      <div class="form-row">
+        <label for="distanceSelect" id="distanceLabel">Distance Sensor:</label>
+        <div class="select-wrapper">
+          <select id="distanceSelect" aria-labelledby="distanceLabel"></select>
+        </div>
       </div>
-    </div>
-    <div class="form-row hidden" id="batteryPlateRow">
+    </fieldset>
+
+    <div class="form-row" id="batteryPlateRow">
       <label for="batteryPlateSelect" id="batteryPlateLabel">Battery Plate:</label>
       <select id="batteryPlateSelect" aria-labelledby="batteryPlateLabel"></select>
     </div>
-  </fieldset>
 
     <div class="form-row">
       <label for="batterySelect" id="batteryLabel">V-Mount Battery:</label>
@@ -281,7 +282,7 @@
         <option value="fiz.motors">FIZ Motor</option>
         <option value="fiz.controllers">FIZ Controller</option>
         <option value="fiz.distance">FIZ Distance</option>
-        <option value="batteries">V-Mount Battery</option>
+        <option value="batteries">Battery</option>
         <option value="batteryHotswaps">Battery Hotswap</option>
         <option value="accessories.batteries">Accessory Battery</option>
         <option value="accessories.cables">Cable</option>
