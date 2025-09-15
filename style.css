@@ -1471,6 +1471,7 @@ html.dark-mode,
   --selected-row-bg: #003366;
 }
 
+html.high-contrast,
 body.high-contrast {
   --background-color: #000;
   --surface-color: #000;
