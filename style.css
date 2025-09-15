@@ -19,6 +19,7 @@
   --panel-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
   --border-radius: 5px;
   --page-padding: 20px;
+  --main-top-padding-multiplier: 1.5;
   --gap-size: 10px;
   --button-size: 24px;
   --font-family: 'Ubuntu', sans-serif;
@@ -75,7 +76,9 @@ body {
 main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: calc(var(--page-padding) * 0.75) var(--page-padding) var(--page-padding);
+  padding: calc(var(--page-padding) * var(--main-top-padding-multiplier))
+    var(--page-padding)
+    var(--page-padding);
 }
 
 section,
@@ -89,7 +92,7 @@ textarea {
 @supports (padding: env(safe-area-inset-top)) {
   main {
     padding:
-      calc(env(safe-area-inset-top) + var(--page-padding) * 0.75)
+      calc(env(safe-area-inset-top) + var(--page-padding) * var(--main-top-padding-multiplier))
       calc(env(safe-area-inset-right) + var(--page-padding))
       calc(env(safe-area-inset-bottom) + var(--page-padding))
       calc(env(safe-area-inset-left) + var(--page-padding));
