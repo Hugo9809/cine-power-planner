@@ -1564,6 +1564,7 @@ function setLanguage(lang) {
   document.getElementById("cameraVoltageLabel").textContent = texts[lang].cameraVoltageLabel;
   document.getElementById("cameraPortTypeLabel").textContent = texts[lang].cameraPortTypeLabel;
   document.getElementById("cameraPlatesLabel").textContent = texts[lang].cameraPlatesLabel;
+  document.getElementById("cameraWeightLabel").textContent = texts[lang].cameraWeightLabel;
   document.getElementById("cameraMediaLabel").textContent = texts[lang].cameraMediaLabel;
   document.getElementById("cameraLensMountLabel").textContent = texts[lang].cameraLensMountLabel;
   document.getElementById("cameraPowerDistLabel").textContent = texts[lang].powerDistributionLabel;
@@ -1579,6 +1580,10 @@ function setLanguage(lang) {
   document.getElementById("viewfinderHeading").textContent = texts[lang].viewfinderHeading;
   document.getElementById("lensMountHeading").textContent = texts[lang].lensMountHeading;
   document.getElementById("timecodeHeading").textContent = texts[lang].timecodeHeading;
+  document.getElementById("cameraSpecsHeading").textContent = texts[lang].cameraSpecsHeading;
+  document.getElementById("cameraRecordingCodecsLabel").textContent = texts[lang].cameraRecordingCodecsLabel;
+  document.getElementById("cameraSensorModesLabel").textContent = texts[lang].cameraSensorModesLabel;
+  document.getElementById("cameraResolutionsLabel").textContent = texts[lang].cameraResolutionsLabel;
   document.getElementById("monitorScreenSizeLabel").textContent = texts[lang].monitorScreenSizeLabel;
   document.getElementById("monitorBrightnessLabel").textContent = texts[lang].monitorBrightnessLabel;
   document.getElementById("monitorWattLabel").textContent = texts[lang].monitorWattLabel;
@@ -2376,6 +2381,10 @@ const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
 const viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
+const recordingCodecsContainer = document.getElementById("recordingCodecsContainer");
+const sensorModesContainer = document.getElementById("sensorModesContainer");
+const resolutionsContainer = document.getElementById("resolutionsContainer");
+const cameraWeightInput = document.getElementById("cameraWeight");
 const batteryFieldsDiv = document.getElementById("batteryFields");
 const batteryPlateRow = document.getElementById("batteryPlateRow");
 const batteryPlateSelect = document.getElementById("batteryPlateSelect");
@@ -2395,7 +2404,20 @@ const categoryExcludedAttrs = {
   batteries: ["capacity", "pinA", "dtapA"],
   batteryHotswaps: ["capacity", "pinA"],
   "accessories.batteries": ["capacity", "pinA"],
-  cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
+  cameras: [
+    "powerDrawWatts",
+    "power",
+    "recordingMedia",
+    "lensMount",
+    "videoOutputs",
+    "fizConnectors",
+    "viewfinder",
+    "timecode",
+    "weight_g",
+    "recordingCodecs",
+    "sensorModes",
+    "resolutions"
+  ],
   monitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"],
   viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
   video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
@@ -3355,7 +3377,7 @@ function filterNoneEntries(list, prop = 'type') {
 }
 
 // Build a single row of the video output editor UI.
-function createVideoOutputRow(value = '') {
+function createVideoOutputRow(type = '', notes = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
   const select = document.createElement('select');
@@ -3368,8 +3390,16 @@ function createVideoOutputRow(value = '') {
     opt.textContent = optVal;
     select.appendChild(opt);
   });
-  select.value = value;
+  select.value = type;
   row.appendChild(createFieldWithLabel(select, 'Type'));
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.name = 'videoOutputNotes';
+  notesInput.value = notes;
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.textContent = '+';
@@ -3392,8 +3422,10 @@ function setVideoOutputs(list) {
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(item => {
-      const t = typeof item === 'string' ? item : item.type;
-      videoOutputsContainer.appendChild(createVideoOutputRow(t));
+      const entry = typeof item === 'string' ? { type: item } : (item || {});
+      videoOutputsContainer.appendChild(
+        createVideoOutputRow(entry.type || '', entry.notes || '')
+      );
     });
   } else {
     videoOutputsContainer.appendChild(createVideoOutputRow());
@@ -3401,8 +3433,15 @@ function setVideoOutputs(list) {
 }
 
 function getVideoOutputs() {
-  return Array.from(videoOutputsContainer.querySelectorAll('select'))
-    .map(sel => ({ type: sel.value }))
+  return Array.from(videoOutputsContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const select = row.querySelector('select');
+      const notesInput = row.querySelector('input');
+      return {
+        type: select ? select.value : '',
+        notes: notesInput ? notesInput.value : ''
+      };
+    })
     .filter(vo => vo.type && vo.type !== 'None');
 }
 
@@ -3742,7 +3781,7 @@ function getVideoOutputsIO() {
 function clearVideoOutputsIO() { setVideoOutputsIO([]); }
 
 // Build a row for editing a FIZ connector entry.
-function createFizConnectorRow(value = '') {
+function createFizConnectorRow(type = '', notes = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
   const select = document.createElement('select');
@@ -3755,8 +3794,16 @@ function createFizConnectorRow(value = '') {
     opt.textContent = optVal;
     select.appendChild(opt);
   });
-  select.value = value;
+  select.value = type;
   row.appendChild(createFieldWithLabel(select, 'Type'));
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.name = 'fizConnectorNotes';
+  notesInput.value = notes;
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.textContent = '+';
@@ -3779,8 +3826,10 @@ function setFizConnectors(list) {
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(item => {
-      const t = typeof item === 'string' ? item : item.type;
-      fizConnectorContainer.appendChild(createFizConnectorRow(t));
+      const entry = typeof item === 'string' ? { type: item } : (item || {});
+      fizConnectorContainer.appendChild(
+        createFizConnectorRow(entry.type || '', entry.notes || '')
+      );
     });
   } else {
     fizConnectorContainer.appendChild(createFizConnectorRow());
@@ -3788,8 +3837,15 @@ function setFizConnectors(list) {
 }
 
 function getFizConnectors() {
-  return Array.from(fizConnectorContainer.querySelectorAll('select'))
-    .map(sel => ({ type: sel.value }))
+  return Array.from(fizConnectorContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const select = row.querySelector('select');
+      const notesInput = row.querySelector('input');
+      return {
+        type: select ? select.value : '',
+        notes: notesInput ? notesInput.value : ''
+      };
+    })
     .filter(fc => fc.type && fc.type !== 'None');
 }
 
@@ -4258,8 +4314,8 @@ function updateMountTypeOptions() {
   });
 }
 
-// Build a lens mount row with type and mount selection fields.
-function createLensMountRow(type = '', mount = 'native') {
+// Build a lens mount row with type, mount and notes fields.
+function createLensMountRow(type = '', mount = 'native', notes = '') {
   const row = document.createElement('div');
   row.className = 'form-row';
 
@@ -4294,6 +4350,13 @@ function createLensMountRow(type = '', mount = 'native') {
   mountSelect.value = mount || '';
   row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
 
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.name = 'lensMountNotes';
+  notesInput.value = notes;
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.textContent = '+';
@@ -4318,8 +4381,8 @@ function setLensMounts(list) {
   const filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(item => {
-      const { type = '', mount = 'native' } = item || {};
-      lensMountContainer.appendChild(createLensMountRow(type, mount));
+      const { type = '', mount = 'native', notes = '' } = item || {};
+      lensMountContainer.appendChild(createLensMountRow(type, mount, notes));
     });
   } else {
     lensMountContainer.appendChild(createLensMountRow());
@@ -4329,8 +4392,15 @@ function setLensMounts(list) {
 function getLensMounts() {
   return Array.from(lensMountContainer.querySelectorAll('.form-row'))
     .map(row => {
-      const [typeSel, mountSel] = row.querySelectorAll('select');
-      return { type: typeSel.value, mount: mountSel.value };
+      const selects = row.querySelectorAll('select');
+      const typeSel = selects[0];
+      const mountSel = selects[1];
+      const notesInput = row.querySelector('input');
+      return {
+        type: typeSel ? typeSel.value : '',
+        mount: mountSel ? mountSel.value : '',
+        notes: notesInput ? notesInput.value : ''
+      };
     })
     .filter(lm => lm.type && lm.type !== 'None');
 }
@@ -4656,6 +4726,177 @@ function getTimecodes() {
   function clearTimecodes() {
     setTimecodes([]);
   }
+
+function createRecordingCodecRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Codec';
+  input.name = 'recordingCodec';
+  input.value = value;
+  row.appendChild(createFieldWithLabel(input, 'Codec'));
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createRecordingCodecRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (recordingCodecsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function normalizeStringList(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .map(item => {
+      if (typeof item === 'string') return item;
+      if (item === null || item === undefined) return '';
+      if (typeof item === 'object' && 'type' in item && typeof item.type === 'string') {
+        return item.type;
+      }
+      return String(item);
+    })
+    .map(str => str.trim())
+    .filter(val => val && val !== 'None');
+}
+
+function setRecordingCodecs(list) {
+  if (!recordingCodecsContainer) return;
+  recordingCodecsContainer.innerHTML = '';
+  const values = normalizeStringList(list);
+  if (values.length) {
+    values.forEach(val => recordingCodecsContainer.appendChild(createRecordingCodecRow(val)));
+  } else {
+    recordingCodecsContainer.appendChild(createRecordingCodecRow());
+  }
+}
+
+function getRecordingCodecs() {
+  if (!recordingCodecsContainer) return [];
+  return Array.from(recordingCodecsContainer.querySelectorAll('input'))
+    .map(input => input.value.trim())
+    .filter(Boolean);
+}
+
+function clearRecordingCodecs() {
+  setRecordingCodecs([]);
+}
+
+function createSensorModeRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Mode';
+  input.name = 'sensorMode';
+  input.value = value;
+  row.appendChild(createFieldWithLabel(input, 'Mode'));
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createSensorModeRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (sensorModesContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setSensorModes(list) {
+  if (!sensorModesContainer) return;
+  sensorModesContainer.innerHTML = '';
+  const values = normalizeStringList(list);
+  if (values.length) {
+    values.forEach(val => sensorModesContainer.appendChild(createSensorModeRow(val)));
+  } else {
+    sensorModesContainer.appendChild(createSensorModeRow());
+  }
+}
+
+function getSensorModes() {
+  if (!sensorModesContainer) return [];
+  return Array.from(sensorModesContainer.querySelectorAll('input'))
+    .map(input => input.value.trim())
+    .filter(Boolean);
+}
+
+function clearSensorModes() {
+  setSensorModes([]);
+}
+
+function createResolutionRow(value = '') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Resolution';
+  input.name = 'resolution';
+  input.value = value;
+  row.appendChild(createFieldWithLabel(input, 'Resolution'));
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    row.after(createResolutionRow());
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    if (resolutionsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setResolutions(list) {
+  if (!resolutionsContainer) return;
+  resolutionsContainer.innerHTML = '';
+  const values = normalizeStringList(list);
+  if (values.length) {
+    values.forEach(val => resolutionsContainer.appendChild(createResolutionRow(val)));
+  } else {
+    resolutionsContainer.appendChild(createResolutionRow());
+  }
+}
+
+function getResolutions() {
+  if (!resolutionsContainer) return [];
+  return Array.from(resolutionsContainer.querySelectorAll('input'))
+    .map(input => input.value.trim())
+    .filter(Boolean);
+}
+
+function clearResolutions() {
+  setResolutions([]);
+}
 
   function getFavoriteValues(id) {
     const favs = loadFavorites();
@@ -7131,6 +7372,10 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     cameraWattInput.value = deviceData.powerDrawWatts || '';
     cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
     cameraPortTypeInput.value = tmp || "";
+    cameraWeightInput.value =
+      deviceData.weight_g === null || deviceData.weight_g === undefined
+        ? ''
+        : deviceData.weight_g;
     setBatteryPlates(deviceData.power?.batteryPlateSupport || []);
     setRecordingMedia(deviceData.recordingMedia || []);
     setLensMounts(deviceData.lensMount || []);
@@ -7139,6 +7384,9 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setFizConnectors(deviceData.fizConnectors || []);
     setViewfinders(deviceData.viewfinder || []);
     setTimecodes(deviceData.timecode || []);
+    setRecordingCodecs(deviceData.recordingCodecs || []);
+    setSensorModes(deviceData.sensorModes || []);
+    setResolutions(deviceData.resolutions || []);
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
     monitorFieldsDiv.style.display = "block";
@@ -7463,6 +7711,7 @@ newCategorySelect.addEventListener("change", () => {
   cameraWattInput.value = "";
   cameraVoltageInput.value = "";
   cameraPortTypeInput.value = "";
+  cameraWeightInput.value = "";
   monitorScreenSizeInput.value = "";
   monitorBrightnessInput.value = "";
   monitorWattInput.value = "";
@@ -7490,6 +7739,9 @@ newCategorySelect.addEventListener("change", () => {
   clearFizConnectors();
   clearViewfinders();
   clearTimecodes();
+  clearRecordingCodecs();
+  clearSensorModes();
+  clearResolutions();
   videoPowerInput.value = "";
   clearVideoInputs();
   clearVideoOutputsIO();
@@ -7642,6 +7894,11 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertInvalidCameraJSON);
       return;
     }
+    const codecs = getRecordingCodecs();
+    const sensorModes = getSensorModes();
+    const resolutions = getResolutions();
+    const weightParsed = parseFloat(cameraWeightInput.value);
+    const weight = isNaN(weightParsed) ? undefined : weightParsed;
     targetCategory[name] = {
       powerDrawWatts: watt,
       power: {
@@ -7657,8 +7914,14 @@ addDeviceBtn.addEventListener("click", () => {
       recordingMedia: getRecordingMedia(),
       viewfinder: viewfinder,
       lensMount: getLensMounts(),
-      timecode: timecode
+      timecode: timecode,
+      recordingCodecs: codecs,
+      sensorModes: sensorModes,
+      resolutions: resolutions
     };
+    if (weight !== undefined) {
+      targetCategory[name].weight_g = weight;
+    }
     Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "monitors" || category === "directorMonitors") {
     const watt = parseFloat(monitorWattInput.value);
