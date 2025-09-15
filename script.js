@@ -2394,12 +2394,21 @@ const projectRequirementsOutput = document.getElementById("projectRequirementsOu
 // Load accent color from localStorage
 let accentColor = '#001589';
 let prevAccentColor = accentColor;
+
+const applyAccentColor = (color) => {
+  document.documentElement.style.setProperty('--accent-color', color);
+  document.documentElement.style.setProperty('--link-color', color);
+  if (document.body) {
+    document.body.style.setProperty('--accent-color', color);
+    document.body.style.setProperty('--link-color', color);
+  }
+};
+
 try {
   const storedAccent = localStorage.getItem('accentColor');
   if (storedAccent) {
     accentColor = storedAccent;
-    document.documentElement.style.setProperty('--accent-color', accentColor);
-    document.documentElement.style.setProperty('--link-color', accentColor);
+    applyAccentColor(accentColor);
   }
 } catch (e) {
   console.warn('Could not load accent color', e);
@@ -2409,14 +2418,12 @@ prevAccentColor = accentColor;
 if (accentColorInput) {
   accentColorInput.addEventListener('input', () => {
     const color = accentColorInput.value;
-    document.documentElement.style.setProperty('--accent-color', color);
-    document.documentElement.style.setProperty('--link-color', color);
+    applyAccentColor(color);
   });
 }
 
 const revertAccentColor = () => {
-  document.documentElement.style.setProperty('--accent-color', prevAccentColor);
-  document.documentElement.style.setProperty('--link-color', prevAccentColor);
+  applyAccentColor(prevAccentColor);
 };
 
 function populateFeatureSearch() {
@@ -10411,8 +10418,7 @@ if (settingsButton && settingsDialog) {
       }
       if (accentColorInput) {
         const color = accentColorInput.value;
-        document.documentElement.style.setProperty('--accent-color', color);
-        document.documentElement.style.setProperty('--link-color', color);
+        applyAccentColor(color);
         try {
           localStorage.setItem('accentColor', color);
         } catch (e) {

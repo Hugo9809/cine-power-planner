@@ -1816,6 +1816,18 @@ describe('script.js functions', () => {
     expect(dialog.hasAttribute('hidden')).toBe(true);
   });
 
+  test('accent color input updates body and root variables', () => {
+    const { applyPinkMode } = script;
+    applyPinkMode(true);
+    const colorInput = document.getElementById('accentColorInput');
+    colorInput.value = '#654321';
+    colorInput.dispatchEvent(new Event('input'));
+    expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#654321');
+    expect(document.documentElement.style.getPropertyValue('--link-color')).toBe('#654321');
+    expect(document.body.style.getPropertyValue('--accent-color')).toBe('#654321');
+    expect(document.body.style.getPropertyValue('--link-color')).toBe('#654321');
+  });
+
   test('generatePrintableOverview includes diagram and device blocks', () => {
     const { generatePrintableOverview } = script;
     document.getElementById('setupName').value = 'Test';
