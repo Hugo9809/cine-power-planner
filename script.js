@@ -10475,6 +10475,7 @@ if (backupSettings) {
   backupSettings.addEventListener('click', () => {
     try {
       const backup = {
+        version: APP_VERSION,
         settings: { ...localStorage },
         data: typeof exportAllData === 'function' ? exportAllData() : {},
       };
@@ -10500,6 +10501,7 @@ if (restoreSettings && restoreSettingsInput) {
     reader.onload = e => {
       try {
         const parsed = JSON.parse(e.target.result);
+        const backupVersion = parsed && typeof parsed === 'object' ? parsed.version : null;
         const settings = parsed && typeof parsed === 'object' && parsed.settings
           ? parsed.settings
           : parsed;
@@ -10526,7 +10528,11 @@ if (restoreSettings && restoreSettingsInput) {
         }
         const lang = localStorage.getItem('language');
         if (lang) setLanguage(lang);
-        alert(texts[currentLang].restoreSuccess);
+        if (!backupVersion || backupVersion !== APP_VERSION) {
+          alert(texts[currentLang].restoreVersionWarning);
+        } else {
+          alert(texts[currentLang].restoreSuccess);
+        }
       } catch (err) {
         console.warn('Restore failed', err);
       }
@@ -11511,6 +11517,7 @@ if (document.readyState === "loading") {
 // Export functions for testing in Node environment
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
+    APP_VERSION,
     setLanguage,
     updateCalculations,
     setBatteryPlates,

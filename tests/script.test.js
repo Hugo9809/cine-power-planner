@@ -364,6 +364,7 @@ describe('settings backup and restore', () => {
     require('../translations.js');
     const script = require('../script.js');
     script.setLanguage('en');
+    global.alert = jest.fn();
 
     global.URL.createObjectURL = jest.fn(() => 'blob:url');
     global.URL.revokeObjectURL = jest.fn();
@@ -377,6 +378,7 @@ describe('settings backup and restore', () => {
     const text = await blob.text();
     const obj = JSON.parse(text);
     expect(obj.data).toEqual({ foo: 'bar' });
+    expect(obj.version).toBe(script.APP_VERSION);
 
     document.createElement = origCreateElement;
 
@@ -390,7 +392,49 @@ describe('settings backup and restore', () => {
     restoreBtn.dispatchEvent(new window.Event('click'));
     restoreInput.dispatchEvent(new window.Event('change'));
     expect(global.importAllData).toHaveBeenCalledWith({ foo: 'bar' });
+    expect(global.alert).toHaveBeenCalledWith(texts.en.restoreSuccess);
     jest.useRealTimers();
+  });
+
+  test('warns when backup version differs', () => {
+    setupDom(false);
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.loadDeviceData = jest.fn(() => ({}));
+    global.saveDeviceData = jest.fn();
+    global.loadSessionState = jest.fn(() => null);
+    global.saveSessionState = jest.fn();
+    global.loadProject = jest.fn(() => ({}));
+    global.saveProject = jest.fn();
+    global.deleteProject = jest.fn();
+    global.loadFavorites = jest.fn(() => ({}));
+    global.saveFavorites = jest.fn();
+
+    const restoreBtn = document.createElement('button');
+    restoreBtn.id = 'restoreSettings';
+    document.body.appendChild(restoreBtn);
+    const restoreInput = document.createElement('input');
+    restoreInput.type = 'file';
+    restoreInput.id = 'restoreSettingsInput';
+    document.body.appendChild(restoreInput);
+
+    global.importAllData = jest.fn();
+
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+    global.alert = jest.fn();
+
+    const fileData = JSON.stringify({ version: '0.0.1', data: {} });
+    global.FileReader = class {
+      readAsText() { this.onload({ target: { result: fileData } }); }
+    };
+    Object.defineProperty(restoreInput, 'files', { value: [new Blob()] });
+    restoreBtn.dispatchEvent(new window.Event('click'));
+    restoreInput.dispatchEvent(new window.Event('change'));
+
+    expect(global.importAllData).toHaveBeenCalled();
+    expect(global.alert).toHaveBeenCalledWith(texts.en.restoreVersionWarning);
   });
 });
 
