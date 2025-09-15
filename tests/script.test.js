@@ -7142,3 +7142,24 @@ test('ARRI Alexa 35 setup suggests appropriate FIZ cables', () => {
   ]));
   expect(fizCables).toHaveLength(6);
 });
+
+test('cforce mini RF uses camera-specific CAM cable', () => {
+  const { collectAccessories } = require('../script.js');
+  const addOpt = (id, value) => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = `<option value="${value}">${value}</option>`;
+    sel.value = value;
+  };
+  addOpt('cameraSelect', 'Arri Amira');
+  addOpt('motor1Select', 'Arri cforce mini RF (KK.0040345)');
+  addOpt('controller1Select', 'None');
+  addOpt('distanceSelect', 'None');
+  addOpt('monitorSelect', 'None');
+  addOpt('videoSelect', 'None');
+  addOpt('batterySelect', 'BattA');
+  const { fizCables } = collectAccessories({ hasMotor: true });
+  expect(fizCables).toEqual(expect.arrayContaining([
+    'Cable CAM (7-pin) – EXT (6-pin) 0,6m',
+    'Cable CAM (7-pin) – EXT (6-pin) 0,6m (spare)'
+  ]));
+});

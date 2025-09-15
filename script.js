@@ -8454,8 +8454,6 @@ function addArriKNumber(name) {
 function suggestArriFizCables() {
     const CABLE_LBUS_05 = 'LBUS to LBUS 0,5m';
     const CABLE_UDM = 'Cable UDM – SERIAL (4p) 0,8m';
-    const CABLE_CAM_LANC = 'Cable CAM (7-pin) – LANC/D-Tap 0,5m';
-    const CABLE_CAM_EXT = 'Cable CAM (7-pin) – EXT (16-pin) 0,8m';
     const cables = [];
     const lbusLengths = [];
     const camSpare = [];
@@ -8471,6 +8469,9 @@ function suggestArriFizCables() {
     if (hasLCube && (hasRIA || camera === 'Arri Alexa 35')) hasLCube = false;
     const isCforceMiniRF = /cforce mini rf/i.test(motor);
     const isCforceMini = /cforce mini/i.test(motor) && !isCforceMiniRF;
+    const controllersToCheck = [];
+    if (hasRIA) controllersToCheck.push('Arri RIA-1');
+    if (isCforceMiniRF) controllersToCheck.push('Arri cforce mini RF');
     const pushLbus = len => {
         const formatted = String(len).replace('.', ',');
         cables.push(`LBUS to LBUS ${formatted}m`);
@@ -8484,13 +8485,6 @@ function suggestArriFizCables() {
         pushLbus(0.3);
         if (hasMasterGrip) pushLbus(0.5);
     } else if (isCforceMiniRF) {
-        if (camera === 'Sony FX6') {
-            cables.push(CABLE_CAM_LANC);
-            camSpare.push(CABLE_CAM_LANC);
-        } else if (camera === 'Arri Amira') {
-            cables.push(CABLE_CAM_EXT);
-            camSpare.push(CABLE_CAM_EXT);
-        }
         if (hasLCube) {
             pushLbus(0.4);
             if (hasMasterGrip) pushLbus(0.5);
@@ -8498,10 +8492,36 @@ function suggestArriFizCables() {
             pushLbus(0.5);
         }
     } else if (hasRIA && isCforceMini) {
-        cables.push(CABLE_CAM_LANC);
-        camSpare.push(CABLE_CAM_LANC);
         pushLbus(0.4);
         if (hasMasterGrip) pushLbus(0.5);
+    }
+    if (controllersToCheck.length) {
+        const cablesData = devices.accessories?.cables || {};
+        let chosen = null;
+        for (const [name, data] of Object.entries(cablesData)) {
+            const connectors = [];
+            if (Array.isArray(data.connectors)) connectors.push(...data.connectors);
+            if (data.from) connectors.push(data.from);
+            if (data.to) connectors.push(data.to);
+            if (!connectors.some(c => /CAM \(7-pin/i.test(c))) continue;
+            const ctrlOk = (data.compatibleControllers || []).some(cc =>
+                controllersToCheck.some(ct => cc.toLowerCase().includes(ct.toLowerCase())));
+            if (!ctrlOk) continue;
+            const camOk = !data.compatibleCameras ||
+                data.compatibleCameras.some(c => c.toLowerCase() === camera.toLowerCase());
+            if (!camOk) continue;
+            if (!chosen || (data.lengthM ?? Infinity) < (cablesData[chosen].lengthM ?? Infinity)) {
+                chosen = name;
+            }
+        }
+        if (chosen) {
+            cables.push(chosen);
+            camSpare.push(chosen);
+        } else if (hasRIA && cablesData['Cable CAM (7-pin) – D-Tap 0,5m']) {
+            const fallback = 'Cable CAM (7-pin) – D-Tap 0,5m';
+            cables.push(fallback);
+            camSpare.push(fallback);
+        }
     }
     if (hasUDM) {
         cables.push(CABLE_UDM);
