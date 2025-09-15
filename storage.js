@@ -509,27 +509,85 @@ function importAllData(allData) {
     if (allData.favorites) {
       saveFavorites(allData.favorites);
     }
+    let importProjectEntry = null;
+    const ensureProjectImporter = () => {
+      if (importProjectEntry) return importProjectEntry;
+      const existing = loadProject();
+      const usedNames = new Set(Object.keys(existing));
+      const normalizedNames = new Set(
+        [...usedNames].map((name) => name.trim().toLowerCase()),
+      );
+      const defaultName = "Imported project";
+      importProjectEntry = (rawName, project, fallbackName = defaultName) => {
+        if (typeof project !== "string" && !isPlainObject(project)) return;
+        const candidates = [];
+        if (typeof rawName === "string") {
+          candidates.push(rawName.trim());
+        }
+        if (isPlainObject(project)) {
+          if (typeof project.name === "string") {
+            candidates.push(project.name.trim());
+          }
+          const info = project.projectInfo;
+          if (isPlainObject(info) && typeof info.projectName === "string") {
+            candidates.push(info.projectName.trim());
+          }
+        }
+        const fallback = typeof fallbackName === "string" && fallbackName.trim()
+          ? fallbackName.trim()
+          : defaultName;
+        if (candidates.includes("") && !normalizedNames.has("")) {
+          usedNames.add("");
+          normalizedNames.add("");
+          saveProject("", project);
+          return;
+        }
+        const baseName = candidates.find((name) => name) || fallback;
+        const uniqueName = generateUniqueName(baseName, usedNames, normalizedNames);
+        saveProject(uniqueName, project);
+      };
+      return importProjectEntry;
+    };
+
     if (allData.project) {
-      Object.entries(allData.project).forEach(([name, proj]) => {
-        saveProject(name, proj);
-      });
+      const importProject = ensureProjectImporter();
+      if (typeof allData.project === "string") {
+        importProject("", allData.project);
+      } else if (Array.isArray(allData.project)) {
+        allData.project.forEach((proj, idx) => {
+          if (proj === null || proj === undefined) return;
+          const rawName =
+            isPlainObject(proj) && typeof proj.name === "string"
+              ? proj.name
+              : "";
+          importProject(rawName, proj, `Imported project ${idx + 1}`);
+        });
+      } else if (isPlainObject(allData.project)) {
+        Object.entries(allData.project).forEach(([name, proj]) => {
+          importProject(name, proj);
+        });
+      }
     } else if (allData.projects) {
       // Legacy plural key. Accept object map or array of named projects.
+      const importProject = ensureProjectImporter();
       if (Array.isArray(allData.projects)) {
-        allData.projects.forEach((proj) => {
-          if (proj && typeof proj === "object") {
-            const name = typeof proj.name === "string" ? proj.name : "";
-            saveProject(name, proj);
-          }
+        allData.projects.forEach((proj, idx) => {
+          if (proj === null || proj === undefined) return;
+          const rawName =
+            isPlainObject(proj) && typeof proj.name === "string"
+              ? proj.name
+              : "";
+          importProject(rawName, proj, `Imported project ${idx + 1}`);
         });
       } else if (isPlainObject(allData.projects)) {
         Object.entries(allData.projects).forEach(([name, proj]) => {
-          saveProject(name, proj);
+          importProject(name, proj);
         });
       }
     } else if (typeof allData.gearList === "string") {
       // Legacy export format stored just the gear list HTML
-      saveProject("", { gearList: allData.gearList });
+      const importProject = ensureProjectImporter();
+      importProject("", { gearList: allData.gearList });
     }
   }
 }

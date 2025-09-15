@@ -358,6 +358,8 @@ describe('populateSetupSelect ordering', () => {
 describe('settings backup and restore', () => {
   test('includes user data in backup and restores it', async () => {
     jest.useFakeTimers();
+    const fixedDate = new Date('2024-05-01T12:34:56.789Z');
+    jest.setSystemTime(fixedDate);
     setupDom(false);
     global.loadSetups = jest.fn(() => ({}));
     global.saveSetups = jest.fn();
@@ -382,7 +384,10 @@ describe('settings backup and restore', () => {
     restoreInput.id = 'restoreSettingsInput';
     document.body.appendChild(restoreInput);
 
-    global.exportAllData = jest.fn(() => ({ foo: 'bar', favorites: { cat: ['A'] } }));
+    const projectPayload = {
+      Demo: { gearList: '<ul><li>Item</li></ul>', projectInfo: { projectName: 'Demo' } }
+    };
+    global.exportAllData = jest.fn(() => ({ foo: 'bar', favorites: { cat: ['A'] }, project: projectPayload }));
     global.importAllData = jest.fn();
 
     require('../translations.js');
@@ -390,6 +395,13 @@ describe('settings backup and restore', () => {
     script.setLanguage('en');
     const logoData = 'data:image/svg+xml;base64,PHN2Zy8+';
     localStorage.setItem('customLogo', logoData);
+    localStorage.setItem('language', 'de');
+    localStorage.setItem('darkMode', 'true');
+    localStorage.setItem('pinkMode', 'true');
+    localStorage.setItem('highContrast', 'true');
+    localStorage.setItem('fontSize', '18');
+    localStorage.setItem('fontFamily', 'Inter');
+    localStorage.setItem('accentColor', '#123456');
 
     global.URL.createObjectURL = jest.fn(() => 'blob:url');
     global.URL.revokeObjectURL = jest.fn();
@@ -402,9 +414,18 @@ describe('settings backup and restore', () => {
     const blob = global.URL.createObjectURL.mock.calls[0][0];
     const text = await blob.text();
     const obj = JSON.parse(text);
-    expect(obj.data).toEqual({ foo: 'bar', favorites: { cat: ['A'] } });
+    expect(obj.data).toEqual({ foo: 'bar', favorites: { cat: ['A'] }, project: projectPayload });
     expect(obj.version).toBe(script.APP_VERSION);
+    expect(obj.generatedAt).toBe(fixedDate.toISOString());
     expect(obj.settings.customLogo).toBe(logoData);
+    expect(obj.settings.language).toBe('de');
+    expect(obj.settings.darkMode).toBe('true');
+    expect(obj.settings.pinkMode).toBe('true');
+    expect(obj.settings.highContrast).toBe('true');
+    expect(obj.settings.fontSize).toBe('18');
+    expect(obj.settings.fontFamily).toBe('Inter');
+    expect(obj.settings.accentColor).toBe('#123456');
+    expect(anchor.download).toBe('2024-05-01T12-34-56Z full app backup.json');
 
     document.createElement = origCreateElement;
 
@@ -420,7 +441,7 @@ describe('settings backup and restore', () => {
     restoreBtn.dispatchEvent(new window.Event('click'));
     restoreInput.dispatchEvent(new window.Event('change'));
     expect(global.exportAllData).toHaveBeenCalledTimes(2);
-    expect(global.importAllData).toHaveBeenCalledWith({ foo: 'bar', favorites: { cat: ['A'] } });
+    expect(global.importAllData).toHaveBeenCalledWith({ foo: 'bar', favorites: { cat: ['A'] }, project: projectPayload });
     expect(localStorage.getItem('customLogo')).toBe(logoData);
     jest.useRealTimers();
   });
