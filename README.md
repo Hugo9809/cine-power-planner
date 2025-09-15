@@ -68,7 +68,7 @@ See the language-specific README files for full details.
 - Check that selected batteries can supply the required output.
 - See required battery counts for a 10 h shoot and adjust runtimes for temperature.
 - Compare runtimes across all batteries with an optional battery comparison panel.
-- Save, load, share and clear projects (project requirements included); import/export them as JSON, and generate gear lists and printable overviews.
+- Save, load, share and clear projects (project requirements included); generate gear lists and printable overviews.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
 - Uses your browser's language on first load (falls back to English), lets you switch languages, toggle dark or playful pink themes, and swap between V‑, B‑ and Gold‑Mount plates on supported cameras.

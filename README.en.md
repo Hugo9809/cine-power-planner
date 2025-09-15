@@ -36,7 +36,6 @@ The app automatically uses your browser language on first load, and you can swit
 - Save, load and delete multiple camera projects (press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered)
 - Share a project via link or clear the current configuration
 - Data is stored locally via `localStorage`
-- Import and export projects as JSON
 - Generate a printable overview for any saved project
 - Save project requirements along with each project
 - Works fully offline – language, dark mode, projects and device data persist
@@ -163,7 +162,7 @@ The generator turns your selections into a categorized packing list:
 2. **Select Devices:** Choose devices from each category using the dropdowns
 3. **View Calculations:** See total draw, current and runtime when a battery is selected
 4. **Check Output Limits:** Status indicators show if the battery output is exceeded
-5. **Save & Load Projects:** Name and save your project, export/import them and generate a printable overview
+5. **Save & Load Projects:** Name and save your project and generate a printable overview
 6. **Manage Device List:** Click “Edit Device Data…” to open the editor, modify devices or revert to the defaults
 7. **Submit Runtime Data (optional):** Use “Submit User Runtime Feedback” to share your results and improve estimates
 

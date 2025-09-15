@@ -321,8 +321,6 @@ const texts = {
     alertInvalidCameraJSON: "Invalid JSON for camera details",
 
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
-    exportSetupsBtn: "Export All Projects",
-    importSetupsBtn: "Import Projects",
     generateOverviewBtn: "Generate Overview",
     generateGearListBtn: "Generate Gear List and Project Requirements",
     editProjectBtn: "Edit Project requirements",
@@ -341,9 +339,6 @@ const texts = {
     confirmSaveGearList: "Save gear list?",
     confirmDeleteGearList: "Delete gear list?",
     confirmDeleteGearListAgain: "This will permanently delete the gear list. Are you sure?",
-    alertNoSetupsToExport: "There are no saved projects to export.",
-    alertImportSetupsSuccess: "Successfully imported {num_setups} projects.",
-    alertImportSetupsError: "Error: Could not import projects. The file may be invalid or corrupted.",
     alertSelectSetupForOverview: "Please select a saved project to generate an overview.",
     overviewTitle: "Project Overview",
     backToAppBtn: "Back to App",
@@ -375,10 +370,6 @@ const texts = {
       "Remove the highlighted saved project permanently from your browser.",
     saveSetupHelp:
       "Store the devices and battery you have selected so the project can be recalled later. Press Enter or Ctrl+S (Cmd+S on Mac) to save quickly; the Save button stays disabled until a name is entered.",
-    exportSetupsHelp:
-      "Download every saved configuration as a JSON file for backup or sharing.",
-    importSetupsHelp:
-      "Load projects from a previously exported JSON file, replacing the current list.",
     generateOverviewHelp:
       "Generate a print-ready summary of any saved project, including power and connection details.",
     generateGearListHelp:
@@ -717,8 +708,6 @@ const texts = {
     alertDeviceWatt: "Inserisci un valore Watt valido.",
     alertDeviceName: "Il nome del dispositivo non può essere vuoto.",
     alertInvalidCameraJSON: "JSON non valido per i dettagli della fotocamera",
-    exportSetupsBtn: "Esporta tutte le configurazioni",
-    importSetupsBtn: "Importa configurazioni",
     generateOverviewBtn: "Genera panoramica",
     generateGearListBtn: "Genera elenco attrezzatura e requisiti del progetto",
     editProjectBtn: "Modifica requisiti del progetto",
@@ -737,9 +726,6 @@ const texts = {
     confirmSaveGearList: "Salvare l'elenco attrezzatura?",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
     confirmDeleteGearListAgain: "Questo eliminerà definitivamente l'elenco attrezzatura. Sei sicuro?",
-    alertNoSetupsToExport: "Non ci sono configurazioni salvate per l'esportazione.",
-    alertImportSetupsSuccess: "Importate correttamente {num_setups} configurazioni.",
-    alertImportSetupsError: "Errore: non è stato in grado di importare configurazioni. Il file può essere non valido o corrotto.",
     alertSelectSetupForOverview: "Selezionare una configurazione salvata per generare una panoramica.",
     overviewTitle: "Panoramica di configurazione",
     backToAppBtn: "Torna all'app",
@@ -767,9 +753,6 @@ const texts = {
     setupNameHelp: "Inserisci un nome per la configurazione corrente.",
     deleteSetupHelp: "Elimina la configurazione salvata selezionata.",
     saveSetupHelp: "Salva la configurazione corrente. Premi Invio o Ctrl+S (Cmd+S su Mac) per salvare rapidamente; il pulsante Salva rimane disabilitato finché non viene inserito un nome.",
-    exportSetupsHelp:
-      "Scarica tutte le configurazioni salvate come file JSON.",
-    importSetupsHelp: "Carica configurazioni da un file JSON.",
     generateOverviewHelp:
       "Crea un riepilogo stampabile delle configurazioni salvate.",
     generateGearListHelp:
@@ -1118,8 +1101,6 @@ const texts = {
     alertDeviceName: "El nombre no puede estar vacío.",
     alertInvalidCameraJSON: "JSON de cámara no válido",
 
-    exportSetupsBtn: "Exportar todas las configuraciones",
-    importSetupsBtn: "Importar configuraciones",
     generateOverviewBtn: "Generar resumen",
     generateGearListBtn: "Generar lista de equipo y requisitos del proyecto",
     editProjectBtn: "Editar requisitos del proyecto",
@@ -1138,9 +1119,6 @@ const texts = {
     confirmSaveGearList: "¿Guardar lista de equipo?",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
     confirmDeleteGearListAgain: "Esto eliminará permanentemente la lista de equipo. ¿Estás seguro?",
-    alertNoSetupsToExport: "No hay configuraciones para exportar.",
-    alertImportSetupsSuccess: "{num_setups} configuraciones importadas.",
-    alertImportSetupsError: "Error: no se pudieron importar las configuraciones.",
     alertSelectSetupForOverview: "Selecciona una configuración para generar un resumen.",
     overviewTitle: "Resumen de Configuración",
     backToAppBtn: "Volver a la app",
@@ -1169,9 +1147,6 @@ const texts = {
     setupNameHelp: "Introduce un nombre para la configuración actual.",
     deleteSetupHelp: "Elimina la configuración guardada seleccionada.",
     saveSetupHelp: "Guarda la configuración actual. Pulsa Intro o Ctrl+S (Cmd+S en Mac) para guardar rápidamente; el botón Guardar permanece desactivado hasta que se introduce un nombre.",
-    exportSetupsHelp:
-      "Descarga todas las configuraciones guardadas como archivo JSON.",
-    importSetupsHelp: "Carga configuraciones desde un archivo JSON.",
     generateOverviewHelp:
       "Crea un resumen imprimible de las configuraciones guardadas.",
     generateGearListHelp:
@@ -1521,8 +1496,6 @@ const texts = {
     alertDeviceName: "Le nom de l'appareil ne peut être vide.",
     alertInvalidCameraJSON: "JSON caméra invalide",
 
-    exportSetupsBtn: "Exporter toutes les configurations",
-    importSetupsBtn: "Importer des configurations",
     generateOverviewBtn: "Générer un résumé",
     generateGearListBtn: "Générer la liste du matériel et les exigences du projet",
     editProjectBtn: "Modifier les exigences du projet",
@@ -1541,9 +1514,6 @@ const texts = {
     confirmSaveGearList: "Enregistrer la liste du matériel ?",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
     confirmDeleteGearListAgain: "Cela supprimera définitivement la liste du matériel. Êtes-vous sûr ?",
-    alertNoSetupsToExport: "Aucune configuration à exporter.",
-    alertImportSetupsSuccess: "{num_setups} configurations importées.",
-    alertImportSetupsError: "Erreur : import impossible.",
     alertSelectSetupForOverview: "Sélectionnez une configuration pour générer un résumé.",
     overviewTitle: "Aperçu de Configuration",
     backToAppBtn: "Retour à l'application",
@@ -1572,9 +1542,6 @@ const texts = {
     setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
     deleteSetupHelp: "Supprime la configuration enregistrée sélectionnée.",
     saveSetupHelp: "Enregistre la configuration actuelle. Appuyez sur Entrée ou Ctrl+S (Cmd+S sur Mac) pour enregistrer rapidement ; le bouton Enregistrer reste désactivé tant qu'aucun nom n'est saisi.",
-    exportSetupsHelp:
-      "Télécharge toutes les configurations enregistrées au format JSON.",
-    importSetupsHelp: "Charge des configurations depuis un fichier JSON.",
     generateOverviewHelp:
       "Crée un aperçu imprimable des configurations enregistrées.",
     generateGearListHelp:
@@ -1927,8 +1894,6 @@ const texts = {
     alertDeviceName: "Der Gerätename darf nicht leer sein.",
     alertInvalidCameraJSON: "Ungültiges JSON für Kameradetails",
     // NEW TEXTS FOR SETUP MANAGEMENT START HERE
-    exportSetupsBtn: "Alle Setups exportieren",
-    importSetupsBtn: "Setups importieren",
     generateOverviewBtn: "Übersicht erstellen",
     generateGearListBtn: "Gear-Liste und Projektanforderungen erstellen",
     editProjectBtn: "Projektanforderungen bearbeiten",
@@ -1947,9 +1912,6 @@ const texts = {
     confirmSaveGearList: "Gear-Liste speichern?",
     confirmDeleteGearList: "Gear-Liste löschen?",
     confirmDeleteGearListAgain: "Dies wird die Gear-Liste dauerhaft löschen. Bist du sicher?",
-    alertNoSetupsToExport: "Es gibt keine gespeicherten Setups zum Exportieren.",
-    alertImportSetupsSuccess: "{num_setups} Setups erfolgreich importiert.",
-    alertImportSetupsError: "Fehler: Setups konnten nicht importiert werden. Die Datei ist möglicherweise ungültig oder beschädigt.",
     alertSelectSetupForOverview: "Bitte wählen Sie ein gespeichertes Setup, um eine Übersicht zu erstellen.",
     overviewTitle: "Setup-Übersicht",
     backToAppBtn: "Zurück zur App",
@@ -1977,9 +1939,6 @@ const texts = {
     setupNameHelp: "Gib einen Namen für die aktuelle Konfiguration ein.",
     deleteSetupHelp: "Löscht die ausgewählte gespeicherte Konfiguration.",
     saveSetupHelp: "Speichert die aktuelle Konfiguration. Drücke Eingabe oder Strg+S (Cmd+S auf dem Mac), um schnell zu speichern; der Speichern-Button bleibt deaktiviert, bis ein Name eingegeben ist.",
-    exportSetupsHelp:
-      "Lade alle gespeicherten Konfigurationen als JSON-Datei herunter.",
-    importSetupsHelp: "Lade Konfigurationen aus einer JSON-Datei.",
     generateOverviewHelp:
       "Erstellt eine druckbare Übersicht der gespeicherten Konfigurationen.",
     generateGearListHelp:
