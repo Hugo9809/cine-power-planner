@@ -22,6 +22,9 @@
   --main-top-padding-multiplier: 1.5;
   --gap-size: 10px;
   --button-size: 24px;
+  --form-label-width: 150px;
+  --form-label-min-width: 120px;
+  --form-action-width: 110px;
   --font-family: 'Ubuntu', sans-serif;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
@@ -241,14 +244,57 @@ footer a {
   flex-wrap: wrap; /* allow inputs to wrap on smaller screens */
 }
 .form-row label {
-  flex: 0 0 150px;
-  min-width: 120px;
+  flex: 0 0 var(--form-label-width);
+  min-width: var(--form-label-min-width);
   font-weight: 300;
 }
 .form-row select,
 .form-row input {
   flex: 1;
   min-width: 0; /* allow shrinking inside flex container */
+}
+
+/* Keep controls aligned within Manage Project and Device Selection */
+#setup-manager .form-row,
+#setup-config .form-row {
+  align-items: stretch;
+}
+
+#setup-manager .form-row:not(.form-row-actions) > button:not(.clear-input-btn):not(.favorite-toggle),
+#setup-config .form-row:not(.form-row-actions) > button:not(.clear-input-btn):not(.favorite-toggle) {
+  align-self: stretch;
+  flex: 0 0 var(--form-action-width);
+  margin: 0;
+}
+
+.form-label-spacer {
+  flex: 0 0 var(--form-label-width);
+  min-width: var(--form-label-min-width);
+}
+
+#setup-manager .form-row.form-row-actions {
+  flex-wrap: nowrap;
+}
+
+#setup-manager .form-row.form-row-actions .form-actions {
+  display: flex;
+  gap: var(--gap-size);
+  flex: 1;
+}
+
+#setup-manager .form-row.form-row-actions .form-actions button,
+#setup-manager .form-row.form-row-actions > button {
+  flex: 1;
+  margin: 0;
+}
+
+#setup-manager #shareLinkMessage {
+  margin-left: calc(var(--form-label-width) + var(--gap-size));
+}
+
+#setup-manager #sharedLinkRow > button {
+  align-self: stretch;
+  margin: 0;
 }
 
 @media (max-width: 600px) {
@@ -263,6 +309,29 @@ footer a {
   .form-row select,
   .form-row input {
     margin: 0;
+  }
+  .form-label-spacer {
+    display: none;
+  }
+  #setup-manager .form-row:not(.form-row-actions) > button:not(.clear-input-btn):not(.favorite-toggle),
+  #setup-config .form-row:not(.form-row-actions) > button:not(.clear-input-btn):not(.favorite-toggle) {
+    flex: 1 0 100%;
+    width: 100%;
+    margin: 5px 0 0 0;
+  }
+  #setup-manager .form-row.form-row-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #setup-manager .form-row.form-row-actions .form-actions {
+    flex-direction: column;
+  }
+  #setup-manager .form-row.form-row-actions .form-actions button,
+  #setup-manager .form-row.form-row-actions > button {
+    width: 100%;
+  }
+  #setup-manager #shareLinkMessage {
+    margin-left: 0;
   }
 }
 

@@ -108,15 +108,23 @@
       <input type="text" id="setupName" placeholder="Project name" aria-labelledby="setupNameLabel" />
       <button id="saveSetupBtn">Save</button>
     </div>
-    <button id="generateOverviewBtn">Generate Overview</button>
-      <button id="shareSetupBtn">Share Project</button>
+    <div class="form-row form-row-actions" role="group" aria-label="Project actions">
+      <span class="form-label-spacer" aria-hidden="true"></span>
+      <div class="form-actions">
+        <button id="generateOverviewBtn">Generate Overview</button>
+        <button id="shareSetupBtn">Share Project</button>
+      </div>
+    </div>
     <p id="shareLinkMessage" class="hidden" role="status" aria-live="polite"></p>
     <div class="form-row" id="sharedLinkRow">
       <label for="sharedLinkInput" id="sharedLinkLabel">Shared Project:</label>
       <input type="file" id="sharedLinkInput" accept=".json" aria-labelledby="sharedLinkLabel" />
       <button id="applySharedLinkBtn">Load</button>
     </div>
-    <button id="clearSetupBtn">Clear Current Project</button>
+    <div class="form-row form-row-actions">
+      <span class="form-label-spacer" aria-hidden="true"></span>
+      <button id="clearSetupBtn">Clear Current Project</button>
+    </div>
   </section>
 
   <section id="setup-config">
