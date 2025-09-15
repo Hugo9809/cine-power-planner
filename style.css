@@ -395,6 +395,9 @@ footer a {
   max-height: 80vh;
   overflow-y: auto;
   color: var(--text-color);
+  width: min(90vw, 700px);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 
