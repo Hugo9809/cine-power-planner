@@ -10471,24 +10471,26 @@ if (settingsButton && settingsDialog) {
   });
 }
 
+function createSettingsBackup() {
+  try {
+    const backup = {
+      settings: { ...localStorage },
+      data: typeof exportAllData === 'function' ? exportAllData() : {},
+    };
+    const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'planner-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.warn('Backup failed', e);
+  }
+}
+
 if (backupSettings) {
-  backupSettings.addEventListener('click', () => {
-    try {
-      const backup = {
-        settings: { ...localStorage },
-        data: typeof exportAllData === 'function' ? exportAllData() : {},
-      };
-      const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'planner-backup.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.warn('Backup failed', e);
-    }
-  });
+  backupSettings.addEventListener('click', createSettingsBackup);
 }
 
 if (restoreSettings && restoreSettingsInput) {
@@ -10496,6 +10498,7 @@ if (restoreSettings && restoreSettingsInput) {
   restoreSettingsInput.addEventListener('change', () => {
     const file = restoreSettingsInput.files[0];
     if (!file) return;
+    createSettingsBackup();
     const reader = new FileReader();
     reader.onload = e => {
       try {

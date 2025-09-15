@@ -13,6 +13,8 @@ const {
     saveFeedback,
     saveProject,
     loadProject,
+    loadFavorites,
+    saveFavorites,
     clearAllData,
     exportAllData,
     importAllData,
@@ -302,12 +304,14 @@ describe('export/import all data', () => {
     saveSessionState({ camera: 'CamA' });
     saveFeedback({ note: 'hi' });
     saveProject('Proj', { gearList: '<ul></ul>' });
+    saveFavorites({ cat: ['A'] });
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
-      project: { Proj: { gearList: '<ul></ul>', projectInfo: null } }
+      project: { Proj: { gearList: '<ul></ul>', projectInfo: null } },
+      favorites: { cat: ['A'] }
     });
   });
 
@@ -317,7 +321,8 @@ describe('export/import all data', () => {
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
-      project: { Proj: { gearList: '<ol></ol>' } }
+      project: { Proj: { gearList: '<ol></ol>' } },
+      favorites: { cat: ['B'] }
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
@@ -325,6 +330,7 @@ describe('export/import all data', () => {
     expect(loadSessionState()).toEqual({ camera: 'CamA' });
     expect(loadFeedback()).toEqual({ note: 'hi' });
     expect(loadProject('Proj')).toEqual({ gearList: '<ol></ol>', projectInfo: null });
+    expect(loadFavorites()).toEqual({ cat: ['B'] });
   });
 });
 
