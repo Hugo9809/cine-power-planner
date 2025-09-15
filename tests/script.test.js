@@ -936,7 +936,7 @@ describe('script.js functions', () => {
   test('gear list cage selection is stored with selected attribute', () => {
     global.saveProject = jest.fn();
     const gear = document.getElementById('gearListOutput');
-    gear.innerHTML = '1x <select id="gearListCage"><option value="Cage1">Cage1</option><option value="Cage2">Cage2</option></select>';
+    gear.innerHTML = '<span class="cage-select-wrapper"><span>1x</span><select id="gearListCage"><option value="Cage1">Cage1</option><option value="Cage2">Cage2</option></select></span>';
     gear.classList.remove('hidden');
     const cageSel = gear.querySelector('#gearListCage');
     cageSel.value = 'Cage2';
@@ -2263,7 +2263,7 @@ describe('script.js functions', () => {
       expect(html).toContain('Camera');
       expect(html).toContain(`1x ${cageCamera}`);
       expect(html).toContain('Camera Support');
-      expect(html).toContain('1x <select id="gearListCage"');
+      expect(html).toContain('<span class="cage-select-wrapper"><span>1x</span><select id="gearListCage"');
       expect(html).toContain(`<option value="${cageNames[0]}"`);
       expect(html).toContain('LDS (FIZ)');
       expect(html).toContain('1x LBUS to LBUS');
