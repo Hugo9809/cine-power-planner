@@ -9185,7 +9185,8 @@ function generateGearListHtml(info = {}) {
             .join('');
         const idSuffix = role === 'DoP' ? 'Dop' : role;
         const size = dirDb[defaultName]?.screenSizeInches || '';
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${role} Monitor</strong> - ${size}&quot; - <select id="gearList${idSuffix}Monitor15">${opts}</select> incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
+        monitoringItems += (monitoringItems ? '<br>' : '') +
+            `1x <strong>${role} Monitor</strong> - <span id="monitorSize${idSuffix}15">${size}&quot;</span> - <select id="gearList${idSuffix}Monitor15">${opts}</select> incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
         if (size) monitorSizes.push(size);
     });
     if (hasMotor) {
@@ -9967,6 +9968,19 @@ function bindGearListDirectorMonitorListener() {
             sel.addEventListener('change', () => {
                 const monitorInfo = devices && devices.monitors && devices.monitors[sel.value];
                 const span = gearListOutput.querySelector(`#monitorSize${role}`);
+                if (span && monitorInfo && monitorInfo.screenSizeInches) {
+                    span.textContent = `${monitorInfo.screenSizeInches}"`;
+                }
+                saveCurrentGearList();
+            });
+        }
+    });
+    ['Director', 'Combo', 'Dop'].forEach(role => {
+        const sel = gearListOutput.querySelector(`#gearList${role}Monitor15`);
+        if (sel) {
+            sel.addEventListener('change', () => {
+                const monitorInfo = devices && devices.directorMonitors && devices.directorMonitors[sel.value];
+                const span = gearListOutput.querySelector(`#monitorSize${role}15`);
                 if (span && monitorInfo && monitorInfo.screenSizeInches) {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
