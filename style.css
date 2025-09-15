@@ -528,6 +528,16 @@ body.hover-help-active * {
   margin: 5px 5px 0 0;
 }
 
+/* Give wrappers the same margin so favorite stars line up with selects */
+.field-with-label .select-wrapper {
+  margin: 5px 5px 0 0;
+}
+
+/* Remove the default margin from selects inside wrappers */
+.field-with-label .select-wrapper select {
+  margin: 0;
+}
+
 /* Wrapper for selects to allow flexible layout */
 .select-wrapper {
   display: flex;
