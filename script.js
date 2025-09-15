@@ -9285,7 +9285,7 @@ function generateGearListHtml(info = {}) {
     let cageSelectHtml = '';
     if (compatibleCages.length) {
         const options = compatibleCages.map(c => `<option value="${escapeHtml(c)}"${c === selectedNames.cage ? ' selected' : ''}>${escapeHtml(addArriKNumber(c))}</option>`).join('');
-        cageSelectHtml = `1x <select id="gearListCage">${options}</select>`;
+        cageSelectHtml = `<span class="cage-select-wrapper"><span>1x</span><select id="gearListCage">${options}</select></span>`;
     }
     addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
     let mediaItems = '';
