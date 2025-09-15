@@ -7106,3 +7106,39 @@ describe('copy summary button without clipboard support', () => {
     expect(global.prompt).toHaveBeenCalled();
   });
 });
+
+test('ARRI Alexa 35 setup suggests appropriate FIZ cables', () => {
+  setupDom(false);
+  devices.cameras['Arri Alexa 35'] = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }, { type: 'SERIAL (LEMO 4-pin)' }] };
+  devices.fiz.motors['Arri Cforce Mini'] = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+  devices.fiz.controllers['Arri Master Grip (single unit)'] = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }], internalController: true };
+  devices.fiz.distance['UDM-1 + LCube'] = { fizConnectors: [{ type: 'Serial' }] };
+  devices.accessories.cables.fiz = {
+    'LBUS to LBUS 0,3m': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' },
+    'LBUS to LBUS 0,5m': { from: 'LBUS (LEMO 4-pin)', to: 'LBUS (LEMO 4-pin)' },
+    'Cable UDM – SERIAL (4p) 0,8m': { from: 'SERIAL (LEMO 4-pin)', to: 'Serial' }
+  };
+  const { collectAccessories } = require('../script.js');
+  const addOpt = (id, value) => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = `<option value="${value}">${value}</option>`;
+    sel.value = value;
+  };
+  addOpt('cameraSelect', 'Arri Alexa 35');
+  addOpt('motor1Select', 'Arri Cforce Mini');
+  addOpt('controller1Select', 'Arri Master Grip (single unit)');
+  addOpt('distanceSelect', 'UDM-1 + LCube');
+  addOpt('monitorSelect', 'None');
+  addOpt('videoSelect', 'None');
+  addOpt('batterySelect', 'BattA');
+  const { fizCables } = collectAccessories({ hasMotor: true });
+  expect(fizCables).toEqual(expect.arrayContaining([
+    'LBUS to LBUS 0,3m',
+    'Cable UDM – SERIAL (4p) 0,8m',
+    'LBUS to LBUS 0,5m',
+    'LBUS to LBUS 0,3m (spare)',
+    'LBUS to LBUS 0,5m (spare)',
+    'Cable UDM – SERIAL (4p) 0,8m (spare)'
+  ]));
+  expect(fizCables).toHaveLength(6);
+});

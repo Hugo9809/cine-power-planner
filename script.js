@@ -6740,13 +6740,6 @@ function renderDeviceList(categoryKey, ulElement) {
 }
 
 function refreshDeviceLists() {
-  // Merge FIZ cables into the general cables category
-  if (devices.fiz?.cables) {
-    devices.accessories = devices.accessories || {};
-    devices.accessories.cables = devices.accessories.cables || {};
-    devices.accessories.cables.fiz = devices.fiz.cables;
-  }
-
   renderDeviceList("cameras", cameraListElem);
   renderDeviceList("viewfinders", viewfinderListElem);
   renderDeviceList("monitors", monitorListElem);
@@ -8434,17 +8427,93 @@ function addArriKNumber(name) {
         }
     }
     if (d.accessories) {
+        const findItem = obj => {
+            if (!obj) return null;
+            if (obj[name]) return obj[name];
+            for (const val of Object.values(obj)) {
+                if (val && typeof val === 'object') {
+                    const found = findItem(val);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
         for (const col of Object.values(d.accessories)) {
-            if (col && col[name]) {
-                const item = col[name];
+            const item = findItem(col);
+            if (item) {
                 if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
-                    return name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `);
+                    return /^ARRI\s*/i.test(name) ? name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `) : `ARRI ${item.kNumber} ${name}`;
                 }
                 return name;
             }
         }
     }
     return name;
+}
+
+function suggestArriFizCables() {
+    const CABLE_LBUS_05 = 'LBUS to LBUS 0,5m';
+    const CABLE_UDM = 'Cable UDM – SERIAL (4p) 0,8m';
+    const CABLE_CAM_LANC = 'Cable CAM (7-pin) – LANC/D-Tap 0,5m';
+    const CABLE_CAM_EXT = 'Cable CAM (7-pin) – EXT (16-pin) 0,8m';
+    const cables = [];
+    const lbusLengths = [];
+    const camSpare = [];
+    const camera = cameraSelect?.value || '';
+    const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
+    const distance = distanceSelect?.value || '';
+    const motor = motors[0] || '';
+    const hasMasterGrip = controllers.includes('Arri Master Grip (single unit)');
+    const hasRIA = controllers.includes('Arri RIA-1');
+    let hasUDM = distance.includes('UDM');
+    let hasLCube = distance.includes('LCube');
+    if (hasLCube && (hasRIA || camera === 'Arri Alexa 35')) hasLCube = false;
+    const isCforceMiniRF = /cforce mini rf/i.test(motor);
+    const isCforceMini = /cforce mini/i.test(motor) && !isCforceMiniRF;
+    const pushLbus = len => {
+        const formatted = String(len).replace('.', ',');
+        cables.push(`LBUS to LBUS ${formatted}m`);
+        lbusLengths.push(Number(len));
+    };
+    if ((camera === 'Arri Alexa Mini' || camera === 'Arri Alexa Mini LF') && isCforceMini) {
+        pushLbus(0.3);
+        if (hasLCube) pushLbus(0.4);
+        if (hasMasterGrip) pushLbus(0.5);
+    } else if (camera === 'Arri Alexa 35' && isCforceMini) {
+        pushLbus(0.3);
+        if (hasMasterGrip) pushLbus(0.5);
+    } else if (isCforceMiniRF) {
+        if (camera === 'Sony FX6') {
+            cables.push(CABLE_CAM_LANC);
+            camSpare.push(CABLE_CAM_LANC);
+        } else if (camera === 'Arri Amira') {
+            cables.push(CABLE_CAM_EXT);
+            camSpare.push(CABLE_CAM_EXT);
+        }
+        if (hasLCube) {
+            pushLbus(0.4);
+            if (hasMasterGrip) pushLbus(0.5);
+        } else if (hasMasterGrip) {
+            pushLbus(0.5);
+        }
+    } else if (hasRIA && isCforceMini) {
+        cables.push(CABLE_CAM_LANC);
+        camSpare.push(CABLE_CAM_LANC);
+        pushLbus(0.4);
+        if (hasMasterGrip) pushLbus(0.5);
+    }
+    if (hasUDM) {
+        cables.push(CABLE_UDM);
+        if (!hasLCube) cables.push(`${CABLE_UDM} (spare)`);
+    }
+    if (lbusLengths.length) {
+        const shortest = Math.min(...lbusLengths);
+        cables.push(`LBUS to LBUS ${shortest}m (spare)`);
+        cables.push(`${CABLE_LBUS_05} (spare)`);
+    }
+    camSpare.forEach(n => cables.push(`${n} (spare)`));
+    return cables;
 }
 
 function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
@@ -8569,7 +8638,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     controllerSelects.forEach(sel => gatherPower(devices.fiz.controllers[sel.value]));
     gatherPower(devices.fiz.distance[distanceSelect.value]);
 
-    const fizCableDb = devices.fiz?.cables || acc.cables?.fiz || {};
+    const fizCableDb = acc.cables?.fiz || {};
     const motorDatas = motorSelects.map(sel => devices.fiz.motors[sel.value]).filter(Boolean);
     const controllerDatas = controllerSelects.map(sel => devices.fiz.controllers[sel.value]).filter(Boolean);
     motorDatas.forEach(m => {
@@ -8587,6 +8656,8 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
             });
         });
     });
+
+    fizCables.push(...suggestArriFizCables());
 
     const miscUnique = [...new Set(misc)];
     const monitoringSupportList = monitoringSupport.slice();
