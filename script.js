@@ -1736,16 +1736,34 @@ function setLanguage(lang) {
   if (fontFamilyLabel) fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
   const settingsLogoLabel = document.getElementById("settingsLogoLabel");
   if (settingsLogoLabel) settingsLogoLabel.textContent = texts[lang].logoSetting;
+  const generalHeading = document.getElementById("generalHeading");
+  if (generalHeading) generalHeading.textContent = texts[lang].generalHeading;
+  const generalDescription = document.getElementById("generalDescription");
+  if (generalDescription) {
+    generalDescription.textContent = texts[lang].generalDescription || '';
+  }
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
   if (contrastLabel) contrastLabel.textContent = texts[lang].highContrastSetting;
   const accessibilityHeading = document.getElementById("accessibilityHeading");
   if (accessibilityHeading) accessibilityHeading.textContent = texts[lang].accessibilityHeading;
+  const accessibilityDescription = document.getElementById("accessibilityDescription");
+  if (accessibilityDescription) {
+    accessibilityDescription.textContent = texts[lang].accessibilityDescription || '';
+  }
   const backupHeading = document.getElementById("backupHeading");
   if (backupHeading) backupHeading.textContent = texts[lang].backupHeading;
+  const backupDescription = document.getElementById("backupDescription");
+  if (backupDescription) {
+    backupDescription.textContent = texts[lang].backupDescription || '';
+  }
   if (backupSettings) backupSettings.textContent = texts[lang].backupSettings;
   if (restoreSettings) restoreSettings.textContent = texts[lang].restoreSettings;
   const aboutHeading = document.getElementById("aboutHeading");
   if (aboutHeading) aboutHeading.textContent = texts[lang].aboutHeading;
+  const aboutDescription = document.getElementById("aboutDescription");
+  if (aboutDescription) {
+    aboutDescription.textContent = texts[lang].aboutDescription || '';
+  }
   if (aboutVersionElem) aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION}`;
   if (supportLink) supportLink.textContent = texts[lang].supportLink;
   if (settingsSave) settingsSave.textContent = texts[lang].saveSettings;

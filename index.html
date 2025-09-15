@@ -673,66 +673,113 @@
 
   <div id="settingsDialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
     <div class="settings-content">
-      <h2 id="settingsTitle">Settings</h2>
-      <div class="form-row">
-        <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
-        <select id="settingsLanguage">
-          <option value="en">English</option>
-          <option value="de">Deutsch</option>
-          <option value="es">Español</option>
-          <option value="fr">Français</option>
-          <option value="it">Italiano</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="settingsDarkMode" id="settingsDarkModeLabel">Dark mode</label>
-        <input type="checkbox" id="settingsDarkMode" />
-      </div>
-      <div class="form-row">
-        <label for="accentColorInput" id="accentColorLabel">Accent color</label>
-        <input type="color" id="accentColorInput" value="#001589" />
-      </div>
-      <div class="form-row">
-        <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
-        <select id="settingsFontSize">
-          <option value="14">14px</option>
-          <option value="16">16px</option>
-          <option value="18">18px</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="settingsFontFamily" id="settingsFontFamilyLabel">Font</label>
-        <select id="settingsFontFamily">
-          <option value="'Ubuntu', sans-serif">Ubuntu</option>
-          <option value="'Arial', sans-serif">Arial</option>
-          <option value="'Times New Roman', serif">Times New Roman</option>
-          <option value="'Courier New', monospace">Courier New</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>
-        <input type="file" id="settingsLogo" accept="image/svg+xml" />
-      </div>
-      <h3 id="accessibilityHeading">Accessibility</h3>
-      <div class="form-row">
-        <label for="settingsHighContrast" id="settingsHighContrastLabel">High contrast</label>
-        <input type="checkbox" id="settingsHighContrast" />
-      </div>
-      <h3 id="backupHeading">Backup &amp; Restore</h3>
-      <div class="button-row">
-        <button id="backupSettings">Backup</button>
-        <input type="file" id="restoreSettingsInput" accept="application/json" hidden />
-        <button id="restoreSettings">Restore</button>
-      </div>
-      <h3 id="aboutHeading">About &amp; Support</h3>
-      <p id="aboutVersion">Version 1.0.0</p>
-      <p><a href="https://github.com" id="supportLink" target="_blank">Support</a></p>
-      <div class="button-row">
-      </div>
-      <div class="button-row action-buttons">
-        <button id="settingsSave">Save</button>
-        <button id="settingsCancel">Cancel</button>
-      </div>
+      <form class="settings-form" novalidate>
+        <header class="settings-header">
+          <span class="settings-icon" aria-hidden="true">⚙️</span>
+          <h2 id="settingsTitle">Settings</h2>
+        </header>
+
+        <fieldset class="settings-section" aria-labelledby="generalHeading generalDescription">
+          <legend class="settings-legend">
+            <span class="settings-legend-icon" aria-hidden="true">🎛️</span>
+            <span class="settings-legend-text">
+              <span class="settings-legend-title" id="generalHeading">General</span>
+              <span class="settings-legend-subtitle" id="generalDescription">Language, theme and typography preferences.</span>
+            </span>
+          </legend>
+          <div class="settings-grid">
+            <div class="settings-field">
+              <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
+              <select id="settingsLanguage">
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="it">Italiano</option>
+              </select>
+            </div>
+            <div class="settings-field settings-toggle">
+              <label for="settingsDarkMode" id="settingsDarkModeLabel">Dark mode</label>
+              <input type="checkbox" id="settingsDarkMode" />
+            </div>
+            <div class="settings-field">
+              <label for="accentColorInput" id="accentColorLabel">Accent color</label>
+              <input type="color" id="accentColorInput" value="#001589" />
+            </div>
+            <div class="settings-field">
+              <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
+              <select id="settingsFontSize">
+                <option value="14">14px</option>
+                <option value="16">16px</option>
+                <option value="18">18px</option>
+              </select>
+            </div>
+            <div class="settings-field">
+              <label for="settingsFontFamily" id="settingsFontFamilyLabel">Font</label>
+              <select id="settingsFontFamily">
+                <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                <option value="'Arial', sans-serif">Arial</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Courier New', monospace">Courier New</option>
+              </select>
+            </div>
+            <div class="settings-field">
+              <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>
+              <input type="file" id="settingsLogo" accept="image/svg+xml" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="settings-section" aria-labelledby="accessibilityHeading accessibilityDescription">
+          <legend class="settings-legend">
+            <span class="settings-legend-icon" aria-hidden="true">♿</span>
+            <span class="settings-legend-text">
+              <span class="settings-legend-title" id="accessibilityHeading">Accessibility</span>
+              <span class="settings-legend-subtitle" id="accessibilityDescription">Improve contrast and readability options.</span>
+            </span>
+          </legend>
+          <div class="settings-grid">
+            <div class="settings-field settings-toggle">
+              <label for="settingsHighContrast" id="settingsHighContrastLabel">High contrast</label>
+              <input type="checkbox" id="settingsHighContrast" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="settings-section" aria-labelledby="backupHeading backupDescription">
+          <legend class="settings-legend">
+            <span class="settings-legend-icon" aria-hidden="true">💾</span>
+            <span class="settings-legend-text">
+              <span class="settings-legend-title" id="backupHeading">Backup &amp; Restore</span>
+              <span class="settings-legend-subtitle" id="backupDescription">Save or restore your settings and data.</span>
+            </span>
+          </legend>
+          <div class="settings-actions">
+            <button id="backupSettings" type="button" class="ghost">Backup</button>
+            <input type="file" id="restoreSettingsInput" accept="application/json" hidden />
+            <button id="restoreSettings" type="button" class="ghost">Restore</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="settings-section" aria-labelledby="aboutHeading aboutDescription">
+          <legend class="settings-legend">
+            <span class="settings-legend-icon" aria-hidden="true">ℹ️</span>
+            <span class="settings-legend-text">
+              <span class="settings-legend-title" id="aboutHeading">About &amp; Support</span>
+              <span class="settings-legend-subtitle" id="aboutDescription">Version details and support resources.</span>
+            </span>
+          </legend>
+          <div class="settings-info">
+            <p id="aboutVersion">Version 1.0.0</p>
+            <p><a href="https://github.com" id="supportLink" target="_blank">Support</a></p>
+          </div>
+        </fieldset>
+
+        <footer class="settings-footer">
+          <button id="settingsCancel" type="button" class="secondary">Cancel</button>
+          <button id="settingsSave" type="button" class="primary">Save</button>
+        </footer>
+      </form>
     </div>
   </div>
 
