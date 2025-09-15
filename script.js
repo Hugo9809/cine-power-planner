@@ -1714,6 +1714,10 @@ function setLanguage(lang) {
   if (settingsDarkLabel) settingsDarkLabel.textContent = texts[lang].darkModeSetting;
   const accentLabel = document.getElementById("accentColorLabel");
   if (accentLabel) accentLabel.textContent = texts[lang].accentColorSetting;
+  const fontSizeLabel = document.getElementById("settingsFontSizeLabel");
+  if (fontSizeLabel) fontSizeLabel.textContent = texts[lang].fontSizeSetting;
+  const fontFamilyLabel = document.getElementById("settingsFontFamilyLabel");
+  if (fontFamilyLabel) fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
   if (contrastLabel) contrastLabel.textContent = texts[lang].highContrastSetting;
   const accessibilityHeading = document.getElementById("accessibilityHeading");
@@ -2374,6 +2378,8 @@ const settingsDialog  = document.getElementById("settingsDialog");
 const settingsLanguage = document.getElementById("settingsLanguage");
 const settingsDarkMode = document.getElementById("settingsDarkMode");
 const accentColorInput = document.getElementById("accentColorInput");
+const settingsFontSize = document.getElementById("settingsFontSize");
+const settingsFontFamily = document.getElementById("settingsFontFamily");
 const settingsHighContrast = document.getElementById("settingsHighContrast");
 const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
@@ -2428,6 +2434,36 @@ if (accentColorInput) {
     applyAccentColor(color);
   });
 }
+
+// Font preferences
+let fontSize = '16';
+let fontFamily = "'Ubuntu', sans-serif";
+
+function applyFontSize(size) {
+  document.documentElement.style.fontSize = `${size}px`;
+}
+
+function applyFontFamily(family) {
+  document.documentElement.style.setProperty('--font-family', family);
+}
+
+try {
+  const storedSize = localStorage.getItem('fontSize');
+  if (storedSize) {
+    fontSize = storedSize;
+    applyFontSize(fontSize);
+  }
+  const storedFamily = localStorage.getItem('fontFamily');
+  if (storedFamily) {
+    fontFamily = storedFamily;
+    applyFontFamily(fontFamily);
+  }
+} catch (e) {
+  console.warn('Could not load font preferences', e);
+}
+
+if (settingsFontSize) settingsFontSize.value = fontSize;
+if (settingsFontFamily) settingsFontFamily.value = fontFamily;
 
 const revertAccentColor = () => {
   applyAccentColor(prevAccentColor);
@@ -10418,6 +10454,8 @@ if (settingsButton && settingsDialog) {
       const stored = localStorage.getItem('accentColor');
       accentColorInput.value = stored || accentColor;
     }
+    if (settingsFontSize) settingsFontSize.value = fontSize;
+    if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     settingsDialog.removeAttribute('hidden');
     // Focus the first control except the language selector to avoid opening it automatically
     const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
@@ -10464,6 +10502,26 @@ if (settingsButton && settingsDialog) {
         }
         accentColor = color;
         prevAccentColor = color;
+      }
+      if (settingsFontSize) {
+        const size = settingsFontSize.value;
+        applyFontSize(size);
+        try {
+          localStorage.setItem('fontSize', size);
+        } catch (e) {
+          console.warn('Could not save font size', e);
+        }
+        fontSize = size;
+      }
+      if (settingsFontFamily) {
+        const family = settingsFontFamily.value;
+        applyFontFamily(family);
+        try {
+          localStorage.setItem('fontFamily', family);
+        } catch (e) {
+          console.warn('Could not save font family', e);
+        }
+        fontFamily = family;
       }
       settingsDialog.setAttribute('hidden', '');
     });

@@ -21,7 +21,7 @@
   --page-padding: 20px;
   --gap-size: 10px;
   --button-size: 24px;
-  --link-color: var(--accent-color);
+  --font-family: 'Ubuntu', sans-serif;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
@@ -60,7 +60,7 @@ body {
 }
 
 body {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: 300;
   margin: 0;
   background-color: var(--background-color);
@@ -174,7 +174,7 @@ textarea:focus-visible {
   margin-top: 10px;
 }
 h1, h2, h3 {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: 400;
   color: var(--accent-color);
 }
@@ -746,7 +746,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 }
 
 .device-category h4 {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: 400;
   color: var(--accent-color);
   margin-top: 0;
@@ -1849,13 +1849,13 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   overflow-y: auto;
   background: var(--surface-color);
   color: var(--control-text);
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: 300;
 }
 #overviewDialogContent h1,
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: 400;
   color: var(--accent-color);
 }
@@ -1922,7 +1922,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   box-shadow: var(--panel-shadow);
 }
 #overviewDialogContent .device-category h3 {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: 400;
   margin-top: 0;
   margin-bottom: 5px;
