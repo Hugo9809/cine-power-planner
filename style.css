@@ -672,6 +672,45 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Style file input buttons to match standard buttons */
+input[type="file"]::file-selector-button,
+input[type="file"]::-webkit-file-upload-button {
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0 8px;
+  margin-right: 5px;
+  cursor: pointer;
+  font-size: 0.85em;
+  min-height: var(--button-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover,
+input[type="file"]::-webkit-file-upload-button:hover {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  transform: translateY(-2px);
+}
+
+input[type="file"]::file-selector-button:active,
+input[type="file"]::-webkit-file-upload-button:active {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  filter: brightness(0.9);
+  transform: translateY(0);
+}
+
+input[type="file"]:disabled::file-selector-button,
+input[type="file"]:disabled::-webkit-file-upload-button {
+  background-color: var(--control-disabled-bg);
+  cursor: not-allowed;
+}
+
 
 /* Device Manager specific styles */
 .device-list-container {
