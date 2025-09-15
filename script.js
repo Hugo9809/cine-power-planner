@@ -2393,6 +2393,7 @@ const projectRequirementsOutput = document.getElementById("projectRequirementsOu
 
 // Load accent color from localStorage
 let accentColor = '#001589';
+let prevAccentColor = accentColor;
 try {
   const storedAccent = localStorage.getItem('accentColor');
   if (storedAccent) {
@@ -2403,6 +2404,20 @@ try {
 } catch (e) {
   console.warn('Could not load accent color', e);
 }
+prevAccentColor = accentColor;
+
+if (accentColorInput) {
+  accentColorInput.addEventListener('input', () => {
+    const color = accentColorInput.value;
+    document.documentElement.style.setProperty('--accent-color', color);
+    document.documentElement.style.setProperty('--link-color', color);
+  });
+}
+
+const revertAccentColor = () => {
+  document.documentElement.style.setProperty('--accent-color', prevAccentColor);
+  document.documentElement.style.setProperty('--link-color', prevAccentColor);
+};
 
 function populateFeatureSearch() {
   if (!featureList) return;
@@ -10361,6 +10376,7 @@ if (pinkModeToggle) {
 
 if (settingsButton && settingsDialog) {
   settingsButton.addEventListener('click', () => {
+    prevAccentColor = accentColor;
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (accentColorInput) {
@@ -10374,6 +10390,7 @@ if (settingsButton && settingsDialog) {
 
   if (settingsCancel) {
     settingsCancel.addEventListener('click', () => {
+      revertAccentColor();
       settingsDialog.setAttribute('hidden', '');
     });
   }
@@ -10402,13 +10419,17 @@ if (settingsButton && settingsDialog) {
           console.warn('Could not save accent color', e);
         }
         accentColor = color;
+        prevAccentColor = color;
       }
       settingsDialog.setAttribute('hidden', '');
     });
   }
 
   settingsDialog.addEventListener('click', e => {
-    if (e.target === settingsDialog) settingsDialog.setAttribute('hidden', '');
+    if (e.target === settingsDialog) {
+      revertAccentColor();
+      settingsDialog.setAttribute('hidden', '');
+    }
   });
 }
 
@@ -10798,6 +10819,7 @@ if (helpButton && helpDialog) {
     } else if (
       e.key === 'Escape' && settingsDialog && !settingsDialog.hasAttribute('hidden')
     ) {
+      revertAccentColor();
       settingsDialog.setAttribute('hidden', '');
     } else if (
       e.key === 'F1' ||
