@@ -507,6 +507,20 @@ function importAllData(allData) {
       Object.entries(allData.project).forEach(([name, proj]) => {
         saveProject(name, proj);
       });
+    } else if (allData.projects) {
+      // Legacy plural key. Accept object map or array of named projects.
+      if (Array.isArray(allData.projects)) {
+        allData.projects.forEach((proj) => {
+          if (proj && typeof proj === "object") {
+            const name = typeof proj.name === "string" ? proj.name : "";
+            saveProject(name, proj);
+          }
+        });
+      } else if (isPlainObject(allData.projects)) {
+        Object.entries(allData.projects).forEach(([name, proj]) => {
+          saveProject(name, proj);
+        });
+      }
     } else if (typeof allData.gearList === "string") {
       // Legacy export format stored just the gear list HTML
       saveProject("", { gearList: allData.gearList });
