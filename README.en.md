@@ -16,6 +16,13 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
+- Clear local cache button to wipe saved projects and settings.
+- Gear list and printable overview display the project name for quick reference.
+- Upload a custom logo for printed overviews and backups.
+- Backups include favorites and create an automatic backup before restore.
+- Crew list entries now feature an email field.
+- High contrast theme option for improved readability.
+- Device forms populate category fields dynamically based on schema attributes.
 - Revamped interface design with improved contrast and spacing for a cleaner experience on any device.
 - Simplified project sharing – export and import buttons were removed; share links now handle project transfer.
 - Unique icons for required scenarios to distinguish project requirements.
@@ -41,6 +48,9 @@ The app automatically uses your browser language on first load, and you can swit
 - Data is stored locally via `localStorage`
 - Generate a printable overview for any saved project
 - Save project requirements along with each project
+- Clear all saved data with a dedicated button
+- Upload a custom logo for printable overviews and backups
+- Backups include favorites and create an automatic backup before restore
 - Works fully offline – language, dark mode, projects and device data persist
 - Responsive layout adapts seamlessly across desktops, tablets and phones
 - Choose a **B‑Mount** or **V‑Mount** plate on supported cameras; the battery list adapts automatically
@@ -142,6 +152,9 @@ The generator turns your selections into a categorized packing list:
 ### 🦄 Pink Mode
 - Click the unicorn button or press **P** for a playful pink accent.
 - Works in both light and dark themes and persists between visits.
+
+### ⚫ High Contrast Mode
+- Toggle a high contrast theme for improved readability.
 
 ### 📝 User Runtime Feedback
 - Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.
