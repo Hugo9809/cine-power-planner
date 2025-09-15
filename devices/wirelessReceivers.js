@@ -96,7 +96,7 @@ const wirelessReceiversData = {
         "type": "3G-SDI"
       }
     ],
-    "frequency": "5 GHz",
+    "frequency": "5.1-5.9 GHz",
     "latencyMs": "< 1ms",
     "power": {
       "input": [
