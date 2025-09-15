@@ -393,6 +393,19 @@ describe('settings backup and restore', () => {
     require('../translations.js');
     const script = require('../script.js');
     script.setLanguage('en');
+    const { iso: expectedIso, fileName: expectedFileName } = script.formatFullBackupFilename(fixedDate);
+    const pad = (n) => String(n).padStart(2, '0');
+    const offsetMinutes = fixedDate.getTimezoneOffset();
+    const offsetSuffix = offsetMinutes === 0
+      ? 'Z'
+      : `${offsetMinutes > 0 ? '-' : '+'}${pad(Math.floor(Math.abs(offsetMinutes) / 60))}:${pad(Math.abs(offsetMinutes) % 60)}`;
+    const manualIso = `${fixedDate.getFullYear()}-${pad(fixedDate.getMonth() + 1)}-${pad(fixedDate.getDate())}`
+      + `T${pad(fixedDate.getHours())}:${pad(fixedDate.getMinutes())}:${pad(fixedDate.getSeconds())}${offsetSuffix}`;
+    expect(expectedIso).toBe(manualIso);
+    expect(expectedFileName).toBe(`${manualIso.replace(/[:]/g, '-')} full app backup.json`);
+    if (offsetMinutes !== 0) {
+      expect(expectedIso).not.toBe(fixedDate.toISOString());
+    }
     const logoData = 'data:image/svg+xml;base64,PHN2Zy8+';
     localStorage.setItem('customLogo', logoData);
     localStorage.setItem('language', 'de');
@@ -416,7 +429,7 @@ describe('settings backup and restore', () => {
     const obj = JSON.parse(text);
     expect(obj.data).toEqual({ foo: 'bar', favorites: { cat: ['A'] }, project: projectPayload });
     expect(obj.version).toBe(script.APP_VERSION);
-    expect(obj.generatedAt).toBe(fixedDate.toISOString());
+    expect(obj.generatedAt).toBe(expectedIso);
     expect(obj.settings.customLogo).toBe(logoData);
     expect(obj.settings.language).toBe('de');
     expect(obj.settings.darkMode).toBe('true');
@@ -425,7 +438,7 @@ describe('settings backup and restore', () => {
     expect(obj.settings.fontSize).toBe('18');
     expect(obj.settings.fontFamily).toBe('Inter');
     expect(obj.settings.accentColor).toBe('#123456');
-    expect(anchor.download).toBe('2024-05-01T12-34-56Z full app backup.json');
+    expect(anchor.download).toBe(expectedFileName);
 
     document.createElement = origCreateElement;
 
