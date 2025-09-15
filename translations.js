@@ -1994,10 +1994,10 @@ const texts = {
 
 const gearItems = {
   en: { 'tennis ball': 'tennis ball', 'Clapper Stick': 'Clapper Stick' },
-  it: { 'tennis ball': 'palla da tennis', 'Clapper Stick': 'clachette' },
-  es: { 'tennis ball': 'pelota de tenis', 'Clapper Stick': 'palillo de la claqueta' },
-  fr: { 'tennis ball': 'balle de tennis', 'Clapper Stick': 'baguette du clap' },
-  de: { 'tennis ball': 'Tennisball', 'Clapper Stick': 'Klappenstift' }
+  it: { 'tennis ball': 'palla da tennis', 'Clapper Stick': 'bastoncino del ciak' },
+  es: { 'tennis ball': 'pelota de tenis', 'Clapper Stick': 'palo de la claqueta' },
+  fr: { 'tennis ball': 'balle de tennis', 'Clapper Stick': 'baguette de clap' },
+  de: { 'tennis ball': 'Tennisball', 'Clapper Stick': 'Klappenstab' }
 };
 
 // Mapping for category values to display names (singular for form dropdown)
