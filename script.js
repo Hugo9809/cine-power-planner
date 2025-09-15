@@ -10960,9 +10960,10 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
     const shouldNotify = isEvent ? true : Boolean(notify);
     const { iso, fileName } = formatFullBackupFilename(timestamp);
-    const settings = {};
+    const settings = Object.create(null);
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
+      if (typeof key !== 'string') continue;
       settings[key] = localStorage.getItem(key);
     }
     const backup = {
