@@ -39,7 +39,7 @@ Vous pouvez changer la langue en haut à droite; la préférence est mémorisée
 ### 📦 Catégories d'Appareils
 - **Caméra** (1)
 - **Moniteur** (optionnel)
-- **Vidéo sans fil** (optionnel)
+- **Transmetteur sans fil** (optionnel)
 - **Moteurs FIZ** (0–4)
 - **Contrôleurs FIZ** (0–4)
 - **Capteur de distance** (0–1)

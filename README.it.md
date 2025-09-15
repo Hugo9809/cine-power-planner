@@ -38,7 +38,7 @@ Puoi cambiare la lingua nell'angolo in alto a destra e la scelta viene memorizza
 ### 📦 Categorie di dispositivi
 - **Camera** (1)
 - **Monitor** (opzionale)
-- **Video wireless** (opzionale)
+- **Trasmettitore wireless** (opzionale)
 - **Motori FIZ** (0–4)
 - **Controller FIZ** (0–4)
 - **Sensore di distanza** (0–1)
