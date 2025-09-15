@@ -97,8 +97,7 @@ body.dark-mode {
 }
 
 h1 {
-  text-align: center;
-  margin-bottom: 0.5em;
+  display: none;
 }
 
 p {
@@ -107,7 +106,8 @@ p {
 
 #topBar,
 .print-btn,
-.back-btn {
+.back-btn,
+.favorite-toggle {
   display: none;
 }
 
