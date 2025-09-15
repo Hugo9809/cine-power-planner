@@ -1720,6 +1720,8 @@ function setLanguage(lang) {
   if (fontSizeLabel) fontSizeLabel.textContent = texts[lang].fontSizeSetting;
   const fontFamilyLabel = document.getElementById("settingsFontFamilyLabel");
   if (fontFamilyLabel) fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
+  const settingsLogoLabel = document.getElementById("settingsLogoLabel");
+  if (settingsLogoLabel) settingsLogoLabel.textContent = texts[lang].logoSetting;
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
   if (contrastLabel) contrastLabel.textContent = texts[lang].highContrastSetting;
   const accessibilityHeading = document.getElementById("accessibilityHeading");
@@ -2380,6 +2382,7 @@ const settingsDarkMode = document.getElementById("settingsDarkMode");
 const accentColorInput = document.getElementById("accentColorInput");
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
+const settingsLogo = document.getElementById("settingsLogo");
 const settingsHighContrast = document.getElementById("settingsHighContrast");
 const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
@@ -10400,6 +10403,7 @@ if (settingsButton && settingsDialog) {
     }
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
+    if (settingsLogo) settingsLogo.value = '';
     settingsDialog.removeAttribute('hidden');
     // Focus the first control except the language selector to avoid opening it automatically
     const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
@@ -10466,6 +10470,18 @@ if (settingsButton && settingsDialog) {
           console.warn('Could not save font family', e);
         }
         fontFamily = family;
+      }
+      if (settingsLogo && settingsLogo.files && settingsLogo.files[0]) {
+        const file = settingsLogo.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            localStorage.setItem('customLogo', reader.result);
+          } catch (e) {
+            console.warn('Could not save custom logo', e);
+          }
+        };
+        reader.readAsDataURL(file);
       }
       settingsDialog.setAttribute('hidden', '');
     });

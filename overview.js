@@ -7,6 +7,7 @@ function generatePrintableOverview() {
     const locale = localeMap[currentLang] || 'en-US';
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const t = texts[currentLang];
+    const customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;
 
     let deviceListHtml = '<div class="device-category-container">';
     const sections = {};
@@ -195,10 +196,13 @@ function generatePrintableOverview() {
     }
     const gearListHtmlWithBreak = gearListHtml ? `<div class="page-break"></div>${gearListHtml}` : '';
 
+    const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
+    const contentClass = customLogo ? 'logo-present' : '';
     const overviewHtml = `
-        <div id="overviewDialogContent">
+        <div id="overviewDialogContent" class="${contentClass}">
             <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
             <button id="printOverviewBtn" class="print-btn">${t.printBtn}</button>
+            ${logoHtml}
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
             <p><em>Generated on: ${dateTimeString}</em></p>
