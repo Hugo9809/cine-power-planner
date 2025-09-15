@@ -23,6 +23,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Playful pink accent theme that persists between visits.
 - Searchable help dialog with step-by-step sections and a FAQ; open with ?, H, F1 or Ctrl+/.
 - Contextual hover help for buttons, fields, dropdowns and headers.
+- Global search bar to jump to features, device selectors or help topics.
 - Support for cameras with V-, B- or Gold-Mount battery plates.
 - Submit user runtime feedback with temperature for better estimates.
 - Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
@@ -126,6 +127,8 @@ The generator turns your selections into a categorized packing list:
 ### 🔍 Search & Filtering
 - Type inside dropdowns to quickly find entries
 - Filter device lists with a search box
+- Use the global search bar at the top to jump to features, devices or help topics; press Enter to navigate and × to clear.
+- Press '/' or Ctrl+F (⌘F on macOS) to focus the nearest search box instantly.
 
 ### 🛠 Device Database Editor
 - Add, edit or delete devices in all categories
