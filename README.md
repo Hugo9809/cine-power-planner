@@ -17,13 +17,15 @@ that future visits work offline and pick up updates automatically.
 - [Translations](#translations)
 - [Recent Updates](#recent-updates)
 - [Features at a Glance](#features-at-a-glance)
-- [Runtime Data Weighting](#runtime-data-weighting)
 - [Quick Start](#quick-start)
+- [Interface Overview](#interface-overview)
+- [Customization and Accessibility](#customization-and-accessibility)
 - [Gear List](#gear-list)
-- [Getting Started](#getting-started)
-- [Install as an App](#install-as-an-app)
-- [Browser Support](#browser-support)
+- [Runtime Data Weighting](#runtime-data-weighting)
 - [Backup and Recovery](#backup-and-recovery)
+- [Install as an App](#install-as-an-app)
+- [Offline Use and Data Storage](#offline-use-and-data-storage)
+- [Browser Support](#browser-support)
 - [Development](#development)
 - [Feedback and Support](#feedback-and-support)
 - [Contributing](#contributing)
@@ -45,6 +47,9 @@ Contributions for additional languages are welcome. To add a translation, includ
 
 ## Recent Updates
 
+- **Accent and typography controls** – adjust the accent color, font size and typeface from the Settings dialog while dark, pink and high contrast themes remain available on every visit.
+- **Force reload button** – clear cached service worker files and refresh the offline app without deleting saved projects or devices.
+- **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries and accessories at the top of each selector and include them in backups.
 - **Clear local cache** – wipe stored projects and settings with one click.
 - **Project name above gear list** – printed overviews and the gear list now show the project name.
 - **Custom print logo** – upload a logo that appears in printable overviews and backups.
@@ -72,43 +77,53 @@ See the language-specific README files for full details.
 
 ## Features at a Glance
 
-- Calculate total power consumption, current draw at 14.4 V and 12 V, and estimated battery runtime.
-- Runtime estimates draw on a weighted average of user-submitted runtimes for greater accuracy.
-- Check that selected batteries can supply the required output.
-- See required battery counts for a 10 h shoot and adjust runtimes for temperature.
-- Compare runtimes across all batteries with an optional battery comparison panel.
-- Save, load, share and clear projects (project requirements included); generate gear lists and printable overviews.
-- Visualize power and video connections with an interactive diagram.
-- Customize the device database with your own gear.
-- Uses your browser's language on first load (falls back to English), lets you switch languages, toggle dark or playful pink themes, and swap between V‑, B‑ and Gold‑Mount plates on supported cameras.
-- Enjoy a responsive layout with an updated design that adapts to phones, tablets and desktops.
-- Jump to features, device selectors or help topics with the global search field; press Enter to navigate and × to clear the query.
-- Works completely offline and offers a searchable help dialog with hover help for every button, field, dropdown and header.
-
-## Runtime Data Weighting
-
-User-submitted battery runtimes are combined using a weighted average to better match your project:
-
-- Entries are adjusted for temperature, scaling from ×1 at 25 °C to ×1.25 at 0 °C, ×1.6 at −10 °C and ×2 at −20 °C.
-- Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled relative to 1080p.
-- Frame rate scales linearly from a base of 24 fps (e.g. 48 fps = ×2).
-- Wi‑Fi enabled adds 10 %.
-- Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7.
-- Monitor entries below the specified brightness are weighted by their brightness ratio.
-- The final weight reflects how much of the total power draw comes from the camera, monitor and other devices so that similar rigs count more.
-- A dedicated dashboard orders entries by weight and shows the share percentage for each runtime entry.
+- Calculate total power consumption, current draw at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount), and estimated battery runtime.
+- Combine user-submitted runtimes using weighted averages that account for temperature, resolution, frame rate, codecs and each device’s share of total draw.
+- Warn when selected batteries cannot safely supply the required current and show required battery counts for a 10 h shoot (including a spare).
+- Save, auto-back up, share, restore and clear projects (project requirements included); generate printable overviews and shareable JSON bundles that include custom devices and runtime feedback.
+- Compare runtimes across all compatible batteries with the optional battery comparison panel.
+- Visualize power and video connections with an interactive diagram—drag, zoom, snap to grid and export as SVG, or hold Shift while downloading to create a JPG snapshot.
+- Generate rich gear lists that expand project requirements into categorized packing tables with accessories, duplicates merged by quantity and tooltips for weight and dimensions.
+- Customize the device database with your own gear, import/export it as JSON and revert to the bundled defaults at any time.
+- Jump to features, device selectors or help topics with the global search field, star favorites to pin go-to devices and type directly inside dropdowns to filter instantly.
+- Tailor the interface with language detection, dark or playful pink themes, high contrast mode, accent color and typography controls, all stored locally.
+- Works completely offline with a service worker, persistent storage and a force reload button to refresh cached assets without losing data.
 
 ## Quick Start
 
 1. Download or clone this repository.
 2. Open `index.html` in a modern browser.
-3. (Optional) Serve the folder over HTTP to enable the service worker and other Progressive Web App features. You can use any static file server, for example:
+3. (Optional) Serve the folder over HTTP to enable the service worker and Progressive Web App features:
    ```bash
    npx http-server
    # or
    python -m http.server
    ```
    The planner then works fully offline and updates automatically.
+
+## Interface Overview
+
+### Top bar controls
+
+- A skip link, offline indicator and responsive branding keep the interface accessible across devices; the offline badge appears whenever the browser loses its connection.
+- The global search bar jumps to features, device selectors or help topics—press Enter to navigate to the highlighted result and use × to clear the query.
+- Language, dark mode and pink mode buttons sit alongside the Settings dialog, which exposes accent color, font size, font family, high contrast and custom logo uploads plus backup and restore tools.
+- The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
+- The Force reload button (🔄) removes cached service worker files and refreshes the app without touching saved projects or device data.
+
+### Navigation and search
+
+- On smaller screens a collapsible side menu mirrors the main sections for quick navigation.
+- Every dropdown and editor list includes an inline search box and supports type-to-filter interactions; pressing / or Ctrl+F (⌘F on macOS) focuses the nearest search field.
+- Star icons beside selectors let you pin favorite devices so they stay at the top of the list and persist between sessions.
+
+## Customization and Accessibility
+
+- Theme preferences include dark mode, playful pink accents and a dedicated high contrast switch for improved readability.
+- Accent color, base font size and typeface can be customised in Settings; choices are applied immediately and remembered with other preferences.
+- A keyboard-friendly skip link, focus-visible controls, offline indicator and responsive layout improve navigation on desktops, tablets and phones.
+- Built-in keyboard shortcuts cover help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
+- The hover-help toggle turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
 
 ## Gear List
 
@@ -117,8 +132,8 @@ The planner expands your selections into a detailed packing table:
 - Click **Generate Gear List** to compile chosen gear and project requirements into a categorized table.
 - The list refreshes automatically whenever device selections or project details change.
 - Entries are grouped by category (camera, lens, power, monitoring, rigging, grip, consumables, etc.) and duplicates are merged with a count.
-- Required cables, rigging and accessories are added automatically for monitors, motors, gimbals and weather scenarios.
-- Scenario selections inject matching gear (for example, *Handheld* + *Easyrig* adds a telescopic handle; *Gimbal* supplies the selected gimbal, friction arms and sunshades; *Outdoor* adds spigots, umbrellas and CapIt rain covers).
+- Required cables, rigging and accessories are added automatically for monitors, motors, gimbals, weather scenarios and speciality setups.
+- Scenario selections inject matching gear (for example, *Handheld* + *Easyrig* adds a telescopic handle; *Gimbal* supplies the selected gimbal, friction arms and sunshades; *Outdoor* adds spigots, umbrellas and CapIt rain covers; *Vehicle* and *Steadicam* pack in mounts, isolation arms and suction gear where applicable).
 - Lens choices note front diameter, weight, minimum focus and rod requirements, and add lens supports and matte box components with warnings for incompatible rod standards.
 - Battery rows reflect counts from the power calculator and include a hotswap plate or the selected hotswap device when needed.
 - Monitoring preferences provide default monitors for each role and bundle cable sets for every screen.
@@ -137,17 +152,18 @@ The planner expands your selections into a detailed packing table:
 - **Delete Gear List** removes the saved list and hides the output.
 - Gear list forms use fork buttons to duplicate your entries instantly.
 
-## Getting Started
+## Runtime Data Weighting
 
-Set up a development environment:
+User-submitted battery runtimes are combined using a weighted average to better match your project:
 
-1. Install Node.js 18 or later.
-2. Install dependencies and run the full test suite:
-   ```bash
-   npm install
-   npm test
-   ```
-   The `npm test` command runs ESLint, data consistency checks and Jest tests.
+- Entries are adjusted for temperature, scaling from ×1 at 25 °C to ×1.25 at 0 °C, ×1.6 at −10 °C and ×2 at −20 °C.
+- Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled relative to 1080p.
+- Frame rate scales linearly from a base of 24 fps (e.g. 48 fps = ×2).
+- Wi‑Fi enabled adds 10 %.
+- Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7.
+- Monitor entries below the specified brightness are weighted by their brightness ratio.
+- The final weight reflects how much of the total power draw comes from the camera, monitor and other devices so that similar rigs count more.
+- A dedicated dashboard orders entries by weight and shows the share percentage for each runtime entry.
 
 ## Install as an App
 
@@ -196,6 +212,8 @@ controls to export your work:
 Cine Power Planner relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.
 
 ## Development
+
+Set up a development environment with Node.js 18 or later. After cloning the repository run `npm install` once, then use `npm test` to execute ESLint, data consistency checks and Jest tests together while you iterate on changes.
 
 After cloning the repository, you can inspect or modify the code base.
 
