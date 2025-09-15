@@ -446,6 +446,57 @@ describe('settings backup and restore', () => {
     jest.useRealTimers();
   });
 
+  test('preserves localStorage keys that resemble prototypes', async () => {
+    jest.useFakeTimers();
+    try {
+      const fixedDate = new Date('2024-05-01T12:34:56.789Z');
+      jest.setSystemTime(fixedDate);
+      setupDom(false);
+      global.loadSetups = jest.fn(() => ({}));
+      global.saveSetups = jest.fn();
+      global.loadDeviceData = jest.fn(() => ({}));
+      global.saveDeviceData = jest.fn();
+      global.loadSessionState = jest.fn(() => null);
+      global.saveSessionState = jest.fn();
+      global.loadProject = jest.fn(() => ({}));
+      global.saveProject = jest.fn();
+      global.deleteProject = jest.fn();
+      global.loadFavorites = jest.fn(() => ({}));
+      global.saveFavorites = jest.fn();
+
+      const backupBtn = document.createElement('button');
+      backupBtn.id = 'backupSettings';
+      document.body.appendChild(backupBtn);
+
+      global.exportAllData = jest.fn(() => ({}));
+
+      require('../translations.js');
+      require('../script.js').setLanguage('en');
+
+      localStorage.setItem('__proto__', 'proto-value');
+      localStorage.setItem('constructor', 'ctor-value');
+
+      global.URL.createObjectURL = jest.fn(() => 'blob:url');
+      global.URL.revokeObjectURL = jest.fn();
+      const origCreateElement = document.createElement.bind(document);
+      const anchor = { href: '', download: '', click: jest.fn() };
+      document.createElement = jest.fn(tag => tag === 'a' ? anchor : origCreateElement(tag));
+
+      try {
+        backupBtn.dispatchEvent(new window.Event('click'));
+        expect(global.exportAllData).toHaveBeenCalledTimes(1);
+        const blob = global.URL.createObjectURL.mock.calls[0][0];
+        const json = JSON.parse(await blob.text());
+        expect(json.settings['__proto__']).toBe('proto-value');
+        expect(json.settings.constructor).toBe('ctor-value');
+      } finally {
+        document.createElement = origCreateElement;
+      }
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   test('warns when backup version differs', async () => {
     jest.useFakeTimers();
     setupDom(false);
