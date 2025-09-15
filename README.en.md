@@ -49,7 +49,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
 - Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
 - Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices; load it through the Shared Project picker to restore everything in one step.
-- Data is stored locally via `localStorage` and favorites are preserved in backups; use the dedicated clear button if you need to wipe cached projects and device edits.
+- Data is stored locally via `localStorage` and favorites are preserved in backups; use the dedicated **Clear Local Cache** button in Settings if you need to wipe cached projects and device edits.
 - Generate printable overviews for any saved project and add a custom logo so exports and backups match your production branding.
 - Save project requirements along with each project so gear lists retain full context.
 - Works fully offline with the installed service worker—language, theme, device data and favorites persist between sessions.
@@ -59,7 +59,7 @@ The app automatically uses your browser language on first load, and you can swit
 ### 🧭 Interface Overview
 - A skip link and offline indicator keep the layout accessible on keyboard and touch devices—the badge appears whenever the browser loses its connection.
 - The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result and tap × to clear the query.
-- Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup and restore tools.
+- Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup, restore and Clear Local Cache tools.
 - The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
 - The Force reload button (🔄) clears cached service worker files so the offline app updates without deleting saved projects or custom devices.
 - On smaller screens a collapsible side menu mirrors every major section for quick navigation.
@@ -87,7 +87,8 @@ The generator turns your selections into a categorized packing list:
 - Battery rows mirror counts from the power calculator and include hotswap plates or chosen hotswap devices when required.
 - Monitoring preferences assign default monitors for each role (Director, DoP, Focus, etc.) with cable sets and wireless receivers.
 - The **Project Requirements** form feeds the list:
-  - **Project Name** and **DoP** appear in the heading of the printed requirements.
+  - **Project Name**, **Production Company**, **Rental House** and **DoP** appear in the heading of the printed requirements.
+  - **Crew** entries capture names, roles and email addresses so contact info travels with the project.
   - **Prep Days** and **Shooting Days** supply schedule notes and, when paired with outdoor scenarios, suggest weather gear.
   - **Required Scenarios** append matching rigging, gimbals and weather protection.
   - **Camera Handle** and **Viewfinder Extension** insert the chosen handle parts or extension brackets.
@@ -213,7 +214,8 @@ Serving the app over HTTP(S) installs a service worker that caches every file
 so Cine Power Planner works fully offline and updates in the background. Projects,
 runtime submissions and preferences (language, theme, pink mode and saved gear
 lists) live in your browser's `localStorage`. Clearing the site's data in the
-browser removes all stored information.
+browser removes all stored information, and the Settings dialog includes a
+**Clear Local Cache** button for the same one-click cleanup.
 
 ---
 

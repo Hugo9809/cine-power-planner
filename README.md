@@ -107,7 +107,7 @@ See the language-specific README files for full details.
 
 - A skip link, offline indicator and responsive branding keep the interface accessible across devices; the offline badge appears whenever the browser loses its connection.
 - The global search bar jumps to features, device selectors or help topics—press Enter to navigate to the highlighted result and use × to clear the query.
-- Language, dark mode and pink mode buttons sit alongside the Settings dialog, which exposes accent color, font size, font family, high contrast and custom logo uploads plus backup and restore tools.
+- Language, dark mode and pink mode buttons sit alongside the Settings dialog, which exposes accent color, font size, font family, high contrast and custom logo uploads plus backup, restore and Clear Local Cache tools.
 - The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
 - The Force reload button (🔄) removes cached service worker files and refreshes the app without touching saved projects or device data.
 
@@ -138,7 +138,8 @@ The planner expands your selections into a detailed packing table:
 - Battery rows reflect counts from the power calculator and include a hotswap plate or the selected hotswap device when needed.
 - Monitoring preferences provide default monitors for each role and bundle cable sets for every screen.
 - The **Project Requirements** form feeds the list:
-  - **Project Name** and **DoP** appear in the heading of the printed requirements.
+  - **Project Name**, **Production Company**, **Rental House** and **DoP** appear in the heading of the printed requirements.
+  - **Crew** entries capture names, roles and email addresses so contact lists stay attached to each project.
   - **Prep Days** and **Shooting Days** supply schedule notes and, when paired with outdoor scenarios, suggest weather gear.
   - **Required Scenarios** append matching rigging, gimbals and weather protection.
   - **Camera Handle** and **Viewfinder Extension** insert the chosen handle parts or extension brackets.
@@ -185,8 +186,8 @@ files so the planner runs entirely offline and pulls updates in the
 background. Projects, runtime submissions and preferences (language, theme,
 pink mode and saved gear lists) are stored locally via `localStorage` in your
 browser. Clearing the site's data in your browser removes all saved
-information. See [Backup and Recovery](#backup-and-recovery) for tips on keeping
-your data safe.
+information, and the Settings dialog includes a **Clear Local Cache** button for a one-click reset when you need a fresh start.
+See [Backup and Recovery](#backup-and-recovery) for tips on keeping your data safe.
 
 ## Backup and Recovery
 
@@ -203,6 +204,9 @@ controls to export your work:
   the internal `exportAllData()` routine. Restoring the file automatically saves
   a safety copy of your current data before importing the new settings and warns
   when the file was produced with a different app version.
+- **Clear Local Cache:** In **Settings → Backup & Restore**, wipe saved projects,
+  custom gear, favorites and runtime feedback with one click when you need to
+  start over.
 - **Regular reminders:** While the planner is running, an hourly background job
   triggers the same backup export so you always have a recent download prompt as
   a reminder to archive your data.
