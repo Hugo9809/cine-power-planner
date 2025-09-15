@@ -3303,7 +3303,7 @@ const cameraData = {
       "2048×1080"
     ]
   },
-  "V-Raptor XL 8K VV": {
+  "Red V-Raptor XL 8K VV": {
     "powerDrawWatts": 75,
     "power": {
       "input": {
@@ -3427,7 +3427,7 @@ const cameraData = {
       "2048x1080 (2K)"
     ]
   },
-  "V-RAPTOR® X XL 8K VV": {
+  "Red V-RAPTOR® X XL 8K VV": {
     "powerDrawWatts": 75,
     "power": {
       "input": {
@@ -3550,7 +3550,7 @@ const cameraData = {
       "2048x1080 (2K)"
     ]
   },
-  "V-RAPTOR® XL 8K S35": {
+  "Red V-RAPTOR® XL 8K S35": {
     "powerDrawWatts": 75,
     "power": {
       "input": {
@@ -3672,7 +3672,7 @@ const cameraData = {
       "2048x1080 (2K)"
     ]
   },
-  "V-RAPTOR® X XL 8K S35": {
+  "Red V-RAPTOR® X XL 8K S35": {
     "powerDrawWatts": 75,
     "power": {
       "input": {
@@ -3794,7 +3794,7 @@ const cameraData = {
       "2048x1080 (2K)"
     ]
   },
-  "V-Raptor 8k S35": {
+  "Red V-Raptor 8k S35": {
     "powerDrawWatts": 60,
     "power": {
       "input": {
@@ -3883,7 +3883,7 @@ const cameraData = {
       "2048x1080"
     ]
   },
-  "V-Raptor X 8k S35": {
+  "Red V-Raptor X 8k S35": {
     "powerDrawWatts": 60,
     "power": {
       "input": {
@@ -3972,7 +3972,7 @@ const cameraData = {
       "2048x1080 (2K)"
     ]
   },
-  "V-Raptor 8k VV": {
+  "Red V-Raptor 8k VV": {
     "powerDrawWatts": 60,
     "power": {
       "input": {
@@ -4066,7 +4066,7 @@ const cameraData = {
       "2048x1080 (2K)"
     ]
   },
-  "V-Raptor X 8k VV": {
+  "Red V-Raptor X 8k VV": {
     "powerDrawWatts": 60,
     "power": {
       "input": {
