@@ -1070,8 +1070,9 @@ const BRAND_KEYWORDS = {
 };
 
 function detectBrand(name) {
-  if (!name || name === 'None') return null;
-  const n = name.toLowerCase();
+  if (!name) return null;
+  const n = String(name).trim().toLowerCase();
+  if (n === 'none') return null;
   for (const [keyword, brand] of Object.entries(BRAND_KEYWORDS)) {
     if (n.includes(keyword)) return brand;
   }
