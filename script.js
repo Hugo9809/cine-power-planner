@@ -9350,7 +9350,23 @@ function generateGearListHtml(info = {}) {
     });
     addRow('Lens Support', formatItems(lensSupportItems));
     addRow('Matte box + filter', [filterSelectHtml, formatItems(filterSelections)].filter(Boolean).join('<br>'));
-    addRow('LDS (FIZ)', formatItems([...selectedNames.motors, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
+    const motorItems = selectedNames.motors.flatMap(name => {
+        const lower = name.toLowerCase();
+        if (/cforce\s*mini\s*rf|cforce\s*rf/.test(lower)) {
+            return ['ARRI KK.0040345 CFORCE MINI RF Basic Set 2'];
+        }
+        if (/cforce\s*mini/.test(lower) && !/rf/.test(lower)) {
+            return ['ARRI KK.0040344 Cforce Mini Basic Set 2'];
+        }
+        if (/cforce\s*plus/.test(lower)) {
+            return [
+                'Arri KK.0008824 cforce plus Basic Set',
+                'ARRI K2.0009335 Cforce Plus Gear M0.8/32p, 60t'
+            ];
+        }
+        return [name];
+    });
+    addRow('LDS (FIZ)', formatItems([...motorItems, ...selectedNames.controllers, selectedNames.distance, ...fizCableAcc]));
     let batteryItems = '';
     if (selectedNames.battery) {
         let count = batteryCountElem ? parseInt(batteryCountElem.textContent, 10) : NaN;
