@@ -3603,13 +3603,14 @@ function createViewfinderVideoOutputRow(value = '') {
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
   removeBtn.addEventListener('click', () => {
-    if (viewfinderVideoOutputsContainer.children.length > 1) row.remove();
+    if (viewfinderVideoOutputsContainer && viewfinderVideoOutputsContainer.children.length > 1) row.remove();
   });
   row.appendChild(removeBtn);
   return row;
 }
 
 function setViewfinderVideoOutputs(list) {
+  if (!viewfinderVideoOutputsContainer) return;
   viewfinderVideoOutputsContainer.innerHTML = '';
   const filtered = filterNoneEntries(list, 'type');
   if (filtered.length) {
@@ -3623,6 +3624,7 @@ function setViewfinderVideoOutputs(list) {
 }
 
 function getViewfinderVideoOutputs() {
+  if (!viewfinderVideoOutputsContainer) return [];
   return Array.from(viewfinderVideoOutputsContainer.querySelectorAll('select'))
     .map(sel => ({ type: sel.value }))
     .filter(v => v.type && v.type !== 'None');
