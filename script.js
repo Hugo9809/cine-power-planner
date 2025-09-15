@@ -2424,6 +2424,7 @@ prevAccentColor = accentColor;
 
 if (accentColorInput) {
   accentColorInput.addEventListener('input', () => {
+    if (document.body.classList.contains('pink-mode')) return;
     const color = accentColorInput.value;
     applyAccentColor(color);
   });
@@ -10326,6 +10327,9 @@ function applyDarkMode(enabled) {
     }
   }
   updateThemeColor(enabled);
+  if (settingsDarkMode) {
+    settingsDarkMode.checked = enabled;
+  }
 }
 
 let darkModeEnabled = false;
@@ -10375,12 +10379,25 @@ applyHighContrast(highContrastEnabled);
 function applyPinkMode(enabled) {
   if (enabled) {
     document.body.classList.add("pink-mode");
+    if (accentColorInput) {
+      accentColorInput.disabled = true;
+    }
+    document.documentElement.style.removeProperty('--accent-color');
+    document.documentElement.style.removeProperty('--link-color');
+    if (document.body) {
+      document.body.style.removeProperty('--accent-color');
+      document.body.style.removeProperty('--link-color');
+    }
     if (pinkModeToggle) {
       pinkModeToggle.textContent = "🦄";
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
   } else {
     document.body.classList.remove("pink-mode");
+    if (accentColorInput) {
+      accentColorInput.disabled = false;
+    }
+    applyAccentColor(accentColor);
     if (pinkModeToggle) {
       pinkModeToggle.textContent = "🐴";
       pinkModeToggle.setAttribute("aria-pressed", "false");
