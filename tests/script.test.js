@@ -377,6 +377,7 @@ describe('settings backup and restore', () => {
     const text = await blob.text();
     const obj = JSON.parse(text);
     expect(obj.data).toEqual({ foo: 'bar', favorites: { cat: ['A'] } });
+    expect(obj.version).toBe(script.APP_VERSION);
 
     document.createElement = origCreateElement;
 
@@ -391,6 +392,60 @@ describe('settings backup and restore', () => {
     restoreInput.dispatchEvent(new window.Event('change'));
     expect(global.exportAllData).toHaveBeenCalledTimes(2);
     expect(global.importAllData).toHaveBeenCalledWith({ foo: 'bar', favorites: { cat: ['A'] } });
+    jest.useRealTimers();
+  });
+
+  test('warns when backup version differs', async () => {
+    jest.useFakeTimers();
+    setupDom(false);
+    global.loadSetups = jest.fn(() => ({}));
+    global.saveSetups = jest.fn();
+    global.loadDeviceData = jest.fn(() => ({}));
+    global.saveDeviceData = jest.fn();
+    global.loadSessionState = jest.fn(() => null);
+    global.saveSessionState = jest.fn();
+    global.loadProject = jest.fn(() => ({}));
+    global.saveProject = jest.fn();
+    global.deleteProject = jest.fn();
+    global.loadFavorites = jest.fn(() => ({}));
+    global.saveFavorites = jest.fn();
+
+    const restoreBtn = document.createElement('button');
+    restoreBtn.id = 'restoreSettings';
+    document.body.appendChild(restoreBtn);
+    const restoreInput = document.createElement('input');
+    restoreInput.type = 'file';
+    restoreInput.id = 'restoreSettingsInput';
+    document.body.appendChild(restoreInput);
+
+    global.exportAllData = jest.fn(() => ({}));
+    global.importAllData = jest.fn();
+
+    require('../translations.js');
+    const script = require('../script.js');
+    script.setLanguage('en');
+
+    global.URL.createObjectURL = jest.fn(() => 'blob:url');
+    global.URL.revokeObjectURL = jest.fn();
+    const origCreateElement = document.createElement.bind(document);
+    const anchor = { href: '', download: '', click: jest.fn() };
+    document.createElement = jest.fn(tag => tag === 'a' ? anchor : origCreateElement(tag));
+
+    const fileData = JSON.stringify({ version: '0.9.0', settings: {}, data: {} });
+    global.FileReader = class {
+      readAsText() {
+        this.onload({ target: { result: fileData } });
+      }
+    };
+    Object.defineProperty(restoreInput, 'files', { value: [new Blob()] });
+
+    global.alert.mockClear();
+    restoreBtn.dispatchEvent(new window.Event('click'));
+    restoreInput.dispatchEvent(new window.Event('change'));
+    expect(global.alert.mock.calls[0][0]).toContain(texts.en.restoreVersionWarning);
+    expect(global.alert.mock.calls[1][0]).toBe(texts.en.restoreSuccess);
+
+    document.createElement = origCreateElement;
     jest.useRealTimers();
   });
 });

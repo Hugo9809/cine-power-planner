@@ -10499,6 +10499,7 @@ if (settingsButton && settingsDialog) {
 function createSettingsBackup() {
   try {
     const backup = {
+      version: APP_VERSION,
       settings: { ...localStorage },
       data: typeof exportAllData === 'function' ? exportAllData() : {},
     };
@@ -10534,6 +10535,10 @@ if (restoreSettings && restoreSettingsInput) {
         const data = parsed && typeof parsed === 'object' && parsed.data
           ? parsed.data
           : null;
+        const fileVersion = parsed && typeof parsed === 'object' && parsed.version;
+        if (fileVersion !== APP_VERSION) {
+          alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
+        }
         if (settings && typeof settings === 'object') {
           Object.entries(settings).forEach(([k, v]) => {
             localStorage.setItem(k, v);
@@ -11539,6 +11544,7 @@ if (document.readyState === "loading") {
 // Export functions for testing in Node environment
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
+    APP_VERSION,
     setLanguage,
     updateCalculations,
     setBatteryPlates,
