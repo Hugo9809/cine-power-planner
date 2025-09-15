@@ -2056,6 +2056,22 @@ describe('script.js functions', () => {
     expect(content.classList.contains('logo-present')).toBe(true);
   });
 
+  test('rejects non-SVG logo uploads', () => {
+    setupDom(false);
+    require('../script.js');
+    const settingsBtn = document.getElementById('settingsButton');
+    settingsBtn.click();
+    const fileInput = document.getElementById('settingsLogo');
+    const file = new File(['dummy'], 'logo.png', { type: 'image/png' });
+    Object.defineProperty(fileInput, 'files', { value: [file] });
+    document.getElementById('settingsSave').click();
+    const stored = localStorage.getItem('customLogo');
+    expect(stored).toBeNull();
+    const note = document.querySelector('#backupNotificationContainer div');
+    expect(note).not.toBeNull();
+    expect(note.textContent).toBe(texts.en.logoFormatError);
+  });
+
   test('accent color input updates body and root variables when pink mode off', () => {
     const { applyPinkMode } = script;
     applyPinkMode(false);
