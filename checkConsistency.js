@@ -10,8 +10,8 @@ function checkConsistency(devices = require('./data.js')) {
       'lensMount',
       'timecode',
     ],
-    monitors: ['power', 'videoInputs', 'videoOutputs'],
-    video: ['power', 'videoInputs', 'videoOutputs'],
+    monitors: ['powerDrawWatts', 'power', 'videoInputs', 'videoOutputs'],
+    video: ['powerDrawWatts', 'power', 'videoInputs', 'videoOutputs'],
   };
   const inconsistent = [];
 

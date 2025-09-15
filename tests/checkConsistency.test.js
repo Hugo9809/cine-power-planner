@@ -18,11 +18,25 @@ test('reports missing fields for incomplete devices', () => {
         timecode: []
       }
     },
-    monitors: {},
-    video: {}
+    monitors: {
+      TestMonitor: {
+        power: {},
+        videoInputs: [],
+        videoOutputs: []
+      }
+    },
+    video: {
+      TestVideo: {
+        power: {},
+        videoInputs: [],
+        videoOutputs: []
+      }
+    }
   };
   const result = checkConsistency(data);
   expect(result).toEqual([
-    { category: 'cameras', name: 'TestCam', missing: ['powerDrawWatts'] }
+    { category: 'cameras', name: 'TestCam', missing: ['powerDrawWatts'] },
+    { category: 'monitors', name: 'TestMonitor', missing: ['powerDrawWatts'] },
+    { category: 'video', name: 'TestVideo', missing: ['powerDrawWatts'] }
   ]);
 });
