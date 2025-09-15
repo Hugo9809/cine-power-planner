@@ -2253,6 +2253,37 @@ const monitorWattInput = document.getElementById("monitorWatt");
 const monitorVoltageInput = document.getElementById("monitorVoltage");
 const monitorPortTypeInput = document.getElementById("monitorPortType");
 const monitorVideoInputsContainer = document.getElementById("monitorVideoInputsContainer");
+
+function populateCategoryOptions() {
+  if (!newCategorySelect || !deviceSchema) return;
+  newCategorySelect.innerHTML = '';
+  const addOpt = (val) => {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = categoryNames[currentLang]?.[val] || val.split('.').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+    newCategorySelect.appendChild(opt);
+  };
+  if (deviceSchema.accessories) {
+    for (const [sub, obj] of Object.entries(deviceSchema.accessories)) {
+      if (sub === 'cables') {
+        addOpt('accessories.cables');
+      } else if (obj && obj.attributes) {
+        addOpt(`accessories.${sub}`);
+      }
+    }
+  }
+  for (const [key, obj] of Object.entries(deviceSchema)) {
+    if (key === 'accessories' || key === 'fiz') continue;
+    if (obj && obj.attributes) addOpt(key);
+  }
+  if (deviceSchema.fiz) {
+    for (const [sub, obj] of Object.entries(deviceSchema.fiz)) {
+      if (obj && obj.attributes) addOpt(`fiz.${sub}`);
+    }
+  }
+}
+
+populateCategoryOptions();
 const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
 const monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
 const monitorLatencyInput = document.getElementById("monitorLatency");
@@ -2329,6 +2360,21 @@ const importFileInput = document.getElementById("importFileInput");
 const importDataBtn   = document.getElementById("importDataBtn");
 const skipLink       = document.getElementById("skipLink");
 
+const categoryExcludedAttrs = {
+  batteries: ["capacity", "pinA", "dtapA"],
+  batteryHotswaps: ["capacity", "pinA"],
+  "accessories.batteries": ["capacity", "pinA"],
+  cameras: ["powerDrawWatts", "power", "recordingMedia", "lensMount", "videoOutputs", "fizConnectors", "viewfinder", "timecode"],
+  monitors: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs", "audioOutput"],
+  viewfinders: ["screenSizeInches", "brightnessNits", "power", "powerDrawWatts", "videoInputs", "videoOutputs", "wirelessTx", "latencyMs"],
+  video: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
+  wirelessReceivers: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
+  iosVideo: ["powerDrawWatts", "power", "videoInputs", "videoOutputs", "frequency", "latencyMs"],
+  "fiz.motors": ["fizConnectors", "gearTypes", "internalController", "notes", "powerDrawWatts", "torqueNm"],
+  "fiz.controllers": ["batteryType", "connectivity", "fizConnectors", "internalController", "notes", "powerDrawWatts", "powerSource"],
+  "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"]
+};
+
 function getSchemaAttributesForCategory(category) {
   if (!deviceSchema) return [];
   const parts = category.split('.');
@@ -2346,9 +2392,9 @@ function clearDynamicFields() {
   dynamicFieldsDiv.hidden = true;
 }
 
-function buildDynamicFields(category, data = {}) {
+function buildDynamicFields(category, data = {}, exclude = []) {
   if (!dynamicFieldsDiv) return;
-  const attrs = getSchemaAttributesForCategory(category);
+  const attrs = getSchemaAttributesForCategory(category).filter(a => !exclude.includes(a));
   dynamicFieldsDiv.innerHTML = '';
   if (!attrs.length) {
     dynamicFieldsDiv.hidden = true;
@@ -2371,8 +2417,8 @@ function buildDynamicFields(category, data = {}) {
   }
 }
 
-function collectDynamicFieldValues(category) {
-  const attrs = getSchemaAttributesForCategory(category);
+function collectDynamicFieldValues(category, exclude = []) {
+  const attrs = getSchemaAttributesForCategory(category).filter(a => !exclude.includes(a));
   const result = {};
   for (const attr of attrs) {
     const el = document.getElementById(`attr-${attr}`);
@@ -7045,6 +7091,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     newPinAInput.value = deviceData.pinA || '';
     if (dtapRow) dtapRow.style.display = categoryKey === "batteryHotswaps" ? "none" : "";
     newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : (deviceData.dtapA || '');
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "cameras") {
     wattFieldDiv.style.display = "none";
     cameraFieldsDiv.style.display = "block";
@@ -7060,6 +7107,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setFizConnectors(deviceData.fizConnectors || []);
     setViewfinders(deviceData.viewfinder || []);
     setTimecodes(deviceData.timecode || []);
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
     monitorFieldsDiv.style.display = "block";
     monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
@@ -7076,6 +7124,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       deviceData.audioOutput?.portType ||
       deviceData.audioOutput?.type ||
       deviceData.audioOutput || '';
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "viewfinders") {
     viewfinderFieldsDiv.style.display = "block";
     viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
@@ -7088,6 +7137,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setViewfinderVideoOutputs(deviceData.videoOutputs || deviceData.video?.outputs || []);
     viewfinderWirelessTxInput.checked = !!deviceData.wirelessTx;
     viewfinderLatencyInput.value = deviceData.latencyMs || '';
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "video") {
     videoFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
@@ -7097,6 +7147,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     videoFrequencyInput.value = deviceData.frequency || '';
     videoLatencyInput.value = deviceData.latencyMs || '';
     motorConnectorInput.value = '';
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.motors") {
     motorFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
@@ -7105,6 +7156,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     motorTorqueInput.value = deviceData.torqueNm || '';
     motorGearInput.value = Array.isArray(deviceData.gearTypes) ? deviceData.gearTypes.join(', ') : '';
     motorNotesInput.value = deviceData.notes || '';
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.controllers") {
     controllerFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
@@ -7116,6 +7168,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     controllerBatteryInput.value = deviceData.batteryType || '';
     controllerConnectivityInput.value = deviceData.connectivity || '';
     controllerNotesInput.value = deviceData.notes || '';
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.distance") {
     distanceFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
@@ -7125,6 +7178,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     distanceAccuracyInput.value = deviceData.accuracy || '';
     distanceOutputInput.value = deviceData.outputDisplay || '';
     distanceNotesInput.value = deviceData.notes || '';
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "accessories.cables") {
     wattFieldDiv.style.display = "none";
     subcategoryFieldDiv.hidden = false;
@@ -7138,11 +7192,11 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     }
     newSubcategorySelect.value = subcategory || '';
     newSubcategorySelect.disabled = true;
-    buildDynamicFields(`accessories.cables.${subcategory}`, deviceData);
+    buildDynamicFields(`accessories.cables.${subcategory}`, deviceData, categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []);
   } else {
     const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
     newWattInput.value = watt || '';
-    buildDynamicFields(categoryKey, deviceData);
+    buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   }
 }
 
@@ -7356,7 +7410,7 @@ newCategorySelect.addEventListener("change", () => {
       newSubcategorySelect.appendChild(opt);
     }
     if (newSubcategorySelect.value) {
-      buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`);
+      buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
     }
   } else {
     wattFieldDiv.style.display = "block";
@@ -7368,7 +7422,7 @@ newCategorySelect.addEventListener("change", () => {
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
-    buildDynamicFields(val);
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
   }
   newWattInput.value = "";
   newCapacityInput.value = "";
@@ -7425,6 +7479,9 @@ newCategorySelect.addEventListener("change", () => {
   distanceAccuracyInput.value = "";
   distanceOutputInput.value = "";
   distanceNotesInput.value = "";
+  if (val !== 'accessories.cables') {
+    buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
+  }
   // Reset add/update button to "Add" and clear originalName in dataset
   addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
   addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
@@ -7438,7 +7495,7 @@ newCategorySelect.addEventListener("change", () => {
 
 newSubcategorySelect.addEventListener('change', () => {
   if (newCategorySelect.value === 'accessories.cables') {
-    buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`);
+    buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
   }
 });
 
@@ -7521,6 +7578,7 @@ addDeviceBtn.addEventListener("click", () => {
     } else {
       targetCategory[name] = { capacity: capacity, pinA: pinA, dtapA: dtapA };
     }
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "accessories.cables") {
     const existing = isEditing
       ? devices.accessories.cables[originalSubcategory][originalName] || {}
@@ -7528,7 +7586,7 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && (name !== originalName || subcategory !== originalSubcategory)) {
       delete devices.accessories.cables[originalSubcategory][originalName];
     }
-    const attrs = collectDynamicFieldValues(`accessories.cables.${subcategory}`);
+    const attrs = collectDynamicFieldValues(`accessories.cables.${subcategory}`, categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []);
     targetCategory[name] = { ...existing, ...attrs };
   } else if (category === "cameras") {
     const watt = parseFloat(cameraWattInput.value);
@@ -7569,6 +7627,7 @@ addDeviceBtn.addEventListener("click", () => {
       lensMount: getLensMounts(),
       timecode: timecode
     };
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "monitors") {
     const watt = parseFloat(monitorWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -7599,6 +7658,7 @@ addDeviceBtn.addEventListener("click", () => {
       latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "viewfinders") {
     const watt = parseFloat(viewfinderWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -7628,6 +7688,7 @@ addDeviceBtn.addEventListener("click", () => {
       wirelessTx: viewfinderWirelessTxInput.checked,
       latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -7645,6 +7706,7 @@ addDeviceBtn.addEventListener("click", () => {
       frequency: videoFrequencyInput.value,
       latencyMs: videoLatencyInput.value
     };
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "fiz.motors") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -7662,6 +7724,7 @@ addDeviceBtn.addEventListener("click", () => {
       gearTypes: motorGearInput.value ? motorGearInput.value.split(',').map(s => s.trim()).filter(Boolean) : [],
       notes: motorNotesInput.value
     };
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "fiz.controllers") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -7679,6 +7742,7 @@ addDeviceBtn.addEventListener("click", () => {
       connectivity: controllerConnectivityInput.value,
       notes: controllerNotesInput.value
     };
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "fiz.distance") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -7697,6 +7761,7 @@ addDeviceBtn.addEventListener("click", () => {
       outputDisplay: distanceOutputInput.value,
       notes: distanceNotesInput.value
     };
+    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -7707,7 +7772,7 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
-    const attrs = collectDynamicFieldValues(category);
+    const attrs = collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []);
     targetCategory[name] = { ...existing, ...attrs, powerDrawWatts: watt };
   }
 
