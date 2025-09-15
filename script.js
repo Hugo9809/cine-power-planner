@@ -1540,10 +1540,13 @@ function setLanguage(lang) {
   document.getElementById("category_viewfinders").textContent = texts[lang].category_viewfinders;
   document.getElementById("category_monitors").textContent = texts[lang].category_monitors;
   document.getElementById("category_video").textContent = texts[lang].category_video;
+  document.getElementById("category_wirelessReceivers").textContent = texts[lang].category_wirelessReceivers;
+  document.getElementById("category_cages").textContent = texts[lang].category_cages;
   document.getElementById("category_fiz_motors").textContent = texts[lang].category_fiz_motors;
   document.getElementById("category_fiz_controllers").textContent = texts[lang].category_fiz_controllers;
   document.getElementById("category_fiz_distance").textContent = texts[lang].category_fiz_distance;
   document.getElementById("category_batteries").textContent = texts[lang].category_batteries;
+  document.getElementById("category_batteryHotswaps").textContent = texts[lang].category_batteryHotswaps;
   document.getElementById("category_accessory_batteries").textContent = texts[lang].category_accessory_batteries;
   document.getElementById("category_cables").textContent = texts[lang].category_cables;
   document.getElementById("category_camera_support").textContent = texts[lang].category_camera_support;
@@ -1636,12 +1639,15 @@ function setLanguage(lang) {
     {input: viewfinderListFilterInput, label: texts[lang].category_viewfinders},
     {input: monitorListFilterInput, label: texts[lang].category_monitors},
     {input: videoListFilterInput, label: texts[lang].category_video},
+    {input: wirelessReceiverListFilterInput, label: texts[lang].category_wirelessReceivers},
     {input: motorListFilterInput, label: texts[lang].category_fiz_motors},
     {input: controllerListFilterInput, label: texts[lang].category_fiz_controllers},
     {input: distanceListFilterInput, label: texts[lang].category_fiz_distance},
     {input: batteryListFilterInput, label: texts[lang].category_batteries},
+    {input: batteryHotswapListFilterInput, label: texts[lang].category_batteryHotswaps},
     {input: accessoryBatteryListFilterInput, label: texts[lang].category_accessory_batteries},
     {input: cableListFilterInput, label: texts[lang].category_cables},
+    {input: cageListFilterInput, label: texts[lang].category_cages},
     {input: cameraSupportListFilterInput, label: texts[lang].category_camera_support},
     {input: chargerListFilterInput, label: texts[lang].category_chargers}
   ];
@@ -2214,12 +2220,15 @@ const cameraListElem  = document.getElementById("cameraList");
 const viewfinderListElem = document.getElementById("viewfinderList");
 const monitorListElem = document.getElementById("monitorList");
 const videoListElem   = document.getElementById("videoList");
+const wirelessReceiverListElem = document.getElementById("wirelessReceiverList");
 const motorListElem   = document.getElementById("motorList");
 const controllerListElem = document.getElementById("controllerList");
 const distanceListElem   = document.getElementById("distanceList");
 const batteryListElem    = document.getElementById("batteryList");
+const batteryHotswapListElem = document.getElementById("batteryHotswapList");
 const accessoryBatteryListElem = document.getElementById("accessoryBatteryList");
 const cableListElem = document.getElementById("cableList");
+const cageListElem = document.getElementById("cageList");
 const cameraSupportListElem = document.getElementById("cameraSupportList");
 const chargerListElem       = document.getElementById("chargerList");
 function getCurrentProjectName() {
@@ -2973,14 +2982,17 @@ const cameraListFilterInput = document.getElementById("cameraListFilter");
 const viewfinderListFilterInput = document.getElementById("viewfinderListFilter");
 const monitorListFilterInput = document.getElementById("monitorListFilter");
 const videoListFilterInput = document.getElementById("videoListFilter");
+const wirelessReceiverListFilterInput = document.getElementById("wirelessReceiverListFilter");
 const motorListFilterInput = document.getElementById("motorListFilter");
 const controllerListFilterInput = document.getElementById("controllerListFilter");
 const distanceListFilterInput = document.getElementById("distanceListFilter");
 const batteryListFilterInput = document.getElementById("batteryListFilter");
+const batteryHotswapListFilterInput = document.getElementById("batteryHotswapListFilter");
 const cameraSupportListFilterInput = document.getElementById("cameraSupportListFilter");
 const chargerListFilterInput = document.getElementById("chargerListFilter");
 const accessoryBatteryListFilterInput = document.getElementById("accessoryBatteryListFilter");
 const cableListFilterInput = document.getElementById("cableListFilter");
+const cageListFilterInput = document.getElementById("cageListFilter");
 
 // NEW SETUP MANAGEMENT DOM ELEMENTS
 const generateOverviewBtn = document.getElementById('generateOverviewBtn');
@@ -4783,12 +4795,15 @@ function applyFilters() {
   filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
   filterDeviceList(monitorListElem, monitorListFilterInput.value);
   filterDeviceList(videoListElem, videoListFilterInput.value);
+  filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value);
   filterDeviceList(motorListElem, motorListFilterInput.value);
   filterDeviceList(controllerListElem, controllerListFilterInput.value);
   filterDeviceList(distanceListElem, distanceListFilterInput.value);
   filterDeviceList(batteryListElem, batteryListFilterInput.value);
+  filterDeviceList(batteryHotswapListElem, batteryHotswapListFilterInput.value);
   filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value);
   filterDeviceList(cableListElem, cableListFilterInput.value);
+  filterDeviceList(cageListElem, cageListFilterInput.value);
   filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
   filterDeviceList(chargerListElem, chargerListFilterInput.value);
 }
@@ -6650,12 +6665,15 @@ function refreshDeviceLists() {
   renderDeviceList("viewfinders", viewfinderListElem);
   renderDeviceList("monitors", monitorListElem);
   renderDeviceList("video", videoListElem);
+  renderDeviceList("wirelessReceivers", wirelessReceiverListElem);
   renderDeviceList("fiz.motors", motorListElem);
   renderDeviceList("fiz.controllers", controllerListElem);
   renderDeviceList("fiz.distance", distanceListElem);
   renderDeviceList("batteries", batteryListElem);
+  renderDeviceList("batteryHotswaps", batteryHotswapListElem);
   renderDeviceList("accessories.batteries", accessoryBatteryListElem);
   renderDeviceList("accessories.cables", cableListElem);
+  renderDeviceList("accessories.cages", cageListElem);
   renderDeviceList("accessories.cameraSupport", cameraSupportListElem);
   renderDeviceList("accessories.chargers", chargerListElem);
 
@@ -6663,12 +6681,15 @@ function refreshDeviceLists() {
   filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
   filterDeviceList(monitorListElem, monitorListFilterInput.value);
   filterDeviceList(videoListElem, videoListFilterInput.value);
+  filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value);
   filterDeviceList(motorListElem, motorListFilterInput.value);
   filterDeviceList(controllerListElem, controllerListFilterInput.value);
   filterDeviceList(distanceListElem, distanceListFilterInput.value);
   filterDeviceList(batteryListElem, batteryListFilterInput.value);
+  filterDeviceList(batteryHotswapListElem, batteryHotswapListFilterInput.value);
   filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value);
   filterDeviceList(cableListElem, cableListFilterInput.value);
+  filterDeviceList(cageListElem, cageListFilterInput.value);
   filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
   filterDeviceList(chargerListElem, chargerListFilterInput.value);
 }
@@ -6698,12 +6719,15 @@ bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, ca
 bindFilterInput(viewfinderListFilterInput, () => filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value));
 bindFilterInput(monitorListFilterInput, () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
 bindFilterInput(videoListFilterInput, () => filterDeviceList(videoListElem, videoListFilterInput.value));
+bindFilterInput(wirelessReceiverListFilterInput, () => filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value));
 bindFilterInput(motorListFilterInput, () => filterDeviceList(motorListElem, motorListFilterInput.value));
 bindFilterInput(controllerListFilterInput, () => filterDeviceList(controllerListElem, controllerListFilterInput.value));
 bindFilterInput(distanceListFilterInput, () => filterDeviceList(distanceListElem, distanceListFilterInput.value));
 bindFilterInput(batteryListFilterInput, () => filterDeviceList(batteryListElem, batteryListFilterInput.value));
+bindFilterInput(batteryHotswapListFilterInput, () => filterDeviceList(batteryHotswapListElem, batteryHotswapListFilterInput.value));
 bindFilterInput(accessoryBatteryListFilterInput, () => filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value));
 bindFilterInput(cableListFilterInput, () => filterDeviceList(cableListElem, cableListFilterInput.value));
+bindFilterInput(cageListFilterInput, () => filterDeviceList(cageListElem, cageListFilterInput.value));
 bindFilterInput(cameraSupportListFilterInput, () => filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value));
 bindFilterInput(chargerListFilterInput, () => filterDeviceList(chargerListElem, chargerListFilterInput.value));
 
