@@ -419,16 +419,54 @@ footer a {
 .settings-content {
   background: var(--surface-color);
   border: 2px solid var(--accent-color);
-  padding: 20px;
+  padding: 32px;
   color: var(--text-color);
-  width: min(90vw, 400px);
+  width: min(90vw, 440px);
   max-height: 80vh;
   overflow-y: auto;
   border-radius: var(--border-radius);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 24px;
+}
+
+.settings-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-section {
+  background: var(--panel-bg);
+  border: 1px solid var(--accent-color);
+  border-radius: calc(var(--border-radius) + 3px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+  padding: 20px;
+}
+
+.settings-section h3 {
+  margin: 0 0 0.75em;
+}
+
+.settings-section .form-row {
+  margin: 0;
+}
+
+.settings-section .form-row + .form-row {
+  margin-top: 12px;
+}
+
+.settings-section .button-row {
+  justify-content: flex-start;
+}
+
+.settings-section p {
+  margin: 0;
+}
+
+.settings-section p + p {
+  margin-top: 0.75em;
 }
 
 .settings-content .button-row {
@@ -453,7 +491,9 @@ footer a {
     max-height: none;
     border-radius: 0;
     box-shadow: none;
+    padding: 24px;
     padding-bottom: 80px;
+    gap: 20px;
   }
 
   .settings-content .action-buttons {
@@ -464,6 +504,10 @@ footer a {
     border-top: 1px solid var(--accent-color);
     justify-content: flex-end;
     margin-top: 10px;
+  }
+
+  .settings-section {
+    padding: 16px;
   }
 }
 
@@ -1754,6 +1798,11 @@ body.dark-mode.pink-mode {
   border-color: var(--control-border);
 }
 body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
+.dark-mode .settings-section {
+  border-color: var(--control-border);
+  box-shadow: var(--panel-shadow);
+}
+body.dark-mode.pink-mode .settings-section { border-color: var(--accent-color); }
 
 @media (prefers-color-scheme: dark) {
   html:not(.light-mode),

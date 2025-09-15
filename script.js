@@ -1724,6 +1724,8 @@ function setLanguage(lang) {
   }
   const settingsTitleElem = document.getElementById("settingsTitle");
   if (settingsTitleElem) settingsTitleElem.textContent = texts[lang].settingsHeading;
+  const generalSettingsHeading = document.getElementById("generalSettingsHeading");
+  if (generalSettingsHeading) generalSettingsHeading.textContent = texts[lang].generalSettingsHeading;
   const settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
   if (settingsLanguageLabel) settingsLanguageLabel.textContent = texts[lang].languageSetting;
   const settingsDarkLabel = document.getElementById("settingsDarkModeLabel");
