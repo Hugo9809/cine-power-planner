@@ -335,6 +335,22 @@ describe('export/import all data', () => {
     expect(loadProject('Proj')).toEqual({ gearList: '<ol></ol>', projectInfo: null });
     expect(loadFavorites()).toEqual({ cat: ['B'] });
   });
+
+  test('importAllData handles legacy projects array', () => {
+    const data = {
+      projects: [
+        { name: 'OldProj', gearList: '<ul></ul>' }
+      ]
+    };
+    importAllData(data);
+    expect(loadProject('OldProj')).toEqual({ gearList: '<ul></ul>', projectInfo: null });
+  });
+
+  test('importAllData handles legacy single gearList', () => {
+    const data = { gearList: '<p></p>' };
+    importAllData(data);
+    expect(loadProject('')).toEqual({ gearList: '<p></p>', projectInfo: null });
+  });
 });
 
 afterAll(() => {

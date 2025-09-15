@@ -6883,28 +6883,41 @@ function populateSetupSelect() {
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
 
-// Auto-save a backup project after 5 minutes if none selected. The timer is
-// long-lived and would keep Node's event loop active in tests or server-side
-// rendering scenarios. Calling `unref()` (when available) allows the process to
-// exit naturally without waiting for the timeout to fire.
-const isNodeEnv = typeof process !== 'undefined' && process.versions && process.versions.node;
-const backupTimer = setTimeout(() => {
-  if (!setupSelect || setupSelect.value) return;
-  const pad = (n) => String(n).padStart(2, "0");
-  const now = new Date();
-  const backupName = `saved-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
-  const currentSetup = { ...getCurrentSetupState(), gearList: getCurrentGearListHtml() };
-  const setups = getSetups();
-  setups[backupName] = currentSetup;
-  storeSetups(setups);
-  populateSetupSelect();
-  setupSelect.value = backupName;
-  if (setupNameInput) setupNameInput.value = backupName;
-  loadedSetupState = getCurrentSetupState();
-  checkSetupChanged();
-}, isNodeEnv ? 0 : 5 * 60 * 1000);
-if (typeof backupTimer.unref === 'function') {
-  backupTimer.unref();
+// Auto-save backups every 10 minutes. Saved backups appear in the setup
+// selector but do not change the currently selected setup. Intervals are
+// unref'ed when possible so Node environments can exit cleanly.
+function autoBackup() {
+  if (!setupSelect) return;
+  try {
+    const pad = (n) => String(n).padStart(2, '0');
+    const now = new Date();
+    const backupName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
+    const currentSetup = { ...getCurrentSetupState(), gearList: getCurrentGearListHtml() };
+    const setups = getSetups();
+    setups[backupName] = currentSetup;
+    storeSetups(setups);
+    const prevValue = setupSelect.value;
+    const prevName = setupNameInput ? setupNameInput.value : '';
+    populateSetupSelect();
+    setupSelect.value = prevValue;
+    if (setupNameInput) setupNameInput.value = prevName;
+    showNotification('success', 'Auto backup saved');
+  } catch (e) {
+    console.warn('Auto backup failed', e);
+    showNotification('error', 'Auto backup failed');
+  }
+}
+const autoBackupInterval = setInterval(autoBackup, 10 * 60 * 1000);
+if (typeof autoBackupInterval.unref === 'function') {
+  autoBackupInterval.unref();
+}
+
+const hourlyBackupInterval = setInterval(() => {
+  const ok = createSettingsBackup(false);
+  showNotification(ok ? 'success' : 'error', ok ? 'Backup file created' : 'Backup file failed');
+}, 60 * 60 * 1000);
+if (typeof hourlyBackupInterval.unref === 'function') {
+  hourlyBackupInterval.unref();
 }
 
 // Toggle device manager visibility
@@ -10505,7 +10518,35 @@ if (settingsButton && settingsDialog) {
   });
 }
 
-function createSettingsBackup() {
+function showNotification(type, message) {
+  if (typeof document === 'undefined') return;
+  const id = 'backupNotificationContainer';
+  let container = document.getElementById(id);
+  if (!container) {
+    container = document.createElement('div');
+    container.id = id;
+    container.style.position = 'fixed';
+    container.style.top = '1rem';
+    container.style.right = '1rem';
+    container.style.zIndex = '10000';
+    document.body.appendChild(container);
+  }
+  const note = document.createElement('div');
+  note.textContent = message;
+  note.style.padding = '0.5rem 1rem';
+  note.style.marginTop = '0.5rem';
+  note.style.background = type === 'error' ? '#fdd' : type === 'warning' ? '#ffd' : '#dfd';
+  note.style.border = '1px solid #ccc';
+  container.appendChild(note);
+  setTimeout(() => {
+    note.remove();
+    if (!container.children.length) {
+      container.remove();
+    }
+  }, 4000);
+}
+
+function createSettingsBackup(notify = true) {
   try {
     const backup = {
       version: APP_VERSION,
@@ -10519,8 +10560,16 @@ function createSettingsBackup() {
     a.download = 'planner-backup.json';
     a.click();
     URL.revokeObjectURL(url);
+    if (notify) {
+      showNotification('success', 'Backup created');
+    }
+    return true;
   } catch (e) {
     console.warn('Backup failed', e);
+    if (notify) {
+      showNotification('error', 'Backup failed');
+    }
+    return false;
   }
 }
 

@@ -311,7 +311,7 @@ test('restoring session state preserves selections', () => {
 });
 
 describe('auto backup', () => {
-  test('creates backup after 5 minutes when no project selected', () => {
+  test('creates backup after 10 minutes without changing selection', () => {
     setupDom(false);
     const stored = {};
     global.loadSetups = jest.fn(() => stored);
@@ -320,13 +320,14 @@ describe('auto backup', () => {
     require('../translations.js');
     const script = require('../script.js');
     script.setLanguage('en');
-    jest.advanceTimersByTime(5 * 60 * 1000);
+    const prevVal = document.getElementById('setupSelect').value;
+    jest.advanceTimersByTime(10 * 60 * 1000);
     expect(global.saveSetups).toHaveBeenCalled();
     const names = Object.keys(stored);
     expect(names.length).toBe(1);
     const backupName = names[0];
-    expect(backupName.startsWith('saved-backup-')).toBe(true);
-    expect(document.getElementById('setupSelect').value).toBe(backupName);
+    expect(backupName.startsWith('auto-backup-')).toBe(true);
+    expect(document.getElementById('setupSelect').value).toBe(prevVal);
     jest.useRealTimers();
   });
 });
