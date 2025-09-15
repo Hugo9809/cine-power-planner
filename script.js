@@ -2515,6 +2515,50 @@ const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
 const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
 
+const DEFAULT_FONT_SIZES = ["14", "16", "18"];
+
+function normalizeFontSizeValue(size) {
+  if (size === null || size === undefined) return null;
+  const match = /^\s*(\d+(?:\.\d+)?)\s*(?:px)?\s*$/i.exec(String(size));
+  if (!match) return null;
+  const parsed = Number.parseFloat(match[1]);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  return Number.isInteger(parsed) ? String(parsed) : parsed.toString();
+}
+
+function collectAdditionalFontSizes() {
+  if (typeof window === "undefined" || !Array.isArray(window.mirFontSizes)) {
+    return [];
+  }
+  const extras = [];
+  window.mirFontSizes.forEach(size => {
+    const normalized = normalizeFontSizeValue(size);
+    if (normalized) extras.push(normalized);
+  });
+  return extras;
+}
+
+function populateFontSizeOptions(currentSize) {
+  if (!settingsFontSize) return;
+  const normalizedCurrent = normalizeFontSizeValue(currentSize) || currentSize;
+  const sizeSet = new Set(DEFAULT_FONT_SIZES);
+  collectAdditionalFontSizes().forEach(size => sizeSet.add(size));
+  if (normalizedCurrent) sizeSet.add(normalizedCurrent);
+  const sorted = Array.from(sizeSet).sort((a, b) => parseFloat(a) - parseFloat(b));
+  const prevValue = settingsFontSize.value;
+  settingsFontSize.innerHTML = "";
+  sorted.forEach(size => {
+    const option = document.createElement("option");
+    option.value = size;
+    option.textContent = `${size}px`;
+    settingsFontSize.appendChild(option);
+  });
+  const targetValue = normalizeFontSizeValue(currentSize) || prevValue || DEFAULT_FONT_SIZES[1];
+  if (targetValue) {
+    settingsFontSize.value = normalizeFontSizeValue(targetValue) || targetValue;
+  }
+}
+
 // Load accent color from localStorage
 let accentColor = '#001589';
 let prevAccentColor = accentColor;
@@ -2574,7 +2618,7 @@ try {
   console.warn('Could not load font preferences', e);
 }
 
-if (settingsFontSize) settingsFontSize.value = fontSize;
+populateFontSizeOptions(fontSize);
 if (settingsFontFamily) settingsFontFamily.value = fontFamily;
 
 const revertAccentColor = () => {
@@ -10807,6 +10851,7 @@ if (pinkModeToggle) {
 if (settingsButton && settingsDialog) {
   settingsButton.addEventListener('click', () => {
     prevAccentColor = accentColor;
+    populateFontSizeOptions(fontSize);
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsHighContrast) settingsHighContrast.checked = document.body.classList.contains('high-contrast');
@@ -10814,7 +10859,6 @@ if (settingsButton && settingsDialog) {
       const stored = localStorage.getItem('accentColor');
       accentColorInput.value = stored || accentColor;
     }
-    if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
     settingsDialog.removeAttribute('hidden');

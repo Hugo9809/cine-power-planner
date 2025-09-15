@@ -2069,6 +2069,17 @@ describe('script.js functions', () => {
     expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#123456');
   });
 
+  test('settings font size options include MIR font sizes', () => {
+    setupDom();
+    window.mirFontSizes = ['20', 22, '14px'];
+    require('../translations.js');
+    require('../script.js');
+    const select = document.getElementById('settingsFontSize');
+    const values = Array.from(select.options).map(opt => opt.value);
+    expect(values).toEqual(['14', '16', '18', '20', '22']);
+    delete window.mirFontSizes;
+  });
+
   test('settings dialog saves preferences to localStorage', () => {
     const settingsBtn = document.getElementById('settingsButton');
     settingsBtn.click();
