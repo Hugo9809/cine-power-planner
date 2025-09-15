@@ -365,6 +365,8 @@ describe('settings backup and restore', () => {
     require('../translations.js');
     const script = require('../script.js');
     script.setLanguage('en');
+    const logoData = 'data:image/svg+xml;base64,PHN2Zy8+';
+    localStorage.setItem('customLogo', logoData);
 
     global.URL.createObjectURL = jest.fn(() => 'blob:url');
     global.URL.revokeObjectURL = jest.fn();
@@ -379,6 +381,7 @@ describe('settings backup and restore', () => {
     const obj = JSON.parse(text);
     expect(obj.data).toEqual({ foo: 'bar', favorites: { cat: ['A'] } });
     expect(obj.version).toBe(script.APP_VERSION);
+    expect(obj.settings.customLogo).toBe(logoData);
 
     document.createElement = origCreateElement;
 
@@ -388,11 +391,14 @@ describe('settings backup and restore', () => {
         this.onload({ target: { result: fileData } });
       }
     };
+    localStorage.removeItem('customLogo');
+    expect(localStorage.getItem('customLogo')).toBeNull();
     Object.defineProperty(restoreInput, 'files', { value: [new Blob()] });
     restoreBtn.dispatchEvent(new window.Event('click'));
     restoreInput.dispatchEvent(new window.Event('change'));
     expect(global.exportAllData).toHaveBeenCalledTimes(2);
     expect(global.importAllData).toHaveBeenCalledWith({ foo: 'bar', favorites: { cat: ['A'] } });
+    expect(localStorage.getItem('customLogo')).toBe(logoData);
     jest.useRealTimers();
   });
 
