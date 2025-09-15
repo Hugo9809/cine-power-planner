@@ -1573,7 +1573,9 @@ body:not(.light-mode) #temperatureNote td {
 }
 
 #userFeedbackTable {
-  width: 100%;
+  width: auto; /* Allow the table to size to its content by default */
+  width: fit-content; /* Prevent stretching across the full viewport on wide screens */
+  max-width: 100%;
   border-collapse: collapse;
 }
 
