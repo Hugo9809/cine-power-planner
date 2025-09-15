@@ -8451,6 +8451,16 @@ function addArriKNumber(name) {
     return name;
 }
 
+const sanitizeFizContext = context => (context || '')
+    .replace(/[()]/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+const formatFizCable = (name, context) => {
+    const cleaned = sanitizeFizContext(context);
+    return cleaned ? `${name} (${cleaned})` : name;
+};
+
 function suggestArriFizCables() {
     const CABLE_LBUS_05 = 'LBUS to LBUS 0,5m';
     const CABLE_UDM = 'Cable UDM – SERIAL (4p) 0,8m';
@@ -8469,31 +8479,36 @@ function suggestArriFizCables() {
     if (hasLCube && (hasRIA || camera === 'Arri Alexa 35')) hasLCube = false;
     const isCforceMiniRF = /cforce mini rf/i.test(motor);
     const isCforceMini = /cforce mini/i.test(motor) && !isCforceMiniRF;
+    const motorContext = motor ? `for ${motor}` : 'for FIZ motor';
+    const masterGripContext = 'for Arri Master Grip (single unit)';
+    const distanceContext = distance ? `for ${distance}` : 'for distance sensor';
     const controllersToCheck = [];
     if (hasRIA) controllersToCheck.push('Arri RIA-1');
     if (isCforceMiniRF) controllersToCheck.push('Arri cforce mini RF');
-    const pushLbus = len => {
+    const primaryController = controllersToCheck[0] || controllers[0] || '';
+    const pushLbus = (len, contextOverride) => {
         const formatted = String(len).replace('.', ',');
-        cables.push(`LBUS to LBUS ${formatted}m`);
+        const ctx = contextOverride || motorContext;
+        cables.push(formatFizCable(`LBUS to LBUS ${formatted}m`, ctx));
         lbusLengths.push(Number(len));
     };
     if ((camera === 'Arri Alexa Mini' || camera === 'Arri Alexa Mini LF') && isCforceMini) {
         pushLbus(0.3);
-        if (hasLCube) pushLbus(0.4);
-        if (hasMasterGrip) pushLbus(0.5);
+        if (hasLCube) pushLbus(0.4, distanceContext);
+        if (hasMasterGrip) pushLbus(0.5, masterGripContext);
     } else if (camera === 'Arri Alexa 35' && isCforceMini) {
         pushLbus(0.3);
-        if (hasMasterGrip) pushLbus(0.5);
+        if (hasMasterGrip) pushLbus(0.5, masterGripContext);
     } else if (isCforceMiniRF) {
         if (hasLCube) {
-            pushLbus(0.4);
-            if (hasMasterGrip) pushLbus(0.5);
+            pushLbus(0.4, distanceContext);
+            if (hasMasterGrip) pushLbus(0.5, masterGripContext);
         } else if (hasMasterGrip) {
-            pushLbus(0.5);
+            pushLbus(0.5, masterGripContext);
         }
     } else if (hasRIA && isCforceMini) {
         pushLbus(0.4);
-        if (hasMasterGrip) pushLbus(0.5);
+        if (hasMasterGrip) pushLbus(0.5, masterGripContext);
     }
     if (controllersToCheck.length) {
         const cablesData = devices.accessories?.cables || {};
@@ -8515,24 +8530,27 @@ function suggestArriFizCables() {
             }
         }
         if (chosen) {
-            cables.push(chosen);
+            const camContext = camera ? `for ${camera}` : 'for camera control';
+            cables.push(formatFizCable(chosen, camContext));
             camSpare.push(chosen);
         } else if (hasRIA && cablesData['Cable CAM (7-pin) – D-Tap 0,5m']) {
             const fallback = 'Cable CAM (7-pin) – D-Tap 0,5m';
-            cables.push(fallback);
+            const fallbackContext = primaryController ? `for ${primaryController} power` : 'for controller power';
+            cables.push(formatFizCable(fallback, fallbackContext));
             camSpare.push(fallback);
         }
     }
     if (hasUDM) {
-        cables.push(CABLE_UDM);
-        if (!hasLCube) cables.push(`${CABLE_UDM} (spare)`);
+        cables.push(formatFizCable(CABLE_UDM, distanceContext));
+        if (!hasLCube) cables.push(formatFizCable(CABLE_UDM, 'spare'));
     }
     if (lbusLengths.length) {
         const shortest = Math.min(...lbusLengths);
-        cables.push(`LBUS to LBUS ${shortest}m (spare)`);
-        cables.push(`${CABLE_LBUS_05} (spare)`);
+        const formattedShortest = String(shortest).replace('.', ',');
+        cables.push(formatFizCable(`LBUS to LBUS ${formattedShortest}m`, 'spare'));
+        cables.push(formatFizCable(CABLE_LBUS_05, 'spare'));
     }
-    camSpare.forEach(n => cables.push(`${n} (spare)`));
+    camSpare.forEach(n => cables.push(formatFizCable(n, 'spare')));
     return cables;
 }
 
@@ -8659,17 +8677,64 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     gatherPower(devices.fiz.distance[distanceSelect.value]);
 
     const fizCableDb = acc.cables?.fiz || {};
-    const motorDatas = motorSelects.map(sel => devices.fiz.motors[sel.value]).filter(Boolean);
-    const controllerDatas = controllerSelects.map(sel => devices.fiz.controllers[sel.value]).filter(Boolean);
-    motorDatas.forEach(m => {
-        const mConns = (m.fizConnectors || []).map(fc => fc.type || fc);
-        controllerDatas.forEach(c => {
-            const cConns = (c.fizConnectors || []).map(fc => fc.type || fc);
-            mConns.forEach(mc => {
-                cConns.forEach(cc => {
-                    if (mc === cc) {
-                        for (const [name, cable] of Object.entries(fizCableDb)) {
-                            if (cable.from === mc && cable.to === cc) fizCables.push(name);
+    const getFizConnectors = data => {
+        const list = [];
+        if (!data) return list;
+        if (Array.isArray(data.fizConnectors)) {
+            data.fizConnectors.forEach(fc => {
+                const type = fc && typeof fc === 'object' ? fc.type : fc;
+                if (type) list.push(type);
+            });
+        }
+        if (data.fizConnector) list.push(data.fizConnector);
+        return [...new Set(list.filter(Boolean))];
+    };
+    const pushFizCable = (name, context) => {
+        fizCables.push(formatFizCable(name, context));
+    };
+    const pairContextCounts = {};
+    const buildPairContext = (motorName, controllerName) => {
+        const parts = [sanitizeFizContext(motorName), sanitizeFizContext(controllerName)].filter(Boolean);
+        if (!parts.length) return '';
+        const base = parts.join(' ↔ ');
+        const key = base.toLowerCase();
+        const next = (pairContextCounts[key] || 0) + 1;
+        pairContextCounts[key] = next;
+        return next > 1 ? `${base} #${next}` : base;
+    };
+    const matchesCable = (cable, from, to) => {
+        if (!cable) return false;
+        const fromToMatch = (a, b) => (cable.from === a && cable.to === b) || (cable.from === b && cable.to === a);
+        if (cable.from && cable.to) {
+            if (fromToMatch(from, to)) return true;
+        }
+        if (Array.isArray(cable.connectors)) {
+            const connectors = cable.connectors;
+            if (connectors.includes(from) && connectors.includes(to)) return true;
+        }
+        return false;
+    };
+    const motorEntries = motorSelects
+        .map(sel => sel.value)
+        .filter(v => v && v !== 'None')
+        .map(name => ({ name, data: devices.fiz.motors[name] }))
+        .filter(entry => entry.data);
+    const controllerEntries = controllerSelects
+        .map(sel => sel.value)
+        .filter(v => v && v !== 'None')
+        .map(name => ({ name, data: devices.fiz.controllers[name] }))
+        .filter(entry => entry.data);
+    motorEntries.forEach(motorEntry => {
+        const motorConns = getFizConnectors(motorEntry.data);
+        controllerEntries.forEach(controllerEntry => {
+            const controllerConns = getFizConnectors(controllerEntry.data);
+            motorConns.forEach(mConn => {
+                controllerConns.forEach(cConn => {
+                    if (mConn !== cConn) return;
+                    for (const [name, cable] of Object.entries(fizCableDb)) {
+                        if (matchesCable(cable, mConn, cConn)) {
+                            const context = buildPairContext(motorEntry.name, controllerEntry.name);
+                            pushFizCable(name, context);
                         }
                     }
                 });
@@ -8677,7 +8742,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
         });
     });
 
-    fizCables.push(...suggestArriFizCables());
+    suggestArriFizCables().forEach(name => fizCables.push(name));
 
     const miscUnique = [...new Set(misc)];
     const monitoringSupportList = monitoringSupport.slice();
@@ -8686,7 +8751,7 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     return {
         cameraSupport: [...new Set(cameraSupport)],
         chargers,
-        fizCables: [...new Set(fizCables)],
+        fizCables,
         misc: miscUnique,
         monitoringSupport: monitoringSupportList,
         rigging: riggingUnique
