@@ -700,6 +700,14 @@ describe('script.js functions', () => {
     expect(Array.from(sel.options).map(o => o.value)).toEqual(['None', 'Alpha', 'Beta']);
   });
 
+  test('hidden select does not get favorite star', () => {
+    document.body.innerHTML = '<select id="hiddenSel" hidden></select>';
+    const sel = document.getElementById('hiddenSel');
+    script.populateSelect(sel, { Alpha: {}, Beta: {} }, true);
+    const btn = document.querySelector('.favorite-toggle');
+    expect(btn).toBeNull();
+  });
+
 
   test('gear list lens row includes lens attributes', () => {
     const html = script.generateGearListHtml({ lenses: 'LensA' });
