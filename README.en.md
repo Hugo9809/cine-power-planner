@@ -16,6 +16,8 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
+- Revamped interface design with improved contrast and spacing for a cleaner experience on any device.
+- Simplified project sharing – export and import buttons were removed; share links now handle project transfer.
 - Unique icons for required scenarios to distinguish project requirements.
 - Interactive project diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
 - Playful pink accent theme that persists between visits.
@@ -39,6 +41,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Generate a printable overview for any saved project
 - Save project requirements along with each project
 - Works fully offline – language, dark mode, projects and device data persist
+- Responsive layout adapts seamlessly across desktops, tablets and phones
 - Choose a **B‑Mount** or **V‑Mount** plate on supported cameras; the battery list adapts automatically
 
 ### 📋 Gear List

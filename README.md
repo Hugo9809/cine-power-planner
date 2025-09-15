@@ -44,6 +44,8 @@ Contributions for additional languages are welcome. To add a translation, includ
 
 ## Recent Updates
 
+- **Refreshed interface design** – cleaner layout and improved contrast make the planner easier to use on desktop and mobile.
+- **Simplified project sharing** – export and import buttons were removed; share links now handle project transfer.
 - **Unique icons for required scenarios** – each required scenario now shows its own icon for quick recognition.
 - **Persistent diagram popups on touch** – tapping a node on touch devices keeps its popup visible until another node is selected.
 - **Aggregated wireless receiver entries** – similar receiver models are grouped to streamline gear selection.
@@ -72,6 +74,7 @@ See the language-specific README files for full details.
 - Visualize power and video connections with an interactive diagram.
 - Customize the device database with your own gear.
 - Uses your browser's language on first load (falls back to English), lets you switch languages, toggle dark or playful pink themes, and swap between V‑, B‑ and Gold‑Mount plates on supported cameras.
+- Enjoy a responsive layout with an updated design that adapts to phones, tablets and desktops.
 - Works completely offline and offers a searchable help dialog with hover help for every button, field, dropdown and header.
 
 ## Runtime Data Weighting
