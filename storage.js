@@ -335,7 +335,10 @@ function normalizeProject(data) {
     // New format { gearList, projectInfo }
     if (Object.prototype.hasOwnProperty.call(data, "gearList") || Object.prototype.hasOwnProperty.call(data, "projectInfo")) {
       return {
-        gearList: typeof data.gearList === "object" || typeof data.gearList === "string" ? data.gearList : "",
+        gearList:
+          typeof data.gearList === "string" || (data.gearList && typeof data.gearList === "object")
+            ? data.gearList
+            : "",
         projectInfo: isPlainObject(data.projectInfo) ? data.projectInfo : null,
       };
     }
