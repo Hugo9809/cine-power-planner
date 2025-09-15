@@ -270,6 +270,11 @@ describe('project storage', () => {
     expect(loadProject('A')).toEqual({ gearList: '<ul>A</ul>', projectInfo: null });
     expect(loadProject('B')).toEqual({ gearList: '<ul>B</ul>', projectInfo: null });
   });
+
+  test('saveProject normalizes null gearList to empty string', () => {
+    saveProject('NullProj', { gearList: null });
+    expect(loadProject('NullProj')).toEqual({ gearList: '', projectInfo: null });
+  });
 });
 
 describe('clearAllData', () => {
