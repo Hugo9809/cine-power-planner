@@ -27,7 +27,7 @@ try {
   deviceSchema = require('./schema.json');
 } catch {
   if (typeof fetch === 'function') {
-    fetch('schema.json').then(r => r.json()).then(d => { deviceSchema = d; });
+    fetch('schema.json').then(r => r.json()).then(d => { deviceSchema = d; populateCategoryOptions(); });
   } else {
     deviceSchema = {};
   }
@@ -2255,7 +2255,7 @@ const monitorPortTypeInput = document.getElementById("monitorPortType");
 const monitorVideoInputsContainer = document.getElementById("monitorVideoInputsContainer");
 
 function populateCategoryOptions() {
-  if (!newCategorySelect || !deviceSchema) return;
+  if (!newCategorySelect) return;
   newCategorySelect.innerHTML = '';
   const addOpt = (val) => {
     const opt = document.createElement('option');
@@ -2263,22 +2263,45 @@ function populateCategoryOptions() {
     opt.textContent = categoryNames[currentLang]?.[val] || val.split('.').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
     newCategorySelect.appendChild(opt);
   };
-  if (deviceSchema.accessories) {
-    for (const [sub, obj] of Object.entries(deviceSchema.accessories)) {
-      if (sub === 'cables') {
-        addOpt('accessories.cables');
-      } else if (obj && obj.attributes) {
-        addOpt(`accessories.${sub}`);
+
+  // Add categories from schema when available
+  if (deviceSchema) {
+    if (deviceSchema.accessories) {
+      for (const [sub, obj] of Object.entries(deviceSchema.accessories)) {
+        if (sub === 'cables') {
+          addOpt('accessories.cables');
+        } else if (obj && obj.attributes) {
+          addOpt(`accessories.${sub}`);
+        }
+      }
+    }
+    for (const [key, obj] of Object.entries(deviceSchema)) {
+      if (key === 'accessories' || key === 'fiz') continue;
+      if (obj && obj.attributes) addOpt(key);
+    }
+    if (deviceSchema.fiz) {
+      for (const [sub, obj] of Object.entries(deviceSchema.fiz)) {
+        if (obj && obj.attributes) addOpt(`fiz.${sub}`);
       }
     }
   }
-  for (const [key, obj] of Object.entries(deviceSchema)) {
-    if (key === 'accessories' || key === 'fiz') continue;
-    if (obj && obj.attributes) addOpt(key);
-  }
-  if (deviceSchema.fiz) {
-    for (const [sub, obj] of Object.entries(deviceSchema.fiz)) {
-      if (obj && obj.attributes) addOpt(`fiz.${sub}`);
+
+  // Include any categories present in the device database that were not in the schema
+  if (typeof devices === 'object') {
+    const existing = new Set(Array.from(newCategorySelect.options).map(o => o.value));
+    const addIfMissing = (val) => { if (!existing.has(val)) { addOpt(val); existing.add(val); } };
+    for (const [key, obj] of Object.entries(devices)) {
+      if (key === 'accessories') {
+        for (const sub of Object.keys(obj || {})) {
+          addIfMissing(`accessories.${sub}`);
+        }
+      } else if (key === 'fiz') {
+        for (const sub of Object.keys(obj || {})) {
+          addIfMissing(`fiz.${sub}`);
+        }
+      } else if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+        addIfMissing(key);
+      }
     }
   }
 }
@@ -7331,7 +7354,7 @@ newCategorySelect.addEventListener("change", () => {
     motorFieldsDiv.style.display = "none";
     controllerFieldsDiv.style.display = "none";
     distanceFieldsDiv.style.display = "none";
-  } else if (val === "monitors") {
+  } else if (val === "monitors" || val === "directorMonitors") {
     wattFieldDiv.style.display = "none";
     batteryFieldsDiv.style.display = "none";
     cameraFieldsDiv.style.display = "none";
@@ -7628,7 +7651,7 @@ addDeviceBtn.addEventListener("click", () => {
       timecode: timecode
     };
     Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
-  } else if (category === "monitors") {
+  } else if (category === "monitors" || category === "directorMonitors") {
     const watt = parseFloat(monitorWattInput.value);
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
