@@ -10421,7 +10421,8 @@ if (settingsButton && settingsDialog) {
       accentColorInput.value = stored || accentColor;
     }
     settingsDialog.removeAttribute('hidden');
-    const first = settingsDialog.querySelector('select, input');
+    // Focus the first control except the language selector to avoid opening it automatically
+    const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
     if (first) first.focus();
   });
 
