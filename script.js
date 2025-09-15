@@ -673,14 +673,6 @@ function getSupportedBatteryPlates(name) {
   return cam.power.batteryPlateSupport.map(bp => bp.type);
 }
 
-function getNativeBatteryPlates(name) {
-  const cam = devices.cameras[name];
-  if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
-  return cam.power.batteryPlateSupport
-    .filter(bp => bp.mount === 'native')
-    .map(bp => bp.type);
-}
-
 function supportsMountCamera(name, mountType) {
   return getSupportedBatteryPlates(name).includes(mountType);
 }
@@ -711,13 +703,9 @@ function getHotswapsByMount(mountType) {
 
 function getSelectedPlate() {
   const camName = cameraSelect.value;
-  const nativePlates = getNativeBatteryPlates(camName);
-  if (nativePlates.length > 1) {
-    return batteryPlateSelect.value;
-  } else if (nativePlates.length === 1) {
-    return nativePlates[0];
-  }
-  return null;
+  const plates = getSupportedBatteryPlates(camName);
+  if (!plates.length) return null;
+  return batteryPlateSelect.value || (plates.includes('V-Mount') ? 'V-Mount' : plates[0]);
 }
 
 function isSelectedPlateNative(camName) {
@@ -912,25 +900,25 @@ function connectionLabel(outType, inType) {
 
 function updateBatteryPlateVisibility() {
   const camName = cameraSelect.value;
-  const nativePlates = getNativeBatteryPlates(camName);
-  if (nativePlates.length > 1) {
-    batteryPlateRow.style.display = '';
-    const current = batteryPlateSelect.value;
-    batteryPlateSelect.innerHTML = '';
-    nativePlates.forEach(pt => {
+  const plates = getSupportedBatteryPlates(camName);
+  const current = batteryPlateSelect.value;
+  batteryPlateSelect.innerHTML = '';
+  if (plates.length) {
+    plates.forEach(pt => {
       const opt = document.createElement('option');
       opt.value = pt;
       opt.textContent = pt;
       batteryPlateSelect.appendChild(opt);
     });
-    if (nativePlates.includes(current)) {
-      batteryPlateSelect.value = current;
-    } else {
-      batteryPlateSelect.value = nativePlates[0];
+    let def = current;
+    if (!plates.includes(def)) {
+      def = plates.includes('V-Mount') ? 'V-Mount' : plates[0];
     }
+    batteryPlateSelect.value = def;
+    batteryPlateRow.style.display = '';
   } else {
     batteryPlateRow.style.display = 'none';
-    batteryPlateSelect.value = nativePlates[0] || '';
+    batteryPlateSelect.value = '';
   }
   updateViewfinderSettingsVisibility();
   updateViewfinderExtensionVisibility();
