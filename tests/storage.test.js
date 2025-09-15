@@ -3,21 +3,22 @@ const {
   saveDeviceData,
   loadSetups,
   saveSetups,
-    saveSetup,
-    loadSetup,
-    deleteSetup,
-    renameSetup,
-    loadSessionState,
-    saveSessionState,
-    loadFeedback,
-    saveFeedback,
-    saveProject,
-    loadProject,
-    loadFavorites,
-    saveFavorites,
-    clearAllData,
-    exportAllData,
-    importAllData,
+  saveSetup,
+  loadSetup,
+  deleteSetup,
+  renameSetup,
+  loadSessionState,
+  saveSessionState,
+  loadFeedback,
+  saveFeedback,
+  saveProject,
+  loadProject,
+  deleteProject,
+  loadFavorites,
+  saveFavorites,
+  clearAllData,
+  exportAllData,
+  importAllData,
 } = require('../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -274,6 +275,72 @@ describe('project storage', () => {
   test('saveProject normalizes null gearList to empty string', () => {
     saveProject('NullProj', { gearList: null });
     expect(loadProject('NullProj')).toEqual({ gearList: '', projectInfo: null });
+  });
+
+  test('saveProject strips non-object projectInfo values', () => {
+    saveProject('InfoProj', { gearList: '<ul>Info</ul>', projectInfo: 'bad' });
+    expect(loadProject('InfoProj')).toEqual({ gearList: '<ul>Info</ul>', projectInfo: null });
+  });
+
+  test('saveProject ignores non-object payloads entirely', () => {
+    saveProject('Broken', 'not-an-object');
+    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
+  });
+
+  test('loadProject returns normalized map of projects when name omitted', () => {
+    const stored = {
+      NewFormat: { gearList: '<ul>New</ul>', projectInfo: { notes: 'ok' } },
+      LegacyHtml: { projectHtml: '<section>project</section>', gearHtml: '<div>gear</div>' },
+      LegacyString: '<p>standalone</p>',
+      Invalid: 7,
+    };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(stored));
+    expect(loadProject()).toEqual({
+      NewFormat: { gearList: '<ul>New</ul>', projectInfo: { notes: 'ok' } },
+      LegacyHtml: { gearList: { projectHtml: '<section>project</section>', gearHtml: '<div>gear</div>' }, projectInfo: null },
+      LegacyString: { gearList: '<p>standalone</p>', projectInfo: null },
+    });
+  });
+
+  test('loadProject returns null for unknown names', () => {
+    saveProject('Known', { gearList: '<ul></ul>' });
+    expect(loadProject('Missing')).toBeNull();
+  });
+
+  test('deleteProject removes individual projects and cleans up key when empty', () => {
+    saveProject('Keep', { gearList: '<ul>Keep</ul>' });
+    saveProject('Drop', { gearList: '<ul>Drop</ul>' });
+
+    deleteProject('Drop');
+    expect(loadProject('Drop')).toBeNull();
+    expect(loadProject('Keep')).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
+    expect(localStorage.getItem(PROJECT_KEY)).not.toBeNull();
+
+    deleteProject('Keep');
+    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
+  });
+
+  test('deleteProject without a name clears all stored projects', () => {
+    saveProject('A', { gearList: '<ul>A</ul>' });
+    saveProject('B', { gearList: '<ul>B</ul>' });
+    deleteProject();
+    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
+  });
+});
+
+describe('favorites storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('loadFavorites returns empty object for non-object data', () => {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(['CamA']));
+    expect(loadFavorites()).toEqual({});
+  });
+
+  test('saveFavorites ignores non-object payloads', () => {
+    saveFavorites(['CamA']);
+    expect(localStorage.getItem(FAVORITES_KEY)).toBeNull();
   });
 });
 
