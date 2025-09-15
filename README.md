@@ -44,11 +44,17 @@ Contributions for additional languages are welcome. To add a translation, includ
 
 ## Recent Updates
 
+- **Clear local cache** – wipe stored projects and settings with one click.
+- **Project name above gear list** – printed overviews and the gear list now show the project name.
+- **Custom print logo** – upload a logo that appears in printable overviews and backups.
+- **Favorites in backups** – favorites are saved and an automatic backup runs before restoring data.
+- **Crew email field** – record email addresses for each crew member.
+- **High contrast mode** – switch to a high contrast theme for improved readability.
+- **Dynamic device forms** – category fields populate automatically from the schema in new device forms.
 - **Refreshed interface design** – cleaner layout and improved contrast make the planner easier to use on desktop and mobile.
 - **Simplified project sharing** – export and import buttons were removed; share links now handle project transfer.
 - **Unique icons for required scenarios** – each required scenario now shows its own icon for quick recognition.
 - **Persistent diagram popups on touch** – tapping a node on touch devices keeps its popup visible until another node is selected.
-- **Aggregated wireless receiver entries** – similar receiver models are grouped to streamline gear selection.
 - **Interactive project diagram** – drag devices, zoom, snap nodes to a grid, and export layouts as SVG or JPG.
 - **Pink accent theme** – toggle a playful pink highlight that persists between visits or press **P** to switch quickly.
 - **Searchable help dialog and hover hints** – open with ?, H, F1 or Ctrl+/ (even while typing), filter topics instantly, press / or Ctrl+F to jump to the search box, browse the built-in FAQ, and hover over any button, field, dropdown or header for a quick explanation.
