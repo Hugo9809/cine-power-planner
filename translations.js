@@ -814,15 +814,15 @@ const texts = {
     impressum: "Aviso legal",
     privacy: "Política de privacidad",
 
-    setupManageHeading: "Gestionar Configuración",
+    setupManageHeading: "Gestionar Proyecto",
     deviceSelectionHeading: "Selección de Dispositivos",
     overviewDeviceSelectionHeading: "Dispositivos de Configuración de Cámara",
     resultsHeading: "Resultados",
     deviceManagerHeading: "Gestionar Base de Datos de Dispositivos",
     batteryComparisonHeading: "Comparación de Baterías",
-    setupDiagramHeading: "Diagrama de Configuración",
+    setupDiagramHeading: "Diagrama del Proyecto",
     setupManageHeadingHelp:
-      "Administra las configuraciones guardadas: guarda, carga o limpia configuraciones.",
+      "Administra los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
     deviceSelectionHeadingHelp:
       "Elige cámaras, monitores y accesorios para tu equipo.",
     resultsHeadingHelp:
@@ -832,8 +832,8 @@ const texts = {
     batteryComparisonHeadingHelp:
       "Compara los tiempos de funcionamiento de todas las baterías compatibles.",
     setupDiagramHeadingHelp:
-      "Ve un diagrama visual de cómo se conectan los dispositivos seleccionados.",
-    setupDiagramPlaceholder: "Elige dispositivos para visualizar el diagrama.",
+      "Visualiza cómo se conectan los dispositivos del proyecto.",
+    setupDiagramPlaceholder: "Selecciona dispositivos para mostrar el diagrama del proyecto.",
     diagramLegendPower: "Energía",
     diagramLegendVideo: "Vídeo",
     diagramLegendFIZ: "FIZ",
@@ -873,10 +873,10 @@ const texts = {
     restoreVersionWarning: "La copia de seguridad se creó con una versión diferente. Es posible que algunas funciones no se transfieran.",
     saveSettings: "Guardar",
     cancelSettings: "Cancelar",
-    reloadAppLabel: "Recargar",
+    reloadAppLabel: "Forzar recarga",
     reloadAppHelp: "Borra la caché y recarga la aplicación sin eliminar los datos guardados.",
 
-    favoriteToggleLabel: "Favorito",
+    favoriteToggleLabel: "Alternar favorito",
     favoriteToggleHelp:
       "Marca la selección actual como favorita para fijarla al principio de la lista.",
     savedSetupsLabel: "Configuraciones guardadas:",
