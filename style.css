@@ -570,7 +570,7 @@ input,
 select,
 textarea {
   padding: 4px;
-  font-size: 1rem;
+  font-size: 1em;
   background-color: var(--control-bg);
   color: var(--control-text);
   border: none;
