@@ -9961,6 +9961,14 @@ function bindGearListDirectorMonitorListener() {
             });
         }
     });
+    ['Director', 'Combo', 'Dop'].forEach(role => {
+        const sel = gearListOutput.querySelector(`#gearList${role}Monitor15`);
+        if (sel) {
+            sel.addEventListener('change', () => {
+                saveCurrentGearList();
+            });
+        }
+    });
 }
 
 

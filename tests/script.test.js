@@ -2983,6 +2983,29 @@ describe('script.js functions', () => {
     expect(saved.projectInfo.focusMonitor).toBe('MonA');
   });
 
+  test('director 15-21" monitor selection saved to project info', () => {
+    setupDom(false);
+    require('../script.js');
+    global.saveProject = jest.fn();
+    global.devices.directorMonitors = {
+      'SmallHD Cine 24" 4K High-Bright Monitor': { screenSizeInches: 24 },
+      Other: { screenSizeInches: 17 }
+    };
+    const videoSel = document.getElementById('videoDistribution');
+    videoSel.innerHTML = '<option value="Director Monitor 15-21&quot;">Director Monitor 15-21"</option>';
+    videoSel.value = 'Director Monitor 15-21"';
+    document.getElementById('projectName').value = 'Proj';
+    const form = document.getElementById('projectForm');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const gear = document.getElementById('gearListOutput');
+    const sel = gear.querySelector('#gearListDirectorMonitor15');
+    const newVal = Array.from(sel.options).find(o => o.value !== sel.value).value;
+    sel.value = newVal;
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    const saved = global.saveProject.mock.calls.pop()[1];
+    expect(saved.projectInfo.directorMonitor15).toBe(newVal);
+  });
+
   test('zoom remote adds second motor and controller for Arri brand', () => {
     const { ensureZoomRemoteSetup, generateGearListHtml } = script;
     global.devices.fiz.motors['Arri cforce mini RF (KK.0040345)'] = { powerDrawWatts: 1 };
