@@ -2372,7 +2372,6 @@ function collectDynamicFieldValues(category) {
 }
 const languageSelect  = document.getElementById("languageSelect");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
-const logo            = document.getElementById("logo");
 const darkModeToggle  = document.getElementById("darkModeToggle");
 const helpButton      = document.getElementById("helpButton");
 const reloadButton    = document.getElementById("reloadButton");
@@ -10382,17 +10381,11 @@ function applyPinkMode(enabled) {
       pinkModeToggle.textContent = "🦄";
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
-    if (logo) {
-      logo.src = "icon-pink.svg";
-    }
   } else {
     document.body.classList.remove("pink-mode");
     if (pinkModeToggle) {
       pinkModeToggle.textContent = "🐴";
       pinkModeToggle.setAttribute("aria-pressed", "false");
-    }
-    if (logo) {
-      logo.src = "icon.svg";
     }
   }
 }
