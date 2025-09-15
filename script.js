@@ -2557,13 +2557,31 @@ const projectRequirementsOutput = document.getElementById("projectRequirementsOu
 // Load accent color from localStorage
 let accentColor = '#001589';
 let prevAccentColor = accentColor;
+const HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
+
+const isHighContrastActive = () =>
+  typeof document !== 'undefined' &&
+  (document.documentElement.classList.contains('high-contrast') ||
+    (document.body && document.body.classList.contains('high-contrast')));
 
 const applyAccentColor = (color) => {
-  document.documentElement.style.setProperty('--accent-color', color);
-  document.documentElement.style.setProperty('--link-color', color);
+  const highContrast = isHighContrastActive();
+  const accentValue = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : color;
+  const rootStyle = document.documentElement.style;
+  rootStyle.setProperty('--accent-color', accentValue);
+  if (highContrast) {
+    rootStyle.removeProperty('--link-color');
+  } else {
+    rootStyle.setProperty('--link-color', color);
+  }
   if (document.body) {
-    document.body.style.setProperty('--accent-color', color);
-    document.body.style.setProperty('--link-color', color);
+    const bodyStyle = document.body.style;
+    bodyStyle.setProperty('--accent-color', accentValue);
+    if (highContrast) {
+      bodyStyle.removeProperty('--link-color');
+    } else {
+      bodyStyle.setProperty('--link-color', color);
+    }
   }
 };
 
@@ -10792,11 +10810,24 @@ if (darkModeToggle) {
 
 function applyHighContrast(enabled) {
   if (enabled) {
-    document.body.classList.add("high-contrast");
+    if (document.body) {
+      document.body.classList.add("high-contrast");
+    }
     document.documentElement.classList.add("high-contrast");
+    applyAccentColor(accentColor);
   } else {
-    document.body.classList.remove("high-contrast");
+    if (document.body) {
+      document.body.classList.remove("high-contrast");
+    }
     document.documentElement.classList.remove("high-contrast");
+    if (document.body && document.body.classList.contains('pink-mode')) {
+      document.documentElement.style.removeProperty('--accent-color');
+      document.documentElement.style.removeProperty('--link-color');
+      document.body.style.removeProperty('--accent-color');
+      document.body.style.removeProperty('--link-color');
+    } else {
+      applyAccentColor(accentColor);
+    }
   }
 }
 
