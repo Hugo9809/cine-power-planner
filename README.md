@@ -8,6 +8,24 @@ checks that batteries can safely deliver the required output, and estimates how
 long your project will run. The tool runs entirely in the browser and even works
 offline.
 
+The planner was built for ACs, data wranglers and DoPs who need to keep complex
+digital cinema rigs running all day without guesswork. As you swap camera
+bodies, add accessories or adjust requirements, the power draw, required
+batteries and runtime feedback update instantly so you can react before you get
+to set.
+
+**Why crews choose Cine Power Planner**
+
+- Model multi-mount rigs with precise draw calculations, weighted runtime
+  feedback and safety warnings when a battery cannot deliver the current you
+  need.
+- Keep production context together—projects store requirements, crew, scenarios
+  and even pinned favorites so printed gear lists and shared bundles carry the
+  whole picture.
+- Work the way you prefer with offline support, dark, pink and high-contrast
+  themes, typography controls and type-to-search shortcuts across the
+  interface.
+
 No build step is required—open `index.html` in your browser and start planning
 immediately. Serving the repository over HTTP(S) installs a service worker so
 that future visits work offline and pick up updates automatically.
@@ -82,17 +100,44 @@ See the language-specific README files for full details.
 
 ## Features at a Glance
 
-- Calculate total power consumption, current draw at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount), and estimated battery runtime.
-- Combine user-submitted runtimes using weighted averages that account for temperature, resolution, frame rate, codecs and each device’s share of total draw.
-- Warn when selected batteries cannot safely supply the required current and show required battery counts for a 10 h shoot (including a spare).
-- Save, auto-back up, share, restore and clear projects (project requirements included); generate printable overviews and shareable JSON bundles that include custom devices and runtime feedback.
-- Compare runtimes across all compatible batteries with the optional battery comparison panel.
-- Visualize power and video connections with an interactive diagram—drag, zoom, snap to grid and export as SVG, or hold Shift while downloading to create a JPG snapshot.
-- Generate rich gear lists that expand project requirements into categorized packing tables with accessories, duplicates merged by quantity and tooltips for weight and dimensions.
-- Customize the device database with your own gear, import/export it as JSON and revert to the bundled defaults at any time.
-- Jump to features, device selectors or help topics with the global search field, star favorites to pin go-to devices and type directly inside dropdowns to filter instantly.
-- Tailor the interface with language detection, dark or playful pink themes, high contrast mode, accent color and typography controls, all stored locally.
-- Works completely offline with a service worker, persistent storage and a force reload button to refresh cached assets without losing data.
+### Plan with confidence
+
+- Calculate total power consumption, current draw at 14.4 V (33.6 V for
+  B‑Mount) and 12 V (21.6 V for B‑Mount), and estimated battery runtime across
+  any combination of devices.
+- Combine user-submitted runtimes using weighted averages that account for
+  temperature, resolution, frame rate, codecs and each device’s share of total
+  draw.
+- Compare runtimes across all compatible batteries with the optional battery
+  comparison panel and warnings when a pack cannot safely supply the required
+  current.
+
+### Manage evolving projects
+
+- Save, auto-back up, share, restore and clear projects—requirements included—with
+  printable overviews and shareable JSON bundles that also include custom
+  devices and runtime feedback.
+- Customize the device database with your own gear, import or export the
+  catalog as JSON and revert to the bundled defaults at any time.
+
+### Communicate clearly
+
+- Visualize power and video connections with an interactive diagram: drag,
+  zoom, snap to grid and export as SVG or hold Shift to download a JPG
+  snapshot.
+- Generate rich gear lists that expand project requirements into categorized
+  packing tables with accessories, duplicates merged by quantity and tooltips
+  for weight and dimensions.
+
+### Stay productive anywhere
+
+- Jump to features, device selectors or help topics with the global search
+  field, star favorites to pin go-to devices and type directly inside dropdowns
+  to filter instantly.
+- Tailor the interface with language detection, dark or playful pink themes,
+  high contrast mode, accent color and typography controls.
+- Work completely offline thanks to the service worker, persistent storage and a
+  force reload button that refreshes cached assets without losing data.
 
 ## Quick Start
 
