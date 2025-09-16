@@ -442,7 +442,7 @@ main.legal-content {
   margin-left: calc(16px + 0.6rem);
 }
 
-/* Keep controls aligned within Manage Project and Device Selection */
+/* Keep controls aligned within Project Overview and Configure Devices */
 #setup-manager .form-row,
 #setup-config .form-row {
   align-items: stretch;

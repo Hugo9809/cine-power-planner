@@ -1346,6 +1346,28 @@ function setLanguage(lang) {
     "data-help",
     texts[lang].setupDiagramHeadingHelp
   );
+
+  const sideMenuLinks = document.querySelectorAll("#sideMenu [data-nav-key]");
+  sideMenuLinks.forEach((link) => {
+    const navKey = link.dataset.navKey;
+    if (!navKey) {
+      return;
+    }
+    const label = texts[lang][navKey];
+    if (label) {
+      link.textContent = label;
+      link.setAttribute("aria-label", label);
+    }
+    const helpKey = `${navKey}Help`;
+    const helpText = texts[lang][helpKey];
+    if (helpText) {
+      link.setAttribute("title", helpText);
+      link.setAttribute("data-help", helpText);
+    } else {
+      link.removeAttribute("title");
+      link.removeAttribute("data-help");
+    }
+  });
   // Setup manager labels and buttons
   const savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
   savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
