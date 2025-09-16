@@ -2361,7 +2361,18 @@ function createCrewRow(data = {}) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
-  removeBtn.addEventListener('click', () => row.remove());
+  const persistCrewChange = () => {
+    saveCurrentSession();
+    autoSaveCurrentSetup();
+  };
+  roleSel.addEventListener('change', persistCrewChange);
+  nameInput.addEventListener('input', persistCrewChange);
+  phoneInput.addEventListener('input', persistCrewChange);
+  emailInput.addEventListener('input', persistCrewChange);
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    persistCrewChange();
+  });
   row.append(roleSel, nameInput, phoneInput, emailInput, removeBtn);
   crewContainer.appendChild(row);
 }
@@ -2385,7 +2396,16 @@ function createPrepRow(data = {}) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
-  removeBtn.addEventListener('click', () => row.remove());
+  const persistPrepChange = () => {
+    saveCurrentSession();
+    autoSaveCurrentSetup();
+  };
+  start.addEventListener('change', persistPrepChange);
+  end.addEventListener('change', persistPrepChange);
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    persistPrepChange();
+  });
   row.append(start, span, end, removeBtn);
   prepContainer.appendChild(row);
 }
@@ -2409,7 +2429,16 @@ function createShootRow(data = {}) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
-  removeBtn.addEventListener('click', () => row.remove());
+  const persistShootChange = () => {
+    saveCurrentSession();
+    autoSaveCurrentSetup();
+  };
+  start.addEventListener('change', persistShootChange);
+  end.addEventListener('change', persistShootChange);
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    persistShootChange();
+  });
   row.append(start, span, end, removeBtn);
   shootContainer.appendChild(row);
 }
@@ -3927,7 +3956,14 @@ if (projectForm) {
     });
 
     projectForm.querySelectorAll('input, textarea, select').forEach(el => {
-        el.addEventListener('change', saveCurrentSession);
+        const persistProjectChange = () => {
+            saveCurrentSession();
+            autoSaveCurrentSetup();
+        };
+        el.addEventListener('change', persistProjectChange);
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.addEventListener('input', persistProjectChange);
+        }
     });
 }
 
@@ -11095,22 +11131,25 @@ function handleImportGearList(e) {
         try {
             const obj = JSON.parse(ev.target.result);
             if (obj && obj.gearList) {
-            displayGearAndRequirements(obj.gearList);
-            currentProjectInfo = obj.projectInfo || null;
-            populateProjectForm(currentProjectInfo || {});
-            ensureGearListActions();
-            bindGearListCageListener();
-            bindGearListEasyrigListener();
-            bindGearListSliderBowlListener();
-            bindGearListEyeLeatherListener();
-            bindGearListProGaffTapeListener();
-            bindGearListDirectorMonitorListener();
-            if (setupNameInput) {
-                const base = file.name.replace(/\.json$/i, '');
-                setupNameInput.value = base;
-                setupNameInput.dispatchEvent(new Event('input'));
-            }
-            saveCurrentGearList();
+                displayGearAndRequirements(obj.gearList);
+                currentProjectInfo = obj.projectInfo || null;
+                populateProjectForm(currentProjectInfo || {});
+                ensureGearListActions();
+                bindGearListCageListener();
+                bindGearListEasyrigListener();
+                bindGearListSliderBowlListener();
+                bindGearListEyeLeatherListener();
+                bindGearListProGaffTapeListener();
+                bindGearListDirectorMonitorListener();
+                if (setupNameInput) {
+                    const base = file.name.replace(/\.json$/i, '');
+                    setupNameInput.value = base;
+                    setupNameInput.dispatchEvent(new Event('input'));
+                }
+                saveCurrentGearList();
+                saveCurrentSession();
+                checkSetupChanged();
+                autoSaveCurrentSetup();
             }
         } catch {
             alert('Invalid gear list file.');
@@ -11236,6 +11275,7 @@ function ensureGearListActions() {
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
             const cb = e.target;
+            let handled = false;
             if (cb.matches('.filter-values-container input[type="checkbox"]')) {
                 const container = cb.closest('.filter-values-container');
                 const sel = container && container.querySelector('select');
@@ -11247,14 +11287,20 @@ function ensureGearListActions() {
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
+                handled = true;
             } else if (cb.id && cb.id.startsWith('filter-size-')) {
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
+                handled = true;
             } else if (cb.id && cb.id.startsWith('filter-values-')) {
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
+                handled = true;
+            }
+            if (handled) {
+                autoSaveCurrentSetup();
             }
         });
         gearListOutput._filterListenerBound = true;
@@ -11283,6 +11329,7 @@ function bindGearListEasyrigListener() {
             saveCurrentGearList();
             saveCurrentSession();
             checkSetupChanged();
+            autoSaveCurrentSetup();
         });
     }
 }
@@ -11295,6 +11342,7 @@ function bindGearListSliderBowlListener() {
             saveCurrentGearList();
             saveCurrentSession();
             checkSetupChanged();
+            autoSaveCurrentSetup();
         });
     }
 }
@@ -11305,6 +11353,9 @@ function bindGearListEyeLeatherListener() {
     if (sel) {
         sel.addEventListener('change', () => {
             saveCurrentGearList();
+            saveCurrentSession();
+            checkSetupChanged();
+            autoSaveCurrentSetup();
         });
     }
 }
@@ -11318,6 +11369,9 @@ function bindGearListProGaffTapeListener() {
             if (sel) {
                 sel.addEventListener('change', () => {
                     saveCurrentGearList();
+                    saveCurrentSession();
+                    checkSetupChanged();
+                    autoSaveCurrentSetup();
                 });
             }
         });
@@ -11338,6 +11392,7 @@ function bindGearListDirectorMonitorListener() {
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
+                autoSaveCurrentSetup();
             });
         }
     });
@@ -11353,6 +11408,7 @@ function bindGearListDirectorMonitorListener() {
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
+                autoSaveCurrentSetup();
             });
         }
     });
@@ -12917,6 +12973,7 @@ function initApp() {
       saveCurrentSession();
       saveCurrentGearList();
       checkSetupChanged();
+      autoSaveCurrentSetup();
     });
     renderFilterDetails();
   }
