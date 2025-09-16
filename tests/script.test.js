@@ -6379,6 +6379,48 @@ describe('script.js functions', () => {
     expect(featureSearch.showPicker).toHaveBeenCalled();
   });
 
+  test('Ctrl+K focuses the global feature search', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const setupName = document.getElementById('setupName');
+    featureSearch.value = 'Sony FX3';
+    featureSearch.showPicker = jest.fn();
+    setupName.focus();
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
+
+    expect(document.activeElement).toBe(featureSearch);
+    expect(featureSearch.selectionStart).toBe(0);
+    expect(featureSearch.selectionEnd).toBe(featureSearch.value.length);
+    expect(featureSearch.showPicker).toHaveBeenCalled();
+  });
+
+  test('Ctrl+K opens the side menu when the feature search is inside it', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureContainer = document.querySelector('.feature-search');
+    const sideMenu = document.getElementById('sideMenu');
+    const sidebarControls = sideMenu.querySelector('.sidebar-controls');
+    const overlay = document.getElementById('menuOverlay');
+    const toggle = document.getElementById('menuToggle');
+    sidebarControls.appendChild(featureContainer);
+    sideMenu.classList.remove('open');
+    sideMenu.setAttribute('hidden', '');
+    overlay.classList.add('hidden');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Menu');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
+
+    expect(sideMenu.classList.contains('open')).toBe(true);
+    expect(sideMenu.hasAttribute('hidden')).toBe(false);
+    expect(overlay.classList.contains('hidden')).toBe(false);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(toggle.getAttribute('aria-label')).toBe('Close menu');
+    expect(document.activeElement).toBe(document.getElementById('featureSearch'));
+  });
+
   test('feature clear button resets search', () => {
     setupDom(false);
     require('../script.js');

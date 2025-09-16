@@ -48,6 +48,7 @@ Contributions for additional languages are welcome. To add a translation, includ
 ## Recent Updates
 
 - **Accent and typography controls** – adjust the accent color, font size and typeface from the Settings dialog while dark, pink and high contrast themes remain available on every visit.
+- **Global search shortcut** – press Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it lives inside the collapsed mobile side menu.
 - **Force reload button** – clear cached service worker files and refresh the offline app without deleting saved projects or devices.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries and accessories at the top of each selector and include them in backups.
 - **Clear local cache** – wipe stored projects and settings with one click.
@@ -106,7 +107,7 @@ See the language-specific README files for full details.
 ### Top bar controls
 
 - A skip link, offline indicator and responsive branding keep the interface accessible across devices; the offline badge appears whenever the browser loses its connection.
-- The global search bar jumps to features, device selectors or help topics—press Enter to navigate to the highlighted result and use × to clear the query.
+- The global search bar jumps to features, device selectors or help topics—press Enter to navigate to the highlighted result, use Ctrl+K (⌘K on macOS) to focus it from anywhere (the side menu opens automatically on small screens), and use × to clear the query.
 - Language, dark mode and pink mode buttons sit alongside the Settings dialog, which exposes accent color, font size, font family, high contrast and custom logo uploads plus backup, restore and Clear Local Cache tools.
 - The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
 - The Force reload button (🔄) removes cached service worker files and refreshes the app without touching saved projects or device data.
@@ -122,7 +123,7 @@ See the language-specific README files for full details.
 - Theme preferences include dark mode, playful pink accents and a dedicated high contrast switch for improved readability.
 - Accent color, base font size and typeface can be customised in Settings; choices are applied immediately and remembered with other preferences.
 - A keyboard-friendly skip link, focus-visible controls, offline indicator and responsive layout improve navigation on desktops, tablets and phones.
-- Built-in keyboard shortcuts cover help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
+- Built-in keyboard shortcuts cover global search (Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
 - The hover-help toggle turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
 
 ## Gear List
