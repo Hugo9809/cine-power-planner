@@ -732,6 +732,59 @@ main.legal-content {
   flex-wrap: wrap;
 }
 
+.storage-summary {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.storage-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.storage-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.storage-summary-label {
+  font-weight: 600;
+}
+
+.storage-summary-key {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--control-bg);
+  color: var(--control-text);
+}
+
+.storage-summary-value {
+  margin: 0;
+  font-weight: 500;
+}
+
+.storage-summary-note,
+.storage-summary-description,
+.storage-summary-extra {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--control-text);
+  opacity: 0.85;
+}
+
+.storage-summary-extra {
+  padding-left: 0;
+}
+
 .settings-content .button-row {
   display: flex;
   gap: 10px;
