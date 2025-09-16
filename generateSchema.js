@@ -51,12 +51,17 @@ if (require.main === module) {
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
       [
-        'Usage: node generateSchema.js [--help]',
+        'Usage: node generateSchema.js [options]',
         '',
         'Generates schema.json from data.js.',
         '',
         'The output lists attributes found in each device category so editors and tests can validate new entries.',
         'It writes schema.json in the project root without modifying data.js.',
+        '',
+        'Recommended workflow:',
+        '  1. Run `npm run normalize` followed by `npm run unify-ports` to update data.js.',
+        '  2. Execute this script (`npm run generate-schema`) to keep schema.json synchronized.',
+        '  3. Commit schema.json alongside data.js so CI and editors share the same expectations.',
         '',
         'Examples:',
         '  npm run generate-schema',
@@ -64,7 +69,7 @@ if (require.main === module) {
         '  node generateSchema.js --help',
         '',
         'Options:',
-        '  -h, --help  Show this help message and exit.'
+        '  -h, --help     Show this help message and exit.'
       ].join('\n')
     );
     process.exit(0);

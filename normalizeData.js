@@ -388,7 +388,7 @@ if (require.main === module) {
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
       [
-        'Usage: node normalizeData.js [--help]',
+        'Usage: node normalizeData.js [options]',
         '',
         'Cleans and expands device data, then overwrites data.js with the result.',
         '',
@@ -397,7 +397,13 @@ if (require.main === module) {
         '  - Normalizes recording media, timecode generators, viewfinders and lens mounts.',
         '  - Rebuilds derived fields such as power distribution outputs and video port lists.',
         '',
-        'The script modifies data.js in place. Review the diff and commit it with matching schema updates.',
+        'Recommended workflow:',
+        '  1. Run `npm run check-consistency` after editing devices/ files to catch missing metadata.',
+        '  2. Run this script (`npm run normalize`) to regenerate derived values.',
+        '  3. Follow up with `npm run unify-ports` so connector metadata stays aligned.',
+        '  4. Finish with `npm run generate-schema` to refresh schema.json.',
+        '',
+        'The script modifies data.js in place. Review the diff and commit it together with schema updates.',
         '',
         'Examples:',
         '  npm run normalize',
@@ -405,7 +411,7 @@ if (require.main === module) {
         '  node normalizeData.js --help',
         '',
         'Options:',
-        '  -h, --help  Show this help message and exit.'
+        '  -h, --help     Show this help message and exit.'
       ].join('\n')
     );
     process.exit(0);
