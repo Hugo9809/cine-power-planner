@@ -2445,6 +2445,200 @@ const categoryExcludedAttrs = {
   "fiz.distance": ["accuracy", "connectionCompatibility", "measurementMethod", "measurementRange", "notes", "outputDisplay", "powerDrawWatts"]
 };
 
+const schemaFieldConfigs = {
+  '*': {
+    brand: { type: 'text', placeholder: 'ARRI' },
+    model: { type: 'text', placeholder: 'Mini LF' },
+    notes: { type: 'textarea', rows: 3, placeholder: 'Additional notes' }
+  },
+  batteries: {
+    mount_type: { type: 'text', placeholder: 'V-Mount' },
+    pinV: { type: 'number', step: '0.1', suffix: 'V' },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  'accessories.batteries': {
+    mount_type: { type: 'text', placeholder: 'V-Mount' },
+    pinV: { type: 'number', step: '0.1', suffix: 'V' },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  batteryHotswaps: {
+    mount_type: { type: 'text', placeholder: 'Gold Mount' },
+    pinV: { type: 'number', step: '0.1', suffix: 'V' },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  cameras: {
+    recordingCodecs: { type: 'list', placeholder: 'ProRes 422 HQ' },
+    resolutions: { type: 'list', placeholder: '4.5K Open Gate' },
+    sensorModes: { type: 'list', placeholder: 'LF Open Gate' },
+    viewfinder: { type: 'json', rows: 4 },
+    timecode: { type: 'json', rows: 3 },
+    weight_g: { type: 'number', step: '1', suffix: 'g' }
+  },
+  monitors: {
+    audioInput: { type: 'text', placeholder: '3.5mm stereo' },
+    audioIo: { type: 'text', placeholder: 'SDI / HDMI' },
+    audioOutput: { type: 'text', placeholder: '3.5mm stereo' },
+    bluetooth: { type: 'boolean' },
+    latencyMs: { type: 'text', placeholder: '< 1ms' },
+    wireless: { type: 'text', placeholder: 'Bolt 6' },
+    wirelessRX: { type: 'boolean' },
+    wirelessTx: { type: 'boolean' }
+  },
+  video: {
+    frequency: { type: 'text', placeholder: '5 GHz' },
+    latencyMs: { type: 'text', placeholder: '1 ms' }
+  },
+  wirelessReceivers: {
+    frequency: { type: 'text', placeholder: '5 GHz' },
+    latencyMs: { type: 'text', placeholder: '1 ms' }
+  },
+  iosVideo: {
+    frequency: { type: 'text', placeholder: '5 GHz' },
+    latencyMs: { type: 'text', placeholder: '1 ms' }
+  },
+  'fiz.motors': {
+    gearTypes: { type: 'list', placeholder: '0.8 MOD' },
+    internalController: { type: 'boolean' }
+  },
+  'fiz.controllers': {
+    connectivity: { type: 'text', placeholder: '2.4 GHz' },
+    internalController: { type: 'boolean' }
+  },
+  'fiz.distance': {
+    accuracy: { type: 'text', placeholder: '± 1"' }
+  }
+};
+
+function formatAttributeLabel(attr) {
+  return attr
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
+    .replace(/^./, ch => ch.toUpperCase())
+    .trim();
+}
+
+function resolveSchemaFieldConfig(category, attr) {
+  if (!category) return schemaFieldConfigs['*'][attr] || null;
+  const parts = category.split('.');
+  while (parts.length) {
+    const key = parts.join('.');
+    if (schemaFieldConfigs[key] && schemaFieldConfigs[key][attr]) {
+      return schemaFieldConfigs[key][attr];
+    }
+    parts.pop();
+  }
+  return schemaFieldConfigs['*'][attr] || null;
+}
+
+function autoRows(text, min = 3, max = 10) {
+  if (!text) return min;
+  const lines = text.split('\n').length + 1;
+  return Math.max(min, Math.min(max, lines));
+}
+
+function createSchemaField(category, attr, value) {
+  const config = resolveSchemaFieldConfig(category, attr) || {};
+  const attrId = `attr-${attr}`;
+  const labelText = config.label || formatAttributeLabel(attr);
+  let inputType = config.type;
+
+  if (!inputType) {
+    if (Array.isArray(value)) {
+      inputType = value.every(item => typeof item === 'string') ? 'list' : 'json';
+    } else if (typeof value === 'number') {
+      inputType = 'number';
+    } else if (typeof value === 'boolean') {
+      inputType = 'boolean';
+    } else if (value && typeof value === 'object') {
+      inputType = 'json';
+    } else {
+      inputType = 'text';
+    }
+  }
+
+  if (inputType === 'boolean') {
+    const field = document.createElement('div');
+    field.className = 'schema-field schema-field--checkbox';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.id = attrId;
+    input.className = 'schema-input schema-input--checkbox';
+    input.dataset.attrType = 'boolean';
+    input.checked = value === undefined ? !!config.default : !!value;
+    const label = document.createElement('label');
+    label.setAttribute('for', attrId);
+    label.textContent = labelText;
+    field.appendChild(input);
+    field.appendChild(label);
+    if (config.help) {
+      const help = document.createElement('p');
+      help.className = 'schema-field-help';
+      help.textContent = config.help;
+      field.appendChild(help);
+    }
+    return field;
+  }
+
+  const field = document.createElement('div');
+  field.className = 'schema-field';
+  const label = document.createElement('label');
+  label.setAttribute('for', attrId);
+  label.textContent = labelText;
+  field.appendChild(label);
+
+  let control;
+  if (inputType === 'list' || inputType === 'json' || inputType === 'textarea') {
+    control = document.createElement('textarea');
+    control.className = 'schema-input schema-input--textarea';
+    control.id = attrId;
+    const textValue = value === undefined || value === null
+      ? ''
+      : inputType === 'list' && Array.isArray(value)
+        ? value.join('\n')
+        : typeof value === 'string'
+          ? value
+          : JSON.stringify(value, null, 2);
+    control.value = textValue;
+    control.rows = config.rows || autoRows(control.value);
+  } else {
+    control = document.createElement('input');
+    control.className = 'schema-input';
+    control.id = attrId;
+    control.type = inputType === 'number' ? 'number' : 'text';
+    if (inputType === 'number') {
+      if (config.step) control.step = config.step;
+    }
+    if (value !== undefined && value !== null) {
+      control.value = value;
+    }
+  }
+
+  control.dataset.attrType = inputType;
+  if (config.placeholder && !control.value) {
+    control.placeholder = config.placeholder;
+  }
+
+  const controlWrap = document.createElement('div');
+  controlWrap.className = 'schema-field-control';
+  controlWrap.appendChild(control);
+  if (config.suffix) {
+    const suffix = document.createElement('span');
+    suffix.className = 'schema-field-suffix';
+    suffix.textContent = config.suffix;
+    controlWrap.appendChild(suffix);
+  }
+  field.appendChild(controlWrap);
+
+  if (config.help) {
+    const help = document.createElement('p');
+    help.className = 'schema-field-help';
+    help.textContent = config.help;
+    field.appendChild(help);
+  }
+
+  return field;
+}
+
 function getSchemaAttributesForCategory(category) {
   if (!deviceSchema) return [];
   const parts = category.split('.');
@@ -2471,20 +2665,13 @@ function buildDynamicFields(category, data = {}, exclude = []) {
     return;
   }
   dynamicFieldsDiv.hidden = false;
+  const grid = document.createElement('div');
+  grid.className = 'schema-attribute-grid';
   for (const attr of attrs) {
-    const row = document.createElement('div');
-    row.className = 'form-row';
-    const label = document.createElement('label');
-    label.setAttribute('for', `attr-${attr}`);
-    label.textContent = `${attr}:`;
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.id = `attr-${attr}`;
-    input.value = data && data[attr] !== undefined ? data[attr] : '';
-    row.appendChild(label);
-    row.appendChild(input);
-    dynamicFieldsDiv.appendChild(row);
+    const value = data && data[attr] !== undefined ? data[attr] : undefined;
+    grid.appendChild(createSchemaField(category, attr, value));
   }
+  dynamicFieldsDiv.appendChild(grid);
 }
 
 function collectDynamicFieldValues(category, exclude = []) {
@@ -2493,10 +2680,40 @@ function collectDynamicFieldValues(category, exclude = []) {
   for (const attr of attrs) {
     const el = document.getElementById(`attr-${attr}`);
     if (el) {
+      const type = el.dataset.attrType || el.type;
+      if (type === 'boolean') {
+        result[attr] = el.checked;
+        continue;
+      }
+      if (type === 'list') {
+        const list = el.value
+          .split('\n')
+          .map(item => item.trim())
+          .filter(Boolean);
+        if (list.length) {
+          result[attr] = list;
+        }
+        continue;
+      }
+      if (type === 'json') {
+        const raw = el.value.trim();
+        if (raw) {
+          try {
+            result[attr] = JSON.parse(raw);
+          } catch {
+            result[attr] = raw;
+          }
+        }
+        continue;
+      }
       const val = el.value.trim();
       if (val !== '') {
-        const num = Number(val);
-        result[attr] = isNaN(num) ? val : num;
+        if (type === 'number') {
+          const num = Number(val);
+          result[attr] = Number.isNaN(num) ? val : num;
+        } else {
+          result[attr] = val;
+        }
       }
     }
   }

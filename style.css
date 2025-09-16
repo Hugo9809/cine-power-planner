@@ -254,6 +254,91 @@ footer a {
   min-width: 0; /* allow shrinking inside flex container */
 }
 
+#dynamicFields {
+  margin-top: 10px;
+}
+
+.schema-attribute-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.schema-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 12px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
+}
+
+.schema-field label {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.schema-field-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.schema-input {
+  flex: 1;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--control-text);
+  font: inherit;
+}
+
+.schema-input:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 1px;
+}
+
+.schema-input--textarea {
+  resize: vertical;
+}
+
+.schema-input--checkbox {
+  width: auto;
+  min-width: 16px;
+  height: 16px;
+}
+
+.schema-field-suffix {
+  font-size: 0.9em;
+  color: var(--control-text);
+}
+
+.schema-field-help {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--control-text);
+  opacity: 0.85;
+}
+
+.schema-field--checkbox {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.schema-field--checkbox label {
+  margin: 0;
+}
+
+.schema-field--checkbox .schema-field-help {
+  margin-left: calc(16px + 0.6rem);
+}
+
 /* Keep controls aligned within Manage Project and Device Selection */
 #setup-manager .form-row,
 #setup-config .form-row {
