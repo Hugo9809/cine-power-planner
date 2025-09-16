@@ -110,4 +110,58 @@ describe('global feature search helpers', () => {
 
     expect(result?.value.label).toBe('B-Mount Battery Plate');
   });
+
+  test('searchKey normalizes degree and multiplication symbols', () => {
+    expect(searchKey('35° Tilt Module')).toBe(
+      searchKey('35 deg tilt module')
+    );
+    expect(searchKey('35° Tilt Module')).toBe(
+      searchKey('35 degree tilt module')
+    );
+    expect(searchKey('3840×2160')).toBe(searchKey('3840 x 2160'));
+  });
+
+  test('searchTokens expose degree and multiplication variants', () => {
+    expect(searchTokens('35° Tilt Module')).toEqual(
+      expect.arrayContaining(['35', 'deg'])
+    );
+    expect(searchTokens('35 degree Tilt Module')).toEqual(
+      expect.arrayContaining(['35', 'deg'])
+    );
+    expect(searchTokens('3840×2160 (UHD)')).toEqual(
+      expect.arrayContaining(['3840', '2160', 'x', 'by'])
+    );
+  });
+
+  test('findBestSearchMatch handles degree and by queries', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('35° Tilt Module'),
+      {
+        label: '35° Tilt Module',
+        tokens: searchTokens('35° Tilt Module')
+      }
+    );
+    entries.set(
+      searchKey('3840×2160 (UHD)'),
+      {
+        label: '3840×2160 (UHD)',
+        tokens: searchTokens('3840×2160 (UHD)')
+      }
+    );
+
+    const degreeMatch = findBestSearchMatch(
+      entries,
+      searchKey('35 deg module'),
+      searchTokens('35 deg module')
+    );
+    expect(degreeMatch?.value.label).toBe('35° Tilt Module');
+
+    const resolutionMatch = findBestSearchMatch(
+      entries,
+      searchKey('3840 by 2160'),
+      searchTokens('3840 by 2160')
+    );
+    expect(resolutionMatch?.value.label).toBe('3840×2160 (UHD)');
+  });
 });

@@ -3102,7 +3102,10 @@ const searchKey       = str => {
     .replace(/œ/g, 'oe')
     .replace(/ø/g, 'o')
     .replace(/&/g, 'and')
-    .replace(/\+/g, 'plus');
+    .replace(/\+/g, 'plus')
+    .replace(/[°º˚]/g, 'deg')
+    .replace(/\bdegrees?\b/g, 'deg')
+    .replace(/[×✕✖✗✘]/g, 'x');
   const simplified = normalized.replace(/[^a-z0-9]+/g, '');
   if (simplified) return simplified;
   return value.toLowerCase().replace(/\s+/g, '');
@@ -3121,7 +3124,10 @@ const searchTokens = str => {
     .replace(/œ/g, 'oe')
     .replace(/ø/g, 'o')
     .replace(/&/g, ' and ')
-    .replace(/\+/g, ' plus ');
+    .replace(/\+/g, ' plus ')
+    .replace(/[°º˚]/g, ' deg ')
+    .replace(/\bdegrees?\b/g, ' deg ')
+    .replace(/[×✕✖✗✘]/g, ' x by ');
   const tokens = new Set();
   normalized.split(/\s+/).forEach(part => {
     if (!part) return;
