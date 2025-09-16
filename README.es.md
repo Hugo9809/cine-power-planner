@@ -41,7 +41,7 @@ Se agradecen contribuciones en idiomas adicionales. Para añadir una traducción
 ## Novedades recientes
 
 - **Controles de acento y tipografía**: ajusta el color de acento, el tamaño base de la fuente y la familia tipográfica desde Ajustes; los temas oscuro, rosa y de alto contraste siguen disponibles en cada visita.
-- **Atajo para la búsqueda global**: pulsa Ctrl+K (⌘K en macOS) para enfocar la búsqueda de funciones al instante, incluso cuando esté dentro del menú lateral móvil plegado.
+- **Atajos para la búsqueda global**: pulsa / o Ctrl+K (⌘K en macOS) para enfocar la búsqueda de funciones al instante, incluso cuando esté dentro del menú lateral móvil plegado.
 - **Botón de recarga forzada**: elimina los archivos en caché del *service worker* y actualiza la aplicación sin conexión sin borrar proyectos o dispositivos guardados.
 - **Favoritos fijados**: marca con una estrella los elementos de los desplegables para mantener cámaras, baterías y accesorios habituales en la parte superior de cada selector e incluirlos en las copias de seguridad.
 - **Borrar caché local**: vacía con un clic los proyectos almacenados y la configuración.
@@ -100,7 +100,7 @@ Consulta los README específicos de cada idioma para obtener detalles completos.
 ### Controles de la barra superior
 
 - Un enlace para saltar al contenido, un indicador de modo sin conexión y una identidad adaptable mantienen la accesibilidad en cualquier dispositivo; la insignia offline aparece cuando el navegador pierde la conexión.
-- La barra de búsqueda global permite saltar a funciones, selectores o temas de ayuda: pulsa Intro para ir al resultado destacado, usa Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (en pantallas pequeñas se abre automáticamente el menú lateral) y pulsa × para borrar la búsqueda.
+- La barra de búsqueda global permite saltar a funciones, selectores o temas de ayuda: pulsa Intro para ir al resultado destacado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (en pantallas pequeñas se abre automáticamente el menú lateral) y pulsa Esc o × para borrar la búsqueda.
 - Los controles de idioma, modo oscuro y modo rosa se sitúan junto al diálogo de Ajustes, que ofrece color de acento, tamaño de fuente, familia tipográfica, alto contraste y carga de logos personalizados, además de herramientas de copia de seguridad, restauración y borrado de caché local.
 - El botón de Ayuda abre un diálogo con búsqueda, pasos guiados, atajos de teclado, FAQ y un modo de ayuda contextual al pasar el cursor; también puedes abrirlo con ?, H, F1 o Ctrl+/ incluso mientras escribes.
 - El botón de recarga forzada (🔄) elimina los archivos del *service worker* en caché y actualiza la aplicación sin conexión sin borrar proyectos ni dispositivos guardados.
@@ -116,7 +116,7 @@ Consulta los README específicos de cada idioma para obtener detalles completos.
 - Las preferencias de tema incluyen modo oscuro, un acento rosa divertido y un interruptor de alto contraste para mejorar la legibilidad.
 - Puedes personalizar el color de acento, el tamaño base de la fuente y la tipografía desde Ajustes; los cambios se aplican al instante y se recuerdan junto con las demás preferencias.
 - Un enlace para saltar a contenido, controles con estado de foco visible, indicador de modo sin conexión y un diseño adaptable mejoran la navegación en ordenadores, tabletas y móviles.
-- Los atajos de teclado integrados cubren la búsqueda global (Ctrl+K/⌘K), la ayuda (?, H, F1, Ctrl+/), el guardado (Intro o Ctrl+S/⌘S), el modo oscuro (D) y el modo rosa (P).
+- Los atajos de teclado integrados cubren la búsqueda global (/ o Ctrl+K/⌘K), la ayuda (?, H, F1, Ctrl+/), el guardado (Intro o Ctrl+S/⌘S), el modo oscuro (D) y el modo rosa (P).
 - El modo de ayuda contextual convierte cada botón, campo, desplegable y encabezado en un tooltip bajo demanda para que los usuarios nuevos aprendan la interfaz rápidamente.
 
 ## Lista de equipo

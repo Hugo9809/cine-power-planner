@@ -40,9 +40,9 @@ const texts = {
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
     featureSearchHelp:
-      "Type to jump to features, devices or help topics. Press Enter to navigate, Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, and use × to clear the query.",
+      "Type to jump to features, devices or help topics. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, and use Escape or × to clear the query.",
     featureSearchClear: "Clear search",
-    featureSearchClearHelp: "Clear the search box and show all results again.",
+    featureSearchClearHelp: "Clear the search box and show all results again. Press Escape to clear quickly.",
     darkModeHelp:
       "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
     pinkModeHelp:
@@ -604,9 +604,9 @@ const texts = {
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
-      "Digita per andare alle funzionalità, ai dispositivi o aprire gli argomenti di aiuto correlati. Premi Invio per navigare, Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque e × per cancellare la ricerca.",
+      "Digita per andare alle funzionalità, ai dispositivi o aprire gli argomenti di aiuto correlati. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque e usa Esc o × per cancellare la ricerca.",
     featureSearchClear: "Cancella ricerca",
-    featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati.",
+    featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati. Premi Esc per cancellare rapidamente.",
     darkModeHelp:
       "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
@@ -1143,9 +1143,9 @@ const texts = {
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
-      "Escribe para ir a funciones, dispositivos o temas de ayuda relacionados. Pulsa Enter para navegar, Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y × para limpiar la búsqueda.",
+      "Escribe para ir a funciones, dispositivos o temas de ayuda relacionados. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y usa Esc o × para borrar la búsqueda.",
     featureSearchClear: "Borrar búsqueda",
-    featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo.",
+    featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo. Pulsa Esc para borrar rápidamente.",
     darkModeHelp:
       "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
@@ -1696,9 +1696,9 @@ const texts = {
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l'aide",
     featureSearchHelp:
-      "Tapez pour accéder aux fonctionnalités, appareils ou sujets d'aide associés. Appuyez sur Entrée pour naviguer, sur Ctrl+K (Cmd+K sur Mac) pour placer le focus sur la recherche où que vous soyez, puis sur × pour effacer la requête.",
+      "Tapez pour accéder aux fonctionnalités, appareils ou sujets d'aide associés. Appuyez sur Entrée pour naviguer, sur / ou Ctrl+K (Cmd+K sur Mac) pour placer le focus sur la recherche où que vous soyez, puis sur Échap ou × pour effacer la requête.",
     featureSearchClear: "Effacer la recherche",
-    featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats.",
+    featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats. Appuyez sur Échap pour effacer rapidement.",
     darkModeHelp:
       "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
     pinkModeHelp:
@@ -2251,9 +2251,9 @@ const texts = {
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
     featureSearchHelp:
-      "Tippen, um zu Funktionen, Geräten oder Hilfethemen zu springen. Drücke Enter zum Navigieren, Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, und ×, um die Eingabe zu löschen.",
+      "Tippen, um zu Funktionen, Geräten oder Hilfethemen zu springen. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, und verwende Esc oder ×, um die Eingabe zu löschen.",
     featureSearchClear: "Suche löschen",
-    featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen.",
+    featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen. Drücke Esc, um schnell zu löschen.",
     darkModeHelp:
       "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:

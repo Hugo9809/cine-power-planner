@@ -12760,7 +12760,15 @@ if (helpButton && helpDialog) {
       }
     });
     featureSearch.addEventListener('keydown', e => {
-      if (e.key === 'Enter') handle();
+      if (e.key === 'Enter') {
+        handle();
+      } else if (e.key === 'Escape' && featureSearch.value) {
+        featureSearch.value = '';
+        if (featureSearchClear) {
+          featureSearchClear.setAttribute('hidden', '');
+        }
+        e.preventDefault();
+      }
     });
   }
 
@@ -12811,6 +12819,13 @@ if (helpButton && helpDialog) {
       // F1 or Ctrl+/ toggles the dialog even while typing
       e.preventDefault();
       toggleHelp();
+    } else if (
+      e.key === '/' &&
+      !isTextField &&
+      (!helpDialog || helpDialog.hasAttribute('hidden'))
+    ) {
+      e.preventDefault();
+      focusFeatureSearchInput();
     } else if (
       (e.key === '?' && !isTextField) ||
       (e.key.toLowerCase() === 'h' && !isTextField)
