@@ -1,16 +1,18 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getCssVariableValue */
 
-const getCssVariableValue = (name, fallback = '') => {
-    if (typeof document === 'undefined') return fallback;
-    const root = document.documentElement;
-    if (!root) return fallback;
-    const computed = typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
-        ? window.getComputedStyle(root).getPropertyValue(name).trim()
-        : '';
-    if (computed) return computed;
-    const inline = root.style.getPropertyValue(name).trim();
-    return inline || fallback;
-};
+const getCssVarValue = (typeof getCssVariableValue === 'function'
+    ? getCssVariableValue
+    : (name, fallback = '') => {
+        if (typeof document === 'undefined') return fallback;
+        const root = document.documentElement;
+        if (!root) return fallback;
+        const computed = typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
+            ? window.getComputedStyle(root).getPropertyValue(name).trim()
+            : '';
+        if (computed) return computed;
+        const inline = root.style.getPropertyValue(name).trim();
+        return inline || fallback;
+    });
 
 function generatePrintableOverview() {
     const escapeHtmlSafe = (value) => (typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? ''));
@@ -157,7 +159,7 @@ function generatePrintableOverview() {
             };
             const entry = colorMap[method];
             if (entry) {
-                const color = getCssVariableValue(entry.var, entry.fallback);
+                const color = getCssVarValue(entry.var, entry.fallback);
                 return `<span style="color:${color};">${entry.text}</span>`;
             }
             return method === 'dtap' ? 'D-Tap' : method;
