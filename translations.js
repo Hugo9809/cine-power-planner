@@ -9,13 +9,13 @@ const texts = {
     impressum: "Imprint",
     privacy: "Privacy Policy",
 
-    setupManageHeading: "Manage Project",
-    deviceSelectionHeading: "Device Selection",
+    setupManageHeading: "Project Overview",
+    deviceSelectionHeading: "Configure Devices",
     overviewDeviceSelectionHeading: "Camera Setup Devices",
-    resultsHeading: "Results",
-    deviceManagerHeading: "Manage Device Database",
+    resultsHeading: "Power Summary",
+    deviceManagerHeading: "Device Library",
     batteryComparisonHeading: "Battery Comparison",
-    setupDiagramHeading: "Project Diagram",
+    setupDiagramHeading: "Connection Diagram",
     setupManageHeadingHelp:
       "Manage saved projects: save, load, or clear configurations.",
     deviceSelectionHeadingHelp:
@@ -573,13 +573,13 @@ const texts = {
     offlineIndicator: "Non in linea",
     impressum: "Note legali",
     privacy: "Informativa sulla privacy",
-    setupManageHeading: "Gestisci progetto",
-    deviceSelectionHeading: "Selezione dei dispositivi",
+    setupManageHeading: "Panoramica del progetto",
+    deviceSelectionHeading: "Configura dispositivi",
     overviewDeviceSelectionHeading: "Dispositivi della configurazione della camera",
-    resultsHeading: "Risultati",
-    deviceManagerHeading: "Gestisci il database dei dispositivi",
+    resultsHeading: "Riepilogo potenza",
+    deviceManagerHeading: "Libreria dispositivi",
     batteryComparisonHeading: "Confronto batterie",
-    setupDiagramHeading: "Diagramma di configurazione",
+    setupDiagramHeading: "Diagramma delle connessioni",
     setupManageHeadingHelp:
       "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
     deviceSelectionHeadingHelp:
@@ -1112,13 +1112,13 @@ const texts = {
     impressum: "Aviso legal",
     privacy: "Política de privacidad",
 
-    setupManageHeading: "Gestionar Proyecto",
-    deviceSelectionHeading: "Selección de Dispositivos",
+    setupManageHeading: "Resumen del Proyecto",
+    deviceSelectionHeading: "Configurar Dispositivos",
     overviewDeviceSelectionHeading: "Dispositivos de Configuración de Cámara",
-    resultsHeading: "Resultados",
-    deviceManagerHeading: "Gestionar Base de Datos de Dispositivos",
+    resultsHeading: "Resumen de Potencia",
+    deviceManagerHeading: "Biblioteca de Dispositivos",
     batteryComparisonHeading: "Comparación de Baterías",
-    setupDiagramHeading: "Diagrama del Proyecto",
+    setupDiagramHeading: "Diagrama de Conexiones",
     setupManageHeadingHelp:
       "Administra los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
     deviceSelectionHeadingHelp:
@@ -1665,13 +1665,13 @@ const texts = {
     impressum: "Mentions légales",
     privacy: "Politique de confidentialité",
 
-    setupManageHeading: "Gestion de la configuration",
-    deviceSelectionHeading: "Sélection des appareils",
+    setupManageHeading: "Vue d’ensemble du projet",
+    deviceSelectionHeading: "Configurer les appareils",
     overviewDeviceSelectionHeading: "Équipements de la configuration caméra",
-    resultsHeading: "Résultats",
-    deviceManagerHeading: "Gestion de la base de données des appareils",
+    resultsHeading: "Résumé de puissance",
+    deviceManagerHeading: "Bibliothèque d’appareils",
     batteryComparisonHeading: "Comparaison des batteries",
-    setupDiagramHeading: "Schéma de configuration",
+    setupDiagramHeading: "Schéma de connexion",
     setupManageHeadingHelp:
       "Gérez les configurations enregistrées : sauvegarder, charger ou effacer.",
     deviceSelectionHeadingHelp:
@@ -2220,13 +2220,13 @@ const texts = {
     impressum: "Impressum",
     privacy: "Datenschutz",
 
-    setupManageHeading: "Projekt verwalten",
-    deviceSelectionHeading: "Geräte-Auswahl",
+    setupManageHeading: "Projektübersicht",
+    deviceSelectionHeading: "Geräte konfigurieren",
     overviewDeviceSelectionHeading: "Geräte im Kamera-Setup",
-    resultsHeading: "Ergebnisse",
-    deviceManagerHeading: "Geräte-Datenbank verwalten",
+    resultsHeading: "Leistungsübersicht",
+    deviceManagerHeading: "Gerätebibliothek",
     batteryComparisonHeading: "Akkuvergleich",
-    setupDiagramHeading: "Projekt-Diagramm",
+    setupDiagramHeading: "Verbindungsdiagramm",
     setupManageHeadingHelp:
       "Gespeicherte Projekte verwalten: Projekte speichern, laden oder löschen.",
     deviceSelectionHeadingHelp:
