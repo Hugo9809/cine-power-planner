@@ -329,7 +329,7 @@ if (require.main === module) {
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
       [
-        'Usage: node unifyPorts.js [--help]',
+        'Usage: node unifyPorts.js [options]',
         '',
         'Normalizes connector and port definitions in data.js and overwrites the file.',
         '',
@@ -338,7 +338,13 @@ if (require.main === module) {
         '  - Cleans audio, video and FIZ ports, merging duplicates and removing blanks.',
         '  - Aligns voltage ranges and port metadata so dropdown help stays descriptive.',
         '',
-        'Run this after normalizeData.js to keep port information consistent. Review and commit the resulting data.js diff.',
+        'Recommended workflow:',
+        '  1. Normalize data first with `npm run normalize`.',
+        '  2. Run this script (`npm run unify-ports`) to synchronize connector metadata across categories.',
+        '  3. Regenerate schema.json afterwards with `npm run generate-schema`.',
+        '  4. Re-run Jest data tests (`npm run test:data`) to confirm selector expectations still pass.',
+        '',
+        'The script updates data.js in place. Review the diff and commit it together with schema changes.',
         '',
         'Examples:',
         '  npm run unify-ports',
@@ -346,7 +352,7 @@ if (require.main === module) {
         '  node unifyPorts.js --help',
         '',
         'Options:',
-        '  -h, --help  Show this help message and exit.'
+        '  -h, --help     Show this help message and exit.'
       ].join('\n')
     );
     process.exit(0);

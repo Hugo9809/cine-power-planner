@@ -32,14 +32,20 @@ if (require.main === module) {
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
       [
-        'Usage: node checkConsistency.js [--help]',
+        'Usage: node checkConsistency.js [options]',
         '',
-        'Checks device entries in data.js for required fields across key categories.',
-        'Leaves data.js untouched and exits with code 1 when a required field is missing.',
+        'Validates device entries in data.js before normalization scripts touch the dataset.',
         '',
-        'Tips:',
-        '  - Run after editing files in devices/ to catch missing power, connector or port details.',
-        '  - Include it in CI before committing updates to the shared device database.',
+        'What it checks:',
+        '  - Scans cameras, monitors, FIZ equipment, wireless links and accessories.',
+        '  - Ensures required metadata such as power, connector and port details are present.',
+        '',
+        'No files are modified. The process exits with code 1 and prints a report when any device is incomplete.',
+        '',
+        'Recommended workflow:',
+        '  1. Run after editing files in devices/ to catch omissions early.',
+        '  2. Fix the reported "missing" keys and rerun until the summary reads "All devices have required fields."',
+        '  3. Continue with `npm run normalize` and `npm run unify-ports` once this check passes.',
         '',
         'Examples:',
         '  npm run check-consistency',
@@ -47,7 +53,7 @@ if (require.main === module) {
         '  node checkConsistency.js --help',
         '',
         'Options:',
-        '  -h, --help  Show this help message and exit.'
+        '  -h, --help     Show this help message and exit.'
       ].join('\n')
     );
     process.exit(0);
