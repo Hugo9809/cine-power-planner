@@ -1352,6 +1352,9 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
+  if (renameSetupBtn) {
+    renameSetupBtn.innerHTML = `<span class="btn-icon" aria-hidden="true">✏️</span>${texts[lang].renameSetupBtn}`;
+  }
   deleteSetupBtn.innerHTML = `<span class="btn-icon" aria-hidden="true">🗑️</span>${texts[lang].deleteSetupBtn}`;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
@@ -1363,6 +1366,11 @@ function setLanguage(lang) {
   setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
   setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
 
+  if (renameSetupBtn) {
+    renameSetupBtn.setAttribute("title", texts[lang].renameSetupHelp);
+    renameSetupBtn.setAttribute("aria-label", texts[lang].renameSetupHelp);
+    renameSetupBtn.setAttribute("data-help", texts[lang].renameSetupHelp);
+  }
   deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
   deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
   deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
@@ -1400,6 +1408,7 @@ function setLanguage(lang) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
   }
   checkSetupChanged();
+  updateRenameButtonState();
   // Device selection labels with help
   const cameraLabelElem = document.getElementById("cameraLabel");
   cameraLabelElem.textContent = texts[lang].cameraLabel;
@@ -2492,6 +2501,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
 const setupSelect     = document.getElementById("setupSelect");
 const setupNameInput  = document.getElementById("setupName");
 const saveSetupBtn    = document.getElementById("saveSetupBtn");
+const renameSetupBtn  = document.getElementById("renameSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
 const clearSetupBtn   = document.getElementById("clearSetupBtn");
 const shareSetupBtn   = document.getElementById("shareSetupBtn");
@@ -3853,6 +3863,12 @@ function checkSetupChanged() {
   } else {
     saveSetupBtn.textContent = texts[currentLang].saveSetupBtn;
   }
+}
+
+function updateRenameButtonState() {
+  if (!renameSetupBtn) return;
+  const hasSelection = Boolean(setupSelect && setupSelect.value);
+  renameSetupBtn.disabled = !hasSelection;
 }
 
 const projectDialog = document.getElementById("projectDialog");
@@ -7771,6 +7787,107 @@ saveSetupBtn.addEventListener("click", () => {
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
 });
 
+if (renameSetupBtn) {
+  renameSetupBtn.addEventListener("click", () => {
+    const currentName = setupSelect ? setupSelect.value : "";
+    if (!currentName) {
+      alert(
+        texts[currentLang].alertNoSetupSelectedRename ||
+        texts[currentLang].alertNoSetupSelected
+      );
+      return;
+    }
+
+    const template = texts[currentLang].promptRenameSetup || 'Enter a new name for "{name}":';
+    const promptMessage = template.replace("{name}", currentName);
+    const response = typeof prompt === 'function' ? prompt(promptMessage, currentName) : null;
+    if (response === null) return;
+    const trimmed = response.trim();
+    if (!trimmed) {
+      alert(
+        texts[currentLang].alertRenameSetupEmpty ||
+        texts[currentLang].alertSetupName
+      );
+      return;
+    }
+
+    if (typeof autoSaveCurrentSetup === 'function') {
+      autoSaveCurrentSetup();
+    }
+
+    let finalName = trimmed;
+    if (typeof renameSetup === 'function') {
+      const result = renameSetup(currentName, trimmed);
+      if (typeof result === 'string' && result) {
+        finalName = result;
+      } else if (result === null) {
+        alert(
+          texts[currentLang].alertRenameSetupMissing ||
+          texts[currentLang].alertNoSetupSelectedRename ||
+          texts[currentLang].alertNoSetupSelected
+        );
+        return;
+      }
+    } else {
+      const setups = getSetups();
+      if (!Object.prototype.hasOwnProperty.call(setups, currentName)) {
+        alert(
+          texts[currentLang].alertRenameSetupMissing ||
+          texts[currentLang].alertNoSetupSelectedRename ||
+          texts[currentLang].alertNoSetupSelected
+        );
+        return;
+      }
+      const storedSetup = setups[currentName];
+      delete setups[currentName];
+      let candidate = finalName;
+      let suffix = 2;
+      while (Object.prototype.hasOwnProperty.call(setups, candidate)) {
+        candidate = `${trimmed} (${suffix++})`;
+      }
+      setups[candidate] = storedSetup;
+      storeSetups(setups);
+      finalName = candidate;
+    }
+
+    if (finalName === currentName) {
+      alert(
+        texts[currentLang].alertRenameSetupNoChange ||
+        (texts[currentLang].alertSetupRenamed
+          ? texts[currentLang].alertSetupRenamed
+              .replace("{old}", currentName)
+              .replace("{name}", finalName)
+          : texts[currentLang].alertSetupName)
+      );
+      return;
+    }
+
+    if (typeof loadProject === 'function' && typeof saveProject === 'function') {
+      const projectData = loadProject(currentName);
+      if (projectData) {
+        saveProject(finalName, projectData);
+      }
+    }
+    if (typeof deleteProject === 'function' && finalName !== currentName) {
+      deleteProject(currentName);
+    }
+
+    populateSetupSelect();
+    if (setupSelect) setupSelect.value = finalName;
+    if (setupNameInput) setupNameInput.value = finalName;
+    lastSetupName = finalName;
+    updateRenameButtonState();
+    saveCurrentSession();
+    loadedSetupState = getCurrentSetupState();
+    checkSetupChanged();
+    alert(
+      (texts[currentLang].alertSetupRenamed || 'Project "{old}" renamed to "{name}".')
+        .replace("{old}", currentName)
+        .replace("{name}", finalName)
+    );
+  });
+}
+
 deleteSetupBtn.addEventListener("click", () => {
   const setupName = setupSelect.value;
   if (!setupName) {
@@ -7927,6 +8044,7 @@ setupSelect.addEventListener("change", (event) => {
   updateCalculations();
   checkSetupChanged();
   lastSetupName = setupName;
+  updateRenameButtonState();
 });
 
 
@@ -7947,6 +8065,7 @@ function populateSetupSelect() {
     opt.textContent = name;
     setupSelect.appendChild(opt);
   }
+  updateRenameButtonState();
 }
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
