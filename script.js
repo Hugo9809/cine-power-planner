@@ -3905,6 +3905,7 @@ function displayGearAndRequirements(html) {
           el.setAttribute('data-help', desc);
         });
       });
+      adjustGearListSelectWidths(projectRequirementsOutput);
     } else {
       projectRequirementsOutput.innerHTML = '';
       projectRequirementsOutput.classList.add('hidden');
@@ -3975,6 +3976,7 @@ function displayGearAndRequirements(html) {
         sel.setAttribute('data-help', desc);
         initFavoritableSelect(sel);
       });
+      adjustGearListSelectWidths(gearListOutput);
     } else {
       gearListOutput.innerHTML = '';
       gearListOutput.classList.add('hidden');
@@ -3998,6 +4000,7 @@ function setSliderBowlValue(val) {
   const sel = getSliderBowlSelect();
   if (sel && val && Array.from(sel.options).some(opt => opt.value === val)) {
     sel.value = val;
+    adjustGearListSelectWidth(sel);
   }
 }
 function getEasyrigSelect() {
@@ -4012,6 +4015,7 @@ function setEasyrigValue(val) {
   const sel = getEasyrigSelect();
   if (sel && val && Array.from(sel.options).some(opt => opt.value === val)) {
     sel.value = val;
+    adjustGearListSelectWidth(sel);
   }
 }
 
@@ -5838,6 +5842,41 @@ function getTimecodes() {
     saveFavorites(favs);
     applyFavoritesToSelect(selectElem);
     updateFavoriteButton(selectElem);
+    adjustGearListSelectWidth(selectElem);
+  }
+
+  function adjustGearListSelectWidth(selectElem) {
+    if (!selectElem || selectElem.multiple || selectElem.size > 1) return;
+    const container = selectElem.closest('#gearListOutput, #projectRequirementsOutput');
+    if (!container) return;
+    const styles = window.getComputedStyle(selectElem);
+    if (!styles || styles.display === 'none') {
+      selectElem.style.removeProperty('--gear-select-width');
+      return;
+    }
+    const selectedOption = selectElem.selectedOptions && selectElem.selectedOptions[0];
+    const optionText = selectedOption ? selectedOption.textContent.trim() : selectElem.value || '';
+    const fontSize = parseFloat(styles.fontSize) || 16;
+    const approxCharWidth = fontSize * 0.6;
+    const textWidth = (optionText ? optionText.length : 1) * approxCharWidth;
+    const paddingLeft = parseFloat(styles.paddingLeft) || 0;
+    const paddingRight = parseFloat(styles.paddingRight) || 0;
+    const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
+    const borderRight = parseFloat(styles.borderRightWidth) || 0;
+    const arrowReserve = Math.max(fontSize, 16);
+    const minWidth = Math.max(fontSize * 4, 56);
+    const widthPx = Math.max(
+      Math.ceil(textWidth + paddingLeft + paddingRight + borderLeft + borderRight + arrowReserve),
+      minWidth
+    );
+    selectElem.style.setProperty('--gear-select-width', `${widthPx}px`);
+  }
+
+  function adjustGearListSelectWidths(container) {
+    if (!container) return;
+    container
+      .querySelectorAll('select')
+      .forEach(selectElem => adjustGearListSelectWidth(selectElem));
   }
 
   function initFavoritableSelect(selectElem) {
@@ -5878,6 +5917,7 @@ function getTimecodes() {
     }
     applyFavoritesToSelect(selectElem);
     updateFavoriteButton(selectElem);
+    adjustGearListSelectWidth(selectElem);
   }
 
   // Populate dropdowns with device options
@@ -11371,6 +11411,9 @@ function ensureGearListActions() {
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
             const target = e.target;
+            if (target && target.matches('select')) {
+                adjustGearListSelectWidth(target);
+            }
             let shouldSync = false;
             if (target.matches('.filter-values-container input[type="checkbox"]')) {
                 const container = target.closest('.filter-values-container');
@@ -13589,6 +13632,7 @@ function applyFilterSelectionsToGearList(info = currentProjectInfo) {
       }
     }
   });
+  adjustGearListSelectWidths(gearListOutput);
 }
 
 function buildFilterSelectHtml(filters = []) {
