@@ -208,47 +208,6 @@ function escapeHtml(str) {
   return escapeDiv.innerHTML;
 }
 
-/**
- * Copy text to the system clipboard with fallbacks for older browsers.
- *
- * Uses the modern Clipboard API when available and falls back to the legacy
- * `document.execCommand('copy')` approach otherwise. The promise rejects when
- * copying fails in all supported mechanisms.
- *
- * @param {string} text - The text to copy.
- * @returns {Promise<void>} Resolves when the text has been copied.
- */
-function copyTextToClipboard(text) {
-  if (navigator?.clipboard?.writeText && globalThis.isSecureContext) {
-    return navigator.clipboard.writeText(text);
-  }
-  return new Promise((resolve, reject) => {
-    if (!globalThis.document) {
-      reject(new Error('No document available'));
-      return;
-    }
-    const textarea = globalThis.document.createElement('textarea');
-    textarea.value = text;
-    textarea.setAttribute('readonly', '');
-    textarea.style.position = 'absolute';
-    textarea.style.left = '-9999px';
-    globalThis.document.body.appendChild(textarea);
-    textarea.select();
-    try {
-      const successful = globalThis.document.execCommand('copy');
-      if (successful) {
-        resolve();
-      } else {
-        reject(new Error('execCommand failed'));
-      }
-    } catch (err) {
-      reject(err);
-    } finally {
-      globalThis.document.body.removeChild(textarea);
-    }
-  });
-}
-
 // Use a Set for O(1) lookups when validating video output types
 const VIDEO_OUTPUT_TYPES = new Set([
   '3G-SDI',
@@ -1436,10 +1395,6 @@ function setLanguage(lang) {
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-  copySummaryBtn.textContent = texts[lang].copySummaryBtn;
-  copySummaryBtn.removeAttribute("disabled");
-  copySummaryBtn.setAttribute("title", texts[lang].copySummaryBtn);
-  copySummaryBtn.setAttribute("data-help", texts[lang].copySummaryBtnHelp);
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -2466,7 +2421,6 @@ const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
 const totalCurrent12Elem  = document.getElementById("totalCurrent12");
 const batteryLifeElem     = document.getElementById("batteryLife");
-const batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
 const batteryLifeLabelElem = document.getElementById("batteryLifeLabel");
 const runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
 const batteryCountElem    = document.getElementById("batteryCount");
@@ -3271,7 +3225,6 @@ const existingDevicesHeading = document.getElementById("existingDevicesHeading")
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
-const copySummaryBtn = document.getElementById("copySummaryBtn");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
 const gearListOutput = document.getElementById("gearListOutput");
@@ -9137,34 +9090,6 @@ if (applySharedLinkBtn && sharedLinkInput) {
       }
     };
     reader.readAsText(file);
-  });
-}
-
-if (copySummaryBtn) {
-  copySummaryBtn.addEventListener('click', () => {
-    const lines = [
-      `${texts[currentLang].totalPowerLabel} ${totalPowerElem.textContent} W`,
-      `${texts[currentLang].totalCurrent144Label} ${totalCurrent144Elem.textContent} A`,
-      `${texts[currentLang].totalCurrent12Label} ${totalCurrent12Elem.textContent} A`,
-      `${texts[currentLang].batteryLifeLabel} ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}`,
-      `${texts[currentLang].batteryCountLabel} ${batteryCountElem.textContent}`
-    ];
-    const summary = lines.join('\n');
-    if (!navigator?.clipboard?.writeText || !globalThis.isSecureContext) {
-      prompt(texts[currentLang].copySummaryBtn, summary);
-      return;
-    }
-    copyTextToClipboard(summary).then(() => {
-      copySummaryBtn.textContent = texts[currentLang].copySummarySuccess;
-      const resetTimer = setTimeout(() => {
-        copySummaryBtn.textContent = texts[currentLang].copySummaryBtn;
-      }, 2000);
-      if (typeof resetTimer.unref === 'function') {
-        resetTimer.unref();
-      }
-    }).catch(() => {
-      prompt(texts[currentLang].copySummaryBtn, summary);
-    });
   });
 }
 
