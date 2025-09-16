@@ -517,6 +517,12 @@ const texts = {
     helpSearchHelp:
       "Type keywords or alternate spellings to instantly filter the help topics list. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box quickly.",
     helpSearchClearHelp: "Clear the search box and show all help topics again.",
+    helpQuickLinksHeading: "Jump to a topic",
+    helpQuickLinksAriaLabel: "Help topics quick navigation",
+    helpQuickLinksHelp:
+      "Jump directly to any section of the help dialog. Buttons only show topics that match the current search.",
+    helpQuickLinkButtonHelp:
+      "Scroll to the “%s” section in the help dialog.",
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
       "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations.",
@@ -1061,6 +1067,12 @@ const texts = {
     helpSearchHelp:
       "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti dell'aiuto. Premi '/' o Ctrl+F (Cmd+F su Mac) per focalizzare rapidamente la casella di ricerca.",
     helpSearchClearHelp: "Cancella la ricerca corrente.",
+    helpQuickLinksHeading: "Vai a un argomento",
+    helpQuickLinksAriaLabel: "Navigazione rapida degli argomenti di aiuto",
+    helpQuickLinksHelp:
+      "Vai direttamente a una sezione della guida. I pulsanti mostrano solo gli argomenti visibili alla ricerca corrente.",
+    helpQuickLinkButtonHelp:
+      "Scorri fino alla sezione “%s” nella finestra di aiuto.",
     hoverHelpButtonLabel: "Passa il mouse per aiuto",
     hoverHelpButtonHelp:
       "Attiva l'aiuto al passaggio del mouse così, spostando il cursore su pulsanti, campi, menu a discesa o intestazioni, vengono mostrate brevi spiegazioni.",
@@ -1613,6 +1625,12 @@ const texts = {
     helpSearchHelp:
       "Escribe palabras clave o variantes ortográficas para filtrar al instante la lista de temas de ayuda. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para enfocar rápidamente el campo de búsqueda.",
     helpSearchClearHelp: "Borra la consulta de búsqueda actual.",
+    helpQuickLinksHeading: "Ir a un tema",
+    helpQuickLinksAriaLabel: "Navegación rápida por los temas de ayuda",
+    helpQuickLinksHelp:
+      "Ve directamente a una sección de la ayuda. Los botones solo muestran los temas que coinciden con la búsqueda actual.",
+    helpQuickLinkButtonHelp:
+      "Desplázate a la sección “%s” dentro del cuadro de ayuda.",
     hoverHelpButtonLabel: "Pasa el cursor para ayuda",
     hoverHelpButtonHelp:
       "Activa la ayuda al pasar el cursor para que al moverlo sobre botones, campos, menús desplegables o encabezados aparezcan breves explicaciones.",
@@ -2166,6 +2184,12 @@ const texts = {
     helpSearchHelp:
       "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément la liste des sujets d'aide. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour cibler rapidement le champ de recherche.",
     helpSearchClearHelp: "Effacer la requête de recherche en cours.",
+    helpQuickLinksHeading: "Accéder à un sujet",
+    helpQuickLinksAriaLabel: "Navigation rapide des sujets d'aide",
+    helpQuickLinksHelp:
+      "Accédez directement à une section de l'aide. Les boutons n'affichent que les sujets correspondant à votre recherche actuelle.",
+    helpQuickLinkButtonHelp:
+      "Faites défiler jusqu'à la section « %s » dans la fenêtre d'aide.",
     hoverHelpButtonLabel: "Survoler pour obtenir de l'aide",
     hoverHelpButtonHelp:
       "Active l'aide au survol pour qu'en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, des explications brèves apparaissent.",
@@ -2721,6 +2745,12 @@ const texts = {
     helpSearchHelp:
       "Gib Stichwörter oder alternative Schreibweisen ein, um die Liste der Hilfethemen sofort zu filtern. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld schnell zu fokussieren.",
     helpSearchClearHelp: "Lösche die aktuelle Suchanfrage.",
+    helpQuickLinksHeading: "Zum Thema springen",
+    helpQuickLinksAriaLabel: "Schnellnavigation der Hilfethemen",
+    helpQuickLinksHelp:
+      "Springe direkt zu einem Abschnitt im Hilfedialog. Die Schaltflächen zeigen nur Themen, die zur aktuellen Suche passen.",
+    helpQuickLinkButtonHelp:
+      "Zum Abschnitt „%s“ im Hilfedialog scrollen.",
     hoverHelpButtonLabel: "Für Hilfe darüberfahren",
     hoverHelpButtonHelp:
       "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen erscheinen.",

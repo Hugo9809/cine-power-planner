@@ -774,9 +774,83 @@ main.legal-content {
   display: none;
 }
 
+#helpQuickLinks {
+  margin: 16px 0;
+  padding: 12px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+}
+
+#helpQuickLinks[hidden] {
+  display: none;
+}
+
+#helpQuickLinksHeading {
+  margin: 0;
+  font-size: 1rem;
+}
+
+#helpQuickLinksList {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+#helpQuickLinksList li {
+  margin: 0;
+}
+
+.help-quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.help-quick-link:hover,
+.help-quick-link:focus {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+
+.help-quick-link:focus {
+  outline: none;
+}
+
+.help-quick-link:focus-visible {
+  outline: 2px solid var(--inverse-text-color);
+  outline-offset: 2px;
+}
+
+.help-quick-link.active {
+  border-color: var(--accent-color);
+}
+
 #helpSections section[hidden],
 #helpSections details[hidden] {
   display: none;
+}
+
+#helpSections section {
+  scroll-margin-top: 24px;
+}
+
+#helpSections section.help-section-focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
+  border-radius: var(--border-radius);
 }
 
 .help-icon {

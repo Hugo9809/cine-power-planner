@@ -5,6 +5,8 @@ describe('help dialog search behaviour', () => {
   let helpSearch;
   let helpSearchClear;
   let helpDialog;
+  let helpQuickLinks;
+  let helpQuickLinksList;
 
   const typeInHelpSearch = value => {
     helpSearch.value = value;
@@ -16,6 +18,8 @@ describe('help dialog search behaviour', () => {
     helpSearch = document.getElementById('helpSearch');
     helpSearchClear = document.getElementById('helpSearchClear');
     helpDialog = document.getElementById('helpDialog');
+    helpQuickLinks = document.getElementById('helpQuickLinks');
+    helpQuickLinksList = document.getElementById('helpQuickLinksList');
   });
 
   afterEach(() => {
@@ -54,5 +58,54 @@ describe('help dialog search behaviour', () => {
     typeInHelpSearch('');
 
     expect(helpSearchClear.hasAttribute('hidden')).toBe(true);
+  });
+
+  test('quick links mirror filtered help sections', () => {
+    expect(helpQuickLinks).toBeTruthy();
+    expect(helpQuickLinksList).toBeTruthy();
+    const buttons = Array.from(
+      helpQuickLinksList.querySelectorAll('.help-quick-link')
+    );
+    const featuresButton = buttons.find(btn =>
+      btn.textContent.includes('Features at a Glance')
+    );
+    const powerButton = buttons.find(btn =>
+      btn.textContent.includes('Power Calculator')
+    );
+    expect(featuresButton).toBeTruthy();
+    expect(powerButton).toBeTruthy();
+    const featuresItem = featuresButton.closest('li');
+    const powerItem = powerButton.closest('li');
+    expect(featuresItem).toBeTruthy();
+    expect(powerItem).toBeTruthy();
+
+    typeInHelpSearch('power calculator');
+
+    expect(helpQuickLinks.hasAttribute('hidden')).toBe(false);
+    expect(powerItem.hasAttribute('hidden')).toBe(false);
+    expect(featuresItem.hasAttribute('hidden')).toBe(true);
+
+    typeInHelpSearch('no matching topic');
+
+    expect(helpQuickLinks.hasAttribute('hidden')).toBe(true);
+
+    typeInHelpSearch('');
+
+    expect(helpQuickLinks.hasAttribute('hidden')).toBe(false);
+    expect(featuresItem.hasAttribute('hidden')).toBe(false);
+  });
+
+  test('clicking a quick link highlights the target section', () => {
+    const powerSection = document.getElementById('powerCalculator');
+    expect(powerSection).toBeTruthy();
+    const button = Array.from(
+      helpQuickLinksList.querySelectorAll('.help-quick-link')
+    ).find(btn => btn.textContent.includes('Power Calculator'));
+    expect(button).toBeTruthy();
+
+    button.click();
+
+    expect(button.classList.contains('active')).toBe(true);
+    expect(powerSection.classList.contains('help-section-focus')).toBe(true);
   });
 });
