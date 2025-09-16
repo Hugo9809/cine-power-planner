@@ -1114,7 +1114,7 @@ button {
   border: none;
   border-radius: var(--border-radius);
   padding: 0 8px;
-  margin: 5px;
+  margin: 10px 5px 5px;
   cursor: pointer;
   font-size: 0.85em;
   height: var(--button-size);
