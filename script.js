@@ -11094,127 +11094,6 @@ function saveCurrentGearList() {
     }
 }
 
-function exportCurrentGearList() {
-    const html = getCurrentGearListHtml();
-    if (!html) return;
-    const info = projectForm ? collectProjectFormData() : {};
-    info.sliderBowl = getSliderBowlValue();
-    info.easyrig = getEasyrigValue();
-    const proj = Object.values(info).some(v => v) ? info : null;
-    const blob = new Blob([JSON.stringify({ projectInfo: proj, gearList: html })], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-
-    const pad = n => String(n).padStart(2, '0');
-    const now = new Date();
-    const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const namePart = (getCurrentProjectName() || 'gear-list')
-        .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
-    a.download = `${datePart}_${namePart}_gear-list.json`;
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
-}
-
-function clearCurrentProjectForImport() {
-    if (setupSelect && typeof setupSelect.dispatchEvent === 'function') {
-        setupSelect.value = '';
-        setupSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        return;
-    }
-
-    if (setupNameInput) setupNameInput.value = '';
-
-    const resetSelectable = sel => {
-        if (!sel) return;
-        const options = Array.from(sel.options || []);
-        const noneOption = options.find(opt => opt.value === 'None');
-        if (noneOption) {
-            sel.value = 'None';
-        } else if (options.length > 0) {
-            sel.selectedIndex = 0;
-        }
-    };
-
-    [
-        cameraSelect,
-        monitorSelect,
-        videoSelect,
-        cageSelect,
-        distanceSelect,
-        batterySelect,
-        hotswapSelect,
-        batteryPlateSelect
-    ].forEach(resetSelectable);
-
-    const sliderBowlSelect = typeof getSliderBowlSelect === 'function' ? getSliderBowlSelect() : null;
-    if (sliderBowlSelect) sliderBowlSelect.value = '';
-
-    motorSelects.forEach(sel => {
-        if (sel && sel.options && sel.options.length) sel.value = 'None';
-    });
-    controllerSelects.forEach(sel => {
-        if (sel && sel.options && sel.options.length) sel.value = 'None';
-    });
-
-    if (typeof updateBatteryPlateVisibility === 'function') updateBatteryPlateVisibility();
-    if (typeof updateBatteryOptions === 'function') updateBatteryOptions();
-
-    if (gearListOutput) {
-        gearListOutput.innerHTML = '';
-        gearListOutput.classList.add('hidden');
-    }
-    if (projectRequirementsOutput) {
-        projectRequirementsOutput.innerHTML = '';
-        projectRequirementsOutput.classList.add('hidden');
-    }
-
-    currentProjectInfo = null;
-    if (projectForm) populateProjectForm({});
-    loadedSetupState = null;
-    lastSetupName = '';
-
-    if (typeof updateCalculations === 'function') updateCalculations();
-    if (typeof checkSetupChanged === 'function') checkSetupChanged();
-}
-
-function handleImportGearList(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-        try {
-            const obj = JSON.parse(ev.target.result);
-            if (obj && obj.gearList) {
-                saveCurrentGearList();
-                clearCurrentProjectForImport();
-                displayGearAndRequirements(obj.gearList);
-                currentProjectInfo = obj.projectInfo || null;
-                populateProjectForm(currentProjectInfo || {});
-                ensureGearListActions();
-                bindGearListCageListener();
-                bindGearListEasyrigListener();
-                bindGearListSliderBowlListener();
-                bindGearListEyeLeatherListener();
-                bindGearListProGaffTapeListener();
-                bindGearListDirectorMonitorListener();
-                if (setupNameInput) {
-                    const base = file.name.replace(/\.json$/i, '');
-                    setupNameInput.value = base;
-                    setupNameInput.dispatchEvent(new Event('input'));
-                }
-                saveCurrentGearList();
-            }
-        } catch {
-            alert('Invalid gear list file.');
-        }
-        e.target.value = '';
-    };
-    reader.readAsText(file);
-}
-
 function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearList)) return;
     if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return;
@@ -11305,35 +11184,18 @@ function ensureGearListActions() {
     if (!actions) {
         actions = document.createElement('div');
         actions.id = 'gearListActions';
-        const exportBtn = document.createElement('button');
-        exportBtn.id = 'exportGearListBtn';
-        const importBtn = document.createElement('button');
-        importBtn.id = 'importGearListBtn';
-        const importInput = document.createElement('input');
-        importInput.type = 'file';
-        importInput.accept = '.json';
-        importInput.id = 'importGearListInput';
-        importInput.className = 'hidden';
-        importInput.name = 'importGearList';
         const deleteBtn = document.createElement('button');
         deleteBtn.id = 'deleteGearListBtn';
         const autoSaveNote = document.createElement('p');
         autoSaveNote.id = 'gearListAutosaveNote';
         autoSaveNote.className = 'gear-list-autosave-note';
-        actions.append(exportBtn, importBtn, importInput, deleteBtn, autoSaveNote);
+        actions.append(deleteBtn, autoSaveNote);
         gearListOutput.appendChild(actions);
-        exportBtn.addEventListener('click', exportCurrentGearList);
-        importBtn.addEventListener('click', () => importInput.click());
-        importInput.addEventListener('change', handleImportGearList);
         deleteBtn.addEventListener('click', deleteCurrentGearList);
     }
     // Update texts for current language
-    const exportBtn = document.getElementById('exportGearListBtn');
-    const importBtn = document.getElementById('importGearListBtn');
     const deleteBtn = document.getElementById('deleteGearListBtn');
     const autoSaveNote = document.getElementById('gearListAutosaveNote');
-    const exportHelp = texts[currentLang].exportGearListBtnHelp || texts[currentLang].exportGearListBtn;
-    const importHelp = texts[currentLang].importGearListBtnHelp || texts[currentLang].importGearListBtn;
     const deleteHelp = texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn;
     if (autoSaveNote) {
         const noteText = texts[currentLang].gearListAutosaveNote
@@ -11342,15 +11204,11 @@ function ensureGearListActions() {
         autoSaveNote.setAttribute('title', noteText);
         autoSaveNote.setAttribute('data-help', noteText);
     }
-    exportBtn.textContent = texts[currentLang].exportGearListBtn;
-    exportBtn.setAttribute('title', exportHelp);
-    exportBtn.setAttribute('data-help', exportHelp);
-    importBtn.textContent = texts[currentLang].importGearListBtn;
-    importBtn.setAttribute('title', importHelp);
-    importBtn.setAttribute('data-help', importHelp);
-    deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
-    deleteBtn.setAttribute('title', deleteHelp);
-    deleteBtn.setAttribute('data-help', deleteHelp);
+    if (deleteBtn) {
+        deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
+        deleteBtn.setAttribute('title', deleteHelp);
+        deleteBtn.setAttribute('data-help', deleteHelp);
+    }
 
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
@@ -11385,7 +11243,7 @@ function ensureGearListActions() {
     if (!gearListOutput._inputListenerBound) {
         gearListOutput.addEventListener('input', e => {
             const target = e.target;
-            if (!target || target.id === 'importGearListInput') return;
+            if (!target) return;
             if (target.closest('#gearListActions')) return;
             if (target.matches('input, textarea')) {
                 saveCurrentGearList();
