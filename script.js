@@ -7788,8 +7788,8 @@ saveSetupBtn.addEventListener("click", () => {
   saveCurrentSession(); // Persist selection so refreshes restore this setup
   loadedSetupState = getCurrentSetupState();
   checkSetupChanged();
-  // Ensure the current gear list is persisted with the project so it can be
-  // restored even without a manual "Save Gear List" action.
+  // Ensure the current gear list stays persisted with the project so setups
+  // remain in sync with the automatically saved table.
   saveCurrentGearList();
   alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
 });
@@ -11235,19 +11235,12 @@ function deleteCurrentGearList() {
     updateGearListButtonVisibility();
 }
 
-function confirmSaveCurrentGearList() {
-    if (!confirm(texts[currentLang].confirmSaveGearList)) return;
-    saveCurrentGearList();
-}
-
 function ensureGearListActions() {
     if (!gearListOutput) return;
     let actions = document.getElementById('gearListActions');
     if (!actions) {
         actions = document.createElement('div');
         actions.id = 'gearListActions';
-        const saveBtn = document.createElement('button');
-        saveBtn.id = 'saveGearListBtn';
         const exportBtn = document.createElement('button');
         exportBtn.id = 'exportGearListBtn';
         const importBtn = document.createElement('button');
@@ -11260,26 +11253,31 @@ function ensureGearListActions() {
         importInput.name = 'importGearList';
         const deleteBtn = document.createElement('button');
         deleteBtn.id = 'deleteGearListBtn';
-        actions.append(saveBtn, exportBtn, importBtn, importInput, deleteBtn);
+        const autoSaveNote = document.createElement('p');
+        autoSaveNote.id = 'gearListAutosaveNote';
+        autoSaveNote.className = 'gear-list-autosave-note';
+        actions.append(exportBtn, importBtn, importInput, deleteBtn, autoSaveNote);
         gearListOutput.appendChild(actions);
-        saveBtn.addEventListener('click', confirmSaveCurrentGearList);
         exportBtn.addEventListener('click', exportCurrentGearList);
         importBtn.addEventListener('click', () => importInput.click());
         importInput.addEventListener('change', handleImportGearList);
         deleteBtn.addEventListener('click', deleteCurrentGearList);
     }
     // Update texts for current language
-    const saveBtn = document.getElementById('saveGearListBtn');
     const exportBtn = document.getElementById('exportGearListBtn');
     const importBtn = document.getElementById('importGearListBtn');
     const deleteBtn = document.getElementById('deleteGearListBtn');
-    const saveHelp = texts[currentLang].saveGearListBtnHelp || texts[currentLang].saveGearListBtn;
+    const autoSaveNote = document.getElementById('gearListAutosaveNote');
     const exportHelp = texts[currentLang].exportGearListBtnHelp || texts[currentLang].exportGearListBtn;
     const importHelp = texts[currentLang].importGearListBtnHelp || texts[currentLang].importGearListBtn;
     const deleteHelp = texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn;
-    saveBtn.textContent = texts[currentLang].saveGearListBtn;
-    saveBtn.setAttribute('title', saveHelp);
-    saveBtn.setAttribute('data-help', saveHelp);
+    if (autoSaveNote) {
+        const noteText = texts[currentLang].gearListAutosaveNote
+            || 'Gear lists save automatically with the project.';
+        autoSaveNote.textContent = noteText;
+        autoSaveNote.setAttribute('title', noteText);
+        autoSaveNote.setAttribute('data-help', noteText);
+    }
     exportBtn.textContent = texts[currentLang].exportGearListBtn;
     exportBtn.setAttribute('title', exportHelp);
     exportBtn.setAttribute('data-help', exportHelp);
@@ -11292,29 +11290,46 @@ function ensureGearListActions() {
 
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
-            const cb = e.target;
-            if (cb.matches('.filter-values-container input[type="checkbox"]')) {
-                const container = cb.closest('.filter-values-container');
+            const target = e.target;
+            let shouldSync = false;
+            if (target.matches('.filter-values-container input[type="checkbox"]')) {
+                const container = target.closest('.filter-values-container');
                 const sel = container && container.querySelector('select');
                 if (sel) {
-                    const opt = Array.from(sel.options).find(opt => opt.value === cb.value);
-                    if (opt) opt.selected = cb.checked;
+                    const opt = Array.from(sel.options).find(opt => opt.value === target.value);
+                    if (opt) opt.selected = target.checked;
                     sel.dispatchEvent(new Event('change'));
                 }
-                saveCurrentGearList();
-                saveCurrentSession();
-                checkSetupChanged();
-            } else if (cb.id && cb.id.startsWith('filter-size-')) {
-                saveCurrentGearList();
-                saveCurrentSession();
-                checkSetupChanged();
-            } else if (cb.id && cb.id.startsWith('filter-values-')) {
+                shouldSync = true;
+            } else if (target.id && target.id.startsWith('filter-size-')) {
+                shouldSync = true;
+            } else if (target.id && target.id.startsWith('filter-values-')) {
+                shouldSync = true;
+            } else if (target.matches('input, select, textarea') && !target.closest('#gearListActions')) {
+                shouldSync = true;
+            }
+
+            if (shouldSync) {
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
             }
         });
         gearListOutput._filterListenerBound = true;
+    }
+
+    if (!gearListOutput._inputListenerBound) {
+        gearListOutput.addEventListener('input', e => {
+            const target = e.target;
+            if (!target || target.id === 'importGearListInput') return;
+            if (target.closest('#gearListActions')) return;
+            if (target.matches('input, textarea')) {
+                saveCurrentGearList();
+                saveCurrentSession();
+                checkSetupChanged();
+            }
+        });
+        gearListOutput._inputListenerBound = true;
     }
 }
 

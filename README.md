@@ -208,7 +208,7 @@ The planner expands your selections into a detailed packing table:
   - **User Button** selections and **Tripod Preferences** are listed for quick reference.
 - Items are sorted alphabetically within their category and each exposes a tooltip on hover.
 - The gear list appears in printable overviews and shared project files so collaborators see the full context.
-- **Save Gear List** stores the current table with the project.
+- Gear lists save automatically with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
 - Gear list forms use fork buttons to duplicate your entries instantly.
