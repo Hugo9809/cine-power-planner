@@ -1615,12 +1615,26 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 }
 
 @media (max-width: 600px) {
-  .diagram-controls button {
-    flex: 1 0 calc(50% - 0.5em);
+  .diagram-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(var(--button-size), 1fr));
+    justify-content: center;
   }
+
+  .diagram-controls button {
+    min-width: 0;
+  }
+
   .diagram-controls #zoomOut,
   .diagram-controls #zoomIn {
-    flex: 0 0 var(--button-size);
+    width: var(--button-size);
+    justify-self: center;
+  }
+
+  .diagram-controls #resetView,
+  .diagram-controls #gridSnapToggle {
+    justify-self: stretch;
+    white-space: nowrap;
   }
 }
 
