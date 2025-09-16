@@ -2705,6 +2705,20 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
 #overviewDialogContent .device-block-grid.two-column {
   grid-template-columns: repeat(2, 1fr);
 }
+
+@media screen and (max-width: 600px) {
+  #overviewDialogContent .device-category-container {
+    flex-direction: column;
+  }
+
+  #overviewDialogContent .device-category {
+    flex: 1 1 100%;
+  }
+
+  #overviewDialogContent .device-block-grid.two-column {
+    grid-template-columns: 1fr;
+  }
+}
 #overviewDialogContent.pink-mode {
   --accent-color: #ff69b4;
 }
