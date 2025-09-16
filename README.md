@@ -250,6 +250,15 @@ npm test
 
 `npm run lint` executes ESLint without running tests. The `npm test` command then runs ESLint, data consistency checks and Jest tests.
 
+To run individual suites while iterating you can target specific Jest projects:
+
+```bash
+npm run test:unit   # module-level logic and storage helpers
+npm run test:data   # static dataset validations
+npm run test:dom    # lightweight DOM utilities
+npm run test:script # reduced smoke checks for script.js
+```
+
 ### Update device data
 
 Device definitions live in the files under `devices/`. After modifying these files, run the helper scripts to clean, verify and regenerate the database:

@@ -1,3 +1,21 @@
+if (typeof window === 'undefined') {
+  global.window = {};
+}
+
+if (!('localStorage' in global.window)) {
+  Object.defineProperty(global.window, 'localStorage', {
+    configurable: true,
+    value: global.localStorage,
+  });
+}
+
+if (!('sessionStorage' in global.window)) {
+  Object.defineProperty(global.window, 'sessionStorage', {
+    configurable: true,
+    value: global.sessionStorage,
+  });
+}
+
 const {
   loadDeviceData,
   saveDeviceData,
@@ -19,7 +37,7 @@ const {
   clearAllData,
   exportAllData,
   importAllData,
-} = require('../storage');
+} = require('../../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_KEY = 'cameraPowerPlanner_setups';
