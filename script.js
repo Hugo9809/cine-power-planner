@@ -3091,6 +3091,61 @@ const deviceMap       = new Map();
 // and treating symbols like “&”/“+” as their word equivalents. Falls back to
 // whitespace-stripping when no meaningful characters remain (e.g. emoji-only
 // headings) so legacy behaviour is preserved for those edge cases.
+const ROMAN_NUMERAL_VALUES = {
+  i: 1,
+  v: 5,
+  x: 10,
+  l: 50,
+  c: 100,
+  d: 500,
+  m: 1000
+};
+
+const ROMAN_NUMERAL_PATTERN = /^[ivxlcdm]+$/;
+
+const parseMarkSuffix = value => {
+  if (!value) {
+    return { cleaned: '', number: null };
+  }
+  const cleaned = value.replace(/[^a-z0-9]+/g, '');
+  if (!cleaned) {
+    return { cleaned: '', number: null };
+  }
+  let number = null;
+  if (/^\d+$/.test(cleaned)) {
+    number = parseInt(cleaned, 10);
+  } else if (ROMAN_NUMERAL_PATTERN.test(cleaned)) {
+    let total = 0;
+    let prev = 0;
+    for (let i = cleaned.length - 1; i >= 0; i -= 1) {
+      const char = cleaned[i];
+      const current = ROMAN_NUMERAL_VALUES[char];
+      if (!current) {
+        total = 0;
+        break;
+      }
+      if (current < prev) {
+        total -= current;
+      } else {
+        total += current;
+        prev = current;
+      }
+    }
+    if (total > 0) {
+      number = total;
+    }
+  }
+  return { cleaned, number };
+};
+
+const normaliseMarkVariants = str =>
+  str.replace(/\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g, (_match, _prefix, rawValue) => {
+    const { cleaned, number } = parseMarkSuffix(rawValue);
+    if (!cleaned) return 'mk';
+    const suffix = number != null ? String(number) : cleaned;
+    return `mk${suffix}`;
+  });
+
 const searchKey       = str => {
   if (!str) return '';
   const value = String(str);
@@ -3109,6 +3164,7 @@ const searchKey       = str => {
     .replace(/[°º˚]/g, 'deg')
     .replace(/\bdegrees?\b/g, 'deg')
     .replace(/[×✕✖✗✘]/g, 'x');
+  normalized = normaliseMarkVariants(normalized);
   const simplified = normalized.replace(/[^a-z0-9]+/g, '');
   if (simplified) return simplified;
   return value.toLowerCase().replace(/\s+/g, '');
@@ -3132,15 +3188,46 @@ const searchTokens = str => {
     .replace(/\bdegrees?\b/g, ' deg ')
     .replace(/[×✕✖✗✘]/g, ' x by ');
   const tokens = new Set();
-  normalized.split(/\s+/).forEach(part => {
-    if (!part) return;
-    const cleaned = part.replace(/[^a-z0-9]+/g, '');
+  const addToken = token => {
+    if (!token) return;
+    const cleaned = token.replace(/[^a-z0-9]+/g, '');
     if (cleaned) tokens.add(cleaned);
-    part
-      .split(/[^a-z0-9]+/)
-      .filter(Boolean)
-      .forEach(segment => tokens.add(segment));
-  });
+  };
+  const processParts = strToProcess => {
+    strToProcess.split(/\s+/).forEach(part => {
+      if (!part) return;
+      addToken(part);
+      part
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean)
+        .forEach(segment => addToken(segment));
+    });
+  };
+  processParts(normalized);
+  const markNormalized = normaliseMarkVariants(normalized);
+  if (markNormalized !== normalized) {
+    processParts(markNormalized);
+  }
+  const markPattern = /\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g;
+  let match;
+  while ((match = markPattern.exec(normalized)) !== null) {
+    const prefix = match[1];
+    const rawValue = match[2];
+    const { cleaned, number } = parseMarkSuffix(rawValue);
+    if (!cleaned) continue;
+    const altPrefix = prefix === 'mk' ? 'mark' : 'mk';
+    addToken(prefix);
+    addToken(altPrefix);
+    addToken(cleaned);
+    addToken(`${prefix}${cleaned}`);
+    addToken(`${altPrefix}${cleaned}`);
+    if (number != null) {
+      const numberToken = String(number);
+      addToken(numberToken);
+      addToken(`${prefix}${numberToken}`);
+      addToken(`${altPrefix}${numberToken}`);
+    }
+  }
   return Array.from(tokens);
 };
 
