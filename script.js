@@ -11118,6 +11118,68 @@ function exportCurrentGearList() {
     URL.revokeObjectURL(a.href);
 }
 
+function clearCurrentProjectForImport() {
+    if (setupSelect && typeof setupSelect.dispatchEvent === 'function') {
+        setupSelect.value = '';
+        setupSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        return;
+    }
+
+    if (setupNameInput) setupNameInput.value = '';
+
+    const resetSelectable = sel => {
+        if (!sel) return;
+        const options = Array.from(sel.options || []);
+        const noneOption = options.find(opt => opt.value === 'None');
+        if (noneOption) {
+            sel.value = 'None';
+        } else if (options.length > 0) {
+            sel.selectedIndex = 0;
+        }
+    };
+
+    [
+        cameraSelect,
+        monitorSelect,
+        videoSelect,
+        cageSelect,
+        distanceSelect,
+        batterySelect,
+        hotswapSelect,
+        batteryPlateSelect
+    ].forEach(resetSelectable);
+
+    const sliderBowlSelect = typeof getSliderBowlSelect === 'function' ? getSliderBowlSelect() : null;
+    if (sliderBowlSelect) sliderBowlSelect.value = '';
+
+    motorSelects.forEach(sel => {
+        if (sel && sel.options && sel.options.length) sel.value = 'None';
+    });
+    controllerSelects.forEach(sel => {
+        if (sel && sel.options && sel.options.length) sel.value = 'None';
+    });
+
+    if (typeof updateBatteryPlateVisibility === 'function') updateBatteryPlateVisibility();
+    if (typeof updateBatteryOptions === 'function') updateBatteryOptions();
+
+    if (gearListOutput) {
+        gearListOutput.innerHTML = '';
+        gearListOutput.classList.add('hidden');
+    }
+    if (projectRequirementsOutput) {
+        projectRequirementsOutput.innerHTML = '';
+        projectRequirementsOutput.classList.add('hidden');
+    }
+
+    currentProjectInfo = null;
+    if (projectForm) populateProjectForm({});
+    loadedSetupState = null;
+    lastSetupName = '';
+
+    if (typeof updateCalculations === 'function') updateCalculations();
+    if (typeof checkSetupChanged === 'function') checkSetupChanged();
+}
+
 function handleImportGearList(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -11126,22 +11188,24 @@ function handleImportGearList(e) {
         try {
             const obj = JSON.parse(ev.target.result);
             if (obj && obj.gearList) {
-            displayGearAndRequirements(obj.gearList);
-            currentProjectInfo = obj.projectInfo || null;
-            populateProjectForm(currentProjectInfo || {});
-            ensureGearListActions();
-            bindGearListCageListener();
-            bindGearListEasyrigListener();
-            bindGearListSliderBowlListener();
-            bindGearListEyeLeatherListener();
-            bindGearListProGaffTapeListener();
-            bindGearListDirectorMonitorListener();
-            if (setupNameInput) {
-                const base = file.name.replace(/\.json$/i, '');
-                setupNameInput.value = base;
-                setupNameInput.dispatchEvent(new Event('input'));
-            }
-            saveCurrentGearList();
+                saveCurrentGearList();
+                clearCurrentProjectForImport();
+                displayGearAndRequirements(obj.gearList);
+                currentProjectInfo = obj.projectInfo || null;
+                populateProjectForm(currentProjectInfo || {});
+                ensureGearListActions();
+                bindGearListCageListener();
+                bindGearListEasyrigListener();
+                bindGearListSliderBowlListener();
+                bindGearListEyeLeatherListener();
+                bindGearListProGaffTapeListener();
+                bindGearListDirectorMonitorListener();
+                if (setupNameInput) {
+                    const base = file.name.replace(/\.json$/i, '');
+                    setupNameInput.value = base;
+                    setupNameInput.dispatchEvent(new Event('input'));
+                }
+                saveCurrentGearList();
             }
         } catch {
             alert('Invalid gear list file.');
