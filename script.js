@@ -12025,7 +12025,8 @@ if (helpButton && helpDialog) {
     // Bail out early if the search input is missing
     if (!helpSearch) return;
     const rawQuery = helpSearch.value.trim();
-    const query = rawQuery.replace(/\s+/g, '').toLowerCase();
+    const normalizedQuery = rawQuery.replace(/\s+/g, '');
+    const query = normalizedQuery.toLowerCase();
     // Treat sections and FAQ items uniformly so the same logic can filter both
     const sections = Array.from(
       helpDialog.querySelectorAll('[data-help-section]')
@@ -12033,15 +12034,63 @@ if (helpButton && helpDialog) {
     const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
     const elements = sections.concat(items);
     let anyVisible = false;
-    // Prepare a regex to wrap matches in <mark>; escape to avoid breaking on
-    // special characters in the query.
+    // Prepare a regex pattern to wrap matches in <mark>; escape to avoid
+    // breaking on special characters in the query and allow flexible
+    // whitespace matching between characters.
     const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = rawQuery
-      ? new RegExp(
-          `(${escapeRegExp(rawQuery.replace(/\s+/g, '')).split('').join('\\s*')})`,
-          'ig'
-        )
+    const highlightPattern = normalizedQuery
+      ? `(${escapeRegExp(normalizedQuery).split('').join('\\s*')})`
       : null;
+    const highlightMatches = (root, pattern) => {
+      if (
+        !pattern ||
+        typeof document.createTreeWalker !== 'function' ||
+        typeof NodeFilter === 'undefined'
+      ) {
+        return;
+      }
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT,
+        null
+      );
+      const textNodes = [];
+      while (walker.nextNode()) {
+        textNodes.push(walker.currentNode);
+      }
+      textNodes.forEach(node => {
+        const text = node.textContent;
+        if (!text) return;
+        const regex = new RegExp(pattern, 'ig');
+        const firstMatch = regex.exec(text);
+        if (!firstMatch) return;
+        const frag = document.createDocumentFragment();
+        let lastIndex = 0;
+        let match = firstMatch;
+        do {
+          const start = match.index;
+          const end = start + match[0].length;
+          if (start > lastIndex) {
+            frag.appendChild(
+              document.createTextNode(text.slice(lastIndex, start))
+            );
+          }
+          const mark = document.createElement('mark');
+          mark.textContent = text.slice(start, end);
+          frag.appendChild(mark);
+          lastIndex = end;
+          if (regex.lastIndex === start) {
+            regex.lastIndex++;
+          }
+        } while ((match = regex.exec(text)) !== null);
+        if (lastIndex < text.length) {
+          frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        if (node.parentNode) {
+          node.parentNode.replaceChild(frag, node);
+        }
+      });
+    };
     elements.forEach(el => {
       // Save original HTML once so that repeated filtering doesn't permanently
       // insert <mark> tags; restore it before applying a new highlight.
@@ -12052,9 +12101,9 @@ if (helpButton && helpDialog) {
       }
       const text = el.textContent.toLowerCase().replace(/\s+/g, '');
       if (!query || text.includes(query)) {
-        if (query && regex) {
+        if (query && highlightPattern) {
           // Highlight the matching text while preserving the rest of the content
-          el.innerHTML = el.innerHTML.replace(regex, '<mark>$1</mark>');
+          highlightMatches(el, highlightPattern);
         }
         el.removeAttribute('hidden');
         anyVisible = true;
