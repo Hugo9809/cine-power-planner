@@ -2236,15 +2236,15 @@ const texts = {
     impressum: "Impressum",
     privacy: "Datenschutz",
 
-    setupManageHeading: "Setup verwalten",
+    setupManageHeading: "Projekt verwalten",
     deviceSelectionHeading: "Geräte-Auswahl",
     overviewDeviceSelectionHeading: "Geräte im Kamera-Setup",
     resultsHeading: "Ergebnisse",
     deviceManagerHeading: "Geräte-Datenbank verwalten",
     batteryComparisonHeading: "Akkuvergleich",
-    setupDiagramHeading: "Setup-Diagramm",
+    setupDiagramHeading: "Projekt-Diagramm",
     setupManageHeadingHelp:
-      "Gespeicherte Setups verwalten: Konfigurationen speichern, laden oder löschen.",
+      "Gespeicherte Projekte verwalten: Projekte speichern, laden oder löschen.",
     deviceSelectionHeadingHelp:
       "Wähle Kameras, Monitore und Zubehör für dein Setup.",
     resultsHeadingHelp:
@@ -2255,7 +2255,7 @@ const texts = {
       "Vergleicht Laufzeiten aller kompatiblen Batterien.",
     setupDiagramHeadingHelp:
       "Zeigt ein visuelles Diagramm der Verbindungen der ausgewählten Geräte.",
-    setupDiagramPlaceholder: "Geräte auswählen, um das Diagramm zu sehen.",
+    setupDiagramPlaceholder: "Geräte auswählen, um das Projekt zu visualisieren.",
     diagramLegendPower: "Strom",
     diagramLegendVideo: "Video",
     diagramLegendFIZ: "FIZ",
@@ -2280,13 +2280,13 @@ const texts = {
     favoriteToggleLabel: "Favorit",
     favoriteToggleHelp:
       "Markiere die aktuelle Auswahl als Favorit, um sie oben in der Liste zu halten.",
-    savedSetupsLabel: "Gespeicherte Setups:",
-    newSetupOption: "-- Neues Setup --",
-    setupNameLabel: "Setup-Name:",
+    savedSetupsLabel: "Gespeicherte Projekte:",
+    newSetupOption: "-- Neues Projekt --",
+    setupNameLabel: "Projektname:",
     deleteSetupBtn: "Löschen",
     saveSetupBtn: "Speichern",
     updateSetupBtn: "Aktualisieren",
-    clearSetupBtn: "Aktuelles Setup zurücksetzen",
+    clearSetupBtn: "Aktuelles Projekt zurücksetzen",
     clearFilter: "Filter löschen",
     shareSetupBtn: "Projekt teilen",
     shareSetupPrompt: "Projektdatei bereit zum Teilen.",
@@ -2506,7 +2506,7 @@ const texts = {
     runtimeLabel: "Geschätzte Laufzeit (h)",
     batteryLifeUnit: "Std.",
     runtimeAverageNote: "Hinweis: Die Laufzeitschätzung verwendet einen gewichteten Durchschnitt der Nutzereinträge, angepasst an Auflösung, Codec, Bildrate, Helligkeit und Temperatur.",
-    runtimeUserCountNote: "Basierend auf {count} Nutzereinträgen für dieses Setup.",
+    runtimeUserCountNote: "Basierend auf {count} Nutzereinträgen für dieses Projekt.",
     temperatureNoteHeading: "Temperatureinfluss auf die Laufzeit:",
     temperatureNoteHelp: "Zeigt, wie die Temperatur die Laufzeit des Akkus beeinflusst.",
     temperatureLabel: "Temperatur (°C)",
@@ -2514,13 +2514,13 @@ const texts = {
 
     noBatterySupports: "Kein Akku kann diese Last liefern.",
 
-    alertSetupName: "Bitte einen Namen für das Setup eingeben.",
-    alertSetupSaved: "Setup \"{name}\" gespeichert.",
-    alertNoSetupSelected: "Wählen Sie ein gespeichertes Setup zum Löschen aus.",
-    alertSetupDeleted: "Setup \"{name}\" gelöscht.",
-    confirmClearSetup: "Aktuelles Setup zurücksetzen?",
+    alertSetupName: "Bitte einen Namen für das Projekt eingeben.",
+    alertSetupSaved: "Projekt \"{name}\" gespeichert.",
+    alertNoSetupSelected: "Wählen Sie ein gespeichertes Projekt zum Löschen aus.",
+    alertSetupDeleted: "Projekt \"{name}\" gelöscht.",
+    confirmClearSetup: "Aktuelles Projekt zurücksetzen?",
     confirmClearSetupAgain: "Dadurch werden alle Auswahlen entfernt. Sind Sie sicher?",
-    confirmDeleteSetup: "Setup \"{name}\" wirklich löschen?",
+    confirmDeleteSetup: "Projekt \"{name}\" wirklich löschen?",
     confirmDeleteSetupAgain: "Dadurch wird das Projekt dauerhaft gelöscht. Sind Sie sicher?",
     confirmDeleteDevice: "Gerät \"{name}\" wirklich löschen?",
     alertDeviceExists: "Ein Gerät mit diesem Namen existiert in dieser Kategorie bereits.",
@@ -2644,8 +2644,8 @@ const texts = {
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
     confirmDeleteGearList: "Gear-Liste löschen?",
     confirmDeleteGearListAgain: "Dies wird die Gear-Liste dauerhaft löschen. Bist du sicher?",
-    alertSelectSetupForOverview: "Bitte wählen Sie ein gespeichertes Setup, um eine Übersicht zu erstellen.",
-    overviewTitle: "Setup-Übersicht",
+    alertSelectSetupForOverview: "Bitte wählen Sie ein gespeichertes Projekt, um eine Übersicht zu erstellen.",
+    overviewTitle: "Projektübersicht",
     backToAppBtn: "Zurück zur App",
     printBtn: "Drucken",
     exportAndRevertBtn: "Exportieren und auf Standarddatenbank zurücksetzen",
@@ -2745,12 +2745,12 @@ const texts = {
     hoverHelpButtonHelp:
       "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen erscheinen.",
     setupSelectHelp:
-      "Wähle eine gespeicherte Konfiguration zum Laden oder starte eine neue.",
-    setupNameHelp: "Gib einen Namen für die aktuelle Konfiguration ein.",
-    deleteSetupHelp: "Löscht die ausgewählte gespeicherte Konfiguration.",
-    saveSetupHelp: "Speichert die aktuelle Konfiguration. Drücke Eingabe oder Strg+S (Cmd+S auf dem Mac), um schnell zu speichern; der Speichern-Button bleibt deaktiviert, bis ein Name eingegeben ist.",
+      "Wähle ein gespeichertes Projekt zum Laden oder starte ein neues.",
+    setupNameHelp: "Gib einen Namen für das aktuelle Projekt ein.",
+    deleteSetupHelp: "Löscht das ausgewählte gespeicherte Projekt.",
+    saveSetupHelp: "Speichert das aktuelle Projekt. Drücke Eingabe oder Strg+S (Cmd+S auf dem Mac), um schnell zu speichern; der Speichern-Button bleibt deaktiviert, bis ein Name eingegeben ist.",
     generateOverviewHelp:
-      "Erstellt eine druckbare Übersicht der gespeicherten Konfigurationen.",
+      "Erstellt eine druckbare Übersicht eines gespeicherten Projekts.",
     generateGearListHelp:
       "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp:
@@ -2767,13 +2767,13 @@ const texts = {
     batteryPlateSelectHelp: "Wähle die Batterieplatte oder den Adapter aus.",
     batteryHotswapSelectHelp: "Wähle das Hotswap-Modul, das beim Akkutausch weiter mit Strom versorgt.",
     clearSetupHelp:
-      "Entfernt alle Geräte aus der aktuellen Konfiguration.",
+      "Entfernt alle Geräte aus dem aktuellen Projekt.",
     runtimeFeedbackBtnHelp:
-      "Sende deine gemessene Laufzeit für diese Konfiguration.",
-    zoomOutHelp: "Verkleinert das Setup-Diagramm.",
-    zoomInHelp: "Vergrößert das Setup-Diagramm.",
+      "Sende deine gemessene Laufzeit für dieses Projekt.",
+    zoomOutHelp: "Verkleinert das Projekt-Diagramm.",
+    zoomInHelp: "Vergrößert das Projekt-Diagramm.",
     downloadDiagramHelp:
-      "Lädt das Setup-Diagramm als Bild herunter.",
+      "Lädt das Projekt-Diagramm als Bild herunter.",
     gridSnapToggleHelp:
       "Schaltet das Einrasten der Diagrammknoten am Raster um.",
     resetViewBtn: "Ansicht zurücksetzen",
