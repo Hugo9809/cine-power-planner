@@ -3,10 +3,10 @@
 ![Cine Power Planner icon](icon.svg)
 
 Cine Power Planner is a standalone web app for planning professional camera
-rigs powered by V‑Mount, B‑Mount or Gold‑Mount batteries. It calculates total power draw,
-checks that batteries can safely deliver the required output, and estimates how
-long your project will run. The tool runs entirely in the browser and even works
-offline.
+rigs powered by V‑Mount, B‑Mount or Gold‑Mount batteries. It calculates total
+power draw, checks that batteries can safely deliver the required output, and
+estimates how long your project will run. The tool runs entirely in the browser
+and even works offline.
 
 The planner was built for ACs, data wranglers and DoPs who need to keep complex
 digital cinema rigs running all day without guesswork. As you swap camera
@@ -30,13 +30,29 @@ No build step is required—open `index.html` in your browser and start planning
 immediately. Serving the repository over HTTP(S) installs a service worker so
 that future visits work offline and pick up updates automatically.
 
+## Highlights
+
+- **Runs anywhere.** No accounts, servers or build steps—open `index.html` from
+  disk or host it behind the firewall your production already trusts.
+- **Designed for crews.** Projects keep requirements, runtime data, favorites
+  and backups together so camera, lighting and production teams share the same
+  context.
+- **Confidence by default.** Safety warnings, weighted runtime averages and a
+  comparison view make it easy to validate that planned batteries can deliver
+  the required current.
+- **Approachable customization.** Add custom devices, shareable project
+  bundles, localized UI strings and printable gear lists without leaving the
+  browser.
+
 ## Table of Contents
 
+- [Highlights](#highlights)
 - [Translations](#translations)
 - [Recent Updates](#recent-updates)
 - [Features at a Glance](#features-at-a-glance)
 - [Quick Start](#quick-start)
 - [Example Workflow](#example-workflow)
+- [Key Concepts](#key-concepts)
 - [Interface Overview](#interface-overview)
 - [Customization and Accessibility](#customization-and-accessibility)
 - [Gear List](#gear-list)
@@ -143,13 +159,16 @@ See the language-specific README files for full details.
 
 1. Download or clone this repository.
 2. Open `index.html` in a modern browser.
-3. (Optional) Serve the folder over HTTP to enable the service worker and Progressive Web App features:
+3. (Optional) Serve the folder over HTTP to enable the service worker and
+   Progressive Web App features:
    ```bash
    npx http-server
    # or
    python -m http.server
    ```
    The planner then works fully offline and updates automatically.
+4. Create your first project, add devices from the dropdowns and generate a gear
+   list or printable overview to share with collaborators.
 
 ## Example Workflow
 
@@ -160,6 +179,44 @@ Use the planner end-to-end with the following workflow:
 3. **Check power draw and runtime.** Watch the power summary panel for current draw warnings, explore the battery comparison view to spot longer-lasting options and use the runtime dashboard to understand how temperature, codec, frame rate and other factors influence user feedback.
 4. **Capture project requirements.** Fill out project details, crew lists and required scenarios so the gear list and printable overview reflect the full production context. Fork buttons duplicate entries to speed up data entry.
 5. **Share or back up the plan.** Generate the gear list, export a planner backup or download a shareable project bundle before heading to set. Backups include custom devices, runtime feedback and pinned favorites.
+
+## Key Concepts
+
+Understanding the planner's vocabulary makes it easier to explore new features:
+
+### Projects
+
+- Saved plans collect device selections, project requirements, crew lists and
+  generated gear lists. The selector stores multiple projects and autosaves
+  every change so you can switch between productions without losing your place.
+
+### Devices and accessories
+
+- Device dropdowns contain both bundled hardware and your own custom entries.
+  Category tabs match the files in `devices/`, making it simple to update or
+  audit the catalog in version control.
+- Favorites keep go-to cameras, batteries and accessories at the top of the
+  list. They appear in backups and follow the project when you export a bundle.
+
+### Runtime feedback
+
+- User-submitted runtimes are stored with environmental context. Weighted
+  averages factor in temperature, codec, resolution, frame rate and each
+  component's share of the total draw so estimates mirror real-world shoots.
+
+### Scenarios and gear lists
+
+- Required scenarios (e.g. Vehicle, Outdoor, Steadicam) expand into the
+  necessary rigging, weather protection and accessories. Generated gear lists
+  combine those presets with your device selections so printouts and shared
+  bundles capture the entire kit.
+
+### Backups and recoverability
+
+- Automatic snapshots, manual exports and the **Force reload** button let you
+  experiment without fear. Restores create a safety backup before overwriting
+  data, and the **Clear Local Cache** option removes everything when you need a
+  clean slate.
 
 ## Interface Overview
 
