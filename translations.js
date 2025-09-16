@@ -48,34 +48,70 @@ const texts = {
     pinkModeHelp:
       "Add a playful pink accent theme. Works with light or dark mode and is remembered for next time.",
     settingsButton: "Settings",
+    settingsButtonHelp:
+      "Open Settings to personalize language, colors, fonts, accessibility options and backups.",
     settingsHeading: "Settings",
+    settingsHeadingHelp:
+      "Adjust language, themes, typography, accessibility preferences and backups in one place.",
     languageSetting: "Language",
+    settingsLanguageHelp:
+      "Choose the interface language. Changes apply immediately and are remembered for next time.",
     darkModeSetting: "Dark mode",
+    settingsDarkModeHelp:
+      "Toggle dark mode from Settings while previewing the result instantly.",
     accentColorSetting: "Accent color",
+    accentColorHelp:
+      "Pick the accent color used for buttons, highlights and diagrams. The choice is saved with your settings.",
     fontSizeSetting: "Font size",
+    fontSizeSettingHelp:
+      "Set the base interface font size to improve readability or fit more information on screen.",
     fontFamilySetting: "Font",
+    fontFamilySettingHelp:
+      "Select the typeface used throughout the planner. Added local fonts appear in this menu.",
     bundledFontsGroup: "Bundled fonts",
     localFontsGroup: "Local fonts",
     localFontsButton: "Add local font…",
+    localFontsButtonHelp:
+      "Allow the planner to use installable fonts from this device when your browser supports it.",
     localFontsUnsupported: "Local fonts aren't supported in this browser.",
     localFontsAdded: "Added: %s",
     localFontsAlreadyAdded: "Already added: %s",
     localFontsNoFonts: "No fonts were selected.",
     localFontsError: "Could not access local fonts.",
     logoSetting: "Logo (SVG)",
+    logoSettingHelp:
+      "Upload an SVG logo to brand printable overviews and include it in backups.",
     logoFormatError: "Unsupported logo format. Please choose an SVG file.",
     accessibilityHeading: "Accessibility",
+    accessibilityHeadingHelp:
+      "Adjust contrast and other options that improve legibility.",
     highContrastSetting: "High contrast",
+    highContrastSettingHelp:
+      "Increase contrast for text and outlines to boost readability in any theme.",
     backupHeading: "Backup & Restore",
+    backupHeadingHelp:
+      "Manage full backups of settings, saved projects, custom devices and runtime feedback.",
     backupSettings: "Backup",
+    backupSettingsHelp:
+      "Download a JSON snapshot of settings, projects, custom devices, favorites and runtime data.",
     restoreSettings: "Restore",
+    restoreSettingsHelp:
+      "Load a previously exported JSON snapshot to restore your planner data.",
     aboutHeading: "About & Support",
+    aboutHeadingHelp:
+      "Review version details and reach support resources.",
     versionLabel: "Version",
     supportLink: "Support",
+    supportLinkHelp:
+      "Open support documentation in a new tab.",
     restoreSuccess: "Settings restored. Reload to apply all changes.",
     restoreVersionWarning: "Backup created with a different version. Some features might not transfer.",
     saveSettings: "Save",
+    saveSettingsHelp:
+      "Apply personalization changes and close Settings.",
     cancelSettings: "Cancel",
+    cancelSettingsHelp:
+      "Close Settings without saving; previous colors and logo are restored.",
 
     reloadAppLabel: "Force reload",
     reloadAppHelp: "Clear cached files and reload without removing saved data.",
@@ -470,35 +506,6 @@ const texts = {
       "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
       "Attiva un tema rosa giocoso; funziona con modalità chiara o scura e viene salvato.",
-    settingsButton: "Impostazioni",
-    settingsHeading: "Impostazioni",
-    languageSetting: "Lingua",
-    darkModeSetting: "Modalità scura",
-    accentColorSetting: "Colore accento",
-    fontSizeSetting: "Dimensione carattere",
-    fontFamilySetting: "Carattere",
-    bundledFontsGroup: "Caratteri inclusi",
-    localFontsGroup: "Caratteri locali",
-    localFontsButton: "Aggiungi carattere locale…",
-    localFontsUnsupported: "I caratteri locali non sono supportati da questo browser.",
-    localFontsAdded: "Aggiunti: %s",
-    localFontsAlreadyAdded: "Già presenti: %s",
-    localFontsNoFonts: "Nessun carattere selezionato.",
-    localFontsError: "Impossibile accedere ai caratteri locali.",
-    logoSetting: "Logo (SVG)",
-    logoFormatError: "Formato di logo non supportato. Seleziona un file SVG.",
-    accessibilityHeading: "Accessibilità",
-    highContrastSetting: "Alto contrasto",
-    backupHeading: "Backup & Ripristino",
-    backupSettings: "Backup",
-    restoreSettings: "Ripristina",
-    aboutHeading: "Informazioni & Supporto",
-    versionLabel: "Versione",
-    supportLink: "Supporto",
-    restoreSuccess: "Impostazioni ripristinate. Ricarica per applicare le modifiche.",
-    restoreVersionWarning: "Backup creato con una versione diversa. Alcune funzionalità potrebbero non essere trasferite.",
-    saveSettings: "Salva",
-    cancelSettings: "Annulla",
     reloadAppLabel: "Ricarica",
     reloadAppHelp: "Svuota la cache e ricarica l'app senza eliminare i dati salvati.",
 
@@ -766,6 +773,71 @@ const texts = {
     printBtn: "Stampa",
     exportAndRevertBtn: "Esporta e ripristina il database predefinito",
     exportAndRevertBtnHelp: "Esporta il database e ripristina i dati predefiniti.",
+    settingsButton: "Impostazioni",
+    settingsButtonHelp:
+      "Apri Impostazioni per personalizzare lingua, colori, font, opzioni di accessibilità e backup.",
+    settingsHeading: "Impostazioni",
+    settingsHeadingHelp:
+      "Configura lingua, temi, tipografia, accessibilità e backup da un'unica schermata.",
+    languageSetting: "Lingua",
+    settingsLanguageHelp:
+      "Scegli la lingua dell'interfaccia. Le modifiche sono immediate e vengono ricordate alla visita successiva.",
+    darkModeSetting: "Modalità scura",
+    settingsDarkModeHelp:
+      "Attiva o disattiva il tema scuro dalle Impostazioni visualizzando subito il risultato.",
+    accentColorSetting: "Colore evidenza",
+    accentColorHelp:
+      "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma. La scelta viene salvata.",
+    fontSizeSetting: "Dimensione carattere",
+    fontSizeSettingHelp:
+      "Imposta la dimensione base del carattere per migliorare la leggibilità o avere più spazio sullo schermo.",
+    fontFamilySetting: "Font",
+    fontFamilySettingHelp:
+      "Scegli il font utilizzato nell'app. I font locali aggiunti compaiono in questo menu.",
+    bundledFontsGroup: "Font inclusi",
+    localFontsGroup: "Font locali",
+    localFontsButton: "Aggiungi font locale…",
+    localFontsButtonHelp:
+      "Consenti all'app di usare i font installati sul dispositivo, se supportato dal browser.",
+    localFontsUnsupported: "I font locali non sono supportati in questo browser.",
+    localFontsAdded: "Aggiunto: %s",
+    localFontsAlreadyAdded: "Già presente: %s",
+    localFontsNoFonts: "Nessun font selezionato.",
+    localFontsError: "Impossibile accedere ai font locali.",
+    logoSetting: "Logo (SVG)",
+    logoSettingHelp:
+      "Carica un logo SVG per personalizzare panoramiche stampabili e includerlo nei backup.",
+    logoFormatError: "Formato logo non supportato. Scegli un file SVG.",
+    accessibilityHeading: "Accessibilità",
+    accessibilityHeadingHelp:
+      "Regola le opzioni che migliorano la leggibilità, come il contrasto elevato.",
+    highContrastSetting: "Alto contrasto",
+    highContrastSettingHelp:
+      "Aumenta il contrasto di testi e contorni per una lettura più agevole in qualsiasi tema.",
+    backupHeading: "Backup e ripristino",
+    backupHeadingHelp:
+      "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati e feedback.",
+    backupSettings: "Backup",
+    backupSettingsHelp:
+      "Scarica uno snapshot JSON con impostazioni, progetti, dispositivi personalizzati, preferiti e dati runtime.",
+    restoreSettings: "Ripristina",
+    restoreSettingsHelp:
+      "Carica uno snapshot JSON esportato in precedenza per ripristinare dati e impostazioni.",
+    aboutHeading: "Informazioni e supporto",
+    aboutHeadingHelp:
+      "Consulta dettagli sulla versione e i collegamenti al supporto.",
+    versionLabel: "Versione",
+    supportLink: "Supporto",
+    supportLinkHelp:
+      "Apri la documentazione di supporto in una nuova scheda.",
+    restoreSuccess: "Impostazioni ripristinate. Ricarica per applicare tutte le modifiche.",
+    restoreVersionWarning: "Il backup è stato creato con una versione diversa. Alcune funzioni potrebbero non essere trasferite.",
+    saveSettings: "Salva",
+    saveSettingsHelp:
+      "Applica le modifiche di personalizzazione e chiudi le Impostazioni.",
+    cancelSettings: "Annulla",
+    cancelSettingsHelp:
+      "Chiudi le Impostazioni senza salvare; colori e logo tornano allo stato precedente.",
     helpButtonLabel: "Aiuto",
     helpButtonTitle: "Aiuto (premi ?, H, F1 o Ctrl+/)",
     helpButtonHelp: "Apri la finestra di aiuto (premi ?, H, F1 o Ctrl+/).",
@@ -868,35 +940,6 @@ const texts = {
       "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
       "Aplica un tema rosa divertido; funciona con modo claro u oscuro y se recuerda la próxima vez.",
-    settingsButton: "Configuración",
-    settingsHeading: "Configuración",
-    languageSetting: "Idioma",
-    darkModeSetting: "Modo oscuro",
-    accentColorSetting: "Color de acento",
-    fontSizeSetting: "Tamaño de fuente",
-    fontFamilySetting: "Fuente",
-    bundledFontsGroup: "Fuentes incluidas",
-    localFontsGroup: "Fuentes locales",
-    localFontsButton: "Añadir fuente local…",
-    localFontsUnsupported: "Las fuentes locales no son compatibles con este navegador.",
-    localFontsAdded: "Añadidas: %s",
-    localFontsAlreadyAdded: "Ya añadidas: %s",
-    localFontsNoFonts: "No se seleccionaron fuentes.",
-    localFontsError: "No se pudo acceder a las fuentes locales.",
-    logoSetting: "Logo (SVG)",
-    logoFormatError: "Formato de logotipo no compatible. Elige un archivo SVG.",
-    accessibilityHeading: "Accesibilidad",
-    highContrastSetting: "Alto contraste",
-    backupHeading: "Copia de seguridad y restauración",
-    backupSettings: "Guardar copia",
-    restoreSettings: "Restaurar",
-    aboutHeading: "Acerca de y soporte",
-    versionLabel: "Versión",
-    supportLink: "Soporte",
-    restoreSuccess: "Configuración restaurada. Recarga para aplicar los cambios.",
-    restoreVersionWarning: "La copia de seguridad se creó con una versión diferente. Es posible que algunas funciones no se transfieran.",
-    saveSettings: "Guardar",
-    cancelSettings: "Cancelar",
     reloadAppLabel: "Forzar recarga",
     reloadAppHelp: "Borra la caché y recarga la aplicación sin eliminar los datos guardados.",
 
@@ -1176,6 +1219,71 @@ const texts = {
     printBtn: "Imprimir",
     exportAndRevertBtn: "Exportar y Restaurar por Defecto",
     exportAndRevertBtnHelp: "Exporta la base y restaura los datos por defecto.",
+    settingsButton: "Ajustes",
+    settingsButtonHelp:
+      "Abre Ajustes para personalizar idioma, colores, tipografías, opciones de accesibilidad y copias de seguridad.",
+    settingsHeading: "Ajustes",
+    settingsHeadingHelp:
+      "Configura idioma, temas, tipografía, accesibilidad y copias de seguridad desde un único panel.",
+    languageSetting: "Idioma",
+    settingsLanguageHelp:
+      "Elige el idioma de la interfaz. Los cambios se aplican al instante y se recuerdan para la próxima visita.",
+    darkModeSetting: "Modo oscuro",
+    settingsDarkModeHelp:
+      "Activa o desactiva el modo oscuro desde Ajustes viendo el resultado al momento.",
+    accentColorSetting: "Color de acento",
+    accentColorHelp:
+      "Selecciona el color de acento usado en botones, destacados y diagramas. Se guarda con tus ajustes.",
+    fontSizeSetting: "Tamaño de fuente",
+    fontSizeSettingHelp:
+      "Define el tamaño base de fuente para mejorar la legibilidad o mostrar más información.",
+    fontFamilySetting: "Tipografía",
+    fontFamilySettingHelp:
+      "Elige la tipografía que usa el planificador. Las fuentes locales añadidas aparecerán en esta lista.",
+    bundledFontsGroup: "Fuentes incluidas",
+    localFontsGroup: "Fuentes locales",
+    localFontsButton: "Añadir fuente local…",
+    localFontsButtonHelp:
+      "Permite que la aplicación use fuentes instaladas en este dispositivo si el navegador lo admite.",
+    localFontsUnsupported: "Las fuentes locales no son compatibles con este navegador.",
+    localFontsAdded: "Añadida: %s",
+    localFontsAlreadyAdded: "Ya añadida: %s",
+    localFontsNoFonts: "No se seleccionaron fuentes.",
+    localFontsError: "No se pudo acceder a las fuentes locales.",
+    logoSetting: "Logotipo (SVG)",
+    logoSettingHelp:
+      "Carga un logotipo SVG para personalizar los resúmenes imprimibles e incluirlo en las copias de seguridad.",
+    logoFormatError: "Formato de logotipo no compatible. Elige un archivo SVG.",
+    accessibilityHeading: "Accesibilidad",
+    accessibilityHeadingHelp:
+      "Ajusta opciones que mejoran la legibilidad, como el alto contraste.",
+    highContrastSetting: "Alto contraste",
+    highContrastSettingHelp:
+      "Incrementa el contraste del texto y los bordes para facilitar la lectura con cualquier tema.",
+    backupHeading: "Copia de seguridad y restaurar",
+    backupHeadingHelp:
+      "Gestiona copias de seguridad completas de ajustes, proyectos guardados, dispositivos personalizados y comentarios.",
+    backupSettings: "Copia de seguridad",
+    backupSettingsHelp:
+      "Descarga una instantánea JSON con ajustes, proyectos, dispositivos personalizados, favoritos y datos de autonomía.",
+    restoreSettings: "Restaurar",
+    restoreSettingsHelp:
+      "Carga una instantánea JSON exportada previamente para restaurar datos y ajustes.",
+    aboutHeading: "Acerca de y soporte",
+    aboutHeadingHelp:
+      "Consulta la versión y accede a los recursos de soporte.",
+    versionLabel: "Versión",
+    supportLink: "Soporte",
+    supportLinkHelp:
+      "Abre la documentación de soporte en una nueva pestaña.",
+    restoreSuccess: "Ajustes restaurados. Recarga para aplicar todos los cambios.",
+    restoreVersionWarning: "La copia se creó con otra versión. Algunas funciones podrían no transferirse.",
+    saveSettings: "Guardar",
+    saveSettingsHelp:
+      "Aplica los cambios de personalización y cierra Ajustes.",
+    cancelSettings: "Cancelar",
+    cancelSettingsHelp:
+      "Cierra Ajustes sin guardar; los colores y el logotipo vuelven a su estado anterior.",
     helpButtonLabel: "Ayuda",
     helpButtonTitle: "Ayuda (presiona ?, H, F1 o Ctrl+/)",
     helpButtonHelp:
@@ -1280,35 +1388,6 @@ const texts = {
       "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
     pinkModeHelp:
       "Active un thème rose ludique; fonctionne en mode clair ou sombre et est enregistré.",
-    settingsButton: "Paramètres",
-    settingsHeading: "Paramètres",
-    languageSetting: "Langue",
-    darkModeSetting: "Mode sombre",
-    accentColorSetting: "Couleur d'accent",
-    fontSizeSetting: "Taille de police",
-    fontFamilySetting: "Police",
-    bundledFontsGroup: "Polices intégrées",
-    localFontsGroup: "Polices locales",
-    localFontsButton: "Ajouter une police locale…",
-    localFontsUnsupported: "Les polices locales ne sont pas prises en charge par ce navigateur.",
-    localFontsAdded: "Ajoutées : %s",
-    localFontsAlreadyAdded: "Déjà ajoutées : %s",
-    localFontsNoFonts: "Aucune police sélectionnée.",
-    localFontsError: "Impossible d'accéder aux polices locales.",
-    logoSetting: "Logo (SVG)",
-    logoFormatError: "Format de logo non pris en charge. Veuillez choisir un fichier SVG.",
-    accessibilityHeading: "Accessibilité",
-    highContrastSetting: "Contraste élevé",
-    backupHeading: "Sauvegarde et restauration",
-    backupSettings: "Sauvegarder",
-    restoreSettings: "Restaurer",
-    aboutHeading: "À propos et support",
-    versionLabel: "Version",
-    supportLink: "Support",
-    restoreSuccess: "Paramètres restaurés. Rechargez pour appliquer les modifications.",
-    restoreVersionWarning: "La sauvegarde a été créée avec une version différente. Certaines fonctionnalités pourraient ne pas être transférées.",
-    saveSettings: "Enregistrer",
-    cancelSettings: "Annuler",
     reloadAppLabel: "Recharger",
     reloadAppHelp: "Vider le cache et recharger l'application sans supprimer les données enregistrées.",
 
@@ -1588,6 +1667,71 @@ const texts = {
     printBtn: "Imprimer",
     exportAndRevertBtn: "Exporter et Réinitialiser",
     exportAndRevertBtnHelp: "Exporter la base puis restaurer les données par défaut.",
+    settingsButton: "Paramètres",
+    settingsButtonHelp:
+      "Ouvrez Paramètres pour personnaliser la langue, les couleurs, les polices, l’accessibilité et les sauvegardes.",
+    settingsHeading: "Paramètres",
+    settingsHeadingHelp:
+      "Configurez langue, thèmes, typographie, accessibilité et sauvegardes depuis un seul panneau.",
+    languageSetting: "Langue",
+    settingsLanguageHelp:
+      "Choisissez la langue de l’interface. Les modifications sont instantanées et mémorisées pour la prochaine visite.",
+    darkModeSetting: "Mode sombre",
+    settingsDarkModeHelp:
+      "Activez ou désactivez le mode sombre depuis Paramètres et voyez le résultat immédiatement.",
+    accentColorSetting: "Couleur d’accent",
+    accentColorHelp:
+      "Sélectionnez la couleur d’accent utilisée pour les boutons, les surlignages et le diagramme. Elle est enregistrée.",
+    fontSizeSetting: "Taille de police",
+    fontSizeSettingHelp:
+      "Définissez la taille de police de base pour améliorer la lisibilité ou afficher plus d’informations.",
+    fontFamilySetting: "Police",
+    fontFamilySettingHelp:
+      "Choisissez la police utilisée par le planificateur. Les polices locales ajoutées apparaissent dans cette liste.",
+    bundledFontsGroup: "Polices incluses",
+    localFontsGroup: "Polices locales",
+    localFontsButton: "Ajouter une police locale…",
+    localFontsButtonHelp:
+      "Autorisez l’application à utiliser les polices installées sur cet appareil si le navigateur le permet.",
+    localFontsUnsupported: "Les polices locales ne sont pas prises en charge par ce navigateur.",
+    localFontsAdded: "Ajoutée : %s",
+    localFontsAlreadyAdded: "Déjà ajoutée : %s",
+    localFontsNoFonts: "Aucune police sélectionnée.",
+    localFontsError: "Impossible d’accéder aux polices locales.",
+    logoSetting: "Logo (SVG)",
+    logoSettingHelp:
+      "Importez un logo SVG pour personnaliser les aperçus imprimables et l’inclure dans les sauvegardes.",
+    logoFormatError: "Format de logo non pris en charge. Choisissez un fichier SVG.",
+    accessibilityHeading: "Accessibilité",
+    accessibilityHeadingHelp:
+      "Ajustez les options qui améliorent la lisibilité, comme le contraste élevé.",
+    highContrastSetting: "Contraste élevé",
+    highContrastSettingHelp:
+      "Augmentez le contraste du texte et des contours pour une lecture plus confortable quel que soit le thème.",
+    backupHeading: "Sauvegarde et restauration",
+    backupHeadingHelp:
+      "Gérez des sauvegardes complètes des réglages, projets enregistrés, appareils personnalisés et retours.",
+    backupSettings: "Sauvegarder",
+    backupSettingsHelp:
+      "Téléchargez une sauvegarde JSON comprenant réglages, projets, appareils personnalisés, favoris et données d’autonomie.",
+    restoreSettings: "Restaurer",
+    restoreSettingsHelp:
+      "Chargez une sauvegarde JSON exportée auparavant pour restaurer données et réglages.",
+    aboutHeading: "À propos et support",
+    aboutHeadingHelp:
+      "Consultez les informations de version et les ressources d’assistance.",
+    versionLabel: "Version",
+    supportLink: "Support",
+    supportLinkHelp:
+      "Ouvrez la documentation d’assistance dans un nouvel onglet.",
+    restoreSuccess: "Paramètres restaurés. Rechargez pour appliquer tous les changements.",
+    restoreVersionWarning: "La sauvegarde a été créée avec une autre version. Certaines fonctions peuvent ne pas être transférées.",
+    saveSettings: "Enregistrer",
+    saveSettingsHelp:
+      "Appliquez les personnalisations et fermez Paramètres.",
+    cancelSettings: "Annuler",
+    cancelSettingsHelp:
+      "Fermez Paramètres sans enregistrer ; les couleurs et le logo reviennent à leur état précédent.",
     helpButtonLabel: "Aide",
     helpButtonTitle: "Aide (appuyez sur ?, H, F1 ou Ctrl+/)",
     helpButtonHelp:
@@ -1694,35 +1838,6 @@ const texts = {
       "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:
       "Aktiviere ein verspieltes pinkes Design; funktioniert mit hellen oder dunklen Modi und wird gemerkt.",
-    settingsButton: "Einstellungen",
-    settingsHeading: "Einstellungen",
-    languageSetting: "Sprache",
-    darkModeSetting: "Dunkelmodus",
-    accentColorSetting: "Akzentfarbe",
-    fontSizeSetting: "Schriftgröße",
-    fontFamilySetting: "Schriftart",
-    bundledFontsGroup: "Enthaltene Schriftarten",
-    localFontsGroup: "Lokale Schriftarten",
-    localFontsButton: "Lokale Schriftart hinzufügen…",
-    localFontsUnsupported: "Lokale Schriftarten werden in diesem Browser nicht unterstützt.",
-    localFontsAdded: "Hinzugefügt: %s",
-    localFontsAlreadyAdded: "Bereits vorhanden: %s",
-    localFontsNoFonts: "Keine Schriftarten ausgewählt.",
-    localFontsError: "Zugriff auf lokale Schriftarten nicht möglich.",
-    logoSetting: "Logo (SVG)",
-    logoFormatError: "Nicht unterstütztes Logoformat. Bitte eine SVG-Datei wählen.",
-    accessibilityHeading: "Barrierefreiheit",
-    highContrastSetting: "Hoher Kontrast",
-    backupHeading: "Sichern & Wiederherstellen",
-    backupSettings: "Sichern",
-    restoreSettings: "Wiederherstellen",
-    aboutHeading: "Über & Support",
-    versionLabel: "Version",
-    supportLink: "Support",
-    restoreSuccess: "Einstellungen wiederhergestellt. Zum Anwenden neu laden.",
-    restoreVersionWarning: "Die Sicherung wurde mit einer anderen Version erstellt. Einige Funktionen werden möglicherweise nicht übertragen.",
-    saveSettings: "Speichern",
-    cancelSettings: "Abbrechen",
     reloadAppLabel: "Neu laden",
     reloadAppHelp: "Cache leeren und Anwendung neu laden, ohne gespeicherte Daten zu entfernen.",
 
@@ -2003,6 +2118,71 @@ const texts = {
     printBtn: "Drucken",
     exportAndRevertBtn: "Exportieren und auf Standarddatenbank zurücksetzen",
     exportAndRevertBtnHelp: "Datenbank exportieren und auf Standarddaten zurücksetzen.",
+    settingsButton: "Einstellungen",
+    settingsButtonHelp:
+      "Öffne die Einstellungen, um Sprache, Farben, Schriften, Barrierefreiheit und Sicherungen anzupassen.",
+    settingsHeading: "Einstellungen",
+    settingsHeadingHelp:
+      "Konfiguriere Sprache, Themes, Typografie, Barrierefreiheit und Backups zentral.",
+    languageSetting: "Sprache",
+    settingsLanguageHelp:
+      "Wähle die Oberflächensprache. Änderungen wirken sofort und werden gespeichert.",
+    darkModeSetting: "Dunkelmodus",
+    settingsDarkModeHelp:
+      "Schalte den Dark Mode in den Einstellungen ein oder aus und sieh das Ergebnis sofort.",
+    accentColorSetting: "Akzentfarbe",
+    accentColorHelp:
+      "Wähle die Akzentfarbe für Buttons, Hervorhebungen und Diagramm. Die Auswahl wird gespeichert.",
+    fontSizeSetting: "Schriftgröße",
+    fontSizeSettingHelp:
+      "Bestimme die Grundschriftgröße für bessere Lesbarkeit oder mehr Platz auf dem Bildschirm.",
+    fontFamilySetting: "Schrift",
+    fontFamilySettingHelp:
+      "Wähle die im Planner verwendete Schrift. Hinzugefügte lokale Fonts erscheinen in der Liste.",
+    bundledFontsGroup: "Mitgelieferte Schriften",
+    localFontsGroup: "Lokale Schriften",
+    localFontsButton: "Lokale Schrift hinzufügen…",
+    localFontsButtonHelp:
+      "Erlaube der App, installierte Schriften dieses Geräts zu nutzen, sofern der Browser es unterstützt.",
+    localFontsUnsupported: "Lokale Schriften werden von diesem Browser nicht unterstützt.",
+    localFontsAdded: "Hinzugefügt: %s",
+    localFontsAlreadyAdded: "Bereits hinzugefügt: %s",
+    localFontsNoFonts: "Keine Schriften ausgewählt.",
+    localFontsError: "Zugriff auf lokale Schriften nicht möglich.",
+    logoSetting: "Logo (SVG)",
+    logoSettingHelp:
+      "Lade ein SVG-Logo hoch, das in Druckübersichten und Sicherungen verwendet wird.",
+    logoFormatError: "Nicht unterstütztes Logo-Format. Bitte eine SVG-Datei wählen.",
+    accessibilityHeading: "Barrierefreiheit",
+    accessibilityHeadingHelp:
+      "Passe Optionen für bessere Lesbarkeit wie hohen Kontrast an.",
+    highContrastSetting: "Hoher Kontrast",
+    highContrastSettingHelp:
+      "Erhöht den Kontrast von Text und Konturen für bessere Lesbarkeit in allen Themes.",
+    backupHeading: "Sichern & Wiederherstellen",
+    backupHeadingHelp:
+      "Verwalte vollständige Sicherungen von Einstellungen, Projekten, eigenen Geräten und Feedback.",
+    backupSettings: "Sichern",
+    backupSettingsHelp:
+      "Lade eine JSON-Sicherung mit Einstellungen, Projekten, eigenen Geräten, Favoriten und Laufzeitdaten herunter.",
+    restoreSettings: "Wiederherstellen",
+    restoreSettingsHelp:
+      "Importiere eine zuvor exportierte JSON-Sicherung, um Daten und Einstellungen wiederherzustellen.",
+    aboutHeading: "Info & Support",
+    aboutHeadingHelp:
+      "Zeigt Versionsinfos und Links zum Support.",
+    versionLabel: "Version",
+    supportLink: "Support",
+    supportLinkHelp:
+      "Öffnet die Support-Dokumentation in einem neuen Tab.",
+    restoreSuccess: "Einstellungen wiederhergestellt. Zum Anwenden Seite neu laden.",
+    restoreVersionWarning: "Die Sicherung stammt aus einer anderen Version. Manche Funktionen werden eventuell nicht übernommen.",
+    saveSettings: "Speichern",
+    saveSettingsHelp:
+      "Übernimmt die Personalisierung und schließt die Einstellungen.",
+    cancelSettings: "Abbrechen",
+    cancelSettingsHelp:
+      "Schließt die Einstellungen ohne zu speichern; Farben und Logo werden zurückgesetzt.",
     helpButtonLabel: "Hilfe",
     helpButtonTitle: "Hilfe (Drücke ?, H, F1 oder Strg+/)",
     helpButtonHelp: "Öffnet den Hilfedialog (drücke ?, H, F1 oder Strg+/).",

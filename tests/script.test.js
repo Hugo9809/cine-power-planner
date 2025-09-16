@@ -6701,6 +6701,58 @@ describe('script.js functions', () => {
     expect(helpDialog.hasAttribute('hidden')).toBe(true);
   });
 
+  test('settings controls expose descriptive hover help', () => {
+    const settingsButton = document.getElementById('settingsButton');
+    expect(settingsButton.getAttribute('data-help')).toBe(
+      texts.en.settingsButtonHelp
+    );
+
+    const expectHelp = (id, expected) => {
+      const el = document.getElementById(id);
+      expect(el).not.toBeNull();
+      expect(el.getAttribute('data-help')).toBe(expected);
+    };
+
+    settingsButton.click();
+    const settingsDialog = document.getElementById('settingsDialog');
+    expect(settingsDialog.hasAttribute('hidden')).toBe(false);
+
+    expectHelp('settingsTitle', texts.en.settingsHeadingHelp);
+    expectHelp('settingsLanguageLabel', texts.en.settingsLanguageHelp);
+    expectHelp('settingsLanguage', texts.en.settingsLanguageHelp);
+    expectHelp('settingsDarkModeLabel', texts.en.settingsDarkModeHelp);
+    expectHelp('settingsDarkMode', texts.en.settingsDarkModeHelp);
+    expectHelp('accentColorLabel', texts.en.accentColorHelp);
+    expectHelp('accentColorInput', texts.en.accentColorHelp);
+    expectHelp('settingsFontSizeLabel', texts.en.fontSizeSettingHelp);
+    expectHelp('settingsFontSize', texts.en.fontSizeSettingHelp);
+    expectHelp('settingsFontFamilyLabel', texts.en.fontFamilySettingHelp);
+    expectHelp('settingsFontFamily', texts.en.fontFamilySettingHelp);
+
+    const localFontsButton = document.getElementById('localFontsButton');
+    expect(localFontsButton.getAttribute('data-help')).toBe(
+      texts.en.localFontsButtonHelp
+    );
+
+    expectHelp('settingsLogoLabel', texts.en.logoSettingHelp);
+    expectHelp('settingsLogo', texts.en.logoSettingHelp);
+    expectHelp('settingsHighContrastLabel', texts.en.highContrastSettingHelp);
+    expectHelp('settingsHighContrast', texts.en.highContrastSettingHelp);
+    expectHelp('accessibilityHeading', texts.en.accessibilityHeadingHelp);
+    expectHelp('backupHeading', texts.en.backupHeadingHelp);
+    expectHelp('backupSettings', texts.en.backupSettingsHelp);
+    expectHelp('restoreSettings', texts.en.restoreSettingsHelp);
+    expectHelp('aboutHeading', texts.en.aboutHeadingHelp);
+    const supportLink = document.getElementById('supportLink');
+    expect(supportLink.getAttribute('data-help')).toBe(
+      texts.en.supportLinkHelp
+    );
+    expectHelp('settingsSave', texts.en.saveSettingsHelp);
+    expectHelp('settingsCancel', texts.en.cancelSettingsHelp);
+
+    document.getElementById('settingsCancel').click();
+  });
+
   test('generateConnectorSummary labels extras', () => {
     const data = {
       power: { batteryPlateSupport: [{ type: 'V-Mount', mount: 'native' }] },
