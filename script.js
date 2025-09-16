@@ -2361,7 +2361,10 @@ function createCrewRow(data = {}) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
-  removeBtn.addEventListener('click', () => row.remove());
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    scheduleProjectAutoSave(true);
+  });
   row.append(roleSel, nameInput, phoneInput, emailInput, removeBtn);
   crewContainer.appendChild(row);
 }
@@ -2385,7 +2388,10 @@ function createPrepRow(data = {}) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
-  removeBtn.addEventListener('click', () => row.remove());
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    scheduleProjectAutoSave(true);
+  });
   row.append(start, span, end, removeBtn);
   prepContainer.appendChild(row);
 }
@@ -2409,7 +2415,10 @@ function createShootRow(data = {}) {
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
-  removeBtn.addEventListener('click', () => row.remove());
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    scheduleProjectAutoSave(true);
+  });
   row.append(start, span, end, removeBtn);
   shootContainer.appendChild(row);
 }
@@ -3925,6 +3934,11 @@ if (projectForm) {
         sel.addEventListener('change', () => updateSelectIconBoxes(sel));
         updateSelectIconBoxes(sel);
     });
+
+    const queueProjectAutoSave = () => scheduleProjectAutoSave();
+    const flushProjectAutoSave = () => scheduleProjectAutoSave(true);
+    projectForm.addEventListener('input', queueProjectAutoSave);
+    projectForm.addEventListener('change', flushProjectAutoSave);
 
     projectForm.querySelectorAll('input, textarea, select').forEach(el => {
         el.addEventListener('change', saveCurrentSession);
@@ -9029,6 +9043,7 @@ if (projectForm) {
         // a page reload can restore the visible gear list without requiring
         // any additional user action.
         saveCurrentSession();
+        scheduleProjectAutoSave(true);
         closeDialog(projectDialog);
     });
 }
@@ -11513,6 +11528,48 @@ function autoSaveCurrentSetup() {
   saveCurrentSession();
   loadedSetupState = getCurrentSetupState();
   checkSetupChanged();
+}
+
+let projectAutoSaveTimer = null;
+
+function runProjectAutoSave() {
+  if (restoringSession) return;
+  projectAutoSaveTimer = null;
+  const hasSetupName = Boolean(setupNameInput && setupNameInput.value.trim());
+  if (!hasSetupName) {
+    saveCurrentSession();
+  }
+  autoSaveCurrentSetup();
+  saveCurrentGearList();
+}
+
+function scheduleProjectAutoSave(immediate = false) {
+  if (restoringSession) {
+    if (projectAutoSaveTimer) {
+      clearTimeout(projectAutoSaveTimer);
+      projectAutoSaveTimer = null;
+    }
+    return;
+  }
+  if (immediate) {
+    if (projectAutoSaveTimer) {
+      clearTimeout(projectAutoSaveTimer);
+      projectAutoSaveTimer = null;
+    }
+    runProjectAutoSave();
+    return;
+  }
+  if (projectAutoSaveTimer) {
+    clearTimeout(projectAutoSaveTimer);
+  }
+  projectAutoSaveTimer = setTimeout(runProjectAutoSave, 300);
+  if (
+    projectAutoSaveTimer &&
+    typeof projectAutoSaveTimer === 'object' &&
+    typeof projectAutoSaveTimer.unref === 'function'
+  ) {
+    projectAutoSaveTimer.unref();
+  }
 }
 
 function setSelectValue(select, value) {
