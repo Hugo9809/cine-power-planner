@@ -345,6 +345,7 @@ const texts = {
     hideDetails: "Hide Details",
 
     batteryTableLabel: "Battery",
+    batteryLifeHeading: "Runtime comparison",
     runtimeLabel: "Estimated Runtime (h)",
     batteryLifeUnit: "hrs",
     runtimeAverageNote: "Note: runtime estimate uses a weighted average of user-submitted runtimes adjusted for resolution, codec, frame rate, brightness and temperature.",
@@ -828,6 +829,7 @@ const texts = {
     showDetails: "Mostra i dettagli",
     hideDetails: "Nascondi dettagli",
     batteryTableLabel: "Batteria",
+    batteryLifeHeading: "Confronto autonomie",
     runtimeLabel: "Autonomia stimata (h)",
     batteryLifeUnit: "ore",
     runtimeAverageNote: "Nota: la stima della durata usa una media ponderata dei tempi inseriti dagli utenti, regolata per risoluzione, codec, frame rate, luminosità e temperatura.",
@@ -1375,6 +1377,7 @@ const texts = {
     hideDetails: "Ocultar Detalles",
 
     batteryTableLabel: "Batería",
+    batteryLifeHeading: "Comparación de autonomía",
     runtimeLabel: "Autonomía Estimada (h)",
     batteryLifeUnit: "h",
     runtimeAverageNote: "Nota: la estimación de autonomía usa un promedio ponderado de las duraciones enviadas por los usuarios, ajustado por resolución, códec, frecuencia de cuadro, brillo y temperatura.",
@@ -1927,6 +1930,7 @@ const texts = {
     hideDetails: "Masquer les Détails",
 
     batteryTableLabel: "Batterie",
+    batteryLifeHeading: "Comparaison d'autonomie",
     runtimeLabel: "Autonomie Estimée (h)",
     batteryLifeUnit: "h",
     runtimeAverageNote: "Note : l’estimation de l’autonomie utilise une moyenne pondérée des durées saisies par les utilisateurs, ajustée selon la résolution, le codec, la cadence, la luminosité et la température.",
@@ -2482,6 +2486,7 @@ const texts = {
     hideDetails: "Details verbergen",
 
     batteryTableLabel: "Akku",
+    batteryLifeHeading: "Laufzeitvergleich",
     runtimeLabel: "Geschätzte Laufzeit (h)",
     batteryLifeUnit: "Std.",
     runtimeAverageNote: "Hinweis: Die Laufzeitschätzung verwendet einen gewichteten Durchschnitt der Nutzereinträge, angepasst an Auflösung, Codec, Bildrate, Helligkeit und Temperatur.",
