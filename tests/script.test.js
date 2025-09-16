@@ -6370,6 +6370,29 @@ describe('script.js functions', () => {
     expect(cameraSelect.value).toBe('Sony FX3');
   });
 
+  test('feature search matches partial device names', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const cameraSelect = document.getElementById('cameraSelect');
+    featureSearch.value = 'fx3';
+    featureSearch.dispatchEvent(new Event('change'));
+    expect(cameraSelect.value).toBe('Sony FX3');
+  });
+
+  test('feature search matches partial feature headings', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const heading = document.getElementById('deviceSelectionHeading');
+    heading.scrollIntoView = jest.fn();
+    heading.focus = jest.fn();
+    featureSearch.value = 'device';
+    featureSearch.dispatchEvent(new Event('change'));
+    expect(heading.scrollIntoView).toHaveBeenCalled();
+    expect(heading.focus).toHaveBeenCalled();
+  });
+
   test('feature search shows predictions on input', () => {
     setupDom(false);
     require('../script.js');

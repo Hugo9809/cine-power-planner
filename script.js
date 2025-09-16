@@ -11676,6 +11676,22 @@ if (helpButton && helpDialog) {
     });
   }
 
+  const findSearchMatch = (map, key) => {
+    if (!key) return null;
+    if (map.has(key)) return map.get(key);
+    for (const [mapKey, value] of map) {
+      if (mapKey.startsWith(key)) {
+        return value;
+      }
+    }
+    for (const [mapKey, value] of map) {
+      if (mapKey.includes(key)) {
+        return value;
+      }
+    }
+    return null;
+  };
+
   const runFeatureSearch = query => {
     if (!query) return;
     const value = query.trim();
@@ -11724,17 +11740,19 @@ if (helpButton && helpDialog) {
       }
     };
 
-    const device = deviceMap.get(cleanKey);
-    if (device && !isHelp) {
-      device.select.value = device.value;
-      device.select.dispatchEvent(new Event('change', { bubbles: true }));
-      focusFeature(device.select);
-      return;
-    }
-    const featureEl = featureMap.get(cleanKey);
-    if (featureEl && !isHelp) {
-      focusFeature(featureEl);
-      return;
+    if (!isHelp) {
+      const device = findSearchMatch(deviceMap, cleanKey);
+      if (device) {
+        device.select.value = device.value;
+        device.select.dispatchEvent(new Event('change', { bubbles: true }));
+        focusFeature(device.select);
+        return;
+      }
+      const featureEl = findSearchMatch(featureMap, cleanKey);
+      if (featureEl) {
+        focusFeature(featureEl);
+        return;
+      }
     }
     openHelp();
     if (helpSearch) {
