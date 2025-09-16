@@ -1733,19 +1733,81 @@ function setLanguage(lang) {
   if (settingsButton) {
     settingsButton.setAttribute("title", texts[lang].settingsButton);
     settingsButton.setAttribute("aria-label", texts[lang].settingsButton);
+    settingsButton.setAttribute(
+      "data-help",
+      texts[lang].settingsButtonHelp || texts[lang].settingsButton
+    );
   }
   const settingsTitleElem = document.getElementById("settingsTitle");
-  if (settingsTitleElem) settingsTitleElem.textContent = texts[lang].settingsHeading;
+  if (settingsTitleElem) {
+    settingsTitleElem.textContent = texts[lang].settingsHeading;
+    settingsTitleElem.setAttribute(
+      "data-help",
+      texts[lang].settingsHeadingHelp || texts[lang].settingsHeading
+    );
+  }
   const settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
-  if (settingsLanguageLabel) settingsLanguageLabel.textContent = texts[lang].languageSetting;
+  if (settingsLanguageLabel) {
+    settingsLanguageLabel.textContent = texts[lang].languageSetting;
+    const languageHelp =
+      texts[lang].settingsLanguageHelp || texts[lang].languageSetting;
+    settingsLanguageLabel.setAttribute("data-help", languageHelp);
+    if (settingsLanguage) {
+      settingsLanguage.setAttribute("data-help", languageHelp);
+      settingsLanguage.setAttribute("aria-label", texts[lang].languageSetting);
+    }
+  }
   const settingsDarkLabel = document.getElementById("settingsDarkModeLabel");
-  if (settingsDarkLabel) settingsDarkLabel.textContent = texts[lang].darkModeSetting;
+  if (settingsDarkLabel) {
+    settingsDarkLabel.textContent = texts[lang].darkModeSetting;
+    const darkModeHelp =
+      texts[lang].settingsDarkModeHelp || texts[lang].darkModeSetting;
+    settingsDarkLabel.setAttribute("data-help", darkModeHelp);
+    if (settingsDarkMode) {
+      settingsDarkMode.setAttribute("data-help", darkModeHelp);
+      settingsDarkMode.setAttribute("aria-label", texts[lang].darkModeSetting);
+    }
+  }
   const accentLabel = document.getElementById("accentColorLabel");
-  if (accentLabel) accentLabel.textContent = texts[lang].accentColorSetting;
+  if (accentLabel) {
+    accentLabel.textContent = texts[lang].accentColorSetting;
+    const accentHelp =
+      texts[lang].accentColorHelp || texts[lang].accentColorSetting;
+    accentLabel.setAttribute("data-help", accentHelp);
+    if (accentColorInput) {
+      accentColorInput.setAttribute("data-help", accentHelp);
+      accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
+    }
+  }
   const fontSizeLabel = document.getElementById("settingsFontSizeLabel");
-  if (fontSizeLabel) fontSizeLabel.textContent = texts[lang].fontSizeSetting;
+  if (fontSizeLabel) {
+    fontSizeLabel.textContent = texts[lang].fontSizeSetting;
+    const sizeHelp =
+      texts[lang].fontSizeSettingHelp || texts[lang].fontSizeSetting;
+    fontSizeLabel.setAttribute("data-help", sizeHelp);
+    if (settingsFontSize) {
+      settingsFontSize.setAttribute("data-help", sizeHelp);
+      settingsFontSize.setAttribute("aria-label", texts[lang].fontSizeSetting);
+    }
+  }
   const fontFamilyLabel = document.getElementById("settingsFontFamilyLabel");
-  if (fontFamilyLabel) fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
+  if (fontFamilyLabel) {
+    fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
+    const familyHelp =
+      texts[lang].fontFamilySettingHelp || texts[lang].fontFamilySetting;
+    fontFamilyLabel.setAttribute("data-help", familyHelp);
+    if (settingsFontFamily) {
+      settingsFontFamily.setAttribute("data-help", familyHelp);
+      settingsFontFamily.setAttribute("aria-label", texts[lang].fontFamilySetting);
+    }
+  }
+  if (localFontsButton) {
+    const localFontsHelp =
+      texts[lang].localFontsButtonHelp || localFontsButton.textContent;
+    localFontsButton.setAttribute("data-help", localFontsHelp);
+    localFontsButton.setAttribute("title", localFontsHelp);
+    localFontsButton.setAttribute("aria-label", localFontsHelp);
+  }
   if (bundledFontGroup) {
     const builtInLabel =
       (texts[lang] && texts[lang].bundledFontsGroup) ||
@@ -1786,21 +1848,93 @@ function setLanguage(lang) {
     localFontsStatus.textContent = template;
   }
   const settingsLogoLabel = document.getElementById("settingsLogoLabel");
-  if (settingsLogoLabel) settingsLogoLabel.textContent = texts[lang].logoSetting;
+  if (settingsLogoLabel) {
+    settingsLogoLabel.textContent = texts[lang].logoSetting;
+    const logoHelp = texts[lang].logoSettingHelp || texts[lang].logoSetting;
+    settingsLogoLabel.setAttribute("data-help", logoHelp);
+    if (settingsLogo) {
+      settingsLogo.setAttribute("data-help", logoHelp);
+      settingsLogo.setAttribute("aria-label", texts[lang].logoSetting);
+    }
+  }
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
-  if (contrastLabel) contrastLabel.textContent = texts[lang].highContrastSetting;
+  if (contrastLabel) {
+    contrastLabel.textContent = texts[lang].highContrastSetting;
+    const contrastHelp =
+      texts[lang].highContrastSettingHelp || texts[lang].highContrastSetting;
+    contrastLabel.setAttribute("data-help", contrastHelp);
+    if (settingsHighContrast) {
+      settingsHighContrast.setAttribute("data-help", contrastHelp);
+      settingsHighContrast.setAttribute(
+        "aria-label",
+        texts[lang].highContrastSetting
+      );
+    }
+  }
   const accessibilityHeading = document.getElementById("accessibilityHeading");
-  if (accessibilityHeading) accessibilityHeading.textContent = texts[lang].accessibilityHeading;
+  if (accessibilityHeading) {
+    accessibilityHeading.textContent = texts[lang].accessibilityHeading;
+    accessibilityHeading.setAttribute(
+      "data-help",
+      texts[lang].accessibilityHeadingHelp || texts[lang].accessibilityHeading
+    );
+  }
   const backupHeading = document.getElementById("backupHeading");
-  if (backupHeading) backupHeading.textContent = texts[lang].backupHeading;
-  if (backupSettings) backupSettings.textContent = texts[lang].backupSettings;
-  if (restoreSettings) restoreSettings.textContent = texts[lang].restoreSettings;
+  if (backupHeading) {
+    backupHeading.textContent = texts[lang].backupHeading;
+    backupHeading.setAttribute(
+      "data-help",
+      texts[lang].backupHeadingHelp || texts[lang].backupHeading
+    );
+  }
+  if (backupSettings) {
+    backupSettings.textContent = texts[lang].backupSettings;
+    const backupHelp =
+      texts[lang].backupSettingsHelp || texts[lang].backupSettings;
+    backupSettings.setAttribute("data-help", backupHelp);
+    backupSettings.setAttribute("title", backupHelp);
+    backupSettings.setAttribute("aria-label", backupHelp);
+  }
+  if (restoreSettings) {
+    restoreSettings.textContent = texts[lang].restoreSettings;
+    const restoreHelp =
+      texts[lang].restoreSettingsHelp || texts[lang].restoreSettings;
+    restoreSettings.setAttribute("data-help", restoreHelp);
+    restoreSettings.setAttribute("title", restoreHelp);
+    restoreSettings.setAttribute("aria-label", restoreHelp);
+  }
   const aboutHeading = document.getElementById("aboutHeading");
-  if (aboutHeading) aboutHeading.textContent = texts[lang].aboutHeading;
-  if (aboutVersionElem) aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION}`;
-  if (supportLink) supportLink.textContent = texts[lang].supportLink;
-  if (settingsSave) settingsSave.textContent = texts[lang].saveSettings;
-  if (settingsCancel) settingsCancel.textContent = texts[lang].cancelSettings;
+  if (aboutHeading) {
+    aboutHeading.textContent = texts[lang].aboutHeading;
+    aboutHeading.setAttribute(
+      "data-help",
+      texts[lang].aboutHeadingHelp || texts[lang].aboutHeading
+    );
+  }
+  if (aboutVersionElem)
+    aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION}`;
+  if (supportLink) {
+    supportLink.textContent = texts[lang].supportLink;
+    const supportHelp =
+      texts[lang].supportLinkHelp || texts[lang].supportLink;
+    supportLink.setAttribute("data-help", supportHelp);
+    supportLink.setAttribute("title", supportHelp);
+  }
+  if (settingsSave) {
+    settingsSave.textContent = texts[lang].saveSettings;
+    const saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings;
+    settingsSave.setAttribute("data-help", saveHelp);
+    settingsSave.setAttribute("title", saveHelp);
+    settingsSave.setAttribute("aria-label", saveHelp);
+  }
+  if (settingsCancel) {
+    settingsCancel.textContent = texts[lang].cancelSettings;
+    const cancelHelp =
+      texts[lang].cancelSettingsHelp || texts[lang].cancelSettings;
+    settingsCancel.setAttribute("data-help", cancelHelp);
+    settingsCancel.setAttribute("title", cancelHelp);
+    settingsCancel.setAttribute("aria-label", cancelHelp);
+  }
   if (reloadButton) {
     reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
     reloadButton.setAttribute("aria-label", texts[lang].reloadAppLabel);
