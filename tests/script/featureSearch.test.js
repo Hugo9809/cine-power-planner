@@ -190,4 +190,59 @@ describe('global feature search helpers', () => {
     );
     expect(resolutionMatch?.value.label).toBe('3840×2160 (UHD)');
   });
+
+  test('searchKey treats mark and mk numbering the same', () => {
+    expect(searchKey('Canon C500 Mark II')).toBe(
+      searchKey('Canon C500 Mk2')
+    );
+    expect(searchKey('Canon C300 Mk III')).toBe(
+      searchKey('Canon C300 Mark 3')
+    );
+    expect(searchKey('Canon C70 MkIV')).toBe(
+      searchKey('Canon C70 Mark 4')
+    );
+  });
+
+  test('searchTokens expose mark and mk variations', () => {
+    const tokens = searchTokens('Canon EOS R5 Mark II');
+    expect(tokens).toEqual(
+      expect.arrayContaining([
+        'mark',
+        'mk',
+        'ii',
+        '2',
+        'mkii',
+        'markii',
+        'mk2',
+        'mark2'
+      ])
+    );
+  });
+
+  test('findBestSearchMatch pairs mk-style queries with mark entries', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('Canon EOS R5 Mark II'),
+      {
+        label: 'Canon EOS R5 Mark II',
+        tokens: searchTokens('Canon EOS R5 Mark II')
+      }
+    );
+
+    const mkResult = findBestSearchMatch(
+      entries,
+      searchKey('r5 mk2'),
+      searchTokens('r5 mk2')
+    );
+
+    expect(mkResult?.value.label).toBe('Canon EOS R5 Mark II');
+
+    const markResult = findBestSearchMatch(
+      entries,
+      searchKey('r5 mark 2'),
+      searchTokens('r5 mark 2')
+    );
+
+    expect(markResult?.value.label).toBe('Canon EOS R5 Mark II');
+  });
 });
