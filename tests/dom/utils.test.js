@@ -1,33 +1,26 @@
-const { getHtmlBody } = require('../domUtils');
-
-let utils;
-
-beforeAll(() => {
-  document.body.innerHTML = getHtmlBody();
-
-  global.devices = {
-    cameras: {},
-    monitors: {},
-    video: {},
-    fiz: { motors: {}, controllers: {}, distance: {} },
-    batteries: {},
-    lenses: { Dummy: {} }
-  };
-  global.loadDeviceData = jest.fn(() => null);
-  global.saveDeviceData = jest.fn();
-  global.loadSetups = jest.fn(() => ({}));
-  global.saveSetups = jest.fn();
-  global.saveSetup = jest.fn();
-  global.loadSetup = jest.fn();
-  global.deleteSetup = jest.fn();
-  
-  require('../../translations.js');
-  global.loadFavorites = jest.fn(() => ({}));
-  global.saveFavorites = jest.fn();
-  utils = require('../../script.js');
-});
+const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 describe('utility function tests', () => {
+  let env;
+  let utils;
+  let devices;
+
+  const addOpt = (id, value) => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = `<option value="${value}">${value}</option>`;
+    sel.value = value;
+  };
+
+  beforeEach(() => {
+    env = setupScriptEnvironment();
+    utils = env.utils;
+    devices = env.globals.devices;
+  });
+
+  afterEach(() => {
+    env?.cleanup();
+  });
+
   test('detectBrand categorizes known brands', () => {
     const { detectBrand } = utils;
     expect(detectBrand('ARRI Alexa')).toBe('arri');
@@ -60,14 +53,9 @@ describe('utility function tests', () => {
 
   test('distanceFizPort defaults to LBUS', () => {
     const { renderSetupDiagram } = utils;
-    const addOpt = (id, value) => {
-      const sel = document.getElementById(id);
-      sel.innerHTML = `<option value="${value}">${value}</option>`;
-      sel.value = value;
-    };
-    global.devices.fiz.distance = {};
-    global.devices.fiz.controllers.TestCtrl = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
-    global.devices.cameras.CamX = { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+    devices.fiz.distance = {};
+    devices.fiz.controllers.TestCtrl = { fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+    devices.cameras.CamX = { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
     addOpt('distanceSelect', 'Unknown');
     addOpt('controller1Select', 'TestCtrl');
     addOpt('cameraSelect', 'CamX');
@@ -78,16 +66,11 @@ describe('utility function tests', () => {
 
   test('distance connection uses Serial for RIA-1 controller', () => {
     const { renderSetupDiagram } = utils;
-    const addOpt = (id, value) => {
-      const sel = document.getElementById(id);
-      sel.innerHTML = `<option value="${value}">${value}</option>`;
-      sel.value = value;
-    };
-    global.devices.cameras.CamX = { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
-    global.devices.fiz.controllers['Arri RIA-1'] = {
+    devices.cameras.CamX = { powerDrawWatts: 10, fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }] };
+    devices.fiz.controllers['Arri RIA-1'] = {
       fizConnectors: [{ type: 'LBUS (LEMO 4-pin)' }, { type: 'SERIAL (LEMO 4-pin)' }]
     };
-    global.devices.fiz.distance.Dist = {};
+    devices.fiz.distance.Dist = {};
     addOpt('cameraSelect', 'CamX');
     addOpt('controller1Select', 'Arri RIA-1');
     addOpt('distanceSelect', 'Dist');
