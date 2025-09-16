@@ -473,8 +473,8 @@
     </div>
     <div id="videoFields" class="hidden">
       <div class="form-row">
-        <label for="videoPower" id="videoPowerInputLabel">Power Input:</label>
-        <input type="text" id="videoPower" aria-labelledby="videoPowerInputLabel" />
+        <label id="videoPowerInputLabel">Power Inputs:</label>
+        <div id="videoPowerContainer" class="flex-1" aria-labelledby="videoPowerInputLabel"></div>
       </div>
       <div class="video-subsection">
         <h4 id="videoVideoInputsHeading">Video Inputs</h4>
@@ -501,8 +501,8 @@
     </div>
     <div id="motorFields" class="hidden">
       <div class="form-row">
-        <label for="motorConnector" id="motorConnectorLabel">Connector:</label>
-        <select id="motorConnector" aria-labelledby="motorConnectorLabel"></select>
+        <label id="motorConnectorLabel">Connector:</label>
+        <div id="motorConnectorContainer" class="flex-1" aria-labelledby="motorConnectorLabel"></div>
       </div>
       <div class="form-row">
         <label for="motorInternal" id="motorInternalLabel">Internal Controller:</label>
@@ -523,8 +523,12 @@
     </div>
     <div id="controllerFields" class="hidden">
       <div class="form-row">
-        <label for="controllerConnector" id="controllerConnectorLabel">Connector:</label>
-        <select id="controllerConnector" aria-labelledby="controllerConnectorLabel"></select>
+        <label id="controllerConnectorLabel">Connector:</label>
+        <div id="controllerConnectorContainer" class="flex-1" aria-labelledby="controllerConnectorLabel"></div>
+      </div>
+      <div class="form-row">
+        <label for="controllerInternal" id="controllerInternalLabel">Internal Controller:</label>
+        <input type="checkbox" id="controllerInternal" aria-labelledby="controllerInternalLabel" />
       </div>
       <div class="form-row">
         <label for="controllerPower" id="controllerPowerLabel">Power Source:</label>

@@ -2682,7 +2682,7 @@ const viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideo
 const viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
 const viewfinderLatencyInput = document.getElementById("viewfinderLatency");
 const videoFieldsDiv = document.getElementById("videoFields");
-const videoPowerInput = document.getElementById("videoPower");
+const videoPowerContainer = document.getElementById("videoPowerContainer");
 const videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 const videoFrequencyInput = document.getElementById("videoFrequency");
@@ -2702,13 +2702,14 @@ function placeWattField(category, data) {
   }
 }
 const motorFieldsDiv = document.getElementById("motorFields");
-const motorConnectorInput = document.getElementById("motorConnector");
+const motorConnectorContainer = document.getElementById("motorConnectorContainer");
 const motorInternalInput = document.getElementById("motorInternal");
 const motorTorqueInput = document.getElementById("motorTorque");
 const motorGearInput = document.getElementById("motorGearTypes");
 const motorNotesInput = document.getElementById("motorNotes");
 const controllerFieldsDiv = document.getElementById("controllerFields");
-const controllerConnectorInput = document.getElementById("controllerConnector");
+const controllerConnectorContainer = document.getElementById("controllerConnectorContainer");
+const controllerInternalInput = document.getElementById("controllerInternal");
 const controllerPowerInput = document.getElementById("controllerPower");
 const controllerBatteryInput = document.getElementById("controllerBattery");
 const controllerConnectivityInput = document.getElementById("controllerConnectivity");
@@ -4069,7 +4070,11 @@ function updateFizConnectorOptions() {
 function getAllMotorConnectorTypes() {
   const types = new Set();
   Object.values(devices.fiz?.motors || {}).forEach(m => {
-    if (m && m.fizConnector) types.add(m.fizConnector);
+    if (!m) return;
+    if (Array.isArray(m.fizConnectors)) {
+      m.fizConnectors.forEach(fc => { if (fc && fc.type) types.add(fc.type); });
+    }
+    if (m.fizConnector) types.add(m.fizConnector);
   });
   return Array.from(types).filter(Boolean).sort(localeSort);
 }
@@ -4078,18 +4083,18 @@ let motorConnectorOptions = getAllMotorConnectorTypes();
 
 function updateMotorConnectorOptions() {
   motorConnectorOptions = getAllMotorConnectorTypes();
-  if (motorConnectorInput) {
-    const cur = motorConnectorInput.value;
-    motorConnectorInput.innerHTML = '';
-    addEmptyOption(motorConnectorInput);
+  document.querySelectorAll('.motor-connector-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
     motorConnectorOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
       opt.textContent = optVal;
-      motorConnectorInput.appendChild(opt);
+      sel.appendChild(opt);
     });
-    if (motorConnectorOptions.includes(cur)) motorConnectorInput.value = cur;
-  }
+    if (motorConnectorOptions.includes(cur)) sel.value = cur;
+  });
 }
 
 function getAllControllerConnectors() {
@@ -4133,18 +4138,18 @@ let controllerConnectivityOptions = getAllControllerConnectivity();
 
 function updateControllerConnectorOptions() {
   controllerConnectorOptions = getAllControllerConnectors();
-  if (controllerConnectorInput) {
-    const cur = controllerConnectorInput.value;
-    controllerConnectorInput.innerHTML = '';
-    addEmptyOption(controllerConnectorInput);
+  document.querySelectorAll('.controller-connector-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
     controllerConnectorOptions.forEach(optVal => {
       const opt = document.createElement('option');
       opt.value = optVal;
       opt.textContent = optVal;
-      controllerConnectorInput.appendChild(opt);
+      sel.appendChild(opt);
     });
-    if (controllerConnectorOptions.includes(cur)) controllerConnectorInput.value = cur;
-  }
+    if (controllerConnectorOptions.includes(cur)) sel.value = cur;
+  });
 }
 
 function updateControllerPowerOptions() {
@@ -4692,60 +4697,236 @@ function getVideoOutputsIO() {
 
 function clearVideoOutputsIO() { setVideoOutputsIO([]); }
 
-// Build a row for editing a FIZ connector entry.
-function createFizConnectorRow(value = '') {
+function createVideoPowerRow(type = '', notes = '', container = videoPowerContainer) {
   const row = document.createElement('div');
   row.className = 'form-row';
+
   const select = document.createElement('select');
-  select.className = 'fiz-connector-select';
-  select.name = 'fizConnector';
+  select.className = 'video-power-type-select';
+  select.name = 'videoPowerType';
   addEmptyOption(select);
-  fizConnectorOptions.forEach(optVal => {
+  (powerPortOptions || []).forEach(optVal => {
     const opt = document.createElement('option');
     opt.value = optVal;
     opt.textContent = optVal;
     select.appendChild(opt);
   });
-  select.value = value;
+  if (type && !(powerPortOptions || []).includes(type)) {
+    const opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    select.appendChild(opt);
+  }
+  select.value = type || '';
   row.appendChild(createFieldWithLabel(select, 'Type'));
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.className = 'video-power-notes-input';
+  notesInput.value = notes || '';
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.textContent = '+';
   addBtn.addEventListener('click', () => {
-    row.after(createFizConnectorRow());
+    const parent = container || row.parentElement;
+    if (!parent) return;
+    row.after(createVideoPowerRow('', '', parent));
   });
   row.appendChild(addBtn);
+
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = '−';
   removeBtn.addEventListener('click', () => {
-    if (fizConnectorContainer.children.length > 1) row.remove();
+    const parent = container || row.parentElement;
+    if (parent && parent.children.length > 1) row.remove();
   });
   row.appendChild(removeBtn);
+
   return row;
 }
 
-function setFizConnectors(list) {
-  fizConnectorContainer.innerHTML = '';
-  const filtered = filterNoneEntries(list);
-  if (filtered.length) {
-    filtered.forEach(item => {
-      const t = typeof item === 'string' ? item : item.type;
-      fizConnectorContainer.appendChild(createFizConnectorRow(t));
+function setVideoPowerInputs(list) {
+  if (!videoPowerContainer) return;
+  videoPowerContainer.innerHTML = '';
+  const items = Array.isArray(list)
+    ? list
+    : list
+      ? [list]
+      : [];
+  if (items.length) {
+    items.forEach(item => {
+      if (!item) {
+        videoPowerContainer.appendChild(createVideoPowerRow('', '', videoPowerContainer));
+        return;
+      }
+      const typeValue = Array.isArray(item.type || item.portType)
+        ? (item.type || item.portType).join(' / ')
+        : (item.type || item.portType || '');
+      const notesValue = item.notes || '';
+      videoPowerContainer.appendChild(createVideoPowerRow(typeValue, notesValue, videoPowerContainer));
     });
   } else {
-    fizConnectorContainer.appendChild(createFizConnectorRow());
+    videoPowerContainer.appendChild(createVideoPowerRow('', '', videoPowerContainer));
   }
 }
 
-function getFizConnectors() {
-  return Array.from(fizConnectorContainer.querySelectorAll('select'))
-    .map(sel => ({ type: sel.value }))
-    .filter(fc => fc.type && fc.type !== 'None');
+function getVideoPowerInputs() {
+  if (!videoPowerContainer) return [];
+  return Array.from(videoPowerContainer.querySelectorAll('.form-row'))
+    .map(row => {
+      const select = row.querySelector('.video-power-type-select');
+      if (!select) return null;
+      const type = (select.value || '').trim();
+      if (!type || type === 'None') return null;
+      const entry = { type };
+      const notesInput = row.querySelector('.video-power-notes-input');
+      const notes = (notesInput && notesInput.value.trim()) || '';
+      if (notes) entry.notes = notes;
+      return entry;
+    })
+    .filter(Boolean);
 }
 
-function clearFizConnectors() {
-  setFizConnectors([]);
+function clearVideoPowerInputs() {
+  setVideoPowerInputs([]);
+}
+
+function createConnectorRow(options, value = '', notes = '', container, selectClass, notesClass = 'connector-notes-input') {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+
+  const select = document.createElement('select');
+  select.className = selectClass;
+  addEmptyOption(select);
+  const optList = Array.isArray(options) ? options : [];
+  optList.forEach(optVal => {
+    const opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  if (value && !optList.includes(value)) {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = value;
+    select.appendChild(opt);
+  }
+  select.value = value || '';
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.className = notesClass;
+  notesInput.value = notes || '';
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.textContent = '+';
+  addBtn.addEventListener('click', () => {
+    const parent = container || row.parentElement;
+    if (!parent) return;
+    row.after(createConnectorRow(options, '', '', parent, selectClass, notesClass));
+  });
+  row.appendChild(addBtn);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.textContent = '−';
+  removeBtn.addEventListener('click', () => {
+    const parent = container || row.parentElement;
+    if (parent && parent.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+
+  return row;
+}
+
+function setConnectorRows(list, container, options, selectClass, notesClass) {
+  if (!container) return;
+  container.innerHTML = '';
+  const items = Array.isArray(list)
+    ? list
+    : list
+      ? [list]
+      : [];
+  if (items.length) {
+    items.forEach(item => {
+      if (!item) {
+        container.appendChild(createConnectorRow(options, '', '', container, selectClass, notesClass));
+        return;
+      }
+      const rawType = item.type !== undefined ? item.type : item.portType;
+      const typeValue = Array.isArray(rawType) ? rawType.join(' / ') : (rawType || '');
+      const notesValue = item.notes || '';
+      container.appendChild(createConnectorRow(options, typeValue, notesValue, container, selectClass, notesClass));
+    });
+  } else {
+    container.appendChild(createConnectorRow(options, '', '', container, selectClass, notesClass));
+  }
+}
+
+function getConnectorRows(container, selectSelector, notesSelector) {
+  if (!container) return [];
+  return Array.from(container.querySelectorAll('.form-row'))
+    .map(row => {
+      const select = row.querySelector(selectSelector);
+      if (!select) return null;
+      const type = (select.value || '').trim();
+      if (!type || type === 'None') return null;
+      const entry = { type };
+      if (notesSelector) {
+        const notesInput = row.querySelector(notesSelector);
+        const notes = notesInput ? notesInput.value.trim() : '';
+        if (notes) entry.notes = notes;
+      }
+      return entry;
+    })
+    .filter(Boolean);
+}
+
+function setFizConnectors(list, container = fizConnectorContainer) {
+  setConnectorRows(list, container, fizConnectorOptions, 'fiz-connector-select', 'fiz-connector-notes');
+  updateFizConnectorOptions();
+}
+
+function getFizConnectors(container = fizConnectorContainer) {
+  return getConnectorRows(container, '.fiz-connector-select', '.fiz-connector-notes');
+}
+
+function clearFizConnectors(container = fizConnectorContainer) {
+  setFizConnectors([], container);
+}
+
+function setMotorConnectors(list) {
+  setConnectorRows(list, motorConnectorContainer, motorConnectorOptions, 'motor-connector-select', 'motor-connector-notes');
+  updateMotorConnectorOptions();
+}
+
+function getMotorConnectors() {
+  return getConnectorRows(motorConnectorContainer, '.motor-connector-select', '.motor-connector-notes');
+}
+
+function clearMotorConnectors() {
+  setMotorConnectors([]);
+}
+
+function setControllerConnectors(list) {
+  setConnectorRows(list, controllerConnectorContainer, controllerConnectorOptions, 'controller-connector-select', 'controller-connector-notes');
+  updateControllerConnectorOptions();
+}
+
+function getControllerConnectors() {
+  return getConnectorRows(controllerConnectorContainer, '.controller-connector-select', '.controller-connector-notes');
+}
+
+function clearControllerConnectors() {
+  setControllerConnectors([]);
 }
 
 function getAllRecordingMedia() {
@@ -4924,6 +5105,19 @@ function updatePowerPortOptions() {
     });
     if (powerPortOptions.includes(curMon)) monitorPortTypeInput.value = curMon;
   }
+
+  document.querySelectorAll('.video-power-type-select').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    powerPortOptions.forEach(optVal => {
+      const opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (powerPortOptions.includes(cur)) sel.value = cur;
+  });
 }
 
 function getAllPlateTypes() {
@@ -8148,17 +8342,16 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else if (type === "video") {
     videoFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
-    videoPowerInput.value = firstPowerInputType(deviceData);
+    setVideoPowerInputs(deviceData.power?.input || []);
     setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
     setVideoOutputsIO(deviceData.videoOutputs || deviceData.video?.outputs || []);
     videoFrequencyInput.value = deviceData.frequency || '';
     videoLatencyInput.value = deviceData.latencyMs || '';
-    motorConnectorInput.value = '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.motors") {
     motorFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
-    motorConnectorInput.value = deviceData.fizConnector || '';
+    setMotorConnectors(deviceData.fizConnectors || (deviceData.fizConnector ? [{ type: deviceData.fizConnector }] : []));
     motorInternalInput.checked = !!deviceData.internalController;
     motorTorqueInput.value = deviceData.torqueNm || '';
     motorGearInput.value = Array.isArray(deviceData.gearTypes) ? deviceData.gearTypes.join(', ') : '';
@@ -8167,10 +8360,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   } else if (type === "fiz.controllers") {
     controllerFieldsDiv.style.display = "block";
     newWattInput.value = deviceData.powerDrawWatts || '';
-    const cc = Array.isArray(deviceData.fizConnectors)
-      ? deviceData.fizConnectors.map(fc => fc.type).join(', ')
-      : (deviceData.fizConnector || '');
-    controllerConnectorInput.value = cc;
+    setControllerConnectors(deviceData.fizConnectors || (deviceData.fizConnector ? [{ type: deviceData.fizConnector }] : []));
+    if (controllerInternalInput) controllerInternalInput.checked = !!deviceData.internalController;
     controllerPowerInput.value = deviceData.powerSource || '';
     controllerBatteryInput.value = deviceData.batteryType || '';
     controllerConnectivityInput.value = deviceData.connectivity || '';
@@ -8465,17 +8656,18 @@ newCategorySelect.addEventListener("change", () => {
   clearFizConnectors();
   clearViewfinders();
   clearTimecodes();
-  videoPowerInput.value = "";
+  clearVideoPowerInputs();
   clearVideoInputs();
   clearVideoOutputsIO();
   videoFrequencyInput.value = "";
   videoLatencyInput.value = "";
-  motorConnectorInput.value = "";
+  clearMotorConnectors();
   motorInternalInput.checked = false;
   motorTorqueInput.value = "";
   motorGearInput.value = "";
   motorNotesInput.value = "";
-  controllerConnectorInput.value = "";
+  clearControllerConnectors();
+  if (controllerInternalInput) controllerInternalInput.checked = false;
   controllerPowerInput.value = "";
   controllerBatteryInput.value = "";
   controllerConnectivityInput.value = "";
@@ -8705,9 +8897,10 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
+    const powerInputs = getVideoPowerInputs();
     targetCategory[name] = {
       powerDrawWatts: watt,
-      power: { input: { type: videoPowerInput.value } },
+      power: { input: powerInputs.length === 0 ? [] : (powerInputs.length === 1 ? powerInputs[0] : powerInputs) },
       videoInputs: getVideoInputs(),
       videoOutputs: getVideoOutputsIO(),
       frequency: videoFrequencyInput.value,
@@ -8723,9 +8916,11 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
+    const motorConnectors = getMotorConnectors();
     targetCategory[name] = {
       powerDrawWatts: watt,
-      fizConnector: motorConnectorInput.value,
+      fizConnector: motorConnectors[0]?.type || '',
+      fizConnectors: motorConnectors,
       internalController: motorInternalInput.checked,
       torqueNm: motorTorqueInput.value ? parseFloat(motorTorqueInput.value) : null,
       gearTypes: motorGearInput.value ? motorGearInput.value.split(',').map(s => s.trim()).filter(Boolean) : [],
@@ -8741,14 +8936,20 @@ addDeviceBtn.addEventListener("click", () => {
     if (isEditing && name !== originalName) {
       delete targetCategory[originalName];
     }
+    const controllerConnectors = getControllerConnectors();
     targetCategory[name] = {
       powerDrawWatts: watt,
-      fizConnector: controllerConnectorInput.value,
+      fizConnector: controllerConnectors[0]?.type || '',
+      fizConnectors: controllerConnectors,
+      internalController: controllerInternalInput ? controllerInternalInput.checked : undefined,
       powerSource: controllerPowerInput.value,
       batteryType: controllerBatteryInput.value,
       connectivity: controllerConnectivityInput.value,
       notes: controllerNotesInput.value
     };
+    if (targetCategory[name].internalController === undefined) {
+      delete targetCategory[name].internalController;
+    }
     Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "fiz.distance") {
     const watt = parseFloat(newWattInput.value);
