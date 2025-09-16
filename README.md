@@ -248,15 +248,15 @@ npm run lint     # run ESLint alone
 npm test
 ```
 
-`npm run lint` executes ESLint without running tests. The `npm test` command then runs ESLint, data consistency checks and Jest tests.
+`npm run lint` executes ESLint without running tests. The `npm test` command then runs ESLint, data consistency checks and a single Jest invocation that executes every project sequentially. Tests run with `--runInBand` and `maxWorkers=1` to minimise parallel memory usage while still failing fast when an assertion breaks.
 
 To run individual suites while iterating you can target specific Jest projects:
 
 ```bash
-npm run test:unit   # module-level logic and storage helpers
-npm run test:data   # static dataset validations
-npm run test:dom    # lightweight DOM utilities
-npm run test:script # reduced smoke checks for script.js
+npm run test:unit   # module-level logic and storage helpers (1 GB heap cap)
+npm run test:data   # static dataset validations (1 GB heap cap)
+npm run test:dom    # lightweight DOM utilities (1.5 GB heap cap)
+npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
 ```
 
 ### Update device data

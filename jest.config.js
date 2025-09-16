@@ -15,5 +15,7 @@ module.exports = {
     createProject('dom', 'jsdom', '<rootDir>/tests/dom/**/*.test.js'),
     createProject('script', 'jsdom', '<rootDir>/tests/script/**/*.test.js')
   ],
-  workerIdleMemoryLimit: '1GB'
+  workerIdleMemoryLimit: '1GB',
+  maxWorkers: 1,
+  bail: 1
 };
