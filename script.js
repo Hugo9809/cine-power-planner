@@ -11458,7 +11458,17 @@ function saveCurrentSession() {
 function autoSaveCurrentSetup() {
   if (!setupNameInput) return;
   const name = setupNameInput.value.trim();
-  if (!name) return;
+  if (!name) {
+    saveCurrentSession();
+    checkSetupChanged();
+    return;
+  }
+  const selectedName = setupSelect ? setupSelect.value : '';
+  if (setupSelect && (!selectedName || name !== selectedName)) {
+    saveCurrentSession();
+    checkSetupChanged();
+    return;
+  }
   const currentSetup = { ...getCurrentSetupState() };
   const gearListHtml = getCurrentGearListHtml();
   if (gearListHtml) {
