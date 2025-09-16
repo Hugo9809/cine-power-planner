@@ -333,6 +333,10 @@ footer a {
   #setup-manager #shareLinkMessage {
     margin-left: 0;
   }
+
+  .settings-hint {
+    margin-left: 0;
+  }
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -350,11 +354,27 @@ footer a {
   align-self: flex-end;
   margin-top: 5px;
 }
+
+.form-row > .inline-form-button {
+  align-self: center;
+  margin-top: 0;
+  white-space: nowrap;
+}
+
 #sharedLinkRow > button {
   align-self: center;
 }
 .form-row > button:not(.clear-input-btn):not(.favorite-toggle) + button:not(.clear-input-btn):not(.favorite-toggle) {
   margin-left: 0;
+}
+
+.settings-hint {
+  flex-basis: 100%;
+  margin: 0;
+  margin-left: calc(var(--form-label-width) + var(--gap-size));
+  font-size: 0.75em;
+  color: var(--control-text);
+  opacity: 0.8;
 }
 
 /* Ensure favorite star aligns with its select element */

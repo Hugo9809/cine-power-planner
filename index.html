@@ -714,11 +714,18 @@
         <div class="form-row">
           <label for="settingsFontFamily" id="settingsFontFamilyLabel">Font</label>
           <select id="settingsFontFamily">
-            <option value="'Ubuntu', sans-serif">Ubuntu</option>
-            <option value="'Arial', sans-serif">Arial</option>
-            <option value="'Times New Roman', serif">Times New Roman</option>
-            <option value="'Courier New', monospace">Courier New</option>
+            <optgroup label="Bundled fonts" id="bundledFontOptions">
+              <option value="'Ubuntu', sans-serif">Ubuntu</option>
+              <option value="'Arial', sans-serif">Arial</option>
+              <option value="'Times New Roman', serif">Times New Roman</option>
+              <option value="'Courier New', monospace">Courier New</option>
+            </optgroup>
+            <optgroup label="Local fonts" id="localFontsGroup"></optgroup>
           </select>
+          <button type="button" id="localFontsButton" class="inline-form-button" hidden>
+            Add local font…
+          </button>
+          <p id="localFontsStatus" class="settings-hint" role="status" aria-live="polite" hidden></p>
         </div>
         <div class="form-row">
           <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>

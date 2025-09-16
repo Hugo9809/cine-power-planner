@@ -17,6 +17,8 @@ const cageNames = Object.keys(cagesData);
 
 const DEFAULT_FILTER_SIZE = '4x5.65';
 
+const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+
 // Read and cache the body of index.html once via shared helper to avoid
 // duplicate disk access across test suites. This keeps memory usage low and
 // speeds up setup when multiple tests need the DOM skeleton.
@@ -47,6 +49,10 @@ function setupDom(removeGear) {
     if (!(key in global)) {
       global[key] = dom.window[key];
     }
+  }
+
+  if (global.URL && typeof global.URL.revokeObjectURL !== 'function') {
+    global.URL.revokeObjectURL = jest.fn();
   }
 
   if (removeGear) {
@@ -2192,6 +2198,25 @@ describe('script.js functions', () => {
     expect(document.body.classList.contains('high-contrast')).toBe(true);
     expect(document.documentElement.classList.contains('high-contrast')).toBe(true);
     expect(dialog.hasAttribute('hidden')).toBe(true);
+  });
+
+  test('local fonts can be added to the selector when supported', async () => {
+    setupDom();
+    window.queryLocalFonts = jest
+      .fn()
+      .mockResolvedValue([{ family: 'Test Sans', fullName: 'Test Sans Regular' }]);
+    require('../script.js');
+    const button = document.getElementById('localFontsButton');
+    expect(button).not.toBeNull();
+    expect(button.hasAttribute('hidden')).toBe(false);
+    button.click();
+    await flushPromises();
+    const select = document.getElementById('settingsFontFamily');
+    const values = Array.from(select.options).map(opt => opt.value);
+    expect(values).toContain("'Test Sans', sans-serif");
+    expect(select.value).toBe("'Test Sans', sans-serif");
+    const status = document.getElementById('localFontsStatus');
+    expect(status.textContent).toContain('Test Sans');
   });
 
   test('applyHighContrast forces white accent color and restores the saved choice', () => {
