@@ -11549,6 +11549,13 @@ function getCurrentGearListHtml() {
                 });
             }
         });
+        clone.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            if (cb.checked) {
+                cb.setAttribute('checked', '');
+            } else {
+                cb.removeAttribute('checked');
+            }
+        });
         const table = clone.querySelector('.gear-table');
         gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
     }
@@ -12912,7 +12919,7 @@ if (helpButton && helpDialog) {
     if (!hadTabIndex) heading.setAttribute('tabindex', '-1');
     try {
       heading.focus({ preventScroll: true });
-    } catch (err) {
+    } catch {
       heading.focus();
     }
     if (!hadTabIndex) {
@@ -13881,11 +13888,27 @@ function createFilterValueSelect(type, selected) {
   sel.setAttribute('multiple', '');
   const { opts } = getFilterValueConfig(type);
   const selectedVals = Array.isArray(selected) ? selected : [];
+  const syncOption = (option, isSelected) => {
+    option.selected = isSelected;
+    if (isSelected) {
+      option.setAttribute('selected', '');
+    } else {
+      option.removeAttribute('selected');
+    }
+  };
+  const syncCheckbox = (checkbox, isChecked) => {
+    checkbox.checked = isChecked;
+    if (isChecked) {
+      checkbox.setAttribute('checked', '');
+    } else {
+      checkbox.removeAttribute('checked');
+    }
+  };
   opts.forEach(o => {
     const opt = document.createElement('option');
     opt.value = o;
     opt.textContent = o;
-    if (selectedVals.includes(o)) opt.selected = true;
+    syncOption(opt, selectedVals.includes(o));
     sel.appendChild(opt);
   });
   // Hidden select holds the values; checkboxes provide the UI
@@ -13899,10 +13922,11 @@ function createFilterValueSelect(type, selected) {
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.value = o;
-    cb.checked = selectedVals.includes(o);
+    syncCheckbox(cb, selectedVals.includes(o));
     cb.addEventListener('change', () => {
       const opt = Array.from(sel.options).find(opt => opt.value === o);
-      if (opt) opt.selected = cb.checked;
+      if (opt) syncOption(opt, cb.checked);
+      syncCheckbox(cb, cb.checked);
       sel.dispatchEvent(new Event('change'));
     });
     lbl.appendChild(cb);
@@ -13912,7 +13936,8 @@ function createFilterValueSelect(type, selected) {
   sel.addEventListener('change', () => {
     Array.from(container.querySelectorAll('input[type="checkbox"]')).forEach(cb => {
       const opt = Array.from(sel.options).find(opt => opt.value === cb.value);
-      cb.checked = !!opt && opt.selected;
+      if (opt) syncOption(opt, opt.selected);
+      syncCheckbox(cb, !!opt && opt.selected);
     });
   });
   container.appendChild(sel);
@@ -13972,12 +13997,24 @@ function applyFilterSelectionsToGearList(info = currentProjectInfo) {
     if (valSel) {
       const arr = Array.isArray(values) ? values : [];
       Array.from(valSel.options).forEach(opt => {
-        opt.selected = arr.includes(opt.value);
+        const selected = arr.includes(opt.value);
+        opt.selected = selected;
+        if (selected) {
+          opt.setAttribute('selected', '');
+        } else {
+          opt.removeAttribute('selected');
+        }
       });
       const container = valSel.closest('.filter-values-container');
       if (container) {
         Array.from(container.querySelectorAll('input[type="checkbox"]')).forEach(cb => {
-          cb.checked = arr.includes(cb.value);
+          const checked = arr.includes(cb.value);
+          cb.checked = checked;
+          if (checked) {
+            cb.setAttribute('checked', '');
+          } else {
+            cb.removeAttribute('checked');
+          }
         });
       }
     }
