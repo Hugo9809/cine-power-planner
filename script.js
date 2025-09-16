@@ -86,6 +86,22 @@ function closeSideMenu() {
 }
 
 /**
+ * Open the sidebar menu if it is currently closed.
+ */
+function openSideMenu() {
+  const menu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('menuOverlay');
+  const toggle = document.getElementById('menuToggle');
+  if (!menu || !overlay || !toggle) return;
+  if (menu.classList.contains('open')) return;
+  menu.classList.add('open');
+  menu.removeAttribute('hidden');
+  overlay.classList.remove('hidden');
+  toggle.setAttribute('aria-expanded', 'true');
+  toggle.setAttribute('aria-label', 'Close menu');
+}
+
+/**
  * Initialize sidebar menu toggle.
  */
 function setupSideMenu() {
@@ -95,14 +111,10 @@ function setupSideMenu() {
   if (!toggle || !menu || !overlay) return;
 
   toggle.addEventListener('click', () => {
-    const isOpen = menu.classList.toggle('open');
-    if (isOpen) {
-      menu.removeAttribute('hidden');
-      overlay.classList.remove('hidden');
-      toggle.setAttribute('aria-expanded', 'true');
-      toggle.setAttribute('aria-label', 'Close menu');
-    } else {
+    if (menu.classList.contains('open')) {
       closeSideMenu();
+    } else {
+      openSideMenu();
     }
   });
 
@@ -11676,6 +11688,26 @@ if (helpButton && helpDialog) {
     });
   }
 
+  const focusFeatureSearchInput = () => {
+    if (!featureSearch) return;
+    const sideMenu = document.getElementById('sideMenu');
+    if (sideMenu?.contains(featureSearch)) {
+      openSideMenu();
+    }
+    if (typeof featureSearch.scrollIntoView === 'function') {
+      featureSearch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    try {
+      featureSearch.focus({ preventScroll: true });
+    } catch {
+      featureSearch.focus();
+    }
+    if (typeof featureSearch.select === 'function') {
+      featureSearch.select();
+    }
+    featureSearch.showPicker?.();
+  };
+
   const runFeatureSearch = query => {
     if (!query) return;
     const value = query.trim();
@@ -11766,7 +11798,7 @@ if (helpButton && helpDialog) {
       if (featureSearch) {
         featureSearch.value = '';
         featureSearchClear.setAttribute('hidden', '');
-        featureSearch.focus();
+        focusFeatureSearchInput();
       }
     });
     if (featureSearch && featureSearch.value) {
@@ -11822,6 +11854,9 @@ if (helpButton && helpDialog) {
       // When the dialog is open, / or Ctrl+F moves focus to the search box
       e.preventDefault();
       if (helpSearch) helpSearch.focus();
+    } else if (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      focusFeatureSearchInput();
     } else if (e.key.toLowerCase() === 'd' && !isTextField) {
       darkModeEnabled = !document.body.classList.contains('dark-mode');
       applyDarkMode(darkModeEnabled);

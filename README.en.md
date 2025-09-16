@@ -17,6 +17,7 @@ The app automatically uses your browser language on first load, and you can swit
 
 ## 🆕 Recent Features
 - Accent and typography controls in Settings let you adjust the accent color, base font size and typeface alongside dark, pink and high contrast themes.
+- Keyboard shortcut for the global search lets you press Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it sits inside the collapsed mobile side menu.
 - Force reload button clears cached service worker files so the offline app refreshes without deleting saved projects or devices.
 - Star icons in every selector pin favorite cameras, batteries and accessories to the top of the list and keep them in backups.
 - Clear local cache button wipes stored projects and settings.
@@ -58,7 +59,7 @@ The app automatically uses your browser language on first load, and you can swit
 
 ### 🧭 Interface Overview
 - A skip link and offline indicator keep the layout accessible on keyboard and touch devices—the badge appears whenever the browser loses its connection.
-- The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result and tap × to clear the query.
+- The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result, use Ctrl+K (⌘K on macOS) to focus it from anywhere (the side menu opens automatically on small screens) and tap × to clear the query.
 - Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup, restore and Clear Local Cache tools.
 - The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
 - The Force reload button (🔄) clears cached service worker files so the offline app updates without deleting saved projects or custom devices.
@@ -67,7 +68,7 @@ The app automatically uses your browser language on first load, and you can swit
 ### ♿ Customization & Accessibility
 - Theme preferences include dark mode, playful pink accents and a dedicated high contrast switch for improved readability.
 - Accent color, base font size and typeface changes apply instantly and persist in the browser, letting you match studio branding or accessibility needs.
-- Built-in keyboard shortcuts cover help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
+- Built-in keyboard shortcuts cover global search (Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
 - Hover-help mode turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
 - Type-to-search inputs, focus-visible controls and star icons beside selectors let you filter long lists quickly and pin favourite devices to the top.
 
@@ -156,7 +157,7 @@ The generator turns your selections into a categorized packing list:
 ### 🔍 Search & Filtering
 - Type inside dropdowns to quickly find entries
 - Filter device lists with a search box
-- Use the global search bar at the top to jump to features, devices or help topics; press Enter to navigate and × to clear.
+- Use the global search bar at the top to jump to features, devices or help topics; press Enter to navigate, Ctrl+K (⌘K on macOS) to focus it instantly and × to clear.
 - Press '/' or Ctrl+F (⌘F on macOS) to focus the nearest search box instantly.
 - Click the star beside any selector to pin favourites so they stay at the top of the list and sync with backups.
 
