@@ -3088,9 +3088,11 @@ const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
 const deviceMap       = new Map();
 // Normalise strings for search comparisons by removing punctuation, diacritics
-// and treating symbols like “&”/“+” as their word equivalents. Falls back to
-// whitespace-stripping when no meaningful characters remain (e.g. emoji-only
-// headings) so legacy behaviour is preserved for those edge cases.
+// and treating symbols like “&”/“+” as their word equivalents. British and
+// American spelling variants are folded together so queries like “favourites”
+// still match “Favorites”. Falls back to whitespace-stripping when no
+// meaningful characters remain (e.g. emoji-only headings) so legacy behaviour
+// is preserved for those edge cases.
 const ROMAN_NUMERAL_VALUES = {
   i: 1,
   v: 5,
@@ -3146,6 +3148,89 @@ const normaliseMarkVariants = str =>
     return `mk${suffix}`;
   });
 
+const SPELLING_VARIANTS = new Map([
+  ['analyse', 'analyze'],
+  ['analysed', 'analyzed'],
+  ['analyses', 'analyzes'],
+  ['analysing', 'analyzing'],
+  ['behaviour', 'behavior'],
+  ['behaviours', 'behaviors'],
+  ['behavioural', 'behavioral'],
+  ['behaviourally', 'behaviorally'],
+  ['centre', 'center'],
+  ['centres', 'centers'],
+  ['colour', 'color'],
+  ['colourful', 'colorful'],
+  ['colouring', 'coloring'],
+  ['colourings', 'colorings'],
+  ['colourless', 'colorless'],
+  ['colours', 'colors'],
+  ['customisation', 'customization'],
+  ['customisations', 'customizations'],
+  ['customise', 'customize'],
+  ['customised', 'customized'],
+  ['customises', 'customizes'],
+  ['customising', 'customizing'],
+  ['defence', 'defense'],
+  ['defences', 'defenses'],
+  ['favour', 'favor'],
+  ['favourable', 'favorable'],
+  ['favourably', 'favorably'],
+  ['favoured', 'favored'],
+  ['favourite', 'favorite'],
+  ['favourites', 'favorites'],
+  ['favouring', 'favoring'],
+  ['favours', 'favors'],
+  ['licence', 'license'],
+  ['licences', 'licenses'],
+  ['localisation', 'localization'],
+  ['localisations', 'localizations'],
+  ['localise', 'localize'],
+  ['localised', 'localized'],
+  ['localises', 'localizes'],
+  ['localising', 'localizing'],
+  ['modelling', 'modeling'],
+  ['modeller', 'modeler'],
+  ['modellers', 'modelers'],
+  ['optimisation', 'optimization'],
+  ['optimisations', 'optimizations'],
+  ['optimise', 'optimize'],
+  ['optimised', 'optimized'],
+  ['optimises', 'optimizes'],
+  ['optimising', 'optimizing'],
+  ['organisation', 'organization'],
+  ['organisations', 'organizations'],
+  ['organise', 'organize'],
+  ['organised', 'organized'],
+  ['organises', 'organizes'],
+  ['organising', 'organizing'],
+  ['personalisation', 'personalization'],
+  ['personalisations', 'personalizations'],
+  ['personalise', 'personalize'],
+  ['personalised', 'personalized'],
+  ['personalises', 'personalizes'],
+  ['personalising', 'personalizing'],
+  ['practise', 'practice'],
+  ['practised', 'practiced'],
+  ['practises', 'practices'],
+  ['practising', 'practicing'],
+  ['theatre', 'theater'],
+  ['theatres', 'theaters'],
+  ['traveller', 'traveler'],
+  ['travellers', 'travelers'],
+  ['travelling', 'traveling']
+]);
+
+const SPELLING_VARIANT_PATTERN =
+  SPELLING_VARIANTS.size > 0
+    ? new RegExp(`\\b(${Array.from(SPELLING_VARIANTS.keys()).join('|')})\\b`, 'g')
+    : null;
+
+const normalizeSpellingVariants = (str) => {
+  if (!SPELLING_VARIANT_PATTERN) return str;
+  return str.replace(SPELLING_VARIANT_PATTERN, match => SPELLING_VARIANTS.get(match) || match);
+};
+
 const searchKey       = str => {
   if (!str) return '';
   const value = String(str);
@@ -3164,6 +3249,7 @@ const searchKey       = str => {
     .replace(/[°º˚]/g, 'deg')
     .replace(/\bdegrees?\b/g, 'deg')
     .replace(/[×✕✖✗✘]/g, 'x');
+  normalized = normalizeSpellingVariants(normalized);
   normalized = normaliseMarkVariants(normalized);
   const simplified = normalized.replace(/[^a-z0-9]+/g, '');
   if (simplified) return simplified;
@@ -3204,13 +3290,18 @@ const searchTokens = str => {
     });
   };
   processParts(normalized);
-  const markNormalized = normaliseMarkVariants(normalized);
-  if (markNormalized !== normalized) {
+  const spellingNormalized = normalizeSpellingVariants(normalized);
+  if (spellingNormalized !== normalized) {
+    processParts(spellingNormalized);
+  }
+  const markNormalized = normaliseMarkVariants(spellingNormalized);
+  if (markNormalized !== spellingNormalized) {
     processParts(markNormalized);
   }
   const markPattern = /\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g;
   let match;
-  while ((match = markPattern.exec(normalized)) !== null) {
+  const variantSource = spellingNormalized || normalized;
+  while ((match = markPattern.exec(variantSource)) !== null) {
     const prefix = match[1];
     const rawValue = match[2];
     const { cleaned, number } = parseMarkSuffix(rawValue);

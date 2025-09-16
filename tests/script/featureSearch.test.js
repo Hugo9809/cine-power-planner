@@ -159,6 +159,33 @@ describe('global feature search helpers', () => {
     );
   });
 
+  test('search handles British and American spelling variants', () => {
+    expect(searchKey('Favourite Colour Settings')).toBe(
+      searchKey('Favorite Color Settings')
+    );
+
+    expect(searchTokens('Favourite Colour Settings')).toEqual(
+      expect.arrayContaining(['favourite', 'favorite', 'colour', 'color'])
+    );
+
+    const entries = new Map();
+    entries.set(
+      searchKey('Favorite Color Settings'),
+      {
+        label: 'Favorite Color Settings',
+        tokens: searchTokens('Favorite Color Settings')
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('favourite colour settings'),
+      searchTokens('favourite colour settings')
+    );
+
+    expect(result?.value.label).toBe('Favorite Color Settings');
+  });
+
   test('findBestSearchMatch handles degree and by queries', () => {
     const entries = new Map();
     entries.set(
