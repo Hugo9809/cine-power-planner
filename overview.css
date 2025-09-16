@@ -27,7 +27,7 @@ table {
 }
 th, td { border: 1px solid var(--panel-border); padding: 8px; text-align: left; font-size: 0.9em; overflow: hidden; }
 th { background-color: var(--control-bg); font-weight: 700; }
-.warning { color: red; font-weight: bold; margin-top: 10px; }
+.warning { color: var(--danger-color); font-weight: bold; margin-top: 10px; }
 
 .gear-table td {
   padding: 4px 0;
@@ -91,7 +91,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
   font-weight: 400;
   margin-top: 0;
   margin-bottom: 5px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--divider-color);
   padding-bottom: 3px;
 }
 
@@ -110,10 +110,10 @@ th { background-color: var(--control-bg); font-weight: 700; }
 .connector-summary { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
 .connector-block { padding: 2px 4px; border-radius: 4px; margin: 2px 2px 0 0; font-size: 0.85em; }
 .info-box { margin-top: 5px; padding: 6px 10px; border-radius: 4px; }
-.power-conn { background-color: rgba(244,67,54,0.15); }
-.fiz-conn { background-color: rgba(76,175,80,0.15); }
-.video-conn { background-color: rgba(33,150,243,0.15); }
-.neutral-conn { background-color: rgba(158,158,158,0.15); }
+.power-conn { background-color: var(--power-conn-bg); }
+.fiz-conn { background-color: var(--fiz-conn-bg); }
+.video-conn { background-color: var(--video-conn-bg); }
+.neutral-conn { background-color: var(--neutral-conn-bg); }
 .diagram-section { margin-top: 20px; }
 .diagram-controls {
   margin-bottom: 10px;
@@ -151,10 +151,10 @@ th { background-color: var(--control-bg); font-weight: 700; }
   .device-category h3 { border-bottom: 1px solid var(--inverse-text-color); color: var(--inverse-text-color); }
   .device-block { background: rgba(255,255,255,0.1); border-color: var(--control-border); box-shadow: var(--panel-shadow); }
   .connector-block, .info-box { background-color: rgba(255,255,255,0.1); }
-  .power-conn { background-color: rgba(244,67,54,0.3); }
-  .fiz-conn { background-color: rgba(76,175,80,0.3); }
-  .video-conn { background-color: rgba(33,150,243,0.3); }
-  .neutral-conn { background-color: rgba(158,158,158,0.3); }
+  .power-conn { background-color: var(--power-conn-bg); }
+  .fiz-conn { background-color: var(--fiz-conn-bg); }
+  .video-conn { background-color: var(--video-conn-bg); }
+  .neutral-conn { background-color: var(--neutral-conn-bg); }
   .gear-table td {
     border-top: 1px solid var(--inverse-text-color);
     border-bottom: 1px solid var(--inverse-text-color);

@@ -42,6 +42,18 @@ try {
 
 const APP_VERSION = "1.0.1";
 
+const getCssVariableValue = (name, fallback = '') => {
+  if (typeof document === 'undefined') return fallback;
+  const root = document.documentElement;
+  if (!root) return fallback;
+  const computed = typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
+    ? window.getComputedStyle(root).getPropertyValue(name).trim()
+    : '';
+  if (computed) return computed;
+  const inline = root.style.getPropertyValue(name).trim();
+  return inline || fallback;
+};
+
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js');
@@ -5985,9 +5997,16 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       };
       // Helper to display method label
       const getMethodLabel = (method) => {
-            if (method === "pins") return `<span style="color:#FF9800;">${texts[currentLang].methodPinsOnly}</span>`;
-            if (method === "both pins and D-Tap") return `<span style="color:#4CAF50;">${texts[currentLang].methodPinsAndDTap}</span>`;
-            if (method === "infinite") return `<span style="color:#007bff;">${texts[currentLang].methodInfinite}</span>`;
+            const colorMap = {
+              pins: { var: '--warning-color', fallback: '#FF9800', text: texts[currentLang].methodPinsOnly },
+              'both pins and D-Tap': { var: '--success-color', fallback: '#4CAF50', text: texts[currentLang].methodPinsAndDTap },
+              infinite: { var: '--info-color', fallback: '#007bff', text: texts[currentLang].methodInfinite }
+            };
+            const entry = colorMap[method];
+            if (entry) {
+              const color = getCssVariableValue(entry.var, entry.fallback);
+              return `<span style="color:${color};">${entry.text}</span>`;
+            }
             return method;
         };
 
@@ -11628,8 +11647,21 @@ function showNotification(type, message) {
   note.textContent = message;
   note.style.padding = '0.5rem 1rem';
   note.style.marginTop = '0.5rem';
-  note.style.background = type === 'error' ? '#fdd' : type === 'warning' ? '#ffd' : '#dfd';
-  note.style.border = '1px solid #ccc';
+  const backgroundVar = type === 'error'
+    ? '--status-error-bg'
+    : type === 'warning'
+      ? '--status-warning-bg'
+      : '--status-success-bg';
+  const fallbackBackground = type === 'error' ? '#fdd' : type === 'warning' ? '#ffd' : '#dfd';
+  note.style.background = getCssVariableValue(backgroundVar, fallbackBackground);
+  const borderColor = getCssVariableValue('--status-border-color', '#ccc');
+  note.style.border = `1px solid ${borderColor}`;
+  const textColorVar = type === 'error'
+    ? '--status-error-text-color'
+    : type === 'warning'
+      ? '--status-warning-text-color'
+      : '--status-success-text-color';
+  note.style.color = getCssVariableValue(textColorVar, '#000');
   container.appendChild(note);
   setTimeout(() => {
     note.remove();

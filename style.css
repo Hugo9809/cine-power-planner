@@ -33,6 +33,36 @@
   --fiz-color: #090;
   --selected-row-bg: #e6f7ff;
   --favorite-inactive-color: #bbb;
+  --link-color: var(--accent-color);
+  --muted-text-color: #555555;
+  --border-strong-color: #ccc;
+  --divider-color: #eee;
+  --diagram-gridline-color: var(--divider-color);
+  --diagram-button-active-bg: #ddd;
+  --warning-color: #ff9800;
+  --warning-text-color: #000000;
+  --danger-color: #f44336;
+  --danger-overlay-color: rgba(244, 67, 54, 0.4);
+  --success-color: #4caf50;
+  --info-color: #2196f3;
+  --neutral-color: #9e9e9e;
+  --status-error-bg: #fdd;
+  --status-warning-bg: #ffd;
+  --status-success-bg: #dfd;
+  --status-border-color: #ccc;
+  --status-error-text-color: #000;
+  --status-warning-text-color: #000;
+  --status-success-text-color: #000;
+  --camera-color: #4caf50;
+  --monitor-color: #2196f3;
+  --video-segment-color: #ffc107;
+  --motor-color: #9c27b0;
+  --controller-color: #ff5722;
+  --distance-color: #795548;
+  --power-conn-bg: rgba(244, 67, 54, 0.15);
+  --fiz-conn-bg: rgba(76, 175, 80, 0.15);
+  --video-conn-bg: rgba(33, 150, 243, 0.15);
+  --neutral-conn-bg: rgba(158, 158, 158, 0.15);
 }
 @media (max-width: 600px) {
   :root {
@@ -122,8 +152,8 @@ textarea {
   top: 0;
   left: 0;
   right: 0;
-  background: #ff9800;
-  color: #000;
+  background: var(--warning-color);
+  color: var(--warning-text-color);
   text-align: center;
   padding: 8px 0;
   z-index: 1000;
@@ -174,7 +204,7 @@ textarea:focus-visible {
 #pinWarning,
 #dtapWarning,
 #compatWarning {
-  color: red;
+  color: var(--danger-color);
   font-weight: bold;
 }
 
@@ -586,7 +616,7 @@ main.legal-content {
 .field-with-label::before {
   content: attr(data-label);
   font-size: 0.75em;
-  color: #555;
+  color: var(--muted-text-color);
   margin-bottom: 2px;
 }
 
@@ -1169,7 +1199,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   color: var(--accent-color);
   margin-top: 0;
   margin-bottom: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--divider-color);
   padding-bottom: 5px;
 }
 
@@ -1180,7 +1210,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 }
 
 .device-ul li {
-  border-bottom: 1px dashed #eee;
+  border-bottom: 1px dashed var(--divider-color);
   padding: 5px 0;
   font-size: 0.9em;
 }
@@ -1405,7 +1435,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   position: relative;
   display: flex;
   height: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-strong-color);
   overflow: visible;
 }
 
@@ -1417,7 +1447,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--inverse-text-color);
   font-size: 0.75em;
   overflow: hidden;
 }
@@ -1428,19 +1458,19 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   padding: 0 2px;
 }
 
-.power-bar .camera { background-color: #4caf50; }
-.power-bar .monitor { background-color: #2196f3; }
-.power-bar .video { background-color: #ffc107; }
-.power-bar .motors { background-color: #9c27b0; }
-.power-bar .controllers { background-color: #ff5722; }
-.power-bar .distance { background-color: #795548; }
+.power-bar .camera { background-color: var(--camera-color); }
+.power-bar .monitor { background-color: var(--monitor-color); }
+.power-bar .video { background-color: var(--video-segment-color); }
+.power-bar .motors { background-color: var(--motor-color); }
+.power-bar .controllers { background-color: var(--controller-color); }
+.power-bar .distance { background-color: var(--distance-color); }
 
 .power-bar .over-usage {
   position: absolute;
   top: 0;
   bottom: 0;
   right: 0;
-  background: rgba(244, 67, 54, 0.4);
+  background: var(--danger-overlay-color);
   z-index: 2;
   pointer-events: none;
 }
@@ -1451,7 +1481,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   top: -4px;
   bottom: -4px;
   width: 2px;
-  background: red;
+  background: var(--danger-color);
   z-index: 4;
   overflow: visible;
 }
@@ -1461,15 +1491,15 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   top: -1.2em;
   left: 50%;
   transform: translateX(-50%);
-  background: #fff;
-  color: red;
+  background: var(--surface-color);
+  color: var(--danger-color);
   font-size: 0.75em;
   padding: 0 2px;
   white-space: nowrap;
 }
 
 #powerDiagram.over .power-bar {
-  border-color: red;
+  border-color: var(--danger-color);
 }
 
 
@@ -1492,8 +1522,8 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 #diagramArea.grid-snap {
   background-size: 20px 20px;
-  background-image: linear-gradient(#eee 1px, transparent 1px),
-                    linear-gradient(90deg, #eee 1px, transparent 1px);
+  background-image: linear-gradient(var(--diagram-gridline-color) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--diagram-gridline-color) 1px, transparent 1px);
 }
 
 #diagramLegend {
@@ -1532,12 +1562,12 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   margin-right: 4px;
   display: inline-block;
 }
-#powerDiagramLegend .camera { background-color: #4caf50; }
-#powerDiagramLegend .monitor { background-color: #2196f3; }
-#powerDiagramLegend .video { background-color: #ffc107; }
-#powerDiagramLegend .motors { background-color: #9c27b0; }
-#powerDiagramLegend .controllers { background-color: #ff5722; }
-#powerDiagramLegend .distance { background-color: #795548; }
+#powerDiagramLegend .camera { background-color: var(--camera-color); }
+#powerDiagramLegend .monitor { background-color: var(--monitor-color); }
+#powerDiagramLegend .video { background-color: var(--video-segment-color); }
+#powerDiagramLegend .motors { background-color: var(--motor-color); }
+#powerDiagramLegend .controllers { background-color: var(--controller-color); }
+#powerDiagramLegend .distance { background-color: var(--distance-color); }
 
 .diagram-controls {
   margin-top: 0.5em;
@@ -1554,7 +1584,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 }
 
 .diagram-controls button.active {
-  background: #ddd;
+  background: var(--diagram-button-active-bg);
 }
 
 @media (max-width: 600px) {
@@ -1570,7 +1600,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 #diagramHint {
   margin-top: 0.25em;
   font-size: 12px;
-  color: #555;
+  color: var(--muted-text-color);
 }
 
 
@@ -1670,34 +1700,34 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 .port-table .power-row th,
 .port-table .power-row td {
-  color: #f44336;
+  color: var(--danger-color);
 }
 
 .port-table .fiz-row th,
 .port-table .fiz-row td {
-  color: #4caf50;
+  color: var(--success-color);
 }
 
 .port-table .video-row th,
 .port-table .video-row td {
-  color: #2196f3;
+  color: var(--info-color);
 }
 
 .power-conn {
-  border-color: #f44336;
-  background-color: rgba(244, 67, 54, 0.15);
+  border-color: var(--danger-color);
+  background-color: var(--power-conn-bg);
 }
 .fiz-conn {
-  border-color: #4caf50;
-  background-color: rgba(76, 175, 80, 0.15);
+  border-color: var(--success-color);
+  background-color: var(--fiz-conn-bg);
 }
 .video-conn {
-  border-color: #2196f3;
-  background-color: rgba(33, 150, 243, 0.15);
+  border-color: var(--info-color);
+  background-color: var(--video-conn-bg);
 }
 .neutral-conn {
-  border-color: #9e9e9e;
-  background-color: rgba(158, 158, 158, 0.15);
+  border-color: var(--neutral-color);
+  background-color: var(--neutral-conn-bg);
 }
 
 
@@ -1791,7 +1821,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 body:not(.light-mode) #temperatureNote th,
 body:not(.light-mode) #temperatureNote td {
-  border-color: #555;
+  border-color: var(--border-strong-color);
 }
 
 /* Battery comparison section */
@@ -1818,7 +1848,7 @@ body:not(.light-mode) #temperatureNote td {
   margin-top: 5px;
 }
 #batteryComparison th, #batteryComparison td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--panel-border);
   padding: 8px;
   text-align: left;
   font-size: 0.9em;
@@ -1839,7 +1869,7 @@ body:not(.light-mode) #temperatureNote td {
 }
 
 #batteryComparison th {
-  background-color: #ffffff;
+  background-color: var(--surface-color);
 }
 
 /* User runtime feedback table */
@@ -1858,23 +1888,23 @@ body:not(.light-mode) #temperatureNote td {
 
 #userFeedbackTable th,
 #userFeedbackTable td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--panel-border);
   padding: 6px;
   white-space: nowrap;
   text-align: left;
 }
 
 #userFeedbackTable th {
-  background-color: #ffffff;
+  background-color: var(--surface-color);
 }
 
 body:not(.light-mode) #userFeedbackTable th {
-  background-color: #333;
+  background-color: var(--panel-bg);
 }
 
 body:not(.light-mode) #userFeedbackTable th,
 body:not(.light-mode) #userFeedbackTable td {
-  border-color: #555;
+  border-color: var(--border-strong-color);
 }
 
 /* Accent handling for feedback table */
@@ -1893,7 +1923,7 @@ body.pink-mode #userFeedbackTable th {
 /* Battery comparison bars */
 .barContainer {
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--surface-color);
   border-radius: 3px;
   overflow: hidden;
   height: 15px; /* Height of the bar */
@@ -1901,14 +1931,14 @@ body.pink-mode #userFeedbackTable th {
 
 .bar {
   height: 100%;
-  background-color: #4CAF50; /* Green color for the bar (both) */
+  background-color: var(--success-color);
   width: 0%; /* Will be set by JS */
   border-radius: 3px;
   transition: width 0.5s ease-out; /* Smooth transition for bar growth */
 }
 
 .bar-pins-only {
-  background-color: #FF9800; /* Orange color for pins only */
+  background-color: var(--warning-color);
 }
 
 /* Runtime weighting */
@@ -1918,7 +1948,7 @@ body.pink-mode #userFeedbackTable th {
 }
 .weightBar {
   height: 100%;
-  background-color: #2196F3;
+  background-color: var(--info-color);
   border-radius: 3px;
   transition: width 0.5s ease-out;
 }
@@ -1950,11 +1980,39 @@ html.dark-mode,
   --panel-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   --panel-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.6);
   --link-color: #7ec8ff;
+  --muted-text-color: #bbb;
+  --border-strong-color: #555;
+  --divider-color: #444;
+  --diagram-gridline-color: #444;
+  --diagram-button-active-bg: #3a3a3d;
+  --warning-text-color: #000000;
+  --danger-color: #ff6666;
+  --danger-overlay-color: rgba(255, 102, 102, 0.4);
+  --success-color: #66bb6a;
+  --info-color: #7ec8ff;
+  --neutral-color: #bbbbbb;
+  --status-error-bg: rgba(255, 102, 102, 0.2);
+  --status-warning-bg: rgba(255, 184, 77, 0.2);
+  --status-success-bg: rgba(102, 187, 106, 0.2);
+  --status-border-color: #444;
+  --status-error-text-color: #f0f0f0;
+  --status-warning-text-color: #f0f0f0;
+  --status-success-text-color: #f0f0f0;
   --diagram-node-fill: #444;
   --power-color: #ff6666;
   --video-color: #7ec8ff;
   --fiz-color: #6f6;
+  --camera-color: #66bb6a;
+  --monitor-color: #7ec8ff;
+  --video-segment-color: #ffd54f;
+  --motor-color: #ce93d8;
+  --controller-color: #ff8a65;
+  --distance-color: #a1887f;
   --selected-row-bg: #003366;
+  --power-conn-bg: rgba(255, 102, 102, 0.3);
+  --fiz-conn-bg: rgba(102, 187, 106, 0.3);
+  --video-conn-bg: rgba(126, 200, 255, 0.3);
+  --neutral-conn-bg: rgba(187, 187, 187, 0.3);
 }
 
 html.high-contrast,
@@ -1969,6 +2027,40 @@ body.high-contrast {
   --panel-bg: #000;
   --panel-border: #fff;
   --link-color: #0ff;
+  --muted-text-color: #fff;
+  --border-strong-color: #fff;
+  --divider-color: #fff;
+  --diagram-gridline-color: #fff;
+  --diagram-button-active-bg: #444;
+  --warning-color: #ff0;
+  --warning-text-color: #000;
+  --danger-color: #f00;
+  --danger-overlay-color: rgba(255, 0, 0, 0.5);
+  --success-color: #0f0;
+  --info-color: #0ff;
+  --neutral-color: #fff;
+  --status-error-bg: #f00;
+  --status-warning-bg: #ff0;
+  --status-success-bg: #0f0;
+  --status-border-color: #fff;
+  --status-error-text-color: #000;
+  --status-warning-text-color: #000;
+  --status-success-text-color: #000;
+  --diagram-node-fill: #fff;
+  --power-color: #f00;
+  --video-color: #0ff;
+  --fiz-color: #0f0;
+  --camera-color: #0f0;
+  --monitor-color: #0ff;
+  --video-segment-color: #ff0;
+  --motor-color: #f0f;
+  --controller-color: #fff;
+  --distance-color: #ff8800;
+  --power-conn-bg: rgba(255, 0, 0, 0.5);
+  --fiz-conn-bg: rgba(0, 255, 0, 0.5);
+  --video-conn-bg: rgba(0, 255, 255, 0.5);
+  --neutral-conn-bg: rgba(255, 255, 255, 0.5);
+  --selected-row-bg: #fff;
 }
 
 html.dark-mode,
@@ -2000,29 +2092,24 @@ body.dark-mode.pink-mode {
 .dark-mode section,
 .dark-mode .device-category,
 .dark-mode #batteryComparison {
-  background-color: #1c1c1e;
-  border-color: #333;
+  background-color: var(--panel-bg);
+  border-color: var(--panel-border);
   box-shadow: var(--panel-shadow);
 }
 .dark-mode fieldset { border-color: var(--inverse-text-color); }
 .dark-mode legend { color: var(--inverse-text-color); }
-.dark-mode #batteryComparison th { background-color: #333; }
-.dark-mode .barContainer { background-color: #333; }
+.dark-mode #batteryComparison th { background-color: var(--control-bg); }
+.dark-mode .barContainer { background-color: var(--panel-bg); }
 .dark-mode .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
-.dark-mode #diagramHint { color: #ccc; }
 .dark-mode .diagram-popup {
   background: rgba(51, 51, 51, 0.95);
   color: var(--inverse-text-color);
-  border-color: #888;
+  border-color: var(--border-strong-color);
   box-shadow: var(--panel-shadow);
 }
 .dark-mode .connector-block,
 .dark-mode .info-box { background-color: rgba(255,255,255,0.1); }
 .dark-mode .scenario-box { background-color: rgba(255,255,255,0.1); }
-.dark-mode .power-conn { background-color: rgba(244, 67, 54, 0.3); }
-.dark-mode .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
-.dark-mode .video-conn { background-color: rgba(33, 150, 243, 0.3); }
-.dark-mode .neutral-conn { background-color: rgba(158, 158, 158, 0.3); }
 .dark-mode .tray-box { background-color: rgba(255,255,255,0.1); }
 .dark-mode #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
 .dark-mode #setupDiagram text { fill: var(--inverse-text-color); }
@@ -2052,12 +2139,40 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     --panel-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     --panel-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.6);
     --link-color: #7ec8ff;
+    --muted-text-color: #bbb;
+    --border-strong-color: #555;
+    --divider-color: #444;
+    --diagram-gridline-color: #444;
+    --diagram-button-active-bg: #3a3a3d;
+    --warning-text-color: #000000;
+    --danger-color: #ff6666;
+    --danger-overlay-color: rgba(255, 102, 102, 0.4);
+    --success-color: #66bb6a;
+    --info-color: #7ec8ff;
+    --neutral-color: #bbbbbb;
+    --status-error-bg: rgba(255, 102, 102, 0.2);
+    --status-warning-bg: rgba(255, 184, 77, 0.2);
+    --status-success-bg: rgba(102, 187, 106, 0.2);
+    --status-border-color: #444;
+    --status-error-text-color: #f0f0f0;
+    --status-warning-text-color: #f0f0f0;
+    --status-success-text-color: #f0f0f0;
     --favorite-inactive-color: #bbb;
     --diagram-node-fill: #444;
     --power-color: #ff6666;
     --video-color: #7ec8ff;
     --fiz-color: #6f6;
+    --camera-color: #66bb6a;
+    --monitor-color: #7ec8ff;
+    --video-segment-color: #ffd54f;
+    --motor-color: #ce93d8;
+    --controller-color: #ff8a65;
+    --distance-color: #a1887f;
     --selected-row-bg: #003366;
+    --power-conn-bg: rgba(255, 102, 102, 0.3);
+    --fiz-conn-bg: rgba(102, 187, 106, 0.3);
+    --video-conn-bg: rgba(126, 200, 255, 0.3);
+    --neutral-conn-bg: rgba(187, 187, 187, 0.3);
     background-color: var(--background-color);
     color: var(--text-color);
   }
@@ -2079,34 +2194,25 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   }
   body:not(.light-mode) fieldset { border-color: var(--inverse-text-color); }
   body:not(.light-mode) legend { color: var(--inverse-text-color); }
-  body:not(.light-mode) #batteryComparison th { background-color: #333; }
-  body:not(.light-mode) .barContainer { background-color: #333; }
+  body:not(.light-mode) #batteryComparison th { background-color: var(--control-bg); }
+  body:not(.light-mode) .barContainer { background-color: var(--panel-bg); }
   body:not(.light-mode) .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
-  body:not(.light-mode) #diagramHint { color: #ccc; }
   body:not(.light-mode) .diagram-popup {
     background: rgba(51, 51, 51, 0.95);
     color: var(--inverse-text-color);
-    border-color: #888;
+    border-color: var(--border-strong-color);
     box-shadow: var(--panel-shadow);
   }
   body:not(.light-mode) .connector-block,
   body:not(.light-mode) .info-box { background-color: rgba(255,255,255,0.1); }
   body:not(.light-mode) .scenario-box { background-color: rgba(255,255,255,0.1); }
-  body:not(.light-mode) .power-conn { background-color: rgba(244, 67, 54, 0.3); }
-  body:not(.light-mode) .fiz-conn { background-color: rgba(76, 175, 80, 0.3); }
-  body:not(.light-mode) .video-conn { background-color: rgba(33, 150, 243, 0.3); }
-  body:not(.light-mode) .neutral-conn { background-color: rgba(158, 158, 158, 0.3); }
   body:not(.light-mode) .tray-box { background-color: rgba(255,255,255,0.1); }
   body:not(.light-mode) #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
   body:not(.light-mode) #setupDiagram text { fill: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram line { stroke: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) { stroke: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram marker polygon { fill: var(--inverse-text-color); }
-  body:not(.light-mode) #setupDiagram .diagram-placeholder { color: #bbb; }
-  body:not(.light-mode) #diagramArea.grid-snap {
-    background-image: linear-gradient(#444 1px, transparent 1px),
-                      linear-gradient(90deg, #444 1px, transparent 1px);
-  }
+  body:not(.light-mode) #setupDiagram .diagram-placeholder { color: var(--muted-text-color); }
   body:not(.light-mode) .help-content {
     border-color: var(--control-border);
   }
@@ -2393,7 +2499,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   font-weight: 400;
   margin-top: 0;
   margin-bottom: 5px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--divider-color);
   padding-bottom: 3px;
 }
 #overviewDialogContent .device-block-grid {
