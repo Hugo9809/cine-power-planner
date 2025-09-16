@@ -230,22 +230,46 @@ function saveDeviceData(deviceData) {
 
 // --- Setup Data Storage ---
 function normalizeSetups(rawData) {
-  if (!rawData) return {};
+  if (!rawData) {
+    return { data: {}, changed: false };
+  }
+
   if (Array.isArray(rawData)) {
     const obj = {};
     const used = new Set();
     const normalized = new Set();
     for (let idx = 0; idx < rawData.length; idx += 1) {
       const item = rawData[idx];
-      if (isPlainObject(item)) {
-        const base = item.name || item.setupName || `Setup ${idx + 1}`;
-        const key = generateUniqueName(base, used, normalized);
-        obj[key] = item;
+      if (!isPlainObject(item)) {
+        continue;
       }
+      const base = item.name || item.setupName || `Setup ${idx + 1}`;
+      const key = generateUniqueName(base, used, normalized);
+      obj[key] = item;
     }
-    return obj;
+    return { data: obj, changed: true };
   }
-  return isPlainObject(rawData) ? rawData : {};
+
+  if (!isPlainObject(rawData)) {
+    return { data: {}, changed: true };
+  }
+
+  const normalized = {};
+  let changed = false;
+  Object.keys(rawData).forEach((name) => {
+    const value = rawData[name];
+    if (isPlainObject(value)) {
+      normalized[name] = value;
+    } else {
+      changed = true;
+    }
+  });
+
+  if (!changed) {
+    return { data: rawData, changed: false };
+  }
+
+  return { data: normalized, changed: true };
 }
 
 function loadSetups() {
@@ -254,18 +278,19 @@ function loadSetups() {
     SETUP_STORAGE_KEY,
     "Error loading setups from localStorage:",
   );
-  const setups = normalizeSetups(parsedData);
-  if (parsedData && Array.isArray(parsedData) && SAFE_LOCAL_STORAGE) {
+  const { data: setups, changed } = normalizeSetups(parsedData);
+  if (changed && SAFE_LOCAL_STORAGE) {
     SAFE_LOCAL_STORAGE.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
   }
   return setups;
 }
 
 function saveSetups(setups) {
+  const { data: normalizedSetups } = normalizeSetups(setups);
   saveJSONToStorage(
     SAFE_LOCAL_STORAGE,
     SETUP_STORAGE_KEY,
-    setups,
+    normalizedSetups,
     "Error saving setups to localStorage:",
     "Setups saved to localStorage.",
   );

@@ -153,6 +153,18 @@ describe('setup storage', () => {
     expect(loadSetups()).toEqual({});
   });
 
+  test('loadSetups removes entries that are not plain objects', () => {
+    const stored = {
+      A: { foo: 1 },
+      B: null,
+      C: ['not-an-object'],
+      D: 'string value'
+    };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(stored));
+    expect(loadSetups()).toEqual({ A: { foo: 1 } });
+    expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({ A: { foo: 1 } });
+  });
+
   test('saveSetup adds and persists single setup', () => {
     const initial = {A: {foo: 1}};
     localStorage.setItem(SETUP_KEY, JSON.stringify(initial));
