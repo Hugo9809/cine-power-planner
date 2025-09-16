@@ -203,6 +203,10 @@ body:not(.light-mode) .gear-table .category-row td {
   border: none !important;
 }
 
+#overviewDialogContent #gearListOutput select {
+  background: var(--panel-bg) !important;
+}
+
 #overviewDialogContent .diagram-controls button {
   background: var(--surface-color) !important;
   color: var(--text-color) !important;
