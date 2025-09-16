@@ -1,75 +1,19 @@
+const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
+
 describe('script utility helpers', () => {
-  function stubReadyState(value) {
-    const descriptor = Object.getOwnPropertyDescriptor(document, 'readyState');
-    try {
-      Object.defineProperty(document, 'readyState', {
-        configurable: true,
-        get: () => value
-      });
-    } catch {
-      // If redefining fails we still return the descriptor so tests can attempt
-      // to restore it later.
-    }
-    return descriptor;
-  }
+  let env;
+  let utils;
 
-  function restoreReadyState(descriptor) {
-    if (descriptor) {
-      Object.defineProperty(document, 'readyState', descriptor);
-    } else {
-      delete document.readyState;
-    }
-  }
-
-  function loadScriptModule() {
-    jest.resetModules();
-    const { getHtmlBody } = require('../domUtils');
-    document.body.innerHTML = getHtmlBody();
-
-    const readyStateDescriptor = stubReadyState('loading');
-
-    global.devices = {
-      cameras: {},
-      monitors: {},
-      video: {},
-      fiz: { motors: {}, controllers: {}, distance: {} },
-      batteries: {},
-      batteryHotswaps: {}
-    };
-    global.loadDeviceData = jest.fn(() => null);
-    global.saveDeviceData = jest.fn();
-    global.loadSetups = jest.fn(() => ({}));
-    global.saveSetups = jest.fn();
-    global.saveSetup = jest.fn();
-    global.loadSetup = jest.fn();
-    global.deleteSetup = jest.fn();
-    global.loadFavorites = jest.fn(() => ({}));
-    global.saveFavorites = jest.fn();
-
-    require('../../translations.js');
-    const utils = require('../../script.js');
-
-    restoreReadyState(readyStateDescriptor);
-    return utils;
-  }
+  beforeEach(() => {
+    env = setupScriptEnvironment();
+    utils = env.utils;
+  });
 
   afterEach(() => {
-    delete global.devices;
-    delete global.loadDeviceData;
-    delete global.saveDeviceData;
-    delete global.loadSetups;
-    delete global.saveSetups;
-    delete global.saveSetup;
-    delete global.loadSetup;
-    delete global.deleteSetup;
-    delete global.loadFavorites;
-    delete global.saveFavorites;
-    delete window.defaultDevices;
-    jest.resetModules();
+    env?.cleanup();
   });
 
   test('ensureList merges defaults for string and object entries', () => {
-    const utils = loadScriptModule();
     const defaults = { label: 'default' };
 
     const result = utils.ensureList(['D-Tap', { type: 'USB-C', notes: 'PD' }, null], defaults);
@@ -84,8 +28,6 @@ describe('script utility helpers', () => {
   });
 
   test('fixPowerInput normalizes string and array inputs', () => {
-    const utils = loadScriptModule();
-
     const basic = { powerInput: 'D-Tap / USB Type-C®' };
     utils.fixPowerInput(basic);
     expect(basic).not.toHaveProperty('powerInput');
@@ -111,7 +53,6 @@ describe('script utility helpers', () => {
   });
 
   test('generateConnectorSummary groups connectors and escapes content', () => {
-    const utils = loadScriptModule();
     const device = {
       powerInput: 'B-Mount / USB Type-C®',
       power: {
