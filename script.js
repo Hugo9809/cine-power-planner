@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -1939,6 +1939,15 @@ function setLanguage(lang) {
     restoreSettings.setAttribute("title", restoreHelp);
     restoreSettings.setAttribute("aria-label", restoreHelp);
   }
+  if (factoryResetButton) {
+    const resetLabel = texts[lang].factoryResetButton || "Factory reset";
+    const resetHelp =
+      texts[lang].factoryResetButtonHelp || resetLabel;
+    factoryResetButton.textContent = resetLabel;
+    factoryResetButton.setAttribute("data-help", resetHelp);
+    factoryResetButton.setAttribute("title", resetHelp);
+    factoryResetButton.setAttribute("aria-label", resetHelp);
+  }
   const aboutHeading = document.getElementById("aboutHeading");
   if (aboutHeading) {
     aboutHeading.textContent = texts[lang].aboutHeading;
@@ -3097,6 +3106,7 @@ if (settingsLogo) {
 const settingsHighContrast = document.getElementById("settingsHighContrast");
 const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
+const factoryResetButton = document.getElementById("factoryResetButton");
 const restoreSettingsInput = document.getElementById("restoreSettingsInput");
 const settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
 const aboutVersionElem = document.getElementById("aboutVersion");
@@ -12115,6 +12125,66 @@ if (restoreSettings && restoreSettingsInput) {
       }
     };
     reader.readAsText(file);
+  });
+}
+
+if (factoryResetButton) {
+  factoryResetButton.addEventListener('click', () => {
+    const langTexts = texts[currentLang] || texts.en || {};
+    const confirmReset = langTexts.confirmFactoryReset
+      || 'Create a backup and wipe all planner data?';
+    if (!confirm(confirmReset)) return;
+    const confirmResetAgain = langTexts.confirmFactoryResetAgain
+      || 'This will permanently delete all saved planner data. Continue?';
+    if (!confirm(confirmResetAgain)) return;
+
+    if (typeof createSettingsBackup !== 'function') {
+      const errorMsg = langTexts.factoryResetError
+        || 'Factory reset failed. Please try again.';
+      showNotification('error', errorMsg);
+      return;
+    }
+
+    let backupFileName = null;
+    try {
+      backupFileName = createSettingsBackup(false, new Date());
+    } catch (error) {
+      console.error('Backup before factory reset failed', error);
+    }
+
+    if (!backupFileName) {
+      const backupFailedMsg = langTexts.factoryResetBackupFailed
+        || 'Backup failed. Data was not deleted.';
+      showNotification('error', backupFailedMsg);
+      return;
+    }
+
+    if (typeof clearAllData !== 'function') {
+      const errorMsg = langTexts.factoryResetError
+        || 'Factory reset failed. Please try again.';
+      showNotification('error', errorMsg);
+      return;
+    }
+
+    try {
+      clearAllData();
+      if (settingsDialog) {
+        settingsDialog.setAttribute('hidden', '');
+      }
+      const successMsg = langTexts.factoryResetSuccess
+        || 'Backup downloaded. All planner data cleared. Reloading…';
+      showNotification('success', successMsg);
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.location && window.location.reload) {
+          window.location.reload();
+        }
+      }, 600);
+    } catch (error) {
+      console.error('Factory reset failed', error);
+      const errorMsg = langTexts.factoryResetError
+        || 'Factory reset failed. Please try again.';
+      showNotification('error', errorMsg);
+    }
   });
 }
 
