@@ -51,9 +51,11 @@ function generatePrintableOverview() {
             let details = '';
             if (deviceInfo !== undefined && deviceInfo !== null) {
                 const connectors = summarizeConnectors(deviceInfo);
+                const latencyLabel = t.videoLatencyLabel || t.monitorLatencyLabel || 'Latency:';
+                const frequencyLabel = t.videoFrequencyLabel || 'Frequency:';
                 const infoBoxes =
-                    (deviceInfo.latencyMs !== undefined ? `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtmlSafe(String(deviceInfo.latencyMs))}</div>` : '') +
-                    (deviceInfo.frequency ? `<div class="info-box video-conn"><strong>Frequency:</strong> ${escapeHtmlSafe(String(deviceInfo.frequency))}</div>` : '');
+                    (deviceInfo.latencyMs !== undefined ? `<div class="info-box video-conn"><strong>${escapeHtmlSafe(latencyLabel)}</strong> ${escapeHtmlSafe(String(deviceInfo.latencyMs))}</div>` : '') +
+                    (deviceInfo.frequency ? `<div class="info-box video-conn"><strong>${escapeHtmlSafe(frequencyLabel)}</strong> ${escapeHtmlSafe(String(deviceInfo.frequency))}</div>` : '');
                 details = connectors + infoBoxes;
             }
             addToSection(headingKey, `<div class="device-block"><strong>${safeName}</strong>${details}</div>`);
@@ -165,7 +167,8 @@ function generatePrintableOverview() {
         };
         pinsCandidates.sort((a, b) => b.hours - a.hours);
         dtapCandidates.sort((a, b) => b.hours - a.hours);
-        let tableHtml = `<h2>${t.batteryLifeHeading}</h2><table class="battery-table"><tr><th>${t.batteryLabel}</th><th>${t.batteryLifeLabel}</th><th>${t.batteryLifeHeading}</th></tr>`;
+        const runtimeHeading = t.batteryLifeHeading || t.batteryComparisonHeading || 'Runtime comparison';
+        let tableHtml = `<h2>${runtimeHeading}</h2><table class="battery-table"><tr><th>${t.batteryLabel}</th><th>${t.batteryLifeLabel}</th><th>${runtimeHeading}</th></tr>`;
         const maxHours = Math.max(
             selectedCandidate ? selectedCandidate.hours : 0,
             pinsCandidates[0] ? pinsCandidates[0].hours : 0,
