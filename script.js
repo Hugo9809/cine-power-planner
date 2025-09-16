@@ -42,6 +42,29 @@ try {
 
 const APP_VERSION = "1.0.1";
 
+const LEGAL_LINKS = {
+  de: {
+    imprint: "impressum.html",
+    privacy: "datenschutz.html",
+  },
+  en: {
+    imprint: "impressum-en.html",
+    privacy: "datenschutz-en.html",
+  },
+  es: {
+    imprint: "impressum-es.html",
+    privacy: "datenschutz-es.html",
+  },
+  fr: {
+    imprint: "impressum-fr.html",
+    privacy: "datenschutz-fr.html",
+  },
+  it: {
+    imprint: "impressum-it.html",
+    privacy: "datenschutz-it.html",
+  },
+};
+
 const getCssVariableValue = (name, fallback = '') => {
   if (typeof document === 'undefined') return fallback;
   const root = document.documentElement;
@@ -1299,10 +1322,21 @@ function setLanguage(lang) {
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
   if (offlineElem) offlineElem.textContent = texts[lang].offlineIndicator;
+  const legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
   const impressumElem = document.getElementById("impressumLink");
-  if (impressumElem) impressumElem.textContent = texts[lang].impressum;
+  if (impressumElem) {
+    impressumElem.textContent = texts[lang].impressum;
+    if (legalLinks?.imprint) {
+      impressumElem.setAttribute("href", legalLinks.imprint);
+    }
+  }
   const privacyElem = document.getElementById("privacyLink");
-  if (privacyElem) privacyElem.textContent = texts[lang].privacy;
+  if (privacyElem) {
+    privacyElem.textContent = texts[lang].privacy;
+    if (legalLinks?.privacy) {
+      privacyElem.setAttribute("href", legalLinks.privacy);
+    }
+  }
   // Section headings with descriptive hover help
   const setupManageHeadingElem = document.getElementById("setupManageHeading");
   setupManageHeadingElem.textContent = texts[lang].setupManageHeading;

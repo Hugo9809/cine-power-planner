@@ -282,6 +282,23 @@ main.legal-content {
   max-width: 960px;
 }
 
+.legal-language-nav {
+  margin: 0 0 1.5em;
+}
+
+.legal-language-nav ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  padding: 0;
+  margin: 0;
+}
+
+.legal-language-nav a[aria-current="page"] {
+  font-weight: 600;
+}
+
 .legal-content h1 {
   margin-bottom: 0.6em;
 }

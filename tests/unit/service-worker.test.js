@@ -6,7 +6,20 @@ describe('service worker configuration', () => {
   });
 
   test('caches legal pages for offline usage', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./impressum.html', './datenschutz.html']));
+    expect(ASSETS).toEqual(
+      expect.arrayContaining([
+        './impressum.html',
+        './impressum-en.html',
+        './impressum-es.html',
+        './impressum-fr.html',
+        './impressum-it.html',
+        './datenschutz.html',
+        './datenschutz-en.html',
+        './datenschutz-es.html',
+        './datenschutz-fr.html',
+        './datenschutz-it.html',
+      ]),
+    );
   });
 
   test('caches the shared theme helper for legal pages', () => {
