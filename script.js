@@ -12203,24 +12203,45 @@ if (helpButton && helpDialog) {
       });
     };
     elements.forEach(el => {
+      const isFaqItem = el.classList.contains('faq-item');
       // Save original HTML once so that repeated filtering doesn't permanently
-      // insert <mark> tags; restore it before applying a new highlight.
+      // insert <mark> tags; restore it before applying a new highlight. While
+      // doing so, capture the default open state for FAQ <details> elements so
+      // the search can temporarily expand matches and restore the original
+      // collapsed/expanded configuration when cleared.
       if (!el.dataset.origHtml) {
         el.dataset.origHtml = el.innerHTML;
+        if (isFaqItem) {
+          el.dataset.defaultOpen = el.hasAttribute('open') ? 'true' : 'false';
+        }
       } else {
         el.innerHTML = el.dataset.origHtml;
       }
       const text = el.textContent.toLowerCase().replace(/\s+/g, '');
-      if (!query || text.includes(query)) {
+      const matches = !query || text.includes(query);
+      if (matches) {
         if (query && highlightPattern) {
           // Highlight the matching text while preserving the rest of the content
           highlightMatches(el, highlightPattern);
         }
         el.removeAttribute('hidden');
+        if (isFaqItem) {
+          if (query) {
+            el.setAttribute('open', '');
+          } else if (el.dataset.defaultOpen === 'true') {
+            el.setAttribute('open', '');
+          } else {
+            el.removeAttribute('open');
+          }
+        }
         anyVisible = true;
       } else {
-        // Hide entries that do not match
+        // Hide entries that do not match and collapse FAQ answers while they
+        // are filtered out so reopening the dialog starts from a clean state.
         el.setAttribute('hidden', '');
+        if (isFaqItem) {
+          el.removeAttribute('open');
+        }
       }
     });
     if (helpNoResults) {
