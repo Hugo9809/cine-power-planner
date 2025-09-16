@@ -80,11 +80,21 @@ describe('delete gear list action', () => {
 
     expect(confirmSpy).toHaveBeenCalledTimes(2);
     expect(deleteProjectMock).toHaveBeenCalledWith('Project One');
-    expect(saveSetupsMock).toHaveBeenCalledTimes(1);
+    expect(saveSetupsMock).toHaveBeenCalled();
+    expect(saveSetupsMock.mock.calls.length).toBeGreaterThanOrEqual(3);
 
-    const savedArg = saveSetupsMock.mock.calls[0][0];
-    expect(savedArg['Project One'].gearList).toBeUndefined();
-    expect(savedArg['Project One'].projectInfo).toBeUndefined();
+    const backupCall = saveSetupsMock.mock.calls.find(([arg]) =>
+      Object.keys(arg).some(key => key.startsWith('auto-backup-'))
+    );
+    expect(backupCall).toBeDefined();
+    const backupArg = backupCall[0];
+    const backupKey = Object.keys(backupArg).find(key => key.startsWith('auto-backup-'));
+    expect(backupKey).toBeTruthy();
+    expect(backupArg[backupKey].gearList).toContain('<table');
+
+    const finalArg = saveSetupsMock.mock.calls[saveSetupsMock.mock.calls.length - 1][0];
+    expect(finalArg['Project One'].gearList).toBeUndefined();
+    expect(finalArg['Project One'].projectInfo).toBeUndefined();
     expect(storedSetups['Project One'].gearList).toBeUndefined();
     expect(storedSetups['Project One'].projectInfo).toBeUndefined();
 
@@ -96,8 +106,6 @@ describe('delete gear list action', () => {
     expect(requirementsOutput.classList.contains('hidden')).toBe(true);
 
     expect(env.utils.getCurrentProjectInfo()).toBeNull();
-    expect(saveSessionStateMock).toHaveBeenCalledWith(expect.objectContaining({
-      projectInfo: null
-    }));
+    expect(saveSessionStateMock.mock.calls.some(([state]) => state.projectInfo === null)).toBe(true);
   });
 });

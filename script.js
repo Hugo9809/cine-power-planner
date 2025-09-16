@@ -7765,10 +7765,11 @@ saveSetupBtn.addEventListener("click", () => {
     alert(texts[currentLang].alertSetupName);
     return;
   }
-  const currentSetup = {
-    ...getCurrentSetupState(),
-    gearList: getCurrentGearListHtml()
-  };
+  const currentSetup = { ...getCurrentSetupState() };
+  const gearListHtml = getCurrentGearListHtml();
+  if (gearListHtml) {
+    currentSetup.gearList = gearListHtml;
+  }
   let setups = getSetups();
   setups[setupName] = currentSetup;
   storeSetups(setups);
@@ -7974,7 +7975,11 @@ function autoBackup() {
     const baseName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
     const projectName = setupSelect.value ? `-${setupSelect.value}` : '';
     const backupName = `${baseName}${projectName}`;
-    const currentSetup = { ...getCurrentSetupState(), gearList: getCurrentGearListHtml() };
+    const currentSetup = { ...getCurrentSetupState() };
+    const gearListHtml = getCurrentGearListHtml();
+    if (gearListHtml) {
+      currentSetup.gearList = gearListHtml;
+    }
     const setups = getSetups();
     setups[backupName] = currentSetup;
     storeSetups(setups);
@@ -10868,9 +10873,6 @@ function generateGearListHtml(info = {}) {
 function getCurrentGearListHtml() {
     if (!gearListOutput && !projectRequirementsOutput) return '';
 
-    const projectName = getCurrentProjectName();
-    const titleHtml = projectName ? `<h2>${projectName}</h2>` : '';
-
     let projHtml = '';
     if (projectRequirementsOutput) {
         const projClone = projectRequirementsOutput.cloneNode(true);
@@ -10888,8 +10890,6 @@ function getCurrentGearListHtml() {
         if (actions) actions.remove();
         const editBtn = clone.querySelector('#editProjectBtn');
         if (editBtn) editBtn.remove();
-        const t = clone.querySelector('h2');
-        if (t) t.remove();
         ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(role => {
             const sel = clone.querySelector(`#gearList${role}Monitor`);
             if (sel) {
@@ -10996,6 +10996,10 @@ function getCurrentGearListHtml() {
         gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
     }
 
+    if (!projHtml && !gearHtml) return '';
+
+    const projectName = getCurrentProjectName();
+    const titleHtml = projectName ? `<h2>${projectName}</h2>` : '';
     return `${titleHtml}${projHtml}${gearHtml}`.trim();
 }
 
@@ -11040,16 +11044,43 @@ function saveCurrentGearList() {
         saveProject(projectName, { projectInfo: currentProjectInfo, gearList: html });
     }
 
-    if (projectName) {
-        const setups = getSetups();
-        const existing = setups[projectName];
-        if (html || existing) {
-            const setup = existing || {};
-            if (html) setup.gearList = html;
-            setup.projectInfo = currentProjectInfo;
-            setups[projectName] = setup;
-            storeSetups(setups);
+    if (!projectName) return;
+
+    const setups = getSetups();
+    const existing = setups[projectName];
+    if (!existing && !html && !currentProjectInfo) {
+        return;
+    }
+
+    const setup = existing || {};
+    let changed = false;
+
+    if (html) {
+        if (setup.gearList !== html) {
+            setup.gearList = html;
+            changed = true;
         }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
+        delete setup.gearList;
+        changed = true;
+    }
+
+    if (currentProjectInfo) {
+        if (setup.projectInfo !== currentProjectInfo) {
+            setup.projectInfo = currentProjectInfo;
+            changed = true;
+        }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
+        delete setup.projectInfo;
+        changed = true;
+    }
+
+    if (!existing) {
+        setups[projectName] = setup;
+        storeSetups(setups);
+    } else if (changed) {
+        setups[projectName] = setup;
+        storeSetups(setups);
     }
 }
 
@@ -11113,6 +11144,10 @@ function handleImportGearList(e) {
 function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearList)) return;
     if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return;
+    const currentGearListHtml = getCurrentGearListHtml();
+    if (currentGearListHtml && typeof autoBackup === 'function') {
+        autoBackup();
+    }
     const projectName = getCurrentProjectName();
     const storageKey = typeof projectName === 'string' ? projectName : '';
     if (typeof deleteProject === 'function') {
@@ -11165,6 +11200,28 @@ function deleteCurrentGearList() {
         easyrig: getEasyrigValue(),
         projectInfo: null
     });
+    if (typeof autoSaveCurrentSetup === 'function') {
+        autoSaveCurrentSetup();
+        if (storageKey) {
+            const setupsAfterSave = getSetups();
+            const savedSetup = setupsAfterSave && setupsAfterSave[storageKey];
+            if (savedSetup && typeof savedSetup === 'object') {
+                let resaved = false;
+                if (Object.prototype.hasOwnProperty.call(savedSetup, 'gearList')) {
+                    delete savedSetup.gearList;
+                    resaved = true;
+                }
+                if (Object.prototype.hasOwnProperty.call(savedSetup, 'projectInfo')) {
+                    delete savedSetup.projectInfo;
+                    resaved = true;
+                }
+                if (resaved) {
+                    storeSetups(setupsAfterSave);
+                }
+            }
+        }
+    }
+    currentProjectInfo = null;
     updateGearListButtonVisibility();
 }
 
@@ -11418,7 +11475,11 @@ function autoSaveCurrentSetup() {
   if (!setupNameInput) return;
   const name = setupNameInput.value.trim();
   if (!name) return;
-  const currentSetup = { ...getCurrentSetupState(), gearList: getCurrentGearListHtml() };
+  const currentSetup = { ...getCurrentSetupState() };
+  const gearListHtml = getCurrentGearListHtml();
+  if (gearListHtml) {
+    currentSetup.gearList = gearListHtml;
+  }
   const setups = getSetups();
   setups[name] = currentSetup;
   storeSetups(setups);
