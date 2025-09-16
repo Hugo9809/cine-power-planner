@@ -779,7 +779,11 @@
       <button id="hoverHelpButton" type="button">Hover for help</button>
       <p id="helpNoResults" aria-live="polite" hidden>No results found.</p>
       <div id="helpSections">
-        <section data-help-section id="featuresOverview">
+        <section
+          data-help-section
+          id="featuresOverview"
+          data-help-keywords="overview summary capabilities highlights offline offline-mode favorites favourites pinned search global keyboard shortcuts themes personalization backups tour"
+        >
           <h3><span class="help-icon" aria-hidden="true">✨</span>Features at a Glance</h3>
           <ul>
             <li>Plan complete camera rigs and compute power draw and battery life.</li>
@@ -798,18 +802,29 @@
             <li>Cameras with both V- and B-Mount plates let you swap battery types; the list updates automatically.</li>
           </ul>
         </section>
-        <section data-help-section id="gettingStarted">
+        <section
+          data-help-section
+          id="gettingStarted"
+          data-help-keywords="quickstart onboarding tutorial first steps workflow basics getting started new project guide"
+        >
           <h3><span class="help-icon" aria-hidden="true">🚀</span>Getting Started</h3>
           <ol>
             <li>Select a camera, monitor and other devices from the dropdown menus.</li>
             <li>Use the search boxes inside each dropdown to quickly filter the lists.</li>
+            <li>Open the Project Requirements dialog when you need to capture crew, schedule or scenario notes; those details feed printouts and gear lists.</li>
             <li>Choose a battery to update total draw and estimated runtime.</li>
+            <li>Name the project and click <strong>Save</strong> so you can revisit, share or print the setup later.</li>
           </ol>
         </section>
-        <section data-help-section id="managingSetups">
+        <section
+          data-help-section
+          id="managingSetups"
+          data-help-keywords="save saved projects load manage share backup restore export import delete rename factory reset clear project"
+        >
           <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Projects</h3>
           <ul>
             <li>Use <strong>Save</strong> to store the current configuration in your browser. Press Enter or Ctrl+S (⌘S on macOS) to save quickly; the Save button stays disabled until a name is entered.</li>
+            <li>Select a saved project from the dropdown to load it instantly; adjust gear and click <strong>Save</strong> again to update the entry.</li>
             <li><strong>Share Project</strong> downloads a JSON file containing your selections, project requirements, gear list, runtime feedback and any custom devices so you can back up or share the setup.</li>
             <li>Open <strong>Settings</strong> to fine-tune accent color, base font size, typeface and high contrast mode, upload a custom logo and manage full planner backups or restores.</li>
             <li>Select a JSON file in <strong>Shared Project</strong> and click <strong>Load</strong> to restore a shared configuration.</li>
@@ -818,7 +833,11 @@
             <li>Need a clean slate? Choose <strong>Factory reset</strong> in Settings → Backup &amp; Restore. The tool prompts you to download a backup, then clears saved projects, custom devices, favorites and runtime submissions.</li>
             </ul>
           </section>
-        <section data-help-section id="settingsHelp">
+        <section
+          data-help-section
+          id="settingsHelp"
+          data-help-keywords="settings preferences customization customise personalize colour color font typeface accent high contrast theme backup restore"
+        >
           <h3><span class="help-icon" aria-hidden="true">⚙️</span>Settings &amp; Personalization</h3>
           <ul>
             <li>Switch languages instantly; the planner remembers your preference for next time.</li>
@@ -828,15 +847,24 @@
             <li>Use <strong>Backup</strong> to download a JSON snapshot of settings, projects, custom devices, favorites and runtime feedback; <strong>Restore</strong> loads a saved snapshot.</li>
           </ul>
         </section>
-        <section data-help-section id="projectRequirementsHelp">
+        <section
+          data-help-section
+          id="projectRequirementsHelp"
+          data-help-keywords="project requirements brief notes metadata crew schedule prep shoot forms multi-select documentation"
+        >
           <h3><span class="help-icon" aria-hidden="true">🗒️</span>Project Requirements</h3>
           <ul>
             <li>Capture production details such as production company, rental house, DoP, crew roles with email contacts, shooting dates, resolutions, codecs and more for each project.</li>
             <li>Multi-select lists let you specify multiple scenarios, accessories or monitoring setups.</li>
+            <li>Use the + buttons to add crew entries or prep/shoot ranges, and tap the − buttons to remove items as plans change.</li>
             <li>The information is saved with the project and included in printed overviews and gear lists.</li>
           </ul>
         </section>
-        <section data-help-section id="gearListHelp">
+        <section
+          data-help-section
+          id="gearListHelp"
+          data-help-keywords="gear list equipment inventory export print accessories scenarios quantity breakdown report"
+        >
           <h3><span class="help-icon" aria-hidden="true">📋</span>Gear List</h3>
             <ul>
               <li>The <strong>Generate Gear List</strong> button expands every selected device and project detail into a rich table grouped by category and quantity.</li>
@@ -879,16 +907,25 @@
               <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
             </ul>
           </section>
-        <section data-help-section id="powerCalculator">
+        <section
+          data-help-section
+          id="powerCalculator"
+          data-help-keywords="power calculator runtime estimator watt hours consumption battery life current warnings hotswap compare energy"
+        >
           <h3><span class="help-icon" aria-hidden="true">⚡</span>Power Calculator</h3>
           <ul>
             <li>Select a battery to see estimated runtime, current draw and required batteries for a 10&nbsp;h shoot (incl. spare).</li>
             <li>A temperature note helps account for runtime changes in hot or cold conditions.</li>
             <li>Warnings appear if the configuration exceeds battery output limits.</li>
+            <li>Select a <strong>Battery Hotswap</strong> to factor in dual plates or adapters; its capacity and pin limits are merged into the calculation.</li>
             <li>The optional <strong>Battery Comparison</strong> panel shows runtimes for all batteries at once.</li>
           </ul>
         </section>
-        <section data-help-section id="calculationDetails">
+        <section
+          data-help-section
+          id="calculationDetails"
+          data-help-keywords="calculation math formula codec weighting brightness wifi runtime details advanced explanation"
+        >
           <h3><span class="help-icon" aria-hidden="true">🧮</span>Calculation Details</h3>
           <ul>
             <li>Each device contributes its power draw in watts to <em>Total Consumption</em>.</li>
@@ -912,7 +949,11 @@
             <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
           </ul>
         </section>
-        <section data-help-section id="runtimeFeedbackHelp">
+        <section
+          data-help-section
+          id="runtimeFeedbackHelp"
+          data-help-keywords="runtime feedback user measurements field data submit temperature weighting crowdsource"
+        >
           <h3><span class="help-icon" aria-hidden="true">📝</span>User Runtime Feedback</h3>
           <ul>
             <li>Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.</li>
@@ -920,7 +961,11 @@
             <li>Your entries are stored locally and refine the runtime estimate.</li>
           </ul>
         </section>
-        <section data-help-section id="setupDiagramHelp">
+        <section
+          data-help-section
+          id="setupDiagramHelp"
+          data-help-keywords="diagram layout connections map wiring visualize nodes drag zoom pan svg jpg export reset snap grid"
+        >
           <h3><span class="help-icon" aria-hidden="true">🗺️</span>Project Diagram</h3>
           <ul>
             <li>Visualizes power and video connections between selected devices.</li>
@@ -933,7 +978,11 @@
             <li>Hover or tap devices to see popup details; on touch devices, tapping a node keeps its popup until another is selected.</li>
           </ul>
         </section>
-        <section data-help-section id="deviceEditorHelp">
+        <section
+          data-help-section
+          id="deviceEditorHelp"
+          data-help-keywords="device editor database custom gear add edit modify remove import export revert data management"
+        >
           <h3><span class="help-icon" aria-hidden="true">🛠️</span>Device Database Editor</h3>
           <ul>
             <li>Open with <em>Edit Device Data…</em> to add, modify or remove devices.</li>
@@ -941,7 +990,11 @@
             <li><em>Revert</em> restores defaults from the files in <code>devices/</code>.</li>
           </ul>
         </section>
-        <section data-help-section id="deviceCategoriesHelp">
+        <section
+          data-help-section
+          id="deviceCategoriesHelp"
+          data-help-keywords="device categories slots limits optional required types selection count overview"
+        >
           <h3><span class="help-icon" aria-hidden="true">📁</span>Device Categories</h3>
           <ul>
             <li><strong>Camera</strong> (1)</li>
@@ -955,28 +1008,41 @@
           </ul>
           <p>The number in parentheses shows how many of that type you can select.</p>
         </section>
-        <section data-help-section id="searchFiltering">
+        <section
+          data-help-section
+          id="searchFiltering"
+          data-help-keywords="search filter filtering favourites favorites quick find slash ctrl+f ctrl+k global search star pinned clear query"
+        >
           <h3><span class="help-icon" aria-hidden="true">🔍</span>Search & Filtering</h3>
           <ul>
             <li>Every dropdown and list can be filtered via its search box.</li>
             <li>The help dialog itself is searchable using the field at the top.</li>
-            <li>The global search bar jumps to features, device selectors or help topics; press Enter to navigate and × to clear.</li>
+            <li>The global search bar jumps to features, device selectors or help topics; press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) to focus it from anywhere, press Enter to navigate and use × to clear. On small screens the side menu opens automatically.</li>
             <li>Click the star beside a dropdown to mark favorites; pinned items move to the top and persist between sessions.</li>
             <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to focus the nearest search box.</li>
             <li>Use the × button in any search field to reset the query and show all items.</li>
           </ul>
         </section>
-        <section data-help-section id="helpDialogHelp">
+        <section
+          data-help-section
+          id="helpDialogHelp"
+          data-help-keywords="help dialog window modal question mark f1 instructions search toggle open close clear focus"
+        >
           <h3><span class="help-icon" aria-hidden="true">❓</span>Help Dialog</h3>
           <ul>
             <li>Open with the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> (works even while typing).</li>
             <li>Use the search field to filter topics; the query resets when closed.</li>
             <li>Click the × button to clear the search and show all topics again.</li>
             <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to jump to the search box.</li>
+            <li>The search also matches common keywords and alternate spellings, so queries like “favourites” still highlight the Favorites tips.</li>
             <li>Close the dialog with <kbd>Escape</kbd> or by clicking outside.</li>
           </ul>
         </section>
-        <section data-help-section id="hoverHelp">
+        <section
+          data-help-section
+          id="hoverHelp"
+          data-help-keywords="hover help tooltips hints guidance cursor descriptions overlay tips"
+        >
           <h3><span class="help-icon" aria-hidden="true">🖱️</span>Hover Help</h3>
           <ul>
             <li>Activate tooltip mode with <strong>Hover for help</strong> in the help dialog.</li>
@@ -984,21 +1050,33 @@
             <li>Click anywhere or press <kbd>Escape</kbd> to exit.</li>
           </ul>
         </section>
-        <section data-help-section id="languageHelp">
+        <section
+          data-help-section
+          id="languageHelp"
+          data-help-keywords="language translation locale localisation english german spanish french italian switch change"
+        >
           <h3><span class="help-icon" aria-hidden="true">🌐</span>Language</h3>
           <ul>
             <li>Use the dropdown in the top right to switch languages.</li>
             <li>Your choice is remembered for the next visit.</li>
           </ul>
         </section>
-        <section data-help-section id="darkModeHelp">
+        <section
+          data-help-section
+          id="darkModeHelp"
+          data-help-keywords="dark mode night theme low light brightness contrast toggle d key"
+        >
           <h3><span class="help-icon" aria-hidden="true">🌓</span>Dark Mode</h3>
           <ul>
             <li>Click the moon button or press <kbd>D</kbd> to toggle dark mode.</li>
             <li>The setting persists between visits.</li>
           </ul>
         </section>
-        <section data-help-section id="pinkModeHelp">
+        <section
+          data-help-section
+          id="pinkModeHelp"
+          data-help-keywords="pink mode unicorn accent theme playful colour color toggle p key"
+        >
           <h3><span class="help-icon" aria-hidden="true">🦄</span>Pink Mode</h3>
           <ul>
             <li>Click the horse button for a pink unicorn theme that accents buttons and headings.</li>
@@ -1006,10 +1084,15 @@
             <li>Press <kbd>P</kbd> to toggle pink mode.</li>
           </ul>
         </section>
-        <section data-help-section id="shortcuts">
+        <section
+          data-help-section
+          id="shortcuts"
+          data-help-keywords="keyboard shortcuts hotkeys key commands quick reference controls"
+        >
           <h3><span class="help-icon" aria-hidden="true">⌨️</span>Keyboard Shortcuts</h3>
           <ul>
             <li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> – toggle help</li>
+            <li><kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>) – focus the global search field</li>
             <li><kbd>Escape</kbd> – close dialogs</li>
             <li><kbd>D</kbd> – toggle dark mode</li>
             <li><kbd>P</kbd> – toggle pink mode</li>
@@ -1017,37 +1100,65 @@
             <li>Type in dropdowns to filter options</li>
           </ul>
         </section>
-        <section data-help-section id="faq">
+        <section
+          data-help-section
+          id="faq"
+          data-help-keywords="faq questions answers troubleshooting tips"
+        >
           <h3><span class="help-icon" aria-hidden="true">❓</span>FAQ</h3>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="save project saved projects ctrl+s enter autosave rename update"
+          >
             <summary>How do I save a project?</summary>
-            <p>Enter a name in the Project Name field and click Save. It will then appear in the Saved Projects list.</p>
+            <p>Enter a name in the Project Name field and click Save. It will then appear in the Saved Projects list. Selecting an entry loads it instantly; tweak the setup and press Save again to update it, use Delete to remove it entirely or choose Clear Current Project to start fresh without touching saved copies.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="share backup export import json download upload restore collaboration file"
+          >
             <summary>How do I share or back up a project?</summary>
             <p>Click <em>Share Project</em> to download a JSON file with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the <em>Shared Project</em> field and press <em>Load</em> to restore it.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="edit device data database editor custom gear add remove modify"
+          >
             <summary>How do I edit device data?</summary>
             <p>Click the <em>Edit Device Data…</em> button to open the database editor where you can add, change or remove devices.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="battery runtime calculation estimate formula watt hours consumption"
+          >
             <summary>How is battery runtime calculated?</summary>
             <p>The app divides the selected battery's capacity (in watt-hours) by the total power consumption of your devices. For example, a 98&nbsp;Wh battery powering a 24&nbsp;W project is estimated to run for about 4&nbsp;hours.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="warning colors alerts orange red overload limit dtap safety"
+          >
             <summary>What do the warning colors mean?</summary>
             <p>Orange messages indicate the project is nearing the battery's output limit. Red warnings mean the estimated current exceeds the safe rating and could damage the battery.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="projects saved storage localstorage browser offline data persistence"
+          >
             <summary>Where are my projects saved?</summary>
             <p>Projects and device edits are stored in your browser's <code>localStorage</code>. Use <em>Share Project</em> to download a setup file, and use the Device Database Editor's <em>Export</em>/<em>Import</em> buttons to back up custom gear.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="offline pwa cached caching service worker airplane mode"
+          >
             <summary>Does the planner work offline?</summary>
             <p>Yes. Once the fonts and database are cached on first load, all features continue to work without an internet connection.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="install app pwa add to home screen desktop ios android progressive web app"
+          >
             <summary>Can I install the planner as an app?</summary>
             <p>You can install the planner like an app on most platforms:</p>
             <ul>
@@ -1057,43 +1168,73 @@
               <li>After installation it runs offline and updates automatically.</li>
             </ul>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="reset defaults revert factory reset wipe data clear restore"
+          >
             <summary>How do I reset everything to the defaults?</summary>
             <p>Open the device editor and choose <em>Export and Revert</em> to restore the default database. Delete projects individually using the Delete button, or open <em>Settings → Backup &amp; Restore</em> and press <em>Factory reset</em> to download a safety backup and wipe saved projects, favorites and runtime data at once.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="change language translation locale switch english german spanish french italian"
+          >
             <summary>How do I change the language?</summary>
             <p>Use the dropdown in the top right to pick a language. The planner remembers your choice for the next visit.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="print overview pdf summary report generate overview"
+          >
             <summary>How can I print a project overview?</summary>
             <p>Save the project, then click <em>Generate Overview</em> and print from the dialog.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="compare batteries battery comparison runtime chart list options"
+          >
             <summary>How do I compare different batteries?</summary>
             <p>The Battery Comparison section shows estimated run time for all batteries once a configuration is calculated.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="device database import export json share data backup"
+          >
             <summary>How do I import or export the device database?</summary>
             <p>Open the Device Database Editor and use the <em>Export</em> button to download your current database as JSON. Use <em>Import</em> to load a JSON file and replace your local data.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="add devices edit custom gear database editor create modify remove"
+          >
             <summary>Can I edit or add devices?</summary>
             <p>Yes. In the Device Database Editor you can create new devices, change existing ones or delete entries. The changes appear immediately in the dropdown menus.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="project diagram connections cables layout wiring nodes visual map"
+          >
             <summary>What does the Project Diagram show?</summary>
             <p>The diagram illustrates how power and video cables connect between your chosen devices. Drag the nodes to arrange them and use the buttons to zoom or download an image.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="device categories types list optional required slots selections"
+          >
             <summary>Which device categories are available?</summary>
             <p>Categories include Camera, Monitor, Wireless Transmitter, FIZ Motors, FIZ Controllers, Distance Sensor, Battery Plate and V‑/B‑Mount Battery.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="clear cache update refresh reload force reload service worker"
+          >
             <summary>How do I clear cached files or update the app?</summary>
             <p>Use the <em>Force reload</em> button (🔄) in the top bar to clear cached files and reload without losing saved data.</p>
           </details>
-          <details class="faq-item">
+          <details
+            class="faq-item"
+            data-help-keywords="device data source manufacturer specs defaults dataset"
+          >
             <summary>Where does the device data come from?</summary>
             <p>The default database is defined in the files under <code>devices/</code> from manufacturer specifications. You can modify or replace them via the Device Database Editor.</p>
           </details>
