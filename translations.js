@@ -97,6 +97,15 @@ const texts = {
     restoreSettings: "Restore",
     restoreSettingsHelp:
       "Load a previously exported JSON snapshot to restore your planner data.",
+    factoryResetSettings: "Factory Reset",
+    factoryResetSettingsHelp:
+      "Erase all saved projects, custom devices, favorites, feedback and personalization settings from this browser.",
+    factoryResetConfirm:
+      "Factory reset will permanently delete all saved data, customizations and backups stored in this browser. Continue?",
+    factoryResetConfirmFinal:
+      "Final confirmation: erase everything and reload the planner?",
+    factoryResetSuccess:
+      "All data has been erased. The planner will reload now.",
     aboutHeading: "About & Support",
     aboutHeadingHelp:
       "Review version details and reach support resources.",
@@ -1031,6 +1040,15 @@ const texts = {
     restoreSettings: "Ripristina",
     restoreSettingsHelp:
       "Carica uno snapshot JSON esportato in precedenza per ripristinare dati e impostazioni.",
+    factoryResetSettings: "Ripristino di fabbrica",
+    factoryResetSettingsHelp:
+      "Cancella tutti i progetti salvati, i dispositivi personalizzati, i preferiti, i feedback e le impostazioni personalizzate da questo browser.",
+    factoryResetConfirm:
+      "Il ripristino di fabbrica eliminerà definitivamente tutti i dati salvati, le personalizzazioni e i backup presenti in questo browser. Continuare?",
+    factoryResetConfirmFinal:
+      "Conferma finale: eliminare tutto e ricaricare il planner?",
+    factoryResetSuccess:
+      "Tutti i dati sono stati eliminati. Il planner verrà ricaricato ora.",
     aboutHeading: "Informazioni e supporto",
     aboutHeadingHelp:
       "Consulta dettagli sulla versione e i collegamenti al supporto.",
@@ -1581,6 +1599,15 @@ const texts = {
     restoreSettings: "Restaurar",
     restoreSettingsHelp:
       "Carga una instantánea JSON exportada previamente para restaurar datos y ajustes.",
+    factoryResetSettings: "Restablecimiento de fábrica",
+    factoryResetSettingsHelp:
+      "Borra todos los proyectos guardados, dispositivos personalizados, favoritos, comentarios y ajustes personalizados de este navegador.",
+    factoryResetConfirm:
+      "El restablecimiento de fábrica eliminará de forma permanente todos los datos guardados, las personalizaciones y las copias de seguridad almacenadas en este navegador. ¿Continuar?",
+    factoryResetConfirmFinal:
+      "Confirmación final: ¿borrar todo y recargar el planificador?",
+    factoryResetSuccess:
+      "Todos los datos se han eliminado. El planificador se recargará ahora.",
     aboutHeading: "Acerca de y soporte",
     aboutHeadingHelp:
       "Consulta la versión y accede a los recursos de soporte.",
@@ -2133,6 +2160,15 @@ const texts = {
     restoreSettings: "Restaurer",
     restoreSettingsHelp:
       "Chargez une sauvegarde JSON exportée auparavant pour restaurer données et réglages.",
+    factoryResetSettings: "Réinitialisation d'usine",
+    factoryResetSettingsHelp:
+      "Efface tous les projets enregistrés, les appareils personnalisés, les favoris, les retours et les réglages personnalisés de ce navigateur.",
+    factoryResetConfirm:
+      "La réinitialisation d'usine supprimera définitivement toutes les données enregistrées, les personnalisations et les sauvegardes stockées dans ce navigateur. Continuer ?",
+    factoryResetConfirmFinal:
+      "Confirmation finale : tout effacer et recharger le planificateur ?",
+    factoryResetSuccess:
+      "Toutes les données ont été effacées. Le planificateur va se recharger.",
     aboutHeading: "À propos et support",
     aboutHeadingHelp:
       "Consultez les informations de version et les ressources d’assistance.",
@@ -2688,6 +2724,15 @@ const texts = {
     restoreSettings: "Wiederherstellen",
     restoreSettingsHelp:
       "Importiere eine zuvor exportierte JSON-Sicherung, um Daten und Einstellungen wiederherzustellen.",
+    factoryResetSettings: "Werkseinstellungen",
+    factoryResetSettingsHelp:
+      "Löscht alle gespeicherten Projekte, benutzerdefinierten Geräte, Favoriten, Rückmeldungen und persönlichen Einstellungen aus diesem Browser.",
+    factoryResetConfirm:
+      "Das Zurücksetzen auf Werkseinstellungen entfernt dauerhaft alle gespeicherten Daten, Anpassungen und Sicherungen in diesem Browser. Fortfahren?",
+    factoryResetConfirmFinal:
+      "Letzte Bestätigung: alles löschen und den Planner neu laden?",
+    factoryResetSuccess:
+      "Alle Daten wurden gelöscht. Der Planner wird jetzt neu geladen.",
     aboutHeading: "Info & Support",
     aboutHeadingHelp:
       "Zeigt Versionsinfos und Links zum Support.",

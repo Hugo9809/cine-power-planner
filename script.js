@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -1916,6 +1916,14 @@ function setLanguage(lang) {
     restoreSettings.setAttribute("title", restoreHelp);
     restoreSettings.setAttribute("aria-label", restoreHelp);
   }
+  if (factoryResetSettings) {
+    factoryResetSettings.textContent = texts[lang].factoryResetSettings;
+    const resetHelp =
+      texts[lang].factoryResetSettingsHelp || texts[lang].factoryResetSettings;
+    factoryResetSettings.setAttribute("data-help", resetHelp);
+    factoryResetSettings.setAttribute("title", resetHelp);
+    factoryResetSettings.setAttribute("aria-label", resetHelp);
+  }
   const aboutHeading = document.getElementById("aboutHeading");
   if (aboutHeading) {
     aboutHeading.textContent = texts[lang].aboutHeading;
@@ -3075,6 +3083,7 @@ const settingsHighContrast = document.getElementById("settingsHighContrast");
 const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
 const restoreSettingsInput = document.getElementById("restoreSettingsInput");
+const factoryResetSettings = document.getElementById("factoryResetSettings");
 const aboutVersionElem = document.getElementById("aboutVersion");
 const supportLink = document.getElementById("supportLink");
 const settingsSave    = document.getElementById("settingsSave");
@@ -12015,6 +12024,58 @@ if (restoreSettings && restoreSettingsInput) {
       }
     };
     reader.readAsText(file);
+  });
+}
+
+if (factoryResetSettings) {
+  factoryResetSettings.addEventListener('click', () => {
+    const lang = texts[currentLang] ? currentLang : 'en';
+    const confirmMessage =
+      texts[lang].factoryResetConfirm
+      || 'Factory reset will permanently delete all saved data and personalization. Continue?';
+    if (!window.confirm(confirmMessage)) return;
+
+    const finalConfirm =
+      texts[lang].factoryResetConfirmFinal
+      || 'This is the final confirmation. Erase everything and reload?';
+    if (!window.confirm(finalConfirm)) return;
+
+    try {
+      if (typeof clearAllData === 'function') {
+        clearAllData();
+      }
+    } catch (err) {
+      console.warn('Factory reset clearAllData failed', err);
+    }
+
+    try {
+      if (typeof localStorage !== 'undefined' && localStorage && typeof localStorage.clear === 'function') {
+        localStorage.clear();
+      }
+    } catch (err) {
+      console.warn('Factory reset localStorage clear failed', err);
+    }
+
+    try {
+      if (typeof sessionStorage !== 'undefined' && sessionStorage && typeof sessionStorage.clear === 'function') {
+        sessionStorage.clear();
+      }
+    } catch (err) {
+      console.warn('Factory reset sessionStorage clear failed', err);
+    }
+
+    try {
+      if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+        const successMessage =
+          texts[lang].factoryResetSuccess
+          || 'All data has been erased. The planner will reload now.';
+        window.alert(successMessage);
+      }
+    } catch (err) {
+      console.warn('Factory reset alert failed', err);
+    }
+
+    window.location.reload(true);
   });
 }
 
