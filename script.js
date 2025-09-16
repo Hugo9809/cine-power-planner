@@ -1237,12 +1237,13 @@ function checkArriCompatibility() {
     !camCounts;
 
   let msg = '';
-  const hasCLM = motors.some(m => /CLM-4|CLM-5/i.test(m));
+  const clmRegex = /CLM-[345]/i;
+  const hasCLM = motors.some(m => clmRegex.test(m));
   if (hasCLM && !usesUMC4) {
     msg = texts[currentLang].arriCLMNoUMC4Warning;
-  } else if (usesUMC4 && motors.some(m => !/CLM-4|CLM-5/i.test(m))) {
+  } else if (usesUMC4 && motors.some(m => !clmRegex.test(m))) {
     msg = texts[currentLang].arriUMC4Warning;
-  } else if ((usesRIA1 || usesRF) && motors.some(m => /CLM-4|CLM-5/i.test(m))) {
+  } else if ((usesRIA1 || usesRF) && motors.some(m => clmRegex.test(m))) {
     msg = texts[currentLang].arriRIA1Warning;
   } else if (
     distance &&
@@ -10113,9 +10114,13 @@ function generateGearListHtml(info = {}) {
                         ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
                         if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                     } else {
-                        const realContexts = ctxKeys.filter(c => c && c.toLowerCase() !== 'spare');
-                        const spareCount = total - realContexts.length;
-                        ctxParts = realContexts.map(c => `1x ${c}`);
+                        const realEntries = Object.entries(ctxCounts)
+                            .filter(([c]) => c && c.toLowerCase() !== 'spare')
+                            .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+                        ctxParts = realEntries.map(([c, count]) => `${count}x ${c}`);
+                        const spareCount = Object.entries(ctxCounts)
+                            .filter(([c]) => c && c.toLowerCase() === 'spare')
+                            .reduce((sum, [, count]) => sum + count, 0);
                         if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
                     }
                 }
@@ -10234,21 +10239,38 @@ function generateGearListHtml(info = {}) {
     });
     addRow('Lens Support', formatItems(lensSupportItems));
     addRow('Matte box + filter', [filterSelectHtml, formatItems(filterSelections)].filter(Boolean).join('<br>'));
-    const motorItems = selectedNames.motors.flatMap(name => {
+    const motorItems = [];
+    const clmSpareAdded = { clm3: false, clm4: false, clm5: false };
+    selectedNames.motors.forEach(name => {
         const lower = name.toLowerCase();
         if (/cforce\s*mini\s*rf|cforce\s*rf/.test(lower)) {
-            return ['ARRI KK.0040345 CFORCE MINI RF Basic Set 2'];
+            motorItems.push('ARRI KK.0040345 CFORCE MINI RF Basic Set 2');
+        } else if (/cforce\s*mini/.test(lower) && !/rf/.test(lower)) {
+            motorItems.push('ARRI KK.0040344 Cforce Mini Basic Set 2');
+        } else if (/cforce\s*plus/.test(lower)) {
+            motorItems.push('Arri KK.0008824 cforce plus Basic Set');
+            motorItems.push('ARRI K2.0009335 Cforce Plus Gear M0.8/32p, 60t');
+        } else if (/clm-3/.test(lower)) {
+            motorItems.push('Arri KK.0005854 Controlled Lens Motor CLM-3 Basic Set');
+            if (!clmSpareAdded.clm3) {
+                motorItems.push('Arri K2.65145.0, Cable CLM-3 (7p) - CLM/FIZ (12p) (0,8m/2.6ft) (spare)');
+                clmSpareAdded.clm3 = true;
+            }
+        } else if (/clm-4/.test(lower)) {
+            motorItems.push('ARRI Controlled Lens Motor CLM-4, Basic Kit (KK.0005855)');
+            if (!clmSpareAdded.clm4) {
+                motorItems.push('Arri K2.72099.0 CLM-4 Motor Cable (spare)');
+                clmSpareAdded.clm4 = true;
+            }
+        } else if (/clm-5/.test(lower)) {
+            motorItems.push('Arri K2.0006361 Controlled Lens Motor CLM-5 Basic Set');
+            if (!clmSpareAdded.clm5) {
+                motorItems.push('Arri K2.0006361 Controlled Lens Motor CLM-5 Basic Set (spare)');
+                clmSpareAdded.clm5 = true;
+            }
+        } else {
+            motorItems.push(name);
         }
-        if (/cforce\s*mini/.test(lower) && !/rf/.test(lower)) {
-            return ['ARRI KK.0040344 Cforce Mini Basic Set 2'];
-        }
-        if (/cforce\s*plus/.test(lower)) {
-            return [
-                'Arri KK.0008824 cforce plus Basic Set',
-                'ARRI K2.0009335 Cforce Plus Gear M0.8/32p, 60t'
-            ];
-        }
-        return [name];
     });
     const distanceItems = [];
     const distanceName = selectedNames.distance;

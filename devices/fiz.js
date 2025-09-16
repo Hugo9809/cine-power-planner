@@ -114,6 +114,22 @@ const fizData = {
         }
       ]
     },
+    "Arri CLM-3": {
+      "powerDrawWatts": 12,
+      "internalController": false,
+      "torqueNm": 0.5,
+      "gearTypes": [
+        "0.8 mod",
+        "0.6 mod",
+        "0.5 mod"
+      ],
+      "notes": "Classic digital lens motor for ARRI LCS. Requires a UMC-4 (or earlier UMC-3) for control. Uses a 7-pin LEMO cable to connect to ARRI FIZ controllers.",
+      "fizConnectors": [
+        {
+          "type": "LEMO 7-pin"
+        }
+      ]
+    },
     "Arri CLM-4 (K2.72114.0)": {
       "powerDrawWatts": 12,
       "internalController": false,
@@ -529,7 +545,7 @@ const fizData = {
       "powerSource": "External DC (via RS)",
       "batteryType": "N/A (no internal battery)",
       "connectivity": "Wireless (2.4 GHz ARRI radio, works with WCU-4/Hi-5) or Wired (LCS, CAM, Serial)",
-      "notes": "3‑axis motor controller providing lens data and timecode. Works with CLM-4/5 motors and, via LCS‑to‑LBUS cable, with cforce motors."
+      "notes": "3‑axis motor controller providing lens data and timecode. Works with CLM-3/4/5 motors and, via LCS‑to‑LBUS cable, with cforce motors."
     },
     "Arri RIA-1": {
       "powerDrawWatts": 2.5,
