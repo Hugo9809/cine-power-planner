@@ -55,4 +55,24 @@ describe('help dialog search behaviour', () => {
 
     expect(helpSearchClear.hasAttribute('hidden')).toBe(true);
   });
+
+  test('clicking help link focuses and highlights the referenced control', () => {
+    const helpButton = document.getElementById('helpButton');
+    const saveButton = document.getElementById('saveSetupBtn');
+    const nameInput = document.getElementById('setupName');
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+
+    helpButton.click();
+
+    expect(helpDialog.hasAttribute('hidden')).toBe(false);
+
+    const saveLink = helpDialog.querySelector('a[data-help-target="#saveSetupBtn"]');
+    expect(saveLink).toBeTruthy();
+
+    saveLink.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    expect(document.activeElement).toBe(nameInput);
+    expect(saveButton.classList.contains('help-highlight')).toBe(true);
+  });
 });

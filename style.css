@@ -257,6 +257,13 @@ a:focus {
   text-decoration: underline;
 }
 
+.help-highlight {
+  outline: 0.25rem solid var(--accent-color);
+  outline-offset: 0.2rem;
+  border-radius: 0.4rem;
+  transition: outline-color 0.2s ease, outline-offset 0.2s ease;
+}
+
 footer {
   text-align: center;
   padding: 20px 0;
