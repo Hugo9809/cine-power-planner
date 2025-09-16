@@ -1,4 +1,4 @@
-const { getHtmlBody } = require('./domUtils');
+const { getHtmlBody } = require('../domUtils');
 
 let utils;
 
@@ -21,10 +21,10 @@ beforeAll(() => {
   global.loadSetup = jest.fn();
   global.deleteSetup = jest.fn();
   
-  require('../translations.js');
+  require('../../translations.js');
   global.loadFavorites = jest.fn(() => ({}));
   global.saveFavorites = jest.fn();
-  utils = require('../script.js');
+  utils = require('../../script.js');
 });
 
 describe('utility function tests', () => {

@@ -1,4 +1,4 @@
-const devices = require('../data.js');
+const devices = require('../../data.js');
 
 describe('cages data', () => {
   test('every cage specifies handle_extension_compatible', () => {

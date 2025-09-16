@@ -10,9 +10,13 @@
     "unify-ports": "node unifyPorts.js",
     "generate-schema": "node generateSchema.js",
     "test": "npm run lint && npm run check-consistency && npm run test:jest",
-    "test:jest": "npm run test:unit && npm run test:script",
-    "test:unit": "jest --runInBand --testPathIgnorePatterns=tests/script.test.js",
-    "test:script": "jest --runInBand tests/script.test.js"
+    "test:jest": "npm run test:unit && npm run test:ui",
+    "test:unit": "npm run test:data && npm run test:storage",
+    "test:script": "node --max-old-space-size=4096 node_modules/jest/bin/jest.js --runInBand tests/ui/script.integration.test.js",
+    "test:data": "jest --runInBand tests/data",
+    "test:storage": "jest --runInBand tests/storage",
+    "test:ui": "npm run test:script && npm run test:ui:components",
+    "test:ui:components": "jest --runInBand tests/ui/sharedLinkButton.test.js tests/ui/utils.test.js"
   },
   "keywords": [],
   "author": "",
