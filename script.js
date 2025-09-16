@@ -2049,6 +2049,88 @@ function setLanguage(lang) {
   if (diagramHint) {
     diagramHint.textContent = texts[lang].diagramMoveHint;
   }
+  const fallbackProjectForm = texts.en && texts.en.projectForm ? texts.en.projectForm : {};
+  const projectFormTexts = texts[lang].projectForm || fallbackProjectForm;
+  if (projectFormTexts) {
+    const setLabelText = (element, key) => {
+      if (!element) return;
+      const value = projectFormTexts[key] || fallbackProjectForm[key];
+      if (value) element.textContent = value;
+    };
+    setLabelText(projectDialogHeading, 'heading');
+    setLabelText(projectNameLabel, 'projectName');
+    setLabelText(productionCompanyLabel, 'productionCompany');
+    setLabelText(rentalHouseLabel, 'rentalHouse');
+    setLabelText(crewHeadingElem, 'crewHeading');
+    setLabelText(prepLabelElem, 'prepLabel');
+    setLabelText(shootLabelElem, 'shootLabel');
+    setLabelText(deliveryResolutionLabel, 'deliveryResolution');
+    setLabelText(recordingResolutionLabel, 'recordingResolution');
+    setLabelText(sensorModeLabel, 'sensorMode');
+    setLabelText(aspectRatioLabel, 'aspectRatio');
+    setLabelText(codecLabel, 'codec');
+    setLabelText(baseFrameRateLabel, 'baseFrameRate');
+    setLabelText(lensesHeadingElem, 'lensesHeading');
+    setLabelText(lensesLabelElem, 'lensesLabel');
+    setLabelText(riggingHeadingElem, 'riggingHeading');
+    setLabelText(requiredScenariosLabel, 'requiredScenarios');
+    setLabelText(cameraHandleLabel, 'cameraHandle');
+    setLabelText(viewfinderExtensionLabel, 'viewfinderExtension');
+    setLabelText(matteboxFilterHeadingElem, 'matteboxFilterHeading');
+    setLabelText(matteboxLabel, 'mattebox');
+    setLabelText(filterLabel, 'filter');
+    setLabelText(monitoringHeadingElem, 'monitoringHeading');
+    setLabelText(monitoringConfigurationLabel, 'monitoringConfiguration');
+    setLabelText(viewfinderSettingsLabel, 'viewfinderSettings');
+    setLabelText(frameGuidesLabel, 'frameGuides');
+    setLabelText(aspectMaskOpacityLabel, 'aspectMaskOpacity');
+    setLabelText(videoDistributionLabel, 'videoDistribution');
+    setLabelText(monitorUserButtonsLabel, 'monitorUserButtons');
+    setLabelText(cameraUserButtonsLabel, 'cameraUserButtons');
+    setLabelText(viewfinderUserButtonsLabel, 'viewfinderUserButtons');
+    setLabelText(tripodPreferencesHeading, 'tripodPreferencesHeading');
+    setLabelText(tripodHeadBrandLabel, 'tripodHeadBrand');
+    setLabelText(tripodBowlLabel, 'tripodBowl');
+    setLabelText(tripodTypesLabel, 'tripodTypes');
+    setLabelText(tripodSpreaderLabel, 'tripodSpreader');
+    if (viewfinderExtensionSelect && viewfinderExtensionSelect.options.length >= 2) {
+      const noneLabel = projectFormTexts.viewfinderExtensionNone || fallbackProjectForm.viewfinderExtensionNone;
+      const yesLabel = projectFormTexts.viewfinderExtensionYes || fallbackProjectForm.viewfinderExtensionYes;
+      if (noneLabel) viewfinderExtensionSelect.options[0].textContent = noneLabel;
+      if (yesLabel) viewfinderExtensionSelect.options[1].textContent = yesLabel;
+    }
+    if (projectCancelBtn) {
+      const cancelText = projectFormTexts.cancel || fallbackProjectForm.cancel;
+      if (cancelText) projectCancelBtn.textContent = cancelText;
+    }
+    if (projectSubmitBtn) {
+      const submitText = projectFormTexts.submit || fallbackProjectForm.submit;
+      if (submitText) projectSubmitBtn.textContent = submitText;
+    }
+    const crewPlaceholders = {
+      name: projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder,
+      phone: projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder,
+      email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder
+    };
+    const crewRoleLabels = texts[lang].crewRoles || (texts.en && texts.en.crewRoles) || {};
+    document.querySelectorAll('#crewContainer .person-row').forEach(row => {
+      const roleSelect = row.querySelector('select');
+      if (roleSelect) {
+        const currentValue = roleSelect.value;
+        Array.from(roleSelect.options).forEach(opt => {
+          const roleKey = opt.value;
+          opt.textContent = crewRoleLabels[roleKey] || roleKey;
+        });
+        roleSelect.value = currentValue;
+      }
+      const nameInput = row.querySelector('.person-name');
+      if (nameInput && crewPlaceholders.name) nameInput.placeholder = crewPlaceholders.name;
+      const phoneInput = row.querySelector('.person-phone');
+      if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
+      const emailInput = row.querySelector('.person-email');
+      if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+    });
+  }
   document.querySelectorAll('.favorite-toggle').forEach(btn => {
     btn.setAttribute('aria-label', texts[lang].favoriteToggleLabel);
     btn.setAttribute('title', texts[lang].favoriteToggleLabel);
@@ -2097,6 +2179,43 @@ const tripodSpreaderSelect = document.getElementById("tripodSpreader");
 const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
+const projectDialogHeading = document.getElementById("projectDialogHeading");
+const projectNameLabel = document.getElementById("projectNameLabel");
+const productionCompanyLabel = document.getElementById("productionCompanyLabel");
+const rentalHouseLabel = document.getElementById("rentalHouseLabel");
+const crewHeadingElem = document.getElementById("crewHeading");
+const prepLabelElem = document.getElementById("prepLabel");
+const shootLabelElem = document.getElementById("shootLabel");
+const deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
+const recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
+const sensorModeLabel = document.getElementById("sensorModeLabel");
+const aspectRatioLabel = document.getElementById("aspectRatioLabel");
+const codecLabel = document.getElementById("codecLabel");
+const baseFrameRateLabel = document.getElementById("baseFrameRateLabel");
+const lensesHeadingElem = document.getElementById("lensesHeading");
+const lensesLabelElem = document.getElementById("lensesLabel");
+const riggingHeadingElem = document.getElementById("riggingHeading");
+const requiredScenariosLabel = document.getElementById("requiredScenariosLabel");
+const cameraHandleLabel = document.getElementById("cameraHandleLabel");
+const viewfinderExtensionLabel = document.getElementById("viewfinderExtensionLabel");
+const viewfinderExtensionSelect = document.getElementById("viewfinderExtension");
+const matteboxFilterHeadingElem = document.getElementById("matteboxFilterHeading");
+const matteboxLabel = document.getElementById("matteboxLabel");
+const filterLabel = document.getElementById("filterLabel");
+const monitoringHeadingElem = document.getElementById("monitoringHeading");
+const monitoringConfigurationLabel = document.getElementById("monitoringConfigurationLabel");
+const viewfinderSettingsLabel = document.getElementById("viewfinderSettingsLabel");
+const frameGuidesLabel = document.getElementById("frameGuidesLabel");
+const aspectMaskOpacityLabel = document.getElementById("aspectMaskOpacityLabel");
+const videoDistributionLabel = document.getElementById("videoDistributionLabel");
+const monitorUserButtonsLabel = document.getElementById("monitorUserButtonsLabel");
+const cameraUserButtonsLabel = document.getElementById("cameraUserButtonsLabel");
+const viewfinderUserButtonsLabel = document.getElementById("viewfinderUserButtonsLabel");
+const tripodHeadBrandLabel = document.getElementById("tripodHeadBrandLabel");
+const tripodBowlLabel = document.getElementById("tripodBowlLabel");
+const tripodTypesLabel = document.getElementById("tripodTypesLabel");
+const tripodSpreaderLabel = document.getElementById("tripodSpreaderLabel");
+const projectSubmitBtn = document.getElementById("projectSubmit");
 const crewContainer = document.getElementById("crewContainer");
 const addPersonBtn = document.getElementById("addPersonBtn");
 const prepContainer = document.getElementById("prepContainer");
@@ -2172,23 +2291,26 @@ function createCrewRow(data = {}) {
   crewRoles.forEach(r => {
     const opt = document.createElement('option');
     opt.value = r;
-    opt.textContent = r;
+    const roleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
+    opt.textContent = roleLabels[r] || r;
     roleSel.appendChild(opt);
   });
   if (data.role) roleSel.value = data.role;
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
-  nameInput.placeholder = 'Name';
+  const fallbackProjectForm = texts.en?.projectForm || {};
+  const projectFormTexts = texts[currentLang]?.projectForm || fallbackProjectForm;
+  nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
   nameInput.className = 'person-name';
   nameInput.value = data.name || '';
   const phoneInput = document.createElement('input');
   phoneInput.type = 'tel';
-  phoneInput.placeholder = 'Phone';
+  phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
   phoneInput.className = 'person-phone';
   phoneInput.value = data.phone || '';
   const emailInput = document.createElement('input');
   emailInput.type = 'email';
-  emailInput.placeholder = 'Email';
+  emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.className = 'person-email';
   emailInput.value = data.email || '';
   const removeBtn = document.createElement('button');
@@ -9866,12 +9988,14 @@ function generateGearListHtml(info = {}) {
         supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
     }
     const projectInfo = { ...info };
+    const crewRoleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
     if (Array.isArray(info.people)) {
         const crewEntries = info.people
             .filter(p => p.role && p.name)
             .map(p => {
                 const details = [p.phone, p.email].filter(Boolean).join(', ');
-                return details ? `${p.role}: ${p.name} (${details})` : `${p.role}: ${p.name}`;
+                const roleLabel = crewRoleLabels[p.role] || p.role;
+                return details ? `${roleLabel}: ${p.name} (${details})` : `${roleLabel}: ${p.name}`;
             });
         if (crewEntries.length) {
             projectInfo.crew = crewEntries.join('\n');
@@ -9892,39 +10016,8 @@ function generateGearListHtml(info = {}) {
     delete projectInfo.frameGuides;
     delete projectInfo.aspectMaskOpacity;
     const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
-    const labels = {
-        productionCompany: 'Production Company',
-        rentalHouse: 'Rental House',
-        crew: 'Crew',
-        prepDays: 'Prep Days',
-        shootingDays: 'Shooting Days',
-        deliveryResolution: 'Delivery Resolution',
-        recordingResolution: 'Recording Resolution',
-        aspectRatio: 'Aspect Ratio',
-        codec: 'Codec',
-        baseFrameRate: 'Base Frame Rate',
-        sensorMode: 'Sensor Mode',
-        lenses: 'Lenses',
-        requiredScenarios: 'Required Scenarios',
-        cameraHandle: 'Camera Handle',
-        viewfinderExtension: 'Viewfinder Extension',
-        viewfinderEyeLeatherColor: 'Viewfinder Eye Leather Color',
-        mattebox: 'Mattebox',
-        gimbal: 'Gimbal',
-        videoDistribution: 'Video Distribution',
-        monitoringSupport: 'Monitoring support',
-        monitoringConfiguration: 'Monitoring configuration',
-        focusMonitor: 'Focus Monitor',
-        monitorUserButtons: 'Onboard Monitor User Buttons',
-        cameraUserButtons: 'Camera User Buttons',
-        viewfinderUserButtons: 'Viewfinder User Buttons',
-        tripodHeadBrand: 'Tripod Head Brand',
-        tripodBowl: 'Tripod Bowl',
-        tripodTypes: 'Tripod Types',
-        tripodSpreader: 'Tripod Spreader',
-        sliderBowl: 'Slider Bowl',
-        easyrig: 'Further Stabilisation'
-    };
+    const projectLabels = texts[currentLang]?.projectFields || texts.en?.projectFields || {};
+    const projectFormTexts = texts[currentLang]?.projectForm || texts.en?.projectForm || {};
     const excludedFields = new Set([
         'cameraHandle',
         'viewfinderExtension',
@@ -9960,9 +10053,11 @@ function generateGearListHtml(info = {}) {
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => {
             const value = escapeHtml(v).replace(/\n/g, '<br>');
-            return `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(labels[k] || k)}</span><span class="req-value">${value}</span></div>`;
+            const label = projectLabels[k] || k;
+            return `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(label)}</span><span class="req-value">${value}</span></div>`;
         }).join('') + '</div>' : '';
-    const infoHtml = infoEntries.length ? `<h3>Project Requirements</h3>${boxesHtml}` : '';
+    const requirementsHeading = projectFormTexts.heading || 'Project Requirements';
+    const infoHtml = infoEntries.length ? `<h3>${escapeHtml(requirementsHeading)}</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
         arr.filter(Boolean).map(addArriKNumber).forEach(item => {

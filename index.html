@@ -1100,15 +1100,15 @@
     <form id="projectForm" method="dialog">
       <h3 id="projectDialogHeading">Project Requirements</h3>
       <div class="form-row">
-        <label for="projectName">Project Name:</label>
+        <label for="projectName" id="projectNameLabel">Project Name:</label>
         <input type="text" id="projectName" name="projectName" />
       </div>
       <div class="form-row">
-        <label for="productionCompany">Production Company:</label>
+        <label for="productionCompany" id="productionCompanyLabel">Production Company:</label>
         <input type="text" id="productionCompany" name="productionCompany" />
       </div>
       <div class="form-row">
-        <label for="rentalHouse">Rental House:</label>
+        <label for="rentalHouse" id="rentalHouseLabel">Rental House:</label>
         <input type="text" id="rentalHouse" name="rentalHouse" />
       </div>
       <h3 id="crewHeading">Crew</h3>
@@ -1127,7 +1127,7 @@
         <button type="button" id="addShootBtn">+</button>
       </div>
       <div class="form-row">
-        <label for="deliveryResolution">Delivery Resolution:</label>
+        <label for="deliveryResolution" id="deliveryResolutionLabel">Delivery Resolution:</label>
         <select id="deliveryResolution" name="deliveryResolution">
           <option value=""></option>
           <option value="720p">720p</option>
@@ -1149,15 +1149,15 @@
         </select>
       </div>
       <div class="form-row">
-        <label for="recordingResolution">Recording Resolution:</label>
+        <label for="recordingResolution" id="recordingResolutionLabel">Recording Resolution:</label>
         <select id="recordingResolution" name="recordingResolution"></select>
       </div>
       <div class="form-row">
-        <label for="sensorMode">Sensor Mode:</label>
+        <label for="sensorMode" id="sensorModeLabel">Sensor Mode:</label>
         <select id="sensorMode" name="sensorMode"></select>
       </div>
       <div class="form-row">
-        <label for="aspectRatio">Aspect Ratio:</label>
+        <label for="aspectRatio" id="aspectRatioLabel">Aspect Ratio:</label>
         <select id="aspectRatio" name="aspectRatio" multiple size="20">
           <option value="16:9">16:9</option>
           <option value="17:9">17:9</option>
@@ -1182,11 +1182,11 @@
         </select>
       </div>
       <div class="form-row">
-        <label for="codec">Codec:</label>
+        <label for="codec" id="codecLabel">Codec:</label>
         <select id="codec" name="codec"></select>
       </div>
       <div class="form-row">
-        <label for="baseFrameRate">Base Frame Rate:</label>
+        <label for="baseFrameRate" id="baseFrameRateLabel">Base Frame Rate:</label>
         <select id="baseFrameRate" name="baseFrameRate">
           <option value=""></option>
           <option value="23.976">23.976</option>
@@ -1209,7 +1209,7 @@
 
       <h3 id="riggingHeading">Rigging</h3>
       <div class="form-row">
-        <label for="requiredScenarios">What required scenarios do we have for this shoot?</label>
+        <label for="requiredScenarios" id="requiredScenariosLabel">What required scenarios do we have for this shoot?</label>
         <select id="requiredScenarios" name="requiredScenarios" multiple size="25">
           <option value="Indoor">Indoor</option>
           <option value="Outdoor">Outdoor</option>
@@ -1240,7 +1240,7 @@
         <div id="requiredScenariosSummary" class="scenario-summary" aria-live="polite"></div>
       </div>
       <div class="form-row">
-        <label for="cameraHandle">Camera Handle:</label>
+        <label for="cameraHandle" id="cameraHandleLabel">Camera Handle:</label>
         <select id="cameraHandle" name="cameraHandle" multiple size="3">
           <option value="Handle Extension">Handle Extension</option>
           <option value="L-Handle">L-Handle</option>
@@ -1248,7 +1248,7 @@
         </select>
       </div>
       <div class="form-row hidden" id="viewfinderExtensionRow">
-        <label for="viewfinderExtension">Viewfinder Extension:</label>
+        <label for="viewfinderExtension" id="viewfinderExtensionLabel">Viewfinder Extension:</label>
         <select id="viewfinderExtension" name="viewfinderExtension">
           <option value="" selected>No</option>
           <option value="ARRI VEB-3 Viewfinder Extension Bracket">Yes</option>
@@ -1259,7 +1259,7 @@
 
       <h3 id="matteboxFilterHeading">Mattebox and Filter</h3>
       <div class="form-row">
-        <label for="mattebox">Mattebox:</label>
+        <label for="mattebox" id="matteboxLabel">Mattebox:</label>
         <select id="mattebox" name="mattebox">
           <option value="">-- Select --</option>
           <option value="Rod based">Rod based</option>
@@ -1268,14 +1268,14 @@
         </select>
       </div>
       <div class="form-row">
-        <label for="filter">Filter:</label>
+        <label for="filter" id="filterLabel">Filter:</label>
         <select id="filter" name="filter" multiple size="10"></select>
       </div>
       <div class="form-row" id="filterDetails"></div>
 
       <h3 id="monitoringHeading">Monitoring</h3>
       <div class="form-row">
-        <label for="monitoringConfiguration">Camera Monitoring Configuration:</label>
+        <label for="monitoringConfiguration" id="monitoringConfigurationLabel">Camera Monitoring Configuration:</label>
         <select id="monitoringConfiguration" name="monitoringConfiguration">
           <option value="Viewfinder only">Viewfinder only</option>
           <option value="Viewfinder and Onboard">Viewfinder and Onboard</option>
@@ -1283,14 +1283,14 @@
         </select>
       </div>
       <div class="form-row hidden" id="viewfinderSettingsRow">
-        <label for="viewfinderSettings">Viewfinder Settings:</label>
+        <label for="viewfinderSettings" id="viewfinderSettingsLabel">Viewfinder Settings:</label>
         <select id="viewfinderSettings" name="viewfinderSettings" multiple size="2">
           <option value="Viewfinder Clean Feed">Viewfinder Clean Feed</option>
           <option value="Surround View">Surround View</option>
         </select>
       </div>
       <div class="form-row">
-        <label for="frameGuides">Frameguides:</label>
+        <label for="frameGuides" id="frameGuidesLabel">Frameguides:</label>
         <select id="frameGuides" name="frameGuides" multiple size="5">
           <option value="Frame Guide: Center Dot">Frame Guide: Center Dot</option>
           <option value="Frame Guides: Center Cross">Frame Guides: Center Cross</option>
@@ -1300,7 +1300,7 @@
         </select>
       </div>
       <div class="form-row">
-        <label for="aspectMaskOpacity">Aspect Mask Opacity:</label>
+        <label for="aspectMaskOpacity" id="aspectMaskOpacityLabel">Aspect Mask Opacity:</label>
         <select id="aspectMaskOpacity" name="aspectMaskOpacity" multiple size="5">
           <option value="Aspect Mask Opacity 100%">Aspect Mask Opacity 100%</option>
           <option value="AM Opacity 75%">AM Opacity 75%</option>
@@ -1310,7 +1310,7 @@
         </select>
       </div>
       <div class="form-row">
-        <label for="videoDistribution">Video distribution:</label>
+        <label for="videoDistribution" id="videoDistributionLabel">Video distribution:</label>
         <select id="videoDistribution" name="videoDistribution" multiple size="10">
           <option value="Director Monitor 7&quot; handheld">Director Monitor 7&quot; handheld</option>
           <option value="Gaffer Monitor 7&quot; handheld">Gaffer Monitor 7&quot; handheld</option>
@@ -1323,22 +1323,22 @@
       </div>
       <h3 id="userButtonsHeading">User Buttons</h3>
       <div class="form-row">
-        <label for="monitorUserButtons">Onboard Monitor User Buttons:</label>
+        <label for="monitorUserButtons" id="monitorUserButtonsLabel">Onboard Monitor User Buttons:</label>
         <select id="monitorUserButtons" name="monitorUserButtons" multiple></select>
       </div>
       <div class="form-row">
-        <label for="cameraUserButtons">Camera User Buttons:</label>
+        <label for="cameraUserButtons" id="cameraUserButtonsLabel">Camera User Buttons:</label>
         <select id="cameraUserButtons" name="cameraUserButtons" multiple></select>
       </div>
       <div class="form-row">
-        <label for="viewfinderUserButtons">Viewfinder User Buttons:</label>
+        <label for="viewfinderUserButtons" id="viewfinderUserButtonsLabel">Viewfinder User Buttons:</label>
         <select id="viewfinderUserButtons" name="viewfinderUserButtons" multiple></select>
       </div>
 
       <h3 id="tripodPreferencesHeading" class="hidden">Tripod Preferences</h3>
       <div class="hidden" id="tripodPreferencesRow">
         <div class="form-row">
-          <label for="tripodHeadBrand">Head Brand:</label>
+          <label for="tripodHeadBrand" id="tripodHeadBrandLabel">Head Brand:</label>
           <select id="tripodHeadBrand" name="tripodHeadBrand">
             <option value=""></option>
             <option value="OConnor">O'Connor</option>
@@ -1347,7 +1347,7 @@
           </select>
         </div>
         <div class="form-row">
-          <label for="tripodBowl">Bowl type:</label>
+          <label for="tripodBowl" id="tripodBowlLabel">Bowl type:</label>
           <select id="tripodBowl" name="tripodBowl">
             <option value=""></option>
             <option value="75mm bowl">75mm bowl</option>
@@ -1357,7 +1357,7 @@
           </select>
         </div>
         <div class="form-row">
-          <label for="tripodTypes">Tripod types:</label>
+          <label for="tripodTypes" id="tripodTypesLabel">Tripod types:</label>
           <select id="tripodTypes" name="tripodTypes" multiple size="4">
             <option value="Standard Tripod">Standard Tripod</option>
             <option value="Baby Tripod">Baby Tripod</option>
@@ -1366,7 +1366,7 @@
           </select>
         </div>
         <div class="form-row">
-          <label for="tripodSpreader">Spreader Preference:</label>
+          <label for="tripodSpreader" id="tripodSpreaderLabel">Spreader Preference:</label>
           <select id="tripodSpreader" name="tripodSpreader">
             <option value=""></option>
             <option value="Mid-Level Spreader">Mid-Level Spreader</option>
@@ -1376,7 +1376,7 @@
       </div>
       <menu>
         <button type="reset" id="projectCancel">Cancel</button>
-        <button type="submit">OK</button>
+        <button type="submit" id="projectSubmit">OK</button>
       </menu>
     </form>
   </dialog>
