@@ -1252,6 +1252,7 @@ if (typeof texts === 'undefined') {
 
 // Determine initial language (default English)
 let currentLang = "en";
+let updateHelpQuickLinksForLanguage;
 let lastRuntimeHours = null;
 try {
   const savedLang = localStorage.getItem("language");
@@ -2005,6 +2006,9 @@ function setLanguage(lang) {
       document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
     }
     if (helpNoResults) helpNoResults.textContent = texts[lang].helpNoResults;
+    if (typeof updateHelpQuickLinksForLanguage === 'function') {
+      updateHelpQuickLinksForLanguage(lang);
+    }
   }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
@@ -3011,6 +3015,10 @@ const closeHelpBtn    = document.getElementById("closeHelp");
 const helpSearch      = document.getElementById("helpSearch");
 const helpNoResults   = document.getElementById("helpNoResults");
 const helpSearchClear = document.getElementById("helpSearchClear");
+const helpSectionsContainer = document.getElementById("helpSections");
+const helpQuickLinksNav = document.getElementById("helpQuickLinks");
+const helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
+const helpQuickLinksList = document.getElementById("helpQuickLinksList");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
 const settingsButton  = document.getElementById("settingsButton");
 const settingsDialog  = document.getElementById("settingsDialog");
@@ -12374,6 +12382,162 @@ if (helpButton && helpDialog) {
   // mode that exposes descriptions for interface controls. The following
   // functions manage searching, opening/closing the dialog and tooltip-based
   // hover help.
+  const helpContent = helpDialog.querySelector('.help-content');
+  const helpQuickLinkItems = new Map();
+  const helpSectionHighlightTimers = new Map();
+
+  const focusHelpSectionHeading = section => {
+    if (!section) return;
+    const heading =
+      section.querySelector('h3, summary, h4, h5, h6') ||
+      section.querySelector('button, a');
+    if (!heading) return;
+    const hadTabIndex = heading.hasAttribute('tabindex');
+    if (!hadTabIndex) heading.setAttribute('tabindex', '-1');
+    try {
+      heading.focus({ preventScroll: true });
+    } catch (err) {
+      heading.focus();
+    }
+    if (!hadTabIndex) {
+      heading.addEventListener(
+        'blur',
+        () => heading.removeAttribute('tabindex'),
+        { once: true }
+      );
+    }
+  };
+
+  const highlightHelpSection = section => {
+    if (!section) return;
+    const existingTimer = helpSectionHighlightTimers.get(section);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+    section.classList.add('help-section-focus');
+    const timer = setTimeout(() => {
+      section.classList.remove('help-section-focus');
+      helpSectionHighlightTimers.delete(section);
+    }, 1500);
+    helpSectionHighlightTimers.set(section, timer);
+  };
+
+  const syncHelpQuickLinksVisibility = () => {
+    if (!helpQuickLinksNav || !helpQuickLinksList || !helpQuickLinkItems.size) {
+      if (helpQuickLinksNav) helpQuickLinksNav.setAttribute('hidden', '');
+      return;
+    }
+    let hasVisible = false;
+    helpQuickLinkItems.forEach(({ section, listItem, button }) => {
+      if (section && !section.hasAttribute('hidden')) {
+        listItem.removeAttribute('hidden');
+        hasVisible = true;
+      } else {
+        listItem.setAttribute('hidden', '');
+        if (button) button.classList.remove('active');
+      }
+    });
+    if (hasVisible) {
+      helpQuickLinksNav.removeAttribute('hidden');
+    } else {
+      helpQuickLinksNav.setAttribute('hidden', '');
+    }
+  };
+
+  const applyQuickLinkLanguage = lang => {
+    if (!helpQuickLinksNav) return;
+    const langTexts = (texts && texts[lang]) || {};
+    const fallbackTexts = (texts && texts.en) || {};
+    const headingText =
+      langTexts.helpQuickLinksHeading || fallbackTexts.helpQuickLinksHeading;
+    if (helpQuickLinksHeading && headingText) {
+      helpQuickLinksHeading.textContent = headingText;
+    }
+    const ariaLabel =
+      langTexts.helpQuickLinksAriaLabel ||
+      headingText ||
+      fallbackTexts.helpQuickLinksAriaLabel ||
+      'Help topics quick navigation';
+    helpQuickLinksNav.setAttribute('aria-label', ariaLabel);
+    const helpDescription =
+      langTexts.helpQuickLinksHelp || fallbackTexts.helpQuickLinksHelp;
+    if (helpDescription) {
+      helpQuickLinksNav.setAttribute('data-help', helpDescription);
+    } else {
+      helpQuickLinksNav.removeAttribute('data-help');
+    }
+    const template =
+      langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
+    helpQuickLinkItems.forEach(({ button, label }) => {
+      if (!button) return;
+      if (template) {
+        const helpText = template.replace('%s', label);
+        button.setAttribute('data-help', helpText);
+        button.setAttribute('aria-label', helpText);
+      } else {
+        button.removeAttribute('data-help');
+        button.setAttribute('aria-label', label);
+      }
+    });
+  };
+
+  updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
+
+  const buildHelpQuickLinks = () => {
+    if (!helpQuickLinksNav || !helpQuickLinksList || !helpSectionsContainer) {
+      helpQuickLinkItems.clear();
+      if (helpQuickLinksNav) helpQuickLinksNav.setAttribute('hidden', '');
+      return;
+    }
+    helpQuickLinkItems.clear();
+    helpQuickLinksList.textContent = '';
+    const fragment = document.createDocumentFragment();
+    const sections = Array.from(
+      helpSectionsContainer.querySelectorAll('section[data-help-section]')
+    );
+    sections.forEach(section => {
+      const id = section.id;
+      if (!id) return;
+      const heading = section.querySelector('h3');
+      if (!heading) return;
+      const label = heading.textContent.trim();
+      if (!label) return;
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'help-quick-link';
+      button.textContent = label;
+      button.dataset.targetId = id;
+      button.setAttribute('aria-label', label);
+      button.addEventListener('click', () => {
+        if (section.hasAttribute('hidden')) return;
+        if (helpQuickLinksList) {
+          helpQuickLinksList
+            .querySelectorAll('.help-quick-link.active')
+            .forEach(btn => btn.classList.remove('active'));
+        }
+        button.classList.add('active');
+        if (typeof section.scrollIntoView === 'function') {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        highlightHelpSection(section);
+        focusHelpSectionHeading(section);
+      });
+      li.appendChild(button);
+      fragment.appendChild(li);
+      helpQuickLinkItems.set(id, { section, button, listItem: li, label });
+    });
+    if (!fragment.childNodes.length) {
+      helpQuickLinksNav.setAttribute('hidden', '');
+      return;
+    }
+    helpQuickLinksList.appendChild(fragment);
+    applyQuickLinkLanguage(currentLang);
+    syncHelpQuickLinksVisibility();
+  };
+
+  buildHelpQuickLinks();
+
   // Search and filtering for the help dialog. Every keystroke scans both
   // high-level sections and individual FAQ items, restoring their original
   // markup, highlighting matches and hiding entries that do not include the
@@ -12511,6 +12675,7 @@ if (helpButton && helpDialog) {
         helpSearchClear.setAttribute('hidden', '');
       }
     }
+    syncHelpQuickLinksVisibility();
   };
 
   // Display the help dialog. The search box is reset so stale filter state
@@ -12522,6 +12687,14 @@ if (helpButton && helpDialog) {
     if (helpSearch) {
       helpSearch.value = '';
       filterHelp(); // ensure all sections are visible again
+      if (helpQuickLinksList) {
+        helpQuickLinksList
+          .querySelectorAll('.help-quick-link.active')
+          .forEach(btn => btn.classList.remove('active'));
+      }
+      if (helpContent) {
+        helpContent.scrollTop = 0;
+      }
       helpSearch.focus();
     } else {
       helpDialog.focus();
