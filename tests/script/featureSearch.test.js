@@ -111,6 +111,32 @@ describe('global feature search helpers', () => {
     expect(result?.value.label).toBe('B-Mount Battery Plate');
   });
 
+  test('findBestSearchMatch tolerates unmatched query tokens', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('12V Power Input'),
+      {
+        label: '12V Power Input',
+        tokens: searchTokens('12V Power Input')
+      }
+    );
+    entries.set(
+      searchKey('Power Distribution'),
+      {
+        label: 'Power Distribution',
+        tokens: searchTokens('Power Distribution')
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('power 12v camera rig'),
+      searchTokens('power 12v camera rig')
+    );
+
+    expect(result?.value.label).toBe('12V Power Input');
+  });
+
   test('searchKey normalizes degree and multiplication symbols', () => {
     expect(searchKey('35° Tilt Module')).toBe(
       searchKey('35 deg tilt module')

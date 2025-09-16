@@ -3187,6 +3187,7 @@ const searchTokens = str => {
 const tokenMatchScore = (entryTokens = [], queryTokens = []) => {
   if (!Array.isArray(entryTokens) || entryTokens.length === 0) return 0;
   let total = 0;
+  let matched = 0;
   for (const token of queryTokens) {
     if (!token) continue;
     let best = 0;
@@ -3202,9 +3203,12 @@ const tokenMatchScore = (entryTokens = [], queryTokens = []) => {
         best = Math.max(best, 1);
       }
     }
-    if (best === 0) return 0;
-    total += best;
+    if (best > 0) {
+      matched += 1;
+      total += best;
+    }
   }
+  if (matched === 0) return 0;
   return total;
 };
 
