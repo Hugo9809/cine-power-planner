@@ -387,14 +387,26 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node normalizeData.js [--help]\n' +
-        '\nCleans and expands device data, then overwrites data.js with the result.\n' +
-        '\nExamples:\n' +
-        '  npm run normalize\n' +
-        '  npm run normalize -- --help\n' +
-        '  node normalizeData.js --help\n' +
-        '\nOptions:\n' +
+      [
+        'Usage: node normalizeData.js [--help]',
+        '',
+        'Cleans and expands device data, then overwrites data.js with the result.',
+        '',
+        'What it does:',
+        '  - Harmonizes connector names across cameras, motors and controllers (LBUS, LEMO, Hirose, etc.).',
+        '  - Normalizes recording media, timecode generators, viewfinders and lens mounts.',
+        '  - Rebuilds derived fields such as power distribution outputs and video port lists.',
+        '',
+        'The script modifies data.js in place. Review the diff and commit it with matching schema updates.',
+        '',
+        'Examples:',
+        '  npm run normalize',
+        '  npm run normalize -- --help',
+        '  node normalizeData.js --help',
+        '',
+        'Options:',
         '  -h, --help  Show this help message and exit.'
+      ].join('\n')
     );
     process.exit(0);
   }
