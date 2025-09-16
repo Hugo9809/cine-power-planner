@@ -91,6 +91,9 @@ const texts = {
     backupHeading: "Backup & Restore",
     backupHeadingHelp:
       "Manage full backups of settings, saved projects, custom devices and runtime feedback.",
+    showAutoBackupsSetting: "Show auto backups in project list",
+    showAutoBackupsHelp:
+      "Temporarily list automatic backup snapshots in Saved Projects so you can restore them manually.",
     backupSettings: "Backup",
     backupSettingsHelp:
       "Download a JSON snapshot of settings, projects, custom devices, favorites and runtime data.",
@@ -1025,6 +1028,9 @@ const texts = {
     backupHeading: "Backup e ripristino",
     backupHeadingHelp:
       "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati e feedback.",
+    showAutoBackupsSetting: "Mostra i salvataggi automatici nell'elenco progetti",
+    showAutoBackupsHelp:
+      "Mostra temporaneamente gli snapshot di backup automatici nei progetti salvati per poterli ripristinare manualmente.",
     backupSettings: "Backup",
     backupSettingsHelp:
       "Scarica uno snapshot JSON con impostazioni, progetti, dispositivi personalizzati, preferiti e dati runtime.",
@@ -1575,6 +1581,9 @@ const texts = {
     backupHeading: "Copia de seguridad y restaurar",
     backupHeadingHelp:
       "Gestiona copias de seguridad completas de ajustes, proyectos guardados, dispositivos personalizados y comentarios.",
+    showAutoBackupsSetting: "Mostrar las copias de seguridad automáticas en la lista de proyectos",
+    showAutoBackupsHelp:
+      "Muestra temporalmente las instantáneas automáticas en Proyectos guardados para que puedas restaurarlas manualmente.",
     backupSettings: "Copia de seguridad",
     backupSettingsHelp:
       "Descarga una instantánea JSON con ajustes, proyectos, dispositivos personalizados, favoritos y datos de autonomía.",
@@ -2127,6 +2136,9 @@ const texts = {
     backupHeading: "Sauvegarde et restauration",
     backupHeadingHelp:
       "Gérez des sauvegardes complètes des réglages, projets enregistrés, appareils personnalisés et retours.",
+    showAutoBackupsSetting: "Afficher les sauvegardes automatiques dans la liste des projets",
+    showAutoBackupsHelp:
+      "Affiche temporairement les instantanés de sauvegarde automatiques dans Projets enregistrés afin de pouvoir les restaurer manuellement.",
     backupSettings: "Sauvegarder",
     backupSettingsHelp:
       "Téléchargez une sauvegarde JSON comprenant réglages, projets, appareils personnalisés, favoris et données d’autonomie.",
@@ -2682,6 +2694,9 @@ const texts = {
     backupHeading: "Sichern & Wiederherstellen",
     backupHeadingHelp:
       "Verwalte vollständige Sicherungen von Einstellungen, Projekten, eigenen Geräten und Feedback.",
+    showAutoBackupsSetting: "Automatische Sicherungen in der Projektliste anzeigen",
+    showAutoBackupsHelp:
+      "Blendet automatische Sicherungs-Snapshots vorübergehend in den gespeicherten Projekten ein, damit du sie manuell wiederherstellen kannst.",
     backupSettings: "Sichern",
     backupSettingsHelp:
       "Lade eine JSON-Sicherung mit Einstellungen, Projekten, eigenen Geräten, Favoriten und Laufzeitdaten herunter.",

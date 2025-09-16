@@ -266,6 +266,15 @@ const localeSort = (a, b) => collator.compare(a, b);
 
 const DEFAULT_FILTER_SIZE = '4x5.65';
 
+let showAutoBackups = false;
+try {
+  if (typeof localStorage !== 'undefined') {
+    showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
+  }
+} catch (e) {
+  console.warn('Could not load auto backup visibility preference', e);
+}
+
 // Labels for B-Mount support are defined in translations.js using the keys
 // batteryBMountLabel, totalCurrent336Label and totalCurrent216Label.
 
@@ -1900,6 +1909,20 @@ function setLanguage(lang) {
       texts[lang].backupHeadingHelp || texts[lang].backupHeading
     );
   }
+  const showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
+  if (showAutoBackupsLabel) {
+    showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
+    const autoBackupsHelp =
+      texts[lang].showAutoBackupsHelp || texts[lang].showAutoBackupsSetting;
+    showAutoBackupsLabel.setAttribute("data-help", autoBackupsHelp);
+    if (settingsShowAutoBackups) {
+      settingsShowAutoBackups.setAttribute("data-help", autoBackupsHelp);
+      settingsShowAutoBackups.setAttribute(
+        "aria-label",
+        texts[lang].showAutoBackupsSetting
+      );
+    }
+  }
   if (backupSettings) {
     backupSettings.textContent = texts[lang].backupSettings;
     const backupHelp =
@@ -3075,6 +3098,7 @@ const settingsHighContrast = document.getElementById("settingsHighContrast");
 const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
 const restoreSettingsInput = document.getElementById("restoreSettingsInput");
+const settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
 const aboutVersionElem = document.getElementById("aboutVersion");
 const supportLink = document.getElementById("supportLink");
 const settingsSave    = document.getElementById("settingsSave");
@@ -7915,12 +7939,14 @@ setupSelect.addEventListener("change", (event) => {
 function populateSetupSelect() {
   const setups = getSetups();
   setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
-  const names = Object.keys(setups).sort((a, b) => {
-    const autoA = a.startsWith('auto-backup-');
-    const autoB = b.startsWith('auto-backup-');
-    if (autoA !== autoB) return autoA ? 1 : -1; // Auto backups last
-    return localeSort(a, b);
-  });
+  const names = Object.keys(setups)
+    .filter(name => showAutoBackups || !name.startsWith('auto-backup-'))
+    .sort((a, b) => {
+      const autoA = a.startsWith('auto-backup-');
+      const autoB = b.startsWith('auto-backup-');
+      if (autoA !== autoB) return autoA ? 1 : -1; // Auto backups last
+      return localeSort(a, b);
+    });
   for (const name of names) {
     const opt = document.createElement("option");
     opt.value = name;
@@ -11748,6 +11774,7 @@ if (settingsButton && settingsDialog) {
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsHighContrast) settingsHighContrast.checked = document.body.classList.contains('high-contrast');
+    if (settingsShowAutoBackups) settingsShowAutoBackups.checked = showAutoBackups;
     if (accentColorInput) {
       const stored = localStorage.getItem('accentColor');
       accentColorInput.value = stored || accentColor;
@@ -11792,6 +11819,31 @@ if (settingsButton && settingsDialog) {
           localStorage.setItem('highContrast', enabled);
         } catch (e) {
           console.warn('Could not save high contrast preference', e);
+        }
+      }
+      if (settingsShowAutoBackups) {
+        const enabled = settingsShowAutoBackups.checked;
+        const changed = enabled !== showAutoBackups;
+        showAutoBackups = enabled;
+        try {
+          localStorage.setItem('showAutoBackups', enabled);
+        } catch (e) {
+          console.warn('Could not save auto backup visibility preference', e);
+        }
+        if (changed) {
+          const prevValue = setupSelect ? setupSelect.value : '';
+          const prevName = setupNameInput ? setupNameInput.value : '';
+          populateSetupSelect();
+          if (setupSelect) {
+            if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
+              setupSelect.value = prevValue;
+            } else {
+              setupSelect.value = '';
+            }
+          }
+          if (setupNameInput) {
+            setupNameInput.value = prevName;
+          }
         }
       }
       if (accentColorInput) {
@@ -12000,6 +12052,23 @@ if (restoreSettings && restoreSettingsInput) {
         applyDarkMode(localStorage.getItem('darkMode') === 'true');
         applyPinkMode(localStorage.getItem('pinkMode') === 'true');
         applyHighContrast(localStorage.getItem('highContrast') === 'true');
+        showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
+        const prevValue = setupSelect ? setupSelect.value : '';
+        const prevName = setupNameInput ? setupNameInput.value : '';
+        populateSetupSelect();
+        if (setupSelect) {
+          if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
+            setupSelect.value = prevValue;
+          } else {
+            setupSelect.value = '';
+          }
+        }
+        if (setupNameInput) {
+          setupNameInput.value = prevName;
+        }
+        if (settingsShowAutoBackups) {
+          settingsShowAutoBackups.checked = showAutoBackups;
+        }
         const color = localStorage.getItem('accentColor');
         if (color) {
           document.documentElement.style.setProperty('--accent-color', color);
