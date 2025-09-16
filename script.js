@@ -1734,6 +1734,45 @@ function setLanguage(lang) {
   if (fontSizeLabel) fontSizeLabel.textContent = texts[lang].fontSizeSetting;
   const fontFamilyLabel = document.getElementById("settingsFontFamilyLabel");
   if (fontFamilyLabel) fontFamilyLabel.textContent = texts[lang].fontFamilySetting;
+  if (bundledFontGroup) {
+    const builtInLabel =
+      (texts[lang] && texts[lang].bundledFontsGroup) ||
+      (texts.en && texts.en.bundledFontsGroup) ||
+      bundledFontGroup.label;
+    if (builtInLabel) bundledFontGroup.label = builtInLabel;
+  }
+  if (localFontsGroup) {
+    const localLabel =
+      (texts[lang] && texts[lang].localFontsGroup) ||
+      (texts.en && texts.en.localFontsGroup) ||
+      localFontsGroup.label;
+    if (localLabel) localFontsGroup.label = localLabel;
+  }
+  if (localFontsButton) {
+    const localFontsLabel =
+      (texts[lang] && texts[lang].localFontsButton) ||
+      (texts.en && texts.en.localFontsButton) ||
+      localFontsButton.textContent;
+    if (localFontsLabel) {
+      localFontsButton.textContent = localFontsLabel;
+      localFontsButton.setAttribute('aria-label', localFontsLabel);
+      localFontsButton.setAttribute('title', localFontsLabel);
+    }
+  }
+  if (localFontsStatus && localFontsStatus.dataset.statusKey) {
+    const statusKey = localFontsStatus.dataset.statusKey;
+    const arg = localFontsStatus.dataset.statusArg;
+    let template =
+      (texts[lang] && texts[lang][statusKey]) ||
+      (texts.en && texts.en[statusKey]) ||
+      '';
+    if (template && arg !== undefined && arg !== null) {
+      template = template.replace('%s', arg);
+    } else if (!template && arg !== undefined && arg !== null) {
+      template = arg;
+    }
+    localFontsStatus.textContent = template;
+  }
   const settingsLogoLabel = document.getElementById("settingsLogoLabel");
   if (settingsLogoLabel) settingsLogoLabel.textContent = texts[lang].logoSetting;
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
@@ -2481,6 +2520,10 @@ const settingsDarkMode = document.getElementById("settingsDarkMode");
 const accentColorInput = document.getElementById("accentColorInput");
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
+const localFontsButton = document.getElementById("localFontsButton");
+const localFontsStatus = document.getElementById("localFontsStatus");
+const localFontsGroup = document.getElementById("localFontsGroup");
+const bundledFontGroup = document.getElementById("bundledFontOptions");
 const settingsLogo = document.getElementById("settingsLogo");
 const settingsLogoPreview = document.getElementById("settingsLogoPreview");
 
@@ -2608,6 +2651,176 @@ if (accentColorInput) {
 let fontSize = '16';
 let fontFamily = "'Ubuntu', sans-serif";
 
+const supportsLocalFonts =
+  typeof window !== 'undefined' && typeof window.queryLocalFonts === 'function';
+
+function getLocalizedText(key) {
+  if (texts[currentLang] && texts[currentLang][key]) return texts[currentLang][key];
+  if (texts.en && texts.en[key]) return texts.en[key];
+  return '';
+}
+
+function guessFontFallback(name) {
+  if (!name) return 'sans-serif';
+  const lower = name.toLowerCase();
+  if (/(mono|code|console|courier|menlo|fixed|inconsolata|monaco)/.test(lower)) {
+    return 'monospace';
+  }
+  if (/(serif|times|garamond|georgia|baskerville|roman|palatino|bodoni|bookman)/.test(lower)) {
+    return 'serif';
+  }
+  if (/(script|hand|brush|cursive|callig|marker)/.test(lower)) {
+    return 'cursive';
+  }
+  return 'sans-serif';
+}
+
+function buildFontFamilyValue(name) {
+  if (!name) return fontFamily;
+  const escaped = name.replace(/\\/g, '\\').replace(/'/g, "\\'");
+  return `'${escaped}', ${guessFontFallback(name)}`;
+}
+
+function extractFontLabel(value) {
+  if (!value) return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  const firstChar = trimmed[0];
+  if (firstChar === "'" || firstChar === '"') {
+    let result = '';
+    for (let i = 1; i < trimmed.length; i += 1) {
+      const ch = trimmed[i];
+      if (ch === '\\') {
+        if (i + 1 < trimmed.length) {
+          result += trimmed[i + 1];
+          i += 1;
+        }
+      } else if (ch === firstChar) {
+        return result;
+      } else {
+        result += ch;
+      }
+    }
+    return result;
+  }
+  const commaIdx = trimmed.indexOf(',');
+  if (commaIdx !== -1) return trimmed.slice(0, commaIdx).trim();
+  return trimmed;
+}
+
+function ensureFontFamilyOption(value, label, targetGroup, source) {
+  if (!settingsFontFamily || !value) {
+    return { option: null, created: false };
+  }
+  const existing = Array.from(settingsFontFamily.options).find(opt => opt.value === value);
+  if (existing) {
+    if (source) existing.dataset.source = source;
+    if (label && !existing.textContent.trim()) existing.textContent = label;
+    return { option: existing, created: false };
+  }
+  const option = document.createElement('option');
+  option.value = value;
+  option.textContent = label || extractFontLabel(value);
+  if (source) option.dataset.source = source;
+  const container = targetGroup && typeof targetGroup.appendChild === 'function'
+    ? targetGroup
+    : settingsFontFamily;
+  container.appendChild(option);
+  return { option, created: true };
+}
+
+function setLocalFontsStatus(key, replacement) {
+  if (!localFontsStatus || !key) {
+    if (localFontsStatus) {
+      localFontsStatus.textContent = '';
+      localFontsStatus.setAttribute('hidden', '');
+      delete localFontsStatus.dataset.statusKey;
+      delete localFontsStatus.dataset.statusArg;
+    }
+    return;
+  }
+  const template = getLocalizedText(key);
+  const hasReplacement = replacement !== undefined && replacement !== null;
+  let message = template;
+  if (hasReplacement) {
+    const replacementText = String(replacement);
+    message = template ? template.replace('%s', replacementText) : replacementText;
+    localFontsStatus.dataset.statusArg = replacementText;
+  } else {
+    delete localFontsStatus.dataset.statusArg;
+  }
+  localFontsStatus.dataset.statusKey = key;
+  localFontsStatus.textContent = message;
+  localFontsStatus.removeAttribute('hidden');
+}
+
+async function requestLocalFonts() {
+  if (!supportsLocalFonts || !localFontsButton || !window.queryLocalFonts) return;
+  localFontsButton.disabled = true;
+  try {
+    const fonts = await window.queryLocalFonts();
+    if (!Array.isArray(fonts) || fonts.length === 0) {
+      setLocalFontsStatus('localFontsNoFonts');
+      return;
+    }
+    const added = [];
+    const duplicates = [];
+    const seenValues = new Set();
+    for (const font of fonts) {
+      const rawName = font && (font.family || font.fullName || font.postscriptName);
+      const name = rawName ? String(rawName).trim() : '';
+      if (!name) continue;
+      const value = buildFontFamilyValue(name);
+      if (seenValues.has(value)) {
+        duplicates.push(name);
+        continue;
+      }
+      const { option, created } = ensureFontFamilyOption(
+        value,
+        name,
+        localFontsGroup,
+        'local'
+      );
+      if (!option) continue;
+      seenValues.add(option.value);
+      if (created) {
+        added.push({ name, value: option.value });
+      } else {
+        duplicates.push(name);
+      }
+    }
+    if (added.length > 0) {
+      if (settingsFontFamily) {
+        settingsFontFamily.value = added[0].value;
+      }
+      setLocalFontsStatus(
+        'localFontsAdded',
+        added.map(item => item.name).join(', ')
+      );
+    } else if (duplicates.length > 0) {
+      setLocalFontsStatus('localFontsAlreadyAdded', duplicates.join(', '));
+    } else {
+      setLocalFontsStatus('localFontsNoFonts');
+    }
+  } catch (err) {
+    console.error('Could not access local fonts', err);
+    setLocalFontsStatus('localFontsError');
+  } finally {
+    localFontsButton.disabled = false;
+  }
+}
+
+if (localFontsButton) {
+  if (supportsLocalFonts) {
+    localFontsButton.removeAttribute('hidden');
+    localFontsButton.addEventListener('click', () => {
+      requestLocalFonts();
+    });
+  } else {
+    setLocalFontsStatus('localFontsUnsupported');
+  }
+}
+
 function applyFontSize(size) {
   document.documentElement.style.fontSize = `${size}px`;
 }
@@ -2632,7 +2845,15 @@ try {
 }
 
 if (settingsFontSize) settingsFontSize.value = fontSize;
-if (settingsFontFamily) settingsFontFamily.value = fontFamily;
+if (settingsFontFamily) {
+  const hasStoredOption = Array.from(settingsFontFamily.options).some(
+    opt => opt.value === fontFamily
+  );
+  if (!hasStoredOption && fontFamily) {
+    ensureFontFamilyOption(fontFamily, extractFontLabel(fontFamily), localFontsGroup, 'local');
+  }
+  settingsFontFamily.value = fontFamily;
+}
 
 const revertAccentColor = () => {
   applyAccentColor(prevAccentColor);
