@@ -12378,7 +12378,11 @@ if (helpButton && helpDialog) {
         el.innerHTML = el.dataset.origHtml;
       }
       const text = el.textContent.toLowerCase().replace(/\s+/g, '');
-      const matches = !query || text.includes(query);
+      const keywordText = (el.dataset.helpKeywords || '')
+        .toLowerCase()
+        .replace(/\s+/g, '');
+      const matches =
+        !query || text.includes(query) || keywordText.includes(query);
       if (matches) {
         if (query && highlightPattern) {
           // Highlight the matching text while preserving the rest of the content

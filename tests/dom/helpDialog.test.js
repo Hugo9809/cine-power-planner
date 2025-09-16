@@ -41,4 +41,18 @@ describe('help dialog search behaviour', () => {
     expect(targetFaq.hasAttribute('open')).toBe(defaultOpen);
     expect(helpSearchClear.hasAttribute('hidden')).toBe(true);
   });
+
+  test('search matches keyword metadata for alternate spellings', () => {
+    const featuresSection = helpDialog.querySelector('#featuresOverview');
+    expect(featuresSection).toBeTruthy();
+
+    typeInHelpSearch('favourites');
+
+    expect(featuresSection.hasAttribute('hidden')).toBe(false);
+    expect(helpSearchClear.hasAttribute('hidden')).toBe(false);
+
+    typeInHelpSearch('');
+
+    expect(helpSearchClear.hasAttribute('hidden')).toBe(true);
+  });
 });
