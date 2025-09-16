@@ -63,4 +63,39 @@ describe('shared project gear list handling', () => {
     expect(savedCalls.some(([, data]) => data.gearList.includes('Imported'))).toBe(true);
     expect(savedCalls.some(([, data]) => data.projectInfo?.projectName === 'Imported Project')).toBe(true);
   });
+
+  test('importing shared project does not overwrite previous project gear list', () => {
+    const { utils, globals } = env;
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+
+    setupSelect.insertAdjacentHTML('beforeend', '<option value="Existing Project">Existing Project</option>');
+    setupSelect.value = 'Existing Project';
+    setupNameInput.value = 'Existing Project';
+    setupNameInput.dispatchEvent(new Event('input'));
+
+    globals.saveProject.mockClear();
+
+    const sharedData = {
+      setupName: 'Imported Project',
+      gearList: `
+        <h2>Imported Project</h2>
+        <h3>Gear List</h3>
+        <table class="gear-table">
+          <tr><td class="gear-item" data-gear-name="Test Item">Test Item</td></tr>
+        </table>
+      `,
+      projectInfo: { projectName: 'Imported Project' }
+    };
+
+    utils.applySharedSetup(sharedData);
+    utils.saveCurrentGearList();
+
+    const existingCalls = globals.saveProject.mock.calls.filter(([name]) => name === 'Existing Project');
+    expect(existingCalls.length).toBe(0);
+
+    const importedCalls = globals.saveProject.mock.calls.filter(([name]) => name === 'Imported Project');
+    expect(importedCalls.length).toBeGreaterThan(0);
+    expect(importedCalls.some(([, data]) => data.gearList.includes('Imported'))).toBe(true);
+  });
 });
