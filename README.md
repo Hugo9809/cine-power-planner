@@ -14,6 +14,7 @@ that future visits work offline and pick up updates automatically.
 
 ## Table of Contents
 
+- [Why Cine Power Planner?](#why-cine-power-planner)
 - [Translations](#translations)
 - [Recent Updates](#recent-updates)
 - [Features at a Glance](#features-at-a-glance)
@@ -21,11 +22,12 @@ that future visits work offline and pick up updates automatically.
 - [Example Workflow](#example-workflow)
 - [Interface Overview](#interface-overview)
 - [Customization and Accessibility](#customization-and-accessibility)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Gear List](#gear-list)
 - [Runtime Data Weighting](#runtime-data-weighting)
-- [Backup and Recovery](#backup-and-recovery)
 - [Install as an App](#install-as-an-app)
 - [Offline Use and Data Storage](#offline-use-and-data-storage)
+- [Backup and Recovery](#backup-and-recovery)
 - [Browser Support](#browser-support)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
@@ -33,6 +35,14 @@ that future visits work offline and pick up updates automatically.
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
+
+## Why Cine Power Planner?
+
+- **Plan confidently on any set.** Everything runs entirely in the browser, works offline once cached and keeps projects, custom gear and runtime feedback in local storage so you can prep even without a network connection.
+- **Model complex rigs visually.** Build complete power and video diagrams with drag-and-drop nodes, zoom controls and exportable SVG/JPG layouts that help crews reason about wiring at a glance.
+- **Turn field knowledge into data.** Weighted runtime feedback blends real-world reports with environmental factors so estimates improve the more your team contributes.
+- **Generate production-ready paperwork.** One click produces detailed gear lists and printable overviews that reference crew, scenarios, cables and accessories.
+- **Make the tool your own.** Customize themes, accent colors, typography, languages and device databases—including your own equipment—without touching a build pipeline.
 
 ## Translations
 
@@ -45,7 +55,11 @@ language on first load, and you can switch languages in the top right corner:
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-Contributions for additional languages are welcome. To add a translation, include a `README.<lang>.md` file and the necessary translation strings in your pull request.
+Contributions for additional languages are welcome. To add a translation:
+
+1. Copy `README.en.md` to `README.<lang>.md` and translate the content.
+2. Extend `translations.js` with a new language block so the interface exposes the translated UI strings.
+3. If your language requires locale-specific formatting, update any relevant datasets (for example, device names) and run `npm test` to confirm everything still passes.
 
 ## Recent Updates
 
@@ -135,8 +149,22 @@ Use the planner end-to-end with the following workflow:
 - Theme preferences include dark mode, playful pink accents and a dedicated high contrast switch for improved readability.
 - Accent color, base font size and typeface can be customised in Settings; choices are applied immediately and remembered with other preferences.
 - A keyboard-friendly skip link, focus-visible controls, offline indicator and responsive layout improve navigation on desktops, tablets and phones.
-- Built-in keyboard shortcuts cover global search (Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
+- Built-in keyboard shortcuts cover global search (Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P). See [Keyboard Shortcuts](#keyboard-shortcuts) for a consolidated reference.
 - The hover-help toggle turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
+
+## Keyboard Shortcuts
+
+| Action | Shortcut |
+| --- | --- |
+| Focus the global feature search | `Ctrl` + `K` / `⌘` + `K` |
+| Save the active project | `Enter` (in the project name field) or `Ctrl` + `S` / `⌘` + `S` |
+| Open the Help dialog | `?`, `H`, `F1` or `Ctrl` + `/` |
+| Toggle dark mode | `D` |
+| Toggle the pink accent theme | `P` |
+| Jump to the nearest list or dropdown search | `/` or `Ctrl` + `F` / `⌘` + `F` |
+| Download a diagram snapshot as JPG | Hold `Shift` while clicking **Download Diagram** |
+
+Shortcuts work on desktop and mobile hardware keyboards, even when the navigation menu is collapsed.
 
 ## Gear List
 
@@ -232,7 +260,7 @@ Cine Power Planner relies on modern web APIs and is tested in current versions o
 
 Set up a development environment with Node.js 18 or later. After cloning the repository run `npm install` once, then use `npm test` to execute ESLint, data consistency checks and Jest tests together while you iterate on changes.
 
-After cloning the repository, you can inspect or modify the code base.
+The app ships as static assets—open `index.html` directly in your browser for quick tweaks or serve the folder with a simple HTTP server to exercise the Progressive Web App features during development.
 
 ### File Structure
 
@@ -270,6 +298,16 @@ npm run test:data   # static dataset validations (1 GB heap cap)
 npm run test:dom    # lightweight DOM utilities (1.5 GB heap cap)
 npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
 ```
+
+### Common npm scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run lint -- --fix` | Run ESLint with automatic fixes before committing changes. |
+| `npm run check-consistency` | Validate device data files without running the full Jest suite. |
+| `npm run normalize` | Apply cleanup routines that expand shorthand entries and align connector naming. |
+| `npm run unify-ports` | Harmonize connector labels across all device definitions. |
+| `npm run generate-schema` | Rebuild `schema.json` from the normalized dataset. |
 
 ### Update device data
 
