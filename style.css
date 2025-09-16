@@ -968,6 +968,32 @@ select {
   appearance: none;
 }
 
+/* Ensure multi-select lists remain legible across themes, including dark mode on mobile */
+select[multiple] {
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  -webkit-text-fill-color: var(--control-text);
+}
+
+select[multiple] option {
+  background-color: var(--control-bg);
+  color: var(--control-text);
+}
+
+select[multiple] option:hover {
+  background-color: var(--control-hover-bg);
+}
+
+select[multiple] option:checked {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+
+html.high-contrast select[multiple] option:checked,
+body.high-contrast select[multiple] option:checked {
+  color: #000;
+}
+
 input:hover,
 select:hover,
 textarea:hover {
