@@ -6380,6 +6380,32 @@ describe('script.js functions', () => {
     expect(cameraSelect.value).toBe('Sony FX3');
   });
 
+  test('feature search tolerates punctuation in queries', () => {
+    setupDom(false);
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const cameraSelect = document.getElementById('cameraSelect');
+    featureSearch.value = 'Sony FX-3';
+    featureSearch.dispatchEvent(new Event('change'));
+    expect(cameraSelect.value).toBe('Sony FX3');
+  });
+
+  test('feature search matches ampersands when typing "and"', () => {
+    setupDom(false);
+    require('../translations.js');
+    require('../script.js');
+    const featureSearch = document.getElementById('featureSearch');
+    const settingsDialog = document.getElementById('settingsDialog');
+    const helpDialog = document.getElementById('helpDialog');
+    expect(settingsDialog.hasAttribute('hidden')).toBe(true);
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    featureSearch.value = 'Backup and Restore';
+    featureSearch.dispatchEvent(new Event('change'));
+    expect(settingsDialog.hasAttribute('hidden')).toBe(false);
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    expect(featureSearch.value).toBe('Backup & Restore');
+  });
+
   test('feature search shows predictions on input', () => {
     setupDom(false);
     require('../script.js');

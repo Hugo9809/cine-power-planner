@@ -2815,7 +2815,29 @@ const featureSearchClear = document.getElementById("featureSearchClear");
 const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
 const deviceMap       = new Map();
-const searchKey       = str => str.toLowerCase().replace(/\s+/g, '');
+// Normalise strings for search comparisons by removing punctuation, diacritics
+// and treating symbols like “&”/“+” as their word equivalents. Falls back to
+// whitespace-stripping when no meaningful characters remain (e.g. emoji-only
+// headings) so legacy behaviour is preserved for those edge cases.
+const searchKey       = str => {
+  if (!str) return '';
+  const value = String(str);
+  let normalized = value.toLowerCase();
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  }
+  normalized = normalized
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ß/g, 'ss')
+    .replace(/æ/g, 'ae')
+    .replace(/œ/g, 'oe')
+    .replace(/ø/g, 'o')
+    .replace(/&/g, 'and')
+    .replace(/\+/g, 'plus');
+  const simplified = normalized.replace(/[^a-z0-9]+/g, '');
+  if (simplified) return simplified;
+  return value.toLowerCase().replace(/\s+/g, '');
+};
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
