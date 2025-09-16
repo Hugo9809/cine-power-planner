@@ -10,9 +10,11 @@
     "unify-ports": "node unifyPorts.js",
     "generate-schema": "node generateSchema.js",
     "test": "npm run lint && npm run check-consistency && npm run test:jest",
-    "test:jest": "npm run test:unit && npm run test:script",
-    "test:unit": "jest --runInBand --testPathIgnorePatterns=tests/script.test.js",
-    "test:script": "jest --runInBand tests/script.test.js"
+    "test:jest": "npm run test:unit && npm run test:data && npm run test:dom && npm run test:script",
+    "test:unit": "jest --selectProjects unit",
+    "test:data": "jest --runInBand --selectProjects data",
+    "test:dom": "jest --runInBand --selectProjects dom",
+    "test:script": "node --max-old-space-size=4096 ./node_modules/jest/bin/jest.js --runInBand --selectProjects script"
   },
   "keywords": [],
   "author": "",

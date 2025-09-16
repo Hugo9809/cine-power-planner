@@ -1,4 +1,4 @@
-const { ASSETS, CACHE_NAME } = require('../service-worker.js');
+const { ASSETS, CACHE_NAME } = require('../../service-worker.js');
 
 describe('service worker configuration', () => {
   test('caches overview assets for offline usage', () => {

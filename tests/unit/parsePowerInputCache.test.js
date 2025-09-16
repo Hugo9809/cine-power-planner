@@ -1,4 +1,4 @@
-const { parsePowerInput } = require('../unifyPorts.js');
+const { parsePowerInput } = require('../../unifyPorts.js');
 
 describe('parsePowerInput cache', () => {
   test('modifying returned array does not pollute cache', () => {
