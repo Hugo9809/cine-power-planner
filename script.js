@@ -12912,7 +12912,7 @@ if (helpButton && helpDialog) {
     if (!hadTabIndex) heading.setAttribute('tabindex', '-1');
     try {
       heading.focus({ preventScroll: true });
-    } catch (err) {
+    } catch {
       heading.focus();
     }
     if (!hadTabIndex) {
