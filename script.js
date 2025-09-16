@@ -11081,6 +11081,31 @@ function handleImportGearList(e) {
 function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearList)) return;
     if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return;
+    const projectName = getCurrentProjectName();
+    const storageKey = typeof projectName === 'string' ? projectName : '';
+    if (typeof deleteProject === 'function') {
+        deleteProject(storageKey);
+    } else if (typeof saveProject === 'function') {
+        saveProject(storageKey, { projectInfo: null, gearList: '' });
+    }
+    const setups = getSetups();
+    if (setups && typeof setups === 'object') {
+        const existingSetup = setups[storageKey];
+        if (existingSetup && typeof existingSetup === 'object') {
+            let changed = false;
+            if (Object.prototype.hasOwnProperty.call(existingSetup, 'gearList')) {
+                delete existingSetup.gearList;
+                changed = true;
+            }
+            if (Object.prototype.hasOwnProperty.call(existingSetup, 'projectInfo')) {
+                delete existingSetup.projectInfo;
+                changed = true;
+            }
+            if (changed) {
+                storeSetups(setups);
+            }
+        }
+    }
     if (gearListOutput) {
         gearListOutput.innerHTML = '';
         gearListOutput.classList.add('hidden');
