@@ -3117,7 +3117,7 @@ function populateFeatureSearch() {
       if (!name || opt.value === 'None') return;
       const key = searchKey(name);
       if (!deviceMap.has(key)) {
-        deviceMap.set(key, { select: sel, value: opt.value });
+        deviceMap.set(key, { select: sel, value: opt.value, label: name });
         const dlOpt = document.createElement('option');
         dlOpt.value = name;
         featureList.appendChild(dlOpt);
@@ -11925,6 +11925,29 @@ if (helpButton && helpDialog) {
     featureSearch.showPicker?.();
   };
 
+  const findBestSearchMatch = (map, key) => {
+    if (!key) return null;
+    if (map.has(key)) {
+      return { key, value: map.get(key) };
+    }
+    for (const [entryKey, entryValue] of map.entries()) {
+      if (entryKey.startsWith(key)) {
+        return { key: entryKey, value: entryValue };
+      }
+    }
+    for (const [entryKey, entryValue] of map.entries()) {
+      if (key.startsWith(entryKey)) {
+        return { key: entryKey, value: entryValue };
+      }
+    }
+    for (const [entryKey, entryValue] of map.entries()) {
+      if (entryKey.includes(key) || key.includes(entryKey)) {
+        return { key: entryKey, value: entryValue };
+      }
+    }
+    return null;
+  };
+
   const runFeatureSearch = query => {
     if (!query) return;
     const value = query.trim();
@@ -11973,17 +11996,32 @@ if (helpButton && helpDialog) {
       }
     };
 
-    const device = deviceMap.get(cleanKey);
-    if (device && !isHelp) {
-      device.select.value = device.value;
-      device.select.dispatchEvent(new Event('change', { bubbles: true }));
-      focusFeature(device.select);
-      return;
+    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey);
+    if (deviceMatch && !isHelp) {
+      const device = deviceMatch.value;
+      if (device && device.select) {
+        device.select.value = device.value;
+        device.select.dispatchEvent(new Event('change', { bubbles: true }));
+        if (featureSearch && device.label) {
+          featureSearch.value = device.label;
+        }
+        focusFeature(device.select);
+        return;
+      }
     }
-    const featureEl = featureMap.get(cleanKey);
-    if (featureEl && !isHelp) {
-      focusFeature(featureEl);
-      return;
+    const featureMatch = findBestSearchMatch(featureMap, cleanKey);
+    if (featureMatch && !isHelp) {
+      const featureEl = featureMatch.value;
+      if (featureEl) {
+        if (featureSearch && typeof featureEl.textContent === 'string') {
+          const label = featureEl.textContent.trim();
+          if (label) {
+            featureSearch.value = label;
+          }
+        }
+        focusFeature(featureEl);
+        return;
+      }
     }
     openHelp();
     if (helpSearch) {
