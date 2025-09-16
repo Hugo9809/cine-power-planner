@@ -3107,6 +3107,107 @@ const searchKey       = str => {
   if (simplified) return simplified;
   return value.toLowerCase().replace(/\s+/g, '');
 };
+
+const searchTokens = str => {
+  if (!str) return [];
+  let normalized = String(str).toLowerCase();
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  }
+  normalized = normalized
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ß/g, 'ss')
+    .replace(/æ/g, 'ae')
+    .replace(/œ/g, 'oe')
+    .replace(/ø/g, 'o')
+    .replace(/&/g, ' and ')
+    .replace(/\+/g, ' plus ');
+  const tokens = new Set();
+  normalized.split(/\s+/).forEach(part => {
+    if (!part) return;
+    const cleaned = part.replace(/[^a-z0-9]+/g, '');
+    if (cleaned) tokens.add(cleaned);
+    part
+      .split(/[^a-z0-9]+/)
+      .filter(Boolean)
+      .forEach(segment => tokens.add(segment));
+  });
+  return Array.from(tokens);
+};
+
+const tokenMatchScore = (entryTokens = [], queryTokens = []) => {
+  if (!Array.isArray(entryTokens) || entryTokens.length === 0) return 0;
+  let total = 0;
+  for (const token of queryTokens) {
+    if (!token) continue;
+    let best = 0;
+    for (const entryToken of entryTokens) {
+      if (!entryToken) continue;
+      if (entryToken === token) {
+        best = 3;
+        break;
+      }
+      if (entryToken.startsWith(token) || token.startsWith(entryToken)) {
+        best = Math.max(best, 2);
+      } else if (entryToken.includes(token) || token.includes(entryToken)) {
+        best = Math.max(best, 1);
+      }
+    }
+    if (best === 0) return 0;
+    total += best;
+  }
+  return total;
+};
+
+function findBestSearchMatch(map, key, tokens = []) {
+  const queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
+  const hasKey = Boolean(key);
+  if (!hasKey && queryTokens.length === 0) return null;
+
+  if (hasKey && map.has(key)) {
+    return { key, value: map.get(key) };
+  }
+
+  let bestTokenMatch = null;
+  let bestTokenScore = 0;
+  let keyPrefixMatch = null;
+  let partialMatch = null;
+
+  for (const [entryKey, entryValue] of map.entries()) {
+    if (hasKey && entryKey.startsWith(key)) {
+      return { key: entryKey, value: entryValue };
+    }
+
+    if (queryTokens.length) {
+      const score = tokenMatchScore(entryValue?.tokens || [], queryTokens);
+      if (score > bestTokenScore) {
+        bestTokenScore = score;
+        bestTokenMatch = { key: entryKey, value: entryValue };
+      }
+    }
+
+    if (hasKey && !keyPrefixMatch && key.startsWith(entryKey)) {
+      keyPrefixMatch = { key: entryKey, value: entryValue };
+    } else if (
+      hasKey &&
+      !partialMatch &&
+      (entryKey.includes(key) || key.includes(entryKey))
+    ) {
+      partialMatch = { key: entryKey, value: entryValue };
+    }
+  }
+
+  if (bestTokenMatch) {
+    return bestTokenMatch;
+  }
+  if (keyPrefixMatch) {
+    return keyPrefixMatch;
+  }
+  if (partialMatch) {
+    return partialMatch;
+  }
+  return null;
+}
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -3389,7 +3490,12 @@ function populateFeatureSearch() {
     .forEach(el => {
       if (helpDialog && helpDialog.contains(el)) return;
       const name = el.textContent.trim();
-      featureMap.set(searchKey(name), el);
+      const key = searchKey(name);
+      featureMap.set(key, {
+        element: el,
+        label: name,
+        tokens: searchTokens(name)
+      });
       const opt = document.createElement('option');
       opt.value = name;
       featureList.appendChild(opt);
@@ -3408,7 +3514,12 @@ function populateFeatureSearch() {
       if (!name || opt.value === 'None') return;
       const key = searchKey(name);
       if (!deviceMap.has(key)) {
-        deviceMap.set(key, { select: sel, value: opt.value, label: name });
+        deviceMap.set(key, {
+          select: sel,
+          value: opt.value,
+          label: name,
+          tokens: searchTokens(name)
+        });
         const dlOpt = document.createElement('option');
         dlOpt.value = name;
         featureList.appendChild(dlOpt);
@@ -12230,29 +12341,6 @@ if (helpButton && helpDialog) {
     featureSearch.showPicker?.();
   };
 
-  const findBestSearchMatch = (map, key) => {
-    if (!key) return null;
-    if (map.has(key)) {
-      return { key, value: map.get(key) };
-    }
-    for (const [entryKey, entryValue] of map.entries()) {
-      if (entryKey.startsWith(key)) {
-        return { key: entryKey, value: entryValue };
-      }
-    }
-    for (const [entryKey, entryValue] of map.entries()) {
-      if (key.startsWith(entryKey)) {
-        return { key: entryKey, value: entryValue };
-      }
-    }
-    for (const [entryKey, entryValue] of map.entries()) {
-      if (entryKey.includes(key) || key.includes(entryKey)) {
-        return { key: entryKey, value: entryValue };
-      }
-    }
-    return null;
-  };
-
   const runFeatureSearch = query => {
     if (!query) return;
     const value = query.trim();
@@ -12261,6 +12349,7 @@ if (helpButton && helpDialog) {
     const isHelp = lower.endsWith(' (help)');
     const clean = isHelp ? value.slice(0, -7).trim() : value;
     const cleanKey = searchKey(clean);
+    const cleanTokens = searchTokens(clean);
 
     const focusFeature = element => {
       if (!element) return;
@@ -12301,7 +12390,7 @@ if (helpButton && helpDialog) {
       }
     };
 
-    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey);
+    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
     if (deviceMatch && !isHelp) {
       const device = deviceMatch.value;
       if (device && device.select) {
@@ -12314,12 +12403,13 @@ if (helpButton && helpDialog) {
         return;
       }
     }
-    const featureMatch = findBestSearchMatch(featureMap, cleanKey);
+    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
     if (featureMatch && !isHelp) {
-      const featureEl = featureMatch.value;
+      const feature = featureMatch.value;
+      const featureEl = feature?.element || feature;
       if (featureEl) {
-        if (featureSearch && typeof featureEl.textContent === 'string') {
-          const label = featureEl.textContent.trim();
+        if (featureSearch) {
+          const label = feature?.label || featureEl.textContent?.trim();
           if (label) {
             featureSearch.value = label;
           }
@@ -13050,5 +13140,8 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentProjectInfo,
     crewRoles,
     formatFullBackupFilename,
+    searchKey,
+    searchTokens,
+    findBestSearchMatch,
   };
 }
