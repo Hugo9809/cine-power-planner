@@ -142,7 +142,7 @@ El generador amplía tus selecciones en una tabla de equipamiento detallada:
   - Las selecciones de **botones de usuario** y **preferencias de trípode** se listan para consulta rápida.
 - Los elementos se ordenan alfabéticamente dentro de cada categoría y muestran un tooltip al pasar el cursor.
 - La lista de equipo aparece en las vistas imprimibles y en los archivos de proyectos compartidos, de modo que los colaboradores ven todo el contexto.
-- **Guardar lista de equipo** almacena la tabla actual con el proyecto.
+- La lista de equipo se guarda automáticamente con el proyecto.
 - **Exportar lista de equipo** descarga un archivo JSON; **Importar lista de equipo** lo restaura.
 - **Eliminar lista de equipo** borra la lista guardada y oculta la salida.
 - Los formularios de la lista utilizan botones de bifurcación para duplicar las entradas personalizadas al instante.

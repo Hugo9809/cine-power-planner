@@ -98,7 +98,7 @@ The generator turns your selections into a categorized packing list:
   - **User Button** selections and **Tripod Preferences** are listed for quick reference.
 - Items inside each category are sorted alphabetically and display tooltips on hover.
 - The gear list is included in printable overviews and shared project files.
-- **Save Gear List** stores the current list with the project.
+- Gear lists save automatically with the project.
 - **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
 - **Delete Gear List** removes the saved list and hides the output.
 - Gear list forms provide fork buttons to duplicate user entries instantly.

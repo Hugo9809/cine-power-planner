@@ -495,19 +495,16 @@ const texts = {
       "Dolly Grip": "Dolly Grip",
       "Rigging Grip": "Rigging Grip"
     },
-    saveGearListBtn: "Save Gear List",
+    gearListAutosaveNote: "Gear lists save automatically with the project.",
     exportGearListBtn: "Export Gear List",
     importGearListBtn: "Import Gear List",
     deleteGearListBtn: "Delete Gear List",
-    saveGearListBtnHelp:
-      "Store the current gear list with the project so it reloads automatically and prints in overviews.",
     exportGearListBtnHelp:
       "Download the saved gear list and project notes as a JSON file.",
     importGearListBtnHelp:
       "Load a gear list from a JSON file, replacing the current table.",
     deleteGearListBtnHelp:
       "Remove the saved gear list from this project and hide the table.",
-    confirmSaveGearList: "Save gear list?",
     confirmDeleteGearList: "Delete gear list?",
     confirmDeleteGearListAgain: "This will permanently delete the gear list. Are you sure?",
     alertSelectSetupForOverview: "Please select a saved project to generate an overview.",
@@ -975,19 +972,16 @@ const texts = {
       "Dolly Grip": "Operatore dolly",
       "Rigging Grip": "Macchinista rigging"
     },
-    saveGearListBtn: "Salva elenco attrezzatura",
+    gearListAutosaveNote: "L'elenco attrezzatura viene salvato automaticamente con il progetto.",
     exportGearListBtn: "Esporta elenco attrezzatura",
     importGearListBtn: "Importa elenco attrezzatura",
     deleteGearListBtn: "Elimina elenco attrezzatura",
-    saveGearListBtnHelp:
-      "Salva l'elenco attrezzatura corrente con il progetto così da ricaricarlo e stamparlo nelle panoramiche.",
     exportGearListBtnHelp:
       "Scarica l'elenco attrezzatura salvato e le note del progetto come file JSON.",
     importGearListBtnHelp:
       "Carica un elenco attrezzatura da un file JSON sostituendo la tabella corrente.",
     deleteGearListBtnHelp:
       "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
-    confirmSaveGearList: "Salvare l'elenco attrezzatura?",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
     confirmDeleteGearListAgain: "Questo eliminerà definitivamente l'elenco attrezzatura. Sei sicuro?",
     alertSelectSetupForOverview: "Selezionare una configurazione salvata per generare una panoramica.",
@@ -1539,19 +1533,16 @@ const texts = {
       "Dolly Grip": "Operador de dolly",
       "Rigging Grip": "Grip de rigging"
     },
-    saveGearListBtn: "Guardar lista de equipo",
+    gearListAutosaveNote: "La lista de equipo se guarda automáticamente con el proyecto.",
     exportGearListBtn: "Exportar lista de equipo",
     importGearListBtn: "Importar lista de equipo",
     deleteGearListBtn: "Eliminar lista de equipo",
-    saveGearListBtnHelp:
-      "Guarda la lista de equipo actual con el proyecto para que se recargue y aparezca en los resúmenes.",
     exportGearListBtnHelp:
       "Descarga la lista de equipo guardada y las notas del proyecto como archivo JSON.",
     importGearListBtnHelp:
       "Carga una lista de equipo desde un archivo JSON reemplazando la tabla actual.",
     deleteGearListBtnHelp:
       "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
-    confirmSaveGearList: "¿Guardar lista de equipo?",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
     confirmDeleteGearListAgain: "Esto eliminará permanentemente la lista de equipo. ¿Estás seguro?",
     alertSelectSetupForOverview: "Selecciona una configuración para generar un resumen.",
@@ -2105,19 +2096,16 @@ const texts = {
       "Dolly Grip": "Machiniste dolly",
       "Rigging Grip": "Machiniste rigging"
     },
-    saveGearListBtn: "Enregistrer la liste du matériel",
+    gearListAutosaveNote: "La liste du matériel est enregistrée automatiquement avec le projet.",
     exportGearListBtn: "Exporter la liste du matériel",
     importGearListBtn: "Importer la liste du matériel",
     deleteGearListBtn: "Supprimer la liste du matériel",
-    saveGearListBtnHelp:
-      "Enregistre la liste du matériel actuelle avec le projet afin qu'elle se recharge et s'imprime dans les aperçus.",
     exportGearListBtnHelp:
       "Télécharge la liste du matériel enregistrée et les notes du projet au format JSON.",
     importGearListBtnHelp:
       "Charge une liste du matériel depuis un fichier JSON en remplaçant la table actuelle.",
     deleteGearListBtnHelp:
       "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
-    confirmSaveGearList: "Enregistrer la liste du matériel ?",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
     confirmDeleteGearListAgain: "Cela supprimera définitivement la liste du matériel. Êtes-vous sûr ?",
     alertSelectSetupForOverview: "Sélectionnez une configuration pour générer un résumé.",
@@ -2674,19 +2662,16 @@ const texts = {
       "Dolly Grip": "Dolly-Grip",
       "Rigging Grip": "Rigging-Grip"
     },
-    saveGearListBtn: "Gear-Liste speichern",
+    gearListAutosaveNote: "Die Gear-Liste wird automatisch mit dem Projekt gespeichert.",
     exportGearListBtn: "Gear-Liste exportieren",
     importGearListBtn: "Gear-Liste importieren",
     deleteGearListBtn: "Gear-Liste löschen",
-    saveGearListBtnHelp:
-      "Speichert die aktuelle Gear-Liste im Projekt, damit sie automatisch geladen und in Übersichten gedruckt wird.",
     exportGearListBtnHelp:
       "Lädt die gespeicherte Gear-Liste und Projektnotizen als JSON-Datei herunter.",
     importGearListBtnHelp:
       "Lädt eine Gear-Liste aus einer JSON-Datei und ersetzt damit die aktuelle Tabelle.",
     deleteGearListBtnHelp:
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
-    confirmSaveGearList: "Gear-Liste speichern?",
     confirmDeleteGearList: "Gear-Liste löschen?",
     confirmDeleteGearListAgain: "Dies wird die Gear-Liste dauerhaft löschen. Bist du sicher?",
     alertSelectSetupForOverview: "Bitte wählen Sie ein gespeichertes Setup, um eine Übersicht zu erstellen.",
