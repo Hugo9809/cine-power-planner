@@ -1864,6 +1864,20 @@ function setLanguage(lang) {
       texts[lang].backupHeadingHelp || texts[lang].backupHeading
     );
   }
+  if (dataHeading) {
+    dataHeading.textContent = texts[lang].dataHeading;
+    const dataHelp = texts[lang].dataHeadingHelp || texts[lang].dataHeading;
+    dataHeading.setAttribute("data-help", dataHelp);
+  }
+  if (storageSummaryIntro) {
+    storageSummaryIntro.textContent = texts[lang].storageSummaryIntro;
+  }
+  if (storageSummaryFootnote) {
+    storageSummaryFootnote.textContent = texts[lang].storageSummaryFootnote;
+  }
+  if (storageSummaryEmpty) {
+    storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
+  }
   const showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
   if (showAutoBackupsLabel) {
     showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
@@ -2141,6 +2155,7 @@ function setLanguage(lang) {
   });
   ensureGearListActions();
   updateDiagramLegend();
+  updateStorageSummary();
   populateFeatureSearch();
 }
 
@@ -3025,6 +3040,11 @@ const localFontsGroup = document.getElementById("localFontsGroup");
 const bundledFontGroup = document.getElementById("bundledFontOptions");
 const settingsLogo = document.getElementById("settingsLogo");
 const settingsLogoPreview = document.getElementById("settingsLogoPreview");
+const dataHeading = document.getElementById("dataHeading");
+const storageSummaryIntro = document.getElementById("storageSummaryIntro");
+const storageSummaryList = document.getElementById("storageSummaryList");
+const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
+const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
 
 function renderSettingsLogoPreview(dataUrl) {
   if (!settingsLogoPreview) return;
@@ -3050,6 +3070,335 @@ function loadStoredLogoPreview() {
     console.warn('Could not load custom logo preview', e);
   }
   renderSettingsLogoPreview(stored);
+}
+
+const isPlainObjectValue = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
+
+function resolveLanguageCode(lang) {
+  if (lang && texts && Object.prototype.hasOwnProperty.call(texts, lang)) {
+    return lang;
+  }
+  return 'en';
+}
+
+function getLanguageTexts(lang) {
+  const resolved = resolveLanguageCode(lang);
+  return (texts && texts[resolved]) || texts.en || {};
+}
+
+function formatNumberForLang(lang, value, options) {
+  const resolved = resolveLanguageCode(lang);
+  try {
+    return new Intl.NumberFormat(resolved, options).format(value);
+  } catch (firstError) {
+    try {
+      return new Intl.NumberFormat('en', options).format(value);
+    } catch (fallbackError) {
+      console.warn('Number formatting failed', firstError, fallbackError);
+      return String(value);
+    }
+  }
+}
+
+function formatCountText(lang, langTexts, baseKey, count) {
+  const resolved = resolveLanguageCode(lang);
+  const localeTexts = langTexts || getLanguageTexts(resolved);
+  const englishTexts = getLanguageTexts('en');
+  let suffix = 'Other';
+  try {
+    const plural = new Intl.PluralRules(resolved).select(count);
+    if (plural === 'one' && (localeTexts[`${baseKey}One`] || englishTexts[`${baseKey}One`])) {
+      suffix = 'One';
+    }
+  } catch {
+    if (count === 1 && (localeTexts[`${baseKey}One`] || englishTexts[`${baseKey}One`])) {
+      suffix = 'One';
+    }
+  }
+  const key = `${baseKey}${suffix}`;
+  const template = localeTexts[key] || englishTexts[key] || '%s';
+  const formatted = formatNumberForLang(resolved, count);
+  return template.replace('%s', formatted);
+}
+
+function formatListForLang(lang, items) {
+  const resolved = resolveLanguageCode(lang);
+  if (!Array.isArray(items) || !items.length) return '';
+  try {
+    return new Intl.ListFormat(resolved, { style: 'long', type: 'conjunction' }).format(items);
+  } catch {
+    return items.join(', ');
+  }
+}
+
+function summarizeCustomDevices() {
+  if (typeof getDeviceChanges !== 'function') {
+    return { total: 0, categories: [] };
+  }
+  const diff = getDeviceChanges();
+  if (!diff || typeof diff !== 'object') {
+    return { total: 0, categories: [] };
+  }
+  const categories = [];
+  let total = 0;
+  Object.entries(diff).forEach(([cat, entries]) => {
+    if (!isPlainObjectValue(entries)) return;
+    if (cat === 'fiz') {
+      Object.entries(entries).forEach(([sub, subEntries]) => {
+        if (!isPlainObjectValue(subEntries)) return;
+        const keys = Object.keys(subEntries);
+        if (!keys.length) return;
+        categories.push({ key: `fiz.${sub}`, count: keys.length });
+        total += keys.length;
+      });
+    } else {
+      const keys = Object.keys(entries);
+      if (!keys.length) return;
+      categories.push({ key: cat, count: keys.length });
+      total += keys.length;
+    }
+  });
+  return { total, categories };
+}
+
+function computeGearListCount(projectData) {
+  if (typeof projectData === 'string') {
+    return projectData.trim() ? 1 : 0;
+  }
+  if (Array.isArray(projectData)) {
+    return projectData.reduce((count, entry) => (entry ? count + 1 : count), 0);
+  }
+  if (isPlainObjectValue(projectData)) {
+    return Object.values(projectData).reduce((count, entry) => (entry ? count + 1 : count), 0);
+  }
+  return 0;
+}
+
+function computeFavoritesCount(favorites) {
+  if (!isPlainObjectValue(favorites)) return 0;
+  return Object.values(favorites).reduce((count, entry) => {
+    if (Array.isArray(entry)) {
+      return count + entry.length;
+    }
+    return count;
+  }, 0);
+}
+
+function computeFeedbackCount(feedback) {
+  if (!isPlainObjectValue(feedback)) return 0;
+  return Object.values(feedback).reduce((count, entry) => {
+    if (Array.isArray(entry)) {
+      return count + entry.length;
+    }
+    if (isPlainObjectValue(entry) && Array.isArray(entry.entries)) {
+      return count + entry.entries.length;
+    }
+    return count;
+  }, 0);
+}
+
+function estimateBackupSize(data) {
+  if (typeof localStorage === 'undefined') return 0;
+  try {
+    const snapshot = {};
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (typeof key !== 'string') continue;
+      snapshot[key] = localStorage.getItem(key);
+    }
+    const payload = {
+      version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : '',
+      generatedAt: new Date().toISOString(),
+      settings: snapshot,
+      data,
+    };
+    const json = JSON.stringify(payload);
+    if (typeof TextEncoder !== 'undefined') {
+      return new TextEncoder().encode(json).length;
+    }
+    return json.length;
+  } catch (err) {
+    console.warn('Could not calculate backup size preview', err);
+    return 0;
+  }
+}
+
+function formatSizeText(lang, langTexts, bytes) {
+  const resolved = resolveLanguageCode(lang);
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    const zero = formatNumberForLang(resolved, 0, { maximumFractionDigits: 0 });
+    const template = langTexts.storageTotalSizeValue || (texts.en?.storageTotalSizeValue) || '~%s KB';
+    return template.replace('%s', zero);
+  }
+  const kilobytes = bytes / 1024;
+  let options;
+  if (kilobytes >= 100) {
+    options = { maximumFractionDigits: 0 };
+  } else if (kilobytes >= 10) {
+    options = { minimumFractionDigits: 1, maximumFractionDigits: 1 };
+  } else {
+    options = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+  }
+  const formatted = formatNumberForLang(resolved, kilobytes, options);
+  const template = langTexts.storageTotalSizeValue || (texts.en?.storageTotalSizeValue) || '~%s KB';
+  return template.replace('%s', formatted);
+}
+
+function formatDeviceCategories(lang, categories) {
+  if (!Array.isArray(categories) || !categories.length) return '';
+  const resolved = resolveLanguageCode(lang);
+  const lookup = (typeof categoryNames !== 'undefined' && categoryNames) || {};
+  const localized = lookup[resolved] || lookup.en || {};
+  const fallback = lookup.en || {};
+  const items = categories
+    .map(({ key, count }) => {
+      const label = localized[key] || fallback[key] || key;
+      const formattedCount = formatNumberForLang(resolved, count, { maximumFractionDigits: 0 });
+      return { label, text: `${label} (${formattedCount})` };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label, resolved, { sensitivity: 'base' }))
+    .map((entry) => entry.text);
+  return formatListForLang(resolved, items);
+}
+
+function createSummaryItemElement(item) {
+  const li = document.createElement('li');
+  li.className = 'storage-summary-item';
+  const header = document.createElement('div');
+  header.className = 'storage-summary-header';
+  const label = document.createElement('span');
+  label.className = 'storage-summary-label';
+  label.textContent = item.label;
+  header.appendChild(label);
+  if (item.storageKey) {
+    const code = document.createElement('code');
+    code.className = 'storage-summary-key';
+    code.textContent = item.storageKey;
+    header.appendChild(code);
+  }
+  li.appendChild(header);
+  if (item.value) {
+    const valueElem = document.createElement('p');
+    valueElem.className = 'storage-summary-value';
+    valueElem.textContent = item.value;
+    li.appendChild(valueElem);
+  }
+  if (item.description) {
+    const desc = document.createElement('p');
+    desc.className = 'storage-summary-description';
+    desc.textContent = item.description;
+    li.appendChild(desc);
+  }
+  if (item.extra) {
+    const extras = Array.isArray(item.extra) ? item.extra : [item.extra];
+    extras.filter(Boolean).forEach((text) => {
+      const extraElem = document.createElement('p');
+      extraElem.className = 'storage-summary-extra';
+      extraElem.textContent = text;
+      li.appendChild(extraElem);
+    });
+  }
+  return li;
+}
+
+function updateStorageSummary() {
+  if (!storageSummaryList) return;
+  while (storageSummaryList.firstChild) {
+    storageSummaryList.removeChild(storageSummaryList.firstChild);
+  }
+  const lang = resolveLanguageCode(currentLang);
+  const langTexts = getLanguageTexts(lang);
+  const exportedData = typeof exportAllData === 'function' ? exportAllData() : null;
+  const data = isPlainObjectValue(exportedData) ? exportedData : {};
+  const setups = isPlainObjectValue(data.setups) ? data.setups : {};
+  const projectNames = Object.keys(setups);
+  const totalProjects = projectNames.length;
+  const autoBackups = projectNames.filter((name) => typeof name === 'string' && name.startsWith('auto-backup-')).length;
+  const gearListCount = computeGearListCount(data.project);
+  const favoritesCount = computeFavoritesCount(data.favorites);
+  const feedbackCount = computeFeedbackCount(data.feedback);
+  const sessionData = data.session;
+  const hasSession = Boolean(
+    (isPlainObjectValue(sessionData) && Object.keys(sessionData).length)
+    || (Array.isArray(sessionData) && sessionData.length)
+    || (typeof sessionData === 'string' && sessionData.trim())
+  );
+  const deviceSummary = summarizeCustomDevices();
+  const approxBytes = estimateBackupSize(data);
+
+  const items = [
+    {
+      storageKey: 'cameraPowerPlanner_setups',
+      label: langTexts.storageKeyProjects || 'Saved projects',
+      value: formatCountText(lang, langTexts, 'storageProjectsCount', totalProjects),
+      description: langTexts.storageKeyProjectsDesc || '',
+      extra: autoBackups > 0
+        ? formatCountText(lang, langTexts, 'storageAutoBackupsCount', autoBackups)
+        : null,
+    },
+    {
+      storageKey: 'cameraPowerPlanner_project',
+      label: langTexts.storageKeyGearLists || 'Gear list snapshots',
+      value: formatCountText(lang, langTexts, 'storageGearListsCount', gearListCount),
+      description: langTexts.storageKeyGearListsDesc || '',
+    },
+    {
+      storageKey: 'cameraPowerPlanner_devices',
+      label: langTexts.storageKeyDevices || 'Custom or modified devices',
+      value: formatCountText(lang, langTexts, 'storageDevicesCount', deviceSummary.total),
+      description: langTexts.storageKeyDevicesDesc || '',
+      extra: deviceSummary.total > 0 && deviceSummary.categories.length
+        ? (langTexts.storageDeviceCategories || texts.en?.storageDeviceCategories || 'Affected categories: %s')
+          .replace('%s', formatDeviceCategories(lang, deviceSummary.categories))
+        : null,
+    },
+    {
+      storageKey: 'cameraPowerPlanner_favorites',
+      label: langTexts.storageKeyFavorites || 'Pinned favorites',
+      value: formatCountText(lang, langTexts, 'storageFavoritesCount', favoritesCount),
+      description: langTexts.storageKeyFavoritesDesc || '',
+    },
+    {
+      storageKey: 'cameraPowerPlanner_feedback',
+      label: langTexts.storageKeyFeedback || 'Runtime feedback',
+      value: formatCountText(lang, langTexts, 'storageFeedbackCount', feedbackCount),
+      description: langTexts.storageKeyFeedbackDesc || '',
+    },
+    {
+      storageKey: 'cameraPowerPlanner_session',
+      label: langTexts.storageKeySession || 'Unsaved session',
+      value: hasSession
+        ? langTexts.storageSessionStored || texts.en?.storageSessionStored || 'Stored'
+        : langTexts.storageSessionNotStored || texts.en?.storageSessionNotStored || 'Not stored',
+      description: langTexts.storageKeySessionDesc || '',
+    },
+    {
+      storageKey: 'localStorage',
+      label: langTexts.storageKeyTotalSize || 'Approximate backup size',
+      value: formatSizeText(lang, langTexts, approxBytes),
+      description: langTexts.storageKeyTotalSizeDesc || '',
+    },
+  ];
+
+  items.forEach((item) => {
+    storageSummaryList.appendChild(createSummaryItemElement(item));
+  });
+
+  if (storageSummaryEmpty) {
+    const hasData = Boolean(
+      totalProjects
+      || gearListCount
+      || deviceSummary.total
+      || favoritesCount
+      || feedbackCount
+      || hasSession
+    );
+    if (hasData) {
+      storageSummaryEmpty.setAttribute('hidden', '');
+    } else {
+      storageSummaryEmpty.removeAttribute('hidden');
+    }
+  }
 }
 
 if (settingsLogo) {
@@ -11901,6 +12250,7 @@ if (settingsButton && settingsDialog) {
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
+    updateStorageSummary();
     settingsDialog.removeAttribute('hidden');
     // Focus the first control except the language selector to avoid opening it automatically
     const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
