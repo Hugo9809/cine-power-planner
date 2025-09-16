@@ -100,6 +100,16 @@ const texts = {
     restoreSettings: "Restore",
     restoreSettingsHelp:
       "Load a previously exported JSON snapshot to restore your planner data.",
+    factoryResetButton: "Factory reset",
+    factoryResetButtonHelp:
+      "Create a backup and wipe all planner data after confirmation.",
+    confirmFactoryReset: "Create a backup and wipe all planner data?",
+    confirmFactoryResetAgain:
+      "Last warning: all projects, devices, settings and feedback will be deleted. Continue?",
+    factoryResetBackupFailed: "Backup failed. Data was not deleted.",
+    factoryResetSuccess:
+      "Backup downloaded. All planner data cleared. Reloading…",
+    factoryResetError: "Factory reset failed. Please try again.",
     aboutHeading: "About & Support",
     aboutHeadingHelp:
       "Review version details and reach support resources.",
@@ -1039,6 +1049,16 @@ const texts = {
     restoreSettings: "Ripristina",
     restoreSettingsHelp:
       "Carica uno snapshot JSON esportato in precedenza per ripristinare dati e impostazioni.",
+    factoryResetButton: "Ripristino di fabbrica",
+    factoryResetButtonHelp:
+      "Crea un backup e cancella tutti i dati del planner dopo la conferma.",
+    confirmFactoryReset: "Creare un backup e cancellare tutti i dati del planner?",
+    confirmFactoryResetAgain:
+      "Ultimo avviso: tutti i progetti, dispositivi, impostazioni e feedback salvati verranno eliminati. Continuare?",
+    factoryResetBackupFailed: "Backup non riuscito. I dati non sono stati eliminati.",
+    factoryResetSuccess:
+      "Backup scaricato. Tutti i dati del planner sono stati cancellati. Ricaricamento in corso…",
+    factoryResetError: "Ripristino di fabbrica non riuscito. Riprova.",
     aboutHeading: "Informazioni e supporto",
     aboutHeadingHelp:
       "Consulta dettagli sulla versione e i collegamenti al supporto.",
@@ -1593,6 +1613,16 @@ const texts = {
     restoreSettings: "Restaurar",
     restoreSettingsHelp:
       "Carga una instantánea JSON exportada previamente para restaurar datos y ajustes.",
+    factoryResetButton: "Restablecimiento de fábrica",
+    factoryResetButtonHelp:
+      "Crea una copia de seguridad y borra todos los datos del planificador tras la confirmación.",
+    confirmFactoryReset: "¿Crear una copia de seguridad y borrar todos los datos del planificador?",
+    confirmFactoryResetAgain:
+      "Último aviso: se eliminarán todos los proyectos, dispositivos, ajustes y comentarios guardados. ¿Continuar?",
+    factoryResetBackupFailed: "La copia de seguridad falló. No se eliminaron los datos.",
+    factoryResetSuccess:
+      "Copia de seguridad descargada. Todos los datos del planificador se borraron. Recargando…",
+    factoryResetError: "El restablecimiento de fábrica falló. Inténtalo de nuevo.",
     aboutHeading: "Acerca de y soporte",
     aboutHeadingHelp:
       "Consulta la versión y accede a los recursos de soporte.",
@@ -2149,6 +2179,16 @@ const texts = {
     restoreSettings: "Restaurer",
     restoreSettingsHelp:
       "Chargez une sauvegarde JSON exportée auparavant pour restaurer données et réglages.",
+    factoryResetButton: "Réinitialisation d’usine",
+    factoryResetButtonHelp:
+      "Crée une sauvegarde puis efface toutes les données du planificateur après confirmation.",
+    confirmFactoryReset: "Créer une sauvegarde puis effacer toutes les données du planificateur ?",
+    confirmFactoryResetAgain:
+      "Dernier avertissement : tous les projets, appareils, réglages et retours enregistrés seront supprimés. Continuer ?",
+    factoryResetBackupFailed: "Échec de la sauvegarde. Aucune donnée n’a été supprimée.",
+    factoryResetSuccess:
+      "Sauvegarde téléchargée. Toutes les données du planificateur ont été effacées. Rechargement…",
+    factoryResetError: "Échec de la réinitialisation d’usine. Veuillez réessayer.",
     aboutHeading: "À propos et support",
     aboutHeadingHelp:
       "Consultez les informations de version et les ressources d’assistance.",
@@ -2708,6 +2748,16 @@ const texts = {
     restoreSettings: "Wiederherstellen",
     restoreSettingsHelp:
       "Importiere eine zuvor exportierte JSON-Sicherung, um Daten und Einstellungen wiederherzustellen.",
+    factoryResetButton: "Werkseinstellungen",
+    factoryResetButtonHelp:
+      "Erstellt ein Backup und löscht nach Bestätigung alle Planner-Daten.",
+    confirmFactoryReset: "Backup erstellen und alle Planner-Daten löschen?",
+    confirmFactoryResetAgain:
+      "Letzte Warnung: Alle gespeicherten Projekte, Geräte, Einstellungen und Rückmeldungen werden gelöscht. Fortfahren?",
+    factoryResetBackupFailed: "Backup fehlgeschlagen. Daten wurden nicht gelöscht.",
+    factoryResetSuccess:
+      "Backup heruntergeladen. Alle Planner-Daten wurden gelöscht. Seite wird neu geladen…",
+    factoryResetError: "Zurücksetzen auf Werkseinstellungen fehlgeschlagen. Bitte erneut versuchen.",
     aboutHeading: "Info & Support",
     aboutHeadingHelp:
       "Zeigt Versionsinfos und Links zum Support.",
