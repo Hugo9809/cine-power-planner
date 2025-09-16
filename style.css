@@ -2764,6 +2764,29 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   display: none;
 }
 
+#gearListOutput .select-wrapper,
+#projectRequirementsOutput .select-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+#gearListOutput .select-wrapper select,
+#projectRequirementsOutput .select-wrapper select {
+  flex: 0 0 auto;
+  width: var(--gear-select-width, auto);
+  max-width: 100%;
+}
+
+#gearListOutput .select-wrapper .favorite-toggle,
+#projectRequirementsOutput .select-wrapper .favorite-toggle {
+  flex: 0 0 auto;
+}
+
 #gearListActions {
   display: flex;
   flex-wrap: wrap;
@@ -2794,6 +2817,15 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   #projectRequirementsOutput select {
     width: 100%;
     max-width: 100%;
+  }
+  #gearListOutput .select-wrapper,
+  #projectRequirementsOutput .select-wrapper {
+    display: flex;
+    width: 100%;
+  }
+  #gearListOutput .select-wrapper select,
+  #projectRequirementsOutput .select-wrapper select {
+    flex: 1 1 auto;
   }
   #gearListOutput select,
   #projectRequirementsOutput select {
