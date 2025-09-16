@@ -1,11 +1,12 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v14';
+const CACHE_NAME = 'cine-power-planner-v15';
 const ASSETS = [
   './',
   './index.html',
   './impressum.html',
   './datenschutz.html',
   './style.css',
+  './static-theme.js',
   './overview.css',
   './overview-print.css',
   './overview.js',

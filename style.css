@@ -3,6 +3,7 @@
 :root {
   color-scheme: light dark;
   --accent-color: #001589;
+  --link-color: var(--accent-color);
   --background-color: #f9f9f9;
   --surface-color: #ffffff;
   --text-color: #000000;
@@ -233,6 +234,77 @@ footer {
 
 footer a {
   margin: 0 0.5em;
+}
+
+/* Static legal pages */
+body.static-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+body.static-page main {
+  flex: 1;
+}
+
+main.legal-content {
+  max-width: 960px;
+}
+
+.legal-content h1 {
+  margin-bottom: 0.6em;
+}
+
+.legal-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: var(--panel-shadow);
+}
+
+.legal-card h2:first-of-type {
+  margin-top: 0;
+}
+
+.legal-card h2 {
+  border-bottom: 1px solid var(--accent-color);
+  padding-bottom: 0.4em;
+}
+
+.static-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.button-link,
+.button-link:visited {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--button-size);
+  min-height: var(--button-size);
+  padding: 0 12px;
+  border-radius: var(--border-radius);
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  font-size: 0.85em;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.button-link:hover {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  transform: translateY(-2px);
+}
+
+.button-link:active {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  filter: brightness(0.9);
+  transform: translateY(0);
 }
 
 /* Form layout */
