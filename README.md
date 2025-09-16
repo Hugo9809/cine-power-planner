@@ -23,11 +23,13 @@ that future visits work offline and pick up updates automatically.
 - [Customization and Accessibility](#customization-and-accessibility)
 - [Gear List](#gear-list)
 - [Runtime Data Weighting](#runtime-data-weighting)
-- [Backup and Recovery](#backup-and-recovery)
 - [Install as an App](#install-as-an-app)
 - [Offline Use and Data Storage](#offline-use-and-data-storage)
+- [Backup and Recovery](#backup-and-recovery)
+- [Privacy and Data Ownership](#privacy-and-data-ownership)
 - [Browser Support](#browser-support)
 - [Development](#development)
+- [Device Data Workflow](#device-data-workflow)
 - [Troubleshooting](#troubleshooting)
 - [Feedback and Support](#feedback-and-support)
 - [Contributing](#contributing)
@@ -224,15 +226,30 @@ controls to export your work:
   triggers the same backup export so you always have a recent download prompt as
   a reminder to archive your data.
 
+## Privacy and Data Ownership
+
+Cine Power Planner intentionally keeps your data on the devices you control. The
+app runs entirely in the browser with no accounts, telemetry or background
+sync—projects, runtime submissions, favorites, custom devices, theme settings
+and backups stay in your local `localStorage` unless you choose to export them.
+Hosting the planner yourself (or loading it directly from disk) lets production
+teams work without personal information or gear lists leaving their own
+infrastructure.
+
+Because a service worker caches assets for offline use, the only runtime network
+requests come from optional resources such as the OpenMoji icon set when a
+connection is available. You can clear saved information at any time via
+**Settings → Clear Local Cache** or by deleting the site's data in your browser.
+Exports produce human-readable JSON so you can review exactly what will be
+shared before handing files to collaborators or clients.
+
 ## Browser Support
 
 Cine Power Planner relies on modern web APIs and is tested in current versions of Chrome, Firefox, Edge and Safari. Older browsers may lack support for features like installation or offline caching. For the best experience, use a browser with up-to-date Progressive Web App (PWA) capabilities.
 
 ## Development
 
-Set up a development environment with Node.js 18 or later. After cloning the repository run `npm install` once, then use `npm test` to execute ESLint, data consistency checks and Jest tests together while you iterate on changes.
-
-After cloning the repository, you can inspect or modify the code base.
+Set up a development environment with Node.js 18 or later. After cloning the repository, run `npm install` once, then use `npm test` to execute ESLint, data consistency checks and Jest tests together while you iterate on changes. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on proposing updates and working with the dataset.
 
 ### File Structure
 
@@ -271,9 +288,13 @@ npm run test:dom    # lightweight DOM utilities (1.5 GB heap cap)
 npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
 ```
 
-### Update device data
+## Device Data Workflow
 
-Device definitions live in the files under `devices/`. After modifying these files, run the helper scripts to clean, verify and regenerate the database:
+The device catalog that powers the planner lives under `devices/`. Each file
+groups related equipment (cameras, monitors, power, accessories, etc.) so
+changes are easy to review in Git history and within the app. When you edit
+these lists, run the helper scripts to clean, verify and rebuild the dataset
+before committing:
 
 ```bash
 npm run normalize
@@ -282,13 +303,22 @@ npm run check-consistency
 npm run generate-schema
 ```
 
-`npm run normalize` applies various cleanup routines to unify connector names and expand shorthand entries. `npm run unify-ports` standardizes connector and port labels. `npm run check-consistency` confirms that required fields are present and raises an error if anything is missing. Finally, `npm run generate-schema` rebuilds `schema.json` from the current data.
+`npm run normalize` applies various cleanup routines to unify connector names
+and expand shorthand entries. `npm run unify-ports` standardizes connector and
+port labels. `npm run check-consistency` confirms that required fields are
+present and raises an error if anything is missing. Finally,
+`npm run generate-schema` rebuilds `schema.json` from the current data so the
+interface reflects your updates.
 
-Add `--help` to any of the above commands for detailed usage, for example:
+You can iterate faster with the data-focused Jest project when refining devices:
 
 ```bash
-npm run normalize -- --help
+npm run test:data
 ```
+
+Add `--help` to any of the helper commands for detailed usage (for example,
+`npm run normalize -- --help`). Review the generated JSON diffs to verify
+naming, connector standards and metadata before opening a pull request.
 
 ## Troubleshooting
 
@@ -303,7 +333,7 @@ If you run into problems, have questions, or want to suggest new features, pleas
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on GitHub. Before submitting, run `npm test` to ensure that linting, data consistency checks, and unit tests all pass.
+Contributions are welcome! Please open an issue or submit a pull request on GitHub. Review [CONTRIBUTING.md](CONTRIBUTING.md) for expectations around dataset updates, translations and testing. Before submitting, run `npm test` to ensure that linting, data consistency checks, and unit tests all pass.
 
 ## Acknowledgements
 
