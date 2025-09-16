@@ -2601,8 +2601,14 @@ const cageListElem = document.getElementById("cageList");
 const cameraSupportListElem = document.getElementById("cameraSupportList");
 const chargerListElem       = document.getElementById("chargerList");
 function getCurrentProjectName() {
-  return (setupSelect && setupSelect.value) ||
-    (setupNameInput && setupNameInput.value.trim()) || '';
+  const typedName =
+    (setupNameInput && typeof setupNameInput.value === 'string'
+      ? setupNameInput.value.trim()
+      : '') || '';
+  if (typedName) {
+    return typedName;
+  }
+  return (setupSelect && setupSelect.value) || '';
 }
 const newCategorySelect  = document.getElementById("newCategory");
 const newSubcategorySelect = document.getElementById("newSubcategory");
