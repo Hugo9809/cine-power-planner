@@ -16,8 +16,8 @@
   --control-disabled-bg: #dddddd;
   --panel-bg: #f9f9f9;
   --panel-border: #ddd;
-  --panel-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --panel-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --panel-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
   --border-radius: 5px;
   --page-padding: 20px;
   --main-top-padding-multiplier: 1.5;
@@ -2018,8 +2018,8 @@ html.dark-mode,
   --control-disabled-bg: #333;
   --panel-bg: #1c1c1e;
   --panel-border: #333;
-  --panel-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --panel-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.6);
+  --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --panel-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.5);
   --link-color: #7ec8ff;
   --muted-text-color: #bbb;
   --border-strong-color: #555;
@@ -2177,8 +2177,8 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     --control-disabled-bg: #333;
     --panel-bg: #1c1c1e;
     --panel-border: #333;
-    --panel-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    --panel-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.6);
+    --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --panel-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.5);
     --link-color: #7ec8ff;
     --muted-text-color: #bbb;
     --border-strong-color: #555;
