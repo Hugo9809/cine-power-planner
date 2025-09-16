@@ -99,7 +99,7 @@ The generator turns your selections into a categorized packing list:
 - Items inside each category are sorted alphabetically and display tooltips on hover.
 - The gear list is included in printable overviews and shared project files.
 - Gear lists save automatically with the project.
-- **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
+- Shared project downloads automatically bundle the current gear list and project requirements so loading the JSON restores the full table.
 - **Delete Gear List** removes the saved list and hides the output.
 - Gear list forms provide fork buttons to duplicate user entries instantly.
 

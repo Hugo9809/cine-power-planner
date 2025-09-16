@@ -209,7 +209,7 @@ The planner expands your selections into a detailed packing table:
 - Items are sorted alphabetically within their category and each exposes a tooltip on hover.
 - The gear list appears in printable overviews and shared project files so collaborators see the full context.
 - Gear lists save automatically with the project.
-- **Export Gear List** downloads a JSON file; **Import Gear List** restores it.
+- Shared project downloads automatically bundle the current gear list and project requirements so loading the JSON restores the full table.
 - **Delete Gear List** removes the saved list and hides the output.
 - Gear list forms use fork buttons to duplicate your entries instantly.
 

@@ -496,13 +496,7 @@ const texts = {
       "Rigging Grip": "Rigging Grip"
     },
     gearListAutosaveNote: "Gear lists save automatically with the project.",
-    exportGearListBtn: "Export Gear List",
-    importGearListBtn: "Import Gear List",
     deleteGearListBtn: "Delete Gear List",
-    exportGearListBtnHelp:
-      "Download the saved gear list and project notes as a JSON file.",
-    importGearListBtnHelp:
-      "Load a gear list from a JSON file, replacing the current table.",
     deleteGearListBtnHelp:
       "Remove the saved gear list from this project and hide the table.",
     confirmDeleteGearList: "Delete gear list?",
@@ -973,13 +967,7 @@ const texts = {
       "Rigging Grip": "Macchinista rigging"
     },
     gearListAutosaveNote: "L'elenco attrezzatura viene salvato automaticamente con il progetto.",
-    exportGearListBtn: "Esporta elenco attrezzatura",
-    importGearListBtn: "Importa elenco attrezzatura",
     deleteGearListBtn: "Elimina elenco attrezzatura",
-    exportGearListBtnHelp:
-      "Scarica l'elenco attrezzatura salvato e le note del progetto come file JSON.",
-    importGearListBtnHelp:
-      "Carica un elenco attrezzatura da un file JSON sostituendo la tabella corrente.",
     deleteGearListBtnHelp:
       "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
@@ -1534,13 +1522,7 @@ const texts = {
       "Rigging Grip": "Grip de rigging"
     },
     gearListAutosaveNote: "La lista de equipo se guarda automáticamente con el proyecto.",
-    exportGearListBtn: "Exportar lista de equipo",
-    importGearListBtn: "Importar lista de equipo",
     deleteGearListBtn: "Eliminar lista de equipo",
-    exportGearListBtnHelp:
-      "Descarga la lista de equipo guardada y las notas del proyecto como archivo JSON.",
-    importGearListBtnHelp:
-      "Carga una lista de equipo desde un archivo JSON reemplazando la tabla actual.",
     deleteGearListBtnHelp:
       "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
@@ -2097,13 +2079,7 @@ const texts = {
       "Rigging Grip": "Machiniste rigging"
     },
     gearListAutosaveNote: "La liste du matériel est enregistrée automatiquement avec le projet.",
-    exportGearListBtn: "Exporter la liste du matériel",
-    importGearListBtn: "Importer la liste du matériel",
     deleteGearListBtn: "Supprimer la liste du matériel",
-    exportGearListBtnHelp:
-      "Télécharge la liste du matériel enregistrée et les notes du projet au format JSON.",
-    importGearListBtnHelp:
-      "Charge une liste du matériel depuis un fichier JSON en remplaçant la table actuelle.",
     deleteGearListBtnHelp:
       "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
@@ -2663,13 +2639,7 @@ const texts = {
       "Rigging Grip": "Rigging-Grip"
     },
     gearListAutosaveNote: "Die Gear-Liste wird automatisch mit dem Projekt gespeichert.",
-    exportGearListBtn: "Gear-Liste exportieren",
-    importGearListBtn: "Gear-Liste importieren",
     deleteGearListBtn: "Gear-Liste löschen",
-    exportGearListBtnHelp:
-      "Lädt die gespeicherte Gear-Liste und Projektnotizen als JSON-Datei herunter.",
-    importGearListBtnHelp:
-      "Lädt eine Gear-Liste aus einer JSON-Datei und ersetzt damit die aktuelle Tabelle.",
     deleteGearListBtnHelp:
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
     confirmDeleteGearList: "Gear-Liste löschen?",

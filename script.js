@@ -9036,6 +9036,7 @@ if (projectForm) {
 shareSetupBtn.addEventListener('click', () => {
   saveCurrentGearList();
   const setupName = getCurrentProjectName();
+  const storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
   const currentSetup = {
     setupName,
     camera: cameraSelect.value,
@@ -9051,17 +9052,17 @@ shareSetupBtn.addEventListener('click', () => {
   };
   if (currentProjectInfo) {
     currentSetup.projectInfo = currentProjectInfo;
-  } else {
-    const project = typeof loadProject === 'function' ? loadProject(setupName) : null;
-    if (project && project.projectInfo) {
-      currentSetup.projectInfo = project.projectInfo;
-    }
+  } else if (storedProject && storedProject.projectInfo) {
+    currentSetup.projectInfo = storedProject.projectInfo;
   }
   const gearSelectors = getGearListSelectors();
   if (Object.keys(gearSelectors).length) {
     currentSetup.gearSelectors = gearSelectors;
   }
-  const combinedHtml = getCurrentGearListHtml();
+  let combinedHtml = getCurrentGearListHtml();
+  if (!combinedHtml && storedProject && storedProject.gearList) {
+    combinedHtml = storedProject.gearList;
+  }
   if (combinedHtml) {
     const { projectHtml, gearHtml } = splitGearListHtml(combinedHtml);
     if (projectHtml) currentSetup.projectHtml = projectHtml;
@@ -11094,63 +11095,6 @@ function saveCurrentGearList() {
     }
 }
 
-function exportCurrentGearList() {
-    const html = getCurrentGearListHtml();
-    if (!html) return;
-    const info = projectForm ? collectProjectFormData() : {};
-    info.sliderBowl = getSliderBowlValue();
-    info.easyrig = getEasyrigValue();
-    const proj = Object.values(info).some(v => v) ? info : null;
-    const blob = new Blob([JSON.stringify({ projectInfo: proj, gearList: html })], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-
-    const pad = n => String(n).padStart(2, '0');
-    const now = new Date();
-    const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const namePart = (getCurrentProjectName() || 'gear-list')
-        .replace(/\s+/g, '-').replace(/[^a-z0-9-_]/gi, '');
-    a.download = `${datePart}_${namePart}_gear-list.json`;
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
-}
-
-function handleImportGearList(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-        try {
-            const obj = JSON.parse(ev.target.result);
-            if (obj && obj.gearList) {
-            displayGearAndRequirements(obj.gearList);
-            currentProjectInfo = obj.projectInfo || null;
-            populateProjectForm(currentProjectInfo || {});
-            ensureGearListActions();
-            bindGearListCageListener();
-            bindGearListEasyrigListener();
-            bindGearListSliderBowlListener();
-            bindGearListEyeLeatherListener();
-            bindGearListProGaffTapeListener();
-            bindGearListDirectorMonitorListener();
-            if (setupNameInput) {
-                const base = file.name.replace(/\.json$/i, '');
-                setupNameInput.value = base;
-                setupNameInput.dispatchEvent(new Event('input'));
-            }
-            saveCurrentGearList();
-            }
-        } catch {
-            alert('Invalid gear list file.');
-        }
-        e.target.value = '';
-    };
-    reader.readAsText(file);
-}
-
 function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearList)) return;
     if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return;
@@ -11241,35 +11185,18 @@ function ensureGearListActions() {
     if (!actions) {
         actions = document.createElement('div');
         actions.id = 'gearListActions';
-        const exportBtn = document.createElement('button');
-        exportBtn.id = 'exportGearListBtn';
-        const importBtn = document.createElement('button');
-        importBtn.id = 'importGearListBtn';
-        const importInput = document.createElement('input');
-        importInput.type = 'file';
-        importInput.accept = '.json';
-        importInput.id = 'importGearListInput';
-        importInput.className = 'hidden';
-        importInput.name = 'importGearList';
         const deleteBtn = document.createElement('button');
         deleteBtn.id = 'deleteGearListBtn';
         const autoSaveNote = document.createElement('p');
         autoSaveNote.id = 'gearListAutosaveNote';
         autoSaveNote.className = 'gear-list-autosave-note';
-        actions.append(exportBtn, importBtn, importInput, deleteBtn, autoSaveNote);
+        actions.append(deleteBtn, autoSaveNote);
         gearListOutput.appendChild(actions);
-        exportBtn.addEventListener('click', exportCurrentGearList);
-        importBtn.addEventListener('click', () => importInput.click());
-        importInput.addEventListener('change', handleImportGearList);
         deleteBtn.addEventListener('click', deleteCurrentGearList);
     }
     // Update texts for current language
-    const exportBtn = document.getElementById('exportGearListBtn');
-    const importBtn = document.getElementById('importGearListBtn');
     const deleteBtn = document.getElementById('deleteGearListBtn');
     const autoSaveNote = document.getElementById('gearListAutosaveNote');
-    const exportHelp = texts[currentLang].exportGearListBtnHelp || texts[currentLang].exportGearListBtn;
-    const importHelp = texts[currentLang].importGearListBtnHelp || texts[currentLang].importGearListBtn;
     const deleteHelp = texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn;
     if (autoSaveNote) {
         const noteText = texts[currentLang].gearListAutosaveNote
@@ -11278,15 +11205,11 @@ function ensureGearListActions() {
         autoSaveNote.setAttribute('title', noteText);
         autoSaveNote.setAttribute('data-help', noteText);
     }
-    exportBtn.textContent = texts[currentLang].exportGearListBtn;
-    exportBtn.setAttribute('title', exportHelp);
-    exportBtn.setAttribute('data-help', exportHelp);
-    importBtn.textContent = texts[currentLang].importGearListBtn;
-    importBtn.setAttribute('title', importHelp);
-    importBtn.setAttribute('data-help', importHelp);
-    deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
-    deleteBtn.setAttribute('title', deleteHelp);
-    deleteBtn.setAttribute('data-help', deleteHelp);
+    if (deleteBtn) {
+        deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
+        deleteBtn.setAttribute('title', deleteHelp);
+        deleteBtn.setAttribute('data-help', deleteHelp);
+    }
 
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
@@ -11321,7 +11244,7 @@ function ensureGearListActions() {
     if (!gearListOutput._inputListenerBound) {
         gearListOutput.addEventListener('input', e => {
             const target = e.target;
-            if (!target || target.id === 'importGearListInput') return;
+            if (!target) return;
             if (target.closest('#gearListActions')) return;
             if (target.matches('input, textarea')) {
                 saveCurrentGearList();
