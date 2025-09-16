@@ -1,12 +1,28 @@
-/* global setupNameInput, currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml */
+
+const getCssVariableValue = (name, fallback = '') => {
+    if (typeof document === 'undefined') return fallback;
+    const root = document.documentElement;
+    if (!root) return fallback;
+    const computed = typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
+        ? window.getComputedStyle(root).getPropertyValue(name).trim()
+        : '';
+    if (computed) return computed;
+    const inline = root.style.getPropertyValue(name).trim();
+    return inline || fallback;
+};
 
 function generatePrintableOverview() {
-    const setupName = setupNameInput.value;
+    const escapeHtmlSafe = (value) => (typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? ''));
+    const summarizeConnectors = (device) => (typeof generateConnectorSummary === 'function' ? generateConnectorSummary(device) : '');
+    const setupNameField = typeof document !== 'undefined' ? document.getElementById('setupName') : null;
+    const setupName = setupNameField ? setupNameField.value : '';
     const now = new Date();
     const localeMap = { de: 'de-DE', es: 'es-ES', fr: 'fr-FR', en: 'en-US' };
-    const locale = localeMap[currentLang] || 'en-US';
+    const lang = typeof currentLang === 'string' ? currentLang : 'en';
+    const locale = localeMap[lang] || 'en-US';
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
-    const t = texts[currentLang];
+    const t = (typeof texts === 'object' && texts) ? (texts[lang] || texts.en || {}) : {};
     const customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;
 
     let deviceListHtml = '<div class="device-category-container">';
@@ -31,13 +47,13 @@ function generatePrintableOverview() {
             } else {
                 deviceInfo = devices[category] && devices[category][deviceKey];
             }
-            const safeName = escapeHtml(deviceName);
+            const safeName = escapeHtmlSafe(deviceName);
             let details = '';
             if (deviceInfo !== undefined && deviceInfo !== null) {
-                const connectors = generateConnectorSummary(deviceInfo);
+                const connectors = summarizeConnectors(deviceInfo);
                 const infoBoxes =
-                    (deviceInfo.latencyMs !== undefined ? `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(deviceInfo.latencyMs))}</div>` : '') +
-                    (deviceInfo.frequency ? `<div class="info-box video-conn"><strong>Frequency:</strong> ${escapeHtml(String(deviceInfo.frequency))}</div>` : '');
+                    (deviceInfo.latencyMs !== undefined ? `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtmlSafe(String(deviceInfo.latencyMs))}</div>` : '') +
+                    (deviceInfo.frequency ? `<div class="info-box video-conn"><strong>Frequency:</strong> ${escapeHtmlSafe(String(deviceInfo.frequency))}</div>` : '');
                 details = connectors + infoBoxes;
             }
             addToSection(headingKey, `<div class="device-block"><strong>${safeName}</strong>${details}</div>`);
@@ -132,9 +148,16 @@ function generatePrintableOverview() {
             else dtapCandidates.push({ name: battName, hours, method });
         }
         const getMethodLabel = method => {
-            if (method === 'pins') return `<span style="color:#FF9800;">${t.methodPinsOnly}</span>`;
-            if (method === 'both pins and D-Tap') return `<span style="color:#4CAF50;">${t.methodPinsAndDTap}</span>`;
-            if (method === 'infinite') return `<span style="color:#007bff;">${t.methodInfinite}</span>`;
+            const colorMap = {
+                pins: { var: '--warning-color', fallback: '#FF9800', text: t.methodPinsOnly },
+                'both pins and D-Tap': { var: '--success-color', fallback: '#4CAF50', text: t.methodPinsAndDTap },
+                infinite: { var: '--info-color', fallback: '#007bff', text: t.methodInfinite }
+            };
+            const entry = colorMap[method];
+            if (entry) {
+                const color = getCssVariableValue(entry.var, entry.fallback);
+                return `<span style="color:${color};">${entry.text}</span>`;
+            }
             return method === 'dtap' ? 'D-Tap' : method;
         };
         const getBarClass = method => {
@@ -149,17 +172,17 @@ function generatePrintableOverview() {
             dtapCandidates[0] ? dtapCandidates[0].hours : 0
         );
         if (selectedCandidate) {
-            tableHtml += `<tr class="selectedBatteryRow"><td>${escapeHtml(selectedCandidate.name)}</td><td>${selectedCandidate.hours.toFixed(2)}h (${getMethodLabel(selectedCandidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(selectedCandidate.method)}" style="width: ${(selectedCandidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
+            tableHtml += `<tr class="selectedBatteryRow"><td>${escapeHtmlSafe(selectedCandidate.name)}</td><td>${selectedCandidate.hours.toFixed(2)}h (${getMethodLabel(selectedCandidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(selectedCandidate.method)}" style="width: ${(selectedCandidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
         }
         pinsCandidates.forEach(candidate => {
             if (selectedCandidate && candidate.name === selectedCandidate.name) return;
-            tableHtml += `<tr><td>${escapeHtml(candidate.name)}</td><td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
+            tableHtml += `<tr><td>${escapeHtmlSafe(candidate.name)}</td><td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
         });
         dtapCandidates.forEach(candidate => {
             if (selectedCandidate && candidate.name === selectedCandidate.name) return;
             const alreadyInPins = pinsCandidates.some(p => p.name === candidate.name);
             if (!alreadyInPins) {
-                tableHtml += `<tr><td>${escapeHtml(candidate.name)}</td><td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
+                tableHtml += `<tr><td>${escapeHtmlSafe(candidate.name)}</td><td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
             }
         });
         tableHtml += `</table>`;
@@ -168,7 +191,7 @@ function generatePrintableOverview() {
         batteryTableHtml = '';
     }
 
-    const safeSetupName = escapeHtml(setupName);
+    const safeSetupName = escapeHtmlSafe(setupName);
     const diagramCss = getDiagramCss(false);
 
     let diagramAreaHtml = '';
