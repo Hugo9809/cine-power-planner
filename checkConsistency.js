@@ -31,15 +31,24 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node checkConsistency.js [--help]\n' +
-        '\nChecks that device entries contain required fields.\n' +
-        'Exits with code 1 when missing fields are found.\n' +
-        '\nExamples:\n' +
-        '  npm run check-consistency\n' +
-        '  npm run check-consistency -- --help\n' +
-        '  node checkConsistency.js --help\n' +
-        '\nOptions:\n' +
+      [
+        'Usage: node checkConsistency.js [--help]',
+        '',
+        'Checks device entries in data.js for required fields across key categories.',
+        'Leaves data.js untouched and exits with code 1 when a required field is missing.',
+        '',
+        'Tips:',
+        '  - Run after editing files in devices/ to catch missing power, connector or port details.',
+        '  - Include it in CI before committing updates to the shared device database.',
+        '',
+        'Examples:',
+        '  npm run check-consistency',
+        '  npm run check-consistency -- --help',
+        '  node checkConsistency.js --help',
+        '',
+        'Options:',
         '  -h, --help  Show this help message and exit.'
+      ].join('\n')
     );
     process.exit(0);
   }

@@ -328,14 +328,26 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node unifyPorts.js [--help]\n' +
-        '\nNormalizes connector and port definitions in data.js and overwrites the file.\n' +
-        '\nExamples:\n' +
-        '  npm run unify-ports\n' +
-        '  npm run unify-ports -- --help\n' +
-        '  node unifyPorts.js --help\n' +
-        '\nOptions:\n' +
+      [
+        'Usage: node unifyPorts.js [--help]',
+        '',
+        'Normalizes connector and port definitions in data.js and overwrites the file.',
+        '',
+        'Key actions:',
+        '  - Converts legacy powerInput strings into structured power.input entries.',
+        '  - Cleans audio, video and FIZ ports, merging duplicates and removing blanks.',
+        '  - Aligns voltage ranges and port metadata so dropdown help stays descriptive.',
+        '',
+        'Run this after normalizeData.js to keep port information consistent. Review and commit the resulting data.js diff.',
+        '',
+        'Examples:',
+        '  npm run unify-ports',
+        '  npm run unify-ports -- --help',
+        '  node unifyPorts.js --help',
+        '',
+        'Options:',
         '  -h, --help  Show this help message and exit.'
+      ].join('\n')
     );
     process.exit(0);
   }

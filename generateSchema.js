@@ -50,14 +50,22 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   if (args.includes('--help') || args.includes('-h')) {
     console.log(
-      'Usage: node generateSchema.js [--help]\n' +
-        '\nGenerates schema.json from data.js.\n' +
-        '\nExamples:\n' +
-        '  npm run generate-schema\n' +
-        '  npm run generate-schema -- --help\n' +
-        '  node generateSchema.js --help\n' +
-        '\nOptions:\n' +
+      [
+        'Usage: node generateSchema.js [--help]',
+        '',
+        'Generates schema.json from data.js.',
+        '',
+        'The output lists attributes found in each device category so editors and tests can validate new entries.',
+        'It writes schema.json in the project root without modifying data.js.',
+        '',
+        'Examples:',
+        '  npm run generate-schema',
+        '  npm run generate-schema -- --help',
+        '  node generateSchema.js --help',
+        '',
+        'Options:',
         '  -h, --help  Show this help message and exit.'
+      ].join('\n')
     );
     process.exit(0);
   }
