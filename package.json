@@ -9,10 +9,12 @@
     "normalize": "node normalizeData.js",
     "unify-ports": "node unifyPorts.js",
     "generate-schema": "node generateSchema.js",
-    "test": "npm run lint && npm run check-consistency && npm run test:jest",
-    "test:jest": "npm run test:unit && npm run test:script",
-    "test:unit": "jest --runInBand --testPathIgnorePatterns=tests/script.test.js",
-    "test:script": "jest --runInBand tests/script.test.js"
+    "test": "npm run lint && npm run check-consistency && npm run test:all",
+    "test:all": "npm run test:core && npm run test:persistence && npm run test:integration",
+    "test:core": "jest --runInBand --selectProjects core",
+    "test:persistence": "jest --runInBand --selectProjects persistence",
+    "test:integration": "jest --runInBand --selectProjects integration",
+    "test:jest": "npm run test:all"
   },
   "keywords": [],
   "author": "",
