@@ -1112,9 +1112,9 @@ const texts = {
     impressum: "Aviso legal",
     privacy: "Política de privacidad",
 
-    setupManageHeading: "Gestionar Proyecto",
+    setupManageHeading: "Administrar proyecto",
     deviceSelectionHeading: "Selección de Dispositivos",
-    overviewDeviceSelectionHeading: "Dispositivos de Configuración de Cámara",
+    overviewDeviceSelectionHeading: "Dispositivos de la configuración de cámara",
     resultsHeading: "Resultados",
     deviceManagerHeading: "Gestionar Base de Datos de Dispositivos",
     batteryComparisonHeading: "Comparación de Baterías",
@@ -1137,15 +1137,15 @@ const texts = {
     diagramLegendFIZ: "FIZ",
     downloadDiagramBtn: "Descargar Diagrama",
     gridSnapToggle: "Ajustar a la cuadrícula",
-    existingDevicesHeading: "Dispositivos Existentes",
+    existingDevicesHeading: "Dispositivos existentes",
     darkModeLabel: "Alternar modo oscuro",
     pinkModeLabel: "Alternar modo rosa",
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
-      "Escribe para ir a funciones, dispositivos o temas de ayuda relacionados. Pulsa Enter para navegar, Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y × para limpiar la búsqueda.",
+      "Escribe para ir a funciones, dispositivos o temas de ayuda relacionados. Pulsa Intro para navegar, Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y × para borrar la búsqueda.",
     featureSearchClear: "Borrar búsqueda",
-    featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo.",
+    featureSearchClearHelp: "Borra el campo de búsqueda y muestra todos los resultados de nuevo.",
     darkModeHelp:
       "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
@@ -1153,12 +1153,12 @@ const texts = {
     reloadAppLabel: "Forzar recarga",
     reloadAppHelp: "Borra la caché y recarga la aplicación sin eliminar los datos guardados.",
 
-    favoriteToggleLabel: "Alternar favorito",
+    favoriteToggleLabel: "Marcar como favorito",
     favoriteToggleHelp:
       "Marca la selección actual como favorita para fijarla al principio de la lista.",
     savedSetupsLabel: "Configuraciones guardadas:",
     newSetupOption: "-- Nueva Configuración --",
-    setupNameLabel: "Nombre de Configuración:",
+    setupNameLabel: "Nombre de la configuración:",
     deleteSetupBtn: "Eliminar",
     saveSetupBtn: "Guardar",
     updateSetupBtn: "Actualizar",
@@ -1179,13 +1179,13 @@ const texts = {
     distanceLabel: "Sensor de distancia:",
     batteryLabel: "Batería:",
     batteryBMountLabel: "Batería B-Mount:",
-    batteryPlateLabel: "Placa de Batería:",
+    batteryPlateLabel: "Placa de batería:",
     batteryHotswapLabel: "Hotswap de batería:",
     lensesLabel: "Lentes:",
 
     fizLegend: "Sistemas FIZ (Follow Focus)",
     fizMotorsLabel: "Motores FIZ:",
-    fizControllersLabel: "Controles FIZ:",
+    fizControllersLabel: "Controladores FIZ:",
     fizLegendHelp:
       "Añade motores, controladores o unidades de distancia para el control FIZ.",
     fizMotorsHelp: "Selecciona los motores de enfoque, iris o zoom.",
