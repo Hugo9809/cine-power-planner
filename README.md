@@ -18,6 +18,7 @@ that future visits work offline and pick up updates automatically.
 - [Recent Updates](#recent-updates)
 - [Features at a Glance](#features-at-a-glance)
 - [Quick Start](#quick-start)
+- [Example Workflow](#example-workflow)
 - [Interface Overview](#interface-overview)
 - [Customization and Accessibility](#customization-and-accessibility)
 - [Gear List](#gear-list)
@@ -27,6 +28,7 @@ that future visits work offline and pick up updates automatically.
 - [Offline Use and Data Storage](#offline-use-and-data-storage)
 - [Browser Support](#browser-support)
 - [Development](#development)
+- [Troubleshooting](#troubleshooting)
 - [Feedback and Support](#feedback-and-support)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
@@ -101,6 +103,16 @@ See the language-specific README files for full details.
    python -m http.server
    ```
    The planner then works fully offline and updates automatically.
+
+## Example Workflow
+
+Use the planner end-to-end with the following workflow:
+
+1. **Create or load a project.** Use the project selector to load an existing setup or type a new project name and press Enter (or click **Save**) to start a fresh plan. The active project name appears above the gear list, printable overview and exports.
+2. **Add cameras, power and accessories.** Pick devices from the categorized dropdowns. Type-to-filter search boxes, pinned favorites and the global search shortcut (Ctrl+K / ⌘K) help you jump directly to gear, settings pages or help topics.
+3. **Check power draw and runtime.** Watch the power summary panel for current draw warnings, explore the battery comparison view to spot longer-lasting options and use the runtime dashboard to understand how temperature, codec, frame rate and other factors influence user feedback.
+4. **Capture project requirements.** Fill out project details, crew lists and required scenarios so the gear list and printable overview reflect the full production context. Fork buttons duplicate entries to speed up data entry.
+5. **Share or back up the plan.** Generate the gear list, export a planner backup or download a shareable project bundle before heading to set. Backups include custom devices, runtime feedback and pinned favorites.
 
 ## Interface Overview
 
@@ -277,6 +289,13 @@ Add `--help` to any of the above commands for detailed usage, for example:
 ```bash
 npm run normalize -- --help
 ```
+
+## Troubleshooting
+
+- **Stuck on an old version?** Service workers aggressively cache assets. Click the in-app **Force reload** button, or open your browser's dev tools and perform a hard reload to clear stale files without deleting saved projects.
+- **Missing data after closing the tab?** Ensure the site has storage access. Private browsing modes or restrictive tracking protections can prevent `localStorage` from persisting backups, favorites and custom devices.
+- **Downloads are blocked?** The browser must be allowed to download multiple files for backups and shareable project bundles. Temporarily disable pop-up blockers or allow multiple downloads when prompted.
+- **Command-line scripts failing?** Confirm Node.js 18+ is installed, run `npm install` to fetch dependencies, and rerun the requested npm script. Memory errors usually mean a test suite exceeded its cap—rerun a narrower target such as `npm run test:unit`.
 
 ## Feedback and Support
 
