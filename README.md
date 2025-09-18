@@ -55,6 +55,8 @@ that future visits work offline and pick up updates automatically.
 - [Key Concepts](#key-concepts)
 - [Interface Overview](#interface-overview)
 - [Customization and Accessibility](#customization-and-accessibility)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Localization](#localization)
 - [Gear List](#gear-list)
 - [Runtime Data Weighting](#runtime-data-weighting)
 - [Install as an App](#install-as-an-app)
@@ -241,6 +243,29 @@ Understanding the planner's vocabulary makes it easier to explore new features:
 - A keyboard-friendly skip link, focus-visible controls, offline indicator and responsive layout improve navigation on desktops, tablets and phones.
 - Built-in keyboard shortcuts cover global search (/ or Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
 - The hover-help toggle turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
+
+## Keyboard Shortcuts
+
+Keyboard navigation keeps the planner quick to operate on set and in prep. The following shortcuts work across desktop browsers unless otherwise noted:
+
+| Shortcut | Action | Notes |
+| --- | --- | --- |
+| `/`, `Ctrl+K`, `⌘K` | Focus the global search field. | Works even when the side navigation is collapsed; press `Esc` to clear the current query. |
+| `Enter`, `Ctrl+S`, `⌘S` | Save the active project. | The Save button stays disabled until a project name is entered. |
+| `?`, `H`, `F1`, `Ctrl+/` | Open the help dialog. | The dialog remains searchable while you type in other fields. |
+| `D` | Toggle dark mode. | Also available from **Settings → Themes**. |
+| `P` | Toggle the pink accent theme. | Works alongside light, dark or high-contrast modes. |
+
+## Localization
+
+The interface language loads automatically from the browser preference, and users can change it at any time from the language menu in the top bar or in **Settings**. To translate the planner into another language:
+
+1. Duplicate the nearest language file (for example `README.en.md`) as `README.<lang>.md` and translate the documentation.
+2. Add UI strings to `translations.js` by copying an existing language block (such as `en`) and translating each value. Most strings include tooltip text that appears in the help dialog and Settings panels, so keep formatting placeholders like `%s` intact.
+3. Provide translated static pages (privacy policy, imprint) where required by copying the relevant HTML files.
+4. Run `npm test` to ensure linting, data validations and Jest suites still pass before submitting a pull request.
+
+New locales can be previewed immediately in the browser by selecting the language from the menu; no build step is required.
 
 ## Gear List
 
