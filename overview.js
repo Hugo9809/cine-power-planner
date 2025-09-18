@@ -20,7 +20,7 @@ function generatePrintableOverview() {
     const setupNameField = typeof document !== 'undefined' ? document.getElementById('setupName') : null;
     const setupName = setupNameField ? setupNameField.value : '';
     const now = new Date();
-    const localeMap = { de: 'de-DE', es: 'es-ES', fr: 'fr-FR', en: 'en-US' };
+    const localeMap = { de: 'de-DE', es: 'es-ES', fr: 'fr-FR', en: 'en-US', it: 'it-IT' };
     const lang = typeof currentLang === 'string' ? currentLang : 'en';
     const locale = localeMap[lang] || 'en-US';
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
