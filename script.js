@@ -8857,7 +8857,9 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       newSubcategorySelect.appendChild(opt);
     }
     newSubcategorySelect.value = subcategory || '';
-    newSubcategorySelect.disabled = true;
+    // Allow selecting a different subcategory while editing so devices can
+    // be reorganised without re-creating them from scratch.
+    newSubcategorySelect.disabled = false;
     buildDynamicFields(`accessories.cables.${subcategory}`, deviceData, categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []);
   } else {
     const watt = typeof deviceData === 'object' ? deviceData.powerDrawWatts : deviceData;
