@@ -14101,6 +14101,10 @@ if (document.readyState === "loading") {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     APP_VERSION,
+    closeSideMenu,
+    openSideMenu,
+    setupSideMenu,
+    setupResponsiveControls,
     setLanguage,
     updateCalculations,
     setBatteryPlates,
