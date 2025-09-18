@@ -3007,21 +3007,52 @@ function getSchemaAttributesForCategory(category) {
   return Array.isArray(node.attributes) ? node.attributes : [];
 }
 
+function getCombinedCategoryAttributes(category, data = {}, exclude = []) {
+  const seen = new Set();
+  const attrs = [];
+  const skip = (attr) => !attr || exclude.includes(attr) || seen.has(attr);
+
+  for (const attr of getSchemaAttributesForCategory(category)) {
+    if (skip(attr)) continue;
+    seen.add(attr);
+    attrs.push(attr);
+  }
+
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    for (const key of Object.keys(data)) {
+      if (skip(key)) continue;
+      seen.add(key);
+      attrs.push(key);
+    }
+  }
+
+  return attrs;
+}
+
 function clearDynamicFields() {
   if (!dynamicFieldsDiv) return;
   dynamicFieldsDiv.innerHTML = '';
   dynamicFieldsDiv.hidden = true;
+  if (dynamicFieldsDiv.dataset) {
+    delete dynamicFieldsDiv.dataset.attrs;
+  }
 }
 
 function buildDynamicFields(category, data = {}, exclude = []) {
   if (!dynamicFieldsDiv) return;
-  const attrs = getSchemaAttributesForCategory(category).filter(a => !exclude.includes(a));
+  const attrs = getCombinedCategoryAttributes(category, data, exclude);
   dynamicFieldsDiv.innerHTML = '';
   if (!attrs.length) {
     dynamicFieldsDiv.hidden = true;
+    if (dynamicFieldsDiv.dataset) {
+      delete dynamicFieldsDiv.dataset.attrs;
+    }
     return;
   }
   dynamicFieldsDiv.hidden = false;
+  if (dynamicFieldsDiv.dataset) {
+    dynamicFieldsDiv.dataset.attrs = JSON.stringify(attrs);
+  }
   const grid = document.createElement('div');
   grid.className = 'schema-attribute-grid';
   for (const attr of attrs) {
@@ -3032,9 +3063,23 @@ function buildDynamicFields(category, data = {}, exclude = []) {
 }
 
 function collectDynamicFieldValues(category, exclude = []) {
-  const attrs = getSchemaAttributesForCategory(category).filter(a => !exclude.includes(a));
+  let attrs = [];
+  if (dynamicFieldsDiv && dynamicFieldsDiv.dataset && dynamicFieldsDiv.dataset.attrs) {
+    try {
+      const parsed = JSON.parse(dynamicFieldsDiv.dataset.attrs);
+      if (Array.isArray(parsed)) {
+        attrs = parsed;
+      }
+    } catch (err) {
+      console.warn('Failed to parse dynamic field attributes', err);
+    }
+  }
+  if (!attrs.length) {
+    attrs = getCombinedCategoryAttributes(category, {}, exclude);
+  }
   const result = {};
   for (const attr of attrs) {
+    if (exclude.includes(attr)) continue;
     const el = document.getElementById(`attr-${attr}`);
     if (el) {
       const type = el.dataset.attrType || el.type;
@@ -3063,14 +3108,15 @@ function collectDynamicFieldValues(category, exclude = []) {
         }
         continue;
       }
-      const val = el.value.trim();
-      if (val !== '') {
-        if (type === 'number') {
-          const num = Number(val);
-          result[attr] = Number.isNaN(num) ? val : num;
-        } else {
-          result[attr] = val;
+      if (type === 'number') {
+        const num = parseFloat(el.value);
+        if (!isNaN(num)) {
+          result[attr] = num;
         }
+        continue;
+      }
+      if (el.value !== '') {
+        result[attr] = el.value;
       }
     }
   }
