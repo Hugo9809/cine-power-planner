@@ -1,6 +1,6 @@
 # 🎥 Cine Power Planner
 
-Cet outil fonctionnant dans le navigateur aide à planifier des configurations professionnelles alimentées par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, le **courant** (à 14,4 V et 12 V) et l'**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise.
+Cet outil basé sur le navigateur aide à planifier des projets caméra professionnels alimentés par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, l’**intensité demandée** (à 14,4 V et 12 V) et l’**autonomie estimée** tout en vérifiant que la batterie peut fournir la puissance requise en toute sécurité.
 
 ---
 
@@ -9,148 +9,244 @@ Cet outil fonctionnant dans le navigateur aide à planifier des configurations p
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
-- 🇫🇷 Français (par défaut si le navigateur est en français)
+- 🇫🇷 [Français](README.fr.md)
 
-Vous pouvez changer la langue en haut à droite; la préférence est mémorisée pour la prochaine visite.
+L’application adopte automatiquement la langue de votre navigateur lors de la première visite et vous pouvez la modifier à tout moment en haut à droite. Le choix est mémorisé pour la prochaine session.
 
 ---
 
-## 🆕 Fonctionnalités récentes
-- Diagramme interactif de configuration permettant de faire glisser les appareils, de zoomer et d'exporter la mise en page en SVG ou JPG.
-- Thème rose ludique qui persiste entre les visites.
-- Fenêtre d'aide consultable avec sections pas à pas et FAQ; ouvrable via ?, H, F1 ou Ctrl+/.
-- Aide contextuelle au survol pour les boutons, champs, menus déroulants et en-têtes.
-- Prise en charge des caméras avec plaques batterie V et B‑Mount.
-- Retour d'autonomie utilisateur avec détails d'environnement pour affiner les estimations.
-- Tableau visuel de pondération des autonomies montrant comment température, résolution, cadence et codec influencent chaque rapport, trié par poids avec pourcentages exacts.
+## 🆕 Nouveautés
+- Les contrôles d’accent et de typographie dans Paramètres permettent d’ajuster la couleur d’accent, la taille de base de la police et la famille de caractères, en plus des thèmes sombre, rose et à fort contraste.
+- Les raccourcis clavier de la recherche globale permettent d’appuyer sur / ou Ctrl+K (⌘K sur macOS) pour la focaliser instantanément, même lorsqu’elle se trouve dans le menu latéral mobile replié.
+- Le bouton de rechargement forcé efface les fichiers mis en cache par le service worker afin que l’application hors ligne se mette à jour sans supprimer les projets ni les appareils enregistrés.
+- Les icônes étoilées dans chaque sélecteur épinglent les caméras, batteries et accessoires favoris en haut de la liste et les incluent dans les sauvegardes.
+- Le bouton **Effacer le cache local** supprime les projets et paramètres stockés.
+- La liste de matériel et l’aperçu imprimable affichent le nom du projet pour une consultation rapide.
+- Importez un logo personnalisé pour les aperçus imprimables et les sauvegardes.
+- Les sauvegardes contiennent les favoris et créent une copie automatique avant toute restauration.
+- Les entrées d’équipe disposent désormais d’un champ e-mail.
+- Un thème à fort contraste améliore la lisibilité.
+- Les formulaires d’appareils remplissent les catégories dynamiquement selon le schéma.
+- Interface repensée avec plus de contraste et d’espacement pour une expérience plus claire sur tous les appareils.
+- Le partage de projets est simplifié : téléchargez un fichier JSON qui regroupe sélections, exigences, listes de matériel, retours d’autonomie et appareils personnalisés, puis importez-le pour tout restaurer.
+- Des icônes uniques pour les scénarios requis facilitent l’identification des contraintes du projet.
+- Diagramme de projet interactif permettant de faire glisser les appareils, de zoomer, d’aligner sur la grille et d’exporter en SVG ou JPG.
+- Thème rose ludique persistant entre les visites.
+- Boîte d’aide avec recherche, sections pas à pas et FAQ ; ouvrez-la avec ?, H, F1 ou Ctrl+/.
+- Aides contextuelles au survol pour les boutons, champs, menus déroulants et en-têtes.
+- Barre de recherche globale pour accéder rapidement aux fonctionnalités, sélecteurs d’appareils ou rubriques d’aide.
+- Compatibilité avec les caméras dotées de plaques batterie V-, B- ou Gold-Mount.
+- Soumettez des retours d’autonomie accompagnés de la température pour affiner les estimations.
+- Tableau de pondération visuel pour analyser l’impact des réglages sur chaque mesure, trié par poids avec pourcentages précis.
+- Génération de listes de matériel regroupant les équipements choisis et les exigences du projet.
+- Sauvegarde des exigences de projet avec chaque configuration afin que la liste de matériel conserve tout le contexte.
+- Duplication instantanée des entrées utilisateur dans les formulaires de liste de matériel grâce aux boutons en forme de fourche.
 
 ---
 
 ## 🔧 Fonctionnalités
 
-### ✅ Gestion des Configurations
-- Enregistrer, charger et supprimer plusieurs configurations
-- Partager une configuration via un lien ou effacer la configuration actuelle
-- Toutes les données sont stockées localement via `localStorage`
-- Générer un aperçu imprimable de toute configuration enregistrée
-- Fonctionne hors ligne : langue, mode sombre, configurations et données des appareils sont conservées
-- Sur les caméras compatibles, choisir une plaque **B‑Mount**, **V‑Mount** ou **Gold-Mount** ; la liste des batteries s'actualise automatiquement
+### ✅ Gestion de projet
+- Enregistrez, chargez et supprimez plusieurs projets caméra (appuyez sur Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton Enregistrer reste inactif tant qu’aucun nom n’est saisi).
+- Des instantanés automatiques sont créés toutes les 10 minutes tant que le planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires pour penser à archiver vos données.
+- Téléchargez un fichier JSON qui regroupe sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; chargez-le via le sélecteur Projet partagé pour tout restaurer en une étape.
+- Les données sont stockées localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez le bouton **Effacer le cache local** dans Paramètres pour supprimer projets mis en cache et modifications d’appareils.
+- Générez des aperçus imprimables pour tout projet enregistré et ajoutez un logo personnalisé afin d’aligner exports et sauvegardes sur l’identité de votre production.
+- Enregistrez les exigences de projet avec chaque projet afin que la liste de matériel conserve tout le contexte.
+- Fonctionne entièrement hors ligne grâce au service worker installé : langue, thème, données d’appareils et favoris persistent entre les sessions.
+- Mise en page responsive qui s’adapte sans effort aux ordinateurs, tablettes et téléphones.
+- Sur les caméras compatibles, choisissez des plaques **V‑Mount**, **B‑Mount** ou **Gold-Mount** ; la liste de batteries se met à jour automatiquement.
 
-### 📦 Catégories d'Appareils
+### 🧭 Aperçu de l’interface
+- Un lien d’évitement et un indicateur hors ligne maintiennent l’interface accessible au clavier et au tactile ; l’insigne apparaît dès que le navigateur perd la connexion.
+- La barre de recherche globale permet d’atteindre des fonctionnalités, sélecteurs d’appareils ou rubriques d’aide ; appuyez sur Entrée pour valider le résultat en surbrillance, utilisez / ou Ctrl+K (⌘K sur macOS) pour la focaliser instantanément (le menu latéral s’ouvre automatiquement sur les petits écrans) et appuyez sur Échap ou × pour effacer la requête.
+- Les commandes de la barre supérieure offrent le changement de langue, les thèmes sombre et rose, ainsi qu’une boîte de dialogue Paramètres avec la couleur d’accent, la taille et la famille de police, le mode à fort contraste et l’import de logo, ainsi que des outils de sauvegarde, restauration et nettoyage du cache local.
+- Le bouton Aide ouvre une boîte de dialogue recherchable avec des sections pas à pas, des raccourcis clavier, une FAQ et un mode aide contextuelle optionnel ; vous pouvez aussi l’ouvrir avec ?, H, F1 ou Ctrl+/ même en cours de saisie.
+- Le bouton de rechargement forcé (🔄) efface les fichiers du service worker en cache afin que l’application hors ligne se mette à jour sans supprimer projets ni appareils.
+- Sur les petits écrans, un menu latéral repliable reflète chaque section principale pour une navigation rapide.
+
+### ♿ Personnalisation et accessibilité
+- Les thèmes incluent un mode sombre, un accent rose ludique et un interrupteur dédié à fort contraste pour une meilleure lisibilité.
+- Les changements de couleur d’accent, de taille de police et de typographie s’appliquent instantanément et restent enregistrés dans le navigateur, ce qui facilite l’adaptation à la charte graphique ou aux besoins d’accessibilité.
+- Les raccourcis intégrés couvrent la recherche globale (/ ou Ctrl+K/⌘K), l’aide ( ?, H, F1, Ctrl+/ ), l’enregistrement (Entrée ou Ctrl+S/⌘S), le mode sombre (D) et le mode rose (P).
+- Le mode aide au survol transforme chaque bouton, champ, menu et en-tête en infobulle à la demande pour accélérer l’apprentissage des nouveaux utilisateurs.
+- Les champs avec recherche incrémentale, les styles visibles au focus et les icônes étoilées à côté des sélecteurs facilitent le filtrage des longues listes et l’épinglage des favoris.
+
+### 📋 Liste de matériel
+Le générateur transforme vos sélections en une liste de préparation catégorisée :
+
+- Cliquez sur **Générer la liste de matériel** pour compiler l’équipement choisi et les exigences du projet dans un tableau.
+- Le tableau se met à jour automatiquement quand les sélections ou exigences changent.
+- Les éléments sont regroupés par catégorie (caméra, optique, alimentation, monitoring, rigging, grip, accessoires, consommables) et les doublons sont fusionnés avec leur quantité.
+- Les câbles, structures et accessoires requis pour les moniteurs, moteurs, gimbals et scénarios météo sont ajoutés automatiquement.
+- Les scénarios sélectionnés injectent le matériel associé :
+  - *Handheld* + *Easyrig* ajoute une poignée télescopique pour un soutien stable.
+  - *Gimbal* ajoute le gimbal choisi, des bras articulés, des spigots et des pare-soleil ou kits de filtres.
+  - *Outdoor* fournit des spigots, des parapluies et des housses de pluie CapIt.
+  - Les scénarios *Vehicle* et *Steadicam* ajoutent fixations, bras isolants et ventouses selon le cas.
+- Les sélections d’optique incluent diamètre frontal, poids, données de rods et mise au point minimale, ajoutent des supports d’objectif et adaptateurs de matte box, et avertissent des standards incompatibles.
+- Les lignes de batteries reflètent les quantités du calculateur d’alimentation et incluent des plaques ou appareils de *hotswap* si nécessaire.
+- Les préférences de monitoring attribuent des moniteurs par défaut pour chaque rôle (réalisateur, DoP, pointeur, etc.) avec jeux de câbles et récepteurs sans fil.
+- Le formulaire **Exigences du projet** alimente la liste :
+  - **Nom du projet**, **société de production**, **loueur** et **DoP** apparaissent dans l’en-tête des exigences imprimées.
+  - Les entrées de **l’équipe** capturent noms, rôles et adresses e-mail afin que les contacts suivent le projet.
+  - **Jours de préparation** et **jours de tournage** fournissent des notes de calendrier et, combinés à des scénarios extérieurs, suggèrent l’équipement météo.
+  - Les **scénarios requis** ajoutent rigging, gimbals et protections climatiques correspondants.
+  - **Poignée caméra** et **extension viseur** ajoutent les pièces ou supports sélectionnés.
+  - Les choix de **matte box** et de **filtres** ajoutent le système retenu avec plateaux, adaptateurs à collier ou filtres nécessaires.
+  - Les réglages de **monitoring**, **distribution vidéo** et **viseur** ajoutent moniteurs, câbles et incrustations pour chaque rôle.
+  - Les sélections de **boutons utilisateur** et **préférences de trépied** sont listées pour référence rapide.
+- Les éléments de chaque catégorie sont triés alphabétiquement et affichent une info-bulle au survol.
+- La liste de matériel figure dans les aperçus imprimables et dans les fichiers de projet partagés.
+- Les listes de matériel sont sauvegardées automatiquement avec le projet et incluses dans les fichiers partagés et les sauvegardes.
+- **Supprimer la liste de matériel** efface la liste enregistrée et masque la sortie.
+- Les formulaires de liste de matériel proposent des boutons en forme de fourche pour dupliquer instantanément les entrées utilisateur.
+
+### 📦 Catégories d’appareils
 - **Caméra** (1)
 - **Moniteur** (optionnel)
 - **Transmetteur sans fil** (optionnel)
 - **Moteurs FIZ** (0–4)
 - **Contrôleurs FIZ** (0–4)
 - **Capteur de distance** (0–1)
-- **Plaque batterie** (uniquement pour les caméras acceptant V‑, B‑ ou Gold‑Mount)
-- **Batterie V‑/B‑/Gold‑Mount** (0–1)
+- **Plaque batterie** (uniquement sur les caméras compatibles V‑ ou B‑Mount)
+- **Batterie V‑Mount** (0–1)
 
-### ⚙️ Calculs de Puissance
+### ⚙️ Calculs de puissance
 - Consommation totale en watts
-- Courant à 14,4 V et 12 V
-- Autonomie estimée en heures
+- Intensité à 14,4 V et 12 V
+- Autonomie estimée en heures via la moyenne pondérée des retours utilisateurs
+- Nombre de batteries nécessaires pour un tournage de 10 h (avec une de secours)
+- Note de température pour ajuster l’autonomie en conditions chaudes ou froides
 
-### 🔋 Vérification de la Batterie
-- Avertit si la consommation dépasse la sortie Pin ou D‑Tap
-- Indique lorsque la limite est proche (80 %)
+### 🔋 Vérification de la sortie batterie
+- Avertit si l’intensité dépasse la sortie de la batterie (pin ou D‑Tap)
+- Indique lorsque la consommation approche de la limite (80 % d’utilisation)
 
-### 📊 Comparaison de Batteries (optionnel)
-- Comparer l'autonomie de toutes les batteries
-- Graphique à barres pour référence rapide
+### 📊 Comparaison des batteries (optionnel)
+- Compare les estimations d’autonomie de toutes les batteries
+- Graphiques à barres pour une lecture immédiate
 
-### 🖼 Diagramme de Configuration
-- Affiche les liaisons d’alimentation et vidéo entre les appareils sélectionnés
-- Avertit en cas de marques FIZ incompatibles
-- Faites glisser les nœuds pour les disposer, utilisez les boutons de zoom et téléchargez le diagramme en SVG ou JPG
-- Des info‑bulles détaillées apparaissent au survol
-- Utilise les icônes [OpenMoji](https://openmoji.org/) en ligne, sinon des emoji :
-  🔋 batterie, 🎥 caméra, 🖥️ moniteur, 📡 vidéo, ⚙️ moteur,
-  🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie
+### 🖼 Diagramme du projet
+- Visualise les connexions d’alimentation et de vidéo des appareils sélectionnés.
+- Signale les marques FIZ incompatibles.
+- Faites glisser les nœuds pour réorganiser le schéma, zoomez avec les boutons et exportez le diagramme en SVG ou JPG.
+- Maintenez Shift enfoncé lors du clic sur Télécharger pour exporter une image JPG plutôt qu’un SVG.
+- Survolez ou touchez un appareil pour afficher sa fiche détaillée.
+- Utilise les icônes [OpenMoji](https://openmoji.org/) lorsqu’une connexion est disponible et se replie sur les emoji : 🔋 batterie, 🎥 caméra, 🖥️ moniteur, 📡 vidéo, ⚙️ moteur, 🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie.
 
-### 🔍 Recherche et Filtres
-- Taper dans les menus pour trouver rapidement
-- Champ de recherche pour filtrer les listes
+### 🧮 Pondération des données d’autonomie
+- Les autonomies remontées par les utilisateurs affinent l’estimation.
+- Chaque saisie est ajustée en fonction de la température, en passant de ×1 à 25 °C à :
+  - ×1,25 à 0 °C
+  - ×1,6 à −10 °C
+  - ×2 à −20 °C
+- Les réglages caméra influencent la pondération :
+  - Multiplicateurs de résolution : ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1 ; les résolutions inférieures sont ramenées à 1080p.
+  - La cadence est pondérée linéairement à partir de 24 i/s (ex. 48 i/s = ×2).
+  - Le Wi-Fi activé ajoute 10 %.
+  - Facteurs codecs : RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1 ; ProRes ×1,1 ; DNx/AVID ×1,2 ; All‑Intra ×1,3 ; H.264/AVC ×1,5 ; H.265/HEVC ×1,7.
+  - Les entrées moniteur en dessous de la luminosité spécifiée sont pondérées selon leur ratio de luminosité.
+- La pondération finale reflète la part de consommation de chaque appareil, de sorte que les projets similaires comptent davantage.
+- La moyenne pondérée est utilisée dès que trois entrées au minimum sont disponibles.
+- Un tableau de bord classe les mesures par poids et affiche le pourcentage associé pour comparer d’un coup d’œil.
 
-### 🛠 Base de Données des Appareils
-- Ajouter, modifier ou supprimer des appareils de chaque catégorie
-- Importer ou exporter la base complète au format JSON
-- Réinitialiser avec la base par défaut de `data.js`
+### 🔍 Recherche et filtrage
+- Tapez dans les menus déroulants pour trouver rapidement une entrée.
+- Filtrez les listes d’appareils via un champ de recherche.
+- Utilisez la barre de recherche globale en haut pour rejoindre une fonctionnalité, un appareil ou un sujet d’aide ; appuyez sur Entrée pour naviguer, / ou Ctrl+K (⌘K sur macOS) pour la focaliser instantanément et Échap ou × pour effacer.
+- Appuyez sur « / » ou Ctrl+F (⌘F sur macOS) pour viser immédiatement le champ de recherche le plus proche.
+- Cliquez sur l’étoile à côté d’un sélecteur pour épingler vos favoris en haut de la liste et les synchroniser avec les sauvegardes.
 
-### 🌓 Mode Sombre
-- Bouton lune pour activer/désactiver le mode sombre
-- La préférence est enregistrée dans le navigateur
-- Couleur rose optionnelle via le bouton cheval/unicorne
-- La fenêtre d’aide est consultable par recherche et FAQ. Ouvrez‑la avec ? ou les touches `?`/`H`/`F1`/`Ctrl+/` puis fermez‑la avec Échap ou en cliquant à l’extérieur.
+### 🛠 Éditeur de la base d’appareils
+- Ajoutez, modifiez ou supprimez des appareils dans toutes les catégories.
+- Importez ou exportez la base complète au format JSON.
+- Revenez à la base par défaut issue de `data.js`.
+
+### 🌓 Mode sombre
+- Activez-le via le bouton lune près du sélecteur de langue.
+- La préférence est mémorisée dans votre navigateur.
+
+### 🦄 Mode rose
+- Cliquez sur l’icône licorne ou appuyez sur **P** pour activer un accent rose ludique.
+- Fonctionne avec les thèmes clair et sombre et persiste entre les visites.
+
+### ⚫ Mode à fort contraste
+- Active un thème à contraste élevé pour améliorer la lisibilité.
+
+### 📝 Retours d’autonomie
+- Cliquez sur <strong>Soumettre un retour d’autonomie</strong> sous l’autonomie pour ajouter votre mesure.
+- Ajoutez la température pour une pondération plus précise.
+- Les entrées sont sauvegardées dans votre navigateur et affinent les estimations futures.
+
+### ❓ Aide avec recherche
+- Ouvrez-la via le bouton <strong>?</strong> ou avec <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> ou <kbd>Ctrl+/</kbd>.
+- Utilisez le champ de recherche pour filtrer instantanément les sujets ; la requête est réinitialisée à la fermeture.
+- Fermez avec <kbd>Échap</kbd> ou en cliquant hors de la boîte de dialogue.
 
 ---
 
-## 🎨 Design
-- Mise en page épurée avec titres bleus et champs gris
-- Utilise la police Google "Open Sans"
-- Mise en page responsive pour les petits écrans
-- Thèmes clair et sombre séparés
+## ▶️ Mode d’emploi
+1. **Lancez l’application :** ouvrez `index.html` dans tout navigateur moderne – aucun serveur n’est requis.
+2. **Explorez la barre supérieure :** changez de langue, activez les thèmes sombre ou rose, ouvrez Paramètres pour régler l’accent et la typographie, et lancez l’aide avec ? ou Ctrl+/.
+3. **Sélectionnez les appareils :** choisissez l’équipement par catégorie via les menus déroulants ; saisissez pour filtrer, cliquez sur l’étoile pour épingler vos favoris et laissez les scénarios prédéfinis ajouter les accessoires automatiquement.
+4. **Consultez les calculs :** dès qu’une batterie est sélectionnée, la consommation, l’intensité et l’autonomie apparaissent ; des alertes signalent les limites dépassées.
+5. **Enregistrez et partagez les projets :** nommez et sauvegardez votre configuration, les sauvegardes automatiques capturent des instantanés et le bouton Partager exporte un bundle JSON pour vos partenaires.
+6. **Générez la liste de matériel :** cliquez sur **Générer la liste de matériel** pour transformer les exigences en liste catégorisée avec infobulles et accessoires.
+7. **Gérez les données d’appareils :** choisissez « Modifier les données d’appareils… » pour ouvrir l’éditeur, ajuster les appareils, exporter/importer du JSON ou revenir aux valeurs par défaut.
+8. **Soumettez des retours d’autonomie :** utilisez « Soumettre un retour d’autonomie » pour enregistrer vos mesures terrain et enrichir la pondération.
 
----
+## 📱 Installer l’application
 
-## ▶️ Utilisation
-1. **Lancer l'application :** ouvrir `index.html` dans un navigateur moderne
-2. **Sélectionner les appareils :** choisir dans chaque catégorie via les menus déroulants
-3. **Voir les calculs :** consommation, courant et autonomie apparaissent lorsqu'une batterie est sélectionnée
-4. **Vérifier les limites :** des messages indiquent si la sortie de la batterie est dépassée
-5. **Enregistrer et charger des configurations :** nommer les configurations et générer un aperçu imprimable
-6. **Gérer la liste des appareils :** « Éditer les données… » ouvre l'éditeur pour modifier ou réinitialiser
+Le planner est une application web progressive et peut être installée directement depuis le navigateur :
+
+- **Chrome/Edge (bureau) :** cliquez sur l’icône d’installation dans la barre d’adresse.
+- **Android :** ouvrez le menu du navigateur et choisissez *Ajouter à l’écran d’accueil*.
+- **iOS/iPadOS Safari :** touchez le bouton *Partager* puis *Ajouter à l’écran d’accueil*.
+
+Une fois installée, l’application se lance depuis l’écran d’accueil, fonctionne hors ligne et se met à jour automatiquement.
 
 ## 📡 Utilisation hors ligne et stockage des données
 
-Servie via HTTP(S), l'application installe un service worker qui met en cache
-tous les fichiers afin que Cine Power Planner fonctionne hors ligne et se mette à jour en
-arrière-plan. Les projets, rapports d'autonomie et préférences (langue, thème,
-mode rose et listes enregistrées) sont stockés dans le `localStorage` du
-navigateur. Effacer les données du site dans le navigateur supprime toutes les
-informations sauvegardées.
+Servir l’application via HTTP(S) installe un service worker qui met chaque fichier en cache pour que Cine Power Planner fonctionne totalement hors ligne et se mette à jour en arrière-plan. Les projets, retours d’autonomie et préférences (langue, thème, mode rose et listes de matériel sauvegardées) sont stockés dans le `localStorage` du navigateur. Effacer les données du site supprime toutes les informations, et la boîte de dialogue Paramètres propose également un bouton **Effacer le cache local** pour le même nettoyage en un clic.
 
 ---
 
-## 🗂️ Arborescence
+## 🗂️ Structure des fichiers
 ```bash
-index.html       # Page principale
+index.html       # Mise en page HTML principale
 style.css        # Styles et mise en page
-script.js        # Logique de l'application
-data.js          # Base par défaut
-storage.js       # Fonctions LocalStorage
-README.*.md      # Documentation en plusieurs langues
-checkConsistency.js  # vérifie que chaque appareil possède les champs requis
-normalizeData.js     # nettoie les entrées et uniformise les connecteurs
-generateSchema.js    # génère schema.json à partir des données
-unifyPorts.js        # harmonise les noms de ports hérités
-tests/               # suite de tests Jest
+script.js        # Logique applicative
+data.js          # Liste d’appareils par défaut
+storage.js       # Helpers LocalStorage
+README.*.md      # Documentation multilingue
+checkConsistency.js  # Vérifie les champs requis dans les données d’appareils
+normalizeData.js     # Nettoie les entrées et unifie les noms de connecteurs
+generateSchema.js    # Reconstruit schema.json à partir de data.js
+unifyPorts.js        # Harmonise les anciens noms de ports
+tests/               # Suite de tests Jest
 ```
-Les polices sont chargées via Google Fonts dans `index.html`.
-Après ce premier chargement des polices, l'application fonctionne entièrement hors ligne.
+Les polices sont intégrées localement via `fonts.css`, ce qui permet à l’application de fonctionner entièrement hors ligne une fois les ressources en cache.
 
 ## 🛠️ Développement
-Nécessite Node.js 18 ou version ultérieure.
-1. Installer les dépendances :
-   ```bash
-   npm install
-   ```
-2. Lancer l'analyse lint :
-   ```bash
-   npm run lint
-   ```
-3. Exécuter les tests :
-   ```bash
-   npm test
-   ```
-   Le script exécute aussi le lint et les vérifications de cohérence.
+Nécessite Node.js 18 ou version ultérieure.
 
-4. Après avoir modifié les données des appareils, nettoyer et vérifier la base :
-   ```bash
-   npm run normalize
-   npm run check-consistency
-   ```
-   `npm run normalize` nettoie les entrées et uniformise les noms de connecteurs. `npm run check-consistency` vérifie que tous les champs obligatoires sont présents. Ajoutez `--help` à l’un ou l’autre pour afficher l’aide.
+```bash
+npm install
+npm run lint     # exécute uniquement ESLint
+npm test         # lance le linting, les vérifications de données et les tests Jest
+```
+
+Après modification des données d’appareils, régénérez la base normalisée :
+
+```bash
+npm run normalize
+npm run unify-ports
+npm run check-consistency
+npm run generate-schema
+```
+
+Ajoutez `--help` à l’un de ces scripts pour afficher les options disponibles.
 
 ## 🤝 Contribuer
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à proposer une pull request sur GitHub.
+Les contributions sont les bienvenues ! N’hésitez pas à ouvrir un ticket ou à proposer une pull request sur GitHub.

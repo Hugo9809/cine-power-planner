@@ -1,230 +1,243 @@
-# Cine Power Planner
+# 🎥 Cine Power Planner
 
-![Icono de Cine Power Planner](icon.svg)
+Esta herramienta basada en el navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada de la batería**, al tiempo que comprueba que el paquete puede suministrar la potencia necesaria.
 
-Cine Power Planner es una aplicación web independiente para planificar rigs de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold‑Mount. Calcula el consumo total de energía, comprueba que las baterías puedan suministrar la corriente necesaria y estima cuánto tiempo podrá funcionar tu proyecto. La herramienta se ejecuta íntegramente en el navegador y también funciona sin conexión.
+---
 
-No necesitas compilar nada: abre `index.html` en tu navegador y empieza a planificar al instante. Si sirves el repositorio a través de HTTP(S) se instala un *service worker* que permite trabajar sin conexión en visitas futuras y obtener actualizaciones automáticamente.
-
-## Tabla de contenidos
-
-- [Traducciones](#traducciones)
-- [Novedades recientes](#novedades-recientes)
-- [Funciones destacadas](#funciones-destacadas)
-- [Guía rápida](#guía-rápida)
-- [Descripción de la interfaz](#descripción-de-la-interfaz)
-- [Personalización y accesibilidad](#personalización-y-accesibilidad)
-- [Lista de equipo](#lista-de-equipo)
-- [Ponderación de datos de autonomía](#ponderación-de-datos-de-autonomía)
-- [Copias de seguridad y recuperación](#copias-de-seguridad-y-recuperación)
-- [Instalar como aplicación](#instalar-como-aplicación)
-- [Uso sin conexión y almacenamiento de datos](#uso-sin-conexión-y-almacenamiento-de-datos)
-- [Compatibilidad con navegadores](#compatibilidad-con-navegadores)
-- [Desarrollo](#desarrollo)
-- [Comentarios y soporte](#comentarios-y-soporte)
-- [Contribuir](#contribuir)
-- [Agradecimientos](#agradecimientos)
-- [Licencia](#licencia)
-
-## Traducciones
-
-La documentación está disponible en varios idiomas. La aplicación detecta el idioma de tu navegador en la primera visita y puedes cambiarlo desde la esquina superior derecha:
-
+## 🌍 Idiomas
 - 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
-- 🇪🇸 Español
+- 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-Se agradecen contribuciones en idiomas adicionales. Para añadir una traducción, incluye un archivo `README.<lang>.md` y las cadenas de texto necesarias en tu *pull request*.
+La aplicación usa automáticamente el idioma de tu navegador en la primera visita y puedes cambiarlo desde la esquina superior derecha. La elección se recuerda para tu próxima sesión.
 
-## Novedades recientes
+---
 
-- **Controles de acento y tipografía**: ajusta el color de acento, el tamaño base de la fuente y la familia tipográfica desde Ajustes; los temas oscuro, rosa y de alto contraste siguen disponibles en cada visita.
-- **Atajos para la búsqueda global**: pulsa / o Ctrl+K (⌘K en macOS) para enfocar la búsqueda de funciones al instante, incluso cuando esté dentro del menú lateral móvil plegado.
-- **Botón de recarga forzada**: elimina los archivos en caché del *service worker* y actualiza la aplicación sin conexión sin borrar proyectos o dispositivos guardados.
-- **Favoritos fijados**: marca con una estrella los elementos de los desplegables para mantener cámaras, baterías y accesorios habituales en la parte superior de cada selector e incluirlos en las copias de seguridad.
-- **Borrar caché local**: vacía con un clic los proyectos almacenados y la configuración.
-- **Nombre del proyecto en la lista de equipo**: las vistas imprimibles y la tabla de equipo ahora muestran el nombre del proyecto.
-- **Logo personalizado para impresión**: sube un logotipo que aparecerá en los resúmenes imprimibles y en las copias de seguridad.
-- **Favoritos en las copias de seguridad**: los favoritos se guardan y, antes de restaurar datos, se genera automáticamente una copia de seguridad.
-- **Campo de correo para el equipo**: registra direcciones de correo electrónico para cada miembro del equipo.
-- **Modo de alto contraste**: activa un tema de alto contraste para mejorar la legibilidad.
-- **Formularios de dispositivos dinámicos**: los campos de categoría se completan automáticamente a partir del esquema en los formularios de nuevos dispositivos.
-- **Interfaz renovada**: un diseño más limpio y con mejor contraste facilita el uso del planificador en escritorio y dispositivos móviles.
-- **Compartir proyectos simplificado**: descarga un único archivo JSON que incluye selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; cárgalo para restaurar toda la configuración.
-- **Iconos únicos para escenarios requeridos**: cada escenario requerido muestra su propio icono para reconocerlo de un vistazo.
-- **Ventanas del diagrama persistentes en pantallas táctiles**: al pulsar un nodo en dispositivos táctiles, su ventana emergente permanece visible hasta seleccionar otro nodo.
-- **Diagrama interactivo del proyecto**: arrastra dispositivos, haz zoom, ajusta los nodos a una cuadrícula y exporta el diseño como SVG o JPG.
-- **Tema rosa**: activa un resaltado rosa divertido que persiste entre visitas o pulsa **P** para cambiarlo rápidamente.
-- **Diálogo de ayuda con búsqueda y pistas flotantes**: ábrelo con ?, H, F1 o Ctrl+/ (incluso mientras escribes), filtra temas al instante, pulsa / o Ctrl+F para saltar a la caja de búsqueda, consulta la FAQ integrada y pasa el cursor por cualquier botón, campo, desplegable o encabezado para ver una explicación.
-- **Desplegables con búsqueda por teclado**: filtra rápidamente las listas de dispositivos escribiendo directamente en cualquier selector.
-- **Compatibilidad multisoporte**: en las cámaras compatibles elige entre placas V‑, B‑ o Gold‑Mount y la lista de baterías se actualiza automáticamente.
-- **Comentarios de autonomía de usuarios**: envía resultados reales de autonomía con detalles del entorno para mejorar las estimaciones.
-- **Panel visual de ponderación de autonomías**: observa cómo la temperatura, la resolución, la frecuencia de imagen y el códec influyen en cada informe, ordenados por peso con porcentajes exactos.
-- **Generador de listas de equipo**: compila con un clic el equipo seleccionado y los requisitos del proyecto.
-- **Guardado rápido de proyectos**: pulsa Intro o Ctrl+S (⌘S en macOS) para guardar un proyecto; el botón Guardar permanece deshabilitado hasta introducir un nombre.
-- **Guardado de requisitos del proyecto**: almacena los requisitos junto con cada proyecto para que las listas de equipo conserven todo el contexto.
-- **Duplicación de entradas personalizadas**: los formularios de la lista de equipo incluyen botones de bifurcación para copiar campos al instante.
+## 🆕 Novedades recientes
+- Los controles de acento y tipografía en Ajustes te permiten modificar el color de acento, el tamaño base de la fuente y la tipografía, junto con los temas oscuro, rosa y de alto contraste.
+- Los atajos de teclado para la búsqueda global te permiten pulsar / o Ctrl+K (⌘K en macOS) para enfocarla al instante, incluso cuando está dentro del menú lateral móvil.
+- El botón de recarga forzada borra los archivos en caché del *service worker* para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
+- Los iconos de estrella en cada selector fijan las cámaras, baterías y accesorios favoritos en la parte superior de la lista y los conservan en las copias de seguridad.
+- El botón de borrar caché local elimina los proyectos y ajustes almacenados.
+- La lista de equipo y la vista imprimible muestran el nombre del proyecto para consultarlo rápidamente.
+- Sube un logotipo personalizado para que aparezca en las vistas imprimibles y en las copias de seguridad.
+- Las copias de seguridad incluyen los favoritos y crean una copia automática antes de restaurar.
+- Las entradas del equipo cuentan ahora con un campo de correo electrónico.
+- Opción de tema de alto contraste para mejorar la legibilidad.
+- Los formularios de dispositivos rellenan los campos de categoría dinámicamente según los atributos del esquema.
+- Rediseño de la interfaz con mejor contraste y espaciado para una experiencia más limpia en cualquier dispositivo.
+- Compartir proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, y cárgalo para restaurarlo todo de una vez.
+- Iconos únicos para los escenarios obligatorios que ayudan a distinguir los requisitos del proyecto.
+- Diagrama de proyecto interactivo que permite arrastrar dispositivos, hacer zoom, ajustar nodos a la cuadrícula y exportar la disposición como SVG o JPG.
+- Tema rosa lúdico que se mantiene entre visitas.
+- Diálogo de ayuda con búsqueda y secciones paso a paso y un FAQ; ábrelo con ?, H, F1 o Ctrl+/.
+- Ayudas contextuales al pasar el cursor por botones, campos, menús y encabezados.
+- Barra de búsqueda global para saltar a funciones, selectores de dispositivos o temas de ayuda.
+- Compatibilidad con cámaras con placas de batería V-, B- o Gold-Mount.
+- Envía comentarios de autonomía con temperatura para mejorar las estimaciones.
+- Panel visual de ponderación de autonomías para inspeccionar cómo influyen los ajustes en cada informe, ahora ordenado por peso y con porcentajes exactos.
+- Genera listas de equipo para compilar el material seleccionado y los requisitos del proyecto.
+- Guarda los requisitos de proyecto con cada proyecto para que las listas de equipo conserven el contexto.
+- Duplica entradas de usuario en los formularios de la lista de equipo con los botones de bifurcar para copiar campos al instante.
 
-Consulta los README específicos de cada idioma para obtener detalles completos.
+---
 
-## Funciones destacadas
+## 🔧 Funciones
 
-- Calcula el consumo total de energía, la corriente a 14,4 V (33,6 V para B‑Mount) y 12 V (21,6 V para B‑Mount), y la autonomía estimada de la batería.
-- Combina autonomías enviadas por usuarios mediante medias ponderadas que tienen en cuenta temperatura, resolución, frecuencia de imagen, códec y la participación de cada dispositivo en el consumo total.
-- Avisa cuando las baterías seleccionadas no pueden suministrar la corriente necesaria y muestra cuántas necesitas para un rodaje de 10 h (incluyendo un repuesto).
-- Guarda, crea copias de seguridad automáticas, comparte, restaura y borra proyectos (con requisitos incluidos); genera vistas imprimibles y paquetes JSON compartibles con dispositivos personalizados y comentarios de autonomía.
-- Compara autonomías entre todas las baterías compatibles mediante el panel opcional de comparación.
-- Visualiza conexiones de alimentación y vídeo con un diagrama interactivo: arrastra, haz zoom, ajusta a la cuadrícula y exporta como SVG o mantén pulsado Shift al descargar para obtener un JPG.
-- Genera listas de equipo detalladas que amplían los requisitos del proyecto en tablas categorizadas, combinan duplicados por cantidad y ofrecen información sobre peso y dimensiones.
-- Personaliza la base de datos con tu propio equipo, impórtala o expórtala en JSON y vuelve a los valores predeterminados cuando quieras.
-- Accede rápidamente a funciones, selectores o temas de ayuda con la búsqueda global, fija favoritos para destacar dispositivos clave y escribe en los desplegables para filtrar al instante.
-- Ajusta la interfaz con detección de idioma, modos oscuro o rosa, modo de alto contraste, controles de color de acento y tipografía, todo almacenado localmente.
-- Funciona completamente sin conexión con un *service worker*, almacenamiento persistente y un botón de recarga forzada para actualizar los recursos en caché sin perder datos.
+### ✅ Gestión de proyectos
+- Guarda, carga y elimina múltiples proyectos de cámara (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
+- Se crean instantáneas automáticas cada 10 minutos mientras el planificador está abierto, y el diálogo de Ajustes puede programar exportaciones de copias de seguridad cada hora como recordatorio para archivar los datos.
+- Descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; cárgalo mediante el selector de Proyecto compartido para restaurarlo todo de una vez.
+- Los datos se almacenan localmente mediante `localStorage`, y los favoritos se conservan en las copias de seguridad; utiliza el botón **Borrar caché local** en Ajustes si necesitas limpiar proyectos en caché y ediciones de dispositivos.
+- Genera vistas imprimibles para cualquier proyecto guardado y añade un logotipo personalizado para que las exportaciones y copias coincidan con la identidad de tu producción.
+- Guarda los requisitos de proyecto junto con cada proyecto para que las listas de equipo conserven el contexto completo.
+- Funciona totalmente sin conexión con el *service worker* instalado: idioma, tema, datos de dispositivos y favoritos persisten entre sesiones.
+- El diseño adaptable se ajusta sin esfuerzo a escritorios, tabletas y teléfonos.
+- En las cámaras compatibles elige placas **V‑Mount**, **B‑Mount** o **Gold-Mount**; la lista de baterías se adapta automáticamente.
 
-## Guía rápida
+### 🧭 Descripción de la interfaz
+- Un enlace de salto y un indicador sin conexión mantienen la interfaz accesible con teclado y pantallas táctiles: la insignia aparece cuando el navegador pierde la conexión.
+- La barra de búsqueda global salta a funciones, selectores de dispositivos o temas de ayuda; pulsa Enter para activar el resultado resaltado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (el menú lateral se abre automáticamente en pantallas pequeñas) y pulsa Escape o × para limpiar la consulta.
+- Los controles de la barra superior permiten cambiar el idioma, alternar los temas oscuro y rosa y abrir Ajustes con opciones de color de acento, tamaño y familia tipográfica, modo de alto contraste y carga de logotipo, además de herramientas para copia de seguridad, restauración y Borrar caché local.
+- El botón de Ayuda abre un diálogo con búsqueda, secciones paso a paso, atajos de teclado, preguntas frecuentes y un modo de ayuda emergente opcional; también puede activarse con ?, H, F1 o Ctrl+/ incluso mientras escribes.
+- El botón de recarga forzada (🔄) borra los archivos del *service worker* en caché para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
+- En pantallas pequeñas, un menú lateral plegable replica cada sección principal para navegar rápidamente.
 
-1. Descarga o clona este repositorio.
-2. Abre `index.html` en un navegador moderno.
-3. (Opcional) Sirve la carpeta vía HTTP para habilitar el *service worker* y las funciones PWA:
-   ```bash
-   npx http-server
-   # o
-   python -m http.server
-   ```
-   La aplicación funcionará completamente sin conexión y se actualizará automáticamente.
+### ♿ Personalización y accesibilidad
+- Las preferencias de tema incluyen modo oscuro, acentos rosas lúdicos y un interruptor dedicado de alto contraste para mejorar la legibilidad.
+- Los cambios en el color de acento, el tamaño base de la fuente y la tipografía se aplican al instante y persisten en el navegador, lo que te permite adaptarlo a la identidad del estudio o a necesidades de accesibilidad.
+- Los atajos de teclado integrados cubren la búsqueda global (/ o Ctrl+K/⌘K), la ayuda ( ?, H, F1, Ctrl+/ ), el guardado (Enter o Ctrl+S/⌘S), el modo oscuro (D) y el modo rosa (P).
+- El modo de ayuda al pasar el cursor convierte cada botón, campo, menú y encabezado en una descripción emergente bajo demanda para que las personas nuevas aprendan rápidamente.
+- Las entradas con búsqueda incremental, los controles visibles al enfocar y los iconos de estrella junto a los selectores permiten filtrar listas largas y fijar dispositivos favoritos en la parte superior.
 
-## Descripción de la interfaz
+### 📋 Lista de equipo
+El generador transforma tus selecciones en una lista de empaquetado categorizada:
 
-### Controles de la barra superior
-
-- Un enlace para saltar al contenido, un indicador de modo sin conexión y una identidad adaptable mantienen la accesibilidad en cualquier dispositivo; la insignia offline aparece cuando el navegador pierde la conexión.
-- La barra de búsqueda global permite saltar a funciones, selectores o temas de ayuda: pulsa Intro para ir al resultado destacado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (en pantallas pequeñas se abre automáticamente el menú lateral) y pulsa Esc o × para borrar la búsqueda.
-- Los controles de idioma, modo oscuro y modo rosa se sitúan junto al diálogo de Ajustes, que ofrece color de acento, tamaño de fuente, familia tipográfica, alto contraste y carga de logos personalizados, además de herramientas de copia de seguridad, restauración y borrado de caché local.
-- El botón de Ayuda abre un diálogo con búsqueda, pasos guiados, atajos de teclado, FAQ y un modo de ayuda contextual al pasar el cursor; también puedes abrirlo con ?, H, F1 o Ctrl+/ incluso mientras escribes.
-- El botón de recarga forzada (🔄) elimina los archivos del *service worker* en caché y actualiza la aplicación sin conexión sin borrar proyectos ni dispositivos guardados.
-
-### Navegación y búsqueda
-
-- En pantallas pequeñas, un menú lateral plegable replica las secciones principales para navegar rápidamente.
-- Cada desplegable y lista del editor incluye un cuadro de búsqueda integrado y admite escritura directa para filtrar; al pulsar / o Ctrl+F (⌘F en macOS) se enfoca el campo de búsqueda más cercano.
-- Los iconos de estrella junto a cada selector permiten fijar dispositivos favoritos para mantenerlos en la parte superior y conservarlos entre sesiones.
-
-## Personalización y accesibilidad
-
-- Las preferencias de tema incluyen modo oscuro, un acento rosa divertido y un interruptor de alto contraste para mejorar la legibilidad.
-- Puedes personalizar el color de acento, el tamaño base de la fuente y la tipografía desde Ajustes; los cambios se aplican al instante y se recuerdan junto con las demás preferencias.
-- Un enlace para saltar a contenido, controles con estado de foco visible, indicador de modo sin conexión y un diseño adaptable mejoran la navegación en ordenadores, tabletas y móviles.
-- Los atajos de teclado integrados cubren la búsqueda global (/ o Ctrl+K/⌘K), la ayuda (?, H, F1, Ctrl+/), el guardado (Intro o Ctrl+S/⌘S), el modo oscuro (D) y el modo rosa (P).
-- El modo de ayuda contextual convierte cada botón, campo, desplegable y encabezado en un tooltip bajo demanda para que los usuarios nuevos aprendan la interfaz rápidamente.
-
-## Lista de equipo
-
-El generador amplía tus selecciones en una tabla de equipamiento detallada:
-
-- Haz clic en **Generar lista de equipo** para combinar el equipo elegido y los requisitos del proyecto en una tabla categorizada.
-- La lista se actualiza automáticamente cuando cambian las selecciones de dispositivos o los detalles del proyecto.
-- Las entradas se agrupan por categoría (cámara, óptica, alimentación, monitorización, rigging, grip, consumibles, etc.) y los duplicados se agrupan con su cantidad.
-- Se añaden automáticamente cables, rigging y accesorios necesarios para monitores, motores, gimbals, escenarios climáticos y configuraciones especiales.
-- Las selecciones de escenarios inyectan el equipo correspondiente (por ejemplo, *Handheld* + *Easyrig* añade un mango telescópico; *Gimbal* incluye el gimbal seleccionado, brazos de fricción y parasoles; *Outdoor* añade espigas, paraguas y cubiertas CapIt; *Vehicle* y *Steadicam* incorporan monturas, brazos de aislamiento y sistemas de succión según corresponda).
-- Las elecciones de óptica incluyen diámetro frontal, peso, distancia mínima y requisitos de barras, añaden soportes de lentes y componentes de matte box con advertencias para estándares incompatibles.
-- Las filas de baterías reflejan los recuentos del calculador de potencia e incluyen una placa de *hotswap* o el dispositivo elegido cuando es necesario.
-- Las preferencias de monitorización asignan monitores predeterminados para cada rol y agrupan juegos de cables para cada pantalla.
+- Haz clic en **Generar lista de equipo** para compilar el material elegido y los requisitos del proyecto en una tabla.
+- La tabla se actualiza automáticamente cuando cambian las selecciones de dispositivos o los requisitos.
+- Los elementos se agrupan por categoría (cámara, óptica, alimentación, monitorización, rigging, grip, accesorios, consumibles) y los duplicados se combinan con sus cantidades.
+- Se añaden cables, rigging y accesorios necesarios para monitores, motores, gimbals y escenarios meteorológicos.
+- Las selecciones de escenarios añaden equipo relacionado:
+  - *Handheld* + *Easyrig* inserta una empuñadura telescópica para un soporte estable.
+  - *Gimbal* añade el gimbal seleccionado, brazos articulados, espigas y parasoles o kits de filtros.
+  - *Outdoor* aporta espigas, paraguas y fundas CapIt para lluvia.
+  - Los escenarios *Vehicle* y *Steadicam* incluyen monturas, brazos de aislamiento y ventosas cuando corresponde.
+- Las selecciones de óptica incluyen diámetro frontal, peso, datos de barras y enfoque mínimo, añaden soportes de lente y adaptadores de matte box, y avisan sobre estándares de barras incompatibles.
+- Las filas de baterías reflejan los recuentos del calculador de alimentación e incluyen placas de *hotswap* o dispositivos seleccionados cuando se necesitan.
+- Las preferencias de monitorización asignan monitores predeterminados para cada rol (Director, DoP, foco, etc.) con juegos de cables y receptores inalámbricos.
 - El formulario de **Requisitos del proyecto** alimenta la lista:
-  - **Nombre del proyecto**, **productora**, **casa de alquiler** y **DoP** aparecen en el encabezado del resumen impreso.
-  - Las entradas de **equipo** capturan nombres, roles y direcciones de correo electrónico para mantener los contactos con el proyecto.
-  - **Días de preparación** y **días de rodaje** aportan notas de calendario y, junto con escenarios exteriores, recomiendan equipo para el clima.
-  - **Escenarios requeridos** añaden el rigging, gimbals y protección meteorológica correspondientes.
-  - **Empuñadura de cámara** y **extensión de visor** insertan las piezas seleccionadas.
-  - Las opciones de **matte box** y **filtros** incluyen el sistema elegido junto con bandejas, adaptadores o filtros necesarios.
-  - Las configuraciones de **monitorización**, **distribución de vídeo** y **visor** añaden monitores, cables y receptores para cada rol.
-  - Las selecciones de **botones de usuario** y **preferencias de trípode** se listan para consulta rápida.
-- Los elementos se ordenan alfabéticamente dentro de cada categoría y muestran un tooltip al pasar el cursor.
-- La lista de equipo aparece en las vistas imprimibles y en los archivos de proyectos compartidos, de modo que los colaboradores ven todo el contexto.
-- La lista de equipo se guarda automáticamente con el proyecto.
-- **Exportar lista de equipo** descarga un archivo JSON; **Importar lista de equipo** lo restaura.
+  - **Nombre del proyecto**, **productora**, **casa de alquiler** y **DoP** aparecen en el encabezado de los requisitos impresos.
+  - Las entradas de **Equipo** recogen nombres, roles y direcciones de correo electrónico para que la información de contacto viaje con el proyecto.
+  - **Días de preparación** y **días de rodaje** aportan notas de planificación y, junto con escenarios exteriores, sugieren equipo para la climatología.
+  - Los **escenarios obligatorios** añaden rigging, gimbals y protección climática correspondiente.
+  - **Empuñadura de cámara** y **extensión de visor** insertan las piezas seleccionadas o los soportes de extensión.
+  - Las opciones de **matte box** y **filtros** agregan el sistema elegido con bandejas, adaptadores de pinza o filtros necesarios.
+  - Las configuraciones de **monitorización**, **distribución de vídeo** y **visor** añaden monitores, cables y superposiciones para cada rol.
+  - Las selecciones de **botones de usuario** y **preferencias de trípode** se listan para una referencia rápida.
+- Los elementos dentro de cada categoría se ordenan alfabéticamente y muestran descripciones al pasar el cursor.
+- La lista de equipo se incluye en las vistas imprimibles y en los archivos de proyectos compartidos.
+- Las listas de equipo se guardan automáticamente con el proyecto y forman parte de los archivos compartidos y de las copias de seguridad.
 - **Eliminar lista de equipo** borra la lista guardada y oculta la salida.
-- Los formularios de la lista utilizan botones de bifurcación para duplicar las entradas personalizadas al instante.
+- Los formularios de la lista de equipo incluyen botones de bifurcar para duplicar entradas de usuario al instante.
 
-## Ponderación de datos de autonomía
+### 📦 Categorías de dispositivos
+- **Cámara** (1)
+- **Monitor** (opcional)
+- **Transmisor inalámbrico** (opcional)
+- **Motores FIZ** (0–4)
+- **Controladores FIZ** (0–4)
+- **Sensor de distancia** (0–1)
+- **Placa de batería** (solo en cámaras que aceptan V‑ o B‑Mount)
+- **Batería V‑Mount** (0–1)
 
-Las autonomías enviadas por usuarios se combinan mediante una media ponderada para adaptarse mejor a tu proyecto:
+### ⚙️ Cálculos de energía
+- Consumo total en vatios
+- Corriente demandada a 14,4 V y 12 V
+- Autonomía estimada de la batería en horas usando la media ponderada de los comentarios de personas usuarias
+- Número de baterías necesarias para un rodaje de 10 h (incluida la de repuesto)
+- Nota de temperatura para ajustar la autonomía en condiciones de calor o frío
 
-- Cada entrada se ajusta por temperatura, pasando de ×1 a 25 °C a ×1,25 a 0 °C, ×1,6 a −10 °C y ×2 a −20 °C.
-- Multiplicadores de resolución: ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1 y valores inferiores escalados respecto a 1080p.
-- La frecuencia de imagen escala de forma lineal desde 24 fps (por ejemplo, 48 fps = ×2).
-- Activar Wi‑Fi añade un 10 % al peso.
-- Factores por códec: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1,1; DNx/AVID ×1,2; All‑Intra ×1,3; H.264/AVC ×1,5; H.265/HEVC ×1,7.
-- Las entradas de monitor con un brillo inferior al especificado se ponderan en función del porcentaje de brillo.
-- El peso final refleja la aportación de cada dispositivo (cámara, monitor y accesorios) al consumo total para que los rigs similares cuenten más.
-- Un panel dedicado ordena las entradas por peso y muestra el porcentaje que aporta cada informe.
+### 🔋 Comprobación de entrega de batería
+- Avisa si la corriente demandada supera la salida de la batería (pin o D‑Tap)
+- Indica cuando el consumo está cerca del límite (80 % de uso)
 
-## Copias de seguridad y recuperación
+### 📊 Comparación de baterías (opcional)
+- Compara estimaciones de autonomía entre todas las baterías
+- Gráficos de barras para consulta rápida
 
-Cine Power Planner protege tus proyectos frente a pérdidas de datos y ofrece controles manuales para exportar tu trabajo:
+### 🖼 Diagrama del proyecto
+- Visualiza las conexiones de alimentación y vídeo de los dispositivos seleccionados.
+- Advierte cuando las marcas FIZ son incompatibles.
+- Arrastra nodos para reorganizar el esquema, haz zoom con los botones y descarga el diagrama como SVG o JPG.
+- Mantén pulsado Shift al hacer clic en Descargar para exportar una instantánea JPG en lugar de SVG.
+- Pasa el cursor o toca los dispositivos para ver detalles emergentes.
+- Utiliza iconos de [OpenMoji](https://openmoji.org/) cuando hay conexión, con emoji como alternativa: 🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 vídeo, ⚙️ motor, 🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería.
 
-- **Instantáneas de proyectos guardados**: el selector de proyectos conserva cada configuración guardada y crea entradas con sello horario `auto-backup-…` cada 10 minutos mientras la aplicación está abierta. Estas instantáneas aparecen al final de la lista para volver a un estado anterior sin sobrescribir el proyecto activo.
-- **Copias de seguridad completas**: abre **Ajustes → Copia de seguridad y restauración** y pulsa **Copia de seguridad** para descargar `planner-backup.json`. El archivo incluye proyectos guardados, dispositivos personalizados, estado de la sesión, comentarios de autonomía y favoritos mediante la rutina interna `exportAllData()`. Al restaurar el archivo se guarda automáticamente una copia de seguridad de los datos actuales antes de importar la nueva configuración y se muestra un aviso si se creó con otra versión de la aplicación.
-- **Borrar caché local**: en **Ajustes → Copia de seguridad y restauración** puedes eliminar con un clic proyectos guardados, equipo personalizado, favoritos y comentarios de autonomía cuando necesites empezar de cero.
-- **Recordatorios periódicos**: mientras la aplicación está abierta, un proceso en segundo plano genera cada hora la misma copia de seguridad para recordarte que descargues y archives tus datos.
+### 🧮 Ponderación de datos de autonomía
+- Los tiempos de batería aportados por la comunidad refinan la estimación de autonomía.
+- Cada registro se ajusta por temperatura, escalando desde ×1 a 25 °C hasta:
+  - ×1,25 a 0 °C
+  - ×1,6 a −10 °C
+  - ×2 a −20 °C
+- Los ajustes de cámara influyen en el peso:
+  - Multiplicadores de resolución: ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1; resoluciones menores se escalan a 1080p.
+  - La frecuencia de cuadro escala linealmente desde 24 fps (por ejemplo, 48 fps = ×2).
+  - Wi‑Fi activado suma un 10 %.
+  - Factores de códec: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1,1; DNx/AVID ×1,2; All‑Intra ×1,3; H.264/AVC ×1,5; H.265/HEVC ×1,7.
+  - Las entradas de monitores por debajo del brillo especificado se ponderan según su relación de brillo.
+- El peso final refleja la cuota de consumo de cada dispositivo, de modo que los proyectos equivalentes cuentan más.
+- Se usa la media ponderada cuando hay al menos tres entradas disponibles.
+- Un panel ordena los registros por peso y muestra el porcentaje que aporta cada uno para compararlos rápidamente.
 
-## Instalar como aplicación
+### 🔍 Búsqueda y filtrado
+- Escribe dentro de los menús desplegables para encontrar entradas rápidamente.
+- Filtra las listas de dispositivos con un cuadro de búsqueda.
+- Utiliza la barra de búsqueda global en la parte superior para saltar a funciones, dispositivos o temas de ayuda; pulsa Enter para navegar, usa / o Ctrl+K (⌘K en macOS) para enfocarla al instante y pulsa Escape o × para limpiar.
+- Pulsa '/' o Ctrl+F (⌘F en macOS) para enfocar al instante el cuadro de búsqueda más cercano.
+- Haz clic en la estrella junto a cualquier selector para fijar favoritos, mantenerlos en la parte superior de la lista y sincronizarlos con las copias de seguridad.
 
-Cine Power Planner es una aplicación web progresiva (*Progressive Web App*) y puede instalarse para acceder rápidamente:
+### 🛠 Editor de la base de datos de dispositivos
+- Añade, edita o elimina dispositivos en todas las categorías.
+- Importa o exporta la base de datos completa como JSON.
+- Vuelve a la base de datos predeterminada de `data.js`.
 
-1. Abre `index.html` en un navegador compatible.
-2. Usa la opción **Instalar** o **Añadir a la pantalla de inicio** del navegador.
-   - **Chrome/Edge (escritorio)**: haz clic en el icono de instalación de la barra de direcciones.
-   - **Android**: abre el menú del navegador y elige *Añadir a la pantalla de inicio*.
-   - **iOS Safari**: pulsa el icono de compartir y selecciona *Añadir a la pantalla de inicio*.
-3. Abre la aplicación desde tu lista de aplicaciones. La versión instalada funciona sin conexión y se actualiza automáticamente.
+### 🌓 Modo oscuro
+- Actívalo con el botón de la luna junto al selector de idioma.
+- La preferencia se guarda en tu navegador.
 
-## Uso sin conexión y almacenamiento de datos
+### 🦄 Modo rosa
+- Haz clic en el botón del unicornio o pulsa **P** para activar un acento rosa lúdico.
+- Funciona en los temas claro y oscuro y persiste entre visitas.
 
-Cuando se sirve a través de HTTP(S), Cine Power Planner instala un *service worker* que almacena en caché todos los archivos para que la aplicación funcione completamente sin conexión y obtenga actualizaciones en segundo plano. Los proyectos, los envíos de autonomía y las preferencias (idioma, tema, modo rosa y listas de equipo guardadas) se almacenan localmente en el `localStorage` del navegador. Si borras los datos del sitio en el navegador se eliminará toda la información guardada, y el diálogo de Ajustes incluye un botón **Borrar caché local** para restablecer todo con un solo clic cuando necesites empezar de nuevo. Consulta [Copias de seguridad y recuperación](#copias-de-seguridad-y-recuperación) para obtener consejos sobre cómo proteger tus datos.
+### ⚫ Modo de alto contraste
+- Activa un tema de alto contraste para mejorar la legibilidad.
 
-## Compatibilidad con navegadores
+### 📝 Comentarios de autonomía
+- Haz clic en <strong>Enviar comentarios de autonomía</strong> debajo de la autonomía para añadir tu propia medición.
+- Incluye la temperatura si quieres una ponderación más precisa.
+- Las entradas se guardan en tu navegador y mejoran las estimaciones futuras.
 
-Cine Power Planner utiliza APIs web modernas y se prueba en las versiones actuales de Chrome, Firefox, Edge y Safari. Algunos navegadores antiguos pueden carecer de funciones como la instalación o la caché sin conexión. Para disfrutar de la mejor experiencia, usa un navegador con capacidades PWA actualizadas.
+### ❓ Ayuda con búsqueda
+- Ábrela mediante el botón <strong>?</strong> o pulsa <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> o <kbd>Ctrl+/</kbd>.
+- Usa el campo de búsqueda para filtrar temas al instante; la consulta se restablece al cerrar el diálogo.
+- Cierra con <kbd>Escape</kbd> o haciendo clic fuera del diálogo.
 
-## Desarrollo
+---
 
-Configura el entorno con Node.js 18 o superior. Tras clonar el repositorio ejecuta `npm install` una vez y utiliza `npm test` para lanzar ESLint, las comprobaciones de coherencia de datos y las pruebas de Jest mientras iteras sobre los cambios.
+## ▶️ Cómo usarlo
+1. **Inicia la aplicación:** abre `index.html` en cualquier navegador moderno; no necesita servidor.
+2. **Explora la barra superior:** cambia de idioma, alterna los temas oscuro o rosa, abre Ajustes para modificar acento y tipografías, y lanza el diálogo de ayuda con ? o Ctrl+/.
+3. **Selecciona los dispositivos:** elige el equipo de cada categoría con los menús desplegables; escribe para filtrar, haz clic en la estrella para fijar favoritos y deja que los escenarios preconfigurados rellenen los accesorios automáticamente.
+4. **Consulta los cálculos:** verás consumo total, corriente y autonomía cuando selecciones una batería; los avisos resaltan cuando se supera la entrega permitida.
+5. **Guarda y comparte proyectos:** pon nombre y guarda tu configuración, las copias automáticas capturan instantáneas y el botón Compartir exporta un paquete JSON para el equipo.
+6. **Genera listas de equipo:** pulsa **Generar lista de equipo** para convertir los requisitos en una lista categorizada con descripciones y accesorios.
+7. **Gestiona los datos de dispositivos:** haz clic en “Editar datos de dispositivos…” para abrir el editor, modificar dispositivos, exportar/importar JSON o volver a los valores predeterminados.
+8. **Envía comentarios de autonomía:** usa “Enviar comentarios de autonomía” para registrar mediciones de campo y refinar las estimaciones ponderadas.
 
-Después de clonar el repositorio puedes inspeccionar o modificar el código.
+## 📱 Instalar como aplicación
 
-### Estructura de archivos
+El planificador es una aplicación web progresiva y puede instalarse directamente desde tu navegador:
 
-```
-index.html       # Maquetación HTML principal
+- **Chrome/Edge (escritorio):** haz clic en el icono de instalación de la barra de direcciones.
+- **Android:** abre el menú del navegador y elige *Añadir a la pantalla de inicio*.
+- **iOS/iPadOS Safari:** toca el botón *Compartir* y selecciona *Añadir a pantalla de inicio*.
+
+Una vez instalada, la aplicación se abre desde tu pantalla de inicio, funciona sin conexión y se actualiza automáticamente.
+
+## 📡 Uso sin conexión y almacenamiento de datos
+
+Servir la aplicación mediante HTTP(S) instala un *service worker* que almacena en caché cada archivo, de modo que Cine Power Planner funciona sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas de equipo guardadas) viven en el `localStorage` del navegador. Al borrar los datos del sitio en el navegador se elimina toda la información almacenada, y el diálogo de Ajustes incluye un botón de **Borrar caché local** para la misma limpieza con un solo clic.
+
+---
+
+## 🗂️ Estructura de archivos
+```bash
+index.html       # Maquetación principal en HTML
 style.css        # Estilos y diseño
 script.js        # Lógica de la aplicación
-devices/         # Listas de dispositivos predeterminadas por categoría
-storage.js       # Utilidades de LocalStorage
+data.js          # Lista predeterminada de dispositivos
+storage.js       # Utilidades para LocalStorage
 README.*.md      # Documentación en varios idiomas
-checkConsistency.js  # Valida los datos de los dispositivos
-normalizeData.js     # Limpia y homogeneiza las entradas
-generateSchema.js    # Regenera schema.json a partir de los datos
-unifyPorts.js        # Unifica nombres de conectores
-tests/               # Suite de pruebas con Jest
+checkConsistency.js  # Verifica campos obligatorios en los datos de dispositivos
+normalizeData.js     # Limpia entradas y unifica nombres de conectores
+generateSchema.js    # Reconstruye schema.json a partir de data.js
+unifyPorts.js        # Armoniza nombres de puertos heredados
+tests/               # Suite de pruebas de Jest
 ```
+Las fuentes se incluyen localmente mediante `fonts.css`, así que una vez que los recursos están en caché la aplicación funciona completamente sin conexión.
 
-### Instalar dependencias y ejecutar pruebas
-
+## 🛠️ Desarrollo
 Requiere Node.js 18 o posterior.
 
 ```bash
 npm install
-npm run lint     # Ejecuta solo ESLint
-npm test
+npm run lint     # ejecuta solo ESLint
+npm test         # ejecuta linting, comprobaciones de datos y pruebas de Jest
 ```
 
-`npm run lint` ejecuta ESLint sin lanzar pruebas. El comando `npm test` ejecuta ESLint, las comprobaciones de coherencia de datos y las pruebas de Jest.
-
-### Actualizar datos de dispositivos
-
-Las definiciones de dispositivos se encuentran en los archivos del directorio `devices/`. Tras modificarlos, ejecuta los siguientes scripts para limpiar, verificar y regenerar la base de datos:
+Después de editar los datos de dispositivos, regenera la base de datos normalizada:
 
 ```bash
 npm run normalize
@@ -233,26 +246,7 @@ npm run check-consistency
 npm run generate-schema
 ```
 
-`npm run normalize` aplica tareas de limpieza para unificar conectores y expandir abreviaturas. `npm run unify-ports` estandariza las etiquetas de conectores y puertos. `npm run check-consistency` confirma que todos los campos obligatorios están presentes y genera un error si falta algo. Por último, `npm run generate-schema` reconstruye `schema.json` con los datos actuales.
+Añade `--help` a cualquiera de los scripts anteriores para ver los detalles de uso.
 
-Añade `--help` a cualquiera de los comandos anteriores para ver la ayuda detallada, por ejemplo:
-
-```bash
-npm run normalize -- --help
-```
-
-## Comentarios y soporte
-
-Si encuentras problemas, tienes dudas o quieres sugerir nuevas funciones, abre una *issue* en GitHub. Los comentarios de la comunidad ayudan a mejorar el planificador para todos.
-
-## Contribuir
-
-¡Las contribuciones son bienvenidas! Abre una *issue* o envía una *pull request* en GitHub. Antes de enviar cambios, ejecuta `npm test` para asegurarte de que el lint, las comprobaciones de datos y las pruebas unitarias se ejecutan correctamente.
-
-## Agradecimientos
-
-El planificador utiliza el conjunto de iconos [OpenMoji](https://openmoji.org/) cuando hay conexión y se apoya en [lz-string](https://pieroxy.net/blog/pages/lz-string/index.html) para almacenar proyectos en URLs de forma compacta.
-
-## Licencia
-
-Distribuido bajo la licencia ISC. Consulta `package.json` para más detalles.
+## 🤝 Contribuciones
+¡Se agradecen las contribuciones! Puedes abrir un issue o enviar un *pull request* en GitHub.
