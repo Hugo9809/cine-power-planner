@@ -12081,13 +12081,49 @@ function scheduleProjectAutoSave(immediate = false) {
 }
 
 function setSelectValue(select, value) {
-  if (select && value) select.value = value;
+  if (!select) return;
+  if (value === undefined) return;
+  const normalized = value === null ? '' : value;
+  select.value = normalized;
+  if (select.value === normalized) return;
+  const options = Array.from(select.options || []);
+  const noneOption = options.find(opt => opt.value === 'None');
+  if (normalized === '' && !options.length) {
+    select.value = '';
+  } else if (normalized === '') {
+    if (noneOption) {
+      select.value = 'None';
+    } else {
+      select.selectedIndex = -1;
+    }
+  } else if (noneOption) {
+    select.value = 'None';
+  } else {
+    select.selectedIndex = -1;
+  }
+}
+
+function resetSelectsToNone(selects) {
+  selects.forEach(select => {
+    if (!select) return;
+    const options = Array.from(select.options || []);
+    const noneOption = options.find(opt => opt.value === 'None');
+    if (noneOption) {
+      select.value = 'None';
+    } else if (!options.length) {
+      select.value = '';
+    } else {
+      select.selectedIndex = -1;
+    }
+  });
 }
 
 function restoreSessionState() {
   restoringSession = true;
   const state = loadSession();
   loadedSetupState = state || null;
+  resetSelectsToNone(motorSelects);
+  resetSelectsToNone(controllerSelects);
   if (state) {
     if (setupNameInput) {
       setupNameInput.value = state.setupName || '';
@@ -12102,10 +12138,10 @@ function restoreSessionState() {
     setSelectValue(cageSelect, state.cage);
     setSelectValue(distanceSelect, state.distance);
     if (Array.isArray(state.motors)) {
-      state.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
+      state.motors.forEach((val, i) => { if (motorSelects[i]) setSelectValue(motorSelects[i], val); });
     }
     if (Array.isArray(state.controllers)) {
-      state.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
+      state.controllers.forEach((val, i) => { if (controllerSelects[i]) setSelectValue(controllerSelects[i], val); });
     }
     setSelectValue(batterySelect, state.battery);
     setSelectValue(hotswapSelect, state.batteryHotswap);
@@ -12170,6 +12206,8 @@ function applySharedSetup(shared) {
       setupNameInput.value = decoded.setupName;
       setupNameInput.dispatchEvent(new Event('input'));
     }
+    resetSelectsToNone(motorSelects);
+    resetSelectsToNone(controllerSelects);
     setSelectValue(cameraSelect, decoded.camera);
     updateBatteryPlateVisibility();
     setSelectValue(batteryPlateSelect, decoded.batteryPlate);
@@ -12179,10 +12217,10 @@ function applySharedSetup(shared) {
     setSelectValue(cageSelect, decoded.cage);
     setSelectValue(distanceSelect, decoded.distance);
     if (Array.isArray(decoded.motors)) {
-      decoded.motors.forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
+      decoded.motors.forEach((val, i) => { if (motorSelects[i]) setSelectValue(motorSelects[i], val); });
     }
     if (Array.isArray(decoded.controllers)) {
-      decoded.controllers.forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
+      decoded.controllers.forEach((val, i) => { if (controllerSelects[i]) setSelectValue(controllerSelects[i], val); });
     }
     setSelectValue(batterySelect, decoded.battery);
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
@@ -12236,6 +12274,9 @@ function applySharedSetupFromUrl() {
   try {
     const data = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
     applySharedSetup(data);
+    if (typeof updateCalculations === 'function') {
+      updateCalculations();
+    }
     if (window.history && window.history.replaceState) {
       history.replaceState(null, '', window.location.pathname);
     }
