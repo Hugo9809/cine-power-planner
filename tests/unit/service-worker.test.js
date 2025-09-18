@@ -5,6 +5,17 @@ describe('service worker configuration', () => {
     expect(ASSETS).toEqual(expect.arrayContaining(['./overview.css', './overview-print.css', './overview.js']));
   });
 
+  test('caches runtime JavaScript dependencies for offline usage', () => {
+    expect(ASSETS).toEqual(
+      expect.arrayContaining([
+        './globalthis-polyfill.js',
+        './devices/batteryHotswaps.js',
+        './devices/chargers.js',
+        './devices/wirelessReceivers.js',
+      ]),
+    );
+  });
+
   test('caches legal pages for offline usage', () => {
     expect(ASSETS).toEqual(
       expect.arrayContaining([
