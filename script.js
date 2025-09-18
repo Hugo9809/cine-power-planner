@@ -13029,6 +13029,79 @@ if (helpButton && helpDialog) {
   const helpContent = helpDialog.querySelector('.help-content');
   const helpQuickLinkItems = new Map();
   const helpSectionHighlightTimers = new Map();
+  const appTargetHighlightTimers = new Map();
+
+  const highlightAppTarget = element => {
+    if (!element) return;
+    const target = element;
+    const existing = appTargetHighlightTimers.get(target);
+    if (existing) {
+      clearTimeout(existing);
+    }
+    target.classList.add('help-target-focus');
+    const timeout = setTimeout(() => {
+      target.classList.remove('help-target-focus');
+      appTargetHighlightTimers.delete(target);
+    }, 2000);
+    appTargetHighlightTimers.set(target, timeout);
+  };
+
+  const focusFeatureElement = element => {
+    if (!element) return;
+
+    const settingsSection = element.closest('#settingsDialog');
+    if (settingsSection && settingsSection.hasAttribute('hidden')) {
+      settingsButton?.click?.();
+    }
+
+    const dialog = element.closest('dialog');
+    if (dialog && !dialog.open) {
+      if (dialog.id === 'projectDialog') {
+        generateGearListBtn?.click?.();
+      } else if (dialog.id === 'feedbackDialog') {
+        runtimeFeedbackBtn?.click?.();
+      } else if (dialog.id === 'overviewDialog') {
+        generateOverviewBtn?.click?.();
+      } else {
+        openDialog(dialog);
+      }
+    }
+
+    const deviceManager = element.closest('#device-manager');
+    if (deviceManager) {
+      showDeviceManagerSection();
+    }
+
+    if (typeof element.scrollIntoView === 'function') {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    const hadTabIndex = element.hasAttribute('tabindex');
+    let addedTabIndex = false;
+    if (!hadTabIndex) {
+      const tabIndex = element.tabIndex;
+      if (typeof tabIndex === 'number' && tabIndex < 0) {
+        element.setAttribute('tabindex', '-1');
+        addedTabIndex = true;
+      }
+    }
+
+    if (typeof element.focus === 'function') {
+      try {
+        element.focus({ preventScroll: true });
+      } catch {
+        element.focus();
+      }
+    }
+
+    if (addedTabIndex) {
+      element.addEventListener(
+        'blur',
+        () => element.removeAttribute('tabindex'),
+        { once: true }
+      );
+    }
+  };
 
   const focusHelpSectionHeading = section => {
     if (!section) return;
@@ -13181,6 +13254,51 @@ if (helpButton && helpDialog) {
   };
 
   buildHelpQuickLinks();
+
+  if (helpDialog) {
+    helpDialog.addEventListener('click', e => {
+      const link = e.target.closest('a[data-help-target]');
+      if (!link) return;
+      const rawSelector = link.dataset.helpTarget || link.getAttribute('href') || '';
+      const selector = rawSelector.trim();
+      if (!selector) return;
+      let focusEl;
+      try {
+        focusEl = document.querySelector(selector);
+      } catch {
+        focusEl = null;
+      }
+      if (!focusEl) return;
+      e.preventDefault();
+      const highlightSelector = link.dataset.helpHighlight || '';
+      let highlightEl = focusEl;
+      if (highlightSelector) {
+        try {
+          const candidate = document.querySelector(highlightSelector);
+          if (candidate) {
+            highlightEl = candidate;
+          }
+        } catch {
+          // ignore selector errors and fall back to the focus element
+        }
+      }
+      const targetInsideHelp = helpDialog.contains(focusEl);
+      const runFocus = () => {
+        focusFeatureElement(focusEl);
+        if (highlightEl) {
+          highlightAppTarget(highlightEl);
+        }
+      };
+      if (targetInsideHelp) {
+        runFocus();
+        return;
+      }
+      closeHelp(null);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(runFocus);
+      });
+    });
+  }
 
   // Search and filtering for the help dialog. Every keystroke scans both
   // high-level sections and individual FAQ items, restoring their original
@@ -13346,9 +13464,15 @@ if (helpButton && helpDialog) {
   };
 
   // Hide the dialog and return focus to the button that opened it
-  const closeHelp = () => {
+  const closeHelp = (returnFocusEl = helpButton) => {
     helpDialog.setAttribute('hidden', '');
-    helpButton.focus();
+    if (returnFocusEl && typeof returnFocusEl.focus === 'function') {
+      try {
+        returnFocusEl.focus({ preventScroll: true });
+      } catch {
+        returnFocusEl.focus();
+      }
+    }
   };
 
   // Convenience helper for toggling the dialog open or closed
@@ -13489,45 +13613,6 @@ if (helpButton && helpDialog) {
     const cleanKey = searchKey(clean);
     const cleanTokens = searchTokens(clean);
 
-    const focusFeature = element => {
-      if (!element) return;
-
-      const settingsSection = element.closest('#settingsDialog');
-      if (settingsSection && settingsSection.hasAttribute('hidden')) {
-        settingsButton?.click?.();
-      }
-
-      const dialog = element.closest('dialog');
-      if (dialog && !dialog.open) {
-        if (dialog.id === 'projectDialog') {
-          generateGearListBtn?.click?.();
-        } else if (dialog.id === 'feedbackDialog') {
-          runtimeFeedbackBtn?.click?.();
-        } else if (dialog.id === 'overviewDialog') {
-          generateOverviewBtn?.click?.();
-        } else {
-          openDialog(dialog);
-        }
-      }
-
-      const deviceManager = element.closest('#device-manager');
-      if (deviceManager) {
-        showDeviceManagerSection();
-      }
-
-      if (typeof element.scrollIntoView === 'function') {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-
-      if (typeof element.focus === 'function') {
-        try {
-          element.focus({ preventScroll: true });
-        } catch {
-          element.focus();
-        }
-      }
-    };
-
     const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
     if (deviceMatch && !isHelp) {
       const device = deviceMatch.value;
@@ -13537,7 +13622,7 @@ if (helpButton && helpDialog) {
         if (featureSearch && device.label) {
           featureSearch.value = device.label;
         }
-        focusFeature(device.select);
+        focusFeatureElement(device.select);
         return;
       }
     }
@@ -13552,7 +13637,7 @@ if (helpButton && helpDialog) {
             featureSearch.value = label;
           }
         }
-        focusFeature(featureEl);
+        focusFeatureElement(featureEl);
         return;
       }
     }

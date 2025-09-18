@@ -816,6 +816,38 @@
             <li>Force reload clears cached files and updates the app without deleting saved data.</li>
             <li>Cameras with both V- and B-Mount plates let you swap battery types; the list updates automatically.</li>
           </ul>
+          <div class="help-link-group" aria-label="Jump to key features">
+            <a
+              class="help-link help-chip"
+              href="#setup-manager"
+              data-help-target="#setupName"
+              data-help-highlight="#setup-manager"
+            >Project Overview</a>
+            <a
+              class="help-link help-chip"
+              href="#setup-config"
+              data-help-target="#cameraSelect"
+              data-help-highlight="#setup-config"
+            >Configure Devices</a>
+            <a
+              class="help-link help-chip"
+              href="#results"
+              data-help-target="#resultsHeading"
+              data-help-highlight="#results"
+            >Power Summary</a>
+            <a
+              class="help-link help-chip"
+              href="#setupDiagram"
+              data-help-target="#setupDiagramHeading"
+              data-help-highlight="#setupDiagram"
+            >Project Diagram</a>
+            <a
+              class="help-link help-chip"
+              href="#device-manager"
+              data-help-target="#deviceManagerHeading"
+              data-help-highlight="#device-manager"
+            >Device Library</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -824,11 +856,53 @@
         >
           <h3><span class="help-icon" aria-hidden="true">🚀</span>Getting Started</h3>
           <ol>
-            <li>Select a camera, monitor and other devices from the dropdown menus.</li>
+            <li>
+              Select a camera, monitor and other devices from the dropdown menus in the
+              <a
+                class="help-link"
+                href="#setup-config"
+                data-help-target="#cameraSelect"
+                data-help-highlight="#setup-config"
+              >Configure Devices</a>
+              section.
+            </li>
             <li>Use the search boxes inside each dropdown to quickly filter the lists.</li>
-            <li>Open the Project Requirements dialog when you need to capture crew, schedule or scenario notes; those details feed printouts and gear lists.</li>
-            <li>Choose a battery to update total draw and estimated runtime.</li>
-            <li>Name the project and click <strong>Save</strong> so you can revisit, share or print the setup later.</li>
+            <li>
+              Open the Project Requirements dialog with the
+              <a
+                class="help-link"
+                href="#projectRequirementsOutput"
+                data-help-target="#generateGearListBtn"
+              >Generate Gear List and Project Requirements</a>
+              button when you need to capture crew, schedule or scenario notes; those details feed printouts and gear lists.
+            </li>
+            <li>
+              Choose a battery in the
+              <a
+                class="help-link"
+                href="#setup-config"
+                data-help-target="#batterySelect"
+                data-help-highlight="#setup-config"
+              >Battery</a>
+              dropdown to update total draw and estimated runtime.
+            </li>
+            <li>
+              Name the project in the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#setupName"
+                data-help-highlight="#setup-manager"
+              >Project Name</a>
+              field and click
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Save</strong></a>
+              so you can revisit, share or print the setup later.
+            </li>
           </ol>
         </section>
         <section
@@ -838,16 +912,105 @@
         >
           <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Projects</h3>
           <ul>
-            <li>Use <strong>Save</strong> to store the current configuration in your browser. Press Enter or Ctrl+S (⌘S on macOS) to save quickly; the Save button stays disabled until a name is entered.</li>
-            <li>Select a saved project from the dropdown to load it instantly; adjust gear and click <strong>Save</strong> again to update the entry.</li>
-            <li><strong>Share Project</strong> downloads a JSON file containing your selections, project requirements, gear list, runtime feedback and any custom devices so you can back up or share the setup.</li>
-            <li>Open <strong>Settings</strong> to fine-tune accent color, base font size, typeface and high contrast mode, upload a custom logo and manage full planner backups or restores.</li>
-            <li>Select a JSON file in <strong>Shared Project</strong> and click <strong>Load</strong> to restore a shared configuration.</li>
-            <li>Use <strong>Delete</strong> to remove the saved entry or <strong>Clear Current Project</strong> to wipe the current selection without touching saved copies.</li>
-            <li><strong>Generate Overview</strong> produces a printable summary of any saved project.</li>
-            <li>Need a clean slate? Choose <strong>Factory reset</strong> in Settings → Backup &amp; Restore. The tool prompts you to download a backup, then clears saved projects, custom devices, favorites and runtime submissions.</li>
-            </ul>
-          </section>
+            <li>
+              Use
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Save</strong></a>
+              to store the current configuration in your browser. Press Enter or Ctrl+S (⌘S on macOS) to save quickly; the Save button stays disabled until a name is entered.
+            </li>
+            <li>
+              Select a saved project from the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#setupSelect"
+                data-help-highlight="#setup-manager"
+              >Saved Projects</a>
+              dropdown to load it instantly; adjust gear and click
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Save</strong></a>
+              again to update the entry.
+            </li>
+            <li>
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#shareSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Share Project</strong></a>
+              downloads a JSON file containing your selections, project requirements, gear list, runtime feedback and any custom devices so you can back up or share the setup.
+            </li>
+            <li>
+              Open
+              <a
+                class="help-link"
+                href="#settingsButton"
+                data-help-target="#settingsButton"
+              ><strong>Settings</strong></a>
+              to fine-tune accent color, base font size, typeface and high contrast mode, upload a custom logo and manage full planner backups or restores.
+            </li>
+            <li>
+              Select a JSON file in the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#sharedLinkInput"
+                data-help-highlight="#setup-manager"
+              ><strong>Shared Project</strong></a>
+              field and click
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#applySharedLinkBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Load</strong></a>
+              to restore a shared configuration.
+            </li>
+            <li>
+              Use
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#deleteSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Delete</strong></a>
+              to remove the saved entry or
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#clearSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Clear Current Project</strong></a>
+              to wipe the current selection without touching saved copies.
+            </li>
+            <li>
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#generateOverviewBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Generate Overview</strong></a>
+              produces a printable summary of any saved project.
+            </li>
+            <li>
+              Need a clean slate? Choose
+              <a
+                class="help-link"
+                href="#settingsButton"
+                data-help-target="#factoryResetButton"
+              ><strong>Factory reset</strong></a>
+              in Settings → Backup &amp; Restore. The tool prompts you to download a backup, then clears saved projects, custom devices, favorites and runtime submissions.
+            </li>
+          </ul>
+        </section>
         <section
           data-help-section
           id="settingsHelp"
@@ -861,6 +1024,34 @@
             <li>Upload an SVG logo to brand printable overviews and configuration backups.</li>
             <li>Use <strong>Backup</strong> to download a JSON snapshot of settings, projects, custom devices, favorites and runtime feedback; <strong>Restore</strong> loads a saved snapshot.</li>
           </ul>
+          <div class="help-link-group" aria-label="Settings shortcuts">
+            <a class="help-link help-chip" href="#settingsButton" data-help-target="#settingsButton">Open Settings</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#accentColorInput"
+            >Accent color</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#settingsLogo"
+            >Upload logo</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#backupSettings"
+            >Backup</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#restoreSettings"
+            >Restore</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsButton"
+              data-help-target="#factoryResetButton"
+            >Factory reset</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -874,6 +1065,14 @@
             <li>Use the + buttons to add crew entries or prep/shoot ranges, and tap the − buttons to remove items as plans change.</li>
             <li>The information is saved with the project and included in printed overviews and gear lists.</li>
           </ul>
+          <div class="help-link-group" aria-label="Project requirement tools">
+            <a
+              class="help-link help-chip"
+              href="#setup-manager"
+              data-help-target="#generateGearListBtn"
+              data-help-highlight="#setup-manager"
+            >Generate Gear List</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -921,6 +1120,24 @@
               <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
               <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
             </ul>
+            <div class="help-link-group" aria-label="Gear list shortcuts">
+              <a
+                class="help-link help-chip"
+                href="#setup-manager"
+                data-help-target="#generateGearListBtn"
+                data-help-highlight="#setup-manager"
+              >Generate Gear List</a>
+              <a
+                class="help-link help-chip"
+                href="#projectRequirementsOutput"
+                data-help-target="#projectRequirementsOutput"
+              >Project Requirements output</a>
+              <a
+                class="help-link help-chip"
+                href="#gearListOutput"
+                data-help-target="#gearListOutput"
+              >Gear List output</a>
+            </div>
           </section>
         <section
           data-help-section
@@ -935,6 +1152,32 @@
             <li>Select a <strong>Battery Hotswap</strong> to factor in dual plates or adapters; its capacity and pin limits are merged into the calculation.</li>
             <li>The optional <strong>Battery Comparison</strong> panel shows runtimes for all batteries at once.</li>
           </ul>
+          <div class="help-link-group" aria-label="Power calculator controls">
+            <a
+              class="help-link help-chip"
+              href="#setup-config"
+              data-help-target="#batterySelect"
+              data-help-highlight="#setup-config"
+            >Battery dropdown</a>
+            <a
+              class="help-link help-chip"
+              href="#results"
+              data-help-target="#resultsHeading"
+              data-help-highlight="#results"
+            >Power Summary</a>
+            <a
+              class="help-link help-chip"
+              href="#setup-config"
+              data-help-target="#batteryHotswapSelect"
+              data-help-highlight="#setup-config"
+            >Battery Hotswap</a>
+            <a
+              class="help-link help-chip"
+              href="#batteryComparison"
+              data-help-target="#batteryComparisonHeading"
+              data-help-highlight="#batteryComparison"
+            >Battery Comparison</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -963,6 +1206,14 @@
             </li>
             <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
           </ul>
+          <div class="help-link-group" aria-label="Power detail links">
+            <a
+              class="help-link help-chip"
+              href="#results"
+              data-help-target="#resultsHeading"
+              data-help-highlight="#results"
+            >View power summary</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -975,6 +1226,19 @@
             <li>Include temperature for more accurate weighting.</li>
             <li>Your entries are stored locally and refine the runtime estimate.</li>
           </ul>
+          <div class="help-link-group" aria-label="Runtime feedback tools">
+            <a
+              class="help-link help-chip"
+              href="#results"
+              data-help-target="#runtimeFeedbackBtn"
+              data-help-highlight="#results"
+            >Submit feedback</a>
+            <a
+              class="help-link help-chip"
+              href="#feedbackDialog"
+              data-help-target="#feedbackDialogHeading"
+            >Feedback form</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -992,6 +1256,29 @@
             <li>Icons denote device types and warn when FIZ brands are incompatible.</li>
             <li>Hover or tap devices to see popup details; on touch devices, tapping a node keeps its popup until another is selected.</li>
           </ul>
+          <div class="help-link-group" aria-label="Diagram controls">
+            <a
+              class="help-link help-chip"
+              href="#setupDiagram"
+              data-help-target="#setupDiagramHeading"
+              data-help-highlight="#setupDiagram"
+            >View diagram</a>
+            <a
+              class="help-link help-chip"
+              href="#setupDiagram"
+              data-help-target="#zoomIn"
+            >Zoom in</a>
+            <a
+              class="help-link help-chip"
+              href="#setupDiagram"
+              data-help-target="#resetView"
+            >Reset view</a>
+            <a
+              class="help-link help-chip"
+              href="#setupDiagram"
+              data-help-target="#gridSnapToggle"
+            >Snap to Grid</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1004,6 +1291,29 @@
             <li>Changes are stored locally; use <em>Export</em> and <em>Import</em> to share databases.</li>
             <li><em>Revert</em> restores defaults from the files in <code>devices/</code>.</li>
           </ul>
+          <div class="help-link-group" aria-label="Device editor controls">
+            <a
+              class="help-link help-chip"
+              href="#device-manager"
+              data-help-target="#toggleDeviceManager"
+            >Edit Device Data…</a>
+            <a
+              class="help-link help-chip"
+              href="#device-manager"
+              data-help-target="#deviceManagerHeading"
+              data-help-highlight="#device-manager"
+            >Device Library</a>
+            <a
+              class="help-link help-chip"
+              href="#device-manager"
+              data-help-target="#exportDataBtn"
+            >Export database</a>
+            <a
+              class="help-link help-chip"
+              href="#device-manager"
+              data-help-target="#importDataBtn"
+            >Import database</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1022,6 +1332,14 @@
             <li><strong>V‑ or B‑Mount Battery</strong> (0–1)</li>
           </ul>
           <p>The number in parentheses shows how many of that type you can select.</p>
+          <div class="help-link-group" aria-label="Device selection">
+            <a
+              class="help-link help-chip"
+              href="#setup-config"
+              data-help-target="#cameraSelect"
+              data-help-highlight="#setup-config"
+            >Configure Devices</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1037,6 +1355,24 @@
             <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to focus the nearest search box.</li>
             <li>Use the × button in any search field to reset the query and show all items.</li>
           </ul>
+          <div class="help-link-group" aria-label="Search controls">
+            <a
+              class="help-link help-chip"
+              href="#topBar"
+              data-help-target="#featureSearch"
+            >Global search</a>
+            <a
+              class="help-link help-chip"
+              href="#helpDialog"
+              data-help-target="#helpSearch"
+            >Help search</a>
+            <a
+              class="help-link help-chip"
+              href="#setup-config"
+              data-help-target="#cameraSelect"
+              data-help-highlight="#setup-config"
+            >Filter a dropdown</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1052,6 +1388,11 @@
             <li>The search also matches common keywords and alternate spellings, so queries like “favourites” still highlight the Favorites tips.</li>
             <li>Close the dialog with <kbd>Escape</kbd> or by clicking outside.</li>
           </ul>
+          <div class="help-link-group" aria-label="Help dialog controls">
+            <a class="help-link help-chip" href="#helpButton" data-help-target="#helpButton">Help button</a>
+            <a class="help-link help-chip" href="#helpDialog" data-help-target="#helpSearch">Help search</a>
+            <a class="help-link help-chip" href="#helpDialog" data-help-target="#helpSearchClear">Clear search</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1064,6 +1405,9 @@
             <li>Move the cursor over buttons, fields, dropdowns or headers to see brief explanations.</li>
             <li>Click anywhere or press <kbd>Escape</kbd> to exit.</li>
           </ul>
+          <div class="help-link-group" aria-label="Hover help control">
+            <a class="help-link help-chip" href="#helpDialog" data-help-target="#hoverHelpButton">Hover for help button</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1075,6 +1419,10 @@
             <li>Use the dropdown in the top right to switch languages.</li>
             <li>Your choice is remembered for the next visit.</li>
           </ul>
+          <div class="help-link-group" aria-label="Language controls">
+            <a class="help-link help-chip" href="#languageSelect" data-help-target="#languageSelect">Header language menu</a>
+            <a class="help-link help-chip" href="#settingsDialog" data-help-target="#settingsLanguage">Settings language</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1086,6 +1434,9 @@
             <li>Click the moon button or press <kbd>D</kbd> to toggle dark mode.</li>
             <li>The setting persists between visits.</li>
           </ul>
+          <div class="help-link-group" aria-label="Theme controls">
+            <a class="help-link help-chip" href="#darkModeToggle" data-help-target="#darkModeToggle">Dark mode toggle</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1098,6 +1449,9 @@
             <li>The setting persists between visits and works in light or dark mode.</li>
             <li>Press <kbd>P</kbd> to toggle pink mode.</li>
           </ul>
+          <div class="help-link-group" aria-label="Theme controls">
+            <a class="help-link help-chip" href="#pinkModeToggle" data-help-target="#pinkModeToggle">Pink mode toggle</a>
+          </div>
         </section>
         <section
           data-help-section
@@ -1126,21 +1480,96 @@
             data-help-keywords="save project saved projects ctrl+s enter autosave rename update"
           >
             <summary>How do I save a project?</summary>
-            <p>Enter a name in the Project Name field and click Save. It will then appear in the Saved Projects list. Selecting an entry loads it instantly; tweak the setup and press Save again to update it, use Delete to remove it entirely or choose Clear Current Project to start fresh without touching saved copies.</p>
+            <p>
+              Enter a name in the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#setupName"
+                data-help-highlight="#setup-manager"
+              >Project Name</a>
+              field and click
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              >Save</a>.
+              It will then appear in the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#setupSelect"
+                data-help-highlight="#setup-manager"
+              >Saved Projects</a>
+              list. Selecting an entry loads it instantly; tweak the setup and press
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              >Save</a>
+              again to update it, use
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#deleteSetupBtn"
+                data-help-highlight="#setup-manager"
+              >Delete</a>
+              to remove it entirely or choose
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#clearSetupBtn"
+                data-help-highlight="#setup-manager"
+              >Clear Current Project</a>
+              to start fresh without touching saved copies.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="share backup export import json download upload restore collaboration file"
           >
             <summary>How do I share or back up a project?</summary>
-            <p>Click <em>Share Project</em> to download a JSON file with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the <em>Shared Project</em> field and press <em>Load</em> to restore it.</p>
+            <p>
+              Click
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#shareSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><em>Share Project</em></a>
+              to download a JSON file with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#sharedLinkInput"
+                data-help-highlight="#setup-manager"
+              ><em>Shared Project</em></a>
+              field and press
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#applySharedLinkBtn"
+                data-help-highlight="#setup-manager"
+              ><em>Load</em></a>
+              to restore it.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="edit device data database editor custom gear add remove modify"
           >
             <summary>How do I edit device data?</summary>
-            <p>Click the <em>Edit Device Data…</em> button to open the database editor where you can add, change or remove devices.</p>
+            <p>
+              Click the
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#toggleDeviceManager"
+              ><em>Edit Device Data…</em></a>
+              button to open the database editor where you can add, change or remove devices.
+            </p>
           </details>
           <details
             class="faq-item"
@@ -1161,7 +1590,28 @@
             data-help-keywords="projects saved storage localstorage browser offline data persistence"
           >
             <summary>Where are my projects saved?</summary>
-            <p>Projects and device edits are stored in your browser's <code>localStorage</code>. Use <em>Share Project</em> to download a setup file, and use the Device Database Editor's <em>Export</em>/<em>Import</em> buttons to back up custom gear.</p>
+            <p>
+              Projects and device edits are stored in your browser's <code>localStorage</code>. Use
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#shareSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><em>Share Project</em></a>
+              to download a setup file, and use the Device Database Editor's
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#exportDataBtn"
+              ><em>Export</em></a>
+              /
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#importDataBtn"
+              ><em>Import</em></a>
+              buttons to back up custom gear.
+            </p>
           </details>
           <details
             class="faq-item"
@@ -1188,70 +1638,171 @@
             data-help-keywords="reset defaults revert factory reset wipe data clear restore"
           >
             <summary>How do I reset everything to the defaults?</summary>
-            <p>Open the device editor and choose <em>Export and Revert</em> to restore the default database. Delete projects individually using the Delete button, or open <em>Settings → Backup &amp; Restore</em> and press <em>Factory reset</em> to download a safety backup and wipe saved projects, favorites and runtime data at once.</p>
+            <p>
+              Open the device editor and choose
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#exportAndRevertBtn"
+              ><em>Export and Revert</em></a>
+              to restore the default database. Delete projects individually using the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#deleteSetupBtn"
+                data-help-highlight="#setup-manager"
+              >Delete</a>
+              button, or open <em>Settings → Backup &amp; Restore</em> and press
+              <a
+                class="help-link"
+                href="#settingsButton"
+                data-help-target="#factoryResetButton"
+              ><em>Factory reset</em></a>
+              to download a safety backup and wipe saved projects, favorites and runtime data at once.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="change language translation locale switch english german spanish french italian"
           >
             <summary>How do I change the language?</summary>
-            <p>Use the dropdown in the top right to pick a language. The planner remembers your choice for the next visit.</p>
+            <p>
+              Use the
+              <a class="help-link" href="#languageSelect" data-help-target="#languageSelect">language dropdown</a>
+              in the top right to pick a language. The planner remembers your choice for the next visit.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="print overview pdf summary report generate overview"
           >
             <summary>How can I print a project overview?</summary>
-            <p>Save the project, then click <em>Generate Overview</em> and print from the dialog.</p>
+            <p>
+              Save the project, then click
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#generateOverviewBtn"
+                data-help-highlight="#setup-manager"
+              ><em>Generate Overview</em></a>
+              and print from the dialog.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="compare batteries battery comparison runtime chart list options"
           >
             <summary>How do I compare different batteries?</summary>
-            <p>The Battery Comparison section shows estimated run time for all batteries once a configuration is calculated.</p>
+            <p>
+              The
+              <a
+                class="help-link"
+                href="#batteryComparison"
+                data-help-target="#batteryComparisonHeading"
+                data-help-highlight="#batteryComparison"
+              >Battery Comparison</a>
+              section shows estimated run time for all batteries once a configuration is calculated.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="device database import export json share data backup"
           >
             <summary>How do I import or export the device database?</summary>
-            <p>Open the Device Database Editor and use the <em>Export</em> button to download your current database as JSON. Use <em>Import</em> to load a JSON file and replace your local data.</p>
+            <p>
+              Open the
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#toggleDeviceManager"
+              >Device Database Editor</a>
+              and use the
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#exportDataBtn"
+              ><em>Export</em></a>
+              button to download your current database as JSON. Use
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#importDataBtn"
+              ><em>Import</em></a>
+              to load a JSON file and replace your local data.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="add devices edit custom gear database editor create modify remove"
           >
             <summary>Can I edit or add devices?</summary>
-            <p>Yes. In the Device Database Editor you can create new devices, change existing ones or delete entries. The changes appear immediately in the dropdown menus.</p>
+            <p>
+              Yes. In the
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#deviceManagerHeading"
+                data-help-highlight="#device-manager"
+              >Device Database Editor</a>
+              you can create new devices, change existing ones or delete entries. The changes appear immediately in the dropdown menus.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="project diagram connections cables layout wiring nodes visual map"
           >
             <summary>What does the Project Diagram show?</summary>
-            <p>The diagram illustrates how power and video cables connect between your chosen devices. Drag the nodes to arrange them and use the buttons to zoom or download an image.</p>
+            <p>
+              The
+              <a
+                class="help-link"
+                href="#setupDiagram"
+                data-help-target="#setupDiagramHeading"
+                data-help-highlight="#setupDiagram"
+              >diagram</a>
+              illustrates how power and video cables connect between your chosen devices. Drag the nodes to arrange them and use the buttons to zoom or download an image.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="device categories types list optional required slots selections"
           >
             <summary>Which device categories are available?</summary>
-            <p>Categories include Camera, Monitor, Wireless Transmitter, FIZ Motors, FIZ Controllers, Distance Sensor, Battery Plate and V‑/B‑Mount Battery.</p>
+            <p>
+              Categories include Camera, Monitor, Wireless Transmitter, FIZ Motors, FIZ Controllers, Distance Sensor, Battery Plate and V‑/B‑Mount Battery. You can configure them in
+              <a
+                class="help-link"
+                href="#setup-config"
+                data-help-target="#cameraSelect"
+                data-help-highlight="#setup-config"
+              >Configure Devices</a>.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="clear cache update refresh reload force reload service worker"
           >
             <summary>How do I clear cached files or update the app?</summary>
-            <p>Use the <em>Force reload</em> button (🔄) in the top bar to clear cached files and reload without losing saved data.</p>
+            <p>
+              Use the
+              <a class="help-link" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>
+              button (🔄) in the top bar to clear cached files and reload without losing saved data.
+            </p>
           </details>
           <details
             class="faq-item"
             data-help-keywords="device data source manufacturer specs defaults dataset"
           >
             <summary>Where does the device data come from?</summary>
-            <p>The default database is defined in the files under <code>devices/</code> from manufacturer specifications. You can modify or replace them via the Device Database Editor.</p>
+            <p>
+              The default database is defined in the files under <code>devices/</code> from manufacturer specifications. You can modify or replace them via the
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#deviceManagerHeading"
+                data-help-highlight="#device-manager"
+              >Device Database Editor</a>.
+            </p>
           </details>
         </section>
       </div>
