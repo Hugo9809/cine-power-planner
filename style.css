@@ -923,6 +923,61 @@ main.legal-content {
   border-radius: var(--border-radius);
 }
 
+.help-link-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.help-link {
+  color: var(--accent-color);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.15em;
+}
+
+.help-link:hover,
+.help-link:focus {
+  text-decoration-thickness: 0.18em;
+}
+
+.help-link:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.help-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--accent-color);
+  background: none;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.help-chip:hover,
+.help-chip:focus {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+
+.help-chip:focus-visible {
+  outline: 2px solid var(--inverse-text-color);
+  outline-offset: 2px;
+}
+
+.help-target-focus {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 4px;
+  border-radius: var(--border-radius);
+  transition: outline-color 0.2s ease-in-out;
+}
+
 .help-icon {
   margin-right: 0.3em;
 }
