@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v16';
+const CACHE_NAME = 'cine-power-planner-v17';
 const ASSETS = [
   './',
   './index.html',
@@ -27,6 +27,7 @@ const ASSETS = [
   './Ubuntu/Ubuntu-Medium.ttf',
   './Ubuntu/Ubuntu-MediumItalic.ttf',
   './Ubuntu/Ubuntu-Regular.ttf',
+  './globalthis-polyfill.js',
   './script.js',
   './devices/index.js',
   './devices/cameras.js',
@@ -34,8 +35,11 @@ const ASSETS = [
   './devices/video.js',
   './devices/fiz.js',
   './devices/batteries.js',
+  './devices/batteryHotswaps.js',
   './devices/cages.js',
+  './devices/chargers.js',
   './devices/gearList.js',
+  './devices/wirelessReceivers.js',
   './translations.js',
   './storage.js',
   './normalizeData.js',
