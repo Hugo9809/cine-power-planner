@@ -813,6 +813,7 @@
             <li>Switch languages, toggle dark or playful pink themes and work fully offline. Theme settings persist.</li>
             <li>Personalize the interface from Settings—adjust accent color, base font size and typeface, toggle high contrast and upload a custom logo that appears in backups and printable overviews.</li>
             <li>Start fresh at any time with the Factory reset button in Settings. It automatically downloads a backup before removing saved projects, custom devices, favorites and runtime feedback in one step.</li>
+            <li>Automatic snapshots save the current project every 10 minutes and hourly full-app backups download timestamped JSON archives so you always have a recovery point.</li>
             <li>Force reload clears cached files and updates the app without deleting saved data.</li>
             <li>Cameras with both V- and B-Mount plates let you swap battery types; the list updates automatically.</li>
           </ul>
@@ -1051,6 +1052,29 @@
               href="#settingsButton"
               data-help-target="#factoryResetButton"
             >Factory reset</a>
+          </div>
+        </section>
+        <section
+          data-help-section
+          id="autoBackupsHelp"
+          data-help-keywords="auto backup automatic snapshot restore recovery safety hourly download full app backup notification show saved projects setting"
+        >
+          <h3><span class="help-icon" aria-hidden="true">💾</span>Automatic Backups</h3>
+          <ul>
+            <li>The planner saves an auto backup every 10 minutes without interrupting your work. Entries are timestamped and stored alongside saved projects.</li>
+            <li>Enable <strong>Show auto backups in project list</strong> in Settings → Backup &amp; Restore to temporarily reveal those snapshots in the <em>Saved Projects</em> dropdown.</li>
+            <li>Select an auto backup to review it. Press <strong>Save</strong> to keep it as a regular project or return to your current setup without overwriting anything.</li>
+            <li>A full JSON export downloads automatically every hour with a name like “2024-05-12T14-00-00 full app backup.json” so you always have an offline safety copy.</li>
+          </ul>
+          <div class="help-link-group" aria-label="Automatic backup controls">
+            <a class="help-link help-chip" href="#settingsDialog" data-help-target="#settingsShowAutoBackups">Show auto backups setting</a>
+            <a
+              class="help-link help-chip"
+              href="#setup-manager"
+              data-help-target="#setupSelect"
+              data-help-highlight="#setup-manager"
+            >Saved Projects</a>
+            <a class="help-link help-chip" href="#settingsDialog" data-help-target="#backupSettings">Download backup</a>
           </div>
         </section>
         <section
@@ -1554,6 +1578,34 @@
                 data-help-highlight="#setup-manager"
               ><em>Load</em></a>
               to restore it.
+            </p>
+          </details>
+          <details
+            class="faq-item"
+            data-help-keywords="auto backup automatic snapshot restore recover hourly download show saved projects setting"
+          >
+            <summary>How do automatic backups work?</summary>
+            <p>
+              The planner saves a timestamped auto backup every 10 minutes. Turn on
+              <a class="help-link" href="#settingsDialog" data-help-target="#settingsShowAutoBackups">Show auto backups in project list</a>
+              inside Settings → Backup &amp; Restore to reveal them in the
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#setupSelect"
+                data-help-highlight="#setup-manager"
+              >Saved Projects</a>
+              dropdown.
+            </p>
+            <p>
+              Choose an auto backup to inspect it; press
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              >Save</a>
+              if you want to keep the snapshot as a regular project. A full JSON export also downloads every hour (“Full app backup downloaded …”) so you have an offline safety copy you can archive or delete as needed.
             </p>
           </details>
           <details
