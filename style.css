@@ -942,6 +942,11 @@ main.legal-content {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+.help-content.modal-surface,
+.settings-content.modal-surface {
+  border: 2px solid var(--panel-border);
+}
+
 .modal-surface-scrollable {
   max-height: 80vh;
   overflow-y: auto;
@@ -3272,12 +3277,15 @@ body.dark-mode.pink-mode {
 .dark-mode #setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) { stroke: var(--inverse-text-color); }
 .dark-mode #setupDiagram marker polygon { fill: var(--inverse-text-color); }
 .dark-mode #setupDiagram .diagram-placeholder { color: #bbb; }
-.dark-mode .help-content {
+.dark-mode .help-content.modal-surface,
+.dark-mode .settings-content.modal-surface {
   border-color: var(--control-border);
 }
 body.dark-mode.pink-mode .help-content,
-body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
-  border-color: var(--accent-color);
+body.dark-mode.pink-mode .settings-content.modal-surface,
+body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content,
+body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface {
+  border-color: var(--control-border);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -3375,7 +3383,8 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   body:not(.light-mode) #setupDiagram path.edge-path:not(.power):not(.video):not(.fiz) { stroke: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram marker polygon { fill: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram .diagram-placeholder { color: var(--muted-text-color); }
-  body:not(.light-mode) .help-content {
+  body:not(.light-mode) .help-content,
+  body:not(.light-mode) .settings-content.modal-surface {
     border-color: var(--control-border);
   }
   body:not(.light-mode) .gear-table td {
@@ -3399,8 +3408,10 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
     color: var(--accent-color);
   }
   body:not(.light-mode).pink-mode .help-content,
-  body:not(.light-mode).dark-accent-boost:not(.pink-mode) .help-content {
-    border-color: var(--accent-color);
+  body:not(.light-mode).pink-mode .settings-content.modal-surface,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) .help-content,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) .settings-content.modal-surface {
+    border-color: var(--control-border);
   }
 }
 /* Responsive layout adjustments */
