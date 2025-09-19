@@ -4897,6 +4897,196 @@ function loadStoredLogoPreview() {
 
 const isPlainObjectValue = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
 
+const REQUIRED_DEVICE_CATEGORIES = ['cameras', 'monitors', 'video', 'viewfinders', 'fiz', 'batteries'];
+const DEFAULT_FIZ_COLLECTIONS = ['motors', 'controllers', 'distance'];
+const MAX_DEVICE_IMPORT_ERRORS = 5;
+
+function isDeviceEntryObject(value) {
+  if (!isPlainObjectValue(value)) {
+    return false;
+  }
+  return Object.values(value).some((entry) => entry === null || typeof entry !== 'object' || Array.isArray(entry));
+}
+
+function countDeviceDatabaseEntries(collection) {
+  if (!isPlainObjectValue(collection)) {
+    return 0;
+  }
+  let total = 0;
+  for (const [name, value] of Object.entries(collection)) {
+    if (name === 'filterOptions' || name === 'None') {
+      continue;
+    }
+    if (!isPlainObjectValue(value)) {
+      continue;
+    }
+    if (isDeviceEntryObject(value)) {
+      total += 1;
+    } else {
+      total += countDeviceDatabaseEntries(value);
+    }
+  }
+  return total;
+}
+
+function looksLikeDeviceDatabase(candidate) {
+  if (!isPlainObjectValue(candidate)) {
+    return false;
+  }
+  let matched = 0;
+  for (const key of REQUIRED_DEVICE_CATEGORIES) {
+    if (Object.prototype.hasOwnProperty.call(candidate, key)) {
+      matched += 1;
+    }
+  }
+  return matched >= 3;
+}
+
+function collectReferenceFizKeys() {
+  const reference = typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.defaultDevices)
+    ? globalThis.defaultDevices
+    : (typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.devices) ? globalThis.devices : null);
+  if (reference && isPlainObjectValue(reference.fiz)) {
+    const keys = Object.keys(reference.fiz).filter(Boolean);
+    if (keys.length) {
+      return keys;
+    }
+  }
+  return DEFAULT_FIZ_COLLECTIONS;
+}
+
+function validateDeviceDatabaseStructure(candidate) {
+  if (!isPlainObjectValue(candidate)) {
+    return { devices: null, errors: ['Imported data must be a JSON object.'] };
+  }
+
+  const errors = [];
+  const missing = [];
+
+  for (const category of REQUIRED_DEVICE_CATEGORIES) {
+    if (category === 'fiz') {
+      if (!isPlainObjectValue(candidate.fiz)) {
+        missing.push('fiz');
+        continue;
+      }
+      const expectedFizKeys = collectReferenceFizKeys();
+      const missingFiz = expectedFizKeys.filter((key) => !isPlainObjectValue(candidate.fiz[key]));
+      if (missingFiz.length) {
+        errors.push(`Missing FIZ categories: ${missingFiz.join(', ')}`);
+      }
+      continue;
+    }
+    if (!isPlainObjectValue(candidate[category])) {
+      missing.push(category);
+    }
+  }
+
+  if (missing.length) {
+    errors.push(`Missing categories: ${missing.join(', ')}`);
+  }
+
+  if (candidate.accessories !== undefined) {
+    if (!isPlainObjectValue(candidate.accessories)) {
+      errors.push('Accessory collections must be objects.');
+    } else {
+      for (const [subKey, subValue] of Object.entries(candidate.accessories)) {
+        if (!isPlainObjectValue(subValue)) {
+          errors.push(`Accessory category "${subKey}" must be an object.`);
+        }
+      }
+    }
+  }
+
+  if (candidate.filterOptions !== undefined && !Array.isArray(candidate.filterOptions)) {
+    errors.push('Filter options must be provided as an array.');
+  }
+
+  if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
+    for (const [subKey, subValue] of Object.entries(candidate.fiz)) {
+      if (subValue !== undefined && !isPlainObjectValue(subValue)) {
+        errors.push(`FIZ category "${subKey}" must be an object.`);
+      }
+    }
+  }
+
+  const structureErrors = [];
+  const inspectCollections = (collection, path = []) => {
+    if (!isPlainObjectValue(collection)) {
+      return;
+    }
+    for (const [name, value] of Object.entries(collection)) {
+      if (name === 'None' || name === 'filterOptions') {
+        continue;
+      }
+      const nextPath = path.concat(name);
+      if (!isPlainObjectValue(value)) {
+        if (!Array.isArray(value)) {
+          structureErrors.push(`${nextPath.join('.')} must be an object.`);
+        }
+      } else if (!isDeviceEntryObject(value)) {
+        inspectCollections(value, nextPath);
+      }
+      if (structureErrors.length >= MAX_DEVICE_IMPORT_ERRORS) {
+        return;
+      }
+    }
+  };
+
+  inspectCollections(candidate);
+  errors.push(...structureErrors);
+
+  const deviceCount = countDeviceDatabaseEntries(candidate);
+  if (!deviceCount) {
+    errors.push('The imported database does not contain any devices.');
+  }
+
+  const uniqueErrors = [];
+  for (const message of errors) {
+    if (message && !uniqueErrors.includes(message)) {
+      uniqueErrors.push(message);
+    }
+    if (uniqueErrors.length >= MAX_DEVICE_IMPORT_ERRORS) {
+      break;
+    }
+  }
+
+  return {
+    devices: uniqueErrors.length ? null : candidate,
+    errors: uniqueErrors,
+  };
+}
+
+function parseDeviceDatabaseImport(rawData) {
+  if (Array.isArray(rawData)) {
+    return { devices: null, errors: ['Import file must contain a JSON object, but found an array.'] };
+  }
+  if (!isPlainObjectValue(rawData)) {
+    return { devices: null, errors: ['Import file must contain a JSON object.'] };
+  }
+
+  if (Object.prototype.hasOwnProperty.call(rawData, 'devices') && !isPlainObjectValue(rawData.devices)) {
+    return { devices: null, errors: ['The "devices" property must be an object.'] };
+  }
+
+  const candidate = Object.prototype.hasOwnProperty.call(rawData, 'devices') && isPlainObjectValue(rawData.devices)
+    ? rawData.devices
+    : (looksLikeDeviceDatabase(rawData) ? rawData : null);
+
+  if (!candidate) {
+    return { devices: null, errors: ['Could not find a device database in the selected file.'] };
+  }
+
+  return validateDeviceDatabaseStructure(candidate);
+}
+
+function formatDeviceImportErrors(errors) {
+  if (!Array.isArray(errors) || !errors.length) {
+    return '';
+  }
+  const lines = errors.slice(0, MAX_DEVICE_IMPORT_ERRORS).map((message) => `- ${message}`);
+  return lines.join('\n');
+}
+
 function resolveLanguageCode(lang) {
   if (lang && texts && Object.prototype.hasOwnProperty.call(texts, lang)) {
     return lang;
@@ -11435,59 +11625,50 @@ importFileInput.addEventListener("change", (event) => {
   reader.onload = (e) => {
     try {
       const importedData = JSON.parse(e.target.result);
-      // Basic validation: check if it has expected top-level keys
-      const expectedKeys = ["cameras", "viewfinders", "monitors", "video", "fiz", "batteries"];
-      const hasAllKeys = expectedKeys.every(key => Object.prototype.hasOwnProperty.call(importedData, key));
+      const result = parseDeviceDatabaseImport(importedData);
 
-      if (hasAllKeys && typeof importedData.fiz === 'object' &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'motors') &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'controllers') &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
-        devices = importedData; // Overwrite current devices with imported data
-        storeDevices(devices);
-        viewfinderTypeOptions = getAllViewfinderTypes();
-        viewfinderConnectorOptions = getAllViewfinderConnectors();
-        refreshDeviceLists(); // Update device manager lists
-        // Re-populate all dropdowns and update calculations
-        populateSelect(cameraSelect, devices.cameras, true);
-        populateMonitorSelect();
-        populateSelect(videoSelect, devices.video, true);
-        motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-        controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-        populateSelect(distanceSelect, devices.fiz.distance, true);
-        populateSelect(batterySelect, devices.batteries, true);
-        updateFizConnectorOptions();
-        updateMotorConnectorOptions();
-        updateControllerConnectorOptions();
-        updateControllerPowerOptions();
-        updateControllerBatteryOptions();
-        updateControllerConnectivityOptions();
-        updateDistanceConnectionOptions();
-        updateDistanceMethodOptions();
-        updateDistanceDisplayOptions();
-        applyFilters();
-        updateCalculations();
-
-        // Count total devices imported for the alert message
-        let deviceCount = 0;
-        for (const category in importedData) {
-            if (category === "fiz") {
-                for (const subcategory in importedData.fiz) {
-                    deviceCount += Object.keys(importedData.fiz[subcategory]).length;
-                }
-            } else {
-                deviceCount += Object.keys(importedData[category]).length;
-            }
-        }
-        alert(texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount));
-        exportOutput.style.display = "block"; // Show the textarea
-        exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
-      } else {
-        alert(texts[currentLang].alertImportError);
+      if (!result.devices) {
+        const summary = formatDeviceImportErrors(result.errors);
+        console.error('Device import validation failed:', result.errors);
+        alert(summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError);
+        return;
       }
+
+      devices = result.devices; // Overwrite current devices with imported data
+      unifyDevices(devices);
+      storeDevices(devices);
+      viewfinderTypeOptions = getAllViewfinderTypes();
+      viewfinderConnectorOptions = getAllViewfinderConnectors();
+      refreshDeviceLists(); // Update device manager lists
+      // Re-populate all dropdowns and update calculations
+      populateSelect(cameraSelect, devices.cameras, true);
+      populateMonitorSelect();
+      populateSelect(videoSelect, devices.video, true);
+      motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
+      controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
+      populateSelect(distanceSelect, devices.fiz.distance, true);
+      populateSelect(batterySelect, devices.batteries, true);
+      updateFizConnectorOptions();
+      updateMotorConnectorOptions();
+      updateControllerConnectorOptions();
+      updateControllerPowerOptions();
+      updateControllerBatteryOptions();
+      updateControllerConnectivityOptions();
+      updateDistanceConnectionOptions();
+      updateDistanceMethodOptions();
+      updateDistanceDisplayOptions();
+      applyFilters();
+      updateCalculations();
+
+      const deviceCount = countDeviceDatabaseEntries(devices);
+      alert(texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount));
+      exportOutput.style.display = "block"; // Show the textarea
+      exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
     } catch (error) {
       console.error("Error parsing or importing data:", error);
-      alert(texts[currentLang].alertImportError);
+      const errorMessage = error && error.message ? error.message : String(error);
+      const summary = formatDeviceImportErrors([errorMessage]);
+      alert(summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError);
     }
   };
   reader.readAsText(file);
@@ -17216,5 +17397,7 @@ if (typeof module !== "undefined" && module.exports) {
     applyAutoGearRulesToTableHtml,
     getAutoGearRules,
     syncAutoGearRulesFromStorage,
+    parseDeviceDatabaseImport,
+    countDeviceDatabaseEntries,
   };
 }
