@@ -3501,6 +3501,109 @@ const RESET_VIEW_ICON_SVG = `
   </svg>
 `.trim();
 
+const PRODUCTION_COMPANY_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M4.5 9.5H19.5V19A1.5 1.5 0 0 1 18 20.5H6A1.5 1.5 0 0 1 4.5 19Z" />
+      <polyline points="4.5 9.5 9.5 4.5 18 4.5 20 6.75 20 9.5" />
+      <line x1="7" y1="6.25" x2="12" y2="9.5" />
+      <line x1="12.75" y1="4.5" x2="17.5" y2="9.5" />
+      <line x1="8.75" y1="13" x2="8.75" y2="18.5" />
+      <line x1="12" y1="13" x2="12" y2="18.5" />
+      <line x1="15.25" y1="13" x2="15.25" y2="18.5" />
+    </g>
+  </svg>
+`.trim();
+
+const RENTAL_HOUSE_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M4.5 11.5 12 5l7.5 6.5" />
+      <path d="M6.75 10.75v8.75H11v-4h2v4h4.25V10.75" />
+      <circle cx="17.75" cy="17" r="1.75" />
+      <path d="M18.95 16.2 20 15.25V13.5" />
+      <line x1="18.9" y1="17.5" x2="20" y2="17.5" />
+    </g>
+  </svg>
+`.trim();
+
+const ASPECT_RATIO_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <rect x="3.5" y="6" width="17" height="12" rx="2" ry="2" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+      <polyline points="9 10.75 8 12 9 13.25" />
+      <polyline points="15 10.75 16 12 15 13.25" />
+      <line x1="12" y1="9" x2="12" y2="15" />
+      <polyline points="10.75 10 12 9 13.25 10" />
+      <polyline points="10.75 14 12 15 13.25 14" />
+    </g>
+  </svg>
+`.trim();
+
+const REQUIRED_SCENARIOS_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M8.5 4.5V3.25A1.25 1.25 0 0 1 9.75 2h4.5a1.25 1.25 0 0 1 1.25 1.25V4.5" />
+      <rect x="5.25" y="4.5" width="13.5" height="15.5" rx="2" ry="2" />
+      <rect x="8.25" y="8.75" width="3" height="3" rx="0.5" ry="0.5" />
+      <rect x="8.25" y="13.75" width="3" height="3" rx="0.5" ry="0.5" />
+      <polyline points="9 10.25 9.85 11.05 11 9.75" />
+      <polyline points="9 15.25 9.85 16.05 11 14.75" />
+      <line x1="12.75" y1="10.25" x2="16.5" y2="10.25" />
+      <line x1="12.75" y1="15.25" x2="16.5" y2="15.25" />
+    </g>
+  </svg>
+`.trim();
+
+const MONITORING_SUPPORT_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <rect x="4.25" y="5.5" width="15.5" height="9.5" rx="1.75" ry="1.75" />
+      <path d="M9 15.25 7.1 19.5" />
+      <path d="M15 15.25 16.9 19.5" />
+      <line x1="9.75" y1="19.5" x2="14.25" y2="19.5" />
+      <line x1="12" y1="15" x2="12" y2="19.5" />
+    </g>
+  </svg>
+`.trim();
+
+const PRODUCTION_COMPANY_ICON = Object.freeze({ markup: PRODUCTION_COMPANY_ICON_SVG, className: 'icon-svg' });
+const RENTAL_HOUSE_ICON = Object.freeze({ markup: RENTAL_HOUSE_ICON_SVG, className: 'icon-svg' });
+const ASPECT_RATIO_ICON = Object.freeze({ markup: ASPECT_RATIO_ICON_SVG, className: 'icon-svg' });
+const REQUIRED_SCENARIOS_ICON = Object.freeze({ markup: REQUIRED_SCENARIOS_ICON_SVG, className: 'icon-svg' });
+const MONITORING_SUPPORT_ICON = Object.freeze({ markup: MONITORING_SUPPORT_ICON_SVG, className: 'icon-svg' });
+
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -4271,23 +4374,23 @@ const PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
 const PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
 
 const projectFieldIcons = {
-  productionCompany: iconGlyph('\uF11F', ICON_FONT_KEYS.FILM),
-  rentalHouse: iconGlyph('\uF12B', ICON_FONT_KEYS.FILM),
+  productionCompany: PRODUCTION_COMPANY_ICON,
+  rentalHouse: RENTAL_HOUSE_ICON,
   crew: iconGlyph('\uF102', ICON_FONT_KEYS.FILM),
   prepDays: iconGlyph('\uF126', ICON_FONT_KEYS.ESSENTIAL),
   shootingDays: iconGlyph('\uF10C', ICON_FONT_KEYS.FILM),
   deliveryResolution: ICON_GLYPHS.screen,
   recordingResolution: ICON_GLYPHS.camera,
-  aspectRatio: iconGlyph('\uF16F', ICON_FONT_KEYS.ESSENTIAL),
+  aspectRatio: ASPECT_RATIO_ICON,
   codec: iconGlyph('\uF107', ICON_FONT_KEYS.GADGET),
   baseFrameRate: ICON_GLYPHS.timecode,
   sensorMode: iconGlyph('\uF110', ICON_FONT_KEYS.GADGET),
-  requiredScenarios: iconGlyph('\uF129', ICON_FONT_KEYS.FILM),
+  requiredScenarios: REQUIRED_SCENARIOS_ICON,
   lenses: iconGlyph('\uF117', ICON_FONT_KEYS.FILM),
   cameraHandle: ICON_GLYPHS.gears,
   viewfinderExtension: iconGlyph('\uF12E', ICON_FONT_KEYS.FILM),
   gimbal: iconGlyph('\uEA9C', ICON_FONT_KEYS.UICONS),
-  monitoringSupport: iconGlyph('\uF11F', ICON_FONT_KEYS.GADGET),
+  monitoringSupport: MONITORING_SUPPORT_ICON,
   monitoringConfiguration: ICON_GLYPHS.sliders,
   monitorUserButtons: ICON_GLYPHS.sliders,
   cameraUserButtons: ICON_GLYPHS.sliders,
@@ -20135,6 +20238,7 @@ function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE, options = 
   return sel;
 }
 
+/* exported createFilterValueSelect */
 function createFilterValueSelect(type, selected) {
   const sel = document.createElement('select');
   sel.id = `filter-values-${filterId(type)}`;
