@@ -16531,29 +16531,58 @@ function applyPinkMode(enabled) {
   }
 }
 
+function isPinkModeActive() {
+  return !!(document.body && document.body.classList.contains('pink-mode'));
+}
+
 let pinkModeEnabled = false;
+
+let settingsInitialPinkMode = isPinkModeActive();
+
+function persistPinkModePreference(enabled) {
+  pinkModeEnabled = !!enabled;
+  applyPinkMode(pinkModeEnabled);
+  try {
+    localStorage.setItem('pinkMode', pinkModeEnabled);
+  } catch (e) {
+    console.warn('Could not save pink mode preference', e);
+  }
+}
+
+function rememberSettingsPinkModeBaseline() {
+  settingsInitialPinkMode = isPinkModeActive();
+}
+
+function revertSettingsPinkModeIfNeeded() {
+  if (isPinkModeActive() !== settingsInitialPinkMode) {
+    persistPinkModePreference(settingsInitialPinkMode);
+  }
+}
+
 try {
-  pinkModeEnabled = localStorage.getItem("pinkMode") === "true";
+  pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
 } catch (e) {
-  console.warn("Could not load pink mode preference", e);
+  console.warn('Could not load pink mode preference', e);
 }
 applyPinkMode(pinkModeEnabled);
+rememberSettingsPinkModeBaseline();
 
 if (pinkModeToggle) {
   pinkModeToggle.addEventListener("click", () => {
-    pinkModeEnabled = !document.body.classList.contains("pink-mode");
-    applyPinkMode(pinkModeEnabled);
-    try {
-      localStorage.setItem("pinkMode", pinkModeEnabled);
-    } catch (e) {
-      console.warn("Could not save pink mode preference", e);
-    }
+    persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+  });
+}
+
+if (settingsPinkMode) {
+  settingsPinkMode.addEventListener('change', () => {
+    persistPinkModePreference(settingsPinkMode.checked);
   });
 }
 
 if (settingsButton && settingsDialog) {
   settingsButton.addEventListener('click', () => {
     prevAccentColor = accentColor;
+    rememberSettingsPinkModeBaseline();
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -16585,6 +16614,8 @@ if (settingsButton && settingsDialog) {
 
   if (settingsCancel) {
     settingsCancel.addEventListener('click', () => {
+      revertSettingsPinkModeIfNeeded();
+      rememberSettingsPinkModeBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -16608,13 +16639,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       if (settingsPinkMode) {
-        const enabled = settingsPinkMode.checked;
-        applyPinkMode(enabled);
-        try {
-          localStorage.setItem('pinkMode', enabled);
-        } catch (e) {
-          console.warn('Could not save pink mode preference', e);
-        }
+        persistPinkModePreference(settingsPinkMode.checked);
       }
       if (settingsHighContrast) {
         const enabled = settingsHighContrast.checked;
@@ -16701,12 +16726,15 @@ if (settingsButton && settingsDialog) {
         }
       }
       closeAutoGearEditor();
+      rememberSettingsPinkModeBaseline();
       settingsDialog.setAttribute('hidden', '');
     });
   }
 
   settingsDialog.addEventListener('click', e => {
     if (e.target === settingsDialog) {
+      revertSettingsPinkModeIfNeeded();
+      rememberSettingsPinkModeBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -18156,6 +18184,8 @@ if (helpButton && helpDialog) {
     } else if (
       e.key === 'Escape' && settingsDialog && !settingsDialog.hasAttribute('hidden')
     ) {
+      revertSettingsPinkModeIfNeeded();
+      rememberSettingsPinkModeBaseline();
       revertAccentColor();
       settingsDialog.setAttribute('hidden', '');
     } else if (
@@ -18203,13 +18233,7 @@ if (helpButton && helpDialog) {
         saveSetupBtn.click();
       }
     } else if (e.key.toLowerCase() === 'p' && !isTextField) {
-      pinkModeEnabled = !document.body.classList.contains('pink-mode');
-      applyPinkMode(pinkModeEnabled);
-      try {
-        localStorage.setItem('pinkMode', pinkModeEnabled);
-      } catch (err) {
-        console.warn('Could not save pink mode preference', err);
-      }
+      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
     }
   });
 
