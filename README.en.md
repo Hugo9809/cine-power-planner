@@ -211,7 +211,7 @@ The generator turns your selections into a categorized packing list:
 - Toggle via the moon button next to the language selector.
 - Preference is stored in your browser.
 
-### ⭐ Pink Mode
+### 🐴 Pink Mode
 - Click the horse button (it turns into a unicorn when active) or press **P** for a playful pink accent.
 - Works in both light and dark themes and persists between visits.
 

@@ -217,7 +217,7 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 - Actívalo con el botón de la luna junto al selector de idioma.
 - La preferencia se guarda en tu navegador.
 
-### ⭐ Modo rosa
+### 🐴 Modo rosa
 - Haz clic en el botón del caballo (se convierte en un unicornio al activarse) o pulsa **P** para activar un acento rosa lúdico.
 - Funciona en los temas claro y oscuro y persiste entre visitas.
 

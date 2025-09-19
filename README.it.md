@@ -216,7 +216,7 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
 - Attivala con il pulsante a forma di luna accanto al selettore della lingua.
 - La preferenza viene salvata nel browser.
 
-### ⭐ Modalità rosa
+### 🐴 Modalità rosa
 - Clicca sul pulsante con il cavallo (diventa un unicorno quando è attivo) o premi **P** per attivare un accento rosa giocoso.
 - Funziona sia nel tema chiaro sia in quello scuro e resta attiva tra una visita e l’altra.
 
