@@ -1636,7 +1636,9 @@ select {
 input[type="file"] {
   padding: 2px 4px;
   height: auto;
-  min-height: calc(var(--button-size) + 8px);
+  min-height: var(--button-size);
+  font-size: 0.85em;
+  line-height: 1.2;
 }
 
 .file-input-wrapper {
@@ -1928,7 +1930,7 @@ input[type="file"]::-webkit-file-upload-button {
   padding: 0 8px;
   margin-right: 5px;
   cursor: pointer;
-  font-size: 0.85em;
+  font-size: 0.8em;
   height: 100%;
   min-height: var(--button-size);
   display: inline-flex;
