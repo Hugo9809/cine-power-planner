@@ -14470,22 +14470,25 @@ function setSelectValue(select, value) {
   if (value === undefined) return;
   const normalized = value === null ? '' : value;
   select.value = normalized;
-  if (select.value === normalized) return;
-  const options = Array.from(select.options || []);
-  const noneOption = options.find(opt => opt.value === 'None');
-  if (normalized === '' && !options.length) {
-    select.value = '';
-  } else if (normalized === '') {
-    if (noneOption) {
+  if (select.value !== normalized) {
+    const options = Array.from(select.options || []);
+    const noneOption = options.find(opt => opt.value === 'None');
+    if (normalized === '' && !options.length) {
+      select.value = '';
+    } else if (normalized === '') {
+      if (noneOption) {
+        select.value = 'None';
+      } else {
+        select.selectedIndex = -1;
+      }
+    } else if (noneOption) {
       select.value = 'None';
     } else {
       select.selectedIndex = -1;
     }
-  } else if (noneOption) {
-    select.value = 'None';
-  } else {
-    select.selectedIndex = -1;
   }
+  updateFavoriteButton(select);
+  adjustGearListSelectWidth(select);
 }
 
 function resetSelectsToNone(selects) {
@@ -17180,6 +17183,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveCurrentGearList,
     getGearListSelectors,
     applyGearListSelectors,
+    setSelectValue,
     autoSaveCurrentSetup,
     saveCurrentSession,
     restoreSessionState,
