@@ -7146,6 +7146,118 @@ const searchTokens = str => {
   return Array.from(tokens);
 };
 
+const FEATURE_CONTEXT_LIMIT = 3;
+
+const toTitleCase = str =>
+  str.replace(/\b([a-z])/g, (_, ch) => ch.toUpperCase());
+
+const idToContextLabel = id => {
+  if (!id) return '';
+  const spaced = id
+    .replace(/[-_]+/g, ' ')
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!spaced) return '';
+  return toTitleCase(spaced);
+};
+
+const addUniqueContext = (contexts, seen, value, baseLabelLower) => {
+  if (!value) return;
+  const trimmed = value.trim();
+  if (!trimmed) return;
+  const normalized = trimmed.toLowerCase();
+  if (normalized === baseLabelLower || seen.has(normalized)) return;
+  contexts.push(trimmed);
+  seen.add(normalized);
+};
+
+const collectFeatureContexts = (element, baseLabelLower) => {
+  if (!element || !element.parentElement) return [];
+  const contexts = [];
+  const seen = new Set();
+  let current = element.parentElement;
+  while (current && contexts.length < FEATURE_CONTEXT_LIMIT) {
+    if (typeof current.dataset?.featureContext === 'string') {
+      current.dataset.featureContext
+        .split(',')
+        .map(part => part.trim())
+        .filter(Boolean)
+        .forEach(value => addUniqueContext(contexts, seen, value, baseLabelLower));
+    }
+    const labelledBy = current.getAttribute('aria-labelledby');
+    if (labelledBy) {
+      labelledBy
+        .split(/\s+/)
+        .map(id => id && document.getElementById(id))
+        .filter(labelEl => labelEl && labelEl !== element)
+        .forEach(labelEl => {
+          addUniqueContext(
+            contexts,
+            seen,
+            labelEl.textContent || '',
+            baseLabelLower
+          );
+        });
+    }
+    const heading = current.querySelector(
+      ':scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > legend'
+    );
+    if (heading && heading !== element) {
+      addUniqueContext(
+        contexts,
+        seen,
+        heading.textContent || '',
+        baseLabelLower
+      );
+    }
+    if (current.id) {
+      addUniqueContext(contexts, seen, idToContextLabel(current.id), baseLabelLower);
+    }
+    current = current.parentElement;
+  }
+  return contexts.reverse();
+};
+
+const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
+  if (!featureList || !element || !label) return null;
+  const baseLabel = label.trim();
+  if (!baseLabel) return null;
+  const baseKey = searchKey(baseLabel);
+  if (!baseKey) return null;
+  const baseLabelLower = baseLabel.toLowerCase();
+  const contextLabels = collectFeatureContexts(element, baseLabelLower);
+  let combinedLabel = baseLabel;
+  if (contextLabels.length) {
+    combinedLabel = `${baseLabel} (${contextLabels.join(' › ')})`;
+  }
+  const combinedKeywords = [baseLabel, contextLabels.join(' '), keywords]
+    .filter(Boolean)
+    .join(' ');
+  const entry = {
+    element,
+    label: baseLabel,
+    baseLabel,
+    displayLabel: combinedLabel,
+    context: contextLabels,
+    tokens: searchTokens(combinedKeywords)
+  };
+  const existing = featureMap.get(baseKey);
+  if (!existing) {
+    featureMap.set(baseKey, entry);
+  } else if (Array.isArray(existing)) {
+    if (!existing.some(item => item && item.element === element)) {
+      existing.push(entry);
+    }
+  } else if (existing.element !== element) {
+    featureMap.set(baseKey, [existing, entry]);
+  }
+  const opt = document.createElement('option');
+  opt.value = combinedLabel;
+  featureList.appendChild(opt);
+  return entry;
+};
+
 const tokenMatchScore = (entryTokens = [], queryTokens = []) => {
   if (!Array.isArray(entryTokens) || entryTokens.length === 0) return 0;
   let total = 0;
@@ -7186,13 +7298,36 @@ function findBestSearchMatch(map, key, tokens = []) {
     score
   });
 
-  if (hasKey && map.has(key)) {
-    const value = map.get(key);
-    const score =
-      queryTokens.length > 0
-        ? tokenMatchScore(value?.tokens || [], queryTokens)
+  const flattened = [];
+  for (const [entryKey, entryValue] of map.entries()) {
+    if (!entryValue) continue;
+    if (Array.isArray(entryValue)) {
+      for (const value of entryValue) {
+        if (value) flattened.push([entryKey, value]);
+      }
+    } else {
+      flattened.push([entryKey, entryValue]);
+    }
+  }
+
+  if (hasKey) {
+    const exactCandidates = flattened.filter(([entryKey]) => entryKey === key);
+    if (exactCandidates.length) {
+      let bestEntry = exactCandidates[0][1];
+      let bestScore = queryTokens.length > 0
+        ? tokenMatchScore(bestEntry?.tokens || [], queryTokens)
         : Number.POSITIVE_INFINITY;
-    return toResult(key, value, 'exactKey', score);
+      if (queryTokens.length) {
+        for (const [, entryValue] of exactCandidates.slice(1)) {
+          const score = tokenMatchScore(entryValue?.tokens || [], queryTokens);
+          if (score > bestScore) {
+            bestScore = score;
+            bestEntry = entryValue;
+          }
+        }
+      }
+      return toResult(key, bestEntry, 'exactKey', bestScore);
+    }
   }
 
   let bestTokenMatch = null;
@@ -7200,7 +7335,7 @@ function findBestSearchMatch(map, key, tokens = []) {
   let keyPrefixMatch = null;
   let partialMatch = null;
 
-  for (const [entryKey, entryValue] of map.entries()) {
+  for (const [entryKey, entryValue] of flattened) {
     if (hasKey && entryKey.startsWith(key)) {
       const score =
         queryTokens.length > 0
@@ -7970,19 +8105,13 @@ function populateFeatureSearch() {
   deviceMap.clear();
   featureList.innerHTML = '';
   document
-    .querySelectorAll('h2[id], legend[id], h3[id]')
+    .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
     .forEach(el => {
       if (helpDialog && helpDialog.contains(el)) return;
       const name = el.textContent.trim();
-      const key = searchKey(name);
-      featureMap.set(key, {
-        element: el,
-        label: name,
-        tokens: searchTokens(name)
-      });
-      const opt = document.createElement('option');
-      opt.value = name;
-      featureList.appendChild(opt);
+      if (!name) return;
+      const keywords = el.dataset?.searchKeywords || el.getAttribute('data-search-keywords') || '';
+      buildFeatureSearchEntry(el, { label: name, keywords });
     });
   if (helpDialog) {
     helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
@@ -8009,11 +8138,17 @@ function populateFeatureSearch() {
       if (!name || opt.value === 'None') return;
       const key = searchKey(name);
       if (!deviceMap.has(key)) {
+        const keywords =
+          opt.dataset?.searchKeywords ||
+          opt.getAttribute('data-search-keywords') ||
+          sel.dataset?.searchKeywords ||
+          sel.getAttribute('data-search-keywords') ||
+          '';
         deviceMap.set(key, {
           select: sel,
           value: opt.value,
           label: name,
-          tokens: searchTokens(name)
+          tokens: searchTokens(`${name} ${keywords}`.trim())
         });
         const dlOpt = document.createElement('option');
         dlOpt.value = name;

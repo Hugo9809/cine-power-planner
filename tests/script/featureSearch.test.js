@@ -368,4 +368,66 @@ describe('global feature search helpers', () => {
     expect(select.dispatchEvent).toHaveBeenCalledTimes(1);
     expect(featureSearchInput.value).toBe('alexa 35');
   });
+
+  test('populateFeatureSearch indexes contextual subheadings for video outputs', () => {
+    const { featureMap, featureListElement } = featureSearchInternals;
+    const entries = featureMap.get(searchKey('Video Outputs'));
+    expect(entries).toBeTruthy();
+    const list = Array.isArray(entries) ? entries : [entries];
+    expect(list.length).toBeGreaterThan(1);
+
+    const monitorEntry = list.find(
+      entry => entry && entry.tokens && entry.tokens.includes('monitor')
+    );
+    const viewfinderEntry = list.find(
+      entry => entry && entry.tokens && entry.tokens.includes('viewfinder')
+    );
+
+    expect(monitorEntry).toBeTruthy();
+    expect(viewfinderEntry).toBeTruthy();
+    expect(monitorEntry.tokens).toEqual(
+      expect.arrayContaining(['video', 'outputs', 'monitor'])
+    );
+    expect(viewfinderEntry.tokens).toEqual(
+      expect.arrayContaining(['video', 'outputs', 'viewfinder'])
+    );
+
+    const optionValues = Array.from(
+      featureListElement.querySelectorAll('option')
+    ).map(opt => opt.value.toLowerCase());
+
+    expect(
+      optionValues.some(
+        value => value.includes('video outputs') && value.includes('monitor')
+      )
+    ).toBe(true);
+    expect(
+      optionValues.some(
+        value => value.includes('video outputs') && value.includes('viewfinder')
+      )
+    ).toBe(true);
+  });
+
+  test('findBestSearchMatch selects the best match from duplicate keys', () => {
+    const entries = [
+      {
+        label: 'Video Outputs (Camera Fields)',
+        tokens: searchTokens('Video Outputs Camera Fields camera')
+      },
+      {
+        label: 'Video Outputs (Monitor Fields)',
+        tokens: searchTokens('Video Outputs Monitor Fields monitor')
+      }
+    ];
+    const map = new Map();
+    map.set(searchKey('Video Outputs'), entries);
+
+    const result = findBestSearchMatch(
+      map,
+      searchKey('monitor video outputs'),
+      searchTokens('monitor video outputs')
+    );
+
+    expect(result?.value?.label).toContain('Monitor');
+  });
 });
