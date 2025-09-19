@@ -621,6 +621,18 @@ describe('export/import all data', () => {
     expect(unnamedEntry[1]).toEqual({ gearList: '<ul>Unnamed</ul>', projectInfo: null });
   });
 
+  test('importAllData handles legacy project string payload', () => {
+    const data = { project: '<section>Legacy</section>' };
+    importAllData(data);
+    expect(loadProject('')).toEqual({ gearList: '<section>Legacy</section>', projectInfo: null });
+  });
+
+  test('importAllData handles legacy project map entries stored as strings', () => {
+    const data = { project: { Legacy: '<div>Legacy</div>' } };
+    importAllData(data);
+    expect(loadProject('Legacy')).toEqual({ gearList: '<div>Legacy</div>', projectInfo: null });
+  });
+
   test('importAllData handles legacy single gearList', () => {
     const data = { gearList: '<p></p>' };
     importAllData(data);

@@ -646,7 +646,8 @@ function createProjectImporter() {
   const defaultName = "Imported project";
 
   return (rawName, project, fallbackName = defaultName) => {
-    if (typeof project !== "string" && !isPlainObject(project)) return;
+    const normalizedProject = normalizeProject(project);
+    if (!normalizedProject) return;
 
     const candidates = [];
     if (typeof rawName === "string") {
@@ -669,13 +670,13 @@ function createProjectImporter() {
     if (candidates.includes("") && !normalizedNames.has("")) {
       usedNames.add("");
       normalizedNames.add("");
-      saveProject("", project);
+      saveProject("", normalizedProject);
       return;
     }
 
     const baseName = candidates.find((name) => name) || fallback;
     const uniqueName = generateUniqueName(baseName, usedNames, normalizedNames);
-    saveProject(uniqueName, project);
+    saveProject(uniqueName, normalizedProject);
   };
 }
 
