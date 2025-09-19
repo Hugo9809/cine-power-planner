@@ -1795,6 +1795,31 @@ select {
   height: var(--button-size);
 }
 
+#accentColorInput {
+  flex: 0 0 auto;
+  width: calc(var(--button-size) * 1.25);
+  height: calc(var(--button-size) * 1.25);
+  min-width: calc(var(--button-size) * 1.25);
+  min-height: calc(var(--button-size) * 1.25);
+  max-width: calc(var(--button-size) * 1.25);
+  max-height: calc(var(--button-size) * 1.25);
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border-radius: calc(var(--border-radius) * 1.2);
+  box-shadow: 0 0 0 1px var(--panel-border);
+  overflow: hidden;
+}
+
+#accentColorInput::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+#accentColorInput::-webkit-color-swatch,
+#accentColorInput::-moz-color-swatch {
+  border: none;
+  border-radius: inherit;
+}
+
 input[type="file"] {
   padding: 2px 4px;
   height: auto;
