@@ -6659,6 +6659,51 @@ let accentColor = '#001589';
 let prevAccentColor = accentColor;
 const HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
 
+const DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
+const PINK_REFERENCE_COLOR = '#ff69b4';
+const PINK_LUMINANCE_TOLERANCE = 0.06;
+
+function computeRelativeLuminance(rgb) {
+  if (!rgb || typeof rgb !== 'object') return 0;
+  const clamp = component => {
+    const numeric = Number(component);
+    if (!Number.isFinite(numeric)) return 0;
+    return Math.min(1, Math.max(0, numeric / 255));
+  };
+  const transform = value =>
+    value <= 0.03928
+      ? value / 12.92
+      : Math.pow((value + 0.055) / 1.055, 2.4);
+  const red = transform(clamp(rgb.r));
+  const green = transform(clamp(rgb.g));
+  const blue = transform(clamp(rgb.b));
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+const PINK_REFERENCE_LUMINANCE = (() => {
+  const pinkRgb = parseColorToRgb(PINK_REFERENCE_COLOR);
+  if (!pinkRgb) return 0.35;
+  return computeRelativeLuminance(pinkRgb);
+})();
+
+function shouldEnableDarkModeAccentBoost({ color, highContrast } = {}) {
+  if (typeof document === 'undefined') return false;
+  if (!document.body || !document.body.classList.contains('dark-mode')) return false;
+  if (document.body.classList.contains('pink-mode')) return false;
+  if (highContrast) return false;
+  if (typeof color !== 'string' || !color) return false;
+  const rgb = parseColorToRgb(color);
+  if (!rgb) return false;
+  const luminance = computeRelativeLuminance(rgb);
+  return Math.abs(luminance - PINK_REFERENCE_LUMINANCE) <= PINK_LUMINANCE_TOLERANCE;
+}
+
+function refreshDarkModeAccentBoost(options = {}) {
+  if (typeof document === 'undefined' || !document.body) return;
+  const shouldEnable = shouldEnableDarkModeAccentBoost(options);
+  document.body.classList.toggle(DARK_MODE_ACCENT_BOOST_CLASS, shouldEnable);
+}
+
 const isHighContrastActive = () =>
   typeof document !== 'undefined' &&
   (document.documentElement.classList.contains('high-contrast') ||
@@ -6683,6 +6728,7 @@ const applyAccentColor = (color) => {
       bodyStyle.setProperty('--link-color', color);
     }
   }
+  refreshDarkModeAccentBoost({ color: accentValue, highContrast });
 };
 
 const clearAccentColorOverrides = () => {
@@ -6697,6 +6743,7 @@ const clearAccentColorOverrides = () => {
     bodyStyle.removeProperty('--accent-color');
     bodyStyle.removeProperty('--link-color');
   }
+  refreshDarkModeAccentBoost({ color: null, highContrast: isHighContrastActive() });
 };
 
 try {
@@ -16324,6 +16371,9 @@ function applyDarkMode(enabled) {
       darkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
+  const highContrast = isHighContrastActive();
+  const accentSource = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : accentColor;
+  refreshDarkModeAccentBoost({ color: accentSource, highContrast });
   updateThemeColor(enabled);
   if (settingsDarkMode) {
     settingsDarkMode.checked = enabled;
@@ -16737,7 +16787,7 @@ if (autoGearAddItemButton) {
   }
 }
 
-const parseRgbComponent = value => {
+function parseRgbComponent(value) {
   const trimmed = value.trim();
   if (!trimmed) return null;
   if (trimmed.endsWith('%')) {
@@ -16748,9 +16798,9 @@ const parseRgbComponent = value => {
   const numeric = Number.parseFloat(trimmed);
   if (Number.isNaN(numeric)) return null;
   return Math.max(0, Math.min(255, Math.round(numeric)));
-};
+}
 
-const parseColorToRgb = color => {
+function parseColorToRgb(color) {
   if (typeof color !== 'string') return null;
   const trimmed = color.trim();
   if (!trimmed) return null;
@@ -16782,7 +16832,7 @@ const parseColorToRgb = color => {
     return { r: red, g: green, b: blue };
   }
   return null;
-};
+}
 
 const createAccentTint = (alpha = 0.16) => {
   const accentFallback = typeof accentColor === 'string' ? accentColor : '#001589';
