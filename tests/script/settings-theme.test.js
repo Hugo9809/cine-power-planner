@@ -91,4 +91,60 @@ describe('settings dialog theme interactions', () => {
     expect(document.body.classList.contains('pink-mode')).toBe(false);
     expect(localStorage.getItem('pinkMode')).toBe('false');
   });
+
+  test('pink mode auto-save can be reverted by cancelling settings', () => {
+    localStorage.setItem('pinkMode', 'false');
+
+    const { cleanup: clean } = setupScriptEnvironment();
+    cleanup = clean;
+
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsPinkMode = document.getElementById('settingsPinkMode');
+    const settingsCancel = document.getElementById('settingsCancel');
+
+    expect(settingsButton).toBeTruthy();
+    expect(settingsPinkMode).toBeTruthy();
+    expect(settingsCancel).toBeTruthy();
+
+    settingsButton.click();
+
+    expect(settingsPinkMode.checked).toBe(false);
+
+    settingsPinkMode.checked = true;
+    settingsPinkMode.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(document.body.classList.contains('pink-mode')).toBe(true);
+    expect(localStorage.getItem('pinkMode')).toBe('true');
+
+    settingsCancel.click();
+
+    expect(document.body.classList.contains('pink-mode')).toBe(false);
+    expect(localStorage.getItem('pinkMode')).toBe('false');
+  });
+
+  test('pink mode auto-save can be reverted when closing with escape', () => {
+    localStorage.setItem('pinkMode', 'false');
+
+    const { cleanup: clean } = setupScriptEnvironment();
+    cleanup = clean;
+
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsPinkMode = document.getElementById('settingsPinkMode');
+
+    expect(settingsButton).toBeTruthy();
+    expect(settingsPinkMode).toBeTruthy();
+
+    settingsButton.click();
+
+    settingsPinkMode.checked = true;
+    settingsPinkMode.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(document.body.classList.contains('pink-mode')).toBe(true);
+    expect(localStorage.getItem('pinkMode')).toBe('true');
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+    expect(document.body.classList.contains('pink-mode')).toBe(false);
+    expect(localStorage.getItem('pinkMode')).toBe('false');
+  });
 });
