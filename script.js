@@ -29,7 +29,7 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-const APP_VERSION = "1.0.2";
+const APP_VERSION = "1.0.3";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
@@ -20162,6 +20162,7 @@ function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE, options = 
   return sel;
 }
 
+// eslint-disable-next-line no-unused-vars
 function createFilterValueSelect(type, selected) {
   const sel = document.createElement('select');
   sel.id = `filter-values-${filterId(type)}`;
