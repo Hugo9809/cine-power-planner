@@ -23,6 +23,7 @@
   --main-top-padding-multiplier: 1.5;
   --gap-size: 10px;
   --button-size: 24px;
+  --form-control-font-size: var(--font-size-relative-base);
   --form-label-width: 150px;
   --form-label-min-width: 120px;
   --form-action-width: 110px;
@@ -444,7 +445,7 @@ main.legal-content {
   border-radius: var(--border-radius);
   background-color: var(--control-bg);
   color: var(--control-text);
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  font-size: var(--form-control-font-size);
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s, transform 0.2s;
 }
@@ -1793,7 +1794,7 @@ input,
 select,
 textarea {
   padding: 4px;
-  font-size: var(--font-size-relative-base);
+  font-size: var(--form-control-font-size);
   background-color: var(--control-bg);
   color: var(--control-text);
   border: none;
@@ -2091,7 +2092,7 @@ button {
   padding: 0 8px;
   margin: 10px 5px 5px;
   cursor: pointer;
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  font-size: var(--form-control-font-size);
   height: var(--button-size);
   min-height: var(--button-size);
   display: inline-flex;
@@ -2128,7 +2129,7 @@ input[type="file"]::-webkit-file-upload-button {
   padding: 0 8px;
   margin-right: 5px;
   cursor: pointer;
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-compact));
+  font-size: var(--form-control-font-size);
   height: 100%;
   min-height: var(--button-size);
   display: inline-flex;
