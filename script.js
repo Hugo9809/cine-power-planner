@@ -1666,22 +1666,6 @@ function setLanguage(lang) {
   const tempNoteElem = document.getElementById("temperatureNote");
   if (tempNoteElem)
     tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
-  // Device manager category headings
-  document.getElementById("category_cameras").textContent = texts[lang].category_cameras;
-  document.getElementById("category_viewfinders").textContent = texts[lang].category_viewfinders;
-  document.getElementById("category_monitors").textContent = texts[lang].category_monitors;
-  document.getElementById("category_video").textContent = texts[lang].category_video;
-  document.getElementById("category_wirelessReceivers").textContent = texts[lang].category_wirelessReceivers;
-  document.getElementById("category_cages").textContent = texts[lang].category_cages;
-  document.getElementById("category_fiz_motors").textContent = texts[lang].category_fiz_motors;
-  document.getElementById("category_fiz_controllers").textContent = texts[lang].category_fiz_controllers;
-  document.getElementById("category_fiz_distance").textContent = texts[lang].category_fiz_distance;
-  document.getElementById("category_batteries").textContent = texts[lang].category_batteries;
-  document.getElementById("category_batteryHotswaps").textContent = texts[lang].category_batteryHotswaps;
-  document.getElementById("category_accessory_batteries").textContent = texts[lang].category_accessory_batteries;
-  document.getElementById("category_cables").textContent = texts[lang].category_cables;
-  document.getElementById("category_camera_support").textContent = texts[lang].category_camera_support;
-  document.getElementById("category_chargers").textContent = texts[lang].category_chargers;
   // Add device form labels and button
   document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
   document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
@@ -1765,37 +1749,7 @@ function setLanguage(lang) {
   newDtapAInput.placeholder = texts[lang].placeholder_dtap;
   cameraVoltageInput.placeholder = texts[lang].placeholder_voltage;
   monitorVoltageInput.placeholder = texts[lang].placeholder_voltage;
-  const filterMappings = [
-    {input: cameraListFilterInput, label: texts[lang].category_cameras},
-    {input: viewfinderListFilterInput, label: texts[lang].category_viewfinders},
-    {input: monitorListFilterInput, label: texts[lang].category_monitors},
-    {input: videoListFilterInput, label: texts[lang].category_video},
-    {input: wirelessReceiverListFilterInput, label: texts[lang].category_wirelessReceivers},
-    {input: motorListFilterInput, label: texts[lang].category_fiz_motors},
-    {input: controllerListFilterInput, label: texts[lang].category_fiz_controllers},
-    {input: distanceListFilterInput, label: texts[lang].category_fiz_distance},
-    {input: batteryListFilterInput, label: texts[lang].category_batteries},
-    {input: batteryHotswapListFilterInput, label: texts[lang].category_batteryHotswaps},
-    {input: accessoryBatteryListFilterInput, label: texts[lang].category_accessory_batteries},
-    {input: cableListFilterInput, label: texts[lang].category_cables},
-    {input: cageListFilterInput, label: texts[lang].category_cages},
-    {input: cameraSupportListFilterInput, label: texts[lang].category_camera_support},
-    {input: chargerListFilterInput, label: texts[lang].category_chargers}
-  ];
-
-  filterMappings.forEach(({ input, label }) => {
-    if (input) {
-      const labelText = label.replace(/[:：]$/, '').toLowerCase();
-      const placeholder = texts[lang].placeholder_filter.replace('{item}', labelText);
-      input.placeholder = placeholder;
-      input.setAttribute('aria-label', placeholder);
-      input.setAttribute('autocomplete', 'off');
-      input.setAttribute('autocorrect', 'off');
-      input.setAttribute('autocapitalize', 'off');
-      input.setAttribute('spellcheck', 'false');
-      input.setAttribute('inputmode', 'search');
-    }
-  });
+  updateDeviceManagerLocalization(lang);
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.classList.contains('hidden')) {
     toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
@@ -1810,9 +1764,7 @@ function setLanguage(lang) {
   }
   // Update newCategory select option texts
   Array.from(newCategorySelect.options).forEach(opt => {
-    if (categoryNames[lang][opt.value] !== undefined) {
-      opt.textContent = categoryNames[lang][opt.value];
-    }
+    opt.textContent = getCategoryLabel(opt.value, lang);
   });
   // Update "None" option text in all dropdowns
   const noneMap = { de: "Keine Auswahl", es: "Ninguno", fr: "Aucun" };
@@ -2711,21 +2663,212 @@ function decodeSharedSetup(setup) {
 }
 const deviceManagerSection = document.getElementById("device-manager");
 const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
-const cameraListElem  = document.getElementById("cameraList");
-const viewfinderListElem = document.getElementById("viewfinderList");
-const monitorListElem = document.getElementById("monitorList");
-const videoListElem   = document.getElementById("videoList");
-const wirelessReceiverListElem = document.getElementById("wirelessReceiverList");
-const motorListElem   = document.getElementById("motorList");
-const controllerListElem = document.getElementById("controllerList");
-const distanceListElem   = document.getElementById("distanceList");
-const batteryListElem    = document.getElementById("batteryList");
-const batteryHotswapListElem = document.getElementById("batteryHotswapList");
-const accessoryBatteryListElem = document.getElementById("accessoryBatteryList");
-const cableListElem = document.getElementById("cableList");
-const cageListElem = document.getElementById("cageList");
-const cameraSupportListElem = document.getElementById("cameraSupportList");
-const chargerListElem       = document.getElementById("chargerList");
+const deviceListContainer = document.getElementById("deviceListContainer");
+const deviceManagerLists = new Map();
+const deviceManagerPreferredOrder = [
+  "cameras",
+  "viewfinders",
+  "monitors",
+  "video",
+  "wirelessReceivers",
+  "directorMonitors",
+  "iosVideo",
+  "lenses",
+  "fiz.motors",
+  "fiz.controllers",
+  "fiz.handUnits",
+  "fiz.distance",
+  "batteries",
+  "batteryHotswaps",
+  "accessories.batteries",
+  "accessories.powerPlates",
+  "accessories.cables",
+  "accessories.cages",
+  "accessories.cameraSupport",
+  "accessories.cameraStabiliser",
+  "accessories.chargers",
+  "accessories.videoAssist",
+  "accessories.media",
+  "accessories.filters",
+  "accessories.matteboxes",
+  "accessories.rigging",
+  "accessories.grip",
+  "accessories.sliders",
+  "accessories.tripodHeads",
+  "accessories.tripods",
+  "accessories.carts"
+];
+
+function normalizeCategoryKey(key) {
+  if (!key) return null;
+  if (key === "accessories" || key === "fiz" || key === "filterOptions") return null;
+  if (key.startsWith("accessories.cables.")) return "accessories.cables";
+  if (key === "videoAssist" && devices?.accessories?.videoAssist) return "accessories.videoAssist";
+  if (key === "media" && devices?.accessories?.media) return "accessories.media";
+  return key;
+}
+
+function getCategoryLabel(categoryKey, lang = currentLang) {
+  if (!categoryKey) return "";
+  const langNames = (typeof categoryNames === "object" && categoryNames && categoryNames[lang]) || {};
+  if (langNames[categoryKey]) return langNames[categoryKey];
+  const fallbackNames = (typeof categoryNames === "object" && categoryNames && categoryNames.en) || {};
+  if (fallbackNames[categoryKey]) return fallbackNames[categoryKey];
+  const parts = categoryKey.split('.');
+  if (parts[0] === "accessories" && parts.length > 1) {
+    const rest = parts.slice(1).map(part => humanizeKey(part));
+    return `${humanizeKey('accessory')} ${rest.join(' ')}`.trim();
+  }
+  if (parts[0] === "fiz" && parts.length > 1) {
+    const rest = parts.slice(1).map(part => humanizeKey(part));
+    return `FIZ ${rest.join(' ')}`.trim();
+  }
+  return parts.map(part => humanizeKey(part)).join(' ');
+}
+
+function collectDeviceManagerCategories() {
+  const categories = new Set();
+  const addCategory = (key) => {
+    const normalized = normalizeCategoryKey(key);
+    if (!normalized) return;
+    categories.add(normalized);
+  };
+
+  const traverseSchema = (node, path = []) => {
+    if (!node || typeof node !== 'object') return;
+    if (Array.isArray(node.attributes)) {
+      addCategory(path.join('.'));
+    }
+    Object.entries(node).forEach(([childKey, value]) => {
+      if (childKey === 'attributes') return;
+      if (value && typeof value === 'object') {
+        traverseSchema(value, path.concat(childKey));
+      }
+    });
+  };
+
+  if (deviceSchema) {
+    traverseSchema(deviceSchema, []);
+  }
+
+  const addFromData = (data) => {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return;
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === 'accessories') {
+        if (value && typeof value === 'object') {
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            if (subValue && typeof subValue === 'object' && !Array.isArray(subValue)) {
+              addCategory(`accessories.${subKey}`);
+            }
+          });
+        }
+      } else if (key === 'fiz') {
+        if (value && typeof value === 'object') {
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            if (subValue && typeof subValue === 'object' && !Array.isArray(subValue)) {
+              addCategory(`fiz.${subKey}`);
+            }
+          });
+        }
+      } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+        addCategory(key);
+      }
+    });
+  };
+
+  addFromData(devices);
+
+  const sorted = Array.from(categories);
+  const orderMap = new Map(deviceManagerPreferredOrder.map((key, index) => [key, index]));
+  sorted.sort((a, b) => {
+    const idxA = orderMap.has(a) ? orderMap.get(a) : deviceManagerPreferredOrder.length;
+    const idxB = orderMap.has(b) ? orderMap.get(b) : deviceManagerPreferredOrder.length;
+    if (idxA !== idxB) return idxA - idxB;
+    return a.localeCompare(b);
+  });
+  return sorted;
+}
+
+function createDeviceCategorySection(categoryKey) {
+  if (!deviceListContainer || deviceManagerLists.has(categoryKey)) return deviceManagerLists.get(categoryKey) || null;
+  const section = document.createElement('div');
+  section.className = 'device-category';
+  const sanitizedId = categoryKey.replace(/[^a-z0-9]+/gi, '_');
+  const heading = document.createElement('h4');
+  heading.id = `category_${sanitizedId}`;
+  heading.dataset.categoryKey = categoryKey;
+  section.appendChild(heading);
+  const filterInput = document.createElement('input');
+  filterInput.type = 'search';
+  filterInput.className = 'list-filter';
+  filterInput.id = `${sanitizedId}ListFilter`;
+  filterInput.dataset.categoryKey = categoryKey;
+  section.appendChild(filterInput);
+  const list = document.createElement('ul');
+  list.className = 'device-ul';
+  list.id = `${sanitizedId}List`;
+  section.appendChild(list);
+  deviceListContainer.appendChild(section);
+  bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
+  const entry = { section, heading, filterInput, list, sanitizedId };
+  deviceManagerLists.set(categoryKey, entry);
+  return entry;
+}
+
+function updateDeviceManagerLocalization(lang = currentLang) {
+  if (!deviceManagerLists.size) return;
+  const placeholderTemplate = (texts[lang] && texts[lang].placeholder_filter) || 'Filter {item}...';
+  const clearLabel = (texts[lang] && texts[lang].clearFilter) || 'Clear filter';
+  deviceManagerLists.forEach((entry, categoryKey) => {
+    const label = getCategoryLabel(categoryKey, lang);
+    if (entry.heading) {
+      entry.heading.textContent = label;
+    }
+    if (entry.filterInput) {
+      const placeholder = placeholderTemplate.replace('{item}', label.toLowerCase());
+      entry.filterInput.placeholder = placeholder;
+      entry.filterInput.setAttribute('aria-label', placeholder);
+      entry.filterInput.setAttribute('autocomplete', 'off');
+      entry.filterInput.setAttribute('autocorrect', 'off');
+      entry.filterInput.setAttribute('autocapitalize', 'off');
+      entry.filterInput.setAttribute('spellcheck', 'false');
+      entry.filterInput.setAttribute('inputmode', 'search');
+      const clearBtn = entry.filterInput.nextElementSibling;
+      if (clearBtn && clearBtn.classList.contains('clear-input-btn')) {
+        clearBtn.setAttribute('aria-label', clearLabel);
+        clearBtn.title = clearLabel;
+      }
+    }
+  });
+}
+
+function syncDeviceManagerCategories() {
+  if (!deviceListContainer) return;
+  const categories = collectDeviceManagerCategories();
+  const desiredSet = new Set(categories);
+  const existingKeys = Array.from(deviceManagerLists.keys());
+  categories.forEach(categoryKey => {
+    if (!deviceManagerLists.has(categoryKey)) {
+      createDeviceCategorySection(categoryKey);
+    }
+  });
+  existingKeys.forEach(categoryKey => {
+    if (!desiredSet.has(categoryKey)) {
+      const entry = deviceManagerLists.get(categoryKey);
+      if (entry && entry.section && entry.section.parentNode) {
+        entry.section.parentNode.removeChild(entry.section);
+      }
+      deviceManagerLists.delete(categoryKey);
+    }
+  });
+  categories.forEach(categoryKey => {
+    const entry = deviceManagerLists.get(categoryKey);
+    if (entry && entry.section) {
+      deviceListContainer.appendChild(entry.section);
+    }
+  });
+  updateDeviceManagerLocalization(currentLang);
+}
 function getCurrentProjectName() {
   const typedName =
     (setupNameInput && typeof setupNameInput.value === 'string'
@@ -2761,7 +2904,7 @@ function populateCategoryOptions() {
   const addOpt = (val) => {
     const opt = document.createElement('option');
     opt.value = val;
-    opt.textContent = categoryNames[currentLang]?.[val] || val.split('.').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+    opt.textContent = getCategoryLabel(val, currentLang);
     newCategorySelect.appendChild(opt);
   };
 
@@ -2805,6 +2948,8 @@ function populateCategoryOptions() {
       }
     }
   }
+
+  syncDeviceManagerCategories();
 }
 
 populateCategoryOptions();
@@ -5333,21 +5478,6 @@ const overviewSectionIcons = {
 
 // Load an image and optionally strip a solid background using Canvas
 // List filters for existing device categories
-const cameraListFilterInput = document.getElementById("cameraListFilter");
-const viewfinderListFilterInput = document.getElementById("viewfinderListFilter");
-const monitorListFilterInput = document.getElementById("monitorListFilter");
-const videoListFilterInput = document.getElementById("videoListFilter");
-const wirelessReceiverListFilterInput = document.getElementById("wirelessReceiverListFilter");
-const motorListFilterInput = document.getElementById("motorListFilter");
-const controllerListFilterInput = document.getElementById("controllerListFilter");
-const distanceListFilterInput = document.getElementById("distanceListFilter");
-const batteryListFilterInput = document.getElementById("batteryListFilter");
-const batteryHotswapListFilterInput = document.getElementById("batteryHotswapListFilter");
-const cameraSupportListFilterInput = document.getElementById("cameraSupportListFilter");
-const chargerListFilterInput = document.getElementById("chargerListFilter");
-const accessoryBatteryListFilterInput = document.getElementById("accessoryBatteryListFilter");
-const cableListFilterInput = document.getElementById("cableListFilter");
-const cageListFilterInput = document.getElementById("cageListFilter");
 
 // NEW SETUP MANAGEMENT DOM ELEMENTS
 const generateOverviewBtn = document.getElementById('generateOverviewBtn');
@@ -7192,21 +7322,11 @@ function addInputClearButton(inputElem, callback) {
 }
 
 function applyFilters() {
-  filterDeviceList(cameraListElem, cameraListFilterInput.value);
-  filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
-  filterDeviceList(monitorListElem, monitorListFilterInput.value);
-  filterDeviceList(videoListElem, videoListFilterInput.value);
-  filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value);
-  filterDeviceList(motorListElem, motorListFilterInput.value);
-  filterDeviceList(controllerListElem, controllerListFilterInput.value);
-  filterDeviceList(distanceListElem, distanceListFilterInput.value);
-  filterDeviceList(batteryListElem, batteryListFilterInput.value);
-  filterDeviceList(batteryHotswapListElem, batteryHotswapListFilterInput.value);
-  filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value);
-  filterDeviceList(cableListElem, cableListFilterInput.value);
-  filterDeviceList(cageListElem, cageListFilterInput.value);
-  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
-  filterDeviceList(chargerListElem, chargerListFilterInput.value);
+  deviceManagerLists.forEach(({ list, filterInput }) => {
+    if (!list) return;
+    const value = filterInput ? filterInput.value : '';
+    filterDeviceList(list, value);
+  });
 }
 
 // Initialize device selection dropdowns
@@ -9062,37 +9182,13 @@ function renderDeviceList(categoryKey, ulElement) {
 }
 
 function refreshDeviceLists() {
-  renderDeviceList("cameras", cameraListElem);
-  renderDeviceList("viewfinders", viewfinderListElem);
-  renderDeviceList("monitors", monitorListElem);
-  renderDeviceList("video", videoListElem);
-  renderDeviceList("wirelessReceivers", wirelessReceiverListElem);
-  renderDeviceList("fiz.motors", motorListElem);
-  renderDeviceList("fiz.controllers", controllerListElem);
-  renderDeviceList("fiz.distance", distanceListElem);
-  renderDeviceList("batteries", batteryListElem);
-  renderDeviceList("batteryHotswaps", batteryHotswapListElem);
-  renderDeviceList("accessories.batteries", accessoryBatteryListElem);
-  renderDeviceList("accessories.cables", cableListElem);
-  renderDeviceList("accessories.cages", cageListElem);
-  renderDeviceList("accessories.cameraSupport", cameraSupportListElem);
-  renderDeviceList("accessories.chargers", chargerListElem);
-
-  filterDeviceList(cameraListElem, cameraListFilterInput.value);
-  filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value);
-  filterDeviceList(monitorListElem, monitorListFilterInput.value);
-  filterDeviceList(videoListElem, videoListFilterInput.value);
-  filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value);
-  filterDeviceList(motorListElem, motorListFilterInput.value);
-  filterDeviceList(controllerListElem, controllerListFilterInput.value);
-  filterDeviceList(distanceListElem, distanceListFilterInput.value);
-  filterDeviceList(batteryListElem, batteryListFilterInput.value);
-  filterDeviceList(batteryHotswapListElem, batteryHotswapListFilterInput.value);
-  filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value);
-  filterDeviceList(cableListElem, cableListFilterInput.value);
-  filterDeviceList(cageListElem, cageListFilterInput.value);
-  filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value);
-  filterDeviceList(chargerListElem, chargerListFilterInput.value);
+  syncDeviceManagerCategories();
+  deviceManagerLists.forEach(({ list, filterInput }, categoryKey) => {
+    if (!list) return;
+    renderDeviceList(categoryKey, list);
+    const filterValue = filterInput ? filterInput.value : '';
+    filterDeviceList(list, filterValue);
+  });
 }
 
 // Initial render of device lists
@@ -9116,21 +9212,6 @@ if (skipLink) {
 
 
 
-bindFilterInput(cameraListFilterInput, () => filterDeviceList(cameraListElem, cameraListFilterInput.value));
-bindFilterInput(viewfinderListFilterInput, () => filterDeviceList(viewfinderListElem, viewfinderListFilterInput.value));
-bindFilterInput(monitorListFilterInput, () => filterDeviceList(monitorListElem, monitorListFilterInput.value));
-bindFilterInput(videoListFilterInput, () => filterDeviceList(videoListElem, videoListFilterInput.value));
-bindFilterInput(wirelessReceiverListFilterInput, () => filterDeviceList(wirelessReceiverListElem, wirelessReceiverListFilterInput.value));
-bindFilterInput(motorListFilterInput, () => filterDeviceList(motorListElem, motorListFilterInput.value));
-bindFilterInput(controllerListFilterInput, () => filterDeviceList(controllerListElem, controllerListFilterInput.value));
-bindFilterInput(distanceListFilterInput, () => filterDeviceList(distanceListElem, distanceListFilterInput.value));
-bindFilterInput(batteryListFilterInput, () => filterDeviceList(batteryListElem, batteryListFilterInput.value));
-bindFilterInput(batteryHotswapListFilterInput, () => filterDeviceList(batteryHotswapListElem, batteryHotswapListFilterInput.value));
-bindFilterInput(accessoryBatteryListFilterInput, () => filterDeviceList(accessoryBatteryListElem, accessoryBatteryListFilterInput.value));
-bindFilterInput(cableListFilterInput, () => filterDeviceList(cableListElem, cableListFilterInput.value));
-bindFilterInput(cageListFilterInput, () => filterDeviceList(cageListElem, cageListFilterInput.value));
-bindFilterInput(cameraSupportListFilterInput, () => filterDeviceList(cameraSupportListElem, cameraSupportListFilterInput.value));
-bindFilterInput(chargerListFilterInput, () => filterDeviceList(chargerListElem, chargerListFilterInput.value));
 
 // Setup management
 saveSetupBtn.addEventListener("click", () => {
