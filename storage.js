@@ -8,6 +8,8 @@ const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
+const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
+const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, fall back to a simple
@@ -101,6 +103,31 @@ function deleteFromStorage(storage, key, errorMessage) {
   if (!storage) return;
   try {
     storage.removeItem(key);
+  } catch (e) {
+    console.error(errorMessage, e);
+    alertStorageError();
+  }
+}
+
+function loadFlagFromStorage(storage, key, errorMessage) {
+  if (!storage) return false;
+  try {
+    return storage.getItem(key) === '1';
+  } catch (e) {
+    console.error(errorMessage, e);
+    alertStorageError();
+    return false;
+  }
+}
+
+function saveFlagToStorage(storage, key, value, errorMessage) {
+  if (!storage) return;
+  try {
+    if (value) {
+      storage.setItem(key, '1');
+    } else {
+      storage.removeItem(key);
+    }
   } catch (e) {
     console.error(errorMessage, e);
     alertStorageError();
@@ -561,6 +588,44 @@ function saveFeedback(feedback) {
   );
 }
 
+// --- Automatic Gear Rules Storage ---
+function loadAutoGearRules() {
+  const parsed = loadJSONFromStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_RULES_STORAGE_KEY,
+    "Error loading automatic gear rules from localStorage:",
+    [],
+  );
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function saveAutoGearRules(rules) {
+  const safeRules = Array.isArray(rules) ? rules : [];
+  saveJSONToStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_RULES_STORAGE_KEY,
+    safeRules,
+    "Error saving automatic gear rules to localStorage:",
+  );
+}
+
+function loadAutoGearSeedFlag() {
+  return loadFlagFromStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_SEEDED_STORAGE_KEY,
+    "Error loading automatic gear seed flag from localStorage:",
+  );
+}
+
+function saveAutoGearSeedFlag(flag) {
+  saveFlagToStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_SEEDED_STORAGE_KEY,
+    Boolean(flag),
+    "Error saving automatic gear seed flag to localStorage:",
+  );
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
@@ -571,6 +636,8 @@ function clearAllData() {
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
@@ -588,6 +655,8 @@ function exportAllData() {
     feedback: loadFeedback(),
     project: loadProject(),
     favorites: loadFavorites(),
+    autoGearRules: loadAutoGearRules(),
+    autoGearSeeded: loadAutoGearSeedFlag(),
   };
 }
 
@@ -610,6 +679,12 @@ function importAllData(allData) {
   }
   if (allData.favorites) {
     saveFavorites(allData.favorites);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
+    saveAutoGearRules(allData.autoGearRules);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
+    saveAutoGearSeedFlag(allData.autoGearSeeded);
   }
 
   let importProjectEntry = null;
@@ -653,5 +728,9 @@ if (typeof module !== "undefined" && module.exports) {
     clearAllData,
     exportAllData,
     importAllData,
+    loadAutoGearRules,
+    saveAutoGearRules,
+    loadAutoGearSeedFlag,
+    saveAutoGearSeedFlag,
   };
 }

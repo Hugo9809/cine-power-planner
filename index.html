@@ -745,6 +745,67 @@
           </div>
         </div>
       </div>
+      <section class="settings-section" aria-labelledby="autoGearHeading">
+        <h3 id="autoGearHeading">Automatic Gear Rules</h3>
+        <p id="autoGearDescription" class="settings-hint"></p>
+        <div id="autoGearRulesList" class="auto-gear-rules" aria-live="polite"></div>
+        <button type="button" id="autoGearAddRule">Add rule</button>
+        <div id="autoGearEditor" class="auto-gear-editor" hidden>
+          <div class="form-row">
+            <label for="autoGearRuleName" id="autoGearRuleNameLabel">Rule name</label>
+            <input type="text" id="autoGearRuleName" />
+          </div>
+          <div class="form-row">
+            <label for="autoGearScenarios" id="autoGearScenariosLabel">Required scenarios</label>
+            <select id="autoGearScenarios" multiple size="8"></select>
+          </div>
+          <div class="auto-gear-editor-columns">
+            <div class="auto-gear-column">
+              <h4 id="autoGearAddItemsHeading">Add these items</h4>
+              <div class="auto-gear-add-controls">
+                <div class="auto-gear-field">
+                  <label for="autoGearAddName" id="autoGearAddItemLabel">Item</label>
+                  <input type="text" id="autoGearAddName" list="autoGearItemCatalog" />
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearAddCategory" id="autoGearAddCategoryLabel">Category</label>
+                  <select id="autoGearAddCategory"></select>
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearAddQuantity" id="autoGearAddQuantityLabel">Qty</label>
+                  <input type="number" id="autoGearAddQuantity" min="1" value="1" />
+                </div>
+                <button type="button" id="autoGearAddItemButton">Add item</button>
+              </div>
+              <ul id="autoGearAddList" class="auto-gear-item-list"></ul>
+            </div>
+            <div class="auto-gear-column">
+              <h4 id="autoGearRemoveItemsHeading">Remove these items</h4>
+              <div class="auto-gear-add-controls">
+                <div class="auto-gear-field">
+                  <label for="autoGearRemoveName" id="autoGearRemoveItemLabel">Item</label>
+                  <input type="text" id="autoGearRemoveName" list="autoGearItemCatalog" />
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearRemoveCategory" id="autoGearRemoveCategoryLabel">Category</label>
+                  <select id="autoGearRemoveCategory"></select>
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearRemoveQuantity" id="autoGearRemoveQuantityLabel">Qty</label>
+                  <input type="number" id="autoGearRemoveQuantity" min="1" value="1" />
+                </div>
+                <button type="button" id="autoGearRemoveItemButton">Add removal</button>
+              </div>
+              <ul id="autoGearRemoveList" class="auto-gear-item-list"></ul>
+            </div>
+          </div>
+          <div class="button-row">
+            <button type="button" id="autoGearSaveRule">Save rule</button>
+            <button type="button" id="autoGearCancelEdit">Cancel</button>
+          </div>
+        </div>
+        <datalist id="autoGearItemCatalog"></datalist>
+      </section>
       <section class="settings-section" aria-labelledby="accessibilityHeading">
         <h3 id="accessibilityHeading">Accessibility</h3>
         <div class="form-row">
