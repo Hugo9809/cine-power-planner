@@ -26,7 +26,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Keyboard shortcuts for the global search let you press / or Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it sits inside the collapsed mobile side menu.
 - Force reload button clears cached service worker files so the offline app refreshes without deleting saved projects or devices.
 - Star icons in every selector pin favorite cameras, batteries and accessories to the top of the list and keep them in backups.
-- Clear local cache button wipes stored projects and settings.
+- Factory reset workflow automatically downloads a backup before wiping stored projects, custom devices and settings.
 - Gear list and printable overview display the project name for quick reference.
 - Upload a custom logo for printed overviews and backups.
 - Backups include favorites and create an automatic backup before restore.
@@ -77,7 +77,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
 - Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
 - Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices; load it through the Shared Project picker to restore everything in one step.
-- Data is stored locally via `localStorage` and favorites are preserved in backups; use the dedicated **Clear Local Cache** button in Settings if you need to wipe cached projects and device edits.
+- Data is stored locally via `localStorage` and favorites are preserved in backups; use the **Factory reset** option in Settings to capture a backup automatically before wiping cached projects and device edits.
 - Generate printable overviews for any saved project and add a custom logo so exports and backups match your production branding.
 - Save project requirements along with each project so gear lists retain full context.
 - Works fully offline with the installed service worker—language, theme, device data and favorites persist between sessions.
@@ -100,7 +100,7 @@ The app automatically uses your browser language on first load, and you can swit
     assets without clearing projects.
 - A skip link and offline indicator keep the layout accessible on keyboard and touch devices—the badge appears whenever the browser loses its connection.
 - The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result, use / or Ctrl+K (⌘K on macOS) to focus it from anywhere (the side menu opens automatically on small screens) and press Escape or tap × to clear the query.
-- Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup, restore and Clear Local Cache tools.
+- Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup, restore and Factory reset tools that back up data before wiping it.
 - The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
 - The Force reload button (🔄) clears cached service worker files so the offline app updates without deleting saved projects or custom devices.
 - On smaller screens a collapsible side menu mirrors every major section for quick navigation.
@@ -259,7 +259,7 @@ so Cine Power Planner works fully offline and updates in the background. Project
 runtime submissions and preferences (language, theme, pink mode and saved gear
 lists) live in your browser's `localStorage`. Clearing the site's data in the
 browser removes all stored information, and the Settings dialog includes a
-**Clear Local Cache** button for the same one-click cleanup. The header shows an
+**Factory reset** workflow that saves a backup automatically before clearing everything. The header shows an
 offline badge whenever connectivity drops, and the 🔄 **Force reload** action
 refreshes cached assets without disturbing saved projects.
 

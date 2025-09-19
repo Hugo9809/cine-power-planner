@@ -22,7 +22,7 @@ Die App übernimmt beim ersten Start automatisch die Sprache deines Browsers; ü
 - Tastenkürzel für die globale Suche lassen dich / oder Strg+K (⌘K auf macOS) drücken, um sie sofort zu fokussieren – auch wenn sie im eingeklappten mobilen Seitenmenü liegt.
 - Die Schaltfläche „Neu laden erzwingen“ leert die zwischengespeicherten Service-Worker-Dateien, damit sich die Offline-App aktualisiert, ohne gespeicherte Projekte oder Geräte zu löschen.
 - Sternsymbole in jeder Auswahl heften Lieblingskameras, -akkus und -zubehör oben an und nehmen sie in Backups auf.
-- Die Schaltfläche „Lokalen Cache löschen“ entfernt gespeicherte Projekte und Einstellungen.
+- Der Workflow **Werkseinstellungen** lädt automatisch eine Sicherung herunter und entfernt danach gespeicherte Projekte, Geräte und Einstellungen.
 - Die Geräteliste und die druckbare Übersicht zeigen den Projektnamen für einen schnellen Überblick an.
 - Lade ein eigenes Logo hoch, das in druckbaren Übersichten und Backups erscheint.
 - Backups enthalten Favoriten und erstellen vor einer Wiederherstellung automatisch eine Sicherung.
@@ -74,7 +74,7 @@ Die App übernimmt beim ersten Start automatisch die Sprache deines Browsers; ü
 - Speichere, lade und lösche mehrere Kamera-Projekte (drücke Enter oder Strg+S/⌘S zum schnellen Speichern; die Schaltfläche bleibt deaktiviert, bis ein Name eingegeben wurde).
 - Alle zehn Minuten entstehen automatisch Schnappschüsse, solange der Planner geöffnet ist; im Einstellungsdialog lassen sich stündliche Backup-Exporte als Erinnerung aktivieren.
 - Lade eine JSON-Datei herunter, die Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigene Geräte bündelt; über den „Geteiltes Projekt“-Picker importierst du alles in einem Schritt.
-- Daten werden lokal über `localStorage` gespeichert, Favoriten landen ebenfalls in Backups; nutze die Schaltfläche **Lokalen Cache löschen** in den Einstellungen, um gespeicherte Projekte und Geräteanpassungen zu entfernen.
+- Daten werden lokal über `localStorage` gespeichert, Favoriten landen ebenfalls in Backups; nutze die Option **Werkseinstellungen** in den Einstellungen, die vor dem Zurücksetzen automatisch eine Sicherung speichert.
 - Erstelle druckbare Übersichten für jedes gespeicherte Projekt und füge ein individuelles Logo hinzu, damit Exporte und Backups zum Produktionsbranding passen.
 - Projektanforderungen werden gemeinsam mit dem Projekt gespeichert, sodass Gerätelisten den gesamten Kontext behalten.
 - Funktioniert komplett offline dank installiertem Service Worker – Sprache, Theme, Gerätedaten und Favoriten bleiben erhalten.
@@ -98,7 +98,7 @@ Die App übernimmt beim ersten Start automatisch die Sprache deines Browsers; ü
     aktualisieren zwischengespeicherte Dateien, ohne Projekte zu löschen.
 - Ein Skip-Link und ein Offline-Indikator halten das Layout für Tastatur und Touch zugänglich; das Badge erscheint, sobald der Browser die Verbindung verliert.
 - Die globale Suchleiste springt zu Funktionen, Geräteauswahlen oder Hilfethemen; drücke Enter für das markierte Ergebnis, / oder Strg+K (⌘K auf macOS) zum sofortigen Fokussieren (auf kleinen Displays öffnet sich das Seitenmenü automatisch) und Escape oder × zum Zurücksetzen.
-- Oben findest du Sprachumschaltung, Toggles für dunkles und rosa Theme sowie den Einstellungsdialog mit Akzentfarbe, Schriftgröße, Schriftfamilie, High-Contrast-Schalter und Logo-Upload plus Backup-, Restore- und Cache-Löschen-Werkzeuge.
+- Oben findest du Sprachumschaltung, Toggles für dunkles und rosa Theme sowie den Einstellungsdialog mit Akzentfarbe, Schriftgröße, Schriftfamilie, High-Contrast-Schalter und Logo-Upload plus Backup-, Restore- und Werkseinstellungen-Werkzeuge, die vor dem Löschen eine Sicherung erstellen.
 - Die Hilfe-Schaltfläche öffnet einen durchsuchbaren Dialog mit Schritt-für-Schritt-Anleitungen, Tastenkürzeln, FAQ und optionalem Hover-Hilfemodus; du erreichst ihn auch mit ?, H, F1 oder Strg+/ – selbst während der Eingabe.
 - Die Schaltfläche zum Erzwingen einer Aktualisierung (🔄) löscht zwischengespeicherte Service-Worker-Dateien, damit sich die Offline-App erneuert, ohne Projekte oder Geräte zu verlieren.
 - Auf kleineren Bildschirmen spiegelt ein einklappbares Seitenmenü alle wichtigen Bereiche für schnellen Zugriff.
@@ -250,7 +250,7 @@ Nach der Installation startet die App vom Startbildschirm, funktioniert offline 
 
 ## 📡 Offline-Nutzung & Datenspeicherung
 
-Beim Ausliefern über HTTP(S) installiert sich ein Service Worker, der alle Dateien cached, sodass Cine Power Planner vollständig offline läuft und Updates im Hintergrund lädt. Projekte, Laufzeit-Einreichungen und Einstellungen (Sprache, Theme, Rosa-Modus, gespeicherte Gerätelisten) liegen im `localStorage` deines Browsers. Das Löschen der Seitendaten entfernt alle Informationen; im Einstellungsdialog gibt es dafür ebenfalls die Schaltfläche **Lokalen Cache löschen**.
+Beim Ausliefern über HTTP(S) installiert sich ein Service Worker, der alle Dateien cached, sodass Cine Power Planner vollständig offline läuft und Updates im Hintergrund lädt. Projekte, Laufzeit-Einreichungen und Einstellungen (Sprache, Theme, Rosa-Modus, gespeicherte Gerätelisten) liegen im `localStorage` deines Browsers. Das Löschen der Seitendaten entfernt alle Informationen; im Einstellungsdialog gibt es dafür ebenfalls den Workflow **Werkseinstellungen**, der vor dem Leeren automatisch eine Sicherung speichert.
 Die Kopfzeile zeigt ein Offline-Badge, sobald die Verbindung wegfällt, und die
 Aktion 🔄 **Neu laden erzwingen** aktualisiert gecachte Assets, ohne Projekte
 anzutasten.

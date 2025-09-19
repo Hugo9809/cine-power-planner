@@ -121,7 +121,7 @@ Contributions for additional languages are welcome. Follow the [translation guid
 - **Global search shortcuts** – press / or Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it lives inside the collapsed mobile side menu.
 - **Force reload button** – clear cached service worker files and refresh the offline app without deleting saved projects or devices.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries and accessories at the top of each selector and include them in backups.
-- **Clear local cache** – wipe stored projects and settings with one click.
+- **Factory reset button** – download a backup automatically before wiping saved projects, custom devices and settings in one step.
 - **Project name above gear list** – printed overviews and the gear list now show the project name.
 - **Custom print logo** – upload a logo that appears in printable overviews and backups.
 - **Favorites in backups** – favorites are saved and an automatic backup runs before restoring data.
@@ -252,8 +252,8 @@ Understanding the planner's vocabulary makes it easier to explore new features:
 
 - Automatic snapshots, manual exports and the **Force reload** button let you
   experiment without fear. Restores create a safety backup before overwriting
-  data, and the **Clear Local Cache** option removes everything when you need a
-  clean slate.
+  data, and the **Factory reset** option downloads a backup before wiping
+  everything when you need a clean slate.
 
 ## Interface Overview
 
@@ -277,7 +277,7 @@ Understanding the planner's vocabulary makes it easier to explore new features:
 
 - A skip link, offline indicator and responsive branding keep the interface accessible across devices; the offline badge appears whenever the browser loses its connection.
 - The global search bar jumps to features, device selectors or help topics—press Enter to navigate to the highlighted result, use / or Ctrl+K (⌘K on macOS) to focus it from anywhere (the side menu opens automatically on small screens), and press Escape or × to clear the query.
-- Language, dark mode and pink mode buttons sit alongside the Settings dialog, which exposes accent color, font size, font family, high contrast and custom logo uploads plus backup, restore and Clear Local Cache tools.
+- Language, dark mode and pink mode buttons sit alongside the Settings dialog, which exposes accent color, font size, font family, high contrast and custom logo uploads plus backup, restore and Factory reset tools that capture a backup before wiping planner data.
 - The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
 - The Force reload button (🔄) removes cached service worker files and refreshes the app without touching saved projects or device data.
 
@@ -381,7 +381,8 @@ files so the planner runs entirely offline and pulls updates in the
 background. Projects, runtime submissions and preferences (language, theme,
 pink mode and saved gear lists) are stored locally via `localStorage` in your
 browser. Clearing the site's data in your browser removes all saved
-information, and the Settings dialog includes a **Clear Local Cache** button for a one-click reset when you need a fresh start.
+information, and the Settings dialog includes a **Factory reset** workflow that
+downloads a backup before clearing everything when you need a fresh start.
 The header shows an offline indicator whenever the browser drops its
 connection, and the 🔄 **Force reload** action refreshes cached assets without
 touching saved data.
@@ -402,9 +403,9 @@ controls to export your work:
   the internal `exportAllData()` routine. Restoring the file automatically saves
   a safety copy of your current data before importing the new settings and warns
   when the file was produced with a different app version.
-- **Clear Local Cache:** In **Settings → Backup & Restore**, wipe saved projects,
-  custom gear, favorites and runtime feedback with one click when you need to
-  start over.
+- **Factory reset:** Open **Settings → Backup & Restore → Factory reset** to
+  download a backup automatically and then wipe saved projects, custom gear,
+  favorites and runtime feedback when you need to start over.
 - **Regular reminders:** While the planner is running, an hourly background job
   triggers the same backup export so you always have a recent download prompt as
   a reminder to archive your data.
@@ -422,7 +423,7 @@ infrastructure.
 Because a service worker caches assets for offline use, the only runtime network
 requests come from optional resources such as the OpenMoji icon set when a
 connection is available. You can clear saved information at any time via
-**Settings → Clear Local Cache** or by deleting the site's data in your browser.
+**Settings → Factory reset** or by deleting the site's data in your browser.
 Exports produce human-readable JSON so you can review exactly what will be
 shared before handing files to collaborators or clients.
 
