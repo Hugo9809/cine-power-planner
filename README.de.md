@@ -208,7 +208,7 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 - Die Einstellung wird im Browser gespeichert.
 
 ### 🦄 Rosa Modus
-- Auf den Einhorn-Button klicken (im aktiven Zustand funkelt er) oder **P** drücken, um den verspielten rosa Akzent zu aktivieren.
+- Auf den Einhorn-Button klicken (im aktiven Pinkmodus wechseln die Einhorn-Icons alle 30 Sekunden mit einer sanften Pop-Animation und beim Verlassen erscheint wieder das Pferd) oder **P** drücken, um den verspielten rosa Akzent zu aktivieren.
 - Funktioniert im hellen und dunklen Theme und bleibt zwischen Besuchen erhalten.
 
 ### ⚫ High-Contrast-Modus

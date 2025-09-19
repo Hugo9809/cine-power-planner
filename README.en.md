@@ -212,7 +212,7 @@ The generator turns your selections into a categorized packing list:
 - Preference is stored in your browser.
 
 ### 🦄 Pink Mode
-- Click the unicorn button (it sparkles when active) or press **P** for a playful pink accent.
+- Click the unicorn button (pink mode cycles through unicorn icons every 30 seconds with a gentle pop animation and switches back to the horse icon when you leave the theme) or press **P** for a playful pink accent.
 - Works in both light and dark themes and persists between visits.
 
 ### ⚫ High Contrast Mode

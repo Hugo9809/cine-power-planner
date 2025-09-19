@@ -3093,31 +3093,117 @@ const ICON_GLYPHS = Object.freeze({
   warning: '\uF340'
 });
 
+const HORSE_ICON_SVG = `
+  <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      d="m1 40c0-8 3-17 3-17a4.84 4.84 0 0 0-1.829-3.064 1 1 0 0 1 .45-1.716 19.438 19.438 0 0 1 4.379-.22c.579-2.317-1.19-3.963-2.782-4.938a1 1 0 0 1 .393-1.85 14.128 14.128 0 0 1 6.389.788c0-.958-1.147-2.145-2.342-3.122a1 1 0 0 1 .708-1.773 40.655 40.655 0 0 1 6.634.895 3.723 3.723 0 0 0-1.049-2.264 1 1 0 0 1 .823-1.652c6.151.378 9.226 1.916 9.226 1.916l10-1s8.472-2.311 15.954.5a1 1 0 0 1-.084 1.9c-1.455.394-2.87 1.143-2.87 2.6 0 0 4.426.738 5.675 4.114a1 1 0 0 1-1.228 1.317c-1.64-.48-4.273-.88-6.447.569Z"
+      fill="#805333"
+    />
+    <path
+      d="m30.18 42.82c1.073 2.7 2.6 9.993 3.357 13.8a2 2 0 0 1-1.964 2.38h-28.573a2 2 0 0 1-2-2v-18c0-2.55 10.03-22.11 23.99-23.87Z"
+      fill="#a56a43"
+    />
+    <path
+      d="m55.67 48.46-6.34 2.97a6 6 0 0 1-7.98-2.88l-.25-.54-.76-1.6a4.956 4.956 0 0 0-4.68-2.87c-.22.01-.44.02-.66.02a16.019 16.019 0 0 1-8.28-29.66c-1.81-2.97-3.45-8.03 2.03-12.49a2.1 2.1 0 0 1 2.5 0c4.23 3.45 4.21 7.25 3.16 10.17a16 16 0 0 1 15.91 11.36l5.31 11.31 2.92 6.22a6.008 6.008 0 0 1-2.88 7.99Z"
+      fill="#cb8252"
+    />
+    <circle cx="42" cy="26" r="3" fill="#2c2f38" />
+    <circle cx="54" cy="43" r="1" fill="#805333" />
+    <path
+      d="m58.55 40.47-2.92-6.22-14.53 13.76.25.54a6 6 0 0 0 7.98 2.88l6.34-2.97a6.008 6.008 0 0 0 2.88-7.99Zm-4.55 3.53a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z"
+      fill="#cf976a"
+    />
+    <circle cx="41" cy="25" r="1.25" fill="#ecf0f1" />
+  </svg>
+`.trim();
+
+const UNICORN_ICON_MARKUP = [
+  `
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        fill="#f6a4eb"
+        d="M12 33c0-11 9-21 21-21h5l6-7 7 3-4 7h3c6 0 10 5 10 11 0 12-9 21-21 21h-9l-5 8-7-8h-4c-5 0-9-4-9-9 0-3 1-6 3-8z"
+      />
+      <path fill="#ffd166" d="M35 12l6-7 2 8-4 5z" />
+      <circle cx="38.5" cy="29.5" r="2.5" fill="#2c2f38" />
+      <path
+        fill="#fff5f8"
+        opacity=".6"
+        d="M23 19c-7 3-11 11-11 18 0 4 3 7 7 7h5l7 8 3-8h9c9 0 15-7 15-15 0-5-4-9-9-9h-6l-3-5z"
+      />
+      <circle cx="39.8" cy="28.8" r="1" fill="#fff" />
+      <path fill="#f9c8f0" d="M14 32c2-9 9-16 17-16h7l3 6c-7 1-12 5-15 11l-2 3h-7c-1 0-3-1-3-4z" />
+      <path fill="#fcf1ff" d="M43 20l4-6 5 2-4 6z" />
+    </svg>
+  `.trim(),
+  `
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        fill="#f4b3ff"
+        d="M11 34c0-11 9-22 21-22h6l5-6 6 3-3 6h4c6 0 10 5 10 11 0 12-9 21-21 21h-8l-4 7-8-7h-5c-5 0-9-4-9-9 0-3 1-6 3-8z"
+      />
+      <path fill="#ffb703" d="M36 12l6-7 2 8-4 5z" />
+      <path fill="#ffe066" d="M47 12l2-4 5 3-4 5z" />
+      <circle cx="38.2" cy="30.1" r="2.6" fill="#2c2f38" />
+      <circle cx="39.4" cy="29.3" r="1" fill="#fff" />
+      <path
+        fill="#ffe9fb"
+        opacity=".7"
+        d="M19 21c-6 4-10 11-10 18 0 3 2 6 6 6h5l8 8 3-8h8c9 0 15-7 15-15 0-5-4-9-9-9h-6l-4-5z"
+      />
+      <path fill="#ff8cc6" d="M14 35c2-10 9-17 17-17h6l4 6c-8 1-13 5-16 12l-1 3h-7c-1 0-3-1-3-4z" />
+      <path
+        fill="#fff1fb"
+        d="M28 18c4 2 8 4 11 9 1 2-1 4-3 3-3-2-6-1-9 1l-3 2 1-5c1-4 1-7 3-10z"
+      />
+      <path fill="#fde68a" d="M41 26l2-4 4 2-2 4z" />
+    </svg>
+  `.trim(),
+  `
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path
+        fill="#f7c1ff"
+        d="M12 34c0-12 9-22 21-22h5l6-7 7 4-4 6h4c6 0 9 5 9 11 0 12-9 21-21 21h-9l-4 7-7-7h-5c-5 0-9-4-9-9 0-3 1-6 3-8z"
+      />
+      <path fill="#ffda67" d="M35 12l7-7 1 8-5 5z" />
+      <circle cx="38.5" cy="30.2" r="2.6" fill="#2c2f38" />
+      <circle cx="39.6" cy="29.4" r="1" fill="#fff" />
+      <path
+        fill="#ffe5fa"
+        opacity=".7"
+        d="M21 22c-6 4-10 10-10 17 0 3 2 6 6 6h5l7 7 3-7h9c9 0 15-7 15-15 0-5-4-9-9-9h-6l-4-5z"
+      />
+      <path fill="#ff90cf" d="M14 34c2-9 9-16 17-16h6l4 6c-7 1-12 5-15 11l-2 3h-7c-1 0-3-1-3-4z" />
+      <path fill="#fff3fb" d="M43 21l3-5 5 2-3 5z" />
+      <path fill="#ffdeeb" d="M27 18c4 2 8 5 11 9 1 2-1 4-3 3-3-1-6 0-9 2l-3 2 1-5c1-4 1-8 3-11z" />
+      <path
+        fill="#ffd7f0"
+        d="M49 36c1 0 2 1 2 2 0 2-2 4-4 4-1 0-2-1-2-2 0-2 2-4 4-4z"
+      />
+      <path fill="#fff3bf" d="M46 16l2-4 4 2-2 4z" />
+    </svg>
+  `.trim()
+];
+Object.freeze(UNICORN_ICON_MARKUP);
+
 const PINK_MODE_ICONS = Object.freeze({
-  off: {
+  off: Object.freeze({
     className: 'icon-svg pink-mode-icon',
-    markup:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M5.5 11.3 8.9 6.1a1 1 0 0 1 1.1-.3l2.8.9a1 1 0 0 1 .5.4l2.5 3.5v2.9l-1.6 2.5V20H9.4v-3.2L6.5 14l-.9-1Z" />' +
-      '<path d="M11.9 6.8 15.2 4.1 15.5 5.8" />' +
-      '<path d="M9 8.1 6.5 7.1" />' +
-      '<path d="M12.4 13.3c.9.1 1.6.6 2 1.3" />' +
-      '<circle cx="14.6" cy="10.6" r=".55" />' +
-      '</svg>'
-  },
-  on: {
-    className: 'icon-svg pink-mode-icon',
-    markup:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M5.4 11.2 8.9 6.1a1 1 0 0 1 1.1-.3l2.8.9a1 1 0 0 1 .5.4l2.5 3.6v2.9l-1.7 2.6V20H9.4v-3.1L6.5 14l-.9-1.1Z" />' +
-      '<path d="M12.1 6.9 15.4 4.2 15.7 5.9" />' +
-      '<path d="M9 8.1 6.3 6.8 8 5.1" />' +
-      '<path d="M12.5 13.4c.9.1 1.6.6 2 1.3" />' +
-      '<circle cx="14.8" cy="10.6" r=".55" />' +
-      '<path d="M18 4.7 18.5 3.5 19 4.7 20.2 5.1 19 5.5 18.5 6.7 18 5.5 16.8 5.1Z" />' +
-      '</svg>'
-  }
+    markup: HORSE_ICON_SVG
+  }),
+  onSequence: Object.freeze(
+    UNICORN_ICON_MARKUP.map(markup =>
+      Object.freeze({
+        className: 'icon-svg pink-mode-icon',
+        markup
+      })
+    )
+  )
 });
+
+const PINK_MODE_ICON_INTERVAL_MS = 30000;
+const PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
+const PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
 
 const projectFieldIcons = {
   productionCompany: '\uE2D5',
@@ -4254,6 +4340,7 @@ function collectDynamicFieldValues(category, exclude = []) {
 }
 const languageSelect  = document.getElementById("languageSelect");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
+const pinkModeHelpIcon = document.getElementById("pinkModeHelpIcon");
 const darkModeToggle  = document.getElementById("darkModeToggle");
 const helpButton      = document.getElementById("helpButton");
 const reloadButton    = document.getElementById("reloadButton");
@@ -15287,6 +15374,77 @@ try {
 applyHighContrast(highContrastEnabled);
 
 // Pink mode handling
+let pinkModeIconRotationTimer = null;
+let pinkModeIconIndex = 0;
+
+function stopPinkModeIconRotation() {
+  if (pinkModeIconRotationTimer) {
+    clearInterval(pinkModeIconRotationTimer);
+    pinkModeIconRotationTimer = null;
+  }
+}
+
+function triggerPinkModeIconAnimation() {
+  const targets = [];
+  if (pinkModeToggle) {
+    const toggleIcon = pinkModeToggle.querySelector('.pink-mode-icon');
+    if (toggleIcon) {
+      targets.push(toggleIcon);
+    }
+  }
+  if (pinkModeHelpIcon) {
+    targets.push(pinkModeHelpIcon);
+  }
+  if (!targets.length) {
+    return;
+  }
+  targets.forEach(target => {
+    target.classList.remove(PINK_MODE_ICON_ANIMATION_CLASS);
+    // Force a reflow so the animation restarts even when toggled quickly
+    target.getBoundingClientRect();
+    target.classList.add(PINK_MODE_ICON_ANIMATION_CLASS);
+    if (PINK_MODE_ICON_ANIMATION_RESET_DELAY > 0) {
+      setTimeout(() => {
+        target.classList.remove(PINK_MODE_ICON_ANIMATION_CLASS);
+      }, PINK_MODE_ICON_ANIMATION_RESET_DELAY);
+    }
+  });
+}
+
+function applyPinkModeIcon(iconConfig, { animate = false } = {}) {
+  if (!iconConfig) return;
+  if (pinkModeToggle) {
+    setToggleIcon(pinkModeToggle, iconConfig);
+  }
+  if (pinkModeHelpIcon) {
+    pinkModeHelpIcon.className = 'help-icon icon-glyph icon-svg pink-mode-icon';
+    pinkModeHelpIcon.innerHTML = iconConfig.markup || '';
+  }
+  if (animate) {
+    triggerPinkModeIconAnimation();
+  }
+}
+
+function startPinkModeIconRotation() {
+  const sequence = Array.isArray(PINK_MODE_ICONS.onSequence)
+    ? PINK_MODE_ICONS.onSequence
+    : [];
+  if (!sequence.length) {
+    applyPinkModeIcon(PINK_MODE_ICONS.off, { animate: false });
+    return;
+  }
+  stopPinkModeIconRotation();
+  if (!pinkModeToggle && !pinkModeHelpIcon) {
+    return;
+  }
+  pinkModeIconIndex = 0;
+  applyPinkModeIcon(sequence[pinkModeIconIndex], { animate: true });
+  pinkModeIconRotationTimer = setInterval(() => {
+    pinkModeIconIndex = (pinkModeIconIndex + 1) % sequence.length;
+    applyPinkModeIcon(sequence[pinkModeIconIndex], { animate: true });
+  }, PINK_MODE_ICON_INTERVAL_MS);
+}
+
 function applyPinkMode(enabled) {
   if (enabled) {
     document.body.classList.add("pink-mode");
@@ -15295,17 +15453,18 @@ function applyPinkMode(enabled) {
     }
     clearAccentColorOverrides();
     if (pinkModeToggle) {
-      setToggleIcon(pinkModeToggle, PINK_MODE_ICONS.on);
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
+    startPinkModeIconRotation();
   } else {
     document.body.classList.remove("pink-mode");
     if (accentColorInput) {
       accentColorInput.disabled = false;
     }
     applyAccentColor(accentColor);
+    stopPinkModeIconRotation();
+    applyPinkModeIcon(PINK_MODE_ICONS.off, { animate: false });
     if (pinkModeToggle) {
-      setToggleIcon(pinkModeToggle, PINK_MODE_ICONS.off);
       pinkModeToggle.setAttribute("aria-pressed", "false");
     }
   }

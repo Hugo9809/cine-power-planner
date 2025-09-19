@@ -220,7 +220,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 - La préférence est mémorisée dans votre navigateur.
 
 ### 🦄 Mode rose
-- Cliquez sur le bouton licorne (il scintille quand il est actif) ou appuyez sur **P** pour activer un accent rose ludique.
+- Cliquez sur le bouton licorne (le mode rose fait défiler des icônes de licorne toutes les 30 secondes avec une douce animation pop et revient au cheval lorsque vous quittez ce mode) ou appuyez sur **P** pour activer un accent rose ludique.
 - Fonctionne avec les thèmes clair et sombre et persiste entre les visites.
 
 ### ⚫ Mode à fort contraste
