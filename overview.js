@@ -100,10 +100,10 @@ function generatePrintableOverview() {
     // Get current warning messages with their colors
     let warningHtml = '';
     if (pinWarnElem.textContent.trim() !== '') {
-        warningHtml += `<p style="color: ${pinWarnElem.style.color}; font-weight: bold;">${pinWarnElem.textContent}</p>`;
+        warningHtml += `<p style="color: ${pinWarnElem.style.color}; font-weight: var(--font-weight-bold);">${pinWarnElem.textContent}</p>`;
     }
     if (dtapWarnElem.textContent.trim() !== '') {
-        warningHtml += `<p style="color: ${dtapWarnElem.style.color}; font-weight: bold;">${dtapWarnElem.textContent}</p>`;
+        warningHtml += `<p style="color: ${dtapWarnElem.style.color}; font-weight: var(--font-weight-bold);">${dtapWarnElem.textContent}</p>`;
     }
 
     const resultsSectionHtml = `

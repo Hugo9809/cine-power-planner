@@ -8485,7 +8485,7 @@ const diagramCssLight = `
 .node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:20px;font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
 .node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
@@ -8494,7 +8494,7 @@ const diagramCssLight = `
 .conn.blue{fill:#369;}
 .conn.green{fill:#090;}
 text{font-family:system-ui,sans-serif;}
-.edge-label{font-size:10px;}
+.edge-label{font-size:var(--font-size-diagram-label, 10px);}
 line{stroke:#333;stroke-width:2px;}
 path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
 path.power{stroke:#d33;}
@@ -8506,7 +8506,7 @@ const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-.node-icon{font-size:20px;font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
 .node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
@@ -11514,6 +11514,9 @@ function renderSetupDiagram() {
   const DEFAULT_NODE_W = 120;
   const nodeHeights = {};
   const nodeWidths = {};
+  const diagramLabelFontSize = 'var(--font-size-diagram-label, 10px)';
+  const diagramTextFontSize = 'var(--font-size-diagram-text, 12px)';
+
   nodes.forEach(id => {
     const label = pos[id].label || id;
     const lines = wrapLabel(label);
@@ -11927,11 +11930,11 @@ function renderSetupDiagram() {
         const fontAttr = ` data-icon-font="${resolvedIcon.font}"`;
         svg += `<text class="node-icon"${fontAttr} x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${resolvedIcon.char}</text>`;
       }
-      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
+      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" style="font-size: ${diagramLabelFontSize};">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     } else {
-      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">`;
+      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" style="font-size: ${diagramTextFontSize};">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     }
