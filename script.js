@@ -146,6 +146,24 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 }
 
+function updateInstallBannerPosition() {
+  if (typeof document === 'undefined') return;
+  const installBanner = document.getElementById('installPromptBanner');
+  if (!installBanner) return;
+  const offlineIndicator = document.getElementById('offlineIndicator');
+  if (offlineIndicator && offlineIndicator.style.display !== 'none') {
+    const rect = typeof offlineIndicator.getBoundingClientRect === 'function'
+      ? offlineIndicator.getBoundingClientRect()
+      : null;
+    const height = rect && typeof rect.height === 'number' && rect.height > 0
+      ? rect.height
+      : offlineIndicator.offsetHeight || 0;
+    installBanner.style.top = `${height}px`;
+  } else {
+    installBanner.style.top = '0';
+  }
+}
+
 /**
  * Initialize the offline status indicator.
  *
@@ -158,6 +176,7 @@ function setupOfflineIndicator() {
   if (!offlineIndicator) return;
   const updateOnlineStatus = () => {
     offlineIndicator.style.display = navigator.onLine ? 'none' : 'block';
+    updateInstallBannerPosition();
   };
   window.addEventListener('online', updateOnlineStatus);
   window.addEventListener('offline', updateOnlineStatus);
@@ -1386,6 +1405,7 @@ function setLanguage(lang) {
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
   if (offlineElem) offlineElem.textContent = texts[lang].offlineIndicator;
+  applyInstallTexts(lang);
   const legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
   const impressumElem = document.getElementById("impressumLink");
   if (impressumElem) {
@@ -3286,6 +3306,19 @@ const helpSectionsContainer = document.getElementById("helpSections");
 const helpQuickLinksNav = document.getElementById("helpQuickLinks");
 const helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 const helpQuickLinksList = document.getElementById("helpQuickLinksList");
+const installPromptBanner = document.getElementById("installPromptBanner");
+const installPromptBannerText = document.getElementById("installPromptBannerText");
+const installGuideDialog = document.getElementById("installGuideDialog");
+const installGuideTitle = document.getElementById("installGuideTitle");
+const installGuideIntro = document.getElementById("installGuideIntro");
+const installGuideSteps = document.getElementById("installGuideSteps");
+const installGuideNote = document.getElementById("installGuideNote");
+const installGuideMigration = document.getElementById("installGuideMigration");
+const installGuideMigrationTitle = document.getElementById("installGuideMigrationTitle");
+const installGuideMigrationIntro = document.getElementById("installGuideMigrationIntro");
+const installGuideMigrationSteps = document.getElementById("installGuideMigrationSteps");
+const installGuideMigrationNote = document.getElementById("installGuideMigrationNote");
+const installGuideClose = document.getElementById("installGuideClose");
 const iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
 const iosPwaHelpTitle = document.getElementById("iosPwaHelpTitle");
 const iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
@@ -3316,6 +3349,8 @@ const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
 
 let lastActiveBeforeIosHelp = null;
+let lastActiveBeforeInstallGuide = null;
+let currentInstallGuidePlatform = null;
 
 function isIosDevice() {
   if (typeof navigator === 'undefined') return false;
@@ -3323,6 +3358,13 @@ function isIosDevice() {
   const platform = navigator.platform || '';
   const hasTouch = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1;
   return /iphone|ipad|ipod/i.test(ua) || (platform === 'MacIntel' && hasTouch);
+}
+
+function isAndroidDevice() {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  const vendor = navigator.vendor || '';
+  return /android/i.test(ua) || /android/i.test(vendor);
 }
 
 function isStandaloneDisplayMode() {
@@ -3356,6 +3398,182 @@ function markIosPwaHelpDismissed() {
     localStorage.setItem(IOS_PWA_HELP_STORAGE_KEY, '1');
   } catch (error) {
     console.warn('Could not store iOS PWA help dismissal', error);
+  }
+}
+
+function shouldShowInstallBanner() {
+  if (!installPromptBanner) return false;
+  if (isStandaloneDisplayMode()) return false;
+  return isIosDevice() || isAndroidDevice();
+}
+
+function updateInstallBannerVisibility() {
+  if (!installPromptBanner) return;
+  if (shouldShowInstallBanner()) {
+    installPromptBanner.removeAttribute('hidden');
+    updateInstallBannerPosition();
+  } else {
+    installPromptBanner.setAttribute('hidden', '');
+  }
+}
+
+function renderInstallGuideContent(platform, lang = currentLang) {
+  if (!installGuideDialog) return;
+  const fallbackTexts = texts.en || {};
+  const langTexts = texts[lang] || fallbackTexts;
+  const isIos = platform === 'ios';
+
+  const titleKey = isIos ? 'installHelpTitleIos' : 'installHelpTitleAndroid';
+  const introKey = isIos ? 'installHelpIntroIos' : 'installHelpIntroAndroid';
+  const stepsKey = isIos ? 'installHelpStepsIos' : 'installHelpStepsAndroid';
+  const noteKey = isIos ? 'installHelpNoteIos' : 'installHelpNoteAndroid';
+
+  const title = langTexts[titleKey] || fallbackTexts[titleKey] || '';
+  if (installGuideTitle) installGuideTitle.textContent = title;
+
+  const intro = langTexts[introKey] || fallbackTexts[introKey] || '';
+  if (installGuideIntro) installGuideIntro.textContent = intro;
+
+  const stepsSource = langTexts[stepsKey];
+  const fallbackStepsSource = fallbackTexts[stepsKey];
+  const toArray = value => {
+    if (!value) return [];
+    return Array.isArray(value) ? value : [value];
+  };
+  const steps = toArray(stepsSource);
+  const fallbackSteps = toArray(fallbackStepsSource);
+  const effectiveSteps = steps.length ? steps : fallbackSteps;
+  if (installGuideSteps) {
+    installGuideSteps.textContent = '';
+    effectiveSteps.forEach(step => {
+      if (!step) return;
+      const li = document.createElement('li');
+      li.textContent = step;
+      installGuideSteps.appendChild(li);
+    });
+  }
+
+  const note = langTexts[noteKey] || fallbackTexts[noteKey] || '';
+  if (installGuideNote) installGuideNote.textContent = note;
+
+  if (installGuideDialog) {
+    installGuideDialog.setAttribute('data-platform', platform);
+  }
+
+  if (!installGuideMigration || !installGuideMigrationTitle || !installGuideMigrationIntro || !installGuideMigrationSteps || !installGuideMigrationNote) {
+    return;
+  }
+
+  if (isIos) {
+    installGuideMigration.removeAttribute('hidden');
+    const migrationTitle = langTexts.installHelpMigrationTitle || fallbackTexts.installHelpMigrationTitle || '';
+    installGuideMigrationTitle.textContent = migrationTitle;
+    const migrationIntro = langTexts.iosPwaHelpIntro || fallbackTexts.iosPwaHelpIntro || '';
+    installGuideMigrationIntro.textContent = migrationIntro;
+    const migrationSteps = [
+      langTexts.iosPwaHelpStep1 || fallbackTexts.iosPwaHelpStep1,
+      langTexts.iosPwaHelpStep2 || fallbackTexts.iosPwaHelpStep2,
+      langTexts.iosPwaHelpStep3 || fallbackTexts.iosPwaHelpStep3,
+      langTexts.iosPwaHelpStep4 || fallbackTexts.iosPwaHelpStep4,
+    ].filter(Boolean);
+    installGuideMigrationSteps.textContent = '';
+    migrationSteps.forEach(step => {
+      const li = document.createElement('li');
+      li.textContent = step;
+      installGuideMigrationSteps.appendChild(li);
+    });
+    const migrationNote = langTexts.iosPwaHelpNote || fallbackTexts.iosPwaHelpNote || '';
+    installGuideMigrationNote.textContent = migrationNote;
+  } else {
+    installGuideMigration.setAttribute('hidden', '');
+    installGuideMigrationTitle.textContent = '';
+    installGuideMigrationIntro.textContent = '';
+    installGuideMigrationSteps.textContent = '';
+    installGuideMigrationNote.textContent = '';
+  }
+}
+
+function openInstallGuide(platform) {
+  if (!installGuideDialog) return;
+  currentInstallGuidePlatform = platform;
+  lastActiveBeforeInstallGuide = document.activeElement;
+  renderInstallGuideContent(platform);
+  installGuideDialog.removeAttribute('hidden');
+  const focusTarget = installGuideClose || installGuideDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    focusTarget.focus();
+  }
+}
+
+function closeInstallGuide() {
+  if (!installGuideDialog) return;
+  installGuideDialog.setAttribute('hidden', '');
+  currentInstallGuidePlatform = null;
+  if (lastActiveBeforeInstallGuide && typeof lastActiveBeforeInstallGuide.focus === 'function') {
+    lastActiveBeforeInstallGuide.focus();
+  }
+}
+
+function setupInstallBanner() {
+  if (!installPromptBanner) return;
+
+  installPromptBanner.addEventListener('click', () => {
+    const platform = isIosDevice() ? 'ios' : 'android';
+    openInstallGuide(platform);
+  });
+
+  if (installGuideClose) {
+    installGuideClose.addEventListener('click', closeInstallGuide);
+  }
+
+  if (installGuideDialog) {
+    installGuideDialog.addEventListener('click', event => {
+      if (event.target === installGuideDialog) {
+        closeInstallGuide();
+      }
+    });
+  }
+
+  applyInstallTexts(currentLang);
+  updateInstallBannerVisibility();
+  updateInstallBannerPosition();
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateInstallBannerPosition);
+    window.addEventListener('appinstalled', updateInstallBannerVisibility);
+    if (typeof window.matchMedia === 'function') {
+      try {
+        const media = window.matchMedia('(display-mode: standalone)');
+        const handleChange = () => updateInstallBannerVisibility();
+        if (typeof media.addEventListener === 'function') {
+          media.addEventListener('change', handleChange);
+        } else if (typeof media.addListener === 'function') {
+          media.addListener(handleChange);
+        }
+      } catch (error) {
+        console.warn('matchMedia display-mode listener failed', error);
+      }
+    }
+  }
+}
+
+function applyInstallTexts(lang) {
+  const fallbackTexts = texts.en || {};
+  const langTexts = texts[lang] || fallbackTexts;
+  const bannerText = langTexts.installBannerText || fallbackTexts.installBannerText;
+  if (installPromptBannerText && bannerText) {
+    installPromptBannerText.textContent = bannerText;
+  }
+  if (installPromptBanner && bannerText) {
+    installPromptBanner.setAttribute('aria-label', bannerText);
+  }
+  const closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose;
+  if (installGuideClose && closeLabel) {
+    installGuideClose.textContent = closeLabel;
+    installGuideClose.setAttribute('aria-label', closeLabel);
+  }
+  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
+    renderInstallGuideContent(currentInstallGuidePlatform, lang);
   }
 }
 
@@ -3407,9 +3625,18 @@ if (iosPwaHelpDialog) {
 }
 
 document.addEventListener('keydown', event => {
-  if (!iosPwaHelpDialog || iosPwaHelpDialog.hasAttribute('hidden')) return;
-  if (event.key === 'Escape' || event.key === 'Esc') {
+  if (event.key !== 'Escape' && event.key !== 'Esc') return;
+  let handled = false;
+  if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
     closeIosPwaHelp(true);
+    handled = true;
+  }
+  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden')) {
+    closeInstallGuide();
+    handled = true;
+  }
+  if (handled) {
+    event.preventDefault();
   }
 });
 
@@ -14249,6 +14476,7 @@ function initApp() {
       attachSelectSearch(sel);
       initFavoritableSelect(sel);
     });
+  setupInstallBanner();
   setLanguage(currentLang);
   maybeShowIosPwaHelp();
   resetDeviceForm();

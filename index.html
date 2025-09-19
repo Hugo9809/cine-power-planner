@@ -28,6 +28,15 @@
 <body>
   <a href="#mainContent" class="skip-link" id="skipLink">Skip to content</a>
   <div id="offlineIndicator" role="status" aria-live="polite">Offline</div>
+  <button
+    id="installPromptBanner"
+    type="button"
+    hidden
+    aria-haspopup="dialog"
+    aria-controls="installGuideDialog"
+  >
+    <span id="installPromptBannerText">Install Cine Power Planner on your device for quick access.</span>
+  </button>
   <header id="topBar">
     <a class="branding" href="index.html">
       <svg id="logo" viewBox="0 0 1024 1024" aria-hidden="true">
@@ -775,6 +784,45 @@
       <div class="button-row action-buttons">
         <button id="settingsSave">Save</button>
         <button id="settingsCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="installGuideDialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="installGuideTitle"
+    aria-describedby="installGuideIntro"
+    hidden
+  >
+    <div class="install-guide-content">
+      <h2 id="installGuideTitle">Install Cine Power Planner</h2>
+      <p id="installGuideIntro">Add the planner to your Home Screen to use it like an app.</p>
+      <ol id="installGuideSteps">
+        <li>Open Cine Power Planner in your browser.</li>
+        <li>Open the browser menu.</li>
+        <li>Choose Add to Home Screen and confirm.</li>
+      </ol>
+      <p id="installGuideNote">After installation, launch Cine Power Planner from your Home Screen.</p>
+      <section id="installGuideMigration" aria-labelledby="installGuideMigrationTitle" hidden>
+        <h3 id="installGuideMigrationTitle">Move your existing data into the app</h3>
+        <p id="installGuideMigrationIntro">
+          Safari keeps the browser tab and the installed app separate. To move your Cine Power Planner data into the app:
+        </p>
+        <ol id="installGuideMigrationSteps">
+          <li>Open Cine Power Planner in Safari where your projects are still visible.</li>
+          <li>Go to Settings → Backup &amp; Restore → Backup to download a copy of your data.</li>
+          <li>Open Cine Power Planner from your home screen.</li>
+          <li>Go to Settings → Backup &amp; Restore → Restore and pick the backup file.</li>
+        </ol>
+        <p id="installGuideMigrationNote">
+          After restoring once, all changes stay inside the installed app. Keep the backup if you plan to reinstall or switch
+          devices.
+        </p>
+      </section>
+      <div class="button-row install-guide-actions">
+        <button id="installGuideClose" type="button">Close</button>
       </div>
     </div>
   </div>
