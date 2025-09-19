@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v18';
+const CACHE_NAME = 'cine-power-planner-v19';
 const ASSETS = [
   './',
   './index.html',
@@ -69,9 +69,35 @@ if (typeof self !== 'undefined') {
   });
 
   self.addEventListener('fetch', event => {
-    event.respondWith(
-      caches.match(event.request).then(resp => resp || fetch(event.request))
-    );
+    if (event.request.method !== 'GET') {
+      return;
+    }
+
+    const isNavigationRequest = event.request.mode === 'navigate';
+
+    event.respondWith((async () => {
+      const cacheMatchOptions = isNavigationRequest ? { ignoreSearch: true } : undefined;
+      const cachedResponse = await caches.match(event.request, cacheMatchOptions);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      try {
+        return await fetch(event.request);
+      } catch (error) {
+        if (!isNavigationRequest) {
+          throw error;
+        }
+
+        const cache = await caches.open(CACHE_NAME);
+        const offlineShell = await cache.match('./index.html') || await cache.match('./');
+        if (offlineShell) {
+          return offlineShell;
+        }
+
+        throw error;
+      }
+    })());
   });
 }
 
