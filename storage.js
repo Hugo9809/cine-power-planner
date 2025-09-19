@@ -10,6 +10,7 @@ const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
+const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
 
 const DEVICE_COLLECTION_KEYS = [
   'cameras',
@@ -689,6 +690,26 @@ function saveAutoGearRules(rules) {
   );
 }
 
+function loadAutoGearBackups() {
+  const parsed = loadJSONFromStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_BACKUPS_STORAGE_KEY,
+    "Error loading automatic gear rule backups from localStorage:",
+    [],
+  );
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function saveAutoGearBackups(backups) {
+  const safeBackups = Array.isArray(backups) ? backups : [];
+  saveJSONToStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_BACKUPS_STORAGE_KEY,
+    safeBackups,
+    "Error saving automatic gear rule backups to localStorage:",
+  );
+}
+
 function loadAutoGearSeedFlag() {
   return loadFlagFromStorage(
     SAFE_LOCAL_STORAGE,
@@ -803,6 +824,8 @@ if (typeof module !== "undefined" && module.exports) {
     saveSessionState,
     loadFavorites,
     saveFavorites,
+    loadAutoGearBackups,
+    saveAutoGearBackups,
     loadFeedback,
     saveFeedback,
     clearAllData,
