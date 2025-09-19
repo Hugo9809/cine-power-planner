@@ -1460,7 +1460,11 @@ body.pink-mode .auto-gear-rule-title,
 .help-quick-link-icon {
   --icon-color: var(--accent-color);
   flex: 0 0 auto;
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  font-size: var(--icon-size-md);
+}
+
+.help-quick-link-icon.icon-glyph {
+  --icon-size: var(--icon-size-md);
 }
 
 .dark-mode .help-quick-link-icon {
