@@ -3946,6 +3946,65 @@ const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
 const shareLinkMessage = document.getElementById("shareLinkMessage");
 const shareIncludeAutoGearCheckbox = document.getElementById("shareIncludeAutoGear");
+
+function sanitizeShareFilename(name) {
+  if (!name) return '';
+  const trimmed = String(name).trim();
+  if (!trimmed) return '';
+  const sanitized = trimmed
+    .replace(/[\\/:*?"<>|]+/g, '_')
+    .replace(/\s+/g, ' ')
+    .replace(/^\.+/, '')
+    .replace(/\.+$/, '')
+    .trim();
+  return sanitized;
+}
+
+function ensureJsonExtension(filename) {
+  if (!filename) return '';
+  return /\.json$/i.test(filename) ? filename : `${filename}.json`;
+}
+
+function getDefaultShareFilename(setupName) {
+  const sanitized = sanitizeShareFilename(setupName);
+  return sanitized || 'project';
+}
+
+function promptForSharedFilename(setupName) {
+  const defaultName = getDefaultShareFilename(setupName);
+  const template = getLocalizedText('shareFilenamePrompt') || '';
+  const promptMessage = template.includes('{defaultName}')
+    ? template.replace('{defaultName}', defaultName)
+    : template || 'Enter a name for the shared project file:';
+  if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
+    const response = window.prompt(promptMessage, defaultName);
+    if (response === null) {
+      return null;
+    }
+    const sanitized = sanitizeShareFilename(response);
+    if (!sanitized) {
+      const invalidMessage =
+        getLocalizedText('shareFilenameInvalid')
+        || 'Please enter a valid file name to continue.';
+      if (typeof window.alert === 'function') {
+        window.alert(invalidMessage);
+      }
+      return null;
+    }
+    return ensureJsonExtension(sanitized);
+  }
+  return ensureJsonExtension(defaultName);
+}
+
+function confirmAutoGearSelection(defaultInclude) {
+  const confirmMessage =
+    getLocalizedText('shareIncludeAutoGearConfirm')
+    || 'Include automatic gear rules in the shared file? Select OK to include them or Cancel to skip.';
+  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+    return window.confirm(confirmMessage);
+  }
+  return !!defaultInclude;
+}
 const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearText");
 const shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
 const sharedImportOptions = document.getElementById("sharedImportOptions");
@@ -13341,6 +13400,23 @@ if (projectForm) {
 shareSetupBtn.addEventListener('click', () => {
   saveCurrentGearList();
   const setupName = getCurrentProjectName();
+  const shareFileName = promptForSharedFilename(setupName);
+  if (!shareFileName) {
+    return;
+  }
+  const rulesForShare = getAutoGearRules();
+  const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
+  let includeAutoGear = false;
+  if (hasAutoGearRules) {
+    includeAutoGear = confirmAutoGearSelection(
+      shareIncludeAutoGearCheckbox ? shareIncludeAutoGearCheckbox.checked : false
+    );
+    if (shareIncludeAutoGearCheckbox) {
+      shareIncludeAutoGearCheckbox.checked = includeAutoGear;
+    }
+  } else if (shareIncludeAutoGearCheckbox) {
+    shareIncludeAutoGearCheckbox.checked = false;
+  }
   const currentSetup = {
     setupName,
     camera: cameraSelect.value,
@@ -13385,18 +13461,15 @@ shareSetupBtn.addEventListener('click', () => {
   if (feedback.length) {
     currentSetup.feedback = feedback;
   }
-  if (shareIncludeAutoGearCheckbox && shareIncludeAutoGearCheckbox.checked) {
-    const rulesForShare = getAutoGearRules();
-    if (rulesForShare.length) {
-      currentSetup.autoGearRules = rulesForShare;
-    }
+  if (includeAutoGear && hasAutoGearRules) {
+    currentSetup.autoGearRules = rulesForShare;
   }
   const json = JSON.stringify(currentSetup, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${setupName || 'project'}.json`;
+  a.download = shareFileName;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
