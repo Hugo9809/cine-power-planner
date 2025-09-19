@@ -3754,54 +3754,77 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   border-bottom: 2px solid var(--inverse-text-color);
 }
 
-#gearListOutput .filter-item {
+#filterDetails {
   display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
-#gearListOutput .filter-item .filter-header {
+#filterDetails.hidden {
+  display: none;
+}
+
+#filterDetails .filter-detail {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   align-items: center;
-  gap: 0.25rem;
-  white-space: nowrap;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  background: var(--panel-bg);
 }
 
-#gearListOutput .filter-item .filter-label {
-  white-space: nowrap;
+#filterDetails .filter-detail-label {
+  font-weight: 600;
+  min-width: 10rem;
 }
 
-#gearListOutput .filter-item .filter-controls {
+#filterDetails .filter-detail-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#filterDetails .filter-detail-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+#filterDetails .filter-detail-values {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
+  align-items: center;
 }
 
-#gearListOutput .filter-item select {
-  width: auto;
+#filterDetails .filter-detail-sublabel {
+  font-weight: 500;
 }
 
-#gearListOutput .filter-values-container {
+#filterDetails .filter-detail-sublabel::after {
+  content: ':';
+}
+
+#filterDetails .filter-values-container {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0.25rem;
 }
 
-#gearListOutput .filter-value-option {
+#filterDetails .filter-value-option {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
 }
 
-#gearListOutput .filter-value-option input[type="checkbox"] {
+#filterDetails .filter-value-option input[type="checkbox"] {
   margin: 0;
   padding: 0;
-  vertical-align: middle;
-}
-
-#gearListOutput .filter-values-container select {
-  display: none;
 }
 
 #gearListOutput .select-wrapper,
@@ -3875,12 +3898,6 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   #projectRequirementsOutput td {
     white-space: normal;
     overflow-wrap: anywhere;
-  }
-  #gearListOutput .filter-item {
-    flex-wrap: wrap;
-  }
-  #gearListOutput .filter-item .filter-header {
-    flex-basis: 100%;
   }
 }
 
