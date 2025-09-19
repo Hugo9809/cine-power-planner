@@ -3455,6 +3455,28 @@ const LOAD_ICON_SVG = `
   </svg>
 `.trim();
 
+const RESET_VIEW_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <line x1="12" y1="4.75" x2="12" y2="9.75" />
+      <polyline points="10.75 8.5 12 9.75 13.25 8.5" />
+      <line x1="12" y1="19.25" x2="12" y2="14.25" />
+      <polyline points="10.75 15.5 12 14.25 13.25 15.5" />
+      <line x1="4.75" y1="12" x2="9.75" y2="12" />
+      <polyline points="8.5 10.75 9.75 12 8.5 13.25" />
+      <line x1="19.25" y1="12" x2="14.25" y2="12" />
+      <polyline points="15.5 10.75 14.25 12 15.5 13.25" />
+    </g>
+    <circle cx="12" cy="12" r="1.35" fill="currentColor" />
+  </svg>
+`.trim();
+
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -3480,7 +3502,7 @@ const ICON_GLYPHS = Object.freeze({
   audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
   note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
   feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG }),
-  resetView: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
+  resetView: Object.freeze({ markup: RESET_VIEW_ICON_SVG, className: 'icon-svg' }),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
   sun: iconGlyph('\uF1F7', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
