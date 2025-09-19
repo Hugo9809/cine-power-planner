@@ -605,15 +605,9 @@ main.legal-content {
   margin-bottom: 0.25rem;
 }
 
-#setup-manager .share-import-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-}
-
-#setup-manager .share-import-option input[type="radio"] {
-  margin: 0;
+#setup-manager .share-import-mode-select {
+  width: 100%;
+  min-height: 6.5rem;
 }
 
 #setup-manager #shareLinkMessage {
