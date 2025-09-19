@@ -3159,10 +3159,19 @@ function setLanguage(lang) {
       if (noneLabel) viewfinderExtensionSelect.options[0].textContent = noneLabel;
       if (yesLabel) viewfinderExtensionSelect.options[1].textContent = yesLabel;
     }
+    const cancelText =
+      projectFormTexts.cancel ||
+      fallbackProjectForm.cancel ||
+      (projectCancelBtn ? projectCancelBtn.textContent : projectDialogCloseBtn?.getAttribute('aria-label')) ||
+      'Cancel';
     if (projectCancelBtn) {
-      const cancelText =
-        projectFormTexts.cancel || fallbackProjectForm.cancel || projectCancelBtn.textContent;
       setButtonLabelWithIcon(projectCancelBtn, cancelText, ICON_GLYPHS.circleX);
+    }
+    if (projectDialogCloseBtn) {
+      projectDialogCloseBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
+      projectDialogCloseBtn.setAttribute('aria-label', cancelText);
+      projectDialogCloseBtn.setAttribute('title', cancelText);
+      projectDialogCloseBtn.setAttribute('data-help', cancelText);
     }
     if (projectSubmitBtn) {
       const submitText = projectFormTexts.submit || fallbackProjectForm.submit;
@@ -3244,6 +3253,7 @@ const requiredScenariosSelect = document.getElementById("requiredScenarios");
 const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
 const remoteHeadOption = requiredScenariosSelect ?
   requiredScenariosSelect.querySelector('option[value="Remote Head"]') : null;
+const tripodPreferencesSection = document.getElementById("tripodPreferencesSection");
 const tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
 const tripodPreferencesHeading = document.getElementById("tripodPreferencesHeading");
 const tripodHeadBrandSelect = document.getElementById("tripodHeadBrand");
@@ -3254,6 +3264,7 @@ const monitoringConfigurationSelect = document.getElementById("monitoringConfigu
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
 const projectDialogHeading = document.getElementById("projectDialogHeading");
+const projectDialogCloseBtn = document.getElementById("projectDialogClose");
 const projectNameLabel = document.getElementById("projectNameLabel");
 const productionCompanyLabel = document.getElementById("productionCompanyLabel");
 const rentalHouseLabel = document.getElementById("rentalHouseLabel");
@@ -14478,6 +14489,16 @@ if (projectCancelBtn) {
     });
 }
 
+if (projectDialogCloseBtn) {
+    projectDialogCloseBtn.addEventListener('click', () => {
+        if (projectCancelBtn) {
+            projectCancelBtn.click();
+        } else {
+            closeDialog(projectDialog);
+        }
+    });
+}
+
 if (projectForm) {
     projectForm.addEventListener('submit', e => {
         e.preventDefault();
@@ -20064,9 +20085,11 @@ function updateRequiredScenariosSummary() {
     if (selected.includes('Tripod')) {
       tripodPreferencesRow.classList.remove('hidden');
       if (tripodPreferencesHeading) tripodPreferencesHeading.classList.remove('hidden');
+      if (tripodPreferencesSection) tripodPreferencesSection.classList.remove('hidden');
     } else {
       tripodPreferencesRow.classList.add('hidden');
       if (tripodPreferencesHeading) tripodPreferencesHeading.classList.add('hidden');
+      if (tripodPreferencesSection) tripodPreferencesSection.classList.add('hidden');
       if (tripodHeadBrandSelect) tripodHeadBrandSelect.value = '';
       if (tripodBowlSelect) tripodBowlSelect.value = '';
       if (tripodTypesSelect) Array.from(tripodTypesSelect.options).forEach(o => { o.selected = false; });

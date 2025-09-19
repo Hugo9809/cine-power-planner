@@ -3535,25 +3535,97 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 
 /* Project requirements dialog */
 #projectDialog {
-  width: 90%;
-  max-width: 700px;
-  padding: 0;
   border: none;
-  background: var(--surface-color);
-  color: var(--control-text);
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+#projectDialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+#projectDialog .project-dialog {
+  width: min(100%, 960px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 4vw, 28px);
+  padding: clamp(20px, 4vw, 32px);
 }
 
 @media (min-width: 1024px) {
-  #projectDialog {
-    max-width: 950px;
+  #projectDialog .project-dialog {
+    width: min(100%, 1100px);
   }
 }
-#projectDialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+
+.project-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
-#projectDialog form {
-  padding: 20px;
+
+.project-dialog-header h2 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
+  font-weight: var(--font-weight-semibold);
 }
+
+.project-dialog-close {
+  border: none;
+  background: transparent;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(36px, 8vw, 44px);
+  height: clamp(36px, 8vw, 44px);
+  border-radius: 50%;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.project-dialog-close:hover,
+.project-dialog-close:focus-visible {
+  background-color: var(--control-bg);
+  color: var(--control-text);
+}
+
+.project-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vw, 24px);
+}
+
+.project-dialog-section {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--panel-shadow);
+  padding: clamp(16px, 2.5vw, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 16px);
+}
+
+.project-section-title {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  font-weight: var(--font-weight-semibold);
+  color: var(--accent-color);
+}
+
+.project-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2vw, 16px);
+}
+
+.project-section-content .form-row {
+  margin: 0;
+}
+
 #projectDialog select[multiple] {
   height: auto;
 }
@@ -3573,6 +3645,14 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   min-width: 0;
   height: 15rem;
   overflow-y: auto;
+}
+
+.project-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--panel-border);
+  padding-top: clamp(12px, 2vw, 16px);
 }
 
 /* Project requirement boxes */
