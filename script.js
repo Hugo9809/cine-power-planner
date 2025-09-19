@@ -16358,18 +16358,21 @@ if (helpButton && helpDialog) {
     const helpScore = helpMatch?.score || 0;
     const deviceScore = deviceMatch?.score || 0;
     const featureScore = featureMatch?.score || 0;
-    const helpExact = helpMatch?.matchType === 'exactKey';
     const deviceStrong = deviceMatch ? STRONG_SEARCH_MATCH_TYPES.has(deviceMatch.matchType) : false;
     const featureStrong = featureMatch ? STRONG_SEARCH_MATCH_TYPES.has(featureMatch.matchType) : false;
     const bestNonHelpScore = Math.max(deviceScore, featureScore);
+    const hasStrongNonHelp = deviceStrong || featureStrong;
     const preferHelp =
       !!helpMatch &&
-      (isHelp ||
-        helpExact ||
-        (!deviceStrong && !featureStrong && helpScore > 0 && helpScore > bestNonHelpScore));
+      (isHelp || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
 
     if (!isHelp && !preferHelp) {
-      if (deviceMatch) {
+      const shouldUseDevice =
+        !!deviceMatch &&
+        (!featureMatch ||
+          (deviceStrong && !featureStrong) ||
+          (deviceStrong === featureStrong && deviceScore > featureScore));
+      if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {
           device.select.value = device.value;
