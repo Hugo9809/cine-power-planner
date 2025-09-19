@@ -304,6 +304,18 @@ footer a {
   margin: 0 0.5em;
 }
 
+body.dark-mode:not(.pink-mode) footer {
+  color: var(--inverse-text-color);
+}
+
+body.dark-mode:not(.pink-mode) footer a {
+  color: var(--inverse-text-color);
+}
+
+body.dark-mode:not(.pink-mode) footer a:visited {
+  color: var(--inverse-text-color);
+}
+
 /* Static legal pages */
 body.static-page {
   display: flex;
