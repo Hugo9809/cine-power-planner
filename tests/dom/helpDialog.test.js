@@ -84,6 +84,9 @@ describe('help dialog search behaviour', () => {
     expect(featuresItem).toBeTruthy();
     expect(powerItem).toBeTruthy();
     expect(troubleshootingItem).toBeTruthy();
+    const powerBadge = powerButton.querySelector('.help-quick-link-count');
+    expect(powerBadge).toBeTruthy();
+    expect(powerBadge.hasAttribute('hidden')).toBe(true);
 
     typeInHelpSearch('power calculator');
 
@@ -91,6 +94,9 @@ describe('help dialog search behaviour', () => {
     expect(powerItem.hasAttribute('hidden')).toBe(false);
     expect(featuresItem.hasAttribute('hidden')).toBe(true);
     expect(troubleshootingItem.hasAttribute('hidden')).toBe(true);
+    expect(powerButton.dataset.matchCount).toBe('1');
+    expect(powerBadge?.hasAttribute('hidden')).toBe(false);
+    expect(powerBadge?.textContent).toBe('1');
 
     typeInHelpSearch('no matching topic');
 
@@ -100,6 +106,8 @@ describe('help dialog search behaviour', () => {
 
     expect(helpQuickLinks.hasAttribute('hidden')).toBe(false);
     expect(featuresItem.hasAttribute('hidden')).toBe(false);
+    expect(powerButton.dataset.matchCount).toBeUndefined();
+    expect(powerBadge?.hasAttribute('hidden')).toBe(true);
   });
 
   test('clicking a quick link highlights the target section', () => {

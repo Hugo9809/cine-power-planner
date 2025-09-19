@@ -630,6 +630,8 @@ const texts = {
       "Jump directly to any section of the help dialog. Buttons only show topics that match the current search.",
     helpQuickLinkButtonHelp:
       "Scroll to the “%s” section in the help dialog.",
+    helpQuickLinkMatchCountOne: "%s match",
+    helpQuickLinkMatchCountOther: "%s matches",
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
       "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations.",
@@ -1288,6 +1290,8 @@ const texts = {
       "Vai direttamente a una sezione della guida. I pulsanti mostrano solo gli argomenti visibili alla ricerca corrente.",
     helpQuickLinkButtonHelp:
       "Scorri fino alla sezione “%s” nella finestra di aiuto.",
+    helpQuickLinkMatchCountOne: "%s corrispondenza",
+    helpQuickLinkMatchCountOther: "%s corrispondenze",
     hoverHelpButtonLabel: "Passa il mouse per aiuto",
     hoverHelpButtonHelp:
       "Attiva l'aiuto al passaggio del mouse così, spostando il cursore su pulsanti, campi, menu a discesa o intestazioni, vengono mostrate brevi spiegazioni.",
@@ -1954,6 +1958,8 @@ const texts = {
       "Ve directamente a una sección de la ayuda. Los botones solo muestran los temas que coinciden con la búsqueda actual.",
     helpQuickLinkButtonHelp:
       "Desplázate a la sección “%s” dentro del cuadro de ayuda.",
+    helpQuickLinkMatchCountOne: "%s coincidencia",
+    helpQuickLinkMatchCountOther: "%s coincidencias",
     hoverHelpButtonLabel: "Pasa el cursor para ayuda",
     hoverHelpButtonHelp:
       "Activa la ayuda al pasar el cursor para que al moverlo sobre botones, campos, menús desplegables o encabezados aparezcan breves explicaciones.",
@@ -2621,6 +2627,8 @@ const texts = {
       "Accédez directement à une section de l'aide. Les boutons n'affichent que les sujets correspondant à votre recherche actuelle.",
     helpQuickLinkButtonHelp:
       "Faites défiler jusqu'à la section « %s » dans la fenêtre d'aide.",
+    helpQuickLinkMatchCountOne: "%s résultat",
+    helpQuickLinkMatchCountOther: "%s résultats",
     hoverHelpButtonLabel: "Survoler pour obtenir de l'aide",
     hoverHelpButtonHelp:
       "Active l'aide au survol pour qu'en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, des explications brèves apparaissent.",
@@ -3290,6 +3298,8 @@ const texts = {
       "Springe direkt zu einem Abschnitt im Hilfedialog. Die Schaltflächen zeigen nur Themen, die zur aktuellen Suche passen.",
     helpQuickLinkButtonHelp:
       "Zum Abschnitt „%s“ im Hilfedialog scrollen.",
+    helpQuickLinkMatchCountOne: "%s Treffer",
+    helpQuickLinkMatchCountOther: "%s Treffer",
     hoverHelpButtonLabel: "Für Hilfe darüberfahren",
     hoverHelpButtonHelp:
       "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen erscheinen.",

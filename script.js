@@ -15460,6 +15460,17 @@ if (helpButton && helpDialog) {
   const helpQuickLinkItems = new Map();
   const helpSectionHighlightTimers = new Map();
   const appTargetHighlightTimers = new Map();
+  const clearActiveQuickLinks = () => {
+    if (!helpQuickLinksList) return;
+    helpQuickLinksList
+      .querySelectorAll('.help-quick-link.active')
+      .forEach(btn => {
+        btn.classList.remove('active');
+        btn.removeAttribute('aria-current');
+      });
+  };
+  let quickLinkMatchLabelSingular = '%s match';
+  let quickLinkMatchLabelPlural = '%s matches';
 
   const highlightAppTarget = element => {
     if (!element) return;
@@ -15575,13 +15586,22 @@ if (helpButton && helpDialog) {
       return;
     }
     let hasVisible = false;
-    helpQuickLinkItems.forEach(({ section, listItem, button }) => {
+    helpQuickLinkItems.forEach(item => {
+      const { section, listItem, button, countBadge } = item;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
       } else {
         listItem.setAttribute('hidden', '');
-        if (button) button.classList.remove('active');
+        if (button) {
+          button.classList.remove('active');
+          button.removeAttribute('aria-current');
+          button.removeAttribute('data-match-count');
+        }
+        if (countBadge) {
+          countBadge.textContent = '';
+          countBadge.setAttribute('hidden', '');
+        }
       }
     });
     if (hasVisible) {
@@ -15615,20 +15635,119 @@ if (helpButton && helpDialog) {
     }
     const template =
       langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(({ button, label }) => {
+    quickLinkMatchLabelSingular =
+      langTexts.helpQuickLinkMatchCountOne ||
+      fallbackTexts.helpQuickLinkMatchCountOne ||
+      '%s match';
+    quickLinkMatchLabelPlural =
+      langTexts.helpQuickLinkMatchCountOther ||
+      fallbackTexts.helpQuickLinkMatchCountOther ||
+      '%s matches';
+    const hasQuery = !!(helpSearch && helpSearch.value.trim());
+    helpQuickLinkItems.forEach(item => {
+      const { button, labelEl, section } = item;
       if (!button) return;
-      if (template) {
-        const helpText = template.replace('%s', label);
+      const heading = section?.querySelector('h3');
+      const updatedLabel = heading?.textContent?.trim() || item.label || '';
+      if (updatedLabel) {
+        item.label = updatedLabel;
+        if (labelEl) labelEl.textContent = updatedLabel;
+      }
+      let ariaText = updatedLabel;
+      let helpText = '';
+      if (template && updatedLabel) {
+        helpText = template.replace('%s', updatedLabel);
         button.setAttribute('data-help', helpText);
-        button.setAttribute('aria-label', helpText);
       } else {
         button.removeAttribute('data-help');
-        button.setAttribute('aria-label', label);
+      }
+      if (helpText) ariaText = helpText;
+      if (ariaText) {
+        button.setAttribute('aria-label', ariaText);
+        button.setAttribute('title', ariaText);
+      } else {
+        button.removeAttribute('aria-label');
+        button.removeAttribute('title');
+      }
+      item.ariaBaseLabel = ariaText || updatedLabel || '';
+      if (hasQuery) {
+        const count = Number(button.dataset.matchCount || '0');
+        if (count > 0) {
+          const matchLabel =
+            count === 1 ? quickLinkMatchLabelSingular : quickLinkMatchLabelPlural;
+          if (matchLabel) {
+            const countText = matchLabel.replace('%s', count);
+            button.setAttribute(
+              'aria-label',
+              `${item.ariaBaseLabel} (${countText})`
+            );
+          }
+        }
       }
     });
   };
 
   updateHelpQuickLinksForLanguage = applyQuickLinkLanguage;
+
+  const updateQuickLinkMatchCounts = (query, matchSummary) => {
+    const hasQuery = !!query;
+    helpQuickLinkItems.forEach(item => {
+      const { button, countBadge, label, ariaBaseLabel, section } = item;
+      if (!button) return;
+      const baseAria = ariaBaseLabel || label;
+      if (!hasQuery) {
+        if (countBadge) {
+          countBadge.textContent = '';
+          countBadge.setAttribute('hidden', '');
+        }
+        button.removeAttribute('data-match-count');
+        if (baseAria) {
+          button.setAttribute('aria-label', baseAria);
+          button.setAttribute('title', baseAria);
+        } else {
+          button.removeAttribute('aria-label');
+          button.removeAttribute('title');
+        }
+        return;
+      }
+      const summary = matchSummary.get(section) || { direct: false, items: 0 };
+      const direct = summary.direct ? 1 : 0;
+      const totalMatches = (summary.items || 0) + direct;
+      if (countBadge) {
+        if (totalMatches > 0) {
+          countBadge.textContent = String(totalMatches);
+          countBadge.removeAttribute('hidden');
+          button.setAttribute('data-match-count', String(totalMatches));
+        } else {
+          countBadge.textContent = '';
+          countBadge.setAttribute('hidden', '');
+          button.removeAttribute('data-match-count');
+        }
+      }
+      if (totalMatches > 0) {
+        const matchLabel =
+          totalMatches === 1 ? quickLinkMatchLabelSingular : quickLinkMatchLabelPlural;
+        if (matchLabel) {
+          const countText = matchLabel.replace('%s', totalMatches);
+          const combined = `${baseAria} (${countText})`;
+          button.setAttribute('aria-label', combined);
+          button.setAttribute('title', combined);
+        } else if (baseAria) {
+          button.setAttribute('aria-label', baseAria);
+          button.setAttribute('title', baseAria);
+        } else {
+          button.removeAttribute('aria-label');
+          button.removeAttribute('title');
+        }
+      } else if (baseAria) {
+        button.setAttribute('aria-label', baseAria);
+        button.setAttribute('title', baseAria);
+      } else {
+        button.removeAttribute('aria-label');
+        button.removeAttribute('title');
+      }
+    });
+  };
 
   const buildHelpQuickLinks = () => {
     if (!helpQuickLinksNav || !helpQuickLinksList || !helpSectionsContainer) {
@@ -15653,17 +15772,23 @@ if (helpButton && helpDialog) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'help-quick-link';
-      button.textContent = label;
       button.dataset.targetId = id;
       button.setAttribute('aria-label', label);
+      button.setAttribute('aria-controls', id);
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'help-quick-link-label';
+      labelSpan.textContent = label;
+      const countBadge = document.createElement('span');
+      countBadge.className = 'help-quick-link-count';
+      countBadge.setAttribute('aria-hidden', 'true');
+      countBadge.setAttribute('hidden', '');
+      button.appendChild(labelSpan);
+      button.appendChild(countBadge);
       button.addEventListener('click', () => {
         if (section.hasAttribute('hidden')) return;
-        if (helpQuickLinksList) {
-          helpQuickLinksList
-            .querySelectorAll('.help-quick-link.active')
-            .forEach(btn => btn.classList.remove('active'));
-        }
+        clearActiveQuickLinks();
         button.classList.add('active');
+        button.setAttribute('aria-current', 'true');
         if (typeof section.scrollIntoView === 'function') {
           section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -15672,7 +15797,15 @@ if (helpButton && helpDialog) {
       });
       li.appendChild(button);
       fragment.appendChild(li);
-      helpQuickLinkItems.set(id, { section, button, listItem: li, label });
+      helpQuickLinkItems.set(id, {
+        section,
+        button,
+        listItem: li,
+        label,
+        labelEl: labelSpan,
+        countBadge,
+        ariaBaseLabel: label,
+      });
     });
     if (!fragment.childNodes.length) {
       helpQuickLinksNav.setAttribute('hidden', '');
@@ -15747,6 +15880,7 @@ if (helpButton && helpDialog) {
     );
     const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
     const elements = sections.concat(items);
+    const sectionMatchSummary = new Map();
     let anyVisible = false;
     // Prepare a regex pattern to wrap matches in <mark>; escape to avoid
     // breaking on special characters in the query and allow flexible
@@ -15807,6 +15941,9 @@ if (helpButton && helpDialog) {
     };
     elements.forEach(el => {
       const isFaqItem = el.classList.contains('faq-item');
+      const owningSection = isFaqItem
+        ? el.closest('section[data-help-section]')
+        : el;
       // Save original HTML once so that repeated filtering doesn't permanently
       // insert <mark> tags; restore it before applying a new highlight. While
       // doing so, capture the default open state for FAQ <details> elements so
@@ -15842,6 +15979,18 @@ if (helpButton && helpDialog) {
           }
         }
         anyVisible = true;
+        if (owningSection) {
+          const summary = sectionMatchSummary.get(owningSection) || {
+            direct: false,
+            items: 0,
+          };
+          if (isFaqItem) {
+            summary.items = (summary.items || 0) + 1;
+          } else {
+            summary.direct = true;
+          }
+          sectionMatchSummary.set(owningSection, summary);
+        }
       } else {
         // Hide entries that do not match and collapse FAQ answers while they
         // are filtered out so reopening the dialog starts from a clean state.
@@ -15868,6 +16017,7 @@ if (helpButton && helpDialog) {
       }
     }
     syncHelpQuickLinksVisibility();
+    updateQuickLinkMatchCounts(query, sectionMatchSummary);
   };
 
   // Display the help dialog. The search box is reset so stale filter state
@@ -15879,11 +16029,7 @@ if (helpButton && helpDialog) {
     if (helpSearch) {
       helpSearch.value = '';
       filterHelp(); // ensure all sections are visible again
-      if (helpQuickLinksList) {
-        helpQuickLinksList
-          .querySelectorAll('.help-quick-link.active')
-          .forEach(btn => btn.classList.remove('active'));
-      }
+      clearActiveQuickLinks();
       if (helpContent) {
         helpContent.scrollTop = 0;
       }
@@ -16058,9 +16204,27 @@ if (helpButton && helpDialog) {
       (isHelp ||
         helpExact ||
         (!deviceStrong && !featureStrong && helpScore > 0 && helpScore > bestNonHelpScore));
+    const shouldUseFeature =
+      featureMatch &&
+      (!deviceMatch ||
+        featureStrong ||
+        (!deviceStrong && featureScore >= deviceScore));
 
     if (!isHelp && !preferHelp) {
-      if (deviceMatch) {
+      if (shouldUseFeature) {
+        const feature = featureMatch.value;
+        const featureEl = feature?.element || feature;
+        if (featureEl) {
+          if (featureSearch) {
+            const label = feature?.label || featureEl.textContent?.trim();
+            if (label) {
+              featureSearch.value = label;
+            }
+          }
+          focusFeatureElement(featureEl);
+          return;
+        }
+      } else if (deviceMatch) {
         const device = deviceMatch.value;
         if (device && device.select) {
           device.select.value = device.value;
@@ -16071,8 +16235,7 @@ if (helpButton && helpDialog) {
           focusFeatureElement(device.select);
           return;
         }
-      }
-      if (featureMatch) {
+      } else if (featureMatch) {
         const feature = featureMatch.value;
         const featureEl = feature?.element || feature;
         if (featureEl) {
@@ -16108,13 +16271,10 @@ if (helpButton && helpDialog) {
         }
         highlightHelpSection(section);
         const quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
-        if (helpQuickLinksList) {
-          helpQuickLinksList
-            .querySelectorAll('.help-quick-link.active')
-            .forEach(btn => btn.classList.remove('active'));
-        }
+        clearActiveQuickLinks();
         if (quickLink && quickLink.button) {
           quickLink.button.classList.add('active');
+          quickLink.button.setAttribute('aria-current', 'true');
         }
       }
       return;
