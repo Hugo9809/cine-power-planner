@@ -33,6 +33,10 @@ describe('service worker configuration', () => {
     );
   });
 
+  test('caches the device schema for offline editing', () => {
+    expect(ASSETS).toEqual(expect.arrayContaining(['./schema.json']));
+  });
+
   test('caches the shared theme helper for legal pages', () => {
     expect(ASSETS).toEqual(expect.arrayContaining(['./static-theme.js']));
   });

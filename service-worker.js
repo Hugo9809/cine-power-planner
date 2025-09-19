@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v17';
+const CACHE_NAME = 'cine-power-planner-v18';
 const ASSETS = [
   './',
   './index.html',
@@ -44,6 +44,7 @@ const ASSETS = [
   './storage.js',
   './normalizeData.js',
   './unifyPorts.js',
+  './schema.json',
   './icon.svg',
   './icon.png',
   './manifest.webmanifest',
