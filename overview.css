@@ -137,6 +137,9 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   }
 }
 .category-icon { margin-right: 4px; }
+.category-icon.icon-glyph {
+  --icon-size: var(--icon-size-md);
+}
 .connector-summary { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
 .connector-block { padding: 2px 4px; border-radius: 4px; margin: 2px 2px 0 0; font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs)); }
 .info-box { margin-top: 5px; padding: 6px 10px; border-radius: 4px; }
