@@ -16367,11 +16367,13 @@ if (helpButton && helpDialog) {
       (isHelp || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
 
     if (!isHelp && !preferHelp) {
+      const featureIsExact = featureMatch?.matchType === 'exactKey';
+      const deviceBeatsFeature =
+        (deviceStrong && !featureStrong) ||
+        (deviceStrong === featureStrong && deviceScore > featureScore);
       const shouldUseDevice =
         !!deviceMatch &&
-        (!featureMatch ||
-          (deviceStrong && !featureStrong) ||
-          (deviceStrong === featureStrong && deviceScore > featureScore));
+        (!featureMatch || (!featureIsExact && deviceBeatsFeature));
       if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {

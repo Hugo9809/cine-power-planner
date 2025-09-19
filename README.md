@@ -154,8 +154,9 @@ See the language-specific README files for full details.
   to filter instantly.
 - Tailor the interface with language detection, dark or playful pink themes,
   high contrast mode, accent color and typography controls.
-- Work completely offline thanks to the service worker, persistent storage and a
-  force reload button that refreshes cached assets without losing data.
+- Work completely offline thanks to the service worker, persistent storage
+  requests and a force reload button that refreshes cached assets without
+  losing data.
 
 ## Quick Start
 
@@ -326,9 +327,10 @@ When served over HTTP(S), Cine Power Planner installs a service worker that cach
 files so the planner runs entirely offline and pulls updates in the
 background. Projects, runtime submissions and preferences (language, theme,
 pink mode and saved gear lists) are stored locally via `localStorage` in your
-browser. Clearing the site's data in your browser removes all saved
-information, and the Settings dialog includes a **Clear Local Cache** button for a one-click reset when you need a fresh start.
-See [Backup and Recovery](#backup-and-recovery) for tips on keeping your data safe.
+browser. Supporting browsers automatically grant [persistent storage](https://developer.mozilla.org/docs/Web/API/StorageManager/persist)
+through the StorageManager API when the planner loads, making it far less
+likely that offline backups or custom gear are evicted while you're on set.
+Clearing the site's data in your browser removes all saved information, and the Settings dialog includes a **Clear Local Cache** button for a one-click reset when you need a fresh start. See [Backup and Recovery](#backup-and-recovery) for tips on keeping your data safe.
 
 ## Backup and Recovery
 
