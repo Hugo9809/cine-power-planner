@@ -1826,7 +1826,7 @@ function setLanguage(lang) {
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
   deleteSetupBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.trash}</span>${texts[lang].deleteSetupBtn}`;
-  clearSetupBtn.textContent = texts[lang].clearSetupBtn;
+  setButtonLabelWithIcon(clearSetupBtn, texts[lang].clearSetupBtn, ICON_GLYPHS.circleX);
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
   sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
