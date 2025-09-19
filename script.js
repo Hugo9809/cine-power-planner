@@ -18066,7 +18066,20 @@ if (helpButton && helpDialog) {
       if (!id) return;
       const heading = section.querySelector('h3');
       if (!heading) return;
-      const label = heading.textContent.trim();
+      const headingIcon = heading.querySelector('.help-icon.icon-glyph');
+      let label = heading.textContent || '';
+      if (headingIcon) {
+        const iconText = headingIcon.textContent || '';
+        if (iconText) {
+          const iconIndex = label.indexOf(iconText);
+          if (iconIndex > -1) {
+            label =
+              label.slice(0, iconIndex) +
+              label.slice(iconIndex + iconText.length);
+          }
+        }
+      }
+      label = label.trim();
       if (!label) return;
       const li = document.createElement('li');
       const button = document.createElement('button');
@@ -18075,7 +18088,6 @@ if (helpButton && helpDialog) {
       button.dataset.targetId = id;
       button.setAttribute('aria-label', label);
 
-      const headingIcon = heading.querySelector('.help-icon.icon-glyph');
       if (headingIcon) {
         const icon = headingIcon.cloneNode(true);
         icon.classList.remove('help-icon');
