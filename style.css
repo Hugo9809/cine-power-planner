@@ -1080,17 +1080,35 @@ main.legal-content {
   margin-top: 0.75rem;
 }
 
-.help-link {
-  color: var(--accent-color);
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-thickness: 0.12em;
-  text-underline-offset: 0.15em;
+.help-link,
+.help-link:visited {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  min-height: var(--button-size);
+  border-radius: var(--border-radius);
+  background-color: var(--control-bg);
+  color: var(--control-text);
+  text-decoration: none;
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: 1em;
+  line-height: 1;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
 }
 
-.help-link:hover,
-.help-link:focus {
-  text-decoration-thickness: 0.18em;
+.help-link:hover {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  transform: translateY(-2px);
+}
+
+.help-link:active {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  filter: brightness(0.9);
+  transform: translateY(0);
 }
 
 .help-link:focus-visible {
