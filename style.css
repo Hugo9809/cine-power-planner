@@ -3530,7 +3530,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
 .requirement-box .req-icon {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxxl));
   display: block;
-  margin-bottom: 5px;
+  margin: 0 auto 5px;
 }
 .requirement-box .req-label {
   font-weight: var(--font-weight-bold);
