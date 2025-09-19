@@ -4229,6 +4229,53 @@ function updateGearListButtonVisibility() {
   }
 }
 
+function ensureGearTableCategoryGrouping(table) {
+  if (!table) return;
+  const doc = table.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  const existingCategoryGroups = table.querySelectorAll('tbody.category-group');
+  if (existingCategoryGroups.length) {
+    existingCategoryGroups.forEach(group => {
+      if (!group.classList.contains('category-group')) {
+        group.classList.add('category-group');
+      }
+    });
+    table.querySelectorAll('tbody').forEach(group => {
+      if (group.querySelector('tr.category-row')) {
+        group.classList.add('category-group');
+      }
+    });
+    return;
+  }
+  const rows = Array.from(table.rows || []);
+  if (!rows.length) return;
+  const newGroups = [];
+  let currentGroup = null;
+  rows.forEach(row => {
+    if (row.classList.contains('category-row')) {
+      currentGroup = doc.createElement('tbody');
+      currentGroup.className = 'category-group';
+      currentGroup.appendChild(row);
+      newGroups.push(currentGroup);
+    } else {
+      if (!currentGroup) {
+        currentGroup = doc.createElement('tbody');
+        currentGroup.className = 'category-group';
+        newGroups.push(currentGroup);
+      }
+      currentGroup.appendChild(row);
+    }
+  });
+  Array.from(table.tBodies || []).forEach(body => {
+    if (!body.rows.length || !body.classList.contains('category-group')) {
+      body.remove();
+    }
+  });
+  newGroups.forEach(group => {
+    if (group.rows.length) table.appendChild(group);
+  });
+}
+
 function splitGearListHtml(html) {
   if (!html) return { projectHtml: '', gearHtml: '' };
   // Support legacy storage formats where the gear list and project
@@ -4248,6 +4295,7 @@ function splitGearListHtml(html) {
   const reqHeading = h3s[0];
   const reqGrid = doc.querySelector('.requirements-grid');
   const table = doc.querySelector('.gear-table');
+  ensureGearTableCategoryGrouping(table);
   const titleHtml = title ? title.outerHTML : '';
   const projectHtml = reqHeading && reqGrid ? titleHtml + reqHeading.outerHTML + reqGrid.outerHTML : '';
   const projectName = title ? title.textContent : '';
@@ -10929,10 +10977,11 @@ function generateGearListHtml(info = {}) {
             registerDevice(categoryPath, entries);
         }
     };
-    const rows = [];
+    const categoryGroups = [];
     const addRow = (cat, items) => {
-        rows.push(`<tr class="category-row"><td>${cat}</td></tr>`);
-        rows.push(`<tr><td>${items}</td></tr>`);
+        categoryGroups.push(
+            `<tbody class="category-group"><tr class="category-row"><td>${cat}</td></tr><tr><td>${items}</td></tr></tbody>`
+        );
     };
     addRow('Camera', formatItems([selectedNames.camera]));
     const cameraSupportText = formatItems(supportAccNoCages);
@@ -11502,7 +11551,7 @@ function generateGearListHtml(info = {}) {
     addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
-    body += '<h3>Gear List</h3><table class="gear-table">' + rows.join('') + '</table>';
+    body += '<h3>Gear List</h3><table class="gear-table">' + categoryGroups.join('') + '</table>';
     return body;
 }
 
