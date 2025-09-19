@@ -10791,6 +10791,9 @@ function renderSetupDiagram() {
   const nodeMap = {};
   const step = 300; // extra spacing for edge labels
   const VIDEO_LABEL_SPACING = 10;
+  const EDGE_LABEL_GAP = 12;
+  const EDGE_LABEL_VERTICAL_GAP = 8;
+  const EDGE_ROUTE_LABEL_GAP = 10;
   const baseY = 220;
   let x = 80;
 
@@ -11104,7 +11107,7 @@ function renderSetupDiagram() {
       const bottomY = maxY + NODE_H;
       path = `M ${from.x} ${from.y} V ${bottomY} H ${to.x} V ${to.y}`;
       lx = (from.x + to.x) / 2;
-      ly = bottomY - 6 - labelSpacing;
+      ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing;
     } else {
       path = `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
       const dx = to.x - from.x;
@@ -11113,10 +11116,8 @@ function renderSetupDiagram() {
       const midX = (from.x + to.x) / 2;
       const midY = (from.y + to.y) / 2;
       const len = Math.hypot(dx, dy) || 1;
-      let off = 8 + labelSpacing;
-      if (Math.abs(dx) < Math.abs(dy)) {
-        off = 4 + labelSpacing;
-      }
+      const baseGap = Math.abs(dx) < Math.abs(dy) ? EDGE_LABEL_VERTICAL_GAP : EDGE_LABEL_GAP;
+      const off = baseGap + labelSpacing;
       const perpX = (dy / len) * off;
       const perpY = (-dx / len) * off;
       lx = midX + perpX;
