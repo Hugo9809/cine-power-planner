@@ -7369,6 +7369,38 @@ if (accentColorInput) {
 let fontSize = '16';
 let fontFamily = "'Ubuntu', sans-serif";
 
+const uiScaleRoot = document.documentElement;
+const defaultUIScaleValues = {
+  '--page-padding': 20,
+  '--gap-size': 10,
+  '--button-size': 24,
+  '--border-radius': 5,
+  '--form-label-width': 150,
+  '--form-label-min-width': 120,
+  '--form-action-width': 110
+};
+const uiScaleProperties = Object.keys(defaultUIScaleValues);
+const baseUIScaleValues = { ...defaultUIScaleValues };
+let baseFontSize = 16;
+
+if (uiScaleRoot) {
+  try {
+    const computedStyle = getComputedStyle(uiScaleRoot);
+    const computedFontSize = parseFloat(computedStyle.fontSize);
+    if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
+      baseFontSize = computedFontSize;
+    }
+    for (const prop of uiScaleProperties) {
+      const value = parseFloat(computedStyle.getPropertyValue(prop));
+      if (Number.isFinite(value) && value > 0) {
+        baseUIScaleValues[prop] = value;
+      }
+    }
+  } catch (error) {
+    console.warn('Unable to read computed styles for UI scaling', error);
+  }
+}
+
 const CUSTOM_FONT_STORAGE_KEY = 'cameraPowerPlanner_customFonts';
 const customFontEntries = new Map();
 
@@ -7900,7 +7932,24 @@ loadStoredCustomFonts().catch(error => {
 });
 
 function applyFontSize(size) {
-  document.documentElement.style.fontSize = `${size}px`;
+  const numericSize = parseFloat(size);
+  if (!Number.isFinite(numericSize) || numericSize <= 0) {
+    return;
+  }
+
+  document.documentElement.style.fontSize = `${numericSize}px`;
+
+  if (!Number.isFinite(baseFontSize) || baseFontSize <= 0) {
+    return;
+  }
+
+  const scale = numericSize / baseFontSize;
+  for (const prop of uiScaleProperties) {
+    const baseValue = baseUIScaleValues[prop];
+    if (!Number.isFinite(baseValue) || baseValue <= 0) continue;
+    document.documentElement.style.setProperty(prop, `${baseValue * scale}px`);
+  }
+  document.documentElement.style.setProperty('--ui-scale', String(scale));
 }
 
 function applyFontFamily(family) {
