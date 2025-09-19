@@ -2,6 +2,12 @@
 
 This browser based tool helps plan professional camera projects powered by V‑Mount, B‑Mount or Gold-Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
 
+All planning, inputs and exports stay on the device in front of you. Language
+choice, projects, custom equipment, favorites and runtime feedback live in your
+browser, and service worker updates are driven directly by this repository. Run
+the planner offline from disk or host it internally so every department uses the
+same audited version.
+
 ---
 
 ## 🌍 Languages
@@ -46,6 +52,27 @@ The app automatically uses your browser language on first load, and you can swit
 
 ## 🔧 Features
 
+### ✨ Expanded highlights
+
+- **Build complex rigs without guesswork.** Combine cameras, battery plates,
+  wireless links, monitors, motors and accessories while tracking total draw at
+  14.4 V/12 V (and 33.6 V/21.6 V for B‑Mount) plus realistic runtimes from
+  weighted field data. The battery comparison panel flags overloads before the
+  wrong kit goes on the truck.
+- **Keep every department aligned.** Save multiple projects with requirements,
+  crew contacts, scenarios and notes. Printable gear lists group equipment by
+  category, merge duplicates, surface technical metadata and include
+  scenario-driven accessories so camera, lighting and grip teams stay synced.
+- **Work confidently anywhere.** Open `index.html` directly or serve the folder
+  over HTTPS to enable the service worker. Offline caching preserves language,
+  themes, favorites and projects, and **Force reload** refreshes cached assets
+  without touching stored data.
+- **Tailor the planner to your crew.** Switch instantly between English,
+  Deutsch, Español, Italiano and Français, adjust font size and typeface, pick a
+  custom accent color, upload a print logo and toggle dark, pink or
+  high-contrast themes. Type-to-search selectors, pinned favorites, fork buttons
+  and hover help keep on-set workflows fast.
+
 ### ✅ Project Management
 - Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
 - Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
@@ -58,6 +85,19 @@ The app automatically uses your browser language on first load, and you can swit
 - Choose **V‑Mount**, **B‑Mount** or **Gold‑Mount** plates on supported cameras; the battery list adapts automatically.
 
 ### 🧭 Interface Overview
+- **Quick reference:**
+  - **Global search** (`/` or `Ctrl+K`/`⌘K`) jumps to features, selectors or help
+    topics even when the side drawer is collapsed.
+  - **Help center** (`?`, `H`, `F1` or `Ctrl+/`) surfaces searchable guides,
+    FAQs, shortcuts and the optional hover-help mode.
+  - **Project diagram** visualizes connections; hold Shift when downloading to
+    save a JPG snapshot instead of SVG while seeing compatibility notices.
+  - **Battery comparison** reveals how compatible packs perform and highlights
+    overload risks before call time.
+  - **Gear list generator** outputs categorized tables with metadata, crew
+    emails and scenario-driven accessories ready for print or PDF.
+  - **Offline badge & Force reload** show connectivity status and refresh cached
+    assets without clearing projects.
 - A skip link and offline indicator keep the layout accessible on keyboard and touch devices—the badge appears whenever the browser loses its connection.
 - The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result, use / or Ctrl+K (⌘K on macOS) to focus it from anywhere (the side menu opens automatically on small screens) and press Escape or tap × to clear the query.
 - Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup, restore and Clear Local Cache tools.
@@ -71,6 +111,8 @@ The app automatically uses your browser language on first load, and you can swit
 - Built-in keyboard shortcuts cover global search (/ or Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
 - Hover-help mode turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
 - Type-to-search inputs, focus-visible controls and star icons beside selectors let you filter long lists quickly and pin favourite devices to the top.
+- Upload a custom logo for printouts, configure default monitoring roles and tweak project requirement presets so exports match your production branding.
+- Fork buttons duplicate gear list rows instantly, and pinned favourites keep go-to equipment at the top of selectors for faster data entry on set.
 
 ### 📋 Gear List
 The generator turns your selections into a categorized packing list:
@@ -180,6 +222,8 @@ The generator turns your selections into a categorized packing list:
 - Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.
 - Optionally include temperature for more accurate weighting.
 - Entries are saved in your browser and improve future estimates.
+- A dashboard orders submissions by weight, shows contribution percentages and
+  highlights outliers so crews can review field data quickly.
 
 ### ❓ Searchable Help
 - Open via the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl+/</kbd>.
@@ -215,7 +259,9 @@ so Cine Power Planner works fully offline and updates in the background. Project
 runtime submissions and preferences (language, theme, pink mode and saved gear
 lists) live in your browser's `localStorage`. Clearing the site's data in the
 browser removes all stored information, and the Settings dialog includes a
-**Clear Local Cache** button for the same one-click cleanup.
+**Clear Local Cache** button for the same one-click cleanup. The header shows an
+offline badge whenever connectivity drops, and the 🔄 **Force reload** action
+refreshes cached assets without disturbing saved projects.
 
 ---
 
@@ -257,3 +303,5 @@ Add `--help` to any of the above scripts for usage details.
 
 ## 🤝 Contributing
 Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
+When reporting data corrections, attaching project backups or runtime samples
+helps keep the catalog accurate for everyone.

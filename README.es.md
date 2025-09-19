@@ -2,6 +2,13 @@
 
 Esta herramienta basada en el navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada de la batería**, al tiempo que comprueba que el paquete puede suministrar la potencia necesaria.
 
+Toda la planificación, los datos introducidos y las exportaciones permanecen en
+el dispositivo que tienes delante. El idioma, los proyectos, los equipos
+personalizados, los favoritos y los comentarios de autonomía viven en tu
+navegador, y las actualizaciones del service worker provienen directamente de
+este repositorio. Puedes ejecutar la app sin conexión desde el disco o alojarla
+internamente para que cada departamento trabaje con la misma versión auditada.
+
 ---
 
 ## 🌍 Idiomas
@@ -46,6 +53,29 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
 
 ## 🔧 Funciones
 
+### ✨ Destacados ampliados
+
+- **Planifica rigs complejos sin conjeturas.** Combina cámaras, placas de
+  batería, enlaces inalámbricos, monitores, motores y accesorios mientras ves el
+  consumo total a 14,4 V/12 V (y 33,6 V/21,6 V para B‑Mount) junto a autonomías
+  realistas basadas en datos de campo ponderados. El panel de comparación de
+  baterías avisa de sobrecargas antes de que el equipo salga rumbo al rodaje.
+- **Mantén alineados a todos los departamentos.** Guarda varios proyectos con
+  requisitos, contactos del equipo, escenarios y notas. Las listas imprimibles
+  agrupan el material por categoría, fusionan duplicados, muestran metadatos
+  técnicos e incluyen accesorios condicionados por escenarios para que cámara,
+  iluminación y grip compartan el mismo contexto.
+- **Trabaja con confianza en cualquier lugar.** Abre `index.html` directamente o
+  sirve la carpeta por HTTPS para activar el service worker. La caché sin
+  conexión conserva idioma, temas, favoritos y proyectos, y **Forzar recarga**
+  actualiza los recursos almacenados sin tocar tus datos.
+- **Adapta el planner a tu equipo.** Cambia al instante entre español, inglés,
+  alemán, italiano y francés, ajusta el tamaño y la tipografía, define un color
+  de acento propio, sube un logotipo para impresión y alterna entre tema claro,
+  oscuro, rosa o de alto contraste. Los desplegables con búsqueda, favoritos
+  fijados, botones de bifurcación y ayudas flotantes mantienen ágil el trabajo en
+  set.
+
 ### ✅ Gestión de proyectos
 - Guarda, carga y elimina múltiples proyectos de cámara (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
 - Se crean instantáneas automáticas cada 10 minutos mientras el planificador está abierto, y el diálogo de Ajustes puede programar exportaciones de copias de seguridad cada hora como recordatorio para archivar los datos.
@@ -58,6 +88,20 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
 - En las cámaras compatibles elige placas **V‑Mount**, **B‑Mount** o **Gold-Mount**; la lista de baterías se adapta automáticamente.
 
 ### 🧭 Descripción de la interfaz
+- **Resumen rápido:**
+  - **Búsqueda global** (`/` o `Ctrl+K`/`⌘K`) salta a funciones, selectores o
+    temas de ayuda incluso cuando el menú lateral está contraído.
+  - **Centro de ayuda** (`?`, `H`, `F1` o `Ctrl+/`) ofrece guías filtrables,
+    preguntas frecuentes, accesos directos y el modo de ayuda flotante.
+  - **Diagrama del proyecto** visualiza conexiones; mantén pulsada Mayús al
+    descargar para guardar un JPG en lugar de SVG y ver avisos de
+    compatibilidad.
+  - **Comparador de baterías** muestra el rendimiento de cada pack compatible y
+    resalta riesgos de sobrecarga.
+  - **Generador de listas** crea tablas por categoría con metadatos, correos de
+    la crew y añadidos según escenario listos para imprimir.
+  - **Indicador sin conexión y Forzar recarga** reflejan el estado de la
+    conexión y renuevan archivos en caché sin borrar proyectos.
 - Un enlace de salto y un indicador sin conexión mantienen la interfaz accesible con teclado y pantallas táctiles: la insignia aparece cuando el navegador pierde la conexión.
 - La barra de búsqueda global salta a funciones, selectores de dispositivos o temas de ayuda; pulsa Enter para activar el resultado resaltado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (el menú lateral se abre automáticamente en pantallas pequeñas) y pulsa Escape o × para limpiar la consulta.
 - Los controles de la barra superior permiten cambiar el idioma, alternar los temas oscuro y rosa y abrir Ajustes con opciones de color de acento, tamaño y familia tipográfica, modo de alto contraste y carga de logotipo, además de herramientas para copia de seguridad, restauración y Borrar caché local.
@@ -71,6 +115,12 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
 - Los atajos de teclado integrados cubren la búsqueda global (/ o Ctrl+K/⌘K), la ayuda ( ?, H, F1, Ctrl+/ ), el guardado (Enter o Ctrl+S/⌘S), el modo oscuro (D) y el modo rosa (P).
 - El modo de ayuda al pasar el cursor convierte cada botón, campo, menú y encabezado en una descripción emergente bajo demanda para que las personas nuevas aprendan rápidamente.
 - Las entradas con búsqueda incremental, los controles visibles al enfocar y los iconos de estrella junto a los selectores permiten filtrar listas largas y fijar dispositivos favoritos en la parte superior.
+- Sube un logotipo para las impresiones, configura roles de monitorización por
+  defecto y ajusta los presets de requisitos del proyecto para que las
+  exportaciones respeten la identidad de la productora.
+- Los botones de bifurcación duplican filas de formularios de inmediato y los
+  favoritos fijados mantienen el equipo habitual en la parte alta de cada
+  selector, algo clave cuando el tiempo en set es limitado.
 
 ### 📋 Lista de equipo
 El generador transforma tus selecciones en una lista de empaquetado categorizada:
@@ -178,6 +228,9 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 - Haz clic en <strong>Enviar comentarios de autonomía</strong> debajo de la autonomía para añadir tu propia medición.
 - Incluye la temperatura si quieres una ponderación más precisa.
 - Las entradas se guardan en tu navegador y mejoran las estimaciones futuras.
+- Un panel dedicado ordena los envíos según su peso, muestra porcentajes de
+  contribución y resalta valores atípicos para que el equipo evalúe los datos de
+  campo rápidamente.
 
 ### ❓ Ayuda con búsqueda
 - Ábrela mediante el botón <strong>?</strong> o pulsa <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> o <kbd>Ctrl+/</kbd>.
@@ -209,6 +262,9 @@ Una vez instalada, la aplicación se abre desde tu pantalla de inicio, funciona 
 ## 📡 Uso sin conexión y almacenamiento de datos
 
 Servir la aplicación mediante HTTP(S) instala un *service worker* que almacena en caché cada archivo, de modo que Cine Power Planner funciona sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas de equipo guardadas) viven en el `localStorage` del navegador. Al borrar los datos del sitio en el navegador se elimina toda la información almacenada, y el diálogo de Ajustes incluye un botón de **Borrar caché local** para la misma limpieza con un solo clic.
+La cabecera muestra un indicador sin conexión cuando se pierde la red, y la
+acción 🔄 **Forzar recarga** actualiza los recursos en caché sin afectar a los
+proyectos guardados.
 
 ---
 
@@ -250,3 +306,5 @@ Añade `--help` a cualquiera de los scripts anteriores para ver los detalles de 
 
 ## 🤝 Contribuciones
 ¡Se agradecen las contribuciones! Puedes abrir un issue o enviar un *pull request* en GitHub.
+Si informas de datos incorrectos, adjuntar copias de seguridad de proyectos o
+mediciones de autonomía ayuda a mantener el catálogo fiable para todos.

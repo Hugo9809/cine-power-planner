@@ -14,6 +14,13 @@ bodies, add accessories or adjust requirements, the power draw, required
 batteries and runtime feedback update instantly so you can react before you get
 to set.
 
+All planning, data entry and reporting stay on the machine in front of you.
+Language preferences, projects, custom devices, pinned favorites, runtime
+feedback and backups are stored in your browser, and service worker updates are
+explicit so productions can audit exactly what changes between versions. You
+can open the repository directly from disk for air‑gapped shoots or host it
+internally so crews across departments see the same trustworthy planner.
+
 **Why crews choose Cine Power Planner**
 
 - Model multi-mount rigs with precise draw calculations, weighted runtime
@@ -43,6 +50,29 @@ that future visits work offline and pick up updates automatically.
 - **Approachable customization.** Add custom devices, shareable project
   bundles, localized UI strings and printable gear lists without leaving the
   browser.
+
+### Expanded highlights
+
+- **Plan complex builds without guesswork.** Combine cameras, battery plates,
+  wireless links, monitors, motors and accessories while seeing total wattage,
+  current draw at 14.4 V/12 V (and 33.6 V/21.6 V for B‑Mount) plus realistic
+  runtimes drawn from weighted field data. The battery comparison panel flags
+  overloads before you pack the wrong kit.
+- **Keep every department aligned.** Save multiple projects with requirements,
+  crew contacts, shooting scenarios and custom notes. Generate printable gear
+  lists that group kit by category, merge duplicates, include technical
+  metadata and reflect scenario-driven accessories so lighting, grip and camera
+  departments stay synchronized.
+- **Stay productive anywhere.** Works entirely in the browser—open
+  `index.html` directly or serve it over HTTPS to enable the service worker.
+  Offline caching preserves language, theme, favorites and projects without
+  sending data to external servers and the **Force reload** button refreshes
+  cached assets without touching saved projects.
+- **Tailor it to your team.** Switch instantly between English, Deutsch,
+  Español, Italiano and Français, adjust font size and typeface, pick a custom
+  accent color, upload a print logo, and toggle dark, pink or high-contrast
+  themes. Type-to-search dropdowns, pinned favorites, fork buttons and hover
+  help keep busy crews productive on set.
 
 ## Table of Contents
 
@@ -191,6 +221,9 @@ Understanding the planner's vocabulary makes it easier to explore new features:
 - Saved plans collect device selections, project requirements, crew lists and
   generated gear lists. The selector stores multiple projects and autosaves
   every change so you can switch between productions without losing your place.
+- Shared project bundles export everything—device selections, runtime feedback,
+  favorites, gear lists and custom devices—so another machine can restore the
+  full context with a single upload.
 
 ### Devices and accessories
 
@@ -205,6 +238,8 @@ Understanding the planner's vocabulary makes it easier to explore new features:
 - User-submitted runtimes are stored with environmental context. Weighted
   averages factor in temperature, codec, resolution, frame rate and each
   component's share of the total draw so estimates mirror real-world shoots.
+- The runtime dashboard orders entries by weight, shows contribution
+  percentages and highlights outliers so crews can evaluate feedback quickly.
 
 ### Scenarios and gear lists
 
@@ -221,6 +256,22 @@ Understanding the planner's vocabulary makes it easier to explore new features:
   clean slate.
 
 ## Interface Overview
+
+### Quick reference
+
+- **Global search** (`/` or `Ctrl+K`/`⌘K`) jumps to any feature, selector or help
+  topic—even when the side menu is collapsed.
+- **Help center** (`?`, `H`, `F1` or `Ctrl+/`) surfaces searchable guides, FAQs,
+  shortcuts and optional hover help that turns every button, field and header
+  into a tooltip.
+- **Project diagram** visualizes connections; hold Shift while downloading to
+  export a JPG snapshot instead of SVG and reveal compatibility notices inline.
+- **Battery comparison panel** reveals how each compatible pack performs and
+  highlights overload risks before you arrive on set.
+- **Gear list generator** turns selections into categorized tables with
+  metadata, crew emails and scenario-driven additions that print cleanly.
+- **Offline indicator and force reload** badges show connectivity status and let
+  you refresh cached assets without losing projects.
 
 ### Top bar controls
 
@@ -243,6 +294,8 @@ Understanding the planner's vocabulary makes it easier to explore new features:
 - A keyboard-friendly skip link, focus-visible controls, offline indicator and responsive layout improve navigation on desktops, tablets and phones.
 - Built-in keyboard shortcuts cover global search (/ or Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
 - The hover-help toggle turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
+- Upload a custom logo for printed overviews, configure monitoring defaults and set preferred requirement presets so deliverables match the production company brand.
+- Fork buttons in gear list forms duplicate entries, and pinned favorites keep the most-used gear at the top of dropdowns for faster data entry.
 
 ## Keyboard Shortcuts
 
@@ -255,6 +308,7 @@ Keyboard navigation keeps the planner quick to operate on set and in prep. The f
 | `?`, `H`, `F1`, `Ctrl+/` | Open the help dialog. | The dialog remains searchable while you type in other fields. |
 | `D` | Toggle dark mode. | Also available from **Settings → Themes**. |
 | `P` | Toggle the pink accent theme. | Works alongside light, dark or high-contrast modes. |
+| 🔄 button | Force reload cached assets. | Also accessible via **Settings → Force reload** without erasing projects. |
 
 ## Localization
 
@@ -328,6 +382,9 @@ background. Projects, runtime submissions and preferences (language, theme,
 pink mode and saved gear lists) are stored locally via `localStorage` in your
 browser. Clearing the site's data in your browser removes all saved
 information, and the Settings dialog includes a **Clear Local Cache** button for a one-click reset when you need a fresh start.
+The header shows an offline indicator whenever the browser drops its
+connection, and the 🔄 **Force reload** action refreshes cached assets without
+touching saved data.
 See [Backup and Recovery](#backup-and-recovery) for tips on keeping your data safe.
 
 ## Backup and Recovery
@@ -368,6 +425,11 @@ connection is available. You can clear saved information at any time via
 **Settings → Clear Local Cache** or by deleting the site's data in your browser.
 Exports produce human-readable JSON so you can review exactly what will be
 shared before handing files to collaborators or clients.
+
+For added transparency, each service worker update is triggered by the
+repository contents—there are no background servers to push unreviewed code.
+Hourly backup reminders and the **Force reload** button give productions clear
+controls for how and when data leaves their machines.
 
 ## Browser Support
 
@@ -456,6 +518,8 @@ naming, connector standards and metadata before opening a pull request.
 ## Feedback and Support
 
 If you run into problems, have questions, or want to suggest new features, please open an issue on GitHub. Community feedback helps improve the planner for everyone.
+When reporting data corrections, include relevant project exports or runtime
+samples so the catalog stays accurate for the next shoot.
 
 ## Contributing
 

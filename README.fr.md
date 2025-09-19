@@ -2,6 +2,13 @@
 
 Cet outil basé sur le navigateur aide à planifier des projets caméra professionnels alimentés par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, l’**intensité demandée** (à 14,4 V et 12 V) et l’**autonomie estimée** tout en vérifiant que la batterie peut fournir la puissance requise en toute sécurité.
 
+Toute la planification, les saisies et les exports restent sur la machine sous
+vos yeux. La langue, les projets, les appareils personnalisés, les favoris et
+les retours d’autonomie sont stockés dans votre navigateur, et les mises à jour
+du service worker proviennent directement de ce dépôt. Vous pouvez lancer
+l’application hors ligne depuis le disque ou l’héberger en interne pour que
+tous les départements utilisent la même version vérifiée.
+
 ---
 
 ## 🌍 Langues
@@ -46,6 +53,30 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 
 ## 🔧 Fonctionnalités
 
+### ✨ Points forts supplémentaires
+
+- **Construisez des rigs complexes sans tâtonner.** Combinez caméras, plaques
+  batteries, liaisons sans fil, moniteurs, moteurs et accessoires tout en
+  visualisant la consommation totale à 14,4 V/12 V (et 33,6 V/21,6 V pour
+  B‑Mount) ainsi que des autonomies réalistes issues de données terrain
+  pondérées. Le panneau de comparaison des batteries signale les surcharges
+  avant de charger le mauvais matériel.
+- **Gardez chaque département aligné.** Enregistrez plusieurs projets avec
+  exigences, contacts d’équipe, scénarios et notes. Les listes imprimables
+  regroupent le matériel par catégorie, fusionnent les doublons, affichent les
+  métadonnées techniques et ajoutent les accessoires dictés par les scénarios
+  pour que caméra, lumière et machinerie partagent le même contexte.
+- **Travaillez sereinement partout.** Ouvrez `index.html` directement ou servez
+  le dossier en HTTPS pour activer le service worker. La mise en cache hors
+  ligne conserve langue, thèmes, favoris et projets, et **Forcer le rechargement**
+  actualise les fichiers sans toucher aux données.
+- **Adaptez l’outil à votre équipe.** Basculez instantanément entre français,
+  anglais, allemand, espagnol et italien, ajustez taille et police, choisissez
+  une couleur d’accent personnalisée, importez un logo d’impression et alternez
+  thème clair, sombre, rose ou à fort contraste. Les menus filtrables, favoris
+  épinglés, boutons de duplication et aides contextuelles gardent un rythme
+  rapide sur le plateau.
+
 ### ✅ Gestion de projet
 - Enregistrez, chargez et supprimez plusieurs projets caméra (appuyez sur Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton Enregistrer reste inactif tant qu’aucun nom n’est saisi).
 - Des instantanés automatiques sont créés toutes les 10 minutes tant que le planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires pour penser à archiver vos données.
@@ -58,6 +89,21 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Sur les caméras compatibles, choisissez des plaques **V‑Mount**, **B‑Mount** ou **Gold-Mount** ; la liste de batteries se met à jour automatiquement.
 
 ### 🧭 Aperçu de l’interface
+- **Rappel express :**
+  - **Recherche globale** (`/` ou `Ctrl+K`/`⌘K`) rejoint fonctions, sélecteurs ou
+    rubriques d’aide même quand le menu latéral est replié.
+  - **Centre d’aide** (`?`, `H`, `F1` ou `Ctrl+/`) propose des guides filtrables,
+    une FAQ, des raccourcis et le mode d’aide contextuelle.
+  - **Diagramme de projet** visualise les connexions ; maintenez Maj en
+    téléchargeant pour obtenir un JPG au lieu d’un SVG et afficher les alertes de
+    compatibilité.
+  - **Comparateur de batteries** révèle les performances des packs compatibles
+    et signale les risques de surcharge.
+  - **Générateur de liste** produit des tableaux catégorisés avec métadonnées,
+    courriels de l’équipe et ajouts dépendant des scénarios prêts pour
+    l’impression.
+  - **Badge hors ligne et Forcer le rechargement** reflètent l’état de la
+    connexion et renouvellent les fichiers en cache sans effacer les projets.
 - Un lien d’évitement et un indicateur hors ligne maintiennent l’interface accessible au clavier et au tactile ; l’insigne apparaît dès que le navigateur perd la connexion.
 - La barre de recherche globale permet d’atteindre des fonctionnalités, sélecteurs d’appareils ou rubriques d’aide ; appuyez sur Entrée pour valider le résultat en surbrillance, utilisez / ou Ctrl+K (⌘K sur macOS) pour la focaliser instantanément (le menu latéral s’ouvre automatiquement sur les petits écrans) et appuyez sur Échap ou × pour effacer la requête.
 - Les commandes de la barre supérieure offrent le changement de langue, les thèmes sombre et rose, ainsi qu’une boîte de dialogue Paramètres avec la couleur d’accent, la taille et la famille de police, le mode à fort contraste et l’import de logo, ainsi que des outils de sauvegarde, restauration et nettoyage du cache local.
@@ -71,6 +117,12 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Les raccourcis intégrés couvrent la recherche globale (/ ou Ctrl+K/⌘K), l’aide ( ?, H, F1, Ctrl+/ ), l’enregistrement (Entrée ou Ctrl+S/⌘S), le mode sombre (D) et le mode rose (P).
 - Le mode aide au survol transforme chaque bouton, champ, menu et en-tête en infobulle à la demande pour accélérer l’apprentissage des nouveaux utilisateurs.
 - Les champs avec recherche incrémentale, les styles visibles au focus et les icônes étoilées à côté des sélecteurs facilitent le filtrage des longues listes et l’épinglage des favoris.
+- Importez un logo pour l’impression, définissez des rôles de monitoring par
+  défaut et ajustez les préréglages des exigences projet pour coller à la charte
+  de production.
+- Les boutons de duplication dupliquent instantanément les lignes des
+  formulaires et les favoris épinglés gardent le matériel essentiel en tête de
+  liste, idéal quand le temps est compté sur le plateau.
 
 ### 📋 Liste de matériel
 Le générateur transforme vos sélections en une liste de préparation catégorisée :
@@ -178,6 +230,9 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 - Cliquez sur <strong>Soumettre un retour d’autonomie</strong> sous l’autonomie pour ajouter votre mesure.
 - Ajoutez la température pour une pondération plus précise.
 - Les entrées sont sauvegardées dans votre navigateur et affinent les estimations futures.
+- Un tableau de bord classe les retours selon leur poids, affiche les
+  pourcentages de contribution et met en évidence les valeurs atypiques pour que
+  l’équipe puisse analyser les données terrain en un clin d’œil.
 
 ### ❓ Aide avec recherche
 - Ouvrez-la via le bouton <strong>?</strong> ou avec <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> ou <kbd>Ctrl+/</kbd>.
@@ -209,6 +264,9 @@ Une fois installée, l’application se lance depuis l’écran d’accueil, fon
 ## 📡 Utilisation hors ligne et stockage des données
 
 Servir l’application via HTTP(S) installe un service worker qui met chaque fichier en cache pour que Cine Power Planner fonctionne totalement hors ligne et se mette à jour en arrière-plan. Les projets, retours d’autonomie et préférences (langue, thème, mode rose et listes de matériel sauvegardées) sont stockés dans le `localStorage` du navigateur. Effacer les données du site supprime toutes les informations, et la boîte de dialogue Paramètres propose également un bouton **Effacer le cache local** pour le même nettoyage en un clic.
+L’en-tête affiche un badge hors ligne dès que la connexion tombe, et l’action 🔄
+**Forcer le rechargement** actualise les fichiers mis en cache sans toucher aux
+projets enregistrés.
 
 ---
 
@@ -250,3 +308,5 @@ Ajoutez `--help` à l’un de ces scripts pour afficher les options disponibles.
 
 ## 🤝 Contribuer
 Les contributions sont les bienvenues ! N’hésitez pas à ouvrir un ticket ou à proposer une pull request sur GitHub.
+Pour corriger des données, joindre des sauvegardes de projet ou des mesures
+d’autonomie aide à garder le catalogue fiable pour tout le monde.

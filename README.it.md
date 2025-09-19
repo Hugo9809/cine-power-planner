@@ -2,6 +2,13 @@
 
 Questo strumento basato sul browser aiuta a pianificare progetti camera professionali alimentati da batterie V‑Mount, B‑Mount o Gold-Mount. Calcola il **consumo energetico totale**, la **corrente assorbita** (a 14,4 V e 12 V) e l’**autonomia stimata della batteria**, verificando che il pacco possa erogare in sicurezza la potenza richiesta.
 
+Tutta la pianificazione, i dati inseriti e gli export restano sul dispositivo
+davanti a te. Lingua, progetti, dispositivi personalizzati, preferiti e feedback
+sulle autonomie sono salvati nel browser, e gli aggiornamenti del service worker
+arrivano direttamente da questo repository. Puoi avviare l’app offline dal
+disco oppure ospitarla internamente così che ogni reparto utilizzi la stessa
+versione verificata.
+
 ---
 
 ## 🌍 Lingue
@@ -46,6 +53,28 @@ L’app usa automaticamente la lingua del browser al primo avvio e puoi cambiarl
 
 ## 🔧 Funzionalità
 
+### ✨ Punti salienti aggiuntivi
+
+- **Progetta rig complessi senza tentativi.** Combina camere, piastre batteria,
+  link wireless, monitor, motori e accessori vedendo consumo totale a
+  14,4 V/12 V (e 33,6 V/21,6 V per B‑Mount) con autonomie realistiche basate su
+  dati di campo ponderati. Il pannello di confronto batterie segnala le
+  sovratensioni prima di preparare l’attrezzatura sbagliata.
+- **Mantieni allineati tutti i reparti.** Salva più progetti con requisiti,
+  contatti della troupe, scenari e note. Le liste stampabili raggruppano il
+  materiale per categoria, uniscono i duplicati, mostrano metadati tecnici e
+  includono accessori legati agli scenari così che camera, luce e grip condividano
+  lo stesso contesto.
+- **Lavora in tranquillità ovunque.** Apri `index.html` direttamente o servi la
+  cartella via HTTPS per attivare il service worker. La cache offline conserva
+  lingua, temi, preferiti e progetti, e **Forza ricarica** aggiorna gli asset
+  senza toccare i dati salvati.
+- **Adatta il planner alla tua troupe.** Passa subito tra italiano, inglese,
+  tedesco, spagnolo e francese, regola dimensione e font, scegli un colore
+  accento personalizzato, carica un logo per la stampa e alterna tema chiaro,
+  scuro, rosa o ad alto contrasto. I menu con ricerca, i preferiti fissati, i
+  pulsanti di duplicazione e le guide contestuali mantengono il ritmo sul set.
+
 ### ✅ Gestione dei progetti
 - Salva, carica e cancella più progetti camera (premi Invio o Ctrl+S/⌘S per salvare rapidamente; il pulsante Salva resta disattivato finché non inserisci un nome).
 - Vengono creati automaticamente snapshot ogni 10 minuti mentre il planner è aperto e dalla finestra Impostazioni puoi attivare esportazioni di backup orarie come promemoria.
@@ -58,6 +87,20 @@ L’app usa automaticamente la lingua del browser al primo avvio e puoi cambiarl
 - Sulle videocamere compatibili scegli piastre **V‑Mount**, **B‑Mount** o **Gold-Mount**; l’elenco batterie si aggiorna automaticamente.
 
 ### 🧭 Panoramica dell’interfaccia
+- **Promemoria rapido:**
+  - **Ricerca globale** (`/` o `Ctrl+K`/`⌘K`) salta a funzioni, selettori o
+    argomenti di aiuto anche quando il menu laterale è compresso.
+  - **Centro assistenza** (`?`, `H`, `F1` o `Ctrl+/`) propone guide filtrabili,
+    FAQ, scorciatoie e la modalità di aiuto al passaggio del mouse.
+  - **Diagramma del progetto** visualizza le connessioni; tieni premuto Maiusc
+    durante il download per salvare un JPG invece di un SVG e vedere gli avvisi
+    di compatibilità.
+  - **Confronto batterie** mostra come si comportano i pacchi compatibili e
+    evidenzia subito i rischi di sovraccarico.
+  - **Generatore di liste** produce tabelle per categoria con metadati, e-mail
+    della troupe e aggiunte basate sugli scenari pronte per la stampa.
+  - **Badge offline e Forza ricarica** indicano lo stato della connessione e
+    aggiornano i file in cache senza eliminare i progetti.
 - Un collegamento di salto e un indicatore offline mantengono il layout accessibile con tastiera e tocco; il badge appare ogni volta che il browser perde la connessione.
 - La barra di ricerca globale consente di saltare a funzioni, selettori di dispositivi o argomenti di aiuto; premi Invio per attivare il risultato evidenziato, usa / o Ctrl+K (⌘K su macOS) per focalizzarla subito (sugli schermi piccoli il menu laterale si apre in automatico) e premi Esc o × per cancellare la ricerca.
 - I controlli della barra superiore offrono cambio lingua, temi scuro e rosa e la finestra Impostazioni con colore accento, dimensione e famiglia del font, modalità ad alto contrasto e caricamento del logo, oltre agli strumenti di backup, ripristino e cancellazione cache.
@@ -71,6 +114,12 @@ L’app usa automaticamente la lingua del browser al primo avvio e puoi cambiarl
 - Le scorciatoie integrate coprono ricerca globale (/ o Ctrl+K/⌘K), aiuto ( ?, H, F1, Ctrl+/ ), salvataggio (Invio o Ctrl+S/⌘S), modalità scura (D) e modalità rosa (P).
 - La modalità di aiuto al passaggio del mouse trasforma pulsanti, campi, menu e intestazioni in tooltip su richiesta, così chi è nuovo impara più velocemente.
 - Gli input con ricerca incrementale, i controlli con focus visibile e le icone a stella accanto ai selettori permettono di filtrare elenchi lunghi e fissare i preferiti in cima.
+- Carica un logo personalizzato per le stampe, configura i ruoli di monitoraggio
+  predefiniti e regola i preset dei requisiti di progetto affinché gli export
+  rispettino l’identità della produzione.
+- I pulsanti di duplicazione replicano subito le righe dei moduli e i preferiti
+  pinnati mantengono l’attrezzatura abituale in cima ai selettori, utile quando
+  il tempo sul set è limitato.
 
 ### 📋 Lista attrezzatura
 Il generatore converte le tue scelte in una lista di carico categorizzata:
@@ -178,6 +227,9 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
 - Clicca su <strong>Invia feedback di autonomia</strong> sotto alla stima per aggiungere la tua misurazione.
 - Includi la temperatura per una ponderazione più accurata.
 - Le voci vengono salvate nel browser e migliorano le stime future.
+- Un cruscotto dedicato ordina i contributi in base al peso, mostra le
+  percentuali di contributo e mette in evidenza gli outlier per valutare
+  rapidamente i dati di campo.
 
 ### ❓ Aiuto ricercabile
 - Aprilo tramite il pulsante <strong>?</strong> oppure con <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> o <kbd>Ctrl+/</kbd>.
@@ -209,6 +261,8 @@ Una volta installata, l’app si avvia dalla schermata Home, funziona offline e 
 ## 📡 Uso offline e archiviazione dati
 
 Servire l’app tramite HTTP(S) installa un service worker che memorizza in cache ogni file, così Cine Power Planner funziona completamente offline e si aggiorna in background. Progetti, feedback di autonomia e preferenze (lingua, tema, modalità rosa e liste attrezzatura salvate) vivono nel `localStorage` del browser. Cancellare i dati del sito elimina tutte le informazioni e nella finestra Impostazioni è disponibile anche il pulsante **Cancella cache locale** per lo stesso reset con un clic.
+L’intestazione mostra un badge offline non appena cade la connessione, e l’azione
+🔄 **Forza ricarica** aggiorna i file in cache senza toccare i progetti salvati.
 
 ---
 
@@ -250,3 +304,5 @@ Aggiungi `--help` a uno qualsiasi degli script per visualizzare le opzioni dispo
 
 ## 🤝 Contribuire
 Sono benvenuti contributi di ogni tipo! Apri una issue o invia una pull request su GitHub.
+Quando segnali dati errati, allegare backup dei progetti o misurazioni di
+autonomia aiuta a mantenere il catalogo preciso per tutti.

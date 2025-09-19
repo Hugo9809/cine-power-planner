@@ -2,6 +2,8 @@
 
 Dieses browserbasierte Tool hilft bei der Planung professioneller Kamera-Projekte, die mit V‑Mount-, B‑Mount- oder Gold-Mount-Akkus betrieben werden. Es berechnet **Gesamtleistung**, **Stromaufnahme** (bei 14,4 V und 12 V) sowie die **geschätzte Akkulaufzeit** und prüft gleichzeitig, ob der Akku die benötigte Leistung sicher liefern kann.
 
+Alle Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheinstellungen, Projekte, eigene Geräte, Favoriten und Laufzeit-Feedback liegen im Browser, und Service-Worker-Updates stammen direkt aus diesem Repository. So kannst du die App offline von der Festplatte starten oder intern hosten, damit jede Abteilung dieselbe geprüfte Version nutzt.
+
 ---
 
 ## 🌍 Sprachen
@@ -46,6 +48,28 @@ Die App übernimmt beim ersten Start automatisch die Sprache deines Browsers; ü
 
 ## 🔧 Funktionen
 
+### ✨ Erweiterte Highlights
+
+- **Komplexe Rigs ohne Ratespiel.** Kombiniere Kameras, Batterieplatten,
+  Funkstrecken, Monitore, Motoren und Zubehör und sieh Gesamtleistung,
+  Stromaufnahme bei 14,4 V/12 V (bzw. 33,6 V/21,6 V bei B‑Mount) sowie
+  realistische Laufzeiten aus gewichteten Felddaten. Das Batterie-Vergleichspanel
+  warnt vor Überlastungen, bevor falsches Equipment eingepackt wird.
+- **Alle Abteilungen im Gleichklang.** Speichere mehrere Projekte mit
+  Anforderungen, Crew-Kontakten, Szenarien und Notizen. Druckbare
+  Gerätelisten gruppieren Equipment nach Kategorie, führen Duplikate zusammen,
+  zeigen technische Metadaten und berücksichtigen Szenario-Zubehör, damit
+  Kamera-, Licht- und Grip-Teams denselben Stand sehen.
+- **Produktiv überall.** Die App läuft komplett im Browser – öffne
+  `index.html` direkt oder liefere sie über HTTPS aus, um den Service Worker zu
+  aktivieren. Offline-Caching bewahrt Sprache, Themes, Favoriten und Projekte,
+  und die Aktion **Neu laden erzwingen** aktualisiert Assets ohne Datenverlust.
+- **Auf das Team zugeschnitten.** Wechsel sofort zwischen Deutsch, Englisch,
+  Spanisch, Italienisch und Französisch, passe Schriftgröße und Schriftart an,
+  wähle eine eigene Akzentfarbe, lade ein Drucklogo hoch und schalte zwischen
+  dunklem, rosa oder High-Contrast-Theme. Tippen-zum-Filtern, angepinnte
+  Favoriten, Gabel-Buttons und Hover-Hilfe sparen Zeit am Set.
+
 ### ✅ Projektverwaltung
 - Speichere, lade und lösche mehrere Kamera-Projekte (drücke Enter oder Strg+S/⌘S zum schnellen Speichern; die Schaltfläche bleibt deaktiviert, bis ein Name eingegeben wurde).
 - Alle zehn Minuten entstehen automatisch Schnappschüsse, solange der Planner geöffnet ist; im Einstellungsdialog lassen sich stündliche Backup-Exporte als Erinnerung aktivieren.
@@ -58,6 +82,20 @@ Die App übernimmt beim ersten Start automatisch die Sprache deines Browsers; ü
 - Wähle bei kompatiblen Kameras zwischen **V‑Mount**, **B‑Mount** oder **Gold-Mount**; die Akkuliste aktualisiert sich automatisch.
 
 ### 🧭 Interface-Überblick
+- **Kurzüberblick:**
+  - **Globale Suche** (`/` oder `Strg+K`/`⌘K`) springt zu Funktionen, Dropdowns
+    oder Hilfethemen – auch wenn das Seitenmenü eingeklappt ist.
+  - **Hilfecenter** (`?`, `H`, `F1` oder `Strg+/`) zeigt durchsuchbare Guides,
+    FAQ, Tastenkürzel und den optionalen Hover-Hilfemodus.
+  - **Projekt-Diagramm** visualisiert Verbindungen; mit gedrückter Umschalttaste
+    speicherst du statt SVG ein JPG und siehst Kompatibilitäts-Hinweise.
+  - **Batterievergleich** zeigt, wie kompatible Akkus performen und markiert
+    Überlastungen frühzeitig.
+  - **Gerätelisten-Generator** erstellt kategorisierte Tabellen mit Metadaten,
+    Crew-E-Mails und szenarioabhängigen Ergänzungen, die sich sauber drucken
+    lassen.
+  - **Offline-Badge & Neu laden erzwingen** zeigen den Verbindungsstatus an und
+    aktualisieren zwischengespeicherte Dateien, ohne Projekte zu löschen.
 - Ein Skip-Link und ein Offline-Indikator halten das Layout für Tastatur und Touch zugänglich; das Badge erscheint, sobald der Browser die Verbindung verliert.
 - Die globale Suchleiste springt zu Funktionen, Geräteauswahlen oder Hilfethemen; drücke Enter für das markierte Ergebnis, / oder Strg+K (⌘K auf macOS) zum sofortigen Fokussieren (auf kleinen Displays öffnet sich das Seitenmenü automatisch) und Escape oder × zum Zurücksetzen.
 - Oben findest du Sprachumschaltung, Toggles für dunkles und rosa Theme sowie den Einstellungsdialog mit Akzentfarbe, Schriftgröße, Schriftfamilie, High-Contrast-Schalter und Logo-Upload plus Backup-, Restore- und Cache-Löschen-Werkzeuge.
@@ -71,6 +109,8 @@ Die App übernimmt beim ersten Start automatisch die Sprache deines Browsers; ü
 - Eingebaute Tastenkürzel decken globale Suche (/ oder Strg+K/⌘K), Hilfe ( ?, H, F1, Strg+/ ), Speichern (Enter oder Strg+S/⌘S), Dunkelmodus (D) und Rosa-Modus (P) ab.
 - Der Hover-Hilfemodus macht jede Schaltfläche, jedes Feld, Dropdown und jede Überschrift zur Sofort-Hilfe – perfekt für neue Teammitglieder.
 - Tippen zum Filtern, sichtbare Fokusmarken und Sternsymbole neben Auswahllisten erleichtern das Durchsuchen langer Listen und das Fixieren von Favoriten.
+- Lade ein eigenes Logo für Ausdrucke hoch, konfiguriere Standard-Monitoring-Rollen und passe Vorgaben für Projektanforderungen an, damit Exporte zum Produktionsbranding passen.
+- Gabel-Symbole duplizieren Formularzeilen sofort und angepinnte Favoriten halten beliebte Geräte oben in der Liste – ideal für schnelle Eingaben am Set.
 
 ### 📋 Geräteliste
 Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
@@ -178,6 +218,8 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 - Klicke unter der Laufzeit auf <strong>Nutzer-Laufzeit-Feedback senden</strong>, um eigene Messungen hinzuzufügen.
 - Optional Temperatur eintragen, um die Gewichtung zu verfeinern.
 - Einträge werden im Browser gespeichert und verbessern künftige Schätzungen.
+- Ein Dashboard sortiert Beiträge nach Gewicht, zeigt prozentuale Anteile und
+  hebt Ausreißer hervor, damit Crews Feedback schneller bewerten können.
 
 ### ❓ Durchsuchbare Hilfe
 - Über die Schaltfläche <strong>?</strong> oder per <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> oder <kbd>Strg+/</kbd> öffnen.
@@ -209,6 +251,9 @@ Nach der Installation startet die App vom Startbildschirm, funktioniert offline 
 ## 📡 Offline-Nutzung & Datenspeicherung
 
 Beim Ausliefern über HTTP(S) installiert sich ein Service Worker, der alle Dateien cached, sodass Cine Power Planner vollständig offline läuft und Updates im Hintergrund lädt. Projekte, Laufzeit-Einreichungen und Einstellungen (Sprache, Theme, Rosa-Modus, gespeicherte Gerätelisten) liegen im `localStorage` deines Browsers. Das Löschen der Seitendaten entfernt alle Informationen; im Einstellungsdialog gibt es dafür ebenfalls die Schaltfläche **Lokalen Cache löschen**.
+Die Kopfzeile zeigt ein Offline-Badge, sobald die Verbindung wegfällt, und die
+Aktion 🔄 **Neu laden erzwingen** aktualisiert gecachte Assets, ohne Projekte
+anzutasten.
 
 ---
 
@@ -250,3 +295,4 @@ Mit `--help` zeigen die Skripte weitere Optionen an.
 
 ## 🤝 Mitmachen
 Beiträge sind jederzeit willkommen! Eröffne gerne ein Issue oder sende einen Pull Request auf GitHub.
+Für Datenkorrekturen helfen Projekt-Backups oder Beispiel-Laufzeiten, damit die Gerätekataloge verlässlich bleiben.
