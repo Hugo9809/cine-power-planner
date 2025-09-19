@@ -3092,10 +3092,11 @@ const PINK_MODE_ICONS = Object.freeze({
     className: 'icon-svg pink-mode-icon',
     markup:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-      '<path d="M5.6 11.3 8.8 6.3a1 1 0 0 1 1.1-.4l2.9 1a1 1 0 0 1 .5.4l2.5 3.5v2.8l-1.6 2.6V20H9.3v-3.2L6.5 14l-.9-1Z" />' +
-      '<path d="M8.8 9.9 6.4 9.1" />' +
-      '<path d="M12.4 13.2c.9.1 1.6.6 2 1.3" />' +
-      '<circle cx="14.6" cy="10.7" r=".55" />' +
+      '<path d="M5.5 11.3 8.9 6.1a1 1 0 0 1 1.1-.3l2.8.9a1 1 0 0 1 .5.4l2.5 3.5v2.9l-1.6 2.5V20H9.4v-3.2L6.5 14l-.9-1Z" />' +
+      '<path d="M11.9 6.8 15.2 4.1 15.5 5.8" />' +
+      '<path d="M9 8.1 6.5 7.1" />' +
+      '<path d="M12.4 13.3c.9.1 1.6.6 2 1.3" />' +
+      '<circle cx="14.6" cy="10.6" r=".55" />' +
       '</svg>'
   },
   on: {
@@ -3103,11 +3104,11 @@ const PINK_MODE_ICONS = Object.freeze({
     markup:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       '<path d="M5.4 11.2 8.9 6.1a1 1 0 0 1 1.1-.3l2.8.9a1 1 0 0 1 .5.4l2.5 3.6v2.9l-1.7 2.6V20H9.4v-3.1L6.5 14l-.9-1.1Z" />' +
-      '<path d="M12.2 7.1 15.8 3.5" />' +
-      '<path d="M9 8 6.3 6.7 8 5" />' +
-      '<path d="M8.8 10.1 6.2 9.4" />' +
+      '<path d="M12.1 6.9 15.4 4.2 15.7 5.9" />' +
+      '<path d="M9 8.1 6.3 6.8 8 5.1" />' +
       '<path d="M12.5 13.4c.9.1 1.6.6 2 1.3" />' +
       '<circle cx="14.8" cy="10.6" r=".55" />' +
+      '<path d="M18 4.7 18.5 3.5 19 4.7 20.2 5.1 19 5.5 18.5 6.7 18 5.5 16.8 5.1Z" />' +
       '</svg>'
   }
 });
