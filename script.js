@@ -8129,6 +8129,7 @@ function displayGearAndRequirements(html) {
       gearListOutput.innerHTML = gearHtml;
       gearListOutput.classList.remove('hidden');
       applyFilterSelectionsToGearList();
+      renderFilterDetails();
       const findDevice = name => {
         for (const [catName, cat] of Object.entries(devices)) {
           if (cat && typeof cat === 'object') {
@@ -8417,6 +8418,7 @@ function checkSetupChanged() {
 const projectDialog = document.getElementById("projectDialog");
 const projectForm = document.getElementById("projectForm");
 const filterSelectElem = document.getElementById('filter');
+const filterDetailsContainer = document.getElementById('filterDetails');
 const matteboxSelect = document.getElementById('mattebox');
 const projectCancelBtn = document.getElementById("projectCancel");
 const feedbackDialog = document.getElementById("feedbackDialog");
@@ -19253,8 +19255,10 @@ function createFilterValueSelect(type, selected) {
   // Use both the property and attribute to ensure HTML serialization
   sel.multiple = true;
   sel.setAttribute('multiple', '');
-  const { opts } = getFilterValueConfig(type);
-  const selectedVals = Array.isArray(selected) ? selected : [];
+  const { opts, defaults = [] } = getFilterValueConfig(type);
+  const selectedVals = Array.isArray(selected) && selected.length
+    ? selected.slice()
+    : defaults.slice();
   const syncOption = (option, isSelected) => {
     option.selected = isSelected;
     if (isSelected) {
@@ -19308,17 +19312,247 @@ function createFilterValueSelect(type, selected) {
     });
   });
   container.appendChild(sel);
-  return container;
+  return { container, select: sel };
+}
+
+function resolveFilterDisplayInfo(type, size = DEFAULT_FILTER_SIZE) {
+  switch (type) {
+    case 'Diopter':
+      return { label: 'Schneider CF DIOPTER FULL GEN2', gearName: 'Schneider CF DIOPTER FULL GEN2' };
+    case 'Clear':
+      return { label: 'Clear Filter', gearName: 'Clear Filter' };
+    case 'IRND':
+      return { label: 'IRND Filter', gearName: 'IRND Filter' };
+    case 'Pol':
+      return { label: 'Pol Filter', gearName: 'Pol Filter' };
+    case 'Rota-Pol': {
+      if (size === '6x6') {
+        return {
+          label: 'ARRI Rota Pola Filter Frame (6x6)',
+          gearName: 'ARRI Rota Pola Filter Frame (6x6)'
+        };
+      }
+      if (size === '95mm') {
+        return {
+          label: 'Tilta 95mm Polarizer Filter for Tilta Mirage',
+          gearName: 'Tilta 95mm Polarizer Filter for Tilta Mirage'
+        };
+      }
+      return {
+        label: 'ARRI Rota Pola Filter Frame',
+        gearName: 'ARRI Rota Pola Filter Frame'
+      };
+    }
+    case 'ND Grad HE':
+      return { label: 'ND Grad HE Filter', gearName: 'ND Grad HE Filter' };
+    case 'ND Grad SE':
+      return { label: 'ND Grad SE Filter', gearName: 'ND Grad SE Filter' };
+    default:
+      return { label: `${type} Filter Set`, gearName: `${type} Filter Set` };
+  }
+}
+
+function buildFilterGearEntries(filters = []) {
+  const entries = [];
+  filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values }) => {
+    if (!type) return;
+    const sizeValue = size || DEFAULT_FILTER_SIZE;
+    const idBase = `filter-${filterId(type)}`;
+    switch (type) {
+      case 'Diopter': {
+        entries.push({
+          id: `${idBase}-frame`,
+          gearName: 'ARRI Diopter Frame 138mm',
+          label: 'ARRI Diopter Frame 138mm',
+          type: '',
+          size: '',
+          values: []
+        });
+        const diopterValues = Array.isArray(values) && values.length
+          ? values.slice()
+          : (getFilterValueConfig(type).defaults || []).slice();
+        entries.push({
+          id: `${idBase}-set`,
+          gearName: 'Schneider CF DIOPTER FULL GEN2',
+          label: 'Schneider CF DIOPTER FULL GEN2',
+          type,
+          size: '',
+          values: diopterValues
+        });
+        break;
+      }
+      case 'Clear': {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: sizeValue,
+          values: []
+        });
+        break;
+      }
+      case 'Pol': {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: sizeValue,
+          values: []
+        });
+        break;
+      }
+      case 'Rota-Pol': {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        const displaySize = label.includes(sizeValue) ? '' : sizeValue;
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: displaySize,
+          values: []
+        });
+        break;
+      }
+      case 'ND Grad HE':
+      case 'ND Grad SE': {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        const gradValues = values == null
+          ? (getFilterValueConfig(type).defaults || []).slice()
+          : (Array.isArray(values) ? values.slice() : []);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: sizeValue,
+          values: gradValues
+        });
+        break;
+      }
+      default: {
+        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        const filterValues = values == null
+          ? (getFilterValueConfig(type).defaults || []).slice()
+          : (Array.isArray(values) ? values.slice() : []);
+        entries.push({
+          id: idBase,
+          gearName,
+          label,
+          type,
+          size: sizeValue,
+          values: filterValues
+        });
+      }
+    }
+  });
+  return entries;
+}
+
+function formatFilterEntryText(entry) {
+  const details = [];
+  if (entry.size) details.push(entry.size);
+  if (entry.values && entry.values.length) details.push(entry.values.join(', '));
+  const suffix = details.length ? ` (${details.join(' • ')})` : '';
+  return `1x ${entry.label}${suffix}`;
+}
+
+function updateGearListFilterEntries(entries = []) {
+  if (!gearListOutput) return;
+  const entryMap = new Map(entries.map(entry => [entry.id, entry]));
+  gearListOutput.querySelectorAll('[data-filter-entry]').forEach(span => {
+    const entryId = span.getAttribute('data-filter-entry');
+    if (!entryId) return;
+    const entry = entryMap.get(entryId);
+    if (!entry) return;
+    span.textContent = formatFilterEntryText(entry);
+    span.setAttribute('data-gear-name', entry.gearName);
+    span.setAttribute('data-filter-label', entry.label);
+    if (entry.type) {
+      span.setAttribute('data-filter-type', entry.type);
+    } else {
+      span.removeAttribute('data-filter-type');
+    }
+  });
 }
 
 function renderFilterDetails() {
   if (!filterSelectElem) return;
-  // No more rendering in project requirements; keep matte box logic only
+  const existingSelections = collectFilterSelections();
+  const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value).filter(Boolean);
+  const existingTokens = existingSelections
+    ? parseFilterTokens(existingSelections)
+    : (currentProjectInfo && currentProjectInfo.filter ? parseFilterTokens(currentProjectInfo.filter) : []);
+  const existingMap = new Map(existingTokens.map(token => [token.type, token]));
+  if (filterDetailsContainer) {
+    filterDetailsContainer.innerHTML = '';
+    if (!selected.length) {
+      filterDetailsContainer.classList.add('hidden');
+    } else {
+      filterDetailsContainer.classList.remove('hidden');
+      selected.forEach(type => {
+        const prev = existingMap.get(type) || {};
+        const row = document.createElement('div');
+        row.className = 'filter-detail';
+        const { label } = resolveFilterDisplayInfo(type, prev.size || DEFAULT_FILTER_SIZE);
+        const heading = document.createElement('div');
+        heading.className = 'filter-detail-label';
+        heading.textContent = label;
+        row.appendChild(heading);
+        const controls = document.createElement('div');
+        controls.className = 'filter-detail-controls';
+        if (type !== 'Diopter') {
+          const sizeLabel = document.createElement('label');
+          sizeLabel.className = 'filter-detail-size';
+          const sizeText = document.createElement('span');
+          sizeText.className = 'filter-detail-sublabel';
+          sizeText.textContent = 'Size';
+          const sizeSelect = createFilterSizeSelect(type, prev.size || DEFAULT_FILTER_SIZE);
+          sizeSelect.addEventListener('change', handleFilterDetailChange);
+          sizeLabel.append(sizeText, sizeSelect);
+          controls.appendChild(sizeLabel);
+        }
+        const needsValues = type === 'Diopter'
+          || type === 'IRND'
+          || type === 'ND Grad HE'
+          || type === 'ND Grad SE'
+          || (type !== 'Clear' && type !== 'Pol' && type !== 'Rota-Pol');
+        if (needsValues) {
+          const valuesWrap = document.createElement('div');
+          valuesWrap.className = 'filter-detail-values';
+          const valueLabel = document.createElement('span');
+          valueLabel.className = 'filter-detail-sublabel';
+          valueLabel.textContent = 'Strengths';
+          const { container, select } = createFilterValueSelect(type, prev.values);
+          select.addEventListener('change', handleFilterDetailChange);
+          valuesWrap.append(valueLabel, container);
+          controls.appendChild(valuesWrap);
+        }
+        row.appendChild(controls);
+        filterDetailsContainer.appendChild(row);
+      });
+    }
+  }
   if (matteboxSelect) {
-    const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
     const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
     if (needsSwing) matteboxSelect.value = 'Swing Away';
   }
+}
+
+function handleFilterDetailChange() {
+  if (!filterSelectElem) return;
+  const filterStr = collectFilterSelections();
+  const entries = buildFilterGearEntries(parseFilterTokens(filterStr));
+  updateGearListFilterEntries(entries);
+  if (gearListOutput) adjustGearListSelectWidths(gearListOutput);
+  saveCurrentSession();
+  saveCurrentGearList();
+  checkSetupChanged();
+  renderFilterDetails();
 }
 
 function collectFilterSelections() {
@@ -19355,100 +19589,26 @@ function parseFilterTokens(str) {
 }
 
 function applyFilterSelectionsToGearList(info = currentProjectInfo) {
-  if (!info || !info.filter || !gearListOutput) return;
-  const tokens = parseFilterTokens(info.filter);
-  tokens.forEach(({ type, size, values }) => {
-    const sizeSel = gearListOutput.querySelector(`#filter-size-${filterId(type)}`);
-    if (sizeSel) sizeSel.value = size;
-    const valSel = gearListOutput.querySelector(`#filter-values-${filterId(type)}`);
-    if (valSel) {
-      const arr = Array.isArray(values) ? values : [];
-      Array.from(valSel.options).forEach(opt => {
-        const selected = arr.includes(opt.value);
-        opt.selected = selected;
-        if (selected) {
-          opt.setAttribute('selected', '');
-        } else {
-          opt.removeAttribute('selected');
-        }
-      });
-      const container = valSel.closest('.filter-values-container');
-      if (container) {
-        Array.from(container.querySelectorAll('input[type="checkbox"]')).forEach(cb => {
-          const checked = arr.includes(cb.value);
-          cb.checked = checked;
-          if (checked) {
-            cb.setAttribute('checked', '');
-          } else {
-            cb.removeAttribute('checked');
-          }
-        });
-      }
-    }
-  });
+  if (!gearListOutput) return;
+  const tokens = info && info.filter ? parseFilterTokens(info.filter) : [];
+  const entries = buildFilterGearEntries(tokens);
+  updateGearListFilterEntries(entries);
   adjustGearListSelectWidths(gearListOutput);
 }
 
 function buildFilterSelectHtml(filters = []) {
-  const parts = [];
-  const itemHtml = (gearName, label, sizeHtml = '', controlsHtml = '') =>
-    `<span class="gear-item filter-item" data-gear-name="${gearName}"><span class="filter-header"><span class="filter-label">1x ${label}</span>${sizeHtml ? ` ${sizeHtml}` : ''}</span>${controlsHtml ? `<span class="filter-controls">${controlsHtml}</span>` : ''}</span>`;
-  filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values }) => {
-    switch (type) {
-      case 'Diopter': {
-        const valSel = createFilterValueSelect(type, values);
-        parts.push(itemHtml('ARRI Diopter Frame 138mm', 'ARRI Diopter Frame 138mm'));
-        parts.push(itemHtml('Schneider CF DIOPTER FULL GEN2', 'Schneider CF DIOPTER FULL GEN2', '', valSel.outerHTML));
-        break;
-      }
-      case 'Clear': {
-        const sizeSel = createFilterSizeSelect(type, size);
-        parts.push(itemHtml('Clear Filter', 'Clear Filter', sizeSel.outerHTML));
-        break;
-      }
-      case 'IRND': {
-        const sizeSel = createFilterSizeSelect(type, size);
-        const valSel = createFilterValueSelect(type, values);
-        parts.push(itemHtml('IRND Filter', 'IRND Filter', sizeSel.outerHTML, valSel.outerHTML));
-        break;
-      }
-      case 'Pol': {
-        const sizeSel = createFilterSizeSelect(type, size);
-        parts.push(itemHtml('Pol Filter', 'Pol Filter', sizeSel.outerHTML));
-        break;
-      }
-      case 'Rota-Pol': {
-        const sizeSel = createFilterSizeSelect(type, size);
-        let name = 'ARRI Rota Pola Filter Frame';
-        if (size === '6x6') {
-          name = 'ARRI Rota Pola Filter Frame (6x6)';
-        } else if (size === '95mm') {
-          name = 'Tilta 95mm Polarizer Filter for Tilta Mirage';
-        }
-        const displayName = name;
-        parts.push(itemHtml(name, displayName, sizeSel.outerHTML));
-        break;
-      }
-      case 'ND Grad HE': {
-        const sizeSel = createFilterSizeSelect(type, size);
-        const valSel = createFilterValueSelect(type, values);
-        parts.push(itemHtml('ND Grad HE Filter', 'ND Grad HE Filter', sizeSel.outerHTML, valSel.outerHTML));
-        break;
-      }
-      case 'ND Grad SE': {
-        const sizeSel = createFilterSizeSelect(type, size);
-        const valSel = createFilterValueSelect(type, values);
-        parts.push(itemHtml('ND Grad SE Filter', 'ND Grad SE Filter', sizeSel.outerHTML, valSel.outerHTML));
-        break;
-      }
-      default: {
-        const sizeSel = createFilterSizeSelect(type, size);
-        const valSel = createFilterValueSelect(type, values);
-        parts.push(itemHtml(`${type} Filter Set`, `${type} Filter Set`, sizeSel.outerHTML, valSel.outerHTML));
-      }
-    }
-  });
-  return parts.join('<br>');
+  const entries = buildFilterGearEntries(filters);
+  return entries.map(entry => {
+    const attrs = [
+      'class="gear-item"',
+      `data-gear-name="${escapeHtml(entry.gearName)}"`,
+      `data-filter-entry="${escapeHtml(entry.id)}"`,
+      `data-filter-label="${escapeHtml(entry.label)}"`
+    ];
+    if (entry.type) attrs.push(`data-filter-type="${escapeHtml(entry.type)}"`);
+    const text = formatFilterEntryText(entry);
+    return `<span ${attrs.join(' ')}>${escapeHtml(text)}</span>`;
+  }).join('<br>');
 }
 
 function collectFilterAccessories(filters = []) {
