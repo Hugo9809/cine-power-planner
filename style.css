@@ -1585,6 +1585,25 @@ body.pink-mode .auto-gear-rule-title,
   fill: none;
 }
 
+.icon-glyph.diagram-camera-icon svg {
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-glyph.diagram-camera-icon svg .diagram-camera-icon__lens {
+  fill: currentColor;
+  fill-opacity: 0.2;
+  stroke: none;
+}
+
+.dark-mode .icon-glyph.diagram-camera-icon svg .diagram-camera-icon__lens,
+html.dark-mode .icon-glyph.diagram-camera-icon svg .diagram-camera-icon__lens,
+body.high-contrast .icon-glyph.diagram-camera-icon svg .diagram-camera-icon__lens,
+html.high-contrast .icon-glyph.diagram-camera-icon svg .diagram-camera-icon__lens {
+  fill-opacity: 0.3;
+}
+
 @keyframes pink-mode-icon-pop {
   0% {
     transform: scale(0.85);
@@ -2795,6 +2814,42 @@ body.dark-mode.pink-mode #topBar #logo .logo-center {
 
 #setupDiagram .node-icon[data-icon-font='gadget'] {
   font-family: 'GadgetIcons', system-ui, sans-serif;
+}
+
+#setupDiagram .node-icon-svg {
+  color: #333;
+  pointer-events: none;
+}
+
+#setupDiagram .node-icon-svg svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  stroke: currentColor;
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+#setupDiagram .node-icon-svg svg .diagram-camera-icon__lens {
+  fill: currentColor;
+  fill-opacity: 0.2;
+  stroke: none;
+}
+
+.dark-mode #setupDiagram .node-icon-svg,
+html.dark-mode #setupDiagram .node-icon-svg,
+body.high-contrast #setupDiagram .node-icon-svg,
+html.high-contrast #setupDiagram .node-icon-svg {
+  color: var(--inverse-text-color);
+}
+
+.dark-mode #setupDiagram .node-icon-svg svg .diagram-camera-icon__lens,
+html.dark-mode #setupDiagram .node-icon-svg svg .diagram-camera-icon__lens,
+body.high-contrast #setupDiagram .node-icon-svg svg .diagram-camera-icon__lens,
+html.high-contrast #setupDiagram .node-icon-svg svg .diagram-camera-icon__lens {
+  fill-opacity: 0.3;
 }
 
 #setupDiagram .node-icon[data-icon-font='uicons'] {

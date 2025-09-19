@@ -3286,22 +3286,66 @@ function iconGlyph(char, font = ICON_FONT_KEYS.UICONS) {
 
 function resolveIconGlyph(glyph) {
   if (!glyph) {
-    return { char: '', font: ICON_FONT_KEYS.UICONS };
+    return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
   }
   if (glyph.markup) {
-    return { markup: glyph.markup, className: glyph.className || '', font: ICON_FONT_KEYS.UICONS };
+    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+    return {
+      markup: glyph.markup,
+      className: glyph.className || '',
+      font: ICON_FONT_KEYS.UICONS,
+      size
+    };
   }
   if (typeof glyph === 'string') {
-    return { char: glyph, font: ICON_FONT_KEYS.UICONS };
+    return { char: glyph, font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
   }
   if (typeof glyph === 'object') {
     const char = typeof glyph.char === 'string' ? glyph.char : '';
     const fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font)
       ? glyph.font
       : ICON_FONT_KEYS.UICONS;
-    return { char, font: fontKey };
+    const className = typeof glyph.className === 'string' ? glyph.className : '';
+    const size = Number.isFinite(glyph.size) ? glyph.size : undefined;
+    if (glyph.markup) {
+      return {
+        markup: glyph.markup,
+        className,
+        font: fontKey,
+        size
+      };
+    }
+    return { char, font: fontKey, className, size };
   }
-  return { char: '', font: ICON_FONT_KEYS.UICONS };
+  return { char: '', font: ICON_FONT_KEYS.UICONS, className: '', size: undefined };
+}
+
+function formatSvgCoordinate(value) {
+  if (!Number.isFinite(value)) return '0';
+  const rounded = Math.round(value * 100) / 100;
+  if (Number.isInteger(rounded)) return String(rounded);
+  return rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+}
+
+function positionSvgMarkup(markup, centerX, centerY, size = 24) {
+  if (typeof markup !== 'string') return '';
+  const trimmed = markup.trim();
+  if (!trimmed) return '';
+  const half = size / 2;
+  const x = formatSvgCoordinate(centerX - half);
+  const y = formatSvgCoordinate(centerY - half);
+  const width = formatSvgCoordinate(size);
+  const height = formatSvgCoordinate(size);
+  return trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
+    const attrText = attrs.trim();
+    const additions = [];
+    if (!/\bwidth\s*=/.test(attrs)) additions.push(`width="${width}"`);
+    if (!/\bheight\s*=/.test(attrs)) additions.push(`height="${height}"`);
+    if (!/\bx\s*=/.test(attrs)) additions.push(`x="${x}"`);
+    if (!/\by\s*=/.test(attrs)) additions.push(`y="${y}"`);
+    const combined = [attrText, ...additions].filter(Boolean).join(' ').trim();
+    return combined ? `<svg ${combined}>` : '<svg>';
+  });
 }
 
 function glyphText(glyph) {
@@ -8601,6 +8645,9 @@ const diagramCssLight = `
 .node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
+.node-icon-svg{color:#333;pointer-events:none;}
+.node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}
+.node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.2;stroke:none;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
@@ -8622,6 +8669,9 @@ const diagramCssDark = `
 .node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
 .node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
+.node-icon-svg{color:#fff;pointer-events:none;}
+.node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}
+.node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.3;stroke:none;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
@@ -8640,9 +8690,29 @@ function getDiagramCss(includeDark = true) {
 
 // Icons for setup diagram nodes
 
+const CAMERA_DIAGRAM_ICON_SVG = `
+  <svg
+    viewBox="0 0 24 24"
+    class="diagram-camera-icon-svg"
+    aria-hidden="true"
+    focusable="false"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <rect x="3" y="7" width="18" height="12" rx="2" ry="2" />
+    <path d="M7.5 7V5.75A1.75 1.75 0 0 1 9.25 4h2.8a1 1 0 0 1 .78.38L13.9 7" />
+    <circle cx="12" cy="13" r="3.2" />
+    <circle cx="12" cy="13" r="1.6" class="diagram-camera-icon__lens" />
+    <path d="M18.5 10.25 20.75 8.5A1 1 0 0 1 22 9.35v7.3a1 1 0 0 1-1.25.86L18.5 15.75" />
+  </svg>
+`.trim();
+
 const diagramIcons = {
   battery: ICON_GLYPHS.batteryBolt,
-  camera: ICON_GLYPHS.camera,
+  camera: Object.freeze({ markup: CAMERA_DIAGRAM_ICON_SVG, className: 'icon-svg diagram-camera-icon', size: 24 }),
   monitor: ICON_GLYPHS.screen,
   viewfinder: ICON_GLYPHS.viewfinder,
   video: ICON_GLYPHS.wifi,
@@ -8665,6 +8735,11 @@ const overviewSectionIcons = {
   category_fiz_controllers: diagramIcons.controllers,
   category_fiz_distance: diagramIcons.distance
 };
+
+const cameraProjectLegendIcon = document.getElementById('cameraProjectLegendIcon');
+if (cameraProjectLegendIcon) {
+  applyIconGlyph(cameraProjectLegendIcon, diagramIcons.camera);
+}
 
 // Load an image and optionally strip a solid background using Canvas
 // List filters for existing device categories
@@ -11952,7 +12027,20 @@ function renderSetupDiagram() {
 
     if (icon) {
       const resolvedIcon = resolveIconGlyph(icon);
-      if (resolvedIcon.char) {
+      if (resolvedIcon.markup) {
+        const iconSize = Number.isFinite(resolvedIcon.size) ? resolvedIcon.size : 24;
+        const markup = positionSvgMarkup(
+          ensureSvgHasAriaHidden(resolvedIcon.markup),
+          p.x,
+          p.y - 10,
+          iconSize
+        );
+        if (markup) {
+          const wrapperClasses = ['node-icon-svg'];
+          if (resolvedIcon.className) wrapperClasses.push(resolvedIcon.className);
+          svg += `<g class="${wrapperClasses.join(' ')}">${markup}</g>`;
+        }
+      } else if (resolvedIcon.char) {
         const fontAttr = ` data-icon-font="${resolvedIcon.font}"`;
         svg += `<text class="node-icon"${fontAttr} x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${resolvedIcon.char}</text>`;
       }
@@ -13968,7 +14056,10 @@ function applyIconGlyph(element, glyph) {
     element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
     element.setAttribute('aria-hidden', 'true');
     if (resolved.className) {
-      element.classList.add(resolved.className);
+      resolved.className
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach(cls => element.classList.add(cls));
     }
     element.removeAttribute('data-icon-font');
     return;
