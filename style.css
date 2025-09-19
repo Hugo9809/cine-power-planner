@@ -976,6 +976,13 @@ main.legal-content {
   margin: 10px 0;
   padding: 5px calc(var(--button-size) + 12px) 5px 10px;
   box-sizing: border-box;
+  border: 1px solid var(--panel-border);
+}
+
+#helpSearch:focus-visible {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 1px var(--accent-color);
 }
 
 #helpSearchClear {
