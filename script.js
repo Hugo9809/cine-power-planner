@@ -4567,6 +4567,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
     powerDiagramElem.classList.add("hidden");
     powerDiagramBarElem.innerHTML = "";
     powerDiagramLegendElem.innerHTML = "";
+    powerDiagramBarElem.style.width = "";
     maxPowerTextElem.textContent = "";
     return;
   }
@@ -4574,8 +4575,11 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
   powerDiagramBarElem.innerHTML = "";
   powerDiagramLegendElem.innerHTML = "";
   const MAX_WIDTH = 300;
+  const measuredWidth = powerDiagramElem.clientWidth || MAX_WIDTH;
+  const barWidth = Math.max(1, Math.min(MAX_WIDTH, measuredWidth));
+  powerDiagramBarElem.style.width = `${barWidth}px`;
   const total = segments.reduce((sum, s) => sum + s.power, 0);
-  const scale = MAX_WIDTH / Math.max(availableWatt, total);
+  const scale = barWidth / Math.max(availableWatt, total);
   const limitPos = availableWatt * scale;
 
   segments.forEach(seg => {
