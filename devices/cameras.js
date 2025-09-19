@@ -2050,11 +2050,38 @@ const cameraData = {
     ]
   },
   "Canon EOS C700 FF": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 61,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11-17",
+        "type": "XLR 4-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Factory configuration ships with integrated V-Mount back"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "native",
+          "notes": "Factory swappable AB Gold Mount version available"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "Hirose 4-pin",
+          "voltage": "12V",
+          "current": "1.5A",
+          "notes": "Regulated DC OUT for accessories"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "24V",
+          "current": "2A",
+          "notes": "Regulated 24V DC OUT (for lens/remote heads)"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -5804,11 +5831,38 @@ const cameraData = {
     ]
   },
   "Sony PXW-FS7": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 19,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11-17",
+        "type": "XLR 4-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Sony BP-U",
+          "mount": "native",
+          "notes": "Supports BP-U30/60/90 series packs"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Requires XDCA-FS7 extension unit"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "Hirose 4-pin",
+          "voltage": "12V",
+          "current": "0.5A",
+          "notes": "DC OUT on camera body"
+        },
+        {
+          "type": "USB-A",
+          "voltage": "5V",
+          "current": "1.5A",
+          "notes": "USB host port powers accessories/data"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -5834,11 +5888,38 @@ const cameraData = {
     ]
   },
   "Canon C200": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 19.3,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11-17",
+        "type": "XLR 4-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Canon BP-A",
+          "mount": "native",
+          "notes": "Supports BP-A30/BP-A60 packs"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Requires third-party plate or expansion back"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "Hirose 4-pin",
+          "voltage": "12V",
+          "current": "1.5A",
+          "notes": "Regulated DC OUT"
+        },
+        {
+          "type": "USB-A",
+          "voltage": "5V",
+          "current": "0.5A",
+          "notes": "USB terminal for accessories/Wi-Fi"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -5864,11 +5945,43 @@ const cameraData = {
     ]
   },
   "Panasonic AU-EVA1": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 19,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "10.5-17",
+        "type": "XLR 4-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Panasonic AG-VBR",
+          "mount": "native",
+          "notes": "Supports AG-VBR59/89/118 packs"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Requires third-party plate"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Requires third-party plate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "Hirose 4-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Regulated DC OUT"
+        },
+        {
+          "type": "USB-A",
+          "voltage": "5V",
+          "current": "0.5A",
+          "notes": "USB host/control port"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -5894,11 +6007,50 @@ const cameraData = {
     ]
   },
   "Panasonic VariCam LT": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 47,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "10-18",
+        "type": "XLR 4-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Integrated V-Mount back"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Optional plate swap"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "D-Tap",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Accessory D-Tap"
+        },
+        {
+          "type": "D-Tap",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Accessory D-Tap"
+        },
+        {
+          "type": "Hirose 4-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Regulated DC OUT"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "24V",
+          "current": "2A",
+          "notes": "Regulated 24V for lens/remote"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -5933,11 +6085,55 @@ const cameraData = {
     ]
   },
   "RED V-RAPTOR 8K VV": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 60,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": "LEMO 6-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Micro V-Mount",
+          "mount": "native",
+          "notes": "Integrated micro V-lock interface"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Full-size plates via adapters"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Requires third-party adapter/backplate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR 1"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR 2"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "24V",
+          "current": "3A",
+          "notes": "Aux PWR 24V"
+        },
+        {
+          "type": "USB-C PD",
+          "voltage": "5-20V",
+          "wattage": 45,
+          "notes": "USB-C PD on camera body"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -5967,11 +6163,55 @@ const cameraData = {
     ]
   },
   "RED V-RAPTOR [X] 8K VV": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 75,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": "LEMO 6-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Micro V-Mount",
+          "mount": "native",
+          "notes": "Integrated micro V-lock interface"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Full-size plates via adapters"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Requires third-party adapter/backplate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR 1"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR 2"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "24V",
+          "current": "3A",
+          "notes": "Aux PWR 24V"
+        },
+        {
+          "type": "USB-C PD",
+          "voltage": "5-20V",
+          "wattage": 45,
+          "notes": "USB-C PD on camera body"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6001,11 +6241,55 @@ const cameraData = {
     ]
   },
   "RED V-RAPTOR 8K S35": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 70,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": "LEMO 6-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Micro V-Mount",
+          "mount": "native",
+          "notes": "Integrated micro V-lock interface"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Full-size plates via adapters"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Requires third-party adapter/backplate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR 1"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR 2"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "24V",
+          "current": "3A",
+          "notes": "Aux PWR 24V"
+        },
+        {
+          "type": "USB-C PD",
+          "voltage": "5-20V",
+          "wattage": 45,
+          "notes": "USB-C PD on camera body"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6048,11 +6332,37 @@ const cameraData = {
     ]
   },
   "Blackmagic Cinema Camera 6K": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 30,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "12-20",
+        "type": "Locking DC barrel"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "NP-F570",
+          "mount": "native",
+          "notes": "Sony L-Series type"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Requires battery grip or adapter"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Requires battery grip or adapter"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "USB-C",
+          "voltage": "5V",
+          "current": "1.5A",
+          "notes": "USB-C expansion port powers external drives"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6172,10 +6482,29 @@ const cameraData = {
     ]
   },
   "Canon EOS R5 C": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 13.3,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
+      "input": {
+        "voltageRange": "9-15",
+        "type": "USB-C PD,DC Coupler"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Canon LP-E6NH",
+          "mount": "native",
+          "notes": "Also accepts LP-E6N/LP-E6 packs"
+        },
+        {
+          "type": "DC Coupler (DR-E6C)",
+          "mount": "native",
+          "notes": "Used with CA-946 AC adapter"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": "Requires external plate feeding USB-C PD or coupler"
+        }
+      ],
       "powerDistributionOutputs": []
     },
     "videoOutputs": [],
@@ -6206,11 +6535,50 @@ const cameraData = {
     ]
   },
   "Blackmagic URSA Broadcast G2": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 100,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "12-20",
+        "type": "XLR 4-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Integrated plate"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": "Optional accessory plate"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Accessory power 1"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Accessory power 2"
+        },
+        {
+          "type": "Hirose 12-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Lens power/control connector"
+        },
+        {
+          "type": "USB-C",
+          "voltage": "5V",
+          "current": "1.5A",
+          "notes": "USB-C expansion port"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6236,11 +6604,46 @@ const cameraData = {
     ]
   },
   "Kinefinity MAVO Edge 6K": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 32,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "10.5-34",
+        "type": "LEMO 2-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Hybrid plate accepts standard 14.8V packs"
+        },
+        {
+          "type": "BP-U",
+          "mount": "native",
+          "notes": "Supports GripBAT 4S batteries for compact builds"
+        },
+        {
+          "type": "NP-F",
+          "mount": "optional",
+          "notes": "GripBAT 2S via UPS baseplate can supply backup power"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "D-Tap",
+          "voltage": "14.8V",
+          "notes": "Unregulated output on camera body"
+        },
+        {
+          "type": "RS (LEMO 2-pin)",
+          "voltage": "12V",
+          "notes": "Regulated 12V accessory rail"
+        },
+        {
+          "type": "Lens port (LEMO 7-pin)",
+          "voltage": "12V",
+          "notes": "Lens/control port with 12V accessory power"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6268,22 +6671,92 @@ const cameraData = {
     ]
   },
   "Z CAM E2-F6": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 50,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "12-16.8",
+        "type": "LEMO 2-pin",
+        "notes": "DC input"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "Sony NP-F (L-Series)",
+          "mount": "native",
+          "notes": "Integrated L-Series battery sled"
+        },
+        {
+          "type": "V-Mount",
+          "mount": "optional",
+          "notes": "Available via optional power module"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "Regulated accessory power output"
+        }
+      ]
     },
-    "videoOutputs": [],
-    "fizConnectors": [],
-    "recordingMedia": [],
-    "viewfinder": [],
-    "lensMount": [],
-    "timecode": [],
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "version": "2.0 Type A",
+        "notes": "4K up to 59.94p, 10-bit 4:2:2"
+      },
+      {
+        "type": "12G-SDI",
+        "notes": "BNC, up to 4K60 10-bit 4:2:2"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "type": "2.5mm LANC",
+        "notes": "Remote control port"
+      },
+      {
+        "type": "Serial CTRL",
+        "notes": "Dedicated accessory control port"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CFast 2.0",
+        "notes": "Dual slots"
+      },
+      {
+        "type": "ZBlade",
+        "notes": "Optional NVMe media module"
+      }
+    ],
+    "viewfinder": [
+      {
+        "type": "5\" Touchscreen LCD",
+        "resolution": "1920x1080",
+        "notes": "Included monitor powered via control cable"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "EF",
+        "mount": "native",
+        "notes": "Optional adapters support M, MFT, PL, and LPL"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC (TC/Genlock)",
+        "notes": "Shared LTC and tri-level sync input"
+      }
+    ],
     "weight_g": 1090,
     "recordingCodecs": [
       "ZRAW 12-bit",
-      "Apple ProRes 422 family",
+      "Apple ProRes 422 Proxy",
+      "Apple ProRes 422 LT",
+      "Apple ProRes 422",
+      "Apple ProRes 422 HQ",
       "H.265/HEVC",
       "H.264/AVC"
     ],
@@ -6291,23 +6764,165 @@ const cameraData = {
       "Full-Frame 6K Open Gate",
       "C6K",
       "6K 2.4:1",
-      "6K UHD"
+      "6K UHD",
+      "5K 4:3",
+      "C5K",
+      "4K UHD"
     ],
     "resolutions": [
       "6064×4040 (Open Gate)",
       "6064×3196 (C6K)",
       "6064×2560 (6K 2.4:1)",
       "5760×3240 (6K UHD)",
+      "5376×4032 (5K 4:3)",
+      "5120×2700 (C5K)",
       "4096×2160 (DCI 4K)",
-      "3840×2160 (UHD)"
+      "3840×2160 (UHD)",
+      "2112×1188 (S16 16:9)",
+      "1920×1080 (FHD)"
+    ]
+  },
+  "Z CAM E2-F6 Pro / Mark II": {
+    "powerDrawWatts": 50,
+    "power": {
+      "input": {
+        "voltageRange": "12-18",
+        "type": "LEMO 2-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Integrated 14.8V plate on Pro body"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "2A",
+          "notes": "AUX DC output"
+        }
+      ]
+    },
+    "videoOutputs": [
+      {
+        "type": "HDMI",
+        "version": "2.0 Type A",
+        "notes": "4K up to 59.94p, 10-bit 4:2:2"
+      },
+      {
+        "type": "12G-SDI",
+        "notes": "BNC, up to 4K60 10-bit 4:2:2"
+      }
+    ],
+    "fizConnectors": [
+      {
+        "type": "2.5mm LANC",
+        "notes": "Remote control port"
+      },
+      {
+        "type": "Serial CTRL",
+        "notes": "Dedicated accessory control port"
+      }
+    ],
+    "recordingMedia": [
+      {
+        "type": "CFast 2.0",
+        "notes": "Dual slots"
+      },
+      {
+        "type": "ZBlade",
+        "notes": "Optional NVMe media module"
+      }
+    ],
+    "viewfinder": [
+      {
+        "type": "5\" Touchscreen LCD",
+        "resolution": "1920x1080",
+        "notes": "Included monitor powered via control cable"
+      }
+    ],
+    "lensMount": [
+      {
+        "type": "EF",
+        "mount": "native",
+        "notes": "Optional adapters support M, MFT, PL, and LPL"
+      }
+    ],
+    "timecode": [
+      {
+        "type": "BNC (TC/Genlock)",
+        "notes": "Shared LTC and tri-level sync input"
+      }
+    ],
+    "weight_g": 1390,
+    "recordingCodecs": [
+      "ProRes 422 Proxy",
+      "ProRes 422 LT",
+      "ProRes 422",
+      "ProRes 422 HQ"
+    ],
+    "sensorModes": [
+      "Full-Frame 6K Open Gate",
+      "C6K",
+      "6K 2.4:1",
+      "6K UHD",
+      "5K 4:3",
+      "C5K",
+      "4K UHD"
+    ],
+    "resolutions": [
+      "6064×4040 (Open Gate)",
+      "6064×3196 (C6K)",
+      "6064×2560 (6K 2.4:1)",
+      "5760×3240 (6K UHD)",
+      "5376×4032 (5K 4:3)",
+      "5120×2700 (C5K)",
+      "4096×2160 (DCI 4K)",
+      "3840×2160 (UHD)",
+      "2112×1188 (S16 16:9)",
+      "1920×1080 (FHD)"
     ]
   },
   "RED DSMC2 MONSTRO 8K VV": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 60,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": "LEMO 6-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "native",
+          "notes": "Compatible with DSMC2 Gold Mount battery module"
+        },
+        {
+          "type": "REDVOLT Micro-V",
+          "mount": "native",
+          "notes": "Dual-battery expander provides compact onboard power"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "14V",
+          "current": "3A",
+          "notes": "DC OUT from DSMC2 I/O expander"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR rail on expander"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6332,11 +6947,43 @@ const cameraData = {
     ]
   },
   "RED DSMC2 HELIUM 8K S35": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 45,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": "LEMO 6-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "native",
+          "notes": "Compatible with DSMC2 Gold Mount battery module"
+        },
+        {
+          "type": "REDVOLT Micro-V",
+          "mount": "native",
+          "notes": "Dual-battery expander provides compact onboard power"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "14V",
+          "current": "3A",
+          "notes": "DC OUT from DSMC2 I/O expander"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR rail on expander"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6361,11 +7008,43 @@ const cameraData = {
     ]
   },
   "RED DSMC2 GEMINI 5K S35": {
-    "powerDrawWatts": 0,
+    "powerDrawWatts": 63,
     "power": {
-      "input": { "voltageRange": null, "type": null },
-      "batteryPlateSupport": [],
-      "powerDistributionOutputs": []
+      "input": {
+        "voltageRange": "11.5-32",
+        "type": "LEMO 6-pin"
+      },
+      "batteryPlateSupport": [
+        {
+          "type": "V-Mount",
+          "mount": "native",
+          "notes": "Supports DSMC2 V-Lock battery and I/O expanders"
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "native",
+          "notes": "Compatible with DSMC2 Gold Mount battery module"
+        },
+        {
+          "type": "REDVOLT Micro-V",
+          "mount": "native",
+          "notes": "Dual-battery expander provides compact onboard power"
+        }
+      ],
+      "powerDistributionOutputs": [
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "14V",
+          "current": "3A",
+          "notes": "DC OUT from DSMC2 I/O expander"
+        },
+        {
+          "type": "LEMO 2-pin",
+          "voltage": "12V",
+          "current": "3A",
+          "notes": "Aux PWR rail on expander"
+        }
+      ]
     },
     "videoOutputs": [],
     "fizConnectors": [],
@@ -6393,7 +7072,8 @@ const cameraData = {
     "power": {
       "input": {
         "voltageRange": null,
-        "type": null
+        "type": "N/A",
+        "notes": "Placeholder entry representing no camera body"
       },
       "batteryPlateSupport": [],
       "powerDistributionOutputs": []
@@ -6406,6 +7086,14 @@ const cameraData = {
     "timecode": []
   }
 };
+
+const suppressedCameras = [];
+
+suppressedCameras.forEach(name => {
+  if (Object.prototype.hasOwnProperty.call(cameraData, name)) {
+    delete cameraData[name];
+  }
+});
 
 if (typeof registerDevice === 'function') {
   if (typeof module !== 'undefined' && module.exports) {

@@ -15,16 +15,19 @@ const wirelessReceiversData = {
     "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
     "latencyMs": "< 1ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "LEMO 2-pin",
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "type": "Gold-Mount",
+          "mount": "optional"
         },
         {
-          "type": "Gold-Mount"
-        },
-        {
-          "type": "V-Mount"
+          "type": "V-Mount",
+          "mount": "optional"
         }
       ]
     }
@@ -43,16 +46,19 @@ const wirelessReceiversData = {
     "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
     "latencyMs": "< 1ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "LEMO 2-pin",
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "type": "Gold-Mount",
+          "mount": "optional"
         },
         {
-          "type": "Gold-Mount"
-        },
-        {
-          "type": "V-Mount"
+          "type": "V-Mount",
+          "mount": "optional"
         }
       ]
     }
@@ -71,16 +77,19 @@ const wirelessReceiversData = {
     "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS)",
     "latencyMs": "< 1ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "LEMO 2-pin",
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "type": "Gold-Mount",
+          "mount": "optional"
         },
         {
-          "type": "Gold-Mount"
-        },
-        {
-          "type": "V-Mount"
+          "type": "V-Mount",
+          "mount": "optional"
         }
       ]
     }
@@ -99,16 +108,19 @@ const wirelessReceiversData = {
     "frequency": "5.1-5.9 GHz",
     "latencyMs": "< 1ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "LEMO 2-pin",
+        "voltageRange": "7-17",
+        "notes": "Regulated DC input"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "7-17V"
+          "type": "Gold-Mount",
+          "mount": "optional"
         },
         {
-          "type": "Gold-Mount"
-        },
-        {
-          "type": "V-Mount"
+          "type": "V-Mount",
+          "mount": "optional"
         }
       ]
     }
@@ -117,8 +129,9 @@ const wirelessReceiversData = {
     "powerDrawWatts": 0,
     "power": {
       "input": {
-        "voltageRange": "",
-        "type": ""
+        "voltageRange": null,
+        "type": "N/A",
+        "notes": "Placeholder entry representing no wireless receiver"
       }
     },
     "videoInputs": [],
@@ -139,7 +152,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -157,16 +171,19 @@ const wirelessReceiversData = {
     "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS), 5.945-6.425 GHz (6GHz/U-NII 5-8)",
     "latencyMs": "< 1ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "LEMO 2-pin",
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "type": "Gold-Mount",
+          "mount": "optional"
         },
         {
-          "type": "Gold-Mount"
-        },
-        {
-          "type": "V-Mount"
+          "type": "V-Mount",
+          "mount": "optional"
         }
       ]
     }
@@ -184,7 +201,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -202,16 +220,19 @@ const wirelessReceiversData = {
     "frequency": "5.190-5.230 GHz (Non-DFS), 5.270-5.670 GHz (DFS), 5.755-5.795 GHz (Non-DFS) (with Bluetooth 2.4 GHz for app control)",
     "latencyMs": "< 1ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "LEMO 2-pin",
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "LEMO 2-pin",
-          "notes": "6-28V"
+          "type": "Gold-Mount",
+          "mount": "optional"
         },
         {
-          "type": "Gold-Mount"
-        },
-        {
-          "type": "V-Mount"
+          "type": "V-Mount",
+          "mount": "optional"
         }
       ]
     }
@@ -229,7 +250,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -246,7 +268,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -263,7 +286,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -280,7 +304,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -297,7 +322,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -314,7 +340,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -331,7 +358,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -348,7 +376,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-28V"
+        "voltageRange": "6-28",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -366,17 +395,22 @@ const wirelessReceiversData = {
     "frequency": "2.412-2.484 GHz / 5.15-5.85 GHz (Dual-Band Wi-Fi 4)",
     "latencyMs": "50ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "DC Barrel",
+        "voltageRange": "6-16",
+        "notes": "Locking coaxial DC input"
+      },
+      "alternateInputs": [
         {
           "type": "USB-C",
-          "notes": "5V-12V"
-        },
+          "voltageRange": "5-12",
+          "notes": "USB-C PD"
+        }
+      ],
+      "batteryPlateSupport": [
         {
-          "type": "NP-F"
-        },
-        {
-          "type": "DC Barrel",
-          "notes": "6-16V"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -392,13 +426,22 @@ const wirelessReceiversData = {
     "frequency": "5 GHz",
     "latencyMs": "< 80ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "DC Barrel",
+        "voltageRange": "6-16",
+        "notes": "Locking coaxial DC input"
+      },
+      "alternateInputs": [
         {
           "type": "USB-C",
-          "notes": "5-12V"
-        },
+          "voltageRange": "5-12",
+          "notes": "USB-C PD"
+        }
+      ],
+      "batteryPlateSupport": [
         {
-          "type": "NP-F"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -417,17 +460,22 @@ const wirelessReceiversData = {
     "frequency": "5 GHz",
     "latencyMs": "< 80ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "DC Barrel",
+        "voltageRange": "6-16",
+        "notes": "Locking coaxial DC input"
+      },
+      "alternateInputs": [
         {
           "type": "USB-C",
-          "notes": "5-12V"
-        },
+          "voltageRange": "5-12",
+          "notes": "USB-C PD"
+        }
+      ],
+      "batteryPlateSupport": [
         {
-          "type": "NP-F"
-        },
-        {
-          "type": "DC Barrel",
-          "notes": "6-16V"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -446,16 +494,19 @@ const wirelessReceiversData = {
     "frequency": "2.4000-2.4835 GHz (Non-DFS), 5.470-5.725 GHz (DFS), 5.725-5.850 GHz (Non-DFS)",
     "latencyMs": "< 60ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "DC Barrel",
+        "voltageRange": "6-18",
+        "notes": "Coaxial power input"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "DC-",
-          "notes": "6-18V"
+          "type": "NP-F",
+          "mount": "integrated"
         },
         {
-          "type": "NP-F"
-        },
-        {
-          "type": "WB37"
+          "type": "DJI WB37",
+          "mount": "integrated"
         }
       ]
     }
@@ -476,7 +527,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-18V"
+        "voltageRange": "6-18",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -496,7 +548,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-18V"
+        "voltageRange": "6-18",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -516,7 +569,8 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "6-18V"
+        "voltageRange": "6-18",
+        "notes": "Regulated DC input"
       }
     }
   },
@@ -531,13 +585,15 @@ const wirelessReceiversData = {
     "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
     "latencyMs": "< 60ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "USB-C",
+        "voltageRange": "5",
+        "notes": "USB-C PD"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "USB-C",
-          "notes": "5V"
-        },
-        {
-          "type": "NP-F battery"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -553,13 +609,15 @@ const wirelessReceiversData = {
     "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
     "latencyMs": "< 60ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "USB-C",
+        "voltageRange": "5",
+        "notes": "USB-C PD"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "USB-C",
-          "notes": "5V"
-        },
-        {
-          "type": "NP-F battery"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -578,13 +636,15 @@ const wirelessReceiversData = {
     "frequency": "2.412-2.472 GHz / 5.180-5.580 GHz / 5.660-5.825 MHz (Dual-Band Wi-Fi 5 with MU-MIMO)",
     "latencyMs": "< 60ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "USB-C",
+        "voltageRange": "5",
+        "notes": "USB-C PD"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "USB-C",
-          "notes": "5V"
-        },
-        {
-          "type": "NP-F battery"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -603,13 +663,15 @@ const wirelessReceiversData = {
     "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
     "latencyMs": "< 60ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "USB-C",
+        "voltageRange": "5",
+        "notes": "USB-C PD"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "USB-C",
-          "notes": "5V"
-        },
-        {
-          "type": "NP-F battery"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -625,13 +687,15 @@ const wirelessReceiversData = {
     "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
     "latencyMs": "< 60ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "USB-C",
+        "voltageRange": "5",
+        "notes": "USB-C PD"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "USB-C",
-          "notes": "5V"
-        },
-        {
-          "type": "NP-F battery"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -650,13 +714,15 @@ const wirelessReceiversData = {
     "frequency": "2.4 GHz / 5 GHz (Dual-Band Wi-Fi)",
     "latencyMs": "< 60ms",
     "power": {
-      "input": [
+      "input": {
+        "type": "USB-C",
+        "voltageRange": "5",
+        "notes": "USB-C PD"
+      },
+      "batteryPlateSupport": [
         {
-          "type": "USB-C",
-          "notes": "5V"
-        },
-        {
-          "type": "NP-F battery"
+          "type": "NP-F",
+          "mount": "integrated"
         }
       ]
     }
@@ -673,11 +739,13 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "10.5-34V"
+        "voltageRange": "10.5-34",
+        "notes": "Regulated DC input"
       },
       "output": {
         "type": "LEMO 2-pin",
-        "notes": "12V, max 2.0A"
+        "voltageRange": "12",
+        "notes": "Max 2.0A accessory feed"
       }
     }
   },
@@ -692,11 +760,13 @@ const wirelessReceiversData = {
     "power": {
       "input": {
         "type": "LEMO 2-pin",
-        "notes": "10.5-34V"
+        "voltageRange": "10.5-34",
+        "notes": "Regulated DC input"
       },
       "output": {
         "type": "LEMO 2-pin",
-        "notes": "12V, max 2.0A"
+        "voltageRange": "12",
+        "notes": "Max 2.0A accessory feed"
       }
     }
   }

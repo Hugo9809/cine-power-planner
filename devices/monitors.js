@@ -1028,8 +1028,9 @@ const monitorData = {
     "powerDrawWatts": 0,
     "power": {
       "input": {
-        "voltageRange": "",
-        "portType": ""
+        "voltageRange": null,
+        "portType": "N/A",
+        "notes": "Placeholder entry representing no dedicated monitor"
       }
     },
     "wirelessTx": false,
