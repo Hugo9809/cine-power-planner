@@ -1254,6 +1254,35 @@ main.legal-content {
   white-space: normal;
 }
 
+.help-quick-link-icon {
+  --icon-color: var(--accent-color);
+  flex: 0 0 1.75em;
+  width: 1.75em;
+  height: 1.75em;
+  border-radius: 999px;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.dark-mode .help-quick-link-icon,
+html.dark-mode .help-quick-link-icon {
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.help-quick-link.active .help-quick-link-icon {
+  background-color: transparent;
+  border-color: transparent;
+  --icon-color: var(--inverse-text-color);
+  box-shadow: none;
+}
+
+.help-quick-link-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.3;
+}
+
 .help-quick-link:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;

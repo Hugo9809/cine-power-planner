@@ -16160,9 +16160,21 @@ if (helpButton && helpDialog) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'help-quick-link';
-      button.textContent = label;
       button.dataset.targetId = id;
       button.setAttribute('aria-label', label);
+
+      const headingIcon = heading.querySelector('.help-icon.icon-glyph');
+      if (headingIcon) {
+        const icon = headingIcon.cloneNode(true);
+        icon.classList.remove('help-icon');
+        icon.classList.add('help-quick-link-icon');
+        button.appendChild(icon);
+      }
+
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'help-quick-link-label';
+      labelSpan.textContent = label;
+      button.appendChild(labelSpan);
       button.addEventListener('click', () => {
         if (section.hasAttribute('hidden')) return;
         if (helpQuickLinksList) {
