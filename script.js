@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearSeedFlag, saveAutoGearSeedFlag */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearSeedFlag, saveAutoGearSeedFlag, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -33,6 +33,14 @@ const APP_VERSION = "1.0.1";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
+const AUTO_GEAR_RULES_KEY =
+  typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined'
+    ? AUTO_GEAR_RULES_STORAGE_KEY
+    : 'cameraPowerPlanner_autoGearRules';
+const AUTO_GEAR_SEEDED_KEY =
+  typeof AUTO_GEAR_SEEDED_STORAGE_KEY !== 'undefined'
+    ? AUTO_GEAR_SEEDED_STORAGE_KEY
+    : 'cameraPowerPlanner_autoGearSeeded';
 
 const schemaStorage = (() => {
   if (typeof window === 'undefined') return null;
@@ -128,8 +136,6 @@ const LEGAL_LINKS = {
   },
 };
 
-const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
-const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_CUSTOM_CATEGORY = '';
 const GEAR_LIST_CATEGORIES = [
   'Camera',
@@ -200,7 +206,7 @@ function readAutoGearRulesFromStorage() {
     }
   } else if (typeof localStorage !== 'undefined') {
     try {
-      const raw = localStorage.getItem(AUTO_GEAR_RULES_STORAGE_KEY);
+      const raw = localStorage.getItem(AUTO_GEAR_RULES_KEY);
       stored = raw ? JSON.parse(raw) : [];
     } catch (error) {
       console.warn('Failed to load automatic gear rules', error);
@@ -224,7 +230,7 @@ function persistAutoGearRules() {
   }
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(AUTO_GEAR_RULES_STORAGE_KEY, JSON.stringify(autoGearRules));
+    localStorage.setItem(AUTO_GEAR_RULES_KEY, JSON.stringify(autoGearRules));
   } catch (error) {
     console.warn('Failed to save automatic gear rules', error);
   }
@@ -254,7 +260,7 @@ function hasSeededAutoGearDefaults() {
   }
   if (typeof localStorage === 'undefined') return false;
   try {
-    return localStorage.getItem(AUTO_GEAR_SEEDED_STORAGE_KEY) === '1';
+    return localStorage.getItem(AUTO_GEAR_SEEDED_KEY) === '1';
   } catch (error) {
     console.warn('Failed to read automatic gear seed flag', error);
     return false;
@@ -272,7 +278,7 @@ function markAutoGearDefaultsSeeded() {
   }
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(AUTO_GEAR_SEEDED_STORAGE_KEY, '1');
+    localStorage.setItem(AUTO_GEAR_SEEDED_KEY, '1');
   } catch (error) {
     console.warn('Failed to persist automatic gear seed flag', error);
   }
