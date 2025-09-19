@@ -3758,34 +3758,45 @@ function createSchemaField(category, attr, value) {
   }
 
   if (inputType === 'boolean') {
-    const field = document.createElement('div');
-    field.className = 'schema-field schema-field--checkbox';
+    const row = document.createElement('div');
+    row.className = 'form-row schema-form-row';
+
+    const label = document.createElement('label');
+    label.setAttribute('for', attrId);
+    label.textContent = labelText;
+    row.appendChild(label);
+
+    const controlContainer = document.createElement('div');
+    controlContainer.className = 'schema-control schema-control--checkbox';
+    const inlineWrap = document.createElement('div');
+    inlineWrap.className = 'schema-control-inline';
+
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.id = attrId;
     input.className = 'schema-input schema-input--checkbox';
     input.dataset.attrType = 'boolean';
     input.checked = value === undefined ? !!config.default : !!value;
-    const label = document.createElement('label');
-    label.setAttribute('for', attrId);
-    label.textContent = labelText;
-    field.appendChild(input);
-    field.appendChild(label);
+    inlineWrap.appendChild(input);
+
+    controlContainer.appendChild(inlineWrap);
     if (config.help) {
       const help = document.createElement('p');
       help.className = 'schema-field-help';
       help.textContent = config.help;
-      field.appendChild(help);
+      controlContainer.appendChild(help);
     }
-    return field;
+
+    row.appendChild(controlContainer);
+    return row;
   }
 
-  const field = document.createElement('div');
-  field.className = 'schema-field';
+  const row = document.createElement('div');
+  row.className = 'form-row schema-form-row';
   const label = document.createElement('label');
   label.setAttribute('for', attrId);
   label.textContent = labelText;
-  field.appendChild(label);
+  row.appendChild(label);
 
   let control;
   if (inputType === 'list' || inputType === 'json' || inputType === 'textarea') {
@@ -3819,25 +3830,29 @@ function createSchemaField(category, attr, value) {
     control.placeholder = config.placeholder;
   }
 
-  const controlWrap = document.createElement('div');
-  controlWrap.className = 'schema-field-control';
-  controlWrap.appendChild(control);
+  const controlContainer = document.createElement('div');
+  controlContainer.className = 'schema-control';
+  const inlineWrap = document.createElement('div');
+  inlineWrap.className = 'schema-control-inline';
+  inlineWrap.appendChild(control);
   if (config.suffix) {
     const suffix = document.createElement('span');
     suffix.className = 'schema-field-suffix';
     suffix.textContent = config.suffix;
-    controlWrap.appendChild(suffix);
+    inlineWrap.appendChild(suffix);
   }
-  field.appendChild(controlWrap);
+  controlContainer.appendChild(inlineWrap);
 
   if (config.help) {
     const help = document.createElement('p');
     help.className = 'schema-field-help';
     help.textContent = config.help;
-    field.appendChild(help);
+    controlContainer.appendChild(help);
   }
 
-  return field;
+  row.appendChild(controlContainer);
+
+  return row;
 }
 
 function getSchemaAttributesForCategory(category) {
@@ -3897,13 +3912,13 @@ function buildDynamicFields(category, data = {}, exclude = []) {
   if (dynamicFieldsDiv.dataset) {
     dynamicFieldsDiv.dataset.attrs = JSON.stringify(attrs);
   }
-  const grid = document.createElement('div');
-  grid.className = 'schema-attribute-grid';
+  const list = document.createElement('div');
+  list.className = 'schema-attribute-list';
   for (const attr of attrs) {
     const value = data && data[attr] !== undefined ? data[attr] : undefined;
-    grid.appendChild(createSchemaField(category, attr, value));
+    list.appendChild(createSchemaField(category, attr, value));
   }
-  dynamicFieldsDiv.appendChild(grid);
+  dynamicFieldsDiv.appendChild(list);
 }
 
 function collectDynamicFieldValues(category, exclude = []) {
