@@ -2373,6 +2373,17 @@ function setLanguage(lang) {
       settingsDarkMode.setAttribute("aria-label", texts[lang].darkModeSetting);
     }
   }
+  const settingsPinkLabel = document.getElementById("settingsPinkModeLabel");
+  if (settingsPinkLabel) {
+    settingsPinkLabel.textContent = texts[lang].pinkModeSetting;
+    const pinkModeHelp =
+      texts[lang].settingsPinkModeHelp || texts[lang].pinkModeSetting;
+    settingsPinkLabel.setAttribute("data-help", pinkModeHelp);
+    if (settingsPinkMode) {
+      settingsPinkMode.setAttribute("data-help", pinkModeHelp);
+      settingsPinkMode.setAttribute("aria-label", texts[lang].pinkModeSetting);
+    }
+  }
   const accentLabel = document.getElementById("accentColorLabel");
   if (accentLabel) {
     accentLabel.textContent = texts[lang].accentColorSetting;
@@ -4264,6 +4275,7 @@ const settingsButton  = document.getElementById("settingsButton");
 const settingsDialog  = document.getElementById("settingsDialog");
 const settingsLanguage = document.getElementById("settingsLanguage");
 const settingsDarkMode = document.getElementById("settingsDarkMode");
+const settingsPinkMode = document.getElementById("settingsPinkMode");
 const accentColorInput = document.getElementById("accentColorInput");
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
@@ -15260,6 +15272,9 @@ function applyPinkMode(enabled) {
       pinkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
+  if (settingsPinkMode) {
+    settingsPinkMode.checked = enabled;
+  }
 }
 
 let pinkModeEnabled = false;
@@ -15287,6 +15302,7 @@ if (settingsButton && settingsDialog) {
     prevAccentColor = accentColor;
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
+    if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
     if (settingsHighContrast) settingsHighContrast.checked = document.body.classList.contains('high-contrast');
     if (settingsShowAutoBackups) settingsShowAutoBackups.checked = showAutoBackups;
     if (accentColorInput) {
@@ -15335,6 +15351,15 @@ if (settingsButton && settingsDialog) {
           localStorage.setItem('darkMode', enabled);
         } catch (e) {
           console.warn('Could not save dark mode preference', e);
+        }
+      }
+      if (settingsPinkMode) {
+        const enabled = settingsPinkMode.checked;
+        applyPinkMode(enabled);
+        try {
+          localStorage.setItem('pinkMode', enabled);
+        } catch (e) {
+          console.warn('Could not save pink mode preference', e);
         }
       }
       if (settingsHighContrast) {
