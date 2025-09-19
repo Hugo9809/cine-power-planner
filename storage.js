@@ -7,6 +7,7 @@ const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, fall back to a simple
@@ -498,6 +499,7 @@ function clearAllData() {
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);

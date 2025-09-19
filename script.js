@@ -22,17 +22,6 @@ try {
   }
 }
 
-let deviceSchema;
-try {
-  deviceSchema = require('./schema.json');
-} catch {
-  if (typeof fetch === 'function') {
-    fetch('schema.json').then(r => r.json()).then(d => { deviceSchema = d; populateCategoryOptions(); });
-  } else {
-    deviceSchema = {};
-  }
-}
-
 var generatePrintableOverview;
 try {
   ({ generatePrintableOverview } = require('./overview.js'));
@@ -41,6 +30,79 @@ try {
 }
 
 const APP_VERSION = "1.0.1";
+
+const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
+
+const schemaStorage = (() => {
+  if (typeof window === 'undefined') return null;
+  try {
+    if (!('localStorage' in window)) return null;
+    const { localStorage } = window;
+    const testKey = '__schema_cache__';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    return localStorage;
+  } catch (error) {
+    console.warn('Device schema cache disabled', error);
+    return null;
+  }
+})();
+
+function loadCachedDeviceSchema() {
+  if (!schemaStorage) return null;
+  try {
+    const raw = schemaStorage.getItem(DEVICE_SCHEMA_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch (error) {
+    console.warn('Failed to read cached device schema', error);
+    try {
+      schemaStorage.removeItem(DEVICE_SCHEMA_STORAGE_KEY);
+    } catch (removeError) {
+      console.warn('Failed to clear invalid cached device schema', removeError);
+    }
+    return null;
+  }
+}
+
+function persistDeviceSchema(schema) {
+  if (!schemaStorage) return;
+  try {
+    schemaStorage.setItem(DEVICE_SCHEMA_STORAGE_KEY, JSON.stringify(schema));
+  } catch (error) {
+    console.warn('Failed to cache device schema', error);
+  }
+}
+
+const cachedDeviceSchema = loadCachedDeviceSchema();
+
+let deviceSchema;
+try {
+  deviceSchema = require('./schema.json');
+} catch {
+  deviceSchema = cachedDeviceSchema;
+  if (typeof fetch === 'function') {
+    fetch('schema.json')
+      .then(r => r.json())
+      .then(data => {
+        deviceSchema = data;
+        if (data && typeof data === 'object') {
+          persistDeviceSchema(data);
+        }
+        populateCategoryOptions();
+      })
+      .catch(error => {
+        console.warn('Failed to fetch schema.json', error);
+        if (!deviceSchema) {
+          deviceSchema = cachedDeviceSchema || {};
+        }
+        populateCategoryOptions();
+      });
+  } else if (!deviceSchema) {
+    deviceSchema = cachedDeviceSchema || {};
+  }
+}
 
 const LEGAL_LINKS = {
   de: {

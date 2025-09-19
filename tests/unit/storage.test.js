@@ -45,6 +45,7 @@ const SESSION_KEY = 'cameraPowerPlanner_session';
 const FEEDBACK_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
+const SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 
 const validDeviceData = {
   cameras: {},
@@ -387,6 +388,7 @@ describe('clearAllData', () => {
     saveProject('Proj', { gearList: '<ul></ul>' });
     saveFavorites({ cat: ['A'] });
     saveSessionState({ camera: 'CamA' });
+    localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
@@ -394,6 +396,7 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
     expect(localStorage.getItem(SESSION_KEY)).toBeNull();
     expect(localStorage.getItem(FAVORITES_KEY)).toBeNull();
+    expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
   });
 });
 
