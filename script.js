@@ -29,7 +29,7 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.0.2";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
@@ -4313,7 +4313,14 @@ function addAutoGearDraftItem(type) {
 
 function saveAutoGearRuleFromEditor() {
   if (!autoGearEditorDraft) return;
-  const scenarioValue = autoGearScenariosSelect ? autoGearScenariosSelect.value : '';
+  let scenarioValue = autoGearScenariosSelect ? autoGearScenariosSelect.value : '';
+  if (!scenarioValue && autoGearScenariosSelect) {
+    const fallbackOption = Array.from(autoGearScenariosSelect.options || []).find(option => option && option.value);
+    if (fallbackOption) {
+      scenarioValue = fallbackOption.value;
+      autoGearScenariosSelect.value = scenarioValue;
+    }
+  }
   const scenarios = scenarioValue ? [scenarioValue] : [];
   if (!scenarios.length) {
     const message = texts[currentLang]?.autoGearRuleScenarioRequired
@@ -14934,6 +14941,196 @@ function captureStorageSnapshot(storage) {
   return snapshot;
 }
 
+const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_'];
+const BACKUP_STORAGE_KNOWN_KEYS = new Set([
+  'darkMode',
+  'pinkMode',
+  'highContrast',
+  'showAutoBackups',
+  'accentColor',
+  'fontSize',
+  'fontFamily',
+  'customLogo',
+  'language',
+  IOS_PWA_HELP_STORAGE_KEY,
+]);
+const BACKUP_METADATA_BASE_KEYS = new Set([
+  'settings',
+  'storage',
+  'localStorage',
+  'values',
+  'entries',
+  'sessionStorage',
+  'sessionState',
+  'sessionEntries',
+  'payload',
+  'plannerData',
+  'allData',
+  'generatedAt',
+  'version',
+  'appVersion',
+  'applicationVersion',
+]);
+const BACKUP_DATA_KEYS = [
+  'devices',
+  'setups',
+  'session',
+  'feedback',
+  'project',
+  'projects',
+  'gearList',
+  'favorites',
+  'autoGearRules',
+  'autoGearSeeded',
+];
+
+function isPlainObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function normalizeStoredValue(value) {
+  if (typeof value === 'string') return value;
+  if (value === undefined || value === null) return '';
+  try {
+    return String(value);
+  } catch (error) {
+    console.warn('Failed to normalize stored value for backup compatibility', error);
+    return '';
+  }
+}
+
+function convertEntriesToSnapshot(section) {
+  if (!section) return null;
+  const snapshot = Object.create(null);
+  const assignEntry = (key, value) => {
+    if (typeof key !== 'string' || !key) return;
+    snapshot[key] = normalizeStoredValue(value);
+  };
+
+  if (Array.isArray(section)) {
+    section.forEach(entry => {
+      if (!entry) return;
+      if (Array.isArray(entry)) {
+        assignEntry(entry[0], entry[1]);
+        return;
+      }
+      if (typeof entry === 'object') {
+        if (typeof entry.key === 'string') {
+          assignEntry(entry.key, entry.value ?? entry.val ?? entry.data ?? entry.content ?? entry.string);
+          return;
+        }
+        if (typeof entry.name === 'string') {
+          assignEntry(entry.name, entry.value ?? entry.val ?? entry.data ?? entry.content ?? entry.string);
+          return;
+        }
+        if (Array.isArray(entry.entry)) {
+          assignEntry(entry.entry[0], entry.entry[1]);
+        }
+      }
+    });
+  } else if (isPlainObject(section)) {
+    Object.entries(section).forEach(([key, value]) => {
+      assignEntry(key, value);
+    });
+  } else {
+    return null;
+  }
+
+  return Object.keys(snapshot).length ? snapshot : null;
+}
+
+function extractFirstMatchingSnapshot(source, keys) {
+  if (!isPlainObject(source)) return { snapshot: null, keyUsed: null };
+  for (const key of keys) {
+    if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
+    const snapshot = convertEntriesToSnapshot(source[key]);
+    if (snapshot) {
+      return { snapshot, keyUsed: key };
+    }
+  }
+  return { snapshot: null, keyUsed: null };
+}
+
+function looksLikeStoredSettingKey(key) {
+  if (BACKUP_STORAGE_KNOWN_KEYS.has(key)) {
+    return true;
+  }
+  return BACKUP_STORAGE_KEY_PREFIXES.some(prefix => key.startsWith(prefix));
+}
+
+function buildLegacyStorageFromRoot(source, metadataKeys) {
+  if (!isPlainObject(source)) return null;
+  const snapshot = Object.create(null);
+  Object.entries(source).forEach(([key, value]) => {
+    if (metadataKeys.has(key)) return;
+    if (!looksLikeStoredSettingKey(key)) return;
+    snapshot[key] = normalizeStoredValue(value);
+  });
+  return Object.keys(snapshot).length ? snapshot : null;
+}
+
+function extractBackupSections(raw) {
+  const parsed = isPlainObject(raw) ? raw : {};
+  const versionValue =
+    typeof parsed.version === 'string'
+      ? parsed.version
+      : typeof parsed.appVersion === 'string'
+        ? parsed.appVersion
+        : typeof parsed.applicationVersion === 'string'
+          ? parsed.applicationVersion
+          : undefined;
+
+  const settingsResult = extractFirstMatchingSnapshot(parsed, [
+    'settings',
+    'localStorage',
+    'storage',
+    'storedSettings',
+    'values',
+    'entries',
+  ]);
+  const sessionResult = extractFirstMatchingSnapshot(parsed, [
+    'sessionStorage',
+    'session',
+    'sessions',
+    'sessionState',
+    'sessionEntries',
+  ]);
+
+  const metadataKeys = new Set(BACKUP_METADATA_BASE_KEYS);
+  if (settingsResult.keyUsed) metadataKeys.add(settingsResult.keyUsed);
+  if (sessionResult.keyUsed) metadataKeys.add(sessionResult.keyUsed);
+
+  const settingsSnapshot = settingsResult.snapshot || buildLegacyStorageFromRoot(parsed, metadataKeys);
+  const sessionSnapshot = sessionResult.snapshot;
+
+  let dataSection = null;
+  for (const key of ['data', 'payload', 'plannerData', 'allData']) {
+    if (isPlainObject(parsed[key])) {
+      dataSection = parsed[key];
+      break;
+    }
+  }
+  if (!dataSection) {
+    const fallback = {};
+    BACKUP_DATA_KEYS.forEach(key => {
+      if (metadataKeys.has(key)) return;
+      if (Object.prototype.hasOwnProperty.call(parsed, key)) {
+        fallback[key] = parsed[key];
+      }
+    });
+    if (Object.keys(fallback).length) {
+      dataSection = fallback;
+    }
+  }
+
+  return {
+    fileVersion: versionValue,
+    settings: settingsSnapshot,
+    sessionStorage: sessionSnapshot,
+    data: isPlainObject(dataSection) ? dataSection : null,
+  };
+}
+
 function createSettingsBackup(notify = true, timestamp = new Date()) {
   try {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
@@ -14982,26 +15179,26 @@ if (restoreSettings && restoreSettingsInput) {
     reader.onload = e => {
       try {
         const parsed = JSON.parse(e.target.result);
-        const settings = parsed && typeof parsed === 'object' && parsed.settings
-          ? parsed.settings
-          : parsed;
-        const data = parsed && typeof parsed === 'object' && parsed.data
-          ? parsed.data
-          : null;
-        const fileVersion = parsed && typeof parsed === 'object' && parsed.version;
+        const {
+          settings: restoredSettings,
+          sessionStorage: restoredSession,
+          data,
+          fileVersion,
+        } = extractBackupSections(parsed);
         if (fileVersion !== APP_VERSION) {
           alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
         }
-        if (settings && typeof settings === 'object') {
-          Object.entries(settings).forEach(([k, v]) => {
-            localStorage.setItem(k, v);
+        if (restoredSettings && typeof restoredSettings === 'object') {
+          Object.entries(restoredSettings).forEach(([k, v]) => {
+            try {
+              localStorage.setItem(k, v);
+            } catch (storageError) {
+              console.warn('Failed to restore localStorage entry', k, storageError);
+            }
           });
         }
-        const sessionSnapshot = parsed && typeof parsed === 'object' && parsed.sessionStorage
-          ? parsed.sessionStorage
-          : null;
-        if (sessionSnapshot && typeof sessionStorage !== 'undefined') {
-          Object.entries(sessionSnapshot).forEach(([key, value]) => {
+        if (restoredSession && typeof sessionStorage !== 'undefined') {
+          Object.entries(restoredSession).forEach(([key, value]) => {
             try {
               sessionStorage.setItem(key, value);
             } catch (sessionError) {
