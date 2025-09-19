@@ -859,7 +859,16 @@
         <div id="autoGearBackupsSection" class="auto-gear-backups">
           <h4 id="autoGearBackupsHeading">Automatic backups</h4>
           <p id="autoGearBackupsDescription" class="settings-hint"></p>
-          <ul id="autoGearBackupList" class="auto-gear-backup-list" aria-live="polite"></ul>
+          <div id="autoGearBackupControls" class="auto-gear-backup-controls" aria-live="polite">
+            <label for="autoGearBackupSelect" id="autoGearBackupSelectLabel">Choose a backup</label>
+            <div class="auto-gear-backup-row">
+              <select id="autoGearBackupSelect" class="auto-gear-backup-select" disabled>
+                <option value="">Select a backup to restore</option>
+              </select>
+              <button type="button" id="autoGearBackupRestore" disabled>Restore</button>
+            </div>
+            <p id="autoGearBackupEmpty" class="auto-gear-backup-empty" hidden>No automatic backups yet.</p>
+          </div>
         </div>
         <div id="autoGearEditor" class="auto-gear-editor" hidden>
           <div class="form-row">

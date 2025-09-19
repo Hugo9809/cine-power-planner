@@ -1138,27 +1138,20 @@ main.legal-content {
   gap: 8px;
 }
 
-.auto-gear-backup-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.auto-gear-backup-controls {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.auto-gear-backup-item {
+.auto-gear-backup-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 12px;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--border-radius);
-  background: var(--surface-color);
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.auto-gear-backup-meta {
+.auto-gear-backup-select {
   flex: 1;
   min-width: 0;
 }
@@ -1166,6 +1159,7 @@ main.legal-content {
 .auto-gear-backup-empty {
   font-style: italic;
   color: var(--muted-text-color, #666);
+  margin: 0;
 }
 
 .auto-gear-rule {

@@ -363,8 +363,10 @@ describe('applyAutoGearRulesToTableHtml', () => {
       ])
     );
 
-    const backupButtons = document.querySelectorAll('#autoGearBackupList button[data-backup-id]');
-    expect(backupButtons.length).toBeGreaterThan(0);
+    const backupSelect = document.getElementById('autoGearBackupSelect');
+    expect(backupSelect).not.toBeNull();
+    const backupOptions = Array.from(backupSelect.options).filter(option => option.value);
+    expect(backupOptions.length).toBeGreaterThan(0);
 
     jest.useRealTimers();
   });
@@ -399,11 +401,17 @@ describe('applyAutoGearRulesToTableHtml', () => {
     editorName.value = 'Backup modified';
     document.getElementById('autoGearSaveRule').click();
 
-    const backupButton = document.querySelector('#autoGearBackupList button[data-backup-id]');
-    expect(backupButton).not.toBeNull();
+    const backupSelect = document.getElementById('autoGearBackupSelect');
+    const backupRestoreButton = document.getElementById('autoGearBackupRestore');
+    expect(backupSelect).not.toBeNull();
+    expect(backupRestoreButton).not.toBeNull();
+    const selectableOption = Array.from(backupSelect.options).find(option => option.value);
+    expect(selectableOption).toBeDefined();
+    backupSelect.value = selectableOption.value;
+    backupSelect.dispatchEvent(new Event('change'));
     const originalConfirm = window.confirm;
     window.confirm = jest.fn(() => true);
-    backupButton.click();
+    backupRestoreButton.click();
     window.confirm = originalConfirm;
 
     const storedRules = JSON.parse(localStorage.getItem(STORAGE_KEY));
