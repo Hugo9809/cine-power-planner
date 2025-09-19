@@ -9,9 +9,10 @@ describe('device manager details', () => {
   });
 
   function openDetails(name) {
-    const item = Array.from(document.querySelectorAll('#cameraList li')).find(li =>
-      li.querySelector('.device-summary span')?.textContent.includes(name)
-    );
+    const item = Array.from(document.querySelectorAll('.device-ul li')).find(li => {
+      const summary = li.querySelector('.device-summary');
+      return summary?.textContent.includes(name);
+    });
     expect(item).toBeTruthy();
     item.querySelector('.detail-toggle').click();
     const details = item.querySelector('.device-details');

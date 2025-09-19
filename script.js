@@ -1801,7 +1801,7 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  deleteSetupBtn.innerHTML = `<span class="btn-icon" aria-hidden="true">🗑️</span>${texts[lang].deleteSetupBtn}`;
+  deleteSetupBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.trash}</span>${texts[lang].deleteSetupBtn}`;
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
@@ -2564,7 +2564,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
   }
   if (resetViewBtn) {
-    resetViewBtn.innerHTML = `<span class="btn-icon" aria-hidden="true">🔄</span>${texts[lang].resetViewBtn}`;
+    resetViewBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.reload}</span>${texts[lang].resetViewBtn}`;
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
@@ -2805,28 +2805,59 @@ const crewRoles = [
   'Rigging Grip'
 ];
 
+const ICON_GLYPHS = Object.freeze({
+  batteryBolt: '\uE1A6',
+  batteryFull: '\uE1A5',
+  bolt: '\uE212',
+  plug: '\uEE71',
+  sliders: '\uF0D1',
+  screen: '\uEFFC',
+  brightness: '\uEB43',
+  wifi: '\uF4AC',
+  gears: '\uE8AF',
+  controller: '\uE898',
+  distance: '\uEFB9',
+  viewfinder: '\uE338',
+  camera: '\uE333',
+  trash: '\uF32D',
+  reload: '\uE11B',
+  timecode: '\uF1CD',
+  audioIn: '\uEC2E',
+  audioOut: '\uF44C',
+  note: '\uECF6',
+  pin: '\uEBCB',
+  sun: '\uF1F7',
+  moon: '\uEC7E',
+  unicorn: '\uF38D',
+  horse: '\uE9E1',
+  circleX: '\uE453',
+  circleStar: '\uE445',
+  star: '\uF1A9',
+  warning: '\uF340'
+});
+
 const projectFieldIcons = {
-  productionCompany: '🏢',
-  rentalHouse: '🏬',
-  crew: '👥',
-  prepDays: '📅',
-  shootingDays: '🎬',
-  deliveryResolution: '📺',
-  recordingResolution: '📹',
-  aspectRatio: '🖼️',
-  codec: '💾',
-  baseFrameRate: '⏱️',
-  sensorMode: '🔍',
-  requiredScenarios: '🌄',
-  lenses: '💎',
-  cameraHandle: '🛠️',
-  viewfinderExtension: '🔭',
-  gimbal: '🌀',
-  monitoringSupport: '🧰',
-  monitoringConfiguration: '🎛️',
-  monitorUserButtons: '🔘',
-  cameraUserButtons: '🔘',
-  viewfinderUserButtons: '🔘'
+  productionCompany: '\uE2D5',
+  rentalHouse: '\uE9F6',
+  crew: '\uF404',
+  prepDays: '\uE30C',
+  shootingDays: '\uE45B',
+  deliveryResolution: ICON_GLYPHS.screen,
+  recordingResolution: ICON_GLYPHS.camera,
+  aspectRatio: '\uE86E',
+  codec: '\uE7A6',
+  baseFrameRate: ICON_GLYPHS.timecode,
+  sensorMode: '\uF016',
+  requiredScenarios: '\uEC90',
+  lenses: '\uE8B0',
+  cameraHandle: ICON_GLYPHS.gears,
+  viewfinderExtension: '\uF25F',
+  gimbal: '\uEA9C',
+  monitoringSupport: '\uF2DC',
+  monitoringConfiguration: ICON_GLYPHS.sliders,
+  monitorUserButtons: '\uEF14',
+  cameraUserButtons: '\uEF14',
+  viewfinderUserButtons: '\uEF14'
 };
 
 function createCrewRow(data = {}) {
@@ -6179,7 +6210,7 @@ const diagramCssLight = `
 .node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:20px;}
+.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
@@ -6197,6 +6228,7 @@ const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
+.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
@@ -6216,16 +6248,15 @@ function getDiagramCss(includeDark = true) {
 // Icons for setup diagram nodes
 
 const diagramIcons = {
-  battery: "\uD83D\uDD0B", // 🔋 battery
-  camera: "\uD83C\uDFA5", // 🎥 camera
-  monitor: "\uD83D\uDDA5\uFE0F", // 🖥️ monitor
-  viewfinder: "\uD83D\uDC41\uFE0F", // 👁️ viewfinder
-  video: "\uD83D\uDCE1", // 📡 wireless video
-  motors: "\u2699\uFE0F", // ⚙️ lens motor
-  controllers: "\uD83C\uDFAE", // 🎮 game controller
-  handle: "\uD83C\uDFAE", // 🎮 handle/grip (same icon as controller)
-  // Using a triangular ruler to represent a distance measuring device.
-  distance: "\uD83D\uDCD0" // 📐 distance sensor
+  battery: ICON_GLYPHS.batteryBolt,
+  camera: ICON_GLYPHS.camera,
+  monitor: ICON_GLYPHS.screen,
+  viewfinder: ICON_GLYPHS.viewfinder,
+  video: ICON_GLYPHS.wifi,
+  motors: ICON_GLYPHS.gears,
+  controllers: ICON_GLYPHS.controller,
+  handle: ICON_GLYPHS.controller,
+  distance: ICON_GLYPHS.distance
 };
 
 // Map overview section keys to diagram icons
@@ -7859,9 +7890,11 @@ function getTimecodes() {
     const favVals = getFavoriteValues(selectElem.id);
     const val = selectElem.value;
     const isFav = favVals.includes(val);
-    selectElem._favButton.textContent = isFav ? '★' : '☆';
+    const glyph = isFav ? ICON_GLYPHS.star : ICON_GLYPHS.circleStar;
+    selectElem._favButton.innerHTML = iconMarkup(glyph, 'favorite-icon');
     selectElem._favButton.classList.toggle('favorited', isFav);
     selectElem._favButton.disabled = val === 'None';
+    selectElem._favButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
   }
 
   function toggleFavorite(selectElem) {
@@ -7919,7 +7952,8 @@ function getTimecodes() {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'favorite-toggle';
-      btn.textContent = '☆';
+      btn.innerHTML = iconMarkup(ICON_GLYPHS.circleStar, 'favorite-icon');
+      btn.setAttribute('aria-pressed', 'false');
       btn.addEventListener('click', () => toggleFavorite(selectElem));
       let wrapper = selectElem.parentElement;
       if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
@@ -8068,8 +8102,8 @@ function addInputClearButton(inputElem, callback) {
   const label = (texts[currentLang] && texts[currentLang].clearFilter) || "Clear filter";
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.textContent = "\u00D7";
   btn.className = "clear-input-btn";
+  btn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'clear-icon');
   btn.setAttribute("aria-label", label);
   btn.title = label;
   btn.hidden = true;
@@ -11394,6 +11428,11 @@ function summarizeByType(list) {
     }, {});
 }
 
+function iconMarkup(glyph, className = 'info-icon') {
+    if (!glyph) return '';
+    return `<span class="${className} icon-glyph" aria-hidden="true">${glyph}</span>`;
+}
+
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
     if (!Array.isArray(items) || items.length === 0) return '';
     const counts = summarizeByType(items);
@@ -11402,7 +11441,8 @@ function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = ''
     });
     if (!entries.length) return '';
     const prefix = label ? `${label}${dir ? ` ${dir}` : ''}: ` : '';
-    return `<span class="connector-block ${cls}">${icon} ${prefix}${entries.join(', ')}</span>`;
+    const iconHtml = iconMarkup(icon, 'connector-icon');
+    return `<span class="connector-block ${cls}">${iconHtml}${prefix}${entries.join(', ')}</span>`;
 }
 
 function generateConnectorSummary(device) {
@@ -11410,15 +11450,15 @@ function generateConnectorSummary(device) {
 
     let portHtml = '';
     const connectors = [
-        { items: device.power?.powerDistributionOutputs, icon: '⚡', cls: 'power-conn', label: 'Power', dir: 'Out' },
-        { items: powerInputTypes(device).map(t => ({ type: t })), icon: '🔌', cls: 'power-conn', label: 'Power', dir: 'In' },
-        { items: device.fizConnectors, icon: '🎚️', cls: 'fiz-conn', label: 'FIZ Port' },
-        { items: device.video?.inputs || device.videoInputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'In' },
-        { items: device.video?.outputs || device.videoOutputs, icon: '📺', cls: 'video-conn', label: 'Video', dir: 'Out' },
-        { items: device.timecode, icon: '⏱️', cls: 'neutral-conn', label: 'Timecode' },
-        { items: device.audioInput?.portType ? [{ type: device.audioInput.portType }] : undefined, icon: '🎤', cls: 'neutral-conn', label: 'Audio', dir: 'In' },
-        { items: device.audioOutput?.portType ? [{ type: device.audioOutput.portType }] : undefined, icon: '🔊', cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
-        { items: device.audioIo?.portType ? [{ type: device.audioIo.portType }] : undefined, icon: '🎚️', cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
+        { items: device.power?.powerDistributionOutputs, icon: ICON_GLYPHS.bolt, cls: 'power-conn', label: 'Power', dir: 'Out' },
+        { items: powerInputTypes(device).map(t => ({ type: t })), icon: ICON_GLYPHS.plug, cls: 'power-conn', label: 'Power', dir: 'In' },
+        { items: device.fizConnectors, icon: ICON_GLYPHS.sliders, cls: 'fiz-conn', label: 'FIZ Port' },
+        { items: device.video?.inputs || device.videoInputs, icon: ICON_GLYPHS.screen, cls: 'video-conn', label: 'Video', dir: 'In' },
+        { items: device.video?.outputs || device.videoOutputs, icon: ICON_GLYPHS.screen, cls: 'video-conn', label: 'Video', dir: 'Out' },
+        { items: device.timecode, icon: ICON_GLYPHS.timecode, cls: 'neutral-conn', label: 'Timecode' },
+        { items: device.audioInput?.portType ? [{ type: device.audioInput.portType }] : undefined, icon: ICON_GLYPHS.audioIn, cls: 'neutral-conn', label: 'Audio', dir: 'In' },
+        { items: device.audioOutput?.portType ? [{ type: device.audioOutput.portType }] : undefined, icon: ICON_GLYPHS.audioOut, cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
+        { items: device.audioIo?.portType ? [{ type: device.audioIo.portType }] : undefined, icon: ICON_GLYPHS.sliders, cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
     ];
 
     for (const { items, icon, cls, label, dir } of connectors) {
@@ -11427,13 +11467,13 @@ function generateConnectorSummary(device) {
 
     let specHtml = '';
     if (typeof device.powerDrawWatts === 'number') {
-        specHtml += `<span class="info-box power-conn">⚡ Power: ${device.powerDrawWatts} W</span>`;
+        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.bolt)}Power: ${device.powerDrawWatts} W</span>`;
     }
     if (device.power?.input?.voltageRange) {
-        specHtml += `<span class="info-box power-conn">🔋 Voltage: ${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
+        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}Voltage: ${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
     }
     if (typeof device.capacity === 'number') {
-        specHtml += `<span class="info-box power-conn">🔋 Capacity: ${device.capacity} Wh</span>`;
+        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}Capacity: ${device.capacity} Wh</span>`;
     }
     if (typeof device.pinA === 'number') {
         specHtml += `<span class="info-box power-conn">Pins: ${device.pinA}A</span>`;
@@ -11445,22 +11485,22 @@ function generateConnectorSummary(device) {
         specHtml += `<span class="info-box power-conn">Mount: ${escapeHtml(String(device.mount_type))}</span>`;
     }
     if (typeof device.screenSizeInches === 'number') {
-        specHtml += `<span class="info-box video-conn">📐 Screen: ${device.screenSizeInches}"</span>`;
+        specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.screen)}Screen: ${device.screenSizeInches}"</span>`;
     }
     if (typeof device.brightnessNits === 'number') {
-        specHtml += `<span class="info-box video-conn">💡 Brightness: ${device.brightnessNits} nits</span>`;
+        specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.brightness)}Brightness: ${device.brightnessNits} nits</span>`;
     }
     if (typeof device.wirelessTx === 'boolean') {
-        specHtml += `<span class="info-box video-conn">📡 Wireless: ${device.wirelessTx}</span>`;
+        specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.wifi)}Wireless: ${device.wirelessTx}</span>`;
     }
     if (device.internalController) {
-        specHtml += `<span class="info-box fiz-conn">🎛️ Controller: Internal</span>`;
+        specHtml += `<span class="info-box fiz-conn">${iconMarkup(ICON_GLYPHS.controller)}Controller: Internal</span>`;
     }
     if (typeof device.torqueNm === 'number') {
-        specHtml += `<span class="info-box fiz-conn">⚙️ Torque: ${device.torqueNm} Nm</span>`;
+        specHtml += `<span class="info-box fiz-conn">${iconMarkup(ICON_GLYPHS.gears)}Torque: ${device.torqueNm} Nm</span>`;
     }
     if (device.powerSource) {
-        specHtml += `<span class="info-box power-conn">🔌 Power Source: ${escapeHtml(String(device.powerSource))}</span>`;
+        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.plug)}Power Source: ${escapeHtml(String(device.powerSource))}</span>`;
     }
 
     let extraHtml = '';
@@ -12767,7 +12807,8 @@ function generateGearListHtml(info = {}) {
         infoEntries.map(([k, v]) => {
             const value = escapeHtml(v).replace(/\n/g, '<br>');
             const label = projectLabels[k] || k;
-            return `<div class="requirement-box" data-field="${k}"><span class="req-icon">${projectFieldIcons[k] || ''}</span><span class="req-label">${escapeHtml(label)}</span><span class="req-value">${value}</span></div>`;
+            const iconHtml = iconMarkup(projectFieldIcons[k], 'req-icon');
+            return `<div class="requirement-box" data-field="${k}">${iconHtml}<span class="req-label">${escapeHtml(label)}</span><span class="req-value">${value}</span></div>`;
         }).join('') + '</div>' : '';
     const requirementsHeading = projectFormTexts.heading || 'Project Requirements';
     const infoHtml = infoEntries.length ? `<h3>${escapeHtml(requirementsHeading)}</h3>${boxesHtml}` : '';
@@ -12928,7 +12969,7 @@ function generateGearListHtml(info = {}) {
     const cageRodTypes = cageRod ? (Array.isArray(cageRod) ? cageRod : [cageRod]) : [];
     requiredRodTypes.forEach(rt => {
         if (cageRodTypes.length && !cageRodTypes.includes(rt)) {
-            lensSupportItems.push(`⚠️ cage incompatible with ${rt} rods`);
+            lensSupportItems.push(`${ICON_GLYPHS.warning}\u00A0cage incompatible with ${rt} rods`);
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
@@ -14330,6 +14371,19 @@ function updateThemeColor(isDark) {
   }
 }
 
+function setToggleIcon(button, glyph) {
+  if (!button) return;
+  let iconSpan = button.querySelector('.icon-glyph');
+  if (!iconSpan) {
+    iconSpan = document.createElement('span');
+    iconSpan.className = 'icon-glyph';
+    iconSpan.setAttribute('aria-hidden', 'true');
+    button.textContent = '';
+    button.appendChild(iconSpan);
+  }
+  iconSpan.textContent = glyph;
+}
+
 function applyDarkMode(enabled) {
   if (enabled) {
     document.body.classList.add("dark-mode");
@@ -14337,7 +14391,7 @@ function applyDarkMode(enabled) {
     document.body.classList.remove("light-mode");
     document.documentElement.classList.remove("light-mode");
     if (darkModeToggle) {
-      darkModeToggle.textContent = "☀️";
+      setToggleIcon(darkModeToggle, ICON_GLYPHS.sun);
       darkModeToggle.setAttribute("aria-pressed", "true");
     }
   } else {
@@ -14346,7 +14400,7 @@ function applyDarkMode(enabled) {
     document.body.classList.add("light-mode");
     document.documentElement.classList.add("light-mode");
     if (darkModeToggle) {
-      darkModeToggle.textContent = "🌙";
+      setToggleIcon(darkModeToggle, ICON_GLYPHS.moon);
       darkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
@@ -14426,7 +14480,7 @@ function applyPinkMode(enabled) {
       document.body.style.removeProperty('--link-color');
     }
     if (pinkModeToggle) {
-      pinkModeToggle.textContent = "🦄";
+      setToggleIcon(pinkModeToggle, ICON_GLYPHS.unicorn);
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
   } else {
@@ -14436,7 +14490,7 @@ function applyPinkMode(enabled) {
     }
     applyAccentColor(accentColor);
     if (pinkModeToggle) {
-      pinkModeToggle.textContent = "🐴";
+      setToggleIcon(pinkModeToggle, ICON_GLYPHS.horse);
       pinkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
@@ -15897,31 +15951,31 @@ if (helpButton && helpDialog) {
 
 
 const scenarioIcons = {
-  Indoor: '🏠',
-  Outdoor: '🌳',
-  Studio: '🎬',
-  Tripod: '🎥',
-  Handheld: '✋',
-  Easyrig: '🎒',
-  'Cine Saddle': '💺',
-  Steadybag: '👜',
-  Dolly: '🛞',
-  Slider: '📏',
-  Steadicam: '🏃',
-  Gimbal: '🌀',
-  Trinity: '♾️',
-  Rollcage: '🛡️',
-  'Car Mount': '🚗',
-  Jib: '🪝',
-  'Undersling mode': '⬇️',
-  Crane: '🏗️',
-  'Remote Head': '🎮',
-  'Extreme cold (snow)': '❄️',
-  'Extreme rain': '🌧️',
-  'Extreme heat': '🔥',
-  'Rain Machine': '🚿',
-  'Slow Motion': '🐌',
-  'Battery Belt': '🔋'
+  Indoor: '\uEA03',
+  Outdoor: '\uF334',
+  Studio: '\uE45B',
+  Tripod: ICON_GLYPHS.camera,
+  Handheld: '\uE93B',
+  Easyrig: '\uE15B',
+  'Cine Saddle': '\uF01B',
+  Steadybag: '\uE925',
+  Dolly: '\uE668',
+  Slider: '\uE112',
+  Steadicam: '\uEFBD',
+  Gimbal: '\uEA9C',
+  Trinity: '\uEA4E',
+  Rollcage: '\uF04C',
+  'Car Mount': '\uE35B',
+  Jib: '\uE553',
+  'Undersling mode': '\uE0D8',
+  Crane: '\uE554',
+  'Remote Head': ICON_GLYPHS.controller,
+  'Extreme cold (snow)': '\uF0FB',
+  'Extreme rain': '\uE4A6',
+  'Extreme heat': '\uE80F',
+  'Rain Machine': '\uF153',
+  'Slow Motion': '\uF373',
+  'Battery Belt': ICON_GLYPHS.batteryBolt
 };
 
 function updateSelectIconBoxes(sel) {
@@ -15940,8 +15994,8 @@ function updateSelectIconBoxes(sel) {
     const box = document.createElement('span');
     box.className = 'icon-box';
     const iconSpan = document.createElement('span');
-    iconSpan.className = 'icon';
-    iconSpan.textContent = opt.dataset.icon || projectFieldIcons[sel.name] || '📌';
+    iconSpan.className = 'icon icon-glyph';
+    iconSpan.textContent = opt.dataset.icon || projectFieldIcons[sel.name] || ICON_GLYPHS.pin;
     box.appendChild(iconSpan);
     box.appendChild(document.createTextNode(opt.value));
     container.appendChild(box);
@@ -15996,8 +16050,8 @@ function updateRequiredScenariosSummary() {
     const box = document.createElement('span');
     box.className = 'scenario-box';
     const iconSpan = document.createElement('span');
-    iconSpan.className = 'scenario-icon';
-    iconSpan.textContent = scenarioIcons[val] || '📌';
+    iconSpan.className = 'scenario-icon icon-glyph';
+    iconSpan.textContent = scenarioIcons[val] || ICON_GLYPHS.pin;
     box.appendChild(iconSpan);
     box.appendChild(document.createTextNode(val));
     requiredScenariosSummary.appendChild(box);
