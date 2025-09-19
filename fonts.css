@@ -54,3 +54,36 @@
   font-display: swap;
   src: url('Ubuntu/Ubuntu-BoldItalic.ttf') format('truetype');
 }
+
+:root {
+  --font-family: 'Ubuntu', 'uicons-thin-straight', sans-serif;
+  --font-family-heading: 'Ubuntu', sans-serif;
+
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --font-size-2xs: 0.75em;
+  --font-size-xs: 0.8em;
+  --font-size-sm: 0.85em;
+  --font-size-md: 0.9em;
+  --font-size-base: 1em;
+  --font-size-root: 1rem;
+  --font-size-lg: 1.1em;
+  --font-size-xl: 1.2em;
+  --font-size-2xl: 1.4em;
+  --font-size-3xl: 1.5em;
+  --font-size-4xl: 1.8em;
+
+  --font-size-label: 0.95rem;
+  --font-size-label-sm: 0.85rem;
+  --font-size-meta: 0.9rem;
+  --font-size-tooltip: 0.8rem;
+  --font-size-print-base: 12pt;
+
+  --font-size-fixed-xs: 10px;
+  --font-size-fixed-sm: 12px;
+  --font-size-fixed-lg: 20px;
+}

@@ -7973,13 +7973,13 @@ const diagramCssLight = `
 .node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:var(--font-size-fixed-lg);font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
 .conn.green{fill:#090;}
 text{font-family:system-ui,sans-serif;}
-.edge-label{font-size:10px;}
+.edge-label{font-size:var(--font-size-fixed-xs);}
 line{stroke:#333;stroke-width:2px;}
 path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
 path.power{stroke:#d33;}
@@ -7991,7 +7991,7 @@ const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:var(--font-size-fixed-lg);font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
@@ -11317,11 +11317,11 @@ function renderSetupDiagram() {
 
     if (icon) {
       svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
-      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
+      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="var(--font-size-fixed-xs)">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     } else {
-      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">`;
+      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="var(--font-size-fixed-sm)">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
     }
