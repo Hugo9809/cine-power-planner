@@ -14,7 +14,7 @@ body { font-family: 'Ubuntu', sans-serif; font-weight: var(--font-weight-light);
 }
 h1, h2, h3 { font-family: 'Ubuntu', sans-serif; font-weight: var(--font-weight-regular); color: var(--accent-color); }
 h1 { font-size: calc(var(--font-size-relative-base) * var(--font-scale-display)); margin-bottom: 0.2em; }
-h2 { font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl)); margin-top: 1.3em; border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; }
+h2 { font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl)); margin-top: 1.3em; border-bottom: 1px solid var(--accent-color); padding-bottom: 5px; }
 h3 { font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg)); margin-top: 1em; }
 p { line-height: var(--line-height-base, 1.6); }
 ul { list-style: none; margin: 5px 0; padding-left: 0; }
@@ -177,7 +177,7 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 @media (prefers-color-scheme: dark) {
   body { background-color: var(--background-color); color: var(--text-color); }
   h1, h2, h3 { color: var(--inverse-text-color); }
-  h2 { border-bottom: 2px solid var(--inverse-text-color); }
+  h2 { border-bottom: 1px solid var(--inverse-text-color); }
   th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); }
   .print-btn, .back-btn { background: var(--control-bg); color: var(--text-color); }
   .device-category { background: var(--panel-bg); border-color: var(--panel-border); box-shadow: var(--panel-shadow); }

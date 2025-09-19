@@ -297,7 +297,7 @@ h1 {
 h2 {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   margin-top: 1.3em;
-  border-bottom: 2px solid var(--text-color);
+  border-bottom: 1px solid var(--text-color);
 }
 
 body.pink-mode:not(.dark-mode) h1,
@@ -307,7 +307,7 @@ body.pink-mode:not(.dark-mode) h3 {
 }
 
 body.pink-mode:not(.dark-mode) h2 {
-  border-bottom: 2px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
 }
 h3 {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
@@ -3196,7 +3196,7 @@ body.dark-mode {
   color: var(--inverse-text-color);
 }
 .dark-mode h2 {
-  border-bottom: 2px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
 }
 body.dark-mode.pink-mode h1,
 body.dark-mode.pink-mode h2,
@@ -3208,7 +3208,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) h3 {
 }
 body.dark-mode.pink-mode h2,
 body.dark-mode.dark-accent-boost:not(.pink-mode) h2 {
-  border-bottom: 2px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
 }
 
 body.dark-mode.pink-mode {
@@ -3310,7 +3310,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
     color: var(--inverse-text-color);
   }
   body:not(.light-mode) h2 {
-    border-bottom: 2px solid var(--inverse-text-color);
+    border-bottom: 1px solid var(--inverse-text-color);
   }
   body:not(.light-mode).pink-mode h1,
   body:not(.light-mode).pink-mode h2,
@@ -3322,7 +3322,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   }
   body:not(.light-mode).pink-mode h2,
   body:not(.light-mode).dark-accent-boost:not(.pink-mode) h2 {
-    border-bottom: 2px solid var(--accent-color);
+    border-bottom: 1px solid var(--accent-color);
   }
   body:not(.light-mode) fieldset { border-color: var(--inverse-text-color); }
   body:not(.light-mode) legend { color: var(--inverse-text-color); }
@@ -3594,7 +3594,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
 #overviewDialogContent h2 {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   margin-top: 1.3em;
-  border-bottom: 2px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
   padding-bottom: 5px;
 }
 #overviewDialogContent h3 {
@@ -3694,7 +3694,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   color: var(--accent-color);
 }
 #overviewDialogContent.dark-mode h2 {
-  border-bottom: 2px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
 }
 #overviewDialogContent.dark-mode th {
   background-color: var(--control-bg);
@@ -3840,7 +3840,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
 }
 
 #gearListOutput h2 {
-  border-bottom: 2px solid var(--accent-color);
+  border-bottom: 1px solid var(--accent-color);
 }
 
 .dark-mode #gearListOutput h1,
@@ -3854,7 +3854,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
 
 .dark-mode #gearListOutput h2,
 #gearListOutput.dark-mode h2 {
-  border-bottom: 2px solid var(--inverse-text-color);
+  border-bottom: 1px solid var(--inverse-text-color);
 }
 
 #filterDetails {
