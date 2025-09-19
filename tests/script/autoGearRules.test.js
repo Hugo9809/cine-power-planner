@@ -230,7 +230,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     );
   });
 
-  test('changing the shared import mode reapplies shared rules', () => {
+  test('confirming the shared import mode applies shared rules', () => {
     env = setupScriptEnvironment();
     env.utils.syncAutoGearRulesFromStorage([]);
 
@@ -238,6 +238,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const sharedLinkInput = document.getElementById('sharedLinkInput');
     const sharedImportModeSelect = document.getElementById('sharedImportModeSelect');
     const sharedImportModeGlobalOption = document.getElementById('sharedImportModeGlobalOption');
+    const sharedImportDialog = document.getElementById('sharedImportDialog');
+    const sharedImportConfirmBtn = document.getElementById('sharedImportConfirmBtn');
 
     const sharedRule = {
       id: 'shared-rule',
@@ -272,6 +274,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     applySharedLinkBtn.click();
 
+    expect(sharedImportDialog.hasAttribute('open')).toBe(true);
     expect(sharedImportModeGlobalOption.disabled).toBe(false);
     const storedBeforeChange = localStorage.getItem('cameraPowerPlanner_autoGearRules');
     expect(storedBeforeChange).not.toBeNull();
@@ -281,7 +284,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
       option.selected = option.value === 'global';
     });
 
-    sharedImportModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    sharedImportConfirmBtn.click();
 
     const stored = JSON.parse(localStorage.getItem('cameraPowerPlanner_autoGearRules'));
     expect(stored).toHaveLength(1);
