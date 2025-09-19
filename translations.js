@@ -139,6 +139,15 @@ const texts = {
     autoGearSaveRule: "Save rule",
     autoGearRuleSaved: "Automatic gear rule saved.",
     autoGearCancelEdit: "Cancel",
+    autoGearResetFactoryButton: "Reset to factory additions",
+    autoGearResetFactoryHelp:
+      "Restore the automatic gear rules generated from the planner's default scenarios.",
+    autoGearResetFactoryConfirm:
+      "Replace your automatic gear rules with the default additions?",
+    autoGearResetFactoryDone: "Automatic gear rules restored to factory additions.",
+    autoGearResetFactoryEmpty:
+      "Factory additions unavailable. Automatic gear rules cleared.",
+    autoGearResetFactoryError: "Reset failed. Please try again.",
     autoGearAddsCountOne: "%s addition",
     autoGearAddsCountOther: "%s additions",
     autoGearRemovalsCountOne: "%s removal",
@@ -1196,6 +1205,16 @@ const texts = {
     autoGearSaveRule: "Salva regola",
     autoGearRuleSaved: "Regola automatica dell'attrezzatura salvata.",
     autoGearCancelEdit: "Annulla",
+    autoGearResetFactoryButton: "Ripristina aggiunte di fabbrica",
+    autoGearResetFactoryHelp:
+      "Ripristina le regole automatiche generate dagli scenari predefiniti del planner.",
+    autoGearResetFactoryConfirm:
+      "Sostituire le regole automatiche con le aggiunte predefinite?",
+    autoGearResetFactoryDone:
+      "Regole automatiche ripristinate alle aggiunte di fabbrica.",
+    autoGearResetFactoryEmpty:
+      "Nessuna aggiunta di fabbrica disponibile. Regole automatiche azzerate.",
+    autoGearResetFactoryError: "Ripristino non riuscito. Riprova.",
     autoGearAddsCountOne: "%s aggiunta",
     autoGearAddsCountOther: "%s aggiunte",
     autoGearRemovalsCountOne: "%s rimozione",
@@ -1871,6 +1890,16 @@ const texts = {
     autoGearSaveRule: "Guardar regla",
     autoGearRuleSaved: "Regla automática de equipamiento guardada.",
     autoGearCancelEdit: "Cancelar",
+    autoGearResetFactoryButton: "Restablecer a adiciones de fábrica",
+    autoGearResetFactoryHelp:
+      "Restaura las reglas automáticas generadas a partir de los escenarios predeterminados del planificador.",
+    autoGearResetFactoryConfirm:
+      "¿Reemplazar tus reglas automáticas con las adiciones predeterminadas?",
+    autoGearResetFactoryDone:
+      "Reglas automáticas restablecidas a las adiciones de fábrica.",
+    autoGearResetFactoryEmpty:
+      "No hay adiciones de fábrica disponibles. Las reglas automáticas se han borrado.",
+    autoGearResetFactoryError: "Error al restablecer. Inténtalo de nuevo.",
     autoGearAddsCountOne: "%s adición",
     autoGearAddsCountOther: "%s adiciones",
     autoGearRemovalsCountOne: "%s eliminación",
@@ -2548,6 +2577,16 @@ const texts = {
     autoGearSaveRule: "Enregistrer la règle",
     autoGearRuleSaved: "Règle automatique d’équipement enregistrée.",
     autoGearCancelEdit: "Annuler",
+    autoGearResetFactoryButton: "Réinitialiser aux ajouts d’usine",
+    autoGearResetFactoryHelp:
+      "Restaure les règles automatiques générées depuis les scénarios par défaut du planificateur.",
+    autoGearResetFactoryConfirm:
+      "Remplacer vos règles automatiques par les ajouts par défaut ?",
+    autoGearResetFactoryDone:
+      "Règles automatiques rétablies aux ajouts d’usine.",
+    autoGearResetFactoryEmpty:
+      "Aucun ajout d’usine disponible. Les règles automatiques ont été effacées.",
+    autoGearResetFactoryError: "La réinitialisation a échoué. Veuillez réessayer.",
     autoGearAddsCountOne: "%s ajout",
     autoGearAddsCountOther: "%s ajouts",
     autoGearRemovalsCountOne: "%s retrait",
@@ -3228,6 +3267,16 @@ const texts = {
     autoGearSaveRule: "Regel speichern",
     autoGearRuleSaved: "Automatische Gear-Regel gespeichert.",
     autoGearCancelEdit: "Abbrechen",
+    autoGearResetFactoryButton: "Auf Werks-Ergänzungen zurücksetzen",
+    autoGearResetFactoryHelp:
+      "Stellt die automatisch erzeugten Regeln aus den Standardszenarien des Planners wieder her.",
+    autoGearResetFactoryConfirm:
+      "Automatische Gear-Regeln durch die Standard-Ergänzungen ersetzen?",
+    autoGearResetFactoryDone:
+      "Automatische Gear-Regeln auf Werks-Ergänzungen zurückgesetzt.",
+    autoGearResetFactoryEmpty:
+      "Keine Werks-Ergänzungen verfügbar. Automatische Regeln wurden geleert.",
+    autoGearResetFactoryError: "Zurücksetzen fehlgeschlagen. Bitte erneut versuchen.",
     autoGearAddsCountOne: "%s Ergänzung",
     autoGearAddsCountOther: "%s Ergänzungen",
     autoGearRemovalsCountOne: "%s Entfernung",

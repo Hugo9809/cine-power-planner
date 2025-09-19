@@ -372,6 +372,23 @@ function markAutoGearDefaultsSeeded() {
   }
 }
 
+function clearAutoGearDefaultsSeeded() {
+  if (typeof saveAutoGearSeedFlag !== 'undefined' && typeof saveAutoGearSeedFlag === 'function') {
+    try {
+      saveAutoGearSeedFlag(false);
+      return;
+    } catch (error) {
+      console.warn('Failed to clear automatic gear seed flag', error);
+    }
+  }
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.removeItem(AUTO_GEAR_SEEDED_KEY);
+  } catch (error) {
+    console.warn('Failed to clear automatic gear seed flag', error);
+  }
+}
+
 function parseGearTableForAutoRules(html) {
   if (!html || typeof DOMParser !== 'function') return null;
   let doc;
@@ -500,6 +517,44 @@ function seedAutoGearRulesFromCurrentProject() {
   if (!rules.length) return;
   setAutoGearRules(rules);
   markAutoGearDefaultsSeeded();
+}
+
+function resetAutoGearRulesToFactoryAdditions() {
+  const langTexts = texts[currentLang] || texts.en || {};
+  const confirmation = langTexts.autoGearResetFactoryConfirm
+    || texts.en?.autoGearResetFactoryConfirm
+    || 'Replace your automatic gear rules with the default additions?';
+  if (typeof confirm === 'function' && !confirm(confirmation)) {
+    return;
+  }
+
+  try {
+    setAutoGearRules([]);
+    clearAutoGearDefaultsSeeded();
+    closeAutoGearEditor();
+    seedAutoGearRulesFromCurrentProject();
+    const updatedRules = getAutoGearRules();
+    renderAutoGearRulesList();
+    renderAutoGearDraftLists();
+    updateAutoGearCatalogOptions();
+    const messageKey = updatedRules.length
+      ? 'autoGearResetFactoryDone'
+      : 'autoGearResetFactoryEmpty';
+    const fallback = updatedRules.length
+      ? 'Automatic gear rules restored to factory additions.'
+      : 'Factory additions unavailable. Automatic gear rules cleared.';
+    const message = langTexts[messageKey]
+      || texts.en?.[messageKey]
+      || fallback;
+    const type = updatedRules.length ? 'success' : 'warning';
+    showNotification(type, message);
+  } catch (error) {
+    console.error('Failed to reset automatic gear rules to factory additions', error);
+    const errorMsg = langTexts.autoGearResetFactoryError
+      || texts.en?.autoGearResetFactoryError
+      || 'Reset failed. Please try again.';
+    showNotification('error', errorMsg);
+  }
 }
 
 function collectAutoGearCatalogNames() {
@@ -2421,6 +2476,18 @@ function setLanguage(lang) {
     const help = texts[lang].autoGearHeadingHelp || texts.en?.autoGearHeadingHelp || label;
     autoGearAddRuleBtn.setAttribute('data-help', help);
   }
+  if (autoGearResetFactoryButton) {
+    const label = texts[lang].autoGearResetFactoryButton
+      || texts.en?.autoGearResetFactoryButton
+      || autoGearResetFactoryButton.textContent;
+    const help = texts[lang].autoGearResetFactoryHelp
+      || texts.en?.autoGearResetFactoryHelp
+      || label;
+    autoGearResetFactoryButton.textContent = label;
+    autoGearResetFactoryButton.setAttribute('data-help', help);
+    autoGearResetFactoryButton.setAttribute('title', help);
+    autoGearResetFactoryButton.setAttribute('aria-label', label);
+  }
   if (autoGearRuleNameLabel) {
     const label = texts[lang].autoGearRuleNameLabel || texts.en?.autoGearRuleNameLabel || autoGearRuleNameLabel.textContent;
     autoGearRuleNameLabel.textContent = label;
@@ -4210,6 +4277,7 @@ const autoGearHeadingElem = document.getElementById('autoGearHeading');
 const autoGearDescriptionElem = document.getElementById('autoGearDescription');
 const autoGearRulesList = document.getElementById('autoGearRulesList');
 const autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
+const autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
 const autoGearEditor = document.getElementById('autoGearEditor');
 const autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 const autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
@@ -15296,14 +15364,17 @@ if (settingsButton && settingsDialog) {
     }
   });
 
-  if (autoGearAddRuleBtn) {
-    autoGearAddRuleBtn.addEventListener('click', () => {
-      openAutoGearEditor();
-    });
-  }
-  if (autoGearAddItemButton) {
-    autoGearAddItemButton.addEventListener('click', () => addAutoGearDraftItem('add'));
-  }
+if (autoGearAddRuleBtn) {
+  autoGearAddRuleBtn.addEventListener('click', () => {
+    openAutoGearEditor();
+  });
+}
+if (autoGearResetFactoryButton) {
+  autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesToFactoryAdditions);
+}
+if (autoGearAddItemButton) {
+  autoGearAddItemButton.addEventListener('click', () => addAutoGearDraftItem('add'));
+}
   if (autoGearRemoveItemButton) {
     autoGearRemoveItemButton.addEventListener('click', () => addAutoGearDraftItem('remove'));
   }

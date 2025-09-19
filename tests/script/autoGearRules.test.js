@@ -5,6 +5,13 @@ const STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 describe('applyAutoGearRulesToTableHtml', () => {
   let env;
 
+  const stripRuleIds = rule => ({
+    label: rule.label,
+    scenarios: rule.scenarios,
+    add: rule.add.map(({ name, category, quantity }) => ({ name, category, quantity })),
+    remove: rule.remove.map(({ name, category, quantity }) => ({ name, category, quantity })),
+  });
+
   afterEach(() => {
     env?.cleanup();
     localStorage.clear();
@@ -381,6 +388,46 @@ describe('applyAutoGearRulesToTableHtml', () => {
       window.URL.createObjectURL = originalCreateObjectURL;
       window.URL.revokeObjectURL = originalRevokeObjectURL;
       sessionStorage.clear();
+    }
+  });
+
+  test('resetting rules restores seeded factory additions', () => {
+    env = setupScriptEnvironment();
+
+    const resetButton = document.getElementById('autoGearResetFactory');
+    expect(resetButton).not.toBeNull();
+
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+
+    try {
+      resetButton.click();
+
+      const factoryRules = env.utils.getAutoGearRules();
+      const factoryNormalized = factoryRules.map(stripRuleIds);
+      expect(factoryNormalized.length).toBeGreaterThan(0);
+
+      const customRule = {
+        id: 'custom-reset-rule',
+        label: 'Extra rule',
+        scenarios: ['Handheld'],
+        add: [
+          { id: 'custom-item', name: 'Sandbag', category: 'Grip', quantity: 2 }
+        ],
+        remove: [],
+      };
+
+      env.utils.syncAutoGearRulesFromStorage([...factoryRules, customRule]);
+      expect(env.utils.getAutoGearRules().some(rule => rule.label === 'Extra rule')).toBe(true);
+
+      resetButton.click();
+
+      const finalRules = env.utils.getAutoGearRules();
+      expect(finalRules.some(rule => rule.label === 'Extra rule')).toBe(false);
+      expect(finalRules.map(stripRuleIds)).toEqual(factoryNormalized);
+      expect(localStorage.getItem('cameraPowerPlanner_autoGearSeeded')).toBe('1');
+      expect(confirmSpy).toHaveBeenCalledTimes(2);
+    } finally {
+      confirmSpy.mockRestore();
     }
   });
 });
