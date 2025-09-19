@@ -2031,6 +2031,7 @@ textarea:disabled {
   cursor: pointer;
   font-size: var(--font-size-base);
   color: var(--favorite-inactive-color);
+  --icon-color: currentColor;
   display: inline-flex;
   align-items: center;
   justify-content: center;
