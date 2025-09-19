@@ -2069,13 +2069,6 @@ function setLanguage(lang) {
     texts[lang].loadSharedLinkBtn,
     ICON_GLYPHS.load
   );
-  if (applySharedLinkBtn) {
-    const loadIcon = applySharedLinkBtn.querySelector('.icon-glyph');
-    if (loadIcon) {
-      loadIcon.classList.add('icon-svg');
-      loadIcon.innerHTML = LOAD_ICON_SVG;
-    }
-  }
 
   // Descriptive hover help for setup management controls
   setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
@@ -3407,6 +3400,47 @@ const FEEDBACK_ICON_SVG = `
   </svg>
 `.trim();
 
+const LOAD_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      d="M12 3v9.75"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <polyline
+      points="8.75 9.75 12 12.75 15.25 9.75"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M4.75 11.5H8.6L10.4 9h8.85L21 11.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <rect
+      x="4.75"
+      y="12.5"
+      width="14.5"
+      height="7.25"
+      rx="1.75"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`.trim();
+
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -3423,7 +3457,7 @@ const ICON_GLYPHS = Object.freeze({
   camera: iconGlyph('\uF12D', ICON_FONT_KEYS.FILM),
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
-  load: iconGlyph('\uF155', ICON_FONT_KEYS.ESSENTIAL),
+  load: Object.freeze({ markup: LOAD_ICON_SVG, className: 'icon-svg' }),
   save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
   share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
   magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
@@ -3461,39 +3495,6 @@ const HORSE_ICON_SVG = `
       fill="#cf976a"
     />
     <circle cx="41" cy="25" r="1.25" fill="#ecf0f1" />
-  </svg>
-`.trim();
-
-const LOAD_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path
-      d="M12 3v9"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M8.5 9.5 12 13l3.5-3.5"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <rect
-      x="5"
-      y="16"
-      width="14"
-      height="5"
-      rx="1"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
   </svg>
 `.trim();
 
