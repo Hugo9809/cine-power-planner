@@ -145,11 +145,36 @@
         <button id="shareSetupBtn">Share Project</button>
       </div>
     </div>
+    <div class="form-row form-row-actions share-options">
+      <span class="form-label-spacer" aria-hidden="true"></span>
+      <label id="shareIncludeAutoGearLabel" class="share-option">
+        <input type="checkbox" id="shareIncludeAutoGear" />
+        <span id="shareIncludeAutoGearText">Include automatic gear rules</span>
+      </label>
+    </div>
     <p id="shareLinkMessage" class="hidden" role="status" aria-live="polite"></p>
     <div class="form-row" id="sharedLinkRow">
       <label for="sharedLinkInput" id="sharedLinkLabel">Shared Project:</label>
       <input type="file" id="sharedLinkInput" accept=".json" aria-labelledby="sharedLinkLabel" />
       <button id="applySharedLinkBtn">Load</button>
+    </div>
+    <div class="form-row share-import-row">
+      <span class="form-label-spacer" aria-hidden="true"></span>
+      <fieldset id="sharedImportOptions" class="share-import-options">
+        <legend id="sharedImportLegend">Automatic gear rules</legend>
+        <label id="sharedImportModeNoneLabel" class="share-import-option">
+          <input type="radio" name="sharedImportMode" value="none" checked />
+          <span id="sharedImportModeNoneText">Don't import automatic gear rules</span>
+        </label>
+        <label id="sharedImportModeProjectLabel" class="share-import-option">
+          <input type="radio" name="sharedImportMode" value="project" />
+          <span id="sharedImportModeProjectText">Use shared rules for this project only</span>
+        </label>
+        <label id="sharedImportModeGlobalLabel" class="share-import-option">
+          <input type="radio" name="sharedImportMode" value="global" />
+          <span id="sharedImportModeGlobalText">Add shared rules to all projects</span>
+        </label>
+      </fieldset>
     </div>
     <div class="form-row form-row-actions">
       <span class="form-label-spacer" aria-hidden="true"></span>

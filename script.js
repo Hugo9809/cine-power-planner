@@ -218,6 +218,8 @@ function readAutoGearRulesFromStorage() {
 }
 
 let autoGearRules = readAutoGearRulesFromStorage();
+let baseAutoGearRules = autoGearRules.slice();
+let projectScopedAutoGearRules = null;
 
 function assignAutoGearRules(rules) {
   autoGearRules = Array.isArray(rules)
@@ -244,7 +246,9 @@ function persistAutoGearRules() {
 }
 
 function setAutoGearRules(rules) {
-  assignAutoGearRules(rules);
+  const normalized = assignAutoGearRules(rules);
+  baseAutoGearRules = normalized.slice();
+  projectScopedAutoGearRules = null;
   persistAutoGearRules();
 }
 
@@ -256,11 +260,77 @@ function syncAutoGearRulesFromStorage(rules) {
   if (Array.isArray(rules)) {
     setAutoGearRules(rules);
   } else {
-    assignAutoGearRules(readAutoGearRulesFromStorage());
+    baseAutoGearRules = readAutoGearRulesFromStorage();
+    projectScopedAutoGearRules = null;
+    assignAutoGearRules(baseAutoGearRules);
   }
   closeAutoGearEditor();
   renderAutoGearRulesList();
   updateAutoGearCatalogOptions();
+}
+
+function useProjectAutoGearRules(rules) {
+  if (Array.isArray(rules) && rules.length) {
+    projectScopedAutoGearRules = assignAutoGearRules(rules).slice();
+  } else {
+    projectScopedAutoGearRules = null;
+    assignAutoGearRules(baseAutoGearRules);
+  }
+}
+
+function clearProjectAutoGearRules() {
+  if (!projectScopedAutoGearRules || !projectScopedAutoGearRules.length) {
+    projectScopedAutoGearRules = null;
+    assignAutoGearRules(baseAutoGearRules);
+    return;
+  }
+  projectScopedAutoGearRules = null;
+  assignAutoGearRules(baseAutoGearRules);
+}
+
+function getProjectScopedAutoGearRules() {
+  return projectScopedAutoGearRules ? projectScopedAutoGearRules.slice() : null;
+}
+
+function usingProjectAutoGearRules() {
+  return Array.isArray(projectScopedAutoGearRules) && projectScopedAutoGearRules.length > 0;
+}
+
+function getBaseAutoGearRules() {
+  return baseAutoGearRules.slice();
+}
+
+function autoGearRuleSignature(rule) {
+  if (!rule || typeof rule !== 'object') return '';
+  const normalizeList = list => Array.isArray(list)
+    ? list.map(item => ({
+        name: typeof item.name === 'string' ? item.name : '',
+        category: typeof item.category === 'string' ? item.category : '',
+        quantity: normalizeAutoGearQuantity(item.quantity),
+      }))
+    : [];
+  return stableStringify({
+    label: typeof rule.label === 'string' ? rule.label : '',
+    scenarios: Array.isArray(rule.scenarios) ? rule.scenarios : [],
+    add: normalizeList(rule.add),
+    remove: normalizeList(rule.remove),
+  });
+}
+
+function mergeAutoGearRules(existing, incoming) {
+  const normalizedExisting = Array.isArray(existing)
+    ? existing.map(normalizeAutoGearRule).filter(Boolean)
+    : [];
+  const seen = new Set(normalizedExisting.map(autoGearRuleSignature));
+  (Array.isArray(incoming) ? incoming : []).forEach(rule => {
+    const normalized = normalizeAutoGearRule(rule);
+    if (!normalized) return;
+    const signature = autoGearRuleSignature(normalized);
+    if (seen.has(signature)) return;
+    normalizedExisting.push(normalized);
+    seen.add(signature);
+  });
+  return normalizedExisting;
 }
 
 function looksLikeGearName(name) {
@@ -1860,6 +1930,80 @@ function setLanguage(lang) {
   shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
   shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
 
+  if (shareIncludeAutoGearText) {
+    const label = texts[lang].shareIncludeAutoGearLabel
+      || texts.en?.shareIncludeAutoGearLabel
+      || shareIncludeAutoGearText.textContent;
+    shareIncludeAutoGearText.textContent = label;
+    const help = texts[lang].shareIncludeAutoGearHelp
+      || texts.en?.shareIncludeAutoGearHelp
+      || label;
+    if (shareIncludeAutoGearLabelElem) {
+      shareIncludeAutoGearLabelElem.setAttribute('data-help', help);
+    }
+    if (shareIncludeAutoGearCheckbox) {
+      shareIncludeAutoGearCheckbox.setAttribute('aria-label', label);
+    }
+  }
+
+  if (sharedImportLegend) {
+    const legend = texts[lang].sharedImportAutoGearLabel
+      || texts.en?.sharedImportAutoGearLabel
+      || sharedImportLegend.textContent;
+    sharedImportLegend.textContent = legend;
+    if (sharedImportOptions) {
+      sharedImportOptions.setAttribute('data-help', legend);
+    }
+  }
+  if (sharedImportModeNoneText) {
+    const label = texts[lang].sharedImportAutoGearNone
+      || texts.en?.sharedImportAutoGearNone
+      || sharedImportModeNoneText.textContent;
+    sharedImportModeNoneText.textContent = label;
+    const help = texts[lang].sharedImportAutoGearNoneHelp
+      || texts.en?.sharedImportAutoGearNoneHelp
+      || label;
+    if (sharedImportModeNoneLabel) {
+      sharedImportModeNoneLabel.setAttribute('data-help', help);
+    }
+    const noneRadio = sharedImportModeNoneLabel?.querySelector('input[type="radio"]');
+    if (noneRadio) {
+      noneRadio.setAttribute('aria-label', label);
+    }
+  }
+  if (sharedImportModeProjectText) {
+    const label = texts[lang].sharedImportAutoGearProject
+      || texts.en?.sharedImportAutoGearProject
+      || sharedImportModeProjectText.textContent;
+    sharedImportModeProjectText.textContent = label;
+    const help = texts[lang].sharedImportAutoGearProjectHelp
+      || texts.en?.sharedImportAutoGearProjectHelp
+      || label;
+    if (sharedImportModeProjectLabel) {
+      sharedImportModeProjectLabel.setAttribute('data-help', help);
+    }
+    const projectRadio = sharedImportModeProjectLabel?.querySelector('input[type="radio"]');
+    if (projectRadio) {
+      projectRadio.setAttribute('aria-label', label);
+    }
+  }
+  if (sharedImportModeGlobalText) {
+    const label = texts[lang].sharedImportAutoGearGlobal
+      || texts.en?.sharedImportAutoGearGlobal
+      || sharedImportModeGlobalText.textContent;
+    sharedImportModeGlobalText.textContent = label;
+    const help = texts[lang].sharedImportAutoGearGlobalHelp
+      || texts.en?.sharedImportAutoGearGlobalHelp
+      || label;
+    if (sharedImportModeGlobalLabel) {
+      sharedImportModeGlobalLabel.setAttribute('data-help', help);
+    }
+    const globalRadio = sharedImportModeGlobalLabel?.querySelector('input[type="radio"]');
+    if (globalRadio) {
+      globalRadio.setAttribute('aria-label', label);
+    }
+  }
+
   applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
   applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
 
@@ -3115,6 +3259,23 @@ const shareSetupBtn   = document.getElementById("shareSetupBtn");
 const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
 const shareLinkMessage = document.getElementById("shareLinkMessage");
+const shareIncludeAutoGearCheckbox = document.getElementById("shareIncludeAutoGear");
+const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearText");
+const shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
+const sharedImportOptions = document.getElementById("sharedImportOptions");
+const sharedImportLegend = document.getElementById("sharedImportLegend");
+const sharedImportModeNoneLabel = document.getElementById("sharedImportModeNoneLabel");
+const sharedImportModeProjectLabel = document.getElementById("sharedImportModeProjectLabel");
+const sharedImportModeGlobalLabel = document.getElementById("sharedImportModeGlobalLabel");
+const sharedImportModeNoneText = document.getElementById("sharedImportModeNoneText");
+const sharedImportModeProjectText = document.getElementById("sharedImportModeProjectText");
+const sharedImportModeGlobalText = document.getElementById("sharedImportModeGlobalText");
+if (sharedImportOptions) {
+  const projectRadio = sharedImportOptions.querySelector('input[value="project"]');
+  const globalRadio = sharedImportOptions.querySelector('input[value="global"]');
+  if (projectRadio) projectRadio.disabled = true;
+  if (globalRadio) globalRadio.disabled = true;
+}
 let lastSetupName = setupSelect ? setupSelect.value : '';
 const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const sharedKeyMap = {
@@ -3134,8 +3295,22 @@ const sharedKeyMap = {
   gearSelectors: "e",
   gearList: "l",
   changedDevices: "x",
-  feedback: "f"
+  feedback: "f",
+  autoGearRules: "a"
 };
+
+function resolveSharedImportMode(sharedRules) {
+  const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
+  if (!hasRules) return 'none';
+  if (!sharedImportOptions) return 'project';
+  const radios = sharedImportOptions.querySelectorAll('input[name="sharedImportMode"]');
+  const checked = Array.from(radios || []).find(radio => radio.checked);
+  const value = checked ? checked.value : 'project';
+  if (value === 'global' || value === 'project' || value === 'none') {
+    return value;
+  }
+  return 'project';
+}
 
 function encodeSharedSetup(setup) {
   const out = {};
@@ -4068,17 +4243,9 @@ function refreshAutoGearScenarioOptions(selected) {
         : '';
 
   autoGearScenariosSelect.innerHTML = '';
-  const placeholder = document.createElement('option');
-  placeholder.value = '';
-  placeholder.textContent = texts[currentLang]?.autoGearScenarioPlaceholder
-    || texts.en?.autoGearScenarioPlaceholder
-    || 'Select a scenario';
-  placeholder.disabled = true;
-  placeholder.selected = !selectedValue;
-  autoGearScenariosSelect.appendChild(placeholder);
-
   const source = document.getElementById('requiredScenarios');
   let hasSelectedValue = false;
+  let hasOptions = false;
   if (source) {
     Array.from(source.options).forEach(opt => {
       if (!opt.value) return;
@@ -4090,7 +4257,19 @@ function refreshAutoGearScenarioOptions(selected) {
         hasSelectedValue = true;
       }
       autoGearScenariosSelect.appendChild(option);
+      hasOptions = true;
     });
+  }
+  if (!hasOptions) {
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = texts[currentLang]?.autoGearScenarioPlaceholder
+      || texts.en?.autoGearScenarioPlaceholder
+      || 'Select a scenario';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearScenariosSelect.appendChild(placeholder);
+    return;
   }
   if (!hasSelectedValue && selectedValue) {
     const fallbackOption = document.createElement('option');
@@ -4098,6 +4277,8 @@ function refreshAutoGearScenarioOptions(selected) {
     fallbackOption.textContent = selectedValue;
     fallbackOption.selected = true;
     autoGearScenariosSelect.appendChild(fallbackOption);
+  } else if (!selectedValue && autoGearScenariosSelect.options.length) {
+    autoGearScenariosSelect.options[0].selected = true;
   }
 }
 
@@ -6166,7 +6347,8 @@ function computeSetupSignature(state) {
     state.batteryHotswap || '',
     state.sliderBowl || '',
     state.easyrig || '',
-    stableStringify(state.projectInfo || null)
+    stableStringify(state.projectInfo || null),
+    stableStringify(state.autoGearRules || null)
   ].join('||');
 }
 
@@ -6180,7 +6362,7 @@ function getCurrentSetupState() {
   info.sliderBowl = getSliderBowlValue();
   info.easyrig = getEasyrigValue();
   const projectInfo = deriveProjectInfo(info);
-  return {
+  const state = {
     camera: cameraSelect.value,
     monitor: monitorSelect.value,
     video: videoSelect.value,
@@ -6195,6 +6377,11 @@ function getCurrentSetupState() {
     easyrig: info.easyrig,
     projectInfo
   };
+  const projectRules = getProjectScopedAutoGearRules();
+  if (projectRules && projectRules.length) {
+    state.autoGearRules = projectRules;
+  }
+  return state;
 }
 
 function checkSetupChanged() {
@@ -10171,6 +10358,9 @@ clearSetupBtn.addEventListener("click", () => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    clearProjectAutoGearRules();
+    renderAutoGearRulesList();
+    updateAutoGearCatalogOptions();
     updateCalculations();
   }
 });
@@ -10179,14 +10369,18 @@ clearSetupBtn.addEventListener("click", () => {
 setupSelect.addEventListener("change", (event) => {
   const setupName = event.target.value;
   if (lastSetupName && typeof saveProject === 'function') {
-    saveProject(lastSetupName, {
+    const previousRules = getProjectScopedAutoGearRules();
+    const previousPayload = {
       projectInfo: currentProjectInfo,
       gearList: getCurrentGearListHtml()
-    });
+    };
+    if (previousRules && previousRules.length) {
+      previousPayload.autoGearRules = previousRules;
+    }
+    saveProject(lastSetupName, previousPayload);
   }
   if (setupName === "") { // "-- New Setup --" selected
     setupNameInput.value = "";
-    // Reset all dropdowns to "None" or first option
     [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
       const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
       if (noneOption) {
@@ -10212,8 +10406,9 @@ setupSelect.addEventListener("change", (event) => {
     }
     currentProjectInfo = null;
     if (projectForm) populateProjectForm({});
+    clearProjectAutoGearRules();
   } else {
-    let setups = getSetups();
+    const setups = getSetups();
     const setup = setups[setupName];
     if (setup) {
       setupNameInput.value = setupName;
@@ -10234,6 +10429,16 @@ setupSelect.addEventListener("change", (event) => {
       const storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
       const html = setup.gearList || storedProject?.gearList || '';
       currentProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
+      const projectRulesSource = Array.isArray(setup.autoGearRules) && setup.autoGearRules.length
+        ? setup.autoGearRules
+        : (Array.isArray(storedProject?.autoGearRules) && storedProject.autoGearRules.length
+          ? storedProject.autoGearRules
+          : null);
+      if (projectRulesSource) {
+        useProjectAutoGearRules(projectRulesSource);
+      } else {
+        clearProjectAutoGearRules();
+      }
       if (gearListOutput) {
         displayGearAndRequirements(html);
         populateProjectForm(currentProjectInfo || {});
@@ -10247,16 +10452,27 @@ setupSelect.addEventListener("change", (event) => {
           bindGearListDirectorMonitorListener();
         }
         if (typeof saveProject === 'function') {
-          saveProject(setupName, { projectInfo: currentProjectInfo, gearList: html });
+          const payload = {
+            projectInfo: currentProjectInfo,
+            gearList: html
+          };
+          const activeRules = getProjectScopedAutoGearRules();
+          if (activeRules && activeRules.length) {
+            payload.autoGearRules = activeRules;
+          }
+          saveProject(setupName, payload);
         }
       }
     } else {
       currentProjectInfo = null;
       if (projectForm) populateProjectForm({});
       displayGearAndRequirements('');
+      clearProjectAutoGearRules();
     }
     storeLoadedSetupState(getCurrentSetupState());
   }
+  renderAutoGearRulesList();
+  updateAutoGearCatalogOptions();
   if (saveSetupBtn) {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
   }
@@ -10311,7 +10527,11 @@ function autoBackup() {
         gearList: gearListHtml || '',
         projectInfo: currentSetup.projectInfo || null,
       };
-      if (payload.gearList || payload.projectInfo) {
+      const activeRules = getProjectScopedAutoGearRules();
+      if (activeRules && activeRules.length) {
+        payload.autoGearRules = activeRules;
+      }
+      if (payload.gearList || payload.projectInfo || payload.autoGearRules) {
         saveProject(backupName, payload);
       }
     }
@@ -11354,6 +11574,12 @@ shareSetupBtn.addEventListener('click', () => {
   if (feedback.length) {
     currentSetup.feedback = feedback;
   }
+  if (shareIncludeAutoGearCheckbox && shareIncludeAutoGearCheckbox.checked) {
+    const rulesForShare = getAutoGearRules();
+    if (rulesForShare.length) {
+      currentSetup.autoGearRules = rulesForShare;
+    }
+  }
   const json = JSON.stringify(currentSetup, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -11379,7 +11605,24 @@ if (applySharedLinkBtn && sharedLinkInput) {
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result);
-        applySharedSetup(data);
+        const sharedRules = Array.isArray(data.autoGearRules) ? data.autoGearRules : null;
+        if (sharedImportOptions) {
+          const radios = sharedImportOptions.querySelectorAll('input[name="sharedImportMode"]');
+          const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
+          Array.from(radios || []).forEach(radio => {
+            if (radio.value === 'none') {
+              radio.disabled = false;
+              if (!hasRules) radio.checked = true;
+            } else {
+              radio.disabled = !hasRules;
+              if (!hasRules && radio.checked) {
+                radio.checked = false;
+              }
+            }
+          });
+        }
+        const mode = resolveSharedImportMode(sharedRules);
+        applySharedSetup(data, { autoGearMode: mode, sharedAutoGearRules: sharedRules });
         updateCalculations();
       } catch {
         alert(texts[currentLang].invalidSharedLink);
@@ -13705,15 +13948,23 @@ function saveCurrentGearList() {
     info.easyrig = getEasyrigValue();
     currentProjectInfo = deriveProjectInfo(info);
     const projectName = getCurrentProjectName();
+    const projectRules = getProjectScopedAutoGearRules();
     if (typeof saveProject === 'function') {
-        saveProject(projectName, { projectInfo: currentProjectInfo, gearList: html });
+        const payload = {
+            projectInfo: currentProjectInfo,
+            gearList: html
+        };
+        if (projectRules && projectRules.length) {
+            payload.autoGearRules = projectRules;
+        }
+        saveProject(projectName, payload);
     }
 
     if (!projectName) return;
 
     const setups = getSetups();
     const existing = setups[projectName];
-    if (!existing && !html && !currentProjectInfo) {
+    if (!existing && !html && !currentProjectInfo && !(projectRules && projectRules.length)) {
         return;
     }
 
@@ -13737,6 +13988,19 @@ function saveCurrentGearList() {
         }
     } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
         delete setup.projectInfo;
+        changed = true;
+    }
+
+    const existingRules = setup.autoGearRules;
+    const existingRulesSig = existingRules && existingRules.length ? stableStringify(existingRules) : '';
+    const newRulesSig = projectRules && projectRules.length ? stableStringify(projectRules) : '';
+    if (newRulesSig) {
+        if (existingRulesSig !== newRulesSig) {
+            setup.autoGearRules = projectRules;
+            changed = true;
+        }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'autoGearRules')) {
+        delete setup.autoGearRules;
         changed = true;
     }
 
@@ -13774,6 +14038,10 @@ function deleteCurrentGearList() {
             }
             if (Object.prototype.hasOwnProperty.call(existingSetup, 'projectInfo')) {
                 delete existingSetup.projectInfo;
+                changed = true;
+            }
+            if (Object.prototype.hasOwnProperty.call(existingSetup, 'autoGearRules')) {
+                delete existingSetup.autoGearRules;
                 changed = true;
             }
             if (changed) {
@@ -14261,11 +14529,44 @@ function restoreSessionState() {
   saveCurrentSession();
 }
 
-function applySharedSetup(shared) {
+function applySharedSetup(shared, options = {}) {
   try {
     const decoded = decodeSharedSetup(
       typeof shared === 'string' ? JSON.parse(shared) : shared
     );
+    const sharedRulesFromData = Array.isArray(decoded.autoGearRules) ? decoded.autoGearRules : null;
+    const providedRules = Array.isArray(options.sharedAutoGearRules) && options.sharedAutoGearRules.length
+      ? options.sharedAutoGearRules
+      : sharedRulesFromData;
+    let mode = options.autoGearMode;
+    if (!mode || !['global', 'project', 'none'].includes(mode)) {
+      mode = providedRules && providedRules.length ? 'project' : 'none';
+    }
+    let autoGearUpdated = false;
+    if (mode === 'global') {
+      if (providedRules && providedRules.length) {
+        const merged = mergeAutoGearRules(getBaseAutoGearRules(), providedRules);
+        setAutoGearRules(merged);
+        autoGearUpdated = true;
+      } else if (usingProjectAutoGearRules()) {
+        clearProjectAutoGearRules();
+        autoGearUpdated = true;
+      }
+    } else if (mode === 'project') {
+      if (providedRules && providedRules.length) {
+        useProjectAutoGearRules(providedRules);
+      } else {
+        clearProjectAutoGearRules();
+      }
+      autoGearUpdated = true;
+    } else if (usingProjectAutoGearRules()) {
+      clearProjectAutoGearRules();
+      autoGearUpdated = true;
+    }
+    if (autoGearUpdated) {
+      renderAutoGearRulesList();
+      updateAutoGearCatalogOptions();
+    }
     if (decoded.changedDevices) {
       applyDeviceChanges(decoded.changedDevices);
     }
@@ -14326,7 +14627,15 @@ function applySharedSetup(shared) {
       applyGearListSelectors(decoded.gearSelectors);
     }
     if (decoded.projectInfo || decoded.gearSelectors || decoded.gearList) {
-      saveProject(getCurrentProjectName(), { gearList: getCurrentGearListHtml(), projectInfo: decoded.projectInfo || null });
+      const payload = {
+        gearList: getCurrentGearListHtml(),
+        projectInfo: decoded.projectInfo || null
+      };
+      const activeRules = getProjectScopedAutoGearRules();
+      if (activeRules && activeRules.length) {
+        payload.autoGearRules = activeRules;
+      }
+      saveProject(getCurrentProjectName(), payload);
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);

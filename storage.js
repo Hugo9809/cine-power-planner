@@ -387,17 +387,24 @@ function normalizeProject(data) {
   if (isPlainObject(data)) {
     // New format { gearList, projectInfo }
     if (Object.prototype.hasOwnProperty.call(data, "gearList") || Object.prototype.hasOwnProperty.call(data, "projectInfo")) {
-      return {
+      const normalized = {
         gearList:
           typeof data.gearList === "string" || (data.gearList && typeof data.gearList === "object")
             ? data.gearList
             : "",
         projectInfo: isPlainObject(data.projectInfo) ? data.projectInfo : null,
       };
+      if (Array.isArray(data.autoGearRules) && data.autoGearRules.length) {
+        normalized.autoGearRules = data.autoGearRules;
+      }
+      return normalized;
     }
     // Legacy format { projectHtml, gearHtml }
     if (Object.prototype.hasOwnProperty.call(data, "projectHtml") || Object.prototype.hasOwnProperty.call(data, "gearHtml")) {
-      return { gearList: { projectHtml: data.projectHtml || "", gearHtml: data.gearHtml || "" }, projectInfo: null };
+      return {
+        gearList: { projectHtml: data.projectHtml || "", gearHtml: data.gearHtml || "" },
+        projectInfo: null,
+      };
     }
   }
   return null;
