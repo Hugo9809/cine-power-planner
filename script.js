@@ -3612,6 +3612,12 @@ const ASPECT_RATIO_ICON = Object.freeze({ markup: ASPECT_RATIO_ICON_SVG, classNa
 const REQUIRED_SCENARIOS_ICON = Object.freeze({ markup: REQUIRED_SCENARIOS_ICON_SVG, className: 'icon-svg' });
 const MONITORING_SUPPORT_ICON = Object.freeze({ markup: MONITORING_SUPPORT_ICON_SVG, className: 'icon-svg' });
 
+const STAR_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z" />
+  </svg>
+`.trim();
+
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -3642,7 +3648,10 @@ const ICON_GLYPHS = Object.freeze({
   sun: iconGlyph('\uF1F7', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
   circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
-  star: iconGlyph('\uF238', ICON_FONT_KEYS.ESSENTIAL),
+  star: Object.freeze({
+    markup: STAR_ICON_SVG,
+    className: 'icon-svg favorite-star-icon'
+  }),
   warning: iconGlyph('\uF26F', ICON_FONT_KEYS.ESSENTIAL)
 });
 

@@ -1620,6 +1620,12 @@ body.pink-mode .auto-gear-rule-title,
   fill: none;
 }
 
+.favorite-icon.icon-svg svg,
+.favorite-star-icon svg {
+  fill: currentColor;
+  stroke-width: 0;
+}
+
 .icon-glyph.icon-svg .pink-mode-icon-image {
   width: 1em;
   height: 1em;
