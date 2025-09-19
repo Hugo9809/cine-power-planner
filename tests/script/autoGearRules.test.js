@@ -1,9 +1,15 @@
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 const STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
+const BACKUP_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
 
 describe('applyAutoGearRulesToTableHtml', () => {
   let env;
+  const originalAlert = window.alert;
+
+  beforeEach(() => {
+    window.alert = jest.fn();
+  });
 
   const stripRuleIds = rule => ({
     label: rule.label,
@@ -13,8 +19,10 @@ describe('applyAutoGearRulesToTableHtml', () => {
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     env?.cleanup();
     localStorage.clear();
+    window.alert = originalAlert;
   });
 
   test('removes matching gear without duplicating categories', () => {
@@ -214,6 +222,91 @@ describe('applyAutoGearRulesToTableHtml', () => {
         expect.objectContaining({ label: 'Test confirmation' })
       ])
     );
+  });
+
+  test('automatic backups capture snapshots after rules change', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T12:00:00Z'));
+    env = setupScriptEnvironment();
+
+    const addRuleButton = document.getElementById('autoGearAddRule');
+    addRuleButton.click();
+
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
+
+    document.getElementById('autoGearRuleName').value = 'Auto backup test';
+    document.getElementById('autoGearAddName').value = 'Backup item';
+    const categorySelect = document.getElementById('autoGearAddCategory');
+    categorySelect.value = categorySelect.options[0].value;
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+    document.getElementById('autoGearSaveRule').click();
+
+    jest.advanceTimersByTime(10 * 60 * 1000);
+    jest.advanceTimersByTime(4000);
+
+    const storedBackups = JSON.parse(localStorage.getItem(BACKUP_STORAGE_KEY));
+    expect(Array.isArray(storedBackups)).toBe(true);
+    expect(storedBackups.length).toBe(1);
+    expect(storedBackups[0].rules).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Auto backup test' })
+      ])
+    );
+
+    const backupButtons = document.querySelectorAll('#autoGearBackupList button[data-backup-id]');
+    expect(backupButtons.length).toBeGreaterThan(0);
+
+    jest.useRealTimers();
+  });
+
+  test('restoring an automatic backup replaces the current rules', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T12:00:00Z'));
+    env = setupScriptEnvironment();
+
+    const addRuleButton = document.getElementById('autoGearAddRule');
+    addRuleButton.click();
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
+    document.getElementById('autoGearRuleName').value = 'Backup original';
+    document.getElementById('autoGearAddName').value = 'Original item';
+    const addCategory = document.getElementById('autoGearAddCategory');
+    addCategory.value = addCategory.options[0].value;
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+    document.getElementById('autoGearSaveRule').click();
+
+    jest.advanceTimersByTime(10 * 60 * 1000);
+    jest.advanceTimersByTime(4000);
+
+    // Modify the rule so we can confirm restore works
+    addRuleButton.click();
+    const editScenarios = document.getElementById('autoGearScenarios');
+    const editSelectable = Array.from(editScenarios.options).find(opt => opt.value);
+    if (editSelectable) editSelectable.selected = true;
+    const editorName = document.getElementById('autoGearRuleName');
+    editorName.value = 'Backup modified';
+    document.getElementById('autoGearSaveRule').click();
+
+    const backupButton = document.querySelector('#autoGearBackupList button[data-backup-id]');
+    expect(backupButton).not.toBeNull();
+    const originalConfirm = window.confirm;
+    window.confirm = jest.fn(() => true);
+    backupButton.click();
+    window.confirm = originalConfirm;
+
+    const storedRules = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(storedRules).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Backup original' })
+      ])
+    );
+
+    jest.useRealTimers();
   });
 
   test('restoring a backup updates automatic gear rules immediately', () => {
