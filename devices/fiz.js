@@ -65,11 +65,9 @@ const fizData = {
       "internalController": true,
       "torqueNm": null,
       "gearTypes": [
-        "0.8 mod",
-        "0.5 mod",
-        "0.6 mod"
+        "0.8 mod"
       ],
-      "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Compatible with standard 0.8 mod lens gears of various diameters.",
+      "notes": "Enhanced version of the Nano. Power draw calculated at 2.5A max at 14.8V. USB-C for power and data. Ships with Tilta's fixed 0.8 mod gear ring and does not support swapping to other gear rings.",
       "fizConnectors": [
         {
           "type": "USB-C"
