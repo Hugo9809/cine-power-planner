@@ -3655,6 +3655,42 @@ const sharedKeyMap = {
   autoGearRules: "a"
 };
 
+let lastSharedSetupData = null;
+let lastSharedAutoGearRules = null;
+
+function cloneSharedImportValue(value) {
+  if (value == null) return null;
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (error) {
+    console.warn('Failed to clone shared import value', error);
+    return null;
+  }
+}
+
+function storeSharedImportData(data, rules) {
+  lastSharedSetupData = cloneSharedImportValue(data);
+  lastSharedAutoGearRules = cloneSharedImportValue(rules);
+}
+
+function clearStoredSharedImportData() {
+  lastSharedSetupData = null;
+  lastSharedAutoGearRules = null;
+}
+
+function reapplySharedImportSelection() {
+  if (lastSharedSetupData === null) return;
+  const storedData = cloneSharedImportValue(lastSharedSetupData);
+  if (!storedData) return;
+  const storedRules = cloneSharedImportValue(lastSharedAutoGearRules);
+  const mode = resolveSharedImportMode(storedRules);
+  applySharedSetup(storedData, {
+    autoGearMode: mode,
+    sharedAutoGearRules: storedRules,
+  });
+  updateCalculations();
+}
+
 function resolveSharedImportMode(sharedRules) {
   const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
   if (!sharedImportModeSelect) {
@@ -12677,6 +12713,7 @@ if (applySharedLinkBtn && sharedLinkInput) {
       try {
         const data = JSON.parse(reader.result);
         const sharedRules = Array.isArray(data.autoGearRules) ? data.autoGearRules : null;
+        storeSharedImportData(data, sharedRules);
         if (sharedImportModeSelect) {
           const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
           Array.from(sharedImportModeSelect.options || []).forEach(option => {
@@ -12700,10 +12737,18 @@ if (applySharedLinkBtn && sharedLinkInput) {
         applySharedSetup(data, { autoGearMode: mode, sharedAutoGearRules: sharedRules });
         updateCalculations();
       } catch {
+        clearStoredSharedImportData();
         alert(texts[currentLang].invalidSharedLink);
       }
     };
     reader.readAsText(file);
+  });
+}
+
+if (sharedImportModeSelect) {
+  sharedImportModeSelect.addEventListener('change', () => {
+    if (lastSharedSetupData === null) return;
+    reapplySharedImportSelection();
   });
 }
 

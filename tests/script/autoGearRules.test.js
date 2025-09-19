@@ -6,6 +6,7 @@ const BACKUP_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
 describe('applyAutoGearRulesToTableHtml', () => {
   let env;
   const originalAlert = window.alert;
+  const originalFileReader = window.FileReader;
 
   beforeEach(() => {
     window.alert = jest.fn();
@@ -23,6 +24,11 @@ describe('applyAutoGearRulesToTableHtml', () => {
     env?.cleanup();
     localStorage.clear();
     window.alert = originalAlert;
+    if (typeof originalFileReader === 'undefined') {
+      delete window.FileReader;
+    } else {
+      window.FileReader = originalFileReader;
+    }
   });
 
   test('removes matching gear without duplicating categories', () => {
@@ -222,6 +228,64 @@ describe('applyAutoGearRulesToTableHtml', () => {
         expect.objectContaining({ label: 'Test confirmation' })
       ])
     );
+  });
+
+  test('changing the shared import mode reapplies shared rules', () => {
+    env = setupScriptEnvironment();
+    env.utils.syncAutoGearRulesFromStorage([]);
+
+    const applySharedLinkBtn = document.getElementById('applySharedLinkBtn');
+    const sharedLinkInput = document.getElementById('sharedLinkInput');
+    const sharedImportModeSelect = document.getElementById('sharedImportModeSelect');
+    const sharedImportModeGlobalOption = document.getElementById('sharedImportModeGlobalOption');
+
+    const sharedRule = {
+      id: 'shared-rule',
+      label: 'Shared grip tweak',
+      scenarios: ['Grip'],
+      add: [
+        { id: 'shared-add', name: 'Apple Box', category: 'Grip', quantity: 1 }
+      ],
+      remove: []
+    };
+
+    const fileContent = JSON.stringify({
+      setupName: 'Imported setup',
+      autoGearRules: [sharedRule]
+    });
+
+    Object.defineProperty(sharedLinkInput, 'files', {
+      value: [{ content: fileContent }],
+      configurable: true
+    });
+
+    class FileReaderStub {
+      readAsText(file) {
+        this.result = file?.content || '';
+        if (typeof this.onload === 'function') {
+          this.onload({ target: this });
+        }
+      }
+    }
+
+    window.FileReader = FileReaderStub;
+
+    applySharedLinkBtn.click();
+
+    expect(sharedImportModeGlobalOption.disabled).toBe(false);
+    const storedBeforeChange = localStorage.getItem('cameraPowerPlanner_autoGearRules');
+    expect(storedBeforeChange).not.toBeNull();
+    expect(JSON.parse(storedBeforeChange)).toEqual([]);
+
+    Array.from(sharedImportModeSelect.options).forEach(option => {
+      option.selected = option.value === 'global';
+    });
+
+    sharedImportModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const stored = JSON.parse(localStorage.getItem('cameraPowerPlanner_autoGearRules'));
+    expect(stored).toHaveLength(1);
+    expect(stored[0].label).toBe('Shared grip tweak');
   });
 
   test('rule editor accepts multiple additions at once', () => {
