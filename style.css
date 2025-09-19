@@ -3548,6 +3548,19 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   padding: 10px 0;
 }
 
+#sideMenu a.is-active,
+#sideMenu a[aria-current="true"] {
+  color: var(--accent-color);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+#sideMenu a:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
+}
+
 .dark-mode #sideMenu ul {
   border-color: var(--accent-color);
 }

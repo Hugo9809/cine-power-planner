@@ -620,7 +620,83 @@ if (typeof window !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     setupSideMenu();
     setupResponsiveControls();
+    setupSectionHighlights();
   });
+}
+
+/**
+ * Highlight the navigation entry that corresponds to the section currently in
+ * view.
+ *
+ * Keeping the highlight in sync helps people understand where they are in the
+ * long single-page layout, and the `aria-current` attribute gives the same
+ * context to assistive technologies.
+ */
+function setupSectionHighlights() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+  const navLinks = Array.from(document.querySelectorAll('#sideMenu [data-nav-key]'));
+  if (!navLinks.length) return;
+
+  const sectionEntries = navLinks
+    .map(link => {
+      const hash = link.getAttribute('href');
+      if (!hash || !hash.startsWith('#')) return null;
+      const section = document.querySelector(hash);
+      if (!section) return null;
+      return { link, section };
+    })
+    .filter(Boolean);
+
+  if (!sectionEntries.length) return;
+
+  let activeLink = null;
+
+  const setActiveLink = link => {
+    if (activeLink === link) return;
+    if (activeLink) {
+      activeLink.classList.remove('is-active');
+      activeLink.removeAttribute('aria-current');
+    }
+    activeLink = link || null;
+    if (activeLink) {
+      activeLink.classList.add('is-active');
+      activeLink.setAttribute('aria-current', 'true');
+    }
+  };
+
+  const updateActiveLink = () => {
+    const offset = 140;
+    let candidate = sectionEntries[0];
+    for (const entry of sectionEntries) {
+      const rect = entry.section.getBoundingClientRect();
+      if (rect.top <= offset) {
+        candidate = entry;
+      }
+    }
+    setActiveLink(candidate ? candidate.link : null);
+  };
+
+  let rafId = null;
+  const scheduleUpdate = () => {
+    if (rafId) return;
+    rafId = window.requestAnimationFrame(() => {
+      rafId = null;
+      updateActiveLink();
+    });
+  };
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  window.addEventListener('hashchange', scheduleUpdate);
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      setActiveLink(link);
+    });
+  });
+
+  updateActiveLink();
 }
 
 /**
@@ -4309,7 +4385,14 @@ function addAutoGearDraftItem(type) {
 function saveAutoGearRuleFromEditor() {
   if (!autoGearEditorDraft) return;
   const scenarioValue = autoGearScenariosSelect ? autoGearScenariosSelect.value : '';
-  const scenarios = scenarioValue ? [scenarioValue] : [];
+  let scenarios = scenarioValue ? [scenarioValue] : [];
+  if (!scenarios.length && autoGearScenariosSelect) {
+    const fallbackOption = Array.from(autoGearScenariosSelect.options || []).find(option => option.value);
+    if (fallbackOption) {
+      autoGearScenariosSelect.value = fallbackOption.value;
+      scenarios = [fallbackOption.value];
+    }
+  }
   if (!scenarios.length) {
     const message = texts[currentLang]?.autoGearRuleScenarioRequired
       || texts.en?.autoGearRuleScenarioRequired
