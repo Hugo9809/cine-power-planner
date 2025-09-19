@@ -3047,7 +3047,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
   }
   if (resetViewBtn) {
-    setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.reload);
+    setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.resetView);
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
@@ -3466,6 +3466,7 @@ const ICON_GLYPHS = Object.freeze({
   audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
   note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
   feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG }),
+  resetView: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
   sun: iconGlyph('\uF1F7', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
