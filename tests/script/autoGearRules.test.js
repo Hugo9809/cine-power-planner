@@ -201,6 +201,12 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(note).not.toBeNull();
     expect(note.textContent).toBe('Automatic gear rule saved.');
 
+    const backupsList = document.getElementById('autoGearBackupsList');
+    expect(backupsList).not.toBeNull();
+    expect(backupsList.children.length).toBeGreaterThan(0);
+    const emptyState = document.getElementById('autoGearBackupsEmpty');
+    expect(emptyState.getAttribute('hidden')).not.toBeNull();
+
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
     expect(stored).toEqual(
       expect.arrayContaining([

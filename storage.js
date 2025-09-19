@@ -10,6 +10,7 @@ const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
+const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, fall back to
@@ -655,6 +656,26 @@ function saveAutoGearSeedFlag(flag) {
   );
 }
 
+function loadAutoGearBackups() {
+  const parsed = loadJSONFromStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_BACKUPS_STORAGE_KEY,
+    "Error loading automatic gear rule backups from localStorage:",
+    [],
+  );
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function saveAutoGearBackups(backups) {
+  const safeBackups = Array.isArray(backups) ? backups : [];
+  saveJSONToStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_BACKUPS_STORAGE_KEY,
+    safeBackups,
+    "Error saving automatic gear rule backups to localStorage:",
+  );
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
@@ -667,6 +688,7 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
@@ -686,6 +708,7 @@ function exportAllData() {
     favorites: loadFavorites(),
     autoGearRules: loadAutoGearRules(),
     autoGearSeeded: loadAutoGearSeedFlag(),
+    autoGearBackups: loadAutoGearBackups(),
   };
 }
 
@@ -714,6 +737,9 @@ function importAllData(allData) {
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     saveAutoGearSeedFlag(allData.autoGearSeeded);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
+    saveAutoGearBackups(allData.autoGearBackups);
   }
 
   let importProjectEntry = null;
@@ -761,5 +787,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearRules,
     loadAutoGearSeedFlag,
     saveAutoGearSeedFlag,
+    loadAutoGearBackups,
+    saveAutoGearBackups,
   };
 }

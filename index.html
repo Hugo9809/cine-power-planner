@@ -753,6 +753,16 @@
       <section class="settings-section" aria-labelledby="autoGearHeading">
         <h3 id="autoGearHeading">Automatic Gear Rules</h3>
         <p id="autoGearDescription" class="settings-hint"></p>
+        <div class="auto-gear-tools">
+          <button type="button" id="autoGearExportRules">Export rules</button>
+          <button type="button" id="autoGearImportRules">Import rules</button>
+          <input type="file" id="autoGearImportInput" accept="application/json" hidden />
+        </div>
+        <div class="auto-gear-backups">
+          <h4 id="autoGearBackupsHeading">Backups</h4>
+          <p id="autoGearBackupsEmpty" class="auto-gear-empty" hidden>No backups yet.</p>
+          <ul id="autoGearBackupsList" class="auto-gear-backup-list"></ul>
+        </div>
         <div id="autoGearRulesList" class="auto-gear-rules" aria-live="polite"></div>
         <button type="button" id="autoGearAddRule">Add rule</button>
         <div id="autoGearEditor" class="auto-gear-editor" hidden>

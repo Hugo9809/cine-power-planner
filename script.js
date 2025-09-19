@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearSeedFlag, saveAutoGearSeedFlag, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearBackups, saveAutoGearBackups, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -41,6 +41,11 @@ const AUTO_GEAR_SEEDED_KEY =
   typeof AUTO_GEAR_SEEDED_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_SEEDED_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearSeeded';
+const AUTO_GEAR_BACKUPS_KEY =
+  typeof AUTO_GEAR_BACKUPS_STORAGE_KEY !== 'undefined'
+    ? AUTO_GEAR_BACKUPS_STORAGE_KEY
+    : 'cameraPowerPlanner_autoGearBackups';
+const AUTO_GEAR_BACKUP_LIMIT = 24;
 
 const schemaStorage = (() => {
   if (typeof window === 'undefined') return null;
@@ -221,6 +226,74 @@ let autoGearRules = readAutoGearRulesFromStorage();
 let baseAutoGearRules = autoGearRules.slice();
 let projectScopedAutoGearRules = null;
 
+function readAutoGearBackupsFromStorage() {
+  let stored = [];
+  if (typeof loadAutoGearBackups !== 'undefined' && typeof loadAutoGearBackups === 'function') {
+    try {
+      stored = loadAutoGearBackups();
+    } catch (error) {
+      console.warn('Failed to load automatic gear rule backups', error);
+      stored = [];
+    }
+  } else if (typeof localStorage !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(AUTO_GEAR_BACKUPS_KEY);
+      stored = raw ? JSON.parse(raw) : [];
+    } catch (error) {
+      console.warn('Failed to load automatic gear rule backups', error);
+      stored = [];
+    }
+  }
+  if (!Array.isArray(stored)) return [];
+  const normalized = stored.map(normalizeAutoGearBackupEntry).filter(Boolean);
+  normalized.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  if (normalized.length > AUTO_GEAR_BACKUP_LIMIT) {
+    return normalized.slice(0, AUTO_GEAR_BACKUP_LIMIT);
+  }
+  return normalized;
+}
+
+function persistAutoGearBackups() {
+  const payload = autoGearBackups.map(entry => ({
+    id: entry.id,
+    createdAt: entry.createdAt,
+    origin: entry.origin,
+    label: entry.label,
+    rules: cloneAutoGearRulesForBackup(entry.rules),
+  }));
+  if (typeof saveAutoGearBackups !== 'undefined' && typeof saveAutoGearBackups === 'function') {
+    try {
+      saveAutoGearBackups(payload);
+      return;
+    } catch (error) {
+      console.warn('Failed to persist automatic gear rule backups', error);
+    }
+  }
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify(payload));
+  } catch (error) {
+    console.warn('Failed to persist automatic gear rule backups', error);
+  }
+}
+
+let autoGearBackups = readAutoGearBackupsFromStorage();
+if (autoGearBackups.length > AUTO_GEAR_BACKUP_LIMIT) {
+  autoGearBackups = autoGearBackups.slice(0, AUTO_GEAR_BACKUP_LIMIT);
+  persistAutoGearBackups();
+}
+let lastAutoGearBackupSignature = autoGearBackups.length
+  ? autoGearBackups[0].signature
+  : autoGearRulesSnapshotSignature(baseAutoGearRules);
+let pendingInitialAutoGearBackup = !autoGearBackups.length && baseAutoGearRules.length > 0;
+
+let autoGearExportButton;
+let autoGearImportButton;
+let autoGearImportInput;
+let autoGearBackupsHeading;
+let autoGearBackupsEmpty;
+let autoGearBackupsList;
+
 function assignAutoGearRules(rules) {
   autoGearRules = Array.isArray(rules)
     ? rules.map(normalizeAutoGearRule).filter(Boolean)
@@ -245,24 +318,184 @@ function persistAutoGearRules() {
   }
 }
 
-function setAutoGearRules(rules) {
+function setAutoGearRules(rules, options = {}) {
   const normalized = assignAutoGearRules(rules);
   baseAutoGearRules = normalized.slice();
   projectScopedAutoGearRules = null;
   persistAutoGearRules();
+  const snapshot = cloneAutoGearRulesForBackup(baseAutoGearRules);
+  const signature = autoGearRulesSnapshotSignature(snapshot);
+  if (options.skipBackup) {
+    lastAutoGearBackupSignature = signature;
+    if (options.updateBackups) {
+      persistAutoGearBackups();
+      if (autoGearBackupsList) renderAutoGearBackupsList();
+    }
+    return;
+  }
+  const source = options.source || 'manual';
+  const label = typeof options.label === 'string' ? options.label : '';
+  const force = Boolean(options.force);
+  recordAutoGearBackup(source, { snapshot, signature, force, label });
 }
 
 function getAutoGearRules() {
   return autoGearRules.slice();
 }
 
+function recordAutoGearBackup(source = 'auto', options = {}) {
+  const snapshot = options.snapshot || cloneAutoGearRulesForBackup(getBaseAutoGearRules());
+  const signature = options.signature || autoGearRulesSnapshotSignature(snapshot);
+  if (!options.force && signature === lastAutoGearBackupSignature) {
+    lastAutoGearBackupSignature = signature;
+    return null;
+  }
+  const entry = {
+    id: generateAutoGearId('backup'),
+    createdAt: typeof options.createdAt === 'string' && options.createdAt
+      ? options.createdAt
+      : new Date().toISOString(),
+    origin: normalizeAutoGearBackupOrigin(source),
+    label: typeof options.label === 'string' ? options.label : '',
+    rules: snapshot,
+    signature,
+  };
+  autoGearBackups.unshift(entry);
+  if (autoGearBackups.length > AUTO_GEAR_BACKUP_LIMIT) {
+    autoGearBackups.length = AUTO_GEAR_BACKUP_LIMIT;
+  }
+  persistAutoGearBackups();
+  lastAutoGearBackupSignature = signature;
+  if (autoGearBackupsList) {
+    renderAutoGearBackupsList();
+  }
+  return entry;
+}
+
+function getAutoGearBackups() {
+  return autoGearBackups.map(entry => ({
+    id: entry.id,
+    createdAt: entry.createdAt,
+    origin: entry.origin,
+    label: entry.label,
+    rules: cloneAutoGearRulesForBackup(entry.rules),
+  }));
+}
+
+function restoreAutoGearBackup(backupId, options = {}) {
+  if (!backupId) return false;
+  const entry = autoGearBackups.find(backup => backup.id === backupId);
+  if (!entry) return false;
+  const snapshot = cloneAutoGearRulesForBackup(entry.rules);
+  const signature = autoGearRulesSnapshotSignature(snapshot);
+  lastAutoGearBackupSignature = signature;
+  setAutoGearRules(snapshot, { source: options.source || 'manual', skipBackup: true });
+  return true;
+}
+
+function extractAutoGearRulesFromImportPayload(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload && typeof payload === 'object') {
+    if (Array.isArray(payload.rules)) return payload.rules;
+    if (Array.isArray(payload.autoGearRules)) return payload.autoGearRules;
+  }
+  return null;
+}
+
+function importAutoGearRulesFromText(text) {
+  try {
+    const parsed = typeof text === 'string' ? JSON.parse(text) : null;
+    const rules = extractAutoGearRulesFromImportPayload(parsed);
+    if (!Array.isArray(rules)) {
+      throw new Error('Invalid automatic gear rules payload');
+    }
+    setAutoGearRules(rules, { source: 'import', force: true });
+    renderAutoGearRulesList();
+    updateAutoGearCatalogOptions();
+    closeAutoGearEditor();
+    const message = texts[currentLang]?.autoGearImportSuccess
+      || texts.en?.autoGearImportSuccess
+      || 'Automatic gear rules imported.';
+    showNotification('success', message);
+    return true;
+  } catch (error) {
+    console.warn('Failed to import automatic gear rules', error);
+    const message = texts[currentLang]?.autoGearImportError
+      || texts.en?.autoGearImportError
+      || 'Automatic gear rule import failed. Please select a valid file.';
+    showNotification('error', message);
+    return false;
+  }
+}
+
+function exportAutoGearRulesToFile() {
+  try {
+    const snapshot = cloneAutoGearRulesForBackup(getBaseAutoGearRules());
+    const payload = {
+      version: APP_VERSION,
+      exportedAt: new Date().toISOString(),
+      rules: snapshot,
+    };
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const pad = value => String(value).padStart(2, '0');
+    const now = new Date();
+    const fileName = `auto-gear-rules-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, 0);
+    const message = texts[currentLang]?.autoGearExportSuccess
+      || texts.en?.autoGearExportSuccess
+      || 'Automatic gear rules exported.';
+    showNotification('success', message);
+  } catch (error) {
+    console.warn('Failed to export automatic gear rules', error);
+    const message = texts[currentLang]?.autoGearExportError
+      || texts.en?.autoGearExportError
+      || 'Automatic gear rule export failed.';
+    showNotification('error', message);
+  }
+}
+
+function handleAutoGearImportChange(event) {
+  const input = event?.target;
+  if (!input || !input.files || !input.files.length) return;
+  const [file] = input.files;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const text = typeof reader.result === 'string' ? reader.result : '';
+    importAutoGearRulesFromText(text);
+    input.value = '';
+  };
+  reader.onerror = () => {
+    input.value = '';
+    const message = texts[currentLang]?.autoGearImportError
+      || texts.en?.autoGearImportError
+      || 'Automatic gear rule import failed. Please select a valid file.';
+    showNotification('error', message);
+  };
+  reader.onabort = () => {
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
 function syncAutoGearRulesFromStorage(rules) {
   if (Array.isArray(rules)) {
-    setAutoGearRules(rules);
+    setAutoGearRules(rules, { source: 'sync', skipBackup: true, updateBackups: true });
   } else {
     baseAutoGearRules = readAutoGearRulesFromStorage();
     projectScopedAutoGearRules = null;
     assignAutoGearRules(baseAutoGearRules);
+    const snapshot = cloneAutoGearRulesForBackup(baseAutoGearRules);
+    lastAutoGearBackupSignature = autoGearRulesSnapshotSignature(snapshot);
   }
   closeAutoGearEditor();
   renderAutoGearRulesList();
@@ -315,6 +548,74 @@ function autoGearRuleSignature(rule) {
     add: normalizeList(rule.add),
     remove: normalizeList(rule.remove),
   });
+}
+
+function autoGearRulesSnapshotSignature(rules) {
+  if (!Array.isArray(rules) || !rules.length) return '[]';
+  return rules
+    .map(autoGearRuleSignature)
+    .filter(Boolean)
+    .sort()
+    .join('|');
+}
+
+function cloneAutoGearRuleForBackup(rule) {
+  if (!rule || typeof rule !== 'object') return null;
+  const scenarios = Array.isArray(rule.scenarios)
+    ? rule.scenarios
+        .map(value => (typeof value === 'string' ? value.trim() : ''))
+        .filter(Boolean)
+    : [];
+  const mapItems = items => (Array.isArray(items)
+    ? items
+        .map(item => ({
+          id: typeof item.id === 'string' && item.id ? item.id : generateAutoGearId('item'),
+          name: typeof item.name === 'string' ? item.name : '',
+          category: typeof item.category === 'string' ? item.category : '',
+          quantity: normalizeAutoGearQuantity(item.quantity),
+        }))
+        .filter(item => item.name)
+    : []);
+  const add = mapItems(rule.add);
+  const remove = mapItems(rule.remove);
+  if (!scenarios.length || (!add.length && !remove.length)) return null;
+  return {
+    id: typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule'),
+    label: typeof rule.label === 'string' ? rule.label : '',
+    scenarios: scenarios.slice(),
+    add,
+    remove,
+  };
+}
+
+function cloneAutoGearRulesForBackup(rules) {
+  if (!Array.isArray(rules)) return [];
+  return rules.map(cloneAutoGearRuleForBackup).filter(Boolean);
+}
+
+function normalizeAutoGearBackupOrigin(value) {
+  if (value === 'manual' || value === 'import' || value === 'seed' || value === 'initial') {
+    return value;
+  }
+  return 'auto';
+}
+
+function normalizeAutoGearBackupEntry(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  const normalizedRules = cloneAutoGearRulesForBackup(entry.rules);
+  const createdAt = typeof entry.createdAt === 'string' ? entry.createdAt : new Date().toISOString();
+  const origin = normalizeAutoGearBackupOrigin(entry.origin);
+  const label = typeof entry.label === 'string' ? entry.label : '';
+  const id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('backup');
+  const normalized = {
+    id,
+    createdAt,
+    origin,
+    label,
+    rules: normalizedRules,
+  };
+  normalized.signature = autoGearRulesSnapshotSignature(normalizedRules);
+  return normalized;
 }
 
 function mergeAutoGearRules(existing, incoming) {
@@ -498,7 +799,7 @@ function seedAutoGearRulesFromCurrentProject() {
     rules.push({ id: generateAutoGearId('rule'), label: combinedLabel, scenarios: combo.slice(), add: adjusted.add, remove: adjusted.remove });
   });
   if (!rules.length) return;
-  setAutoGearRules(rules);
+  setAutoGearRules(rules, { source: 'seed' });
   markAutoGearDefaultsSeeded();
 }
 
@@ -2421,6 +2722,35 @@ function setLanguage(lang) {
     const help = texts[lang].autoGearHeadingHelp || texts.en?.autoGearHeadingHelp || label;
     autoGearAddRuleBtn.setAttribute('data-help', help);
   }
+  if (autoGearExportButton) {
+    const label = texts[lang].autoGearExport || texts.en?.autoGearExport || autoGearExportButton.textContent;
+    autoGearExportButton.textContent = label;
+    const help = texts[lang].autoGearExportHelp || texts.en?.autoGearExportHelp || label;
+    autoGearExportButton.setAttribute('data-help', help);
+    autoGearExportButton.setAttribute('aria-label', label);
+  }
+  if (autoGearImportButton) {
+    const label = texts[lang].autoGearImport || texts.en?.autoGearImport || autoGearImportButton.textContent;
+    autoGearImportButton.textContent = label;
+    const help = texts[lang].autoGearImportHelp || texts.en?.autoGearImportHelp || label;
+    autoGearImportButton.setAttribute('data-help', help);
+    autoGearImportButton.setAttribute('aria-label', label);
+    if (autoGearImportInput) {
+      autoGearImportInput.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearBackupsHeading) {
+    const heading = texts[lang].autoGearBackupsHeading || texts.en?.autoGearBackupsHeading || autoGearBackupsHeading.textContent;
+    autoGearBackupsHeading.textContent = heading;
+    const help = texts[lang].autoGearBackupsHelp || texts.en?.autoGearBackupsHelp || heading;
+    autoGearBackupsHeading.setAttribute('data-help', help);
+  }
+  if (autoGearBackupsEmpty) {
+    autoGearBackupsEmpty.textContent = texts[lang].autoGearBackupsEmpty
+      || texts.en?.autoGearBackupsEmpty
+      || autoGearBackupsEmpty.textContent;
+  }
+  renderAutoGearBackupsList();
   if (autoGearRuleNameLabel) {
     const label = texts[lang].autoGearRuleNameLabel || texts.en?.autoGearRuleNameLabel || autoGearRuleNameLabel.textContent;
     autoGearRuleNameLabel.textContent = label;
@@ -4210,6 +4540,12 @@ const autoGearHeadingElem = document.getElementById('autoGearHeading');
 const autoGearDescriptionElem = document.getElementById('autoGearDescription');
 const autoGearRulesList = document.getElementById('autoGearRulesList');
 const autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
+autoGearExportButton = document.getElementById('autoGearExportRules');
+autoGearImportButton = document.getElementById('autoGearImportRules');
+autoGearImportInput = document.getElementById('autoGearImportInput');
+autoGearBackupsHeading = document.getElementById('autoGearBackupsHeading');
+autoGearBackupsEmpty = document.getElementById('autoGearBackupsEmpty');
+autoGearBackupsList = document.getElementById('autoGearBackupsList');
 const autoGearEditor = document.getElementById('autoGearEditor');
 const autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 const autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
@@ -4243,6 +4579,14 @@ const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
 
 let autoGearEditorDraft = null;
+
+if (autoGearBackupsList) {
+  renderAutoGearBackupsList();
+}
+if (pendingInitialAutoGearBackup) {
+  recordAutoGearBackup('initial', { force: true });
+  pendingInitialAutoGearBackup = false;
+}
 
 function createAutoGearDraft(rule) {
   if (rule) {
@@ -4410,6 +4754,84 @@ function renderAutoGearRulesList() {
   });
 }
 
+function describeAutoGearBackupSource(entry) {
+  const langTexts = texts[currentLang] || texts.en || {};
+  const sourceKeyMap = {
+    auto: 'autoGearBackupSourceAuto',
+    manual: 'autoGearBackupSourceManual',
+    import: 'autoGearBackupSourceImport',
+    seed: 'autoGearBackupSourceSeed',
+    initial: 'autoGearBackupSourceInitial',
+  };
+  const key = sourceKeyMap[entry.origin] || sourceKeyMap.auto;
+  return langTexts[key] || texts.en?.[key] || 'Auto backup';
+}
+
+function formatAutoGearBackupTimestamp(createdAt) {
+  if (typeof createdAt !== 'string' || !createdAt) return '';
+  const date = new Date(createdAt);
+  if (!Number.isNaN(date.valueOf())) {
+    try {
+      return date.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
+    } catch (error) {
+      console.warn('Failed to format backup timestamp', error);
+    }
+    return date.toISOString();
+  }
+  return createdAt;
+}
+
+function renderAutoGearBackupsList() {
+  if (!autoGearBackupsList) return;
+  autoGearBackupsList.innerHTML = '';
+  if (!autoGearBackups.length) {
+    if (autoGearBackupsEmpty) autoGearBackupsEmpty.removeAttribute('hidden');
+    return;
+  }
+  if (autoGearBackupsEmpty) autoGearBackupsEmpty.setAttribute('hidden', '');
+  autoGearBackups.forEach(entry => {
+    const item = document.createElement('li');
+    item.className = 'auto-gear-backup';
+    item.dataset.backupId = entry.id;
+    const info = document.createElement('div');
+    info.className = 'auto-gear-backup-info';
+    const title = document.createElement('p');
+    title.className = 'auto-gear-backup-title';
+    const sourceLabel = describeAutoGearBackupSource(entry);
+    title.textContent = entry.label || sourceLabel;
+    info.appendChild(title);
+    const meta = document.createElement('p');
+    meta.className = 'auto-gear-backup-meta';
+    const parts = [];
+    if (entry.label) parts.push(sourceLabel);
+    const timestamp = formatAutoGearBackupTimestamp(entry.createdAt);
+    if (timestamp) parts.push(timestamp);
+    const rulesCount = formatAutoGearCount(
+      Array.isArray(entry.rules) ? entry.rules.length : 0,
+      'autoGearRulesCountOne',
+      'autoGearRulesCountOther'
+    );
+    if (rulesCount) parts.push(rulesCount);
+    meta.textContent = parts.join(' · ');
+    info.appendChild(meta);
+    item.appendChild(info);
+    const actions = document.createElement('div');
+    actions.className = 'auto-gear-backup-actions';
+    const loadBtn = document.createElement('button');
+    loadBtn.type = 'button';
+    loadBtn.className = 'auto-gear-restore';
+    loadBtn.dataset.backupId = entry.id;
+    const loadLabel = texts[currentLang]?.autoGearBackupLoad
+      || texts.en?.autoGearBackupLoad
+      || 'Load';
+    loadBtn.textContent = loadLabel;
+    loadBtn.setAttribute('data-help', loadLabel);
+    actions.appendChild(loadBtn);
+    item.appendChild(actions);
+    autoGearBackupsList.appendChild(item);
+  });
+}
+
 function renderAutoGearDraftLists() {
   if (!autoGearEditorDraft) {
     if (autoGearAddList) autoGearAddList.innerHTML = '';
@@ -4550,7 +4972,7 @@ function saveAutoGearRuleFromEditor() {
   } else {
     rules.push(draftRule);
   }
-  setAutoGearRules(rules);
+  setAutoGearRules(rules, { source: 'manual' });
   updateAutoGearCatalogOptions();
   renderAutoGearRulesList();
   const successMessage = texts[currentLang]?.autoGearRuleSaved
@@ -4569,7 +4991,7 @@ function deleteAutoGearRule(ruleId) {
     || 'Delete this rule?';
   if (!window.confirm(confirmation)) return;
   rules.splice(index, 1);
-  setAutoGearRules(rules);
+  setAutoGearRules(rules, { source: 'manual' });
   updateAutoGearCatalogOptions();
   renderAutoGearRulesList();
   if (autoGearEditorDraft && autoGearEditorDraft.id === ruleId) {
@@ -5139,6 +5561,7 @@ function updateStorageSummary() {
   const autoBackups = projectNames.filter((name) => typeof name === 'string' && name.startsWith('auto-backup-')).length;
   const gearListCount = computeGearListCount(data.project);
   const favoritesCount = computeFavoritesCount(data.favorites);
+  const autoGearBackupCount = Array.isArray(data.autoGearBackups) ? data.autoGearBackups.length : 0;
   const feedbackCount = computeFeedbackCount(data.feedback);
   const sessionData = data.session;
   const hasSession = Boolean(
@@ -5180,6 +5603,12 @@ function updateStorageSummary() {
       label: langTexts.storageKeyFavorites || 'Pinned favorites',
       value: formatCountText(lang, langTexts, 'storageFavoritesCount', favoritesCount),
       description: langTexts.storageKeyFavoritesDesc || '',
+    },
+    {
+      storageKey: 'cameraPowerPlanner_autoGearBackups',
+      label: langTexts.storageKeyAutoGearBackups || 'Automatic gear backups',
+      value: formatCountText(lang, langTexts, 'storageAutoGearBackupsCount', autoGearBackupCount),
+      description: langTexts.storageKeyAutoGearBackupsDesc || '',
     },
     {
       storageKey: 'cameraPowerPlanner_feedback',
@@ -10553,6 +10982,11 @@ function populateSetupSelect() {
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
 
+const autoGearBackupInterval = setInterval(() => recordAutoGearBackup('auto'), 10 * 60 * 1000);
+if (typeof autoGearBackupInterval.unref === 'function') {
+  autoGearBackupInterval.unref();
+}
+
 // Auto-save backups every 10 minutes. Saved backups appear in the setup
 // selector but do not change the currently selected setup. Intervals are
 // unref'ed when possible so Node environments can exit cleanly.
@@ -14596,7 +15030,7 @@ function applySharedSetup(shared, options = {}) {
     if (mode === 'global') {
       if (providedRules && providedRules.length) {
         const merged = mergeAutoGearRules(getBaseAutoGearRules(), providedRules);
-        setAutoGearRules(merged);
+        setAutoGearRules(merged, { source: 'import' });
         autoGearUpdated = true;
       } else if (usingProjectAutoGearRules()) {
         clearProjectAutoGearRules();
@@ -15098,6 +15532,42 @@ if (settingsButton && settingsDialog) {
     }
   });
 
+  if (autoGearExportButton) {
+    autoGearExportButton.addEventListener('click', exportAutoGearRulesToFile);
+  }
+  if (autoGearImportButton && autoGearImportInput) {
+    autoGearImportButton.addEventListener('click', () => {
+      autoGearImportInput.value = '';
+      autoGearImportInput.click();
+    });
+    autoGearImportInput.addEventListener('change', handleAutoGearImportChange);
+  }
+  if (autoGearBackupsList) {
+    autoGearBackupsList.addEventListener('click', event => {
+      const button = event.target.closest('button.auto-gear-restore');
+      if (!button) return;
+      const backupId = button.dataset.backupId;
+      if (!backupId) return;
+      const confirmation = texts[currentLang]?.autoGearBackupLoadConfirm
+        || texts.en?.autoGearBackupLoadConfirm
+        || 'Replace your automatic gear rules with this backup?';
+      if (confirmation && !window.confirm(confirmation)) return;
+      if (restoreAutoGearBackup(backupId, { source: 'manual' })) {
+        closeAutoGearEditor();
+        renderAutoGearRulesList();
+        updateAutoGearCatalogOptions();
+        const success = texts[currentLang]?.autoGearBackupRestoreSuccess
+          || texts.en?.autoGearBackupRestoreSuccess
+          || 'Automatic gear rules restored from backup.';
+        showNotification('success', success);
+      } else {
+        const error = texts[currentLang]?.autoGearBackupRestoreError
+          || texts.en?.autoGearBackupRestoreError
+          || 'Unable to restore that backup.';
+        showNotification('error', error);
+      }
+    });
+  }
   if (autoGearAddRuleBtn) {
     autoGearAddRuleBtn.addEventListener('click', () => {
       openAutoGearEditor();
@@ -16370,15 +16840,20 @@ if (helpButton && helpDialog) {
 
     if (!isHelp && !preferHelp) {
       if (deviceMatch) {
-        const device = deviceMatch.value;
-        if (device && device.select) {
-          device.select.value = device.value;
-          device.select.dispatchEvent(new Event('change', { bubbles: true }));
-          if (featureSearch && device.label) {
-            featureSearch.value = device.label;
+        const preferFeatureOverDevice = featureMatch
+          && STRONG_SEARCH_MATCH_TYPES.has(featureMatch.matchType)
+          && featureScore >= deviceScore;
+        if (!preferFeatureOverDevice) {
+          const device = deviceMatch.value;
+          if (device && device.select) {
+            device.select.value = device.value;
+            device.select.dispatchEvent(new Event('change', { bubbles: true }));
+            if (featureSearch && device.label) {
+              featureSearch.value = device.label;
+            }
+            focusFeatureElement(device.select);
+            return;
           }
-          focusFeatureElement(device.select);
-          return;
         }
       }
       if (featureMatch) {
@@ -17212,6 +17687,9 @@ if (typeof module !== "undefined" && module.exports) {
     collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml,
     getAutoGearRules,
+    getAutoGearBackups,
+    recordAutoGearBackup,
+    restoreAutoGearBackup,
     syncAutoGearRulesFromStorage,
   };
 }

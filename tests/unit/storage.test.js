@@ -41,6 +41,8 @@ const {
   saveAutoGearRules,
   loadAutoGearSeedFlag,
   saveAutoGearSeedFlag,
+  loadAutoGearBackups,
+  saveAutoGearBackups,
 } = require('../../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -52,6 +54,7 @@ const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
 const SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_KEY = 'cameraPowerPlanner_autoGearSeeded';
+const AUTO_GEAR_BACKUPS_KEY = 'cameraPowerPlanner_autoGearBackups';
 
 const validDeviceData = {
   cameras: {},
@@ -112,6 +115,25 @@ describe('device data storage', () => {
   test('loadDeviceData returns null for primitive data', () => {
     localStorage.setItem(DEVICE_KEY, JSON.stringify(5));
     expect(loadDeviceData()).toBeNull();
+  });
+});
+
+describe('automatic gear storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('loadAutoGearBackups returns an empty array when missing', () => {
+    expect(loadAutoGearBackups()).toEqual([]);
+  });
+
+  test('saveAutoGearBackups persists backups in localStorage', () => {
+    const backups = [
+      { id: 'backup-1', createdAt: '2024-01-01T00:00:00.000Z', origin: 'auto', label: '', rules: [] }
+    ];
+    saveAutoGearBackups(backups);
+    expect(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY)).toBe(JSON.stringify(backups));
+    expect(loadAutoGearBackups()).toEqual(backups);
   });
 });
 
@@ -423,6 +445,7 @@ describe('clearAllData', () => {
     saveSessionState({ camera: 'CamA' });
     saveAutoGearRules([{ id: 'rule', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }]);
     saveAutoGearSeedFlag(true);
+    saveAutoGearBackups([{ id: 'backup', createdAt: '2024-01-01T00:00:00.000Z', origin: 'auto', label: '', rules: [] }]);
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
@@ -433,6 +456,7 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(FAVORITES_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_RULES_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
   });
 });
@@ -453,6 +477,8 @@ describe('export/import all data', () => {
     const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
     saveAutoGearRules(rules);
     saveAutoGearSeedFlag(true);
+    const backups = [{ id: 'backup-1', createdAt: '2024-01-01T00:00:00.000Z', origin: 'auto', label: '', rules: [] }];
+    saveAutoGearBackups(backups);
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
@@ -462,6 +488,7 @@ describe('export/import all data', () => {
       favorites: { cat: ['A'] },
       autoGearRules: rules,
       autoGearSeeded: true,
+      autoGearBackups: backups,
     });
   });
 
@@ -477,6 +504,9 @@ describe('export/import all data', () => {
         { id: 'rule-indoor', label: 'Indoor', scenarios: ['Indoor'], add: [{ name: 'Item', category: 'Grip', quantity: 1 }], remove: [] }
       ],
       autoGearSeeded: true,
+      autoGearBackups: [
+        { id: 'backup-2', createdAt: '2024-01-01T00:10:00.000Z', origin: 'auto', label: '', rules: [] }
+      ],
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
@@ -487,6 +517,7 @@ describe('export/import all data', () => {
     expect(loadFavorites()).toEqual({ cat: ['B'] });
     expect(loadAutoGearRules()).toEqual(data.autoGearRules);
     expect(loadAutoGearSeedFlag()).toBe(true);
+    expect(loadAutoGearBackups()).toEqual(data.autoGearBackups);
   });
 
   test('importAllData handles legacy projects array', () => {
