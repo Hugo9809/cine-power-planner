@@ -76,7 +76,7 @@ function generatePrintableOverview() {
       sectionOrder.forEach(key => {
           const heading = t[key] || key;
           const icon = overviewSectionIcons[key] || '';
-          const iconHtml = icon ? `<span class="category-icon" aria-hidden="true">${icon}</span>` : '';
+          const iconHtml = icon ? `<span class="category-icon icon-glyph" aria-hidden="true">${icon}</span>` : '';
           const gridClasses = (key === 'category_fiz_motors' || key === 'category_fiz_controllers') ? 'device-block-grid two-column' : 'device-block-grid single-column';
         deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
       });
@@ -331,6 +331,7 @@ function generatePrintableOverview() {
 <meta charset="utf-8">
 <title>${t.overviewTitle}</title>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="webfonts/uicons-thin-straight.css">
 <link rel="stylesheet" href="overview.css">
 <link rel="stylesheet" href="overview-print.css" media="print">
 <link rel="stylesheet" href="overview-print.css" media="screen">

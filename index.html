@@ -19,6 +19,7 @@
   <meta name="color-scheme" content="light dark" />
   <title>Cine Power Planner</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="webfonts/uicons-thin-straight.css" />
   <link rel="stylesheet" href="overview-print.css" media="print" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="icon" href="icon.png" type="image/png" />
@@ -59,11 +60,22 @@
       </svg>
       <h1 id="mainTitle">Cine Power Planner</h1>
     </a>
-    <button id="menuToggle" aria-label="Menu" aria-expanded="false">☰</button>
+    <button id="menuToggle" aria-label="Menu" aria-expanded="false">
+      <span class="icon-glyph" aria-hidden="true">&#xE198;</span>
+    </button>
     <div class="feature-search">
       <div id="featureSearchContainer">
         <input type="search" id="featureSearch" list="featureList" placeholder="Search features or devices..." aria-label="Search features, devices and help" />
-        <button id="featureSearchClear" type="button" aria-label="Clear search" title="Clear search" hidden>&times;</button>
+        <button
+          id="featureSearchClear"
+          class="clear-input-btn"
+          type="button"
+          aria-label="Clear search"
+          title="Clear search"
+          hidden
+        >
+          <span class="icon-glyph" aria-hidden="true">&#xE453;</span>
+        </button>
       </div>
       <datalist id="featureList"></datalist>
     </div>
@@ -75,11 +87,21 @@
         <option value="fr">Français</option>
         <option value="it">Italiano</option>
       </select>
-      <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">🌙</button>
-      <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode" aria-pressed="false">🐴</button>
-      <button id="settingsButton" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsDialog" title="Settings">⚙️</button>
-      <button id="helpButton" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">?</button>
-      <button id="reloadButton" title="Force reload" aria-label="Force reload">🔄</button>
+      <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">
+        <span class="icon-glyph" aria-hidden="true">&#xEC7E;</span>
+      </button>
+      <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode" aria-pressed="false">
+        <span class="icon-glyph" aria-hidden="true">&#xF38D;</span>
+      </button>
+      <button id="settingsButton" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsDialog" title="Settings">
+        <span class="icon-glyph" aria-hidden="true">&#xE8AF;</span>
+      </button>
+      <button id="helpButton" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">
+        <span class="icon-glyph" aria-hidden="true">&#xEEFB;</span>
+      </button>
+      <button id="reloadButton" title="Force reload" aria-label="Force reload">
+        <span class="icon-glyph" aria-hidden="true">&#xE11B;</span>
+      </button>
     </nav>
   </header>
 
@@ -109,7 +131,7 @@
         </select>
       </div>
       <button id="deleteSetupBtn" title="Delete selected project">
-        <span class="btn-icon" aria-hidden="true">🗑️</span>Delete
+        <span class="btn-icon icon-glyph" aria-hidden="true">&#xF32D;</span>Delete
       </button>
     </div>
     <div class="form-row">
@@ -267,7 +289,7 @@
     <div class="diagram-controls">
       <button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out">-</button>
       <button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in">+</button>
-      <button id="resetView" type="button"><span class="btn-icon" aria-hidden="true">🔄</span>Reset View</button>
+      <button id="resetView" type="button"><span class="btn-icon icon-glyph" aria-hidden="true">&#xE11B;</span>Reset View</button>
       <button id="gridSnapToggle" type="button" aria-pressed="false">Snap to Grid</button>
     </div>
     <p id="diagramHint" class="diagram-hint"></p>
@@ -847,7 +869,16 @@
       <h2 id="helpTitle">How to use</h2>
       <div id="helpSearchContainer">
         <input type="text" id="helpSearch" placeholder="Search help topics..." aria-label="Search help topics" />
-        <button id="helpSearchClear" type="button" aria-label="Clear search" title="Clear search" hidden>&times;</button>
+        <button
+          id="helpSearchClear"
+          class="clear-input-btn"
+          type="button"
+          aria-label="Clear search"
+          title="Clear search"
+          hidden
+        >
+          <span class="icon-glyph" aria-hidden="true">&#xE453;</span>
+        </button>
       </div>
       <button id="hoverHelpButton" type="button">Hover for help</button>
       <nav id="helpQuickLinks" aria-label="Help topics" hidden>
@@ -861,7 +892,7 @@
           id="featuresOverview"
           data-help-keywords="overview summary capabilities highlights offline offline-mode favorites favourites pinned search global keyboard shortcuts themes personalization backups tour"
         >
-          <h3><span class="help-icon" aria-hidden="true">✨</span>Features at a Glance</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xF139;</span>Features at a Glance</h3>
           <ul>
             <li>Plan complete camera rigs and compute power draw and battery life.</li>
             <li>Save multiple projects, export or import them and print overviews.</li>
@@ -917,7 +948,7 @@
           id="gettingStarted"
           data-help-keywords="quickstart onboarding tutorial first steps workflow basics getting started new project guide"
         >
-          <h3><span class="help-icon" aria-hidden="true">🚀</span>Getting Started</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xEF93;</span>Getting Started</h3>
           <ol>
             <li>
               Select a camera, monitor and other devices from the dropdown menus in the
@@ -973,7 +1004,7 @@
           id="managingSetups"
           data-help-keywords="save saved projects load manage share backup restore export import delete rename factory reset clear project cache local storage browser reopen"
         >
-          <h3><span class="help-icon" aria-hidden="true">🗂️</span>Managing Projects</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE852;</span>Managing Projects</h3>
           <ul>
             <li>
               Use
@@ -1083,7 +1114,7 @@
           id="settingsHelp"
           data-help-keywords="settings preferences customization customise personalize colour color font typeface accent high contrast theme backup restore"
         >
-          <h3><span class="help-icon" aria-hidden="true">⚙️</span>Settings &amp; Personalization</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE8AF;</span>Settings &amp; Personalization</h3>
           <ul>
             <li>Switch languages instantly; the planner remembers your preference for next time.</li>
             <li>Tune the interface with dark mode, high contrast, pink accents and a custom accent color to match your production.</li>
@@ -1125,7 +1156,7 @@
           id="autoBackupsHelp"
           data-help-keywords="auto backup automatic snapshot restore recovery safety hourly download full app backup notification show saved projects setting"
         >
-          <h3><span class="help-icon" aria-hidden="true">💾</span>Automatic Backups</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE825;</span>Automatic Backups</h3>
           <ul>
             <li>The planner saves an auto backup every 10 minutes without interrupting your work. Entries are timestamped and stored alongside saved projects.</li>
             <li>Enable <strong>Show auto backups in project list</strong> in Settings → Backup &amp; Restore to temporarily reveal those snapshots in the <em>Saved Projects</em> dropdown.</li>
@@ -1148,7 +1179,7 @@
           id="projectRequirementsHelp"
           data-help-keywords="project requirements brief notes metadata crew schedule prep shoot forms multi-select documentation"
         >
-          <h3><span class="help-icon" aria-hidden="true">🗒️</span>Project Requirements</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE469;</span>Project Requirements</h3>
           <ul>
             <li>Capture production details such as production company, rental house, DoP, crew roles with email contacts, shooting dates, resolutions, codecs and more for each project.</li>
             <li>Multi-select lists let you specify multiple scenarios, accessories or monitoring setups.</li>
@@ -1169,7 +1200,7 @@
           id="gearListHelp"
           data-help-keywords="gear list equipment inventory export print accessories scenarios quantity breakdown report"
         >
-          <h3><span class="help-icon" aria-hidden="true">📋</span>Gear List</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE467;</span>Gear List</h3>
             <ul>
               <li>The <strong>Generate Gear List</strong> button expands every selected device and project detail into a rich table grouped by category and quantity.</li>
               <li>Any change to devices, lenses, batteries or project information rebuilds the list so it always reflects the current configuration.</li>
@@ -1234,7 +1265,7 @@
           id="powerCalculator"
           data-help-keywords="power calculator runtime estimator watt hours consumption battery life current warnings hotswap compare energy"
         >
-          <h3><span class="help-icon" aria-hidden="true">⚡</span>Power Calculator</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE212;</span>Power Calculator</h3>
           <ul>
             <li>Select a battery to see estimated runtime, current draw and required batteries for a 10&nbsp;h shoot (incl. spare).</li>
             <li>A temperature note helps account for runtime changes in hot or cold conditions.</li>
@@ -1274,7 +1305,7 @@
           id="calculationDetails"
           data-help-keywords="calculation math formula codec weighting brightness wifi runtime details advanced explanation"
         >
-          <h3><span class="help-icon" aria-hidden="true">🧮</span>Calculation Details</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE306;</span>Calculation Details</h3>
           <ul>
             <li>Each device contributes its power draw in watts to <em>Total Consumption</em>.</li>
             <li>Current at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) equals total watts divided by voltage.</li>
@@ -1310,7 +1341,7 @@
           id="runtimeFeedbackHelp"
           data-help-keywords="runtime feedback user measurements field data submit temperature weighting crowdsource"
         >
-          <h3><span class="help-icon" aria-hidden="true">📝</span>User Runtime Feedback</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xECF6;</span>User Runtime Feedback</h3>
           <ul>
             <li>Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.</li>
             <li>Include temperature for more accurate weighting.</li>
@@ -1335,7 +1366,7 @@
           id="setupDiagramHelp"
           data-help-keywords="diagram layout connections map wiring visualize nodes drag zoom pan svg jpg export reset snap grid"
         >
-          <h3><span class="help-icon" aria-hidden="true">🗺️</span>Project Diagram</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xEF8C;</span>Project Diagram</h3>
           <ul>
             <li>Visualizes power and video connections between selected devices.</li>
             <li>Drag nodes to rearrange the layout; use +/– buttons to zoom.</li>
@@ -1375,7 +1406,7 @@
           id="deviceEditorHelp"
           data-help-keywords="device editor database custom gear add edit modify remove import export revert data management"
         >
-          <h3><span class="help-icon" aria-hidden="true">🛠️</span>Device Database Editor</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xF2DF;</span>Device Database Editor</h3>
           <ul>
             <li>Open with <em>Edit Device Data…</em> to add, modify or remove devices.</li>
             <li>Changes are stored locally; use <em>Export</em> and <em>Import</em> to share databases.</li>
@@ -1410,7 +1441,7 @@
           id="deviceCategoriesHelp"
           data-help-keywords="device categories slots limits optional required types selection count overview"
         >
-          <h3><span class="help-icon" aria-hidden="true">📁</span>Device Categories</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE84A;</span>Device Categories</h3>
           <ul>
             <li><strong>Camera</strong> (1)</li>
             <li><strong>Monitor</strong> (optional)</li>
@@ -1436,7 +1467,7 @@
           id="searchFiltering"
           data-help-keywords="search filter filtering favourites favorites quick find slash ctrl+f ctrl+k global search star pinned clear query"
         >
-          <h3><span class="help-icon" aria-hidden="true">🔍</span>Search & Filtering</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xF016;</span>Search &amp; Filtering</h3>
           <ul>
             <li>Every dropdown and list can be filtered via its search box.</li>
             <li>The help dialog itself is searchable using the field at the top.</li>
@@ -1469,7 +1500,7 @@
           id="helpDialogHelp"
           data-help-keywords="help dialog window modal question mark f1 instructions search toggle open close clear focus"
         >
-          <h3><span class="help-icon" aria-hidden="true">❓</span>Help Dialog</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xEEFB;</span>Help Dialog</h3>
           <ul>
             <li>Open with the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd> on macOS); shortcuts work even while typing.</li>
             <li>Type keywords or alternate spellings to filter topics; the search resets automatically whenever you close the dialog.</li>
@@ -1489,7 +1520,7 @@
           id="troubleshootingHelp"
           data-help-keywords="troubleshooting recovery issue problem stuck blank update reload cache backup restore revert factory reset missing gear lost data"
         >
-          <h3><span class="help-icon" aria-hidden="true">🛠️</span>Troubleshooting &amp; Recovery</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xF2DF;</span>Troubleshooting &amp; Recovery</h3>
           <ul>
             <li>
               If the interface looks stuck or outdated, click
@@ -1553,7 +1584,7 @@
           id="hoverHelp"
           data-help-keywords="hover help tooltips hints guidance cursor descriptions overlay tips"
         >
-          <h3><span class="help-icon" aria-hidden="true">🖱️</span>Hover Help</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE597;</span>Hover Help</h3>
           <ul>
             <li>Activate tooltip mode with <strong>Hover for help</strong> in the help dialog.</li>
             <li>Move the cursor over buttons, fields, dropdowns or headers to see brief explanations.</li>
@@ -1568,7 +1599,7 @@
           id="languageHelp"
           data-help-keywords="language translation locale localisation english german spanish french italian switch change"
         >
-          <h3><span class="help-icon" aria-hidden="true">🌐</span>Language</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xEAE7;</span>Language</h3>
           <ul>
             <li>Use the dropdown in the top right to switch languages.</li>
             <li>Your choice is remembered for the next visit.</li>
@@ -1583,7 +1614,7 @@
           id="darkModeHelp"
           data-help-keywords="dark mode night theme low light brightness contrast toggle d key"
         >
-          <h3><span class="help-icon" aria-hidden="true">🌓</span>Dark Mode</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xEC7E;</span>Dark Mode</h3>
           <ul>
             <li>Click the moon button or press <kbd>D</kbd> to toggle dark mode.</li>
             <li>The setting persists between visits.</li>
@@ -1597,7 +1628,7 @@
           id="pinkModeHelp"
           data-help-keywords="pink mode unicorn accent theme playful colour color toggle p key"
         >
-          <h3><span class="help-icon" aria-hidden="true">🦄</span>Pink Mode</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xF38D;</span>Pink Mode</h3>
           <ul>
             <li>Click the horse button for a pink unicorn theme that accents buttons and headings.</li>
             <li>The setting persists between visits and works in light or dark mode.</li>
@@ -1612,7 +1643,7 @@
           id="shortcuts"
           data-help-keywords="keyboard shortcuts hotkeys key commands quick reference controls"
         >
-          <h3><span class="help-icon" aria-hidden="true">⌨️</span>Keyboard Shortcuts</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xEAB8;</span>Keyboard Shortcuts</h3>
           <ul>
             <li><kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> – toggle help</li>
             <li><kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>) – focus the global search field</li>
@@ -1628,7 +1659,7 @@
           id="faq"
           data-help-keywords="faq questions answers troubleshooting tips"
         >
-          <h3><span class="help-icon" aria-hidden="true">❓</span>FAQ</h3>
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xEEFB;</span>FAQ</h3>
           <details
             class="faq-item"
             data-help-keywords="save project saved projects ctrl+s enter autosave rename update"
@@ -1968,7 +1999,7 @@
             <p>
               Use the
               <a class="help-link" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>
-              button (🔄) in the top bar to clear cached files and reload without losing saved data.
+              button (<span class="icon-glyph" aria-hidden="true">&#xE11B;</span>) in the top bar to clear cached files and reload without losing saved data.
             </p>
           </details>
           <details
@@ -2282,7 +2313,7 @@
       <h3 id="feedbackDialogHeading">User Runtime Feedback</h3>
 
       <fieldset>
-        <legend>📋 Basic Info</legend>
+        <legend><span class="legend-icon icon-glyph" aria-hidden="true">&#xE469;</span>Basic Info</legend>
         <div class="form-row"><label>User:<input type="text" id="fbUsername" name="fbUsername" required></label></div>
         <div class="form-row"><label>Date:<input type="date" id="fbDate" name="fbDate" required></label></div>
         <div class="form-row">
@@ -2292,7 +2323,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🎥 Camera Project</legend>
+        <legend><span class="legend-icon icon-glyph" aria-hidden="true">&#xE333;</span>Camera Project</legend>
         <div class="form-row"><label>Camera:<input type="text" id="fbCamera" name="fbCamera" readonly></label></div>
         <div class="form-row"><label>Battery Plate:<input type="text" id="fbBatteryPlate" name="fbBatteryPlate" readonly></label></div>
         <div class="form-row"><label>Lens Mount:<input list="mountOptions" id="fbLensMount" name="fbLensMount"></label></div>
@@ -2304,7 +2335,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🔋 Power &amp; Accessories</legend>
+        <legend><span class="legend-icon icon-glyph" aria-hidden="true">&#xE1A6;</span>Power &amp; Accessories</legend>
         <div class="form-row"><label>Battery:<input type="text" id="fbBattery" name="fbBattery" readonly></label></div>
         <div class="form-row"><label>Battery Age:<input type="number" id="fbBatteryAge" name="fbBatteryAge"></label></div>
         <div class="form-row"><label>Wireless Transmitter:<input type="text" id="fbWirelessVideo" name="fbWirelessVideo" readonly></label></div>
@@ -2318,7 +2349,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>🌡️ Environment</legend>
+        <legend><span class="legend-icon icon-glyph" aria-hidden="true">&#xF262;</span>Environment</legend>
         <div class="form-row"><label>Temp (°C):<select id="fbTemperature" name="fbTemperature"></select></label></div>
         <div class="form-row"><label>Charging:<select id="fbCharging" name="fbCharging"><option value="yes">Yes</option><option value="no">No</option></select></label></div>
         <div class="form-row"><label>Runtime (hrs):<input type="number" step="0.01" id="fbRuntime" name="fbRuntime" required></label></div>

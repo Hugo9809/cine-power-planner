@@ -26,7 +26,7 @@
   --form-label-width: 150px;
   --form-label-min-width: 120px;
   --form-action-width: 110px;
-  --font-family: 'Ubuntu', sans-serif;
+  --font-family: 'Ubuntu', 'uicons-thin-straight', sans-serif;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
@@ -82,6 +82,7 @@
 body.pink-mode {
   --accent-color: #ff69b4;
   --link-color: #ff69b4;
+  --icon-color: var(--accent-color);
 }
 
 html {
@@ -1131,11 +1132,19 @@ main.legal-content {
   right: 10px;
   transform: translateY(-50%);
   margin: 0;
-  padding: 0 8px;
-  height: auto;
+  padding: 0;
+  width: var(--button-size);
+  height: var(--button-size);
   min-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   font-size: 1rem;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 #helpSearchClear[hidden] {
@@ -1297,12 +1306,64 @@ main.legal-content {
   outline-offset: 4px;
 }
 
-.help-icon {
+.icon-glyph {
+  font-family: 'uicons-thin-straight';
+  font-style: normal;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: var(--icon-color, currentColor);
+}
+
+#featureSearchClear .icon-glyph,
+#helpSearchClear .icon-glyph,
+.clear-input-btn .icon-glyph,
+.controls button .icon-glyph {
+  font-size: 1.2em;
+}
+
+.help-icon,
+.btn-icon,
+.legend-icon,
+.connector-icon,
+.info-icon,
+.category-icon,
+.scenario-icon,
+.icon-box .icon {
   margin-right: 0.3em;
 }
 
-.btn-icon {
-  margin-right: 0.3em;
+.favorite-icon.icon-glyph {
+  font-size: 1.3em;
+}
+
+body.pink-mode button:hover,
+body.pink-mode button:active,
+body.pink-mode button:focus-visible,
+body.pink-mode .button-link:hover,
+body.pink-mode .button-link:active,
+body.pink-mode .help-link:hover,
+body.pink-mode .help-link:active,
+body.pink-mode .help-quick-link.active,
+body.pink-mode .favorite-toggle.favorited,
+body.pink-mode .favorite-toggle:hover,
+body.pink-mode .favorite-toggle:active,
+body.pink-mode .favorite-toggle.favorited:hover,
+body.pink-mode .favorite-toggle.favorited:active {
+  --icon-color: currentColor;
+}
+
+.help-icon.icon-glyph,
+.btn-icon.icon-glyph,
+.legend-icon.icon-glyph,
+.connector-icon.icon-glyph,
+.info-icon.icon-glyph,
+.category-icon.icon-glyph,
+.scenario-icon.icon-glyph,
+.icon-box .icon.icon-glyph {
+  font-size: 1.1em;
 }
 
 #hoverHelpTooltip {
@@ -1537,6 +1598,15 @@ textarea:disabled {
   border: none;
   cursor: pointer;
   font-size: 1em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--button-size);
+  height: var(--button-size);
+  padding: 0;
+  line-height: 1;
+  border-radius: var(--border-radius);
+  color: inherit;
 }
 
 .clear-input-btn:hover {
@@ -1916,10 +1986,19 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
+  margin: 0;
   background: none;
   border: none;
   cursor: pointer;
   font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--button-size);
+  height: var(--button-size);
+  padding: 0;
+  line-height: 1;
+  color: inherit;
 }
 
 #featureSearchClear[hidden] {
@@ -2204,7 +2283,9 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 .connector-block,
 .info-box {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
   padding: 2px 6px;
   margin: 2px;
   border-radius: 3px;
@@ -2323,6 +2404,8 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 #setupDiagram .node-icon {
   font-size: 20px;
+  font-family: 'uicons-thin-straight', system-ui, sans-serif;
+  font-style: normal;
 }
 #setupDiagram .conn {
   stroke: none;
