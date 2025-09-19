@@ -273,3 +273,92 @@ describe('global feature search helpers', () => {
     expect(markResult?.value.label).toBe('Canon EOS R5 Mark II');
   });
 });
+
+describe('feature search prioritisation', () => {
+  let runFeatureSearch;
+  let featureMap;
+  let deviceMap;
+  let helpMap;
+  let searchKey;
+  let searchTokens;
+  let featureSearch;
+
+  beforeEach(() => {
+    ({
+      __testRunFeatureSearch: runFeatureSearch,
+      __testFeatureMap: featureMap,
+      __testDeviceMap: deviceMap,
+      __testHelpMap: helpMap,
+      searchKey,
+      searchTokens
+    } = loadScript());
+    featureSearch = document.getElementById('featureSearch');
+    featureMap.clear();
+    deviceMap.clear();
+    helpMap.clear();
+  });
+
+  test('exact feature matches beat higher scoring device suggestions', () => {
+    const query = 'Exact Feature';
+    featureSearch.value = query;
+
+    const featureButton = document.createElement('button');
+    featureButton.textContent = query;
+    document.body.appendChild(featureButton);
+
+    featureMap.set(searchKey(query), {
+      element: featureButton,
+      label: query,
+      tokens: []
+    });
+
+    const deviceSelect = document.createElement('select');
+    const deviceOption = document.createElement('option');
+    deviceOption.value = 'device-1';
+    deviceOption.textContent = 'Exact Feature Device';
+    deviceSelect.appendChild(deviceOption);
+    deviceSelect.value = '';
+    deviceSelect.dispatchEvent = jest.fn();
+    document.body.appendChild(deviceSelect);
+
+    deviceMap.set(searchKey('Exact Feature Device'), {
+      select: deviceSelect,
+      value: 'device-1',
+      label: 'Exact Feature Device',
+      tokens: searchTokens('Exact Feature Device')
+    });
+
+    runFeatureSearch(query);
+
+    expect(deviceSelect.value).toBe('');
+    expect(deviceSelect.dispatchEvent).not.toHaveBeenCalled();
+    expect(featureSearch.value).toBe(query);
+    expect(document.activeElement).toBe(featureButton);
+  });
+
+  test('device selections keep user-entered casing when unchanged', () => {
+    const query = 'test device';
+    featureSearch.value = query;
+
+    const deviceSelect = document.createElement('select');
+    const deviceOption = document.createElement('option');
+    deviceOption.value = 'device-1';
+    deviceOption.textContent = 'Test Device';
+    deviceSelect.appendChild(deviceOption);
+    document.body.appendChild(deviceSelect);
+    const dispatchSpy = jest.spyOn(deviceSelect, 'dispatchEvent');
+
+    deviceMap.set(searchKey('Test Device'), {
+      select: deviceSelect,
+      value: 'device-1',
+      label: 'Test Device',
+      tokens: searchTokens('Test Device')
+    });
+
+    runFeatureSearch(query);
+
+    expect(deviceSelect.value).toBe('device-1');
+    expect(dispatchSpy).toHaveBeenCalled();
+    expect(featureSearch.value).toBe(query);
+  });
+});

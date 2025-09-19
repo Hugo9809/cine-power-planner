@@ -11,6 +11,53 @@ const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 
+let persistentStorageRequest = null;
+
+function requestPersistentStorage() {
+  if (persistentStorageRequest) {
+    return persistentStorageRequest;
+  }
+
+  if (typeof navigator === 'undefined') {
+    persistentStorageRequest = Promise.resolve(false);
+    return persistentStorageRequest;
+  }
+
+  const storageManager = navigator.storage;
+  if (!storageManager || typeof storageManager.persist !== 'function') {
+    persistentStorageRequest = Promise.resolve(false);
+    return persistentStorageRequest;
+  }
+
+  const ensurePersistent = async () => {
+    try {
+      if (typeof storageManager.persisted === 'function') {
+        try {
+          const alreadyPersistent = await storageManager.persisted();
+          if (alreadyPersistent) {
+            return true;
+          }
+        } catch (error) {
+          console.warn('Unable to determine persistent storage state', error);
+        }
+      }
+
+      const granted = await storageManager.persist();
+      if (!granted) {
+        console.warn('Persistent storage request was not granted by the browser.');
+      }
+      return Boolean(granted);
+    } catch (error) {
+      console.warn('Persistent storage request failed', error);
+      return false;
+    }
+  };
+
+  persistentStorageRequest = ensurePersistent();
+  persistentStorageRequest.catch(() => {});
+  return persistentStorageRequest;
+}
+
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, fall back to
 // sessionStorage when possible so data persists across reloads within the same
@@ -31,7 +78,10 @@ const SAFE_LOCAL_STORAGE = (() => {
     try {
       if ('localStorage' in window) {
         const storage = verifyStorage(window.localStorage);
-        if (storage) return storage;
+        if (storage) {
+          requestPersistentStorage();
+          return storage;
+        }
       }
     } catch (e) {
       console.warn('localStorage is unavailable:', e);
@@ -737,6 +787,7 @@ function importAllData(allData) {
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
+    requestPersistentStorage,
     loadDeviceData,
     saveDeviceData,
     loadSetups,

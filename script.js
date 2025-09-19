@@ -5535,6 +5535,7 @@ const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
 const helpMap         = new Map();
 const deviceMap       = new Map();
+let runFeatureSearchForTests = null;
 // Normalise strings for search comparisons by removing punctuation, diacritics
 // and treating symbols like “&”/“+” as their word equivalents. British and
 // American spelling variants are folded together so queries like “favourites”
@@ -16621,6 +16622,15 @@ if (helpButton && helpDialog) {
     const cleanKey = searchKey(clean);
     const cleanTokens = searchTokens(clean);
 
+    const shouldReplaceSearchValue = label => {
+      if (!featureSearch) return false;
+      if (!label) return false;
+      const trimmed = label.trim();
+      if (!trimmed) return false;
+      if (!value) return true;
+      return trimmed.localeCompare(value, undefined, { sensitivity: 'base' }) !== 0;
+    };
+
     const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
     const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
     const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
@@ -16629,6 +16639,7 @@ if (helpButton && helpDialog) {
     const featureScore = featureMatch?.score || 0;
     const deviceStrong = deviceMatch ? STRONG_SEARCH_MATCH_TYPES.has(deviceMatch.matchType) : false;
     const featureStrong = featureMatch ? STRONG_SEARCH_MATCH_TYPES.has(featureMatch.matchType) : false;
+    const featureExact = featureMatch?.matchType === 'exactKey';
     const bestNonHelpScore = Math.max(deviceScore, featureScore);
     const hasStrongNonHelp = deviceStrong || featureStrong;
     const preferHelp =
@@ -16639,14 +16650,16 @@ if (helpButton && helpDialog) {
       const shouldUseDevice =
         !!deviceMatch &&
         (!featureMatch ||
-          (deviceStrong && !featureStrong) ||
-          (deviceStrong === featureStrong && deviceScore > featureScore));
+          (!featureExact && (
+            (deviceStrong && !featureStrong) ||
+            (deviceStrong === featureStrong && deviceScore > featureScore)
+          )));
       if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {
           device.select.value = device.value;
           device.select.dispatchEvent(new Event('change', { bubbles: true }));
-          if (featureSearch && device.label) {
+          if (featureSearch && device.label && shouldReplaceSearchValue(device.label)) {
             featureSearch.value = device.label;
           }
           focusFeatureElement(device.select);
@@ -16659,7 +16672,7 @@ if (helpButton && helpDialog) {
         if (featureEl) {
           if (featureSearch) {
             const label = feature?.label || featureEl.textContent?.trim();
-            if (label) {
+            if (label && shouldReplaceSearchValue(label)) {
               featureSearch.value = label;
             }
           }
@@ -16706,6 +16719,8 @@ if (helpButton && helpDialog) {
       filterHelp();
     }
   };
+
+  runFeatureSearchForTests = runFeatureSearch;
 
   if (featureSearch) {
     const handle = () => runFeatureSearch(featureSearch.value);
@@ -17481,6 +17496,10 @@ if (typeof module !== "undefined" && module.exports) {
     searchKey,
     searchTokens,
     findBestSearchMatch,
+    __testRunFeatureSearch: runFeatureSearchForTests,
+    __testFeatureMap: featureMap,
+    __testDeviceMap: deviceMap,
+    __testHelpMap: helpMap,
     collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml,
     getAutoGearRules,
