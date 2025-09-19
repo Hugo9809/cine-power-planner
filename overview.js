@@ -282,36 +282,126 @@ function generatePrintableOverview() {
             closeDialog(overviewDialog);
         });
     }
+
+    let removePrintMediaListener = null;
+    let afterPrintRegistered = false;
+    const closeAfterPrint = () => {
+        if (removePrintMediaListener) {
+            removePrintMediaListener();
+            removePrintMediaListener = null;
+        }
+        if (afterPrintRegistered) {
+            window.removeEventListener('afterprint', closeAfterPrint);
+            afterPrintRegistered = false;
+        }
+        closeDialog(overviewDialog);
+    };
+
+    const openFallbackPrintView = () => {
+        if (!content || typeof window === 'undefined') return false;
+        const fallbackRoot = content.cloneNode(true);
+        fallbackRoot.querySelectorAll('.print-btn, .back-btn').forEach(btn => btn.remove());
+        const printWindow = window.open('', '_blank', 'noopener,noreferrer');
+        if (!printWindow) {
+            console.error('Unable to open a fallback print window. Please allow pop-ups and try again.');
+            return false;
+        }
+
+        const doc = printWindow.document;
+        const bodyClassName = typeof document !== 'undefined' && document.body ? document.body.className : '';
+        const htmlLang = typeof document !== 'undefined' && document.documentElement
+            ? document.documentElement.getAttribute('lang') || 'en'
+            : 'en';
+
+        doc.open();
+        doc.write(`<!DOCTYPE html>
+<html lang="${htmlLang}">
+<head>
+<meta charset="utf-8">
+<title>${t.overviewTitle}</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="overview.css">
+<link rel="stylesheet" href="overview-print.css" media="print">
+<link rel="stylesheet" href="overview-print.css" media="screen">
+</head>
+<body class="${bodyClassName}">
+${fallbackRoot.outerHTML}
+</body>
+</html>`);
+        doc.close();
+
+        const triggerPrint = () => {
+            printWindow.focus();
+            try {
+                printWindow.print();
+            } catch (error) {
+                console.error('Failed to trigger print in fallback window.', error);
+            }
+        };
+
+        if (printWindow.document.readyState === 'complete') {
+            triggerPrint();
+        } else {
+            printWindow.addEventListener('load', triggerPrint, { once: true });
+        }
+        printWindow.addEventListener('afterprint', () => {
+            printWindow.close();
+        });
+
+        return true;
+    };
+
     const printBtn = overviewDialog.querySelector('#printOverviewBtn');
     if (printBtn) {
         printBtn.addEventListener('click', () => {
-            window.print();
+            const handlePrintError = (error) => {
+                if (error && error.name === 'AbortError') {
+                    return;
+                }
+                console.warn('window.print() failed; using fallback print window.', error);
+                if (openFallbackPrintView()) {
+                    closeAfterPrint();
+                }
+            };
+
+            if (typeof window.print !== 'function') {
+                handlePrintError(new Error('Print API unavailable'));
+                return;
+            }
+
+            try {
+                const result = window.print();
+                if (result && typeof result.then === 'function') {
+                    result.catch(handlePrintError);
+                }
+            } catch (error) {
+                handlePrintError(error);
+            }
         });
     }
     openDialog(overviewDialog);
 
-    const closeAfterPrint = () => {
-        closeDialog(overviewDialog);
-    };
     if (typeof window.matchMedia === 'function') {
         const mql = window.matchMedia('print');
         const mqlListener = e => {
             if (!e.matches) {
-                if (mql.removeEventListener) {
-                    mql.removeEventListener('change', mqlListener);
-                } else if (mql.removeListener) {
-                    mql.removeListener(mqlListener);
+                if (removePrintMediaListener) {
+                    removePrintMediaListener();
+                    removePrintMediaListener = null;
                 }
                 closeAfterPrint();
             }
         };
         if (mql.addEventListener) {
             mql.addEventListener('change', mqlListener);
+            removePrintMediaListener = () => mql.removeEventListener('change', mqlListener);
         } else if (mql.addListener) {
             mql.addListener(mqlListener);
+            removePrintMediaListener = () => mql.removeListener(mqlListener);
         }
     }
     window.addEventListener('afterprint', closeAfterPrint, { once: true });
+    afterPrintRegistered = true;
 }
 
 if (typeof module !== 'undefined' && module.exports) {
