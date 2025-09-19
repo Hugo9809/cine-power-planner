@@ -2914,10 +2914,14 @@ body.dark-mode {
 }
 body.dark-mode.pink-mode h1,
 body.dark-mode.pink-mode h2,
-body.dark-mode.pink-mode h3 {
+body.dark-mode.pink-mode h3,
+body.dark-mode.dark-accent-boost:not(.pink-mode) h1,
+body.dark-mode.dark-accent-boost:not(.pink-mode) h2,
+body.dark-mode.dark-accent-boost:not(.pink-mode) h3 {
   color: var(--accent-color);
 }
-body.dark-mode.pink-mode h2 {
+body.dark-mode.pink-mode h2,
+body.dark-mode.dark-accent-boost:not(.pink-mode) h2 {
   border-bottom: 2px solid var(--accent-color);
 }
 
@@ -2955,7 +2959,10 @@ body.dark-mode.pink-mode {
 .dark-mode .help-content {
   border-color: var(--control-border);
 }
-body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
+body.dark-mode.pink-mode .help-content,
+body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
+  border-color: var(--accent-color);
+}
 
 @media (prefers-color-scheme: dark) {
   html:not(.light-mode),
@@ -3021,10 +3028,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   }
   body:not(.light-mode).pink-mode h1,
   body:not(.light-mode).pink-mode h2,
-  body:not(.light-mode).pink-mode h3 {
+  body:not(.light-mode).pink-mode h3,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) h1,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) h2,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) h3 {
     color: var(--accent-color);
   }
-  body:not(.light-mode).pink-mode h2 {
+  body:not(.light-mode).pink-mode h2,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) h2 {
     border-bottom: 2px solid var(--accent-color);
   }
   body:not(.light-mode) fieldset { border-color: var(--inverse-text-color); }
@@ -3060,16 +3071,21 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     border-bottom: 1px solid var(--inverse-text-color);
     color: var(--inverse-text-color);
   }
-  body:not(.light-mode).pink-mode .gear-table td {
+  body:not(.light-mode).pink-mode .gear-table td,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) .gear-table td {
     border-top: 1px solid var(--accent-color);
     border-bottom: 1px solid var(--accent-color);
   }
-  body:not(.light-mode).pink-mode .gear-table .category-row td {
+  body:not(.light-mode).pink-mode .gear-table .category-row td,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) .gear-table .category-row td {
     border-top: 1px solid var(--accent-color);
     border-bottom: 1px solid var(--accent-color);
     color: var(--accent-color);
   }
-  body:not(.light-mode).pink-mode .help-content { border-color: var(--accent-color); }
+  body:not(.light-mode).pink-mode .help-content,
+  body:not(.light-mode).dark-accent-boost:not(.pink-mode) .help-content {
+    border-color: var(--accent-color);
+  }
 }
 /* Responsive layout adjustments */
 @media (max-width: 768px) {
@@ -3464,12 +3480,14 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   color: var(--inverse-text-color);
 }
 
-.dark-mode.pink-mode .gear-table td {
+.dark-mode.pink-mode .gear-table td,
+.dark-mode.dark-accent-boost:not(.pink-mode) .gear-table td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
 }
 
-.dark-mode.pink-mode .gear-table .category-row td {
+.dark-mode.pink-mode .gear-table .category-row td,
+.dark-mode.dark-accent-boost:not(.pink-mode) .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   color: var(--accent-color);
