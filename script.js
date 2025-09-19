@@ -1830,7 +1830,11 @@ function setLanguage(lang) {
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
   sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
-  applySharedLinkBtn.textContent = texts[lang].loadSharedLinkBtn;
+  setButtonLabelWithIcon(
+    applySharedLinkBtn,
+    texts[lang].loadSharedLinkBtn,
+    ICON_GLYPHS.load
+  );
 
   // Descriptive hover help for setup management controls
   setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
@@ -2853,6 +2857,7 @@ const ICON_GLYPHS = Object.freeze({
   camera: '\uE333',
   trash: '\uF32D',
   reload: '\uE11B',
+  load: '\uE7B3',
   save: '\uE825',
   timecode: '\uF1CD',
   audioIn: '\uEC2E',
