@@ -224,6 +224,46 @@ describe('applyAutoGearRulesToTableHtml', () => {
     );
   });
 
+  test('rule editor accepts multiple additions at once', () => {
+    env = setupScriptEnvironment();
+
+    const addRuleButton = document.getElementById('autoGearAddRule');
+    addRuleButton.click();
+
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
+
+    const ruleNameInput = document.getElementById('autoGearRuleName');
+    ruleNameInput.value = 'Multi add rule';
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = addCategorySelect.options[0].value;
+
+    const addQuantityInput = document.getElementById('autoGearAddQuantity');
+    addQuantityInput.value = '3';
+
+    const addNameInput = document.getElementById('autoGearAddName');
+    addNameInput.value = 'Monitor Hood; 2x BNC Cable; Lens Cloth';
+
+    const addItemButton = document.getElementById('autoGearAddItemButton');
+    addItemButton.click();
+
+    const saveButton = document.getElementById('autoGearSaveRule');
+    saveButton.click();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const rule = stored.find(entry => entry.label === 'Multi add rule');
+    expect(rule).toBeDefined();
+    expect(rule.add).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Monitor Hood', quantity: 3 }),
+        expect.objectContaining({ name: 'BNC Cable', quantity: 2 }),
+        expect.objectContaining({ name: 'Lens Cloth', quantity: 3 }),
+      ])
+    );
+  });
+
   test('automatic backups capture snapshots after rules change', () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-06T12:00:00Z'));

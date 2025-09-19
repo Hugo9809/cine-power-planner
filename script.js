@@ -181,6 +181,27 @@ function normalizeAutoGearQuantity(value) {
   return Number.isFinite(num) && num > 0 ? num : 1;
 }
 
+function parseAutoGearDraftNames(value) {
+  if (typeof value !== 'string') return [];
+  const raw = value.trim();
+  if (!raw) return [];
+  const hasDelimiters = /[;\n\r]/.test(raw);
+  const parts = hasDelimiters ? raw.split(/[;\n\r]+/) : [raw];
+  return parts
+    .map(part => {
+      const segment = part.trim();
+      if (!segment) return null;
+      const quantityMatch = segment.match(/^(\d+)\s*[x×]\s*(.+)$/i);
+      if (quantityMatch) {
+        const name = quantityMatch[2].trim();
+        if (!name) return null;
+        return { name, quantity: normalizeAutoGearQuantity(quantityMatch[1]) };
+      }
+      return { name: segment };
+    })
+    .filter(Boolean);
+}
+
 function normalizeAutoGearItem(entry) {
   if (!entry || typeof entry !== 'object') return null;
   const name = typeof entry.name === 'string' ? entry.name.trim() : '';
@@ -2645,9 +2666,18 @@ function setLanguage(lang) {
   }
   if (autoGearAddItemLabel) {
     const label = texts[lang].autoGearAddItemLabel || texts.en?.autoGearAddItemLabel || autoGearAddItemLabel.textContent;
+    const hint = texts[lang].autoGearAddMultipleHint || texts.en?.autoGearAddMultipleHint || '';
+    const helpText = hint ? `${label} – ${hint}` : label;
     autoGearAddItemLabel.textContent = label;
+    autoGearAddItemLabel.setAttribute('data-help', helpText);
     if (autoGearAddNameInput) {
       autoGearAddNameInput.setAttribute('aria-label', label);
+      autoGearAddNameInput.setAttribute('data-help', helpText);
+      if (hint) {
+        autoGearAddNameInput.setAttribute('placeholder', hint);
+      } else {
+        autoGearAddNameInput.removeAttribute('placeholder');
+      }
     }
   }
   if (autoGearAddCategoryLabel) {
@@ -2674,9 +2704,18 @@ function setLanguage(lang) {
   }
   if (autoGearRemoveItemLabel) {
     const label = texts[lang].autoGearRemoveItemLabel || texts.en?.autoGearRemoveItemLabel || autoGearRemoveItemLabel.textContent;
+    const hint = texts[lang].autoGearRemoveMultipleHint || texts.en?.autoGearRemoveMultipleHint || '';
+    const helpText = hint ? `${label} – ${hint}` : label;
     autoGearRemoveItemLabel.textContent = label;
+    autoGearRemoveItemLabel.setAttribute('data-help', helpText);
     if (autoGearRemoveNameInput) {
       autoGearRemoveNameInput.setAttribute('aria-label', label);
+      autoGearRemoveNameInput.setAttribute('data-help', helpText);
+      if (hint) {
+        autoGearRemoveNameInput.setAttribute('placeholder', hint);
+      } else {
+        autoGearRemoveNameInput.removeAttribute('placeholder');
+      }
     }
   }
   if (autoGearRemoveCategoryLabel) {
@@ -4851,8 +4890,8 @@ function addAutoGearDraftItem(type) {
   const categorySelect = isAdd ? autoGearAddCategorySelect : autoGearRemoveCategorySelect;
   const quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
   if (!nameInput || !categorySelect || !quantityInput) return;
-  const name = nameInput.value.trim();
-  if (!name) {
+  const parsedNames = parseAutoGearDraftNames(nameInput.value);
+  if (!parsedNames.length) {
     const message = texts[currentLang]?.autoGearItemNameRequired
       || texts.en?.autoGearItemNameRequired
       || 'Enter an item name first.';
@@ -4860,9 +4899,14 @@ function addAutoGearDraftItem(type) {
     return;
   }
   const category = categorySelect.value || '';
-  const quantity = normalizeAutoGearQuantity(quantityInput.value);
+  const defaultQuantity = normalizeAutoGearQuantity(quantityInput.value);
   const list = isAdd ? autoGearEditorDraft.add : autoGearEditorDraft.remove;
-  list.push({ id: generateAutoGearId('item'), name, category, quantity });
+  parsedNames.forEach(entry => {
+    const quantity = Object.prototype.hasOwnProperty.call(entry, 'quantity')
+      ? normalizeAutoGearQuantity(entry.quantity)
+      : defaultQuantity;
+    list.push({ id: generateAutoGearId('item'), name: entry.name, category, quantity });
+  });
   nameInput.value = '';
   quantityInput.value = '1';
   renderAutoGearDraftLists();
