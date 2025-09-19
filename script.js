@@ -4259,52 +4259,73 @@ function createAutoGearDraft(rule) {
 
 function refreshAutoGearScenarioOptions(selected) {
   if (!autoGearScenariosSelect) return;
-  const selectedValue = Array.isArray(selected)
-    ? selected[0] || ''
-    : typeof selected === 'string'
-      ? selected
+
+  const candidateValues = Array.isArray(selected)
+    ? selected
+    : typeof selected === 'string' && selected
+      ? [selected]
       : Array.isArray(autoGearEditorDraft?.scenarios)
-        ? autoGearEditorDraft.scenarios[0] || ''
-        : '';
+        ? autoGearEditorDraft.scenarios
+        : [];
+
+  const selectedValues = Array.from(
+    new Set(
+      candidateValues
+        .filter(value => typeof value === 'string')
+        .map(value => value.trim())
+        .filter(Boolean)
+    )
+  );
 
   autoGearScenariosSelect.innerHTML = '';
+  autoGearScenariosSelect.multiple = true;
+
   const source = document.getElementById('requiredScenarios');
-  let hasSelectedValue = false;
   let hasOptions = false;
+
   if (source) {
     Array.from(source.options).forEach(opt => {
       if (!opt.value) return;
       const option = document.createElement('option');
       option.value = opt.value;
       option.textContent = opt.textContent;
-      if (opt.value === selectedValue) {
+      if (selectedValues.includes(opt.value)) {
         option.selected = true;
-        hasSelectedValue = true;
       }
       autoGearScenariosSelect.appendChild(option);
       hasOptions = true;
     });
   }
+
   if (!hasOptions) {
     const placeholder = document.createElement('option');
     placeholder.value = '';
     placeholder.textContent = texts[currentLang]?.autoGearScenarioPlaceholder
       || texts.en?.autoGearScenarioPlaceholder
-      || 'Select a scenario';
+      || 'Select scenarios';
     placeholder.disabled = true;
     placeholder.selected = true;
     autoGearScenariosSelect.appendChild(placeholder);
-    return;
+  } else {
+    selectedValues.forEach(value => {
+      const exists = Array.from(autoGearScenariosSelect.options || []).some(
+        option => option && option.value === value
+      );
+      if (!exists) {
+        const fallbackOption = document.createElement('option');
+        fallbackOption.value = value;
+        fallbackOption.textContent = value;
+        fallbackOption.selected = true;
+        autoGearScenariosSelect.appendChild(fallbackOption);
+      }
+    });
   }
-  if (!hasSelectedValue && selectedValue) {
-    const fallbackOption = document.createElement('option');
-    fallbackOption.value = selectedValue;
-    fallbackOption.textContent = selectedValue;
-    fallbackOption.selected = true;
-    autoGearScenariosSelect.appendChild(fallbackOption);
-  } else if (!selectedValue && autoGearScenariosSelect.options.length) {
-    autoGearScenariosSelect.options[0].selected = true;
-  }
+
+  const selectableOptions = Array.from(autoGearScenariosSelect.options || []).filter(option => !option.disabled);
+  const visibleCount = selectableOptions.length
+    ? Math.min(6, Math.max(selectableOptions.length, 3))
+    : 1;
+  autoGearScenariosSelect.size = visibleCount;
 }
 
 function populateAutoGearCategorySelect(select, currentValue) {
@@ -4480,7 +4501,7 @@ function closeAutoGearEditor() {
   autoGearEditor.hidden = true;
   autoGearEditorDraft = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
-  refreshAutoGearScenarioOptions('');
+  refreshAutoGearScenarioOptions([]);
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
@@ -4514,15 +4535,11 @@ function addAutoGearDraftItem(type) {
 
 function saveAutoGearRuleFromEditor() {
   if (!autoGearEditorDraft) return;
-  let scenarioValue = autoGearScenariosSelect ? autoGearScenariosSelect.value : '';
-  if (!scenarioValue && autoGearScenariosSelect) {
-    const fallbackOption = Array.from(autoGearScenariosSelect.options || []).find(option => option && option.value);
-    if (fallbackOption) {
-      scenarioValue = fallbackOption.value;
-      autoGearScenariosSelect.value = scenarioValue;
-    }
-  }
-  const scenarios = scenarioValue ? [scenarioValue] : [];
+  const scenarios = autoGearScenariosSelect
+    ? Array.from(autoGearScenariosSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(Boolean)
+    : [];
   if (!scenarios.length) {
     const message = texts[currentLang]?.autoGearRuleScenarioRequired
       || texts.en?.autoGearRuleScenarioRequired
