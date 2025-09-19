@@ -101,7 +101,8 @@ function setupScriptEnvironment(options = {}) {
     loadSetup: jest.fn(),
     deleteSetup: jest.fn(),
     loadFavorites: jest.fn(() => ({})),
-    saveFavorites: jest.fn()
+    saveFavorites: jest.fn(),
+    alert: jest.fn()
   };
 
   if (options.devices) {

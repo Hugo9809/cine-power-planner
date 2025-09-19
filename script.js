@@ -11101,20 +11101,201 @@ cancelEditBtn.addEventListener("click", () => {
   resetDeviceForm();
 });
 
-// Export device data
-exportBtn.addEventListener("click", () => {
-  const dataStr = JSON.stringify(devices, null, 2);
-  exportOutput.style.display = "block";
-  exportOutput.value = dataStr;
-  const blob = new Blob([dataStr], { type: "application/json" });
+const DEVICE_DATABASE_EXPORT_FORMAT = 'camera-power-planner-device-database';
+
+function cloneDeviceData(value) {
+  if (value === undefined) return undefined;
+  const json = JSON.stringify(value);
+  return typeof json === 'string' ? JSON.parse(json) : undefined;
+}
+
+function computeDeviceStatistics(database) {
+  const stats = { total: 0, categoryCounts: {} };
+  if (!isPlainObjectValue(database)) {
+    return stats;
+  }
+
+  Object.entries(database).forEach(([key, value]) => {
+    if (key === 'fiz' && isPlainObjectValue(value)) {
+      Object.entries(value).forEach(([subKey, subValue]) => {
+        if (!isPlainObjectValue(subValue)) return;
+        const count = Object.keys(subValue).length;
+        stats.categoryCounts[`fiz.${subKey}`] = count;
+        stats.total += count;
+      });
+      return;
+    }
+
+    if (!isPlainObjectValue(value)) {
+      return;
+    }
+
+    const count = Object.keys(value).length;
+    stats.categoryCounts[key] = count;
+    stats.total += count;
+  });
+
+  return stats;
+}
+
+function createDeviceExportPayload(deviceData, exportedAt) {
+  const stats = computeDeviceStatistics(deviceData);
+  let timestamp = exportedAt;
+  if (!timestamp || typeof timestamp.toISOString !== 'function') {
+    timestamp = new Date(timestamp || Date.now());
+  }
+  let exportedAtIso;
+  try {
+    exportedAtIso = timestamp.toISOString();
+  } catch (error) {
+    console.warn('Failed to serialise export timestamp', error);
+    exportedAtIso = new Date().toISOString();
+  }
+
+  return {
+    meta: {
+      format: DEVICE_DATABASE_EXPORT_FORMAT,
+      exportedAt: exportedAtIso,
+      appVersion: APP_VERSION,
+      totalDevices: stats.total,
+      categoryCounts: stats.categoryCounts,
+    },
+    devices: deviceData,
+  };
+}
+
+function createDeviceExportText(deviceData, exportedAt) {
+  return JSON.stringify(createDeviceExportPayload(deviceData, exportedAt), null, 2);
+}
+
+function sanitizeDeviceDatabase(database) {
+  if (!isPlainObjectValue(database)) {
+    return null;
+  }
+
+  const json = JSON.stringify(database);
+  if (typeof json !== 'string') {
+    return null;
+  }
+
+  const sanitized = JSON.parse(json);
+  const ensureObject = (target, key) => {
+    if (!isPlainObjectValue(target[key])) {
+      target[key] = {};
+    }
+  };
+
+  const defaultSource =
+    (typeof window !== 'undefined' && window.defaultDevices && typeof window.defaultDevices === 'object')
+      ? window.defaultDevices
+      : (typeof devices !== 'undefined' && devices && typeof devices === 'object' ? devices : null);
+
+  if (defaultSource) {
+    Object.entries(defaultSource).forEach(([key, value]) => {
+      if (!isPlainObjectValue(value)) {
+        return;
+      }
+      if (key === 'fiz') {
+        if (!isPlainObjectValue(sanitized.fiz)) {
+          sanitized.fiz = {};
+        }
+        Object.keys(value).forEach(subKey => {
+          ensureObject(sanitized.fiz, subKey);
+        });
+        return;
+      }
+      ensureObject(sanitized, key);
+    });
+  } else {
+    ['cameras', 'monitors', 'video', 'viewfinders', 'batteries', 'batteryHotswaps', 'chargers', 'cages', 'wirelessReceivers'].forEach(key => {
+      ensureObject(sanitized, key);
+    });
+    if (!isPlainObjectValue(sanitized.fiz)) {
+      sanitized.fiz = {};
+    }
+    ['motors', 'controllers', 'distance'].forEach(subKey => ensureObject(sanitized.fiz, subKey));
+  }
+
+  return sanitized;
+}
+
+function parseImportedDevicePayload(rawData) {
+  if (!isPlainObjectValue(rawData)) {
+    return null;
+  }
+
+  let meta = null;
+  let database = rawData;
+  if (isPlainObjectValue(rawData.devices)) {
+    database = rawData.devices;
+    meta = isPlainObjectValue(rawData.meta) ? rawData.meta : null;
+  }
+
+  const sanitized = sanitizeDeviceDatabase(database);
+  if (!sanitized) {
+    return null;
+  }
+
+  return { devices: sanitized, meta };
+}
+
+function mergeDeviceDatabaseWithDefaults(customDevices) {
+  const baseSource =
+    (typeof window !== 'undefined' && window.defaultDevices && typeof window.defaultDevices === 'object')
+      ? window.defaultDevices
+      : (typeof devices !== 'undefined' && devices && typeof devices === 'object' ? devices : {});
+  const baseClone = cloneDeviceData(baseSource) || {};
+  const sanitized = sanitizeDeviceDatabase(customDevices);
+  if (!sanitized) {
+    return baseClone;
+  }
+
+  Object.entries(sanitized).forEach(([key, value]) => {
+    if (key === 'fiz' && isPlainObjectValue(value)) {
+      const targetFiz = isPlainObjectValue(baseClone.fiz) ? baseClone.fiz : {};
+      Object.entries(value).forEach(([subKey, subValue]) => {
+        if (isPlainObjectValue(subValue)) {
+          const existing = isPlainObjectValue(targetFiz[subKey]) ? targetFiz[subKey] : {};
+          targetFiz[subKey] = { ...existing, ...subValue };
+        } else {
+          targetFiz[subKey] = subValue;
+        }
+      });
+      baseClone.fiz = targetFiz;
+      return;
+    }
+
+    if (isPlainObjectValue(value) && isPlainObjectValue(baseClone[key])) {
+      baseClone[key] = { ...baseClone[key], ...value };
+    } else {
+      baseClone[key] = value;
+    }
+  });
+
+  return baseClone;
+}
+
+function downloadJsonString(filename, dataStr) {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  const blob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
-  a.download = "device_data_export.json";
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// Export device data
+exportBtn.addEventListener("click", () => {
+  const exportText = createDeviceExportText(devices);
+  exportOutput.style.display = "block";
+  exportOutput.value = exportText;
+  downloadJsonString('device_data_export.json', exportText);
 });
 
 const exportAndRevertBtn = document.getElementById('exportAndRevertBtn'); 
@@ -11124,17 +11305,8 @@ if (exportAndRevertBtn) {
     // Step 1: Export the current database
     if (confirm(texts[currentLang].confirmExportAndRevert)) { // Confirmation for both actions
       // Reusing the export logic from the existing 'Export Database' button
-      const dataStr = JSON.stringify(devices, null, 2);
-      // For simplicity, let's just trigger a download directly.
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "device_data_backup_before_revert.json"; // Suggests it's a backup
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const exportText = createDeviceExportText(devices);
+      downloadJsonString('device_data_backup_before_revert.json', exportText);
 
       // Give a small delay to ensure download prompt appears before next step
       const revertTimer = setTimeout(() => {
@@ -11165,56 +11337,56 @@ importFileInput.addEventListener("change", (event) => {
   reader.onload = (e) => {
     try {
       const importedData = JSON.parse(e.target.result);
-      // Basic validation: check if it has expected top-level keys
-      const expectedKeys = ["cameras", "viewfinders", "monitors", "video", "fiz", "batteries"];
-      const hasAllKeys = expectedKeys.every(key => Object.prototype.hasOwnProperty.call(importedData, key));
-
-      if (hasAllKeys && typeof importedData.fiz === 'object' &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'motors') &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'controllers') &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
-        devices = importedData; // Overwrite current devices with imported data
-        storeDevices(devices);
-        viewfinderTypeOptions = getAllViewfinderTypes();
-        viewfinderConnectorOptions = getAllViewfinderConnectors();
-        refreshDeviceLists(); // Update device manager lists
-        // Re-populate all dropdowns and update calculations
-        populateSelect(cameraSelect, devices.cameras, true);
-        populateMonitorSelect();
-        populateSelect(videoSelect, devices.video, true);
-        motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-        controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-        populateSelect(distanceSelect, devices.fiz.distance, true);
-        populateSelect(batterySelect, devices.batteries, true);
-        updateFizConnectorOptions();
-        updateMotorConnectorOptions();
-        updateControllerConnectorOptions();
-        updateControllerPowerOptions();
-        updateControllerBatteryOptions();
-        updateControllerConnectivityOptions();
-        updateDistanceConnectionOptions();
-        updateDistanceMethodOptions();
-        updateDistanceDisplayOptions();
-        applyFilters();
-        updateCalculations();
-
-        // Count total devices imported for the alert message
-        let deviceCount = 0;
-        for (const category in importedData) {
-            if (category === "fiz") {
-                for (const subcategory in importedData.fiz) {
-                    deviceCount += Object.keys(importedData.fiz[subcategory]).length;
-                }
-            } else {
-                deviceCount += Object.keys(importedData[category]).length;
-            }
-        }
-        alert(texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount));
-        exportOutput.style.display = "block"; // Show the textarea
-        exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
-      } else {
+      const parsed = parseImportedDevicePayload(importedData);
+      if (!parsed) {
         alert(texts[currentLang].alertImportError);
+        return;
       }
+
+      const mergedDevices = mergeDeviceDatabaseWithDefaults(parsed.devices);
+      unifyDevices(mergedDevices);
+      devices = mergedDevices;
+      storeDevices(devices);
+
+      viewfinderTypeOptions = getAllViewfinderTypes();
+      viewfinderConnectorOptions = getAllViewfinderConnectors();
+      updatePlateTypeOptions();
+      updatePowerPortOptions();
+      updatePowerDistTypeOptions();
+      updatePowerDistVoltageOptions();
+      updatePowerDistCurrentOptions();
+      updateRecordingMediaOptions();
+      updateTimecodeTypeOptions();
+      refreshDeviceLists(); // Update device manager lists
+      // Re-populate all dropdowns and update calculations
+      populateSelect(cameraSelect, devices.cameras, true);
+      populateMonitorSelect();
+      populateSelect(videoSelect, devices.video, true);
+      motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
+      controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
+      populateSelect(distanceSelect, devices.fiz.distance, true);
+      populateSelect(batterySelect, devices.batteries, true);
+      updateFizConnectorOptions();
+      updateMotorConnectorOptions();
+      updateControllerConnectorOptions();
+      updateControllerPowerOptions();
+      updateControllerBatteryOptions();
+      updateControllerConnectivityOptions();
+      updateDistanceConnectionOptions();
+      updateDistanceMethodOptions();
+      updateDistanceDisplayOptions();
+      applyFilters();
+      updateCalculations();
+
+      const stats = computeDeviceStatistics(devices);
+      alert(texts[currentLang].alertImportSuccess.replace("{num_devices}", stats.total));
+      exportOutput.style.display = "block"; // Show the textarea
+      exportOutput.value = createDeviceExportText(devices);
+      console.log('Device database import summary:', {
+        total: stats.total,
+        categories: stats.categoryCounts,
+        meta: parsed.meta || null,
+      });
     } catch (error) {
       console.error("Error parsing or importing data:", error);
       alert(texts[currentLang].alertImportError);
@@ -16666,5 +16838,10 @@ if (typeof module !== "undefined" && module.exports) {
     applyAutoGearRulesToTableHtml,
     getAutoGearRules,
     syncAutoGearRulesFromStorage,
+    computeDeviceStatistics,
+    createDeviceExportPayload,
+    createDeviceExportText,
+    parseImportedDevicePayload,
+    mergeDeviceDatabaseWithDefaults,
   };
 }
