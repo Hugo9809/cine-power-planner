@@ -2121,56 +2121,72 @@ function setLanguage(lang) {
     }
   }
 
-  let sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
-  if (sharedImportLegend) {
-    const legend = texts[lang].sharedImportAutoGearLabel
-      || texts.en?.sharedImportAutoGearLabel
-      || sharedImportLegend.textContent;
-    sharedImportLegend.textContent = legend;
-    sharedImportLegendText = legend;
-    if (sharedImportOptions) {
-      sharedImportOptions.setAttribute('data-help', legend);
-    }
+  const sharedRulesLabel = texts[lang].sharedImportAutoGearLabel
+    || texts.en?.sharedImportAutoGearLabel
+    || (sharedRulesDialogTitle ? sharedRulesDialogTitle.textContent : '');
+  if (sharedRulesDialogTitle && sharedRulesLabel) {
+    sharedRulesDialogTitle.textContent = sharedRulesLabel;
   }
-  if (sharedImportModeSelect && sharedImportLegendText) {
-    sharedImportModeSelect.setAttribute('aria-label', sharedImportLegendText);
-    sharedImportModeSelect.setAttribute('data-help', sharedImportLegendText);
+  if (sharedRulesDialogSelectLabel && sharedRulesLabel) {
+    sharedRulesDialogSelectLabel.textContent = sharedRulesLabel;
+    sharedRulesDialogSelectLabel.setAttribute('data-help', sharedRulesLabel);
   }
-  if (sharedImportModeNoneOption) {
+  if (sharedRulesDialogSelect && sharedRulesLabel) {
+    sharedRulesDialogSelect.setAttribute('aria-label', sharedRulesLabel);
+    sharedRulesDialogSelect.setAttribute('data-help', sharedRulesLabel);
+  }
+  if (sharedRulesDialogMessage) {
+    const message = texts[lang].sharedImportAutoGearDialogMessage
+      || texts.en?.sharedImportAutoGearDialogMessage
+      || sharedRulesDialogMessage.textContent;
+    sharedRulesDialogMessage.textContent = message;
+  }
+  if (sharedRulesDialogNoneOption) {
     const label = texts[lang].sharedImportAutoGearNone
       || texts.en?.sharedImportAutoGearNone
-      || sharedImportModeNoneOption.textContent;
-    sharedImportModeNoneOption.textContent = label;
+      || sharedRulesDialogNoneOption.textContent;
+    sharedRulesDialogNoneOption.textContent = label;
     const help = texts[lang].sharedImportAutoGearNoneHelp
       || texts.en?.sharedImportAutoGearNoneHelp
       || label;
-    sharedImportModeNoneOption.setAttribute('data-help', help);
-    sharedImportModeNoneOption.setAttribute('title', help);
-    sharedImportModeNoneOption.setAttribute('aria-label', label);
+    sharedRulesDialogNoneOption.setAttribute('data-help', help);
+    sharedRulesDialogNoneOption.setAttribute('title', help);
   }
-  if (sharedImportModeProjectOption) {
+  if (sharedRulesDialogProjectOption) {
     const label = texts[lang].sharedImportAutoGearProject
       || texts.en?.sharedImportAutoGearProject
-      || sharedImportModeProjectOption.textContent;
-    sharedImportModeProjectOption.textContent = label;
+      || sharedRulesDialogProjectOption.textContent;
+    sharedRulesDialogProjectOption.textContent = label;
     const help = texts[lang].sharedImportAutoGearProjectHelp
       || texts.en?.sharedImportAutoGearProjectHelp
       || label;
-    sharedImportModeProjectOption.setAttribute('data-help', help);
-    sharedImportModeProjectOption.setAttribute('title', help);
-    sharedImportModeProjectOption.setAttribute('aria-label', label);
+    sharedRulesDialogProjectOption.setAttribute('data-help', help);
+    sharedRulesDialogProjectOption.setAttribute('title', help);
   }
-  if (sharedImportModeGlobalOption) {
+  if (sharedRulesDialogGlobalOption) {
     const label = texts[lang].sharedImportAutoGearGlobal
       || texts.en?.sharedImportAutoGearGlobal
-      || sharedImportModeGlobalOption.textContent;
-    sharedImportModeGlobalOption.textContent = label;
+      || sharedRulesDialogGlobalOption.textContent;
+    sharedRulesDialogGlobalOption.textContent = label;
     const help = texts[lang].sharedImportAutoGearGlobalHelp
       || texts.en?.sharedImportAutoGearGlobalHelp
       || label;
-    sharedImportModeGlobalOption.setAttribute('data-help', help);
-    sharedImportModeGlobalOption.setAttribute('title', help);
-    sharedImportModeGlobalOption.setAttribute('aria-label', label);
+    sharedRulesDialogGlobalOption.setAttribute('data-help', help);
+    sharedRulesDialogGlobalOption.setAttribute('title', help);
+  }
+  if (sharedRulesDialogApply) {
+    const label = texts[lang].sharedImportAutoGearDialogApply
+      || texts.en?.sharedImportAutoGearDialogApply
+      || sharedRulesDialogApply.textContent;
+    setButtonLabelWithIcon(sharedRulesDialogApply, label, ICON_GLYPHS.save);
+    sharedRulesDialogApply.setAttribute('data-help', label);
+  }
+  if (sharedRulesDialogCancel) {
+    const label = texts[lang].sharedImportAutoGearDialogCancel
+      || texts.en?.sharedImportAutoGearDialogCancel
+      || sharedRulesDialogCancel.textContent;
+    setButtonLabelWithIcon(sharedRulesDialogCancel, label, ICON_GLYPHS.circleX);
+    sharedRulesDialogCancel.setAttribute('data-help', label);
   }
 
   applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
@@ -3660,18 +3676,16 @@ const shareLinkMessage = document.getElementById("shareLinkMessage");
 const shareIncludeAutoGearCheckbox = document.getElementById("shareIncludeAutoGear");
 const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearText");
 const shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
-const sharedImportOptions = document.getElementById("sharedImportOptions");
-const sharedImportLegend = document.getElementById("sharedImportLegend");
-const sharedImportModeSelect = document.getElementById("sharedImportModeSelect");
-const sharedImportModeNoneOption = document.getElementById("sharedImportModeNoneOption");
-const sharedImportModeProjectOption = document.getElementById("sharedImportModeProjectOption");
-const sharedImportModeGlobalOption = document.getElementById("sharedImportModeGlobalOption");
-if (sharedImportModeSelect) {
-  Array.from(sharedImportModeSelect.options || []).forEach(option => {
-    if (option.value === "none") return;
-    option.disabled = true;
-  });
-}
+const sharedRulesDialog = document.getElementById("sharedRulesDialog");
+const sharedRulesDialogTitle = document.getElementById("sharedRulesDialogTitle");
+const sharedRulesDialogMessage = document.getElementById("sharedRulesDialogMessage");
+const sharedRulesDialogSelectLabel = document.getElementById("sharedRulesDialogSelectLabel");
+const sharedRulesDialogSelect = document.getElementById("sharedRulesDialogSelect");
+const sharedRulesDialogApply = document.getElementById("sharedRulesDialogApply");
+const sharedRulesDialogCancel = document.getElementById("sharedRulesDialogCancel");
+const sharedRulesDialogNoneOption = document.getElementById("sharedRulesDialogNoneOption");
+const sharedRulesDialogProjectOption = document.getElementById("sharedRulesDialogProjectOption");
+const sharedRulesDialogGlobalOption = document.getElementById("sharedRulesDialogGlobalOption");
 let lastSetupName = setupSelect ? setupSelect.value : '';
 const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const sharedKeyMap = {
@@ -3697,6 +3711,10 @@ const sharedKeyMap = {
 
 let lastSharedSetupData = null;
 let lastSharedAutoGearRules = null;
+let lastSharedImportMode = null;
+let sharedRulesDialogResolver = null;
+let sharedRulesDialogRejecter = null;
+let lastActiveBeforeSharedRules = null;
 
 function cloneSharedImportValue(value) {
   if (value == null) return null;
@@ -3705,6 +3723,33 @@ function cloneSharedImportValue(value) {
   } catch (error) {
     console.warn('Failed to clone shared import value', error);
     return null;
+  }
+}
+
+function autoGearRulesMatch(first, second) {
+  const normalize = list => (Array.isArray(list)
+    ? list.map(normalizeAutoGearRule).filter(Boolean)
+    : []);
+  const a = normalize(first);
+  const b = normalize(second);
+  if (a.length !== b.length) {
+    return false;
+  }
+  const signaturesA = a.map(autoGearRuleSignature).sort();
+  const signaturesB = b.map(autoGearRuleSignature).sort();
+  return signaturesA.every((signature, index) => signature === signaturesB[index]);
+}
+
+function shouldPromptForSharedRules(sharedRules) {
+  if (!Array.isArray(sharedRules) || !sharedRules.length) {
+    return false;
+  }
+  try {
+    const currentRules = getAutoGearRules();
+    return !autoGearRulesMatch(sharedRules, currentRules);
+  } catch (error) {
+    console.warn('Failed to compare automatic gear rules', error);
+    return true;
   }
 }
 
@@ -3718,12 +3763,12 @@ function clearStoredSharedImportData() {
   lastSharedAutoGearRules = null;
 }
 
-function reapplySharedImportSelection() {
+function reapplySharedImportSelection(modeOverride) {
   if (lastSharedSetupData === null) return;
   const storedData = cloneSharedImportValue(lastSharedSetupData);
   if (!storedData) return;
   const storedRules = cloneSharedImportValue(lastSharedAutoGearRules);
-  const mode = resolveSharedImportMode(storedRules);
+  const mode = resolveSharedImportMode(storedRules, modeOverride);
   applySharedSetup(storedData, {
     autoGearMode: mode,
     sharedAutoGearRules: storedRules,
@@ -3731,31 +3776,69 @@ function reapplySharedImportSelection() {
   updateCalculations();
 }
 
-function resolveSharedImportMode(sharedRules) {
+function resolveSharedImportMode(sharedRules, explicitMode) {
   const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
-  if (!sharedImportModeSelect) {
-    return hasRules ? 'project' : 'none';
-  }
-  const selectedValues = Array.from(sharedImportModeSelect.selectedOptions || [])
-    .map(option => option.value)
-    .filter(value => value === 'none' || value === 'project' || value === 'global');
   if (!hasRules) {
     return 'none';
   }
-  let modes = Array.from(new Set(selectedValues));
-  if (!modes.length) {
-    return 'project';
+  const preferred = [explicitMode, lastSharedImportMode].find(mode => (
+    mode === 'none' || mode === 'project' || mode === 'global'
+  ));
+  if (preferred) {
+    return preferred;
   }
-  if (modes.length > 1 && modes.includes('none')) {
-    modes = modes.filter(value => value !== 'none');
+  return 'project';
+}
+
+function closeSharedRulesDialog(restoreFocus = true) {
+  if (!sharedRulesDialog) return;
+  sharedRulesDialog.setAttribute('hidden', '');
+  sharedRulesDialogResolver = null;
+  sharedRulesDialogRejecter = null;
+  if (restoreFocus && lastActiveBeforeSharedRules && typeof lastActiveBeforeSharedRules.focus === 'function') {
+    lastActiveBeforeSharedRules.focus();
   }
-  if (!modes.length) {
-    return 'project';
+  lastActiveBeforeSharedRules = null;
+}
+
+function openSharedRulesDialog(defaultMode = 'project') {
+  if (!sharedRulesDialog) {
+    return Promise.resolve(defaultMode);
   }
-  if (modes.length === 1) {
-    return modes[0];
+  const allowed = ['none', 'project', 'global'];
+  const selection = allowed.includes(defaultMode) ? defaultMode : 'project';
+  if (sharedRulesDialogSelect) {
+    sharedRulesDialogSelect.value = selection;
   }
-  return modes;
+  sharedRulesDialog.removeAttribute('hidden');
+  lastActiveBeforeSharedRules = document.activeElement;
+  const focusTarget = sharedRulesDialogSelect || sharedRulesDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    focusTarget.focus();
+  }
+  return new Promise((resolve, reject) => {
+    sharedRulesDialogResolver = resolve;
+    sharedRulesDialogRejecter = reject;
+  });
+}
+
+function confirmSharedRulesDialogSelection() {
+  const allowed = ['none', 'project', 'global'];
+  const selected = sharedRulesDialogSelect ? sharedRulesDialogSelect.value : 'project';
+  const mode = allowed.includes(selected) ? selected : 'project';
+  const resolver = sharedRulesDialogResolver;
+  closeSharedRulesDialog();
+  if (typeof resolver === 'function') {
+    resolver(mode);
+  }
+}
+
+function cancelSharedRulesDialogSelection() {
+  const rejecter = sharedRulesDialogRejecter;
+  closeSharedRulesDialog();
+  if (typeof rejecter === 'function') {
+    rejecter(new Error('cancelled'));
+  }
 }
 
 function encodeSharedSetup(setup) {
@@ -5647,6 +5730,10 @@ if (iosPwaHelpDialog) {
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape' && event.key !== 'Esc') return;
   let handled = false;
+  if (sharedRulesDialog && !sharedRulesDialog.hasAttribute('hidden')) {
+    cancelSharedRulesDialogSelection();
+    handled = true;
+  }
   if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
     closeIosPwaHelp(true);
     handled = true;
@@ -13122,7 +13209,18 @@ shareSetupBtn.addEventListener('click', () => {
 
 if (applySharedLinkBtn && sharedLinkInput) {
   applySharedLinkBtn.addEventListener('click', () => {
-    const file = sharedLinkInput.files[0];
+    try {
+      sharedLinkInput.value = '';
+    } catch (error) {
+      console.warn('Failed to reset shared project input', error);
+    }
+    if (typeof sharedLinkInput.click === 'function') {
+      sharedLinkInput.click();
+    }
+  });
+
+  sharedLinkInput.addEventListener('change', () => {
+    const file = (sharedLinkInput.files && sharedLinkInput.files[0]) || null;
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -13130,41 +13228,73 @@ if (applySharedLinkBtn && sharedLinkInput) {
         const data = JSON.parse(reader.result);
         const sharedRules = Array.isArray(data.autoGearRules) ? data.autoGearRules : null;
         storeSharedImportData(data, sharedRules);
-        if (sharedImportModeSelect) {
-          const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
-          Array.from(sharedImportModeSelect.options || []).forEach(option => {
-            if (option.value === 'none') {
-              option.disabled = false;
-              if (!hasRules) {
-                option.selected = true;
-              }
-            } else {
-              option.disabled = !hasRules;
-              if (!hasRules) {
-                option.selected = false;
-              }
+        const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
+        const handleModeSelection = mode => {
+          reapplySharedImportSelection(mode);
+        };
+        if (hasRules && shouldPromptForSharedRules(sharedRules)) {
+          const defaultMode = resolveSharedImportMode(sharedRules, lastSharedImportMode);
+          openSharedRulesDialog(defaultMode).then(mode => {
+            lastSharedImportMode = mode;
+            handleModeSelection(mode);
+          }).catch(() => {
+            clearStoredSharedImportData();
+          }).finally(() => {
+            try {
+              sharedLinkInput.value = '';
+            } catch (error) {
+              console.warn('Failed to reset shared project input after dialog', error);
             }
           });
-          if (!hasRules && !sharedImportModeSelect.selectedOptions.length) {
-            sharedImportModeSelect.selectedIndex = 0;
+        } else {
+          handleModeSelection(hasRules ? 'none' : 'none');
+          try {
+            sharedLinkInput.value = '';
+          } catch (error) {
+            console.warn('Failed to reset shared project input after load', error);
           }
         }
-        const mode = resolveSharedImportMode(sharedRules);
-        applySharedSetup(data, { autoGearMode: mode, sharedAutoGearRules: sharedRules });
-        updateCalculations();
-      } catch {
+      } catch (error) {
+        console.warn('Failed to load shared project', error);
         clearStoredSharedImportData();
         alert(texts[currentLang].invalidSharedLink);
+        try {
+          sharedLinkInput.value = '';
+        } catch (err) {
+          console.warn('Failed to reset shared project input after error', err);
+        }
+      }
+    };
+    reader.onerror = () => {
+      clearStoredSharedImportData();
+      alert(texts[currentLang].invalidSharedLink);
+      try {
+        sharedLinkInput.value = '';
+      } catch (error) {
+        console.warn('Failed to reset shared project input after read error', error);
       }
     };
     reader.readAsText(file);
   });
 }
 
-if (sharedImportModeSelect) {
-  sharedImportModeSelect.addEventListener('change', () => {
-    if (lastSharedSetupData === null) return;
-    reapplySharedImportSelection();
+if (sharedRulesDialogApply) {
+  sharedRulesDialogApply.addEventListener('click', () => {
+    confirmSharedRulesDialogSelection();
+  });
+}
+
+if (sharedRulesDialogCancel) {
+  sharedRulesDialogCancel.addEventListener('click', () => {
+    cancelSharedRulesDialogSelection();
+  });
+}
+
+if (sharedRulesDialog) {
+  sharedRulesDialog.addEventListener('click', event => {
+    if (event.target === sharedRulesDialog) {
+      cancelSharedRulesDialogSelection();
+    }
   });
 }
 

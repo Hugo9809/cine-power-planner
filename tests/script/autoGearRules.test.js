@@ -230,14 +230,14 @@ describe('applyAutoGearRulesToTableHtml', () => {
     );
   });
 
-  test('changing the shared import mode reapplies shared rules', () => {
+  test('prompting for shared automatic gear rules applies the selected mode', async () => {
     env = setupScriptEnvironment();
     env.utils.syncAutoGearRulesFromStorage([]);
 
-    const applySharedLinkBtn = document.getElementById('applySharedLinkBtn');
     const sharedLinkInput = document.getElementById('sharedLinkInput');
-    const sharedImportModeSelect = document.getElementById('sharedImportModeSelect');
-    const sharedImportModeGlobalOption = document.getElementById('sharedImportModeGlobalOption');
+    const sharedRulesDialog = document.getElementById('sharedRulesDialog');
+    const sharedRulesDialogSelect = document.getElementById('sharedRulesDialogSelect');
+    const sharedRulesDialogApply = document.getElementById('sharedRulesDialogApply');
 
     const sharedRule = {
       id: 'shared-rule',
@@ -270,22 +270,27 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     window.FileReader = FileReaderStub;
 
-    applySharedLinkBtn.click();
+    sharedLinkInput.dispatchEvent(new Event('change', { bubbles: true }));
 
-    expect(sharedImportModeGlobalOption.disabled).toBe(false);
+    await Promise.resolve();
+
+    expect(sharedRulesDialog).not.toBeNull();
+    expect(sharedRulesDialog.hasAttribute('hidden')).toBe(false);
+
     const storedBeforeChange = localStorage.getItem('cameraPowerPlanner_autoGearRules');
     expect(storedBeforeChange).not.toBeNull();
     expect(JSON.parse(storedBeforeChange)).toEqual([]);
 
-    Array.from(sharedImportModeSelect.options).forEach(option => {
-      option.selected = option.value === 'global';
-    });
+    sharedRulesDialogSelect.value = 'global';
+    sharedRulesDialogApply.click();
 
-    sharedImportModeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    await Promise.resolve();
+    await Promise.resolve();
 
     const stored = JSON.parse(localStorage.getItem('cameraPowerPlanner_autoGearRules'));
     expect(stored).toHaveLength(1);
     expect(stored[0].label).toBe('Shared grip tweak');
+    expect(sharedRulesDialog.hasAttribute('hidden')).toBe(true);
   });
 
   test('rule editor accepts multiple additions at once', () => {

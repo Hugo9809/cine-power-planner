@@ -312,6 +312,10 @@ const texts = {
     sharedImportAutoGearProjectHelp: "Apply the shared automatic gear rules to this project without affecting others.",
     sharedImportAutoGearGlobal: "Add shared rules to all projects",
     sharedImportAutoGearGlobalHelp: "Merge the shared automatic gear rules into your global collection.",
+    sharedImportAutoGearDialogMessage:
+      "This project includes automatic gear rules. How should they be handled?",
+    sharedImportAutoGearDialogApply: "Apply",
+    sharedImportAutoGearDialogCancel: "Cancel",
 
     cameraLabel: "Camera:",
     monitorLabel: "Monitor:",
@@ -843,6 +847,10 @@ const texts = {
     sharedImportAutoGearProjectHelp: "Applica le regole automatiche condivise solo a questo progetto.",
     sharedImportAutoGearGlobal: "Aggiungi le regole condivise a tutti i progetti",
     sharedImportAutoGearGlobalHelp: "Unisci le regole automatiche condivise alla raccolta globale.",
+    sharedImportAutoGearDialogMessage:
+      "Questo progetto include regole automatiche per l'attrezzatura. Come vuoi gestirle?",
+    sharedImportAutoGearDialogApply: "Applica",
+    sharedImportAutoGearDialogCancel: "Annulla",
     cameraLabel: "Telecamera:",
     monitorLabel: "Monitor:",
     videoLabel: "Trasmettitore wireless:",
@@ -1555,6 +1563,10 @@ const texts = {
     sharedImportAutoGearProjectHelp: "Aplica las reglas automáticas compartidas a este proyecto sin afectar a los demás.",
     sharedImportAutoGearGlobal: "Añadir las reglas compartidas a todos los proyectos",
     sharedImportAutoGearGlobalHelp: "Incorpora las reglas automáticas compartidas a tu colección global.",
+    sharedImportAutoGearDialogMessage:
+      "Este proyecto incluye reglas automáticas de equipo. ¿Cómo deseas gestionarlas?",
+    sharedImportAutoGearDialogApply: "Aplicar",
+    sharedImportAutoGearDialogCancel: "Cancelar",
 
     cameraLabel: "Cámara:",
     monitorLabel: "Monitor:",
@@ -2281,6 +2293,10 @@ const texts = {
     sharedImportAutoGearProjectHelp: "Applique les règles automatiques partagées à ce projet sans toucher aux autres.",
     sharedImportAutoGearGlobal: "Ajouter les règles partagées à tous les projets",
     sharedImportAutoGearGlobalHelp: "Ajoute les règles automatiques partagées à votre collection globale.",
+    sharedImportAutoGearDialogMessage:
+      "Ce projet contient des règles automatiques d’équipement. Comment souhaitez-vous les appliquer ?",
+    sharedImportAutoGearDialogApply: "Appliquer",
+    sharedImportAutoGearDialogCancel: "Annuler",
 
     cameraLabel: "Caméra:",
     monitorLabel: "Moniteur:",
@@ -3009,6 +3025,10 @@ const texts = {
     sharedImportAutoGearProjectHelp: "Wendet die geteilten automatischen Gear-Regeln nur auf dieses Projekt an.",
     sharedImportAutoGearGlobal: "Geteilte Regeln zu allen Projekten hinzufügen",
     sharedImportAutoGearGlobalHelp: "Fügt die geteilten automatischen Gear-Regeln deiner globalen Sammlung hinzu.",
+    sharedImportAutoGearDialogMessage:
+      "Diese Projektdatei enthält automatische Gear-Regeln. Wie sollen sie übernommen werden?",
+    sharedImportAutoGearDialogApply: "Übernehmen",
+    sharedImportAutoGearDialogCancel: "Abbrechen",
 
     cameraLabel: "Kamera:",
     monitorLabel: "Monitor:",

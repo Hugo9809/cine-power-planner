@@ -600,32 +600,6 @@ main.legal-content {
   margin: 0;
 }
 
-#setup-manager .share-import-row {
-  align-items: flex-start;
-}
-
-#setup-manager .share-import-options {
-  flex: 1;
-  border: 1px solid var(--panel-border);
-  border-radius: var(--border-radius);
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  background-color: var(--surface-color);
-}
-
-#setup-manager .share-import-options legend {
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem;
-}
-
-#setup-manager .share-import-mode-select {
-  width: 100%;
-  min-height: 6.5rem;
-}
-
 #setup-manager #shareLinkMessage {
   margin-left: calc(var(--form-label-width) + var(--gap-size));
 }
@@ -678,14 +652,6 @@ main.legal-content {
 
   #setup-manager .share-option {
     justify-content: flex-start;
-  }
-
-  #setup-manager .share-import-row {
-    flex-direction: column;
-  }
-
-  #setup-manager .share-import-options {
-    width: 100%;
   }
 
   .settings-hint {
@@ -870,6 +836,46 @@ main.legal-content {
 
 #iosPwaHelpDialog[hidden] {
   display: none;
+}
+
+#sharedRulesDialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 210;
+}
+
+#sharedRulesDialog[hidden] {
+  display: none;
+}
+
+.shared-rules-dialog {
+  background: var(--surface-color);
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: var(--text-color);
+  width: min(460px, 90vw);
+  padding: clamp(20px, 4vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.shared-rules-dialog label {
+  font-weight: 600;
+}
+
+.shared-rules-dialog select {
+  width: 100%;
+}
+
+.shared-rules-dialog-actions {
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 #settingsDialog[hidden] {

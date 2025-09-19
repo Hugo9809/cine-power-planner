@@ -210,33 +210,15 @@
     </div>
     <p id="shareLinkMessage" class="hidden" role="status" aria-live="polite"></p>
     <div class="form-row" id="sharedLinkRow">
-      <label for="sharedLinkInput" id="sharedLinkLabel">Shared Project:</label>
-      <input type="file" id="sharedLinkInput" accept=".json" aria-labelledby="sharedLinkLabel" />
+      <label for="applySharedLinkBtn" id="sharedLinkLabel">Shared Project:</label>
+      <input
+        type="file"
+        id="sharedLinkInput"
+        accept=".json"
+        aria-labelledby="sharedLinkLabel"
+        class="visually-hidden"
+      />
       <button id="applySharedLinkBtn"><span class="btn-icon icon-glyph" aria-hidden="true">&#xE7B3;</span>Load</button>
-    </div>
-    <div class="form-row share-import-row">
-      <span class="form-label-spacer" aria-hidden="true"></span>
-      <fieldset id="sharedImportOptions" class="share-import-options">
-        <legend id="sharedImportLegend">Automatic gear rules</legend>
-        <select
-          id="sharedImportModeSelect"
-          class="share-import-mode-select"
-          name="sharedImportMode"
-          multiple
-          size="3"
-          aria-labelledby="sharedImportLegend"
-        >
-          <option id="sharedImportModeNoneOption" value="none" selected>
-            Don't import automatic gear rules
-          </option>
-          <option id="sharedImportModeProjectOption" value="project" disabled>
-            Use shared rules for this project only
-          </option>
-          <option id="sharedImportModeGlobalOption" value="global" disabled>
-            Add shared rules to all projects
-          </option>
-        </select>
-      </fieldset>
     </div>
     <div class="form-row form-row-actions">
       <span class="form-label-spacer" aria-hidden="true"></span>
@@ -946,6 +928,32 @@
       </section>
       <div class="button-row install-guide-actions">
         <button id="installGuideClose" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="sharedRulesDialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="sharedRulesDialogTitle"
+    aria-describedby="sharedRulesDialogMessage"
+    hidden
+  >
+    <div class="shared-rules-dialog">
+      <h2 id="sharedRulesDialogTitle">Automatic gear rules</h2>
+      <p id="sharedRulesDialogMessage">
+        This project includes automatic gear rules. How should they be handled?
+      </p>
+      <label for="sharedRulesDialogSelect" id="sharedRulesDialogSelectLabel">Automatic gear rules</label>
+      <select id="sharedRulesDialogSelect" aria-labelledby="sharedRulesDialogSelectLabel">
+        <option id="sharedRulesDialogNoneOption" value="none">Don't import automatic gear rules</option>
+        <option id="sharedRulesDialogProjectOption" value="project">Use shared rules for this project only</option>
+        <option id="sharedRulesDialogGlobalOption" value="global">Add shared rules to all projects</option>
+      </select>
+      <div class="button-row shared-rules-dialog-actions">
+        <button id="sharedRulesDialogCancel">Cancel</button>
+        <button id="sharedRulesDialogApply">Apply</button>
       </div>
     </div>
   </div>
