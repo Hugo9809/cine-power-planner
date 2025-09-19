@@ -11,6 +11,9 @@ const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
+const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
+const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
+const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 
 const DEVICE_COLLECTION_KEYS = [
   'cameras',
@@ -812,6 +815,73 @@ function saveAutoGearSeedFlag(flag) {
   );
 }
 
+function loadAutoGearPresets() {
+  const presets = loadJSONFromStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_PRESETS_STORAGE_KEY,
+    "Error loading automatic gear presets from localStorage:",
+    [],
+  );
+  return Array.isArray(presets) ? presets : [];
+}
+
+function saveAutoGearPresets(presets) {
+  const safePresets = Array.isArray(presets) ? presets : [];
+  saveJSONToStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_PRESETS_STORAGE_KEY,
+    safePresets,
+    "Error saving automatic gear presets to localStorage:",
+  );
+}
+
+function loadAutoGearActivePresetId() {
+  if (!SAFE_LOCAL_STORAGE) {
+    return '';
+  }
+  try {
+    const value = SAFE_LOCAL_STORAGE.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+    return typeof value === 'string' ? value : '';
+  } catch (error) {
+    console.error('Error loading automatic gear active preset from localStorage:', error);
+    alertStorageError();
+    return '';
+  }
+}
+
+function saveAutoGearActivePresetId(presetId) {
+  if (!SAFE_LOCAL_STORAGE) {
+    return;
+  }
+  try {
+    if (presetId) {
+      SAFE_LOCAL_STORAGE.setItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, presetId);
+    } else {
+      SAFE_LOCAL_STORAGE.removeItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+    }
+  } catch (error) {
+    console.error('Error saving automatic gear active preset to localStorage:', error);
+    alertStorageError();
+  }
+}
+
+function loadAutoGearBackupVisibility() {
+  return loadFlagFromStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+    "Error loading automatic gear backup visibility from localStorage:",
+  );
+}
+
+function saveAutoGearBackupVisibility(flag) {
+  saveFlagToStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+    Boolean(flag),
+    "Error saving automatic gear backup visibility to localStorage:",
+  );
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
@@ -825,6 +895,9 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
@@ -845,6 +918,9 @@ function exportAllData() {
     autoGearRules: loadAutoGearRules(),
     autoGearBackups: loadAutoGearBackups(),
     autoGearSeeded: loadAutoGearSeedFlag(),
+    autoGearPresets: loadAutoGearPresets(),
+    autoGearActivePresetId: loadAutoGearActivePresetId(),
+    autoGearShowBackups: loadAutoGearBackupVisibility(),
   };
 }
 
@@ -876,6 +952,17 @@ function importAllData(allData) {
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     saveAutoGearSeedFlag(allData.autoGearSeeded);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearPresets')) {
+    saveAutoGearPresets(allData.autoGearPresets);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearActivePresetId')) {
+    saveAutoGearActivePresetId(
+      typeof allData.autoGearActivePresetId === 'string' ? allData.autoGearActivePresetId : ''
+    );
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearShowBackups')) {
+    saveAutoGearBackupVisibility(Boolean(allData.autoGearShowBackups));
   }
 
   let importProjectEntry = null;
@@ -925,6 +1012,12 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearRules,
     loadAutoGearSeedFlag,
     saveAutoGearSeedFlag,
+    loadAutoGearPresets,
+    saveAutoGearPresets,
+    loadAutoGearActivePresetId,
+    saveAutoGearActivePresetId,
+    loadAutoGearBackupVisibility,
+    saveAutoGearBackupVisibility,
     requestPersistentStorage,
   };
 }

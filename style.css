@@ -1125,6 +1125,35 @@ main.legal-content {
   gap: 12px;
 }
 
+.auto-gear-preset-panel {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auto-gear-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.auto-gear-preset-row label {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.auto-gear-preset-select {
+  flex: 1 1 200px;
+  min-width: 160px;
+}
+
 .auto-gear-action-row {
   display: flex;
   flex-wrap: wrap;
@@ -1141,6 +1170,32 @@ main.legal-content {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.auto-gear-backup-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.auto-gear-backup-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auto-gear-backup-toggle-row label {
+  margin: 0;
+}
+
+.auto-gear-backups.auto-gear-backups-collapsed {
+  gap: 4px;
+}
+
+.auto-gear-backups.auto-gear-backups-collapsed .auto-gear-backup-controls {
+  display: none;
 }
 
 .auto-gear-backup-controls {
