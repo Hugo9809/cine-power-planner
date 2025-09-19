@@ -78,4 +78,51 @@ describe('restoreSessionState', () => {
 
     reloadEnv.cleanup();
   });
+
+  test('restores gear list using previous setup selection when rename not saved', () => {
+    const savedGearHtml = `
+      <h2>Project One</h2>
+      <h3>Gear List</h3>
+      <table class="gear-table"><tr><td>Saved Item</td></tr></table>
+    `;
+
+    const savedPayload = {
+      gearList: savedGearHtml,
+      projectInfo: { projectName: 'Project One' }
+    };
+
+    const saveProjectMock = jest.fn();
+    const saveSessionStateMock = jest.fn();
+    const loadProjectMock = jest.fn(name => {
+      if (name === 'Project Two') return null;
+      if (name === 'Project One') return savedPayload;
+      return null;
+    });
+
+    const env = setupScriptEnvironment({
+      readyState: 'complete',
+      globals: {
+        loadSessionState: jest.fn(() => ({
+          setupName: 'Project Two',
+          setupSelect: 'Project One'
+        })),
+        loadProject: loadProjectMock,
+        saveProject: saveProjectMock,
+        saveSessionState: saveSessionStateMock,
+        deleteProject: jest.fn()
+      }
+    });
+
+    const gearListOutput = document.getElementById('gearListOutput');
+
+    expect(loadProjectMock).toHaveBeenCalledWith('Project Two');
+    expect(loadProjectMock).toHaveBeenCalledWith('Project One');
+    expect(gearListOutput.classList.contains('hidden')).toBe(false);
+    expect(gearListOutput.textContent).toContain('Saved Item');
+
+    const savedNames = saveProjectMock.mock.calls.map(([name]) => name);
+    expect(savedNames).toContain('Project Two');
+
+    env.cleanup();
+  });
 });

@@ -17529,8 +17529,23 @@ function restoreSessionState() {
   }
   if (gearListOutput || projectRequirementsOutput) {
     const projectName = getCurrentProjectName();
-    const storedProject = typeof loadProject === 'function' ? loadProject(projectName) : null;
-    if (storedProject && (storedProject.gearList || storedProject.projectInfo)) {
+    const fetchStoredProject = name =>
+      typeof loadProject === 'function' && typeof name === 'string'
+        ? loadProject(name)
+        : null;
+    const hasProjectPayload = project =>
+      project && (project.gearList || project.projectInfo);
+    let storedProject = fetchStoredProject(projectName);
+    if (!hasProjectPayload(storedProject) && state) {
+      const fallbackName = typeof state.setupSelect === 'string' ? state.setupSelect.trim() : '';
+      if (fallbackName && fallbackName !== projectName) {
+        const fallbackProject = fetchStoredProject(fallbackName);
+        if (hasProjectPayload(fallbackProject)) {
+          storedProject = fallbackProject;
+        }
+      }
+    }
+    if (hasProjectPayload(storedProject)) {
       const mergedInfo = {
         ...(storedProject.projectInfo || {}),
         ...(currentProjectInfo || {})
