@@ -974,7 +974,7 @@ main.legal-content {
 #helpSearch {
   width: 100%;
   margin: 10px 0;
-  padding: 5px 2em 5px 5px;
+  padding: 5px calc(var(--button-size) + 12px) 5px 10px;
   box-sizing: border-box;
 }
 
@@ -983,9 +983,11 @@ main.legal-content {
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
+  margin: 0;
+  padding: 0 8px;
+  height: auto;
+  min-height: 0;
+  line-height: 1;
   font-size: 1rem;
 }
 
@@ -1026,35 +1028,27 @@ main.legal-content {
 .help-quick-link {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.5em;
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid transparent;
-  border-radius: var(--border-radius);
-  background: none;
-  color: inherit;
-  font: inherit;
+  margin: 0;
+  padding: 0 10px;
   text-align: left;
-  cursor: pointer;
-}
-
-.help-quick-link:hover,
-.help-quick-link:focus {
-  background: var(--accent-color);
-  color: var(--inverse-text-color);
-}
-
-.help-quick-link:focus {
-  outline: none;
+  white-space: normal;
 }
 
 .help-quick-link:focus-visible {
-  outline: 2px solid var(--inverse-text-color);
+  outline: 2px solid var(--accent-color);
   outline-offset: 2px;
 }
 
 .help-quick-link.active {
-  border-color: var(--accent-color);
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+
+.help-quick-link.active:focus-visible {
+  outline-color: var(--inverse-text-color);
 }
 
 #helpSections section[hidden],
