@@ -7,8 +7,12 @@ const cageData = {
       "Blackmagic Pocket Cinema Camera 6K Pro",
       "Blackmagic BMPCC 6K G2"
     ],
-    "material": null,
-    "weight_g": null,
+    "material": "aluminum, steel",
+    "weight_g": 187.3,
+    "batteryMount": "none",
+    "rodStandard": [
+      "15mm LWS (via bracket in kit)"
+    ],
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16",
@@ -28,7 +32,7 @@ const cageData = {
       "Blackmagic BMPCC 4K",
       "Blackmagic BMPCC 6K"
     ],
-    "material": "aluminum",
+    "material": "aluminum alloy",
     "weight_g": 300,
     "mounting_points": [
       "1/4\"-20",
@@ -66,8 +70,9 @@ const cageData = {
       "Sony FX3",
       "Sony FX30"
     ],
-    "material": null,
-    "weight_g": null,
+    "material": "aluminum, silicone",
+    "weight_g": 160,
+    "batteryMount": "none",
     "mounting_points": [
       "ARCA QR plate",
       "1/4\"-20",
@@ -155,8 +160,8 @@ const cageData = {
       "Sony A1",
       "Sony A7R IV"
     ],
-    "material": "aluminum",
-    "weight_g": null,
+    "material": "aluminum alloy, stainless steel, silicone",
+    "weight_g": 180,
     "mounting_points": [
       "1/4\"-20",
       "ARRI 3/8\"-16 locating",
@@ -192,7 +197,7 @@ const cageData = {
       "Panasonic Lumix S5 II",
       "Panasonic Lumix S5 IIX"
     ],
-    "material": "aluminum, steel",
+    "material": "aluminum alloy, stainless steel",
     "weight_g": 161,
     "mounting_points": [
       "1/4\"-20",
@@ -215,7 +220,7 @@ const cageData = {
       "Panasonic Lumix S5 IIX"
     ],
     "material": null,
-    "weight_g": null,
+    "weight_g": 303,
     "mounting_points": [
       "NATO clamp top handle",
       "cable clamp",
@@ -291,6 +296,9 @@ const cageData = {
       "RED Komodo X"
     ],
     "material": null,
+    "rodStandard": [
+      "15mm LWS"
+    ],
     "weight_g": null,
     "mounting_points": [
       "1/4\"-20",
@@ -352,8 +360,7 @@ const cageData = {
       "Arri Alexa Mini LF"
     ],
     "rodStandard": [
-      "15mm",
-      "19mm"
+      "19mm Studio"
     ],
     "material": null,
     "weight_g": null,
@@ -366,7 +373,7 @@ const cageData = {
     ],
     "top_handle_included": true,
     "side_plates": true,
-    "notes": "ARRI PCA kit including cage plates, top handle, and both 15mm LWS and 19mm Studio rod support.",
+    "notes": "ARRI PCA kit including cage plates, top handle, and dedicated 19mm Studio rod support for Mini and Mini LF.",
     "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories",
     "handle_extension_compatible": true
   },
@@ -378,8 +385,7 @@ const cageData = {
     ],
     "kNumber": "KK.0015124",
     "rodStandard": [
-      "15mm",
-      "19mm"
+      "19mm Studio"
     ],
     "batteryMount": "V-Mount",
     "mounting_points": [
@@ -391,7 +397,7 @@ const cageData = {
     ],
     "top_handle_included": true,
     "side_plates": true,
-    "notes": "ARRI studio set with both 15mm LWS and 19mm Studio rod support.",
+    "notes": "ARRI studio set focused on 19mm Studio rod support with integrated V-mount back.",
     "verified_source": "https://www.arri.com/en/camera-systems/accessories/pro-camera-accessories",
     "handle_extension_compatible": true
   },
@@ -636,7 +642,10 @@ const cageData = {
       "Arri Alexa 35"
     ],
     "material": null,
-    "weight_g": null,
+    "rodStandard": [
+      "15mm LWS"
+    ],
+    "weight_g": 279,
     "mounting_points": [
       "15mm LWS",
       "ARRI BUD dovetail"
@@ -837,8 +846,7 @@ const cageData = {
       "Arri Alexa 35"
     ],
     "rodStandard": [
-      "15mm",
-      "19mm"
+      "19mm Studio"
     ],
     "material": null,
     "weight_g": null,
@@ -861,6 +869,9 @@ const cageData = {
       "Arri Alexa 35"
     ],
     "material": null,
+    "rodStandard": [
+      "15mm LWS"
+    ],
     "weight_g": null,
     "mounting_points": [
       "15 mm LWS lightweight",
@@ -1503,8 +1514,7 @@ const cageData = {
       "Arri Alexa 35"
     ],
     "rodStandard": [
-      "15mm",
-      "19mm"
+      "19mm Studio"
     ],
     "material": null,
     "weight_g": null,
@@ -1517,7 +1527,7 @@ const cageData = {
     ],
     "top_handle_included": true,
     "side_plates": true,
-    "notes": "Production cage set for ALEXA 35 with both 15mm LWS and 19mm Studio rod support.",
+    "notes": "Production cage set for ALEXA 35 centered on 19mm Studio rod support and studio accessories.",
     "verified_source": "https://www.arri.com/",
     "handle_extension_compatible": true
   },
