@@ -775,6 +775,7 @@ main.legal-content {
   align-self: center;
   margin-top: 0;
   white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 #sharedLinkRow > button {
@@ -1307,6 +1308,12 @@ body.pink-mode .auto-gear-rule-title,
 .settings-content .button-row {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#settingsDialog button {
+  flex-shrink: 0;
 }
 
 .settings-content .action-buttons {
