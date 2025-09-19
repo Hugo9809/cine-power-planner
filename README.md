@@ -154,9 +154,9 @@ Use Cine Power Planner end-to-end with the following routine:
    entry. When specific scenarios demand bespoke kits, open **Settings →
    Automatic Gear Rules** to layer custom additions or removals before
    generating exports.
-5. **Share or archive the plan.** Generate the gear list, export a planner
-   backup or download a shareable project bundle before heading to set. Backups
-   include custom devices, runtime feedback and favorites.
+5. **Export or archive the plan.** Generate the gear list, export a planner
+   backup or download an exportable project bundle before heading to set.
+   Backups include custom devices, runtime feedback and favorites.
 6. **Verify offline readiness.** Toggle the offline switch on your router or
    device, refresh the planner and confirm that the project, settings and gear
    lists all remain accessible. Restore from the most recent backup if anything
@@ -186,15 +186,15 @@ Use Cine Power Planner end-to-end with the following routine:
   remove unused versions. You’ll be asked to confirm before anything leaves the
   browser, ensuring you do not lose a project by accident.
 
-## Sharing & Imports
+## Exports & Imports
 
-- **Project bundles travel light.** Choose **Settings → Share → Export current
-  project** to download a `.cpproject` file containing the active project,
-  favorites and any referenced custom devices. Send it via your preferred secure
-  channel; recipients can import without needing internet access.
+- **Project bundles travel light.** Click **Export Project** to download a
+  `.cpproject` file containing the active project, favorites and any referenced
+  custom devices. Send it via your preferred secure channel; recipients can
+  import without needing internet access.
 - **Automatic gear rules travel with bundles.** Decide whether to include your
   rules during export; teammates who import the bundle can ignore them, apply
-  them only to the shared project or merge them into their global ruleset.
+  them only to the imported project or merge them into their global ruleset.
 - **Restores are double-buffered.** Importing a bundle prompts you to save a
   backup of your current environment first. After choosing the bundle file, the
   planner validates its schema, merges new devices and places the restored
@@ -203,9 +203,9 @@ Use Cine Power Planner end-to-end with the following routine:
   no connectivity, copy `index.html`, `script.js`, `devices/` and your backup or
   bundle files onto removable media. Launch from disk, import the bundle and
   continue planning without touching external networks.
-- **Share responsibly.** Review the exported JSON before distributing it to make
-  sure no extra projects or notes are included. The structure is human readable
-  so you can redact or duplicate entries as needed.
+- **Export responsibly.** Review the exported JSON before distributing it to
+  make sure no extra projects or notes are included. The structure is human
+  readable so you can redact or duplicate entries as needed.
 - **Synchronize with checklists.** When a teammate sends you an updated bundle,
   import it, review the `Updated at` timestamps in the sidebar and archive the
   previous bundle in your storage system to maintain a clear history.

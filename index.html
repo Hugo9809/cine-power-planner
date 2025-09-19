@@ -197,7 +197,52 @@
     <div class="form-row form-row-actions" role="group" aria-label="Project actions">
       <span class="form-label-spacer" aria-hidden="true"></span>
       <div class="form-actions">
-        <button id="shareSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF219;</span>Share Project</button>
+        <button id="shareSetupBtn">
+          <span class="btn-icon icon-glyph icon-svg" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <line
+                x1="12"
+                y1="6.75"
+                x2="12"
+                y2="16.25"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <polyline
+                points="8.75 12.75 12 16.25 15.25 12.75"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4.75 14.5H8.6L10.4 17h8.85L21 14.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <rect
+                x="4.75"
+                y="12.5"
+                width="14.5"
+                height="7.25"
+                rx="1.75"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          Export Project
+        </button>
         <div id="sharedLinkRow" class="share-import-group">
           <label for="applySharedLinkBtn" id="sharedLinkLabel" class="visually-hidden">Project file</label>
           <input
@@ -252,7 +297,7 @@
                 />
               </svg>
             </span>
-            Load Project
+            Import Project
           </button>
         </div>
         <button id="clearSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Clear Current Project</button>
@@ -1228,7 +1273,7 @@
                 href="#setup-manager"
                 data-help-target="#shareSetupBtn"
                 data-help-highlight="#setup-manager"
-              ><strong>Share Project</strong></a>
+              ><strong>Export Project</strong></a>
               downloads a JSON file containing your selections, project requirements, gear list, runtime feedback and any custom devices so you can back up or share the setup.
             </li>
             <li>
@@ -1247,14 +1292,14 @@
                 href="#setup-manager"
                 data-help-target="#applySharedLinkBtn"
                 data-help-highlight="#setup-manager"
-              ><strong>Shared Project</strong></a>
+              ><strong>Import Project</strong></a>
               field and click
               <a
                 class="help-link button-link"
                 href="#setup-manager"
                 data-help-target="#applySharedLinkBtn"
                 data-help-highlight="#setup-manager"
-              ><strong>Load</strong></a>
+              ><strong>Import</strong></a>
               to restore a shared configuration.
             </li>
             <li>
@@ -1442,7 +1487,7 @@
                   <li><strong>Viewfinder Settings</strong> and <strong>Tripod Preferences</strong> add EVF mounts, extension brackets, tripod heads, spreaders and counterbalance details.</li>
                 </ul>
               </li>
-              <li>The resulting gear list appears in printable overviews and shared project files so collaborators see full context.</li>
+              <li>The resulting gear list appears in printable overviews and exported project files so collaborators see full context.</li>
               <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
               <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
             </ul>
@@ -1493,7 +1538,7 @@
               category shown in the gear list to target the right row.
             </li>
             <li>
-              Rules live in Settings, are included in backups and apply to printable gear lists and shared project exports.
+              Rules live in Settings, are included in backups and apply to printable gear lists and exported project bundles.
             </li>
           </ul>
           <div class="help-link-group" aria-label="Automatic gear rule controls">
@@ -1800,7 +1845,7 @@
                 href="#setup-manager"
                 data-help-target="#shareSetupBtn"
                 data-help-highlight="#setup-manager"
-              ><em>Share Project</em></a>
+              ><em>Export Project</em></a>
               so you can re-import them later.
             </li>
             <li>
@@ -2008,21 +2053,21 @@
                 href="#setup-manager"
                 data-help-target="#shareSetupBtn"
                 data-help-highlight="#setup-manager"
-              ><em>Share Project</em></a>
+              ><em>Export Project</em></a>
               to download a JSON file with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the
               <a
                 class="help-link"
                 href="#setup-manager"
                 data-help-target="#applySharedLinkBtn"
                 data-help-highlight="#setup-manager"
-              ><em>Shared Project</em></a>
+              ><em>Import Project</em></a>
               field and press
               <a
                 class="help-link"
                 href="#setup-manager"
                 data-help-target="#applySharedLinkBtn"
                 data-help-highlight="#setup-manager"
-              ><em>Load</em></a>
+              ><em>Import</em></a>
               to restore it.
             </p>
           </details>
@@ -2077,7 +2122,7 @@
             </p>
             <p>
               Use the <strong>Remove these items</strong> list to hide entries the generator adds by default. Rules are stored in
-              Settings, included in backups and apply to printable gear lists and shared project exports.
+              Settings, included in backups and apply to printable gear lists and exported project bundles.
             </p>
           </details>
           <details
@@ -2121,7 +2166,7 @@
                 href="#setup-manager"
                 data-help-target="#shareSetupBtn"
                 data-help-highlight="#setup-manager"
-              ><em>Share Project</em></a>
+              ><em>Export Project</em></a>
               to download a setup file, and use the Device Database Editor's
               <a
                 class="help-link"
@@ -2334,10 +2379,10 @@
   </dialog>
   <dialog id="shareDialog" aria-labelledby="shareDialogHeading">
     <form id="shareForm" method="dialog">
-      <h3 id="shareDialogHeading">Share Project</h3>
-      <p id="shareFilenameMessage">Enter a name for the shared project file (default: project).</p>
+      <h3 id="shareDialogHeading">Export Project</h3>
+      <p id="shareFilenameMessage">Enter a name for the exported project file (default: project).</p>
       <div class="form-row">
-        <label for="shareFilename" id="shareFilenameLabel">Shared file name</label>
+        <label for="shareFilename" id="shareFilenameLabel">Export file name</label>
         <input type="text" id="shareFilename" name="shareFilename" />
       </div>
       <label id="shareIncludeAutoGearLabel" class="share-option">

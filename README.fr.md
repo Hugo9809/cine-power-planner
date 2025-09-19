@@ -35,7 +35,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Un thème à fort contraste améliore la lisibilité.
 - Les formulaires d’appareils remplissent les catégories dynamiquement selon le schéma.
 - Interface repensée avec plus de contraste et d’espacement pour une expérience plus claire sur tous les appareils.
-- Le partage de projets est simplifié : téléchargez un fichier JSON qui regroupe sélections, exigences, listes de matériel, retours d’autonomie et appareils personnalisés, puis importez-le pour tout restaurer.
+- L’export de projets est simplifié : téléchargez un fichier JSON qui regroupe sélections, exigences, listes de matériel, retours d’autonomie et appareils personnalisés, puis importez-le pour tout restaurer.
 - Des icônes uniques pour les scénarios requis facilitent l’identification des contraintes du projet.
 - Diagramme de projet interactif permettant de faire glisser les appareils, de zoomer, d’aligner sur la grille et d’exporter en SVG ou JPG.
 - Thème rose ludique persistant entre les visites.
@@ -80,7 +80,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 ### ✅ Gestion de projet
 - Enregistrez, chargez et supprimez plusieurs projets caméra (appuyez sur Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton Enregistrer reste inactif tant qu’aucun nom n’est saisi).
 - Des instantanés automatiques sont créés toutes les 10 minutes tant que le planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires pour penser à archiver vos données.
-- Téléchargez un fichier JSON qui regroupe sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; chargez-le via le sélecteur Projet partagé pour tout restaurer en une étape.
+- Téléchargez un fichier JSON qui regroupe sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; chargez-le via le sélecteur Importer le projet pour tout restaurer en une étape.
 - Les données sont stockées localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez l’option **Réinitialisation d’usine** dans Paramètres pour enregistrer automatiquement une sauvegarde avant de supprimer projets mis en cache et modifications d’appareils.
 - Générez des aperçus imprimables pour tout projet enregistré et ajoutez un logo personnalisé afin d’aligner exports et sauvegardes sur l’identité de votre production.
 - Enregistrez les exigences de projet avec chaque projet afin que la liste de matériel conserve tout le contexte.
@@ -149,8 +149,8 @@ Le générateur transforme vos sélections en une liste de préparation catégor
   - Les réglages de **monitoring**, **distribution vidéo** et **viseur** ajoutent moniteurs, câbles et incrustations pour chaque rôle.
   - Les sélections de **boutons utilisateur** et **préférences de trépied** sont listées pour référence rapide.
 - Les éléments de chaque catégorie sont triés alphabétiquement et affichent une info-bulle au survol.
-- La liste de matériel figure dans les aperçus imprimables et dans les fichiers de projet partagés.
-- Les listes de matériel sont sauvegardées automatiquement avec le projet et incluses dans les fichiers partagés et les sauvegardes.
+- La liste de matériel figure dans les aperçus imprimables et dans les fichiers de projet exportés.
+- Les listes de matériel sont sauvegardées automatiquement avec le projet et incluses dans les fichiers exportés et les sauvegardes.
 - **Supprimer la liste de matériel** efface la liste enregistrée et masque la sortie.
 - Les formulaires de liste de matériel proposent des boutons en forme de fourche pour dupliquer instantanément les entrées utilisateur.
 
@@ -246,7 +246,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 2. **Explorez la barre supérieure :** changez de langue, activez les thèmes sombre ou rose, ouvrez Paramètres pour régler l’accent et la typographie, et lancez l’aide avec ? ou Ctrl+/.
 3. **Sélectionnez les appareils :** choisissez l’équipement par catégorie via les menus déroulants ; saisissez pour filtrer, cliquez sur l’étoile pour épingler vos favoris et laissez les scénarios prédéfinis ajouter les accessoires automatiquement.
 4. **Consultez les calculs :** dès qu’une batterie est sélectionnée, la consommation, l’intensité et l’autonomie apparaissent ; des alertes signalent les limites dépassées.
-5. **Enregistrez et partagez les projets :** nommez et sauvegardez votre configuration, les sauvegardes automatiques capturent des instantanés et le bouton Partager exporte un bundle JSON pour vos partenaires.
+5. **Enregistrez et exportez les projets :** nommez et sauvegardez votre configuration, les sauvegardes automatiques capturent des instantanés et le bouton Exporter télécharge un bundle JSON pour vos partenaires tandis que le bouton Importer le restaure.
 6. **Générez la liste de matériel :** cliquez sur **Générer la liste de matériel** pour transformer les exigences en liste catégorisée avec infobulles et accessoires.
 7. **Gérez les données d’appareils :** choisissez « Modifier les données d’appareils… » pour ouvrir l’éditeur, ajuster les appareils, exporter/importer du JSON ou revenir aux valeurs par défaut.
 8. **Soumettez des retours d’autonomie :** utilisez « Soumettre un retour d’autonomie » pour enregistrer vos mesures terrain et enrichir la pondération.
