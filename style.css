@@ -878,15 +878,50 @@ main.legal-content {
   margin-bottom: 2px;
 }
 
-/* Help dialog */
-#helpDialog {
+#helpDialog[hidden] {
+  display: none;
+}
+#settingsDialog[hidden] {
+  display: none;
+}
+
+/* Global modal layout */
+.app-modal {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  max-width: none;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+}
+
+.app-modal::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.app-modal[open] {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
   z-index: 200;
+}
+
+.modal-surface {
+  background: var(--surface-color);
+  color: var(--text-color);
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-surface-scrollable {
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 #installGuideDialog {
@@ -909,16 +944,6 @@ main.legal-content {
   justify-content: center;
   z-index: 210;
   padding: 20px;
-}
-
-#settingsDialog {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
 }
 
 #feedbackDialog {
@@ -951,10 +976,6 @@ main.legal-content {
   margin-top: 10px;
 }
 
-#helpDialog[hidden] {
-  display: none;
-}
-
 #installGuideDialog[hidden] {
   display: none;
 }
@@ -968,15 +989,8 @@ main.legal-content {
 }
 
 .help-content {
-  background: var(--surface-color);
-  border: 2px solid var(--accent-color);
   padding: 20px;
-  max-height: 80vh;
-  overflow-y: auto;
-  color: var(--text-color);
   width: min(90vw, 700px);
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .help-content h3 {
@@ -992,11 +1006,6 @@ main.legal-content {
 
 
 .install-guide-content {
-  background: var(--surface-color);
-  border: 2px solid var(--accent-color);
-  color: var(--text-color);
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   padding: clamp(20px, 4vw, 32px);
   width: min(520px, 100%);
   display: flex;
@@ -1031,11 +1040,6 @@ main.legal-content {
 
 
 .ios-pwa-help-content {
-  background: var(--surface-color);
-  border: 2px solid var(--accent-color);
-  color: var(--text-color);
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   padding: clamp(20px, 4vw, 32px);
   width: min(480px, 100%);
   display: flex;
@@ -1056,15 +1060,8 @@ main.legal-content {
 
 
 .settings-content {
-  background: var(--surface-color);
-  border: 2px solid var(--accent-color);
   padding: 20px;
-  color: var(--text-color);
   width: min(90vw, 700px);
-  max-height: 80vh;
-  overflow-y: auto;
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   gap: 20px;

@@ -780,8 +780,8 @@
     <a id="privacyLink" href="datenschutz-en.html">Privacy Policy</a>
   </footer>
 
-  <div id="settingsDialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
-    <div class="settings-content">
+  <dialog id="settingsDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+    <div class="modal-surface modal-surface-scrollable settings-content">
       <h2 id="settingsTitle">Settings</h2>
       <div class="settings-section general-settings">
         <div class="form-row">
@@ -961,7 +961,7 @@
         <button id="settingsCancel"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel</button>
       </div>
     </div>
-  </div>
+  </dialog>
 
   <div
     id="installGuideDialog"
@@ -971,7 +971,7 @@
     aria-describedby="installGuideIntro"
     hidden
   >
-    <div class="install-guide-content">
+    <div class="modal-surface install-guide-content">
       <h2 id="installGuideTitle">Install Cine Power Planner</h2>
       <p id="installGuideIntro">Add the planner to your Home Screen to use it like an app.</p>
       <ol id="installGuideSteps">
@@ -1010,7 +1010,7 @@
     aria-describedby="iosPwaHelpIntro"
     hidden
   >
-    <div class="ios-pwa-help-content">
+    <div class="modal-surface ios-pwa-help-content">
       <h2 id="iosPwaHelpTitle">Keep your data when installing on iOS</h2>
       <p id="iosPwaHelpIntro">
         Safari keeps the browser tab and the installed app separate. To move your Cine Power Planner data into the app:
@@ -1031,8 +1031,16 @@
     </div>
   </div>
 
-  <div id="helpDialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1" hidden>
-    <div class="help-content">
+  <dialog
+    id="helpDialog"
+    class="app-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="helpTitle"
+    tabindex="-1"
+    hidden
+  >
+    <div class="modal-surface modal-surface-scrollable help-content">
       <button id="closeHelp">Close</button>
       <h2 id="helpTitle">How to use</h2>
       <div id="helpSearchContainer">
@@ -2314,7 +2322,7 @@
         </section>
       </div>
     </div>
-  </div>
+  </dialog>
   <dialog id="shareDialog" aria-labelledby="shareDialogHeading">
     <form id="shareForm" method="dialog">
       <h3 id="shareDialogHeading">Share Project</h3>

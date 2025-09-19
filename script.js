@@ -975,6 +975,20 @@ function closeDialog(dialog) {
 }
 
 /**
+ * Determine whether a dialog element is currently open.
+ *
+ * @param {HTMLDialogElement} dialog - The dialog to inspect.
+ * @returns {boolean} True if the dialog is open.
+ */
+function isDialogOpen(dialog) {
+  if (!dialog) return false;
+  if (typeof dialog.open === 'boolean') {
+    return dialog.open;
+  }
+  return dialog.hasAttribute('open');
+}
+
+/**
  * Memoize a normalisation function for repeated lookups.
  *
  * The provided function receives both the original trimmed string and a
@@ -17725,9 +17739,16 @@ if (settingsButton && settingsDialog) {
       updateAutoGearCatalogOptions();
     }
     settingsDialog.removeAttribute('hidden');
+    openDialog(settingsDialog);
     // Focus the first control except the language selector to avoid opening it automatically
     const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
-    if (first) first.focus();
+    if (first) {
+      try {
+        first.focus({ preventScroll: true });
+      } catch {
+        first.focus();
+      }
+    }
   });
 
   if (settingsCancel) {
@@ -17738,6 +17759,7 @@ if (settingsButton && settingsDialog) {
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
+      closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
   }
@@ -17845,6 +17867,7 @@ if (settingsButton && settingsDialog) {
       }
       closeAutoGearEditor();
       rememberSettingsPinkModeBaseline();
+      closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
   }
@@ -17857,8 +17880,21 @@ if (settingsButton && settingsDialog) {
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
+      closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     }
+  });
+
+  settingsDialog.addEventListener('cancel', e => {
+    e.preventDefault();
+    revertSettingsPinkModeIfNeeded();
+    rememberSettingsPinkModeBaseline();
+    revertAccentColor();
+    if (settingsLogo) settingsLogo.value = '';
+    if (settingsLogoPreview) loadStoredLogoPreview();
+    closeAutoGearEditor();
+    closeDialog(settingsDialog);
+    settingsDialog.setAttribute('hidden', '');
   });
 
 if (autoGearAddRuleBtn) {
@@ -18576,12 +18612,12 @@ if (helpButton && helpDialog) {
     if (!element) return;
 
     const settingsSection = element.closest('#settingsDialog');
-    if (settingsSection && settingsSection.hasAttribute('hidden')) {
+    if (settingsSection && !isDialogOpen(settingsDialog)) {
       settingsButton?.click?.();
     }
 
     const dialog = element.closest('dialog');
-    if (dialog && !dialog.open) {
+    if (dialog && !isDialogOpen(dialog)) {
       if (dialog.id === 'projectDialog') {
         generateGearListBtn?.click?.();
       } else if (dialog.id === 'feedbackDialog') {
@@ -18996,6 +19032,7 @@ if (helpButton && helpDialog) {
   const openHelp = () => {
     closeSideMenu();
     helpDialog.removeAttribute('hidden');
+    openDialog(helpDialog);
     if (helpSearch) {
       helpSearch.value = '';
       filterHelp(); // ensure all sections are visible again
@@ -19009,12 +19046,17 @@ if (helpButton && helpDialog) {
       }
       helpSearch.focus();
     } else {
-      helpDialog.focus();
+      try {
+        helpDialog.focus({ preventScroll: true });
+      } catch {
+        helpDialog.focus();
+      }
     }
   };
 
   // Hide the dialog and return focus to the button that opened it
   const closeHelp = (returnFocusEl = helpButton) => {
+    closeDialog(helpDialog);
     helpDialog.setAttribute('hidden', '');
     if (returnFocusEl && typeof returnFocusEl.focus === 'function') {
       try {
@@ -19027,7 +19069,7 @@ if (helpButton && helpDialog) {
 
   // Convenience helper for toggling the dialog open or closed
   const toggleHelp = () => {
-    if (helpDialog.hasAttribute('hidden')) {
+    if (!isDialogOpen(helpDialog)) {
       openHelp();
     } else {
       closeHelp();
@@ -19308,15 +19350,18 @@ if (helpButton && helpDialog) {
     if (hoverHelpActive && e.key === 'Escape') {
       // Escape exits hover-help mode
       stopHoverHelp();
-    } else if (e.key === 'Escape' && !helpDialog.hasAttribute('hidden')) {
+    } else if (e.key === 'Escape' && isDialogOpen(helpDialog)) {
       // Escape closes the help dialog
+      e.preventDefault();
       closeHelp();
     } else if (
-      e.key === 'Escape' && settingsDialog && !settingsDialog.hasAttribute('hidden')
+      e.key === 'Escape' && settingsDialog && isDialogOpen(settingsDialog)
     ) {
+      e.preventDefault();
       revertSettingsPinkModeIfNeeded();
       rememberSettingsPinkModeBaseline();
       revertAccentColor();
+      closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     } else if (
       e.key === 'F1' ||
@@ -19328,7 +19373,7 @@ if (helpButton && helpDialog) {
     } else if (
       e.key === '/' &&
       !isTextField &&
-      (!helpDialog || helpDialog.hasAttribute('hidden'))
+      (!helpDialog || !isDialogOpen(helpDialog))
     ) {
       e.preventDefault();
       focusFeatureSearchInput();
@@ -19340,7 +19385,7 @@ if (helpButton && helpDialog) {
       e.preventDefault();
       toggleHelp();
     } else if (
-      !helpDialog.hasAttribute('hidden') &&
+      isDialogOpen(helpDialog) &&
       ((e.key === '/' && !isTextField) || (e.key.toLowerCase() === 'f' && (e.ctrlKey || e.metaKey)))
     ) {
       // When the dialog is open, / or Ctrl+F moves focus to the search box
@@ -19370,6 +19415,11 @@ if (helpButton && helpDialog) {
   helpDialog.addEventListener('click', e => {
     // Clicking the semi-transparent backdrop (not the dialog content) closes it
     if (e.target === helpDialog) closeHelp();
+  });
+
+  helpDialog.addEventListener('cancel', e => {
+    e.preventDefault();
+    closeHelp();
   });
 }
 
