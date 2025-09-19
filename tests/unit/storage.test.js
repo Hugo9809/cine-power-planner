@@ -43,6 +43,10 @@ const {
   saveAutoGearSeedFlag,
   loadAutoGearBackups,
   saveAutoGearBackups,
+  loadAutoGearPresets,
+  saveAutoGearPresets,
+  loadAutoGearActivePreset,
+  saveAutoGearActivePreset,
 } = require('../../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -55,6 +59,8 @@ const SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_KEY = 'cameraPowerPlanner_autoGearBackups';
+const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
+const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 
 const validDeviceData = {
   cameras: {},
@@ -519,6 +525,8 @@ describe('clearAllData', () => {
       { id: 'backup-1', label: 'Snapshot', createdAt: 1720646400000, rules: [] }
     ]);
     saveAutoGearSeedFlag(true);
+    saveAutoGearPresets([{ id: 'preset-1', label: 'Outdoor kit', rules: [] }]);
+    saveAutoGearActivePreset('preset-1');
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
@@ -530,6 +538,8 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(AUTO_GEAR_RULES_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_PRESETS_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
   });
 });
@@ -549,16 +559,22 @@ describe('export/import all data', () => {
     saveFavorites({ cat: ['A'] });
     const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
     saveAutoGearRules(rules);
+    const backupPresets = [{ id: 'preset-main', label: 'Outdoor kit', rules }];
     const backups = [
       {
         id: 'backup-1',
         label: 'Snapshot',
         createdAt: 1720646400000,
         rules,
+        presets: backupPresets,
+        activePresetId: 'preset-main',
       }
     ];
     saveAutoGearBackups(backups);
     saveAutoGearSeedFlag(true);
+    const presets = [{ id: 'preset-main', label: 'Outdoor kit', rules }];
+    saveAutoGearPresets(presets);
+    saveAutoGearActivePreset('preset-main');
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
@@ -569,6 +585,8 @@ describe('export/import all data', () => {
       autoGearRules: rules,
       autoGearBackups: backups,
       autoGearSeeded: true,
+      autoGearPresets: presets,
+      autoGearActivePreset: 'preset-main',
     });
   });
 
@@ -584,9 +602,20 @@ describe('export/import all data', () => {
         { id: 'rule-indoor', label: 'Indoor', scenarios: ['Indoor'], add: [{ name: 'Item', category: 'Grip', quantity: 1 }], remove: [] }
       ],
       autoGearBackups: [
-        { id: 'backup-restore', label: 'Restore', createdAt: 1720646400000, rules: [] }
+        {
+          id: 'backup-restore',
+          label: 'Restore',
+          createdAt: 1720646400000,
+          rules: [],
+          presets: [{ id: 'preset-import', label: 'Import preset', rules: [] }],
+          activePresetId: 'preset-import',
+        }
       ],
       autoGearSeeded: true,
+      autoGearPresets: [
+        { id: 'preset-import', label: 'Import preset', rules: [] }
+      ],
+      autoGearActivePreset: 'preset-import',
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
@@ -598,6 +627,8 @@ describe('export/import all data', () => {
     expect(loadAutoGearRules()).toEqual(data.autoGearRules);
     expect(loadAutoGearBackups()).toEqual(data.autoGearBackups);
     expect(loadAutoGearSeedFlag()).toBe(true);
+    expect(loadAutoGearPresets()).toEqual(data.autoGearPresets);
+    expect(loadAutoGearActivePreset()).toBe('preset-import');
   });
 
   test('importAllData handles legacy projects array', () => {

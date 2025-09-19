@@ -6,10 +6,14 @@ const BACKUP_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
 describe('applyAutoGearRulesToTableHtml', () => {
   let env;
   const originalAlert = window.alert;
+  const originalConfirm = window.confirm;
+  const originalPrompt = window.prompt;
   const originalFileReader = window.FileReader;
 
   beforeEach(() => {
     window.alert = jest.fn();
+    window.confirm = jest.fn(() => true);
+    window.prompt = jest.fn();
   });
 
   const stripRuleIds = rule => ({
@@ -24,6 +28,16 @@ describe('applyAutoGearRulesToTableHtml', () => {
     env?.cleanup();
     localStorage.clear();
     window.alert = originalAlert;
+    if (typeof originalConfirm === 'undefined') {
+      delete window.confirm;
+    } else {
+      window.confirm = originalConfirm;
+    }
+    if (typeof originalPrompt === 'undefined') {
+      delete window.prompt;
+    } else {
+      window.prompt = originalPrompt;
+    }
     if (typeof originalFileReader === 'undefined') {
       delete window.FileReader;
     } else {
@@ -362,11 +376,43 @@ describe('applyAutoGearRulesToTableHtml', () => {
         expect.objectContaining({ label: 'Auto backup test' })
       ])
     );
+    expect(Array.isArray(storedBackups[0].presets)).toBe(true);
+    expect(storedBackups[0].presets).toHaveLength(0);
+    expect(storedBackups[0].activePresetId).toBeNull();
 
     const backupButtons = document.querySelectorAll('#autoGearBackupList button[data-backup-id]');
     expect(backupButtons.length).toBeGreaterThan(0);
 
     jest.useRealTimers();
+  });
+
+  test('automatic gear backups remain hidden until explicitly shown', () => {
+    env = setupScriptEnvironment();
+
+    const section = document.getElementById('autoGearBackupsSection');
+    expect(section).not.toBeNull();
+    expect(section.hasAttribute('hidden')).toBe(true);
+
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsSave = document.getElementById('settingsSave');
+    const toggle = document.getElementById('autoGearShowBackups');
+    expect(settingsButton).not.toBeNull();
+    expect(settingsSave).not.toBeNull();
+    expect(toggle).not.toBeNull();
+
+    settingsButton.click();
+    toggle.checked = true;
+    settingsSave.click();
+
+    expect(localStorage.getItem('cameraPowerPlanner_showAutoGearBackups')).toBe('true');
+    expect(section.hasAttribute('hidden')).toBe(false);
+
+    settingsButton.click();
+    toggle.checked = false;
+    settingsSave.click();
+
+    expect(localStorage.getItem('cameraPowerPlanner_showAutoGearBackups')).toBe('false');
+    expect(section.hasAttribute('hidden')).toBe(true);
   });
 
   test('restoring an automatic backup replaces the current rules', () => {
@@ -410,6 +456,64 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(storedRules).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ label: 'Backup original' })
+      ])
+    );
+
+    jest.useRealTimers();
+  });
+
+  test('restoring a backup re-applies saved presets', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T12:00:00Z'));
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
+    document.getElementById('autoGearRuleName').value = 'Preset source';
+    document.getElementById('autoGearAddName').value = 'Preset base item';
+    const addCategory = document.getElementById('autoGearAddCategory');
+    addCategory.value = addCategory.options[0].value;
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+    document.getElementById('autoGearSaveRule').click();
+
+    window.prompt.mockReturnValue('Snapshot preset');
+    document.getElementById('autoGearSavePreset').click();
+    const presetId = localStorage.getItem('cameraPowerPlanner_autoGearActivePreset');
+
+    jest.advanceTimersByTime(10 * 60 * 1000);
+    jest.advanceTimersByTime(4000);
+
+    const storedBackups = JSON.parse(localStorage.getItem(BACKUP_STORAGE_KEY));
+    expect(storedBackups[0].activePresetId).toBe(presetId);
+    expect(storedBackups[0].presets).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Snapshot preset' })
+      ])
+    );
+
+    document.getElementById('autoGearDeletePreset').click();
+    const editButton = document.querySelector('.auto-gear-edit');
+    editButton.click();
+    document.getElementById('autoGearRuleName').value = 'Edited after backup';
+    document.getElementById('autoGearSaveRule').click();
+
+    const backupButton = document.querySelector('#autoGearBackupList button[data-backup-id]');
+    expect(backupButton).not.toBeNull();
+    backupButton.click();
+
+    const restoredActivePreset = localStorage.getItem('cameraPowerPlanner_autoGearActivePreset');
+    expect(restoredActivePreset).toBe(presetId);
+    expect(document.getElementById('autoGearPresetSelect').value).toBe(presetId);
+    const restoredPresets = JSON.parse(localStorage.getItem('cameraPowerPlanner_autoGearPresets'));
+    expect(restoredPresets).toHaveLength(1);
+    expect(restoredPresets[0].label).toBe('Snapshot preset');
+    const restoredRules = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(restoredRules).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Preset source' })
       ])
     );
 
@@ -629,5 +733,108 @@ describe('applyAutoGearRulesToTableHtml', () => {
     } finally {
       confirmSpy.mockRestore();
     }
+  });
+
+  test('saving current rules as a preset stores it and selects it', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
+
+    document.getElementById('autoGearRuleName').value = 'Preset source';
+    document.getElementById('autoGearAddName').value = 'Preset item';
+    const categorySelect = document.getElementById('autoGearAddCategory');
+    categorySelect.value = categorySelect.options[0].value;
+    document.getElementById('autoGearAddItemButton').click();
+    document.getElementById('autoGearSaveRule').click();
+
+    window.prompt.mockReturnValue('My preset');
+    document.getElementById('autoGearSavePreset').click();
+
+    const storedPresets = JSON.parse(localStorage.getItem('cameraPowerPlanner_autoGearPresets'));
+    expect(storedPresets).toHaveLength(1);
+    expect(storedPresets[0].label).toBe('My preset');
+    expect(storedPresets[0].rules).toHaveLength(1);
+
+    const activePresetId = localStorage.getItem('cameraPowerPlanner_autoGearActivePreset');
+    expect(activePresetId).toBe(storedPresets[0].id);
+    expect(document.getElementById('autoGearPresetSelect').value).toBe(activePresetId);
+  });
+
+  test('selecting a preset replaces the automatic gear rules', () => {
+    const baseRule = {
+      id: 'rule-base',
+      label: 'Base',
+      scenarios: ['Outdoor'],
+      add: [{ id: 'item-base', name: 'Base Item', category: 'Grip', quantity: 1 }],
+      remove: [],
+    };
+    const presetRule = {
+      id: 'rule-preset',
+      label: 'Preset',
+      scenarios: ['Indoor'],
+      add: [{ id: 'item-preset', name: 'Preset Item', category: 'Rigging', quantity: 2 }],
+      remove: [],
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([baseRule]));
+    localStorage.setItem(
+      'cameraPowerPlanner_autoGearPresets',
+      JSON.stringify([
+        { id: 'preset-base', label: 'Base preset', rules: [baseRule] },
+        { id: 'preset-new', label: 'New preset', rules: [presetRule] },
+      ]),
+    );
+    localStorage.setItem('cameraPowerPlanner_autoGearActivePreset', 'preset-base');
+
+    env = setupScriptEnvironment();
+
+    const select = document.getElementById('autoGearPresetSelect');
+    expect(select.value).toBe('preset-base');
+
+    window.confirm.mockReturnValue(true);
+    select.value = 'preset-new';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const storedRules = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(storedRules).toEqual([presetRule]);
+    expect(select.value).toBe('preset-new');
+    expect(localStorage.getItem('cameraPowerPlanner_autoGearActivePreset')).toBe('preset-new');
+  });
+
+  test('editing rules clears the active preset selection', () => {
+    const baseRule = {
+      id: 'rule-base',
+      label: 'Base',
+      scenarios: ['Outdoor'],
+      add: [{ id: 'item-base', name: 'Base Item', category: 'Grip', quantity: 1 }],
+      remove: [],
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([baseRule]));
+    localStorage.setItem(
+      'cameraPowerPlanner_autoGearPresets',
+      JSON.stringify([{ id: 'preset-base', label: 'Base preset', rules: [baseRule] }]),
+    );
+    localStorage.setItem('cameraPowerPlanner_autoGearActivePreset', 'preset-base');
+
+    env = setupScriptEnvironment();
+
+    expect(document.getElementById('autoGearPresetSelect').value).toBe('preset-base');
+
+    document.getElementById('autoGearAddRule').click();
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
+    document.getElementById('autoGearRuleName').value = 'Custom tweak';
+    document.getElementById('autoGearAddName').value = 'New Item';
+    const categorySelect = document.getElementById('autoGearAddCategory');
+    categorySelect.value = categorySelect.options[0].value;
+    document.getElementById('autoGearAddItemButton').click();
+    document.getElementById('autoGearSaveRule').click();
+
+    expect(document.getElementById('autoGearPresetSelect').value).toBe('');
+    expect(localStorage.getItem('cameraPowerPlanner_autoGearActivePreset')).toBeNull();
   });
 });

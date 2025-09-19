@@ -848,6 +848,17 @@
       <section class="settings-section" aria-labelledby="autoGearHeading">
         <h3 id="autoGearHeading">Automatic Gear Rules</h3>
         <p id="autoGearDescription" class="settings-hint"></p>
+        <div id="autoGearPresets" class="auto-gear-presets">
+          <div class="auto-gear-presets-select">
+            <label for="autoGearPresetSelect" id="autoGearPresetLabel">Preset</label>
+            <select id="autoGearPresetSelect"></select>
+          </div>
+          <div class="auto-gear-presets-actions">
+            <button type="button" id="autoGearSavePreset">Save as preset</button>
+            <button type="button" id="autoGearUpdatePreset">Update preset</button>
+            <button type="button" id="autoGearDeletePreset">Delete preset</button>
+          </div>
+        </div>
         <div id="autoGearRulesList" class="auto-gear-rules" aria-live="polite"></div>
         <div class="auto-gear-action-row">
           <button type="button" id="autoGearAddRule">Add rule</button>
@@ -856,7 +867,11 @@
           <button type="button" id="autoGearImport">Import rules</button>
           <input type="file" id="autoGearImportInput" accept=".json,application/json" hidden />
         </div>
-        <div id="autoGearBackupsSection" class="auto-gear-backups">
+        <div class="form-row">
+          <label for="autoGearShowBackups" id="autoGearShowBackupsLabel">Show automatic backups</label>
+          <input type="checkbox" id="autoGearShowBackups" />
+        </div>
+        <div id="autoGearBackupsSection" class="auto-gear-backups" hidden>
           <h4 id="autoGearBackupsHeading">Automatic backups</h4>
           <p id="autoGearBackupsDescription" class="settings-hint"></p>
           <ul id="autoGearBackupList" class="auto-gear-backup-list" aria-live="polite"></ul>

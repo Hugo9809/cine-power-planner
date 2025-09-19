@@ -1094,6 +1094,33 @@ main.legal-content {
   flex-wrap: wrap;
 }
 
+.auto-gear-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.auto-gear-presets-select {
+  flex: 1 1 240px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auto-gear-presets-select select {
+  width: 100%;
+  min-height: 40px;
+}
+
+.auto-gear-presets-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .auto-gear-rules {
   display: flex;
   flex-direction: column;

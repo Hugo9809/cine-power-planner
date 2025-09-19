@@ -11,6 +11,8 @@ const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
+const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
+const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 
 const DEVICE_COLLECTION_KEYS = [
   'cameras',
@@ -812,6 +814,49 @@ function saveAutoGearSeedFlag(flag) {
   );
 }
 
+function loadAutoGearPresets() {
+  const parsed = loadJSONFromStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_PRESETS_STORAGE_KEY,
+    "Error loading automatic gear presets from localStorage:",
+    [],
+  );
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function saveAutoGearPresets(presets) {
+  const safePresets = Array.isArray(presets) ? presets : [];
+  saveJSONToStorage(
+    SAFE_LOCAL_STORAGE,
+    AUTO_GEAR_PRESETS_STORAGE_KEY,
+    safePresets,
+    "Error saving automatic gear presets to localStorage:",
+  );
+}
+
+function loadAutoGearActivePreset() {
+  try {
+    const raw = SAFE_LOCAL_STORAGE.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+    return typeof raw === 'string' && raw ? raw : null;
+  } catch (error) {
+    console.warn('Error loading active automatic gear preset from localStorage:', error);
+    return null;
+  }
+}
+
+function saveAutoGearActivePreset(presetId) {
+  const value = typeof presetId === 'string' && presetId ? presetId : null;
+  try {
+    if (value) {
+      SAFE_LOCAL_STORAGE.setItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, value);
+    } else {
+      SAFE_LOCAL_STORAGE.removeItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+    }
+  } catch (error) {
+    console.warn('Error saving active automatic gear preset to localStorage:', error);
+  }
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
@@ -825,6 +870,8 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
@@ -845,6 +892,8 @@ function exportAllData() {
     autoGearRules: loadAutoGearRules(),
     autoGearBackups: loadAutoGearBackups(),
     autoGearSeeded: loadAutoGearSeedFlag(),
+    autoGearPresets: loadAutoGearPresets(),
+    autoGearActivePreset: loadAutoGearActivePreset(),
   };
 }
 
@@ -876,6 +925,12 @@ function importAllData(allData) {
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     saveAutoGearSeedFlag(allData.autoGearSeeded);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearPresets')) {
+    saveAutoGearPresets(allData.autoGearPresets);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearActivePreset')) {
+    saveAutoGearActivePreset(allData.autoGearActivePreset);
   }
 
   let importProjectEntry = null;
@@ -916,6 +971,10 @@ if (typeof module !== "undefined" && module.exports) {
     saveFavorites,
     loadAutoGearBackups,
     saveAutoGearBackups,
+    loadAutoGearPresets,
+    saveAutoGearPresets,
+    loadAutoGearActivePreset,
+    saveAutoGearActivePreset,
     loadFeedback,
     saveFeedback,
     clearAllData,
