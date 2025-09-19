@@ -9303,6 +9303,15 @@ function autoBackup() {
     const setups = getSetups();
     setups[backupName] = currentSetup;
     storeSetups(setups);
+    if (typeof saveProject === 'function') {
+      const payload = {
+        gearList: gearListHtml || '',
+        projectInfo: currentSetup.projectInfo || null,
+      };
+      if (payload.gearList || payload.projectInfo) {
+        saveProject(backupName, payload);
+      }
+    }
     const prevValue = setupSelect.value;
     const prevName = setupNameInput ? setupNameInput.value : '';
     populateSetupSelect();
@@ -13126,6 +13135,20 @@ motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCu
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
 if (setupNameInput) setupNameInput.addEventListener("change", autoSaveCurrentSetup);
 
+const flushProjectAutoSaveOnExit = () => scheduleProjectAutoSave(true);
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      flushProjectAutoSaveOnExit();
+    }
+  });
+}
+if (typeof window !== 'undefined') {
+  ['pagehide', 'beforeunload'].forEach((eventName) => {
+    window.addEventListener(eventName, flushProjectAutoSaveOnExit);
+  });
+}
+
 // Enable Save button only when a setup name is entered and allow Enter to save
 if (setupNameInput && saveSetupBtn) {
   const toggleSaveSetupBtn = () => {
@@ -13492,21 +13515,34 @@ function formatFullBackupFilename(date) {
   };
 }
 
+function captureStorageSnapshot(storage) {
+  const snapshot = Object.create(null);
+  if (!storage) return snapshot;
+  try {
+    const length = typeof storage.length === 'number' ? storage.length : 0;
+    for (let i = 0; i < length; i++) {
+      const key = storage.key(i);
+      if (typeof key !== 'string') continue;
+      snapshot[key] = storage.getItem(key);
+    }
+  } catch (error) {
+    console.warn('Failed to snapshot storage', error);
+  }
+  return snapshot;
+}
+
 function createSettingsBackup(notify = true, timestamp = new Date()) {
   try {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
     const shouldNotify = isEvent ? true : Boolean(notify);
     const { iso, fileName } = formatFullBackupFilename(timestamp);
-    const settings = Object.create(null);
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (typeof key !== 'string') continue;
-      settings[key] = localStorage.getItem(key);
-    }
+    const settings = captureStorageSnapshot(typeof localStorage !== 'undefined' ? localStorage : null);
+    const sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
     const backup = {
       version: APP_VERSION,
       generatedAt: iso,
       settings,
+      sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
       data: typeof exportAllData === 'function' ? exportAllData() : {},
     };
     const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
@@ -13556,6 +13592,18 @@ if (restoreSettings && restoreSettingsInput) {
         if (settings && typeof settings === 'object') {
           Object.entries(settings).forEach(([k, v]) => {
             localStorage.setItem(k, v);
+          });
+        }
+        const sessionSnapshot = parsed && typeof parsed === 'object' && parsed.sessionStorage
+          ? parsed.sessionStorage
+          : null;
+        if (sessionSnapshot && typeof sessionStorage !== 'undefined') {
+          Object.entries(sessionSnapshot).forEach(([key, value]) => {
+            try {
+              sessionStorage.setItem(key, value);
+            } catch (sessionError) {
+              console.warn('Failed to restore sessionStorage entry', key, sessionError);
+            }
           });
         }
         loadStoredLogoPreview();
@@ -15159,6 +15207,9 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentProjectInfo,
     crewRoles,
     formatFullBackupFilename,
+    autoBackup,
+    createSettingsBackup,
+    captureStorageSnapshot,
     searchKey,
     searchTokens,
     findBestSearchMatch,
