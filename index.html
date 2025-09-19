@@ -1425,6 +1425,70 @@
         </section>
         <section
           data-help-section
+          id="troubleshootingHelp"
+          data-help-keywords="troubleshooting recovery issue problem stuck blank update reload cache backup restore revert factory reset missing gear lost data"
+        >
+          <h3><span class="help-icon" aria-hidden="true">🛠️</span>Troubleshooting &amp; Recovery</h3>
+          <ul>
+            <li>
+              If the interface looks stuck or outdated, click
+              <a class="help-link" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>
+              to clear cached files without deleting saved projects or custom devices.
+            </li>
+            <li>
+              Lost work? Open Settings → Backup &amp; Restore and enable
+              <a
+                class="help-link"
+                href="#settingsDialog"
+                data-help-target="#settingsShowAutoBackups"
+              >Show auto backups in project list</a>
+              to restore a recent snapshot.
+            </li>
+            <li>
+              Before resetting anything, download your current database with
+              <a class="help-link" href="#device-manager" data-help-target="#exportDataBtn"><em>Export</em></a>
+              and keep project JSON files via
+              <a
+                class="help-link"
+                href="#setup-manager"
+                data-help-target="#shareSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><em>Share Project</em></a>
+              so you can re-import them later.
+            </li>
+            <li>
+              To wipe everything clean, use
+              <a class="help-link" href="#settingsDialog" data-help-target="#factoryResetButton"><em>Factory reset</em></a>
+              or open the Device Database Editor and click
+              <a
+                class="help-link"
+                href="#device-manager"
+                data-help-target="#exportAndRevertBtn"
+              ><em>Export and Revert</em></a>
+              —both actions prompt you to save a safety backup first.
+            </li>
+          </ul>
+          <div class="help-link-group" aria-label="Troubleshooting tools">
+            <a class="help-link help-chip" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#settingsShowAutoBackups"
+            >Auto backups</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#factoryResetButton"
+            >Factory reset</a>
+            <a
+              class="help-link help-chip"
+              href="#device-manager"
+              data-help-target="#exportAndRevertBtn"
+            >Export &amp; Revert</a>
+          </div>
+        </section>
+        <section
+          data-help-section
           id="hoverHelp"
           data-help-keywords="hover help tooltips hints guidance cursor descriptions overlay tips"
         >
