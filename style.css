@@ -632,6 +632,39 @@ main.legal-content {
   min-height: 6.5rem;
 }
 
+#sharedImportDialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#sharedImportDialog .share-import-options {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: var(--surface-color);
+}
+
+#sharedImportDialog .share-import-options legend {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+#sharedImportDialog .share-import-mode-select {
+  width: 100%;
+  min-height: 6.5rem;
+}
+
+#sharedImportDialog .dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
 #setup-manager #shareLinkMessage {
   margin-left: calc(var(--form-label-width) + var(--gap-size));
 }

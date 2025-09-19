@@ -2122,6 +2122,33 @@ function setLanguage(lang) {
   }
 
   let sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
+  if (sharedImportDialogHeading) {
+    const title = texts[lang].sharedImportDialogTitle
+      || texts.en?.sharedImportDialogTitle
+      || sharedImportDialogHeading.textContent;
+    sharedImportDialogHeading.textContent = title;
+  }
+  if (sharedImportDialogMessage) {
+    const message = texts[lang].sharedImportDialogMessage
+      || texts.en?.sharedImportDialogMessage
+      || sharedImportDialogMessage.textContent;
+    sharedImportDialogMessage.textContent = message;
+    sharedImportDialogMessage.setAttribute('data-help', message);
+  }
+  if (sharedImportConfirmBtn) {
+    const label = texts[lang].sharedImportDialogConfirm
+      || texts.en?.sharedImportDialogConfirm
+      || sharedImportConfirmBtn.textContent;
+    sharedImportConfirmBtn.textContent = label;
+    sharedImportConfirmBtn.setAttribute('data-help', label);
+  }
+  if (sharedImportCancelBtn) {
+    const label = texts[lang].sharedImportDialogCancel
+      || texts.en?.sharedImportDialogCancel
+      || sharedImportCancelBtn.textContent;
+    sharedImportCancelBtn.textContent = label;
+    sharedImportCancelBtn.setAttribute('data-help', label);
+  }
   if (sharedImportLegend) {
     const legend = texts[lang].sharedImportAutoGearLabel
       || texts.en?.sharedImportAutoGearLabel
@@ -4046,18 +4073,26 @@ function confirmAutoGearSelection(defaultInclude) {
 }
 const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearText");
 const shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
+const sharedImportDialog = document.getElementById("sharedImportDialog");
+const sharedImportForm = document.getElementById("sharedImportForm");
+const sharedImportDialogHeading = document.getElementById("sharedImportDialogHeading");
+const sharedImportDialogMessage = document.getElementById("sharedImportDialogMessage");
 const sharedImportOptions = document.getElementById("sharedImportOptions");
 const sharedImportLegend = document.getElementById("sharedImportLegend");
 const sharedImportModeSelect = document.getElementById("sharedImportModeSelect");
 const sharedImportModeNoneOption = document.getElementById("sharedImportModeNoneOption");
 const sharedImportModeProjectOption = document.getElementById("sharedImportModeProjectOption");
 const sharedImportModeGlobalOption = document.getElementById("sharedImportModeGlobalOption");
+const sharedImportConfirmBtn = document.getElementById("sharedImportConfirmBtn");
+const sharedImportCancelBtn = document.getElementById("sharedImportCancelBtn");
 if (sharedImportModeSelect) {
   Array.from(sharedImportModeSelect.options || []).forEach(option => {
     if (option.value === "none") return;
     option.disabled = true;
   });
 }
+let sharedImportPromptActive = false;
+let pendingSharedLinkListener = null;
 let lastSetupName = setupSelect ? setupSelect.value : '';
 const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const sharedKeyMap = {
@@ -4102,6 +4137,90 @@ function storeSharedImportData(data, rules) {
 function clearStoredSharedImportData() {
   lastSharedSetupData = null;
   lastSharedAutoGearRules = null;
+}
+
+function configureSharedImportOptions(sharedRules) {
+  if (!sharedImportModeSelect) {
+    return Array.isArray(sharedRules) && sharedRules.length > 0;
+  }
+  const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
+  const options = Array.from(sharedImportModeSelect.options || []);
+  options.forEach(option => {
+    if (option.value === 'none') {
+      option.disabled = false;
+      option.selected = !hasRules;
+    } else {
+      option.disabled = !hasRules;
+      option.selected = hasRules && option.value === 'project';
+    }
+  });
+  return hasRules;
+}
+
+function sharedImportRulesDiffer(sharedRules) {
+  if (!Array.isArray(sharedRules) || !sharedRules.length) return false;
+  if (typeof getAutoGearRules !== 'function') return true;
+  try {
+    const currentRules = getAutoGearRules();
+    return stableStringify(sharedRules) !== stableStringify(currentRules || []);
+  } catch (error) {
+    console.warn('Failed to compare automatic gear rules', error);
+    return true;
+  }
+}
+
+function applyStoredSharedImport() {
+  if (lastSharedSetupData === null) return;
+  reapplySharedImportSelection();
+}
+
+function finalizeSharedImportPrompt() {
+  sharedImportPromptActive = false;
+  if (sharedImportDialog) closeDialog(sharedImportDialog);
+}
+
+function openSharedImportPrompt() {
+  if (!sharedImportDialog) return;
+  sharedImportPromptActive = true;
+  openDialog(sharedImportDialog);
+  const focusTarget = sharedImportModeSelect || sharedImportConfirmBtn || sharedImportCancelBtn;
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    focusTarget.focus();
+  }
+}
+
+function processSharedProjectData(data) {
+  try {
+    sharedImportPromptActive = false;
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+    const sharedRules = Array.isArray(parsed.autoGearRules) ? parsed.autoGearRules : null;
+    storeSharedImportData(parsed, sharedRules);
+    const hasRules = configureSharedImportOptions(sharedRules);
+    const shouldPrompt = hasRules && sharedImportRulesDiffer(sharedRules) && !!sharedImportDialog;
+    if (shouldPrompt) {
+      openSharedImportPrompt();
+      return;
+    }
+    applyStoredSharedImport();
+  } catch (error) {
+    clearStoredSharedImportData();
+    console.error('Failed to parse shared project', error);
+    alert(texts[currentLang].invalidSharedLink);
+  }
+}
+
+function readSharedProjectFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    processSharedProjectData(reader.result);
+  };
+  reader.onerror = () => {
+    console.error('Failed to load shared project file', reader.error);
+    clearStoredSharedImportData();
+    alert(texts[currentLang].invalidSharedLink);
+  };
+  reader.readAsText(file);
 }
 
 function reapplySharedImportSelection() {
@@ -13530,51 +13649,68 @@ shareSetupBtn.addEventListener('click', () => {
   }
 });
 
+if (sharedLinkInput) {
+  sharedLinkInput.addEventListener('change', () => {
+    if (pendingSharedLinkListener) return;
+    const file = sharedLinkInput.files && sharedLinkInput.files[0];
+    if (file) {
+      readSharedProjectFile(file);
+    }
+  });
+}
+
 if (applySharedLinkBtn && sharedLinkInput) {
   applySharedLinkBtn.addEventListener('click', () => {
-    const file = sharedLinkInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const data = JSON.parse(reader.result);
-        const sharedRules = Array.isArray(data.autoGearRules) ? data.autoGearRules : null;
-        storeSharedImportData(data, sharedRules);
-        if (sharedImportModeSelect) {
-          const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
-          Array.from(sharedImportModeSelect.options || []).forEach(option => {
-            if (option.value === 'none') {
-              option.disabled = false;
-              if (!hasRules) {
-                option.selected = true;
-              }
-            } else {
-              option.disabled = !hasRules;
-              if (!hasRules) {
-                option.selected = false;
-              }
-            }
-          });
-          if (!hasRules && !sharedImportModeSelect.selectedOptions.length) {
-            sharedImportModeSelect.selectedIndex = 0;
-          }
-        }
-        const mode = resolveSharedImportMode(sharedRules);
-        applySharedSetup(data, { autoGearMode: mode, sharedAutoGearRules: sharedRules });
-        updateCalculations();
-      } catch {
-        clearStoredSharedImportData();
-        alert(texts[currentLang].invalidSharedLink);
+    if (pendingSharedLinkListener) {
+      sharedLinkInput.removeEventListener('change', pendingSharedLinkListener);
+      pendingSharedLinkListener = null;
+    }
+    const handleSelection = () => {
+      sharedLinkInput.removeEventListener('change', handleSelection);
+      pendingSharedLinkListener = null;
+      const file = sharedLinkInput.files && sharedLinkInput.files[0];
+      if (file) {
+        readSharedProjectFile(file);
       }
     };
-    reader.readAsText(file);
+    pendingSharedLinkListener = handleSelection;
+    sharedLinkInput.addEventListener('change', handleSelection);
+    sharedLinkInput.value = '';
+    sharedLinkInput.click();
+    if (sharedLinkInput.files && sharedLinkInput.files.length) {
+      handleSelection();
+    }
   });
 }
 
 if (sharedImportModeSelect) {
   sharedImportModeSelect.addEventListener('change', () => {
+    if (sharedImportPromptActive) return;
     if (lastSharedSetupData === null) return;
     reapplySharedImportSelection();
+  });
+}
+
+if (sharedImportForm) {
+  sharedImportForm.addEventListener('submit', event => {
+    event.preventDefault();
+    finalizeSharedImportPrompt();
+    applyStoredSharedImport();
+  });
+}
+
+if (sharedImportCancelBtn) {
+  sharedImportCancelBtn.addEventListener('click', () => {
+    finalizeSharedImportPrompt();
+    clearStoredSharedImportData();
+  });
+}
+
+if (sharedImportDialog) {
+  sharedImportDialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    finalizeSharedImportPrompt();
+    clearStoredSharedImportData();
   });
 }
 
