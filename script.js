@@ -10022,6 +10022,8 @@ function renderSetupDiagram() {
     return { path, labelX: lx, labelY: ly, angle };
   }
 
+  const EDGE_LABEL_WRAP = 18;
+
   function wrapLabel(text, maxLen = 16) {
     const words = text.split(' ');
     const lines = [];
@@ -10055,7 +10057,19 @@ function renderSetupDiagram() {
     svg += `<path class="${cls}" d="${path}" />`;
     if (e.label) {
       const rot = ` transform="rotate(${angle} ${labelX} ${labelY})"`;
-      svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle"${rot}>${escapeHtml(e.label)}</text>`;
+      const lines = wrapLabel(e.label, EDGE_LABEL_WRAP);
+      if (lines.length <= 1) {
+        svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle"${rot}>${escapeHtml(e.label)}</text>`;
+      } else {
+        const lineHeight = 12;
+        const startDy = -((lines.length - 1) * lineHeight) / 2;
+        svg += `<text class="edge-label" x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle"${rot}>`;
+        lines.forEach((line, i) => {
+          const dy = i === 0 ? startDy : lineHeight;
+          svg += `<tspan x="${labelX}" dy="${dy}">${escapeHtml(line)}</tspan>`;
+        });
+        svg += `</text>`;
+      }
     }
   });
 
