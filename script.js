@@ -2335,7 +2335,7 @@ function setLanguage(lang) {
   }
   if (autoGearSaveRuleButton) {
     const label = texts[lang].autoGearSaveRule || texts.en?.autoGearSaveRule || autoGearSaveRuleButton.textContent;
-    autoGearSaveRuleButton.textContent = label;
+    setButtonLabelWithIcon(autoGearSaveRuleButton, label);
     autoGearSaveRuleButton.setAttribute('data-help', label);
   }
   if (autoGearCancelEditButton) {
@@ -2457,8 +2457,9 @@ function setLanguage(lang) {
     supportLink.setAttribute("title", supportHelp);
   }
   if (settingsSave) {
-    settingsSave.textContent = texts[lang].saveSettings;
-    const saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings;
+    const label = texts[lang].saveSettings || texts.en?.saveSettings || settingsSave.textContent;
+    setButtonLabelWithIcon(settingsSave, label);
+    const saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || label;
     settingsSave.setAttribute("data-help", saveHelp);
     settingsSave.setAttribute("title", saveHelp);
     settingsSave.setAttribute("aria-label", saveHelp);
@@ -2834,6 +2835,7 @@ const ICON_GLYPHS = Object.freeze({
   camera: '\uE333',
   trash: '\uF32D',
   reload: '\uE11B',
+  save: '\uE825',
   timecode: '\uF1CD',
   audioIn: '\uEC2E',
   audioOut: '\uF44C',
@@ -2872,6 +2874,13 @@ const projectFieldIcons = {
   cameraUserButtons: '\uEF14',
   viewfinderUserButtons: '\uEF14'
 };
+
+function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
+  if (!button) return;
+  const safeLabel = typeof label === 'string' ? escapeHtml(label) : '';
+  const iconHtml = iconMarkup(glyph, 'btn-icon');
+  button.innerHTML = `${iconHtml}${safeLabel}`;
+}
 
 function createCrewRow(data = {}) {
   if (!crewContainer) return;
@@ -6164,6 +6173,10 @@ function getCurrentSetupState() {
 
 function checkSetupChanged() {
   if (!saveSetupBtn) return;
+  const langTexts = texts[currentLang] || {};
+  const fallbackTexts = texts.en || {};
+  const saveLabel = langTexts.saveSetupBtn || fallbackTexts.saveSetupBtn || '';
+  const updateLabel = langTexts.updateSetupBtn || fallbackTexts.updateSetupBtn || saveLabel;
   if (
     loadedSetupState &&
     setupSelect.value &&
@@ -6171,11 +6184,11 @@ function checkSetupChanged() {
   ) {
     const currentSignature = computeSetupSignature(getCurrentSetupState());
     if (currentSignature !== loadedSetupStateSignature) {
-      saveSetupBtn.textContent = texts[currentLang].updateSetupBtn;
+      setButtonLabelWithIcon(saveSetupBtn, updateLabel);
       return;
     }
   }
-  saveSetupBtn.textContent = texts[currentLang].saveSetupBtn;
+  setButtonLabelWithIcon(saveSetupBtn, saveLabel);
 }
 
 const projectDialog = document.getElementById("projectDialog");
