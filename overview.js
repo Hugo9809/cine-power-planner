@@ -323,27 +323,58 @@ function generatePrintableOverview() {
         }
 
         const doc = printWindow.document;
-        const bodyClassName = typeof document !== 'undefined' && document.body ? document.body.className : '';
-        const htmlLang = typeof document !== 'undefined' && document.documentElement
-            ? document.documentElement.getAttribute('lang') || 'en'
-            : 'en';
+        const htmlElement = typeof document !== 'undefined' ? document.documentElement : null;
+        const htmlClassName = htmlElement ? htmlElement.className : '';
+        const htmlDir = htmlElement ? htmlElement.getAttribute('dir') || '' : '';
+        const htmlLang = htmlElement ? htmlElement.getAttribute('lang') || 'en' : 'en';
+        const htmlInlineStyle = htmlElement ? htmlElement.getAttribute('style') || '' : '';
+        const bodyElement = typeof document !== 'undefined' ? document.body : null;
+        const bodyClassName = bodyElement ? bodyElement.className : '';
+        const bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
+        const overviewTitle = t.overviewTitle || 'Overview';
 
         doc.open();
         doc.write(`<!DOCTYPE html>
-<html lang="${htmlLang}">
+<html>
 <head>
 <meta charset="utf-8">
-<title>${t.overviewTitle}</title>
+<meta name="color-scheme" content="light dark">
+<title></title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="overview.css">
 <link rel="stylesheet" href="overview-print.css" media="print">
 <link rel="stylesheet" href="overview-print.css" media="screen">
 </head>
-<body class="${bodyClassName}">
-${fallbackRoot.outerHTML}
-</body>
+<body></body>
 </html>`);
         doc.close();
+
+        doc.title = overviewTitle;
+
+        const fallbackHtml = doc.documentElement;
+        if (fallbackHtml) {
+            fallbackHtml.setAttribute('lang', htmlLang || 'en');
+            if (htmlDir) {
+                fallbackHtml.setAttribute('dir', htmlDir);
+            }
+            if (htmlClassName) {
+                fallbackHtml.className = htmlClassName;
+            }
+            if (htmlInlineStyle) {
+                fallbackHtml.setAttribute('style', htmlInlineStyle);
+            }
+        }
+
+        const fallbackBody = doc.body;
+        if (fallbackBody) {
+            if (bodyClassName) {
+                fallbackBody.className = bodyClassName;
+            }
+            if (bodyInlineStyle) {
+                fallbackBody.setAttribute('style', bodyInlineStyle);
+            }
+            fallbackBody.innerHTML = fallbackRoot.outerHTML;
+        }
 
         const triggerPrint = () => {
             printWindow.focus();
