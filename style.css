@@ -49,6 +49,10 @@
   --offline-indicator-bg: #2f3437;
   --offline-indicator-text: #f5f7fa;
   --offline-indicator-border: rgba(245, 247, 250, 0.2);
+  --icon-size-default: 1em;
+  --icon-size-inline: 1.1em;
+  --icon-size-control: 1.2em;
+  --icon-size-favorite: 0.95em;
   --line-height-base: 1.6;
   --line-height-supporting: 1.5;
   --status-error-bg: #fdd;
@@ -1361,7 +1365,7 @@ body.pink-mode .auto-gear-rule-title,
 .help-quick-link-icon {
   --icon-color: var(--accent-color);
   flex: 0 0 auto;
-  font-size: 1.1em;
+  --icon-size: var(--icon-size-inline);
 }
 
 .help-quick-link.active .help-quick-link-icon {
@@ -1464,6 +1468,12 @@ body.pink-mode .auto-gear-rule-title,
   align-items: center;
   justify-content: center;
   line-height: 1;
+  flex: 0 0 auto;
+  font-size: var(--icon-size, var(--icon-size-default));
+  width: var(--icon-size, var(--icon-size-default));
+  height: var(--icon-size, var(--icon-size-default));
+  min-width: var(--icon-size, var(--icon-size-default));
+  min-height: var(--icon-size, var(--icon-size-default));
   color: var(--icon-color, currentColor);
 }
 
@@ -1493,8 +1503,8 @@ body.pink-mode .auto-gear-rule-title,
 }
 
 .icon-glyph.icon-svg svg {
-  width: 1em;
-  height: 1em;
+  width: 100%;
+  height: 100%;
   display: block;
   stroke: currentColor;
   fill: none;
@@ -1586,7 +1596,7 @@ body.pink-mode .auto-gear-rule-title,
 #helpSearchClear .icon-glyph,
 .clear-input-btn .icon-glyph,
 .controls button .icon-glyph {
-  font-size: 1.2em;
+  --icon-size: var(--icon-size-control);
 }
 
 .help-icon,
@@ -1601,7 +1611,7 @@ body.pink-mode .auto-gear-rule-title,
 }
 
 .favorite-icon.icon-glyph {
-  font-size: 0.95em;
+  --icon-size: var(--icon-size-favorite);
 }
 
 body.pink-mode button:hover,
@@ -1626,7 +1636,7 @@ body.pink-mode .favorite-toggle.favorited:active {
 .category-icon.icon-glyph,
 .scenario-icon.icon-glyph,
 .icon-box .icon.icon-glyph {
-  font-size: 1.1em;
+  --icon-size: var(--icon-size-inline);
 }
 
 #hoverHelpTooltip {
