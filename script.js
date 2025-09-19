@@ -3282,13 +3282,6 @@ function glyphText(glyph) {
   return resolved.char || '';
 }
 
-function svgIconGlyph(markup) {
-  if (typeof markup !== 'string') {
-    return Object.freeze({ markup: '', className: 'icon-svg' });
-  }
-  return Object.freeze({ markup: markup.trim(), className: 'icon-svg' });
-}
-
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -8421,104 +8414,18 @@ const diagramIcons = {
   distance: ICON_GLYPHS.distance
 };
 
-const overviewIconGlyphs = Object.freeze({
-  batteries: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3.25" y="6.25" width="7.5" height="11.5" rx="1.5" ry="1.5" stroke-width="1.5" />
-      <rect x="13.25" y="6.25" width="7.5" height="11.5" rx="1.5" ry="1.5" stroke-width="1.5" />
-      <path d="M6.5 4.75h2.5" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M16.5 4.75h2.5" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M8.75 6.25v-1.5" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M18.75 6.25v-1.5" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  `),
-  hotswaps: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3.75" y="6" width="7" height="11" rx="1.5" ry="1.5" stroke-width="1.5" />
-      <rect x="13.25" y="7" width="7" height="11" rx="1.5" ry="1.5" stroke-width="1.5" />
-      <path d="M10.75 11.5h4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M14.75 11.5 13 9.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M14.75 11.5 13 13.25" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  `),
-  cameras: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3.5" y="7" width="11.5" height="10" rx="2" stroke-width="1.5" />
-      <path d="M15 9.5 20.5 7v10L15 15.5" stroke-width="1.5" stroke-linejoin="round" />
-      <circle cx="9.25" cy="12" r="2.75" stroke-width="1.5" />
-      <path d="M6.5 7V5.5h4.75l1.75 1.75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M5.75 16.5h2.5" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  `),
-  viewfinders: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3.75" y="8" width="11" height="7.5" rx="1.8" stroke-width="1.5" />
-      <path d="M14.75 9.5 20.25 12l-5.5 2.5V9.5Z" stroke-width="1.5" stroke-linejoin="round" />
-      <path d="M7 6h4.5" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M6 11.75h2" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  `),
-  monitors: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3.5" y="5" width="17" height="12" rx="2" stroke-width="1.5" />
-      <path d="M8 9h8" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M12 17v3" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M8.5 20h7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-  `),
-  video: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="7.5" y="7" width="9" height="10" rx="1.5" stroke-width="1.5" />
-      <path d="M12 4v3" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M9.5 5 7.5 3" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M14.5 5 16.5 3" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M18.5 8.5a5 5 0 0 1 0 7" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M17 9.75a3.25 3.25 0 0 1 0 4.5" stroke-width="1.5" stroke-linecap="round" />
-      <circle cx="12" cy="12" r="1.75" stroke-width="1.5" />
-    </svg>
-  `),
-  motors: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="5.75" y="5" width="6.5" height="14" rx="1.75" stroke-width="1.5" />
-      <path d="M12.25 12h1.5" stroke-width="1.5" stroke-linecap="round" />
-      <circle cx="16.5" cy="12" r="2.75" stroke-width="1.5" />
-      <path d="M16.5 9.25v5.5" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M13.75 12h5.5" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M14.55 10.7 18.45 14.6" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M18.45 10.7 14.55 14.6" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  `),
-  controllers: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="6.75" y="4.5" width="10.5" height="15" rx="2.5" stroke-width="1.5" />
-      <circle cx="12" cy="11.75" r="3" stroke-width="1.5" />
-      <path d="M9 7.5h6" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M9.25 9.5h2.25" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M9.25 15.5h5.5" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  `),
-  distance: svgIconGlyph(`
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <rect x="5.75" y="6" width="8" height="12" rx="2" stroke-width="1.5" />
-      <circle cx="9.75" cy="12" r="2.25" stroke-width="1.5" />
-      <path d="M13.75 9.5c1.5 1 1.5 4 0 5" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M15.75 8.5c2 1.3 2 6.2 0 7.5" stroke-width="1.5" stroke-linecap="round" />
-    </svg>
-  `)
-});
-
 // Map overview section keys to diagram icons
 /* exported overviewSectionIcons */
 const overviewSectionIcons = {
-  category_batteries: overviewIconGlyphs.batteries,
-  category_batteryHotswaps: overviewIconGlyphs.hotswaps,
-  category_cameras: overviewIconGlyphs.cameras,
-  category_viewfinders: overviewIconGlyphs.viewfinders,
-  category_monitors: overviewIconGlyphs.monitors,
-  category_video: overviewIconGlyphs.video,
-  category_fiz_motors: overviewIconGlyphs.motors,
-  category_fiz_controllers: overviewIconGlyphs.controllers,
-  category_fiz_distance: overviewIconGlyphs.distance
+  category_batteries: diagramIcons.battery,
+  category_batteryHotswaps: diagramIcons.battery,
+  category_cameras: diagramIcons.camera,
+  category_viewfinders: diagramIcons.viewfinder,
+  category_monitors: diagramIcons.monitor,
+  category_video: diagramIcons.video,
+  category_fiz_motors: diagramIcons.motors,
+  category_fiz_controllers: diagramIcons.controllers,
+  category_fiz_distance: diagramIcons.distance
 };
 
 // Load an image and optionally strip a solid background using Canvas
