@@ -3505,6 +3505,18 @@ const PINK_MODE_ICON_FILES = Object.freeze([
   'unicorns/toy.svg'
 ]);
 
+function createPinkModeIconImageMarkup(path) {
+  if (typeof path !== 'string' || !path) {
+    return '';
+  }
+  const safePath = escapeHtml(path);
+  return `<img src="${safePath}" alt="" loading="lazy" decoding="async" aria-hidden="true" class="pink-mode-icon-image">`;
+}
+
+const PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(
+  PINK_MODE_ICON_FILES.map(createPinkModeIconImageMarkup).filter(Boolean)
+);
+
 const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
   'animated icons/cup.json',
   'animated icons/fox.json',
@@ -5310,6 +5322,8 @@ const iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
 const iosPwaHelpStep1 = document.getElementById("iosPwaHelpStep1");
 const iosPwaHelpStep2 = document.getElementById("iosPwaHelpStep2");
 const iosPwaHelpStep3 = document.getElementById("iosPwaHelpStep3");
+
+setPinkModeIconSequence(PINK_MODE_ICON_FALLBACK_MARKUP);
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   loadPinkModeIconsFromFiles().catch(() => {});

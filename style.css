@@ -1596,6 +1596,13 @@ body.pink-mode .auto-gear-rule-title,
   fill: none;
 }
 
+.icon-glyph.icon-svg .pink-mode-icon-image {
+  width: 1em;
+  height: 1em;
+  display: block;
+  object-fit: contain;
+}
+
 .icon-glyph.diagram-camera-icon svg {
   stroke-width: 1.5px;
   stroke-linecap: round;
