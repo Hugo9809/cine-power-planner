@@ -72,18 +72,25 @@ describe('help dialog search behaviour', () => {
     const powerButton = buttons.find(btn =>
       btn.textContent.includes('Power Calculator')
     );
+    const troubleshootingButton = buttons.find(btn =>
+      btn.textContent.includes('Troubleshooting')
+    );
     expect(featuresButton).toBeTruthy();
     expect(powerButton).toBeTruthy();
+    expect(troubleshootingButton).toBeTruthy();
     const featuresItem = featuresButton.closest('li');
     const powerItem = powerButton.closest('li');
+    const troubleshootingItem = troubleshootingButton.closest('li');
     expect(featuresItem).toBeTruthy();
     expect(powerItem).toBeTruthy();
+    expect(troubleshootingItem).toBeTruthy();
 
     typeInHelpSearch('power calculator');
 
     expect(helpQuickLinks.hasAttribute('hidden')).toBe(false);
     expect(powerItem.hasAttribute('hidden')).toBe(false);
     expect(featuresItem.hasAttribute('hidden')).toBe(true);
+    expect(troubleshootingItem.hasAttribute('hidden')).toBe(true);
 
     typeInHelpSearch('no matching topic');
 
@@ -107,5 +114,21 @@ describe('help dialog search behaviour', () => {
 
     expect(button.classList.contains('active')).toBe(true);
     expect(powerSection.classList.contains('help-section-focus')).toBe(true);
+  });
+
+  test('troubleshooting keywords surface the recovery section', () => {
+    const troubleshootingSection = document.getElementById(
+      'troubleshootingHelp'
+    );
+    expect(troubleshootingSection).toBeTruthy();
+
+    typeInHelpSearch('stuck');
+
+    expect(troubleshootingSection.hasAttribute('hidden')).toBe(false);
+    expect(helpQuickLinks.hasAttribute('hidden')).toBe(false);
+
+    typeInHelpSearch('');
+
+    expect(troubleshootingSection.hasAttribute('hidden')).toBe(false);
   });
 });
