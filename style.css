@@ -3002,6 +3002,12 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   background: var(--surface-color);
   color: var(--control-text);
 }
+
+@media (min-width: 1024px) {
+  #projectDialog {
+    max-width: 950px;
+  }
+}
 #projectDialog::backdrop {
   background: rgba(0, 0, 0, 0.5);
 }
