@@ -102,6 +102,16 @@ function generatePrintableOverview() {
         warningHtml += `<p style="color: ${dtapWarnElem.style.color}; font-weight: bold;">${dtapWarnElem.textContent}</p>`;
     }
 
+    const resultsSectionHtml = `
+        <section id="resultsSection" class="results-section print-section">
+            <h2>${t.resultsHeading}</h2>
+            <div class="results-body">
+                ${resultsHtml}
+                ${warningHtml ? `<div class="results-warnings">${warningHtml}</div>` : ''}
+            </div>
+        </section>
+    `;
+
     // REGENERATE BATTERY TABLE HTML WITH BARS FOR OVERVIEW
     let batteryTableHtml = '';
     const totalWatt = parseFloat(totalPowerElem.textContent);
@@ -214,8 +224,9 @@ function generatePrintableOverview() {
     const diagramControlsHtml = document.querySelector('.diagram-controls') ? document.querySelector('.diagram-controls').outerHTML : '';
     const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
     const diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
-    const diagramSectionHtml = diagramAreaHtml ? `<section id="setupDiagram"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}</section>` : '';
-    const diagramSectionHtmlWithBreak = diagramSectionHtml ? `<div class="page-break"></div>${diagramSectionHtml}` : '';
+    const diagramSectionHtml = diagramAreaHtml
+        ? `<section id="setupDiagram" class="diagram-section print-section"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}</section>`
+        : '';
     const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
 
     let gearListCombined = getCurrentGearListHtml();
@@ -229,14 +240,14 @@ function generatePrintableOverview() {
             ? splitGearListHtml(gearListCombined)
             : { projectHtml: '', gearHtml: '' };
         if (parts.projectHtml) {
-            projectSectionHtml = `<section id="projectRequirementsOutput">${parts.projectHtml}</section>`;
+            projectSectionHtml = `<section id="projectRequirementsOutput" class="print-section project-requirements-section">${parts.projectHtml}</section>`;
         }
         if (parts.gearHtml) {
-            gearSectionHtml = `<section id="gearListOutput">${parts.gearHtml}</section>`;
+            gearSectionHtml = `<section id="gearListOutput" class="gear-list-section">${parts.gearHtml}</section>`;
         }
     }
-    const gearListHtmlWithBreak = projectSectionHtml || gearSectionHtml
-        ? `<div class="page-break"></div>${projectSectionHtml}${gearSectionHtml}`
+    const gearListHtmlCombined = projectSectionHtml || gearSectionHtml
+        ? `${projectSectionHtml || ''}${gearSectionHtml || ''}`
         : '';
 
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
@@ -253,13 +264,11 @@ function generatePrintableOverview() {
             <h2>${t.overviewDeviceSelectionHeading || t.deviceSelectionHeading}</h2>
             ${deviceListHtml}
 
-            <h2>${t.resultsHeading}</h2>
-            ${resultsHtml}
-            ${warningHtml}
+            ${resultsSectionHtml}
 
-            ${diagramSectionHtmlWithBreak}
+            ${diagramSectionHtml}
 
-            ${gearListHtmlWithBreak}
+            ${gearListHtmlCombined}
             ${batteryTableHtmlWithBreak}
         </div>
     `;
