@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearSeedFlag, saveAutoGearSeedFlag, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearSeedFlag, saveAutoGearSeedFlag, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, requestPersistentStorage */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -641,6 +641,11 @@ function setupOfflineIndicator() {
 
 if (typeof window !== 'undefined') {
   setupOfflineIndicator();
+  if (typeof requestPersistentStorage === 'function') {
+    requestPersistentStorage().catch(error => {
+      console.warn('Persistent storage request error:', error);
+    });
+  }
 }
 
 /**
@@ -16710,17 +16715,20 @@ if (helpButton && helpDialog) {
       (isHelp || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
 
     if (!isHelp && !preferHelp) {
+      const featureExact = featureMatch?.matchType === 'exactKey';
       const shouldUseDevice =
         !!deviceMatch &&
         (!featureMatch ||
           (deviceStrong && !featureStrong) ||
-          (deviceStrong === featureStrong && deviceScore > featureScore));
+          (deviceStrong === featureStrong &&
+            (deviceScore > featureScore ||
+              (deviceScore === featureScore && !featureExact))));
       if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {
           device.select.value = device.value;
           device.select.dispatchEvent(new Event('change', { bubbles: true }));
-          if (featureSearch && device.label) {
+          if (featureSearch && device.label && deviceMatch.matchType !== 'exactKey') {
             featureSearch.value = device.label;
           }
           focusFeatureElement(device.select);
@@ -16733,7 +16741,7 @@ if (helpButton && helpDialog) {
         if (featureEl) {
           if (featureSearch) {
             const label = feature?.label || featureEl.textContent?.trim();
-            if (label) {
+            if (label && featureMatch.matchType !== 'exactKey') {
               featureSearch.value = label;
             }
           }

@@ -257,9 +257,11 @@ Once installed, the app launches from your home screen, works offline and update
 Serving the app over HTTP(S) installs a service worker that caches every file
 so Cine Power Planner works fully offline and updates in the background. Projects,
 runtime submissions and preferences (language, theme, pink mode and saved gear
-lists) live in your browser's `localStorage`. Clearing the site's data in the
-browser removes all stored information, and the Settings dialog includes a
-**Factory reset** workflow that saves a backup automatically before clearing everything. The header shows an
+lists) live in your browser's `localStorage`. When available, the app asks the
+StorageManager API for persistent storage so cached data survives storage
+pressure on mobile devices. Clearing the site's data in the browser removes all
+stored information, and the Settings dialog includes a **Factory reset** workflow
+that saves a backup automatically before clearing everything. The header shows an
 offline badge whenever connectivity drops, and the 🔄 **Force reload** action
 refreshes cached assets without disturbing saved projects.
 

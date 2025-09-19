@@ -109,6 +109,73 @@ const SAFE_LOCAL_STORAGE = (() => {
   };
 })();
 
+const PERSISTENCE_UNSUPPORTED_RESULT = Object.freeze({
+  supported: false,
+  persisted: false,
+  granted: false,
+});
+
+let persistentStoragePromise = null;
+
+function requestPersistentStorage() {
+  if (persistentStoragePromise) {
+    return persistentStoragePromise;
+  }
+
+  if (typeof navigator === 'undefined') {
+    persistentStoragePromise = Promise.resolve(PERSISTENCE_UNSUPPORTED_RESULT);
+    return persistentStoragePromise;
+  }
+
+  const storageManager = navigator.storage;
+  if (!storageManager || typeof storageManager.persist !== 'function') {
+    persistentStoragePromise = Promise.resolve(PERSISTENCE_UNSUPPORTED_RESULT);
+    return persistentStoragePromise;
+  }
+
+  persistentStoragePromise = (async () => {
+    const hasPersistedCheck = typeof storageManager.persisted === 'function';
+    let alreadyPersisted = false;
+
+    if (hasPersistedCheck) {
+      try {
+        alreadyPersisted = Boolean(await storageManager.persisted());
+      } catch (error) {
+        console.warn('Persistent storage status check failed:', error);
+      }
+    }
+
+    if (alreadyPersisted) {
+      return { supported: true, persisted: true, granted: true };
+    }
+
+    let granted = false;
+    try {
+      granted = Boolean(await storageManager.persist());
+    } catch (error) {
+      console.warn('Persistent storage request failed:', error);
+      return { supported: true, persisted: false, granted: false };
+    }
+
+    let persisted = granted;
+    if (!persisted && hasPersistedCheck) {
+      try {
+        persisted = Boolean(await storageManager.persisted());
+      } catch (error) {
+        console.warn('Persistent storage status check failed:', error);
+      }
+    }
+
+    if (!persisted) {
+      console.warn('Persistent storage was not granted; data may be cleared under storage pressure.');
+    }
+
+    return { supported: true, persisted, granted };
+  })();
+
+  return persistentStoragePromise;
+}
+
 // Helper to check for plain objects
 function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
@@ -812,5 +879,6 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearRules,
     loadAutoGearSeedFlag,
     saveAutoGearSeedFlag,
+    requestPersistentStorage,
   };
 }
