@@ -13513,6 +13513,61 @@ if (settingsButton && settingsDialog) {
   });
 }
 
+const parseRgbComponent = value => {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (trimmed.endsWith('%')) {
+    const percent = Number.parseFloat(trimmed.slice(0, -1));
+    if (Number.isNaN(percent)) return null;
+    return Math.max(0, Math.min(255, Math.round((percent / 100) * 255)));
+  }
+  const numeric = Number.parseFloat(trimmed);
+  if (Number.isNaN(numeric)) return null;
+  return Math.max(0, Math.min(255, Math.round(numeric)));
+};
+
+const parseColorToRgb = color => {
+  if (typeof color !== 'string') return null;
+  const trimmed = color.trim();
+  if (!trimmed) return null;
+  const hexMatch = trimmed.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hexMatch) {
+    const hex = hexMatch[1];
+    if (hex.length === 3) {
+      return {
+        r: Number.parseInt(hex[0] + hex[0], 16),
+        g: Number.parseInt(hex[1] + hex[1], 16),
+        b: Number.parseInt(hex[2] + hex[2], 16),
+      };
+    }
+    return {
+      r: Number.parseInt(hex.slice(0, 2), 16),
+      g: Number.parseInt(hex.slice(2, 4), 16),
+      b: Number.parseInt(hex.slice(4, 6), 16),
+    };
+  }
+  const rgbMatch = trimmed.match(/^rgba?\(([^)]+)\)$/i);
+  if (rgbMatch) {
+    const parts = rgbMatch[1].split(',');
+    if (parts.length < 3) return null;
+    const [r, g, b] = parts;
+    const red = parseRgbComponent(r);
+    const green = parseRgbComponent(g);
+    const blue = parseRgbComponent(b);
+    if ([red, green, blue].some(component => component === null)) return null;
+    return { r: red, g: green, b: blue };
+  }
+  return null;
+};
+
+const createAccentTint = (alpha = 0.16) => {
+  const accentFallback = typeof accentColor === 'string' ? accentColor : '#001589';
+  const accentSource = getCssVariableValue('--accent-color', accentFallback);
+  const rgb = parseColorToRgb(accentSource);
+  if (!rgb) return null;
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+};
+
 function showNotification(type, message) {
   if (typeof document === 'undefined') return;
   const id = 'backupNotificationContainer';
@@ -13528,23 +13583,25 @@ function showNotification(type, message) {
   }
   const note = document.createElement('div');
   note.textContent = message;
-  note.style.padding = '0.5rem 1rem';
+  note.style.padding = '0.75rem 1.25rem';
   note.style.marginTop = '0.5rem';
-  const backgroundVar = type === 'error'
-    ? '--status-error-bg'
-    : type === 'warning'
-      ? '--status-warning-bg'
-      : '--status-success-bg';
-  const fallbackBackground = type === 'error' ? '#fdd' : type === 'warning' ? '#ffd' : '#dfd';
-  note.style.background = getCssVariableValue(backgroundVar, fallbackBackground);
-  const borderColor = getCssVariableValue('--status-border-color', '#ccc');
-  note.style.border = `1px solid ${borderColor}`;
-  const textColorVar = type === 'error'
-    ? '--status-error-text-color'
-    : type === 'warning'
-      ? '--status-warning-text-color'
-      : '--status-success-text-color';
-  note.style.color = getCssVariableValue(textColorVar, '#000');
+  note.style.borderRadius = '0.75rem';
+  note.style.border = 'none';
+  note.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
+  let background;
+  let textColor;
+  if (type === 'error' || type === 'warning') {
+    const backgroundVar = type === 'error' ? '--status-error-bg' : '--status-warning-bg';
+    const fallbackBackground = type === 'error' ? '#fdd' : '#ffd';
+    background = getCssVariableValue(backgroundVar, fallbackBackground);
+    const textColorVar = type === 'error' ? '--status-error-text-color' : '--status-warning-text-color';
+    textColor = getCssVariableValue(textColorVar, '#000');
+  } else {
+    background = createAccentTint() || getCssVariableValue('--status-success-bg', '#dfd');
+    textColor = getCssVariableValue('--status-success-text-color', '#000');
+  }
+  note.style.background = background;
+  note.style.color = textColor;
   container.appendChild(note);
   setTimeout(() => {
     note.remove();
