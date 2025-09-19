@@ -248,5 +248,7 @@ npm run generate-schema
 
 Aggiungi `--help` a uno qualsiasi degli script per visualizzare le opzioni disponibili.
 
+Esegui `npm run help` per ottenere rapidamente un riepilogo degli script di manutenzione e dell'ordine consigliato.
+
 ## 🤝 Contribuire
 Sono benvenuti contributi di ogni tipo! Apri una issue o invia una pull request su GitHub.

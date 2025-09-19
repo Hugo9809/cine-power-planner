@@ -248,5 +248,7 @@ npm run generate-schema
 
 Mit `--help` zeigen die Skripte weitere Optionen an.
 
+Mit `npm run help` erhältst du eine kurze Übersicht über die Wartungsskripte und ihre empfohlene Reihenfolge.
+
 ## 🤝 Mitmachen
 Beiträge sind jederzeit willkommen! Eröffne gerne ein Issue oder sende einen Pull Request auf GitHub.

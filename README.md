@@ -446,6 +446,8 @@ Add `--help` to any of the helper commands for detailed usage (for example,
 `npm run normalize -- --help`). Review the generated JSON diffs to verify
 naming, connector standards and metadata before opening a pull request.
 
+Run `npm run help` at any point for a concise summary of the available scripts and the recommended execution order.
+
 ## Troubleshooting
 
 - **Stuck on an old version?** Service workers aggressively cache assets. Click the in-app **Force reload** button, or open your browser's dev tools and perform a hard reload to clear stale files without deleting saved projects.
