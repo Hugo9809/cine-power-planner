@@ -77,7 +77,7 @@ const texts = {
     darkModeHelp:
       "Switch between light and dark themes for comfortable viewing. Press D to toggle. The preference is saved.",
     pinkModeHelp:
-      "Add a playful pink accent theme. Works with light or dark mode and is remembered for next time.",
+      "Add a playful pink accent theme. The unicorn icon cycles every 30 seconds with a gentle pop animation while pink mode is on, and the setting works with light or dark mode and is remembered for next time.",
     settingsButton: "Settings",
     settingsButtonHelp:
       "Open Settings to personalize language, colors, fonts, accessibility options and backups.",
@@ -802,7 +802,7 @@ const texts = {
     darkModeHelp:
       "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
-      "Attiva un tema rosa giocoso; funziona con modalità chiara o scura e viene salvato.",
+      "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
     reloadAppLabel: "Ricarica",
     reloadAppHelp: "Svuota la cache e ricarica l'app senza eliminare i dati salvati.",
 
@@ -1504,7 +1504,7 @@ const texts = {
     darkModeHelp:
       "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
     pinkModeHelp:
-      "Aplica un tema rosa divertido; funciona con modo claro u oscuro y se recuerda la próxima vez.",
+      "Añade un tema rosa divertido. Cuando el modo rosa está activo, el icono del unicornio cambia cada 30 segundos con una suave animación emergente, y el ajuste funciona en modo claro u oscuro y se recuerda para la próxima vez.",
     reloadAppLabel: "Forzar recarga",
     reloadAppHelp: "Borra la caché y recarga la aplicación sin eliminar los datos guardados.",
 
@@ -2220,7 +2220,7 @@ const texts = {
     darkModeHelp:
       "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
     pinkModeHelp:
-      "Active un thème rose ludique; fonctionne en mode clair ou sombre et est enregistré.",
+      "Ajoute un thème rose ludique. Lorsque le mode rose est actif, l’icône de licorne change toutes les 30 secondes avec une animation de pop douce, et le réglage fonctionne en mode clair ou sombre et est mémorisé pour la prochaine fois.",
     reloadAppLabel: "Recharger",
     reloadAppHelp: "Vider le cache et recharger l'application sans supprimer les données enregistrées.",
 
@@ -2938,7 +2938,7 @@ const texts = {
     darkModeHelp:
       "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:
-      "Aktiviere ein verspieltes pinkes Design; funktioniert mit hellen oder dunklen Modi und wird gemerkt.",
+      "Füge ein verspieltes pinkes Akzentthema hinzu. Während der Pinkmodus aktiv ist, wechselt das Einhorn-Symbol alle 30 Sekunden mit einer sanften Pop-Animation, und die Einstellung funktioniert in hellen wie dunklen Modi und bleibt für das nächste Mal gespeichert.",
     reloadAppLabel: "Neu laden",
     reloadAppHelp: "Cache leeren und Anwendung neu laden, ohne gespeicherte Daten zu entfernen.",
 

@@ -218,7 +218,7 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 - La preferencia se guarda en tu navegador.
 
 ### 🦄 Modo rosa
-- Haz clic en el botón del unicornio (brilla cuando está activo) o pulsa **P** para activar un acento rosa lúdico.
+- Haz clic en el botón del unicornio (el modo rosa alterna iconos de unicornio cada 30 segundos con una suave animación emergente y vuelve al caballo cuando lo desactivas) o pulsa **P** para activar un acento rosa lúdico.
 - Funciona en los temas claro y oscuro y persiste entre visitas.
 
 ### ⚫ Modo de alto contraste

@@ -1447,6 +1447,33 @@ html.dark-mode .help-quick-link-icon {
   fill: none;
 }
 
+@keyframes pink-mode-icon-pop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  45% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pink-mode-icon-pop {
+  animation: pink-mode-icon-pop 420ms ease-out;
+  transform-origin: center;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pink-mode-icon-pop {
+    animation: none;
+  }
+}
+
 #featureSearchClear .icon-glyph,
 #helpSearchClear .icon-glyph,
 .clear-input-btn .icon-glyph,

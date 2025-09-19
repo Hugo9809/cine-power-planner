@@ -217,7 +217,7 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
 - La preferenza viene salvata nel browser.
 
 ### 🦄 Modalità rosa
-- Clicca sul pulsante con l'unicorno (brilla quando è attivo) o premi **P** per attivare un accento rosa giocoso.
+- Clicca sul pulsante con l'unicorno (la modalità rosa fa ruotare le icone dell'unicorno ogni 30 secondi con una delicata animazione pop e torna al cavallo quando disattivi il tema) o premi **P** per attivare un accento rosa giocoso.
 - Funziona sia nel tema chiaro sia in quello scuro e resta attiva tra una visita e l’altra.
 
 ### ⚫ Modalità ad alto contrasto
