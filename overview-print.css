@@ -57,6 +57,27 @@ body.dark-mode {
   fill: var(--text-color);
   font-family: 'Ubuntu', sans-serif;
 }
+
+#overviewDialogContent #setupDiagram .node-icon-svg {
+  color: var(--text-color);
+}
+
+#overviewDialogContent #setupDiagram .node-icon-svg svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+  stroke: var(--text-color);
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+#overviewDialogContent #setupDiagram .node-icon-svg svg .diagram-camera-icon__lens {
+  fill: var(--text-color);
+  fill-opacity: 0.2;
+  stroke: none;
+}
 #overviewDialogContent #setupDiagram line,
 #overviewDialogContent #setupDiagram path.edge-path {
   stroke: var(--control-text);
@@ -90,6 +111,18 @@ body.dark-mode {
   font-weight: var(--font-weight-regular);
   border-color: var(--text-color) !important;
   color: var(--text-color) !important;
+}
+
+#overviewDialogContent .icon-glyph.diagram-camera-icon svg {
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#overviewDialogContent .icon-glyph.diagram-camera-icon svg .diagram-camera-icon__lens {
+  fill: currentColor;
+  fill-opacity: 0.2;
+  stroke: none;
 }
 
 #overviewDialogContent.logo-present {
