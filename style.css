@@ -49,6 +49,8 @@
   --offline-indicator-bg: #2f3437;
   --offline-indicator-text: #f5f7fa;
   --offline-indicator-border: rgba(245, 247, 250, 0.2);
+  --line-height-base: 1.6;
+  --line-height-supporting: 1.5;
   --status-error-bg: #fdd;
   --status-warning-bg: #ffd;
   --status-success-bg: #dfd;
@@ -109,6 +111,7 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-size: 1em;
+  line-height: var(--line-height-base);
 }
 
 main {
@@ -273,7 +276,7 @@ h3 {
 
 /* Paragraph text */
 p {
-  line-height: 1.4em;
+  line-height: var(--line-height-base);
 }
 
 #tagline {
@@ -550,7 +553,7 @@ main.legal-content {
   margin: 0;
   font-size: 0.85em;
   color: var(--muted-text-color);
-  line-height: 1.4;
+  line-height: var(--line-height-supporting);
 }
 
 /* Keep controls aligned within Project Overview and Configure Devices */
@@ -1117,7 +1120,7 @@ body.pink-mode .auto-gear-rule-title,
 
 .auto-gear-rule-item {
   font-size: 0.9em;
-  line-height: 1.4;
+  line-height: var(--line-height-supporting);
   word-break: break-word;
 }
 
@@ -3193,7 +3196,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
     margin-bottom: 4px;
   }
   #setup-config .form-row label {
-    line-height: 1.4;
+    line-height: var(--line-height-base);
   }
   .form-row select,
   .form-row input {
@@ -3502,7 +3505,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
-  line-height: 1.4em;
+  line-height: var(--line-height-supporting);
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -3563,7 +3566,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
-  line-height: 1.4em;
+  line-height: var(--line-height-supporting);
   break-inside: avoid;
   page-break-inside: avoid;
 }

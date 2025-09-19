@@ -25,6 +25,7 @@ body.dark-mode {
   font-family: 'Ubuntu', sans-serif;
   font-weight: 300;
   font-size: 12pt;
+  line-height: var(--line-height-base, 1.6);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
   background: var(--surface-color);
@@ -111,6 +112,7 @@ h1 {
 
 p {
   margin: 0.3em 0;
+  line-height: var(--line-height-base, 1.6);
 }
 
 #topBar,
@@ -229,7 +231,7 @@ body:not(.light-mode) .gear-table td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
-  line-height: 1.4em;
+  line-height: var(--line-height-supporting, 1.5);
   break-inside: avoid;
   page-break-inside: avoid;
 }
