@@ -3112,6 +3112,7 @@ function setLanguage(lang) {
       if (value) element.textContent = value;
     };
     setLabelText(projectDialogHeading, 'heading');
+    setLabelText(projectDetailsHeadingElem, 'detailsHeading');
     setLabelText(projectNameLabel, 'projectName');
     setLabelText(productionCompanyLabel, 'productionCompany');
     setLabelText(rentalHouseLabel, 'rentalHouse');
@@ -3124,6 +3125,7 @@ function setLanguage(lang) {
     }
     setLabelText(prepLabelElem, 'prepLabel');
     setLabelText(shootLabelElem, 'shootLabel');
+    setLabelText(cameraSettingsHeadingElem, 'cameraSettingsHeading');
     setLabelText(deliveryResolutionLabel, 'deliveryResolution');
     setLabelText(recordingResolutionLabel, 'recordingResolution');
     setLabelText(sensorModeLabel, 'sensorMode');
@@ -3145,6 +3147,7 @@ function setLanguage(lang) {
     setLabelText(frameGuidesLabel, 'frameGuides');
     setLabelText(aspectMaskOpacityLabel, 'aspectMaskOpacity');
     setLabelText(videoDistributionLabel, 'videoDistribution');
+    setLabelText(userButtonsHeadingElem, 'userButtonsHeading');
     setLabelText(monitorUserButtonsLabel, 'monitorUserButtons');
     setLabelText(cameraUserButtonsLabel, 'cameraUserButtons');
     setLabelText(viewfinderUserButtonsLabel, 'viewfinderUserButtons');
@@ -3254,6 +3257,7 @@ const monitoringConfigurationSelect = document.getElementById("monitoringConfigu
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
 const projectDialogHeading = document.getElementById("projectDialogHeading");
+const projectDetailsHeadingElem = document.getElementById("projectDetailsHeading");
 const projectNameLabel = document.getElementById("projectNameLabel");
 const productionCompanyLabel = document.getElementById("productionCompanyLabel");
 const rentalHouseLabel = document.getElementById("rentalHouseLabel");
@@ -3261,6 +3265,7 @@ const crewHeadingElem = document.getElementById("crewHeading");
 const crewLabelElem = document.getElementById("crewLabel");
 const prepLabelElem = document.getElementById("prepLabel");
 const shootLabelElem = document.getElementById("shootLabel");
+const cameraSettingsHeadingElem = document.getElementById("cameraSettingsHeading");
 const deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
 const recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
 const sensorModeLabel = document.getElementById("sensorModeLabel");
@@ -3283,6 +3288,7 @@ const viewfinderSettingsLabel = document.getElementById("viewfinderSettingsLabel
 const frameGuidesLabel = document.getElementById("frameGuidesLabel");
 const aspectMaskOpacityLabel = document.getElementById("aspectMaskOpacityLabel");
 const videoDistributionLabel = document.getElementById("videoDistributionLabel");
+const userButtonsHeadingElem = document.getElementById("userButtonsHeading");
 const monitorUserButtonsLabel = document.getElementById("monitorUserButtonsLabel");
 const cameraUserButtonsLabel = document.getElementById("cameraUserButtonsLabel");
 const viewfinderUserButtonsLabel = document.getElementById("viewfinderUserButtonsLabel");
