@@ -9,7 +9,7 @@ describe('device manager details', () => {
   });
 
   function openDetails(name) {
-    const item = Array.from(document.querySelectorAll('#cameraList li')).find(li =>
+    const item = Array.from(document.querySelectorAll('#camerasList li')).find(li =>
       li.querySelector('.device-summary span')?.textContent.includes(name)
     );
     expect(item).toBeTruthy();

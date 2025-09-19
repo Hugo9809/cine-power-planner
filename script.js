@@ -10986,27 +10986,7 @@ addDeviceBtn.addEventListener("click", () => {
   resetDeviceForm();
 
   storeDevices(devices);
-  viewfinderTypeOptions = getAllViewfinderTypes();
-  viewfinderConnectorOptions = getAllViewfinderConnectors();
-  updatePlateTypeOptions();
-  updatePowerPortOptions();
-  updatePowerDistTypeOptions();
-  updatePowerDistVoltageOptions();
-  updatePowerDistCurrentOptions();
-  updateRecordingMediaOptions();
-  updateTimecodeTypeOptions();
-  refreshDeviceLists();
-  // Re-populate all dropdowns to include the new/updated device
-  populateSelect(cameraSelect, devices.cameras, true);
-  populateMonitorSelect();
-  populateSelect(videoSelect, devices.video, true);
-  motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-  controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-  populateSelect(distanceSelect, devices.fiz.distance, true);
-  populateSelect(batterySelect, devices.batteries, true);
-  updateFizConnectorOptions();
-  applyFilters();
-  updateCalculations(); // Update calculations after device data changes
+  refreshDeviceDataDependentUI();
 
   let categoryKey = category.replace(".", "_");
   let categoryDisplay = texts[currentLang]["category_" + categoryKey] || category;
@@ -11038,7 +11018,7 @@ exportBtn.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-const exportAndRevertBtn = document.getElementById('exportAndRevertBtn'); 
+const exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
 
 if (exportAndRevertBtn) {
   exportAndRevertBtn.addEventListener('click', () => {
@@ -11071,6 +11051,250 @@ if (exportAndRevertBtn) {
   });
 }
 
+function snapshotDeviceShape(currentDevices) {
+  const shape = {};
+  if (!isPlainObjectValue(currentDevices)) {
+    return shape;
+  }
+
+  Object.entries(currentDevices).forEach(([key, value]) => {
+    if (key === 'accessories' || key === 'fiz') {
+      if (!shape[key]) {
+        shape[key] = { type: 'object', children: {} };
+      }
+      const children = shape[key].children || (shape[key].children = {});
+      if (isPlainObjectValue(value)) {
+        Object.entries(value).forEach(([childKey, childValue]) => {
+          children[childKey] = Array.isArray(childValue)
+            ? { type: 'array' }
+            : { type: 'object' };
+        });
+      }
+    } else if (Array.isArray(value)) {
+      shape[key] = { type: 'array' };
+    } else if (isPlainObjectValue(value)) {
+      shape[key] = { type: 'object' };
+    }
+  });
+
+  return shape;
+}
+
+function extendShapeWithSchema(shape, schemaNode, path = []) {
+  if (!schemaNode || typeof schemaNode !== 'object') {
+    return;
+  }
+
+  if (path.length === 1) {
+    const key = path[0];
+    if (!shape[key]) {
+      shape[key] = { type: key === 'filterOptions' ? 'array' : 'object' };
+    }
+  } else if (path.length === 2) {
+    const [parent, child] = path;
+    if (!shape[parent]) {
+      shape[parent] = { type: 'object', children: {} };
+    }
+    if (!shape[parent].children) {
+      shape[parent].children = {};
+    }
+    if (!shape[parent].children[child]) {
+      shape[parent].children[child] = { type: 'object' };
+    }
+  }
+
+  Object.entries(schemaNode).forEach(([key, value]) => {
+    if (key === 'attributes') return;
+    extendShapeWithSchema(shape, value, path.concat(key));
+  });
+}
+
+function collectExpectedDeviceShape() {
+  const shape = snapshotDeviceShape(devices);
+  if (deviceSchema) {
+    extendShapeWithSchema(shape, deviceSchema);
+  }
+  return shape;
+}
+
+function countDeviceEntries(data) {
+  if (!isPlainObjectValue(data)) {
+    return 0;
+  }
+  let total = 0;
+  Object.entries(data).forEach(([key, value]) => {
+    if (!value) return;
+    if (Array.isArray(value)) return;
+    if (key === 'accessories' || key === 'fiz') {
+      total += countDeviceEntries(value);
+    } else if (isPlainObjectValue(value)) {
+      total += Object.keys(value).length;
+    }
+  });
+  return total;
+}
+
+function normalizeImportedDeviceData(rawData, shape) {
+  if (!isPlainObjectValue(rawData)) {
+    return {
+      data: null,
+      errors: ['Top-level data must be an object.'],
+      count: 0,
+    };
+  }
+
+  const descriptor = shape || {};
+  const errors = [];
+
+  function sanitizeEntries(entries, path) {
+    if (entries === undefined) {
+      return {};
+    }
+    if (!isPlainObjectValue(entries)) {
+      if (Array.isArray(entries)) {
+        errors.push(`${path}: expected an object but received an array.`);
+      } else {
+        errors.push(`${path}: expected an object.`);
+      }
+      return {};
+    }
+    const sanitized = {};
+    Object.entries(entries).forEach(([name, value]) => {
+      if (isPlainObjectValue(value)) {
+        sanitized[name] = value;
+      } else {
+        errors.push(`${path}.${name}: expected an object entry.`);
+      }
+    });
+    return sanitized;
+  }
+
+  function processNode(nodeDescriptor, value, path) {
+    if (!nodeDescriptor) {
+      if (value === undefined) {
+        return {};
+      }
+      if (Array.isArray(value)) {
+        return value.slice();
+      }
+      return sanitizeEntries(value, path);
+    }
+
+    if (nodeDescriptor.type === 'array') {
+      if (value === undefined) {
+        return [];
+      }
+      if (Array.isArray(value)) {
+        return value.slice();
+      }
+      errors.push(`${path}: expected an array.`);
+      return [];
+    }
+
+    if (nodeDescriptor.children) {
+      const container = isPlainObjectValue(value) ? value : {};
+      if (value !== undefined && !isPlainObjectValue(value)) {
+        errors.push(`${path}: expected an object.`);
+      }
+      const result = {};
+      const seen = new Set();
+      Object.entries(nodeDescriptor.children).forEach(([childKey, childDescriptor]) => {
+        const childPath = `${path}.${childKey}`;
+        result[childKey] = processNode(childDescriptor, container[childKey], childPath);
+        seen.add(childKey);
+      });
+      if (isPlainObjectValue(container)) {
+        Object.entries(container).forEach(([childKey, childValue]) => {
+          if (seen.has(childKey)) return;
+          const childPath = `${path}.${childKey}`;
+          if (Array.isArray(childValue)) {
+            result[childKey] = childValue.slice();
+          } else if (isPlainObjectValue(childValue)) {
+            result[childKey] = sanitizeEntries(childValue, childPath);
+          } else {
+            errors.push(`${childPath}: expected an object or array.`);
+          }
+        });
+      }
+      return result;
+    }
+
+    return sanitizeEntries(value, path);
+  }
+
+  const normalized = {};
+  const seenKeys = new Set();
+
+  Object.entries(rawData).forEach(([key, value]) => {
+    normalized[key] = processNode(descriptor[key], value, key);
+    seenKeys.add(key);
+  });
+
+  Object.entries(descriptor).forEach(([key, nodeDescriptor]) => {
+    if (!seenKeys.has(key)) {
+      normalized[key] = processNode(nodeDescriptor, undefined, key);
+    }
+  });
+
+  return {
+    data: normalized,
+    errors,
+    count: countDeviceEntries(normalized),
+  };
+}
+
+function refreshDeviceDataDependentUI() {
+  viewfinderTypeOptions = getAllViewfinderTypes();
+  viewfinderConnectorOptions = getAllViewfinderConnectors();
+  populateCategoryOptions();
+  refreshDeviceLists();
+
+  populateSelect(cameraSelect, devices.cameras, true);
+  populateMonitorSelect();
+  populateSelect(videoSelect, devices.video, true);
+  if (cageSelect) populateSelect(cageSelect, devices.accessories?.cages || {}, true);
+  motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
+  controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
+  populateSelect(distanceSelect, devices.fiz.distance, true);
+  populateSelect(batterySelect, devices.batteries, true);
+  populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
+
+  updateBatteryPlateVisibility();
+  updateBatteryOptions();
+  updatePlateTypeOptions();
+  updatePowerPortOptions();
+  updatePowerDistTypeOptions();
+  updatePowerDistVoltageOptions();
+  updatePowerDistCurrentOptions();
+  updateRecordingMediaOptions();
+  updateTimecodeTypeOptions();
+  updateFizConnectorOptions();
+  updateMotorConnectorOptions();
+  updateControllerConnectorOptions();
+  updateControllerPowerOptions();
+  updateControllerBatteryOptions();
+  updateControllerConnectivityOptions();
+  updateDistanceConnectionOptions();
+  updateDistanceMethodOptions();
+  updateDistanceDisplayOptions();
+
+  setViewfinders([]);
+  setBatteryPlates([]);
+  setRecordingMedia([]);
+  setLensMounts([]);
+  populateLensDropdown();
+  populateFilterDropdown();
+  setVideoOutputs([]);
+  setMonitorVideoInputs([]);
+  setMonitorVideoOutputs([]);
+  setViewfinderVideoInputs([]);
+  setViewfinderVideoOutputs([]);
+  setFizConnectors([]);
+
+  applyFilters();
+  updateCalculations();
+}
+
 // Import device data
 importDataBtn.addEventListener("click", () => {
   importFileInput.click(); // Trigger the file input click
@@ -11086,56 +11310,30 @@ importFileInput.addEventListener("change", (event) => {
   reader.onload = (e) => {
     try {
       const importedData = JSON.parse(e.target.result);
-      // Basic validation: check if it has expected top-level keys
-      const expectedKeys = ["cameras", "viewfinders", "monitors", "video", "fiz", "batteries"];
-      const hasAllKeys = expectedKeys.every(key => Object.prototype.hasOwnProperty.call(importedData, key));
+      const shape = collectExpectedDeviceShape();
+      const { data: normalized, errors, count } = normalizeImportedDeviceData(importedData, shape);
 
-      if (hasAllKeys && typeof importedData.fiz === 'object' &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'motors') &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'controllers') &&
-          Object.prototype.hasOwnProperty.call(importedData.fiz,'distance')) {
-        devices = importedData; // Overwrite current devices with imported data
-        storeDevices(devices);
-        viewfinderTypeOptions = getAllViewfinderTypes();
-        viewfinderConnectorOptions = getAllViewfinderConnectors();
-        refreshDeviceLists(); // Update device manager lists
-        // Re-populate all dropdowns and update calculations
-        populateSelect(cameraSelect, devices.cameras, true);
-        populateMonitorSelect();
-        populateSelect(videoSelect, devices.video, true);
-        motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
-        controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
-        populateSelect(distanceSelect, devices.fiz.distance, true);
-        populateSelect(batterySelect, devices.batteries, true);
-        updateFizConnectorOptions();
-        updateMotorConnectorOptions();
-        updateControllerConnectorOptions();
-        updateControllerPowerOptions();
-        updateControllerBatteryOptions();
-        updateControllerConnectivityOptions();
-        updateDistanceConnectionOptions();
-        updateDistanceMethodOptions();
-        updateDistanceDisplayOptions();
-        applyFilters();
-        updateCalculations();
-
-        // Count total devices imported for the alert message
-        let deviceCount = 0;
-        for (const category in importedData) {
-            if (category === "fiz") {
-                for (const subcategory in importedData.fiz) {
-                    deviceCount += Object.keys(importedData.fiz[subcategory]).length;
-                }
-            } else {
-                deviceCount += Object.keys(importedData[category]).length;
-            }
-        }
-        alert(texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount));
-        exportOutput.style.display = "block"; // Show the textarea
-        exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
-      } else {
-        alert(texts[currentLang].alertImportError);
+      if (!normalized) {
+        const errorText = errors && errors.length
+          ? `${texts[currentLang].alertImportError}\n${errors.join('\n')}`
+          : texts[currentLang].alertImportError;
+        alert(errorText);
+        console.error('Device database import failed:', errors);
+        return;
       }
+
+      if (errors.length) {
+        console.warn('Device database import warnings:', errors);
+      }
+
+      devices = normalized; // Overwrite current devices with imported data
+      storeDevices(devices);
+      refreshDeviceDataDependentUI();
+
+      const deviceCount = typeof count === 'number' ? count : countDeviceEntries(devices);
+      alert(texts[currentLang].alertImportSuccess.replace("{num_devices}", deviceCount));
+      exportOutput.style.display = "block"; // Show the textarea
+      exportOutput.value = JSON.stringify(devices, null, 2); // Display the newly imported data
     } catch (error) {
       console.error("Error parsing or importing data:", error);
       alert(texts[currentLang].alertImportError);
@@ -16175,19 +16373,34 @@ function populateCodecDropdown(selected = '') {
 }
 
 function populateFilterDropdown() {
-  if (filterSelectElem && devices && Array.isArray(devices.filterOptions)) {
-    if (!filterSelectElem.multiple) {
-      const emptyOpt = document.createElement('option');
-      emptyOpt.value = '';
-      filterSelectElem.appendChild(emptyOpt);
-    }
-    devices.filterOptions.forEach(f => {
-      const opt = document.createElement('option');
-      opt.value = f;
-      opt.textContent = f;
-      filterSelectElem.appendChild(opt);
-    });
+  if (!filterSelectElem) return;
+
+  const previousSelection = new Set(Array.from(filterSelectElem.selectedOptions).map(o => o.value));
+  const isMultiple = filterSelectElem.multiple;
+  filterSelectElem.innerHTML = '';
+
+  if (!devices || !Array.isArray(devices.filterOptions)) {
+    return;
   }
+
+  if (!isMultiple) {
+    const emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    if (previousSelection.has('')) {
+      emptyOpt.selected = true;
+    }
+    filterSelectElem.appendChild(emptyOpt);
+  }
+
+  devices.filterOptions.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f;
+    opt.textContent = f;
+    if (previousSelection.has(f)) {
+      opt.selected = true;
+    }
+    filterSelectElem.appendChild(opt);
+  });
 }
 
 const filterId = t => t.replace(/[^a-z0-9]/gi, '_');
