@@ -8782,13 +8782,54 @@ function splitGearListHtml(html) {
   const h3s = doc.querySelectorAll('h3');
   const reqHeading = h3s[0];
   const reqGrid = doc.querySelector('.requirements-grid');
-  const table = doc.querySelector('.gear-table');
-  ensureGearTableCategoryGrouping(table);
   const titleHtml = title ? title.outerHTML : '';
   const projectHtml = reqHeading && reqGrid ? titleHtml + reqHeading.outerHTML + reqGrid.outerHTML : '';
   const projectName = title ? title.textContent : '';
+  let table = doc.querySelector('.gear-table');
+  if (!table) {
+    const tables = Array.from(doc.querySelectorAll('table'));
+    if (tables.length === 1) {
+      table = tables[0];
+    } else if (tables.length > 1) {
+      const tableAfterGearHeading = tables.find(tbl => {
+        const prev = tbl.previousElementSibling;
+        return prev && prev.matches('h3') && /gear list/i.test(prev.textContent || '');
+      });
+      table = tableAfterGearHeading || tables[0];
+    }
+  }
   const gearHeadingHtml = projectName ? `<h2>Gear List: “${projectName}”</h2>` : '';
-  const gearHtml = table ? gearHeadingHtml + table.outerHTML : '';
+  let gearHtml = '';
+  if (table) {
+    ensureGearTableCategoryGrouping(table);
+    gearHtml = gearHeadingHtml + table.outerHTML;
+  }
+  if (!gearHtml) {
+    const bodyClone = doc.body ? doc.body.cloneNode(true) : null;
+    const bodyHtml = doc.body ? doc.body.innerHTML.trim() : '';
+    if (bodyClone) {
+      if (title) {
+        const cloneTitle = bodyClone.querySelector('h2');
+        if (cloneTitle) cloneTitle.remove();
+      }
+      if (reqHeading) {
+        const cloneHeading = bodyClone.querySelector('h3');
+        if (cloneHeading) cloneHeading.remove();
+      }
+      if (reqGrid) {
+        const cloneGrid = bodyClone.querySelector('.requirements-grid');
+        if (cloneGrid) cloneGrid.remove();
+      }
+      const fallbackHtml = bodyClone.innerHTML.trim();
+      if (fallbackHtml) {
+        gearHtml = fallbackHtml;
+      } else if (bodyHtml) {
+        gearHtml = bodyHtml;
+      }
+    } else if (bodyHtml) {
+      gearHtml = bodyHtml;
+    }
+  }
   return { projectHtml, gearHtml };
 }
 
