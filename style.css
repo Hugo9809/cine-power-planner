@@ -283,6 +283,7 @@ p {
 
 a {
   color: var(--link-color);
+  font-weight: 400;
   text-decoration: none;
 }
 
@@ -293,6 +294,20 @@ a:visited {
 a:hover,
 a:focus {
   text-decoration: underline;
+}
+
+html.dark-mode a,
+body.dark-mode a,
+.dark-mode a {
+  color: var(--inverse-text-color);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+}
+
+html.dark-mode a:visited,
+body.dark-mode a:visited,
+.dark-mode a:visited {
+  color: var(--inverse-text-color);
 }
 
 footer {
@@ -2785,7 +2800,7 @@ html.dark-mode,
   --panel-border: #333;
   --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   --panel-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.5);
-  --link-color: #7ec8ff;
+  --link-color: var(--inverse-text-color);
   --muted-text-color: #bbb;
   --border-strong-color: #555;
   --divider-color: #444;
@@ -2893,7 +2908,7 @@ body.dark-mode.pink-mode h2 {
 }
 
 body.dark-mode.pink-mode {
-  --link-color: #ff9dd8;
+  --link-color: var(--inverse-text-color);
 }
 .dark-mode section,
 .dark-mode .device-category,
