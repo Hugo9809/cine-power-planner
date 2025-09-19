@@ -8010,7 +8010,7 @@ function getTimecodes() {
     const favVals = getFavoriteValues(selectElem.id);
     const val = selectElem.value;
     const isFav = favVals.includes(val);
-    selectElem._favButton.innerHTML = iconMarkup(ICON_GLYPHS.circleStar, 'favorite-icon');
+    selectElem._favButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
     selectElem._favButton.classList.toggle('favorited', isFav);
     selectElem._favButton.disabled = val === 'None';
     selectElem._favButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
@@ -8071,7 +8071,7 @@ function getTimecodes() {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'favorite-toggle';
-      btn.innerHTML = iconMarkup(ICON_GLYPHS.circleStar, 'favorite-icon');
+      btn.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
       btn.setAttribute('aria-pressed', 'false');
       btn.addEventListener('click', () => toggleFavorite(selectElem));
       let wrapper = selectElem.parentElement;
