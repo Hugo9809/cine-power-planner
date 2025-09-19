@@ -90,6 +90,9 @@ const texts = {
     darkModeSetting: "Dark mode",
     settingsDarkModeHelp:
       "Toggle dark mode from Settings while previewing the result instantly.",
+    pinkModeSetting: "Pink mode",
+    settingsPinkModeHelp:
+      "Enable the playful pink accent theme from Settings.",
     accentColorSetting: "Accent color",
     accentColorHelp:
       "Pick the accent color used for buttons, highlights and diagrams. The choice is saved with your settings.",
@@ -1179,6 +1182,9 @@ const texts = {
     darkModeSetting: "Modalità scura",
     settingsDarkModeHelp:
       "Attiva o disattiva il tema scuro dalle Impostazioni visualizzando subito il risultato.",
+    pinkModeSetting: "Modalità rosa",
+    settingsPinkModeHelp:
+      "Attiva il tema rosa giocoso dalle Impostazioni.",
     accentColorSetting: "Colore evidenza",
     accentColorHelp:
       "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma. La scelta viene salvata.",
@@ -1888,6 +1894,9 @@ const texts = {
     darkModeSetting: "Modo oscuro",
     settingsDarkModeHelp:
       "Activa o desactiva el modo oscuro desde Ajustes viendo el resultado al momento.",
+    pinkModeSetting: "Modo rosa",
+    settingsPinkModeHelp:
+      "Activa el tema rosa divertido desde Ajustes.",
     accentColorSetting: "Color de acento",
     accentColorHelp:
       "Selecciona el color de acento usado en botones, destacados y diagramas. Se guarda con tus ajustes.",
@@ -2599,6 +2608,9 @@ const texts = {
     darkModeSetting: "Mode sombre",
     settingsDarkModeHelp:
       "Activez ou désactivez le mode sombre depuis Paramètres et voyez le résultat immédiatement.",
+    pinkModeSetting: "Mode rose",
+    settingsPinkModeHelp:
+      "Activez le thème rose ludique depuis Paramètres.",
     accentColorSetting: "Couleur d’accent",
     accentColorHelp:
       "Sélectionnez la couleur d’accent utilisée pour les boutons, les surlignages et le diagramme. Elle est enregistrée.",
@@ -3313,6 +3325,9 @@ const texts = {
     darkModeSetting: "Dunkelmodus",
     settingsDarkModeHelp:
       "Schalte den Dark Mode in den Einstellungen ein oder aus und sieh das Ergebnis sofort.",
+    pinkModeSetting: "Pinkmodus",
+    settingsPinkModeHelp:
+      "Aktiviere das verspielte Pink-Theme in den Einstellungen.",
     accentColorSetting: "Akzentfarbe",
     accentColorHelp:
       "Wähle die Akzentfarbe für Buttons, Hervorhebungen und Diagramm. Die Auswahl wird gespeichert.",

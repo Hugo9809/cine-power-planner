@@ -35,4 +35,31 @@ describe('settings dialog theme interactions', () => {
     expect(document.body.style.getPropertyValue('--accent-color')).toBe('');
     expect(document.body.style.getPropertyValue('--link-color')).toBe('');
   });
+
+  test('pink mode can be toggled from settings dialog', () => {
+    localStorage.setItem('pinkMode', 'false');
+
+    const { cleanup: clean } = setupScriptEnvironment();
+    cleanup = clean;
+
+    expect(document.body.classList.contains('pink-mode')).toBe(false);
+
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsSave = document.getElementById('settingsSave');
+    const settingsPinkMode = document.getElementById('settingsPinkMode');
+
+    expect(settingsButton).toBeTruthy();
+    expect(settingsSave).toBeTruthy();
+    expect(settingsPinkMode).toBeTruthy();
+
+    settingsButton.click();
+
+    expect(settingsPinkMode.checked).toBe(false);
+
+    settingsPinkMode.checked = true;
+    settingsSave.click();
+
+    expect(document.body.classList.contains('pink-mode')).toBe(true);
+    expect(localStorage.getItem('pinkMode')).toBe('true');
+  });
 });
