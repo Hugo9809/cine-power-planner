@@ -299,6 +299,11 @@ const texts = {
     shareSetupPrompt: "Project file ready to share.",
     shareLinkCopied: "Project file downloaded.",
     shareLinkTooLong: "Project data is too large to share.",
+    shareFilenamePrompt:
+      "Enter a name for the shared project file (default: {defaultName}).",
+    shareFilenameInvalid: "Please enter a valid file name to continue.",
+    shareIncludeAutoGearConfirm:
+      "Include automatic gear rules in the shared file? Select OK to include them or Cancel to skip.",
     shareIncludeAutoGearLabel: "Include automatic gear rules",
     shareIncludeAutoGearHelp: "Add your automatic gear rules to the shared project file.",
 
@@ -831,6 +836,11 @@ const texts = {
     shareSetupPrompt: "File di progetto pronto per la condivisione.",
     shareLinkCopied: "File di progetto scaricato.",
     shareLinkTooLong: "I dati del progetto sono troppo grandi da condividere.",
+    shareFilenamePrompt:
+      "Scegli un nome per il file di progetto condiviso (predefinito: {defaultName}).",
+    shareFilenameInvalid: "Inserisci un nome file valido per continuare.",
+    shareIncludeAutoGearConfirm:
+      "Vuoi includere le regole automatiche per l'attrezzatura nel file condiviso? Seleziona OK per includerle o Annulla per saltarle.",
     shareIncludeAutoGearLabel: "Includi le regole automatiche per l'attrezzatura",
     shareIncludeAutoGearHelp: "Aggiunge le tue regole automatiche per l'attrezzatura al file di progetto condiviso.",
     sharedLinkLabel: "Carica progetto condiviso:",
@@ -1543,6 +1553,11 @@ const texts = {
     shareSetupPrompt: "Archivo de proyecto listo para compartir.",
     shareLinkCopied: "Archivo de proyecto descargado.",
     shareLinkTooLong: "Los datos del proyecto son demasiado grandes para compartir.",
+    shareFilenamePrompt:
+      "Elige un nombre para el archivo de proyecto compartido (predeterminado: {defaultName}).",
+    shareFilenameInvalid: "Introduce un nombre de archivo válido para continuar.",
+    shareIncludeAutoGearConfirm:
+      "¿Quieres incluir las reglas automáticas de equipo en el archivo compartido? Selecciona Aceptar para incluirlas o Cancelar para omitirlas.",
     shareIncludeAutoGearLabel: "Incluir reglas automáticas de equipo",
     shareIncludeAutoGearHelp: "Agrega tus reglas automáticas de equipo al archivo de proyecto compartido.",
     sharedLinkLabel: "Cargar proyecto compartido:",
@@ -2269,6 +2284,11 @@ const texts = {
     shareSetupPrompt: "Fichier projet prêt à être partagé.",
     shareLinkCopied: "Fichier projet téléchargé.",
     shareLinkTooLong: "Les données du projet sont trop volumineuses pour être partagées.",
+    shareFilenamePrompt:
+      "Choisissez un nom pour le fichier projet partagé (par défaut : {defaultName}).",
+    shareFilenameInvalid: "Veuillez saisir un nom de fichier valide pour continuer.",
+    shareIncludeAutoGearConfirm:
+      "Souhaitez-vous inclure les règles automatiques d’équipement dans le fichier partagé ? Sélectionnez OK pour les inclure ou Annuler pour les ignorer.",
     shareIncludeAutoGearLabel: "Inclure les règles automatiques d’équipement",
     shareIncludeAutoGearHelp: "Ajoute vos règles automatiques d’équipement au fichier projet partagé.",
     sharedLinkLabel: "Charger un projet partagé :",
@@ -2997,6 +3017,11 @@ const texts = {
     shareSetupPrompt: "Projektdatei bereit zum Teilen.",
     shareLinkCopied: "Projektdatei heruntergeladen.",
     shareLinkTooLong: "Projektdaten sind zu groß zum Teilen.",
+    shareFilenamePrompt:
+      "Wähle einen Namen für die geteilte Projektdatei (Standard: {defaultName}).",
+    shareFilenameInvalid: "Bitte gib einen gültigen Dateinamen ein, um fortzufahren.",
+    shareIncludeAutoGearConfirm:
+      "Möchtest du die automatischen Gear-Regeln in die geteilte Datei aufnehmen? Wähle OK, um sie einzuschließen, oder Abbrechen, um sie auszulassen.",
     shareIncludeAutoGearLabel: "Automatische Gear-Regeln einschließen",
     shareIncludeAutoGearHelp: "Fügt deine automatischen Gear-Regeln zur geteilten Projektdatei hinzu.",
     sharedLinkLabel: "Geteiltes Projekt laden:",
