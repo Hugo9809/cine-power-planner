@@ -4405,8 +4405,40 @@ if (accentColorInput) {
 let fontSize = '16';
 let fontFamily = "'Ubuntu', sans-serif";
 
-const supportsLocalFonts =
-  typeof window !== 'undefined' && typeof window.queryLocalFonts === 'function';
+async function normalizeFontResults(result) {
+  if (!result) return [];
+  if (Array.isArray(result)) return result;
+  if (typeof result[Symbol.asyncIterator] === 'function') {
+    const fonts = [];
+    for await (const font of result) {
+      fonts.push(font);
+    }
+    return fonts;
+  }
+  if (typeof result[Symbol.iterator] === 'function') {
+    return Array.from(result);
+  }
+  return [];
+}
+
+const queryAvailableLocalFonts = (() => {
+  if (typeof window === 'undefined') return null;
+  if (typeof window.queryLocalFonts === 'function') {
+    return async options => normalizeFontResults(await window.queryLocalFonts(options));
+  }
+  if (
+    typeof navigator !== 'undefined' &&
+    navigator &&
+    navigator.fonts &&
+    typeof navigator.fonts.query === 'function'
+  ) {
+    const { fonts } = navigator;
+    return async options => normalizeFontResults(await fonts.query.call(fonts, options));
+  }
+  return null;
+})();
+
+const supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
 
 function getLocalizedText(key) {
   if (texts[currentLang] && texts[currentLang][key]) return texts[currentLang][key];
@@ -4509,10 +4541,10 @@ function setLocalFontsStatus(key, replacement) {
 }
 
 async function requestLocalFonts() {
-  if (!supportsLocalFonts || !localFontsButton || !window.queryLocalFonts) return;
+  if (!supportsLocalFonts || !localFontsButton || !queryAvailableLocalFonts) return;
   localFontsButton.disabled = true;
   try {
-    const fonts = await window.queryLocalFonts();
+    const fonts = await queryAvailableLocalFonts();
     if (!Array.isArray(fonts) || fonts.length === 0) {
       setLocalFontsStatus('localFontsNoFonts');
       return;
