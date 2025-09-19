@@ -32,7 +32,7 @@
   --video-color: #369;
   --fiz-color: #090;
   --selected-row-bg: #e6f7ff;
-  --favorite-inactive-color: #bbb;
+  --favorite-inactive-color: var(--control-text);
   --link-color: var(--accent-color);
   --muted-text-color: #555555;
   --border-strong-color: #ccc;
@@ -2554,7 +2554,7 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
     --status-error-text-color: #f0f0f0;
     --status-warning-text-color: #f0f0f0;
     --status-success-text-color: #f0f0f0;
-    --favorite-inactive-color: #bbb;
+    --favorite-inactive-color: var(--control-text);
     --diagram-node-fill: #444;
     --power-color: #ff6666;
     --video-color: #7ec8ff;
