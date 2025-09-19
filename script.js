@@ -2601,6 +2601,12 @@ function setLanguage(lang) {
     setLabelText(productionCompanyLabel, 'productionCompany');
     setLabelText(rentalHouseLabel, 'rentalHouse');
     setLabelText(crewHeadingElem, 'crewHeading');
+    if (crewLabelElem) {
+      const crewLabelText = projectFormTexts.crewHeading || fallbackProjectForm.crewHeading;
+      if (crewLabelText) {
+        crewLabelElem.textContent = `${crewLabelText}:`;
+      }
+    }
     setLabelText(prepLabelElem, 'prepLabel');
     setLabelText(shootLabelElem, 'shootLabel');
     setLabelText(deliveryResolutionLabel, 'deliveryResolution');
@@ -2736,6 +2742,7 @@ const projectNameLabel = document.getElementById("projectNameLabel");
 const productionCompanyLabel = document.getElementById("productionCompanyLabel");
 const rentalHouseLabel = document.getElementById("rentalHouseLabel");
 const crewHeadingElem = document.getElementById("crewHeading");
+const crewLabelElem = document.getElementById("crewLabel");
 const prepLabelElem = document.getElementById("prepLabel");
 const shootLabelElem = document.getElementById("shootLabel");
 const deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
