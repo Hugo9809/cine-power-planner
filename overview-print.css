@@ -16,6 +16,7 @@ body,
 body.dark-mode {
   --surface-color: #fff;
   --text-color: #000;
+  --panel-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   --button-size: 24px;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
