@@ -3291,89 +3291,80 @@ const HORSE_ICON_SVG = `
   </svg>
 `.trim();
 
-const UNICORN_ICON_MARKUP = [
-  `
-    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path
-        fill="#f6a4eb"
-        d="M12 33c0-11 9-21 21-21h5l6-7 7 3-4 7h3c6 0 10 5 10 11 0 12-9 21-21 21h-9l-5 8-7-8h-4c-5 0-9-4-9-9 0-3 1-6 3-8z"
-      />
-      <path fill="#ffd166" d="M35 12l6-7 2 8-4 5z" />
-      <circle cx="38.5" cy="29.5" r="2.5" fill="#2c2f38" />
-      <path
-        fill="#fff5f8"
-        opacity=".6"
-        d="M23 19c-7 3-11 11-11 18 0 4 3 7 7 7h5l7 8 3-8h9c9 0 15-7 15-15 0-5-4-9-9-9h-6l-3-5z"
-      />
-      <circle cx="39.8" cy="28.8" r="1" fill="#fff" />
-      <path fill="#f9c8f0" d="M14 32c2-9 9-16 17-16h7l3 6c-7 1-12 5-15 11l-2 3h-7c-1 0-3-1-3-4z" />
-      <path fill="#fcf1ff" d="M43 20l4-6 5 2-4 6z" />
-    </svg>
-  `.trim(),
-  `
-    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path
-        fill="#f4b3ff"
-        d="M11 34c0-11 9-22 21-22h6l5-6 6 3-3 6h4c6 0 10 5 10 11 0 12-9 21-21 21h-8l-4 7-8-7h-5c-5 0-9-4-9-9 0-3 1-6 3-8z"
-      />
-      <path fill="#ffb703" d="M36 12l6-7 2 8-4 5z" />
-      <path fill="#ffe066" d="M47 12l2-4 5 3-4 5z" />
-      <circle cx="38.2" cy="30.1" r="2.6" fill="#2c2f38" />
-      <circle cx="39.4" cy="29.3" r="1" fill="#fff" />
-      <path
-        fill="#ffe9fb"
-        opacity=".7"
-        d="M19 21c-6 4-10 11-10 18 0 3 2 6 6 6h5l8 8 3-8h8c9 0 15-7 15-15 0-5-4-9-9-9h-6l-4-5z"
-      />
-      <path fill="#ff8cc6" d="M14 35c2-10 9-17 17-17h6l4 6c-8 1-13 5-16 12l-1 3h-7c-1 0-3-1-3-4z" />
-      <path
-        fill="#fff1fb"
-        d="M28 18c4 2 8 4 11 9 1 2-1 4-3 3-3-2-6-1-9 1l-3 2 1-5c1-4 1-7 3-10z"
-      />
-      <path fill="#fde68a" d="M41 26l2-4 4 2-2 4z" />
-    </svg>
-  `.trim(),
-  `
-    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path
-        fill="#f7c1ff"
-        d="M12 34c0-12 9-22 21-22h5l6-7 7 4-4 6h4c6 0 9 5 9 11 0 12-9 21-21 21h-9l-4 7-7-7h-5c-5 0-9-4-9-9 0-3 1-6 3-8z"
-      />
-      <path fill="#ffda67" d="M35 12l7-7 1 8-5 5z" />
-      <circle cx="38.5" cy="30.2" r="2.6" fill="#2c2f38" />
-      <circle cx="39.6" cy="29.4" r="1" fill="#fff" />
-      <path
-        fill="#ffe5fa"
-        opacity=".7"
-        d="M21 22c-6 4-10 10-10 17 0 3 2 6 6 6h5l7 7 3-7h9c9 0 15-7 15-15 0-5-4-9-9-9h-6l-4-5z"
-      />
-      <path fill="#ff90cf" d="M14 34c2-9 9-16 17-16h6l4 6c-7 1-12 5-15 11l-2 3h-7c-1 0-3-1-3-4z" />
-      <path fill="#fff3fb" d="M43 21l3-5 5 2-3 5z" />
-      <path fill="#ffdeeb" d="M27 18c4 2 8 5 11 9 1 2-1 4-3 3-3-1-6 0-9 2l-3 2 1-5c1-4 1-8 3-11z" />
-      <path
-        fill="#ffd7f0"
-        d="M49 36c1 0 2 1 2 2 0 2-2 4-4 4-1 0-2-1-2-2 0-2 2-4 4-4z"
-      />
-      <path fill="#fff3bf" d="M46 16l2-4 4 2-2 4z" />
-    </svg>
-  `.trim()
-];
-Object.freeze(UNICORN_ICON_MARKUP);
+const PINK_MODE_ICON_FILES = Object.freeze([
+  'unicorns/unicorn.svg',
+  'unicorns/unicorn-2.svg',
+  'unicorns/celebrate.svg',
+  'unicorns/sunglasses.svg',
+  'unicorns/toy.svg'
+]);
 
-const PINK_MODE_ICONS = Object.freeze({
+const pinkModeIcons = {
   off: Object.freeze({
     className: 'icon-svg pink-mode-icon',
     markup: HORSE_ICON_SVG
   }),
-  onSequence: Object.freeze(
-    UNICORN_ICON_MARKUP.map(markup =>
+  onSequence: Object.freeze([])
+};
+
+let pinkModeIconRotationTimer = null;
+let pinkModeIconIndex = 0;
+
+function ensureSvgHasAriaHidden(markup) {
+  if (typeof markup !== 'string') return '';
+  const trimmed = markup.trim();
+  if (!trimmed) return '';
+  if (!/^<svg\b/i.test(trimmed)) return trimmed;
+  if (/\baria-hidden\s*=\s*['"]/i.test(trimmed)) return trimmed;
+  return trimmed.replace(/<svg\b/i, match => `${match} aria-hidden="true"`);
+}
+
+function setPinkModeIconSequence(markupList) {
+  if (!Array.isArray(markupList) || !markupList.length) {
+    return false;
+  }
+  const configs = markupList
+    .map(ensureSvgHasAriaHidden)
+    .filter(Boolean)
+    .map(markup =>
       Object.freeze({
         className: 'icon-svg pink-mode-icon',
         markup
       })
+    );
+  if (!configs.length) {
+    return false;
+  }
+  pinkModeIcons.onSequence = Object.freeze(configs);
+  if (
+    typeof document !== 'undefined' &&
+    document.body &&
+    document.body.classList.contains('pink-mode')
+  ) {
+    stopPinkModeIconRotation();
+    pinkModeIconIndex = 0;
+    applyPinkModeIcon(pinkModeIcons.onSequence[pinkModeIconIndex], { animate: false });
+    startPinkModeIconRotation();
+  }
+  return true;
+}
+
+async function loadPinkModeIconsFromFiles() {
+  if (typeof fetch !== 'function') {
+    return;
+  }
+  const responses = await Promise.all(
+    PINK_MODE_ICON_FILES.map(path =>
+      fetch(path)
+        .then(response => (response.ok ? response.text() : null))
+        .catch(() => null)
     )
-  )
-});
+  );
+  const markupList = responses.filter(Boolean);
+  if (markupList.length) {
+    setPinkModeIconSequence(markupList);
+  }
+}
 
 const PINK_MODE_ICON_INTERVAL_MS = 30000;
 const PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
@@ -4558,6 +4549,10 @@ const iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
 const iosPwaHelpStep1 = document.getElementById("iosPwaHelpStep1");
 const iosPwaHelpStep2 = document.getElementById("iosPwaHelpStep2");
 const iosPwaHelpStep3 = document.getElementById("iosPwaHelpStep3");
+
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  loadPinkModeIconsFromFiles().catch(() => {});
+}
 const iosPwaHelpStep4 = document.getElementById("iosPwaHelpStep4");
 const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
 const iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
@@ -15952,8 +15947,6 @@ try {
 applyHighContrast(highContrastEnabled);
 
 // Pink mode handling
-let pinkModeIconRotationTimer = null;
-let pinkModeIconIndex = 0;
 
 function stopPinkModeIconRotation() {
   if (pinkModeIconRotationTimer) {
@@ -16004,11 +15997,11 @@ function applyPinkModeIcon(iconConfig, { animate = false } = {}) {
 }
 
 function startPinkModeIconRotation() {
-  const sequence = Array.isArray(PINK_MODE_ICONS.onSequence)
-    ? PINK_MODE_ICONS.onSequence
+  const sequence = Array.isArray(pinkModeIcons.onSequence)
+    ? pinkModeIcons.onSequence
     : [];
   if (!sequence.length) {
-    applyPinkModeIcon(PINK_MODE_ICONS.off, { animate: false });
+    applyPinkModeIcon(pinkModeIcons.off, { animate: false });
     return;
   }
   stopPinkModeIconRotation();
@@ -16041,7 +16034,7 @@ function applyPinkMode(enabled) {
     }
     applyAccentColor(accentColor);
     stopPinkModeIconRotation();
-    applyPinkModeIcon(PINK_MODE_ICONS.off, { animate: false });
+    applyPinkModeIcon(pinkModeIcons.off, { animate: false });
     if (pinkModeToggle) {
       pinkModeToggle.setAttribute("aria-pressed", "false");
     }
