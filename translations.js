@@ -23,7 +23,7 @@ const texts = {
     resultsHeadingHelp:
       "See power consumption, estimated runtime, and battery counts.",
     deviceManagerHeadingHelp:
-      "Add, edit, or remove entries from the device database.",
+      "Add, edit or remove entries from the device database, including categories, subcategories and attributes.",
     batteryComparisonHeadingHelp:
       "Compare runtimes for all compatible batteries.",
     setupDiagramHeadingHelp:
@@ -631,7 +631,7 @@ const texts = {
     resultsHeadingHelp:
       "Vedi il consumo di energia, la durata stimata e il numero di batterie.",
     deviceManagerHeadingHelp:
-      "Aggiungi, modifica o rimuovi elementi dal database dei dispositivi.",
+      "Aggiungi, modifica o rimuovi elementi dal database dei dispositivi, inclusi categorie, sottocategorie e attributi.",
     batteryComparisonHeadingHelp:
       "Confronta le autonomie di tutte le batterie compatibili.",
     setupDiagramHeadingHelp:
@@ -1214,7 +1214,7 @@ const texts = {
     resultsHeadingHelp:
       "Consulta el consumo de energía, la autonomía estimada y la cantidad de baterías.",
     deviceManagerHeadingHelp:
-      "Añade, edita o elimina entradas de la base de datos de dispositivos.",
+      "Añade, edita o elimina entradas de la base de datos de dispositivos, incluidas categorías, subcategorías y atributos.",
     batteryComparisonHeadingHelp:
       "Compara los tiempos de funcionamiento de todas las baterías compatibles.",
     setupDiagramHeadingHelp:
@@ -1811,7 +1811,7 @@ const texts = {
     resultsHeadingHelp:
       "Affiche la consommation, l’autonomie estimée et le nombre de batteries.",
     deviceManagerHeadingHelp:
-      "Ajoutez, modifiez ou supprimez des entrées de la base de données des appareils.",
+      "Ajoutez, modifiez ou supprimez des entrées de la base de données des appareils, y compris les catégories, sous-catégories et attributs.",
     batteryComparisonHeadingHelp:
       "Compare l’autonomie de toutes les batteries compatibles.",
     setupDiagramHeadingHelp:
@@ -2410,7 +2410,7 @@ const texts = {
     resultsHeadingHelp:
       "Zeigt Stromverbrauch, geschätzte Laufzeit und benötigte Akkus.",
     deviceManagerHeadingHelp:
-      "Füge Geräte zur Datenbank hinzu, bearbeite oder entferne sie.",
+      "Füge Einträge zur Gerätedatenbank hinzu, bearbeite oder entferne sie – inklusive Kategorien, Unterkategorien und Attributen.",
     batteryComparisonHeadingHelp:
       "Vergleicht Laufzeiten aller kompatiblen Batterien.",
     setupDiagramHeadingHelp:
