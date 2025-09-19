@@ -42,6 +42,11 @@
   --font-scale-display: 1.8;
   --font-scale-icon-lg: 1.25;
   --font-scale-icon-sm: 0.625;
+  --icon-size-xs: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  --icon-size-sm: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  --icon-size-md: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  --icon-size-lg: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+  --icon-size-xl: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -1518,6 +1523,14 @@ body.pink-mode .auto-gear-rule-title,
   align-items: center;
   justify-content: center;
   line-height: 1;
+  font-size: var(--icon-size, 1em);
+  width: var(--icon-size, 1em);
+  height: var(--icon-size, 1em);
+  inline-size: var(--icon-size, 1em);
+  block-size: var(--icon-size, 1em);
+  min-inline-size: var(--icon-size, 1em);
+  min-block-size: var(--icon-size, 1em);
+  flex: 0 0 var(--icon-size, 1em);
   color: var(--icon-color, currentColor);
 }
 
@@ -1640,7 +1653,7 @@ body.pink-mode .auto-gear-rule-title,
 #helpSearchClear .icon-glyph,
 .clear-input-btn .icon-glyph,
 .controls button .icon-glyph {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+  --icon-size: var(--icon-size-lg);
 }
 
 .help-icon,
@@ -1655,7 +1668,7 @@ body.pink-mode .auto-gear-rule-title,
 }
 
 .favorite-icon.icon-glyph {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
+  --icon-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
 }
 
 body.pink-mode button:hover,
@@ -1680,7 +1693,7 @@ body.pink-mode .favorite-toggle.favorited:active {
 .category-icon.icon-glyph,
 .scenario-icon.icon-glyph,
 .icon-box .icon.icon-glyph {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  --icon-size: var(--icon-size-md);
 }
 
 #hoverHelpTooltip {
