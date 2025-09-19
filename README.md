@@ -51,8 +51,10 @@ safe.
 - [Interface Tour](#interface-tour)
 - [Customization & Accessibility](#customization--accessibility)
 - [Data Safety & Offline Operation](#data-safety--offline-operation)
+- [Data & Storage Overview](#data--storage-overview)
 - [Backup & Recovery](#backup--recovery)
 - [Gear Lists & Reporting](#gear-lists--reporting)
+- [Automatic Gear Rules](#automatic-gear-rules)
 - [Runtime Intelligence](#runtime-intelligence)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Localization](#localization)
@@ -82,6 +84,12 @@ localization steps.
 
 ## What’s New
 
+- **Automatic gear rules** – design scenario-triggered additions or removals
+  that apply after the generator runs, complete with import/export controls
+  and timed backups.
+- **Data & storage dashboard** – audit stored projects, gear lists, custom
+  devices, favorites and runtime feedback, and review approximate backup size
+  without leaving the Settings dialog.
 - **Accent and typography controls** – adjust accent color, font size and
   typeface while dark, pink and high-contrast themes persist between visits.
 - **Global search shortcuts** – press `/` or `Ctrl+K` (`⌘K` on macOS) to focus
@@ -143,7 +151,9 @@ Use Cine Power Planner end-to-end with the following routine:
 4. **Capture project requirements.** Fill out crew details, scenarios, handles,
    matte box preferences and monitoring layouts so generated lists reflect the
    full production context. Fork buttons duplicate entries for faster data
-   entry.
+   entry. When specific scenarios demand bespoke kits, open **Settings →
+   Automatic Gear Rules** to layer custom additions or removals before
+   generating exports.
 5. **Share or archive the plan.** Generate the gear list, export a planner
    backup or download a shareable project bundle before heading to set. Backups
    include custom devices, runtime feedback and favorites.
@@ -162,6 +172,9 @@ Use Cine Power Planner end-to-end with the following routine:
   writes incremental changes in the background. Timestamped `auto-backup-…`
   versions appear in the project selector every 10 minutes so you can roll back
   without leaving the interface.
+- **Reveal auto backup snapshots on demand.** Toggle **Settings → Backup &
+  Restore → Show auto backups** to temporarily display the timestamped safety
+  copies in the project selector when you need to restore one manually.
 - **Renaming duplicates on purpose.** Editing the active project name and
   pressing **Enter** creates a branched copy. Use this when you want to compare
   alternate builds or keep both day and night configurations side by side.
@@ -179,6 +192,9 @@ Use Cine Power Planner end-to-end with the following routine:
   project** to download a `.cpproject` file containing the active project,
   favorites and any referenced custom devices. Send it via your preferred secure
   channel; recipients can import without needing internet access.
+- **Automatic gear rules travel with bundles.** Decide whether to include your
+  rules during export; teammates who import the bundle can ignore them, apply
+  them only to the shared project or merge them into their global ruleset.
 - **Restores are double-buffered.** Importing a bundle prompts you to save a
   backup of your current environment first. After choosing the bundle file, the
   planner validates its schema, merges new devices and places the restored
@@ -276,6 +292,18 @@ Use Cine Power Planner end-to-end with the following routine:
   `localStorage`. Use your browser’s developer tools to inspect or export raw
   records before making experimental changes or clearing caches.
 
+## Data & Storage Overview
+
+- Open **Settings → Data & Storage** to review everything the planner keeps on
+  the current device—saved projects, timestamped auto backups, gear list
+  snapshots, custom devices, favorites, runtime feedback and the unsaved session
+  cache all appear with live counts.
+- Each entry clarifies what it represents and, when relevant, lists affected
+  categories or whether the session data is currently stored. Empty sections stay
+  hidden so you know at a glance when the planner is pristine.
+- The summary also estimates backup size using the most recent export, giving you
+  a quick check that archives will fit on the storage you bring to set.
+
 ## Backup & Recovery
 
 - **Saved project snapshots** – the selector keeps every plan you save and
@@ -283,8 +311,11 @@ Use Cine Power Planner end-to-end with the following routine:
   open so you can roll back without losing changes.
 - **Full planner backups** – **Settings → Backup & Restore → Backup** downloads
   `planner-backup.json` with projects, custom devices, runtime feedback,
-  favorites and UI state. Restores create a safety copy before importing and warn
-  if the file was produced on another version.
+  favorites, automatic gear rules and UI state. Restores create a safety copy
+  before importing and warn if the file was produced on another version.
+- **Automatic gear snapshots** – rule changes trigger timestamped safety copies
+  every 10 minutes in **Settings → Automatic Gear Rules**, and you can restore or
+  export them if a customization misfires.
 - **Factory reset** – wipes stored data only after downloading a backup. Use it
   when you need a clean slate.
 - **Hourly reminders** – a background routine prompts an additional backup each
@@ -307,6 +338,9 @@ Use Cine Power Planner end-to-end with the following routine:
 - Entries are grouped by category with duplicates merged. Scenario selections add
   matching rigging, weather protection and specialty accessories so the printed
   kit reflects reality.
+- Automatic gear rules execute after the generator finishes, inserting
+  scenario-specific additions or removals so exports reflect bespoke crew
+  preferences without editing JSON by hand.
 - Lens rows include front diameter, weight, minimum focus, rod requirements and
   matte box components. Battery rows account for calculator counts and required
   hot-swap hardware.
@@ -315,6 +349,26 @@ Use Cine Power Planner end-to-end with the following routine:
 - Gear lists save with the project, appear in printable overviews, live inside
   shareable project files and can be removed with **Delete Gear List** if you
   want a fresh start.
+
+## Automatic Gear Rules
+
+Settings → **Automatic Gear Rules** lets you fine-tune every generated packing
+list without editing JSON exports manually:
+
+- Build rules that only trigger when selected **Required Scenarios** are active.
+  Each rule can have an optional label for quick scanning in the settings list.
+- Add equipment with explicit category and quantity values or pick **Custom
+  Additions** for reminders, specialty kits or callouts. Matching remove rules
+  hide specific rows the generator would normally include.
+- Rules run after built-in accessory packs so they stack cleanly with default
+  planner logic and flow through to printable gear lists, project backups and
+  shareable bundles.
+- Saving a gear list stores the active rule set with the project. Loading that
+  project—or importing a bundle—restores its rule scope so scenario tweaks stay
+  attached to the plan.
+- Export or import the rule set as JSON, reset to the factory additions when you
+  need a clean baseline and fall back to the automatic history captured every 10
+  minutes if edits go sideways.
 
 ## Runtime Intelligence
 
