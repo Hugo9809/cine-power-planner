@@ -1685,10 +1685,10 @@ html.high-contrast .icon-glyph.diagram-camera-icon svg .diagram-camera-icon__len
   position: absolute;
   top: var(--pink-mode-animation-y, 50%);
   left: var(--pink-mode-animation-x, 50%);
-  width: var(--pink-mode-animation-size, 40px);
-  height: var(--pink-mode-animation-size, 40px);
-  margin-top: calc(-0.5 * var(--pink-mode-animation-size, 40px));
-  margin-left: calc(-0.5 * var(--pink-mode-animation-size, 40px));
+  width: var(--pink-mode-animation-size, 72px);
+  height: var(--pink-mode-animation-size, 72px);
+  margin-top: calc(-0.5 * var(--pink-mode-animation-size, 72px));
+  margin-left: calc(-0.5 * var(--pink-mode-animation-size, 72px));
   opacity: 0;
   animation: pink-mode-floating-icon var(--pink-mode-animation-duration, 7s) ease-in-out forwards;
   transform-origin: center;
