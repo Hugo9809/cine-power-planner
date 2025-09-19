@@ -2941,7 +2941,7 @@ function setLanguage(lang) {
     downloadDiagramBtn.setAttribute("data-help", texts[lang].downloadDiagramHelp);
   }
   if (gridSnapToggleBtn) {
-    gridSnapToggleBtn.textContent = texts[lang].gridSnapToggle;
+    setButtonLabelWithIcon(gridSnapToggleBtn, texts[lang].gridSnapToggle, ICON_GLYPHS.magnet);
     gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
@@ -3215,6 +3215,7 @@ const ICON_GLYPHS = Object.freeze({
   load: '\uE7B3',
   save: '\uE825',
   share: '\uF045',
+  magnet: '\uEB9E',
   timecode: '\uF1CD',
   audioIn: '\uEC2E',
   audioOut: '\uF44C',
