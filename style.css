@@ -878,6 +878,17 @@ main.legal-content {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+.help-content h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.help-content h3 .help-icon {
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
 
 .install-guide-content {
   background: var(--surface-color);
