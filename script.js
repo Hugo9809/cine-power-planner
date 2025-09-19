@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearSeedFlag, saveAutoGearSeedFlag */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -127,6 +127,313 @@ const LEGAL_LINKS = {
     privacy: "datenschutz-it.html",
   },
 };
+
+const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
+const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
+const AUTO_GEAR_CUSTOM_CATEGORY = '';
+const GEAR_LIST_CATEGORIES = [
+  'Camera',
+  'Camera Support',
+  'Media',
+  'Lens',
+  'Lens Support',
+  'Matte box + filter',
+  'LDS (FIZ)',
+  'Camera Batteries',
+  'Monitoring Batteries',
+  'Chargers',
+  'Monitoring',
+  'Monitoring support',
+  'Rigging',
+  'Power',
+  'Grip',
+  'Carts and Transportation',
+  'Miscellaneous',
+  'Consumables',
+];
+
+function generateAutoGearId(prefix) {
+  const base = prefix || 'rule';
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return `${base}-${crypto.randomUUID()}`;
+  }
+  return `${base}-${Math.random().toString(36).slice(2)}-${Date.now()}`;
+}
+
+function normalizeAutoGearQuantity(value) {
+  const num = parseInt(value, 10);
+  return Number.isFinite(num) && num > 0 ? num : 1;
+}
+
+function normalizeAutoGearItem(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+  if (!name) return null;
+  const category = typeof entry.category === 'string' ? entry.category.trim() : '';
+  const quantity = normalizeAutoGearQuantity(entry.quantity);
+  const id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('item');
+  return { id, name, category, quantity };
+}
+
+function normalizeAutoGearRule(rule) {
+  if (!rule || typeof rule !== 'object') return null;
+  const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
+  const label = typeof rule.label === 'string' ? rule.label.trim() : '';
+  const scenarios = Array.isArray(rule.scenarios)
+    ? Array.from(new Set(rule.scenarios.map(s => (typeof s === 'string' ? s.trim() : '')).filter(Boolean)))
+    : [];
+  if (!scenarios.length) return null;
+  const add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
+  const remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
+  if (!add.length && !remove.length) return null;
+  return { id, label, scenarios: scenarios.sort((a, b) => a.localeCompare(b)), add, remove };
+}
+
+function readAutoGearRulesFromStorage() {
+  let stored = [];
+  if (typeof loadAutoGearRules !== 'undefined' && typeof loadAutoGearRules === 'function') {
+    try {
+      stored = loadAutoGearRules();
+    } catch (error) {
+      console.warn('Failed to load automatic gear rules', error);
+      stored = [];
+    }
+  } else if (typeof localStorage !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(AUTO_GEAR_RULES_STORAGE_KEY);
+      stored = raw ? JSON.parse(raw) : [];
+    } catch (error) {
+      console.warn('Failed to load automatic gear rules', error);
+      stored = [];
+    }
+  }
+  if (!Array.isArray(stored)) return [];
+  return stored.map(normalizeAutoGearRule).filter(Boolean);
+}
+
+let autoGearRules = readAutoGearRulesFromStorage();
+
+function persistAutoGearRules() {
+  if (typeof saveAutoGearRules !== 'undefined' && typeof saveAutoGearRules === 'function') {
+    try {
+      saveAutoGearRules(autoGearRules);
+      return;
+    } catch (error) {
+      console.warn('Failed to save automatic gear rules', error);
+    }
+  }
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(AUTO_GEAR_RULES_STORAGE_KEY, JSON.stringify(autoGearRules));
+  } catch (error) {
+    console.warn('Failed to save automatic gear rules', error);
+  }
+}
+
+function setAutoGearRules(rules) {
+  autoGearRules = Array.isArray(rules) ? rules.map(normalizeAutoGearRule).filter(Boolean) : [];
+  persistAutoGearRules();
+}
+
+function getAutoGearRules() {
+  return autoGearRules.slice();
+}
+
+function looksLikeGearName(name) {
+  return typeof name === 'string' && name !== 'None' && (/[A-Z]/.test(name) || /\d/.test(name) || name.includes(' '));
+}
+
+function hasSeededAutoGearDefaults() {
+  if (typeof loadAutoGearSeedFlag !== 'undefined' && typeof loadAutoGearSeedFlag === 'function') {
+    try {
+      return !!loadAutoGearSeedFlag();
+    } catch (error) {
+      console.warn('Failed to read automatic gear seed flag', error);
+      return false;
+    }
+  }
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    return localStorage.getItem(AUTO_GEAR_SEEDED_STORAGE_KEY) === '1';
+  } catch (error) {
+    console.warn('Failed to read automatic gear seed flag', error);
+    return false;
+  }
+}
+
+function markAutoGearDefaultsSeeded() {
+  if (typeof saveAutoGearSeedFlag !== 'undefined' && typeof saveAutoGearSeedFlag === 'function') {
+    try {
+      saveAutoGearSeedFlag(true);
+      return;
+    } catch (error) {
+      console.warn('Failed to persist automatic gear seed flag', error);
+    }
+  }
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(AUTO_GEAR_SEEDED_STORAGE_KEY, '1');
+  } catch (error) {
+    console.warn('Failed to persist automatic gear seed flag', error);
+  }
+}
+
+function parseGearTableForAutoRules(html) {
+  if (!html || typeof DOMParser !== 'function') return null;
+  let doc;
+  try {
+    doc = new DOMParser().parseFromString(html, 'text/html');
+  } catch (error) {
+    console.warn('Failed to parse gear table for automatic rule seeding', error);
+    return null;
+  }
+  const table = doc.querySelector('.gear-table');
+  if (!table) return null;
+  const categoryMaps = new Map();
+  table.querySelectorAll('tbody.category-group').forEach(group => {
+    const header = group.querySelector('.category-row td');
+    if (!header) return;
+    const category = header.textContent ? header.textContent.trim() : '';
+    if (!category) return;
+    const items = categoryMaps.get(category) || new Map();
+    group.querySelectorAll('.gear-item').forEach(span => {
+      const name = span.getAttribute('data-gear-name');
+      if (!looksLikeGearName(name)) return;
+      const text = span.textContent ? span.textContent.trim() : '';
+      const match = text.match(/^(\d+)x\s+/);
+      const quantity = match ? parseInt(match[1], 10) : 1;
+      if (!Number.isFinite(quantity) || quantity <= 0) return;
+      items.set(name, (items.get(name) || 0) + quantity);
+    });
+    if (items.size) categoryMaps.set(category, items);
+  });
+  return categoryMaps;
+}
+
+function diffGearTableMaps(baseMap, variantMap) {
+  if (!baseMap || !variantMap) return { add: [], remove: [] };
+  const add = [];
+  const remove = [];
+  const categories = new Set([...baseMap.keys(), ...variantMap.keys()]);
+  categories.forEach(category => {
+    const baseItems = baseMap.get(category) || new Map();
+    const variantItems = variantMap.get(category) || new Map();
+    const names = new Set([...baseItems.keys(), ...variantItems.keys()]);
+    names.forEach(name => {
+      const baseQty = baseItems.get(name) || 0;
+      const variantQty = variantItems.get(name) || 0;
+      if (variantQty > baseQty) {
+        add.push({ name, category, quantity: variantQty - baseQty });
+      } else if (variantQty < baseQty) {
+        remove.push({ name, category, quantity: baseQty - variantQty });
+      }
+    });
+  });
+  return { add, remove };
+}
+
+function cloneAutoGearItems(items) {
+  return items.map(item => ({
+    name: item.name,
+    category: item.category,
+    quantity: normalizeAutoGearQuantity(item.quantity)
+  })).filter(entry => entry.name && (entry.quantity || entry.quantity === 0));
+}
+
+function subtractScenarioContributions(diff, scenarioKeys, scenarioDiffMap) {
+  const adjust = (items, type) => items
+    .map(item => {
+      let remaining = normalizeAutoGearQuantity(item.quantity);
+      scenarioKeys.forEach(key => {
+        const scenarioDiff = scenarioDiffMap.get(key);
+        if (!scenarioDiff) return;
+        const match = scenarioDiff[type].find(entry => entry.name === item.name && entry.category === item.category);
+        if (match) {
+          remaining -= normalizeAutoGearQuantity(match.quantity);
+        }
+      });
+      remaining = Math.max(remaining, 0);
+      return remaining > 0 ? { name: item.name, category: item.category, quantity: remaining } : null;
+    })
+    .filter(Boolean);
+  return { add: adjust(diff.add, 'add'), remove: adjust(diff.remove, 'remove') };
+}
+
+function seedAutoGearRulesFromCurrentProject() {
+  if (autoGearRules.length) return;
+  if (hasSeededAutoGearDefaults()) return;
+  if (typeof generateGearListHtml !== 'function' || typeof collectProjectFormData !== 'function') return;
+  if (!requiredScenariosSelect) return;
+  const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
+  if (!baseInfo || typeof baseInfo !== 'object') return;
+  const baselineHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: '' });
+  const baselineMap = parseGearTableForAutoRules(baselineHtml);
+  if (!baselineMap) return;
+  const scenarioValues = Array.from(requiredScenariosSelect.options || [])
+    .map(opt => opt.value)
+    .filter(Boolean);
+  if (!scenarioValues.length) return;
+  const scenarioDiffMap = new Map();
+  const rules = [];
+  scenarioValues.forEach(value => {
+    const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: value });
+    const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+    if (!scenarioMap) return;
+    const diff = diffGearTableMaps(baselineMap, scenarioMap);
+    const add = cloneAutoGearItems(diff.add);
+    const remove = cloneAutoGearItems(diff.remove);
+    if (!add.length && !remove.length) return;
+    scenarioDiffMap.set(value, { add, remove });
+    rules.push({ id: generateAutoGearId('rule'), label: value, scenarios: [value], add, remove });
+  });
+  const comboCandidates = [
+    ['Handheld', 'Easyrig'],
+    ['Slider', 'Undersling mode']
+  ].filter(combo => combo.every(value => scenarioValues.includes(value)));
+  comboCandidates.forEach(combo => {
+    const combinedLabel = combo.join(' + ');
+    const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: combo.join(', ') });
+    const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+    if (!scenarioMap) return;
+    const diff = diffGearTableMaps(baselineMap, scenarioMap);
+    const adjusted = subtractScenarioContributions({
+      add: cloneAutoGearItems(diff.add),
+      remove: cloneAutoGearItems(diff.remove)
+    }, combo, scenarioDiffMap);
+    if (!adjusted.add.length && !adjusted.remove.length) return;
+    rules.push({ id: generateAutoGearId('rule'), label: combinedLabel, scenarios: combo.slice(), add: adjusted.add, remove: adjusted.remove });
+  });
+  if (!rules.length) return;
+  setAutoGearRules(rules);
+  markAutoGearDefaultsSeeded();
+}
+
+function collectAutoGearCatalogNames() {
+  const names = new Set();
+  const addName = name => {
+    if (looksLikeGearName(name)) names.add(name);
+  };
+  const seen = typeof WeakSet === 'function' ? new WeakSet() : null;
+  const visit = obj => {
+    if (!obj || typeof obj !== 'object') return;
+    if (seen) {
+      if (seen.has(obj)) return;
+      seen.add(obj);
+    }
+    Object.entries(obj).forEach(([key, value]) => {
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return;
+      addName(key);
+      visit(value);
+    });
+  };
+  if (typeof devices === 'object' && devices) {
+    visit(devices);
+  }
+  autoGearRules.forEach(rule => {
+    [...rule.add, ...rule.remove].forEach(item => addName(item.name));
+  });
+  return Array.from(names).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+}
 
 const getCssVariableValue = (name, fallback = '') => {
   if (typeof document === 'undefined') return fallback;
@@ -1928,6 +2235,121 @@ function setLanguage(lang) {
       settingsLogo.setAttribute("aria-label", texts[lang].logoSetting);
     }
   }
+  if (autoGearHeadingElem) {
+    autoGearHeadingElem.textContent = texts[lang].autoGearHeading || texts.en?.autoGearHeading || 'Automatic Gear Rules';
+    const headingHelp = texts[lang].autoGearHeadingHelp || texts.en?.autoGearHeadingHelp;
+    if (headingHelp) autoGearHeadingElem.setAttribute('data-help', headingHelp);
+  }
+  if (autoGearDescriptionElem) {
+    autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || texts.en?.autoGearDescription || '';
+  }
+  if (autoGearAddRuleBtn) {
+    const label = texts[lang].autoGearAddRule || texts.en?.autoGearAddRule || autoGearAddRuleBtn.textContent;
+    autoGearAddRuleBtn.textContent = label;
+    const help = texts[lang].autoGearHeadingHelp || texts.en?.autoGearHeadingHelp || label;
+    autoGearAddRuleBtn.setAttribute('data-help', help);
+  }
+  if (autoGearRuleNameLabel) {
+    const label = texts[lang].autoGearRuleNameLabel || texts.en?.autoGearRuleNameLabel || autoGearRuleNameLabel.textContent;
+    autoGearRuleNameLabel.textContent = label;
+    const help = texts[lang].autoGearRuleNameHelp || texts.en?.autoGearRuleNameHelp || label;
+    autoGearRuleNameLabel.setAttribute('data-help', help);
+    if (autoGearRuleNameInput) {
+      autoGearRuleNameInput.setAttribute('data-help', help);
+      autoGearRuleNameInput.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearScenariosLabel) {
+    const label = texts[lang].autoGearScenariosLabel || texts.en?.autoGearScenariosLabel || autoGearScenariosLabel.textContent;
+    autoGearScenariosLabel.textContent = label;
+    const help = texts[lang].autoGearScenariosHelp || texts.en?.autoGearScenariosHelp || label;
+    autoGearScenariosLabel.setAttribute('data-help', help);
+    if (autoGearScenariosSelect) {
+      autoGearScenariosSelect.setAttribute('data-help', help);
+      autoGearScenariosSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearAddItemsHeading) {
+    autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || texts.en?.autoGearAddItemsHeading || autoGearAddItemsHeading.textContent;
+  }
+  if (autoGearAddItemLabel) {
+    const label = texts[lang].autoGearAddItemLabel || texts.en?.autoGearAddItemLabel || autoGearAddItemLabel.textContent;
+    autoGearAddItemLabel.textContent = label;
+    if (autoGearAddNameInput) {
+      autoGearAddNameInput.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearAddCategoryLabel) {
+    const label = texts[lang].autoGearAddCategoryLabel || texts.en?.autoGearAddCategoryLabel || autoGearAddCategoryLabel.textContent;
+    autoGearAddCategoryLabel.textContent = label;
+    if (autoGearAddCategorySelect) {
+      autoGearAddCategorySelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearAddQuantityLabel) {
+    const label = texts[lang].autoGearAddQuantityLabel || texts.en?.autoGearAddQuantityLabel || autoGearAddQuantityLabel.textContent;
+    autoGearAddQuantityLabel.textContent = label;
+    if (autoGearAddQuantityInput) {
+      autoGearAddQuantityInput.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearAddItemButton) {
+    const label = texts[lang].autoGearAddItemButton || texts.en?.autoGearAddItemButton || autoGearAddItemButton.textContent;
+    autoGearAddItemButton.textContent = label;
+    autoGearAddItemButton.setAttribute('data-help', label);
+  }
+  if (autoGearRemoveItemsHeading) {
+    autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || texts.en?.autoGearRemoveItemsHeading || autoGearRemoveItemsHeading.textContent;
+  }
+  if (autoGearRemoveItemLabel) {
+    const label = texts[lang].autoGearRemoveItemLabel || texts.en?.autoGearRemoveItemLabel || autoGearRemoveItemLabel.textContent;
+    autoGearRemoveItemLabel.textContent = label;
+    if (autoGearRemoveNameInput) {
+      autoGearRemoveNameInput.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearRemoveCategoryLabel) {
+    const label = texts[lang].autoGearRemoveCategoryLabel || texts.en?.autoGearRemoveCategoryLabel || autoGearRemoveCategoryLabel.textContent;
+    autoGearRemoveCategoryLabel.textContent = label;
+    if (autoGearRemoveCategorySelect) {
+      autoGearRemoveCategorySelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearRemoveQuantityLabel) {
+    const label = texts[lang].autoGearRemoveQuantityLabel || texts.en?.autoGearRemoveQuantityLabel || autoGearRemoveQuantityLabel.textContent;
+    autoGearRemoveQuantityLabel.textContent = label;
+    if (autoGearRemoveQuantityInput) {
+      autoGearRemoveQuantityInput.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearRemoveItemButton) {
+    const label = texts[lang].autoGearRemoveItemButton || texts.en?.autoGearRemoveItemButton || autoGearRemoveItemButton.textContent;
+    autoGearRemoveItemButton.textContent = label;
+    autoGearRemoveItemButton.setAttribute('data-help', label);
+  }
+  if (autoGearSaveRuleButton) {
+    const label = texts[lang].autoGearSaveRule || texts.en?.autoGearSaveRule || autoGearSaveRuleButton.textContent;
+    autoGearSaveRuleButton.textContent = label;
+    autoGearSaveRuleButton.setAttribute('data-help', label);
+  }
+  if (autoGearCancelEditButton) {
+    const label = texts[lang].autoGearCancelEdit || texts.en?.autoGearCancelEdit || autoGearCancelEditButton.textContent;
+    autoGearCancelEditButton.textContent = label;
+    autoGearCancelEditButton.setAttribute('data-help', label);
+  }
+  if (autoGearAddCategorySelect) {
+    populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearAddCategorySelect.value);
+  }
+  if (autoGearRemoveCategorySelect) {
+    populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearRemoveCategorySelect.value);
+  }
+  if (autoGearScenariosSelect) {
+    refreshAutoGearScenarioOptions(autoGearEditorDraft?.scenarios);
+  }
+  seedAutoGearRulesFromCurrentProject();
+  renderAutoGearRulesList();
+  renderAutoGearDraftLists();
+  updateAutoGearCatalogOptions();
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
   if (contrastLabel) {
     contrastLabel.textContent = texts[lang].highContrastSetting;
@@ -3509,11 +3931,341 @@ const localFontsGroup = document.getElementById("localFontsGroup");
 const bundledFontGroup = document.getElementById("bundledFontOptions");
 const settingsLogo = document.getElementById("settingsLogo");
 const settingsLogoPreview = document.getElementById("settingsLogoPreview");
+const autoGearHeadingElem = document.getElementById('autoGearHeading');
+const autoGearDescriptionElem = document.getElementById('autoGearDescription');
+const autoGearRulesList = document.getElementById('autoGearRulesList');
+const autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
+const autoGearEditor = document.getElementById('autoGearEditor');
+const autoGearRuleNameInput = document.getElementById('autoGearRuleName');
+const autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
+const autoGearScenariosSelect = document.getElementById('autoGearScenarios');
+const autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
+const autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
+const autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
+const autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
+const autoGearAddQuantityLabel = document.getElementById('autoGearAddQuantityLabel');
+const autoGearAddNameInput = document.getElementById('autoGearAddName');
+const autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
+const autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
+const autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
+const autoGearAddList = document.getElementById('autoGearAddList');
+const autoGearRemoveItemsHeading = document.getElementById('autoGearRemoveItemsHeading');
+const autoGearRemoveItemLabel = document.getElementById('autoGearRemoveItemLabel');
+const autoGearRemoveCategoryLabel = document.getElementById('autoGearRemoveCategoryLabel');
+const autoGearRemoveQuantityLabel = document.getElementById('autoGearRemoveQuantityLabel');
+const autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
+const autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
+const autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
+const autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
+const autoGearRemoveList = document.getElementById('autoGearRemoveList');
+const autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
+const autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
+const autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
 const dataHeading = document.getElementById("dataHeading");
 const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
 const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
+
+let autoGearEditorDraft = null;
+
+function createAutoGearDraft(rule) {
+  if (rule) {
+    return {
+      id: rule.id,
+      label: rule.label || '',
+      scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
+      add: Array.isArray(rule.add) ? rule.add.map(item => ({ ...item })) : [],
+      remove: Array.isArray(rule.remove) ? rule.remove.map(item => ({ ...item })) : [],
+    };
+  }
+  return { id: generateAutoGearId('rule'), label: '', scenarios: [], add: [], remove: [] };
+}
+
+function refreshAutoGearScenarioOptions(selected) {
+  if (!autoGearScenariosSelect) return;
+  const values = Array.isArray(selected)
+    ? new Set(selected)
+    : autoGearEditorDraft && Array.isArray(autoGearEditorDraft.scenarios)
+      ? new Set(autoGearEditorDraft.scenarios)
+      : new Set();
+  autoGearScenariosSelect.innerHTML = '';
+  const source = document.getElementById('requiredScenarios');
+  if (source) {
+    Array.from(source.options).forEach(opt => {
+      if (!opt.value) return;
+      const option = document.createElement('option');
+      option.value = opt.value;
+      option.textContent = opt.textContent;
+      if (values.has(opt.value)) option.selected = true;
+      autoGearScenariosSelect.appendChild(option);
+    });
+  }
+}
+
+function populateAutoGearCategorySelect(select, currentValue) {
+  if (!select) return;
+  const current = typeof currentValue === 'string' ? currentValue : '';
+  select.innerHTML = '';
+  GEAR_LIST_CATEGORIES.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    if (current === cat) opt.selected = true;
+    select.appendChild(opt);
+  });
+  const customOpt = document.createElement('option');
+  customOpt.value = AUTO_GEAR_CUSTOM_CATEGORY;
+  customOpt.textContent = texts[currentLang]?.autoGearCustomCategory
+    || texts.en?.autoGearCustomCategory
+    || 'Custom Additions';
+  if (!current) customOpt.selected = true;
+  select.appendChild(customOpt);
+}
+
+function updateAutoGearCatalogOptions() {
+  if (!autoGearItemCatalog) return;
+  const names = collectAutoGearCatalogNames();
+  autoGearItemCatalog.innerHTML = '';
+  names.forEach(name => {
+    const option = document.createElement('option');
+    option.value = name;
+    autoGearItemCatalog.appendChild(option);
+  });
+}
+
+function formatAutoGearCount(count, singularKey, pluralKey) {
+  const langTexts = texts[currentLang] || texts.en || {};
+  if (count === 1) {
+    const template = langTexts[singularKey] || texts.en?.[singularKey];
+    return template ? template.replace('%s', '1') : '1';
+  }
+  const template = langTexts[pluralKey] || texts.en?.[pluralKey];
+  return template ? template.replace('%s', String(count)) : String(count);
+}
+
+function renderAutoGearRulesList() {
+  if (!autoGearRulesList) return;
+  autoGearRulesList.innerHTML = '';
+  const rules = getAutoGearRules();
+  if (!rules.length) {
+    const empty = document.createElement('p');
+    empty.className = 'auto-gear-empty';
+    empty.textContent = texts[currentLang]?.autoGearNoRules
+      || texts.en?.autoGearNoRules
+      || 'No custom rules yet.';
+    autoGearRulesList.appendChild(empty);
+    return;
+  }
+  rules.forEach(rule => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'auto-gear-rule';
+    wrapper.dataset.ruleId = rule.id;
+    const info = document.createElement('div');
+    info.className = 'auto-gear-rule-info';
+    const title = document.createElement('p');
+    title.className = 'auto-gear-rule-title';
+    title.textContent = rule.label || rule.scenarios.join(' + ');
+    info.appendChild(title);
+    const scenarioLabel = texts[currentLang]?.projectFields?.requiredScenarios
+      || texts.en?.projectFields?.requiredScenarios
+      || 'Required Scenarios';
+    const scenarioMeta = document.createElement('p');
+    scenarioMeta.className = 'auto-gear-rule-meta';
+    scenarioMeta.textContent = `${scenarioLabel}: ${rule.scenarios.join(' + ')}`;
+    info.appendChild(scenarioMeta);
+    const addSummary = formatAutoGearCount(rule.add.length, 'autoGearAddsCountOne', 'autoGearAddsCountOther');
+    const removeSummary = formatAutoGearCount(rule.remove.length, 'autoGearRemovalsCountOne', 'autoGearRemovalsCountOther');
+    const countsMeta = document.createElement('p');
+    countsMeta.className = 'auto-gear-rule-meta';
+    countsMeta.textContent = `${addSummary} · ${removeSummary}`;
+    info.appendChild(countsMeta);
+    wrapper.appendChild(info);
+    const actions = document.createElement('div');
+    actions.className = 'auto-gear-rule-actions';
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'auto-gear-edit';
+    editBtn.dataset.ruleId = rule.id;
+    const editLabel = texts[currentLang]?.editBtn || texts.en?.editBtn || 'Edit';
+    editBtn.textContent = editLabel;
+    editBtn.setAttribute('data-help', editLabel);
+    actions.appendChild(editBtn);
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'auto-gear-delete';
+    deleteBtn.dataset.ruleId = rule.id;
+    const deleteLabel = texts[currentLang]?.autoGearDeleteRule
+      || texts.en?.autoGearDeleteRule
+      || 'Delete';
+    deleteBtn.textContent = deleteLabel;
+    deleteBtn.setAttribute('data-help', deleteLabel);
+    actions.appendChild(deleteBtn);
+    wrapper.appendChild(actions);
+    autoGearRulesList.appendChild(wrapper);
+  });
+}
+
+function renderAutoGearDraftLists() {
+  if (!autoGearEditorDraft) {
+    if (autoGearAddList) autoGearAddList.innerHTML = '';
+    if (autoGearRemoveList) autoGearRemoveList.innerHTML = '';
+    return;
+  }
+  const renderList = (element, items, type) => {
+    if (!element) return;
+    element.innerHTML = '';
+    if (!items.length) {
+      const empty = document.createElement('li');
+      empty.className = 'auto-gear-empty';
+      empty.textContent = texts[currentLang]?.autoGearEmptyList
+        || texts.en?.autoGearEmptyList
+        || 'No items yet.';
+      element.appendChild(empty);
+      return;
+    }
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'auto-gear-item';
+      const span = document.createElement('span');
+      const categoryLabel = item.category && item.category.trim()
+        ? item.category
+        : (texts[currentLang]?.autoGearCustomCategory || texts.en?.autoGearCustomCategory || 'Custom Additions');
+      span.textContent = `${categoryLabel} – ${item.quantity}x ${item.name}`;
+      li.appendChild(span);
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'auto-gear-remove-entry';
+      removeBtn.dataset.listType = type;
+      removeBtn.dataset.itemId = item.id;
+      const removeLabel = texts[currentLang]?.autoGearListRemove
+        || texts.en?.autoGearListRemove
+        || 'Remove';
+      removeBtn.textContent = removeLabel;
+      removeBtn.setAttribute('data-help', removeLabel);
+      li.appendChild(removeBtn);
+      element.appendChild(li);
+    });
+  };
+  renderList(autoGearAddList, autoGearEditorDraft.add, 'add');
+  renderList(autoGearRemoveList, autoGearEditorDraft.remove, 'remove');
+}
+
+function openAutoGearEditor(ruleId) {
+  if (!autoGearEditor) return;
+  const rules = getAutoGearRules();
+  const existing = ruleId ? rules.find(rule => rule.id === ruleId) : null;
+  autoGearEditorDraft = createAutoGearDraft(existing);
+  autoGearEditor.hidden = false;
+  if (autoGearRuleNameInput) {
+    autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
+  }
+  refreshAutoGearScenarioOptions(autoGearEditorDraft.scenarios);
+  populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearEditorDraft.add[0]?.category || '');
+  populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearEditorDraft.remove[0]?.category || '');
+  if (autoGearAddNameInput) autoGearAddNameInput.value = '';
+  if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
+  if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
+  if (autoGearRemoveQuantityInput) autoGearRemoveQuantityInput.value = '1';
+  renderAutoGearDraftLists();
+  if (autoGearRuleNameInput) autoGearRuleNameInput.focus();
+}
+
+function closeAutoGearEditor() {
+  if (!autoGearEditor) return;
+  autoGearEditor.hidden = true;
+  autoGearEditorDraft = null;
+  if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
+  if (autoGearScenariosSelect) {
+    Array.from(autoGearScenariosSelect.options).forEach(opt => {
+      opt.selected = false;
+    });
+  }
+  if (autoGearAddNameInput) autoGearAddNameInput.value = '';
+  if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
+  if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
+  if (autoGearRemoveQuantityInput) autoGearRemoveQuantityInput.value = '1';
+}
+
+function addAutoGearDraftItem(type) {
+  if (!autoGearEditorDraft) return;
+  const isAdd = type === 'add';
+  const nameInput = isAdd ? autoGearAddNameInput : autoGearRemoveNameInput;
+  const categorySelect = isAdd ? autoGearAddCategorySelect : autoGearRemoveCategorySelect;
+  const quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
+  if (!nameInput || !categorySelect || !quantityInput) return;
+  const name = nameInput.value.trim();
+  if (!name) {
+    const message = texts[currentLang]?.autoGearItemNameRequired
+      || texts.en?.autoGearItemNameRequired
+      || 'Enter an item name first.';
+    window.alert(message);
+    return;
+  }
+  const category = categorySelect.value || '';
+  const quantity = normalizeAutoGearQuantity(quantityInput.value);
+  const list = isAdd ? autoGearEditorDraft.add : autoGearEditorDraft.remove;
+  list.push({ id: generateAutoGearId('item'), name, category, quantity });
+  nameInput.value = '';
+  quantityInput.value = '1';
+  renderAutoGearDraftLists();
+  updateAutoGearCatalogOptions();
+}
+
+function saveAutoGearRuleFromEditor() {
+  if (!autoGearEditorDraft) return;
+  const scenarios = autoGearScenariosSelect
+    ? Array.from(autoGearScenariosSelect.selectedOptions).map(opt => opt.value).filter(Boolean)
+    : [];
+  if (!scenarios.length) {
+    const message = texts[currentLang]?.autoGearRuleScenarioRequired
+      || texts.en?.autoGearRuleScenarioRequired
+      || 'Select at least one scenario.';
+    window.alert(message);
+    return;
+  }
+  if (autoGearRuleNameInput) {
+    autoGearEditorDraft.label = autoGearRuleNameInput.value.trim();
+  }
+  autoGearEditorDraft.scenarios = scenarios;
+  if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
+    const message = texts[currentLang]?.autoGearRuleNeedsItems
+      || texts.en?.autoGearRuleNeedsItems
+      || 'Add at least one item to add or remove.';
+    window.alert(message);
+    return;
+  }
+  const draftRule = normalizeAutoGearRule(autoGearEditorDraft);
+  if (!draftRule) return;
+  const rules = getAutoGearRules();
+  const index = rules.findIndex(rule => rule.id === draftRule.id);
+  if (index >= 0) {
+    rules[index] = draftRule;
+  } else {
+    rules.push(draftRule);
+  }
+  setAutoGearRules(rules);
+  updateAutoGearCatalogOptions();
+  renderAutoGearRulesList();
+  closeAutoGearEditor();
+}
+
+function deleteAutoGearRule(ruleId) {
+  const rules = getAutoGearRules();
+  const index = rules.findIndex(rule => rule.id === ruleId);
+  if (index < 0) return;
+  const confirmation = texts[currentLang]?.autoGearDeleteConfirm
+    || texts.en?.autoGearDeleteConfirm
+    || 'Delete this rule?';
+  if (!window.confirm(confirmation)) return;
+  rules.splice(index, 1);
+  setAutoGearRules(rules);
+  updateAutoGearCatalogOptions();
+  renderAutoGearRulesList();
+  if (autoGearEditorDraft && autoGearEditorDraft.id === ruleId) {
+    closeAutoGearEditor();
+  }
+}
 
 let lastActiveBeforeIosHelp = null;
 let lastActiveBeforeInstallGuide = null;
@@ -11401,6 +12153,327 @@ function ensureZoomRemoteSetup(info) {
     if (typeof saveCurrentSession === 'function') saveCurrentSession();
 }
 
+function stripAutoGearContext(name) {
+    return (name || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+}
+
+function normalizeAutoGearName(name) {
+    return stripAutoGearContext(name).toLowerCase();
+}
+
+function matchesAutoGearItem(target, actual) {
+    if (!target || !actual) return false;
+    const normTarget = normalizeAutoGearName(target);
+    const normActual = normalizeAutoGearName(actual);
+    if (normTarget === normActual) return true;
+    return normTarget === normalizeAutoGearName(actual.replace(/^\d+x\s+/, ''));
+}
+
+function getSpanCount(span) {
+    if (!span) return 1;
+    const text = span.textContent || '';
+    const match = text.trim().match(/^(\d+)x\s+/);
+    return match ? parseInt(match[1], 10) : 1;
+}
+
+function updateSpanCountInPlace(span, newCount) {
+    if (!span) return;
+    const walker = document.createTreeWalker(span, NodeFilter.SHOW_TEXT, null, false);
+    let textNode = null;
+    while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (/\d+x\s+/i.test(node.textContent)) {
+            textNode = node;
+            break;
+        }
+    }
+    if (!textNode) {
+        span.insertBefore(document.createTextNode(`${newCount}x `), span.firstChild);
+        return;
+    }
+    const value = textNode.textContent || '';
+    const match = value.match(/^(\s*)(\d+)x\s+(.*)$/);
+    if (match) {
+        textNode.textContent = `${match[1]}${newCount}x ${match[3]}`;
+    } else {
+        textNode.textContent = value.replace(/^(\d+)x\s+/, `${newCount}x `);
+    }
+}
+
+function cleanupAutoGearCell(cell) {
+    if (!cell) return;
+    const nodes = Array.from(cell.childNodes);
+    let previousWasBreak = true;
+    nodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
+            cell.removeChild(node);
+            return;
+        }
+        if (node.nodeName === 'BR') {
+            if (previousWasBreak || !node.nextSibling) {
+                cell.removeChild(node);
+                return;
+            }
+            previousWasBreak = true;
+        } else {
+            previousWasBreak = false;
+        }
+    });
+    while (cell.firstChild && cell.firstChild.nodeName === 'BR') {
+        cell.removeChild(cell.firstChild);
+    }
+    while (cell.lastChild && cell.lastChild.nodeName === 'BR') {
+        cell.removeChild(cell.lastChild);
+    }
+    const textContent = cell.textContent ? cell.textContent.trim() : '';
+    if (!textContent && !cell.querySelector('.gear-item')) {
+        const row = cell.closest('tr');
+        const section = row ? row.closest('tbody') : null;
+        if (section && section.classList.contains('auto-gear-category')) {
+            section.remove();
+        }
+    }
+}
+
+function analyzeAutoGearSegment(nodes) {
+    if (!nodes || !nodes.length) return null;
+    const span = nodes.find(node => node.nodeType === 1 && node.classList && node.classList.contains('gear-item'));
+    if (span) {
+        const name = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
+        const count = getSpanCount(span);
+        return { span, name, count };
+    }
+    const wrapper = document.createElement('div');
+    nodes.forEach(node => wrapper.appendChild(node.cloneNode(true)));
+    let text = wrapper.innerHTML
+        .replace(/<select[\s\S]*?<\/select>/gi, '')
+        .replace(/<[^>]+>/g, '')
+        .trim();
+    if (!text) return null;
+    const match = text.match(/^(\d+)x\s+/);
+    let count = 1;
+    if (match) {
+        count = parseInt(match[1], 10);
+        text = text.slice(match[0].length).trim();
+    }
+    return { span: null, name: text, count, wrapper };
+}
+
+function updateRawSegmentCount(nodes, info, newCount) {
+    if (!nodes.length) return;
+    let updated = false;
+    for (const node of nodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const value = node.textContent || '';
+            if (/\d+x\s+/i.test(value)) {
+                node.textContent = value.replace(/^(\s*)(\d+)x\s+/, (match, spaces) => `${spaces}${newCount}x `);
+                updated = true;
+                break;
+            }
+            if (value.trim()) {
+                node.textContent = `${newCount}x ${value.trim().replace(/^(\d+)x\s+/, '')}`;
+                updated = true;
+                break;
+            }
+        } else if (node.nodeType === 1) {
+            const child = node.firstChild;
+            if (child && child.nodeType === Node.TEXT_NODE && /\d+x\s+/i.test(child.textContent || '')) {
+                child.textContent = (child.textContent || '').replace(/^(\s*)(\d+)x\s+/, (match, spaces) => `${spaces}${newCount}x `);
+                updated = true;
+                break;
+            }
+        }
+    }
+    if (!updated) {
+        const first = nodes[0];
+        const parent = first.parentNode;
+        if (parent) {
+            parent.insertBefore(document.createTextNode(`${newCount}x ${info.name}`), first);
+        }
+    }
+}
+
+function removeAutoGearItem(cell, item, remainingOverride) {
+    if (!cell) return normalizeAutoGearQuantity(item.quantity);
+    let remaining = typeof remainingOverride === 'number'
+        ? remainingOverride
+        : normalizeAutoGearQuantity(item.quantity);
+    if (remaining <= 0) return remaining;
+    const nodes = Array.from(cell.childNodes);
+    if (!nodes.length) return remaining;
+    const segments = [];
+    let current = [];
+    nodes.forEach(node => {
+        if (node.nodeName === 'BR') {
+            segments.push({ nodes: current, separator: node });
+            current = [];
+        } else {
+            current.push(node);
+        }
+    });
+    segments.push({ nodes: current, separator: null });
+    let modified = false;
+    segments.forEach(segment => {
+        if (!segment.nodes.length || remaining <= 0) return;
+        const info = analyzeAutoGearSegment(segment.nodes);
+        if (!info || !info.name || !matchesAutoGearItem(item.name, info.name)) return;
+        if (info.span) {
+            const currentCount = info.count;
+            if (currentCount > remaining) {
+                updateSpanCountInPlace(info.span, currentCount - remaining);
+                remaining = 0;
+            } else {
+                remaining -= currentCount;
+                segment.nodes.forEach(node => node.remove());
+            }
+            modified = true;
+        } else {
+            if (info.count > remaining && info.count > 1) {
+                updateRawSegmentCount(segment.nodes, info, info.count - remaining);
+                remaining = 0;
+                modified = true;
+            } else {
+                remaining -= info.count;
+                segment.nodes.forEach(node => node.remove());
+                modified = true;
+            }
+        }
+    });
+    if (modified) {
+        cleanupAutoGearCell(cell);
+    }
+    return remaining;
+}
+
+function addAutoGearItem(cell, item) {
+    if (!cell) return;
+    const quantity = normalizeAutoGearQuantity(item.quantity);
+    if (quantity <= 0) return;
+    const name = item.name ? item.name.trim() : '';
+    if (!name) return;
+    const spans = Array.from(cell.querySelectorAll('.gear-item'));
+    for (const span of spans) {
+        const spanName = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
+        if (matchesAutoGearItem(name, spanName)) {
+            const newCount = getSpanCount(span) + quantity;
+            updateSpanCountInPlace(span, newCount);
+            return;
+        }
+    }
+    if (cell.childNodes.length) {
+        cell.appendChild(document.createElement('br'));
+    }
+    const span = document.createElement('span');
+    span.className = 'gear-item auto-gear-item';
+    span.setAttribute('data-gear-name', name);
+    const displayName = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
+    span.textContent = `${quantity}x ${displayName}`;
+    cell.appendChild(span);
+}
+
+function ensureAutoGearCategory(table, category) {
+    const rawCategory = category && category.trim() ? category.trim() : '';
+    const label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
+    const existing = Array.from(table.querySelectorAll('tbody.category-group')).find(body => {
+        if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
+            return body.dataset.autoCategory === rawCategory;
+        }
+        const headerCell = body.querySelector('.category-row td');
+        return headerCell && headerCell.textContent.trim() === label;
+    });
+    if (existing) {
+        const cell = existing.querySelector('tr:not(.category-row) td');
+        return cell || null;
+    }
+    const body = document.createElement('tbody');
+    body.className = 'category-group auto-gear-category';
+    body.dataset.autoCategory = rawCategory;
+    const headerRow = document.createElement('tr');
+    headerRow.className = 'category-row';
+    const headerCell = document.createElement('td');
+    const labelText = rawCategory
+        ? rawCategory
+        : (texts[currentLang]?.autoGearCustomCategory || texts.en?.autoGearCustomCategory || 'Custom Additions');
+    headerCell.textContent = labelText;
+    headerRow.appendChild(headerCell);
+    body.appendChild(headerRow);
+    const itemsRow = document.createElement('tr');
+    const itemsCell = document.createElement('td');
+    itemsRow.appendChild(itemsCell);
+    body.appendChild(itemsRow);
+    table.appendChild(body);
+    return itemsCell;
+}
+
+function findAutoGearCategoryCell(table, category) {
+    if (!table) return null;
+    const rawCategory = category && category.trim() ? category.trim() : '';
+    const label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
+    const bodies = Array.from(table.querySelectorAll('tbody.category-group'));
+    for (const body of bodies) {
+        if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
+            if (body.dataset.autoCategory === rawCategory) {
+                const cell = body.querySelector('tr:not(.category-row) td');
+                if (cell) return cell;
+            }
+            continue;
+        }
+        const headerCell = body.querySelector('.category-row td');
+        if (!headerCell) continue;
+        const headerLabel = headerCell.textContent.trim();
+        if (rawCategory) {
+            if (headerLabel === rawCategory) {
+                const cell = body.querySelector('tr:not(.category-row) td');
+                if (cell) return cell;
+            }
+        } else if (body.classList.contains('auto-gear-category') || headerLabel === label) {
+            const cell = body.querySelector('tr:not(.category-row) td');
+            if (cell) return cell;
+        }
+    }
+    return null;
+}
+
+function applyAutoGearRulesToTableHtml(tableHtml, info) {
+    if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
+    const scenarios = info && info.requiredScenarios
+        ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+    if (!scenarios.length) {
+        const hasRuleWithoutScenario = autoGearRules.some(rule => !rule.scenarios.length);
+        if (!hasRuleWithoutScenario) return tableHtml;
+    }
+    const triggered = autoGearRules.filter(rule => rule.scenarios.every(s => scenarios.includes(s)));
+    if (!triggered.length) return tableHtml;
+    const container = document.createElement('div');
+    container.innerHTML = tableHtml;
+    const table = container.querySelector('.gear-table');
+    if (!table) return tableHtml;
+    triggered.forEach(rule => {
+        rule.remove.forEach(item => {
+            let remaining = normalizeAutoGearQuantity(item.quantity);
+            if (remaining <= 0) return;
+            const primaryCell = findAutoGearCategoryCell(table, item.category);
+            if (primaryCell) {
+                remaining = removeAutoGearItem(primaryCell, item, remaining);
+            }
+            if (remaining > 0) {
+                const gearCells = Array.from(table.querySelectorAll('tbody.category-group tr:not(.category-row) td'));
+                for (const cell of gearCells) {
+                    if (cell === primaryCell) continue;
+                    remaining = removeAutoGearItem(cell, item, remaining);
+                    if (remaining <= 0) break;
+                }
+            }
+        });
+        rule.add.forEach(item => {
+            const cell = ensureAutoGearCategory(table, item.category);
+            if (cell) addAutoGearItem(cell, item);
+        });
+    });
+    return container.innerHTML;
+}
+
 function generateGearListHtml(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
@@ -11463,8 +12536,12 @@ function generateGearListHtml(info = {}) {
     const scenarios = info.requiredScenarios
         ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
         : [];
-    const hasGimbal = scenarios.includes('Gimbal');
-    if (scenarios.includes('Trinity') || scenarios.includes('Steadicam')) {
+    const hasSeededScenarioRules = hasSeededAutoGearDefaults();
+    const allowLegacyScenarioGear = autoGearRules.length === 0 && !hasSeededScenarioRules;
+    const isScenarioActive = scenario => allowLegacyScenarioGear && scenarios.includes(scenario);
+    const isAnyScenarioActive = list => allowLegacyScenarioGear && list.some(value => scenarios.includes(value));
+    const hasGimbal = isScenarioActive('Gimbal');
+    if (isAnyScenarioActive(['Trinity', 'Steadicam'])) {
         for (let i = 0; i < 2; i++) {
             riggingAcc.push('D-Tap Splitter');
             riggingAcc.push('D-Tap Extension 50 cm (Steadicam/Trinity)');
@@ -11532,7 +12609,7 @@ function generateGearListHtml(info = {}) {
         }
     }
     viewfinderExtSelections.forEach(vf => supportAccNoCages.push(vf));
-    if (scenarios.includes('Rain Machine') || scenarios.includes('Extreme rain')) {
+    if (isAnyScenarioActive(['Rain Machine', 'Extreme rain'])) {
         filterSelections.push('Schulz Sprayoff Micro');
         filterSelections.push('Fischer RS to D-Tap cable 0,5m');
         filterSelections.push('Fischer RS to D-Tap cable 0,5m');
@@ -11611,7 +12688,7 @@ function generateGearListHtml(info = {}) {
             supportAccNoCages.push(handleName);
         }
     };
-    if (scenarios.includes('Handheld') && scenarios.includes('Easyrig')) {
+    if (isScenarioActive('Handheld') && isScenarioActive('Easyrig')) {
         addHandle();
     }
     if (handleSelections.includes('Hand Grips')) {
@@ -12066,7 +13143,7 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Steelfingers Wheel C-Stand 3er Set (Focus)');
         gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
     }
-    if (scenarios.includes('Easyrig')) {
+    if (isScenarioActive('Easyrig')) {
         const stabiliser = devices && devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
         const opts = stabiliser && Array.isArray(stabiliser.options) ? stabiliser.options : [];
         const options = ['no further stabilisation', ...opts];
@@ -12082,14 +13159,14 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Avenger D200B Grip Head');
         gripItems.push('Spigot with male 3/8" and 1/4"');
     }
-    if (scenarios.includes('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
-    if (scenarios.includes('Steadybag')) gripItems.push('Steadybag');
-    if (scenarios.includes('Jib')) {
+    if (isScenarioActive('Cine Saddle')) gripItems.push('Cinekinetic Cinesaddle');
+    if (isScenarioActive('Steadybag')) gripItems.push('Steadybag');
+    if (isScenarioActive('Jib')) {
         gripItems.push('Pro Sup EJIb-Arm');
         gripItems.push('Jib counter weights');
         needsStandardTripod = true;
     }
-    if (scenarios.includes('Slider')) {
+    if (isScenarioActive('Slider')) {
         const options = ['', '75er bowl', '100er bowl', '150er bowl', 'Mitchell Mount'].map(o => `<option value="${escapeHtml(o)}"${o === info.sliderBowl ? ' selected' : ''}>${escapeHtml(addArriKNumber(o))}</option>`).join('');
         sliderSelectHtml = `1x Prosup Tango Roller <select id="gearListSliderBowl">${options}</select>`;
         gripItems.push('Avenger Combo Stand 10 A1010CS 64-100 cm black');
@@ -12105,13 +13182,13 @@ function generateGearListHtml(info = {}) {
         gripItems.push('Cable mat');
         gripItems.push('Cable mat');
     }
-    if (scenarios.includes('Slider') && scenarios.includes('Undersling mode')) {
+    if (isScenarioActive('Slider') && isScenarioActive('Undersling mode')) {
         gripItems.push('Tango Beam');
     }
-    if (scenarios.includes('Outdoor')) {
+    if (isScenarioActive('Outdoor')) {
         riggingAcc.push('Spigot with male 3/8" and 1/4" (Focus Umbrella)');
     }
-    if (['Extreme heat', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s))) {
+    if (isAnyScenarioActive(['Extreme heat', 'Extreme rain', 'Rain Machine'])) {
         gripItems.push('Large Umbrella');
         gripItems.push('Avenger A5036CS Roller 36 Low Base with Umbrella Mounting');
     }
@@ -12174,7 +13251,7 @@ function generateGearListHtml(info = {}) {
         ...Array(3).fill('PRCD-S (Portable Residual Current Device-Safety)'),
         ...Array(3).fill('Power Three Way Splitter')
     ];
-    if (scenarios.includes('Studio')) {
+    if (isScenarioActive('Studio')) {
         powerItems.push('Camera Power Supply');
     }
     ensureItems(powerItems, 'accessories.power');
@@ -12249,11 +13326,11 @@ function generateGearListHtml(info = {}) {
         for (let i = 0; i < count; i++) consumables.push(item.name);
     }
     if (eyeLeatherCount) eyeLeatherCount *= multiplier;
-    const needsRainProtection = ['Outdoor', 'Extreme rain', 'Rain Machine'].some(s => scenarios.includes(s));
+    const needsRainProtection = isAnyScenarioActive(['Outdoor', 'Extreme rain', 'Rain Machine']);
     if (needsRainProtection && selectedNames.camera) {
         miscItems.push(`Rain Cover ${addArriKNumber(selectedNames.camera)}`);
     }
-    const needsUmbrellas = needsRainProtection || scenarios.includes('Extreme heat');
+    const needsUmbrellas = needsRainProtection || isScenarioActive('Extreme heat');
     if (needsUmbrellas) {
         if (!miscItems.includes('Umbrella for Focus Monitor')) miscItems.push('Umbrella for Focus Monitor');
         if (!miscItems.includes('Umbrella Magliner incl Mounting to Magliner')) miscItems.push('Umbrella Magliner incl Mounting to Magliner');
@@ -12273,9 +13350,9 @@ function generateGearListHtml(info = {}) {
         consumables.push('Magliner Rain Cover Transparent');
     }
     const needsHairDryer =
-        (isWinterShoot && scenarios.includes('Outdoor')) ||
-        scenarios.includes('Extreme cold (snow)');
-    const needsHandAndFeetWarmers = scenarios.includes('Extreme cold (snow)');
+        (isWinterShoot && isScenarioActive('Outdoor')) ||
+        isScenarioActive('Extreme cold (snow)');
+    const needsHandAndFeetWarmers = isScenarioActive('Extreme cold (snow)');
     if (needsHairDryer) {
         miscItems.push('Hair Dryer');
         if (["Sony Venice 2", "Sony Venice"].includes(selectedNames.camera)) {
@@ -12334,7 +13411,9 @@ function generateGearListHtml(info = {}) {
     addRow('Consumables', [eyeLeatherHtml, proGaffHtml, formatItems(consumables)].filter(Boolean).join('<br>'));
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
-    body += '<h3>Gear List</h3><table class="gear-table">' + categoryGroups.join('') + '</table>';
+    const tableHtml = '<table class="gear-table">' + categoryGroups.join('') + '</table>';
+    const adjustedTable = applyAutoGearRulesToTableHtml(tableHtml, info);
+    body += '<h3>Gear List</h3>' + adjustedTable;
     return body;
 }
 
@@ -13399,6 +14478,15 @@ if (settingsButton && settingsDialog) {
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
     updateStorageSummary();
+    if (autoGearEditor) {
+      closeAutoGearEditor();
+      refreshAutoGearScenarioOptions();
+      populateAutoGearCategorySelect(autoGearAddCategorySelect, '');
+      populateAutoGearCategorySelect(autoGearRemoveCategorySelect, '');
+      renderAutoGearRulesList();
+      renderAutoGearDraftLists();
+      updateAutoGearCatalogOptions();
+    }
     settingsDialog.removeAttribute('hidden');
     // Focus the first control except the language selector to avoid opening it automatically
     const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
@@ -13410,6 +14498,7 @@ if (settingsButton && settingsDialog) {
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
+      closeAutoGearEditor();
       settingsDialog.setAttribute('hidden', '');
     });
   }
@@ -13512,6 +14601,7 @@ if (settingsButton && settingsDialog) {
           loadStoredLogoPreview();
         }
       }
+      closeAutoGearEditor();
       settingsDialog.setAttribute('hidden', '');
     });
   }
@@ -13521,9 +14611,57 @@ if (settingsButton && settingsDialog) {
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
+      closeAutoGearEditor();
       settingsDialog.setAttribute('hidden', '');
     }
   });
+
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.addEventListener('click', () => {
+      openAutoGearEditor();
+    });
+  }
+  if (autoGearAddItemButton) {
+    autoGearAddItemButton.addEventListener('click', () => addAutoGearDraftItem('add'));
+  }
+  if (autoGearRemoveItemButton) {
+    autoGearRemoveItemButton.addEventListener('click', () => addAutoGearDraftItem('remove'));
+  }
+  if (autoGearSaveRuleButton) {
+    autoGearSaveRuleButton.addEventListener('click', saveAutoGearRuleFromEditor);
+  }
+  if (autoGearCancelEditButton) {
+    autoGearCancelEditButton.addEventListener('click', () => {
+      closeAutoGearEditor();
+      renderAutoGearDraftLists();
+    });
+  }
+  if (autoGearRulesList) {
+    autoGearRulesList.addEventListener('click', event => {
+      const target = event.target;
+      if (!target) return;
+      if (target.classList.contains('auto-gear-edit')) {
+        openAutoGearEditor(target.dataset.ruleId || '');
+      } else if (target.classList.contains('auto-gear-delete')) {
+        deleteAutoGearRule(target.dataset.ruleId || '');
+      }
+    });
+  }
+  if (autoGearEditor) {
+    autoGearEditor.addEventListener('click', event => {
+      const target = event.target;
+      if (!target || !target.classList.contains('auto-gear-remove-entry')) return;
+      const listType = target.dataset.listType;
+      const itemId = target.dataset.itemId;
+      if (!autoGearEditorDraft || !itemId) return;
+      const list = listType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
+      const index = list.findIndex(item => item.id === itemId);
+      if (index >= 0) {
+        list.splice(index, 1);
+        renderAutoGearDraftLists();
+      }
+    });
+  }
 }
 
 const parseRgbComponent = value => {
@@ -15400,5 +16538,8 @@ if (typeof module !== "undefined" && module.exports) {
     searchKey,
     searchTokens,
     findBestSearchMatch,
+    collectAutoGearCatalogNames,
+    applyAutoGearRulesToTableHtml,
+    getAutoGearRules,
   };
 }

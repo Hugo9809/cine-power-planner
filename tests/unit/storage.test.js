@@ -37,6 +37,10 @@ const {
   clearAllData,
   exportAllData,
   importAllData,
+  loadAutoGearRules,
+  saveAutoGearRules,
+  loadAutoGearSeedFlag,
+  saveAutoGearSeedFlag,
 } = require('../../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -46,6 +50,8 @@ const FEEDBACK_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
 const SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
+const AUTO_GEAR_RULES_KEY = 'cameraPowerPlanner_autoGearRules';
+const AUTO_GEAR_SEEDED_KEY = 'cameraPowerPlanner_autoGearSeeded';
 
 const validDeviceData = {
   cameras: {},
@@ -375,6 +381,33 @@ describe('favorites storage', () => {
   });
 });
 
+describe('automatic gear storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('saveAutoGearRules persists rule arrays', () => {
+    const rules = [{ id: 'rule-a', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
+    saveAutoGearRules(rules);
+    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_RULES_KEY))).toEqual(rules);
+    expect(loadAutoGearRules()).toEqual(rules);
+  });
+
+  test('loadAutoGearRules falls back to empty array when data malformed', () => {
+    localStorage.setItem(AUTO_GEAR_RULES_KEY, JSON.stringify('oops'));
+    expect(loadAutoGearRules()).toEqual([]);
+  });
+
+  test('saveAutoGearSeedFlag toggles the persisted flag', () => {
+    saveAutoGearSeedFlag(true);
+    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBe('1');
+    expect(loadAutoGearSeedFlag()).toBe(true);
+    saveAutoGearSeedFlag(false);
+    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(loadAutoGearSeedFlag()).toBe(false);
+  });
+});
+
 describe('clearAllData', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -388,6 +421,8 @@ describe('clearAllData', () => {
     saveProject('Proj', { gearList: '<ul></ul>' });
     saveFavorites({ cat: ['A'] });
     saveSessionState({ camera: 'CamA' });
+    saveAutoGearRules([{ id: 'rule', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }]);
+    saveAutoGearSeedFlag(true);
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
@@ -396,6 +431,8 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
     expect(localStorage.getItem(SESSION_KEY)).toBeNull();
     expect(localStorage.getItem(FAVORITES_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_RULES_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
   });
 });
@@ -413,13 +450,18 @@ describe('export/import all data', () => {
     saveFeedback({ note: 'hi' });
     saveProject('Proj', { gearList: '<ul></ul>' });
     saveFavorites({ cat: ['A'] });
+    const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
+    saveAutoGearRules(rules);
+    saveAutoGearSeedFlag(true);
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
       project: { Proj: { gearList: '<ul></ul>', projectInfo: null } },
-      favorites: { cat: ['A'] }
+      favorites: { cat: ['A'] },
+      autoGearRules: rules,
+      autoGearSeeded: true,
     });
   });
 
@@ -430,7 +472,11 @@ describe('export/import all data', () => {
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
       project: { Proj: { gearList: '<ol></ol>' } },
-      favorites: { cat: ['B'] }
+      favorites: { cat: ['B'] },
+      autoGearRules: [
+        { id: 'rule-indoor', label: 'Indoor', scenarios: ['Indoor'], add: [{ name: 'Item', category: 'Grip', quantity: 1 }], remove: [] }
+      ],
+      autoGearSeeded: true,
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
@@ -439,6 +485,8 @@ describe('export/import all data', () => {
     expect(loadFeedback()).toEqual({ note: 'hi' });
     expect(loadProject('Proj')).toEqual({ gearList: '<ol></ol>', projectInfo: null });
     expect(loadFavorites()).toEqual({ cat: ['B'] });
+    expect(loadAutoGearRules()).toEqual(data.autoGearRules);
+    expect(loadAutoGearSeedFlag()).toBe(true);
   });
 
   test('importAllData handles legacy projects array', () => {

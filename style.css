@@ -898,6 +898,118 @@ main.legal-content {
   flex-wrap: wrap;
 }
 
+.auto-gear-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auto-gear-rule {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+}
+
+.auto-gear-rule-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.auto-gear-rule-title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.auto-gear-rule-meta {
+  color: var(--muted-text-color, #666);
+  font-size: 0.9em;
+}
+
+.auto-gear-rule-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.auto-gear-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+}
+
+.auto-gear-editor-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 720px) {
+  .auto-gear-editor-columns {
+    flex-direction: row;
+  }
+}
+
+.auto-gear-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auto-gear-add-controls {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  align-items: end;
+}
+
+.auto-gear-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auto-gear-item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auto-gear-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--surface-color);
+}
+
+.auto-gear-item span {
+  display: block;
+}
+
+.auto-gear-empty {
+  font-style: italic;
+  color: var(--muted-text-color, #666);
+}
+
 .storage-summary {
   list-style: none;
   margin: 0;
