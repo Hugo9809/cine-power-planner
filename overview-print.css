@@ -23,8 +23,8 @@ body.dark-mode {
   --video-color: #369;
   --fiz-color: #090;
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 300;
-  font-size: 12pt;
+  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-base);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
   background: var(--surface-color);
@@ -86,7 +86,7 @@ body.dark-mode {
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   border-color: var(--text-color) !important;
   color: var(--text-color) !important;
 }
@@ -206,7 +206,7 @@ table, th, td {
 }
 #overviewDialogContent th {
   background-color: var(--control-bg) !important;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 #overviewDialogContent tr {
   background-color: var(--surface-color) !important;
@@ -265,7 +265,7 @@ body:not(.light-mode) .gear-table tbody {
 body:not(.light-mode) .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--accent-color);
   break-after: avoid;
   page-break-after: avoid;
@@ -327,7 +327,7 @@ body:not(.light-mode) .gear-table .category-row td {
 }
 
 .warning {
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
 }
 
 #overviewDialogContent .device-category {

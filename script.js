@@ -8258,31 +8258,37 @@ let cleanupDiagramInteractions = null;
 
 // CSS used when exporting the setup diagram
 const diagramCssLight = `
-.node-box{fill:#f0f0f0;stroke:none;}
+.node-box{fill:var(--diagram-node-fill,#f0f0f0);stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:var(--font-size-diagram-icon,1.25rem);font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-label{font-size:var(--font-size-diagram-label,0.75rem);}
+.node-label-tight{font-size:var(--font-size-diagram-label-tight,0.625rem);}
 .conn{stroke:none;}
-.conn.red{fill:#d33;}
-.conn.blue{fill:#369;}
-.conn.green{fill:#090;}
-text{font-family:system-ui,sans-serif;}
-.edge-label{font-size:10px;}
-line{stroke:#333;stroke-width:2px;}
-path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
-path.power{stroke:#d33;}
-path.video{stroke:#369;}
-path.fiz{stroke:#090;}
+.conn.red{fill:var(--power-color,#d33);}
+.conn.blue{fill:var(--video-color,#369);}
+.conn.green{fill:var(--fiz-color,#090);}
+text{font-family:var(--font-family,system-ui,sans-serif);}
+.edge-label{font-size:var(--font-size-diagram-label-tight,0.625rem);}
+line{stroke:var(--control-text,#333);stroke-width:2px;}
+path.edge-path{stroke:var(--control-text,#333);stroke-width:2px;fill:none;}
+path.power{stroke:var(--power-color,#d33);}
+path.video{stroke:var(--video-color,#369);}
+path.fiz{stroke:var(--fiz-color,#090);}
 .diagram-placeholder{font-style:italic;color:#666;margin:0;}
 `;
 const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
-text{fill:#fff;font-family:system-ui,sans-serif;}
-line{stroke:#fff;}
-path.edge-path{stroke:#fff;}
+.node-icon{font-size:var(--font-size-diagram-icon,1.25rem);font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-label{font-size:var(--font-size-diagram-label,0.75rem);}
+.node-label-tight{font-size:var(--font-size-diagram-label-tight,0.625rem);}
+.conn{stroke:none;}
+text{fill:var(--inverse-text-color,#fff);font-family:var(--font-family,system-ui,sans-serif);}
+.edge-label{font-size:var(--font-size-diagram-label-tight,0.625rem);}
+line{stroke:var(--inverse-text-color,#fff);}
+path.edge-path{stroke:var(--inverse-text-color,#fff);}
 path.power{stroke:#ff6666;}
 path.video{stroke:#7ec8ff;}
 path.fiz{stroke:#6f6;}
@@ -11194,6 +11200,32 @@ function renderSetupDiagram() {
   const DEFAULT_NODE_W = 120;
   const nodeHeights = {};
   const nodeWidths = {};
+  let labelDyPx = 12;
+  try {
+    const root = typeof document !== 'undefined' ? document.documentElement : null;
+    const rootStyles = root && typeof window !== 'undefined' && window.getComputedStyle
+      ? window.getComputedStyle(root)
+      : null;
+    const baseFontPx = rootStyles ? parseFloat(rootStyles.fontSize) || 16 : 16;
+    const lengthToPx = (value, fallback) => {
+      if (typeof value !== 'string') return fallback;
+      const trimmed = value.trim();
+      if (!trimmed) return fallback;
+      const numeric = parseFloat(trimmed);
+      if (!Number.isFinite(numeric)) return fallback;
+      if (trimmed.endsWith('rem') || trimmed.endsWith('em')) {
+        return numeric * baseFontPx;
+      }
+      if (trimmed.endsWith('px')) return numeric;
+      return numeric;
+    };
+    const labelSize = lengthToPx(getCssVariableValue('--font-size-diagram-label', '0.75rem'), baseFontPx * 0.75);
+    if (Number.isFinite(labelSize) && labelSize > 0) labelDyPx = labelSize;
+  } catch (error) {
+    console.warn('Unable to determine diagram label spacing', error);
+  }
+  const labelDyStr = `${Math.round(labelDyPx * 100) / 100}px`;
+
   nodes.forEach(id => {
     const label = pos[id].label || id;
     const lines = wrapLabel(label);
@@ -11605,12 +11637,18 @@ function renderSetupDiagram() {
 
     if (icon) {
       svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
-      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
-      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
+      svg += `<text class="node-label node-label-tight" x="${p.x}" y="${p.y + 14}" text-anchor="middle">`;
+      lines.forEach((line, i) => {
+        const dy = i === 0 ? '0' : labelDyStr;
+        svg += `<tspan x="${p.x}" dy="${dy}">${escapeHtml(line)}</tspan>`;
+      });
       svg += `</text>`;
     } else {
-      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="12">`;
-      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
+      svg += `<text class="node-label" x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle">`;
+      lines.forEach((line, i) => {
+        const dy = i === 0 ? '0' : labelDyStr;
+        svg += `<tspan x="${p.x}" dy="${dy}">${escapeHtml(line)}</tspan>`;
+      });
       svg += `</text>`;
     }
     svg += `</g>`;
