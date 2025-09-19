@@ -6,6 +6,17 @@ const texts = {
     tagline: "Plan your film rig and calculate power consumption & battery life.",
     skipToContent: "Skip to content",
     offlineIndicator: "Offline",
+    iosPwaHelpTitle: "Keep your data when installing on iOS",
+    iosPwaHelpIntro:
+      "Safari keeps the browser tab and the installed app separate. To move your Cine Power Planner data into the app:",
+    iosPwaHelpStep1: "Open Cine Power Planner in Safari where your projects are still visible.",
+    iosPwaHelpStep2: "Go to Settings → Backup & Restore → Backup to download a copy of your data.",
+    iosPwaHelpStep3: "Open Cine Power Planner from your home screen.",
+    iosPwaHelpStep4:
+      "Go to Settings → Backup & Restore → Restore and pick the backup file.",
+    iosPwaHelpNote:
+      "After restoring once, all changes stay inside the installed app. Keep the backup if you plan to reinstall or switch devices.",
+    iosPwaHelpClose: "Got it",
     impressum: "Imprint",
     privacy: "Privacy Policy",
 
@@ -615,6 +626,18 @@ const texts = {
     tagline: "Pianifica la tua configurazione cinematografica e calcola il consumo energetico e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Non in linea",
+    iosPwaHelpTitle: "Mantieni i tuoi dati dopo l’installazione su iOS",
+    iosPwaHelpIntro:
+      "Safari separa la scheda del browser dall’app installata. Ecco come trasferire i tuoi dati di Cine Power Planner nell’app:",
+    iosPwaHelpStep1: "Apri Cine Power Planner in Safari, dove i tuoi progetti sono ancora visibili.",
+    iosPwaHelpStep2:
+      "Vai in Impostazioni → Backup e ripristino → Backup per scaricare una copia dei dati.",
+    iosPwaHelpStep3: "Apri Cine Power Planner dall’icona aggiunta alla schermata Home.",
+    iosPwaHelpStep4:
+      "Vai in Impostazioni → Backup e ripristino → Ripristina e scegli il file di backup.",
+    iosPwaHelpNote:
+      "Dopo la prima importazione, tutte le modifiche restano nell’app installata. Conserva il backup se prevedi di reinstallare o cambiare dispositivo.",
+    iosPwaHelpClose: "Ho capito",
     impressum: "Note legali",
     privacy: "Informativa sulla privacy",
     setupManageHeading: "Panoramica del progetto",
@@ -1197,6 +1220,18 @@ const texts = {
     tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
+    iosPwaHelpTitle: "Mantén tus datos al instalar en iOS",
+    iosPwaHelpIntro:
+      "Safari separa la pestaña del navegador y la app instalada. Sigue estos pasos para llevar tus datos de Cine Power Planner a la app:",
+    iosPwaHelpStep1: "Abre Cine Power Planner en Safari, donde tus proyectos siguen visibles.",
+    iosPwaHelpStep2:
+      "Ve a Ajustes → Copia de seguridad y restaurar → Copia de seguridad para descargar una copia de tus datos.",
+    iosPwaHelpStep3: "Abre Cine Power Planner desde el icono de la pantalla de inicio.",
+    iosPwaHelpStep4:
+      "Ve a Ajustes → Copia de seguridad y restaurar → Restaurar y selecciona el archivo de copia de seguridad.",
+    iosPwaHelpNote:
+      "Tras restaurar una vez, todos los cambios permanecen en la app instalada. Conserva la copia de seguridad si piensas reinstalar o cambiar de dispositivo.",
+    iosPwaHelpClose: "Entendido",
     impressum: "Aviso legal",
     privacy: "Política de privacidad",
 
@@ -1794,6 +1829,18 @@ const texts = {
     tagline: "Planifiez votre équipement de tournage et calculez la consommation énergétique et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
+    iosPwaHelpTitle: "Conservez vos données lors de l’installation sur iOS",
+    iosPwaHelpIntro:
+      "Safari sépare l’onglet du navigateur et l’app installée. Voici comment transférer vos données Cine Power Planner dans l’app :",
+    iosPwaHelpStep1: "Ouvrez Cine Power Planner dans Safari, là où vos projets sont encore visibles.",
+    iosPwaHelpStep2:
+      "Allez dans Paramètres → Sauvegarde et restauration → Sauvegarder pour télécharger une copie de vos données.",
+    iosPwaHelpStep3: "Ouvrez Cine Power Planner depuis l’icône ajoutée à l’écran d’accueil.",
+    iosPwaHelpStep4:
+      "Allez dans Paramètres → Sauvegarde et restauration → Restaurer et choisissez le fichier de sauvegarde.",
+    iosPwaHelpNote:
+      "Après une seule restauration, toutes les modifications restent dans l’app installée. Conservez la sauvegarde si vous prévoyez de réinstaller l’app ou de changer d’appareil.",
+    iosPwaHelpClose: "Compris",
     impressum: "Mentions légales",
     privacy: "Politique de confidentialité",
 
@@ -2393,6 +2440,18 @@ const texts = {
     tagline: "Plane dein Film-Setup und berechne Stromverbrauch und Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",
+    iosPwaHelpTitle: "So bleiben deine Daten nach der iOS-Installation erhalten",
+    iosPwaHelpIntro:
+      "Safari trennt den Browser-Tab und die installierte App. So überträgst du deine Cine Power Planner-Daten in die App:",
+    iosPwaHelpStep1: "Öffne Cine Power Planner in Safari, wo deine Projekte noch sichtbar sind.",
+    iosPwaHelpStep2:
+      "Gehe zu Einstellungen → Sichern & Wiederherstellen → Sichern, um eine Kopie deiner Daten herunterzuladen.",
+    iosPwaHelpStep3: "Öffne Cine Power Planner über das Homescreen-Symbol.",
+    iosPwaHelpStep4:
+      "Gehe zu Einstellungen → Sichern & Wiederherstellen → Wiederherstellen und wähle die Backup-Datei.",
+    iosPwaHelpNote:
+      "Nach einmaligem Wiederherstellen bleiben alle Änderungen in der installierten App. Bewahre das Backup auf, falls du neu installierst oder das Gerät wechselst.",
+    iosPwaHelpClose: "Verstanden",
     impressum: "Impressum",
     privacy: "Datenschutz",
 

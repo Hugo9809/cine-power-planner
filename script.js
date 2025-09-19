@@ -30,6 +30,7 @@ try {
 }
 
 const APP_VERSION = "1.0.1";
+const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
 
@@ -2267,6 +2268,18 @@ function setLanguage(lang) {
       if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
     });
   }
+  if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
+  if (iosPwaHelpIntro) iosPwaHelpIntro.textContent = texts[lang].iosPwaHelpIntro;
+  if (iosPwaHelpStep1) iosPwaHelpStep1.textContent = texts[lang].iosPwaHelpStep1;
+  if (iosPwaHelpStep2) iosPwaHelpStep2.textContent = texts[lang].iosPwaHelpStep2;
+  if (iosPwaHelpStep3) iosPwaHelpStep3.textContent = texts[lang].iosPwaHelpStep3;
+  if (iosPwaHelpStep4) iosPwaHelpStep4.textContent = texts[lang].iosPwaHelpStep4;
+  if (iosPwaHelpNote) iosPwaHelpNote.textContent = texts[lang].iosPwaHelpNote;
+  if (iosPwaHelpClose) {
+    iosPwaHelpClose.textContent = texts[lang].iosPwaHelpClose;
+    iosPwaHelpClose.setAttribute('aria-label', texts[lang].iosPwaHelpClose);
+  }
+
   document.querySelectorAll('.favorite-toggle').forEach(btn => {
     btn.setAttribute('aria-label', texts[lang].favoriteToggleLabel);
     btn.setAttribute('title', texts[lang].favoriteToggleLabel);
@@ -3198,6 +3211,15 @@ const helpSectionsContainer = document.getElementById("helpSections");
 const helpQuickLinksNav = document.getElementById("helpQuickLinks");
 const helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 const helpQuickLinksList = document.getElementById("helpQuickLinksList");
+const iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
+const iosPwaHelpTitle = document.getElementById("iosPwaHelpTitle");
+const iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
+const iosPwaHelpStep1 = document.getElementById("iosPwaHelpStep1");
+const iosPwaHelpStep2 = document.getElementById("iosPwaHelpStep2");
+const iosPwaHelpStep3 = document.getElementById("iosPwaHelpStep3");
+const iosPwaHelpStep4 = document.getElementById("iosPwaHelpStep4");
+const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
+const iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
 const settingsButton  = document.getElementById("settingsButton");
 const settingsDialog  = document.getElementById("settingsDialog");
@@ -3217,6 +3239,104 @@ const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
 const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
+
+let lastActiveBeforeIosHelp = null;
+
+function isIosDevice() {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  const platform = navigator.platform || '';
+  const hasTouch = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1;
+  return /iphone|ipad|ipod/i.test(ua) || (platform === 'MacIntel' && hasTouch);
+}
+
+function isStandaloneDisplayMode() {
+  if (typeof window === 'undefined') return false;
+  if (typeof window.matchMedia === 'function') {
+    try {
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        return true;
+      }
+    } catch (error) {
+      console.warn('matchMedia display-mode check failed', error);
+    }
+  }
+  if (typeof navigator !== 'undefined' && typeof navigator.standalone === 'boolean') {
+    return navigator.standalone;
+  }
+  return false;
+}
+
+function hasDismissedIosPwaHelp() {
+  try {
+    return localStorage.getItem(IOS_PWA_HELP_STORAGE_KEY) === '1';
+  } catch (error) {
+    console.warn('Could not read iOS PWA help dismissal flag', error);
+    return false;
+  }
+}
+
+function markIosPwaHelpDismissed() {
+  try {
+    localStorage.setItem(IOS_PWA_HELP_STORAGE_KEY, '1');
+  } catch (error) {
+    console.warn('Could not store iOS PWA help dismissal', error);
+  }
+}
+
+function shouldShowIosPwaHelp() {
+  return (
+    !!iosPwaHelpDialog &&
+    isIosDevice() &&
+    isStandaloneDisplayMode() &&
+    !hasDismissedIosPwaHelp()
+  );
+}
+
+function openIosPwaHelp() {
+  if (!iosPwaHelpDialog) return;
+  if (!shouldShowIosPwaHelp()) return;
+  lastActiveBeforeIosHelp = document.activeElement;
+  iosPwaHelpDialog.removeAttribute('hidden');
+  const focusTarget = iosPwaHelpClose || iosPwaHelpDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    focusTarget.focus();
+  }
+}
+
+function closeIosPwaHelp(storeDismissal = false) {
+  if (!iosPwaHelpDialog) return;
+  iosPwaHelpDialog.setAttribute('hidden', '');
+  if (storeDismissal) {
+    markIosPwaHelpDismissed();
+  }
+  if (lastActiveBeforeIosHelp && typeof lastActiveBeforeIosHelp.focus === 'function') {
+    lastActiveBeforeIosHelp.focus();
+  }
+}
+
+function maybeShowIosPwaHelp() {
+  openIosPwaHelp();
+}
+
+if (iosPwaHelpClose) {
+  iosPwaHelpClose.addEventListener('click', () => closeIosPwaHelp(true));
+}
+
+if (iosPwaHelpDialog) {
+  iosPwaHelpDialog.addEventListener('click', event => {
+    if (event.target === iosPwaHelpDialog) {
+      closeIosPwaHelp(true);
+    }
+  });
+}
+
+document.addEventListener('keydown', event => {
+  if (!iosPwaHelpDialog || iosPwaHelpDialog.hasAttribute('hidden')) return;
+  if (event.key === 'Escape' || event.key === 'Esc') {
+    closeIosPwaHelp(true);
+  }
+});
 
 function renderSettingsLogoPreview(dataUrl) {
   if (!settingsLogoPreview) return;
@@ -13989,6 +14109,7 @@ function initApp() {
       initFavoritableSelect(sel);
     });
   setLanguage(currentLang);
+  maybeShowIosPwaHelp();
   resetDeviceForm();
   restoreSessionState();
   applySharedSetupFromUrl();
