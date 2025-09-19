@@ -60,9 +60,17 @@ describe('global feature search helpers', () => {
   let searchKey;
   let searchTokens;
   let findBestSearchMatch;
+  let runFeatureSearch;
+  let featureSearchInternals;
 
   beforeEach(() => {
-    ({ searchKey, searchTokens, findBestSearchMatch } = loadScript());
+    ({
+      searchKey,
+      searchTokens,
+      findBestSearchMatch,
+      runFeatureSearch,
+      __featureSearchInternals: featureSearchInternals,
+    } = loadScript());
   });
 
   test('searchTokens exposes hyphenated and numeric tokens', () => {
@@ -271,5 +279,93 @@ describe('global feature search helpers', () => {
     );
 
     expect(markResult?.value.label).toBe('Canon EOS R5 Mark II');
+  });
+
+  test('runFeatureSearch prefers exact feature matches over device ties', () => {
+    const { featureMap, deviceMap, helpMap, featureSearchInput } = featureSearchInternals;
+    featureMap.clear();
+    deviceMap.clear();
+    helpMap.clear();
+
+    const featureEl = document.createElement('div');
+    featureEl.id = 'feature-target';
+    featureEl.textContent = 'Dual SDI Output';
+    featureEl.closest = jest.fn(() => null);
+    featureEl.scrollIntoView = jest.fn();
+    featureEl.focus = jest.fn();
+
+    featureMap.set(
+      searchKey('Dual SDI Output'),
+      {
+        element: featureEl,
+        label: 'Dual SDI Output',
+        tokens: searchTokens('Dual SDI Output'),
+      }
+    );
+
+    const select = document.createElement('select');
+    select.closest = jest.fn(() => null);
+    select.scrollIntoView = jest.fn();
+    select.focus = jest.fn();
+    select.dispatchEvent = jest.fn();
+
+    const option = document.createElement('option');
+    option.value = 'dual-sdi-module';
+    option.textContent = 'Dual SDI Output Module';
+    select.appendChild(option);
+
+    deviceMap.set(
+      searchKey('Dual SDI Output Module'),
+      {
+        select,
+        value: option.value,
+        label: option.textContent,
+        tokens: searchTokens('Dual SDI Output Module'),
+      }
+    );
+
+    featureSearchInput.value = 'Dual SDI Output';
+
+    runFeatureSearch('Dual SDI Output');
+
+    expect(select.dispatchEvent).not.toHaveBeenCalled();
+    expect(featureEl.focus).toHaveBeenCalled();
+    expect(featureSearchInput.value).toBe('Dual SDI Output');
+  });
+
+  test('runFeatureSearch keeps user-entered casing when selecting devices', () => {
+    const { featureMap, deviceMap, helpMap, featureSearchInput } = featureSearchInternals;
+    featureMap.clear();
+    deviceMap.clear();
+    helpMap.clear();
+
+    const select = document.createElement('select');
+    select.closest = jest.fn(() => null);
+    select.scrollIntoView = jest.fn();
+    select.focus = jest.fn();
+    select.dispatchEvent = jest.fn();
+
+    const option = document.createElement('option');
+    option.value = 'alexa-35';
+    option.textContent = 'Alexa 35';
+    select.appendChild(option);
+
+    deviceMap.set(
+      searchKey('Alexa 35'),
+      {
+        select,
+        value: 'alexa-35',
+        label: 'Alexa 35',
+        tokens: searchTokens('Alexa 35'),
+      }
+    );
+
+    featureSearchInput.value = 'alexa 35';
+
+    runFeatureSearch('alexa 35');
+
+    expect(select.value).toBe('alexa-35');
+    expect(select.dispatchEvent).toHaveBeenCalledTimes(1);
+    expect(featureSearchInput.value).toBe('alexa 35');
   });
 });
