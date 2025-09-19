@@ -954,8 +954,8 @@ main.legal-content {
   border: 2px solid var(--accent-color);
   padding: clamp(24px, 4vw, 48px);
   color: var(--text-color);
-  width: min(90vw, 420px);
-  max-height: 80vh;
+  width: min(92vw, 520px);
+  max-height: 90vh;
   overflow-y: auto;
   border-radius: var(--border-radius);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -966,7 +966,7 @@ main.legal-content {
 
 @media (min-width: 900px) {
   .settings-content {
-    width: min(80vw, 600px);
+    width: min(78vw, 720px);
   }
 }
 
