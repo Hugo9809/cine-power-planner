@@ -116,7 +116,8 @@ p {
 #topBar,
 .print-btn,
 .back-btn,
-.favorite-toggle {
+.favorite-toggle,
+.overview-actions {
   display: none !important;
 }
 

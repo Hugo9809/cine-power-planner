@@ -254,8 +254,10 @@ function generatePrintableOverview() {
     const contentClass = customLogo ? 'logo-present' : '';
     const overviewHtml = `
         <div id="overviewDialogContent" class="${contentClass}">
-            <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
-            <button id="printOverviewBtn" class="print-btn">${t.printBtn}</button>
+            <div class="overview-actions">
+                <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
+                <button id="printOverviewBtn" class="print-btn">${t.printBtn}</button>
+            </div>
             ${logoHtml}
             <h1>${t.overviewTitle}</h1>
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
