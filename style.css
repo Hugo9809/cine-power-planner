@@ -2038,6 +2038,12 @@ textarea:disabled {
   line-height: 1;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
+.favorite-toggle:disabled {
+  background-color: var(--control-bg);
+  color: var(--muted-text-color);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 .favorite-toggle:hover {
   background-color: var(--accent-color);
   color: var(--inverse-text-color);
