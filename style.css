@@ -1364,6 +1364,10 @@ body.pink-mode .auto-gear-rule-title,
   font-size: 1.1em;
 }
 
+.dark-mode .help-quick-link-icon {
+  --icon-color: var(--inverse-text-color);
+}
+
 .help-quick-link.active .help-quick-link-icon {
   --icon-color: var(--inverse-text-color);
 }
