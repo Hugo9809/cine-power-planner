@@ -424,6 +424,14 @@ main.legal-content {
   min-width: 0; /* allow shrinking inside flex container */
 }
 
+.form-row .auto-gear-scenarios {
+  flex: 0 1 320px;
+  width: min(100%, 320px);
+  max-width: 100%;
+  overflow-y: auto;
+  max-height: 11rem;
+}
+
 #crewContainer {
   flex: 1;
   display: flex;
