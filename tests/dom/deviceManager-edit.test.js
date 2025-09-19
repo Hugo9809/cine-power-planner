@@ -57,4 +57,51 @@ describe('device manager editing', () => {
     );
     expect(alertSpy).toHaveBeenCalled();
   });
+
+  test('allows changing the category of an existing device while editing', () => {
+    env = setupScriptEnvironment({
+      devices: {
+        video: {
+          'Link TX': {
+            powerDrawWatts: 20,
+            power: { input: { type: 'DC' } }
+          }
+        }
+      }
+    });
+
+    const editBtn = document.querySelector(
+      '.edit-btn[data-category="video"][data-name="Link TX"]'
+    );
+    expect(editBtn).toBeTruthy();
+
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+    editBtn.click();
+
+    const categorySelect = document.getElementById('newCategory');
+    const addDeviceBtn = document.getElementById('addDeviceBtn');
+    expect(addDeviceBtn.dataset.mode).toBe('edit');
+    expect(categorySelect.disabled).toBe(false);
+
+    categorySelect.value = 'wirelessReceivers';
+    categorySelect.dispatchEvent(new Event('change'));
+
+    const wattInput = document.getElementById('newWatt');
+    wattInput.value = '18';
+
+    const powerInput = document.getElementById('videoPower');
+    powerInput.value = 'SDI';
+
+    addDeviceBtn.click();
+
+    expect(env.globals.devices.video['Link TX']).toBeUndefined();
+    expect(env.globals.devices.wirelessReceivers['Link TX']).toEqual(
+      expect.objectContaining({
+        powerDrawWatts: 18,
+        power: { input: { type: 'SDI' } }
+      })
+    );
+    expect(alertSpy).toHaveBeenCalled();
+  });
 });

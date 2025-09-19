@@ -2711,6 +2711,81 @@ function populateCategoryOptions() {
 }
 
 populateCategoryOptions();
+
+function getCategoryContainer(categoryKey, subcategory, { create = false } = {}) {
+  if (!categoryKey) {
+    return null;
+  }
+  if (categoryKey === 'accessories.cables') {
+    if (!subcategory) {
+      return null;
+    }
+    if (!devices.accessories) {
+      if (!create) return null;
+      devices.accessories = {};
+    }
+    if (!devices.accessories.cables) {
+      if (!create) return null;
+      devices.accessories.cables = {};
+    }
+    if (!devices.accessories.cables[subcategory]) {
+      if (!create) return null;
+      devices.accessories.cables[subcategory] = {};
+    }
+    return devices.accessories.cables[subcategory];
+  }
+
+  if (categoryKey.includes('.')) {
+    const [mainCat, subCat] = categoryKey.split('.');
+    if (!devices[mainCat]) {
+      if (!create) return null;
+      devices[mainCat] = {};
+    }
+    if (!devices[mainCat][subCat]) {
+      if (!create) return null;
+      devices[mainCat][subCat] = {};
+    }
+    return devices[mainCat][subCat];
+  }
+
+  if (!devices[categoryKey]) {
+    if (!create) return null;
+    devices[categoryKey] = {};
+  }
+  return devices[categoryKey];
+}
+
+function removeOriginalDeviceEntry(originalCategory, originalSubcategory, originalName, newCategory, newSubcategory, newName) {
+  if (!originalCategory || !originalName) {
+    return;
+  }
+  const movedCategory = originalCategory !== newCategory;
+  const movedSubcategory =
+    originalCategory === 'accessories.cables' && originalSubcategory !== newSubcategory;
+  const renamed = originalName !== newName;
+  if (!movedCategory && !movedSubcategory && !renamed) {
+    return;
+  }
+
+  const container = getCategoryContainer(
+    originalCategory,
+    originalCategory === 'accessories.cables' ? originalSubcategory : null,
+    { create: false }
+  );
+  if (!container || !Object.prototype.hasOwnProperty.call(container, originalName)) {
+    return;
+  }
+  delete container[originalName];
+  if (
+    originalCategory === 'accessories.cables' &&
+    devices.accessories?.cables &&
+    container &&
+    originalSubcategory &&
+    !Object.keys(container).length
+  ) {
+    delete devices.accessories.cables[originalSubcategory];
+  }
+}
 const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
 const monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
 const monitorLatencyInput = document.getElementById("monitorLatency");
@@ -8885,13 +8960,20 @@ deviceManagerSection.addEventListener("click", (event) => {
       newCategorySelect.appendChild(opt);
     }
 
+    addDeviceBtn.dataset.mode = "edit";
+    addDeviceBtn.dataset.originalName = name;
+    addDeviceBtn.dataset.originalCategory = categoryKey;
+    if (categoryKey === "accessories.cables" && subcategory) {
+      addDeviceBtn.dataset.originalSubcategory = subcategory;
+    } else {
+      delete addDeviceBtn.dataset.originalSubcategory;
+    }
+
     // Set form for editing
     newCategorySelect.value = categoryKey;
-    // Trigger change handler so fields are cleared
-    newCategorySelect.dispatchEvent(new Event('change'));
-    newCategorySelect.disabled = true; // Prevent changing category during edit
-    // After the change handler runs, restore the device name for editing
     newNameInput.value = name;
+    // Trigger change handler so fields are cleared and rebuilt for the category
+    newCategorySelect.dispatchEvent(new Event('change'));
 
     let deviceData;
     if (categoryKey === "accessories.cables") {
@@ -8908,12 +8990,6 @@ deviceManagerSection.addEventListener("click", (event) => {
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     addDeviceBtn.dataset.mode = "edit";
-    addDeviceBtn.dataset.originalName = name; // Store original name for update
-    if (categoryKey === "accessories.cables") {
-      addDeviceBtn.dataset.originalSubcategory = subcategory;
-    } else {
-      delete addDeviceBtn.dataset.originalSubcategory;
-    }
     cancelEditBtn.textContent = texts[currentLang].cancelEditBtn;
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     cancelEditBtn.style.display = "inline";
@@ -8971,6 +9047,8 @@ deviceManagerSection.addEventListener('keydown', (event) => {
 
 // Category selection in add device form
 newCategorySelect.addEventListener("change", () => {
+  const wasEditing = addDeviceBtn?.dataset.mode === "edit";
+  const previousName = newNameInput ? newNameInput.value : "";
   const val = newCategorySelect.value;
   placeWattField(val);
   clearDynamicFields();
@@ -9150,15 +9228,28 @@ newCategorySelect.addEventListener("change", () => {
   if (val !== 'accessories.cables') {
     buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
   }
-  // Reset add/update button to "Add" and clear originalName in dataset
-  addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
-  addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
-  addDeviceBtn.dataset.mode = "add";
-  delete addDeviceBtn.dataset.originalName;
-  delete addDeviceBtn.dataset.originalSubcategory;
-  newNameInput.value = ""; // Clear name to avoid accidental update
-  cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-  cancelEditBtn.style.display = "none";
+  if (newNameInput) {
+    if (wasEditing) {
+      newNameInput.value = previousName;
+    } else {
+      newNameInput.value = "";
+    }
+  }
+  if (wasEditing) {
+    addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
+    addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+    cancelEditBtn.style.display = "inline";
+  } else {
+    addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
+    addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
+    addDeviceBtn.dataset.mode = "add";
+    delete addDeviceBtn.dataset.originalName;
+    delete addDeviceBtn.dataset.originalSubcategory;
+    delete addDeviceBtn.dataset.originalCategory;
+    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+    cancelEditBtn.style.display = "none";
+  }
 });
 
 newSubcategorySelect.addEventListener('change', () => {
@@ -9168,8 +9259,16 @@ newSubcategorySelect.addEventListener('change', () => {
 });
 
 function resetDeviceForm() {
-  newCategorySelect.disabled = false;
-  cancelEditBtn.style.display = "none";
+  if (addDeviceBtn) {
+    addDeviceBtn.dataset.mode = "add";
+    delete addDeviceBtn.dataset.originalName;
+    delete addDeviceBtn.dataset.originalSubcategory;
+    delete addDeviceBtn.dataset.originalCategory;
+  }
+  if (cancelEditBtn) {
+    cancelEditBtn.style.display = "none";
+    cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
+  }
   // Trigger change handler to reset fields and button text, guarding against
   // missing DOM elements in test environments.
   if (newCategorySelect.isConnected) {
@@ -9188,6 +9287,7 @@ addDeviceBtn.addEventListener("click", () => {
   const category = newCategorySelect.value;
   const isEditing = addDeviceBtn.dataset.mode === "edit";
   const originalName = addDeviceBtn.dataset.originalName;
+  const originalCategory = addDeviceBtn.dataset.originalCategory;
   const subcategory = category === "accessories.cables" ? newSubcategorySelect.value : null;
   const originalSubcategory = addDeviceBtn.dataset.originalSubcategory;
 
@@ -9196,25 +9296,31 @@ addDeviceBtn.addEventListener("click", () => {
     return;
   }
 
-  let targetCategory;
-  if (category === "accessories.cables") {
-    if (!subcategory) {
-      alert(texts[currentLang].alertDeviceFields);
-      return;
-    }
-    if (!devices.accessories) devices.accessories = {};
-    if (!devices.accessories.cables) devices.accessories.cables = {};
-    if (!devices.accessories.cables[subcategory]) devices.accessories.cables[subcategory] = {};
-    targetCategory = devices.accessories.cables[subcategory];
-  } else if (category.includes('.')) {
-    const [mainCat, subCat] = category.split('.');
-    if (!devices[mainCat]) devices[mainCat] = {};
-    if (!devices[mainCat][subCat]) devices[mainCat][subCat] = {};
-    targetCategory = devices[mainCat][subCat];
-  } else {
-    if (!devices[category]) devices[category] = {};
-    targetCategory = devices[category];
+  if (category === "accessories.cables" && !subcategory) {
+    alert(texts[currentLang].alertDeviceFields);
+    return;
   }
+
+  const targetCategory = getCategoryContainer(category, subcategory, { create: true });
+  if (!targetCategory) {
+    alert(texts[currentLang].alertDeviceFields);
+    return;
+  }
+
+  const storedOriginalCategory = originalCategory || category;
+  const storedOriginalSubcategory = originalSubcategory || null;
+  const originalCollection = isEditing
+    ? getCategoryContainer(
+        storedOriginalCategory,
+        storedOriginalCategory === "accessories.cables" ? storedOriginalSubcategory : null,
+        { create: false }
+      )
+    : null;
+  const originalDeviceData = isEditing && originalCollection ? originalCollection[originalName] : undefined;
+  const editingSameCategory = isEditing && storedOriginalCategory === category;
+  const editingSamePath = editingSameCategory && (
+    category !== "accessories.cables" || storedOriginalSubcategory === subcategory
+  );
 
   // Check for duplicate name if adding, or if name changed during edit
   if ((!isEditing && targetCategory[name] !== undefined) ||
@@ -9237,23 +9343,15 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceFields);
       return;
     }
-    const existing = isEditing ? targetCategory[originalName] : {};
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
-    }
+    const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
     if (category === "batteryHotswaps") {
       targetCategory[name] = { ...existing, capacity: capacity, pinA: pinA };
     } else {
-      targetCategory[name] = { capacity: capacity, pinA: pinA, dtapA: dtapA };
+      targetCategory[name] = { ...existing, capacity: capacity, pinA: pinA, dtapA: dtapA };
     }
     Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
   } else if (category === "accessories.cables") {
-    const existing = isEditing
-      ? devices.accessories.cables[originalSubcategory][originalName] || {}
-      : {};
-    if (isEditing && (name !== originalName || subcategory !== originalSubcategory)) {
-      delete devices.accessories.cables[originalSubcategory][originalName];
-    }
+    const existing = isEditing && originalDeviceData ? { ...originalDeviceData } : {};
     const attrs = collectDynamicFieldValues(`accessories.cables.${subcategory}`, categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []);
     targetCategory[name] = { ...existing, ...attrs };
   } else if (category === "cameras") {
@@ -9261,9 +9359,6 @@ addDeviceBtn.addEventListener("click", () => {
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
       return;
-    }
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
     }
     let powerDist, videoOut, fizCon, viewfinder, timecode, plateSupport;
     try {
@@ -9302,9 +9397,6 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
-    }
     const screenSize = parseFloat(monitorScreenSizeInput.value);
     const brightness = parseFloat(monitorBrightnessInput.value);
     targetCategory[name] = {
@@ -9333,9 +9425,6 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
-    }
     const screenSize = parseFloat(viewfinderScreenSizeInput.value);
     const brightness = parseFloat(viewfinderBrightnessInput.value);
     targetCategory[name] = {
@@ -9363,9 +9452,6 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
-    }
     targetCategory[name] = {
       powerDrawWatts: watt,
       power: { input: { type: videoPowerInput.value } },
@@ -9380,9 +9466,6 @@ addDeviceBtn.addEventListener("click", () => {
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
       return;
-    }
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
     }
     targetCategory[name] = {
       powerDrawWatts: watt,
@@ -9399,9 +9482,6 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
-    }
     targetCategory[name] = {
       powerDrawWatts: watt,
       fizConnector: controllerConnectorInput.value,
@@ -9416,9 +9496,6 @@ addDeviceBtn.addEventListener("click", () => {
     if (isNaN(watt) || watt <= 0) {
       alert(texts[currentLang].alertDeviceWatt);
       return;
-    }
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
     }
     targetCategory[name] = {
       powerDrawWatts: watt,
@@ -9436,12 +9513,27 @@ addDeviceBtn.addEventListener("click", () => {
       alert(texts[currentLang].alertDeviceWatt);
       return;
     }
-    const existing = isEditing ? targetCategory[originalName] : {};
-    if (isEditing && name !== originalName) {
-      delete targetCategory[originalName];
-    }
+    const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
     const attrs = collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []);
     targetCategory[name] = { ...existing, ...attrs, powerDrawWatts: watt };
+  }
+
+  if (isEditing) {
+    removeOriginalDeviceEntry(
+      storedOriginalCategory,
+      storedOriginalSubcategory,
+      originalName,
+      category,
+      subcategory,
+      name
+    );
+    addDeviceBtn.dataset.originalCategory = category;
+    if (category === "accessories.cables" && subcategory) {
+      addDeviceBtn.dataset.originalSubcategory = subcategory;
+    } else {
+      delete addDeviceBtn.dataset.originalSubcategory;
+    }
+    addDeviceBtn.dataset.originalName = name;
   }
 
   // After adding/updating, reset form and refresh lists
