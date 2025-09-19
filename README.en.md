@@ -301,6 +301,8 @@ npm run generate-schema
 
 Add `--help` to any of the above scripts for usage details.
 
+Run `npm run help` whenever you need a quick reminder of the maintenance commands and their suggested order.
+
 ## 🤝 Contributing
 Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
 When reporting data corrections, attaching project backups or runtime samples

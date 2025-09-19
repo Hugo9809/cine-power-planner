@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+const lines = [
+  'Cine Power Planner – development command reference',
+  '',
+  'Usage: npm run <command> [-- --options]',
+  '',
+  'Common workflows:',
+  '  npm run lint                Lint JavaScript and JSON files with ESLint.',
+  '  npm test                    Run linting, data validation and Jest suites.',
+  '  npm run test:unit           Execute only the unit tests.',
+  '  npm run test:data           Execute only the data integrity tests.',
+  '  npm run test:dom            Execute only the DOM integration tests.',
+  '  npm run test:script         Execute all Jest projects without linting.',
+  '',
+  'Data maintenance pipeline:',
+  '  npm run check-consistency   Report missing required fields in devices/.',
+  '  npm run normalize           Normalize metadata and rebuild derived data.',
+  '  npm run unify-ports         Standardize connector and port definitions.',
+  '  npm run generate-schema     Refresh schema.json based on the latest data.',
+  '',
+  'Tips:',
+  '  • Pass --help to any script above to see detailed usage instructions.',
+  '  • npm run <script> -- --watch forwards extra flags to the underlying tool.',
+  '  • Run the pipeline after editing devices/ so UI selectors stay in sync.',
+  '',
+  'For contributing guidelines and additional background, open README.md.',
+];
+console.log(lines.join('\n'));

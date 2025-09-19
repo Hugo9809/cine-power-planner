@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "check-consistency": "node checkConsistency.js",
+    "help": "node cliHelp.js",
     "normalize": "node normalizeData.js",
     "unify-ports": "node unifyPorts.js",
     "generate-schema": "node generateSchema.js",
