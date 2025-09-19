@@ -2819,6 +2819,13 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
   line-height: 1.4em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.gear-table tbody {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 #gearListOutput .cage-select-wrapper {
@@ -2837,6 +2844,8 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border-bottom: 1px solid var(--accent-color);
   font-weight: bold;
   color: var(--accent-color);
+  break-after: avoid;
+  page-break-after: avoid;
 }
 
 .dark-mode .gear-table td {
@@ -2869,6 +2878,8 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
   line-height: 1.4em;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 #overviewDialogContent .gear-table .category-row td {
@@ -2876,6 +2887,8 @@ body.dark-mode.pink-mode .help-content { border-color: var(--accent-color); }
   border-bottom: 1px solid var(--accent-color);
   font-weight: bold;
   color: var(--accent-color);
+  break-after: avoid;
+  page-break-after: avoid;
 }
 
 #overviewDialogContent.dark-mode .gear-table td {

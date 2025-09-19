@@ -37,6 +37,13 @@ th { background-color: var(--control-bg); font-weight: 700; }
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
   line-height: 1.4em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.gear-table tbody {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .gear-table .category-row td {
@@ -44,6 +51,8 @@ th { background-color: var(--control-bg); font-weight: 700; }
   border-bottom: 1px solid var(--accent-color);
   font-weight: bold;
   color: var(--accent-color);
+  break-after: avoid;
+  page-break-after: avoid;
 }
 .print-btn,
 .back-btn {

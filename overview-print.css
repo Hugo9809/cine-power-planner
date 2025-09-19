@@ -185,6 +185,15 @@ body:not(.light-mode) .gear-table td {
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
   line-height: 1.4em;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+#overviewDialogContent .gear-table tbody,
+#overviewDialogContent.dark-mode .gear-table tbody,
+body:not(.light-mode) .gear-table tbody {
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 #overviewDialogContent .gear-table .gear-item {
@@ -198,6 +207,8 @@ body:not(.light-mode) .gear-table .category-row td {
   border-bottom: 1px solid var(--accent-color);
   font-weight: 700;
   color: var(--accent-color);
+  break-after: avoid;
+  page-break-after: avoid;
 }
 
 
