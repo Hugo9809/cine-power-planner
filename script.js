@@ -4985,6 +4985,89 @@ let loadedSetupState = null;
 let loadedSetupStateSignature = '';
 let restoringSession = false;
 
+let defaultProjectInfoSnapshot = null;
+
+function sanitizeProjectInfoValue(value) {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? trimmed : undefined;
+  }
+  if (typeof value === 'number') {
+    return Number.isNaN(value) ? undefined : value;
+  }
+  if (typeof value === 'boolean') {
+    return value ? value : undefined;
+  }
+  if (Array.isArray(value)) {
+    const sanitized = value
+      .map((item) => sanitizeProjectInfoValue(item))
+      .filter((item) => item !== undefined);
+    return sanitized.length ? sanitized : undefined;
+  }
+  if (typeof value === 'object') {
+    const sanitizedObj = sanitizeProjectInfo(value);
+    return sanitizedObj || undefined;
+  }
+  return undefined;
+}
+
+function sanitizeProjectInfo(info) {
+  if (!info || typeof info !== 'object') return null;
+  const result = {};
+  Object.entries(info).forEach(([key, value]) => {
+    const sanitized = sanitizeProjectInfoValue(value);
+    if (sanitized !== undefined) {
+      result[key] = sanitized;
+    }
+  });
+  return Object.keys(result).length > 0 ? result : null;
+}
+
+function projectInfoEquals(a, b) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i += 1) {
+      if (!projectInfoEquals(a[i], b[i])) return false;
+    }
+    return true;
+  }
+  if (typeof a === 'object' && typeof b === 'object') {
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    if (aKeys.length !== bKeys.length) return false;
+    return aKeys.every((key) => projectInfoEquals(a[key], b[key]));
+  }
+  return false;
+}
+
+function ensureDefaultProjectInfoSnapshot() {
+  if (defaultProjectInfoSnapshot !== null) return;
+  if (!projectForm) {
+    defaultProjectInfoSnapshot = {};
+    return;
+  }
+  const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
+  baseInfo.sliderBowl = getSliderBowlValue();
+  baseInfo.easyrig = getEasyrigValue();
+  defaultProjectInfoSnapshot = sanitizeProjectInfo(baseInfo) || {};
+}
+
+function deriveProjectInfo(info) {
+  ensureDefaultProjectInfoSnapshot();
+  const sanitized = sanitizeProjectInfo(info);
+  if (!sanitized) return null;
+  if (
+    defaultProjectInfoSnapshot &&
+    projectInfoEquals(sanitized, defaultProjectInfoSnapshot)
+  ) {
+    return null;
+  }
+  return sanitized;
+}
+
 function setCurrentProjectInfo(info) {
   currentProjectInfo = info;
 }
@@ -5035,7 +5118,7 @@ function getCurrentSetupState() {
   const info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSliderBowlValue();
   info.easyrig = getEasyrigValue();
-  const projectInfo = Object.values(info).some(v => v) ? info : null;
+  const projectInfo = deriveProjectInfo(info);
   return {
     camera: cameraSelect.value,
     monitor: monitorSelect.value,
@@ -12342,7 +12425,7 @@ function saveCurrentGearList() {
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSliderBowlValue();
     info.easyrig = getEasyrigValue();
-    currentProjectInfo = Object.values(info).some(v => v) ? info : null;
+    currentProjectInfo = deriveProjectInfo(info);
     const projectName = getCurrentProjectName();
     if (typeof saveProject === 'function') {
         saveProject(projectName, { projectInfo: currentProjectInfo, gearList: html });
@@ -12660,10 +12743,10 @@ function refreshGearListIfVisible() {
         const info = collectProjectFormData();
         info.sliderBowl = getSliderBowlValue();
         info.easyrig = getEasyrigValue();
-        currentProjectInfo = Object.values(info).some(v => v) ? info : null;
+        currentProjectInfo = deriveProjectInfo(info);
     } else {
         const info = { sliderBowl: getSliderBowlValue(), easyrig: getEasyrigValue() };
-        currentProjectInfo = Object.values(info).some(v => v) ? info : null;
+        currentProjectInfo = deriveProjectInfo(info);
     }
 
     const html = generateGearListHtml(currentProjectInfo || {});
@@ -12691,7 +12774,7 @@ function saveCurrentSession() {
   const info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSliderBowlValue();
   info.easyrig = getEasyrigValue();
-  currentProjectInfo = Object.values(info).some(v => v) ? info : null;
+  currentProjectInfo = deriveProjectInfo(info);
   const state = {
     setupName: setupNameInput ? setupNameInput.value : '',
     setupSelect: setupSelect ? setupSelect.value : '',
@@ -14588,6 +14671,7 @@ function initApp() {
   setLanguage(currentLang);
   maybeShowIosPwaHelp();
   resetDeviceForm();
+  ensureDefaultProjectInfoSnapshot();
   restoreSessionState();
   applySharedSetupFromUrl();
   if (requiredScenariosSelect) {
