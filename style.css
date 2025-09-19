@@ -3632,6 +3632,28 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   margin: 0;
 }
 
+#projectDialog .form-row {
+  display: grid;
+  grid-template-columns: minmax(var(--form-label-min-width), var(--form-label-width)) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--gap-size);
+}
+
+#projectDialog .form-row label {
+  flex: initial;
+  min-width: 0;
+}
+
+#projectDialog .form-row > :not(label) {
+  grid-column: 2;
+  justify-self: stretch;
+}
+
+#projectDialog .form-row > button,
+#projectDialog .form-row > .inline-form-button {
+  justify-self: start;
+}
+
 #projectDialog select[multiple] {
   height: auto;
 }
