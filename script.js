@@ -6034,8 +6034,23 @@ const featureSearch   = document.getElementById("featureSearch");
 const featureSearchClear = document.getElementById("featureSearchClear");
 const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
+const normalizeSearchValue = value =>
+  typeof value === 'string' ? value.trim().toLowerCase() : '';
+const updateFeatureSearchValue = (newValue, originalNormalized) => {
+  if (!featureSearch || typeof newValue !== 'string') return;
+  const trimmed = newValue.trim();
+  if (!trimmed) {
+    featureSearch.value = '';
+    return;
+  }
+  if (originalNormalized && trimmed.toLowerCase() === originalNormalized) {
+    return;
+  }
+  featureSearch.value = newValue;
+};
 const helpMap         = new Map();
 const deviceMap       = new Map();
+let runFeatureSearch = () => {};
 // Normalise strings for search comparisons by removing punctuation, diacritics
 // and treating symbols like “&”/“+” as their word equivalents. British and
 // American spelling variants are folded together so queries like “favourites”
@@ -17186,9 +17201,10 @@ if (helpButton && helpDialog) {
     featureSearch.showPicker?.();
   };
 
-  const runFeatureSearch = query => {
-    if (!query) return;
-    const value = query.trim();
+  runFeatureSearch = query => {
+    const rawQuery = typeof query === 'string' ? query : featureSearch?.value || '';
+    const originalNormalized = normalizeSearchValue(rawQuery);
+    const value = rawQuery.trim();
     if (!value) return;
     const lower = value.toLowerCase();
     const isHelp = lower.endsWith(' (help)');
@@ -17215,14 +17231,16 @@ if (helpButton && helpDialog) {
         !!deviceMatch &&
         (!featureMatch ||
           (deviceStrong && !featureStrong) ||
-          (deviceStrong === featureStrong && deviceScore > featureScore));
+          (deviceStrong === featureStrong &&
+            (deviceScore > featureScore ||
+              (deviceScore === featureScore && featureMatch?.matchType !== 'exactKey'))));
       if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {
           device.select.value = device.value;
           device.select.dispatchEvent(new Event('change', { bubbles: true }));
-          if (featureSearch && device.label) {
-            featureSearch.value = device.label;
+          if (device.label) {
+            updateFeatureSearchValue(device.label, originalNormalized);
           }
           focusFeatureElement(device.select);
           return;
@@ -17232,11 +17250,9 @@ if (helpButton && helpDialog) {
         const feature = featureMatch.value;
         const featureEl = feature?.element || feature;
         if (featureEl) {
-          if (featureSearch) {
-            const label = feature?.label || featureEl.textContent?.trim();
-            if (label) {
-              featureSearch.value = label;
-            }
+          const label = feature?.label || featureEl.textContent?.trim();
+          if (label) {
+            updateFeatureSearchValue(label, originalNormalized);
           }
           focusFeatureElement(featureEl);
           return;
@@ -18057,6 +18073,15 @@ if (typeof module !== "undefined" && module.exports) {
     searchKey,
     searchTokens,
     findBestSearchMatch,
+    runFeatureSearch,
+    __featureSearchInternals: {
+      featureMap,
+      deviceMap,
+      helpMap,
+      featureSearchInput: featureSearch,
+      featureSearchClearButton: featureSearchClear,
+      featureListElement: featureList,
+    },
     collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml,
     exportAutoGearRules,

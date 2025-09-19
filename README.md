@@ -380,7 +380,9 @@ When served over HTTP(S), Cine Power Planner installs a service worker that cach
 files so the planner runs entirely offline and pulls updates in the
 background. Projects, runtime submissions and preferences (language, theme,
 pink mode and saved gear lists) are stored locally via `localStorage` in your
-browser. Clearing the site's data in your browser removes all saved
+browser. Browsers that expose the `StorageManager` API receive an automatic
+persistent-storage request so the data is less likely to be evicted while
+working offline. Clearing the site's data in your browser removes all saved
 information, and the Settings dialog includes a **Factory reset** workflow that
 downloads a backup before clearing everything when you need a fresh start.
 The header shows an offline indicator whenever the browser drops its

@@ -49,6 +49,13 @@ const ACCESSORY_COLLECTION_KEYS = [
   'carts',
 ];
 
+const getStorageManager = () =>
+  typeof navigator !== 'undefined' &&
+  navigator &&
+  typeof navigator.storage === 'object'
+    ? navigator.storage
+    : null;
+
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, fall back to
 // sessionStorage when possible so data persists across reloads within the same
@@ -109,6 +116,83 @@ const SAFE_LOCAL_STORAGE = (() => {
     },
   };
 })();
+
+let persistentStorageRequestPromise = null;
+
+function requestPersistentStorage() {
+  if (persistentStorageRequestPromise) {
+    return persistentStorageRequestPromise;
+  }
+
+  const storageManager = getStorageManager();
+  if (!storageManager || typeof storageManager.persist !== 'function') {
+    persistentStorageRequestPromise = Promise.resolve({
+      supported: Boolean(storageManager),
+      granted: false,
+      alreadyGranted: false,
+    });
+    return persistentStorageRequestPromise;
+  }
+
+  persistentStorageRequestPromise = (async () => {
+    let alreadyGranted = false;
+    const supportsPersistedCheck = typeof storageManager.persisted === 'function';
+
+    if (supportsPersistedCheck) {
+      try {
+        alreadyGranted = await storageManager.persisted();
+      } catch (persistedError) {
+        console.warn('Unable to determine persistent storage state', persistedError);
+      }
+    }
+
+    if (alreadyGranted) {
+      return {
+        supported: true,
+        granted: true,
+        alreadyGranted: true,
+      };
+    }
+
+    try {
+      const granted = await storageManager.persist();
+      if (!granted && supportsPersistedCheck) {
+        try {
+          const persisted = await storageManager.persisted();
+          if (persisted) {
+            return {
+              supported: true,
+              granted: true,
+              alreadyGranted: true,
+            };
+          }
+        } catch (verifyError) {
+          console.warn('Unable to verify persistent storage after request', verifyError);
+        }
+      }
+
+      return {
+        supported: true,
+        granted,
+        alreadyGranted: false,
+      };
+    } catch (error) {
+      console.warn('Persistent storage request failed', error);
+      return {
+        supported: true,
+        granted: false,
+        alreadyGranted: false,
+        error,
+      };
+    }
+  })();
+
+  return persistentStorageRequestPromise;
+}
+
+if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+  requestPersistentStorage();
+}
 
 // Helper to check for plain objects
 function isPlainObject(val) {
@@ -835,5 +919,6 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearRules,
     loadAutoGearSeedFlag,
     saveAutoGearSeedFlag,
+    requestPersistentStorage,
   };
 }
