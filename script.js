@@ -15390,7 +15390,7 @@ function refreshGearListIfVisible() {
 }
 
 // --- SESSION STATE HANDLING ---
-function saveCurrentSession() {
+function saveCurrentSession(options = {}) {
   if (restoringSession) return;
   const info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSliderBowlValue();
@@ -15416,20 +15416,22 @@ function saveCurrentSession() {
   storeSession(state);
   // Persist the current gear list and project requirements alongside the
   // session so they survive reloads without requiring a manual save action.
-  saveCurrentGearList();
+  if (!options.skipGearList) {
+    saveCurrentGearList();
+  }
 }
 
 function autoSaveCurrentSetup() {
   if (!setupNameInput) return;
   const name = setupNameInput.value.trim();
   if (!name) {
-    saveCurrentSession();
+    saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
     return;
   }
   const selectedName = setupSelect ? setupSelect.value : '';
   if (setupSelect && (!selectedName || name !== selectedName)) {
-    saveCurrentSession();
+    saveCurrentSession({ skipGearList: true });
     checkSetupChanged();
     return;
   }
@@ -15792,7 +15794,15 @@ controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updat
   .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
-if (setupNameInput) setupNameInput.addEventListener("input", saveCurrentSession);
+if (setupNameInput) {
+  const handleSetupNameInput = () => {
+    const typedName = setupNameInput.value ? setupNameInput.value.trim() : '';
+    const selectedName = setupSelect ? setupSelect.value : '';
+    const renameInProgress = Boolean(selectedName && typedName && typedName !== selectedName);
+    saveCurrentSession({ skipGearList: renameInProgress });
+  };
+  setupNameInput.addEventListener("input", handleSetupNameInput);
+}
 
 [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
   .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
