@@ -1975,6 +1975,13 @@ select[multiple] option:checked {
   color: var(--inverse-text-color);
 }
 
+@supports (color: color-mix(in srgb, #000 50%, white)) {
+  body.light-mode:not(.high-contrast) #projectDialog select[multiple] option:checked {
+    background-color: color-mix(in srgb, var(--accent-color) 35%, white);
+    color: var(--accent-color);
+  }
+}
+
 html.high-contrast select[multiple] option:checked,
 body.high-contrast select[multiple] option:checked {
   color: #000;
