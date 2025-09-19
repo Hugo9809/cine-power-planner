@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v20';
+const CACHE_NAME = 'cine-power-planner-v21';
 const ASSETS = [
   './',
   './index.html',
@@ -57,7 +57,16 @@ const ASSETS = [
   './icon.svg',
   './icon.png',
   './manifest.webmanifest',
-  './lz-string.min.js'
+  './lz-string.min.js',
+  './vendor/lottie-light.min.js',
+  './animated icons/cup.json',
+  './animated icons/fox.json',
+  './animated icons/heart.json',
+  './animated icons/horn.json',
+  './animated icons/mask.json',
+  './animated icons/rainbow.json',
+  './animated icons/rocking-horse.json',
+  './animated icons/unicorn.json'
 ];
 
 if (typeof self !== 'undefined') {

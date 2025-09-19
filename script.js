@@ -3340,6 +3340,17 @@ const PINK_MODE_ICON_FILES = Object.freeze([
   'unicorns/toy.svg'
 ]);
 
+const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
+  'animated icons/cup.json',
+  'animated icons/fox.json',
+  'animated icons/heart.json',
+  'animated icons/horn.json',
+  'animated icons/mask.json',
+  'animated icons/rainbow.json',
+  'animated icons/rocking-horse.json',
+  'animated icons/unicorn.json'
+]);
+
 const pinkModeIcons = {
   off: Object.freeze({
     className: 'icon-svg pink-mode-icon',
@@ -3350,6 +3361,26 @@ const pinkModeIcons = {
 
 let pinkModeIconRotationTimer = null;
 let pinkModeIconIndex = 0;
+
+const PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS = 3800;
+const PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS = 7800;
+const PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS = 5200;
+const PINK_MODE_ANIMATED_ICON_MAX_DURATION_MS = 9200;
+const PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX = 72;
+const PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX = 168;
+const PINK_MODE_ANIMATED_ICON_MAX_ACTIVE = 6;
+
+let pinkModeAnimatedIconLayer = null;
+let pinkModeAnimatedIconTimeoutId = null;
+let pinkModeAnimatedIconsActive = false;
+let pinkModeAnimatedIconTemplates = null;
+let pinkModeAnimatedIconTemplatesPromise = null;
+const pinkModeAnimatedIconInstances = new Set();
+
+const pinkModeReduceMotionQuery =
+  typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : null;
 
 function ensureSvgHasAriaHidden(markup) {
   if (typeof markup !== 'string') return '';
@@ -3404,6 +3435,263 @@ async function loadPinkModeIconsFromFiles() {
   const markupList = responses.filter(Boolean);
   if (markupList.length) {
     setPinkModeIconSequence(markupList);
+  }
+}
+
+async function loadPinkModeAnimatedIconTemplates() {
+  if (pinkModeAnimatedIconTemplates) {
+    return pinkModeAnimatedIconTemplates;
+  }
+  if (pinkModeAnimatedIconTemplatesPromise) {
+    return pinkModeAnimatedIconTemplatesPromise;
+  }
+  if (typeof fetch !== 'function') {
+    pinkModeAnimatedIconTemplates = Object.freeze([]);
+    return pinkModeAnimatedIconTemplates;
+  }
+  pinkModeAnimatedIconTemplatesPromise = Promise.all(
+    PINK_MODE_ANIMATED_ICON_FILES.map(path =>
+      fetch(path)
+        .then(response => (response.ok ? response.text() : null))
+        .catch(() => null)
+    )
+  )
+    .then(contents =>
+      Object.freeze(
+        contents
+          .map((content, index) =>
+            content
+              ? Object.freeze({
+                  name: PINK_MODE_ANIMATED_ICON_FILES[index],
+                  data: content
+                })
+              : null
+          )
+          .filter(Boolean)
+      )
+    )
+    .catch(error => {
+      console.warn('Could not load pink mode animated icons', error);
+      return Object.freeze([]);
+    })
+    .then(templates => {
+      pinkModeAnimatedIconTemplates = templates;
+      return templates;
+    });
+  return pinkModeAnimatedIconTemplatesPromise;
+}
+
+function ensurePinkModeAnimationLayer() {
+  if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.isConnected) {
+    return pinkModeAnimatedIconLayer;
+  }
+  if (!document || !document.body) {
+    return null;
+  }
+  const layer = document.createElement('div');
+  layer.className = 'pink-mode-animation-layer';
+  layer.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(layer);
+  pinkModeAnimatedIconLayer = layer;
+  return layer;
+}
+
+function destroyPinkModeAnimatedIconInstance(instance) {
+  if (!instance || instance.destroyed) {
+    return;
+  }
+  instance.destroyed = true;
+  if (instance.animation && typeof instance.animation.destroy === 'function') {
+    try {
+      instance.animation.destroy();
+    } catch (error) {
+      console.warn('Could not dispose pink mode animation', error);
+    }
+  }
+  if (instance.container && instance.container.parentNode) {
+    instance.container.parentNode.removeChild(instance.container);
+  }
+  pinkModeAnimatedIconInstances.delete(instance);
+}
+
+function spawnPinkModeAnimatedIconInstance(templates) {
+  if (
+    !pinkModeAnimatedIconsActive ||
+    !Array.isArray(templates) ||
+    !templates.length ||
+    typeof window === 'undefined' ||
+    !window.lottie ||
+    typeof window.lottie.loadAnimation !== 'function'
+  ) {
+    return false;
+  }
+  const layer = ensurePinkModeAnimationLayer();
+  if (!layer) {
+    return false;
+  }
+  const template = templates[Math.floor(Math.random() * templates.length)];
+  if (!template || !template.data) {
+    return false;
+  }
+  const container = document.createElement('div');
+  container.className = 'pink-mode-animation-instance';
+  container.setAttribute('aria-hidden', 'true');
+  const duration = Math.round(
+    Math.random() * (PINK_MODE_ANIMATED_ICON_MAX_DURATION_MS - PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS) +
+      PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS
+  );
+  const size = Math.round(
+    Math.random() * (PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX - PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX) +
+      PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX
+  );
+  const x = Math.random() * (88 - 12) + 12;
+  const y = Math.random() * (88 - 12) + 12;
+  container.style.setProperty('--pink-mode-animation-duration', `${duration}ms`);
+  container.style.setProperty('--pink-mode-animation-size', `${size}px`);
+  container.style.setProperty('--pink-mode-animation-x', `${x}vw`);
+  container.style.setProperty('--pink-mode-animation-y', `${y}vh`);
+  layer.appendChild(container);
+
+  let animationData;
+  try {
+    animationData = JSON.parse(template.data);
+  } catch (error) {
+    console.warn('Could not parse pink mode animation', error);
+    if (container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+    return false;
+  }
+
+  let animationInstance;
+  try {
+    animationInstance = window.lottie.loadAnimation({
+      container,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      animationData
+    });
+  } catch (error) {
+    console.warn('Could not start pink mode animation', error);
+    if (container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+    return false;
+  }
+
+  const instance = {
+    container,
+    animation: animationInstance,
+    destroyed: false
+  };
+
+  container.addEventListener(
+    'animationend',
+    () => {
+      destroyPinkModeAnimatedIconInstance(instance);
+    },
+    { once: true }
+  );
+
+  pinkModeAnimatedIconInstances.add(instance);
+  if (pinkModeAnimatedIconInstances.size > PINK_MODE_ANIMATED_ICON_MAX_ACTIVE) {
+    const oldest = pinkModeAnimatedIconInstances.values().next().value;
+    if (oldest && oldest !== instance) {
+      destroyPinkModeAnimatedIconInstance(oldest);
+    }
+  }
+
+  return true;
+}
+
+function scheduleNextPinkModeAnimatedIcon(templates) {
+  if (!pinkModeAnimatedIconsActive) {
+    return;
+  }
+  const delay = Math.round(
+    Math.random() * (PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS - PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS) +
+      PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS
+  );
+  pinkModeAnimatedIconTimeoutId = window.setTimeout(() => {
+    pinkModeAnimatedIconTimeoutId = null;
+    if (!pinkModeAnimatedIconsActive) {
+      return;
+    }
+    spawnPinkModeAnimatedIconInstance(templates);
+    if (pinkModeAnimatedIconsActive) {
+      scheduleNextPinkModeAnimatedIcon(templates);
+    }
+  }, delay);
+}
+
+function startPinkModeAnimatedIcons() {
+  if (pinkModeAnimatedIconsActive) {
+    return;
+  }
+  if (!document || !document.body) {
+    return;
+  }
+  if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+    return;
+  }
+  if (
+    typeof window === 'undefined' ||
+    !window.lottie ||
+    typeof window.lottie.loadAnimation !== 'function'
+  ) {
+    return;
+  }
+  pinkModeAnimatedIconsActive = true;
+  loadPinkModeAnimatedIconTemplates()
+    .then(templates => {
+      if (!pinkModeAnimatedIconsActive) {
+        return templates;
+      }
+      if (!templates.length) {
+        stopPinkModeAnimatedIcons();
+        return templates;
+      }
+      spawnPinkModeAnimatedIconInstance(templates);
+      scheduleNextPinkModeAnimatedIcon(templates);
+      return templates;
+    })
+    .catch(error => {
+      console.warn('Could not prepare pink mode animated icons', error);
+      stopPinkModeAnimatedIcons();
+    });
+}
+
+function stopPinkModeAnimatedIcons() {
+  pinkModeAnimatedIconsActive = false;
+  if (pinkModeAnimatedIconTimeoutId) {
+    clearTimeout(pinkModeAnimatedIconTimeoutId);
+    pinkModeAnimatedIconTimeoutId = null;
+  }
+  if (pinkModeAnimatedIconInstances.size) {
+    Array.from(pinkModeAnimatedIconInstances).forEach(instance => {
+      destroyPinkModeAnimatedIconInstance(instance);
+    });
+    pinkModeAnimatedIconInstances.clear();
+  }
+  if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.parentNode) {
+    pinkModeAnimatedIconLayer.parentNode.removeChild(pinkModeAnimatedIconLayer);
+  }
+  pinkModeAnimatedIconLayer = null;
+}
+
+if (pinkModeReduceMotionQuery) {
+  const handlePinkModeReduceMotionChange = event => {
+    if (event.matches) {
+      stopPinkModeAnimatedIcons();
+    } else if (document.body && document.body.classList.contains('pink-mode')) {
+      startPinkModeAnimatedIcons();
+    }
+  };
+  if (typeof pinkModeReduceMotionQuery.addEventListener === 'function') {
+    pinkModeReduceMotionQuery.addEventListener('change', handlePinkModeReduceMotionChange);
+  } else if (typeof pinkModeReduceMotionQuery.addListener === 'function') {
+    pinkModeReduceMotionQuery.addListener(handlePinkModeReduceMotionChange);
   }
 }
 
@@ -16514,7 +16802,9 @@ function applyPinkMode(enabled) {
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
     startPinkModeIconRotation();
+    startPinkModeAnimatedIcons();
   } else {
+    stopPinkModeAnimatedIcons();
     document.body.classList.remove("pink-mode");
     if (accentColorInput) {
       accentColorInput.disabled = false;

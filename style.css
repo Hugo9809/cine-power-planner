@@ -1502,9 +1502,64 @@ body.pink-mode .auto-gear-rule-title,
   will-change: transform;
 }
 
+.pink-mode-animation-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+  overflow: visible;
+}
+
+.pink-mode-animation-instance {
+  position: absolute;
+  top: var(--pink-mode-animation-y, 50vh);
+  left: var(--pink-mode-animation-x, 50vw);
+  width: var(--pink-mode-animation-size, 120px);
+  height: var(--pink-mode-animation-size, 120px);
+  margin-top: calc(-0.5 * var(--pink-mode-animation-size, 120px));
+  margin-left: calc(-0.5 * var(--pink-mode-animation-size, 120px));
+  opacity: 0;
+  animation: pink-mode-floating-icon var(--pink-mode-animation-duration, 7s) ease-in-out forwards;
+  transform-origin: center;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 4px 12px rgba(255, 105, 180, 0.25));
+}
+
+.pink-mode-animation-instance svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes pink-mode-floating-icon {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12%, 0) scale(0.75);
+  }
+
+  18% {
+    opacity: 0.9;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  82% {
+    opacity: 0.9;
+    transform: translate3d(0, -4%, 0) scale(1.05);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -14%, 0) scale(0.85);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pink-mode-icon-pop {
     animation: none;
+  }
+
+  .pink-mode-animation-layer {
+    display: none !important;
   }
 }
 
