@@ -2901,6 +2901,18 @@ const videoVideoInputsContainer = document.getElementById("videoVideoInputsConta
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
 const videoFrequencyInput = document.getElementById("videoFrequency");
 const videoLatencyInput = document.getElementById("videoLatency");
+
+function showFormSection(section) {
+  if (!section) return;
+  section.classList.remove('hidden');
+  section.style.display = '';
+}
+
+function hideFormSection(section) {
+  if (!section) return;
+  section.classList.add('hidden');
+  section.style.display = 'none';
+}
 const addDeviceForm = wattFieldDiv ? wattFieldDiv.parentNode : null;
 function placeWattField(category, data) {
   if (!wattFieldDiv || !addDeviceForm) return;
@@ -9404,28 +9416,28 @@ function inferDeviceCategory(key, data) {
 function populateDeviceForm(categoryKey, deviceData, subcategory) {
   placeWattField(categoryKey, deviceData);
   const type = inferDeviceCategory(categoryKey, deviceData);
-  wattFieldDiv.style.display = "block";
-  batteryFieldsDiv.style.display = "none";
-  cameraFieldsDiv.style.display = "none";
-  monitorFieldsDiv.style.display = "none";
-  viewfinderFieldsDiv.style.display = "none";
-  videoFieldsDiv.style.display = "none";
-  motorFieldsDiv.style.display = "none";
-  controllerFieldsDiv.style.display = "none";
-  distanceFieldsDiv.style.display = "none";
+  if (wattFieldDiv) wattFieldDiv.style.display = "block";
+  hideFormSection(batteryFieldsDiv);
+  hideFormSection(cameraFieldsDiv);
+  hideFormSection(monitorFieldsDiv);
+  hideFormSection(viewfinderFieldsDiv);
+  hideFormSection(videoFieldsDiv);
+  hideFormSection(motorFieldsDiv);
+  hideFormSection(controllerFieldsDiv);
+  hideFormSection(distanceFieldsDiv);
   clearDynamicFields();
 
   if (type === "batteries") {
-    wattFieldDiv.style.display = "none";
-    batteryFieldsDiv.style.display = "block";
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(batteryFieldsDiv);
     newCapacityInput.value = deviceData.capacity || '';
     newPinAInput.value = deviceData.pinA || '';
     if (dtapRow) dtapRow.style.display = categoryKey === "batteryHotswaps" ? "none" : "";
     newDtapAInput.value = categoryKey === "batteryHotswaps" ? '' : (deviceData.dtapA || '');
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "cameras") {
-    wattFieldDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "block";
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(cameraFieldsDiv);
     const tmp = firstPowerInputType(deviceData);
     cameraWattInput.value = deviceData.powerDrawWatts || '';
     cameraVoltageInput.value = deviceData.power?.input?.voltageRange || '';
@@ -9440,7 +9452,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     setTimecodes(deviceData.timecode || []);
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "monitors") {
-    monitorFieldsDiv.style.display = "block";
+    showFormSection(monitorFieldsDiv);
     monitorScreenSizeInput.value = deviceData.screenSizeInches || '';
     monitorBrightnessInput.value = deviceData.brightnessNits || '';
     monitorWattInput.value = deviceData.powerDrawWatts || '';
@@ -9457,7 +9469,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
       deviceData.audioOutput || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "viewfinders") {
-    viewfinderFieldsDiv.style.display = "block";
+    showFormSection(viewfinderFieldsDiv);
     viewfinderScreenSizeInput.value = deviceData.screenSizeInches || '';
     viewfinderBrightnessInput.value = deviceData.brightnessNits || '';
     viewfinderWattInput.value = deviceData.powerDrawWatts || '';
@@ -9470,7 +9482,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     viewfinderLatencyInput.value = deviceData.latencyMs || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "video") {
-    videoFieldsDiv.style.display = "block";
+    showFormSection(videoFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     videoPowerInput.value = firstPowerInputType(deviceData);
     setVideoInputs(deviceData.videoInputs || deviceData.video?.inputs || []);
@@ -9480,7 +9492,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     motorConnectorInput.value = '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.motors") {
-    motorFieldsDiv.style.display = "block";
+    showFormSection(motorFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     motorConnectorInput.value = deviceData.fizConnector || '';
     motorInternalInput.checked = !!deviceData.internalController;
@@ -9489,7 +9501,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     motorNotesInput.value = deviceData.notes || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.controllers") {
-    controllerFieldsDiv.style.display = "block";
+    showFormSection(controllerFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     const cc = Array.isArray(deviceData.fizConnectors)
       ? deviceData.fizConnectors.map(fc => fc.type).join(', ')
@@ -9501,7 +9513,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     controllerNotesInput.value = deviceData.notes || '';
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   } else if (type === "fiz.distance") {
-    distanceFieldsDiv.style.display = "block";
+    showFormSection(distanceFieldsDiv);
     newWattInput.value = deviceData.powerDrawWatts || '';
     distanceConnectionInput.value = deviceData.connectionCompatibility || '';
     distanceMethodInput.value = deviceData.measurementMethod || '';
@@ -9646,97 +9658,38 @@ newCategorySelect.addEventListener("change", () => {
   newSubcategorySelect.innerHTML = "";
   newSubcategorySelect.disabled = false;
   if (dtapRow) dtapRow.style.display = "";
+  if (wattFieldDiv) wattFieldDiv.style.display = "block";
+  hideFormSection(batteryFieldsDiv);
+  hideFormSection(cameraFieldsDiv);
+  hideFormSection(monitorFieldsDiv);
+  hideFormSection(viewfinderFieldsDiv);
+  hideFormSection(videoFieldsDiv);
+  hideFormSection(motorFieldsDiv);
+  hideFormSection(controllerFieldsDiv);
+  hideFormSection(distanceFieldsDiv);
   if (val === "batteries" || val === "accessories.batteries" || val === "batteryHotswaps") {
-    wattFieldDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
-    batteryFieldsDiv.style.display = "block";
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(batteryFieldsDiv);
     if (dtapRow) dtapRow.style.display = val === "batteryHotswaps" ? "none" : "";
   } else if (val === "cameras") {
-    wattFieldDiv.style.display = "none";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "block";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(cameraFieldsDiv);
   } else if (val === "monitors" || val === "directorMonitors") {
-    wattFieldDiv.style.display = "none";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "block";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(monitorFieldsDiv);
   } else if (val === "viewfinders") {
-    wattFieldDiv.style.display = "none";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "block";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
+    showFormSection(viewfinderFieldsDiv);
   } else if (val === "video" || val === "wirelessReceivers" || val === "iosVideo") {
-    wattFieldDiv.style.display = "block";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "block";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
+    showFormSection(videoFieldsDiv);
   } else if (val === "fiz.motors") {
-    wattFieldDiv.style.display = "block";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "block";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
+    showFormSection(motorFieldsDiv);
   } else if (val === "fiz.controllers") {
-    wattFieldDiv.style.display = "block";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "block";
-    distanceFieldsDiv.style.display = "none";
+    showFormSection(controllerFieldsDiv);
   } else if (val === "fiz.distance") {
-    wattFieldDiv.style.display = "block";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "block";
+    showFormSection(distanceFieldsDiv);
   } else if (val === "accessories.cables") {
-    wattFieldDiv.style.display = "none";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
+    if (wattFieldDiv) wattFieldDiv.style.display = "none";
     subcategoryFieldDiv.hidden = false;
     const subcats = Object.keys(devices.accessories?.cables || {});
     for (const sc of subcats) {
@@ -9749,15 +9702,6 @@ newCategorySelect.addEventListener("change", () => {
       buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
     }
   } else {
-    wattFieldDiv.style.display = "block";
-    batteryFieldsDiv.style.display = "none";
-    cameraFieldsDiv.style.display = "none";
-    monitorFieldsDiv.style.display = "none";
-    viewfinderFieldsDiv.style.display = "none";
-    videoFieldsDiv.style.display = "none";
-    motorFieldsDiv.style.display = "none";
-    controllerFieldsDiv.style.display = "none";
-    distanceFieldsDiv.style.display = "none";
     buildDynamicFields(val, {}, categoryExcludedAttrs[val] || []);
   }
   newWattInput.value = "";
