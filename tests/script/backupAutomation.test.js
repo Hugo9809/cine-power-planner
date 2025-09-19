@@ -80,6 +80,10 @@ describe('automated backups', () => {
 
     const { autoBackup } = loadApp();
 
+    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Epic Shoot' } } };
+    global.loadSetups.mockImplementation(() => setupsStore);
+    global.saveSetups.mockImplementation((next) => next);
+
     const setupSelect = document.getElementById('setupSelect');
     const setupNameInput = document.getElementById('setupName');
     const option = document.createElement('option');
@@ -99,10 +103,10 @@ describe('automated backups', () => {
     autoBackup();
 
     expect(global.saveSetups).toHaveBeenCalledTimes(1);
-    const savedSetups = global.saveSetups.mock.calls[0][0];
-    const backupKeys = Object.keys(savedSetups);
-    expect(backupKeys).toHaveLength(1);
-    const backupKey = backupKeys[0];
+    const savedPayload = global.saveSetups.mock.calls[0][0];
+    const autoKeys = Object.keys(savedPayload).filter((name) => name.startsWith('auto-backup-'));
+    expect(autoKeys).toHaveLength(1);
+    const backupKey = autoKeys[0];
     expect(backupKey).toMatch(/^auto-backup-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-Main Setup$/);
 
     const projectCalls = global.saveProject.mock.calls.filter(([key]) => key === backupKey);
@@ -114,12 +118,48 @@ describe('automated backups', () => {
       }),
     );
 
-    expect(savedSetups[backupKey]).toEqual(
+    expect(setupsStore[backupKey]).toEqual(
       expect.objectContaining({
         projectInfo: expect.objectContaining({ projectName: 'Epic Shoot' }),
         gearList: expect.stringContaining('Alexa 35'),
       }),
     );
+  });
+
+  test('auto backups stay hidden until explicitly shown', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T12:30:00'));
+
+    const { autoBackup } = loadApp();
+
+    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Epic Shoot' } } };
+    global.loadSetups.mockImplementation(() => setupsStore);
+    global.saveSetups.mockImplementation(() => {});
+
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+    const option = document.createElement('option');
+    option.value = 'Main Setup';
+    option.textContent = 'Main Setup';
+    setupSelect.appendChild(option);
+    setupSelect.value = 'Main Setup';
+    setupNameInput.value = 'Main Setup';
+
+    autoBackup();
+
+    const backupKey = Object.keys(setupsStore).find((name) => name.startsWith('auto-backup-'));
+    expect(backupKey).toBeDefined();
+
+    const hiddenValues = Array.from(setupSelect.options).map((opt) => opt.value);
+    expect(hiddenValues).not.toContain(backupKey);
+
+    const settingsShowAutoBackups = document.getElementById('settingsShowAutoBackups');
+    const settingsSave = document.getElementById('settingsSave');
+    settingsShowAutoBackups.checked = true;
+    settingsSave.click();
+
+    const visibleValues = Array.from(setupSelect.options).map((opt) => opt.value);
+    expect(visibleValues).toContain(backupKey);
   });
 
   test('createSettingsBackup includes session storage snapshot', async () => {
