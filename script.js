@@ -3990,22 +3990,45 @@ function createAutoGearDraft(rule) {
 
 function refreshAutoGearScenarioOptions(selected) {
   if (!autoGearScenariosSelect) return;
-  const values = Array.isArray(selected)
-    ? new Set(selected)
-    : autoGearEditorDraft && Array.isArray(autoGearEditorDraft.scenarios)
-      ? new Set(autoGearEditorDraft.scenarios)
-      : new Set();
+  const selectedValue = Array.isArray(selected)
+    ? selected[0] || ''
+    : typeof selected === 'string'
+      ? selected
+      : Array.isArray(autoGearEditorDraft?.scenarios)
+        ? autoGearEditorDraft.scenarios[0] || ''
+        : '';
+
   autoGearScenariosSelect.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = texts[currentLang]?.autoGearScenarioPlaceholder
+    || texts.en?.autoGearScenarioPlaceholder
+    || 'Select a scenario';
+  placeholder.disabled = true;
+  placeholder.selected = !selectedValue;
+  autoGearScenariosSelect.appendChild(placeholder);
+
   const source = document.getElementById('requiredScenarios');
+  let hasSelectedValue = false;
   if (source) {
     Array.from(source.options).forEach(opt => {
       if (!opt.value) return;
       const option = document.createElement('option');
       option.value = opt.value;
       option.textContent = opt.textContent;
-      if (values.has(opt.value)) option.selected = true;
+      if (opt.value === selectedValue) {
+        option.selected = true;
+        hasSelectedValue = true;
+      }
       autoGearScenariosSelect.appendChild(option);
     });
+  }
+  if (!hasSelectedValue && selectedValue) {
+    const fallbackOption = document.createElement('option');
+    fallbackOption.value = selectedValue;
+    fallbackOption.textContent = selectedValue;
+    fallbackOption.selected = true;
+    autoGearScenariosSelect.appendChild(fallbackOption);
   }
 }
 
@@ -4182,11 +4205,7 @@ function closeAutoGearEditor() {
   autoGearEditor.hidden = true;
   autoGearEditorDraft = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
-  if (autoGearScenariosSelect) {
-    Array.from(autoGearScenariosSelect.options).forEach(opt => {
-      opt.selected = false;
-    });
-  }
+  refreshAutoGearScenarioOptions('');
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
@@ -4220,9 +4239,8 @@ function addAutoGearDraftItem(type) {
 
 function saveAutoGearRuleFromEditor() {
   if (!autoGearEditorDraft) return;
-  const scenarios = autoGearScenariosSelect
-    ? Array.from(autoGearScenariosSelect.selectedOptions).map(opt => opt.value).filter(Boolean)
-    : [];
+  const scenarioValue = autoGearScenariosSelect ? autoGearScenariosSelect.value : '';
+  const scenarios = scenarioValue ? [scenarioValue] : [];
   if (!scenarios.length) {
     const message = texts[currentLang]?.autoGearRuleScenarioRequired
       || texts.en?.autoGearRuleScenarioRequired
