@@ -3653,7 +3653,7 @@ const ICON_GLYPHS = Object.freeze({
   audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
   audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
   note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
-  feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG }),
+  feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG, className: 'icon-svg' }),
   resetView: Object.freeze({ markup: RESET_VIEW_ICON_SVG, className: 'icon-svg' }),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
   sun: iconGlyph('\uF1F7', ICON_FONT_KEYS.UICONS),
