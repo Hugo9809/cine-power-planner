@@ -228,4 +228,77 @@ describe('automated backups', () => {
     global.Blob = originalBlob;
     document.createElement.mockRestore();
   });
+
+  test('normalizeBackupPayload maps legacy payloads', () => {
+    const { normalizeBackupPayload } = loadApp();
+
+    const legacyPayload = {
+      generatedAt: '2023-12-01T10:00:00Z',
+      version: 0.9,
+      language: 'es',
+      accentColor: '#ff00aa',
+      sessionStorage: {
+        cameraPowerPlanner_session: { selected: true },
+      },
+      devices: { legacy: true },
+      projects: [{ name: 'Legacy', gearList: '<ul></ul>' }],
+    };
+
+    const normalized = normalizeBackupPayload(legacyPayload);
+
+    expect(normalized.version).toBe('0.9');
+    expect(normalized.settings).toMatchObject({
+      language: 'es',
+      accentColor: '#ff00aa',
+    });
+    expect(JSON.parse(normalized.sessionStorage.cameraPowerPlanner_session))
+      .toEqual({ selected: true });
+    expect(normalized.data).toEqual(expect.objectContaining({
+      devices: { legacy: true },
+      projects: [{ name: 'Legacy', gearList: '<ul></ul>' }],
+    }));
+  });
+
+  test('restoreFromBackupPayload handles older backups', () => {
+    const { restoreFromBackupPayload } = loadApp();
+
+    const alerts = [];
+    const originalAlert = window.alert;
+    window.alert = (message) => alerts.push(message);
+
+    const legacyBackup = {
+      version: '0.9.0',
+      settings: {
+        language: 'de',
+        accentColor: '#00ffaa',
+        darkMode: 'true',
+        showAutoBackups: 'true',
+      },
+      sessionStorage: {
+        cameraPowerPlanner_session: '{"camera":"Mini"}',
+      },
+      devices: { restored: true },
+      projects: [{ name: 'Legacy', gearList: '<ul><li>Legacy Gear</li></ul>' }],
+    };
+
+    restoreFromBackupPayload(legacyBackup);
+
+    expect(localStorage.getItem('language')).toBe('de');
+    expect(localStorage.getItem('accentColor')).toBe('#00ffaa');
+    expect(sessionStorage.getItem('cameraPowerPlanner_session')).toBe('{"camera":"Mini"}');
+    expect(global.importAllData).toHaveBeenCalledWith(expect.objectContaining({
+      devices: { restored: true },
+      projects: [{ name: 'Legacy', gearList: '<ul><li>Legacy Gear</li></ul>' }],
+    }));
+    expect(alerts[0]).toContain('0.9.0');
+    expect(alerts[alerts.length - 1]).toContain('restored');
+
+    localStorage.clear();
+    sessionStorage.clear();
+    document.body.innerHTML = '';
+    delete global.importAllData;
+    delete global.devices;
+    delete window.devices;
+    window.alert = originalAlert;
+  });
 });

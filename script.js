@@ -29,7 +29,7 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.0.2";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
@@ -3234,7 +3234,8 @@ function createDeviceCategorySection(categoryKey) {
   section.appendChild(filterInput);
   const list = document.createElement('ul');
   list.className = 'device-ul';
-  list.id = `${sanitizedId}List`;
+  const listIdBase = sanitizedId === 'cameras' ? 'camera' : sanitizedId;
+  list.id = `${listIdBase}List`;
   section.appendChild(list);
   deviceListContainer.appendChild(section);
   bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
@@ -14830,6 +14831,231 @@ function captureStorageSnapshot(storage) {
   return snapshot;
 }
 
+const BACKUP_META_KEYS = new Set([
+  'version',
+  'generatedAt',
+  'settings',
+  'localStorage',
+  'storage',
+  'data',
+  'plannerData',
+  'payload',
+  'sessionStorage',
+  'session_state',
+  'sessionState',
+  'appVersion',
+  'app_version',
+  'applicationVersion',
+  'plannerVersion',
+]);
+
+function coerceToStorageString(value) {
+  if (typeof value === 'string') return value;
+  if (value === null) return 'null';
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value);
+  }
+  if (typeof value === 'undefined') return '';
+  try {
+    return JSON.stringify(value);
+  } catch (jsonError) {
+    try {
+      return String(value);
+    } catch (stringError) {
+      console.warn('Failed to coerce storage value', jsonError, stringError);
+      return '';
+    }
+  }
+}
+
+function clonePlainObjectEntries(source) {
+  const entries = {};
+  if (!isPlainObjectValue(source)) return entries;
+  Object.entries(source).forEach(([key, value]) => {
+    if (typeof key !== 'string') return;
+    entries[key] = coerceToStorageString(value);
+  });
+  return entries;
+}
+
+function normalizeBackupPayload(raw) {
+  const normalized = {
+    version: '',
+    settings: null,
+    sessionStorage: null,
+    data: null,
+  };
+
+  if (!isPlainObjectValue(raw)) {
+    return normalized;
+  }
+
+  const versionCandidate = raw.version
+    ?? raw.appVersion
+    ?? raw.app_version
+    ?? raw.plannerVersion
+    ?? raw.applicationVersion;
+  if (typeof versionCandidate === 'string' || typeof versionCandidate === 'number') {
+    normalized.version = String(versionCandidate);
+  }
+
+  const pickPlainObject = (...keys) => {
+    for (const key of keys) {
+      if (isPlainObjectValue(raw[key])) {
+        return raw[key];
+      }
+    }
+    return null;
+  };
+
+  const settingsSource = pickPlainObject('settings', 'localStorage', 'storage');
+  if (isPlainObjectValue(settingsSource)) {
+    const cloned = clonePlainObjectEntries(settingsSource);
+    if (Object.keys(cloned).length) {
+      normalized.settings = cloned;
+    }
+  } else {
+    const fallback = {};
+    Object.entries(raw).forEach(([key, value]) => {
+      if (typeof key !== 'string') return;
+      if (BACKUP_META_KEYS.has(key)) return;
+      if (typeof value === 'function') return;
+      fallback[key] = coerceToStorageString(value);
+    });
+    if (Object.keys(fallback).length) {
+      normalized.settings = fallback;
+    }
+  }
+
+  const sessionSource = pickPlainObject('sessionStorage', 'session_state', 'sessionState');
+  if (isPlainObjectValue(sessionSource)) {
+    const clonedSession = clonePlainObjectEntries(sessionSource);
+    if (Object.keys(clonedSession).length) {
+      normalized.sessionStorage = clonedSession;
+    }
+  }
+
+  let dataSource = null;
+  const primaryData = ['data', 'plannerData', 'payload'];
+  for (const key of primaryData) {
+    const candidate = raw[key];
+    if (isPlainObjectValue(candidate) || Array.isArray(candidate)) {
+      dataSource = candidate;
+      break;
+    }
+  }
+  if (!dataSource) {
+    const dataKeys = [
+      'devices',
+      'deviceData',
+      'setups',
+      'session',
+      'feedback',
+      'favorites',
+      'project',
+      'projects',
+      'autoGearRules',
+      'autoGearSeeded',
+      'gearList',
+    ];
+    const extracted = {};
+    dataKeys.forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(raw, key)) {
+        extracted[key] = raw[key];
+      }
+    });
+    if (Object.keys(extracted).length) {
+      dataSource = extracted;
+    }
+  }
+  if (dataSource) {
+    normalized.data = dataSource;
+  }
+
+  return normalized;
+}
+
+function restoreFromBackupPayload(raw) {
+  const normalized = normalizeBackupPayload(raw);
+  const langTexts = texts[currentLang] || texts.en || {};
+  const fileVersion = normalized.version;
+  const versionWarning = langTexts.restoreVersionWarning
+    || 'Backup created with a different version. Some features might not transfer.';
+  if (
+    fileVersion
+    && fileVersion !== APP_VERSION
+    && typeof alert === 'function'
+  ) {
+    alert(`${versionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
+  }
+
+  if (normalized.settings && typeof localStorage !== 'undefined') {
+    Object.entries(normalized.settings).forEach(([key, value]) => {
+      try {
+        localStorage.setItem(key, value);
+      } catch (storageError) {
+        console.warn('Failed to restore localStorage entry', key, storageError);
+      }
+    });
+  }
+
+  if (normalized.sessionStorage && typeof sessionStorage !== 'undefined') {
+    Object.entries(normalized.sessionStorage).forEach(([key, value]) => {
+      try {
+        sessionStorage.setItem(key, value);
+      } catch (sessionError) {
+        console.warn('Failed to restore sessionStorage entry', key, sessionError);
+      }
+    });
+  }
+
+  if (typeof loadStoredLogoPreview === 'function') {
+    loadStoredLogoPreview();
+  }
+
+  if (normalized.data && typeof importAllData === 'function') {
+    importAllData(normalized.data);
+  }
+
+  applyDarkMode(localStorage.getItem('darkMode') === 'true');
+  applyPinkMode(localStorage.getItem('pinkMode') === 'true');
+  applyHighContrast(localStorage.getItem('highContrast') === 'true');
+  showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
+  const prevValue = setupSelect ? setupSelect.value : '';
+  const prevName = setupNameInput ? setupNameInput.value : '';
+  populateSetupSelect();
+  if (setupSelect) {
+    if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
+      setupSelect.value = prevValue;
+    } else {
+      setupSelect.value = '';
+    }
+  }
+  if (setupNameInput) {
+    setupNameInput.value = prevName;
+  }
+  if (settingsShowAutoBackups) {
+    settingsShowAutoBackups.checked = showAutoBackups;
+  }
+  const color = localStorage.getItem('accentColor');
+  if (color) {
+    document.documentElement.style.setProperty('--accent-color', color);
+    document.documentElement.style.setProperty('--link-color', color);
+    accentColor = color;
+    prevAccentColor = color;
+  }
+  const lang = localStorage.getItem('language');
+  if (lang) setLanguage(lang);
+
+  const successMessage = langTexts.restoreSuccess
+    || 'Settings restored. Reload to apply all changes.';
+  if (typeof alert === 'function') {
+    alert(successMessage);
+  }
+
+  return normalized;
+}
+
 function createSettingsBackup(notify = true, timestamp = new Date()) {
   try {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
@@ -14878,67 +15104,7 @@ if (restoreSettings && restoreSettingsInput) {
     reader.onload = e => {
       try {
         const parsed = JSON.parse(e.target.result);
-        const settings = parsed && typeof parsed === 'object' && parsed.settings
-          ? parsed.settings
-          : parsed;
-        const data = parsed && typeof parsed === 'object' && parsed.data
-          ? parsed.data
-          : null;
-        const fileVersion = parsed && typeof parsed === 'object' && parsed.version;
-        if (fileVersion !== APP_VERSION) {
-          alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
-        }
-        if (settings && typeof settings === 'object') {
-          Object.entries(settings).forEach(([k, v]) => {
-            localStorage.setItem(k, v);
-          });
-        }
-        const sessionSnapshot = parsed && typeof parsed === 'object' && parsed.sessionStorage
-          ? parsed.sessionStorage
-          : null;
-        if (sessionSnapshot && typeof sessionStorage !== 'undefined') {
-          Object.entries(sessionSnapshot).forEach(([key, value]) => {
-            try {
-              sessionStorage.setItem(key, value);
-            } catch (sessionError) {
-              console.warn('Failed to restore sessionStorage entry', key, sessionError);
-            }
-          });
-        }
-        loadStoredLogoPreview();
-        if (data && typeof importAllData === 'function') {
-          importAllData(data);
-        }
-        applyDarkMode(localStorage.getItem('darkMode') === 'true');
-        applyPinkMode(localStorage.getItem('pinkMode') === 'true');
-        applyHighContrast(localStorage.getItem('highContrast') === 'true');
-        showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
-        const prevValue = setupSelect ? setupSelect.value : '';
-        const prevName = setupNameInput ? setupNameInput.value : '';
-        populateSetupSelect();
-        if (setupSelect) {
-          if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
-            setupSelect.value = prevValue;
-          } else {
-            setupSelect.value = '';
-          }
-        }
-        if (setupNameInput) {
-          setupNameInput.value = prevName;
-        }
-        if (settingsShowAutoBackups) {
-          settingsShowAutoBackups.checked = showAutoBackups;
-        }
-        const color = localStorage.getItem('accentColor');
-        if (color) {
-          document.documentElement.style.setProperty('--accent-color', color);
-          document.documentElement.style.setProperty('--link-color', color);
-          accentColor = color;
-          prevAccentColor = color;
-        }
-        const lang = localStorage.getItem('language');
-        if (lang) setLanguage(lang);
-        alert(texts[currentLang].restoreSuccess);
+        restoreFromBackupPayload(parsed);
       } catch (err) {
         console.warn('Restore failed', err);
       }
@@ -16559,6 +16725,8 @@ if (typeof module !== "undefined" && module.exports) {
     autoBackup,
     createSettingsBackup,
     captureStorageSnapshot,
+    normalizeBackupPayload,
+    restoreFromBackupPayload,
     searchKey,
     searchTokens,
     findBestSearchMatch,
