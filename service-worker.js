@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v21';
+const CACHE_NAME = 'cine-power-planner-v22';
 const ASSETS = [
   './',
   './index.html',
@@ -55,13 +55,21 @@ const ASSETS = [
   './manifest.webmanifest',
   './lz-string.min.js',
   './vendor/lottie-light.min.js',
+  './animated icons/cat.json',
   './animated icons/cup.json',
+  './animated icons/cupcake.json',
+  './animated icons/flamingo.json',
+  './animated icons/float.json',
+  './animated icons/float-2.json',
   './animated icons/fox.json',
   './animated icons/heart.json',
   './animated icons/horn.json',
+  './animated icons/invitation.json',
   './animated icons/mask.json',
   './animated icons/rainbow.json',
   './animated icons/rocking-horse.json',
+  './animated icons/slippers.json',
+  './animated icons/sunglasses.json',
   './animated icons/unicorn.json'
 ];
 
