@@ -1274,7 +1274,7 @@ body.pink-mode .auto-gear-rule-title,
   gap: 8px;
 }
 
-.auto-gear-item {
+.auto-gear-item-list .auto-gear-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1285,7 +1285,7 @@ body.pink-mode .auto-gear-rule-title,
   background: var(--surface-color);
 }
 
-.auto-gear-item span {
+.auto-gear-item-list .auto-gear-item span {
   display: block;
 }
 
