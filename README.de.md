@@ -207,8 +207,8 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 - Über die Mondschaltfläche neben dem Sprachmenü umschalten.
 - Die Einstellung wird im Browser gespeichert.
 
-### 🦄 Rosa Modus
-- Auf das Einhorn klicken oder **P** drücken, um den verspielten rosa Akzent zu aktivieren.
+### ⭐ Rosa Modus
+- Auf den Pferde-Button klicken (im aktiven Zustand wird er zum Einhorn) oder **P** drücken, um den verspielten rosa Akzent zu aktivieren.
 - Funktioniert im hellen und dunklen Theme und bleibt zwischen Besuchen erhalten.
 
 ### ⚫ High-Contrast-Modus

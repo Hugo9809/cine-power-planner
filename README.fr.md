@@ -219,8 +219,8 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 - Activez-le via le bouton lune près du sélecteur de langue.
 - La préférence est mémorisée dans votre navigateur.
 
-### 🦄 Mode rose
-- Cliquez sur l’icône licorne ou appuyez sur **P** pour activer un accent rose ludique.
+### ⭐ Mode rose
+- Cliquez sur le bouton en forme de cheval (il se transforme en licorne quand il est actif) ou appuyez sur **P** pour activer un accent rose ludique.
 - Fonctionne avec les thèmes clair et sombre et persiste entre les visites.
 
 ### ⚫ Mode à fort contraste
