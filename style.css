@@ -1655,6 +1655,7 @@ input[type="checkbox"] {
   width: 1.1em;
   height: 1.1em;
   min-width: 1.1em;
+  max-width: 1.1em;
   padding: 0;
   display: inline-grid;
   place-items: center;
