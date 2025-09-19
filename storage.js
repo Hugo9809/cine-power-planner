@@ -823,6 +823,7 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
@@ -842,6 +843,7 @@ function exportAllData() {
     project: loadProject(),
     favorites: loadFavorites(),
     autoGearRules: loadAutoGearRules(),
+    autoGearBackups: loadAutoGearBackups(),
     autoGearSeeded: loadAutoGearSeedFlag(),
   };
 }
@@ -868,6 +870,9 @@ function importAllData(allData) {
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
     saveAutoGearRules(allData.autoGearRules);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
+    saveAutoGearBackups(allData.autoGearBackups);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     saveAutoGearSeedFlag(allData.autoGearSeeded);
