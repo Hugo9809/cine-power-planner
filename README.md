@@ -83,7 +83,7 @@ language on first load, and you can switch languages in the top right corner:
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-Contributions for additional languages are welcome. To add a translation, include a `README.<lang>.md` file and the necessary translation strings in your pull request.
+Contributions for additional languages are welcome. Follow the [translation guide](docs/translation-guide.md) for step-by-step instructions on localizing the interface, documentation and language switcher.
 
 ## Recent Updates
 
