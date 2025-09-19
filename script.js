@@ -7174,6 +7174,8 @@ const HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
 const DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
 const PINK_REFERENCE_COLOR = '#ff69b4';
 const PINK_LUMINANCE_TOLERANCE = 0.06;
+const BRIGHT_ACCENT_LUMINANCE_THRESHOLD = 0.6;
+const BRIGHT_ACCENT_MIN_SATURATION = 0.35;
 
 function computeRelativeLuminance(rgb) {
   if (!rgb || typeof rgb !== 'object') return 0;
@@ -7192,6 +7194,23 @@ function computeRelativeLuminance(rgb) {
   return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 }
 
+function computeSaturation(rgb) {
+  if (!rgb || typeof rgb !== 'object') return 0;
+  const normalize = component => {
+    const numeric = Number(component);
+    if (!Number.isFinite(numeric)) return 0;
+    return Math.max(0, Math.min(1, numeric / 255));
+  };
+  const r = normalize(rgb.r);
+  const g = normalize(rgb.g);
+  const b = normalize(rgb.b);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  if (max === 0) return 0;
+  if (max === min) return 0;
+  return (max - min) / max;
+}
+
 const PINK_REFERENCE_LUMINANCE = (() => {
   const pinkRgb = parseColorToRgb(PINK_REFERENCE_COLOR);
   if (!pinkRgb) return 0.35;
@@ -7207,7 +7226,14 @@ function shouldEnableDarkModeAccentBoost({ color, highContrast } = {}) {
   const rgb = parseColorToRgb(color);
   if (!rgb) return false;
   const luminance = computeRelativeLuminance(rgb);
-  return Math.abs(luminance - PINK_REFERENCE_LUMINANCE) <= PINK_LUMINANCE_TOLERANCE;
+  if (Math.abs(luminance - PINK_REFERENCE_LUMINANCE) <= PINK_LUMINANCE_TOLERANCE) {
+    return true;
+  }
+  const saturation = computeSaturation(rgb);
+  return (
+    luminance >= BRIGHT_ACCENT_LUMINANCE_THRESHOLD &&
+    saturation >= BRIGHT_ACCENT_MIN_SATURATION
+  );
 }
 
 function refreshDarkModeAccentBoost(options = {}) {

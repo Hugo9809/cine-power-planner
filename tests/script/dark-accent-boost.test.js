@@ -23,6 +23,18 @@ describe('dark accent boost for bright custom colors', () => {
     expect(document.body.classList.contains('dark-accent-boost')).toBe(true);
   });
 
+  test('enables boost for bright custom accents in dark mode', () => {
+    localStorage.setItem('accentColor', '#ffee58');
+    localStorage.setItem('darkMode', 'true');
+
+    const { cleanup: clean } = setupScriptEnvironment();
+    cleanup = clean;
+
+    expect(document.body.classList.contains('dark-mode')).toBe(true);
+    expect(document.body.classList.contains('pink-mode')).toBe(false);
+    expect(document.body.classList.contains('dark-accent-boost')).toBe(true);
+  });
+
   test('removes boost when accent color changes to a darker tone', () => {
     localStorage.setItem('accentColor', '#ff6ab5');
     localStorage.setItem('darkMode', 'true');
@@ -50,6 +62,17 @@ describe('dark accent boost for bright custom colors', () => {
     expect(darkModeToggle).toBeTruthy();
 
     darkModeToggle.click();
+
+    expect(document.body.classList.contains('dark-mode')).toBe(false);
+    expect(document.body.classList.contains('dark-accent-boost')).toBe(false);
+  });
+
+  test('does not enable boost in light mode even with bright accent colors', () => {
+    localStorage.setItem('accentColor', '#ffee58');
+    localStorage.setItem('darkMode', 'false');
+
+    const { cleanup: clean } = setupScriptEnvironment();
+    cleanup = clean;
 
     expect(document.body.classList.contains('dark-mode')).toBe(false);
     expect(document.body.classList.contains('dark-accent-boost')).toBe(false);
