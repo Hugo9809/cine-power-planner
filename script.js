@@ -3547,9 +3547,24 @@ const PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS = 7600;
 const PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS = 13800;
 const PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS = 5200;
 const PINK_MODE_ANIMATED_ICON_MAX_DURATION_MS = 9200;
-const PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX = 48;
-const PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX = 108;
+const PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX = 32;
+const PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX = 50;
 const PINK_MODE_ANIMATED_ICON_MAX_ACTIVE = 6;
+const PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS = 8;
+const PINK_MODE_ANIMATED_ICON_AVOID_MARGIN_PX = 16;
+const PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR =
+  'a, button, input, select, textarea, label, summary, h1, h2, h3, h4, h5, h6, p, li, td, th, [role="button"], [role="link"], [role="menu"], [role="dialog"], [role="listbox"], [role="combobox"], [role="textbox"], [contenteditable="true"], .form-row, .form-row-actions, .form-actions';
+const PINK_MODE_ANIMATED_ICON_PROBE_POINTS = Object.freeze([
+  Object.freeze({ x: 0, y: 0 }),
+  Object.freeze({ x: 0.35, y: 0 }),
+  Object.freeze({ x: -0.35, y: 0 }),
+  Object.freeze({ x: 0, y: 0.35 }),
+  Object.freeze({ x: 0, y: -0.35 }),
+  Object.freeze({ x: 0.25, y: 0.25 }),
+  Object.freeze({ x: -0.25, y: 0.25 }),
+  Object.freeze({ x: 0.25, y: -0.25 }),
+  Object.freeze({ x: -0.25, y: -0.25 })
+]);
 
 let pinkModeAnimatedIconLayer = null;
 let pinkModeAnimatedIconTimeoutId = null;
@@ -3689,6 +3704,154 @@ function ensurePinkModeAnimationLayer() {
   return layer;
 }
 
+function computePinkModeAnimationAvoidRegions(layer) {
+  if (
+    typeof document === 'undefined' ||
+    typeof document.querySelectorAll !== 'function'
+  ) {
+    return Object.freeze([]);
+  }
+  const elements = document.querySelectorAll(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR);
+  if (!elements || !elements.length) {
+    return Object.freeze([]);
+  }
+  const regions = [];
+  for (const element of elements) {
+    if (!element) {
+      continue;
+    }
+    if (layer && layer.contains(element)) {
+      continue;
+    }
+    if (typeof element.getBoundingClientRect !== 'function') {
+      continue;
+    }
+    const rect = element.getBoundingClientRect();
+    if (!rect) {
+      continue;
+    }
+    const { width, height, left, right, top, bottom } = rect;
+    if (!Number.isFinite(width) || !Number.isFinite(height)) {
+      continue;
+    }
+    if (width <= 0 || height <= 0) {
+      continue;
+    }
+    regions.push({ left, right, top, bottom });
+  }
+  return Object.freeze(regions);
+}
+
+function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions) {
+  if (
+    typeof document === 'undefined' ||
+    typeof document.elementFromPoint !== 'function'
+  ) {
+    return true;
+  }
+  const viewportWidth =
+    typeof window !== 'undefined' && typeof window.innerWidth === 'number'
+      ? window.innerWidth
+      : document.documentElement && typeof document.documentElement.clientWidth === 'number'
+        ? document.documentElement.clientWidth
+        : null;
+  const viewportHeight =
+    typeof window !== 'undefined' && typeof window.innerHeight === 'number'
+      ? window.innerHeight
+      : document.documentElement && typeof document.documentElement.clientHeight === 'number'
+        ? document.documentElement.clientHeight
+        : null;
+  const baseX = (hostRect ? hostRect.left : 0) + x;
+  const baseY = (hostRect ? hostRect.top : 0) + y;
+  const margin = Math.max(PINK_MODE_ANIMATED_ICON_AVOID_MARGIN_PX, size * 0.25);
+  const candidate = {
+    left: baseX - size / 2,
+    right: baseX + size / 2,
+    top: baseY - size / 2,
+    bottom: baseY + size / 2
+  };
+
+  if (Array.isArray(avoidRegions) && avoidRegions.length) {
+    for (const region of avoidRegions) {
+      if (!region) {
+        continue;
+      }
+      if (
+        candidate.left < region.right + margin &&
+        candidate.right > region.left - margin &&
+        candidate.top < region.bottom + margin &&
+        candidate.bottom > region.top - margin
+      ) {
+        return false;
+      }
+    }
+  }
+
+  for (const point of PINK_MODE_ANIMATED_ICON_PROBE_POINTS) {
+    const sampleX = baseX + point.x * size;
+    const sampleY = baseY + point.y * size;
+    if (
+      viewportWidth !== null && (sampleX < 0 || sampleX > viewportWidth)
+    ) {
+      continue;
+    }
+    if (
+      viewportHeight !== null && (sampleY < 0 || sampleY > viewportHeight)
+    ) {
+      continue;
+    }
+    const elementsAtPoint =
+      typeof document.elementsFromPoint === 'function'
+        ? document.elementsFromPoint(sampleX, sampleY)
+        : [document.elementFromPoint(sampleX, sampleY)].filter(Boolean);
+    for (const element of elementsAtPoint) {
+      if (!element) {
+        continue;
+      }
+      if (layer && element === layer) {
+        continue;
+      }
+      if (layer && layer.contains(element)) {
+        return false;
+      }
+      if (
+        (typeof element.matches === 'function' && element.matches(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR)) ||
+        (typeof element.closest === 'function' && element.closest(PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR))
+      ) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function findPinkModeAnimationPlacement({
+  layer,
+  hostRect,
+  hostTop,
+  visibleTop,
+  visibleBottom,
+  horizontalPadding,
+  verticalPadding,
+  hostWidth,
+  size,
+  avoidRegions
+}) {
+  const minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
+  const maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
+  const minX = horizontalPadding;
+  const maxX = Math.max(hostWidth - horizontalPadding, minX);
+
+  for (let attempt = 0; attempt < PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS; attempt += 1) {
+    const y = maxY > minY ? minY + Math.random() * (maxY - minY) : minY;
+    const x = maxX > minX ? minX + Math.random() * (maxX - minX) : minX;
+    if (isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)) {
+      return { x, y };
+    }
+  }
+  return null;
+}
+
 function destroyPinkModeAnimatedIconInstance(instance) {
   if (!instance || instance.destroyed) {
     return;
@@ -3777,22 +3940,42 @@ function spawnPinkModeAnimatedIconInstance(templates) {
     visibleTop = hostTop;
     visibleBottom = hostBottom;
   }
-  const horizontalPadding = Math.max(size * 0.5 + 24, 0);
-  const verticalPadding = Math.max(size * 0.5 + 24, 0);
-  let minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
-  let maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
-  if (maxY < minY) {
-    maxY = minY;
-  }
-  const y = maxY > minY ? minY + Math.random() * (maxY - minY) : minY;
   const hostWidth =
     host && typeof host.clientWidth === 'number' && host.clientWidth > 0
       ? host.clientWidth
       : (document.documentElement && document.documentElement.clientWidth) ||
         (typeof window !== 'undefined' && window.innerWidth) ||
         size * 4;
-  const maxX = Math.max(hostWidth - horizontalPadding, horizontalPadding);
-  const x = maxX > horizontalPadding ? horizontalPadding + Math.random() * (maxX - horizontalPadding) : horizontalPadding;
+  const safeHorizontalRange = Math.max(hostWidth, size * 2);
+  const safeVerticalRange = Math.max(hostHeight, size * 2);
+  const horizontalPadding = Math.min(
+    Math.max(size * 0.6 + 48, 48),
+    safeHorizontalRange / 2
+  );
+  const verticalPadding = Math.min(
+    Math.max(size * 0.6 + 64, 64),
+    safeVerticalRange / 2
+  );
+  const avoidRegions = computePinkModeAnimationAvoidRegions(layer);
+  const placement = findPinkModeAnimationPlacement({
+    layer,
+    hostRect,
+    hostTop,
+    visibleTop,
+    visibleBottom,
+    horizontalPadding,
+    verticalPadding,
+    hostWidth,
+    size,
+    avoidRegions
+  });
+  if (!placement) {
+    if (container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+    return false;
+  }
+  const { x, y } = placement;
   container.style.setProperty('--pink-mode-animation-duration', `${duration}ms`);
   container.style.setProperty('--pink-mode-animation-size', `${size}px`);
   container.style.setProperty('--pink-mode-animation-x', `${x}px`);
