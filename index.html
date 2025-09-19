@@ -896,6 +896,17 @@
       <section class="settings-section" aria-labelledby="autoGearHeading">
         <h3 id="autoGearHeading">Automatic Gear Rules</h3>
         <p id="autoGearDescription" class="settings-hint"></p>
+        <div id="autoGearPresetPanel" class="auto-gear-preset-panel">
+          <p id="autoGearPresetDescription" class="settings-hint"></p>
+          <div class="auto-gear-preset-row">
+            <label for="autoGearPresetSelect" id="autoGearPresetLabel">Preset</label>
+            <select id="autoGearPresetSelect" class="auto-gear-preset-select" disabled>
+              <option value="">Custom rules</option>
+            </select>
+            <button type="button" id="autoGearSavePreset">Save preset</button>
+            <button type="button" id="autoGearDeletePreset" disabled>Delete preset</button>
+          </div>
+        </div>
         <div id="autoGearRulesList" class="auto-gear-rules" aria-live="polite"></div>
         <div class="auto-gear-action-row">
           <button type="button" id="autoGearAddRule">Add rule</button>
@@ -905,8 +916,15 @@
           <input type="file" id="autoGearImportInput" accept=".json,application/json" hidden />
         </div>
         <div id="autoGearBackupsSection" class="auto-gear-backups">
-          <h4 id="autoGearBackupsHeading">Automatic backups</h4>
+          <div class="auto-gear-backup-header">
+            <h4 id="autoGearBackupsHeading">Automatic backups</h4>
+            <div class="auto-gear-backup-toggle-row">
+              <input type="checkbox" id="autoGearShowBackups" />
+              <label for="autoGearShowBackups" id="autoGearShowBackupsLabel">Show automatic backups</label>
+            </div>
+          </div>
           <p id="autoGearBackupsDescription" class="settings-hint"></p>
+          <p id="autoGearBackupsHidden" class="settings-hint" hidden></p>
           <div id="autoGearBackupControls" class="auto-gear-backup-controls" aria-live="polite">
             <label for="autoGearBackupSelect" id="autoGearBackupSelectLabel">Choose a backup</label>
             <div class="auto-gear-backup-row">

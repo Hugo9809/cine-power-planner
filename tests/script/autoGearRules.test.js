@@ -599,6 +599,141 @@ describe('applyAutoGearRulesToTableHtml', () => {
     }
   });
 
+  test('allows saving, applying, and deleting automatic gear presets', () => {
+    env = setupScriptEnvironment();
+
+    const presetSelect = document.getElementById('autoGearPresetSelect');
+    const saveButton = document.getElementById('autoGearSavePreset');
+    const deleteButton = document.getElementById('autoGearDeletePreset');
+
+    expect(presetSelect).not.toBeNull();
+    expect(saveButton).not.toBeNull();
+    expect(deleteButton).not.toBeNull();
+
+    const baseRule = {
+      id: 'rule-outdoor',
+      label: 'Outdoor adjustments',
+      scenarios: ['Outdoor'],
+      add: [
+        { id: 'add-monitor', name: 'Weather cover', category: 'Accessories', quantity: 1 }
+      ],
+      remove: [],
+    };
+
+    env.utils.syncAutoGearRulesFromStorage([baseRule]);
+
+    const promptSpy = jest.spyOn(window, 'prompt').mockReturnValue('Outdoor preset');
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+
+    try {
+      saveButton.click();
+
+      const storedPresetsRaw = localStorage.getItem('cameraPowerPlanner_autoGearPresets');
+      expect(storedPresetsRaw).toBeTruthy();
+      const storedPresets = JSON.parse(storedPresetsRaw);
+      expect(storedPresets).toHaveLength(1);
+      const preset = storedPresets[0];
+      expect(preset.label).toBe('Outdoor preset');
+      expect(preset.rules.map(stripRuleIds)).toEqual([stripRuleIds(baseRule)]);
+      expect(presetSelect.value).toBe(preset.id);
+      expect(presetSelect.disabled).toBe(false);
+      expect(localStorage.getItem('cameraPowerPlanner_autoGearActivePreset')).toBe(preset.id);
+
+      const replacementRule = {
+        id: 'rule-indoor',
+        label: 'Indoor replacement',
+        scenarios: ['Indoor'],
+        add: [
+          { id: 'add-light', name: 'LED panel', category: 'Lighting', quantity: 2 }
+        ],
+        remove: [],
+      };
+
+      env.utils.syncAutoGearRulesFromStorage([replacementRule]);
+      expect(env.utils.getAutoGearRules().map(stripRuleIds)).toEqual([stripRuleIds(replacementRule)]);
+      expect(presetSelect.value).toBe('');
+
+      presetSelect.value = preset.id;
+      presetSelect.dispatchEvent(new Event('change'));
+
+      expect(env.utils.getAutoGearRules().map(stripRuleIds)).toEqual([stripRuleIds(baseRule)]);
+      expect(localStorage.getItem('cameraPowerPlanner_autoGearActivePreset')).toBe(preset.id);
+      expect(presetSelect.value).toBe(preset.id);
+
+      deleteButton.click();
+
+      const clearedPresetsRaw = localStorage.getItem('cameraPowerPlanner_autoGearPresets');
+      const clearedPresets = clearedPresetsRaw ? JSON.parse(clearedPresetsRaw) : [];
+      expect(clearedPresets).toEqual([]);
+      expect(localStorage.getItem('cameraPowerPlanner_autoGearActivePreset')).toBeNull();
+      expect(presetSelect.value).toBe('');
+      expect(presetSelect.disabled).toBe(true);
+      expect(deleteButton.disabled).toBe(true);
+    } finally {
+      promptSpy.mockRestore();
+      confirmSpy.mockRestore();
+    }
+  });
+
+  test('keeps automatic backups hidden until explicitly enabled', () => {
+    localStorage.setItem(
+      BACKUP_STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'backup-1',
+          createdAt: '2024-06-01T12:00:00.000Z',
+          rules: [
+            {
+              id: 'rule-outdoor',
+              label: 'Outdoor adjustments',
+              scenarios: ['Outdoor'],
+              add: [
+                { id: 'add-monitor', name: 'Weather cover', category: 'Accessories', quantity: 1 }
+              ],
+              remove: [],
+            }
+          ],
+        },
+      ]),
+    );
+
+    env = setupScriptEnvironment();
+    env.utils.syncAutoGearRulesFromStorage(env.utils.getAutoGearRules());
+
+    const toggle = document.getElementById('autoGearShowBackups');
+    const backupsSection = document.getElementById('autoGearBackupsSection');
+    const backupsContainer = document.getElementById('autoGearBackupControls');
+    const hiddenNotice = document.getElementById('autoGearBackupsHidden');
+    const select = document.getElementById('autoGearBackupSelect');
+    const restoreButton = document.getElementById('autoGearBackupRestore');
+
+    expect(toggle).not.toBeNull();
+    expect(backupsSection).not.toBeNull();
+    expect(backupsContainer).not.toBeNull();
+    expect(hiddenNotice).not.toBeNull();
+    expect(select).not.toBeNull();
+    expect(restoreButton).not.toBeNull();
+
+    expect(toggle.checked).toBe(false);
+    expect(backupsContainer.hidden).toBe(true);
+    expect(hiddenNotice.hidden).toBe(false);
+    expect(select.disabled).toBe(true);
+    expect(restoreButton.disabled).toBe(true);
+    expect(localStorage.getItem('cameraPowerPlanner_autoGearShowBackups')).toBeNull();
+
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event('change'));
+
+    expect(backupsSection.classList.contains('auto-gear-backups-collapsed')).toBe(false);
+    expect(backupsSection.getAttribute('aria-expanded')).toBe('true');
+    expect(backupsContainer.hidden).toBe(false);
+    expect(backupsContainer.getAttribute('aria-hidden')).toBe('false');
+    expect(hiddenNotice.hidden).toBe(true);
+    expect(select.disabled).toBe(false);
+    expect(restoreButton.disabled).toBe(true);
+    expect(localStorage.getItem('cameraPowerPlanner_autoGearShowBackups')).toBe('1');
+  });
+
   test('resetting rules restores seeded factory additions', () => {
     env = setupScriptEnvironment();
 

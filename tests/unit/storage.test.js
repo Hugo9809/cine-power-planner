@@ -43,6 +43,12 @@ const {
   saveAutoGearSeedFlag,
   loadAutoGearBackups,
   saveAutoGearBackups,
+  loadAutoGearPresets,
+  saveAutoGearPresets,
+  loadAutoGearActivePresetId,
+  saveAutoGearActivePresetId,
+  loadAutoGearBackupVisibility,
+  saveAutoGearBackupVisibility,
 } = require('../../storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -55,6 +61,9 @@ const SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_KEY = 'cameraPowerPlanner_autoGearBackups';
+const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
+const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
+const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 
 const validDeviceData = {
   cameras: {},
@@ -519,6 +528,11 @@ describe('clearAllData', () => {
       { id: 'backup-1', label: 'Snapshot', createdAt: 1720646400000, rules: [] }
     ]);
     saveAutoGearSeedFlag(true);
+    saveAutoGearPresets([
+      { id: 'preset-1', label: 'Outdoor tweaks', rules: [] }
+    ]);
+    saveAutoGearActivePresetId('preset-1');
+    saveAutoGearBackupVisibility(true);
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
@@ -530,6 +544,9 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(AUTO_GEAR_RULES_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_PRESETS_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
   });
 });
@@ -559,6 +576,12 @@ describe('export/import all data', () => {
     ];
     saveAutoGearBackups(backups);
     saveAutoGearSeedFlag(true);
+    const presets = [
+      { id: 'preset-1', label: 'Outdoor tweaks', rules }
+    ];
+    saveAutoGearPresets(presets);
+    saveAutoGearActivePresetId('preset-1');
+    saveAutoGearBackupVisibility(true);
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
@@ -569,6 +592,9 @@ describe('export/import all data', () => {
       autoGearRules: rules,
       autoGearBackups: backups,
       autoGearSeeded: true,
+      autoGearPresets: presets,
+      autoGearActivePresetId: 'preset-1',
+      autoGearShowBackups: true,
     });
   });
 
@@ -587,6 +613,11 @@ describe('export/import all data', () => {
         { id: 'backup-restore', label: 'Restore', createdAt: 1720646400000, rules: [] }
       ],
       autoGearSeeded: true,
+      autoGearPresets: [
+        { id: 'preset-restore', label: 'Restore tweaks', rules: [] }
+      ],
+      autoGearActivePresetId: 'preset-restore',
+      autoGearShowBackups: true,
     };
     importAllData(data);
     expect(loadDeviceData()).toEqual(validDeviceData);
@@ -598,6 +629,9 @@ describe('export/import all data', () => {
     expect(loadAutoGearRules()).toEqual(data.autoGearRules);
     expect(loadAutoGearBackups()).toEqual(data.autoGearBackups);
     expect(loadAutoGearSeedFlag()).toBe(true);
+    expect(loadAutoGearPresets()).toEqual(data.autoGearPresets);
+    expect(loadAutoGearActivePresetId()).toBe('preset-restore');
+    expect(loadAutoGearBackupVisibility()).toBe(true);
   });
 
   test('importAllData handles legacy projects array', () => {
