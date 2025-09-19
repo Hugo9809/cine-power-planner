@@ -24,7 +24,7 @@ Thank you for your interest in improving Cine Power Planner!
   npm run check-consistency
   npm run generate-schema
   ```
-- To add translations, include a `README.<lang>.md` file and corresponding strings.
+- To add translations, follow the steps in [docs/translation-guide.md](docs/translation-guide.md) so documentation, UI strings and language selectors stay in sync.
 - For other updates such as documentation or bug fixes, include tests where practical.
 
 ## Pull requests
