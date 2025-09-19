@@ -12,23 +12,45 @@ const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 
 // Safely detect usable localStorage. Some environments (like private browsing)
-// may block access and throw errors. If unavailable, fall back to a simple
-// in-memory store so that the application can still function within the
-// current session. Data stored in this fallback is ephemeral and will be lost
-// on reload, but it avoids runtime errors and provides a best-effort storage
-// layer when `localStorage` cannot be used.
+// may block access and throw errors. If unavailable, fall back to
+// sessionStorage when possible so data persists across reloads within the same
+// tab. When neither storage option is available we fall back to a simple
+// in-memory store to avoid runtime errors even though the data will be lost on
+// reload.
 const SAFE_LOCAL_STORAGE = (() => {
-  try {
-    if (typeof window !== 'undefined' && 'localStorage' in window) {
-      const testKey = '__storage_test__';
-      window.localStorage.setItem(testKey, '1');
-      window.localStorage.removeItem(testKey);
-      return window.localStorage;
+  const TEST_KEY = '__storage_test__';
+
+  const verifyStorage = (storage) => {
+    if (!storage) return null;
+    storage.setItem(TEST_KEY, '1');
+    storage.removeItem(TEST_KEY);
+    return storage;
+  };
+
+  if (typeof window !== 'undefined') {
+    try {
+      if ('localStorage' in window) {
+        const storage = verifyStorage(window.localStorage);
+        if (storage) return storage;
+      }
+    } catch (e) {
+      console.warn('localStorage is unavailable:', e);
     }
-  } catch (e) {
-    console.warn('localStorage is unavailable:', e);
-    alertStorageError();
+
+    try {
+      if ('sessionStorage' in window) {
+        const storage = verifyStorage(window.sessionStorage);
+        if (storage) {
+          console.warn('Falling back to sessionStorage; data persists for this tab only.');
+          return storage;
+        }
+      }
+    } catch (e) {
+      console.warn('sessionStorage fallback is unavailable:', e);
+    }
   }
+
+  alertStorageError();
 
   // Fallback: minimal in-memory storage implementation
   let memoryStore = {};
