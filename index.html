@@ -1262,6 +1262,56 @@
           </section>
         <section
           data-help-section
+          id="autoGearRulesHelp"
+          data-help-keywords="automatic gear rules auto add remove custom scenario requirements generator list automation"
+        >
+          <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE1CE;</span>Automatic Gear Rules</h3>
+          <ul>
+            <li>
+              Open <em>Settings → Automatic Gear Rules</em> to create custom additions or removals that run when specific
+              <strong>Required Scenarios</strong> are active.
+            </li>
+            <li>
+              Rules execute after the planner assembles the gear list, so your adjustments stack on top of built-in accessories
+              and scenario packs.
+            </li>
+            <li>
+              Click <strong>Add rule</strong> to reveal the editor, name the rule for quick reference and select one or more
+              scenarios that must be enabled for it to trigger.
+            </li>
+            <li>
+              Use <strong>Add these items</strong> to insert gear lines with category and quantity; pick <em>Custom Additions</em>
+              for notes, bespoke equipment or reminders.
+            </li>
+            <li>
+              <strong>Remove these items</strong> hides entries the generator would normally include—match the item name and
+              category shown in the gear list to target the right row.
+            </li>
+            <li>
+              Rules live in Settings, are included in backups and apply to printable gear lists and shared project exports.
+            </li>
+          </ul>
+          <div class="help-link-group" aria-label="Automatic gear rule controls">
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#autoGearHeading"
+              data-help-highlight="#settingsDialog"
+            >Settings → Automatic Gear Rules</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#autoGearAddRule"
+            >Add rule</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#autoGearRulesList"
+            >Rules list</a>
+          </div>
+        </section>
+        <section
+          data-help-section
           id="powerCalculator"
           data-help-keywords="power calculator runtime estimator watt hours consumption battery life current warnings hotswap compare energy"
         >
@@ -1767,6 +1817,32 @@
                 data-help-highlight="#setup-manager"
               >Save</a>
               if you want to keep the snapshot as a regular project. A full JSON export also downloads every hour (“Full app backup downloaded …”) so you have an offline safety copy you can archive or delete as needed.
+            </p>
+          </details>
+          <details
+            class="faq-item"
+            data-help-keywords="automatic gear rules scenarios add remove custom items generator overrides"
+          >
+            <summary>How do Automatic Gear Rules work?</summary>
+            <p>
+              Open <em>Settings → Automatic Gear Rules</em> and click
+              <a class="help-link" href="#settingsDialog" data-help-target="#autoGearAddRule">Add rule</a>
+              to reveal the editor. Name the rule so it is easy to recognise later.
+            </p>
+            <p>
+              Select one or more <strong>Required Scenarios</strong>; the rule only runs when every selected scenario is active
+              in the
+              <a
+                class="help-link"
+                href="#projectRequirementsOutput"
+                data-help-target="#projectRequirementsOutput"
+              >Project Requirements</a>
+              form. Add gear lines with category and quantity in <strong>Add these items</strong>—choose
+              <em>Custom Additions</em> for notes or bespoke kit.
+            </p>
+            <p>
+              Use the <strong>Remove these items</strong> list to hide entries the generator adds by default. Rules are stored in
+              Settings, included in backups and apply to printable gear lists and shared project exports.
             </p>
           </details>
           <details
