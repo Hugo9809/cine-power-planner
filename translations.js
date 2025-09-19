@@ -108,10 +108,17 @@ const texts = {
     localFontsButtonHelp:
       "Allow the planner to use installable fonts from this device when your browser supports it.",
     localFontsUnsupported: "Local fonts aren't supported in this browser.",
+    localFontsFileFallback:
+      "Your browser can't list installed fonts automatically. Upload font files instead.",
     localFontsAdded: "Added: %s",
     localFontsAlreadyAdded: "Already added: %s",
     localFontsNoFonts: "No fonts were selected.",
     localFontsError: "Could not access local fonts.",
+    localFontsPermissionNeeded:
+      "Access to installed fonts was denied. Upload font files instead.",
+    localFontsUnsupportedFiles: "Some files weren't recognized as fonts: %s.",
+    localFontsSaveError:
+      "Font added for this session but couldn't be saved for offline use.",
     logoSetting: "Logo (SVG)",
     logoSettingHelp:
       "Upload an SVG logo to brand printable overviews and include it in backups.",
@@ -1205,10 +1212,17 @@ const texts = {
     localFontsButtonHelp:
       "Consenti all'app di usare i font installati sul dispositivo, se supportato dal browser.",
     localFontsUnsupported: "I font locali non sono supportati in questo browser.",
+    localFontsFileFallback:
+      "Il tuo browser non può elencare automaticamente i font installati. Carica invece i file dei font.",
     localFontsAdded: "Aggiunto: %s",
     localFontsAlreadyAdded: "Già presente: %s",
     localFontsNoFonts: "Nessun font selezionato.",
     localFontsError: "Impossibile accedere ai font locali.",
+    localFontsPermissionNeeded:
+      "L'accesso ai font installati è stato negato. Carica invece i file dei font.",
+    localFontsUnsupportedFiles: "Alcuni file non sono stati riconosciuti come font: %s.",
+    localFontsSaveError:
+      "Il font è stato aggiunto per questa sessione ma non è stato possibile salvarlo per l'uso offline.",
     logoSetting: "Logo (SVG)",
     logoSettingHelp:
       "Carica un logo SVG per personalizzare panoramiche stampabili e includerlo nei backup.",
@@ -1922,10 +1936,17 @@ const texts = {
     localFontsButtonHelp:
       "Permite que la aplicación use fuentes instaladas en este dispositivo si el navegador lo admite.",
     localFontsUnsupported: "Las fuentes locales no son compatibles con este navegador.",
+    localFontsFileFallback:
+      "Tu navegador no puede listar automáticamente las fuentes instaladas. Sube archivos de fuentes en su lugar.",
     localFontsAdded: "Añadida: %s",
     localFontsAlreadyAdded: "Ya añadida: %s",
     localFontsNoFonts: "No se seleccionaron fuentes.",
     localFontsError: "No se pudo acceder a las fuentes locales.",
+    localFontsPermissionNeeded:
+      "Se denegó el acceso a las fuentes instaladas. Sube archivos de fuentes en su lugar.",
+    localFontsUnsupportedFiles: "Algunos archivos no se reconocieron como fuentes: %s.",
+    localFontsSaveError:
+      "La fuente se añadió para esta sesión pero no se pudo guardar para uso sin conexión.",
     logoSetting: "Logotipo (SVG)",
     logoSettingHelp:
       "Carga un logotipo SVG para personalizar los resúmenes imprimibles e incluirlo en las copias de seguridad.",
@@ -2641,10 +2662,17 @@ const texts = {
     localFontsButtonHelp:
       "Autorisez l’application à utiliser les polices installées sur cet appareil si le navigateur le permet.",
     localFontsUnsupported: "Les polices locales ne sont pas prises en charge par ce navigateur.",
+    localFontsFileFallback:
+      "Votre navigateur ne peut pas répertorier automatiquement les polices installées. Importez plutôt des fichiers de police.",
     localFontsAdded: "Ajoutée : %s",
     localFontsAlreadyAdded: "Déjà ajoutée : %s",
     localFontsNoFonts: "Aucune police sélectionnée.",
     localFontsError: "Impossible d’accéder aux polices locales.",
+    localFontsPermissionNeeded:
+      "L’accès aux polices installées a été refusé. Importez plutôt des fichiers de police.",
+    localFontsUnsupportedFiles: "Certains fichiers n'ont pas été reconnus comme des polices : %s.",
+    localFontsSaveError:
+      "La police a été ajoutée pour cette session mais n’a pas pu être enregistrée pour une utilisation hors ligne.",
     logoSetting: "Logo (SVG)",
     logoSettingHelp:
       "Importez un logo SVG pour personnaliser les aperçus imprimables et l’inclure dans les sauvegardes.",
@@ -3363,10 +3391,17 @@ const texts = {
     localFontsButtonHelp:
       "Erlaube der App, installierte Schriften dieses Geräts zu nutzen, sofern der Browser es unterstützt.",
     localFontsUnsupported: "Lokale Schriften werden von diesem Browser nicht unterstützt.",
+    localFontsFileFallback:
+      "Ihr Browser kann installierte Schriften nicht automatisch auflisten. Laden Sie stattdessen Schriftdateien hoch.",
     localFontsAdded: "Hinzugefügt: %s",
     localFontsAlreadyAdded: "Bereits hinzugefügt: %s",
     localFontsNoFonts: "Keine Schriften ausgewählt.",
     localFontsError: "Zugriff auf lokale Schriften nicht möglich.",
+    localFontsPermissionNeeded:
+      "Der Zugriff auf installierte Schriften wurde verweigert. Laden Sie stattdessen Schriftdateien hoch.",
+    localFontsUnsupportedFiles: "Einige Dateien wurden nicht als Schriften erkannt: %s.",
+    localFontsSaveError:
+      "Schrift wurde für diese Sitzung hinzugefügt, konnte aber nicht für die Offline-Nutzung gespeichert werden.",
     logoSetting: "Logo (SVG)",
     logoSettingHelp:
       "Lade ein SVG-Logo hoch, das in Druckübersichten und Sicherungen verwendet wird.",

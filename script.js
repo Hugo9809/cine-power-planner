@@ -4567,6 +4567,7 @@ const accentColorInput = document.getElementById("accentColorInput");
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
 const localFontsButton = document.getElementById("localFontsButton");
+const localFontsInput = document.getElementById("localFontsInput");
 const localFontsStatus = document.getElementById("localFontsStatus");
 const localFontsGroup = document.getElementById("localFontsGroup");
 const bundledFontGroup = document.getElementById("bundledFontOptions");
@@ -6645,6 +6646,293 @@ if (accentColorInput) {
 let fontSize = '16';
 let fontFamily = "'Ubuntu', sans-serif";
 
+const CUSTOM_FONT_STORAGE_KEY = 'cameraPowerPlanner_customFonts';
+const customFontEntries = new Map();
+
+const SUPPORTED_FONT_TYPES = new Set([
+  'font/ttf',
+  'font/otf',
+  'font/woff',
+  'font/woff2',
+  'application/font-woff',
+  'application/font-woff2',
+  'application/x-font-ttf',
+  'application/x-font-opentype'
+]);
+
+const SUPPORTED_FONT_EXTENSIONS = ['.ttf', '.otf', '.ttc', '.woff', '.woff2'];
+
+function loadCustomFontMetadataFromStorage() {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(CUSTOM_FONT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map(entry => ({
+        id: entry && typeof entry.id === 'string' ? entry.id : null,
+        name: entry && typeof entry.name === 'string' ? entry.name : '',
+        data: entry && typeof entry.data === 'string' ? entry.data : ''
+      }))
+      .filter(entry => entry.id && entry.name && entry.data);
+  } catch (error) {
+    console.warn('Failed to load stored custom fonts', error);
+    return [];
+  }
+}
+
+function persistCustomFontsToStorage() {
+  if (typeof localStorage === 'undefined') return true;
+  try {
+    const payload = Array.from(customFontEntries.values()).map(entry => ({
+      id: entry.id,
+      name: entry.name,
+      data: entry.data
+    }));
+    localStorage.setItem(CUSTOM_FONT_STORAGE_KEY, JSON.stringify(payload));
+    return true;
+  } catch (error) {
+    console.warn('Could not save custom fonts', error);
+    return false;
+  }
+}
+
+function sanitizeCustomFontName(name) {
+  if (!name) return 'Custom Font';
+  const trimmed = String(name).trim();
+  if (!trimmed) return 'Custom Font';
+  return trimmed.replace(/\s+/g, ' ').slice(0, 80);
+}
+
+function deriveFontNameFromFile(file) {
+  if (!file) return 'Custom Font';
+  const rawName = typeof file.name === 'string' ? file.name : '';
+  if (!rawName) return 'Custom Font';
+  const withoutExtension = rawName.replace(/\.[^.]+$/, '');
+  const candidate = withoutExtension || rawName;
+  return sanitizeCustomFontName(candidate);
+}
+
+function ensureUniqueCustomFontName(baseName) {
+  const sanitizedBase = sanitizeCustomFontName(baseName);
+  if (!settingsFontFamily) return sanitizedBase;
+  let candidate = sanitizedBase;
+  let suffix = 2;
+  while (
+    Array.from(settingsFontFamily.options).some(
+      opt => opt.value === buildFontFamilyValue(candidate)
+    )
+  ) {
+    candidate = `${sanitizedBase} ${suffix}`;
+    suffix += 1;
+  }
+  return candidate;
+}
+
+function cssEscapeFontName(name) {
+  if (typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function') {
+    return CSS.escape(name);
+  }
+  return String(name).replace(/['"\\]/g, match => `\\${match}`);
+}
+
+async function registerCustomFontSource(name, dataUrl, id) {
+  if (!name || !dataUrl || typeof document === 'undefined') return false;
+  let loaded = false;
+  if (
+    typeof FontFace === 'function' &&
+    document.fonts &&
+    typeof document.fonts.add === 'function'
+  ) {
+    try {
+      const fontFace = new FontFace(name, `url(${dataUrl})`);
+      await fontFace.load();
+      document.fonts.add(fontFace);
+      loaded = true;
+    } catch (error) {
+      console.warn('Failed to load custom font via FontFace', error);
+    }
+  }
+  if (!loaded) {
+    try {
+      const safeId = id || cssEscapeFontName(name).replace(/[^a-z0-9_-]+/gi, '-');
+      const styleId = `customFontStyle-${safeId}`;
+      let styleElement = document.getElementById(styleId);
+      if (!styleElement) {
+        styleElement = document.createElement('style');
+        styleElement.id = styleId;
+        if (document.head) {
+          document.head.appendChild(styleElement);
+        } else {
+          document.body.appendChild(styleElement);
+        }
+      }
+      const escapedName = cssEscapeFontName(name);
+      styleElement.textContent = `@font-face { font-family: '${escapedName}'; src: url(${dataUrl}); font-display: swap; }`;
+      loaded = true;
+    } catch (styleError) {
+      console.warn('Failed to inject custom font style', styleError);
+      return false;
+    }
+  }
+  return loaded;
+}
+
+async function applyStoredCustomFont(entry) {
+  if (!entry || !entry.id) return null;
+  const value = buildFontFamilyValue(entry.name);
+  const { option } = ensureFontFamilyOption(value, entry.name, localFontsGroup, 'uploaded');
+  if (option) {
+    option.dataset.fontId = entry.id;
+  }
+  await registerCustomFontSource(entry.name, entry.data, entry.id);
+  return value;
+}
+
+async function loadStoredCustomFonts() {
+  const stored = loadCustomFontMetadataFromStorage();
+  if (!stored.length) return;
+  for (const entry of stored) {
+    const normalized = {
+      id: entry.id,
+      name: sanitizeCustomFontName(entry.name),
+      data: entry.data
+    };
+    customFontEntries.set(normalized.id, normalized);
+    try {
+      await applyStoredCustomFont(normalized);
+    } catch (error) {
+      console.warn('Failed to restore custom font', normalized.name, error);
+    }
+  }
+}
+
+function isSupportedFontFile(file) {
+  if (!file) return false;
+  const type = typeof file.type === 'string' ? file.type.toLowerCase() : '';
+  if (type && SUPPORTED_FONT_TYPES.has(type)) {
+    return true;
+  }
+  const name = typeof file.name === 'string' ? file.name.toLowerCase() : '';
+  return SUPPORTED_FONT_EXTENSIONS.some(ext => name.endsWith(ext));
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    if (typeof FileReader !== 'function') {
+      reject(new Error('FileReader is unavailable'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error || new Error('Failed to read file'));
+    try {
+      reader.readAsDataURL(file);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+async function addCustomFontFromData(name, dataUrl, { persist = true } = {}) {
+  const uniqueName = ensureUniqueCustomFontName(name);
+  const value = buildFontFamilyValue(uniqueName);
+  const { option } = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded');
+  if (!option) {
+    return { name: uniqueName, value, persisted: false };
+  }
+  let entryId = option.dataset.fontId;
+  if (!entryId) {
+    entryId = `custom-font-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    option.dataset.fontId = entryId;
+  }
+  const entry = { id: entryId, name: uniqueName, data: dataUrl };
+  customFontEntries.set(entryId, entry);
+  await registerCustomFontSource(uniqueName, dataUrl, entryId);
+  let persisted = true;
+  if (persist && !persistCustomFontsToStorage()) {
+    persisted = false;
+  }
+  return { name: uniqueName, value, persisted };
+}
+
+async function handleLocalFontFiles(fileList) {
+  if (!fileList || fileList.length === 0) {
+    setLocalFontsStatus('localFontsNoFonts');
+    return;
+  }
+  if (localFontsButton) {
+    localFontsButton.disabled = true;
+  }
+  const added = [];
+  const unsupported = [];
+  const failed = [];
+  let persistFailure = false;
+  for (const file of Array.from(fileList)) {
+    if (!isSupportedFontFile(file)) {
+      unsupported.push(file && typeof file.name === 'string' ? file.name : '');
+      continue;
+    }
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      if (!dataUrl) {
+        failed.push(file && file.name ? file.name : '');
+        continue;
+      }
+      const result = await addCustomFontFromData(deriveFontNameFromFile(file), dataUrl);
+      added.push(result);
+      if (!result.persisted) {
+        persistFailure = true;
+      }
+    } catch (error) {
+      console.warn('Failed to import custom font', error);
+      failed.push(file && typeof file.name === 'string' ? file.name : '');
+    }
+  }
+  if (added.length > 0) {
+    if (settingsFontFamily) {
+      settingsFontFamily.value = added[0].value;
+    }
+    setLocalFontsStatus(
+      'localFontsAdded',
+      added.map(item => item.name).join(', ')
+    );
+  } else if (unsupported.length > 0) {
+    setLocalFontsStatus('localFontsUnsupportedFiles', unsupported.join(', '));
+  } else if (failed.length > 0) {
+    setLocalFontsStatus('localFontsError');
+  } else {
+    setLocalFontsStatus('localFontsNoFonts');
+  }
+
+  if (persistFailure) {
+    const message = getLocalizedText('localFontsSaveError');
+    if (message) {
+      showNotification('warning', message);
+    }
+  }
+  if (unsupported.length > 0 && added.length > 0) {
+    const message = getLocalizedText('localFontsUnsupportedFiles');
+    if (message) {
+      showNotification(
+        'warning',
+        message.replace('%s', unsupported.join(', '))
+      );
+    }
+  }
+  if (failed.length > 0) {
+    const message = getLocalizedText('localFontsError');
+    if (message) {
+      showNotification('error', message);
+    }
+  }
+
+  if (localFontsButton) {
+    localFontsButton.disabled = false;
+  }
+}
+
 async function normalizeFontResults(result) {
   if (!result) return [];
   if (Array.isArray(result)) return result;
@@ -6679,6 +6967,13 @@ const queryAvailableLocalFonts = (() => {
 })();
 
 const supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
+const canUploadFontFiles =
+  !!(
+    localFontsInput &&
+    typeof window !== 'undefined' &&
+    typeof window.FileReader === 'function' &&
+    typeof localFontsInput.click === 'function'
+  );
 
 function getLocalizedText(key) {
   if (texts[currentLang] && texts[currentLang][key]) return texts[currentLang][key];
@@ -6830,22 +7125,56 @@ async function requestLocalFonts() {
     }
   } catch (err) {
     console.error('Could not access local fonts', err);
-    setLocalFontsStatus('localFontsError');
+    if (
+      err &&
+      (err.name === 'NotAllowedError' || err.name === 'SecurityError') &&
+      canUploadFontFiles
+    ) {
+      setLocalFontsStatus('localFontsPermissionNeeded');
+    } else {
+      setLocalFontsStatus('localFontsError');
+    }
   } finally {
     localFontsButton.disabled = false;
   }
 }
 
 if (localFontsButton) {
-  if (supportsLocalFonts) {
+  if (supportsLocalFonts || canUploadFontFiles) {
     localFontsButton.removeAttribute('hidden');
     localFontsButton.addEventListener('click', () => {
-      requestLocalFonts();
+      if (supportsLocalFonts) {
+        requestLocalFonts();
+      } else if (canUploadFontFiles && localFontsInput) {
+        localFontsInput.click();
+      }
     });
+    if (!supportsLocalFonts && canUploadFontFiles) {
+      setLocalFontsStatus('localFontsFileFallback');
+    }
   } else {
     setLocalFontsStatus('localFontsUnsupported');
   }
 }
+
+if (localFontsInput) {
+  localFontsInput.addEventListener('change', () => {
+    if (localFontsInput.files && localFontsInput.files.length > 0) {
+      handleLocalFontFiles(localFontsInput.files);
+    } else {
+      setLocalFontsStatus('localFontsNoFonts');
+    }
+    try {
+      localFontsInput.value = '';
+    } catch {
+      // ignore reset errors
+    }
+  });
+}
+
+loadStoredCustomFonts().catch(error => {
+  console.warn('Unable to restore stored custom fonts', error);
+});
 
 function applyFontSize(size) {
   document.documentElement.style.fontSize = `${size}px`;
