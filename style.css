@@ -2384,7 +2384,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   height: 32px;
 }
 
-body.dark-mode.pink-mode #topBar #logo .logo-center {
+body.pink-mode #topBar #logo .logo-center {
   fill: transparent !important;
 }
 
