@@ -727,9 +727,27 @@ main.legal-content {
   margin-left: calc(var(--form-label-width) + var(--gap-size));
 }
 
-#setup-manager #sharedLinkRow > button {
-  align-self: stretch;
+#setup-manager .project-actions {
+  align-items: stretch;
+}
+
+#setup-manager #sharedLinkRow {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-size);
+  flex: 1 1 var(--form-action-width);
+}
+
+#setup-manager #sharedLinkRow > label {
+  flex: 0 0 auto;
   margin: 0;
+  white-space: nowrap;
+}
+
+#setup-manager #sharedLinkRow > button {
+  flex: 1;
+  margin: 0;
+  align-self: center;
 }
 
 @media (max-width: 600px) {
@@ -767,6 +785,20 @@ main.legal-content {
   }
   #setup-manager #shareLinkMessage {
     margin-left: 0;
+  }
+
+  #setup-manager #sharedLinkRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #setup-manager #sharedLinkRow > label {
+    width: 100%;
+  }
+
+  #setup-manager #sharedLinkRow > button {
+    width: 100%;
+    align-self: stretch;
   }
 
   #setup-manager .share-import-row {

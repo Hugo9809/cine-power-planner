@@ -196,27 +196,24 @@
     </div>
     <div class="form-row form-row-actions" role="group" aria-label="Project actions">
       <span class="form-label-spacer" aria-hidden="true"></span>
-      <div class="form-actions">
+      <div class="form-actions project-actions">
         <button id="shareSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF219;</span>Share Project</button>
+        <div id="sharedLinkRow" class="shared-link-control">
+          <label for="applySharedLinkBtn" id="sharedLinkLabel">Shared Project:</label>
+          <input
+            type="file"
+            id="sharedLinkInput"
+            accept=".json"
+            aria-hidden="true"
+            tabindex="-1"
+            class="visually-hidden"
+          />
+          <button id="applySharedLinkBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF155;</span>Load</button>
+        </div>
+        <button id="clearSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Clear Current Project</button>
       </div>
     </div>
     <p id="shareLinkMessage" class="hidden" role="status" aria-live="polite"></p>
-    <div class="form-row" id="sharedLinkRow">
-      <label for="applySharedLinkBtn" id="sharedLinkLabel">Shared Project:</label>
-      <input
-        type="file"
-        id="sharedLinkInput"
-        accept=".json"
-        aria-hidden="true"
-        tabindex="-1"
-        class="visually-hidden"
-      />
-      <button id="applySharedLinkBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF155;</span>Load</button>
-    </div>
-    <div class="form-row form-row-actions">
-      <span class="form-label-spacer" aria-hidden="true"></span>
-      <button id="clearSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Clear Current Project</button>
-    </div>
     <div class="form-row form-row-actions" role="group" aria-label="Project exports">
       <span class="form-label-spacer" aria-hidden="true"></span>
       <div class="form-actions">
