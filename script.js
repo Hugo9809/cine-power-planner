@@ -2071,6 +2071,7 @@ function setLanguage(lang) {
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
+  setButtonLabelWithIcon(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.note);
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -2164,9 +2165,6 @@ function setLanguage(lang) {
     "data-help",
     texts[lang].batteryCountHelp
   );
-
-  document.getElementById("runtimeFeedbackBtn").textContent =
-    texts[lang].runtimeFeedbackBtn;
 
   if (pinWarnElem)
     pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
