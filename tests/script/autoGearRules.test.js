@@ -176,7 +176,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     const scenarios = document.getElementById('autoGearScenarios');
     expect(scenarios.options.length).toBeGreaterThan(0);
-    scenarios.options[0].selected = true;
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
 
     const ruleNameInput = document.getElementById('autoGearRuleName');
     ruleNameInput.value = 'Test confirmation';
