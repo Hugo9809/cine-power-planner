@@ -2059,7 +2059,7 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  deleteSetupBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.trash}</span>${texts[lang].deleteSetupBtn}`;
+  setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
   setButtonLabelWithIcon(clearSetupBtn, texts[lang].clearSetupBtn, ICON_GLYPHS.circleX);
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
@@ -2987,7 +2987,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
   }
   if (resetViewBtn) {
-    resetViewBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.reload}</span>${texts[lang].resetViewBtn}`;
+    setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.reload);
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
@@ -3235,36 +3235,83 @@ const crewRoles = [
   'Rigging Grip'
 ];
 
+const ICON_FONT_CLASSES = Object.freeze({
+  ESSENTIAL: 'icon-font-essential',
+  FILM: 'icon-font-film',
+  GADGET: 'icon-font-gadget'
+});
+
+function createGlyph(codePointHex, fontClass = ICON_FONT_CLASSES.ESSENTIAL) {
+  return Object.freeze({
+    value: String.fromCodePoint(parseInt(codePointHex, 16)),
+    className: fontClass
+  });
+}
+
+function normalizeGlyph(glyph) {
+  if (!glyph) return null;
+  if (typeof glyph === 'object') {
+    return glyph;
+  }
+  return { value: glyph, className: ICON_FONT_CLASSES.ESSENTIAL };
+}
+
+function glyphValue(glyph) {
+  const config = normalizeGlyph(glyph);
+  return config?.value ?? '';
+}
+
+function applyGlyphToElement(elem, glyph, extraClasses = []) {
+  if (!elem) return;
+  const classes = ['icon-glyph'];
+  if (Array.isArray(extraClasses)) {
+    classes.push(...extraClasses.filter(Boolean));
+  } else if (extraClasses) {
+    classes.push(extraClasses);
+  }
+  const config = normalizeGlyph(glyph);
+  if (config?.className) {
+    classes.push(config.className);
+  }
+  elem.className = classes.join(' ');
+  elem.setAttribute('aria-hidden', 'true');
+  if (config?.markup) {
+    elem.innerHTML = config.markup;
+  } else {
+    elem.textContent = config?.value ?? '';
+  }
+}
+
 const ICON_GLYPHS = Object.freeze({
-  batteryBolt: '\uE1A6',
-  batteryFull: '\uE1A5',
-  bolt: '\uE212',
-  plug: '\uEE71',
-  sliders: '\uF0D1',
-  screen: '\uEFFC',
-  brightness: '\uEB43',
-  wifi: '\uF4AC',
-  gears: '\uE8AF',
-  controller: '\uE898',
-  distance: '\uEFB9',
-  viewfinder: '\uE338',
-  camera: '\uE333',
-  trash: '\uF32D',
-  reload: '\uE11B',
-  load: '\uE7B3',
-  save: '\uE825',
-  share: '\uF045',
-  magnet: '\uEB9E',
-  timecode: '\uF1CD',
-  audioIn: '\uEC2E',
-  audioOut: '\uF44C',
-  note: '\uECF6',
-  pin: '\uEBCB',
-  sun: '\uF1F7',
-  moon: '\uEC7E',
-  circleX: '\uE453',
-  star: '\uF1A9',
-  warning: '\uF340'
+  batteryBolt: createGlyph('F11A'),
+  batteryFull: createGlyph('F118'),
+  bolt: createGlyph('F1F8'),
+  plug: createGlyph('F102', ICON_FONT_CLASSES.GADGET),
+  sliders: createGlyph('F145'),
+  screen: createGlyph('F11D', ICON_FONT_CLASSES.GADGET),
+  brightness: createGlyph('F237'),
+  wifi: createGlyph('F270'),
+  gears: createGlyph('F214'),
+  controller: createGlyph('F117', ICON_FONT_CLASSES.GADGET),
+  distance: createGlyph('F13D'),
+  viewfinder: createGlyph('F12E', ICON_FONT_CLASSES.FILM),
+  camera: createGlyph('F12D', ICON_FONT_CLASSES.FILM),
+  trash: createGlyph('F254'),
+  reload: createGlyph('F200'),
+  load: createGlyph('F155'),
+  save: createGlyph('F207'),
+  share: createGlyph('F219'),
+  magnet: createGlyph('F1B5'),
+  timecode: createGlyph('F10E', ICON_FONT_CLASSES.FILM),
+  audioIn: createGlyph('F11A', ICON_FONT_CLASSES.FILM),
+  audioOut: createGlyph('F230'),
+  note: createGlyph('F1D7'),
+  pin: createGlyph('F1EF'),
+  sun: createGlyph('F19B'),
+  moon: createGlyph('F18B'),
+  circleX: createGlyph('F131'),
+  star: createGlyph('F238'),
+  warning: createGlyph('F26F')
 });
 
 const HORSE_ICON_SVG = `
@@ -3380,27 +3427,27 @@ const PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
 const PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
 
 const projectFieldIcons = {
-  productionCompany: '\uE2D5',
-  rentalHouse: '\uE9F6',
-  crew: '\uF404',
-  prepDays: '\uE30C',
-  shootingDays: '\uE45B',
+  productionCompany: createGlyph('F10B', ICON_FONT_CLASSES.FILM),
+  rentalHouse: createGlyph('F18E'),
+  crew: createGlyph('F102', ICON_FONT_CLASSES.FILM),
+  prepDays: createGlyph('F125'),
+  shootingDays: createGlyph('F10C', ICON_FONT_CLASSES.FILM),
   deliveryResolution: ICON_GLYPHS.screen,
   recordingResolution: ICON_GLYPHS.camera,
-  aspectRatio: '\uE86E',
-  codec: '\uE7A6',
+  aspectRatio: createGlyph('F251'),
+  codec: createGlyph('F107', ICON_FONT_CLASSES.GADGET),
   baseFrameRate: ICON_GLYPHS.timecode,
-  sensorMode: '\uF016',
-  requiredScenarios: '\uEC90',
-  lenses: '\uE8B0',
-  cameraHandle: ICON_GLYPHS.gears,
-  viewfinderExtension: '\uF25F',
-  gimbal: '\uEA9C',
-  monitoringSupport: '\uF2DC',
+  sensorMode: createGlyph('F113', ICON_FONT_CLASSES.FILM),
+  requiredScenarios: createGlyph('F1F1'),
+  lenses: createGlyph('F117', ICON_FONT_CLASSES.FILM),
+  cameraHandle: ICON_GLYPHS.controller,
+  viewfinderExtension: createGlyph('F12E', ICON_FONT_CLASSES.FILM),
+  gimbal: createGlyph('F10A', ICON_FONT_CLASSES.FILM),
+  monitoringSupport: createGlyph('F252'),
   monitoringConfiguration: ICON_GLYPHS.sliders,
-  monitorUserButtons: '\uEF14',
-  cameraUserButtons: '\uEF14',
-  viewfinderUserButtons: '\uEF14'
+  monitorUserButtons: createGlyph('F143'),
+  cameraUserButtons: createGlyph('F143'),
+  viewfinderUserButtons: createGlyph('F143')
 };
 
 function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
@@ -7517,7 +7564,7 @@ const diagramCssLight = `
 .node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:20px;font-family:'EssentialIcons','FilmIndustryIcons','GadgetIcons',system-ui,sans-serif;font-style:normal;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
@@ -7535,7 +7582,7 @@ const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:20px;font-family:'EssentialIcons','FilmIndustryIcons','GadgetIcons',system-ui,sans-serif;font-style:normal;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
@@ -10860,7 +10907,13 @@ function renderSetupDiagram() {
     const lines = wrapLabel(p.label || id);
 
     if (icon) {
-      svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
+      const glyph = normalizeGlyph(icon);
+      const iconClasses = ['node-icon'];
+      if (glyph?.className) {
+        iconClasses.push(glyph.className);
+      }
+      const iconChar = glyph?.value ? escapeHtml(glyph.value) : '';
+      svg += `<text class="${iconClasses.join(' ')}" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${iconChar}</text>`;
       svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
@@ -12808,8 +12861,14 @@ function summarizeByType(list) {
 }
 
 function iconMarkup(glyph, className = 'info-icon') {
-    if (!glyph) return '';
-    return `<span class="${className} icon-glyph" aria-hidden="true">${glyph}</span>`;
+    const config = normalizeGlyph(glyph);
+    if (!config) return '';
+    const classNames = [className, 'icon-glyph'];
+    if (config.className) {
+        classNames.push(config.className);
+    }
+    const inner = config.markup ?? config.value ?? '';
+    return `<span class="${classNames.join(' ')}" aria-hidden="true">${inner}</span>`;
 }
 
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
@@ -14348,7 +14407,7 @@ function generateGearListHtml(info = {}) {
     const cageRodTypes = cageRod ? (Array.isArray(cageRod) ? cageRod : [cageRod]) : [];
     requiredRodTypes.forEach(rt => {
         if (cageRodTypes.length && !cageRodTypes.includes(rt)) {
-            lensSupportItems.push(`${ICON_GLYPHS.warning}\u00A0cage incompatible with ${rt} rods`);
+            lensSupportItems.push(`${glyphValue(ICON_GLYPHS.warning)}\u00A0cage incompatible with ${rt} rods`);
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
@@ -15844,32 +15903,10 @@ function setToggleIcon(button, glyph) {
   let iconSpan = button.querySelector('.icon-glyph');
   if (!iconSpan) {
     iconSpan = document.createElement('span');
-    iconSpan.className = 'icon-glyph';
-    iconSpan.setAttribute('aria-hidden', 'true');
     button.textContent = '';
     button.appendChild(iconSpan);
   }
-
-  const glyphConfig =
-    glyph && typeof glyph === 'object'
-      ? glyph
-      : { value: glyph };
-
-  const classNames = ['icon-glyph'];
-  if (glyphConfig.className) {
-    classNames.push(glyphConfig.className);
-  }
-  iconSpan.className = classNames.join(' ');
-
-  if (glyphConfig.markup) {
-    iconSpan.innerHTML = glyphConfig.markup;
-  } else {
-    const textValue =
-      glyphConfig.value === undefined || glyphConfig.value === null
-        ? ''
-        : glyphConfig.value;
-    iconSpan.textContent = textValue;
-  }
+  applyGlyphToElement(iconSpan, glyph);
 }
 
 function applyDarkMode(enabled) {
@@ -17745,30 +17782,30 @@ if (helpButton && helpDialog) {
 
 
 const scenarioIcons = {
-  Indoor: '\uEA03',
-  Outdoor: '\uF334',
-  Studio: '\uE45B',
-  Tripod: ICON_GLYPHS.camera,
-  Handheld: '\uE93B',
-  Easyrig: '\uE15B',
-  'Cine Saddle': '\uF01B',
-  Steadybag: '\uE925',
-  Dolly: '\uE668',
-  Slider: '\uE112',
-  Steadicam: '\uEFBD',
-  Gimbal: '\uEA9C',
-  Trinity: '\uEA4E',
-  Rollcage: '\uF04C',
-  'Car Mount': '\uE35B',
-  Jib: '\uE553',
-  'Undersling mode': '\uE0D8',
-  Crane: '\uE554',
+  Indoor: createGlyph('F18D'),
+  Outdoor: createGlyph('F278'),
+  Studio: createGlyph('F128', ICON_FONT_CLASSES.FILM),
+  Tripod: createGlyph('F12C', ICON_FONT_CLASSES.FILM),
+  Handheld: createGlyph('F18C'),
+  Easyrig: createGlyph('F10F', ICON_FONT_CLASSES.FILM),
+  'Cine Saddle': createGlyph('F110', ICON_FONT_CLASSES.FILM),
+  Steadybag: createGlyph('F121'),
+  Dolly: createGlyph('F109', ICON_FONT_CLASSES.FILM),
+  Slider: createGlyph('F206'),
+  Steadicam: createGlyph('F12D', ICON_FONT_CLASSES.FILM),
+  Gimbal: createGlyph('F10A', ICON_FONT_CLASSES.FILM),
+  Trinity: createGlyph('F127', ICON_FONT_CLASSES.FILM),
+  Rollcage: createGlyph('F19C'),
+  'Car Mount': createGlyph('F1D2'),
+  Jib: createGlyph('F122', ICON_FONT_CLASSES.FILM),
+  'Undersling mode': createGlyph('F12E', ICON_FONT_CLASSES.FILM),
+  Crane: createGlyph('F10E', ICON_FONT_CLASSES.FILM),
   'Remote Head': ICON_GLYPHS.controller,
-  'Extreme cold (snow)': '\uF0FB',
-  'Extreme rain': '\uE4A6',
-  'Extreme heat': '\uE80F',
-  'Rain Machine': '\uF153',
-  'Slow Motion': '\uF373',
+  'Extreme cold (snow)': createGlyph('F132'),
+  'Extreme rain': createGlyph('F255'),
+  'Extreme heat': createGlyph('F237'),
+  'Rain Machine': createGlyph('F133'),
+  'Slow Motion': createGlyph('F23C'),
   'Battery Belt': ICON_GLYPHS.batteryBolt
 };
 
@@ -17788,9 +17825,12 @@ function updateSelectIconBoxes(sel) {
     const box = document.createElement('span');
     box.className = 'icon-box';
     const iconSpan = document.createElement('span');
-    iconSpan.className = 'icon icon-glyph';
-    iconSpan.textContent = opt.dataset.icon || projectFieldIcons[sel.name] || ICON_GLYPHS.pin;
     box.appendChild(iconSpan);
+    let glyphSource = projectFieldIcons[sel.name] || ICON_GLYPHS.pin;
+    if (opt.dataset.icon) {
+      glyphSource = { value: opt.dataset.icon };
+    }
+    applyGlyphToElement(iconSpan, glyphSource, ['icon']);
     box.appendChild(document.createTextNode(opt.value));
     container.appendChild(box);
   });
@@ -17844,9 +17884,8 @@ function updateRequiredScenariosSummary() {
     const box = document.createElement('span');
     box.className = 'scenario-box';
     const iconSpan = document.createElement('span');
-    iconSpan.className = 'scenario-icon icon-glyph';
-    iconSpan.textContent = scenarioIcons[val] || ICON_GLYPHS.pin;
     box.appendChild(iconSpan);
+    applyGlyphToElement(iconSpan, scenarioIcons[val] || ICON_GLYPHS.pin, ['scenario-icon']);
     box.appendChild(document.createTextNode(val));
     requiredScenariosSummary.appendChild(box);
   });

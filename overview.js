@@ -331,7 +331,6 @@ function generatePrintableOverview() {
 <meta charset="utf-8">
 <title>${t.overviewTitle}</title>
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="webfonts/uicons-thin-straight.css">
 <link rel="stylesheet" href="overview.css">
 <link rel="stylesheet" href="overview-print.css" media="print">
 <link rel="stylesheet" href="overview-print.css" media="screen">
