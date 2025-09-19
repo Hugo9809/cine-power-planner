@@ -1708,15 +1708,12 @@ button {
   margin: 0 5px 5px 5px;
 }
 button:hover {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  transform: translateY(-2px);
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
 }
 button:active {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  filter: brightness(0.9);
-  transform: translateY(0);
+  background-color: var(--control-active-bg);
+  color: var(--control-text);
 }
 button:disabled {
   background-color: var(--control-disabled-bg);
@@ -1744,17 +1741,14 @@ input[type="file"]::-webkit-file-upload-button {
 
 input[type="file"]::file-selector-button:hover,
 input[type="file"]::-webkit-file-upload-button:hover {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  transform: translateY(-2px);
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
 }
 
 input[type="file"]::file-selector-button:active,
 input[type="file"]::-webkit-file-upload-button:active {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
-  filter: brightness(0.9);
-  transform: translateY(0);
+  background-color: var(--control-active-bg);
+  color: var(--control-text);
 }
 
 input[type="file"]:disabled::file-selector-button,
@@ -2014,10 +2008,13 @@ input[type="file"]:disabled::-webkit-file-upload-button {
   border-radius: 50%;
 }
 
-.controls button:hover,
+.controls button:hover {
+  background-color: var(--control-hover-bg);
+  color: var(--control-text);
+}
 .controls button:active {
-  background-color: var(--accent-color);
-  color: var(--inverse-text-color);
+  background-color: var(--control-active-bg);
+  color: var(--control-text);
 }
 
 @supports (padding: env(safe-area-inset-top)) {
