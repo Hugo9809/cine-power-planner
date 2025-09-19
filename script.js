@@ -5327,8 +5327,20 @@ function findBestSearchMatch(map, key, tokens = []) {
   const hasKey = Boolean(key);
   if (!hasKey && queryTokens.length === 0) return null;
 
+  const toResult = (entryKey, entryValue, matchType, score = 0) => ({
+    key: entryKey,
+    value: entryValue,
+    matchType,
+    score
+  });
+
   if (hasKey && map.has(key)) {
-    return { key, value: map.get(key) };
+    const value = map.get(key);
+    const score =
+      queryTokens.length > 0
+        ? tokenMatchScore(value?.tokens || [], queryTokens)
+        : Number.POSITIVE_INFINITY;
+    return toResult(key, value, 'exactKey', score);
   }
 
   let bestTokenMatch = null;
@@ -5338,29 +5350,33 @@ function findBestSearchMatch(map, key, tokens = []) {
 
   for (const [entryKey, entryValue] of map.entries()) {
     if (hasKey && entryKey.startsWith(key)) {
-      return { key: entryKey, value: entryValue };
+      const score =
+        queryTokens.length > 0
+          ? tokenMatchScore(entryValue?.tokens || [], queryTokens)
+          : Number.POSITIVE_INFINITY;
+      return toResult(entryKey, entryValue, 'keyPrefix', score);
     }
 
     if (queryTokens.length) {
       const score = tokenMatchScore(entryValue?.tokens || [], queryTokens);
       if (score > bestTokenScore) {
         bestTokenScore = score;
-        bestTokenMatch = { key: entryKey, value: entryValue };
+        bestTokenMatch = toResult(entryKey, entryValue, 'token', score);
       }
     }
 
     if (hasKey && !keyPrefixMatch && key.startsWith(entryKey)) {
-      keyPrefixMatch = { key: entryKey, value: entryValue };
+      keyPrefixMatch = toResult(entryKey, entryValue, 'keySubset', 0);
     } else if (
       hasKey &&
       !partialMatch &&
       (entryKey.includes(key) || key.includes(entryKey))
     ) {
-      partialMatch = { key: entryKey, value: entryValue };
+      partialMatch = toResult(entryKey, entryValue, 'partial', 0);
     }
   }
 
-  if (bestTokenMatch) {
+  if (bestTokenMatch && bestTokenScore > 0) {
     return bestTokenMatch;
   }
   if (keyPrefixMatch) {
@@ -5371,6 +5387,8 @@ function findBestSearchMatch(map, key, tokens = []) {
   }
   return null;
 }
+
+const STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
@@ -16008,20 +16026,18 @@ if (helpButton && helpDialog) {
     const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
     const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
     const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
-    const helpTokens = helpMatch?.value?.tokens || [];
-    const deviceTokens = deviceMatch?.value?.tokens || [];
-    const featureTokens = featureMatch?.value?.tokens || [];
-    const helpScore = helpTokens.length && cleanTokens.length ? tokenMatchScore(helpTokens, cleanTokens) : 0;
-    const deviceScore = deviceTokens.length && cleanTokens.length ? tokenMatchScore(deviceTokens, cleanTokens) : 0;
-    const featureScore = featureTokens.length && cleanTokens.length ? tokenMatchScore(featureTokens, cleanTokens) : 0;
-    const helpExact = helpMatch && helpMatch.key === cleanKey;
-    const deviceExact = deviceMatch && deviceMatch.key === cleanKey;
-    const featureExact = featureMatch && featureMatch.key === cleanKey;
+    const helpScore = helpMatch?.score || 0;
+    const deviceScore = deviceMatch?.score || 0;
+    const featureScore = featureMatch?.score || 0;
+    const helpExact = helpMatch?.matchType === 'exactKey';
+    const deviceStrong = deviceMatch ? STRONG_SEARCH_MATCH_TYPES.has(deviceMatch.matchType) : false;
+    const featureStrong = featureMatch ? STRONG_SEARCH_MATCH_TYPES.has(featureMatch.matchType) : false;
+    const bestNonHelpScore = Math.max(deviceScore, featureScore);
     const preferHelp =
       !!helpMatch &&
       (isHelp ||
         helpExact ||
-        (!deviceExact && !featureExact && helpScore > 0 && helpScore >= deviceScore && helpScore >= featureScore));
+        (!deviceStrong && !featureStrong && helpScore > 0 && helpScore > bestNonHelpScore));
 
     if (!isHelp && !preferHelp) {
       if (deviceMatch) {
