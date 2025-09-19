@@ -149,6 +149,16 @@ table, th, td {
   border-color: var(--text-color);
   box-shadow: var(--panel-shadow);
 }
+#overviewDialogContent #setupDiagram {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+#overviewDialogContent #setupDiagram #diagramArea {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
 #overviewDialogContent th {
   background-color: var(--control-bg) !important;
   font-weight: 700;
