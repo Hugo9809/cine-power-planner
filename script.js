@@ -7947,8 +7947,7 @@ function getTimecodes() {
     const favVals = getFavoriteValues(selectElem.id);
     const val = selectElem.value;
     const isFav = favVals.includes(val);
-    const glyph = isFav ? ICON_GLYPHS.star : ICON_GLYPHS.circleStar;
-    selectElem._favButton.innerHTML = iconMarkup(glyph, 'favorite-icon');
+    selectElem._favButton.innerHTML = iconMarkup(ICON_GLYPHS.circleStar, 'favorite-icon');
     selectElem._favButton.classList.toggle('favorited', isFav);
     selectElem._favButton.disabled = val === 'None';
     selectElem._favButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
