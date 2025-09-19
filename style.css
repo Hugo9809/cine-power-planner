@@ -1083,8 +1083,18 @@ main.legal-content {
 }
 
 .auto-gear-rule-title {
-  font-weight: 600;
+  font-weight: 500;
   margin: 0;
+}
+
+body.light-mode .auto-gear-rule-title,
+#overviewDialogContent:not(.dark-mode) .auto-gear-rule-title {
+  color: var(--accent-color);
+}
+
+body.pink-mode .auto-gear-rule-title,
+#overviewDialogContent.pink-mode .auto-gear-rule-title {
+  color: var(--accent-color);
 }
 
 .auto-gear-rule-meta {
