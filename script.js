@@ -2781,8 +2781,16 @@ function setLanguage(lang) {
   }
 
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
-  document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
-  document.getElementById("generateGearListBtn").textContent = texts[lang].generateGearListBtn;
+  setButtonLabelWithIcon(
+    document.getElementById("generateOverviewBtn"),
+    texts[lang].generateOverviewBtn,
+    ICON_GLYPHS.note
+  );
+  setButtonLabelWithIcon(
+    document.getElementById("generateGearListBtn"),
+    texts[lang].generateGearListBtn,
+    ICON_GLYPHS.gears
+  );
   setButtonLabelWithIcon(
     document.getElementById("shareSetupBtn"),
     texts[lang].shareSetupBtn,
