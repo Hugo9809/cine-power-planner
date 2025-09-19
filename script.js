@@ -4620,6 +4620,30 @@ function formatAutoGearCount(count, singularKey, pluralKey) {
   return template ? template.replace('%s', String(count)) : String(count);
 }
 
+function formatAutoGearItemSummary(item) {
+  if (!item || typeof item !== 'object') return '';
+  const langTexts = texts[currentLang] || texts.en || {};
+  const quantity = normalizeAutoGearQuantity(item.quantity);
+  const name = typeof item.name === 'string' ? item.name : '';
+  const rawCategory = typeof item.category === 'string' ? item.category.trim() : '';
+  const categoryLabel = rawCategory
+    ? rawCategory
+    : (langTexts.autoGearCustomCategory || texts.en?.autoGearCustomCategory || '');
+  const quantityText = String(quantity);
+  const nameText = name || '';
+  if (!nameText) return quantityText;
+  const withCategoryTemplate = langTexts.autoGearItemSummaryWithCategory
+    || texts.en?.autoGearItemSummaryWithCategory
+    || '%s × %s (%s)';
+  if (categoryLabel) {
+    return formatWithPlaceholders(withCategoryTemplate, quantityText, nameText, categoryLabel);
+  }
+  const baseTemplate = langTexts.autoGearItemSummary
+    || texts.en?.autoGearItemSummary
+    || '%s × %s';
+  return formatWithPlaceholders(baseTemplate, quantityText, nameText);
+}
+
 function formatWithPlaceholders(template, ...values) {
   if (typeof template !== 'string') {
     return values.join(' ');
@@ -4741,6 +4765,23 @@ function renderAutoGearRulesList() {
     countsMeta.className = 'auto-gear-rule-meta';
     countsMeta.textContent = `${addSummary} · ${removeSummary}`;
     info.appendChild(countsMeta);
+    if (rule.add.length) {
+      const addsLabel = document.createElement('p');
+      addsLabel.className = 'auto-gear-rule-meta auto-gear-rule-items-label';
+      addsLabel.textContent = texts[currentLang]?.autoGearAddsListLabel
+        || texts.en?.autoGearAddsListLabel
+        || 'Adds';
+      info.appendChild(addsLabel);
+      const addList = document.createElement('ul');
+      addList.className = 'auto-gear-rule-items';
+      rule.add.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.className = 'auto-gear-rule-item';
+        listItem.textContent = formatAutoGearItemSummary(item);
+        addList.appendChild(listItem);
+      });
+      info.appendChild(addList);
+    }
     wrapper.appendChild(info);
     const actions = document.createElement('div');
     actions.className = 'auto-gear-rule-actions';

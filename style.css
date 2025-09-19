@@ -1077,6 +1077,22 @@ main.legal-content {
   font-size: 0.9em;
 }
 
+.auto-gear-rule-items-label {
+  margin-top: 4px;
+}
+
+.auto-gear-rule-items {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted-text-color, #666);
+}
+
+.auto-gear-rule-item {
+  font-size: 0.9em;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
 .auto-gear-rule-actions {
   display: flex;
   flex-wrap: wrap;
