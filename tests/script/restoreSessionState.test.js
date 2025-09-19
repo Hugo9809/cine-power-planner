@@ -1,0 +1,81 @@
+const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
+
+const savedGearHtml = `
+  <h2>Project One</h2>
+  <h3>Project Requirements</h3>
+  <div class="requirements-grid">
+    <div class="requirement-box" data-field="codec">
+      <span class="req-label">Codec</span>
+      <span class="req-value">ProRes</span>
+    </div>
+  </div>
+  <h3>Gear List</h3>
+  <table class="gear-table"><tr><td>Saved Item</td></tr></table>
+`;
+
+describe('restoreSessionState', () => {
+  test('keeps a saved gear list visible after reload', () => {
+    const saveProjectMock = jest.fn();
+    const saveSessionStateMock = jest.fn();
+
+    const initialEnv = setupScriptEnvironment({
+      readyState: 'complete',
+      globals: {
+        loadSessionState: jest.fn(() => null),
+        loadProject: jest.fn(() => null),
+        saveProject: saveProjectMock,
+        saveSessionState: saveSessionStateMock,
+        deleteProject: jest.fn()
+      }
+    });
+
+    const { utils: initialUtils } = initialEnv;
+    saveProjectMock.mockClear();
+    saveSessionStateMock.mockClear();
+
+    initialUtils.displayGearAndRequirements(savedGearHtml);
+
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'Project One';
+    const setupSelect = document.getElementById('setupSelect');
+    if (setupSelect && !Array.from(setupSelect.options).some(opt => opt.value === 'Project One')) {
+      const option = document.createElement('option');
+      option.value = 'Project One';
+      option.textContent = 'Project One';
+      setupSelect.appendChild(option);
+    }
+    if (setupSelect) {
+      setupSelect.value = 'Project One';
+    }
+
+    initialUtils.saveCurrentSession();
+
+    expect(saveProjectMock).toHaveBeenCalled();
+    expect(saveSessionStateMock).toHaveBeenCalled();
+
+    const [savedName, savedPayload] = saveProjectMock.mock.calls[saveProjectMock.mock.calls.length - 1];
+    expect(savedPayload.gearList).toContain('Saved Item');
+    const savedSessionState = saveSessionStateMock.mock.calls[saveSessionStateMock.mock.calls.length - 1][0];
+
+    initialEnv.cleanup();
+
+    const loadProjectMock = jest.fn(name => (name === savedName ? savedPayload : null));
+
+    const reloadEnv = setupScriptEnvironment({
+      readyState: 'complete',
+      globals: {
+        loadSessionState: jest.fn(() => savedSessionState),
+        loadProject: loadProjectMock,
+        saveProject: jest.fn(),
+        deleteProject: jest.fn()
+      }
+    });
+
+    const gearListOutput = document.getElementById('gearListOutput');
+    expect(loadProjectMock).toHaveBeenCalledWith(savedName);
+    expect(gearListOutput.classList.contains('hidden')).toBe(false);
+    expect(gearListOutput.textContent).toContain('Saved Item');
+
+    reloadEnv.cleanup();
+  });
+});

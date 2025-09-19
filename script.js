@@ -8619,6 +8619,7 @@ let currentProjectInfo = null;
 let loadedSetupState = null;
 let loadedSetupStateSignature = '';
 let restoringSession = false;
+let skipNextGearListRefresh = false;
 
 let defaultProjectInfoSnapshot = null;
 
@@ -16934,6 +16935,11 @@ function bindGearListDirectorMonitorListener() {
 
 function refreshGearListIfVisible() {
     if (!gearListOutput || gearListOutput.classList.contains('hidden')) return;
+    if (restoringSession) return;
+    if (skipNextGearListRefresh) {
+        skipNextGearListRefresh = false;
+        return;
+    }
 
     if (projectForm) {
         populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
@@ -17164,6 +17170,7 @@ function restoreSessionState() {
       displayGearAndRequirements(storedProject.gearList);
       if (gearListOutput && storedProject.gearList) {
         gearListOutput.classList.remove('hidden');
+        skipNextGearListRefresh = true;
       }
       if (gearListOutput) {
         ensureGearListActions();
