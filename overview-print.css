@@ -17,6 +17,10 @@ body.dark-mode {
   --surface-color: #fff;
   --text-color: #000;
   --button-size: 24px;
+  --diagram-node-fill: #f0f0f0;
+  --power-color: #d33;
+  --video-color: #369;
+  --fiz-color: #090;
   font-family: 'Ubuntu', sans-serif;
   font-weight: 300;
   font-size: 12pt;
@@ -33,6 +37,10 @@ body.dark-mode {
   --panel-border: #ddd;
   --control-bg: #f0f0f0;
   --control-text: #333;
+  --diagram-node-fill: #f0f0f0;
+  --power-color: #d33;
+  --video-color: #369;
+  --fiz-color: #090;
   background: var(--surface-color) !important;
   color: var(--text-color) !important;
 }
