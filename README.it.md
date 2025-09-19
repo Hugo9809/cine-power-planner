@@ -27,7 +27,7 @@ L’app usa automaticamente la lingua del browser al primo avvio e puoi cambiarl
 - Le scorciatoie da tastiera per la ricerca globale consentono di premere / o Ctrl+K (⌘K su macOS) per focalizzarla all’istante, anche quando si trova nel menu laterale mobile compresso.
 - Il pulsante di ricarica forzata svuota i file memorizzati dal service worker così l’app offline si aggiorna senza cancellare progetti o dispositivi salvati.
 - Le icone a stella in ogni selettore fissano in alto le videocamere, le batterie e gli accessori preferiti e li includono nei backup.
-- Il pulsante **Cancella cache locale** rimuove progetti e impostazioni memorizzati.
+- Il flusso di **Ripristino di fabbrica** scarica automaticamente un backup prima di rimuovere progetti, dispositivi e impostazioni salvati.
 - La lista attrezzatura e l’anteprima stampabile mostrano il nome del progetto per un riferimento rapido.
 - Carica un logo personalizzato da usare nelle stampe e nei backup.
 - I backup includono i preferiti e creano una copia automatica prima del ripristino.
@@ -79,7 +79,7 @@ L’app usa automaticamente la lingua del browser al primo avvio e puoi cambiarl
 - Salva, carica e cancella più progetti camera (premi Invio o Ctrl+S/⌘S per salvare rapidamente; il pulsante Salva resta disattivato finché non inserisci un nome).
 - Vengono creati automaticamente snapshot ogni 10 minuti mentre il planner è aperto e dalla finestra Impostazioni puoi attivare esportazioni di backup orarie come promemoria.
 - Scarica un file JSON che raccoglie selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati; importalo dal selettore Progetto condiviso per ripristinare tutto in un passaggio.
-- I dati sono archiviati localmente tramite `localStorage` e i preferiti vengono conservati nei backup; usa il pulsante **Cancella cache locale** nelle Impostazioni per eliminare progetti e modifiche ai dispositivi memorizzati.
+- I dati sono archiviati localmente tramite `localStorage` e i preferiti vengono conservati nei backup; usa l'opzione **Ripristino di fabbrica** nelle Impostazioni per salvare automaticamente un backup prima di eliminare progetti e modifiche ai dispositivi memorizzati.
 - Genera anteprime stampabili per ogni progetto salvato e aggiungi un logo personalizzato così esportazioni e backup rispettano l’identità della produzione.
 - Salva i requisiti di progetto insieme a ciascun progetto, così la lista attrezzatura mantiene il contesto completo.
 - Funziona completamente offline grazie al service worker installato: lingua, tema, dati dei dispositivi e preferiti persistono tra le sessioni.
@@ -103,7 +103,7 @@ L’app usa automaticamente la lingua del browser al primo avvio e puoi cambiarl
     aggiornano i file in cache senza eliminare i progetti.
 - Un collegamento di salto e un indicatore offline mantengono il layout accessibile con tastiera e tocco; il badge appare ogni volta che il browser perde la connessione.
 - La barra di ricerca globale consente di saltare a funzioni, selettori di dispositivi o argomenti di aiuto; premi Invio per attivare il risultato evidenziato, usa / o Ctrl+K (⌘K su macOS) per focalizzarla subito (sugli schermi piccoli il menu laterale si apre in automatico) e premi Esc o × per cancellare la ricerca.
-- I controlli della barra superiore offrono cambio lingua, temi scuro e rosa e la finestra Impostazioni con colore accento, dimensione e famiglia del font, modalità ad alto contrasto e caricamento del logo, oltre agli strumenti di backup, ripristino e cancellazione cache.
+- I controlli della barra superiore offrono cambio lingua, temi scuro e rosa e la finestra Impostazioni con colore accento, dimensione e famiglia del font, modalità ad alto contrasto e caricamento del logo, oltre agli strumenti di backup, ripristino e Ripristino di fabbrica che salvano automaticamente un backup prima di cancellare i dati.
 - Il pulsante di aiuto apre un dialogo ricercabile con sezioni guidate, scorciatoie da tastiera, FAQ e una modalità di suggerimenti al passaggio del mouse; si può aprire anche con ?, H, F1 o Ctrl+/ mentre digiti.
 - Il pulsante di ricarica forzata (🔄) cancella i file del service worker in cache così l’app offline si aggiorna senza perdere progetti o dispositivi.
 - Sugli schermi più piccoli un menu laterale a scomparsa replica ogni sezione principale per navigare rapidamente.
@@ -260,7 +260,7 @@ Una volta installata, l’app si avvia dalla schermata Home, funziona offline e 
 
 ## 📡 Uso offline e archiviazione dati
 
-Servire l’app tramite HTTP(S) installa un service worker che memorizza in cache ogni file, così Cine Power Planner funziona completamente offline e si aggiorna in background. Progetti, feedback di autonomia e preferenze (lingua, tema, modalità rosa e liste attrezzatura salvate) vivono nel `localStorage` del browser. Cancellare i dati del sito elimina tutte le informazioni e nella finestra Impostazioni è disponibile anche il pulsante **Cancella cache locale** per lo stesso reset con un clic.
+Servire l’app tramite HTTP(S) installa un service worker che memorizza in cache ogni file, così Cine Power Planner funziona completamente offline e si aggiorna in background. Progetti, feedback di autonomia e preferenze (lingua, tema, modalità rosa e liste attrezzatura salvate) vivono nel `localStorage` del browser. Cancellare i dati del sito elimina tutte le informazioni e nella finestra Impostazioni è disponibile anche il flusso di **Ripristino di fabbrica**, che salva automaticamente un backup prima di eseguire lo stesso azzeramento completo.
 L’intestazione mostra un badge offline non appena cade la connessione, e l’azione
 🔄 **Forza ricarica** aggiorna i file in cache senza toccare i progetti salvati.
 

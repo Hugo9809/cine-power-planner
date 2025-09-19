@@ -27,7 +27,7 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
 - Los atajos de teclado para la búsqueda global te permiten pulsar / o Ctrl+K (⌘K en macOS) para enfocarla al instante, incluso cuando está dentro del menú lateral móvil.
 - El botón de recarga forzada borra los archivos en caché del *service worker* para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
 - Los iconos de estrella en cada selector fijan las cámaras, baterías y accesorios favoritos en la parte superior de la lista y los conservan en las copias de seguridad.
-- El botón de borrar caché local elimina los proyectos y ajustes almacenados.
+- El flujo de **Restablecimiento de fábrica** descarga una copia de seguridad automáticamente antes de borrar los proyectos, ajustes y dispositivos guardados.
 - La lista de equipo y la vista imprimible muestran el nombre del proyecto para consultarlo rápidamente.
 - Sube un logotipo personalizado para que aparezca en las vistas imprimibles y en las copias de seguridad.
 - Las copias de seguridad incluyen los favoritos y crean una copia automática antes de restaurar.
@@ -80,7 +80,7 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
 - Guarda, carga y elimina múltiples proyectos de cámara (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
 - Se crean instantáneas automáticas cada 10 minutos mientras el planificador está abierto, y el diálogo de Ajustes puede programar exportaciones de copias de seguridad cada hora como recordatorio para archivar los datos.
 - Descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; cárgalo mediante el selector de Proyecto compartido para restaurarlo todo de una vez.
-- Los datos se almacenan localmente mediante `localStorage`, y los favoritos se conservan en las copias de seguridad; utiliza el botón **Borrar caché local** en Ajustes si necesitas limpiar proyectos en caché y ediciones de dispositivos.
+- Los datos se almacenan localmente mediante `localStorage`, y los favoritos se conservan en las copias de seguridad; utiliza la opción de **Restablecimiento de fábrica** en Ajustes para guardar automáticamente una copia de seguridad antes de limpiar proyectos en caché y ediciones de dispositivos.
 - Genera vistas imprimibles para cualquier proyecto guardado y añade un logotipo personalizado para que las exportaciones y copias coincidan con la identidad de tu producción.
 - Guarda los requisitos de proyecto junto con cada proyecto para que las listas de equipo conserven el contexto completo.
 - Funciona totalmente sin conexión con el *service worker* instalado: idioma, tema, datos de dispositivos y favoritos persisten entre sesiones.
@@ -104,7 +104,7 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
     conexión y renuevan archivos en caché sin borrar proyectos.
 - Un enlace de salto y un indicador sin conexión mantienen la interfaz accesible con teclado y pantallas táctiles: la insignia aparece cuando el navegador pierde la conexión.
 - La barra de búsqueda global salta a funciones, selectores de dispositivos o temas de ayuda; pulsa Enter para activar el resultado resaltado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (el menú lateral se abre automáticamente en pantallas pequeñas) y pulsa Escape o × para limpiar la consulta.
-- Los controles de la barra superior permiten cambiar el idioma, alternar los temas oscuro y rosa y abrir Ajustes con opciones de color de acento, tamaño y familia tipográfica, modo de alto contraste y carga de logotipo, además de herramientas para copia de seguridad, restauración y Borrar caché local.
+- Los controles de la barra superior permiten cambiar el idioma, alternar los temas oscuro y rosa y abrir Ajustes con opciones de color de acento, tamaño y familia tipográfica, modo de alto contraste y carga de logotipo, además de herramientas para copia de seguridad, restauración y Restablecimiento de fábrica que guardan una copia antes de borrar los datos.
 - El botón de Ayuda abre un diálogo con búsqueda, secciones paso a paso, atajos de teclado, preguntas frecuentes y un modo de ayuda emergente opcional; también puede activarse con ?, H, F1 o Ctrl+/ incluso mientras escribes.
 - El botón de recarga forzada (🔄) borra los archivos del *service worker* en caché para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
 - En pantallas pequeñas, un menú lateral plegable replica cada sección principal para navegar rápidamente.
@@ -261,7 +261,7 @@ Una vez instalada, la aplicación se abre desde tu pantalla de inicio, funciona 
 
 ## 📡 Uso sin conexión y almacenamiento de datos
 
-Servir la aplicación mediante HTTP(S) instala un *service worker* que almacena en caché cada archivo, de modo que Cine Power Planner funciona sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas de equipo guardadas) viven en el `localStorage` del navegador. Al borrar los datos del sitio en el navegador se elimina toda la información almacenada, y el diálogo de Ajustes incluye un botón de **Borrar caché local** para la misma limpieza con un solo clic.
+Servir la aplicación mediante HTTP(S) instala un *service worker* que almacena en caché cada archivo, de modo que Cine Power Planner funciona sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas de equipo guardadas) viven en el `localStorage` del navegador. Al borrar los datos del sitio en el navegador se elimina toda la información almacenada, y el diálogo de Ajustes incluye un flujo de **Restablecimiento de fábrica** que guarda automáticamente una copia antes de realizar la misma limpieza completa.
 La cabecera muestra un indicador sin conexión cuando se pierde la red, y la
 acción 🔄 **Forzar recarga** actualiza los recursos en caché sin afectar a los
 proyectos guardados.

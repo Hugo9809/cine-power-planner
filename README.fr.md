@@ -27,7 +27,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Les raccourcis clavier de la recherche globale permettent d’appuyer sur / ou Ctrl+K (⌘K sur macOS) pour la focaliser instantanément, même lorsqu’elle se trouve dans le menu latéral mobile replié.
 - Le bouton de rechargement forcé efface les fichiers mis en cache par le service worker afin que l’application hors ligne se mette à jour sans supprimer les projets ni les appareils enregistrés.
 - Les icônes étoilées dans chaque sélecteur épinglent les caméras, batteries et accessoires favoris en haut de la liste et les incluent dans les sauvegardes.
-- Le bouton **Effacer le cache local** supprime les projets et paramètres stockés.
+- Le flux de **Réinitialisation d’usine** télécharge automatiquement une sauvegarde avant de supprimer les projets, appareils et paramètres stockés.
 - La liste de matériel et l’aperçu imprimable affichent le nom du projet pour une consultation rapide.
 - Importez un logo personnalisé pour les aperçus imprimables et les sauvegardes.
 - Les sauvegardes contiennent les favoris et créent une copie automatique avant toute restauration.
@@ -81,7 +81,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Enregistrez, chargez et supprimez plusieurs projets caméra (appuyez sur Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton Enregistrer reste inactif tant qu’aucun nom n’est saisi).
 - Des instantanés automatiques sont créés toutes les 10 minutes tant que le planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires pour penser à archiver vos données.
 - Téléchargez un fichier JSON qui regroupe sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; chargez-le via le sélecteur Projet partagé pour tout restaurer en une étape.
-- Les données sont stockées localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez le bouton **Effacer le cache local** dans Paramètres pour supprimer projets mis en cache et modifications d’appareils.
+- Les données sont stockées localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez l’option **Réinitialisation d’usine** dans Paramètres pour enregistrer automatiquement une sauvegarde avant de supprimer projets mis en cache et modifications d’appareils.
 - Générez des aperçus imprimables pour tout projet enregistré et ajoutez un logo personnalisé afin d’aligner exports et sauvegardes sur l’identité de votre production.
 - Enregistrez les exigences de projet avec chaque projet afin que la liste de matériel conserve tout le contexte.
 - Fonctionne entièrement hors ligne grâce au service worker installé : langue, thème, données d’appareils et favoris persistent entre les sessions.
@@ -106,7 +106,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
     connexion et renouvellent les fichiers en cache sans effacer les projets.
 - Un lien d’évitement et un indicateur hors ligne maintiennent l’interface accessible au clavier et au tactile ; l’insigne apparaît dès que le navigateur perd la connexion.
 - La barre de recherche globale permet d’atteindre des fonctionnalités, sélecteurs d’appareils ou rubriques d’aide ; appuyez sur Entrée pour valider le résultat en surbrillance, utilisez / ou Ctrl+K (⌘K sur macOS) pour la focaliser instantanément (le menu latéral s’ouvre automatiquement sur les petits écrans) et appuyez sur Échap ou × pour effacer la requête.
-- Les commandes de la barre supérieure offrent le changement de langue, les thèmes sombre et rose, ainsi qu’une boîte de dialogue Paramètres avec la couleur d’accent, la taille et la famille de police, le mode à fort contraste et l’import de logo, ainsi que des outils de sauvegarde, restauration et nettoyage du cache local.
+- Les commandes de la barre supérieure offrent le changement de langue, les thèmes sombre et rose, ainsi qu’une boîte de dialogue Paramètres avec la couleur d’accent, la taille et la famille de police, le mode à fort contraste et l’import de logo, ainsi que des outils de sauvegarde, restauration et Réinitialisation d’usine qui créent une sauvegarde avant l’effacement.
 - Le bouton Aide ouvre une boîte de dialogue recherchable avec des sections pas à pas, des raccourcis clavier, une FAQ et un mode aide contextuelle optionnel ; vous pouvez aussi l’ouvrir avec ?, H, F1 ou Ctrl+/ même en cours de saisie.
 - Le bouton de rechargement forcé (🔄) efface les fichiers du service worker en cache afin que l’application hors ligne se mette à jour sans supprimer projets ni appareils.
 - Sur les petits écrans, un menu latéral repliable reflète chaque section principale pour une navigation rapide.
@@ -263,7 +263,7 @@ Une fois installée, l’application se lance depuis l’écran d’accueil, fon
 
 ## 📡 Utilisation hors ligne et stockage des données
 
-Servir l’application via HTTP(S) installe un service worker qui met chaque fichier en cache pour que Cine Power Planner fonctionne totalement hors ligne et se mette à jour en arrière-plan. Les projets, retours d’autonomie et préférences (langue, thème, mode rose et listes de matériel sauvegardées) sont stockés dans le `localStorage` du navigateur. Effacer les données du site supprime toutes les informations, et la boîte de dialogue Paramètres propose également un bouton **Effacer le cache local** pour le même nettoyage en un clic.
+Servir l’application via HTTP(S) installe un service worker qui met chaque fichier en cache pour que Cine Power Planner fonctionne totalement hors ligne et se mette à jour en arrière-plan. Les projets, retours d’autonomie et préférences (langue, thème, mode rose et listes de matériel sauvegardées) sont stockés dans le `localStorage` du navigateur. Effacer les données du site supprime toutes les informations, et la boîte de dialogue Paramètres propose également un flux de **Réinitialisation d’usine** qui enregistre automatiquement une sauvegarde avant d’effectuer le même nettoyage complet.
 L’en-tête affiche un badge hors ligne dès que la connexion tombe, et l’action 🔄
 **Forcer le rechargement** actualise les fichiers mis en cache sans toucher aux
 projets enregistrés.
