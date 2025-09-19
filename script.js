@@ -9171,7 +9171,7 @@ function checkSetupChanged() {
 const projectDialog = document.getElementById("projectDialog");
 const projectForm = document.getElementById("projectForm");
 const filterSelectElem = document.getElementById('filter');
-const filterDetailsContainer = document.getElementById('filterDetails');
+const filterDetailsStorage = document.getElementById('filterDetails');
 const matteboxSelect = document.getElementById('mattebox');
 const projectCancelBtn = document.getElementById("projectCancel");
 const feedbackDialog = document.getElementById("feedbackDialog");
@@ -17166,11 +17166,25 @@ function ensureGearListActions() {
             let shouldSync = false;
             if (target.matches('.filter-values-container input[type="checkbox"]')) {
                 const container = target.closest('.filter-values-container');
+                const storageId = container && container.getAttribute('data-storage-values');
                 const sel = container && container.querySelector('select');
-                if (sel) {
+                if (target.checked) {
+                    target.setAttribute('checked', '');
+                } else {
+                    target.removeAttribute('checked');
+                }
+                if (storageId) {
+                    syncGearListFilterValue(storageId, target.value, target.checked);
+                } else if (sel) {
                     const opt = Array.from(sel.options).find(opt => opt.value === target.value);
                     if (opt) opt.selected = target.checked;
                     sel.dispatchEvent(new Event('change'));
+                }
+                shouldSync = true;
+            } else if (target.matches('select[data-storage-id]')) {
+                const storageId = target.getAttribute('data-storage-id');
+                if (storageId) {
+                    syncGearListFilterSize(storageId, target.value);
                 }
                 shouldSync = true;
             } else if (target.id && target.id.startsWith('filter-size-')) {
@@ -20103,9 +20117,12 @@ function getFilterValueConfig(type) {
   }
 }
 
-function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE) {
+function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE, options = {}) {
+  const { includeId = true, idPrefix = 'filter-size-' } = options;
   const sel = document.createElement('select');
-  sel.id = `filter-size-${filterId(type)}`;
+  if (includeId) {
+    sel.id = `${idPrefix}${filterId(type)}`;
+  }
   let sizes = [DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
   if (type === 'Rota-Pol') sizes = [DEFAULT_FILTER_SIZE, '6x6', '95mm'];
   sizes.forEach(s => {
@@ -20350,63 +20367,182 @@ function updateGearListFilterEntries(entries = []) {
   });
 }
 
+function getGearListFilterDetailsContainer() {
+  return gearListOutput ? gearListOutput.querySelector('#gearListFilterDetails') : null;
+}
+
+function filterTypeNeedsValueSelect(type) {
+  return type === 'Diopter'
+    || type === 'IRND'
+    || type === 'ND Grad HE'
+    || type === 'ND Grad SE'
+    || (type !== 'Clear' && type !== 'Pol' && type !== 'Rota-Pol');
+}
+
+function createFilterStorageValueSelect(type, selected) {
+  const select = document.createElement('select');
+  select.id = `filter-values-${filterId(type)}`;
+  select.multiple = true;
+  select.setAttribute('multiple', '');
+  select.hidden = true;
+  select.setAttribute('aria-hidden', 'true');
+  const { opts, defaults = [] } = getFilterValueConfig(type);
+  const chosen = Array.isArray(selected) && selected.length ? selected.slice() : defaults.slice();
+  opts.forEach(value => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = value;
+    if (chosen.includes(value)) {
+      opt.selected = true;
+      opt.setAttribute('selected', '');
+    }
+    select.appendChild(opt);
+  });
+  return select;
+}
+
+function renderFilterDetailsStorage(details) {
+  if (!filterDetailsStorage) return;
+  filterDetailsStorage.innerHTML = '';
+  if (!details.length) {
+    filterDetailsStorage.hidden = true;
+    return;
+  }
+  filterDetailsStorage.hidden = true;
+  details.forEach(detail => {
+    const { type, size, values, needsSize, needsValues } = detail;
+    if (needsSize) {
+      const sizeSelect = createFilterSizeSelect(type, size);
+      sizeSelect.hidden = true;
+      sizeSelect.setAttribute('aria-hidden', 'true');
+      sizeSelect.addEventListener('change', handleFilterDetailChange);
+      filterDetailsStorage.appendChild(sizeSelect);
+    }
+    if (needsValues) {
+      const valuesSelect = createFilterStorageValueSelect(type, values);
+      valuesSelect.addEventListener('change', handleFilterDetailChange);
+      filterDetailsStorage.appendChild(valuesSelect);
+    }
+  });
+}
+
+function renderGearListFilterDetails(details) {
+  const container = getGearListFilterDetailsContainer();
+  if (!container) return;
+  container.innerHTML = '';
+  if (!details.length) {
+    container.classList.add('hidden');
+    return;
+  }
+  container.classList.remove('hidden');
+  details.forEach(detail => {
+    const { type, label, size, values, needsSize, needsValues } = detail;
+    const row = document.createElement('div');
+    row.className = 'filter-detail';
+    const heading = document.createElement('div');
+    heading.className = 'filter-detail-label';
+    heading.textContent = label;
+    row.appendChild(heading);
+    const controls = document.createElement('div');
+    controls.className = 'filter-detail-controls';
+    if (needsSize) {
+      const sizeLabel = document.createElement('label');
+      sizeLabel.className = 'filter-detail-size';
+      const sizeText = document.createElement('span');
+      sizeText.className = 'filter-detail-sublabel';
+      sizeText.textContent = 'Size';
+      const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
+      sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
+      sizeLabel.append(sizeText, sizeSelect);
+      controls.appendChild(sizeLabel);
+    }
+    if (needsValues) {
+      const valuesWrap = document.createElement('div');
+      valuesWrap.className = 'filter-detail-values';
+      const valueLabel = document.createElement('span');
+      valueLabel.className = 'filter-detail-sublabel';
+      valueLabel.textContent = 'Strengths';
+      const optionsWrap = document.createElement('span');
+      optionsWrap.className = 'filter-values-container';
+      optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
+      const { opts, defaults = [] } = getFilterValueConfig(type);
+      const currentValues = Array.isArray(values) && values.length ? values : defaults;
+      opts.forEach(value => {
+        const lbl = document.createElement('label');
+        lbl.className = 'filter-value-option';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = value;
+        if (currentValues.includes(value)) {
+          cb.checked = true;
+          cb.setAttribute('checked', '');
+        }
+        lbl.append(cb, document.createTextNode(value));
+        optionsWrap.appendChild(lbl);
+      });
+      valuesWrap.append(valueLabel, optionsWrap);
+      controls.appendChild(valuesWrap);
+    }
+    row.appendChild(controls);
+    container.appendChild(row);
+  });
+}
+
+function syncGearListFilterSize(storageId, value) {
+  const storageSelect = document.getElementById(storageId);
+  if (!storageSelect) return;
+  if (storageSelect.value !== value) {
+    storageSelect.value = value;
+  }
+  storageSelect.dispatchEvent(new Event('change'));
+}
+
+function syncGearListFilterValue(storageId, value, isSelected) {
+  const storageSelect = document.getElementById(storageId);
+  if (!storageSelect) return;
+  let changed = false;
+  Array.from(storageSelect.options).forEach(opt => {
+    if (opt.value !== value) return;
+    if (opt.selected !== isSelected) {
+      opt.selected = isSelected;
+      changed = true;
+      if (isSelected) {
+        opt.setAttribute('selected', '');
+      } else {
+        opt.removeAttribute('selected');
+      }
+    }
+  });
+  if (changed) {
+    storageSelect.dispatchEvent(new Event('change'));
+  }
+}
+
 function renderFilterDetails() {
   if (!filterSelectElem) return;
-  const existingSelections = collectFilterSelections();
   const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value).filter(Boolean);
+  const existingSelections = collectFilterSelections();
   const existingTokens = existingSelections
     ? parseFilterTokens(existingSelections)
     : (currentProjectInfo && currentProjectInfo.filter ? parseFilterTokens(currentProjectInfo.filter) : []);
   const existingMap = new Map(existingTokens.map(token => [token.type, token]));
-  if (filterDetailsContainer) {
-    filterDetailsContainer.innerHTML = '';
-    if (!selected.length) {
-      filterDetailsContainer.classList.add('hidden');
-    } else {
-      filterDetailsContainer.classList.remove('hidden');
-      selected.forEach(type => {
-        const prev = existingMap.get(type) || {};
-        const row = document.createElement('div');
-        row.className = 'filter-detail';
-        const { label } = resolveFilterDisplayInfo(type, prev.size || DEFAULT_FILTER_SIZE);
-        const heading = document.createElement('div');
-        heading.className = 'filter-detail-label';
-        heading.textContent = label;
-        row.appendChild(heading);
-        const controls = document.createElement('div');
-        controls.className = 'filter-detail-controls';
-        if (type !== 'Diopter') {
-          const sizeLabel = document.createElement('label');
-          sizeLabel.className = 'filter-detail-size';
-          const sizeText = document.createElement('span');
-          sizeText.className = 'filter-detail-sublabel';
-          sizeText.textContent = 'Size';
-          const sizeSelect = createFilterSizeSelect(type, prev.size || DEFAULT_FILTER_SIZE);
-          sizeSelect.addEventListener('change', handleFilterDetailChange);
-          sizeLabel.append(sizeText, sizeSelect);
-          controls.appendChild(sizeLabel);
-        }
-        const needsValues = type === 'Diopter'
-          || type === 'IRND'
-          || type === 'ND Grad HE'
-          || type === 'ND Grad SE'
-          || (type !== 'Clear' && type !== 'Pol' && type !== 'Rota-Pol');
-        if (needsValues) {
-          const valuesWrap = document.createElement('div');
-          valuesWrap.className = 'filter-detail-values';
-          const valueLabel = document.createElement('span');
-          valueLabel.className = 'filter-detail-sublabel';
-          valueLabel.textContent = 'Strengths';
-          const { container, select } = createFilterValueSelect(type, prev.values);
-          select.addEventListener('change', handleFilterDetailChange);
-          valuesWrap.append(valueLabel, container);
-          controls.appendChild(valuesWrap);
-        }
-        row.appendChild(controls);
-        filterDetailsContainer.appendChild(row);
-      });
-    }
-  }
+  const details = selected.map(type => {
+    const prev = existingMap.get(type) || {};
+    const size = prev.size || DEFAULT_FILTER_SIZE;
+    const needsSize = type !== 'Diopter';
+    const needsValues = filterTypeNeedsValueSelect(type);
+    const { label } = resolveFilterDisplayInfo(type, size);
+    return {
+      type,
+      label,
+      size,
+      values: Array.isArray(prev.values) ? prev.values.slice() : undefined,
+      needsSize,
+      needsValues
+    };
+  });
+  renderFilterDetailsStorage(details);
+  renderGearListFilterDetails(details);
   if (matteboxSelect) {
     const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
     if (needsSwing) matteboxSelect.value = 'Swing Away';
@@ -20468,7 +20604,7 @@ function applyFilterSelectionsToGearList(info = currentProjectInfo) {
 
 function buildFilterSelectHtml(filters = []) {
   const entries = buildFilterGearEntries(filters);
-  return entries.map(entry => {
+  const summaryHtml = entries.map(entry => {
     const attrs = [
       'class="gear-item"',
       `data-gear-name="${escapeHtml(entry.gearName)}"`,
@@ -20479,6 +20615,10 @@ function buildFilterSelectHtml(filters = []) {
     const text = formatFilterEntryText(entry);
     return `<span ${attrs.join(' ')}>${escapeHtml(text)}</span>`;
   }).join('<br>');
+  const detailsContainer = entries.length
+    ? '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>'
+    : '';
+  return [summaryHtml, detailsContainer].filter(Boolean).join('<br>');
 }
 
 function collectFilterAccessories(filters = []) {

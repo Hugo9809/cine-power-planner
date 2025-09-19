@@ -3899,18 +3899,18 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   border-bottom: 1px solid var(--inverse-text-color);
 }
 
-#filterDetails {
+#gearListFilterDetails {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
-#filterDetails.hidden {
+#gearListFilterDetails.hidden {
   display: none;
 }
 
-#filterDetails .filter-detail {
+#gearListFilterDetails .filter-detail {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -3921,53 +3921,53 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .help-content {
   background: var(--panel-bg);
 }
 
-#filterDetails .filter-detail-label {
+#gearListFilterDetails .filter-detail-label {
   font-weight: 600;
   min-width: 10rem;
 }
 
-#filterDetails .filter-detail-controls {
+#gearListFilterDetails .filter-detail-controls {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
 }
 
-#filterDetails .filter-detail-size {
+#gearListFilterDetails .filter-detail-size {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
 }
 
-#filterDetails .filter-detail-values {
+#gearListFilterDetails .filter-detail-values {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
   align-items: center;
 }
 
-#filterDetails .filter-detail-sublabel {
+#gearListFilterDetails .filter-detail-sublabel {
   font-weight: 500;
 }
 
-#filterDetails .filter-detail-sublabel::after {
+#gearListFilterDetails .filter-detail-sublabel::after {
   content: ':';
 }
 
-#filterDetails .filter-values-container {
+#gearListFilterDetails .filter-values-container {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0.25rem;
 }
 
-#filterDetails .filter-value-option {
+#gearListFilterDetails .filter-value-option {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
 }
 
-#filterDetails .filter-value-option input[type="checkbox"] {
+#gearListFilterDetails .filter-value-option input[type="checkbox"] {
   margin: 0;
   padding: 0;
 }
