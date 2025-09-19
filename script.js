@@ -16482,22 +16482,33 @@ function applyPinkMode(enabled) {
 }
 
 let pinkModeEnabled = false;
+
+function persistPinkModePreference(enabled) {
+  pinkModeEnabled = !!enabled;
+  applyPinkMode(pinkModeEnabled);
+  try {
+    localStorage.setItem('pinkMode', pinkModeEnabled);
+  } catch (e) {
+    console.warn('Could not save pink mode preference', e);
+  }
+}
+
 try {
-  pinkModeEnabled = localStorage.getItem("pinkMode") === "true";
+  pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
 } catch (e) {
-  console.warn("Could not load pink mode preference", e);
+  console.warn('Could not load pink mode preference', e);
 }
 applyPinkMode(pinkModeEnabled);
 
 if (pinkModeToggle) {
   pinkModeToggle.addEventListener("click", () => {
-    pinkModeEnabled = !document.body.classList.contains("pink-mode");
-    applyPinkMode(pinkModeEnabled);
-    try {
-      localStorage.setItem("pinkMode", pinkModeEnabled);
-    } catch (e) {
-      console.warn("Could not save pink mode preference", e);
-    }
+    persistPinkModePreference(!document.body.classList.contains('pink-mode'));
+  });
+}
+
+if (settingsPinkMode) {
+  settingsPinkMode.addEventListener('change', () => {
+    persistPinkModePreference(settingsPinkMode.checked);
   });
 }
 
@@ -16558,13 +16569,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       if (settingsPinkMode) {
-        const enabled = settingsPinkMode.checked;
-        applyPinkMode(enabled);
-        try {
-          localStorage.setItem('pinkMode', enabled);
-        } catch (e) {
-          console.warn('Could not save pink mode preference', e);
-        }
+        persistPinkModePreference(settingsPinkMode.checked);
       }
       if (settingsHighContrast) {
         const enabled = settingsHighContrast.checked;
@@ -18153,13 +18158,7 @@ if (helpButton && helpDialog) {
         saveSetupBtn.click();
       }
     } else if (e.key.toLowerCase() === 'p' && !isTextField) {
-      pinkModeEnabled = !document.body.classList.contains('pink-mode');
-      applyPinkMode(pinkModeEnabled);
-      try {
-        localStorage.setItem('pinkMode', pinkModeEnabled);
-      } catch (err) {
-        console.warn('Could not save pink mode preference', err);
-      }
+      persistPinkModePreference(!document.body.classList.contains('pink-mode'));
     }
   });
 

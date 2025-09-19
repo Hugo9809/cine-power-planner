@@ -62,4 +62,33 @@ describe('settings dialog theme interactions', () => {
     expect(document.body.classList.contains('pink-mode')).toBe(true);
     expect(localStorage.getItem('pinkMode')).toBe('true');
   });
+
+  test('pink mode toggles auto-save from settings dialog', () => {
+    localStorage.setItem('pinkMode', 'false');
+
+    const { cleanup: clean } = setupScriptEnvironment();
+    cleanup = clean;
+
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsPinkMode = document.getElementById('settingsPinkMode');
+
+    expect(settingsButton).toBeTruthy();
+    expect(settingsPinkMode).toBeTruthy();
+
+    settingsButton.click();
+
+    expect(settingsPinkMode.checked).toBe(false);
+
+    settingsPinkMode.checked = true;
+    settingsPinkMode.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(document.body.classList.contains('pink-mode')).toBe(true);
+    expect(localStorage.getItem('pinkMode')).toBe('true');
+
+    settingsPinkMode.checked = false;
+    settingsPinkMode.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(document.body.classList.contains('pink-mode')).toBe(false);
+    expect(localStorage.getItem('pinkMode')).toBe('false');
+  });
 });
