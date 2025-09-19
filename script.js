@@ -4897,8 +4897,42 @@ function loadStoredLogoPreview() {
 
 const isPlainObjectValue = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
 
-const REQUIRED_DEVICE_CATEGORIES = ['cameras', 'monitors', 'video', 'viewfinders', 'fiz', 'batteries'];
-const DEFAULT_FIZ_COLLECTIONS = ['motors', 'controllers', 'distance'];
+const REQUIRED_DEVICE_CATEGORIES = [
+  'cameras',
+  'monitors',
+  'video',
+  'viewfinders',
+  'directorMonitors',
+  'iosVideo',
+  'videoAssist',
+  'media',
+  'lenses',
+  'fiz',
+  'batteries',
+  'batteryHotswaps',
+  'wirelessReceivers',
+  'accessories',
+];
+const DEFAULT_FIZ_COLLECTIONS = ['motors', 'handUnits', 'controllers', 'distance'];
+const DEFAULT_ACCESSORY_COLLECTIONS = [
+  'chargers',
+  'cages',
+  'powerPlates',
+  'cameraSupport',
+  'matteboxes',
+  'filters',
+  'rigging',
+  'batteries',
+  'cables',
+  'videoAssist',
+  'media',
+  'tripodHeads',
+  'tripods',
+  'sliders',
+  'cameraStabiliser',
+  'grip',
+  'carts',
+];
 const MAX_DEVICE_IMPORT_ERRORS = 5;
 
 function isDeviceEntryObject(value) {
@@ -4955,6 +4989,19 @@ function collectReferenceFizKeys() {
   return DEFAULT_FIZ_COLLECTIONS;
 }
 
+function collectReferenceAccessoryKeys() {
+  const reference = typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.defaultDevices)
+    ? globalThis.defaultDevices
+    : (typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.devices) ? globalThis.devices : null);
+  if (reference && isPlainObjectValue(reference.accessories)) {
+    const keys = Object.keys(reference.accessories).filter(Boolean);
+    if (keys.length) {
+      return keys;
+    }
+  }
+  return DEFAULT_ACCESSORY_COLLECTIONS;
+}
+
 function validateDeviceDatabaseStructure(candidate) {
   if (!isPlainObjectValue(candidate)) {
     return { devices: null, errors: ['Imported data must be a JSON object.'] };
@@ -4973,6 +5020,18 @@ function validateDeviceDatabaseStructure(candidate) {
       const missingFiz = expectedFizKeys.filter((key) => !isPlainObjectValue(candidate.fiz[key]));
       if (missingFiz.length) {
         errors.push(`Missing FIZ categories: ${missingFiz.join(', ')}`);
+      }
+      continue;
+    }
+    if (category === 'accessories') {
+      if (!isPlainObjectValue(candidate.accessories)) {
+        missing.push('accessories');
+        continue;
+      }
+      const expectedAccessoryKeys = collectReferenceAccessoryKeys();
+      const missingAccessories = expectedAccessoryKeys.filter((key) => !isPlainObjectValue(candidate.accessories[key]));
+      if (missingAccessories.length) {
+        errors.push(`Missing accessory categories: ${missingAccessories.join(', ')}`);
       }
       continue;
     }

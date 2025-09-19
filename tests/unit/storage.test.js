@@ -57,8 +57,36 @@ const validDeviceData = {
   cameras: {},
   monitors: {},
   video: {},
+  viewfinders: {},
+  directorMonitors: {},
+  iosVideo: {},
+  videoAssist: {},
+  media: {},
+  lenses: {},
   batteries: {},
-  fiz: { motors: {}, controllers: {}, distance: {} }
+  batteryHotswaps: {},
+  wirelessReceivers: {},
+  accessories: {
+    chargers: {},
+    cages: {},
+    powerPlates: {},
+    cameraSupport: {},
+    matteboxes: {},
+    filters: {},
+    rigging: {},
+    batteries: {},
+    cables: {},
+    videoAssist: {},
+    media: {},
+    tripodHeads: {},
+    tripods: {},
+    sliders: {},
+    cameraStabiliser: {},
+    grip: {},
+    carts: {},
+  },
+  fiz: { motors: {}, handUnits: {}, controllers: {}, distance: {} },
+  filterOptions: [],
 };
 
 describe('device data storage', () => {
@@ -84,8 +112,36 @@ describe('device data storage', () => {
       cameras: {},
       monitors: {},
       video: {},
+      viewfinders: {},
+      directorMonitors: {},
+      iosVideo: {},
+      videoAssist: {},
+      media: {},
+      lenses: {},
       batteries: {},
-      fiz: { motors: {}, controllers: {}, distance: {} }
+      batteryHotswaps: {},
+      wirelessReceivers: {},
+      accessories: {
+        chargers: {},
+        cages: {},
+        powerPlates: {},
+        cameraSupport: {},
+        matteboxes: {},
+        filters: {},
+        rigging: {},
+        batteries: {},
+        cables: {},
+        videoAssist: {},
+        media: {},
+        tripodHeads: {},
+        tripods: {},
+        sliders: {},
+        cameraStabiliser: {},
+        grip: {},
+        carts: {},
+      },
+      fiz: { motors: {}, handUnits: {}, controllers: {}, distance: {} },
+      filterOptions: [],
     };
     expect(result).toEqual(expected);
     expect(JSON.parse(localStorage.getItem(DEVICE_KEY))).toEqual(expected);
@@ -96,17 +152,39 @@ describe('device data storage', () => {
       cameras: null,
       monitors: [],
       video: 5,
+      viewfinders: 'vfs',
+      directorMonitors: 3,
+      iosVideo: false,
+      videoAssist: 'assist',
+      media: 10,
+      lenses: ['Prime'],
       batteries: 'x',
-      fiz: { motors: [], controllers: null }
+      batteryHotswaps: 1,
+      wirelessReceivers: null,
+      accessories: {
+        chargers: [],
+        cages: null,
+        powerPlates: 'yes',
+        cameraSupport: 5,
+        matteboxes: null,
+        filters: 'string',
+        rigging: {},
+        batteries: [],
+        cables: 'cable',
+        videoAssist: null,
+        media: 'media',
+        tripodHeads: 4,
+        tripods: {},
+        sliders: false,
+        cameraStabiliser: 'rig',
+        grip: null,
+        carts: [],
+      },
+      fiz: { motors: [], handUnits: 'x', controllers: null },
+      filterOptions: {},
     };
     localStorage.setItem(DEVICE_KEY, JSON.stringify(corrupted));
-    expect(loadDeviceData()).toEqual({
-      cameras: {},
-      monitors: {},
-      video: {},
-      batteries: {},
-      fiz: { motors: {}, controllers: {}, distance: {} }
-    });
+    expect(loadDeviceData()).toEqual(validDeviceData);
   });
 
   test('loadDeviceData returns null for primitive data', () => {
