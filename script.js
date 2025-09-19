@@ -3088,12 +3088,35 @@ const ICON_GLYPHS = Object.freeze({
   pin: '\uEBCB',
   sun: '\uF1F7',
   moon: '\uEC7E',
-  unicorn: '\uF38D',
-  horse: '\uE9E1',
   circleX: '\uE453',
-  circleStar: '\uE445',
   star: '\uF1A9',
   warning: '\uF340'
+});
+
+const PINK_MODE_ICONS = Object.freeze({
+  off: {
+    className: 'icon-svg pink-mode-icon',
+    markup:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M5.5 11.3 8.9 6.1a1 1 0 0 1 1.1-.3l2.8.9a1 1 0 0 1 .5.4l2.5 3.5v2.9l-1.6 2.5V20H9.4v-3.2L6.5 14l-.9-1Z" />' +
+      '<path d="M11.9 6.8 15.2 4.1 15.5 5.8" />' +
+      '<path d="M9 8.1 6.5 7.1" />' +
+      '<path d="M12.4 13.3c.9.1 1.6.6 2 1.3" />' +
+      '<circle cx="14.6" cy="10.6" r=".55" />' +
+      '</svg>'
+  },
+  on: {
+    className: 'icon-svg pink-mode-icon',
+    markup:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M5.4 11.2 8.9 6.1a1 1 0 0 1 1.1-.3l2.8.9a1 1 0 0 1 .5.4l2.5 3.6v2.9l-1.7 2.6V20H9.4v-3.1L6.5 14l-.9-1.1Z" />' +
+      '<path d="M12.1 6.9 15.4 4.2 15.7 5.9" />' +
+      '<path d="M9 8.1 6.3 6.8 8 5.1" />' +
+      '<path d="M12.5 13.4c.9.1 1.6.6 2 1.3" />' +
+      '<circle cx="14.8" cy="10.6" r=".55" />' +
+      '<path d="M18 4.7 18.5 3.5 19 4.7 20.2 5.1 19 5.5 18.5 6.7 18 5.5 16.8 5.1Z" />' +
+      '</svg>'
+  }
 });
 
 const projectFieldIcons = {
@@ -15161,7 +15184,27 @@ function setToggleIcon(button, glyph) {
     button.textContent = '';
     button.appendChild(iconSpan);
   }
-  iconSpan.textContent = glyph;
+
+  const glyphConfig =
+    glyph && typeof glyph === 'object'
+      ? glyph
+      : { value: glyph };
+
+  const classNames = ['icon-glyph'];
+  if (glyphConfig.className) {
+    classNames.push(glyphConfig.className);
+  }
+  iconSpan.className = classNames.join(' ');
+
+  if (glyphConfig.markup) {
+    iconSpan.innerHTML = glyphConfig.markup;
+  } else {
+    const textValue =
+      glyphConfig.value === undefined || glyphConfig.value === null
+        ? ''
+        : glyphConfig.value;
+    iconSpan.textContent = textValue;
+  }
 }
 
 function applyDarkMode(enabled) {
@@ -15252,7 +15295,7 @@ function applyPinkMode(enabled) {
     }
     clearAccentColorOverrides();
     if (pinkModeToggle) {
-      setToggleIcon(pinkModeToggle, ICON_GLYPHS.unicorn);
+      setToggleIcon(pinkModeToggle, PINK_MODE_ICONS.on);
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
   } else {
@@ -15262,7 +15305,7 @@ function applyPinkMode(enabled) {
     }
     applyAccentColor(accentColor);
     if (pinkModeToggle) {
-      setToggleIcon(pinkModeToggle, ICON_GLYPHS.horse);
+      setToggleIcon(pinkModeToggle, PINK_MODE_ICONS.off);
       pinkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
