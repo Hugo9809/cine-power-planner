@@ -382,4 +382,56 @@ describe('applyAutoGearRulesToTableHtml', () => {
       sessionStorage.clear();
     }
   });
+
+  test('reset button restores factory rule set via reseed function', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'custom-rule',
+          label: 'Custom wipe',
+          scenarios: ['Slider'],
+          add: [],
+          remove: [
+            { id: 'remove-custom', name: 'Legacy Monitor', category: 'Monitoring', quantity: 1 }
+          ]
+        }
+      ])
+    );
+    localStorage.setItem('cameraPowerPlanner_autoGearSeeded', '1');
+
+    env = setupScriptEnvironment();
+
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+    const factoryRules = [
+      {
+        id: 'factory-rule',
+        label: 'Factory Slider Pack',
+        scenarios: ['Slider'],
+        add: [
+          { id: 'factory-add', name: 'Slider Support', category: 'Grip', quantity: 1 }
+        ],
+        remove: []
+      }
+    ];
+
+    env.utils.setAutoGearReseedFunction(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(factoryRules));
+      env.utils.syncAutoGearRulesFromStorage(factoryRules);
+      localStorage.setItem('cameraPowerPlanner_autoGearSeeded', '1');
+    });
+
+    const resetButton = document.getElementById('autoGearResetRules');
+    expect(resetButton).not.toBeNull();
+
+    resetButton.click();
+
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY))).toEqual(factoryRules);
+    expect(env.utils.getAutoGearRules()).toEqual(factoryRules);
+    expect(localStorage.getItem('cameraPowerPlanner_autoGearSeeded')).toBe('1');
+
+    env.utils.setAutoGearReseedFunction(null);
+    confirmSpy.mockRestore();
+  });
 });

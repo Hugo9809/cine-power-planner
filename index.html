@@ -695,7 +695,10 @@
         <h3 id="autoGearHeading">Automatic Gear Rules</h3>
         <p id="autoGearDescription" class="settings-hint"></p>
         <div id="autoGearRulesList" class="auto-gear-rules" aria-live="polite"></div>
-        <button type="button" id="autoGearAddRule">Add rule</button>
+        <div class="auto-gear-actions">
+          <button type="button" id="autoGearAddRule">Add rule</button>
+          <button type="button" id="autoGearResetRules">Reset to factory additions</button>
+        </div>
         <div id="autoGearEditor" class="auto-gear-editor" hidden>
           <div class="form-row">
             <label for="autoGearRuleName" id="autoGearRuleNameLabel">Rule name</label>
@@ -1263,7 +1266,7 @@
         <section
           data-help-section
           id="autoGearRulesHelp"
-          data-help-keywords="automatic gear rules auto add remove custom scenario requirements generator list automation"
+          data-help-keywords="automatic gear rules auto add remove custom scenario requirements generator list automation reset factory"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true">&#xE1CE;</span>Automatic Gear Rules</h3>
           <ul>
@@ -1288,6 +1291,10 @@
               category shown in the gear list to target the right row.
             </li>
             <li>
+              Click <strong>Reset to factory additions</strong> to restore the automatic rules generated from the stock planner
+              scenarios whenever you want to discard custom changes.
+            </li>
+            <li>
               Rules live in Settings, are included in backups and apply to printable gear lists and shared project exports.
             </li>
           </ul>
@@ -1303,6 +1310,11 @@
               href="#settingsDialog"
               data-help-target="#autoGearAddRule"
             >Add rule</a>
+            <a
+              class="help-link help-chip"
+              href="#settingsDialog"
+              data-help-target="#autoGearResetRules"
+            >Reset to factory additions</a>
             <a
               class="help-link help-chip"
               href="#settingsDialog"
@@ -1821,7 +1833,7 @@
           </details>
           <details
             class="faq-item"
-            data-help-keywords="automatic gear rules scenarios add remove custom items generator overrides"
+            data-help-keywords="automatic gear rules scenarios add remove custom items generator overrides reset factory"
           >
             <summary>How do Automatic Gear Rules work?</summary>
             <p>
@@ -1843,6 +1855,10 @@
             <p>
               Use the <strong>Remove these items</strong> list to hide entries the generator adds by default. Rules are stored in
               Settings, included in backups and apply to printable gear lists and shared project exports.
+            </p>
+            <p>
+              Need to start over? Use <a class="help-link" href="#settingsDialog" data-help-target="#autoGearResetRules">Reset to
+              factory additions</a> to reload the automatically generated rules that ship with the planner.
             </p>
           </details>
           <details

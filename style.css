@@ -922,6 +922,17 @@ main.legal-content {
   gap: 12px;
 }
 
+.auto-gear-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 12px 0;
+}
+
+.auto-gear-actions > button {
+  flex: 0 0 auto;
+}
+
 .auto-gear-rule {
   display: flex;
   justify-content: space-between;
