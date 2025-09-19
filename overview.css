@@ -7,7 +7,7 @@ select:focus-visible {
   outline: none;
 }
 
-body { font-family: 'Ubuntu', sans-serif; font-weight: 300; margin: 25px; color: var(--control-text); font-size: 0.9em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: 'Ubuntu', sans-serif; font-weight: 300; margin: 25px; color: var(--control-text); font-size: 0.9em; line-height: var(--line-height-base, 1.6); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 @media (max-width: 600px) {
   body { margin: 10px; }
   h2 { padding-bottom: 8px; }
@@ -16,7 +16,7 @@ h1, h2, h3 { font-family: 'Ubuntu', sans-serif; font-weight: 400; color: var(--a
 h1 { font-size: 1.8em; margin-bottom: 0.2em; }
 h2 { font-size: 1.4em; margin-top: 1.3em; border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; }
 h3 { font-size: 1.1em; margin-top: 1em; }
-p { line-height: 1.4em; }
+p { line-height: var(--line-height-base, 1.6); }
 ul { list-style: none; margin: 5px 0; padding-left: 0; }
 li { margin: 3px 0; }
 table {
@@ -36,7 +36,7 @@ th { background-color: var(--control-bg); font-weight: 700; }
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
-  line-height: 1.4em;
+  line-height: var(--line-height-supporting, 1.5);
   break-inside: avoid;
   page-break-inside: avoid;
 }
