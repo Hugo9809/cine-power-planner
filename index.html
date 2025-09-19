@@ -198,67 +198,64 @@
       <span class="form-label-spacer" aria-hidden="true"></span>
       <div class="form-actions">
         <button id="shareSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF219;</span>Share Project</button>
+        <div id="sharedLinkRow" class="share-import-group">
+          <label for="applySharedLinkBtn" id="sharedLinkLabel">Shared Project:</label>
+          <input
+            type="file"
+            id="sharedLinkInput"
+            accept=".json"
+            aria-hidden="true"
+            tabindex="-1"
+            class="visually-hidden"
+          />
+          <button id="applySharedLinkBtn">
+            <span class="btn-icon icon-glyph icon-svg" aria-hidden="true">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                  d="M12 3v9.75"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <polyline
+                  points="8.75 9.75 12 12.75 15.25 9.75"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M4.75 11.5H8.6L10.4 9h8.85L21 11.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <rect
+                  x="4.75"
+                  y="12.5"
+                  width="14.5"
+                  height="7.25"
+                  rx="1.75"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
+            Load
+          </button>
+        </div>
+        <button id="clearSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Clear Current Project</button>
       </div>
     </div>
     <p id="shareLinkMessage" class="hidden" role="status" aria-live="polite"></p>
-    <div class="form-row" id="sharedLinkRow">
-      <label for="applySharedLinkBtn" id="sharedLinkLabel">Shared Project:</label>
-      <input
-        type="file"
-        id="sharedLinkInput"
-        accept=".json"
-        aria-hidden="true"
-        tabindex="-1"
-        class="visually-hidden"
-      />
-      <button id="applySharedLinkBtn">
-        <span class="btn-icon icon-glyph icon-svg" aria-hidden="true">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path
-              d="M12 3v9.75"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <polyline
-              points="8.75 9.75 12 12.75 15.25 9.75"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M4.75 11.5H8.6L10.4 9h8.85L21 11.5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <rect
-              x="4.75"
-              y="12.5"
-              width="14.5"
-              height="7.25"
-              rx="1.75"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </span>
-        Load
-      </button>
-    </div>
-    <div class="form-row form-row-actions">
-      <span class="form-label-spacer" aria-hidden="true"></span>
-      <button id="clearSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Clear Current Project</button>
-    </div>
     <div class="form-row form-row-actions" role="group" aria-label="Project exports">
       <span class="form-label-spacer" aria-hidden="true"></span>
       <div class="form-actions">
