@@ -46,6 +46,9 @@
   --success-color: #4caf50;
   --info-color: #2196f3;
   --neutral-color: #9e9e9e;
+  --offline-indicator-bg: #2f3437;
+  --offline-indicator-text: #f5f7fa;
+  --offline-indicator-border: rgba(245, 247, 250, 0.2);
   --status-error-bg: #fdd;
   --status-warning-bg: #ffd;
   --status-success-bg: #dfd;
@@ -152,12 +155,18 @@ textarea {
   top: 0;
   left: 0;
   right: 0;
-  background: var(--warning-color);
-  color: var(--warning-text-color);
+  background: var(--offline-indicator-bg);
+  color: var(--offline-indicator-text);
   text-align: center;
-  padding: 8px 0;
+  padding: 10px 16px;
   z-index: 1000;
   display: none;
+  border-bottom: 1px solid var(--offline-indicator-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
 .visually-hidden {
