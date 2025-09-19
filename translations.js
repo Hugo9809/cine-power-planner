@@ -436,7 +436,8 @@ const texts = {
     noBatterySupports: "No battery can supply this load.",
 
     alertSetupName: "Please enter a name for the project.",
-    alertSetupSaved: "Project \"{name}\" saved.",
+    alertSetupSaved:
+      "Project \"{name}\" saved in this browser. It stays available after closing or reopening tabs unless you clear the browser cache.",
     alertNoSetupSelected: "Please select a saved project to delete.",
     alertSetupDeleted: "Project \"{name}\" deleted.",
     confirmClearSetup: "Clear current project?",
@@ -943,7 +944,8 @@ const texts = {
     batteryCountTempLabel: "Batterie necessarie",
     noBatterySupports: "Nessuna batteria può fornire questo carico.",
     alertSetupName: "Immettere un nome per l'installazione.",
-    alertSetupSaved: "Setup \"{name}\" salvato.",
+    alertSetupSaved:
+      "Setup \"{name}\" salvato nel browser. Rimane disponibile dopo aver chiuso o riaperto le schede finché non svuoti la cache del browser.",
     alertNoSetupSelected: "Selezionare una configurazione salvata da eliminare.",
     alertSetupDeleted: "Setup \"{name}\" eliminato.",
     confirmClearSetup: "Cancella configurazione corrente?",
@@ -1569,7 +1571,8 @@ const texts = {
     noBatterySupports: "Ninguna batería puede suministrar esta carga.",
 
     alertSetupName: "Ingresa un nombre para el proyecto.",
-    alertSetupSaved: "Proyecto \"{name}\" guardado.",
+    alertSetupSaved:
+      "Proyecto \"{name}\" guardado en este navegador. Permanece disponible al cerrar o volver a abrir pestañas mientras no borres la caché del navegador.",
     alertNoSetupSelected: "Selecciona un proyecto para eliminar.",
     alertSetupDeleted: "Proyecto \"{name}\" eliminado.",
     confirmClearSetup: "¿Borrar el proyecto actual?",
@@ -2198,7 +2201,8 @@ const texts = {
     noBatterySupports: "Aucune batterie ne peut fournir cette charge.",
 
     alertSetupName: "Veuillez saisir un nom pour la configuration.",
-    alertSetupSaved: "Configuration \"{name}\" enregistrée.",
+    alertSetupSaved:
+      "Configuration \"{name}\" enregistrée dans ce navigateur. Elle reste disponible après avoir fermé ou rouvert des onglets tant que vous ne videz pas le cache du navigateur.",
     alertNoSetupSelected: "Sélectionnez une configuration à supprimer.",
     alertSetupDeleted: "Configuration \"{name}\" supprimée.",
     confirmClearSetup: "Effacer la configuration actuelle ?",
@@ -2830,7 +2834,8 @@ const texts = {
     noBatterySupports: "Kein Akku kann diese Last liefern.",
 
     alertSetupName: "Bitte einen Namen für das Projekt eingeben.",
-    alertSetupSaved: "Projekt \"{name}\" gespeichert.",
+    alertSetupSaved:
+      "Projekt \"{name}\" in diesem Browser gespeichert. Es bleibt verfügbar, wenn Sie Tabs oder den Browser schließen und erneut öffnen, solange Sie den Browsercache nicht löschen.",
     alertNoSetupSelected: "Wählen Sie ein gespeichertes Projekt zum Löschen aus.",
     alertSetupDeleted: "Projekt \"{name}\" gelöscht.",
     confirmClearSetup: "Aktuelles Projekt zurücksetzen?",
