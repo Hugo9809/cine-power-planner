@@ -2905,12 +2905,20 @@ const videoLatencyInput = document.getElementById("videoLatency");
 function showFormSection(section) {
   if (!section) return;
   section.classList.remove('hidden');
+  if (typeof section.removeAttribute === 'function') {
+    section.removeAttribute('hidden');
+  }
+  section.hidden = false;
   section.style.display = '';
 }
 
 function hideFormSection(section) {
   if (!section) return;
   section.classList.add('hidden');
+  if (typeof section.setAttribute === 'function') {
+    section.setAttribute('hidden', '');
+  }
+  section.hidden = true;
   section.style.display = 'none';
 }
 const addDeviceForm = wattFieldDiv ? wattFieldDiv.parentNode : null;
@@ -9594,7 +9602,7 @@ deviceManagerSection.addEventListener("click", (event) => {
     addDeviceBtn.dataset.mode = "edit";
     cancelEditBtn.textContent = texts[currentLang].cancelEditBtn;
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    cancelEditBtn.style.display = "inline";
+    showFormSection(cancelEditBtn);
     document.getElementById("addDeviceHeading").scrollIntoView({ behavior: "smooth", block: "start" });
   } else if (event.target.classList.contains("delete-btn")) {
     const name = event.target.dataset.name;
@@ -9773,7 +9781,7 @@ newCategorySelect.addEventListener("change", () => {
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    cancelEditBtn.style.display = "inline";
+    showFormSection(cancelEditBtn);
   } else {
     addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
@@ -9782,7 +9790,7 @@ newCategorySelect.addEventListener("change", () => {
     delete addDeviceBtn.dataset.originalSubcategory;
     delete addDeviceBtn.dataset.originalCategory;
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
-    cancelEditBtn.style.display = "none";
+    hideFormSection(cancelEditBtn);
   }
 });
 
@@ -9800,7 +9808,7 @@ function resetDeviceForm() {
     delete addDeviceBtn.dataset.originalCategory;
   }
   if (cancelEditBtn) {
-    cancelEditBtn.style.display = "none";
+    hideFormSection(cancelEditBtn);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
   }
   // Trigger change handler to reset fields and button text, guarding against
