@@ -2208,7 +2208,7 @@ function setLanguage(lang) {
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
-  setButtonLabelWithIcon(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.note);
+  setButtonLabelWithIcon(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
   // Update the "-- New Setup --" option text
   if (setupSelect.options.length > 0) {
     setupSelect.options[0].textContent = texts[lang].newSetupOption;
@@ -3309,6 +3309,27 @@ function glyphText(glyph) {
   return resolved.char || '';
 }
 
+const FEEDBACK_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      d="M5 4.5H19Q21.5 4.5 21.5 7V13Q21.5 15.5 19 15.5H15.5L12 19 8.5 15.5H5Q2.5 15.5 2.5 13V7Q2.5 4.5 5 4.5Z"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M8.5 10.5 10.5 12.5 14.5 8.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`.trim();
+
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -3333,6 +3354,7 @@ const ICON_GLYPHS = Object.freeze({
   audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
   audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
   note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
+  feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG }),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
   sun: iconGlyph('\uF1F7', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
