@@ -1127,6 +1127,12 @@ main.legal-content {
   transition: outline-color 0.2s ease-in-out;
 }
 
+.help-target-focus:focus,
+.help-target-focus:focus-visible {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 4px;
+}
+
 .help-icon {
   margin-right: 0.3em;
 }
