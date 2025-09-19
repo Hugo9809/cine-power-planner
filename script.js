@@ -2069,6 +2069,13 @@ function setLanguage(lang) {
     texts[lang].loadSharedLinkBtn,
     ICON_GLYPHS.load
   );
+  if (applySharedLinkBtn) {
+    const loadIcon = applySharedLinkBtn.querySelector('.icon-glyph');
+    if (loadIcon) {
+      loadIcon.classList.add('icon-svg');
+      loadIcon.innerHTML = LOAD_ICON_SVG;
+    }
+  }
 
   // Descriptive hover help for setup management controls
   setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
@@ -3289,6 +3296,39 @@ const HORSE_ICON_SVG = `
       fill="#cf976a"
     />
     <circle cx="41" cy="25" r="1.25" fill="#ecf0f1" />
+  </svg>
+`.trim();
+
+const LOAD_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      d="M12 3v9"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M8.5 9.5 12 13l3.5-3.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <rect
+      x="5"
+      y="16"
+      width="14"
+      height="5"
+      rx="1"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
   </svg>
 `.trim();
 
