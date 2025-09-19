@@ -2568,7 +2568,11 @@ function setLanguage(lang) {
   // NEW SETUP MANAGEMENT BUTTONS TEXTS
   document.getElementById("generateOverviewBtn").textContent = texts[lang].generateOverviewBtn;
   document.getElementById("generateGearListBtn").textContent = texts[lang].generateGearListBtn;
-  document.getElementById("shareSetupBtn").textContent = texts[lang].shareSetupBtn;
+  setButtonLabelWithIcon(
+    document.getElementById("shareSetupBtn"),
+    texts[lang].shareSetupBtn,
+    ICON_GLYPHS.share
+  );
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) {
     exportRevert.textContent = texts[lang].exportAndRevertBtn;
@@ -2854,6 +2858,7 @@ const ICON_GLYPHS = Object.freeze({
   trash: '\uF32D',
   reload: '\uE11B',
   save: '\uE825',
+  share: '\uF045',
   timecode: '\uF1CD',
   audioIn: '\uEC2E',
   audioOut: '\uF44C',
