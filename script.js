@@ -2093,62 +2093,56 @@ function setLanguage(lang) {
     }
   }
 
+  let sharedImportLegendText = sharedImportLegend ? sharedImportLegend.textContent : '';
   if (sharedImportLegend) {
     const legend = texts[lang].sharedImportAutoGearLabel
       || texts.en?.sharedImportAutoGearLabel
       || sharedImportLegend.textContent;
     sharedImportLegend.textContent = legend;
+    sharedImportLegendText = legend;
     if (sharedImportOptions) {
       sharedImportOptions.setAttribute('data-help', legend);
     }
   }
-  if (sharedImportModeNoneText) {
+  if (sharedImportModeSelect && sharedImportLegendText) {
+    sharedImportModeSelect.setAttribute('aria-label', sharedImportLegendText);
+    sharedImportModeSelect.setAttribute('data-help', sharedImportLegendText);
+  }
+  if (sharedImportModeNoneOption) {
     const label = texts[lang].sharedImportAutoGearNone
       || texts.en?.sharedImportAutoGearNone
-      || sharedImportModeNoneText.textContent;
-    sharedImportModeNoneText.textContent = label;
+      || sharedImportModeNoneOption.textContent;
+    sharedImportModeNoneOption.textContent = label;
     const help = texts[lang].sharedImportAutoGearNoneHelp
       || texts.en?.sharedImportAutoGearNoneHelp
       || label;
-    if (sharedImportModeNoneLabel) {
-      sharedImportModeNoneLabel.setAttribute('data-help', help);
-    }
-    const noneRadio = sharedImportModeNoneLabel?.querySelector('input[type="radio"]');
-    if (noneRadio) {
-      noneRadio.setAttribute('aria-label', label);
-    }
+    sharedImportModeNoneOption.setAttribute('data-help', help);
+    sharedImportModeNoneOption.setAttribute('title', help);
+    sharedImportModeNoneOption.setAttribute('aria-label', label);
   }
-  if (sharedImportModeProjectText) {
+  if (sharedImportModeProjectOption) {
     const label = texts[lang].sharedImportAutoGearProject
       || texts.en?.sharedImportAutoGearProject
-      || sharedImportModeProjectText.textContent;
-    sharedImportModeProjectText.textContent = label;
+      || sharedImportModeProjectOption.textContent;
+    sharedImportModeProjectOption.textContent = label;
     const help = texts[lang].sharedImportAutoGearProjectHelp
       || texts.en?.sharedImportAutoGearProjectHelp
       || label;
-    if (sharedImportModeProjectLabel) {
-      sharedImportModeProjectLabel.setAttribute('data-help', help);
-    }
-    const projectRadio = sharedImportModeProjectLabel?.querySelector('input[type="radio"]');
-    if (projectRadio) {
-      projectRadio.setAttribute('aria-label', label);
-    }
+    sharedImportModeProjectOption.setAttribute('data-help', help);
+    sharedImportModeProjectOption.setAttribute('title', help);
+    sharedImportModeProjectOption.setAttribute('aria-label', label);
   }
-  if (sharedImportModeGlobalText) {
+  if (sharedImportModeGlobalOption) {
     const label = texts[lang].sharedImportAutoGearGlobal
       || texts.en?.sharedImportAutoGearGlobal
-      || sharedImportModeGlobalText.textContent;
-    sharedImportModeGlobalText.textContent = label;
+      || sharedImportModeGlobalOption.textContent;
+    sharedImportModeGlobalOption.textContent = label;
     const help = texts[lang].sharedImportAutoGearGlobalHelp
       || texts.en?.sharedImportAutoGearGlobalHelp
       || label;
-    if (sharedImportModeGlobalLabel) {
-      sharedImportModeGlobalLabel.setAttribute('data-help', help);
-    }
-    const globalRadio = sharedImportModeGlobalLabel?.querySelector('input[type="radio"]');
-    if (globalRadio) {
-      globalRadio.setAttribute('aria-label', label);
-    }
+    sharedImportModeGlobalOption.setAttribute('data-help', help);
+    sharedImportModeGlobalOption.setAttribute('title', help);
+    sharedImportModeGlobalOption.setAttribute('aria-label', label);
   }
 
   applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
@@ -3510,17 +3504,15 @@ const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearTe
 const shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
 const sharedImportOptions = document.getElementById("sharedImportOptions");
 const sharedImportLegend = document.getElementById("sharedImportLegend");
-const sharedImportModeNoneLabel = document.getElementById("sharedImportModeNoneLabel");
-const sharedImportModeProjectLabel = document.getElementById("sharedImportModeProjectLabel");
-const sharedImportModeGlobalLabel = document.getElementById("sharedImportModeGlobalLabel");
-const sharedImportModeNoneText = document.getElementById("sharedImportModeNoneText");
-const sharedImportModeProjectText = document.getElementById("sharedImportModeProjectText");
-const sharedImportModeGlobalText = document.getElementById("sharedImportModeGlobalText");
-if (sharedImportOptions) {
-  const projectRadio = sharedImportOptions.querySelector('input[value="project"]');
-  const globalRadio = sharedImportOptions.querySelector('input[value="global"]');
-  if (projectRadio) projectRadio.disabled = true;
-  if (globalRadio) globalRadio.disabled = true;
+const sharedImportModeSelect = document.getElementById("sharedImportModeSelect");
+const sharedImportModeNoneOption = document.getElementById("sharedImportModeNoneOption");
+const sharedImportModeProjectOption = document.getElementById("sharedImportModeProjectOption");
+const sharedImportModeGlobalOption = document.getElementById("sharedImportModeGlobalOption");
+if (sharedImportModeSelect) {
+  Array.from(sharedImportModeSelect.options || []).forEach(option => {
+    if (option.value === "none") return;
+    option.disabled = true;
+  });
 }
 let lastSetupName = setupSelect ? setupSelect.value : '';
 const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
@@ -3547,15 +3539,29 @@ const sharedKeyMap = {
 
 function resolveSharedImportMode(sharedRules) {
   const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
-  if (!hasRules) return 'none';
-  if (!sharedImportOptions) return 'project';
-  const radios = sharedImportOptions.querySelectorAll('input[name="sharedImportMode"]');
-  const checked = Array.from(radios || []).find(radio => radio.checked);
-  const value = checked ? checked.value : 'project';
-  if (value === 'global' || value === 'project' || value === 'none') {
-    return value;
+  if (!sharedImportModeSelect) {
+    return hasRules ? 'project' : 'none';
   }
-  return 'project';
+  const selectedValues = Array.from(sharedImportModeSelect.selectedOptions || [])
+    .map(option => option.value)
+    .filter(value => value === 'none' || value === 'project' || value === 'global');
+  if (!hasRules) {
+    return 'none';
+  }
+  let modes = Array.from(new Set(selectedValues));
+  if (!modes.length) {
+    return 'project';
+  }
+  if (modes.length > 1 && modes.includes('none')) {
+    modes = modes.filter(value => value !== 'none');
+  }
+  if (!modes.length) {
+    return 'project';
+  }
+  if (modes.length === 1) {
+    return modes[0];
+  }
+  return modes;
 }
 
 function encodeSharedSetup(setup) {
@@ -12461,20 +12467,24 @@ if (applySharedLinkBtn && sharedLinkInput) {
       try {
         const data = JSON.parse(reader.result);
         const sharedRules = Array.isArray(data.autoGearRules) ? data.autoGearRules : null;
-        if (sharedImportOptions) {
-          const radios = sharedImportOptions.querySelectorAll('input[name="sharedImportMode"]');
+        if (sharedImportModeSelect) {
           const hasRules = Array.isArray(sharedRules) && sharedRules.length > 0;
-          Array.from(radios || []).forEach(radio => {
-            if (radio.value === 'none') {
-              radio.disabled = false;
-              if (!hasRules) radio.checked = true;
+          Array.from(sharedImportModeSelect.options || []).forEach(option => {
+            if (option.value === 'none') {
+              option.disabled = false;
+              if (!hasRules) {
+                option.selected = true;
+              }
             } else {
-              radio.disabled = !hasRules;
-              if (!hasRules && radio.checked) {
-                radio.checked = false;
+              option.disabled = !hasRules;
+              if (!hasRules) {
+                option.selected = false;
               }
             }
           });
+          if (!hasRules && !sharedImportModeSelect.selectedOptions.length) {
+            sharedImportModeSelect.selectedIndex = 0;
+          }
         }
         const mode = resolveSharedImportMode(sharedRules);
         applySharedSetup(data, { autoGearMode: mode, sharedAutoGearRules: sharedRules });
@@ -15396,13 +15406,30 @@ function applySharedSetup(shared, options = {}) {
     const providedRules = Array.isArray(options.sharedAutoGearRules) && options.sharedAutoGearRules.length
       ? options.sharedAutoGearRules
       : sharedRulesFromData;
-    let mode = options.autoGearMode;
-    if (!mode || !['global', 'project', 'none'].includes(mode)) {
-      mode = providedRules && providedRules.length ? 'project' : 'none';
+    const hasProvidedRules = Array.isArray(providedRules) && providedRules.length > 0;
+    const providedMode = options.autoGearMode;
+    let modes = Array.isArray(providedMode)
+      ? providedMode.slice()
+      : (typeof providedMode === 'string' ? [providedMode] : []);
+    modes = modes.filter((value, index, arr) => (
+      (value === 'none' || value === 'project' || value === 'global')
+      && arr.indexOf(value) === index
+    ));
+    if (!modes.length) {
+      modes = hasProvidedRules ? ['project'] : ['none'];
     }
+    if (modes.length > 1 && modes.includes('none')) {
+      modes = modes.filter(value => value !== 'none');
+    }
+    if (!modes.length) {
+      modes = hasProvidedRules ? ['project'] : ['none'];
+    }
+    const applyGlobal = modes.includes('global');
+    const applyProject = modes.includes('project');
+    const applyNoneOnly = modes.length === 1 && modes[0] === 'none';
     let autoGearUpdated = false;
-    if (mode === 'global') {
-      if (providedRules && providedRules.length) {
+    if (applyGlobal) {
+      if (hasProvidedRules) {
         const merged = mergeAutoGearRules(getBaseAutoGearRules(), providedRules);
         setAutoGearRules(merged);
         autoGearUpdated = true;
@@ -15410,16 +15437,19 @@ function applySharedSetup(shared, options = {}) {
         clearProjectAutoGearRules();
         autoGearUpdated = true;
       }
-    } else if (mode === 'project') {
-      if (providedRules && providedRules.length) {
+    }
+    if (applyProject) {
+      if (hasProvidedRules) {
         useProjectAutoGearRules(providedRules);
       } else {
         clearProjectAutoGearRules();
       }
       autoGearUpdated = true;
-    } else if (usingProjectAutoGearRules()) {
-      clearProjectAutoGearRules();
-      autoGearUpdated = true;
+    } else if (!applyGlobal && (applyNoneOnly || !hasProvidedRules)) {
+      if (usingProjectAutoGearRules()) {
+        clearProjectAutoGearRules();
+        autoGearUpdated = true;
+      }
     }
     if (autoGearUpdated) {
       renderAutoGearRulesList();
