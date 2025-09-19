@@ -1296,14 +1296,31 @@ main.legal-content {
 }
 
 .icon-glyph {
-  font-family: 'uicons-thin-straight';
+  font-family: var(--icon-font-family, 'uicons-thin-straight'), 'uicons-thin-straight';
   font-style: normal;
   font-weight: 400;
+  font-variant: normal;
+  font-variant-ligatures: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: var(--icon-color, currentColor);
+}
+
+.icon-font-essential {
+  --icon-font-family: 'EssentialIcons';
+}
+
+.icon-font-film {
+  --icon-font-family: 'FilmIndustryIcons';
+}
+
+.icon-font-gadget {
+  --icon-font-family: 'GadgetIcons';
 }
 
 #featureSearchClear .icon-glyph,

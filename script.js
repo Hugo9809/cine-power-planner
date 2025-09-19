@@ -1825,7 +1825,7 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  deleteSetupBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.trash}</span>${texts[lang].deleteSetupBtn}`;
+  setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
   clearSetupBtn.textContent = texts[lang].clearSetupBtn;
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
@@ -2597,7 +2597,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
   }
   if (resetViewBtn) {
-    resetViewBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.reload}</span>${texts[lang].resetViewBtn}`;
+    setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.reload);
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
@@ -2845,38 +2845,42 @@ const crewRoles = [
   'Rigging Grip'
 ];
 
+const ICON_FONT_CLASSES = ['icon-font-essential', 'icon-font-film', 'icon-font-gadget'];
+
+const createIconDescriptor = (glyph, fontClass = '') => Object.freeze({ glyph, fontClass });
+
 const ICON_GLYPHS = Object.freeze({
-  batteryBolt: '\uE1A6',
-  batteryFull: '\uE1A5',
-  bolt: '\uE212',
-  plug: '\uEE71',
-  sliders: '\uF0D1',
-  screen: '\uEFFC',
-  brightness: '\uEB43',
-  wifi: '\uF4AC',
-  gears: '\uE8AF',
-  controller: '\uE898',
-  distance: '\uEFB9',
-  viewfinder: '\uE338',
-  camera: '\uE333',
-  trash: '\uF32D',
-  reload: '\uE11B',
-  load: '\uE7B3',
-  save: '\uE825',
-  share: '\uF045',
-  timecode: '\uF1CD',
-  audioIn: '\uEC2E',
-  audioOut: '\uF44C',
-  note: '\uECF6',
-  pin: '\uEBCB',
-  sun: '\uF1F7',
-  moon: '\uEC7E',
-  unicorn: '\uF38D',
-  horse: '\uE9E1',
-  circleX: '\uE453',
-  circleStar: '\uE445',
-  star: '\uF1A9',
-  warning: '\uF340'
+  batteryBolt: createIconDescriptor('\uF117', 'icon-font-essential'),
+  batteryFull: createIconDescriptor('\uF11A', 'icon-font-essential'),
+  bolt: createIconDescriptor('\uF1F8', 'icon-font-essential'),
+  plug: createIconDescriptor('\uF102', 'icon-font-gadget'),
+  sliders: createIconDescriptor('\uF11B', 'icon-font-film'),
+  screen: createIconDescriptor('\uF12A', 'icon-font-film'),
+  brightness: createIconDescriptor('\uF127', 'icon-font-film'),
+  wifi: createIconDescriptor('\uF270', 'icon-font-essential'),
+  gears: createIconDescriptor('\uF212', 'icon-font-essential'),
+  controller: createIconDescriptor('\uF117', 'icon-font-gadget'),
+  distance: createIconDescriptor('\uF206', 'icon-font-essential'),
+  viewfinder: createIconDescriptor('\uF117', 'icon-font-film'),
+  camera: createIconDescriptor('\uF12D', 'icon-font-film'),
+  trash: createIconDescriptor('\uF254', 'icon-font-essential'),
+  reload: createIconDescriptor('\uF202', 'icon-font-essential'),
+  load: createIconDescriptor('\uF155', 'icon-font-essential'),
+  save: createIconDescriptor('\uF207', 'icon-font-essential'),
+  share: createIconDescriptor('\uF21B', 'icon-font-essential'),
+  timecode: createIconDescriptor('\uF10E', 'icon-font-film'),
+  audioIn: createIconDescriptor('\uF11A', 'icon-font-film'),
+  audioOut: createIconDescriptor('\uF234', 'icon-font-essential'),
+  note: createIconDescriptor('\uF1DE', 'icon-font-essential'),
+  pin: createIconDescriptor('\uF1EF', 'icon-font-essential'),
+  sun: createIconDescriptor('\uF1F7'),
+  moon: createIconDescriptor('\uEC7E'),
+  unicorn: createIconDescriptor('\uF38D'),
+  horse: createIconDescriptor('\uE9E1'),
+  circleX: createIconDescriptor('\uF131', 'icon-font-essential'),
+  circleStar: createIconDescriptor('\uF238', 'icon-font-essential'),
+  star: createIconDescriptor('\uF238', 'icon-font-essential'),
+  warning: createIconDescriptor('\uF26F', 'icon-font-essential')
 });
 
 const projectFieldIcons = {
@@ -2903,10 +2907,10 @@ const projectFieldIcons = {
   viewfinderUserButtons: '\uEF14'
 };
 
-function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
+function setButtonLabelWithIcon(button, label, icon = ICON_GLYPHS.save) {
   if (!button) return;
   const safeLabel = typeof label === 'string' ? escapeHtml(label) : '';
-  const iconHtml = iconMarkup(glyph, 'btn-icon');
+  const iconHtml = iconMarkup(icon, 'btn-icon');
   button.innerHTML = `${iconHtml}${safeLabel}`;
 }
 
@@ -11547,9 +11551,39 @@ function summarizeByType(list) {
     }, {});
 }
 
-function iconMarkup(glyph, className = 'info-icon') {
+function normalizeIcon(icon) {
+    if (icon && typeof icon === 'object' && typeof icon.glyph === 'string') {
+        return { glyph: icon.glyph, fontClass: icon.fontClass || '' };
+    }
+    if (typeof icon === 'string') {
+        return { glyph: icon, fontClass: '' };
+    }
+    return { glyph: '', fontClass: '' };
+}
+
+function iconMarkup(icon, className = 'info-icon') {
+    const { glyph, fontClass } = normalizeIcon(icon);
     if (!glyph) return '';
-    return `<span class="${className} icon-glyph" aria-hidden="true">${glyph}</span>`;
+    const baseClass = typeof className === 'string' ? className.trim() : '';
+    const classParts = [];
+    if (baseClass) {
+        classParts.push(baseClass);
+    }
+    classParts.push('icon-glyph');
+    if (fontClass) {
+        classParts.push(fontClass);
+    }
+    return `<span class="${classParts.join(' ')}" aria-hidden="true">${glyph}</span>`;
+}
+
+function applyIconToElement(element, icon) {
+    if (!element) return;
+    const { glyph, fontClass } = normalizeIcon(icon);
+    ICON_FONT_CLASSES.forEach(cls => element.classList.remove(cls));
+    if (fontClass) {
+        element.classList.add(fontClass);
+    }
+    element.textContent = glyph;
 }
 
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
@@ -13088,7 +13122,8 @@ function generateGearListHtml(info = {}) {
     const cageRodTypes = cageRod ? (Array.isArray(cageRod) ? cageRod : [cageRod]) : [];
     requiredRodTypes.forEach(rt => {
         if (cageRodTypes.length && !cageRodTypes.includes(rt)) {
-            lensSupportItems.push(`${ICON_GLYPHS.warning}\u00A0cage incompatible with ${rt} rods`);
+            const warningGlyph = normalizeIcon(ICON_GLYPHS.warning).glyph;
+            lensSupportItems.push(`${warningGlyph}\u00A0cage incompatible with ${rt} rods`);
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
@@ -14490,7 +14525,7 @@ function updateThemeColor(isDark) {
   }
 }
 
-function setToggleIcon(button, glyph) {
+function setToggleIcon(button, icon) {
   if (!button) return;
   let iconSpan = button.querySelector('.icon-glyph');
   if (!iconSpan) {
@@ -14500,7 +14535,7 @@ function setToggleIcon(button, glyph) {
     button.textContent = '';
     button.appendChild(iconSpan);
   }
-  iconSpan.textContent = glyph;
+  applyIconToElement(iconSpan, icon);
 }
 
 function applyDarkMode(enabled) {
@@ -16043,6 +16078,20 @@ if (helpButton && helpDialog) {
     const cleanKey = searchKey(clean);
     const cleanTokens = searchTokens(clean);
 
+    if (!isHelp) {
+      const exactFeature = featureMap.get(cleanKey);
+      if (exactFeature) {
+        if (featureSearch && exactFeature.label) {
+          featureSearch.value = exactFeature.label;
+        }
+        const featureEl = exactFeature.element || exactFeature;
+        if (featureEl) {
+          focusFeatureElement(featureEl);
+        }
+        return;
+      }
+    }
+
     const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
     const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
     const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
@@ -16303,7 +16352,11 @@ function updateSelectIconBoxes(sel) {
     box.className = 'icon-box';
     const iconSpan = document.createElement('span');
     iconSpan.className = 'icon icon-glyph';
-    iconSpan.textContent = opt.dataset.icon || projectFieldIcons[sel.name] || ICON_GLYPHS.pin;
+    const iconValue = opt.dataset.icon || projectFieldIcons[sel.name] || ICON_GLYPHS.pin;
+    applyIconToElement(iconSpan, iconValue);
+    if (opt.dataset.iconFont) {
+      iconSpan.classList.add(opt.dataset.iconFont);
+    }
     box.appendChild(iconSpan);
     box.appendChild(document.createTextNode(opt.value));
     container.appendChild(box);
@@ -16359,7 +16412,7 @@ function updateRequiredScenariosSummary() {
     box.className = 'scenario-box';
     const iconSpan = document.createElement('span');
     iconSpan.className = 'scenario-icon icon-glyph';
-    iconSpan.textContent = scenarioIcons[val] || ICON_GLYPHS.pin;
+    applyIconToElement(iconSpan, scenarioIcons[val] || ICON_GLYPHS.pin);
     box.appendChild(iconSpan);
     box.appendChild(document.createTextNode(val));
     requiredScenariosSummary.appendChild(box);
