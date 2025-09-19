@@ -281,6 +281,11 @@ body:not(.light-mode) .gear-table .category-row td {
   background: var(--surface-color) !important;
 }
 
+#overviewDialogContent .bar {
+  border: 1px solid var(--text-color) !important;
+  box-sizing: border-box;
+}
+
 #overviewDialogContent .selectedBatteryRow {
   background: var(--selected-row-bg) !important;
 }
