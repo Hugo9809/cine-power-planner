@@ -544,11 +544,12 @@ const gear = {
       "ARRI CBP-3 Compact Bridge Plate": {
         "brand": "ARRI",
         "kNumber": "K2.0019580",
-        "rodStandard": "19mm"
+        "rodStandard": "15mm LWS / 19mm Studio"
       },
       "ARRI SAB-2 Side Accessory Bracket": {
         "brand": "ARRI",
-        "kNumber": "K2.0014088"
+        "kNumber": "K2.0014088",
+        "dimensionsMm": "110 x 100 x 60"
       },
       "ARRI VEB-3 Viewfinder Extension Bracket": {
         "brand": "ARRI",
@@ -564,7 +565,8 @@ const gear = {
         "compatible": [
           "Sony FS7 II",
           "Sony FX9"
-        ]
+        ],
+        "rodStandard": "15mm LWS"
       },
       "ARRI Base Plate (FS7II/FX9)": {
         "brand": "ARRI",
@@ -576,17 +578,20 @@ const gear = {
       },
       "ARRI Lens Adapter Support LAS-1": {
         "brand": "ARRI",
-        "kNumber": "K2.0003899"
+        "kNumber": "K2.0003899",
+        "rodStandard": "15mm"
       },
       "ARRI 15mm LWS Rod Console": {
         "brand": "ARRI",
-        "kNumber": "K2.65264.0"
+        "kNumber": "K2.65264.0",
+        "rodStandard": "15mm LWS"
       },
       "ARRI Support Rods 240mm/15mm": {
         "brand": "ARRI",
         "kNumber": "K2.66253.0",
         "lengthMm": 240,
-        "diameterMm": 15
+        "diameterMm": 15,
+        "rodStandard": "15mm"
       },
       "ARRI Side Bracket Left (FS7II/FX9)": {
         "brand": "ARRI",
@@ -618,11 +623,13 @@ const gear = {
       },
       "ARRI Rod Mounting Bracket RMB-3": {
         "brand": "ARRI",
-        "kNumber": "K2.0006186"
+        "kNumber": "K2.0006186",
+        "rodStandard": "19mm (15mm via reduction insert)"
       },
       "ARRI 15mm Reduction Insert": {
         "brand": "ARRI",
-        "kNumber": "K2.66255.0"
+        "kNumber": "K2.66255.0",
+        "rodStandard": "15mm"
       },
       "ARRI Viewfinder Bracket (FS7II/FX9)": {
         "brand": "ARRI",
@@ -676,9 +683,15 @@ const gear = {
         "brand": "ARRI",
         "kNumber": "K2.0048510"
       },
-      "ARRI Bridge Plate BP-8/9": {
+      "ARRI Bridge Plate BP-8": {
         "brand": "ARRI",
-        "kNumber": "K2.0031436"
+        "kNumber": "K2.0031436",
+        "rodStandard": "19mm Studio"
+      },
+      "ARRI Bridge Plate BP-9": {
+        "brand": "ARRI",
+        "kNumber": "K2.0031436",
+        "rodStandard": "15mm Studio"
       },
       "ARRI Bridge Plate Adapter BPA-5": {
         "brand": "ARRI",
@@ -687,7 +700,8 @@ const gear = {
       "ARRI Bottom Dovetail Plate 300mm": {
         "brand": "ARRI",
         "kNumber": "K2.0015896",
-        "lengthMm": 300
+        "lengthMm": 300,
+        "rodStandard": "19mm Studio"
       },
       "ARRI Rosette Adapters RA-6": {
         "brand": "ARRI",
