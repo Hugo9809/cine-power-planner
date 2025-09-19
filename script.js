@@ -634,23 +634,25 @@ function unifyDevices(devicesData) {
       });
     }
     cam.videoOutputs = ensureList(cam.videoOutputs, { type: '', notes: '' }).flatMap(vo => {
-      const norm = normalizeVideoType(vo.type);
+      const { count, ...rest } = vo || {};
+      const norm = normalizeVideoType(rest.type);
       if (!VIDEO_OUTPUT_TYPES.has(norm)) return [];
-      const count = parseInt(vo.count, 10);
-      const num = Number.isFinite(count) && count > 0 ? count : 1;
-      const notes = vo.notes || '';
-      return Array.from({ length: num }, () => ({ type: norm, notes }));
+      const parsedCount = parseInt(count, 10);
+      const num = Number.isFinite(parsedCount) && parsedCount > 0 ? parsedCount : 1;
+      const base = { ...rest, type: norm, notes: rest.notes || '' };
+      return Array.from({ length: num }, () => ({ ...base }));
     });
-    cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' }).map(fc => ({
-      type: normalizeFizConnectorType(fc.type),
-      notes: fc.notes
-    }));
-    cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', connector: '', notes: '' }).map(vf => ({
-      type: normalizeViewfinderType(vf.type),
-      resolution: vf.resolution,
-      connector: vf.connector,
-      notes: vf.notes
-    }));
+    cam.fizConnectors = ensureList(cam.fizConnectors, { type: '', notes: '' }).map(fc => {
+      const { type, ...rest } = fc || {};
+      return { ...rest, type: normalizeFizConnectorType(type) };
+    });
+    cam.viewfinder = ensureList(cam.viewfinder, { type: '', resolution: '', connector: '', notes: '' }).map(vf => {
+      const { type, ...rest } = vf || {};
+      return {
+        ...rest,
+        type: normalizeViewfinderType(type)
+      };
+    });
     cam.recordingMedia = ensureList(cam.recordingMedia, { type: '', notes: '' }).map(m => {
       let { type = '', notes = '' } = m || {};
       const match = type.match(/^(.*?)(?:\((.*)\))?$/);
