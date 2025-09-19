@@ -148,6 +148,7 @@ main {
   padding: calc(var(--page-padding) * var(--main-top-padding-multiplier))
     var(--page-padding)
     var(--page-padding);
+  position: relative;
 }
 
 section,
@@ -1606,17 +1607,17 @@ body.pink-mode .auto-gear-rule-title,
 }
 
 .pink-mode-animation-layer {
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 25;
+  z-index: 2;
   overflow: visible;
 }
 
 .pink-mode-animation-instance {
   position: absolute;
-  top: var(--pink-mode-animation-y, 50vh);
-  left: var(--pink-mode-animation-x, 50vw);
+  top: var(--pink-mode-animation-y, 50%);
+  left: var(--pink-mode-animation-x, 50%);
   width: var(--pink-mode-animation-size, 120px);
   height: var(--pink-mode-animation-size, 120px);
   margin-top: calc(-0.5 * var(--pink-mode-animation-size, 120px));

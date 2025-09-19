@@ -3428,12 +3428,12 @@ const pinkModeIcons = {
 let pinkModeIconRotationTimer = null;
 let pinkModeIconIndex = 0;
 
-const PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS = 3800;
-const PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS = 7800;
+const PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS = 7600;
+const PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS = 13800;
 const PINK_MODE_ANIMATED_ICON_MIN_DURATION_MS = 5200;
 const PINK_MODE_ANIMATED_ICON_MAX_DURATION_MS = 9200;
-const PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX = 72;
-const PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX = 168;
+const PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX = 48;
+const PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX = 108;
 const PINK_MODE_ANIMATED_ICON_MAX_ACTIVE = 6;
 
 let pinkModeAnimatedIconLayer = null;
@@ -3442,6 +3442,7 @@ let pinkModeAnimatedIconsActive = false;
 let pinkModeAnimatedIconTemplates = null;
 let pinkModeAnimatedIconTemplatesPromise = null;
 const pinkModeAnimatedIconInstances = new Set();
+let pinkModeAnimatedIconLastTemplateName = null;
 
 const pinkModeReduceMotionQuery =
   typeof window !== 'undefined' && typeof window.matchMedia === 'function'
@@ -3548,16 +3549,27 @@ async function loadPinkModeAnimatedIconTemplates() {
 }
 
 function ensurePinkModeAnimationLayer() {
-  if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.isConnected) {
+  if (!document) {
+    return null;
+  }
+  const host = document.getElementById('mainContent') || document.body;
+  if (!host) {
+    return null;
+  }
+  if (
+    pinkModeAnimatedIconLayer &&
+    pinkModeAnimatedIconLayer.isConnected &&
+    host.contains(pinkModeAnimatedIconLayer)
+  ) {
     return pinkModeAnimatedIconLayer;
   }
-  if (!document || !document.body) {
-    return null;
+  if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.parentNode) {
+    pinkModeAnimatedIconLayer.parentNode.removeChild(pinkModeAnimatedIconLayer);
   }
   const layer = document.createElement('div');
   layer.className = 'pink-mode-animation-layer';
   layer.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(layer);
+  host.appendChild(layer);
   pinkModeAnimatedIconLayer = layer;
   return layer;
 }
@@ -3595,7 +3607,18 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   if (!layer) {
     return false;
   }
-  const template = templates[Math.floor(Math.random() * templates.length)];
+  let availableTemplates = templates;
+  if (templates.length > 1 && pinkModeAnimatedIconLastTemplateName) {
+    const filteredTemplates = templates.filter(
+      template => template && template.name !== pinkModeAnimatedIconLastTemplateName
+    );
+    if (filteredTemplates.length) {
+      availableTemplates = filteredTemplates;
+    }
+  }
+
+  const template =
+    availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
   if (!template || !template.data) {
     return false;
   }
@@ -3610,12 +3633,55 @@ function spawnPinkModeAnimatedIconInstance(templates) {
     Math.random() * (PINK_MODE_ANIMATED_ICON_MAX_SIZE_PX - PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX) +
       PINK_MODE_ANIMATED_ICON_MIN_SIZE_PX
   );
-  const x = Math.random() * (88 - 12) + 12;
-  const y = Math.random() * (88 - 12) + 12;
+  const host = layer.parentElement || document.body;
+  const viewportHeight =
+    typeof window !== 'undefined' && window.innerHeight
+      ? window.innerHeight
+      : document.documentElement && document.documentElement.clientHeight
+        ? document.documentElement.clientHeight
+        : size * 4;
+  const viewportTop =
+    typeof window !== 'undefined' && typeof window.scrollY === 'number'
+      ? window.scrollY
+      : document.documentElement && typeof document.documentElement.scrollTop === 'number'
+        ? document.documentElement.scrollTop
+        : 0;
+  const viewportBottom = viewportTop + viewportHeight;
+  const hostRect = host ? host.getBoundingClientRect() : null;
+  const hostTop = hostRect ? hostRect.top + viewportTop : 0;
+  const hostHeight =
+    host && typeof host.scrollHeight === 'number' && host.scrollHeight > 0
+      ? host.scrollHeight
+      : hostRect && hostRect.height
+        ? hostRect.height
+        : viewportHeight;
+  const hostBottom = hostTop + hostHeight;
+  let visibleTop = Math.max(hostTop, viewportTop);
+  let visibleBottom = Math.min(hostBottom, viewportBottom);
+  if (visibleBottom <= visibleTop) {
+    visibleTop = hostTop;
+    visibleBottom = hostBottom;
+  }
+  const horizontalPadding = Math.max(size * 0.5 + 24, 0);
+  const verticalPadding = Math.max(size * 0.5 + 24, 0);
+  let minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
+  let maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
+  if (maxY < minY) {
+    maxY = minY;
+  }
+  const y = maxY > minY ? minY + Math.random() * (maxY - minY) : minY;
+  const hostWidth =
+    host && typeof host.clientWidth === 'number' && host.clientWidth > 0
+      ? host.clientWidth
+      : (document.documentElement && document.documentElement.clientWidth) ||
+        (typeof window !== 'undefined' && window.innerWidth) ||
+        size * 4;
+  const maxX = Math.max(hostWidth - horizontalPadding, horizontalPadding);
+  const x = maxX > horizontalPadding ? horizontalPadding + Math.random() * (maxX - horizontalPadding) : horizontalPadding;
   container.style.setProperty('--pink-mode-animation-duration', `${duration}ms`);
   container.style.setProperty('--pink-mode-animation-size', `${size}px`);
-  container.style.setProperty('--pink-mode-animation-x', `${x}vw`);
-  container.style.setProperty('--pink-mode-animation-y', `${y}vh`);
+  container.style.setProperty('--pink-mode-animation-x', `${x}px`);
+  container.style.setProperty('--pink-mode-animation-y', `${y}px`);
   layer.appendChild(container);
 
   let animationData;
@@ -3667,6 +3733,8 @@ function spawnPinkModeAnimatedIconInstance(templates) {
       destroyPinkModeAnimatedIconInstance(oldest);
     }
   }
+
+  pinkModeAnimatedIconLastTemplateName = typeof template.name === 'string' ? template.name : null;
 
   return true;
 }
@@ -3744,6 +3812,7 @@ function stopPinkModeAnimatedIcons() {
     pinkModeAnimatedIconLayer.parentNode.removeChild(pinkModeAnimatedIconLayer);
   }
   pinkModeAnimatedIconLayer = null;
+  pinkModeAnimatedIconLastTemplateName = null;
 }
 
 if (pinkModeReduceMotionQuery) {
