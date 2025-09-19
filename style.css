@@ -1306,6 +1306,23 @@ main.legal-content {
   color: var(--icon-color, currentColor);
 }
 
+.icon-glyph.icon-text {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 600;
+}
+
+.icon-glyph.icon-svg {
+  font-family: inherit;
+}
+
+.icon-glyph.icon-svg svg {
+  width: 1em;
+  height: 1em;
+  display: block;
+  stroke: currentColor;
+  fill: none;
+}
+
 #featureSearchClear .icon-glyph,
 #helpSearchClear .icon-glyph,
 .clear-input-btn .icon-glyph,
