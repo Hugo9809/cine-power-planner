@@ -78,6 +78,8 @@ describe('help dialog search behaviour', () => {
     expect(featuresButton).toBeTruthy();
     expect(powerButton).toBeTruthy();
     expect(troubleshootingButton).toBeTruthy();
+    expect(featuresButton.querySelector('.help-quick-link-icon')).toBeTruthy();
+    expect(powerButton.querySelector('.help-quick-link-icon')).toBeTruthy();
     const featuresItem = featuresButton.closest('li');
     const powerItem = powerButton.closest('li');
     const troubleshootingItem = troubleshootingButton.closest('li');

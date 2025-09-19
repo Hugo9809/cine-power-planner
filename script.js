@@ -15956,13 +15956,41 @@ if (helpButton && helpDialog) {
       if (!id) return;
       const heading = section.querySelector('h3');
       if (!heading) return;
-      const label = heading.textContent.trim();
+      let label = heading.textContent.trim();
+      const iconSource = heading.querySelector('.help-icon, .icon-glyph, .icon-svg');
+      if (iconSource) {
+        const iconText = (iconSource.textContent || '').trim();
+        if (iconText && label.startsWith(iconText)) {
+          label = label.slice(iconText.length).trimStart();
+        } else if (iconText) {
+          label = label.replace(iconText, '').trim();
+        }
+      }
       if (!label) return;
       const li = document.createElement('li');
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'help-quick-link';
-      button.textContent = label;
+      if (iconSource) {
+        let icon;
+        if (iconSource.classList && iconSource.classList.contains('icon-svg')) {
+          icon = iconSource.cloneNode(true);
+          icon.classList.add('help-quick-link-icon');
+          icon.classList.remove('help-icon');
+        } else {
+          icon = document.createElement('span');
+          icon.className = 'help-quick-link-icon icon-glyph';
+          icon.textContent = iconSource.textContent || '';
+        }
+        if (icon) {
+          icon.setAttribute('aria-hidden', 'true');
+          button.appendChild(icon);
+        }
+      }
+      const labelSpan = document.createElement('span');
+      labelSpan.className = 'help-quick-link-label';
+      labelSpan.textContent = label;
+      button.appendChild(labelSpan);
       button.dataset.targetId = id;
       button.setAttribute('aria-label', label);
       button.addEventListener('click', () => {
@@ -16369,6 +16397,30 @@ if (helpButton && helpDialog) {
         (!deviceStrong && !featureStrong && helpScore > 0 && helpScore > bestNonHelpScore));
 
     if (!isHelp && !preferHelp) {
+      const featureScore = featureMatch?.score || 0;
+      const deviceScore = deviceMatch?.score || 0;
+      const handleFeature = match => {
+        const feature = match.value;
+        const featureEl = feature?.element || feature;
+        if (!featureEl) return false;
+        if (featureSearch) {
+          const label = feature?.label || featureEl.textContent?.trim();
+          if (label) {
+            featureSearch.value = label;
+          }
+        }
+        focusFeatureElement(featureEl);
+        return true;
+      };
+
+      const shouldHandleFeatureFirst =
+        !!featureMatch &&
+        (!deviceMatch || featureStrong || (!deviceStrong && featureScore >= deviceScore));
+
+      if (shouldHandleFeatureFirst && handleFeature(featureMatch)) {
+        return;
+      }
+
       if (deviceMatch) {
         const device = deviceMatch.value;
         if (device && device.select) {
@@ -16381,19 +16433,9 @@ if (helpButton && helpDialog) {
           return;
         }
       }
-      if (featureMatch) {
-        const feature = featureMatch.value;
-        const featureEl = feature?.element || feature;
-        if (featureEl) {
-          if (featureSearch) {
-            const label = feature?.label || featureEl.textContent?.trim();
-            if (label) {
-              featureSearch.value = label;
-            }
-          }
-          focusFeatureElement(featureEl);
-          return;
-        }
+
+      if (featureMatch && !shouldHandleFeatureFirst && handleFeature(featureMatch)) {
+        return;
       }
     }
     if (helpMatch) {

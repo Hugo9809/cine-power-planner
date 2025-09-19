@@ -1246,14 +1246,49 @@ main.legal-content {
   white-space: normal;
 }
 
+.help-quick-link-icon {
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 0.6em;
+  background: color-mix(in srgb, var(--accent-color) 20%, var(--panel-bg));
+  color: var(--muted-text-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.help-quick-link-icon.icon-svg {
+  font-size: 1em;
+}
+
+.help-quick-link-label {
+  flex: 1;
+  min-width: 0;
+}
+
 .help-quick-link:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
 }
 
+.help-quick-link:hover .help-quick-link-icon,
+.help-quick-link:focus-visible .help-quick-link-icon {
+  background: color-mix(in srgb, var(--accent-color) 35%, var(--panel-bg));
+  color: inherit;
+  transform: scale(1.05);
+}
+
 .help-quick-link.active {
   background-color: var(--accent-color);
   color: var(--inverse-text-color);
+}
+
+.help-quick-link.active .help-quick-link-icon {
+  background: color-mix(in srgb, var(--inverse-text-color) 24%, transparent);
+  color: inherit;
+  transform: scale(1.05);
 }
 
 .help-quick-link.active:focus-visible {
