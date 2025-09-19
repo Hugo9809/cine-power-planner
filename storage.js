@@ -11,6 +11,43 @@ const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 
+const DEVICE_COLLECTION_KEYS = [
+  'cameras',
+  'monitors',
+  'video',
+  'viewfinders',
+  'directorMonitors',
+  'iosVideo',
+  'videoAssist',
+  'media',
+  'lenses',
+  'batteries',
+  'batteryHotswaps',
+  'wirelessReceivers',
+];
+
+const FIZ_COLLECTION_KEYS = ['motors', 'handUnits', 'controllers', 'distance'];
+
+const ACCESSORY_COLLECTION_KEYS = [
+  'chargers',
+  'cages',
+  'powerPlates',
+  'cameraSupport',
+  'matteboxes',
+  'filters',
+  'rigging',
+  'batteries',
+  'cables',
+  'videoAssist',
+  'media',
+  'tripodHeads',
+  'tripods',
+  'sliders',
+  'cameraStabiliser',
+  'grip',
+  'carts',
+];
+
 // Safely detect usable localStorage. Some environments (like private browsing)
 // may block access and throw errors. If unavailable, fall back to
 // sessionStorage when possible so data persists across reloads within the same
@@ -247,18 +284,32 @@ function loadDeviceData() {
     }
   }
 
-  ensureObject(data, "cameras");
-  ensureObject(data, "monitors");
-  ensureObject(data, "video");
-  ensureObject(data, "batteries");
+  DEVICE_COLLECTION_KEYS.forEach((key) => {
+    ensureObject(data, key);
+  });
 
   if (!isPlainObject(data.fiz)) {
     data.fiz = {};
     changed = true;
   }
-  ensureObject(data.fiz, "motors");
-  ensureObject(data.fiz, "controllers");
-  ensureObject(data.fiz, "distance");
+  FIZ_COLLECTION_KEYS.forEach((key) => {
+    ensureObject(data.fiz, key);
+  });
+
+  if (!isPlainObject(data.accessories)) {
+    data.accessories = {};
+    changed = true;
+  }
+  ACCESSORY_COLLECTION_KEYS.forEach((key) => {
+    ensureObject(data.accessories, key);
+  });
+
+  if (!Array.isArray(data.filterOptions)) {
+    data.filterOptions = Array.isArray(parsedData.filterOptions)
+      ? parsedData.filterOptions.slice()
+      : [];
+    changed = true;
+  }
 
   if (changed && SAFE_LOCAL_STORAGE) {
     SAFE_LOCAL_STORAGE.setItem(DEVICE_STORAGE_KEY, JSON.stringify(data));

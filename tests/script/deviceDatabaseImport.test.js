@@ -22,6 +22,11 @@ describe('device database import helpers', () => {
       viewfinders: {
         'Viewfinder A': { type: 'EVF', powerDrawWatts: 3 }
       },
+      directorMonitors: {},
+      iosVideo: {},
+      videoAssist: {},
+      media: {},
+      lenses: {},
       fiz: {
         motors: {
           'Motor A': { powerDrawWatts: 1, fizConnector: '7-pin' }
@@ -31,19 +36,35 @@ describe('device database import helpers', () => {
         },
         distance: {
           'Rangefinder A': { powerDrawWatts: 1, measurementMethod: 'Laser' }
-        }
+        },
+        handUnits: {}
       },
       batteries: {
         'Battery A': { capacity: 98, mount_type: 'V-Mount', pinA: 10 }
       },
+      batteryHotswaps: {},
+      wirelessReceivers: {},
       accessories: {
+        chargers: {},
+        cages: {},
+        powerPlates: {},
+        cameraSupport: {},
+        matteboxes: {},
+        filters: {},
+        rigging: {},
+        batteries: {},
         cables: {
           'BNC Cable': { connectors: ['BNC'], length_m: 3 }
-        }
+        },
+        videoAssist: {},
+        media: {},
+        tripodHeads: {},
+        tripods: {},
+        sliders: {},
+        cameraStabiliser: {},
+        grip: {},
+        carts: {},
       },
-      batteryHotswaps: {},
-      lenses: {},
-      wirelessReceivers: {},
       filterOptions: ['ND']
     };
   }
