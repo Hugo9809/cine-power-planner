@@ -427,33 +427,35 @@ main.legal-content {
   margin-top: 10px;
 }
 
-.schema-attribute-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 15px;
+.schema-attribute-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin: 15px 0;
 }
 
-.schema-field {
+.schema-form-row {
+  align-items: flex-start;
+}
+
+.schema-control {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding: 12px;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--panel-border);
-  background: var(--panel-bg);
-  box-shadow: var(--panel-shadow);
+  width: 100%;
 }
 
-.schema-field label {
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.schema-field-control {
+.schema-control-inline {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.schema-control--checkbox .schema-control-inline {
+  align-items: center;
 }
 
 .schema-input {
@@ -480,32 +482,19 @@ main.legal-content {
   width: auto;
   min-width: 16px;
   height: 16px;
+  flex: 0 0 auto;
 }
 
 .schema-field-suffix {
   font-size: 0.9em;
-  color: var(--control-text);
+  color: var(--muted-text-color);
 }
 
 .schema-field-help {
   margin: 0;
   font-size: 0.85em;
-  color: var(--control-text);
-  opacity: 0.85;
-}
-
-.schema-field--checkbox {
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.schema-field--checkbox label {
-  margin: 0;
-}
-
-.schema-field--checkbox .schema-field-help {
-  margin-left: calc(16px + 0.6rem);
+  color: var(--muted-text-color);
+  line-height: 1.4;
 }
 
 /* Keep controls aligned within Project Overview and Configure Devices */
