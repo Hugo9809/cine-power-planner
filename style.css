@@ -26,7 +26,7 @@
   --form-label-width: 150px;
   --form-label-min-width: 120px;
   --form-action-width: 110px;
-  --font-family: 'Ubuntu', 'uicons-thin-straight', sans-serif;
+  --font-family: 'Ubuntu', 'UiconsThinStraight', sans-serif;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
@@ -1438,7 +1438,7 @@ main.legal-content {
 }
 
 .icon-glyph {
-  font-family: 'uicons-thin-straight';
+  font-family: 'UiconsThinStraight';
   font-style: normal;
   font-weight: 400;
   display: inline-flex;
@@ -1446,6 +1446,22 @@ main.legal-content {
   justify-content: center;
   line-height: 1;
   color: var(--icon-color, currentColor);
+}
+
+.icon-glyph[data-icon-font='uicons'] {
+  font-family: 'UiconsThinStraight';
+}
+
+.icon-glyph[data-icon-font='essential'] {
+  font-family: 'EssentialIcons';
+}
+
+.icon-glyph[data-icon-font='film'] {
+  font-family: 'FilmIndustryIcons';
+}
+
+.icon-glyph[data-icon-font='gadget'] {
+  font-family: 'GadgetIcons';
 }
 
 .icon-glyph.icon-text {
@@ -2575,8 +2591,24 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 #setupDiagram .node-icon {
   font-size: 20px;
-  font-family: 'uicons-thin-straight', system-ui, sans-serif;
+  font-family: 'UiconsThinStraight', system-ui, sans-serif;
   font-style: normal;
+}
+
+#setupDiagram .node-icon[data-icon-font='essential'] {
+  font-family: 'EssentialIcons', system-ui, sans-serif;
+}
+
+#setupDiagram .node-icon[data-icon-font='film'] {
+  font-family: 'FilmIndustryIcons', system-ui, sans-serif;
+}
+
+#setupDiagram .node-icon[data-icon-font='gadget'] {
+  font-family: 'GadgetIcons', system-ui, sans-serif;
+}
+
+#setupDiagram .node-icon[data-icon-font='uicons'] {
+  font-family: 'UiconsThinStraight', system-ui, sans-serif;
 }
 #setupDiagram .conn {
   stroke: none;

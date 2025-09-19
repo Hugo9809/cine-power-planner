@@ -2059,7 +2059,7 @@ function setLanguage(lang) {
   const setupNameLabelElem = document.getElementById("setupNameLabel");
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  deleteSetupBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.trash}</span>${texts[lang].deleteSetupBtn}`;
+  setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
   setButtonLabelWithIcon(clearSetupBtn, texts[lang].clearSetupBtn, ICON_GLYPHS.circleX);
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
@@ -2987,7 +2987,7 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
   }
   if (resetViewBtn) {
-    resetViewBtn.innerHTML = `<span class="btn-icon icon-glyph" aria-hidden="true">${ICON_GLYPHS.reload}</span>${texts[lang].resetViewBtn}`;
+    setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.reload);
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
@@ -3236,36 +3236,75 @@ const crewRoles = [
   'Rigging Grip'
 ];
 
+const ICON_FONT_KEYS = Object.freeze({
+  ESSENTIAL: 'essential',
+  FILM: 'film',
+  GADGET: 'gadget',
+  UICONS: 'uicons'
+});
+
+const VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
+
+function iconGlyph(char, font = ICON_FONT_KEYS.UICONS) {
+  const normalizedFont = VALID_ICON_FONTS.has(font) ? font : ICON_FONT_KEYS.UICONS;
+  return Object.freeze({ char, font: normalizedFont });
+}
+
+function resolveIconGlyph(glyph) {
+  if (!glyph) {
+    return { char: '', font: ICON_FONT_KEYS.UICONS };
+  }
+  if (glyph.markup) {
+    return { markup: glyph.markup, className: glyph.className || '', font: ICON_FONT_KEYS.UICONS };
+  }
+  if (typeof glyph === 'string') {
+    return { char: glyph, font: ICON_FONT_KEYS.UICONS };
+  }
+  if (typeof glyph === 'object') {
+    const char = typeof glyph.char === 'string' ? glyph.char : '';
+    const fontKey = glyph.font && VALID_ICON_FONTS.has(glyph.font)
+      ? glyph.font
+      : ICON_FONT_KEYS.UICONS;
+    return { char, font: fontKey };
+  }
+  return { char: '', font: ICON_FONT_KEYS.UICONS };
+}
+
+function glyphText(glyph) {
+  const resolved = resolveIconGlyph(glyph);
+  return resolved.char || '';
+}
+
 const ICON_GLYPHS = Object.freeze({
-  batteryBolt: '\uE1A6',
-  batteryFull: '\uE1A5',
-  bolt: '\uE212',
-  plug: '\uEE71',
-  sliders: '\uF0D1',
-  screen: '\uEFFC',
-  brightness: '\uEB43',
-  wifi: '\uF4AC',
-  gears: '\uE8AF',
-  controller: '\uE898',
-  distance: '\uEFB9',
-  viewfinder: '\uE338',
-  camera: '\uE333',
-  trash: '\uF32D',
-  reload: '\uE11B',
-  load: '\uE7B3',
-  save: '\uE825',
-  share: '\uF045',
-  magnet: '\uEB9E',
-  timecode: '\uF1CD',
-  audioIn: '\uEC2E',
-  audioOut: '\uF44C',
-  note: '\uECF6',
-  pin: '\uEBCB',
-  sun: '\uF1F7',
-  moon: '\uEC7E',
-  circleX: '\uE453',
-  star: '\uF1A9',
-  warning: '\uF340'
+  batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
+  batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
+  bolt: iconGlyph('\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
+  plug: iconGlyph('\uEE75', ICON_FONT_KEYS.UICONS),
+  sliders: iconGlyph('\uF143', ICON_FONT_KEYS.ESSENTIAL),
+  screen: iconGlyph('\uF11D', ICON_FONT_KEYS.GADGET),
+  brightness: iconGlyph('\uE2B3', ICON_FONT_KEYS.UICONS),
+  wifi: iconGlyph('\uF4AC', ICON_FONT_KEYS.UICONS),
+  gears: iconGlyph('\uF211', ICON_FONT_KEYS.ESSENTIAL),
+  controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
+  distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
+  viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
+  camera: iconGlyph('\uF12D', ICON_FONT_KEYS.FILM),
+  trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
+  reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
+  load: iconGlyph('\uF155', ICON_FONT_KEYS.ESSENTIAL),
+  save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
+  share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
+  magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
+  timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
+  audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
+  audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
+  note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
+  pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
+  sun: iconGlyph('\uF1F7', ICON_FONT_KEYS.UICONS),
+  moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
+  circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
+  star: iconGlyph('\uF238', ICON_FONT_KEYS.ESSENTIAL),
+  warning: iconGlyph('\uF26F', ICON_FONT_KEYS.ESSENTIAL)
 });
 
 const HORSE_ICON_SVG = `
@@ -3372,27 +3411,27 @@ const PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
 const PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
 
 const projectFieldIcons = {
-  productionCompany: '\uE2D5',
-  rentalHouse: '\uE9F6',
-  crew: '\uF404',
-  prepDays: '\uE30C',
-  shootingDays: '\uE45B',
+  productionCompany: iconGlyph('\uF11F', ICON_FONT_KEYS.FILM),
+  rentalHouse: iconGlyph('\uF12B', ICON_FONT_KEYS.FILM),
+  crew: iconGlyph('\uF102', ICON_FONT_KEYS.FILM),
+  prepDays: iconGlyph('\uF126', ICON_FONT_KEYS.ESSENTIAL),
+  shootingDays: iconGlyph('\uF10C', ICON_FONT_KEYS.FILM),
   deliveryResolution: ICON_GLYPHS.screen,
   recordingResolution: ICON_GLYPHS.camera,
-  aspectRatio: '\uE86E',
-  codec: '\uE7A6',
+  aspectRatio: iconGlyph('\uF16F', ICON_FONT_KEYS.ESSENTIAL),
+  codec: iconGlyph('\uF107', ICON_FONT_KEYS.GADGET),
   baseFrameRate: ICON_GLYPHS.timecode,
-  sensorMode: '\uF016',
-  requiredScenarios: '\uEC90',
-  lenses: '\uE8B0',
+  sensorMode: iconGlyph('\uF110', ICON_FONT_KEYS.GADGET),
+  requiredScenarios: iconGlyph('\uF129', ICON_FONT_KEYS.FILM),
+  lenses: iconGlyph('\uF117', ICON_FONT_KEYS.FILM),
   cameraHandle: ICON_GLYPHS.gears,
-  viewfinderExtension: '\uF25F',
-  gimbal: '\uEA9C',
-  monitoringSupport: '\uF2DC',
+  viewfinderExtension: iconGlyph('\uF12E', ICON_FONT_KEYS.FILM),
+  gimbal: iconGlyph('\uEA9C', ICON_FONT_KEYS.UICONS),
+  monitoringSupport: iconGlyph('\uF11F', ICON_FONT_KEYS.GADGET),
   monitoringConfiguration: ICON_GLYPHS.sliders,
-  monitorUserButtons: '\uEF14',
-  cameraUserButtons: '\uEF14',
-  viewfinderUserButtons: '\uEF14'
+  monitorUserButtons: ICON_GLYPHS.sliders,
+  cameraUserButtons: ICON_GLYPHS.sliders,
+  viewfinderUserButtons: ICON_GLYPHS.sliders
 };
 
 function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
@@ -7557,7 +7596,10 @@ const diagramCssLight = `
 .node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:20px;font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
+.node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
+.node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
+.node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
@@ -7575,7 +7617,10 @@ const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-.node-icon{font-size:20px;font-family:'uicons-thin-straight',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:20px;font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
+.node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
+.node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
+.node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
@@ -10900,7 +10945,11 @@ function renderSetupDiagram() {
     const lines = wrapLabel(p.label || id);
 
     if (icon) {
-      svg += `<text class="node-icon" x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${icon}</text>`;
+      const resolvedIcon = resolveIconGlyph(icon);
+      if (resolvedIcon.char) {
+        const fontAttr = ` data-icon-font="${resolvedIcon.font}"`;
+        svg += `<text class="node-icon"${fontAttr} x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${resolvedIcon.char}</text>`;
+      }
       svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" font-size="10">`;
       lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
       svg += `</text>`;
@@ -12861,8 +12910,39 @@ function summarizeByType(list) {
 }
 
 function iconMarkup(glyph, className = 'info-icon') {
-    if (!glyph) return '';
-    return `<span class="${className} icon-glyph" aria-hidden="true">${glyph}</span>`;
+  if (!glyph) return '';
+  const resolved = resolveIconGlyph(glyph);
+  const classes = ['icon-glyph'];
+  if (className) classes.unshift(className);
+  if (resolved.markup) {
+    if (resolved.className) classes.push(resolved.className);
+    const markup = ensureSvgHasAriaHidden(resolved.markup);
+    return `<span class="${classes.join(' ')}" aria-hidden="true">${markup}</span>`;
+  }
+  const char = resolved.char || '';
+  if (!char) return '';
+  return `<span class="${classes.join(' ')}" data-icon-font="${resolved.font}" aria-hidden="true">${char}</span>`;
+}
+
+function applyIconGlyph(element, glyph) {
+  if (!element) return;
+  const resolved = resolveIconGlyph(glyph);
+  if (resolved.markup) {
+    element.innerHTML = ensureSvgHasAriaHidden(resolved.markup);
+    element.setAttribute('aria-hidden', 'true');
+    if (resolved.className) {
+      element.classList.add(resolved.className);
+    }
+    element.removeAttribute('data-icon-font');
+    return;
+  }
+  const char = resolved.char || '';
+  element.textContent = char;
+  if (char) {
+    element.setAttribute('data-icon-font', resolved.font);
+  } else {
+    element.removeAttribute('data-icon-font');
+  }
 }
 
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
@@ -14401,7 +14481,7 @@ function generateGearListHtml(info = {}) {
     const cageRodTypes = cageRod ? (Array.isArray(cageRod) ? cageRod : [cageRod]) : [];
     requiredRodTypes.forEach(rt => {
         if (cageRodTypes.length && !cageRodTypes.includes(rt)) {
-            lensSupportItems.push(`${ICON_GLYPHS.warning}\u00A0cage incompatible with ${rt} rods`);
+            lensSupportItems.push(`${glyphText(ICON_GLYPHS.warning)}\u00A0cage incompatible with ${rt} rods`);
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));
@@ -15914,7 +15994,7 @@ function setToggleIcon(button, glyph) {
   }
 
   const glyphConfig =
-    glyph && typeof glyph === 'object'
+    glyph && typeof glyph === 'object' && (glyph.markup || glyph.className)
       ? glyph
       : { value: glyph };
 
@@ -15925,13 +16005,10 @@ function setToggleIcon(button, glyph) {
   iconSpan.className = classNames.join(' ');
 
   if (glyphConfig.markup) {
-    iconSpan.innerHTML = glyphConfig.markup;
+    iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
+    iconSpan.removeAttribute('data-icon-font');
   } else {
-    const textValue =
-      glyphConfig.value === undefined || glyphConfig.value === null
-        ? ''
-        : glyphConfig.value;
-    iconSpan.textContent = textValue;
+    applyIconGlyph(iconSpan, glyphConfig.value);
   }
 }
 
@@ -17806,30 +17883,30 @@ if (helpButton && helpDialog) {
 
 
 const scenarioIcons = {
-  Indoor: '\uEA03',
-  Outdoor: '\uF334',
-  Studio: '\uE45B',
-  Tripod: ICON_GLYPHS.camera,
-  Handheld: '\uE93B',
-  Easyrig: '\uE15B',
-  'Cine Saddle': '\uF01B',
-  Steadybag: '\uE925',
-  Dolly: '\uE668',
-  Slider: '\uE112',
-  Steadicam: '\uEFBD',
-  Gimbal: '\uEA9C',
-  Trinity: '\uEA4E',
-  Rollcage: '\uF04C',
-  'Car Mount': '\uE35B',
-  Jib: '\uE553',
-  'Undersling mode': '\uE0D8',
-  Crane: '\uE554',
+  Indoor: iconGlyph('\uF194', ICON_FONT_KEYS.ESSENTIAL),
+  Outdoor: iconGlyph('\uF278', ICON_FONT_KEYS.ESSENTIAL),
+  Studio: iconGlyph('\uF128', ICON_FONT_KEYS.FILM),
+  Tripod: iconGlyph('\uF12C', ICON_FONT_KEYS.FILM),
+  Handheld: iconGlyph('\uE93B', ICON_FONT_KEYS.UICONS),
+  Easyrig: iconGlyph('\uE15B', ICON_FONT_KEYS.UICONS),
+  'Cine Saddle': iconGlyph('\uF01B', ICON_FONT_KEYS.UICONS),
+  Steadybag: iconGlyph('\uE925', ICON_FONT_KEYS.UICONS),
+  Dolly: iconGlyph('\uF109', ICON_FONT_KEYS.FILM),
+  Slider: iconGlyph('\uE112', ICON_FONT_KEYS.UICONS),
+  Steadicam: iconGlyph('\uEFBD', ICON_FONT_KEYS.UICONS),
+  Gimbal: iconGlyph('\uEA9C', ICON_FONT_KEYS.UICONS),
+  Trinity: iconGlyph('\uEA4E', ICON_FONT_KEYS.UICONS),
+  Rollcage: iconGlyph('\uF04C', ICON_FONT_KEYS.UICONS),
+  'Car Mount': iconGlyph('\uE35B', ICON_FONT_KEYS.UICONS),
+  Jib: iconGlyph('\uE553', ICON_FONT_KEYS.UICONS),
+  'Undersling mode': iconGlyph('\uE0D8', ICON_FONT_KEYS.UICONS),
+  Crane: iconGlyph('\uE554', ICON_FONT_KEYS.UICONS),
   'Remote Head': ICON_GLYPHS.controller,
-  'Extreme cold (snow)': '\uF0FB',
-  'Extreme rain': '\uE4A6',
-  'Extreme heat': '\uE80F',
-  'Rain Machine': '\uF153',
-  'Slow Motion': '\uF373',
+  'Extreme cold (snow)': iconGlyph('\uF0FB', ICON_FONT_KEYS.UICONS),
+  'Extreme rain': iconGlyph('\uE4A6', ICON_FONT_KEYS.UICONS),
+  'Extreme heat': iconGlyph('\uE80F', ICON_FONT_KEYS.UICONS),
+  'Rain Machine': iconGlyph('\uF153', ICON_FONT_KEYS.UICONS),
+  'Slow Motion': iconGlyph('\uF373', ICON_FONT_KEYS.UICONS),
   'Battery Belt': ICON_GLYPHS.batteryBolt
 };
 
@@ -17850,7 +17927,11 @@ function updateSelectIconBoxes(sel) {
     box.className = 'icon-box';
     const iconSpan = document.createElement('span');
     iconSpan.className = 'icon icon-glyph';
-    iconSpan.textContent = opt.dataset.icon || projectFieldIcons[sel.name] || ICON_GLYPHS.pin;
+    let glyph = projectFieldIcons[sel.name] || ICON_GLYPHS.pin;
+    if (opt.dataset.icon) {
+      glyph = iconGlyph(opt.dataset.icon, opt.dataset.iconFont || ICON_FONT_KEYS.UICONS);
+    }
+    applyIconGlyph(iconSpan, glyph);
     box.appendChild(iconSpan);
     box.appendChild(document.createTextNode(opt.value));
     container.appendChild(box);
@@ -17906,7 +17987,7 @@ function updateRequiredScenariosSummary() {
     box.className = 'scenario-box';
     const iconSpan = document.createElement('span');
     iconSpan.className = 'scenario-icon icon-glyph';
-    iconSpan.textContent = scenarioIcons[val] || ICON_GLYPHS.pin;
+    applyIconGlyph(iconSpan, scenarioIcons[val] || ICON_GLYPHS.pin);
     box.appendChild(iconSpan);
     box.appendChild(document.createTextNode(val));
     requiredScenariosSummary.appendChild(box);
