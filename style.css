@@ -631,10 +631,10 @@ main.legal-content {
   opacity: 0.8;
 }
 
-/* Ensure favorite star aligns with its select element */
+/* Ensure favorite star aligns with its select element without stretching */
 .select-wrapper .favorite-toggle {
-  align-self: stretch;
-  height: 100%;
+  align-self: center;
+  height: var(--button-size);
   margin-top: 0;
   display: flex;
   align-items: center;
