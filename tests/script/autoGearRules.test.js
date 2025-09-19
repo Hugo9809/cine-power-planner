@@ -282,4 +282,104 @@ describe('applyAutoGearRulesToTableHtml', () => {
       window.URL.revokeObjectURL = originalRevokeObjectURL;
     }
   });
+
+  test('restoring a legacy backup handles snapshots and top-level data', () => {
+    env = setupScriptEnvironment({
+      globals: {
+        importAllData: jest.fn(),
+      },
+    });
+
+    const originalAlert = window.alert;
+    const originalFileReader = window.FileReader;
+    const originalCreateObjectURL = window.URL.createObjectURL;
+    const originalRevokeObjectURL = window.URL.revokeObjectURL;
+
+    window.alert = jest.fn();
+    window.URL.createObjectURL = jest.fn(() => 'blob:legacy-url');
+    window.URL.revokeObjectURL = jest.fn();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    const legacyRules = [
+      {
+        id: 'legacy-rule',
+        label: 'Legacy slider',
+        scenarios: ['Slider'],
+        add: [
+          { id: 'legacy-item', name: 'Legacy slider kit', category: 'Grip', quantity: 1 },
+        ],
+        remove: [],
+      },
+    ];
+
+    const legacyData = {
+      version: '0.9.0',
+      storage: [
+        { key: 'language', value: 'es' },
+        ['darkMode', true],
+        { key: STORAGE_KEY, value: JSON.stringify(legacyRules) },
+        {
+          key: 'cameraPowerPlanner_setups',
+          value: JSON.stringify({
+            Legacy: { name: 'Legacy', items: [] },
+          }),
+        },
+      ],
+      session: [
+        {
+          key: 'cameraPowerPlanner_session',
+          value: JSON.stringify({ activeSetup: 'Legacy' }),
+        },
+      ],
+      setups: {
+        Legacy: { name: 'Legacy', items: [] },
+      },
+      autoGearRules: legacyRules,
+    };
+
+    const fileContent = JSON.stringify(legacyData);
+    const fakeFile = { name: 'legacy-backup.json' };
+
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    const mockReaderInstance = {
+      onload: null,
+      readAsText: jest.fn(function readAsText() {
+        if (typeof this.onload === 'function') {
+          this.onload({ target: { result: fileContent } });
+        }
+      }),
+    };
+
+    window.FileReader = jest.fn(() => mockReaderInstance);
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      expect(localStorage.getItem('language')).toBe('es');
+      expect(localStorage.getItem('darkMode')).toBe('true');
+      expect(sessionStorage.getItem('cameraPowerPlanner_session')).toBe(
+        JSON.stringify({ activeSetup: 'Legacy' }),
+      );
+      expect(env.globals.importAllData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          setups: legacyData.setups,
+          autoGearRules: legacyData.autoGearRules,
+        }),
+      );
+
+      const restoredRule = env.utils.getAutoGearRules().find(rule => rule.id === 'legacy-rule');
+      expect(restoredRule).toBeDefined();
+      expect(restoredRule.label).toBe('Legacy slider');
+    } finally {
+      window.alert = originalAlert;
+      window.FileReader = originalFileReader;
+      window.URL.createObjectURL = originalCreateObjectURL;
+      window.URL.revokeObjectURL = originalRevokeObjectURL;
+      sessionStorage.clear();
+    }
+  });
 });
