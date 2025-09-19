@@ -4049,6 +4049,7 @@ const featureSearch   = document.getElementById("featureSearch");
 const featureSearchClear = document.getElementById("featureSearchClear");
 const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
+const helpMap         = new Map();
 const deviceMap       = new Map();
 // Normalise strings for search comparisons by removing punctuation, diacritics
 // and treating symbols like “&”/“+” as their word equivalents. British and
@@ -4668,6 +4669,7 @@ const revertAccentColor = () => {
 function populateFeatureSearch() {
   if (!featureList) return;
   featureMap.clear();
+  helpMap.clear();
   deviceMap.clear();
   featureList.innerHTML = '';
   document
@@ -4686,9 +4688,20 @@ function populateFeatureSearch() {
       featureList.appendChild(opt);
     });
   if (helpDialog) {
-    helpDialog.querySelectorAll('[data-help-section] > h3').forEach(h => {
+    helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
+      const heading = section.querySelector('h3');
+      if (!heading) return;
+      const label = heading.textContent.trim();
+      if (!label) return;
+      const keywords = section.dataset.helpKeywords || '';
+      const key = searchKey(label);
+      helpMap.set(key, {
+        section,
+        label,
+        tokens: searchTokens(`${label} ${keywords}`.trim())
+      });
       const opt = document.createElement('option');
-      opt.value = `${h.textContent.trim()} (help)`;
+      opt.value = `${label} (help)`;
       featureList.appendChild(opt);
     });
   }
@@ -14388,33 +14401,83 @@ if (helpButton && helpDialog) {
     const cleanKey = searchKey(clean);
     const cleanTokens = searchTokens(clean);
 
+    const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
     const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
-    if (deviceMatch && !isHelp) {
-      const device = deviceMatch.value;
-      if (device && device.select) {
-        device.select.value = device.value;
-        device.select.dispatchEvent(new Event('change', { bubbles: true }));
-        if (featureSearch && device.label) {
-          featureSearch.value = device.label;
+    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    const helpTokens = helpMatch?.value?.tokens || [];
+    const deviceTokens = deviceMatch?.value?.tokens || [];
+    const featureTokens = featureMatch?.value?.tokens || [];
+    const helpScore = helpTokens.length && cleanTokens.length ? tokenMatchScore(helpTokens, cleanTokens) : 0;
+    const deviceScore = deviceTokens.length && cleanTokens.length ? tokenMatchScore(deviceTokens, cleanTokens) : 0;
+    const featureScore = featureTokens.length && cleanTokens.length ? tokenMatchScore(featureTokens, cleanTokens) : 0;
+    const helpExact = helpMatch && helpMatch.key === cleanKey;
+    const deviceExact = deviceMatch && deviceMatch.key === cleanKey;
+    const featureExact = featureMatch && featureMatch.key === cleanKey;
+    const preferHelp =
+      !!helpMatch &&
+      (isHelp ||
+        helpExact ||
+        (!deviceExact && !featureExact && helpScore > 0 && helpScore >= deviceScore && helpScore >= featureScore));
+
+    if (!isHelp && !preferHelp) {
+      if (deviceMatch) {
+        const device = deviceMatch.value;
+        if (device && device.select) {
+          device.select.value = device.value;
+          device.select.dispatchEvent(new Event('change', { bubbles: true }));
+          if (featureSearch && device.label) {
+            featureSearch.value = device.label;
+          }
+          focusFeatureElement(device.select);
+          return;
         }
-        focusFeatureElement(device.select);
-        return;
+      }
+      if (featureMatch) {
+        const feature = featureMatch.value;
+        const featureEl = feature?.element || feature;
+        if (featureEl) {
+          if (featureSearch) {
+            const label = feature?.label || featureEl.textContent?.trim();
+            if (label) {
+              featureSearch.value = label;
+            }
+          }
+          focusFeatureElement(featureEl);
+          return;
+        }
       }
     }
-    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
-    if (featureMatch && !isHelp) {
-      const feature = featureMatch.value;
-      const featureEl = feature?.element || feature;
-      if (featureEl) {
-        if (featureSearch) {
-          const label = feature?.label || featureEl.textContent?.trim();
-          if (label) {
-            featureSearch.value = label;
-          }
-        }
-        focusFeatureElement(featureEl);
-        return;
+    if (helpMatch) {
+      const helpEntry = helpMatch.value || {};
+      const section = helpEntry.section;
+      openHelp();
+      if (helpSearch) {
+        helpSearch.value = clean;
+        filterHelp();
       }
+      if (section) {
+        if (section.hasAttribute('hidden')) {
+          section.removeAttribute('hidden');
+          if (helpNoResults) {
+            helpNoResults.setAttribute('hidden', '');
+          }
+          syncHelpQuickLinksVisibility();
+        }
+        if (typeof section.scrollIntoView === 'function') {
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        highlightHelpSection(section);
+        const quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
+        if (helpQuickLinksList) {
+          helpQuickLinksList
+            .querySelectorAll('.help-quick-link.active')
+            .forEach(btn => btn.classList.remove('active'));
+        }
+        if (quickLink && quickLink.button) {
+          quickLink.button.classList.add('active');
+        }
+      }
+      return;
     }
     openHelp();
     if (helpSearch) {
