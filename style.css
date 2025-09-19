@@ -1342,6 +1342,9 @@ body.pink-mode .auto-gear-rule-title,
   align-items: center;
   justify-content: flex-start;
   gap: 0.5em;
+  background: none;
+  border: none;
+  color: inherit;
   width: 100%;
   margin: 0;
   padding: 0 10px;
