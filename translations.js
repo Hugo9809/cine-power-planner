@@ -172,6 +172,8 @@ const texts = {
     autoGearBackupsHeading: "Automatic backups",
     autoGearBackupsDescription:
       "Backups save your rules every 10 minutes when changes occur. Restore a snapshot if something goes wrong.",
+    autoGearBackupSelectLabel: "Choose a backup",
+    autoGearBackupSelectPlaceholder: "Select a backup to restore",
     autoGearBackupEmpty: "No automatic backups yet.",
     autoGearBackupRestore: "Restore",
     autoGearBackupRestoreConfirm: "Replace your automatic gear rules with this backup?",
@@ -1304,6 +1306,8 @@ const texts = {
     autoGearBackupsHeading: "Backup automatici",
     autoGearBackupsDescription:
       "Viene salvato un backup ogni 10 minuti quando ci sono modifiche. Ripristina una versione se qualcosa va storto.",
+    autoGearBackupSelectLabel: "Scegli un backup",
+    autoGearBackupSelectPlaceholder: "Seleziona un backup da ripristinare",
     autoGearBackupEmpty: "Nessun backup automatico al momento.",
     autoGearBackupRestore: "Ripristina",
     autoGearBackupRestoreConfirm: "Sostituire le regole automatiche dell'equipaggiamento con questo backup?",
@@ -2041,6 +2045,8 @@ const texts = {
     autoGearBackupsHeading: "Copias de seguridad automáticas",
     autoGearBackupsDescription:
       "Se guarda una copia cada 10 minutos cuando hay cambios. Restaura una versión si algo salió mal.",
+    autoGearBackupSelectLabel: "Elige una copia de seguridad",
+    autoGearBackupSelectPlaceholder: "Selecciona una copia de seguridad para restaurar",
     autoGearBackupEmpty: "Aún no hay copias de seguridad automáticas.",
     autoGearBackupRestore: "Restaurar",
     autoGearBackupRestoreConfirm: "¿Reemplazar las reglas automáticas de equipo con esta copia de seguridad?",
@@ -2780,6 +2786,8 @@ const texts = {
     autoGearBackupsHeading: "Sauvegardes automatiques",
     autoGearBackupsDescription:
       "Une sauvegarde est créée toutes les 10 minutes en cas de changement. Restaurez une version si nécessaire.",
+    autoGearBackupSelectLabel: "Choisir une sauvegarde",
+    autoGearBackupSelectPlaceholder: "Sélectionnez une sauvegarde à restaurer",
     autoGearBackupEmpty: "Aucune sauvegarde automatique pour le moment.",
     autoGearBackupRestore: "Restaurer",
     autoGearBackupRestoreConfirm: "Remplacer les règles automatiques d’équipement par cette sauvegarde ?",
@@ -3522,6 +3530,8 @@ const texts = {
     autoGearBackupsHeading: "Automatische Sicherungen",
     autoGearBackupsDescription:
       "Alle 10 Minuten wird bei Änderungen eine Sicherung erstellt. Stelle eine Version wieder her, falls etwas schiefgeht.",
+    autoGearBackupSelectLabel: "Backup auswählen",
+    autoGearBackupSelectPlaceholder: "Wähle eine Sicherung zum Wiederherstellen",
     autoGearBackupEmpty: "Noch keine automatischen Sicherungen.",
     autoGearBackupRestore: "Wiederherstellen",
     autoGearBackupRestoreConfirm: "Automatische Gear-Regeln mit dieser Sicherung ersetzen?",

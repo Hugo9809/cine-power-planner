@@ -372,7 +372,7 @@ function syncAutoGearRulesFromStorage(rules) {
     syncBaseAutoGearRulesState();
   }
   autoGearBackups = readAutoGearBackupsFromStorage();
-  renderAutoGearBackupsList();
+  renderAutoGearBackupControls();
   closeAutoGearEditor();
   renderAutoGearRulesList();
   updateAutoGearCatalogOptions();
@@ -2696,8 +2696,32 @@ function setLanguage(lang) {
       autoGearBackupsDescription.setAttribute('data-help', description);
     }
   }
-  if (autoGearBackupList) {
-    renderAutoGearBackupsList();
+  if (autoGearBackupSelectLabel) {
+    const label = texts[lang].autoGearBackupSelectLabel
+      || texts.en?.autoGearBackupSelectLabel
+      || autoGearBackupSelectLabel.textContent;
+    autoGearBackupSelectLabel.textContent = label;
+    if (autoGearBackupSelect) {
+      autoGearBackupSelect.setAttribute('aria-label', label);
+      autoGearBackupSelect.setAttribute('title', label);
+    }
+  }
+  if (autoGearBackupRestoreButton) {
+    const label = texts[lang].autoGearBackupRestore
+      || texts.en?.autoGearBackupRestore
+      || autoGearBackupRestoreButton.textContent;
+    autoGearBackupRestoreButton.textContent = label;
+    autoGearBackupRestoreButton.setAttribute('aria-label', label);
+    autoGearBackupRestoreButton.setAttribute('title', label);
+  }
+  if (autoGearBackupEmptyMessage) {
+    const emptyText = texts[lang].autoGearBackupEmpty
+      || texts.en?.autoGearBackupEmpty
+      || autoGearBackupEmptyMessage.textContent;
+    autoGearBackupEmptyMessage.textContent = emptyText;
+  }
+  if (autoGearBackupSelect) {
+    renderAutoGearBackupControls();
   }
   if (autoGearRuleNameLabel) {
     const label = texts[lang].autoGearRuleNameLabel || texts.en?.autoGearRuleNameLabel || autoGearRuleNameLabel.textContent;
@@ -5370,7 +5394,10 @@ const autoGearImportButton = document.getElementById('autoGearImport');
 const autoGearImportInput = document.getElementById('autoGearImportInput');
 const autoGearBackupsHeading = document.getElementById('autoGearBackupsHeading');
 const autoGearBackupsDescription = document.getElementById('autoGearBackupsDescription');
-const autoGearBackupList = document.getElementById('autoGearBackupList');
+const autoGearBackupSelectLabel = document.getElementById('autoGearBackupSelectLabel');
+const autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
+const autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
+const autoGearBackupEmptyMessage = document.getElementById('autoGearBackupEmpty');
 const dataHeading = document.getElementById("dataHeading");
 const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
@@ -5579,38 +5606,66 @@ function formatAutoGearBackupMeta(backup) {
   return `${timeLabel} · ${rulesLabel}`;
 }
 
-function renderAutoGearBackupsList() {
-  if (!autoGearBackupList) return;
-  autoGearBackupList.innerHTML = '';
-  if (!autoGearBackups.length) {
-    const empty = document.createElement('li');
-    empty.className = 'auto-gear-backup-empty';
-    empty.textContent = texts[currentLang]?.autoGearBackupEmpty
-      || texts.en?.autoGearBackupEmpty
-      || 'No automatic backups yet.';
-    autoGearBackupList.appendChild(empty);
-    return;
-  }
+function getAutoGearBackupSelectPlaceholder() {
+  return texts[currentLang]?.autoGearBackupSelectPlaceholder
+    || texts.en?.autoGearBackupSelectPlaceholder
+    || 'Select a backup to restore';
+}
+
+function updateAutoGearBackupRestoreButtonState() {
+  if (!autoGearBackupRestoreButton) return;
+  const hasSelection = Boolean(autoGearBackupSelect && autoGearBackupSelect.value);
+  autoGearBackupRestoreButton.disabled = !hasSelection;
+}
+
+function renderAutoGearBackupControls() {
+  if (!autoGearBackupSelect || !autoGearBackupEmptyMessage) return;
+
+  const previousValue = autoGearBackupSelect.value;
+  const placeholderText = getAutoGearBackupSelectPlaceholder();
+
+  autoGearBackupSelect.innerHTML = '';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText;
+  placeholder.disabled = true;
+  autoGearBackupSelect.appendChild(placeholder);
+
+  const availableIds = new Set(autoGearBackups.map(backup => backup.id));
+  const retainSelection = previousValue && availableIds.has(previousValue);
+
   autoGearBackups.forEach(backup => {
-    const item = document.createElement('li');
-    item.className = 'auto-gear-backup-item';
-    const meta = document.createElement('div');
-    meta.className = 'auto-gear-backup-meta';
-    meta.textContent = formatAutoGearBackupMeta(backup);
-    meta.title = backup.createdAt;
-    item.appendChild(meta);
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'auto-gear-backup-restore';
-    const label = texts[currentLang]?.autoGearBackupRestore
-      || texts.en?.autoGearBackupRestore
-      || 'Restore';
-    button.textContent = label;
-    button.setAttribute('data-backup-id', backup.id);
-    button.setAttribute('aria-label', label);
-    item.appendChild(button);
-    autoGearBackupList.appendChild(item);
+    const option = document.createElement('option');
+    option.value = backup.id;
+    option.textContent = formatAutoGearBackupMeta(backup);
+    if (backup.createdAt) {
+      option.title = backup.createdAt;
+    }
+    if (retainSelection && backup.id === previousValue) {
+      option.selected = true;
+    }
+    autoGearBackupSelect.appendChild(option);
   });
+
+  if (!autoGearBackups.length) {
+    placeholder.selected = true;
+    autoGearBackupSelect.value = '';
+    autoGearBackupSelect.disabled = true;
+    autoGearBackupEmptyMessage.hidden = false;
+  } else {
+    autoGearBackupSelect.disabled = false;
+    autoGearBackupEmptyMessage.hidden = true;
+    if (retainSelection) {
+      placeholder.selected = false;
+      autoGearBackupSelect.value = previousValue;
+    } else {
+      placeholder.selected = true;
+      autoGearBackupSelect.value = '';
+    }
+  }
+
+  updateAutoGearBackupRestoreButtonState();
 }
 
 function renderAutoGearRulesList() {
@@ -5956,7 +6011,7 @@ function createAutoGearBackup() {
     autoGearRulesLastBackupSignature = signature;
     autoGearRulesLastPersistedSignature = signature;
     autoGearRulesDirtySinceBackup = false;
-    renderAutoGearBackupsList();
+    renderAutoGearBackupControls();
     const message = texts[currentLang]?.autoGearBackupSaved
       || texts.en?.autoGearBackupSaved
       || 'Automatic gear backup saved.';
@@ -17903,13 +17958,15 @@ if (autoGearAddItemButton) {
       }
     });
   }
-  if (autoGearBackupList) {
-    autoGearBackupList.addEventListener('click', event => {
-      const button = event.target && event.target.closest
-        ? event.target.closest('button[data-backup-id]')
-        : null;
-      if (!button) return;
-      const backupId = button.getAttribute('data-backup-id');
+  if (autoGearBackupSelect) {
+    autoGearBackupSelect.addEventListener('change', () => {
+      updateAutoGearBackupRestoreButtonState();
+    });
+  }
+  if (autoGearBackupRestoreButton) {
+    autoGearBackupRestoreButton.addEventListener('click', () => {
+      if (!autoGearBackupSelect) return;
+      const backupId = autoGearBackupSelect.value;
       if (backupId) {
         restoreAutoGearBackup(backupId);
       }
