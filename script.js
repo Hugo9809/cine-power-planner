@@ -14202,22 +14202,25 @@ function setSelectValue(select, value) {
   if (value === undefined) return;
   const normalized = value === null ? '' : value;
   select.value = normalized;
-  if (select.value === normalized) return;
-  const options = Array.from(select.options || []);
-  const noneOption = options.find(opt => opt.value === 'None');
-  if (normalized === '' && !options.length) {
-    select.value = '';
-  } else if (normalized === '') {
-    if (noneOption) {
+  if (select.value !== normalized) {
+    const options = Array.from(select.options || []);
+    const noneOption = options.find(opt => opt.value === 'None');
+    if (normalized === '' && !options.length) {
+      select.value = '';
+    } else if (normalized === '') {
+      if (noneOption) {
+        select.value = 'None';
+      } else {
+        select.selectedIndex = -1;
+      }
+    } else if (noneOption) {
       select.value = 'None';
     } else {
       select.selectedIndex = -1;
     }
-  } else if (noneOption) {
-    select.value = 'None';
-  } else {
-    select.selectedIndex = -1;
   }
+  updateFavoriteButton(select);
+  adjustGearListSelectWidth(select);
 }
 
 function resetSelectsToNone(selects) {
@@ -14232,6 +14235,8 @@ function resetSelectsToNone(selects) {
     } else {
       select.selectedIndex = -1;
     }
+    updateFavoriteButton(select);
+    adjustGearListSelectWidth(select);
   });
 }
 
@@ -16060,7 +16065,9 @@ if (helpButton && helpDialog) {
         (!deviceStrong && !featureStrong && helpScore > 0 && helpScore > bestNonHelpScore));
 
     if (!isHelp && !preferHelp) {
-      if (deviceMatch) {
+      const shouldUseDevice =
+        deviceMatch && (!featureMatch || deviceScore > featureScore);
+      if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {
           device.select.value = device.value;
