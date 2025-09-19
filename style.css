@@ -629,11 +629,8 @@ main.legal-content {
   margin: 0;
 }
 
-#setup-manager .share-options {
-  align-items: center;
-}
 
-#setup-manager .share-option {
+.share-option {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -641,8 +638,30 @@ main.legal-content {
   margin: 0;
 }
 
-#setup-manager .share-option input[type="checkbox"] {
+.share-option input[type="checkbox"] {
   margin: 0;
+}
+
+.share-option.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#shareDialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#shareDialog .form-row {
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#shareDialog .dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 #setup-manager .share-import-row {
@@ -748,14 +767,6 @@ main.legal-content {
   }
   #setup-manager #shareLinkMessage {
     margin-left: 0;
-  }
-
-  #setup-manager .share-options {
-    align-items: flex-start;
-  }
-
-  #setup-manager .share-option {
-    justify-content: flex-start;
   }
 
   #setup-manager .share-import-row {

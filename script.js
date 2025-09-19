@@ -2105,6 +2105,39 @@ function setLanguage(lang) {
   shareSetupBtn.setAttribute("title", texts[lang].shareSetupBtn);
   shareSetupBtn.setAttribute("data-help", texts[lang].shareSetupHelp);
 
+  if (shareDialogHeadingElem) {
+    const heading = texts[lang].shareDialogTitle
+      || texts.en?.shareDialogTitle
+      || shareDialogHeadingElem.textContent;
+    shareDialogHeadingElem.textContent = heading;
+  }
+
+  if (shareFilenameLabelElem) {
+    const filenameLabel = texts[lang].shareFilenameLabel
+      || texts.en?.shareFilenameLabel
+      || shareFilenameLabelElem.textContent;
+    shareFilenameLabelElem.textContent = filenameLabel;
+  }
+
+  if (shareConfirmBtn) {
+    const confirmLabel = texts[lang].shareDialogConfirm
+      || texts.en?.shareDialogConfirm
+      || shareConfirmBtn.textContent;
+    shareConfirmBtn.textContent = confirmLabel;
+    shareConfirmBtn.setAttribute('title', confirmLabel);
+    shareConfirmBtn.setAttribute('aria-label', confirmLabel);
+    shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
+  }
+
+  if (shareCancelBtn) {
+    const cancelLabel = texts[lang].shareDialogCancel
+      || texts.en?.shareDialogCancel
+      || shareCancelBtn.textContent;
+    shareCancelBtn.textContent = cancelLabel;
+    shareCancelBtn.setAttribute('title', cancelLabel);
+    shareCancelBtn.setAttribute('aria-label', cancelLabel);
+  }
+
   if (shareIncludeAutoGearText) {
     const label = texts[lang].shareIncludeAutoGearLabel
       || texts.en?.shareIncludeAutoGearLabel
@@ -4162,8 +4195,19 @@ function confirmAutoGearSelection(defaultInclude) {
   }
   return !!defaultInclude;
 }
+const shareDialog = document.getElementById("shareDialog");
+const shareForm = document.getElementById("shareForm");
+const shareDialogHeadingElem = document.getElementById("shareDialogHeading");
+const shareFilenameInput = document.getElementById("shareFilename");
+const shareFilenameLabelElem = document.getElementById("shareFilenameLabel");
+const shareFilenameMessage = document.getElementById("shareFilenameMessage");
+const shareCancelBtn = document.getElementById("shareCancelBtn");
+const shareConfirmBtn = document.getElementById("shareConfirmBtn");
 const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearText");
 const shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
+if (shareFilenameInput && shareFilenameMessage) {
+  shareFilenameInput.setAttribute('aria-describedby', 'shareFilenameMessage');
+}
 const sharedImportDialog = document.getElementById("sharedImportDialog");
 const sharedImportForm = document.getElementById("sharedImportForm");
 const sharedImportDialogHeading = document.getElementById("sharedImportDialogHeading");
@@ -13824,26 +13868,9 @@ if (projectForm) {
     });
 }
 
-shareSetupBtn.addEventListener('click', () => {
-  saveCurrentGearList();
+function downloadSharedProject(shareFileName, includeAutoGear) {
+  if (!shareFileName) return;
   const setupName = getCurrentProjectName();
-  const shareFileName = promptForSharedFilename(setupName);
-  if (!shareFileName) {
-    return;
-  }
-  const rulesForShare = getAutoGearRules();
-  const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
-  let includeAutoGear = false;
-  if (hasAutoGearRules) {
-    includeAutoGear = confirmAutoGearSelection(
-      shareIncludeAutoGearCheckbox ? shareIncludeAutoGearCheckbox.checked : false
-    );
-    if (shareIncludeAutoGearCheckbox) {
-      shareIncludeAutoGearCheckbox.checked = includeAutoGear;
-    }
-  } else if (shareIncludeAutoGearCheckbox) {
-    shareIncludeAutoGearCheckbox.checked = false;
-  }
   const currentSetup = {
     setupName,
     camera: cameraSelect.value,
@@ -13888,6 +13915,8 @@ shareSetupBtn.addEventListener('click', () => {
   if (feedback.length) {
     currentSetup.feedback = feedback;
   }
+  const rulesForShare = getAutoGearRules();
+  const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
   if (includeAutoGear && hasAutoGearRules) {
     currentSetup.autoGearRules = rulesForShare;
   }
@@ -13901,12 +13930,124 @@ shareSetupBtn.addEventListener('click', () => {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  if (shareIncludeAutoGearCheckbox) {
+    shareIncludeAutoGearCheckbox.checked = includeAutoGear && hasAutoGearRules;
+  }
   if (shareLinkMessage) {
     shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
     shareLinkMessage.classList.remove('hidden');
     setTimeout(() => shareLinkMessage.classList.add('hidden'), 4000);
   }
+}
+
+shareSetupBtn.addEventListener('click', () => {
+  saveCurrentGearList();
+  const setupName = getCurrentProjectName();
+  const defaultName = getDefaultShareFilename(setupName);
+  const defaultFilename = ensureJsonExtension(defaultName);
+
+  if (!shareDialog || !shareForm || !shareFilenameInput) {
+    const shareFileName = promptForSharedFilename(setupName);
+    if (!shareFileName) {
+      return;
+    }
+    const rulesForShare = getAutoGearRules();
+    const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
+    const includeAutoGear = hasAutoGearRules
+      ? confirmAutoGearSelection(
+          shareIncludeAutoGearCheckbox ? shareIncludeAutoGearCheckbox.checked : false
+        )
+      : false;
+    if (shareIncludeAutoGearCheckbox) {
+      shareIncludeAutoGearCheckbox.checked = includeAutoGear && hasAutoGearRules;
+    }
+    downloadSharedProject(shareFileName, includeAutoGear);
+    return;
+  }
+
+  shareFilenameInput.value = defaultFilename;
+  shareFilenameInput.setCustomValidity('');
+
+  if (shareFilenameMessage) {
+    const template = getLocalizedText('shareFilenamePrompt') || '';
+    shareFilenameMessage.textContent = template.includes('{defaultName}')
+      ? template.replace('{defaultName}', defaultName)
+      : template;
+  }
+
+  const rulesForShare = getAutoGearRules();
+  const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
+  if (shareIncludeAutoGearCheckbox) {
+    shareIncludeAutoGearCheckbox.disabled = !hasAutoGearRules;
+    shareIncludeAutoGearCheckbox.setAttribute('aria-disabled', hasAutoGearRules ? 'false' : 'true');
+    if (!hasAutoGearRules) {
+      shareIncludeAutoGearCheckbox.checked = false;
+    }
+  }
+  if (shareIncludeAutoGearLabelElem) {
+    shareIncludeAutoGearLabelElem.classList.toggle('disabled', !hasAutoGearRules);
+    shareIncludeAutoGearLabelElem.setAttribute('aria-disabled', !hasAutoGearRules ? 'true' : 'false');
+  }
+
+  openDialog(shareDialog);
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(() => {
+      if (shareFilenameInput) {
+        shareFilenameInput.focus();
+        shareFilenameInput.select();
+      }
+    });
+  } else if (shareFilenameInput) {
+    setTimeout(() => {
+      shareFilenameInput.focus();
+      shareFilenameInput.select();
+    }, 0);
+  }
 });
+
+if (shareForm) {
+  shareForm.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!shareFilenameInput) return;
+    const sanitized = sanitizeShareFilename(shareFilenameInput.value);
+    if (!sanitized) {
+      const invalidMessage =
+        getLocalizedText('shareFilenameInvalid')
+        || 'Please enter a valid file name to continue.';
+      shareFilenameInput.setCustomValidity(invalidMessage);
+      shareFilenameInput.reportValidity();
+      return;
+    }
+    shareFilenameInput.setCustomValidity('');
+    const shareFileName = ensureJsonExtension(sanitized);
+    const includeAutoGear = !!(
+      shareIncludeAutoGearCheckbox
+      && !shareIncludeAutoGearCheckbox.disabled
+      && shareIncludeAutoGearCheckbox.checked
+    );
+    closeDialog(shareDialog);
+    downloadSharedProject(shareFileName, includeAutoGear);
+  });
+}
+
+if (shareCancelBtn) {
+  shareCancelBtn.addEventListener('click', () => {
+    if (shareFilenameInput) {
+      shareFilenameInput.setCustomValidity('');
+    }
+    closeDialog(shareDialog);
+  });
+}
+
+if (shareDialog) {
+  shareDialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    if (shareFilenameInput) {
+      shareFilenameInput.setCustomValidity('');
+    }
+    closeDialog(shareDialog);
+  });
+}
 
 if (sharedLinkInput) {
   sharedLinkInput.addEventListener('change', () => {
