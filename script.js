@@ -3392,24 +3392,32 @@ function formatSvgCoordinate(value) {
 }
 
 function positionSvgMarkup(markup, centerX, centerY, size = 24) {
-  if (typeof markup !== 'string') return '';
+  if (typeof markup !== 'string') {
+    return { markup: '', x: '0', y: '0' };
+  }
   const trimmed = markup.trim();
-  if (!trimmed) return '';
+  if (!trimmed) {
+    return { markup: '', x: '0', y: '0' };
+  }
   const half = size / 2;
-  const x = formatSvgCoordinate(centerX - half);
-  const y = formatSvgCoordinate(centerY - half);
+  const x = formatSvgCoordinate(centerX);
+  const y = formatSvgCoordinate(centerY);
   const width = formatSvgCoordinate(size);
   const height = formatSvgCoordinate(size);
-  return trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
-    const attrText = attrs.trim();
+  const cleaned = trimmed.replace(/<svg\b([^>]*)>/i, (match, attrs = '') => {
+    let attrText = attrs
+      .replace(/\s+x\s*=\s*"[^"]*"/gi, '')
+      .replace(/\s+y\s*=\s*"[^"]*"/gi, '')
+      .trim();
     const additions = [];
-    if (!/\bwidth\s*=/.test(attrs)) additions.push(`width="${width}"`);
-    if (!/\bheight\s*=/.test(attrs)) additions.push(`height="${height}"`);
-    if (!/\bx\s*=/.test(attrs)) additions.push(`x="${x}"`);
-    if (!/\by\s*=/.test(attrs)) additions.push(`y="${y}"`);
-    const combined = [attrText, ...additions].filter(Boolean).join(' ').trim();
-    return combined ? `<svg ${combined}>` : '<svg>';
+    if (!/\bwidth\s*=/.test(attrText)) additions.push(`width="${width}"`);
+    if (!/\bheight\s*=/.test(attrText)) additions.push(`height="${height}"`);
+    additions.push(`x="-${formatSvgCoordinate(half)}"`);
+    additions.push(`y="-${formatSvgCoordinate(half)}"`);
+    attrText = [attrText, ...additions].filter(Boolean).join(' ').trim();
+    return attrText ? `<svg ${attrText}>` : '<svg>';
   });
+  return { markup: cleaned, x, y };
 }
 
 function glyphText(glyph) {
@@ -12216,6 +12224,9 @@ function renderSetupDiagram() {
   const nodeWidths = {};
   const diagramLabelFontSize = 'var(--font-size-diagram-label, 10px)';
   const diagramTextFontSize = 'var(--font-size-diagram-text, 12px)';
+  const DIAGRAM_LABEL_LINE_HEIGHT = 12;
+  const DIAGRAM_ICON_TEXT_GAP = 8;
+  const DEFAULT_DIAGRAM_ICON_SIZE = 24;
 
   nodes.forEach(id => {
     const label = pos[id].label || id;
@@ -12623,32 +12634,48 @@ function renderSetupDiagram() {
     }
 
     const lines = wrapLabel(p.label || id);
+    const resolvedIcon = icon ? resolveIconGlyph(icon) : null;
+    const hasIconGlyph = Boolean(resolvedIcon && (resolvedIcon.markup || resolvedIcon.char));
+    const iconSize = hasIconGlyph && Number.isFinite(resolvedIcon.size)
+      ? resolvedIcon.size
+      : DEFAULT_DIAGRAM_ICON_SIZE;
+    const iconHeight = hasIconGlyph ? iconSize : 0;
+    const textLineCount = lines.length;
+    const textHeight = textLineCount ? textLineCount * DIAGRAM_LABEL_LINE_HEIGHT : 0;
+    const iconGap = hasIconGlyph && textLineCount ? DIAGRAM_ICON_TEXT_GAP : 0;
+    const contentHeight = iconHeight + iconGap + textHeight;
+    const contentTop = p.y - contentHeight / 2;
+    const centerX = formatSvgCoordinate(p.x);
 
-    if (icon) {
-      const resolvedIcon = resolveIconGlyph(icon);
+    if (hasIconGlyph) {
+      const iconCenterY = contentTop + iconHeight / 2;
       if (resolvedIcon.markup) {
-        const iconSize = Number.isFinite(resolvedIcon.size) ? resolvedIcon.size : 24;
-        const markup = positionSvgMarkup(
+        const positioned = positionSvgMarkup(
           ensureSvgHasAriaHidden(resolvedIcon.markup),
           p.x,
-          p.y - 10,
+          iconCenterY,
           iconSize
         );
-        if (markup) {
+        if (positioned.markup) {
           const wrapperClasses = ['node-icon-svg'];
           if (resolvedIcon.className) wrapperClasses.push(resolvedIcon.className);
-          svg += `<g class="${wrapperClasses.join(' ')}">${markup}</g>`;
+          svg += `<g class="${wrapperClasses.join(' ')}" transform="translate(${positioned.x}, ${positioned.y})">${positioned.markup}</g>`;
         }
       } else if (resolvedIcon.char) {
         const fontAttr = ` data-icon-font="${resolvedIcon.font}"`;
-        svg += `<text class="node-icon"${fontAttr} x="${p.x}" y="${p.y - 10}" text-anchor="middle" dominant-baseline="middle">${resolvedIcon.char}</text>`;
+        svg += `<text class="node-icon"${fontAttr} x="${centerX}" y="${formatSvgCoordinate(iconCenterY)}" text-anchor="middle" dominant-baseline="middle">${resolvedIcon.char}</text>`;
       }
-      svg += `<text x="${p.x}" y="${p.y + 14}" text-anchor="middle" style="font-size: ${diagramLabelFontSize};">`;
-      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
-      svg += `</text>`;
-    } else {
-      svg += `<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" style="font-size: ${diagramTextFontSize};">`;
-      lines.forEach((line, i) => { svg += `<tspan x="${p.x}" dy="${i === 0 ? 0 : 12}">${escapeHtml(line)}</tspan>`; });
+    }
+
+    if (textLineCount) {
+      const textTop = contentTop + iconHeight + iconGap;
+      const textY = formatSvgCoordinate(textTop);
+      const fontSize = hasIconGlyph ? diagramLabelFontSize : diagramTextFontSize;
+      svg += `<text x="${centerX}" y="${textY}" text-anchor="middle" dominant-baseline="hanging" style="font-size: ${fontSize};">`;
+      lines.forEach((line, i) => {
+        const dyAttr = i === 0 ? '' : ` dy="${DIAGRAM_LABEL_LINE_HEIGHT}"`;
+        svg += `<tspan x="${centerX}"${dyAttr}>${escapeHtml(line)}</tspan>`;
+      });
       svg += `</text>`;
     }
     svg += `</g>`;
