@@ -514,8 +514,41 @@ function setupOfflineIndicator() {
   updateOnlineStatus();
 }
 
+async function ensurePersistentStorage() {
+  if (typeof navigator === 'undefined') return false;
+  const { storage } = navigator;
+  if (!storage || typeof storage.persist !== 'function') {
+    return false;
+  }
+
+  let alreadyPersisted = false;
+  if (typeof storage.persisted === 'function') {
+    try {
+      alreadyPersisted = await storage.persisted();
+    } catch (error) {
+      console.warn('Unable to determine persistent storage status', error);
+    }
+  }
+
+  if (alreadyPersisted) {
+    return true;
+  }
+
+  try {
+    const granted = await storage.persist();
+    if (!granted) {
+      console.warn('Persistent storage request was denied; offline data may be cleared by the browser.');
+    }
+    return granted;
+  } catch (error) {
+    console.warn('Persistent storage request failed', error);
+    return false;
+  }
+}
+
 if (typeof window !== 'undefined') {
   setupOfflineIndicator();
+  void ensurePersistentStorage();
 }
 
 /**
@@ -16052,6 +16085,7 @@ if (helpButton && helpDialog) {
     const helpExact = helpMatch?.matchType === 'exactKey';
     const deviceStrong = deviceMatch ? STRONG_SEARCH_MATCH_TYPES.has(deviceMatch.matchType) : false;
     const featureStrong = featureMatch ? STRONG_SEARCH_MATCH_TYPES.has(featureMatch.matchType) : false;
+    const featureExact = featureMatch?.matchType === 'exactKey';
     const bestNonHelpScore = Math.max(deviceScore, featureScore);
     const preferHelp =
       !!helpMatch &&
@@ -16059,7 +16093,30 @@ if (helpButton && helpDialog) {
         helpExact ||
         (!deviceStrong && !featureStrong && helpScore > 0 && helpScore > bestNonHelpScore));
 
+    const preferFeatureOverDevice =
+      !!featureMatch &&
+      (featureExact || !deviceMatch || (featureStrong && !deviceStrong));
+
     if (!isHelp && !preferHelp) {
+      const applyFeatureMatch = () => {
+        if (!featureMatch) return false;
+        const feature = featureMatch.value;
+        const featureEl = feature?.element || feature;
+        if (!featureEl) return false;
+        if (featureSearch) {
+          const label = feature?.label || featureEl.textContent?.trim();
+          if (label) {
+            featureSearch.value = label;
+          }
+        }
+        focusFeatureElement(featureEl);
+        return true;
+      };
+
+      if (preferFeatureOverDevice && applyFeatureMatch()) {
+        return;
+      }
+
       if (deviceMatch) {
         const device = deviceMatch.value;
         if (device && device.select) {
@@ -16072,19 +16129,8 @@ if (helpButton && helpDialog) {
           return;
         }
       }
-      if (featureMatch) {
-        const feature = featureMatch.value;
-        const featureEl = feature?.element || feature;
-        if (featureEl) {
-          if (featureSearch) {
-            const label = feature?.label || featureEl.textContent?.trim();
-            if (label) {
-              featureSearch.value = label;
-            }
-          }
-          focusFeatureElement(featureEl);
-          return;
-        }
+      if (applyFeatureMatch()) {
+        return;
       }
     }
     if (helpMatch) {
@@ -16825,6 +16871,7 @@ if (document.readyState === "loading") {
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     APP_VERSION,
+    ensurePersistentStorage,
     closeSideMenu,
     openSideMenu,
     setupSideMenu,
