@@ -167,4 +167,119 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(items).toHaveLength(1);
     expect(items[0].classList.contains('auto-gear-item')).toBe(true);
   });
+
+  test('saving a rule shows a confirmation notification', () => {
+    env = setupScriptEnvironment();
+
+    const addRuleButton = document.getElementById('autoGearAddRule');
+    addRuleButton.click();
+
+    const scenarios = document.getElementById('autoGearScenarios');
+    expect(scenarios.options.length).toBeGreaterThan(0);
+    scenarios.options[0].selected = true;
+
+    const ruleNameInput = document.getElementById('autoGearRuleName');
+    ruleNameInput.value = 'Test confirmation';
+
+    const addNameInput = document.getElementById('autoGearAddName');
+    const addQuantityInput = document.getElementById('autoGearAddQuantity');
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addNameInput.value = 'Test item';
+    addQuantityInput.value = '2';
+    addCategorySelect.value = addCategorySelect.options[0].value;
+
+    const addItemButton = document.getElementById('autoGearAddItemButton');
+    addItemButton.click();
+
+    const saveButton = document.getElementById('autoGearSaveRule');
+    saveButton.click();
+
+    const notificationContainer = document.getElementById('backupNotificationContainer');
+    expect(notificationContainer).not.toBeNull();
+    const note = notificationContainer.querySelector('div');
+    expect(note).not.toBeNull();
+    expect(note.textContent).toBe('Automatic gear rule saved.');
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(stored).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ label: 'Test confirmation' })
+      ])
+    );
+  });
+
+  test('restoring a backup updates automatic gear rules immediately', () => {
+    env = setupScriptEnvironment();
+
+    const originalAlert = window.alert;
+    const originalBackup = window.createSettingsBackup;
+    const originalFileReader = window.FileReader;
+    const originalCreateObjectURL = window.URL.createObjectURL;
+    const originalRevokeObjectURL = window.URL.revokeObjectURL;
+
+    window.alert = jest.fn();
+    window.URL.createObjectURL = jest.fn(() => 'blob:mock-url');
+    window.URL.revokeObjectURL = jest.fn();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    const restoreData = {
+      version: env.utils.APP_VERSION,
+      settings: {
+        [STORAGE_KEY]: JSON.stringify([]),
+      },
+      data: {
+        autoGearRules: [
+          {
+            id: 'restored-rule',
+            label: 'Restored slider kit',
+            scenarios: ['Slider'],
+            add: [
+              { id: 'restored-item', name: 'Slider dolly', category: 'Grip', quantity: 1 }
+            ],
+            remove: []
+          }
+        ]
+      }
+    };
+
+    const fileContent = JSON.stringify(restoreData);
+    const fakeFile = { name: 'backup.json' };
+
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile]
+    });
+
+    const mockReaderInstance = {
+      onload: null,
+      readAsText: jest.fn(function readAsText() {
+        if (typeof this.onload === 'function') {
+          this.onload({ target: { result: fileContent } });
+        }
+      })
+    };
+
+    window.FileReader = jest.fn(() => mockReaderInstance);
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      const ruleTitle = document.querySelector('.auto-gear-rule-title');
+      expect(ruleTitle).not.toBeNull();
+      expect(ruleTitle.textContent).toBe('Restored slider kit');
+
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      expect(stored).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ label: 'Restored slider kit' })
+        ])
+      );
+    } finally {
+      window.alert = originalAlert;
+      window.createSettingsBackup = originalBackup;
+      window.FileReader = originalFileReader;
+      window.URL.createObjectURL = originalCreateObjectURL;
+      window.URL.revokeObjectURL = originalRevokeObjectURL;
+    }
+  });
 });

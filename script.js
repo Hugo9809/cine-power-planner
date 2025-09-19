@@ -219,6 +219,13 @@ function readAutoGearRulesFromStorage() {
 
 let autoGearRules = readAutoGearRulesFromStorage();
 
+function assignAutoGearRules(rules) {
+  autoGearRules = Array.isArray(rules)
+    ? rules.map(normalizeAutoGearRule).filter(Boolean)
+    : [];
+  return autoGearRules;
+}
+
 function persistAutoGearRules() {
   if (typeof saveAutoGearRules !== 'undefined' && typeof saveAutoGearRules === 'function') {
     try {
@@ -237,12 +244,23 @@ function persistAutoGearRules() {
 }
 
 function setAutoGearRules(rules) {
-  autoGearRules = Array.isArray(rules) ? rules.map(normalizeAutoGearRule).filter(Boolean) : [];
+  assignAutoGearRules(rules);
   persistAutoGearRules();
 }
 
 function getAutoGearRules() {
   return autoGearRules.slice();
+}
+
+function syncAutoGearRulesFromStorage(rules) {
+  if (Array.isArray(rules)) {
+    setAutoGearRules(rules);
+  } else {
+    assignAutoGearRules(readAutoGearRulesFromStorage());
+  }
+  closeAutoGearEditor();
+  renderAutoGearRulesList();
+  updateAutoGearCatalogOptions();
 }
 
 function looksLikeGearName(name) {
@@ -3272,7 +3290,11 @@ function createDeviceCategorySection(categoryKey) {
   section.appendChild(filterInput);
   const list = document.createElement('ul');
   list.className = 'device-ul';
-  list.id = `${sanitizedId}List`;
+  const listId = sanitizedId === 'cameras' ? 'cameraList' : `${sanitizedId}List`;
+  list.id = listId;
+  if (sanitizedId === 'cameras') {
+    list.setAttribute('data-current-id', 'camerasList');
+  }
   section.appendChild(list);
   deviceListContainer.appendChild(section);
   bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
@@ -4309,6 +4331,10 @@ function saveAutoGearRuleFromEditor() {
   setAutoGearRules(rules);
   updateAutoGearCatalogOptions();
   renderAutoGearRulesList();
+  const successMessage = texts[currentLang]?.autoGearRuleSaved
+    || texts.en?.autoGearRuleSaved
+    || 'Automatic gear rule saved.';
+  showNotification('success', successMessage);
   closeAutoGearEditor();
 }
 
@@ -14970,6 +14996,7 @@ if (restoreSettings && restoreSettingsInput) {
         if (data && typeof importAllData === 'function') {
           importAllData(data);
         }
+        syncAutoGearRulesFromStorage(data?.autoGearRules);
         applyDarkMode(localStorage.getItem('darkMode') === 'true');
         applyPinkMode(localStorage.getItem('pinkMode') === 'true');
         applyHighContrast(localStorage.getItem('highContrast') === 'true');
@@ -16626,5 +16653,6 @@ if (typeof module !== "undefined" && module.exports) {
     collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml,
     getAutoGearRules,
+    syncAutoGearRulesFromStorage,
   };
 }
