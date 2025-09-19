@@ -4982,6 +4982,7 @@ function setEasyrigValue(val) {
 
 let currentProjectInfo = null;
 let loadedSetupState = null;
+let loadedSetupStateSignature = '';
 let restoringSession = false;
 
 function setCurrentProjectInfo(info) {
@@ -4990,6 +4991,44 @@ function setCurrentProjectInfo(info) {
 
 function getCurrentProjectInfo() {
   return currentProjectInfo;
+}
+
+function stableStringify(value) {
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  if (Array.isArray(value)) {
+    return `[${value.map(item => stableStringify(item)).join(',')}]`;
+  }
+  if (typeof value === 'object') {
+    const keys = Object.keys(value).sort();
+    const entries = keys.map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`);
+    return `{${entries.join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function computeSetupSignature(state) {
+  if (!state) return '';
+  return [
+    state.camera || '',
+    state.monitor || '',
+    state.video || '',
+    state.cage || '',
+    stableStringify(state.motors || []),
+    stableStringify(state.controllers || []),
+    state.distance || '',
+    state.batteryPlate || '',
+    state.battery || '',
+    state.batteryHotswap || '',
+    state.sliderBowl || '',
+    state.easyrig || '',
+    stableStringify(state.projectInfo || null)
+  ].join('||');
+}
+
+function storeLoadedSetupState(state) {
+  loadedSetupState = state;
+  loadedSetupStateSignature = computeSetupSignature(state);
 }
 
 function getCurrentSetupState() {
@@ -5019,13 +5058,15 @@ function checkSetupChanged() {
   if (
     loadedSetupState &&
     setupSelect.value &&
-    setupNameInput.value.trim() === setupSelect.value &&
-    JSON.stringify(getCurrentSetupState()) !== JSON.stringify(loadedSetupState)
+    setupNameInput.value.trim() === setupSelect.value
   ) {
-    saveSetupBtn.textContent = texts[currentLang].updateSetupBtn;
-  } else {
-    saveSetupBtn.textContent = texts[currentLang].saveSetupBtn;
+    const currentSignature = computeSetupSignature(getCurrentSetupState());
+    if (currentSignature !== loadedSetupStateSignature) {
+      saveSetupBtn.textContent = texts[currentLang].updateSetupBtn;
+      return;
+    }
   }
+  saveSetupBtn.textContent = texts[currentLang].saveSetupBtn;
 }
 
 const projectDialog = document.getElementById("projectDialog");
@@ -8972,7 +9013,7 @@ saveSetupBtn.addEventListener("click", () => {
   populateSetupSelect();
   setupSelect.value = setupName; // Select the newly saved setup
   saveCurrentSession(); // Persist selection so refreshes restore this setup
-  loadedSetupState = getCurrentSetupState();
+  storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
   // Ensure the current gear list stays persisted with the project so setups
   // remain in sync with the automatically saved table.
@@ -9074,7 +9115,7 @@ setupSelect.addEventListener("change", (event) => {
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     updateBatteryPlateVisibility();
     updateBatteryOptions();
-    loadedSetupState = null;
+    storeLoadedSetupState(null);
     if (gearListOutput) {
       gearListOutput.innerHTML = '';
       gearListOutput.classList.add('hidden');
@@ -9128,7 +9169,7 @@ setupSelect.addEventListener("change", (event) => {
       if (projectForm) populateProjectForm({});
       displayGearAndRequirements('');
     }
-    loadedSetupState = getCurrentSetupState();
+    storeLoadedSetupState(getCurrentSetupState());
   }
   if (saveSetupBtn) {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
@@ -10923,76 +10964,143 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
 
 function collectProjectFormData() {
     if (!projectForm) return {};
-    const val = name => (projectForm.querySelector(`[name="${name}"]`)?.value || '').trim();
-    const multi = name => Array.from(projectForm.querySelector(`[name="${name}"]`)?.selectedOptions || [])
-        .map(o => o.value).join(', ');
-    const viewfinderSettings = multi('viewfinderSettings');
-    const frameGuides = multi('frameGuides');
-    const aspectMaskOpacity = multi('aspectMaskOpacity');
+
+    const formData = new FormData(projectForm);
+    const getValue = (name) => {
+        const raw = formData.get(name);
+        return typeof raw === 'string' ? raw.trim() : '';
+    };
+    const getMultiValue = (name) => {
+        const values = formData.getAll(name);
+        if (!values || values.length === 0) return '';
+        return values.map(value => (typeof value === 'string' ? value : String(value))).join(', ');
+    };
+
+    const viewfinderSettings = getMultiValue('viewfinderSettings');
+    const frameGuides = getMultiValue('frameGuides');
+    const aspectMaskOpacity = getMultiValue('aspectMaskOpacity');
     const filterStr = collectFilterSelections();
     const filterTypes = filterStr ? filterStr.split(',').map(s => s.split(':')[0]) : [];
     const matteboxVal = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE')
         ? 'Swing Away'
-        : val('mattebox');
-    const people = Array.from(crewContainer?.querySelectorAll('.person-row') || []).map(row => ({
-        role: row.querySelector('select')?.value,
-        name: row.querySelector('.person-name')?.value.trim(),
-        phone: row.querySelector('.person-phone')?.value.trim(),
-        email: row.querySelector('.person-email')?.value?.trim()
-    })).filter(p => p.role && p.name);
+        : getValue('mattebox');
+
+    const people = Array.from(crewContainer?.querySelectorAll('.person-row') || [])
+        .map(row => ({
+            role: row.querySelector('select')?.value,
+            name: row.querySelector('.person-name')?.value.trim(),
+            phone: row.querySelector('.person-phone')?.value.trim(),
+            email: row.querySelector('.person-email')?.value?.trim()
+        }))
+        .filter(person => person.role && person.name);
+
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {
             const start = row.querySelector(startSel)?.value;
             const end = row.querySelector(endSel)?.value;
             return [start, end].filter(Boolean).join(' to ');
-        }).filter(Boolean);
+        })
+        .filter(Boolean);
+
     const prepDays = collectRanges(prepContainer, '.prep-start', '.prep-end');
     const shootingDays = collectRanges(shootContainer, '.shoot-start', '.shoot-end');
-    return {
-        projectName: val('projectName'),
-        productionCompany: val('productionCompany'),
-        rentalHouse: val('rentalHouse'),
+
+    const gearValues = gearListOutput ? (() => {
+        const ids = [
+            'gearListDirectorMonitor',
+            'gearListDopMonitor',
+            'gearListGafferMonitor',
+            'gearListDirectorMonitor15',
+            'gearListComboMonitor15',
+            'gearListDopMonitor15',
+            'gearListFocusMonitor',
+            'gearListProGaffColor1',
+            'gearListProGaffWidth1',
+            'gearListProGaffColor2',
+            'gearListProGaffWidth2',
+            'gearListEyeLeatherColor'
+        ];
+        const map = new Map();
+        ids.forEach(id => {
+            const el = gearListOutput.querySelector(`#${id}`);
+            if (!el) return;
+            const value = el.value;
+            map.set(id, typeof value === 'string' ? value : (value == null ? '' : String(value)));
+        });
+        return map;
+    })() : null;
+
+    const getGearValue = (id) => (gearValues && gearValues.has(id) ? gearValues.get(id) : '');
+
+    const proGaffColor1 = getGearValue('gearListProGaffColor1');
+    const proGaffWidth1 = getGearValue('gearListProGaffWidth1');
+    const proGaffColor2 = getGearValue('gearListProGaffColor2');
+    const proGaffWidth2 = getGearValue('gearListProGaffWidth2');
+
+    const info = {
+        projectName: getValue('projectName'),
+        productionCompany: getValue('productionCompany'),
+        rentalHouse: getValue('rentalHouse'),
         ...(people.length ? { people } : {}),
         prepDays,
         shootingDays,
-        deliveryResolution: val('deliveryResolution'),
-        recordingResolution: val('recordingResolution'),
-        aspectRatio: multi('aspectRatio'),
-        codec: val('codec'),
-        baseFrameRate: val('baseFrameRate'),
-        sensorMode: val('sensorMode'),
-        lenses: multi('lenses'),
-        requiredScenarios: multi('requiredScenarios'),
-        cameraHandle: multi('cameraHandle'),
-        viewfinderExtension: val('viewfinderExtension'),
-        viewfinderEyeLeatherColor: gearListOutput?.querySelector('#gearListEyeLeatherColor')?.value || val('viewfinderEyeLeatherColor'),
+        deliveryResolution: getValue('deliveryResolution'),
+        recordingResolution: getValue('recordingResolution'),
+        aspectRatio: getMultiValue('aspectRatio'),
+        codec: getValue('codec'),
+        baseFrameRate: getValue('baseFrameRate'),
+        sensorMode: getValue('sensorMode'),
+        lenses: getMultiValue('lenses'),
+        requiredScenarios: getMultiValue('requiredScenarios'),
+        cameraHandle: getMultiValue('cameraHandle'),
+        viewfinderExtension: getValue('viewfinderExtension'),
+        viewfinderEyeLeatherColor: getGearValue('gearListEyeLeatherColor') || getValue('viewfinderEyeLeatherColor'),
         mattebox: matteboxVal,
-        gimbal: multi('gimbal'),
+        gimbal: getMultiValue('gimbal'),
         viewfinderSettings,
         frameGuides,
         aspectMaskOpacity,
-        videoDistribution: multi('videoDistribution'),
-        monitoringConfiguration: val('monitoringConfiguration'),
-        monitorUserButtons: multi('monitorUserButtons'),
-        cameraUserButtons: multi('cameraUserButtons'),
-        viewfinderUserButtons: multi('viewfinderUserButtons'),
-        tripodHeadBrand: val('tripodHeadBrand'),
-        tripodBowl: val('tripodBowl'),
-        tripodTypes: multi('tripodTypes'),
-        tripodSpreader: val('tripodSpreader'),
+        videoDistribution: getMultiValue('videoDistribution'),
+        monitoringConfiguration: getValue('monitoringConfiguration'),
+        monitorUserButtons: getMultiValue('monitorUserButtons'),
+        cameraUserButtons: getMultiValue('cameraUserButtons'),
+        viewfinderUserButtons: getMultiValue('viewfinderUserButtons'),
+        tripodHeadBrand: getValue('tripodHeadBrand'),
+        tripodBowl: getValue('tripodBowl'),
+        tripodTypes: getMultiValue('tripodTypes'),
+        tripodSpreader: getValue('tripodSpreader'),
         sliderBowl: getSliderBowlValue(),
         easyrig: getEasyrigValue(),
-        ...(gearListOutput?.querySelector('#gearListDirectorMonitor')?.value ? { directorMonitor: gearListOutput.querySelector('#gearListDirectorMonitor').value } : {}),
-        ...(gearListOutput?.querySelector('#gearListDopMonitor')?.value ? { dopMonitor: gearListOutput.querySelector('#gearListDopMonitor').value } : {}),
-        ...(gearListOutput?.querySelector('#gearListGafferMonitor')?.value ? { gafferMonitor: gearListOutput.querySelector('#gearListGafferMonitor').value } : {}),
-        ...(gearListOutput?.querySelector('#gearListDirectorMonitor15')?.value ? { directorMonitor15: gearListOutput.querySelector('#gearListDirectorMonitor15').value } : {}),
-        ...(gearListOutput?.querySelector('#gearListComboMonitor15')?.value ? { comboMonitor15: gearListOutput.querySelector('#gearListComboMonitor15').value } : {}),
-        ...(gearListOutput?.querySelector('#gearListDopMonitor15')?.value ? { dopMonitor15: gearListOutput.querySelector('#gearListDopMonitor15').value } : {}),
-        focusMonitor: gearListOutput?.querySelector('#gearListFocusMonitor')?.value || '',
-        ...(gearListOutput?.querySelector('#gearListProGaffColor1')?.value || gearListOutput?.querySelector('#gearListProGaffWidth1')?.value ? { proGaffColor1: gearListOutput.querySelector('#gearListProGaffColor1')?.value || '', proGaffWidth1: gearListOutput.querySelector('#gearListProGaffWidth1')?.value || '' } : {}),
-        ...(gearListOutput?.querySelector('#gearListProGaffColor2')?.value || gearListOutput?.querySelector('#gearListProGaffWidth2')?.value ? { proGaffColor2: gearListOutput.querySelector('#gearListProGaffColor2')?.value || '', proGaffWidth2: gearListOutput.querySelector('#gearListProGaffWidth2')?.value || '' } : {}),
         filter: filterStr
     };
+
+    const assignGearField = (prop, id) => {
+        const value = getGearValue(id);
+        if (value) {
+            info[prop] = value;
+        }
+    };
+
+    assignGearField('directorMonitor', 'gearListDirectorMonitor');
+    assignGearField('dopMonitor', 'gearListDopMonitor');
+    assignGearField('gafferMonitor', 'gearListGafferMonitor');
+    assignGearField('directorMonitor15', 'gearListDirectorMonitor15');
+    assignGearField('comboMonitor15', 'gearListComboMonitor15');
+    assignGearField('dopMonitor15', 'gearListDopMonitor15');
+
+    info.focusMonitor = getGearValue('gearListFocusMonitor') || '';
+
+    if (proGaffColor1 || proGaffWidth1) {
+        info.proGaffColor1 = proGaffColor1 || '';
+        info.proGaffWidth1 = proGaffWidth1 || '';
+    }
+
+    if (proGaffColor2 || proGaffWidth2) {
+        info.proGaffColor2 = proGaffColor2 || '';
+        info.proGaffWidth2 = proGaffWidth2 || '';
+    }
+
+    return info;
 }
 
 function populateProjectForm(info = {}) {
@@ -12632,7 +12740,7 @@ function autoSaveCurrentSetup() {
   populateSetupSelect();
   if (setupSelect) setupSelect.value = name;
   saveCurrentSession();
-  loadedSetupState = getCurrentSetupState();
+  storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
 }
 
@@ -12719,7 +12827,7 @@ function resetSelectsToNone(selects) {
 function restoreSessionState() {
   restoringSession = true;
   const state = loadSession();
-  loadedSetupState = state || null;
+  storeLoadedSetupState(state || null);
   resetSelectsToNone(motorSelects);
   resetSelectsToNone(controllerSelects);
   if (state) {
