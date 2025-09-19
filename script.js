@@ -2363,14 +2363,12 @@ function setLanguage(lang) {
   if (addDeviceBtn.dataset.mode === "edit") {
     addDeviceBtn.textContent = texts[lang].updateDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
-    cancelEditBtn.textContent = texts[lang].cancelEditBtn;
-    cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
   } else {
     addDeviceBtn.textContent = texts[lang].addDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
-    cancelEditBtn.textContent = texts[lang].cancelEditBtn;
-    cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
   }
+  setButtonLabelWithIcon(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
+  cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
   exportBtn.textContent = texts[lang].exportDataBtn;
   exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
   importDataBtn.textContent = texts[lang].importDataBtn; // New translation for import button
@@ -2744,7 +2742,7 @@ function setLanguage(lang) {
   }
   if (autoGearCancelEditButton) {
     const label = texts[lang].autoGearCancelEdit || texts.en?.autoGearCancelEdit || autoGearCancelEditButton.textContent;
-    autoGearCancelEditButton.textContent = label;
+    setButtonLabelWithIcon(autoGearCancelEditButton, label, ICON_GLYPHS.circleX);
     autoGearCancelEditButton.setAttribute('data-help', label);
   }
   if (autoGearAddCategorySelect) {
@@ -2869,9 +2867,11 @@ function setLanguage(lang) {
     settingsSave.setAttribute("aria-label", saveHelp);
   }
   if (settingsCancel) {
-    settingsCancel.textContent = texts[lang].cancelSettings;
+    const cancelLabel =
+      texts[lang].cancelSettings || texts.en?.cancelSettings || settingsCancel.textContent;
+    setButtonLabelWithIcon(settingsCancel, cancelLabel, ICON_GLYPHS.circleX);
     const cancelHelp =
-      texts[lang].cancelSettingsHelp || texts[lang].cancelSettings;
+      texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || cancelLabel;
     settingsCancel.setAttribute("data-help", cancelHelp);
     settingsCancel.setAttribute("title", cancelHelp);
     settingsCancel.setAttribute("aria-label", cancelHelp);
@@ -3062,8 +3062,9 @@ function setLanguage(lang) {
       if (yesLabel) viewfinderExtensionSelect.options[1].textContent = yesLabel;
     }
     if (projectCancelBtn) {
-      const cancelText = projectFormTexts.cancel || fallbackProjectForm.cancel;
-      if (cancelText) projectCancelBtn.textContent = cancelText;
+      const cancelText =
+        projectFormTexts.cancel || fallbackProjectForm.cancel || projectCancelBtn.textContent;
+      setButtonLabelWithIcon(projectCancelBtn, cancelText, ICON_GLYPHS.circleX);
     }
     if (projectSubmitBtn) {
       const submitText = projectFormTexts.submit || fallbackProjectForm.submit;
@@ -7463,6 +7464,14 @@ const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackCancelBtn = document.getElementById("fbCancel");
 const feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
+if (feedbackCancelBtn) {
+  const cancelLabel =
+    feedbackCancelBtn.textContent?.trim() ||
+    texts[currentLang]?.cancelEditBtn ||
+    texts.en?.cancelEditBtn ||
+    'Cancel';
+  setButtonLabelWithIcon(feedbackCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
+}
 const loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
 const saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
 const setupDiagramContainer = document.getElementById("diagramArea");
@@ -11875,7 +11884,7 @@ deviceManagerSection.addEventListener("click", (event) => {
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     addDeviceBtn.dataset.mode = "edit";
-    cancelEditBtn.textContent = texts[currentLang].cancelEditBtn;
+    setButtonLabelWithIcon(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     showFormSection(cancelEditBtn);
     document.getElementById("addDeviceHeading").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -12052,9 +12061,11 @@ newCategorySelect.addEventListener("change", () => {
       newNameInput.value = "";
     }
   }
+  const cancelLabel = texts[currentLang].cancelEditBtn;
   if (wasEditing) {
     addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
+    setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     showFormSection(cancelEditBtn);
   } else {
@@ -12064,6 +12075,7 @@ newCategorySelect.addEventListener("change", () => {
     delete addDeviceBtn.dataset.originalName;
     delete addDeviceBtn.dataset.originalSubcategory;
     delete addDeviceBtn.dataset.originalCategory;
+    setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     hideFormSection(cancelEditBtn);
   }
@@ -12084,6 +12096,7 @@ function resetDeviceForm() {
   }
   if (cancelEditBtn) {
     hideFormSection(cancelEditBtn);
+    setButtonLabelWithIcon(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
   }
   // Trigger change handler to reset fields and button text, guarding against
