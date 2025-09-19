@@ -846,7 +846,7 @@ main.legal-content {
   border: 2px solid var(--accent-color);
   padding: clamp(24px, 4vw, 48px);
   color: var(--text-color);
-  width: min(90vw, 400px);
+  width: min(90vw, 420px);
   max-height: 80vh;
   overflow-y: auto;
   border-radius: var(--border-radius);
@@ -854,6 +854,12 @@ main.legal-content {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+@media (min-width: 900px) {
+  .settings-content {
+    width: min(80vw, 600px);
+  }
 }
 
 .settings-section {
