@@ -1,5 +1,5 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v20';
+const CACHE_NAME = 'cine-power-planner-v23';
 const ASSETS = [
   './',
   './index.html',
@@ -14,15 +14,15 @@ const ASSETS = [
   './datenschutz-fr.html',
   './datenschutz-it.html',
   './style.css',
+  './webfonts/uicons-thin-straight.css',
+  './webfonts/uicons-thin-straight.woff2',
+  './webfonts/uicons-thin-straight.woff',
+  './webfonts/uicons-thin-straight.eot',
   './static-theme.js',
   './overview.css',
   './overview-print.css',
   './overview.js',
   './fonts.css',
-  './webfonts/uicons-thin-straight.css',
-  './webfonts/uicons-thin-straight.woff2',
-  './webfonts/uicons-thin-straight.woff',
-  './webfonts/uicons-thin-straight.eot',
   './Ubuntu/Ubuntu-Bold.ttf',
   './Ubuntu/Ubuntu-BoldItalic.ttf',
   './Ubuntu/Ubuntu-Italic.ttf',

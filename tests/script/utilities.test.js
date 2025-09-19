@@ -105,7 +105,7 @@ describe('script utility helpers', () => {
     expect(html).toContain('Controller: Internal');
     expect(html).toContain('Torque: 0.8 Nm');
     expect(html).toContain('Power Source: Battery &amp; Charger &lt;fast&gt;');
-    expect(html).toContain('connector-icon icon-glyph');
-    expect(html).toContain('info-icon icon-glyph');
+    expect(html).toContain('icon-glyph connector-icon');
+    expect(html).toContain('icon-glyph info-icon');
   });
 });

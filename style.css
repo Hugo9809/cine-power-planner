@@ -26,7 +26,10 @@
   --form-label-width: 150px;
   --form-label-min-width: 120px;
   --form-action-width: 110px;
-  --font-family: 'Ubuntu', 'uicons-thin-straight', sans-serif;
+  --font-family: 'Ubuntu', sans-serif;
+  --icon-font-essential: 'CineEssentialIcons', 'uicons-thin-straight';
+  --icon-font-film: 'CineFilmIcons', 'uicons-thin-straight';
+  --icon-font-gadget: 'CineGadgetIcons', 'uicons-thin-straight';
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
@@ -1376,8 +1379,9 @@ html.dark-mode .help-quick-link-icon {
   outline-offset: 4px;
 }
 
+
 .icon-glyph {
-  font-family: 'uicons-thin-straight';
+  font-family: var(--icon-font-essential);
   font-style: normal;
   font-weight: 400;
   display: inline-flex;
@@ -1387,8 +1391,20 @@ html.dark-mode .help-quick-link-icon {
   color: var(--icon-color, currentColor);
 }
 
+.icon-glyph.icon-font-essential {
+  font-family: var(--icon-font-essential);
+}
+
+.icon-glyph.icon-font-film {
+  font-family: var(--icon-font-film);
+}
+
+.icon-glyph.icon-font-gadget {
+  font-family: var(--icon-font-gadget);
+}
+
 .icon-glyph.icon-text {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: var(--font-family);
   font-weight: 300;
 }
 
@@ -2486,7 +2502,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 
 #setupDiagram .node-icon {
   font-size: 20px;
-  font-family: 'uicons-thin-straight', system-ui, sans-serif;
+  font-family: var(--icon-font-essential), var(--icon-font-film), var(--icon-font-gadget), system-ui, sans-serif;
   font-style: normal;
 }
 #setupDiagram .conn {
