@@ -62,4 +62,21 @@ describe('global feature search help navigation', () => {
     expect(quickLinkButton).toBeTruthy();
     expect(quickLinkButton.classList.contains('active')).toBe(true);
   });
+
+  test('prefers feature matches over help when relevance ties', async () => {
+    expect(featureSearch).toBeTruthy();
+    expect(helpDialog).toBeTruthy();
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    triggerFeatureSearch('Power Summary');
+
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    expect(featureSearch.value).toBe('Power Summary');
+
+    const resultsHeading = document.getElementById('resultsHeading');
+    expect(resultsHeading).toBeTruthy();
+    expect(document.activeElement).toBe(resultsHeading);
+  });
 });
