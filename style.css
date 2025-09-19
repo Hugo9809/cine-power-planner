@@ -904,6 +904,13 @@ main.legal-content {
   gap: 12px;
 }
 
+.auto-gear-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .auto-gear-rule {
   display: flex;
   justify-content: space-between;

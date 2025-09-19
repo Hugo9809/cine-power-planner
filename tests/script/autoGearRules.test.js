@@ -1,6 +1,7 @@
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 const STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
+const SEED_KEY = 'cameraPowerPlanner_autoGearSeeded';
 
 describe('applyAutoGearRulesToTableHtml', () => {
   let env;
@@ -166,5 +167,121 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const items = container.querySelectorAll('[data-gear-name="Prosup Tango Roller"]');
     expect(items).toHaveLength(1);
     expect(items[0].classList.contains('auto-gear-item')).toBe(true);
+  });
+});
+
+describe('resetAutoGearRulesToFactoryAdditions', () => {
+  let env;
+
+  afterEach(() => {
+    env?.cleanup();
+    env = null;
+    localStorage.clear();
+    jest.restoreAllMocks();
+  });
+
+  const baselineHtml = `
+    <table class="gear-table">
+      <tbody class="category-group">
+        <tr class="category-row"><td>Grip</td></tr>
+        <tr>
+          <td>
+            <span class="gear-item" data-gear-name="Tripod">1x Tripod</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+
+  const outdoorHtml = `
+    <table class="gear-table">
+      <tbody class="category-group">
+        <tr class="category-row"><td>Grip</td></tr>
+        <tr>
+          <td>
+            <span class="gear-item" data-gear-name="Tripod">1x Tripod</span><br />
+            <span class="gear-item" data-gear-name="Rain Cover">1x Rain Cover</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+
+  test('replaces custom rules with seeded factory additions', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'custom',
+          label: 'Custom',
+          scenarios: ['Outdoor'],
+          add: [{ name: 'Umbrella', category: 'Grip', quantity: 1 }],
+          remove: []
+        }
+      ])
+    );
+    localStorage.setItem(SEED_KEY, '1');
+
+    env = setupScriptEnvironment({
+      globals: {
+        collectProjectFormData: jest.fn(() => ({})),
+        generateGearListHtml: jest.fn(info => {
+          const scenarios = (info && info.requiredScenarios) || '';
+          if (!scenarios) return baselineHtml;
+          if (scenarios === 'Outdoor') return outdoorHtml;
+          return baselineHtml;
+        })
+      }
+    });
+
+    const { getAutoGearRules, resetAutoGearRulesToFactoryAdditions } = env.utils;
+    const initialRules = getAutoGearRules();
+    expect(initialRules.some(rule => rule.id === 'custom')).toBe(true);
+
+    const result = resetAutoGearRulesToFactoryAdditions({ skipConfirm: true });
+    expect(result).toBe(true);
+
+    const rules = getAutoGearRules();
+    expect(rules.length).toBeGreaterThan(0);
+    expect(rules.some(rule => rule.id === 'custom')).toBe(false);
+    expect(localStorage.getItem(SEED_KEY)).toBe('1');
+  });
+
+  test('clears seed flag when no factory additions are available', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'custom',
+          label: 'Custom',
+          scenarios: ['Outdoor'],
+          add: [{ name: 'Umbrella', category: 'Grip', quantity: 1 }],
+          remove: []
+        }
+      ])
+    );
+    localStorage.setItem(SEED_KEY, '1');
+
+    env = setupScriptEnvironment({
+      globals: {
+        collectProjectFormData: jest.fn(() => ({})),
+        generateGearListHtml: jest.fn(() => baselineHtml)
+      }
+    });
+
+    const { getAutoGearRules, resetAutoGearRulesToFactoryAdditions } = env.utils;
+    expect(getAutoGearRules().some(rule => rule.id === 'custom')).toBe(true);
+
+    const scenarioSelect = document.getElementById('requiredScenarios');
+    if (scenarioSelect) {
+      scenarioSelect.innerHTML = '';
+    }
+
+    const result = resetAutoGearRulesToFactoryAdditions({ skipConfirm: true });
+    expect(result).toBe(false);
+
+    expect(getAutoGearRules()).toHaveLength(0);
+    expect(localStorage.getItem(STORAGE_KEY)).toBe('[]');
+    expect(localStorage.getItem(SEED_KEY)).toBeNull();
   });
 });

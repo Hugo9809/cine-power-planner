@@ -119,6 +119,16 @@ const texts = {
     autoGearDescription:
       "Create scenario-based rules that tweak the generated gear list. Rules apply after the default planner suggestions.",
     autoGearAddRule: "Add rule",
+    autoGearResetFactory: "Reset to factory additions",
+    autoGearResetFactoryHelp:
+      "Regenerate the planner’s default automatic gear additions and remove custom rules.",
+    autoGearResetFactoryConfirm:
+      "Reset automatic gear rules to the factory additions? Custom rules will be removed.",
+    autoGearResetFactorySuccess: "Factory additions restored.",
+    autoGearResetFactoryEmpty:
+      "No factory additions are available yet. Select scenarios and try again.",
+    autoGearResetFactoryError:
+      "Factory additions could not be restored. Please try again.",
     autoGearNoRules: "No custom rules yet.",
     autoGearRuleNameLabel: "Rule name",
     autoGearRuleNameHelp: "Optional label displayed in the rules list.",
@@ -1156,6 +1166,16 @@ const texts = {
     autoGearDescription:
       "Crea regole basate sugli scenari per rifinire la lista generata dopo i suggerimenti predefiniti.",
     autoGearAddRule: "Aggiungi regola",
+    autoGearResetFactory: "Ripristina aggiunte di fabbrica",
+    autoGearResetFactoryHelp:
+      "Rigenera le aggiunte automatiche predefinite del planner e rimuove le regole personalizzate.",
+    autoGearResetFactoryConfirm:
+      "Ripristinare le regole automatiche alle aggiunte di fabbrica? Le regole personalizzate verranno eliminate.",
+    autoGearResetFactorySuccess: "Aggiunte di fabbrica ripristinate.",
+    autoGearResetFactoryEmpty:
+      "Nessuna aggiunta di fabbrica disponibile al momento. Seleziona alcuni scenari e riprova.",
+    autoGearResetFactoryError:
+      "Impossibile ripristinare le aggiunte di fabbrica. Riprova.",
     autoGearNoRules: "Nessuna regola personalizzata al momento.",
     autoGearRuleNameLabel: "Nome regola",
     autoGearRuleNameHelp: "Etichetta facoltativa mostrata nell'elenco delle regole.",
@@ -1820,6 +1840,16 @@ const texts = {
     autoGearDescription:
       "Crea reglas basadas en escenarios para ajustar la lista generada después de las sugerencias predeterminadas.",
     autoGearAddRule: "Agregar regla",
+    autoGearResetFactory: "Restablecer adiciones de fábrica",
+    autoGearResetFactoryHelp:
+      "Regenera las adiciones automáticas predeterminadas del planificador y elimina las reglas personalizadas.",
+    autoGearResetFactoryConfirm:
+      "¿Restablecer las reglas automáticas a las adiciones de fábrica? Se eliminarán las reglas personalizadas.",
+    autoGearResetFactorySuccess: "Adiciones de fábrica restauradas.",
+    autoGearResetFactoryEmpty:
+      "Todavía no hay adiciones de fábrica disponibles. Selecciona escenarios y vuelve a intentarlo.",
+    autoGearResetFactoryError:
+      "No se pudieron restaurar las adiciones de fábrica. Inténtalo de nuevo.",
     autoGearNoRules: "Todavía no hay reglas personalizadas.",
     autoGearRuleNameLabel: "Nombre de la regla",
     autoGearRuleNameHelp: "Etiqueta opcional que aparece en la lista de reglas.",
@@ -2486,6 +2516,16 @@ const texts = {
     autoGearDescription:
       "Créez des règles basées sur des scénarios pour ajuster la liste générée après les suggestions par défaut.",
     autoGearAddRule: "Ajouter une règle",
+    autoGearResetFactory: "Réinitialiser les ajouts d’usine",
+    autoGearResetFactoryHelp:
+      "Régénère les ajouts automatiques par défaut du planificateur et supprime les règles personnalisées.",
+    autoGearResetFactoryConfirm:
+      "Réinitialiser les règles automatiques aux ajouts d’usine ? Les règles personnalisées seront supprimées.",
+    autoGearResetFactorySuccess: "Ajouts d’usine rétablis.",
+    autoGearResetFactoryEmpty:
+      "Aucun ajout d’usine n’est disponible pour le moment. Sélectionnez des scénarios puis réessayez.",
+    autoGearResetFactoryError:
+      "Impossible de rétablir les ajouts d’usine. Veuillez réessayer.",
     autoGearNoRules: "Aucune règle personnalisée pour le moment.",
     autoGearRuleNameLabel: "Nom de la règle",
     autoGearRuleNameHelp: "Étiquette facultative affichée dans la liste des règles.",
@@ -3155,6 +3195,16 @@ const texts = {
     autoGearDescription:
       "Erstelle szenariobasierte Regeln, um die erzeugte Packliste nach den Standardvorschlägen anzupassen.",
     autoGearAddRule: "Regel hinzufügen",
+    autoGearResetFactory: "Auf Werksergänzungen zurücksetzen",
+    autoGearResetFactoryHelp:
+      "Stellt die vom Planner vorgeschlagenen automatischen Ergänzungen wieder her und entfernt eigene Regeln.",
+    autoGearResetFactoryConfirm:
+      "Automatische Gear-Regeln auf die Werksergänzungen zurücksetzen? Eigene Regeln werden entfernt.",
+    autoGearResetFactorySuccess: "Werksergänzungen wiederhergestellt.",
+    autoGearResetFactoryEmpty:
+      "Aktuell sind keine Werksergänzungen verfügbar. Wähle Szenarien aus und versuche es erneut.",
+    autoGearResetFactoryError:
+      "Werksergänzungen konnten nicht wiederhergestellt werden. Bitte erneut versuchen.",
     autoGearNoRules: "Noch keine benutzerdefinierten Regeln.",
     autoGearRuleNameLabel: "Regelname",
     autoGearRuleNameHelp: "Optionaler Name, der in der Regelnliste angezeigt wird.",
