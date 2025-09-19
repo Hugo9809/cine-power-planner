@@ -3653,6 +3653,29 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   overflow-y: auto;
 }
 
+#projectDialog .lens-selector-row {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: clamp(12px, 2vw, 16px);
+}
+
+#projectDialog .lens-selector-row label {
+  flex: 0 1 clamp(72px, 18vw, var(--form-label-width));
+  min-width: clamp(72px, 18vw, var(--form-label-width));
+  padding-top: 0.25rem;
+}
+
+#projectDialog .lens-selector {
+  flex: 1 1 clamp(320px, 60vw, 640px);
+  min-width: clamp(140px, 60vw, 640px);
+  max-width: 100%;
+}
+
+#projectDialog .lens-selector select {
+  width: 100%;
+  min-height: 15rem;
+}
+
 .project-dialog-footer {
   display: flex;
   justify-content: flex-end;
