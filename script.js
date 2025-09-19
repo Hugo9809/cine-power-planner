@@ -5964,6 +5964,20 @@ const applyAccentColor = (color) => {
   }
 };
 
+const clearAccentColorOverrides = () => {
+  const root = document.documentElement;
+  const rootStyle = root && root.style;
+  if (rootStyle) {
+    rootStyle.removeProperty('--accent-color');
+    rootStyle.removeProperty('--link-color');
+  }
+  if (document.body) {
+    const bodyStyle = document.body.style;
+    bodyStyle.removeProperty('--accent-color');
+    bodyStyle.removeProperty('--link-color');
+  }
+};
+
 try {
   const storedAccent = localStorage.getItem('accentColor');
   if (storedAccent) {
@@ -6224,6 +6238,10 @@ if (settingsFontFamily) {
 }
 
 const revertAccentColor = () => {
+  if (document.body && document.body.classList.contains('pink-mode')) {
+    clearAccentColorOverrides();
+    return;
+  }
   applyAccentColor(prevAccentColor);
 };
 
@@ -15204,10 +15222,7 @@ function applyHighContrast(enabled) {
     }
     document.documentElement.classList.remove("high-contrast");
     if (document.body && document.body.classList.contains('pink-mode')) {
-      document.documentElement.style.removeProperty('--accent-color');
-      document.documentElement.style.removeProperty('--link-color');
-      document.body.style.removeProperty('--accent-color');
-      document.body.style.removeProperty('--link-color');
+      clearAccentColorOverrides();
     } else {
       applyAccentColor(accentColor);
     }
@@ -15229,12 +15244,7 @@ function applyPinkMode(enabled) {
     if (accentColorInput) {
       accentColorInput.disabled = true;
     }
-    document.documentElement.style.removeProperty('--accent-color');
-    document.documentElement.style.removeProperty('--link-color');
-    if (document.body) {
-      document.body.style.removeProperty('--accent-color');
-      document.body.style.removeProperty('--link-color');
-    }
+    clearAccentColorOverrides();
     if (pinkModeToggle) {
       setToggleIcon(pinkModeToggle, ICON_GLYPHS.unicorn);
       pinkModeToggle.setAttribute("aria-pressed", "true");
