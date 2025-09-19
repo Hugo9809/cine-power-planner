@@ -6,10 +6,12 @@ describe('local fonts button', () => {
   let env;
   let originalQueryLocalFonts;
   let originalFontsDescriptor;
+  let originalFileReader;
 
   beforeEach(() => {
     originalQueryLocalFonts = window.queryLocalFonts;
     originalFontsDescriptor = Object.getOwnPropertyDescriptor(window.navigator, 'fonts');
+    originalFileReader = window.FileReader;
   });
 
   afterEach(() => {
@@ -26,6 +28,12 @@ describe('local fonts button', () => {
       Object.defineProperty(window.navigator, 'fonts', originalFontsDescriptor);
     } else {
       delete window.navigator.fonts;
+    }
+
+    if (typeof originalFileReader !== 'undefined') {
+      window.FileReader = originalFileReader;
+    } else {
+      delete window.FileReader;
     }
   });
 
@@ -97,5 +105,59 @@ describe('local fonts button', () => {
     expect(values).toContain("'Fallback Font', sans-serif");
     expect(values).toContain("'Duplicate Font', sans-serif");
     expect(new Set(values).size).toBe(values.length);
+  });
+
+  test('allows uploading font files when local access is unavailable', async () => {
+    delete window.queryLocalFonts;
+    if (originalFontsDescriptor) {
+      delete window.navigator.fonts;
+    }
+
+    window.FileReader = jest.fn(() => ({
+      readAsDataURL(file) {
+        this.result = `data:${file.type || 'font/woff2'};base64,ZmFrZQ==`;
+        setTimeout(() => {
+          if (typeof this.onload === 'function') {
+            this.onload({ target: this });
+          }
+        }, 0);
+      },
+      onload: null,
+      onerror: null
+    }));
+
+    env = setupScriptEnvironment();
+
+    const button = document.getElementById('localFontsButton');
+    expect(button).not.toBeNull();
+    expect(button.hasAttribute('hidden')).toBe(false);
+
+    const input = document.getElementById('localFontsInput');
+    expect(input).not.toBeNull();
+
+    const mockFile = new window.File(['dummy'], 'CustomFont.woff2', { type: 'font/woff2' });
+
+    const clickSpy = jest.spyOn(input, 'click').mockImplementation(() => {
+      Object.defineProperty(input, 'files', {
+        configurable: true,
+        get: () => [mockFile]
+      });
+      input.dispatchEvent(new window.Event('change'));
+    });
+
+    button.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+
+    await flushPromises();
+    await flushPromises();
+
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+    clickSpy.mockRestore();
+
+    const options = Array.from(document.querySelectorAll('#localFontsGroup option'));
+    expect(options.length).toBeGreaterThan(0);
+    expect(options.some(opt => opt.textContent.includes('CustomFont'))).toBe(true);
+
+    const status = document.getElementById('localFontsStatus');
+    expect(status.textContent).toContain('Added');
   });
 });
