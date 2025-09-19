@@ -137,8 +137,8 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
   - Einstellungen für **Monitoring**, **Videoverteilung** und **Sucher** fügen Monitore, Kabel und Overlays für jede Rolle hinzu.
   - **User Buttons** und **Stativ-Präferenzen** werden für schnellen Zugriff aufgeführt.
 - Innerhalb der Kategorien sind Einträge alphabetisch sortiert und zeigen beim Hover Tooltips an.
-- Die Geräteliste ist Teil der druckbaren Übersichten und der geteilten Projektdateien.
-- Gerätelisten werden automatisch mit dem Projekt gespeichert und in geteilte Dateien sowie Backups aufgenommen.
+- Die Geräteliste ist Teil der druckbaren Übersichten und der exportierten Projektdateien.
+- Gerätelisten werden automatisch mit dem Projekt gespeichert und in exportierte Dateien sowie Backups aufgenommen.
 - **Geräteliste löschen** entfernt die gespeicherte Liste und blendet die Ausgabe aus.
 - In den Formularen stehen Gabel-Schaltflächen bereit, um Benutzereinträge sofort zu duplizieren.
 
@@ -233,7 +233,7 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 2. **Top-Bar erkunden:** Sprache wechseln, Dunkel- oder Rosa-Theme umschalten, Einstellungen für Akzent und Typografie öffnen und den Hilfedialog mit ? oder Strg+/ starten.
 3. **Geräte auswählen:** Wähle über Dropdowns das Equipment je Kategorie; tippe zum Filtern, pinne Favoriten mit dem Stern und lass Szenario-Voreinstellungen Zubehör automatisch ergänzen.
 4. **Berechnungen ansehen:** Gesamtverbrauch, Strom und Laufzeit erscheinen, sobald ein Akku gewählt ist; Warnungen markieren überschrittene Grenzen.
-5. **Projekte speichern & teilen:** Benenne und speichere deine Konfiguration, Auto-Backups erstellen Schnappschüsse und die Teilen-Schaltfläche exportiert ein JSON-Paket für das Team.
+5. **Projekte speichern & exportieren:** Benenne und speichere deine Konfiguration, Auto-Backups erstellen Schnappschüsse und die Schaltfläche „Projekt exportieren“ lädt ein JSON-Paket für das Team.
 6. **Geräteliste generieren:** Drücke **Geräteliste erstellen**, um Anforderungen in eine kategorisierte Packliste mit Tooltips und Zubehör zu verwandeln.
 7. **Gerätedaten verwalten:** Über „Gerätedaten bearbeiten…“ den Editor öffnen, Geräte anpassen, JSON exportieren/importieren oder auf Standardwerte zurücksetzen.
 8. **Laufzeit-Feedback senden:** Mit „Nutzer-Laufzeit-Feedback senden“ Messwerte aus der Praxis erfassen und die Gewichtung verbessern.

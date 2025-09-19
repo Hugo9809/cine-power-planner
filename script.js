@@ -4657,7 +4657,7 @@ function promptForSharedFilename(setupName) {
   const template = getLocalizedText('shareFilenamePrompt') || '';
   const promptMessage = template.includes('{defaultName}')
     ? template.replace('{defaultName}', defaultName)
-    : template || 'Enter a name for the shared project file:';
+    : template || 'Enter a name for the exported project file:';
   if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
     const response = window.prompt(promptMessage, defaultName);
     if (response === null) {

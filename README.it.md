@@ -78,7 +78,7 @@ L’app usa automaticamente la lingua del browser al primo avvio e puoi cambiarl
 ### ✅ Gestione dei progetti
 - Salva, carica e cancella più progetti camera (premi Invio o Ctrl+S/⌘S per salvare rapidamente; il pulsante Salva resta disattivato finché non inserisci un nome).
 - Vengono creati automaticamente snapshot ogni 10 minuti mentre il planner è aperto e dalla finestra Impostazioni puoi attivare esportazioni di backup orarie come promemoria.
-- Scarica un file JSON che raccoglie selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati; importalo dal selettore Progetto condiviso per ripristinare tutto in un passaggio.
+- Scarica un file JSON che raccoglie selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati; importalo dal selettore Importa progetto per ripristinare tutto in un passaggio.
 - I dati sono archiviati localmente tramite `localStorage` e i preferiti vengono conservati nei backup; usa l'opzione **Ripristino di fabbrica** nelle Impostazioni per salvare automaticamente un backup prima di eliminare progetti e modifiche ai dispositivi memorizzati.
 - Genera anteprime stampabili per ogni progetto salvato e aggiungi un logo personalizzato così esportazioni e backup rispettano l’identità della produzione.
 - Salva i requisiti di progetto insieme a ciascun progetto, così la lista attrezzatura mantiene il contesto completo.
@@ -146,8 +146,8 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
   - Le configurazioni di **monitoraggio**, **distribuzione video** e **mirino** aggiungono monitor, cavi e overlay per ciascun ruolo.
   - Le scelte dei **pulsanti personalizzati** e delle **preferenze treppiede** vengono elencate per riferimento rapido.
 - Gli elementi di ogni categoria sono ordinati alfabeticamente e mostrano un tooltip al passaggio del mouse.
-- La lista attrezzatura viene inclusa nelle anteprime stampabili e nei file di progetto condivisi.
-- Le liste vengono salvate automaticamente con il progetto e fanno parte sia dei file condivisi sia dei backup.
+- La lista attrezzatura viene inclusa nelle anteprime stampabili e nei file di progetto esportati.
+- Le liste vengono salvate automaticamente con il progetto e fanno parte sia dei file esportati sia dei backup.
 - **Elimina lista attrezzatura** cancella la lista salvata e nasconde l’output.
 - I moduli della lista attrezzatura includono pulsanti a forchetta per duplicare al volo le voci inserite.
 
@@ -243,7 +243,7 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
 2. **Esplora la barra superiore:** cambia lingua, alterna i temi scuro o rosa, apri Impostazioni per regolare accento e tipografia e avvia l’aiuto con ? o Ctrl+/.
 3. **Seleziona i dispositivi:** scegli l’attrezzatura per ogni categoria dai menu a discesa; digita per filtrare, clicca sulla stella per fissare i preferiti e lascia che gli scenari preconfigurati aggiungano automaticamente gli accessori.
 4. **Consulta i calcoli:** una volta selezionata la batteria vedrai consumo, corrente e autonomia; gli avvisi evidenziano eventuali superamenti dei limiti.
-5. **Salva e condividi i progetti:** assegna un nome e salva la configurazione, i backup automatici creano snapshot e il pulsante Condividi esporta un bundle JSON per la troupe.
+5. **Salva ed esporta i progetti:** assegna un nome e salva la configurazione, i backup automatici creano snapshot e il pulsante Esporta scarica un bundle JSON per la troupe mentre Importa lo ripristina.
 6. **Genera la lista attrezzatura:** premi **Genera lista attrezzatura** per trasformare i requisiti in una lista categorizzata con tooltip e accessori.
 7. **Gestisci i dati dei dispositivi:** clicca su “Modifica dati dispositivi…” per aprire l’editor, aggiornare i dispositivi, esportare/importare JSON o tornare ai valori predefiniti.
 8. **Invia feedback di autonomia:** usa “Invia feedback di autonomia” per registrare misurazioni reali e raffinare le medie ponderate.

@@ -35,7 +35,7 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
 - Opción de tema de alto contraste para mejorar la legibilidad.
 - Los formularios de dispositivos rellenan los campos de categoría dinámicamente según los atributos del esquema.
 - Rediseño de la interfaz con mejor contraste y espaciado para una experiencia más limpia en cualquier dispositivo.
-- Compartir proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, y cárgalo para restaurarlo todo de una vez.
+- Exportar proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, y vuelve a cargarlo mediante Importar para restaurarlo todo de una vez.
 - Iconos únicos para los escenarios obligatorios que ayudan a distinguir los requisitos del proyecto.
 - Diagrama de proyecto interactivo que permite arrastrar dispositivos, hacer zoom, ajustar nodos a la cuadrícula y exportar la disposición como SVG o JPG.
 - Tema rosa lúdico que se mantiene entre visitas.
@@ -79,7 +79,7 @@ La aplicación usa automáticamente el idioma de tu navegador en la primera visi
 ### ✅ Gestión de proyectos
 - Guarda, carga y elimina múltiples proyectos de cámara (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
 - Se crean instantáneas automáticas cada 10 minutos mientras el planificador está abierto, y el diálogo de Ajustes puede programar exportaciones de copias de seguridad cada hora como recordatorio para archivar los datos.
-- Descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; cárgalo mediante el selector de Proyecto compartido para restaurarlo todo de una vez.
+- Descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; cárgalo mediante el selector de Importar proyecto para restaurarlo todo de una vez.
 - Los datos se almacenan localmente mediante `localStorage`, y los favoritos se conservan en las copias de seguridad; utiliza la opción de **Restablecimiento de fábrica** en Ajustes para guardar automáticamente una copia de seguridad antes de limpiar proyectos en caché y ediciones de dispositivos.
 - Genera vistas imprimibles para cualquier proyecto guardado y añade un logotipo personalizado para que las exportaciones y copias coincidan con la identidad de tu producción.
 - Guarda los requisitos de proyecto junto con cada proyecto para que las listas de equipo conserven el contexto completo.
@@ -147,8 +147,8 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
   - Las configuraciones de **monitorización**, **distribución de vídeo** y **visor** añaden monitores, cables y superposiciones para cada rol.
   - Las selecciones de **botones de usuario** y **preferencias de trípode** se listan para una referencia rápida.
 - Los elementos dentro de cada categoría se ordenan alfabéticamente y muestran descripciones al pasar el cursor.
-- La lista de equipo se incluye en las vistas imprimibles y en los archivos de proyectos compartidos.
-- Las listas de equipo se guardan automáticamente con el proyecto y forman parte de los archivos compartidos y de las copias de seguridad.
+- La lista de equipo se incluye en las vistas imprimibles y en los archivos de proyectos exportados.
+- Las listas de equipo se guardan automáticamente con el proyecto y forman parte de los archivos exportados y de las copias de seguridad.
 - **Eliminar lista de equipo** borra la lista guardada y oculta la salida.
 - Los formularios de la lista de equipo incluyen botones de bifurcar para duplicar entradas de usuario al instante.
 
@@ -244,7 +244,7 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 2. **Explora la barra superior:** cambia de idioma, alterna los temas oscuro o rosa, abre Ajustes para modificar acento y tipografías, y lanza el diálogo de ayuda con ? o Ctrl+/.
 3. **Selecciona los dispositivos:** elige el equipo de cada categoría con los menús desplegables; escribe para filtrar, haz clic en la estrella para fijar favoritos y deja que los escenarios preconfigurados rellenen los accesorios automáticamente.
 4. **Consulta los cálculos:** verás consumo total, corriente y autonomía cuando selecciones una batería; los avisos resaltan cuando se supera la entrega permitida.
-5. **Guarda y comparte proyectos:** pon nombre y guarda tu configuración, las copias automáticas capturan instantáneas y el botón Compartir exporta un paquete JSON para el equipo.
+5. **Guarda y exporta proyectos:** pon nombre y guarda tu configuración, las copias automáticas capturan instantáneas y el botón Exportar descarga un paquete JSON para el equipo, mientras que Importar lo restaura.
 6. **Genera listas de equipo:** pulsa **Generar lista de equipo** para convertir los requisitos en una lista categorizada con descripciones y accesorios.
 7. **Gestiona los datos de dispositivos:** haz clic en “Editar datos de dispositivos…” para abrir el editor, modificar dispositivos, exportar/importar JSON o volver a los valores predeterminados.
 8. **Envía comentarios de autonomía:** usa “Enviar comentarios de autonomía” para registrar mediciones de campo y refinar las estimaciones ponderadas.

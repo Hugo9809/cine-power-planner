@@ -76,7 +76,7 @@ The app automatically uses your browser language on first load, and you can swit
 ### ✅ Project Management
 - Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
 - Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
-- Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices; load it through the Shared Project picker to restore everything in one step.
+- Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices; load it through the Import Project picker to restore everything in one step.
 - Data is stored locally via `localStorage` and favorites are preserved in backups; use the **Factory reset** option in Settings to capture a backup automatically before wiping cached projects and device edits.
 - Generate printable overviews for any saved project and add a custom logo so exports and backups match your production branding.
 - Save project requirements along with each project so gear lists retain full context.
@@ -139,8 +139,8 @@ The generator turns your selections into a categorized packing list:
   - **Monitoring Configuration**, **Video Distribution** and **Viewfinder** settings add monitors, cables and overlays for each role.
   - **User Button** selections and **Tripod Preferences** are listed for quick reference.
 - Items inside each category are sorted alphabetically and display tooltips on hover.
-- The gear list is included in printable overviews and shared project files.
-- Gear lists save automatically with the project and are included in shared project files and backups.
+- The gear list is included in printable overviews and exported project files.
+- Gear lists save automatically with the project and are included in exported project files and backups.
 - **Delete Gear List** removes the saved list and hides the output.
 - Gear list forms provide fork buttons to duplicate user entries instantly.
 
@@ -237,7 +237,7 @@ The generator turns your selections into a categorized packing list:
 2. **Explore the Top Bar:** Switch language, toggle dark or pink themes, open Settings for accent and typography options, and start the searchable help dialog with ? or Ctrl+/.
 3. **Select Devices:** Choose gear from each category using the dropdowns—type to filter, click the star to pin favourites and let scenario presets fill in accessories automatically.
 4. **View Calculations:** See total draw, current and runtime once a battery is selected; warnings highlight when output limits are exceeded.
-5. **Save & Share Projects:** Name and save your configuration, auto-backups capture snapshots, and the Share button exports a JSON bundle for collaborators.
+5. **Save & Export Projects:** Name and save your configuration, auto-backups capture snapshots, and the Export button downloads a JSON bundle for collaborators while the Import button restores them.
 6. **Generate Gear Lists:** Press **Generate Gear List** to turn project requirements into a categorized packing list with tooltips and accessory packs.
 7. **Manage Device Data:** Click “Edit Device Data…” to open the database editor, modify devices, export/import JSON or revert to the defaults.
 8. **Submit Runtime Feedback:** Use “Submit User Runtime Feedback” to record field measurements and refine weighted estimates.
