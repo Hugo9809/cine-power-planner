@@ -697,6 +697,20 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(backupKeyFor(CUSTOM_LOGO_KEY))).toBeNull();
     expect(localStorage.getItem(backupKeyFor(CUSTOM_FONT_KEY))).toBeNull();
   });
+
+  test('removes legacy planner keys so migrations cannot restore cleared data', () => {
+    const legacySetupKey = 'cinePowerPlanner_setups';
+    const legacySessionKey = 'cinePowerPlanner_session';
+    localStorage.setItem(legacySetupKey, JSON.stringify({ Legacy: { foo: 'bar' } }));
+    localStorage.setItem(`${legacySetupKey}__backup`, JSON.stringify({ Legacy: { foo: 'bar' } }));
+    sessionStorage.setItem(legacySessionKey, JSON.stringify({ camera: 'Legacy Cam' }));
+
+    clearAllData();
+
+    expect(localStorage.getItem(legacySetupKey)).toBeNull();
+    expect(localStorage.getItem(`${legacySetupKey}__backup`)).toBeNull();
+    expect(sessionStorage.getItem(legacySessionKey)).toBeNull();
+  });
 });
 
 describe('export/import all data', () => {

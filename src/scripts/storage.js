@@ -2175,6 +2175,94 @@ function clearAllData() {
   preferenceKeys.forEach((key) => {
     deleteFromStorage(safeStorage, key, msg, { disableBackup: true });
   });
+
+  const storageCandidates = collectUniqueStorages([
+    safeStorage,
+    typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null,
+    getWindowStorage('localStorage'),
+    typeof localStorage !== 'undefined' ? localStorage : null,
+  ]);
+  const sessionCandidates = collectUniqueStorages([
+    typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+    getWindowStorage('sessionStorage'),
+  ]);
+  const prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
+
+  const collectKeysWithPrefixes = (storage) => {
+    if (!storage) {
+      return [];
+    }
+
+    const keys = [];
+
+    if (typeof storage.key === 'function' && typeof storage.length === 'number') {
+      for (let index = 0; index < storage.length; index += 1) {
+        let candidateKey = null;
+        try {
+          candidateKey = storage.key(index);
+        } catch (error) {
+          console.warn('Unable to inspect storage key during factory reset', error);
+        }
+        if (typeof candidateKey === 'string'
+          && prefixedKeys.some(prefix => candidateKey.startsWith(prefix))) {
+          keys.push(candidateKey);
+        }
+      }
+      return keys;
+    }
+
+    if (typeof storage.keys === 'function') {
+      try {
+        const candidateKeys = storage.keys();
+        if (Array.isArray(candidateKeys)) {
+          candidateKeys.forEach((candidateKey) => {
+            if (typeof candidateKey === 'string'
+              && prefixedKeys.some(prefix => candidateKey.startsWith(prefix))) {
+              keys.push(candidateKey);
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Unable to enumerate storage keys during factory reset', error);
+      }
+      return keys;
+    }
+
+    if (typeof storage.forEach === 'function') {
+      try {
+        storage.forEach((value, candidateKey) => {
+          if (typeof candidateKey === 'string'
+            && prefixedKeys.some(prefix => candidateKey.startsWith(prefix))) {
+            keys.push(candidateKey);
+          }
+        });
+      } catch (error) {
+        console.warn('Unable to iterate storage entries during factory reset', error);
+      }
+      return keys;
+    }
+
+    return keys;
+  };
+
+  const deletePrefixedKeys = (storages) => {
+    storages.forEach((storage) => {
+      const keysToRemove = collectKeysWithPrefixes(storage);
+      if (!keysToRemove.length) {
+        return;
+      }
+      keysToRemove.forEach((key) => {
+        try {
+          deleteFromStorage(storage, key, msg);
+        } catch (error) {
+          console.warn('Unable to remove legacy storage key during factory reset', key, error);
+        }
+      });
+    });
+  };
+
+  deletePrefixedKeys(storageCandidates);
+  deletePrefixedKeys(sessionCandidates);
   console.log("All planner data cleared from storage.");
 }
 
