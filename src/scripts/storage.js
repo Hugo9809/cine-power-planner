@@ -451,6 +451,7 @@ function snapshotStorageEntries(storage) {
       }
     } catch (error) {
       console.warn('Unable to read storage key during snapshot', key, error);
+      alertStorageError('migration-read');
       return;
     }
     if (value === null || value === undefined) {
@@ -474,6 +475,7 @@ function snapshotStorageEntries(storage) {
       }
     } catch (error) {
       console.warn('Unable to enumerate storage keys during snapshot', error);
+      alertStorageError('migration-read');
     }
     return snapshot;
   }
@@ -491,6 +493,7 @@ function snapshotStorageEntries(storage) {
       });
     } catch (error) {
       console.warn('Unable to iterate storage entries during snapshot', error);
+      alertStorageError('migration-read');
     }
     return snapshot;
   }
@@ -656,7 +659,11 @@ function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
 }
 
-function alertStorageError() {
+function alertStorageError(reason) {
+  if (reason !== 'migration-read') {
+    return;
+  }
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   }
@@ -725,6 +732,7 @@ function migrateKeyBetweenStorages(source, target, legacyKey, modernKey, options
     legacyValue = source.getItem(legacyKey);
   } catch (error) {
     console.warn(`Unable to read legacy storage key ${legacyKey}`, error);
+    alertStorageError('migration-read');
     return false;
   }
 
@@ -858,6 +866,7 @@ function loadJSONFromStorage(
     backupKey,
     validate,
     restoreIfMissing = false,
+    alertOnFailure = null,
   } = options || {};
 
   const fallbackKey = typeof backupKey === 'string' && backupKey
@@ -930,7 +939,7 @@ function loadJSONFromStorage(
   }
 
   if (shouldAlert) {
-    alertStorageError();
+    alertStorageError(alertOnFailure);
   }
 
   return defaultValue;
@@ -1055,7 +1064,17 @@ function loadWithMigration(
   const value = loadJSONFromStorage(primary, key, primaryLoadMsg, null, loadOptions);
   if (value !== null) return value;
   if (!fallback) return null;
-  const migrated = loadJSONFromStorage(fallback, key, fallbackLoadMsg, null, loadOptions);
+  const fallbackOptions = {
+    ...(loadOptions || {}),
+    alertOnFailure: 'migration-read',
+  };
+  const migrated = loadJSONFromStorage(
+    fallback,
+    key,
+    fallbackLoadMsg,
+    null,
+    fallbackOptions,
+  );
   if (migrated !== null) {
     saveJSONToStorage(primary, key, migrated, saveMsg);
     deleteFromStorage(fallback, key, deleteMsg);
