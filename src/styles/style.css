@@ -707,10 +707,26 @@ main.legal-content {
   min-height: 6.5rem;
 }
 
-#sharedImportDialog form {
+#sharedImportDialog .share-import-dialog {
+  width: min(90vw, 420px);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border-color: var(--panel-border);
+  box-shadow: var(--panel-shadow);
+}
+
+#sharedImportDialog .share-import-dialog h3 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+  font-weight: var(--font-weight-semibold);
+}
+
+#sharedImportDialog .share-import-dialog p {
+  margin: 0;
+  color: var(--muted-text-color);
+  line-height: 1.5;
 }
 
 #sharedImportDialog .share-import-options {
@@ -720,24 +736,37 @@ main.legal-content {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  background-color: var(--surface-color);
+  background-color: var(--panel-bg);
 }
 
 #sharedImportDialog .share-import-options legend {
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
   margin-bottom: 0.25rem;
+  color: var(--text-color);
 }
 
 #sharedImportDialog .share-import-mode-select {
   width: 100%;
   min-height: 6.5rem;
+  border: 1px solid var(--control-border);
+  border-radius: var(--border-radius);
+  background-color: var(--control-bg);
+  color: var(--control-text);
+}
+
+#sharedImportDialog .share-import-mode-select option {
+  padding: 0.5rem 0.75rem;
 }
 
 #sharedImportDialog .dialog-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
+}
+
+#sharedImportDialog .dialog-actions button {
+  min-width: clamp(96px, 20vw, 128px);
 }
 
 #setup-manager #shareLinkMessage {
