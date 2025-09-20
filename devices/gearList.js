@@ -730,29 +730,53 @@ const gear = {
     "matteboxes": {
       "ARRI LMB 4x5 Clamp-On (3-Stage)": {
         "brand": "ARRI",
+        "model": "LMB 4x5 Clamp-On (3-Stage)",
         "kNumber": "KK.0015175",
         "stages": 3,
-        "type": "Clamp-On"
+        "type": "Clamp-On",
+        "traySize": "4x5.65",
+        "compatible": "Requires LMB 4x5 clamp adapters (Ø80–162 mm incl. 156 mm adapter).",
+        "topFlag": true,
+        "sideFlags": false,
+        "provenance": ":contentReference[oaicite:23]{index=23}"
       },
       "ARRI LMB 4x5 Pro Set": {
         "brand": "ARRI",
+        "model": "LMB 4x5 Pro Set",
         "kNumber": "KK.0015177",
         "stages": 3,
-        "type": "Swing Away"
+        "type": "15mm LWS swing-away",
+        "traySize": "4x5.65",
+        "compatible": "Clamp-on via adapters Ø80–162 mm (plus Ø156); includes LWS console; side + top flags.",
+        "topFlag": true,
+        "sideFlags": true,
+        "provenance": ":contentReference[oaicite:24]{index=24}"
       },
       "ARRI LMB 4x5 15mm LWS Set 3-Stage": {
         "brand": "ARRI",
+        "model": "LMB 4x5 15mm LWS Set 3-Stage",
         "kNumber": "KK.0015176",
         "stages": 3,
-        "type": "Rod based"
+        "type": "15mm LWS",
+        "traySize": "4x5.65",
+        "compatible": "Clamp-on diameters via adapters Ø80–162 mm (plus Ø156); includes LWS console, Tilt & Flex.",
+        "topFlag": true,
+        "sideFlags": false,
+        "provenance": ":contentReference[oaicite:25]{index=25}"
       },
       "ARRI LMB 19mm Studio Rod Adapter": {
         "brand": "ARRI",
-        "kNumber": "K2.0013432"
+        "model": "LMB 19mm Studio Rod Adapter",
+        "kNumber": "K2.0013432",
+        "type": "Rod adapter",
+        "compatible": "LMB 4x5 15mm LWS Console; LMB 4x5 Swing Away Tilt Module; LMB 6x6 Clamp Adapter 143mm.",
+        "provenance": ":contentReference[oaicite:26]{index=26}"
       },
       "ARRI LMB 4x5 / LMB-6 Tray Catcher": {
         "brand": "ARRI",
+        "model": "LMB 4x5 / LMB-6 Tray Catcher",
         "kNumber": "K2.66202.0",
+        "type": "Accessory",
         "compatible": [
           "LMB 4x5",
           "LMB-6"
@@ -760,117 +784,202 @@ const gear = {
         "traySize": "Accessory only (tray catcher)",
         "topFlag": false,
         "sideFlags": false,
-        "provenance": "Listed as accessory only, no flags [oai_citation:2‡250211_Equipmentliste_Aktenzeichen_XY_Betrug_.pdf](file-service://file-CSmKG9jmaC5YFTscUZTnmU)"
+        "provenance": ":contentReference[oaicite:27]{index=27}"
       },
       "ARRI LMB 4x5 Side Flags": {
         "brand": "ARRI",
-        "kNumber": "K2.0013750"
+        "model": "LMB 4x5 Side Flags",
+        "kNumber": "K2.0013750",
+        "type": "Accessory",
+        "compatible": "For LMB 4x5 (via Flag Holders K2.0013825).",
+        "topFlag": false,
+        "sideFlags": true,
+        "provenance": ":contentReference[oaicite:28]{index=28}"
       },
       "ARRI LMB Flag Holders": {
         "brand": "ARRI",
-        "kNumber": "K2.0013825"
+        "model": "LMB Flag Holders",
+        "kNumber": "K2.0013825",
+        "type": "Accessory",
+        "compatible": "Mount on top, bottom, or sides of LMB 4x5 & LMB 6x6; top of LMB-25 & LMB-6.",
+        "topFlag": true,
+        "sideFlags": true,
+        "provenance": ":contentReference[oaicite:29]{index=29}"
       },
       "ARRI LMB 4x5 Set of Mattes spherical": {
         "brand": "ARRI",
-        "kNumber": "K2.0000069"
+        "model": "LMB 4x5 Set of Mattes spherical",
+        "kNumber": "K2.0000069",
+        "type": "Accessory",
+        "compatible": "LMB 4x5/LMB-25",
+        "provenance": ":contentReference[oaicite:30]{index=30}"
       },
       "ARRI LMB Accessory Adapter": {
         "brand": "ARRI",
-        "kNumber": "K2.0013014"
+        "model": "LMB Accessory Adapter",
+        "kNumber": "K2.0013014",
+        "type": "Accessory",
+        "compatible": "LMB 4x5 / LMB 6x6 / LMB-25 / LMB-6; 3/8\"-16 accessory mount with sliding shoe.",
+        "provenance": ":contentReference[oaicite:31]{index=31}"
       },
       "ARRI LMB 4x5 Clamp Adapter Set Pro": {
         "brand": "ARRI",
-        "kNumber": "KK.0015133"
+        "model": "LMB 4x5 Clamp Adapter Set Pro",
+        "kNumber": "KK.0015133",
+        "type": "Accessory",
+        "compatible": "Set of clamp adapters covering Ø80–162 mm (+ Ø156).",
+        "provenance": ":contentReference[oaicite:32]{index=32}"
       },
       "ARRI Anti-Reflection Frame 4x5.65": {
         "brand": "ARRI",
-        "kNumber": "K2.0008133"
+        "model": "Anti-Reflection Frame 4x5.65",
+        "kNumber": "K2.0008133",
+        "type": "Frame",
+        "traySize": "4x5.65",
+        "compatible": "Fits LMB 4x5 / LMB-25 / LMB-15 / LMB-5 (uses 2-stage slot).",
+        "provenance": ":contentReference[oaicite:33]{index=33}"
       },
       "ARRI Diopter Frame 138mm": {
         "brand": "ARRI",
+        "model": "Diopter Frame 138mm",
         "kNumber": "K2.0013740",
-        "diameterMm": 138
+        "type": "Diopter frame",
+        "diameterMm": 138,
+        "compatible": "LMB 4x5 / LMB-25; occupies width of two 4x5.65 frames; fits 2- or 3-filter stage.",
+        "provenance": ":contentReference[oaicite:34]{index=34}"
       },
       "ARRI LMB 6x6": {
         "brand": "ARRI",
+        "model": "LMB 6x6",
+        "stages": 2,
+        "type": "Clamp-on / 15mm / 19mm studio (modular)",
         "traySize": "6.6x6.6",
-        "topFlag": "optional",
-        "sideFlags": "optional",
-        "provenance": "ARRI site: modular mattebox, flags available as add-ons【web†source】"
+        "compatible": "Clamp adapters 95–165 mm; expandable to 3 stages via extra stage.",
+        "topFlag": true,
+        "sideFlags": true,
+        "provenance": ":contentReference[oaicite:35]{index=35}"
       },
       "ARRI MMB-2": {
         "brand": "ARRI",
-        "traySize": "4x4 / 4x5.65 / 4.5 round",
+        "model": "MMB-2",
+        "kNumber": "KK.0005749 (114 Clamp-On Set)",
+        "stages": 2,
+        "type": "Clamp-on / 15mm LWS (via console)",
+        "traySize": "4x5.65 / 4x4 (rear rotatable)",
+        "diameterMm": 114,
+        "compatible": "Clip-on to 114 mm lenses; 15mm LWS via console.",
         "topFlag": true,
-        "sideFlags": "optional",
-        "provenance": "ARRI datasheet confirms top flag standard, side flags optional【web†source】"
+        "sideFlags": "available",
+        "provenance": ":contentReference[oaicite:36]{index=36}"
       },
       "Tilta Mirage (MB-T16, 95mm system)": {
         "brand": "Tilta",
+        "model": "Mirage (MB-T16, 95mm system)",
         "stages": 1,
         "type": "Clamp-On",
-        "traySize": "95mm native (optional 4x5.65 trays)",
-        "topFlag": true,
+        "traySize": "4x5.65 (optional front trays) / 95mm round",
+        "diameterMm": 95,
+        "compatible": "95 mm cine; thread adapters 67/72/77/82 mm; optional 4x5.65 stackable trays.",
+        "topFlag": "optional",
         "sideFlags": "optional",
-        "provenance": "Tilta docs: top flag included, side flags sold separately [oai_citation:4‡250828_Equipmentliste_Zinema_Rent_2025.pdf](file-service://file-XGn1wNhzpzKYhGNKNy2UPM)"
+        "provenance": ":contentReference[oaicite:37]{index=37}"
       },
       "Tilta MB-T12 (Carbon Fiber 4x5.65)": {
         "brand": "Tilta",
+        "model": "MB-T12 (Carbon Fiber 4x5.65)",
+        "kNumber": "MB-T12",
         "stages": 3,
-        "type": "Rod based",
-        "traySize": "4x5.65 (3 stages)",
+        "type": "Clamp-On / 15mm LWS",
+        "traySize": "4x5.65",
+        "diameterMm": 134,
+        "compatible": "Includes clamp backs for 134/114/110/95/80 mm.",
         "topFlag": true,
         "sideFlags": "optional",
-        "provenance": "Tilta product page: 'Top Flag helps eliminate flares'【web†source】"
+        "provenance": ":contentReference[oaicite:38]{index=38}"
       },
       "Tilta MB12": {
         "brand": "Tilta",
+        "model": "MB12",
         "traySize": "4x5.65",
         "topFlag": true,
         "sideFlags": false,
+        "note": "Unverified legacy model ‘MB12’ — likely Tilta ‘MB-12’ older 4x5.65 unit, but no current primary page found.",
         "provenance": "Equipment list: 'incl. Top Flag + 80mm rear' [oai_citation:3‡250602_Equipmentliste_Gönrgy_Werbung.pdf](file-service://file-NLioL2MfohXGobdBCXVx63)"
       },
       "Bright Tangerine Misfit Six Core": {
         "brand": "Bright Tangerine",
+        "model": "Misfit Six Core",
+        "stages": 2,
+        "type": "Clamp-on / rod via bracket",
         "traySize": "6.6x6.6 (also supports 4x5.65)",
-        "topFlag": true,
-        "sideFlags": true,
-        "provenance": "3-Stage kit includes top and side flags【web†source】"
+        "compatible": "Frame Safe clamp adapters (typ. 114–143 mm) + 15/19 mm via bracket; upgradeable to 3-stage.",
+        "topFlag": "optional",
+        "sideFlags": "optional",
+        "provenance": ":contentReference[oaicite:39]{index=39}"
       },
       "Wooden Camera UMB-1 Universal Mattebox (Pro)": {
         "brand": "Wooden Camera",
+        "model": "UMB-1 Universal Mattebox (Pro)",
+        "kNumber": "SKU 202100",
+        "stages": 2,
+        "type": "15mm LWS (swing-away)",
         "traySize": "4x5.65 (2 rotating + optional 3rd stage)",
+        "diameterMm": 143,
+        "compatible": "Optional third stage; includes top, side, bottom flags; 143 mm opening with ARRI-style bellows 114 mm.",
         "topFlag": true,
         "sideFlags": true,
-        "provenance": "Product page: 'folding French flag … left and right side flags, bottom flag'【web†source】"
+        "provenance": ":contentReference[oaicite:40]{index=40}"
       },
       "Vocas MB-216": {
         "brand": "Vocas",
-        "traySize": "3x3 – 4x6 (supports 4x5.65)",
+        "model": "MB-216",
+        "kNumber": "0200-0216",
+        "stages": 2,
+        "type": "Clip-on / 15mm LWS capable",
+        "traySize": "4x4 (supports 3x3 to 4x6)",
+        "diameterMm": 114,
+        "compatible": "Quick-Lock for 114 mm; 1 rotatable + 1 fixed 4x4.",
         "topFlag": "optional",
         "sideFlags": "optional",
-        "provenance": "Vocas datasheet: up to 114mm lens support, flags are optional【web†source】"
+        "provenance": ":contentReference[oaicite:41]{index=41}"
       },
       "SmallRig Mini Matte Box Pro (3680)": {
         "brand": "SmallRig",
-        "traySize": "4x5.65 (two trays, stackable)",
+        "model": "Mini Matte Box Pro (3680)",
+        "kNumber": "3680",
+        "stages": 2,
+        "type": "Clamp-on",
+        "traySize": "4x5.65",
+        "diameterMm": 95,
+        "compatible": "Includes 67/72/77/82–95 mm rings; supports round filters ≤92.5 mm.",
         "topFlag": true,
-        "sideFlags": "optional",
-        "provenance": "SmallRig site: top flag included, no mention of side flags【web†source】"
+        "sideFlags": true,
+        "provenance": ":contentReference[oaicite:42]{index=42}"
       },
       "SmallRig Mini Matte Box Lite (3575 / 3196)": {
         "brand": "SmallRig",
-        "traySize": "4x5.65",
+        "model": "Mini Matte Box Lite (3575)",
+        "kNumber": "3575",
+        "stages": 1,
+        "type": "Clamp-on",
+        "traySize": "4x5.65 / 4x4",
+        "diameterMm": 95,
+        "compatible": "Adapter rings for 67/72/77/82 mm; multiple plug-in + circular filters.",
         "topFlag": true,
         "sideFlags": false,
-        "provenance": "Lite kits ship with only top flag【web†source】"
+        "provenance": ":contentReference[oaicite:43]{index=43}"
       },
       "NiSi Cinema C5": {
         "brand": "NiSi",
-        "traySize": "95mm native (adapters for 67–82mm; rotating PL/VND optional)",
-        "topFlag": "optional",
-        "sideFlags": "optional",
-        "provenance": "NiSi C5 Filmmaker Kit includes flags; base system does not【web†source】"
+        "model": "Cinema C5",
+        "stages": 2,
+        "type": "Clamp-on",
+        "traySize": "4x5.65 (side) / 4x4 (top)",
+        "diameterMm": 95,
+        "compatible": "Adapter rings 67/72/77/82 mm included in kits; top flag included.",
+        "topFlag": true,
+        "sideFlags": false,
+        "provenance": ":contentReference[oaicite:44]{index=44}"
       }
     },
     "filters": {
