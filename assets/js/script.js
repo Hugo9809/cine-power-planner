@@ -2194,7 +2194,12 @@ function setLanguage(lang) {
   document.getElementById("tagline").textContent = texts[lang].tagline;
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
-  if (offlineElem) offlineElem.textContent = texts[lang].offlineIndicator;
+  if (offlineElem) {
+    offlineElem.textContent = texts[lang].offlineIndicator;
+    const offlineHelp =
+      texts[lang].offlineIndicatorHelp || texts[lang].offlineIndicator;
+    offlineElem.setAttribute("data-help", offlineHelp);
+  }
   applyInstallTexts(lang);
   const legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
   const impressumElem = document.getElementById("impressumLink");
@@ -3239,6 +3244,27 @@ function setLanguage(lang) {
     settingsCancel.setAttribute("data-help", cancelHelp);
     settingsCancel.setAttribute("title", cancelHelp);
     settingsCancel.setAttribute("aria-label", cancelHelp);
+  }
+  const menuToggle = document.getElementById("menuToggle");
+  if (menuToggle) {
+    const menuLabel =
+      texts[lang].menuToggleLabel ||
+      texts.en?.menuToggleLabel ||
+      menuToggle.getAttribute("aria-label") ||
+      "Menu";
+    menuToggle.setAttribute("title", menuLabel);
+    menuToggle.setAttribute("aria-label", menuLabel);
+    const menuHelp = texts[lang].menuToggleHelp || menuLabel;
+    menuToggle.setAttribute("data-help", menuHelp);
+  }
+  const sideMenu = document.getElementById("sideMenu");
+  if (sideMenu) {
+    const sideMenuHelp = texts[lang].sideMenuHelp;
+    if (sideMenuHelp) {
+      sideMenu.setAttribute("data-help", sideMenuHelp);
+    } else {
+      sideMenu.removeAttribute("data-help");
+    }
   }
   if (reloadButton) {
     reloadButton.setAttribute("title", texts[lang].reloadAppLabel);
@@ -20560,6 +20586,11 @@ if (helpButton && helpDialog) {
   let hoverHelpActive = false;
   let hoverHelpTooltip;
 
+  const canInteractDuringHoverHelp = target => {
+    if (!hoverHelpActive || !target) return false;
+    return !!target.closest('#settingsButton, #settingsDialog');
+  };
+
   // Exit hover-help mode and clean up tooltip/cursor state
   const stopHoverHelp = () => {
     hoverHelpActive = false;
@@ -20630,7 +20661,7 @@ if (helpButton && helpDialog) {
   document.addEventListener(
     'mousedown',
     e => {
-      if (hoverHelpActive) {
+      if (hoverHelpActive && !canInteractDuringHoverHelp(e.target)) {
         e.preventDefault();
       }
     },
@@ -20639,10 +20670,12 @@ if (helpButton && helpDialog) {
 
   document.addEventListener('click', e => {
     // Any click while in hover-help mode exits the mode and removes the tooltip
-    if (hoverHelpActive) {
-      e.preventDefault();
-      stopHoverHelp();
+    if (!hoverHelpActive) return;
+    if (canInteractDuringHoverHelp(e.target)) {
+      return;
     }
+    e.preventDefault();
+    stopHoverHelp();
   });
 
   if (hoverHelpButton) {
