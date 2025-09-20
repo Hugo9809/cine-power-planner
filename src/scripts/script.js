@@ -9431,6 +9431,10 @@ const DEFAULT_ACCENT_COLOR = '#001589';
 let accentColor = DEFAULT_ACCENT_COLOR;
 let prevAccentColor = accentColor;
 const HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
+const DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
+
+const normalizeAccentValue = value =>
+  typeof value === 'string' ? value.trim().toLowerCase() : '';
 
 const DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
 const PINK_REFERENCE_COLOR = '#ff69b4';
@@ -9507,6 +9511,14 @@ const isHighContrastActive = () =>
   typeof document !== 'undefined' &&
   (document.documentElement.classList.contains('high-contrast') ||
     (document.body && document.body.classList.contains('high-contrast')));
+
+const hasCustomAccentSelection = () => {
+  const normalized = normalizeAccentValue(accentColor);
+  return normalized && normalized !== DEFAULT_ACCENT_NORMALIZED;
+};
+
+const shouldPreserveAccentInPinkMode = () =>
+  hasCustomAccentSelection() || isHighContrastActive();
 
 const applyAccentColor = (color) => {
   const highContrast = isHighContrastActive();
@@ -10188,7 +10200,11 @@ if (settingsFontFamily) {
 
 const revertAccentColor = () => {
   if (document.body && document.body.classList.contains('pink-mode')) {
-    clearAccentColorOverrides();
+    if (shouldPreserveAccentInPinkMode()) {
+      applyAccentColor(prevAccentColor);
+    } else {
+      clearAccentColorOverrides();
+    }
     return;
   }
   applyAccentColor(prevAccentColor);
@@ -19834,7 +19850,7 @@ function applyHighContrast(enabled) {
       document.body.classList.remove("high-contrast");
     }
     document.documentElement.classList.remove("high-contrast");
-    if (document.body && document.body.classList.contains('pink-mode')) {
+    if (document.body && document.body.classList.contains('pink-mode') && !hasCustomAccentSelection()) {
       clearAccentColorOverrides();
     } else {
       applyAccentColor(accentColor);
@@ -19921,12 +19937,17 @@ function startPinkModeIconRotation() {
 }
 
 function applyPinkMode(enabled) {
+  const preserveAccent = shouldPreserveAccentInPinkMode();
   if (enabled) {
     document.body.classList.add("pink-mode");
     if (accentColorInput) {
       accentColorInput.disabled = true;
     }
-    clearAccentColorOverrides();
+    if (preserveAccent) {
+      applyAccentColor(accentColor);
+    } else {
+      clearAccentColorOverrides();
+    }
     if (pinkModeToggle) {
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }

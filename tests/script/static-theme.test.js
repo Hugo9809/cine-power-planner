@@ -117,4 +117,27 @@ describe('static theme preferences', () => {
     expect(body.style.getPropertyValue('--link-color')).toBe('#001589');
     expect(themeMeta.getAttribute('content')).toBe('#f9f9f9');
   });
+
+  test('retains stored custom accent when pink mode is enabled', () => {
+    localStorage.getItem.mockImplementation(key => {
+      if (key === 'pinkMode') {
+        return 'true';
+      }
+      if (key === 'accentColor') {
+        return '#ff8800';
+      }
+      return null;
+    });
+
+    loadStaticTheme();
+
+    const root = document.documentElement;
+    const body = document.body;
+
+    expect(body.classList.contains('pink-mode')).toBe(true);
+    expect(root.style.getPropertyValue('--accent-color')).toBe('#ff8800');
+    expect(root.style.getPropertyValue('--link-color')).toBe('#ff8800');
+    expect(body.style.getPropertyValue('--accent-color')).toBe('#ff8800');
+    expect(body.style.getPropertyValue('--link-color')).toBe('#ff8800');
+  });
 });
