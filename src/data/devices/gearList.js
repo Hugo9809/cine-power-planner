@@ -2059,7 +2059,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "mount": "PL",
+          "lengthMm": 89,
+          "minFocusMeters": 0.25,
+          "weight_g": 1200,
+          "notes": "Front Ø80 mm; S35; T1.3-T16"
         },
         "ZEISS High Speed MK III 20mm T2.1": {
           "brand": "ZEISS",
@@ -2079,7 +2084,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "mount": "PL",
+          "lengthMm": 66,
+          "minFocusMeters": 0.25,
+          "weight_g": 900,
+          "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 35mm T1.3": {
           "brand": "ZEISS",
@@ -2089,7 +2099,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "mount": "PL",
+          "lengthMm": 64,
+          "minFocusMeters": 0.3,
+          "weight_g": 700,
+          "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 50mm T1.3": {
           "brand": "ZEISS",
@@ -2099,7 +2114,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "mount": "PL",
+          "lengthMm": 62,
+          "minFocusMeters": 0.6,
+          "weight_g": 700,
+          "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 65mm T1.3": {
           "brand": "ZEISS",
@@ -2109,7 +2129,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "mount": "PL",
+          "minFocusMeters": 0.7,
+          "weight_g": 970,
+          "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 85mm T1.3": {
           "brand": "ZEISS",
@@ -2119,7 +2143,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "mount": "PL",
+          "lengthMm": 69,
+          "minFocusMeters": 0.92,
+          "weight_g": 1100,
+          "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 135mm T1.3": {
           "brand": "ZEISS",
@@ -2974,6 +3003,22 @@ const gear = {
           "lengthMm": 146,
           "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
+        "Leitz Summicron-C 15mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 36,
+          "lengthMm": 118,
+          "minFocusMeters": 0.3,
+          "weight_g": 1800,
+          "notes": "Front Ø95 mm"
+        },
         "Leitz Summicron-C 18mm T2.0": {
           "brand": "Leitz",
           "frontDiameterMm": 95,
@@ -2983,7 +3028,28 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 36,
+          "lengthMm": 101,
+          "minFocusMeters": 0.3,
+          "weight_g": 1300,
+          "notes": "Front Ø95 mm"
+        },
+        "Leitz Summicron-C 21mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 36,
+          "lengthMm": 101,
+          "minFocusMeters": 0.3,
+          "weight_g": 1300,
+          "notes": "Front Ø95 mm"
         },
         "Leitz Summicron-C 25mm T2.0": {
           "brand": "Leitz",
@@ -2994,7 +3060,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "imageCircleMm": 36,
+          "lengthMm": 101,
+          "minFocusMeters": 0.3,
+          "weight_g": 1500,
+          "notes": "Front Ø95 mm"
         },
         "Leitz Summicron-C 35mm T2.0": {
           "brand": "Leitz",
@@ -3274,6 +3345,80 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "Cooke Speed Panchro TLS 18mm T2.2": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "lengthMm": 61,
+          "minFocusMeters": 0.2,
+          "weight_g": 820,
+          "notes": "Front Ø110 mm; Super35; approx 2.40 in length"
+        },
+        "Cooke Speed Panchro TLS 25mm T2.2": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2.2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "lengthMm": 69,
+          "minFocusMeters": 0.2,
+          "weight_g": 860,
+          "notes": "Front Ø110 mm; approx 2.70 in length"
+        },
+        "Cooke Speed Panchro TLS 32mm T2.3": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "lengthMm": 69,
+          "minFocusMeters": 0.23,
+          "weight_g": 820,
+          "notes": "Front Ø110 mm"
+        },
+        "Cooke Speed Panchro TLS 40mm T2.3": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "lengthMm": 69,
+          "minFocusMeters": 0.33,
+          "weight_g": 1040,
+          "notes": "Front Ø110 mm"
+        },
+        "Cooke Speed Panchro TLS 50mm T2.3": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2.3,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.38,
+          "weight_g": 1630,
+          "notes": "Front Ø110 mm; longer prime"
         },
         "Cooke Speed Panchro 18mm (P+S rehousing)": {
           "brand": "Cooke (P+S rehoused)",
