@@ -212,140 +212,114 @@ const getStorageManager = () =>
 // tab. When neither storage option is available we fall back to a simple
 // in-memory store to avoid runtime errors even though the data will be lost on
 // reload.
-const SAFE_LOCAL_STORAGE = (() => {
-  const TEST_KEY = '__storage_test__';
+const STORAGE_TEST_KEY = '__storage_test__';
 
-  const QUOTA_ERROR_NAMES = new Set([
-    'QuotaExceededError',
-    'NS_ERROR_DOM_QUOTA_REACHED',
-  ]);
-  const QUOTA_ERROR_CODES = new Set([22, 1014]);
-  const QUOTA_ERROR_NUMBERS = new Set([22, 1014]);
+const QUOTA_ERROR_NAMES = new Set([
+  'QuotaExceededError',
+  'NS_ERROR_DOM_QUOTA_REACHED',
+]);
+const QUOTA_ERROR_CODES = new Set([22, 1014]);
+const QUOTA_ERROR_NUMBERS = new Set([22, 1014]);
 
-  const isQuotaExceededError = (error) => {
-    if (!error || typeof error !== 'object') {
-      return false;
-    }
-    if (typeof error.code === 'number' && QUOTA_ERROR_CODES.has(error.code)) {
-      return true;
-    }
-    if (typeof error.number === 'number' && QUOTA_ERROR_NUMBERS.has(error.number)) {
-      return true;
-    }
-    if (typeof error.name === 'string' && QUOTA_ERROR_NAMES.has(error.name)) {
-      return true;
-    }
+function isQuotaExceededError(error) {
+  if (!error || typeof error !== 'object') {
     return false;
-  };
+  }
+  if (typeof error.code === 'number' && QUOTA_ERROR_CODES.has(error.code)) {
+    return true;
+  }
+  if (typeof error.number === 'number' && QUOTA_ERROR_NUMBERS.has(error.number)) {
+    return true;
+  }
+  if (typeof error.name === 'string' && QUOTA_ERROR_NAMES.has(error.name)) {
+    return true;
+  }
+  return false;
+}
 
-  const hasStoredEntries = (storage) => {
-    if (!storage) return false;
+function hasStoredEntries(storage) {
+  if (!storage) return false;
 
-    try {
-      if (typeof storage.length === 'number' && storage.length > 0) {
-        return true;
-      }
-    } catch (lengthError) {
-      console.warn('Unable to read storage length after quota error', lengthError);
+  try {
+    if (typeof storage.length === 'number' && storage.length > 0) {
+      return true;
     }
+  } catch (lengthError) {
+    console.warn('Unable to read storage length after quota error', lengthError);
+  }
 
-    if (typeof storage.getItem === 'function') {
-      try {
-        for (let i = 0; i < PRIMARY_STORAGE_KEYS.length; i += 1) {
-          const key = PRIMARY_STORAGE_KEYS[i];
-          if (storage.getItem(key) !== null) {
-            return true;
-          }
+  if (typeof storage.getItem === 'function') {
+    try {
+      for (let i = 0; i < PRIMARY_STORAGE_KEYS.length; i += 1) {
+        const key = PRIMARY_STORAGE_KEYS[i];
+        if (storage.getItem(key) !== null) {
+          return true;
+        }
+        const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
+        if (storage.getItem(backupKey) !== null) {
+          return true;
+        }
+      }
+
+      for (let i = 0; i < SIMPLE_STORAGE_KEYS.length; i += 1) {
+        const key = SIMPLE_STORAGE_KEYS[i];
+        if (storage.getItem(key) !== null) {
+          return true;
+        }
+        if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
           const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
           if (storage.getItem(backupKey) !== null) {
             return true;
           }
         }
-
-        for (let i = 0; i < SIMPLE_STORAGE_KEYS.length; i += 1) {
-          const key = SIMPLE_STORAGE_KEYS[i];
-          if (storage.getItem(key) !== null) {
-            return true;
-          }
-          if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
-            const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
-            if (storage.getItem(backupKey) !== null) {
-              return true;
-            }
-          }
-        }
-      } catch (inspectionError) {
-        console.warn('Unable to inspect known storage keys after quota error', inspectionError);
       }
-    }
-
-    if (typeof storage.key === 'function') {
-      try {
-        const length = typeof storage.length === 'number' ? storage.length : 0;
-        for (let index = 0; index < length; index += 1) {
-          const candidate = storage.key(index);
-          if (typeof candidate === 'string' && candidate) {
-            return true;
-          }
-        }
-      } catch (iterationError) {
-        console.warn('Unable to iterate storage keys after quota error', iterationError);
-      }
-    }
-
-    return false;
-  };
-
-  const verifyStorage = (storage) => {
-    if (!storage) return null;
-    try {
-      storage.setItem(TEST_KEY, '1');
-    } catch (error) {
-      if (isQuotaExceededError(error) && hasStoredEntries(storage)) {
-        console.warn(
-          'localStorage quota exceeded. Existing planner data will remain available but new saves may fail.',
-          error,
-        );
-        return storage;
-      }
-      throw error;
-    }
-
-    try {
-      storage.removeItem(TEST_KEY);
-    } catch (cleanupError) {
-      console.warn('Unable to clean up storage test key', cleanupError);
-    }
-
-    return storage;
-  };
-
-  if (typeof window !== 'undefined') {
-    try {
-      if ('localStorage' in window) {
-        const storage = verifyStorage(window.localStorage);
-        if (storage) return storage;
-      }
-    } catch (e) {
-      console.warn('localStorage is unavailable:', e);
-    }
-
-    try {
-      if ('sessionStorage' in window) {
-        const storage = verifyStorage(window.sessionStorage);
-        if (storage) {
-          console.warn('Falling back to sessionStorage; data persists for this tab only.');
-          return storage;
-        }
-      }
-    } catch (e) {
-      console.warn('sessionStorage fallback is unavailable:', e);
+    } catch (inspectionError) {
+      console.warn('Unable to inspect known storage keys after quota error', inspectionError);
     }
   }
 
-  alertStorageError();
+  if (typeof storage.key === 'function') {
+    try {
+      const length = typeof storage.length === 'number' ? storage.length : 0;
+      for (let index = 0; index < length; index += 1) {
+        const candidate = storage.key(index);
+        if (typeof candidate === 'string' && candidate) {
+          return true;
+        }
+      }
+    } catch (iterationError) {
+      console.warn('Unable to iterate storage keys after quota error', iterationError);
+    }
+  }
 
-  // Fallback: minimal in-memory storage implementation
+  return false;
+}
+
+function verifyStorage(storage) {
+  if (!storage) return null;
+  try {
+    storage.setItem(STORAGE_TEST_KEY, '1');
+  } catch (error) {
+    if (isQuotaExceededError(error) && hasStoredEntries(storage)) {
+      console.warn(
+        'localStorage quota exceeded. Existing planner data will remain available but new saves may fail.',
+        error,
+      );
+      return storage;
+    }
+    throw error;
+  }
+
+  try {
+    storage.removeItem(STORAGE_TEST_KEY);
+  } catch (cleanupError) {
+    console.warn('Unable to clean up storage test key', cleanupError);
+  }
+
+  return storage;
+}
+
+function createMemoryStorage() {
   let memoryStore = {};
   return {
     get length() {
@@ -373,7 +347,232 @@ const SAFE_LOCAL_STORAGE = (() => {
       return Object.keys(memoryStore);
     },
   };
-})();
+}
+
+function initializeSafeLocalStorage() {
+  if (typeof window !== 'undefined') {
+    let candidate = null;
+    try {
+      if ('localStorage' in window) {
+        candidate = window.localStorage;
+        const storage = verifyStorage(candidate);
+        if (storage) {
+          lastFailedUpgradeCandidate = null;
+          return { storage, type: 'local' };
+        }
+      }
+    } catch (e) {
+      console.warn('localStorage is unavailable:', e);
+      if (candidate) {
+        lastFailedUpgradeCandidate = candidate;
+      }
+    }
+
+    try {
+      if ('sessionStorage' in window) {
+        const storage = verifyStorage(window.sessionStorage);
+        if (storage) {
+          console.warn('Falling back to sessionStorage; data persists for this tab only.');
+          return { storage, type: 'session' };
+        }
+      }
+    } catch (e) {
+      console.warn('sessionStorage fallback is unavailable:', e);
+    }
+  }
+
+  alertStorageError();
+  return { storage: createMemoryStorage(), type: 'memory' };
+}
+
+let lastFailedUpgradeCandidate = null;
+let safeLocalStorageInfo = initializeSafeLocalStorage();
+
+function migrateSnapshotToStorage(snapshot, target) {
+  if (!snapshot || !target || typeof target.setItem !== 'function') {
+    return;
+  }
+
+  Object.keys(snapshot).forEach((key) => {
+    const value = snapshot[key];
+    if (value === null || value === undefined) {
+      return;
+    }
+
+    let existing = null;
+    try {
+      existing = target.getItem(key);
+    } catch (readError) {
+      console.warn('Unable to inspect localStorage during upgrade', key, readError);
+    }
+
+    if (existing !== null && existing !== undefined && existing !== value) {
+      createStorageMigrationBackup(target, key, existing);
+    }
+
+    try {
+      target.setItem(key, value);
+    } catch (writeError) {
+      console.warn('Unable to migrate storage key during upgrade', key, writeError);
+    }
+  });
+}
+
+function clearMigratedKeys(snapshot, source) {
+  if (!snapshot || !source || typeof source.removeItem !== 'function') {
+    return;
+  }
+
+  Object.keys(snapshot).forEach((key) => {
+    try {
+      source.removeItem(key);
+    } catch (error) {
+      console.warn('Unable to remove migrated storage key from fallback', key, error);
+    }
+  });
+}
+
+function snapshotStorageEntries(storage) {
+  const snapshot = Object.create(null);
+  if (!storage) {
+    return snapshot;
+  }
+
+  const captureKey = (key) => {
+    if (typeof key !== 'string' || !key) {
+      return;
+    }
+    let value;
+    try {
+      if (typeof storage.getItem === 'function') {
+        value = storage.getItem(key);
+      } else if (Object.prototype.hasOwnProperty.call(storage, key)) {
+        value = storage[key];
+      }
+    } catch (error) {
+      console.warn('Unable to read storage key during snapshot', key, error);
+      return;
+    }
+    if (value === null || value === undefined) {
+      return;
+    }
+    snapshot[key] = String(value);
+  };
+
+  if (typeof storage.key === 'function' && typeof storage.length === 'number') {
+    for (let index = 0; index < storage.length; index += 1) {
+      captureKey(storage.key(index));
+    }
+    return snapshot;
+  }
+
+  if (typeof storage.keys === 'function') {
+    try {
+      const keys = storage.keys();
+      if (Array.isArray(keys)) {
+        keys.forEach(captureKey);
+      }
+    } catch (error) {
+      console.warn('Unable to enumerate storage keys during snapshot', error);
+    }
+    return snapshot;
+  }
+
+  if (typeof storage.forEach === 'function') {
+    try {
+      storage.forEach((value, key) => {
+        if (typeof key !== 'string') {
+          return;
+        }
+        if (value === null || value === undefined) {
+          return;
+        }
+        snapshot[key] = String(value);
+      });
+    } catch (error) {
+      console.warn('Unable to iterate storage entries during snapshot', error);
+    }
+    return snapshot;
+  }
+
+  Object.keys(storage).forEach(captureKey);
+  return snapshot;
+}
+
+function attemptLocalStorageUpgrade() {
+  if (!safeLocalStorageInfo || safeLocalStorageInfo.type === 'local') {
+    return safeLocalStorageInfo.storage;
+  }
+
+  if (typeof window === 'undefined') {
+    return safeLocalStorageInfo.storage;
+  }
+
+  let candidate;
+  try {
+    if (!('localStorage' in window)) {
+      return safeLocalStorageInfo.storage;
+    }
+    candidate = window.localStorage;
+  } catch (error) {
+    console.warn('Unable to access localStorage during upgrade attempt', error);
+    lastFailedUpgradeCandidate = null;
+    return safeLocalStorageInfo.storage;
+  }
+
+  if (candidate && candidate === lastFailedUpgradeCandidate) {
+    return safeLocalStorageInfo.storage;
+  }
+
+  let verified;
+  try {
+    verified = verifyStorage(candidate);
+  } catch (verificationError) {
+    console.warn('localStorage upgrade verification failed', verificationError);
+    lastFailedUpgradeCandidate = candidate;
+    return safeLocalStorageInfo.storage;
+  }
+
+  if (!verified || verified === safeLocalStorageInfo.storage) {
+    if (!verified) {
+      lastFailedUpgradeCandidate = candidate;
+    } else {
+      lastFailedUpgradeCandidate = null;
+    }
+    return safeLocalStorageInfo.storage;
+  }
+
+  const snapshot = snapshotStorageEntries(safeLocalStorageInfo.storage);
+  migrateSnapshotToStorage(snapshot, verified);
+  clearMigratedKeys(snapshot, safeLocalStorageInfo.storage);
+
+  safeLocalStorageInfo = { storage: verified, type: 'local' };
+  lastFailedUpgradeCandidate = null;
+  return verified;
+}
+
+function getSafeLocalStorage() {
+  if (!safeLocalStorageInfo || !safeLocalStorageInfo.storage) {
+    safeLocalStorageInfo = initializeSafeLocalStorage();
+  }
+
+  if (safeLocalStorageInfo.type !== 'local') {
+    attemptLocalStorageUpgrade();
+  }
+
+  return safeLocalStorageInfo.storage;
+}
+
+if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+  try {
+    Object.defineProperty(GLOBAL_SCOPE, 'SAFE_LOCAL_STORAGE', {
+      configurable: true,
+      get: getSafeLocalStorage,
+    });
+  } catch (defineError) {
+    GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
+  }
+}
 
 let persistentStorageRequestPromise = null;
 
@@ -580,7 +779,7 @@ function migrateKeyInStorages(storages, preferredTarget, legacyKey, modernKey, o
 }
 
 function migrateLegacyStorageKeys() {
-  const safeStorage = SAFE_LOCAL_STORAGE;
+  const safeStorage = getSafeLocalStorage();
   const localStorages = collectUniqueStorages([
     getWindowStorage('localStorage'),
     safeStorage,
@@ -1039,8 +1238,9 @@ function normalizeSessionStatePayload(raw) {
 
 function loadSessionState() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const raw = loadWithMigration(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     typeof sessionStorage !== 'undefined' ? sessionStorage : null,
     SESSION_STATE_KEY,
     "Error loading session state from localStorage:",
@@ -1059,7 +1259,7 @@ function loadSessionState() {
   }
 
   if (changed) {
-    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, raw);
+    createStorageMigrationBackup(safeStorage, SESSION_STATE_KEY, raw);
     saveSessionState(state);
   }
 
@@ -1067,9 +1267,10 @@ function loadSessionState() {
 }
 
 function saveSessionState(state) {
+  const safeStorage = getSafeLocalStorage();
   if (state === null || state === undefined) {
     deleteFromStorage(
-      SAFE_LOCAL_STORAGE,
+      safeStorage,
       SESSION_STATE_KEY,
       "Error deleting session state from localStorage:",
     );
@@ -1082,7 +1283,7 @@ function saveSessionState(state) {
   }
 
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     SESSION_STATE_KEY,
     state,
     "Error saving session state to localStorage:",
@@ -1092,8 +1293,9 @@ function saveSessionState(state) {
 // --- Device Data Storage ---
 function loadDeviceData() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const parsedData = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     DEVICE_STORAGE_KEY,
     "Error loading device data from localStorage:",
     null,
@@ -1141,9 +1343,9 @@ function loadDeviceData() {
   }
 
   if (changed) {
-    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, parsedData);
+    createStorageMigrationBackup(safeStorage, DEVICE_STORAGE_KEY, parsedData);
     saveJSONToStorage(
-      SAFE_LOCAL_STORAGE,
+      safeStorage,
       DEVICE_STORAGE_KEY,
       data,
       "Error updating device data in localStorage during normalization:",
@@ -1155,9 +1357,10 @@ function loadDeviceData() {
 }
 
 function saveDeviceData(deviceData) {
+  const safeStorage = getSafeLocalStorage();
   if (deviceData === null || deviceData === undefined) {
     deleteFromStorage(
-      SAFE_LOCAL_STORAGE,
+      safeStorage,
       DEVICE_STORAGE_KEY,
       "Error deleting device data from localStorage:",
     );
@@ -1171,7 +1374,7 @@ function saveDeviceData(deviceData) {
   }
 
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     DEVICE_STORAGE_KEY,
     deviceData,
     "Error saving device data to localStorage:",
@@ -1225,8 +1428,9 @@ function normalizeSetups(rawData) {
 
 function loadSetups() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const parsedData = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     SETUP_STORAGE_KEY,
     "Error loading setups from localStorage:",
     null,
@@ -1237,9 +1441,9 @@ function loadSetups() {
   );
   const { data: setups, changed } = normalizeSetups(parsedData);
   if (changed) {
-    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, parsedData);
+    createStorageMigrationBackup(safeStorage, SETUP_STORAGE_KEY, parsedData);
     saveJSONToStorage(
-      SAFE_LOCAL_STORAGE,
+      safeStorage,
       SETUP_STORAGE_KEY,
       setups,
       "Error updating setups in localStorage during normalization:",
@@ -1250,8 +1454,9 @@ function loadSetups() {
 
 function saveSetups(setups) {
   const { data: normalizedSetups } = normalizeSetups(setups);
+  const safeStorage = getSafeLocalStorage();
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     SETUP_STORAGE_KEY,
     normalizedSetups,
     "Error saving setups to localStorage:",
@@ -1382,8 +1587,9 @@ function isNormalizedProjectEntry(entry) {
 
 function readAllProjectsFromStorage() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const parsed = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     PROJECT_STORAGE_KEY,
     "Error loading project from localStorage:",
     null,
@@ -1463,8 +1669,9 @@ function readAllProjectsFromStorage() {
 }
 
 function persistAllProjects(projects, successMessage) {
+  const safeStorage = getSafeLocalStorage();
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     PROJECT_STORAGE_KEY,
     projects,
     "Error saving project to localStorage:",
@@ -1474,8 +1681,11 @@ function persistAllProjects(projects, successMessage) {
 
 function loadProject(name) {
   const { projects, changed, originalValue } = readAllProjectsFromStorage();
-  if (changed && SAFE_LOCAL_STORAGE) {
-    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
+  if (changed) {
+    const safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
     persistAllProjects(projects);
   }
   if (name === undefined) {
@@ -1489,8 +1699,11 @@ function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
   const { projects, changed, originalValue } = readAllProjectsFromStorage();
-  if (changed && SAFE_LOCAL_STORAGE) {
-    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
+  if (changed) {
+    const safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
   }
   projects[name || ""] = normalized;
   persistAllProjects(projects, "Project saved to localStorage.");
@@ -1499,7 +1712,7 @@ function saveProject(name, project) {
 function deleteProject(name) {
   if (name === undefined) {
     deleteFromStorage(
-      SAFE_LOCAL_STORAGE,
+      getSafeLocalStorage(),
       PROJECT_STORAGE_KEY,
       "Error deleting project from localStorage:",
     );
@@ -1508,8 +1721,11 @@ function deleteProject(name) {
 
   const key = name || "";
   const { projects, changed, originalValue } = readAllProjectsFromStorage();
-  if (changed && SAFE_LOCAL_STORAGE) {
-    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
+  if (changed) {
+    const safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
   }
   if (!Object.prototype.hasOwnProperty.call(projects, key)) {
     return;
@@ -1517,7 +1733,7 @@ function deleteProject(name) {
   delete projects[key];
   if (Object.keys(projects).length === 0) {
     deleteFromStorage(
-      SAFE_LOCAL_STORAGE,
+      getSafeLocalStorage(),
       PROJECT_STORAGE_KEY,
       "Error deleting project from localStorage:",
     );
@@ -1528,8 +1744,11 @@ function deleteProject(name) {
 
 function createProjectImporter() {
   const { projects, changed, originalValue } = readAllProjectsFromStorage();
-  if (changed && SAFE_LOCAL_STORAGE) {
-    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
+  if (changed) {
+    const safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
   }
   const usedNames = new Set(Object.keys(projects));
   const normalizedNames = new Set(
@@ -1643,8 +1862,9 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
 // --- Favorites Storage ---
 function loadFavorites() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const parsed = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     FAVORITES_STORAGE_KEY,
     "Error loading favorites from localStorage:",
     {},
@@ -1654,9 +1874,10 @@ function loadFavorites() {
 }
 
 function saveFavorites(favs) {
+  const safeStorage = getSafeLocalStorage();
   if (favs === null || favs === undefined) {
     deleteFromStorage(
-      SAFE_LOCAL_STORAGE,
+      safeStorage,
       FAVORITES_STORAGE_KEY,
       "Error deleting favorites from localStorage:",
     );
@@ -1669,7 +1890,7 @@ function saveFavorites(favs) {
   }
 
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     FAVORITES_STORAGE_KEY,
     favs,
     "Error saving favorites to localStorage:",
@@ -1679,8 +1900,9 @@ function saveFavorites(favs) {
 // --- User Feedback Storage ---
 function loadFeedback() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const parsed = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     FEEDBACK_STORAGE_KEY,
     "Error loading feedback from localStorage:",
     null,
@@ -1693,9 +1915,10 @@ function loadFeedback() {
 }
 
 function saveFeedback(feedback) {
+  const safeStorage = getSafeLocalStorage();
   if (feedback === null || feedback === undefined) {
     deleteFromStorage(
-      SAFE_LOCAL_STORAGE,
+      safeStorage,
       FEEDBACK_STORAGE_KEY,
       "Error deleting feedback from localStorage:",
     );
@@ -1708,7 +1931,7 @@ function saveFeedback(feedback) {
   }
 
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     FEEDBACK_STORAGE_KEY,
     feedback,
     "Error saving feedback to localStorage:",
@@ -1719,8 +1942,9 @@ function saveFeedback(feedback) {
 // --- Automatic Gear Rules Storage ---
 function loadAutoGearRules() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const parsed = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_RULES_STORAGE_KEY,
     "Error loading automatic gear rules from localStorage:",
     [],
@@ -1731,8 +1955,9 @@ function loadAutoGearRules() {
 
 function saveAutoGearRules(rules) {
   const safeRules = Array.isArray(rules) ? rules : [];
+  const safeStorage = getSafeLocalStorage();
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_RULES_STORAGE_KEY,
     safeRules,
     "Error saving automatic gear rules to localStorage:",
@@ -1741,8 +1966,9 @@ function saveAutoGearRules(rules) {
 
 function loadAutoGearBackups() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const parsed = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_BACKUPS_STORAGE_KEY,
     "Error loading automatic gear rule backups from localStorage:",
     [],
@@ -1753,8 +1979,9 @@ function loadAutoGearBackups() {
 
 function saveAutoGearBackups(backups) {
   const safeBackups = Array.isArray(backups) ? backups : [];
+  const safeStorage = getSafeLocalStorage();
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_BACKUPS_STORAGE_KEY,
     safeBackups,
     "Error saving automatic gear rule backups to localStorage:",
@@ -1763,16 +1990,18 @@ function saveAutoGearBackups(backups) {
 
 function loadAutoGearSeedFlag() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   return loadFlagFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_SEEDED_STORAGE_KEY,
     "Error loading automatic gear seed flag from localStorage:",
   );
 }
 
 function saveAutoGearSeedFlag(flag) {
+  const safeStorage = getSafeLocalStorage();
   saveFlagToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_SEEDED_STORAGE_KEY,
     Boolean(flag),
     "Error saving automatic gear seed flag to localStorage:",
@@ -1781,8 +2010,9 @@ function saveAutoGearSeedFlag(flag) {
 
 function loadAutoGearPresets() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   const presets = loadJSONFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_PRESETS_STORAGE_KEY,
     "Error loading automatic gear presets from localStorage:",
     [],
@@ -1793,8 +2023,9 @@ function loadAutoGearPresets() {
 
 function saveAutoGearPresets(presets) {
   const safePresets = Array.isArray(presets) ? presets : [];
+  const safeStorage = getSafeLocalStorage();
   saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_PRESETS_STORAGE_KEY,
     safePresets,
     "Error saving automatic gear presets to localStorage:",
@@ -1803,11 +2034,12 @@ function saveAutoGearPresets(presets) {
 
 function loadAutoGearActivePresetId() {
   applyLegacyStorageMigrations();
-  if (!SAFE_LOCAL_STORAGE) {
+  const safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return '';
   }
   try {
-    const value = SAFE_LOCAL_STORAGE.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+    const value = safeStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear active preset from localStorage:', error);
@@ -1817,14 +2049,15 @@ function loadAutoGearActivePresetId() {
 }
 
 function saveAutoGearActivePresetId(presetId) {
-  if (!SAFE_LOCAL_STORAGE) {
+  const safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return;
   }
   try {
     if (presetId) {
-      SAFE_LOCAL_STORAGE.setItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, presetId);
+      safeStorage.setItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, presetId);
     } else {
-      SAFE_LOCAL_STORAGE.removeItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+      safeStorage.removeItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
     }
   } catch (error) {
     console.error('Error saving automatic gear active preset to localStorage:', error);
@@ -1833,11 +2066,12 @@ function saveAutoGearActivePresetId(presetId) {
 }
 
 function loadAutoGearAutoPresetId() {
-  if (!SAFE_LOCAL_STORAGE) {
+  const safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return '';
   }
   try {
-    const value = SAFE_LOCAL_STORAGE.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+    const value = safeStorage.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear auto preset from localStorage:', error);
@@ -1847,14 +2081,15 @@ function loadAutoGearAutoPresetId() {
 }
 
 function saveAutoGearAutoPresetId(presetId) {
-  if (!SAFE_LOCAL_STORAGE) {
+  const safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return;
   }
   try {
     if (presetId) {
-      SAFE_LOCAL_STORAGE.setItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, presetId);
+      safeStorage.setItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, presetId);
     } else {
-      SAFE_LOCAL_STORAGE.removeItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+      safeStorage.removeItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
     }
   } catch (error) {
     console.error('Error saving automatic gear auto preset to localStorage:', error);
@@ -1864,16 +2099,18 @@ function saveAutoGearAutoPresetId(presetId) {
 
 function loadAutoGearBackupVisibility() {
   applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
   return loadFlagFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
     "Error loading automatic gear backup visibility from localStorage:",
   );
 }
 
 function saveAutoGearBackupVisibility(flag) {
+  const safeStorage = getSafeLocalStorage();
   saveFlagToStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
     Boolean(flag),
     "Error saving automatic gear backup visibility to localStorage:",
@@ -1883,28 +2120,29 @@ function saveAutoGearBackupVisibility(flag) {
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
-  deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, msg);
+  const safeStorage = getSafeLocalStorage();
+  deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
   // Favorites were added later and can be forgotten if not explicitly cleared.
   // Ensure they are removed alongside other stored planner data.
-  deleteFromStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, PROJECT_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
   deleteFromStorage(
-    SAFE_LOCAL_STORAGE,
+    safeStorage,
     getCustomFontStorageKeyName(),
     msg
   );
-  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_LOGO_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
+  deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
+  deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
@@ -1920,14 +2158,14 @@ function clearAllData() {
     'iosPwaHelpShown',
   ];
   preferenceKeys.forEach((key) => {
-    deleteFromStorage(SAFE_LOCAL_STORAGE, key, msg, { disableBackup: true });
+    deleteFromStorage(safeStorage, key, msg, { disableBackup: true });
   });
   console.log("All planner data cleared from storage.");
 }
 
 // --- Export/Import All Planner Data ---
   function readLocalStorageValue(key) {
-    const storage = SAFE_LOCAL_STORAGE;
+    const storage = getSafeLocalStorage();
     if (!storage || typeof storage.getItem !== 'function') return null;
     try {
       const value = storage.getItem(key);
@@ -2068,7 +2306,7 @@ function clearAllData() {
   }
 
   function safeSetLocalStorage(key, value) {
-    const storage = SAFE_LOCAL_STORAGE;
+    const storage = getSafeLocalStorage();
     if (!storage) return;
     const useBackup = RAW_STORAGE_BACKUP_KEYS.has(key);
     const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
@@ -2100,10 +2338,6 @@ function clearAllData() {
         alertStorageError();
       }
     }
-  }
-
-  function getSafeLocalStorage() {
-    return SAFE_LOCAL_STORAGE;
   }
 
 function normalizeImportedBoolean(value) {
