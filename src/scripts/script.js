@@ -8933,7 +8933,10 @@ if (uiScaleRoot) {
   }
 }
 
-const CUSTOM_FONT_STORAGE_KEY_NAME =
+// Mirror the storage key defined in storage.js without redeclaring the same
+// identifier so browsers don't throw "Identifier has already been declared"
+// when both scripts load in the same page.
+const CUSTOM_FONT_STORAGE_KEY_NAME_LOCAL =
   typeof CUSTOM_FONT_STORAGE_KEY !== 'undefined'
     ? CUSTOM_FONT_STORAGE_KEY
     : 'cameraPowerPlanner_customFonts';
@@ -8955,7 +8958,7 @@ const SUPPORTED_FONT_EXTENSIONS = ['.ttf', '.otf', '.ttc', '.woff', '.woff2'];
 function loadCustomFontMetadataFromStorage() {
   if (typeof localStorage === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(CUSTOM_FONT_STORAGE_KEY_NAME);
+    const raw = localStorage.getItem(CUSTOM_FONT_STORAGE_KEY_NAME_LOCAL);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -8980,7 +8983,7 @@ function persistCustomFontsToStorage() {
       name: entry.name,
       data: entry.data
     }));
-    localStorage.setItem(CUSTOM_FONT_STORAGE_KEY_NAME, JSON.stringify(payload));
+    localStorage.setItem(CUSTOM_FONT_STORAGE_KEY_NAME_LOCAL, JSON.stringify(payload));
     return true;
   } catch (error) {
     console.warn('Could not save custom fonts', error);
