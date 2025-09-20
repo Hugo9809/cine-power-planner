@@ -7667,17 +7667,81 @@ function getLanguageTexts(lang) {
   return (texts && texts[resolved]) || texts.en || {};
 }
 
+const DEFAULT_INTL_CACHE_KEY = '__default__';
+
+const numberFormatCache = new Map();
+const pluralRulesCache = new Map();
+const listFormatCache = new Map();
+const LIST_FORMAT_OPTIONS = Object.freeze({ style: 'long', type: 'conjunction' });
+
+function serializeIntlOptions(options) {
+  if (!options || typeof options !== 'object') {
+    return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
+  }
+  const entries = [];
+  for (const [key, value] of Object.entries(options)) {
+    if (typeof value === 'undefined') continue;
+    let normalizedValue;
+    if (value && typeof value === 'object') {
+      normalizedValue = serializeIntlOptions(value);
+    } else {
+      normalizedValue = String(value);
+    }
+    entries.push(`${key}:${normalizedValue}`);
+  }
+  if (!entries.length) {
+    return DEFAULT_INTL_CACHE_KEY;
+  }
+  return entries.sort().join('|');
+}
+
+function getCachedIntlObject(cache, locale, options, factory) {
+  const key = serializeIntlOptions(options);
+  let localeCache = cache.get(locale);
+  if (!localeCache) {
+    localeCache = new Map();
+    cache.set(locale, localeCache);
+  }
+  if (localeCache.has(key)) {
+    return localeCache.get(key);
+  }
+  try {
+    const instance = factory(locale, options);
+    localeCache.set(key, instance);
+    return instance;
+  } catch (error) {
+    localeCache.delete(key);
+    throw error;
+  }
+}
+
+function getNumberFormatter(locale, options) {
+  return getCachedIntlObject(numberFormatCache, locale, options, (loc, opts) => new Intl.NumberFormat(loc, opts));
+}
+
+function getPluralRules(locale) {
+  return getCachedIntlObject(pluralRulesCache, locale, undefined, loc => new Intl.PluralRules(loc));
+}
+
+function getListFormatter(locale) {
+  return getCachedIntlObject(listFormatCache, locale, LIST_FORMAT_OPTIONS, loc => new Intl.ListFormat(loc, LIST_FORMAT_OPTIONS));
+}
+
 function formatNumberForLang(lang, value, options) {
   const resolved = resolveLanguageCode(lang);
   try {
-    return new Intl.NumberFormat(resolved, options).format(value);
+    return getNumberFormatter(resolved, options).format(value);
   } catch (firstError) {
-    try {
-      return new Intl.NumberFormat('en', options).format(value);
-    } catch (fallbackError) {
-      console.warn('Number formatting failed', firstError, fallbackError);
-      return String(value);
+    if (resolved !== 'en') {
+      try {
+        return getNumberFormatter('en', options).format(value);
+      } catch (fallbackError) {
+        console.warn('Number formatting failed', firstError, fallbackError);
+        return String(value);
+      }
     }
+    console.warn('Number formatting failed', firstError);
+    return String(value);
   }
 }
 
@@ -7687,12 +7751,24 @@ function formatCountText(lang, langTexts, baseKey, count) {
   const englishTexts = getLanguageTexts('en');
   let suffix = 'Other';
   try {
-    const plural = new Intl.PluralRules(resolved).select(count);
+    const plural = getPluralRules(resolved).select(count);
     if (plural === 'one' && (localeTexts[`${baseKey}One`] || englishTexts[`${baseKey}One`])) {
       suffix = 'One';
     }
-  } catch {
-    if (count === 1 && (localeTexts[`${baseKey}One`] || englishTexts[`${baseKey}One`])) {
+  } catch (firstError) {
+    if (resolved !== 'en') {
+      try {
+        const fallbackPlural = getPluralRules('en').select(count);
+        if (fallbackPlural === 'one' && (localeTexts[`${baseKey}One`] || englishTexts[`${baseKey}One`])) {
+          suffix = 'One';
+        }
+      } catch (fallbackError) {
+        console.warn('Plural rules failed', firstError, fallbackError);
+        if (count === 1 && (localeTexts[`${baseKey}One`] || englishTexts[`${baseKey}One`])) {
+          suffix = 'One';
+        }
+      }
+    } else if (count === 1 && (localeTexts[`${baseKey}One`] || englishTexts[`${baseKey}One`])) {
       suffix = 'One';
     }
   }
@@ -7706,8 +7782,17 @@ function formatListForLang(lang, items) {
   const resolved = resolveLanguageCode(lang);
   if (!Array.isArray(items) || !items.length) return '';
   try {
-    return new Intl.ListFormat(resolved, { style: 'long', type: 'conjunction' }).format(items);
-  } catch {
+    return getListFormatter(resolved).format(items);
+  } catch (firstError) {
+    if (resolved !== 'en') {
+      try {
+        return getListFormatter('en').format(items);
+      } catch (fallbackError) {
+        console.warn('List formatting failed', firstError, fallbackError);
+        return items.join(', ');
+      }
+    }
+    console.warn('List formatting failed', firstError);
     return items.join(', ');
   }
 }
