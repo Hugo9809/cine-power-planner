@@ -18290,8 +18290,17 @@ function generateGearListHtml() {
   var needsSwingAway = filterTypes.some(function (t) {
     return t === 'ND Grad HE' || t === 'ND Grad SE';
   });
+  var filterEntries = buildFilterGearEntries(parsedFilters);
   var filterSelections = collectFilterAccessories(parsedFilters);
-  var filterSelectHtml = buildFilterSelectHtml(parsedFilters);
+  if (filterEntries.length && filterSelections.length) {
+    var filterNames = new Set(filterEntries.map(function (entry) {
+      return normalizeGearNameForComparison(entry.gearName);
+    }));
+    filterSelections = filterSelections.filter(function (item) {
+      return !filterNames.has(normalizeGearNameForComparison(item));
+    });
+  }
+  var filterSelectHtml = buildFilterSelectHtml(parsedFilters, filterEntries);
   if (info.mattebox && !needsSwingAway) {
     var matteboxSelection = info.mattebox.toLowerCase();
     if (matteboxSelection.includes('clamp')) {
@@ -23709,9 +23718,24 @@ function applyFilterSelectionsToGearList() {
   updateGearListFilterEntries(entries);
   adjustGearListSelectWidths(gearListOutput);
 }
+function normalizeGearNameForComparison(name) {
+  if (!name) return '';
+  var normalized = String(name);
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  } else if (typeof String.prototype.normalize === 'function') {
+    normalized = String.prototype.normalize.call(normalized, 'NFD');
+  }
+  normalized = normalized.replace(/[\u0300-\u036f]/g, '');
+  normalized = normalized.replace(/\bfuer\b/gi, 'for');
+  normalized = normalized.replace(/\bfur\b/gi, 'for');
+  normalized = normalized.toLowerCase();
+  return normalized.replace(/[^a-z0-9]+/g, '');
+}
 function buildFilterSelectHtml() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var entries = buildFilterGearEntries(filters);
+  var precomputedEntries = arguments.length > 1 ? arguments[1] : undefined;
+  var entries = Array.isArray(precomputedEntries) ? precomputedEntries : buildFilterGearEntries(filters);
   var summaryHtml = entries.map(function (entry) {
     var attrs = ['class="gear-item"', "data-gear-name=\"".concat(escapeHtml(entry.gearName), "\""), "data-filter-entry=\"".concat(escapeHtml(entry.id), "\""), "data-filter-label=\"".concat(escapeHtml(entry.label), "\"")];
     if (entry.type) attrs.push("data-filter-type=\"".concat(escapeHtml(entry.type), "\""));

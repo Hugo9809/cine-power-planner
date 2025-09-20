@@ -18963,8 +18963,17 @@ function generateGearListHtml(info = {}) {
     const parsedFilters = parseFilterTokens(info.filter);
     const filterTypes = parsedFilters.map(f => f.type);
     const needsSwingAway = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
+    const filterEntries = buildFilterGearEntries(parsedFilters);
     let filterSelections = collectFilterAccessories(parsedFilters);
-    const filterSelectHtml = buildFilterSelectHtml(parsedFilters);
+    if (filterEntries.length && filterSelections.length) {
+        const filterNames = new Set(
+            filterEntries.map(entry => normalizeGearNameForComparison(entry.gearName))
+        );
+        filterSelections = filterSelections.filter(item =>
+            !filterNames.has(normalizeGearNameForComparison(item))
+        );
+    }
+    const filterSelectHtml = buildFilterSelectHtml(parsedFilters, filterEntries);
     if (info.mattebox && !needsSwingAway) {
         const matteboxSelection = info.mattebox.toLowerCase();
         if (matteboxSelection.includes('clamp')) {
@@ -24532,8 +24541,25 @@ function applyFilterSelectionsToGearList(info = currentProjectInfo) {
   adjustGearListSelectWidths(gearListOutput);
 }
 
-function buildFilterSelectHtml(filters = []) {
-  const entries = buildFilterGearEntries(filters);
+function normalizeGearNameForComparison(name) {
+  if (!name) return '';
+  let normalized = String(name);
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  } else if (typeof String.prototype.normalize === 'function') {
+    normalized = String.prototype.normalize.call(normalized, 'NFD');
+  }
+  normalized = normalized.replace(/[\u0300-\u036f]/g, '');
+  normalized = normalized.replace(/\bfuer\b/gi, 'for');
+  normalized = normalized.replace(/\bfur\b/gi, 'for');
+  normalized = normalized.toLowerCase();
+  return normalized.replace(/[^a-z0-9]+/g, '');
+}
+
+function buildFilterSelectHtml(filters = [], precomputedEntries) {
+  const entries = Array.isArray(precomputedEntries)
+    ? precomputedEntries
+    : buildFilterGearEntries(filters);
   const summaryHtml = entries.map(entry => {
     const attrs = [
       'class="gear-item"',
