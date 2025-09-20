@@ -119,6 +119,7 @@ body.pink-mode {
   --link-color: #ff69b4;
   --icon-color: var(--accent-color);
   --logo-accent-color: var(--accent-color);
+  --logo-background-color: var(--brand-accent-color);
 }
 
 html {
