@@ -244,6 +244,9 @@ const texts = {
     factoryResetSuccess:
       "Backup downloaded. All planner data cleared. Reloading…",
     factoryResetError: "Factory reset failed. Please try again.",
+    preDeleteBackupSuccess:
+      "Automatic backup saved. Restore it anytime from Saved Projects.",
+    preDeleteBackupFailed: "Automatic backup failed. The action was cancelled.",
     restoreBackupFailed: "Backup failed. Restore cancelled.",
     dataHeading: "Data & Storage",
     dataHeadingHelp:
@@ -1395,6 +1398,9 @@ const texts = {
     factoryResetSuccess:
       "Backup scaricato. Tutti i dati del planner sono stati cancellati. Ricaricamento in corso…",
     factoryResetError: "Ripristino di fabbrica non riuscito. Riprova.",
+    preDeleteBackupSuccess:
+      "Backup automatico salvato. Puoi ripristinarlo da Progetti salvati.",
+    preDeleteBackupFailed: "Backup automatico non riuscito. L'operazione è stata annullata.",
     restoreBackupFailed: "Backup non riuscito. Ripristino annullato.",
     dataHeading: "Dati e archiviazione",
     dataHeadingHelp:
@@ -2151,6 +2157,9 @@ const texts = {
     factoryResetSuccess:
       "Copia de seguridad descargada. Todos los datos del planificador se borraron. Recargando…",
     factoryResetError: "El restablecimiento de fábrica falló. Inténtalo de nuevo.",
+    preDeleteBackupSuccess:
+      "Copia de seguridad automática guardada. Puedes restaurarla desde Proyectos guardados.",
+    preDeleteBackupFailed: "La copia de seguridad automática falló. La acción se canceló.",
     restoreBackupFailed: "La copia de seguridad falló. Restauración cancelada.",
     dataHeading: "Datos y almacenamiento",
     dataHeadingHelp:
@@ -2910,6 +2919,9 @@ const texts = {
     factoryResetSuccess:
       "Sauvegarde téléchargée. Toutes les données du planificateur ont été effacées. Rechargement…",
     factoryResetError: "Échec de la réinitialisation d’usine. Veuillez réessayer.",
+    preDeleteBackupSuccess:
+      "Sauvegarde automatique enregistrée. Vous pouvez la restaurer depuis Projets enregistrés.",
+    preDeleteBackupFailed: "La sauvegarde automatique a échoué. L’action a été annulée.",
     restoreBackupFailed: "Échec de la sauvegarde. Restauration annulée.",
     dataHeading: "Données et stockage",
     dataHeadingHelp:
@@ -3672,6 +3684,9 @@ const texts = {
     factoryResetSuccess:
       "Backup heruntergeladen. Alle Planner-Daten wurden gelöscht. Seite wird neu geladen…",
     factoryResetError: "Zurücksetzen auf Werkseinstellungen fehlgeschlagen. Bitte erneut versuchen.",
+    preDeleteBackupSuccess:
+      "Automatische Sicherung gespeichert. Du kannst sie in Gespeicherte Projekte wiederherstellen.",
+    preDeleteBackupFailed: "Automatische Sicherung fehlgeschlagen. Die Aktion wurde abgebrochen.",
     restoreBackupFailed: "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
     dataHeading: "Daten & Speicherung",
     dataHeadingHelp:

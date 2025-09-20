@@ -846,6 +846,11 @@ function resetAutoGearRulesToFactoryAdditions() {
     return;
   }
 
+  const backupName = ensureAutoBackupBeforeDeletion('reset automatic gear rules');
+  if (!backupName) {
+    return;
+  }
+
   try {
     setAutoGearRules([]);
     clearAutoGearDefaultsSeeded();
@@ -6884,6 +6889,8 @@ function deleteAutoGearRule(ruleId) {
     || texts.en?.autoGearDeleteConfirm
     || 'Delete this rule?';
   if (!window.confirm(confirmation)) return;
+  const backupName = ensureAutoBackupBeforeDeletion('delete automatic gear rule');
+  if (!backupName) return;
   rules.splice(index, 1);
   setAutoGearRules(rules);
   updateAutoGearCatalogOptions();
@@ -14086,6 +14093,10 @@ deleteSetupBtn.addEventListener("click", () => {
     confirm(texts[currentLang].confirmDeleteSetup.replace("{name}", setupName)) &&
     confirm(texts[currentLang].confirmDeleteSetupAgain)
   ) {
+    const backupName = ensureAutoBackupBeforeDeletion('delete setup');
+    if (!backupName) {
+      return;
+    }
     let setups = getSetups();
     delete setups[setupName];
     storeSetups(setups);
@@ -14288,8 +14299,18 @@ checkSetupChanged();
 // Auto-save backups every 10 minutes. Saved backups appear in the setup
 // selector but do not change the currently selected setup. Intervals are
 // unref'ed when possible so Node environments can exit cleanly.
-function autoBackup() {
-  if (!setupSelect) return;
+function autoBackup(options = {}) {
+  if (!setupSelect) return null;
+  const config = typeof options === 'object' && options !== null ? options : {};
+  const suppressSuccess = Boolean(config.suppressSuccess);
+  const suppressError = Boolean(config.suppressError);
+  const successMessage = typeof config.successMessage === 'string' && config.successMessage
+    ? config.successMessage
+    : 'Auto backup saved';
+  const errorMessage = typeof config.errorMessage === 'string' && config.errorMessage
+    ? config.errorMessage
+    : 'Auto backup failed';
+
   try {
     const pad = (n) => String(n).padStart(2, '0');
     const now = new Date();
@@ -14328,11 +14349,57 @@ function autoBackup() {
     populateSetupSelect();
     setupSelect.value = prevValue;
     if (setupNameInput) setupNameInput.value = prevName;
-    showNotification('success', 'Auto backup saved');
+    if (!suppressSuccess) {
+      showNotification('success', successMessage);
+    }
+    return backupName;
   } catch (e) {
     console.warn('Auto backup failed', e);
-    showNotification('error', 'Auto backup failed');
+    if (!suppressError) {
+      showNotification('error', errorMessage);
+    }
+    return null;
   }
+}
+
+function ensureAutoBackupBeforeDeletion(context, options = {}) {
+  const config = typeof options === 'object' && options !== null ? options : {};
+  const langTexts = texts[currentLang] || {};
+  const fallbackTexts = texts.en || {};
+  const successMessage = config.successMessage
+    || langTexts.preDeleteBackupSuccess
+    || fallbackTexts.preDeleteBackupSuccess
+    || 'Automatic backup saved. Restore it anytime from Saved Projects.';
+  const failureMessage = config.failureMessage
+    || langTexts.preDeleteBackupFailed
+    || fallbackTexts.preDeleteBackupFailed
+    || 'Automatic backup failed. The action was cancelled.';
+  const autoBackupOptions = {
+    suppressSuccess: true,
+    suppressError: true,
+    ...(config.autoBackupOptions || {}),
+  };
+
+  let backupName = null;
+  if (typeof autoBackup === 'function') {
+    try {
+      backupName = autoBackup(autoBackupOptions);
+    } catch (error) {
+      console.error(`Automatic backup before ${context || 'deletion'} failed`, error);
+      backupName = null;
+    }
+  }
+
+  if (!backupName) {
+    showNotification('error', failureMessage);
+    return null;
+  }
+
+  if (config.notifySuccess !== false) {
+    showNotification('success', successMessage);
+  }
+
+  return backupName;
 }
 const autoBackupInterval = setInterval(autoBackup, 10 * 60 * 1000);
 if (typeof autoBackupInterval.unref === 'function') {
@@ -17992,10 +18059,8 @@ function saveCurrentGearList() {
 function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearList)) return;
     if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return;
-    const currentGearListHtml = getCurrentGearListHtml();
-    if (currentGearListHtml && typeof autoBackup === 'function') {
-        autoBackup();
-    }
+    const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
+    if (!backupName) return;
     const projectName = getCurrentProjectName();
     const storageKey = typeof projectName === 'string' ? projectName : '';
     if (typeof deleteProject === 'function') {
