@@ -4075,6 +4075,15 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   page-break-inside: avoid;
 }
 
+.gear-table .auto-gear-item {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
 #gearListOutput .cage-select-wrapper {
   display: inline-flex;
   flex-direction: column;
