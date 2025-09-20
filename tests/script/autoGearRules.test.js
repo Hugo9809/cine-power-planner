@@ -499,6 +499,51 @@ describe('applyAutoGearRulesToTableHtml', () => {
     }
   });
 
+  test('restore cancels when automatic backup fails before import', () => {
+    env = setupScriptEnvironment();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    const fakeFile = { name: 'failed-backup.json' };
+
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile]
+    });
+
+    const originalAlert = window.alert;
+    const originalFileReader = window.FileReader;
+    const originalCreateObjectURL = window.URL.createObjectURL;
+
+    window.alert = jest.fn();
+    window.URL.createObjectURL = jest.fn(() => {
+      throw new Error('createObjectURL failed');
+    });
+    window.FileReader = jest.fn(() => ({
+      onload: null,
+      onerror: null,
+      readAsText: jest.fn()
+    }));
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      expect(window.URL.createObjectURL).toHaveBeenCalled();
+      expect(window.FileReader).not.toHaveBeenCalled();
+
+      const textsByLang = window.texts || {};
+      const activeLang = typeof window.currentLang === 'string' ? window.currentLang : 'en';
+      const expectedMessage =
+        (textsByLang[activeLang] && textsByLang[activeLang].restoreBackupFailed)
+          || (textsByLang.en && textsByLang.en.restoreBackupFailed)
+          || 'Backup failed. Restore cancelled.';
+      expect(window.alert).toHaveBeenCalledWith(expectedMessage);
+    } finally {
+      window.alert = originalAlert;
+      window.FileReader = originalFileReader;
+      window.URL.createObjectURL = originalCreateObjectURL;
+    }
+  });
+
   test('restoring a legacy backup handles snapshots and top-level data', () => {
     env = setupScriptEnvironment({
       globals: {

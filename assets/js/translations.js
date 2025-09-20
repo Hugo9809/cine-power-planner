@@ -244,6 +244,7 @@ const texts = {
     factoryResetSuccess:
       "Backup downloaded. All planner data cleared. Reloading…",
     factoryResetError: "Factory reset failed. Please try again.",
+    restoreBackupFailed: "Backup failed. Restore cancelled.",
     dataHeading: "Data & Storage",
     dataHeadingHelp:
       "Review what the planner stores locally and how much space backups take.",
@@ -1394,6 +1395,7 @@ const texts = {
     factoryResetSuccess:
       "Backup scaricato. Tutti i dati del planner sono stati cancellati. Ricaricamento in corso…",
     factoryResetError: "Ripristino di fabbrica non riuscito. Riprova.",
+    restoreBackupFailed: "Backup non riuscito. Ripristino annullato.",
     dataHeading: "Dati e archiviazione",
     dataHeadingHelp:
       "Controlla quali dati vengono salvati localmente e quanto spazio occupano i backup.",
@@ -2149,6 +2151,7 @@ const texts = {
     factoryResetSuccess:
       "Copia de seguridad descargada. Todos los datos del planificador se borraron. Recargando…",
     factoryResetError: "El restablecimiento de fábrica falló. Inténtalo de nuevo.",
+    restoreBackupFailed: "La copia de seguridad falló. Restauración cancelada.",
     dataHeading: "Datos y almacenamiento",
     dataHeadingHelp:
       "Revisa qué guarda el planificador en este navegador y cuánto ocupan las copias de seguridad.",
@@ -2907,6 +2910,7 @@ const texts = {
     factoryResetSuccess:
       "Sauvegarde téléchargée. Toutes les données du planificateur ont été effacées. Rechargement…",
     factoryResetError: "Échec de la réinitialisation d’usine. Veuillez réessayer.",
+    restoreBackupFailed: "Échec de la sauvegarde. Restauration annulée.",
     dataHeading: "Données et stockage",
     dataHeadingHelp:
       "Consultez ce que le planificateur conserve localement et la taille des sauvegardes.",
@@ -3668,6 +3672,7 @@ const texts = {
     factoryResetSuccess:
       "Backup heruntergeladen. Alle Planner-Daten wurden gelöscht. Seite wird neu geladen…",
     factoryResetError: "Zurücksetzen auf Werkseinstellungen fehlgeschlagen. Bitte erneut versuchen.",
+    restoreBackupFailed: "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
     dataHeading: "Daten & Speicherung",
     dataHeadingHelp:
       "Zeigt, welche Planner-Daten lokal gespeichert sind und wie groß Sicherungen werden.",
