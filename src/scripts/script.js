@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -8931,7 +8931,10 @@ if (uiScaleRoot) {
   }
 }
 
-const CUSTOM_FONT_STORAGE_KEY = 'cameraPowerPlanner_customFonts';
+const CUSTOM_FONT_STORAGE_KEY_NAME =
+  typeof CUSTOM_FONT_STORAGE_KEY !== 'undefined'
+    ? CUSTOM_FONT_STORAGE_KEY
+    : 'cameraPowerPlanner_customFonts';
 const customFontEntries = new Map();
 
 const SUPPORTED_FONT_TYPES = new Set([
@@ -8950,7 +8953,7 @@ const SUPPORTED_FONT_EXTENSIONS = ['.ttf', '.otf', '.ttc', '.woff', '.woff2'];
 function loadCustomFontMetadataFromStorage() {
   if (typeof localStorage === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(CUSTOM_FONT_STORAGE_KEY);
+    const raw = localStorage.getItem(CUSTOM_FONT_STORAGE_KEY_NAME);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -8975,7 +8978,7 @@ function persistCustomFontsToStorage() {
       name: entry.name,
       data: entry.data
     }));
-    localStorage.setItem(CUSTOM_FONT_STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(CUSTOM_FONT_STORAGE_KEY_NAME, JSON.stringify(payload));
     return true;
   } catch (error) {
     console.warn('Could not save custom fonts', error);
