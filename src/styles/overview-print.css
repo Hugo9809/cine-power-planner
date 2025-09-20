@@ -113,6 +113,9 @@ body.dark-mode {
   font-style: normal;
   color: var(--text-color);
 }
+#overviewDialogContent #setupDiagram .node-icon[data-icon-font='essential'] {
+  font-family: 'EssentialIconsV2', system-ui, sans-serif;
+}
 #overviewDialogContent #setupDiagram line,
 #overviewDialogContent #setupDiagram path.edge-path {
   stroke: var(--control-text);
