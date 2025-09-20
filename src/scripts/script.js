@@ -10984,12 +10984,6 @@ const diagramCssLight = `
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
 .node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
-.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
-.node-icon[data-icon-font='film']{font-family:'FilmIndustryIconsV2',system-ui,sans-serif;}
-.node-icon[data-icon-font='gadget']{font-family:'GadgetIconsV2',system-ui,sans-serif;}
-.node-icon-svg{color:#333;pointer-events:none;}
-.node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}
-.node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.2;stroke:none;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
@@ -11008,12 +11002,6 @@ const diagramCssDark = `
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
 .node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
-.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
-.node-icon[data-icon-font='film']{font-family:'FilmIndustryIconsV2',system-ui,sans-serif;}
-.node-icon[data-icon-font='gadget']{font-family:'GadgetIconsV2',system-ui,sans-serif;}
-.node-icon-svg{color:#fff;pointer-events:none;}
-.node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}
-.node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.3;stroke:none;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
@@ -11030,37 +11018,37 @@ function getDiagramCss(includeDark = true) {
   return diagramCssLight + (includeDark ? `@media (prefers-color-scheme: dark){${diagramCssDark}}` : '');
 }
 
-// Icons for setup diagram nodes
-
-const CAMERA_DIAGRAM_ICON_SVG = `
-  <svg
-    viewBox="0 0 24 24"
-    class="diagram-camera-icon-svg"
-    aria-hidden="true"
-    focusable="false"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <rect x="3" y="7" width="18" height="12" rx="2" ry="2" />
-    <path d="M7.5 7V5.75A1.75 1.75 0 0 1 9.25 4h2.8a1 1 0 0 1 .78.38L13.9 7" />
-    <circle cx="12" cy="13" r="3.2" />
-    <circle cx="12" cy="13" r="1.6" class="diagram-camera-icon__lens" />
-    <path d="M18.5 10.25 20.75 8.5A1 1 0 0 1 22 9.35v7.3a1 1 0 0 1-1.25.86L18.5 15.75" />
-  </svg>
-`.trim();
-
-// Dedicated Uicons for the setup diagram so the SVG never mixes icon fonts.
+// Dedicated Uicons for the setup diagram.
 const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
 const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
 const DIAGRAM_MOTORS_ICON = iconGlyph('\uE8AF');
 const DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
+const DIAGRAM_POWER_OUTPUT_ICON = iconGlyph('\uE212');
+const DIAGRAM_POWER_INPUT_ICON = iconGlyph('\uEE71');
+const DIAGRAM_TIMECODE_ICON = iconGlyph('\uE46F');
+const DIAGRAM_AUDIO_IN_ICON = iconGlyph('\uE6B7');
+const DIAGRAM_AUDIO_OUT_ICON = iconGlyph('\uECB5');
+const DIAGRAM_AUDIO_IO_ICON = iconGlyph('\uF487');
+const DIAGRAM_VIDEO_ICON = DIAGRAM_MONITOR_ICON;
+
+const diagramConnectorIcons = Object.freeze({
+  powerOut: DIAGRAM_POWER_OUTPUT_ICON,
+  powerIn: DIAGRAM_POWER_INPUT_ICON,
+  fiz: DIAGRAM_MOTORS_ICON,
+  video: DIAGRAM_VIDEO_ICON,
+  timecode: DIAGRAM_TIMECODE_ICON,
+  audioIn: DIAGRAM_AUDIO_IN_ICON,
+  audioOut: DIAGRAM_AUDIO_OUT_ICON,
+  audioIo: DIAGRAM_AUDIO_IO_ICON,
+  torque: DIAGRAM_MOTORS_ICON,
+  controller: DIAGRAM_CONTROLLER_ICON,
+  powerSpec: DIAGRAM_POWER_OUTPUT_ICON,
+  powerSource: DIAGRAM_POWER_INPUT_ICON
+});
 
 const diagramIcons = {
   battery: ICON_GLYPHS.batteryBolt,
-  camera: Object.freeze({ markup: CAMERA_DIAGRAM_ICON_SVG, className: 'icon-svg diagram-camera-icon', size: 24 }),
+  camera: ICON_GLYPHS.camera,
   monitor: DIAGRAM_MONITOR_ICON,
   viewfinder: DIAGRAM_VIEWFINDER_ICON,
   video: ICON_GLYPHS.wifi,
@@ -16638,45 +16626,45 @@ function applyIconGlyph(element, glyph) {
 }
 
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
-    if (!Array.isArray(items) || items.length === 0) return '';
-    const counts = summarizeByType(items);
-    const entries = Object.entries(counts).map(([type, count]) => {
-        return `${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}`;
-    });
-    if (!entries.length) return '';
-    const prefix = label ? `${label}${dir ? ` ${dir}` : ''}: ` : '';
-    const iconHtml = iconMarkup(icon, 'connector-icon');
-    return `<span class="connector-block ${cls}">${iconHtml}${prefix}${entries.join(', ')}</span>`;
+  if (!Array.isArray(items) || items.length === 0) return '';
+  const counts = summarizeByType(items);
+  const entries = Object.entries(counts).map(([type, count]) => {
+    return `${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}`;
+  });
+  if (!entries.length) return '';
+  const prefix = label ? `${label}${dir ? ` ${dir}` : ''}: ` : '';
+  const iconHtml = iconMarkup(icon, 'connector-icon');
+  return `<span class="connector-block ${cls}">${iconHtml}${prefix}${entries.join(', ')}</span>`;
 }
 
 function generateConnectorSummary(device) {
-    if (!device || typeof device !== 'object') return '';
+  if (!device || typeof device !== 'object') return '';
 
-    let portHtml = '';
-    const connectors = [
-        { items: device.power?.powerDistributionOutputs, icon: ICON_GLYPHS.bolt, cls: 'power-conn', label: 'Power', dir: 'Out' },
-        { items: powerInputTypes(device).map(t => ({ type: t })), icon: ICON_GLYPHS.plug, cls: 'power-conn', label: 'Power', dir: 'In' },
-        { items: device.fizConnectors, icon: ICON_GLYPHS.gears, cls: 'fiz-conn', label: 'FIZ Port' },
-        { items: device.video?.inputs || device.videoInputs, icon: ICON_GLYPHS.screen, cls: 'video-conn', label: 'Video', dir: 'In' },
-        { items: device.video?.outputs || device.videoOutputs, icon: ICON_GLYPHS.screen, cls: 'video-conn', label: 'Video', dir: 'Out' },
-        { items: device.timecode, icon: ICON_GLYPHS.timecode, cls: 'neutral-conn', label: 'Timecode' },
-        { items: device.audioInput?.portType ? [{ type: device.audioInput.portType }] : undefined, icon: ICON_GLYPHS.audioIn, cls: 'neutral-conn', label: 'Audio', dir: 'In' },
-        { items: device.audioOutput?.portType ? [{ type: device.audioOutput.portType }] : undefined, icon: ICON_GLYPHS.audioOut, cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
-        { items: device.audioIo?.portType ? [{ type: device.audioIo.portType }] : undefined, icon: ICON_GLYPHS.sliders, cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
-    ];
+  let portHtml = '';
+  const connectors = [
+    { items: device.power?.powerDistributionOutputs, icon: diagramConnectorIcons.powerOut, cls: 'power-conn', label: 'Power', dir: 'Out' },
+    { items: powerInputTypes(device).map(t => ({ type: t })), icon: diagramConnectorIcons.powerIn, cls: 'power-conn', label: 'Power', dir: 'In' },
+    { items: device.fizConnectors, icon: diagramConnectorIcons.fiz, cls: 'fiz-conn', label: 'FIZ Port' },
+    { items: device.video?.inputs || device.videoInputs, icon: diagramConnectorIcons.video, cls: 'video-conn', label: 'Video', dir: 'In' },
+    { items: device.video?.outputs || device.videoOutputs, icon: diagramConnectorIcons.video, cls: 'video-conn', label: 'Video', dir: 'Out' },
+    { items: device.timecode, icon: diagramConnectorIcons.timecode, cls: 'neutral-conn', label: 'Timecode' },
+    { items: device.audioInput?.portType ? [{ type: device.audioInput.portType }] : undefined, icon: diagramConnectorIcons.audioIn, cls: 'neutral-conn', label: 'Audio', dir: 'In' },
+    { items: device.audioOutput?.portType ? [{ type: device.audioOutput.portType }] : undefined, icon: diagramConnectorIcons.audioOut, cls: 'neutral-conn', label: 'Audio', dir: 'Out' },
+    { items: device.audioIo?.portType ? [{ type: device.audioIo.portType }] : undefined, icon: diagramConnectorIcons.audioIo, cls: 'neutral-conn', label: 'Audio', dir: 'I/O' },
+  ];
 
-    for (const { items, icon, cls, label, dir } of connectors) {
-        portHtml += connectorBlocks(items, icon, cls, label, dir);
-    }
+  for (const { items, icon, cls, label, dir } of connectors) {
+    portHtml += connectorBlocks(items, icon, cls, label, dir);
+  }
 
-    let specHtml = '';
-    if (typeof device.powerDrawWatts === 'number') {
-        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.bolt)}Power: ${device.powerDrawWatts} W</span>`;
-    }
-    if (device.power?.input?.voltageRange) {
-        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}Voltage: ${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
-    }
-    if (typeof device.capacity === 'number') {
+  let specHtml = '';
+  if (typeof device.powerDrawWatts === 'number') {
+    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSpec)}Power: ${device.powerDrawWatts} W</span>`;
+  }
+  if (device.power?.input?.voltageRange) {
+    specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}Voltage: ${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
+  }
+  if (typeof device.capacity === 'number') {
         specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}Capacity: ${device.capacity} Wh</span>`;
     }
     if (typeof device.pinA === 'number') {
@@ -16694,18 +16682,18 @@ function generateConnectorSummary(device) {
     if (typeof device.brightnessNits === 'number') {
         specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.brightness)}Brightness: ${device.brightnessNits} nits</span>`;
     }
-    if (typeof device.wirelessTx === 'boolean') {
-        specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.wifi)}Wireless: ${device.wirelessTx}</span>`;
-    }
-    if (device.internalController) {
-        specHtml += `<span class="info-box fiz-conn">${iconMarkup(ICON_GLYPHS.controller)}Controller: Internal</span>`;
-    }
-    if (typeof device.torqueNm === 'number') {
-        specHtml += `<span class="info-box fiz-conn">${iconMarkup(ICON_GLYPHS.gears)}Torque: ${device.torqueNm} Nm</span>`;
-    }
-    if (device.powerSource) {
-        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.plug)}Power Source: ${escapeHtml(String(device.powerSource))}</span>`;
-    }
+  if (typeof device.wirelessTx === 'boolean') {
+    specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.wifi)}Wireless: ${device.wirelessTx}</span>`;
+  }
+  if (device.internalController) {
+    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.controller)}Controller: Internal</span>`;
+  }
+  if (typeof device.torqueNm === 'number') {
+    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.torque)}Torque: ${device.torqueNm} Nm</span>`;
+  }
+  if (device.powerSource) {
+    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSource)}Power Source: ${escapeHtml(String(device.powerSource))}</span>`;
+  }
 
     let extraHtml = '';
     if (Array.isArray(device.power?.batteryPlateSupport) && device.power.batteryPlateSupport.length) {
