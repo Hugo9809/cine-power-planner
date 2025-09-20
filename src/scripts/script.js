@@ -15002,20 +15002,47 @@ deleteSetupBtn.addEventListener("click", () => {
     }
     populateSetupSelect();
     setupNameInput.value = ""; // Clear setup name input
-    // Reset dropdowns to "None" or first option after deleting current setup
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
-      const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
-      if (noneOption) {
-        sel.value = "None";
-      } else {
-        sel.selectedIndex = 0;
+
+    let selectionResetHandled = false;
+    if (setupSelect) {
+      lastSetupName = '';
+      setupSelect.value = "";
+      setupSelect.dispatchEvent(new Event('change'));
+      selectionResetHandled = true;
+    }
+
+    if (!selectionResetHandled) {
+      if (gearListOutput) {
+        gearListOutput.innerHTML = '';
+        gearListOutput.classList.add('hidden');
       }
-    });
-    const sbSel = getSliderBowlSelect();
-    if (sbSel) sbSel.value = '';
-    motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-    controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-    updateCalculations(); // Recalculate after deleting setup
+      if (projectRequirementsOutput) {
+        projectRequirementsOutput.innerHTML = '';
+        projectRequirementsOutput.classList.add('hidden');
+      }
+      currentProjectInfo = null;
+      if (projectForm) populateProjectForm({});
+      storeLoadedSetupState(null);
+      updateBatteryPlateVisibility();
+      updateBatteryOptions();
+      clearProjectAutoGearRules();
+      renderAutoGearRulesList();
+      updateAutoGearCatalogOptions();
+      // Reset dropdowns to "None" or first option after deleting current setup
+      [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
+        const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
+        if (noneOption) {
+          sel.value = "None";
+        } else {
+          sel.selectedIndex = 0;
+        }
+      });
+      const sbSel = getSliderBowlSelect();
+      if (sbSel) sbSel.value = '';
+      motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+      controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
+      updateCalculations(); // Recalculate after deleting setup
+    }
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
   }
 });
