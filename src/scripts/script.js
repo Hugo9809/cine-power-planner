@@ -984,47 +984,66 @@ function buildDefaultMatteboxAutoGearRules() {
 function seedAutoGearRulesFromCurrentProject() {
   if (autoGearRules.length) return;
   if (hasSeededAutoGearDefaults()) return;
-  if (typeof generateGearListHtml !== 'function' || typeof collectProjectFormData !== 'function') return;
-  if (!requiredScenariosSelect) return;
-  const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
-  if (!baseInfo || typeof baseInfo !== 'object') return;
-  const baselineHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: '' });
-  const baselineMap = parseGearTableForAutoRules(baselineHtml);
-  if (!baselineMap) return;
-  const scenarioValues = Array.from(requiredScenariosSelect.options || [])
-    .map(opt => opt.value)
-    .filter(Boolean);
-  if (!scenarioValues.length) return;
-  const scenarioDiffMap = new Map();
+
   const rules = [];
-  scenarioValues.forEach(value => {
-    const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: value });
-    const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
-    if (!scenarioMap) return;
-    const diff = diffGearTableMaps(baselineMap, scenarioMap);
-    const add = cloneAutoGearItems(diff.add);
-    const remove = cloneAutoGearItems(diff.remove);
-    if (!add.length && !remove.length) return;
-    scenarioDiffMap.set(value, { add, remove });
-    rules.push({ id: generateAutoGearId('rule'), label: value, scenarios: [value], add, remove });
-  });
-  const comboCandidates = [
-    ['Handheld', 'Easyrig'],
-    ['Slider', 'Undersling mode']
-  ].filter(combo => combo.every(value => scenarioValues.includes(value)));
-  comboCandidates.forEach(combo => {
-    const combinedLabel = combo.join(' + ');
-    const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: combo.join(', ') });
-    const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
-    if (!scenarioMap) return;
-    const diff = diffGearTableMaps(baselineMap, scenarioMap);
-    const adjusted = subtractScenarioContributions({
-      add: cloneAutoGearItems(diff.add),
-      remove: cloneAutoGearItems(diff.remove)
-    }, combo, scenarioDiffMap);
-    if (!adjusted.add.length && !adjusted.remove.length) return;
-    rules.push({ id: generateAutoGearId('rule'), label: combinedLabel, scenarios: combo.slice(), add: adjusted.add, remove: adjusted.remove });
-  });
+  const canGenerateRules = typeof generateGearListHtml === 'function'
+    && typeof collectProjectFormData === 'function';
+
+  if (canGenerateRules && requiredScenariosSelect) {
+    const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
+    if (baseInfo && typeof baseInfo === 'object') {
+      const scenarioValues = Array.from(requiredScenariosSelect.options || [])
+        .map(opt => opt.value)
+        .filter(Boolean);
+
+      if (scenarioValues.length) {
+        const baselineHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: '' });
+        const baselineMap = parseGearTableForAutoRules(baselineHtml);
+
+        if (baselineMap) {
+          const scenarioDiffMap = new Map();
+
+          scenarioValues.forEach(value => {
+            const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: value });
+            const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+            if (!scenarioMap) return;
+            const diff = diffGearTableMaps(baselineMap, scenarioMap);
+            const add = cloneAutoGearItems(diff.add);
+            const remove = cloneAutoGearItems(diff.remove);
+            if (!add.length && !remove.length) return;
+            scenarioDiffMap.set(value, { add, remove });
+            rules.push({ id: generateAutoGearId('rule'), label: value, scenarios: [value], add, remove });
+          });
+
+          const comboCandidates = [
+            ['Handheld', 'Easyrig'],
+            ['Slider', 'Undersling mode']
+          ].filter(combo => combo.every(value => scenarioValues.includes(value)));
+
+          comboCandidates.forEach(combo => {
+            const combinedLabel = combo.join(' + ');
+            const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: combo.join(', ') });
+            const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+            if (!scenarioMap) return;
+            const diff = diffGearTableMaps(baselineMap, scenarioMap);
+            const adjusted = subtractScenarioContributions({
+              add: cloneAutoGearItems(diff.add),
+              remove: cloneAutoGearItems(diff.remove)
+            }, combo, scenarioDiffMap);
+            if (!adjusted.add.length && !adjusted.remove.length) return;
+            rules.push({
+              id: generateAutoGearId('rule'),
+              label: combinedLabel,
+              scenarios: combo.slice(),
+              add: adjusted.add,
+              remove: adjusted.remove
+            });
+          });
+        }
+      }
+    }
+  }
+
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
   if (!rules.length) return;
   setAutoGearRules(rules);
