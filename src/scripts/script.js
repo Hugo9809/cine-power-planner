@@ -10996,15 +10996,21 @@ const CAMERA_DIAGRAM_ICON_SVG = `
   </svg>
 `.trim();
 
+// Dedicated Uicons for the setup diagram so the SVG never mixes icon fonts.
+const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
+const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
+const DIAGRAM_MOTORS_ICON = iconGlyph('\uE8AF');
+const DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
+
 const diagramIcons = {
   battery: ICON_GLYPHS.batteryBolt,
   camera: Object.freeze({ markup: CAMERA_DIAGRAM_ICON_SVG, className: 'icon-svg diagram-camera-icon', size: 24 }),
-  monitor: ICON_GLYPHS.screen,
-  viewfinder: ICON_GLYPHS.viewfinder,
+  monitor: DIAGRAM_MONITOR_ICON,
+  viewfinder: DIAGRAM_VIEWFINDER_ICON,
   video: ICON_GLYPHS.wifi,
-  motors: ICON_GLYPHS.gears,
-  controllers: ICON_GLYPHS.controller,
-  handle: ICON_GLYPHS.controller,
+  motors: DIAGRAM_MOTORS_ICON,
+  controllers: DIAGRAM_CONTROLLER_ICON,
+  handle: DIAGRAM_CONTROLLER_ICON,
   distance: ICON_GLYPHS.distance
 };
 
