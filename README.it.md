@@ -182,7 +182,7 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
 - Trascina i nodi per riordinare il layout, usa i pulsanti per zoomare ed esporta il diagramma in SVG o JPG.
 - Tieni premuto Shift mentre fai clic su Download per esportare uno snapshot JPG invece di un SVG.
 - Passa il mouse o tocca un dispositivo per vedere i dettagli nel popup.
-- Utilizza le icone [OpenMoji](https://openmoji.org/) quando la connessione è attiva e ripiega sugli emoji: 🔋 batteria, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motore, 🎮 controller, 📐 distanza, 🎮 impugnatura e 🔌 piastra batteria.
+- Utilizza le icone OpenMoji quando la connessione è attiva e ripiega sugli emoji: 🔋 batteria, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motore, 🎮 controller, 📐 distanza, 🎮 impugnatura e 🔌 piastra batteria.
 
 ### 🧮 Ponderazione dei dati di autonomia
 - I feedback di autonomia inviati dagli utenti migliorano la stima finale.

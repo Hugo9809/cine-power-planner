@@ -183,7 +183,7 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 - Arrastra nodos para reorganizar el esquema, haz zoom con los botones y descarga el diagrama como SVG o JPG.
 - Mantén pulsado Shift al hacer clic en Descargar para exportar una instantánea JPG en lugar de SVG.
 - Pasa el cursor o toca los dispositivos para ver detalles emergentes.
-- Utiliza iconos de [OpenMoji](https://openmoji.org/) cuando hay conexión, con emoji como alternativa: 🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 vídeo, ⚙️ motor, 🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería.
+- Utiliza iconos OpenMoji cuando hay conexión, con emoji como alternativa: 🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 vídeo, ⚙️ motor, 🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería.
 
 ### 🧮 Ponderación de datos de autonomía
 - Los tiempos de batería aportados por la comunidad refinan la estimación de autonomía.

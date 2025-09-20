@@ -173,7 +173,7 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 - Ziehe Knoten, um das Layout neu zu ordnen, zoome mit den Schaltflächen und exportiere das Diagramm als SVG oder JPG.
 - Halte Shift gedrückt, während du auf Download klickst, um ein JPG statt eines SVG zu exportieren.
 - Fahre mit der Maus oder tippe auf Geräte, um Popover-Details zu sehen.
-- Nutzt [OpenMoji](https://openmoji.org/)-Icons, wenn eine Verbindung besteht, und greift sonst auf Emoji zurück: 🔋 Akku, 🎥 Kamera, 🖥️ Monitor, 📡 Video, ⚙️ Motor, 🎮 Controller, 📐 Distanz, 🎮 Griff und 🔌 Akkuplatte.
+- Nutzt OpenMoji-Icons, wenn eine Verbindung besteht, und greift sonst auf Emoji zurück: 🔋 Akku, 🎥 Kamera, 🖥️ Monitor, 📡 Video, ⚙️ Motor, 🎮 Controller, 📐 Distanz, 🎮 Griff und 🔌 Akkuplatte.
 
 ### 🧮 Gewichtung der Laufzeitdaten
 - Von Nutzenden gemeldete Laufzeiten verfeinern die Schätzung.
