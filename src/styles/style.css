@@ -4154,6 +4154,20 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   border-bottom: 1px solid var(--inverse-text-color);
 }
 
+body.dark-mode.pink-mode #gearListOutput h1,
+body.dark-mode.pink-mode #gearListOutput h2,
+body.dark-mode.pink-mode #gearListOutput h3,
+#gearListOutput.dark-mode.pink-mode h1,
+#gearListOutput.dark-mode.pink-mode h2,
+#gearListOutput.dark-mode.pink-mode h3 {
+  color: var(--accent-color);
+}
+
+body.dark-mode.pink-mode #gearListOutput h2,
+#gearListOutput.dark-mode.pink-mode h2 {
+  border-bottom: 1px solid var(--accent-color);
+}
+
 #gearListFilterDetails {
   display: flex;
   flex-direction: column;
