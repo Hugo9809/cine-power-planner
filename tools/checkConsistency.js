@@ -1,4 +1,4 @@
-function checkConsistency(devices = require('./data.js')) {
+function checkConsistency(devices = require('../assets/data')) {
   const rules = {
     cameras: [
       'powerDrawWatts',
@@ -34,7 +34,7 @@ if (require.main === module) {
       [
         'Usage: node checkConsistency.js [options]',
         '',
-        'Validates device entries in data.js before normalization scripts touch the dataset.',
+        'Validates device entries in assets/data/index.js before normalization scripts touch the dataset.',
         '',
         'Checks the following collections and required keys:',
         '  - cameras: powerDrawWatts, power, videoOutputs, fizConnectors, recordingMedia, viewfinder, lensMount, timecode.',
@@ -46,7 +46,7 @@ if (require.main === module) {
         '  - Exits with status 1 when inconsistencies are found; otherwise exits with status 0.',
         '',
         'Recommended workflow:',
-        '  1. Run after editing files in devices/ to catch omissions early.',
+        '  1. Run after editing files in assets/data/devices/ to catch omissions early.',
         '  2. Fix the reported "missing" keys and rerun until the summary reads "All devices have required fields."',
         '  3. Continue with `npm run normalize` and `npm run unify-ports` once this check passes.',
         '',

@@ -210,7 +210,7 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
 ### 🛠 Editor del database dispositivi
 - Aggiungi, modifica o elimina dispositivi in tutte le categorie.
 - Importa o esporta l’intero database in formato JSON.
-- Ripristina il database predefinito da `data.js`.
+- Ripristina il database predefinito da `assets/data/index.js`.
 
 ### 🌓 Modalità scura
 - Attivala con il pulsante a forma di luna accanto al selettore della lingua.
@@ -268,17 +268,20 @@ L’intestazione mostra un badge offline non appena cade la connessione, e l’a
 
 ## 🗂️ Struttura dei file
 ```bash
-index.html       # Layout HTML principale
-style.css        # Stili e layout
-script.js        # Logica dell’applicazione
-data.js          # Elenco dispositivi predefinito
-storage.js       # Helper per LocalStorage
-README.*.md      # Documentazione in più lingue
-checkConsistency.js  # Verifica i campi obbligatori nei dati dei dispositivi
-normalizeData.js     # Pulisce le voci e uniforma i nomi dei connettori
-generateSchema.js    # Ricostruisce schema.json a partire da data.js
-unifyPorts.js        # Uniforma i nomi di porta legacy
-tests/               # Suite di test Jest
+index.html                 # Layout HTML principale
+assets/css/style.css       # Stili e layout
+assets/css/overview.css    # Stili della panoramica stampabile
+assets/css/overview-print.css # Regole di stampa per la panoramica
+assets/js/script.js        # Logica dell’applicazione
+assets/js/storage.js       # Helper per LocalStorage
+assets/js/static-theme.js  # Logica di tema condivisa per le pagine legali
+assets/data/index.js       # Elenco dispositivi predefinito
+assets/data/devices/       # Cataloghi dei dispositivi per categoria
+assets/data/schema.json    # Schema generato per i selettori
+assets/vendor/             # Librerie di terze parti incluse
+legal/                     # Pagine legali offline
+tools/                     # Script di manutenzione dei dati
+tests/                     # Suite di test Jest
 ```
 I font sono inclusi localmente tramite `fonts.css`, quindi una volta memorizzate le risorse l’app funziona interamente offline.
 

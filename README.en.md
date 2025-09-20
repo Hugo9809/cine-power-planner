@@ -205,7 +205,7 @@ The generator turns your selections into a categorized packing list:
 ### 🛠 Device Database Editor
 - Add, edit or delete devices in all categories
 - Import or export the full database as JSON
-- Revert to the default database from `data.js`
+- Revert to the default database from `assets/data/index.js`
 
 ### 🌓 Dark Mode
 - Toggle via the moon button next to the language selector.
@@ -267,17 +267,20 @@ refreshes cached assets without disturbing saved projects.
 
 ## 🗂️ File Structure
 ```bash
-index.html       # Main HTML layout
-style.css        # Styles and layout
-script.js        # Application logic
-data.js          # Default device list
-storage.js       # LocalStorage helpers
-README.*.md      # Documentation in different languages
-checkConsistency.js  # Verifies required fields in device data
-normalizeData.js     # Cleans entries and unifies connector names
-generateSchema.js    # Rebuilds schema.json from data.js
-unifyPorts.js        # Harmonizes legacy port names
-tests/               # Jest test suite
+index.html                 # Main HTML layout
+assets/css/style.css       # Core styles and layout
+assets/css/overview.css    # Printable overview styling
+assets/css/overview-print.css # Print overrides for the overview
+assets/js/script.js        # Application logic
+assets/js/storage.js       # LocalStorage helpers
+assets/js/static-theme.js  # Shared theme logic for legal pages
+assets/data/index.js       # Default device list
+assets/data/devices/       # Device catalogs by category
+assets/data/schema.json    # Generated schema for selectors
+assets/vendor/             # Bundled third-party libraries
+legal/                     # Offline legal documents
+tools/                     # Data maintenance scripts
+tests/                     # Jest test suite
 ```
 Fonts are bundled locally via `fonts.css`, so once the assets are cached the application works entirely offline.
 

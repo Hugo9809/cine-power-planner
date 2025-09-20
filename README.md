@@ -478,17 +478,20 @@ npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
 ### File structure
 
 ```
-index.html       # Main HTML layout
-style.css        # Styles and layout
-script.js        # Application logic
-devices/         # Default device lists by category
-storage.js       # Local storage helpers
-README.*.md      # Documentation in multiple languages
-checkConsistency.js  # Validates device data
-normalizeData.js     # Cleans and unifies device entries
-generateSchema.js    # Regenerates schema.json from data
-unifyPorts.js        # Harmonizes connector names
-tests/               # Jest test suites
+index.html                 # Main HTML layout
+assets/css/style.css       # Core styles and layout
+assets/css/overview.css    # Printable overview styling
+assets/css/overview-print.css # Print overrides for the overview dialog
+assets/js/script.js        # Application logic
+assets/js/storage.js       # Local storage helpers
+assets/js/static-theme.js  # Shared theme logic for legal pages
+assets/data/index.js       # Default device list
+assets/data/devices/       # Device catalogs by category
+assets/data/schema.json    # Schema used for validation
+assets/vendor/             # Bundled third-party libraries
+legal/                     # Offline legal documents
+tools/                     # Data maintenance scripts
+tests/                     # Jest test suites
 ```
 
 ## Troubleshooting

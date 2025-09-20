@@ -2,16 +2,16 @@ const { ASSETS, CACHE_NAME } = require('../../service-worker.js');
 
 describe('service worker configuration', () => {
   test('caches overview assets for offline usage', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./overview.css', './overview-print.css', './overview.js']));
+    expect(ASSETS).toEqual(expect.arrayContaining(['./assets/css/overview.css', './assets/css/overview-print.css', './assets/js/overview.js']));
   });
 
   test('caches runtime JavaScript dependencies for offline usage', () => {
     expect(ASSETS).toEqual(
       expect.arrayContaining([
-        './globalthis-polyfill.js',
-        './devices/batteryHotswaps.js',
-        './devices/chargers.js',
-        './devices/wirelessReceivers.js',
+        './assets/js/globalthis-polyfill.js',
+        './assets/data/devices/batteryHotswaps.js',
+        './assets/data/devices/chargers.js',
+        './assets/data/devices/wirelessReceivers.js',
       ]),
     );
   });
@@ -19,26 +19,26 @@ describe('service worker configuration', () => {
   test('caches legal pages for offline usage', () => {
     expect(ASSETS).toEqual(
       expect.arrayContaining([
-        './impressum.html',
-        './impressum-en.html',
-        './impressum-es.html',
-        './impressum-fr.html',
-        './impressum-it.html',
-        './datenschutz.html',
-        './datenschutz-en.html',
-        './datenschutz-es.html',
-        './datenschutz-fr.html',
-        './datenschutz-it.html',
+        './legal/impressum.html',
+        './legal/impressum-en.html',
+        './legal/impressum-es.html',
+        './legal/impressum-fr.html',
+        './legal/impressum-it.html',
+        './legal/datenschutz.html',
+        './legal/datenschutz-en.html',
+        './legal/datenschutz-es.html',
+        './legal/datenschutz-fr.html',
+        './legal/datenschutz-it.html',
       ]),
     );
   });
 
   test('caches the device schema for offline editing', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./schema.json']));
+    expect(ASSETS).toEqual(expect.arrayContaining(['./assets/data/schema.json']));
   });
 
   test('caches the shared theme helper for legal pages', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./static-theme.js']));
+    expect(ASSETS).toEqual(expect.arrayContaining(['./assets/js/static-theme.js']));
   });
 
   test('exposes a cache name', () => {

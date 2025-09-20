@@ -4,8 +4,8 @@ const path = require('path');
 const loadScript = () => {
   jest.resetModules();
 
-  const { texts, categoryNames, gearItems } = require('../../translations.js');
-  const devicesData = require('../../devices');
+  const { texts, categoryNames, gearItems } = require('../../assets/js/translations.js');
+  const devicesData = require('../../assets/data');
 
   const template = fs.readFileSync(
     path.join(__dirname, '../../index.html'),
@@ -53,7 +53,7 @@ const loadScript = () => {
   global.exportAllData = jest.fn();
   global.importAllData = jest.fn();
 
-  return require('../../script.js');
+  return require('../../assets/js/script.js');
 };
 
 describe('global feature search helpers', () => {

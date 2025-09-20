@@ -1,6 +1,6 @@
-const chargerData = require('../../devices/chargers.js');
-const devices = require('../../data.js');
-const gear = require('../../devices/gearList.js');
+const chargerData = require('../../assets/data/devices/chargers.js');
+const devices = require('../../assets/data');
+const gear = require('../../assets/data/devices/gearList.js');
 
 describe('data smoke checks', () => {
   test('provides charger dataset across mounts', () => {

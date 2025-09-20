@@ -213,7 +213,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 ### 🛠 Éditeur de la base d’appareils
 - Ajoutez, modifiez ou supprimez des appareils dans toutes les catégories.
 - Importez ou exportez la base complète au format JSON.
-- Revenez à la base par défaut issue de `data.js`.
+- Revenez à la base par défaut issue de `assets/data/index.js`.
 
 ### 🌓 Mode sombre
 - Activez-le via le bouton lune près du sélecteur de langue.
@@ -272,17 +272,20 @@ projets enregistrés.
 
 ## 🗂️ Structure des fichiers
 ```bash
-index.html       # Mise en page HTML principale
-style.css        # Styles et mise en page
-script.js        # Logique applicative
-data.js          # Liste d’appareils par défaut
-storage.js       # Helpers LocalStorage
-README.*.md      # Documentation multilingue
-checkConsistency.js  # Vérifie les champs requis dans les données d’appareils
-normalizeData.js     # Nettoie les entrées et unifie les noms de connecteurs
-generateSchema.js    # Reconstruit schema.json à partir de data.js
-unifyPorts.js        # Harmonise les anciens noms de ports
-tests/               # Suite de tests Jest
+index.html                 # Mise en page HTML principale
+assets/css/style.css       # Styles et mise en page
+assets/css/overview.css    # Styles de l’aperçu imprimable
+assets/css/overview-print.css # Ajustements d’impression pour l’aperçu
+assets/js/script.js        # Logique applicative
+assets/js/storage.js       # Helpers LocalStorage
+assets/js/static-theme.js  # Logique de thème partagée pour les pages légales
+assets/data/index.js       # Liste d’appareils par défaut
+assets/data/devices/       # Catalogues d’appareils par catégorie
+assets/data/schema.json    # Schéma généré pour les sélecteurs
+assets/vendor/             # Bibliothèques tierces incluses
+legal/                     # Pages légales hors ligne
+tools/                     # Scripts de maintenance des données
+tests/                     # Suite de tests Jest
 ```
 Les polices sont intégrées localement via `fonts.css`, ce qui permet à l’application de fonctionner entièrement hors ligne une fois les ressources en cache.
 

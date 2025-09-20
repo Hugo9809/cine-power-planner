@@ -1,5 +1,5 @@
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
-const fullDevices = require('../../devices');
+const fullDevices = require('../../assets/data');
 
 describe('device manager details', () => {
   let env;
