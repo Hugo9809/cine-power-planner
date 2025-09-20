@@ -956,10 +956,17 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const originalAlert = window.alert;
     const originalFileReader = window.FileReader;
     const originalCreateObjectURL = window.URL.createObjectURL;
+    const originalCreateElement = document.createElement;
 
     window.alert = jest.fn();
     window.URL.createObjectURL = jest.fn(() => {
       throw new Error('createObjectURL failed');
+    });
+    jest.spyOn(document, 'createElement').mockImplementation(tagName => {
+      if (String(tagName).toLowerCase() === 'a') {
+        return { style: {}, click: jest.fn() };
+      }
+      return originalCreateElement.call(document, tagName);
     });
     window.FileReader = jest.fn(() => ({
       onload: null,
@@ -984,6 +991,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
       window.alert = originalAlert;
       window.FileReader = originalFileReader;
       window.URL.createObjectURL = originalCreateObjectURL;
+      document.createElement.mockRestore();
     }
   });
 
