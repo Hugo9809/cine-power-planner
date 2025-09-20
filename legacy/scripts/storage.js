@@ -27,10 +27,26 @@ var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
-var CUSTOM_FONT_STORAGE_KEY_NAME = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === 'string' ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
-if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== 'string') {
-  GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = CUSTOM_FONT_STORAGE_KEY_NAME;
+function ensureCustomFontStorageKeyName() {
+  if (!GLOBAL_SCOPE) {
+    return CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+  }
+  var existingName = typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === 'string' ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME : typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === 'string' ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== existingName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = existingName;
+  }
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME !== existingName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME = existingName;
+  }
+  return existingName;
 }
+function getCustomFontStorageKeyName() {
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === 'string') {
+    return GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME;
+  }
+  return ensureCustomFontStorageKeyName();
+}
+ensureCustomFontStorageKeyName();
 var CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
 var AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 var AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
@@ -39,7 +55,16 @@ var AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 var AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 var STORAGE_BACKUP_SUFFIX = '__backup';
-var RAW_STORAGE_BACKUP_KEYS = new Set([CUSTOM_FONT_STORAGE_KEY_NAME, CUSTOM_LOGO_STORAGE_KEY]);
+var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY]);
+var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
+var storageErrorAlertShown = false;
+if (GLOBAL_SCOPE) {
+  if (typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
+    storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
+  } else {
+    GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = false;
+  }
+}
 var DEVICE_COLLECTION_KEYS = ['cameras', 'monitors', 'video', 'viewfinders', 'directorMonitors', 'iosVideo', 'videoAssist', 'media', 'lenses', 'batteries', 'batteryHotswaps', 'wirelessReceivers'];
 var FIZ_COLLECTION_KEYS = ['motors', 'handUnits', 'controllers', 'distance'];
 var ACCESSORY_COLLECTION_KEYS = ['chargers', 'cages', 'powerPlates', 'cameraSupport', 'matteboxes', 'filters', 'rigging', 'batteries', 'cables', 'videoAssist', 'media', 'tripodHeads', 'tripods', 'sliders', 'cameraStabiliser', 'grip', 'carts'];
@@ -207,6 +232,16 @@ function isPlainObject(val) {
   return val !== null && _typeof(val) === 'object' && !Array.isArray(val);
 }
 function alertStorageError() {
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
+    storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
+  }
+  if (storageErrorAlertShown) {
+    return;
+  }
+  storageErrorAlertShown = true;
+  if (GLOBAL_SCOPE) {
+    GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = true;
+  }
   if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
   var msg = 'Storage error: Unable to access local data. Changes may not be saved.';
   try {
@@ -1006,7 +1041,7 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_FONT_STORAGE_KEY_NAME, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, getCustomFontStorageKeyName(), msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_LOGO_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
@@ -1096,7 +1131,7 @@ function normalizeCustomFontEntries(entries) {
   });
 }
 function readStoredCustomFonts() {
-  var raw = readLocalStorageValue(CUSTOM_FONT_STORAGE_KEY_NAME);
+  var raw = readLocalStorageValue(getCustomFontStorageKeyName());
   if (!raw) {
     return [];
   }
@@ -1226,12 +1261,12 @@ function importAllData(allData) {
     var fonts = normalizeCustomFontEntries(allData.customFonts);
     if (fonts.length) {
       try {
-        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, JSON.stringify(fonts));
+        safeSetLocalStorage(getCustomFontStorageKeyName(), JSON.stringify(fonts));
       } catch (error) {
         console.warn('Unable to store imported custom fonts', error);
       }
     } else {
-      safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, null);
+      safeSetLocalStorage(getCustomFontStorageKeyName(), null);
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {

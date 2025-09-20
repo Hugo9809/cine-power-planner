@@ -90,6 +90,183 @@ const schemaStorage = (() => {
   }
 })();
 
+function isSchemaPlainObject(value) {
+  return value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function fallbackIsDeviceObject(obj) {
+  if (!isSchemaPlainObject(obj)) {
+    return false;
+  }
+  for (const value of Object.values(obj)) {
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function fallbackIsDeviceMap(obj) {
+  if (!isSchemaPlainObject(obj)) {
+    return false;
+  }
+  for (const value of Object.values(obj)) {
+    if (!fallbackIsDeviceObject(value)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function fallbackBuildSchema(node) {
+  if (Array.isArray(node)) {
+    const attrs = new Set();
+    for (const item of node) {
+      if (isSchemaPlainObject(item)) {
+        for (const key of Object.keys(item)) {
+          attrs.add(key);
+        }
+      }
+    }
+    return { attributes: Array.from(attrs).sort() };
+  }
+  if (fallbackIsDeviceMap(node)) {
+    const attrs = new Set();
+    for (const value of Object.values(node)) {
+      for (const key of Object.keys(value)) {
+        attrs.add(key);
+      }
+    }
+    return { attributes: Array.from(attrs).sort() };
+  }
+  if (isSchemaPlainObject(node)) {
+    const result = {};
+    const keys = Object.keys(node).sort();
+    for (const key of keys) {
+      const value = node[key];
+      if (value !== undefined) {
+        result[key] = fallbackBuildSchema(value);
+      }
+    }
+    return result;
+  }
+  return typeof node;
+}
+
+function fallbackGetSchemaNode(schema, path) {
+  let node = schema;
+  for (const key of path) {
+    if (!isSchemaPlainObject(node)) {
+      return undefined;
+    }
+    node = node[key];
+  }
+  return node;
+}
+
+function fallbackGetAttributes(schema, path) {
+  const node = fallbackGetSchemaNode(schema, path);
+  if (node && Array.isArray(node.attributes)) {
+    return node.attributes;
+  }
+  return [];
+}
+
+function fallbackSetAttributes(schema, path, attrs) {
+  let node = schema;
+  for (let i = 0; i < path.length; i += 1) {
+    const key = path[i];
+    if (i === path.length - 1) {
+      node[key] = { attributes: attrs.slice().sort() };
+    } else {
+      const next = node[key];
+      if (!isSchemaPlainObject(next) || Array.isArray(next.attributes)) {
+        node[key] = {};
+      }
+      node = node[key];
+    }
+  }
+}
+
+function fallbackCopyAttributes(schema, fromPath, toPath) {
+  const attrs = fallbackGetAttributes(schema, fromPath);
+  if (attrs.length > 0) {
+    fallbackSetAttributes(schema, toPath, attrs);
+  }
+}
+
+function fallbackUnionAttributes(schema, sourcePaths, targetPath) {
+  const attrs = new Set();
+  for (const path of sourcePaths) {
+    for (const attr of fallbackGetAttributes(schema, path)) {
+      attrs.add(attr);
+    }
+  }
+  if (attrs.size > 0) {
+    fallbackSetAttributes(schema, targetPath, Array.from(attrs));
+  }
+}
+
+function fallbackSortSchema(node) {
+  if (!isSchemaPlainObject(node)) {
+    return node;
+  }
+  if (Array.isArray(node.attributes)) {
+    return { attributes: node.attributes.slice().sort() };
+  }
+  const result = {};
+  const keys = Object.keys(node).sort();
+  for (const key of keys) {
+    result[key] = fallbackSortSchema(node[key]);
+  }
+  return result;
+}
+
+function fallbackAugmentSchema(data, schema) {
+  const result = schema;
+
+  fallbackCopyAttributes(result, ['lenses'], ['accessories', 'lenses']);
+
+  if (isSchemaPlainObject(data?.accessories)) {
+    for (const [category, value] of Object.entries(data)) {
+      if (value === undefined && Object.prototype.hasOwnProperty.call(data.accessories, category)) {
+        fallbackCopyAttributes(result, ['accessories', category], [category]);
+      }
+    }
+  }
+
+  const cablesNode = fallbackGetSchemaNode(result, ['accessories', 'cables']);
+  if (isSchemaPlainObject(cablesNode) && !Array.isArray(cablesNode.attributes)) {
+    const sourcePaths = Object.keys(cablesNode)
+      .filter((key) => key !== 'cables')
+      .map((key) => ['accessories', 'cables', key]);
+    if (sourcePaths.length > 0) {
+      fallbackUnionAttributes(result, sourcePaths, ['accessories', 'cables', 'cables']);
+    }
+  }
+
+  return fallbackSortSchema(result);
+}
+
+const getDerivedDeviceSchema = (() => {
+  let derivedSchema = null;
+  return () => {
+    if (derivedSchema) {
+      return derivedSchema;
+    }
+    if (typeof devices !== 'object' || !devices) {
+      return null;
+    }
+    try {
+      derivedSchema = fallbackAugmentSchema(devices, fallbackBuildSchema(devices));
+    } catch (error) {
+      console.warn('Failed to derive schema from device data', error);
+      derivedSchema = null;
+    }
+    return derivedSchema;
+  };
+})();
+
 function loadCachedDeviceSchema() {
   if (!schemaStorage) return null;
   try {
@@ -123,7 +300,10 @@ let deviceSchema;
 try {
   deviceSchema = require('../data/schema.json');
 } catch {
-  deviceSchema = cachedDeviceSchema;
+  deviceSchema = cachedDeviceSchema || getDerivedDeviceSchema();
+  if (deviceSchema && typeof deviceSchema === 'object') {
+    persistDeviceSchema(deviceSchema);
+  }
   if (typeof fetch === 'function') {
     fetch('src/data/schema.json')
       .then(r => r.json())
@@ -136,13 +316,29 @@ try {
       })
       .catch(error => {
         console.warn('Failed to fetch schema.json', error);
-        if (!deviceSchema) {
-          deviceSchema = cachedDeviceSchema || {};
+        if (!deviceSchema || typeof deviceSchema !== 'object') {
+          const derived = getDerivedDeviceSchema();
+          if (derived) {
+            deviceSchema = derived;
+            persistDeviceSchema(derived);
+          } else if (cachedDeviceSchema) {
+            deviceSchema = cachedDeviceSchema;
+          } else {
+            deviceSchema = {};
+          }
         }
         populateCategoryOptions();
       });
-  } else if (!deviceSchema) {
-    deviceSchema = cachedDeviceSchema || {};
+  } else if (!deviceSchema || typeof deviceSchema !== 'object') {
+    const derived = getDerivedDeviceSchema();
+    if (derived) {
+      deviceSchema = derived;
+      persistDeviceSchema(derived);
+    } else if (cachedDeviceSchema) {
+      deviceSchema = cachedDeviceSchema;
+    } else {
+      deviceSchema = {};
+    }
   }
 }
 

@@ -7,13 +7,8 @@ function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
 function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -21,9 +16,14 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _asyncIterator(r) { var n, t, o, e = 2; for ("undefined" != typeof Symbol && (t = Symbol.asyncIterator, o = Symbol.iterator); e--;) { if (t && null != (n = r[t])) return n.call(r); if (o && null != (n = r[o])) return new AsyncFromSyncIterator(n.call(r)); t = "@@asyncIterator", o = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
@@ -90,6 +90,239 @@ var schemaStorage = function () {
     return null;
   }
 }();
+function isSchemaPlainObject(value) {
+  return value && _typeof(value) === 'object' && !Array.isArray(value);
+}
+function fallbackIsDeviceObject(obj) {
+  if (!isSchemaPlainObject(obj)) {
+    return false;
+  }
+  for (var _i = 0, _Object$values = Object.values(obj); _i < _Object$values.length; _i++) {
+    var value = _Object$values[_i];
+    if (value === null || _typeof(value) !== 'object' || Array.isArray(value)) {
+      return true;
+    }
+  }
+  return false;
+}
+function fallbackIsDeviceMap(obj) {
+  if (!isSchemaPlainObject(obj)) {
+    return false;
+  }
+  for (var _i2 = 0, _Object$values2 = Object.values(obj); _i2 < _Object$values2.length; _i2++) {
+    var value = _Object$values2[_i2];
+    if (!fallbackIsDeviceObject(value)) {
+      return false;
+    }
+  }
+  return true;
+}
+function fallbackBuildSchema(node) {
+  if (Array.isArray(node)) {
+    var attrs = new Set();
+    var _iterator2 = _createForOfIteratorHelper(node),
+      _step2;
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var item = _step2.value;
+        if (isSchemaPlainObject(item)) {
+          for (var _i3 = 0, _Object$keys = Object.keys(item); _i3 < _Object$keys.length; _i3++) {
+            var key = _Object$keys[_i3];
+            attrs.add(key);
+          }
+        }
+      }
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
+    return {
+      attributes: Array.from(attrs).sort()
+    };
+  }
+  if (fallbackIsDeviceMap(node)) {
+    var _attrs = new Set();
+    for (var _i4 = 0, _Object$values3 = Object.values(node); _i4 < _Object$values3.length; _i4++) {
+      var value = _Object$values3[_i4];
+      for (var _i5 = 0, _Object$keys2 = Object.keys(value); _i5 < _Object$keys2.length; _i5++) {
+        var _key = _Object$keys2[_i5];
+        _attrs.add(_key);
+      }
+    }
+    return {
+      attributes: Array.from(_attrs).sort()
+    };
+  }
+  if (isSchemaPlainObject(node)) {
+    var result = {};
+    var keys = Object.keys(node).sort();
+    var _iterator3 = _createForOfIteratorHelper(keys),
+      _step3;
+    try {
+      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+        var _key2 = _step3.value;
+        var _value = node[_key2];
+        if (_value !== undefined) {
+          result[_key2] = fallbackBuildSchema(_value);
+        }
+      }
+    } catch (err) {
+      _iterator3.e(err);
+    } finally {
+      _iterator3.f();
+    }
+    return result;
+  }
+  return _typeof(node);
+}
+function fallbackGetSchemaNode(schema, path) {
+  var node = schema;
+  var _iterator4 = _createForOfIteratorHelper(path),
+    _step4;
+  try {
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+      var key = _step4.value;
+      if (!isSchemaPlainObject(node)) {
+        return undefined;
+      }
+      node = node[key];
+    }
+  } catch (err) {
+    _iterator4.e(err);
+  } finally {
+    _iterator4.f();
+  }
+  return node;
+}
+function fallbackGetAttributes(schema, path) {
+  var node = fallbackGetSchemaNode(schema, path);
+  if (node && Array.isArray(node.attributes)) {
+    return node.attributes;
+  }
+  return [];
+}
+function fallbackSetAttributes(schema, path, attrs) {
+  var node = schema;
+  for (var i = 0; i < path.length; i += 1) {
+    var key = path[i];
+    if (i === path.length - 1) {
+      node[key] = {
+        attributes: attrs.slice().sort()
+      };
+    } else {
+      var next = node[key];
+      if (!isSchemaPlainObject(next) || Array.isArray(next.attributes)) {
+        node[key] = {};
+      }
+      node = node[key];
+    }
+  }
+}
+function fallbackCopyAttributes(schema, fromPath, toPath) {
+  var attrs = fallbackGetAttributes(schema, fromPath);
+  if (attrs.length > 0) {
+    fallbackSetAttributes(schema, toPath, attrs);
+  }
+}
+function fallbackUnionAttributes(schema, sourcePaths, targetPath) {
+  var attrs = new Set();
+  var _iterator5 = _createForOfIteratorHelper(sourcePaths),
+    _step5;
+  try {
+    for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+      var path = _step5.value;
+      var _iterator6 = _createForOfIteratorHelper(fallbackGetAttributes(schema, path)),
+        _step6;
+      try {
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var attr = _step6.value;
+          attrs.add(attr);
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
+      }
+    }
+  } catch (err) {
+    _iterator5.e(err);
+  } finally {
+    _iterator5.f();
+  }
+  if (attrs.size > 0) {
+    fallbackSetAttributes(schema, targetPath, Array.from(attrs));
+  }
+}
+function fallbackSortSchema(node) {
+  if (!isSchemaPlainObject(node)) {
+    return node;
+  }
+  if (Array.isArray(node.attributes)) {
+    return {
+      attributes: node.attributes.slice().sort()
+    };
+  }
+  var result = {};
+  var keys = Object.keys(node).sort();
+  var _iterator7 = _createForOfIteratorHelper(keys),
+    _step7;
+  try {
+    for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+      var key = _step7.value;
+      result[key] = fallbackSortSchema(node[key]);
+    }
+  } catch (err) {
+    _iterator7.e(err);
+  } finally {
+    _iterator7.f();
+  }
+  return result;
+}
+function fallbackAugmentSchema(data, schema) {
+  var result = schema;
+  fallbackCopyAttributes(result, ['lenses'], ['accessories', 'lenses']);
+  if (isSchemaPlainObject(data === null || data === void 0 ? void 0 : data.accessories)) {
+    for (var _i6 = 0, _Object$entries = Object.entries(data); _i6 < _Object$entries.length; _i6++) {
+      var _Object$entries$_i = _slicedToArray(_Object$entries[_i6], 2),
+        category = _Object$entries$_i[0],
+        value = _Object$entries$_i[1];
+      if (value === undefined && Object.prototype.hasOwnProperty.call(data.accessories, category)) {
+        fallbackCopyAttributes(result, ['accessories', category], [category]);
+      }
+    }
+  }
+  var cablesNode = fallbackGetSchemaNode(result, ['accessories', 'cables']);
+  if (isSchemaPlainObject(cablesNode) && !Array.isArray(cablesNode.attributes)) {
+    var sourcePaths = Object.keys(cablesNode).filter(function (key) {
+      return key !== 'cables';
+    }).map(function (key) {
+      return ['accessories', 'cables', key];
+    });
+    if (sourcePaths.length > 0) {
+      fallbackUnionAttributes(result, sourcePaths, ['accessories', 'cables', 'cables']);
+    }
+  }
+  return fallbackSortSchema(result);
+}
+var getDerivedDeviceSchema = function () {
+  var derivedSchema = null;
+  return function () {
+    if (derivedSchema) {
+      return derivedSchema;
+    }
+    if ((typeof devices === "undefined" ? "undefined" : _typeof(devices)) !== 'object' || !devices) {
+      return null;
+    }
+    try {
+      derivedSchema = fallbackAugmentSchema(devices, fallbackBuildSchema(devices));
+    } catch (error) {
+      console.warn('Failed to derive schema from device data', error);
+      derivedSchema = null;
+    }
+    return derivedSchema;
+  };
+}();
 function loadCachedDeviceSchema() {
   if (!schemaStorage) return null;
   try {
@@ -120,7 +353,10 @@ var deviceSchema;
 try {
   deviceSchema = require('../data/schema.json');
 } catch (_unused3) {
-  deviceSchema = cachedDeviceSchema;
+  deviceSchema = cachedDeviceSchema || getDerivedDeviceSchema();
+  if (deviceSchema && _typeof(deviceSchema) === 'object') {
+    persistDeviceSchema(deviceSchema);
+  }
   if (typeof fetch === 'function') {
     fetch('src/data/schema.json').then(function (r) {
       return r.json();
@@ -132,13 +368,29 @@ try {
       populateCategoryOptions();
     }).catch(function (error) {
       console.warn('Failed to fetch schema.json', error);
-      if (!deviceSchema) {
-        deviceSchema = cachedDeviceSchema || {};
+      if (!deviceSchema || _typeof(deviceSchema) !== 'object') {
+        var derived = getDerivedDeviceSchema();
+        if (derived) {
+          deviceSchema = derived;
+          persistDeviceSchema(derived);
+        } else if (cachedDeviceSchema) {
+          deviceSchema = cachedDeviceSchema;
+        } else {
+          deviceSchema = {};
+        }
       }
       populateCategoryOptions();
     });
-  } else if (!deviceSchema) {
-    deviceSchema = cachedDeviceSchema || {};
+  } else if (!deviceSchema || _typeof(deviceSchema) !== 'object') {
+    var derived = getDerivedDeviceSchema();
+    if (derived) {
+      deviceSchema = derived;
+      persistDeviceSchema(derived);
+    } else if (cachedDeviceSchema) {
+      deviceSchema = cachedDeviceSchema;
+    } else {
+      deviceSchema = {};
+    }
   }
 }
 var LEGAL_LINKS = {
@@ -402,8 +654,8 @@ function readActiveAutoGearPresetIdFromStorage() {
   }
   if (typeof localStorage === 'undefined') return '';
   try {
-    var _value = localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY);
-    return typeof _value === 'string' ? _value : '';
+    var _value2 = localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY);
+    return typeof _value2 === 'string' ? _value2 : '';
   } catch (error) {
     console.warn('Failed to read automatic gear active preset id from storage', error);
     return '';
@@ -1528,16 +1780,16 @@ if (window.defaultDevices === undefined) {
 var storedDevices = loadDeviceData();
 if (storedDevices) {
   var merged = JSON.parse(JSON.stringify(window.defaultDevices));
-  for (var _i = 0, _Object$entries = Object.entries(storedDevices); _i < _Object$entries.length; _i++) {
-    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-      key = _Object$entries$_i[0],
-      value = _Object$entries$_i[1];
+  for (var _i7 = 0, _Object$entries2 = Object.entries(storedDevices); _i7 < _Object$entries2.length; _i7++) {
+    var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i7], 2),
+      key = _Object$entries2$_i[0],
+      value = _Object$entries2$_i[1];
     if (key === 'fiz' && value && _typeof(value) === 'object') {
       merged.fiz = merged.fiz || {};
-      for (var _i2 = 0, _Object$entries2 = Object.entries(value); _i2 < _Object$entries2.length; _i2++) {
-        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
-          sub = _Object$entries2$_i[0],
-          subVal = _Object$entries2$_i[1];
+      for (var _i8 = 0, _Object$entries3 = Object.entries(value); _i8 < _Object$entries3.length; _i8++) {
+        var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i8], 2),
+          sub = _Object$entries3$_i[0],
+          subVal = _Object$entries3$_i[1];
         merged.fiz[sub] = _objectSpread(_objectSpread({}, merged.fiz[sub] || {}), subVal || {});
       }
     } else if (merged[key] && _typeof(merged[key]) === 'object') {
@@ -1567,20 +1819,20 @@ function supportsGoldMountCamera(name) {
 }
 function getBatteriesByMount(mountType) {
   var out = {};
-  for (var _i3 = 0, _Object$entries3 = Object.entries(devices.batteries); _i3 < _Object$entries3.length; _i3++) {
-    var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
-      name = _Object$entries3$_i[0],
-      info = _Object$entries3$_i[1];
+  for (var _i9 = 0, _Object$entries4 = Object.entries(devices.batteries); _i9 < _Object$entries4.length; _i9++) {
+    var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i9], 2),
+      name = _Object$entries4$_i[0],
+      info = _Object$entries4$_i[1];
     if (info && info.mount_type === mountType) out[name] = info;
   }
   return out;
 }
 function getHotswapsByMount(mountType) {
   var out = {};
-  for (var _i4 = 0, _Object$entries4 = Object.entries(devices.batteryHotswaps || {}); _i4 < _Object$entries4.length; _i4++) {
-    var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
-      name = _Object$entries4$_i[0],
-      info = _Object$entries4$_i[1];
+  for (var _i0 = 0, _Object$entries5 = Object.entries(devices.batteryHotswaps || {}); _i0 < _Object$entries5.length; _i0++) {
+    var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i0], 2),
+      name = _Object$entries5$_i[0],
+      info = _Object$entries5$_i[1];
     if (info && info.mount_type === mountType) out[name] = info;
   }
   return out;
@@ -1688,11 +1940,11 @@ function getFizPort(device) {
   var preferredMatchers = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   if (!device) return '';
   var connectors = Array.isArray(device.fizConnectors) ? device.fizConnectors : [];
-  var _iterator2 = _createForOfIteratorHelper(preferredMatchers),
-    _step2;
+  var _iterator8 = _createForOfIteratorHelper(preferredMatchers),
+    _step8;
   try {
     var _loop = function _loop() {
-        var matcher = _step2.value;
+        var matcher = _step8.value;
         var match = connectors.find(function (fc) {
           return matcher.test(fc.type);
         });
@@ -1701,14 +1953,14 @@ function getFizPort(device) {
         };
       },
       _ret;
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+    for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
       _ret = _loop();
       if (_ret) return _ret.v;
     }
   } catch (err) {
-    _iterator2.e(err);
+    _iterator8.e(err);
   } finally {
-    _iterator2.f();
+    _iterator8.f();
   }
   var portStr = device.fizConnector || ((_connectors$ = connectors[0]) === null || _connectors$ === void 0 ? void 0 : _connectors$.type);
   return firstConnector(portStr);
@@ -1978,10 +2230,10 @@ function detectBrand(name) {
   if (!name) return null;
   var n = String(name).trim().toLowerCase();
   if (n === 'none') return null;
-  for (var _i5 = 0, _Object$entries5 = Object.entries(BRAND_KEYWORDS); _i5 < _Object$entries5.length; _i5++) {
-    var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i5], 2),
-      keyword = _Object$entries5$_i[0],
-      brand = _Object$entries5$_i[1];
+  for (var _i1 = 0, _Object$entries6 = Object.entries(BRAND_KEYWORDS); _i1 < _Object$entries6.length; _i1++) {
+    var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i1], 2),
+      keyword = _Object$entries6$_i[0],
+      brand = _Object$entries6$_i[1];
     if (n.includes(keyword)) return brand;
   }
   return 'other';
@@ -2190,11 +2442,11 @@ try {
     currentLang = savedLang;
   } else if (typeof navigator !== "undefined") {
     var navLangs = Array.isArray(navigator.languages) ? navigator.languages : [navigator.language];
-    var _iterator3 = _createForOfIteratorHelper(navLangs),
-      _step3;
+    var _iterator9 = _createForOfIteratorHelper(navLangs),
+      _step9;
     try {
-      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-        var lang = _step3.value;
+      for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+        var lang = _step9.value;
         var short = String(lang).slice(0, 2).toLowerCase();
         if (supported.includes(short)) {
           currentLang = short;
@@ -2202,9 +2454,9 @@ try {
         }
       }
     } catch (err) {
-      _iterator3.e(err);
+      _iterator9.e(err);
     } finally {
-      _iterator3.f();
+      _iterator9.f();
     }
   }
 } catch (e) {
@@ -3566,8 +3818,8 @@ var ICON_GLYPHS = Object.freeze({
     markup: LOAD_ICON_SVG,
     className: 'icon-svg'
   }),
-  fileExport: iconGlyph("\uF423", ICON_FONT_KEYS.UICONS),
-  fileImport: iconGlyph("\uF425", ICON_FONT_KEYS.UICONS),
+  fileExport: iconGlyph("\uE7AB", ICON_FONT_KEYS.UICONS),
+  fileImport: iconGlyph("\uE7C7", ICON_FONT_KEYS.UICONS),
   save: iconGlyph("\uF207", ICON_FONT_KEYS.ESSENTIAL),
   share: iconGlyph("\uF219", ICON_FONT_KEYS.ESSENTIAL),
   magnet: iconGlyph("\uF1B5", ICON_FONT_KEYS.ESSENTIAL),
@@ -3584,7 +3836,7 @@ var ICON_GLYPHS = Object.freeze({
     className: 'icon-svg'
   }),
   pin: iconGlyph("\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
-  sun: iconGlyph("\uF1F7", ICON_FONT_KEYS.UICONS),
+  sun: iconGlyph("\uF1FE", ICON_FONT_KEYS.UICONS),
   moon: iconGlyph("\uEC7E", ICON_FONT_KEYS.UICONS),
   circleX: iconGlyph("\uF131", ICON_FONT_KEYS.ESSENTIAL),
   star: Object.freeze({
@@ -3814,11 +4066,11 @@ function computePinkModeAnimationAvoidRegions(layer) {
     return Object.freeze([]);
   }
   var regions = [];
-  var _iterator4 = _createForOfIteratorHelper(elements),
-    _step4;
+  var _iterator0 = _createForOfIteratorHelper(elements),
+    _step0;
   try {
-    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-      var element = _step4.value;
+    for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+      var element = _step0.value;
       if (!element) {
         continue;
       }
@@ -3854,9 +4106,9 @@ function computePinkModeAnimationAvoidRegions(layer) {
       });
     }
   } catch (err) {
-    _iterator4.e(err);
+    _iterator0.e(err);
   } finally {
-    _iterator4.f();
+    _iterator0.f();
   }
   return Object.freeze(regions);
 }
@@ -3865,11 +4117,11 @@ function collectPinkModeAnimationInstanceRegions(layer) {
     return Object.freeze([]);
   }
   var regions = [];
-  var _iterator5 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
-    _step5;
+  var _iterator1 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+    _step1;
   try {
-    for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-      var instance = _step5.value;
+    for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+      var instance = _step1.value;
       if (!instance || !instance.container) {
         continue;
       }
@@ -3909,9 +4161,9 @@ function collectPinkModeAnimationInstanceRegions(layer) {
       });
     }
   } catch (err) {
-    _iterator5.e(err);
+    _iterator1.e(err);
   } finally {
-    _iterator5.f();
+    _iterator1.f();
   }
   return Object.freeze(regions);
 }
@@ -3930,11 +4182,11 @@ function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)
     bottom: baseY + size / 2
   };
   if (Array.isArray(avoidRegions) && avoidRegions.length) {
-    var _iterator6 = _createForOfIteratorHelper(avoidRegions),
-      _step6;
+    var _iterator10 = _createForOfIteratorHelper(avoidRegions),
+      _step10;
     try {
-      for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-        var region = _step6.value;
+      for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+        var region = _step10.value;
         if (!region) {
           continue;
         }
@@ -3944,16 +4196,16 @@ function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)
         }
       }
     } catch (err) {
-      _iterator6.e(err);
+      _iterator10.e(err);
     } finally {
-      _iterator6.f();
+      _iterator10.f();
     }
   }
-  var _iterator7 = _createForOfIteratorHelper(PINK_MODE_ANIMATED_ICON_PROBE_POINTS),
-    _step7;
+  var _iterator11 = _createForOfIteratorHelper(PINK_MODE_ANIMATED_ICON_PROBE_POINTS),
+    _step11;
   try {
-    for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-      var point = _step7.value;
+    for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+      var point = _step11.value;
       var sampleX = baseX + point.x * size;
       var sampleY = baseY + point.y * size;
       if (viewportWidth !== null && (sampleX < 0 || sampleX > viewportWidth)) {
@@ -3963,11 +4215,11 @@ function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)
         continue;
       }
       var elementsAtPoint = typeof document.elementsFromPoint === 'function' ? document.elementsFromPoint(sampleX, sampleY) : [document.elementFromPoint(sampleX, sampleY)].filter(Boolean);
-      var _iterator8 = _createForOfIteratorHelper(elementsAtPoint),
-        _step8;
+      var _iterator12 = _createForOfIteratorHelper(elementsAtPoint),
+        _step12;
       try {
-        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-          var element = _step8.value;
+        for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+          var element = _step12.value;
           if (!element) {
             continue;
           }
@@ -3982,15 +4234,15 @@ function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)
           }
         }
       } catch (err) {
-        _iterator8.e(err);
+        _iterator12.e(err);
       } finally {
-        _iterator8.f();
+        _iterator12.f();
       }
     }
   } catch (err) {
-    _iterator7.e(err);
+    _iterator11.e(err);
   } finally {
-    _iterator7.f();
+    _iterator11.f();
   }
   return true;
 }
@@ -4987,10 +5239,10 @@ function populateCategoryOptions() {
   };
   if (deviceSchema) {
     if (deviceSchema.accessories) {
-      for (var _i6 = 0, _Object$entries6 = Object.entries(deviceSchema.accessories); _i6 < _Object$entries6.length; _i6++) {
-        var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i6], 2),
-          _sub = _Object$entries6$_i[0],
-          obj = _Object$entries6$_i[1];
+      for (var _i10 = 0, _Object$entries7 = Object.entries(deviceSchema.accessories); _i10 < _Object$entries7.length; _i10++) {
+        var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i10], 2),
+          _sub = _Object$entries7$_i[0],
+          obj = _Object$entries7$_i[1];
         if (_sub === 'cables') {
           addOpt('accessories.cables');
         } else if (obj && obj.attributes) {
@@ -4998,18 +5250,18 @@ function populateCategoryOptions() {
         }
       }
     }
-    for (var _i7 = 0, _Object$entries7 = Object.entries(deviceSchema); _i7 < _Object$entries7.length; _i7++) {
-      var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i7], 2),
-        _key = _Object$entries7$_i[0],
-        _obj = _Object$entries7$_i[1];
-      if (_key === 'accessories' || _key === 'fiz') continue;
-      if (_obj && _obj.attributes) addOpt(_key);
+    for (var _i11 = 0, _Object$entries8 = Object.entries(deviceSchema); _i11 < _Object$entries8.length; _i11++) {
+      var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i11], 2),
+        _key3 = _Object$entries8$_i[0],
+        _obj = _Object$entries8$_i[1];
+      if (_key3 === 'accessories' || _key3 === 'fiz') continue;
+      if (_obj && _obj.attributes) addOpt(_key3);
     }
     if (deviceSchema.fiz) {
-      for (var _i8 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i8 < _Object$entries8.length; _i8++) {
-        var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i8], 2),
-          _sub2 = _Object$entries8$_i[0],
-          _obj2 = _Object$entries8$_i[1];
+      for (var _i12 = 0, _Object$entries9 = Object.entries(deviceSchema.fiz); _i12 < _Object$entries9.length; _i12++) {
+        var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i12], 2),
+          _sub2 = _Object$entries9$_i[0],
+          _obj2 = _Object$entries9$_i[1];
         if (_obj2 && _obj2.attributes) addOpt("fiz.".concat(_sub2));
       }
     }
@@ -5024,22 +5276,22 @@ function populateCategoryOptions() {
         existing.add(val);
       }
     };
-    for (var _i9 = 0, _Object$entries9 = Object.entries(devices); _i9 < _Object$entries9.length; _i9++) {
-      var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i9], 2),
-        _key2 = _Object$entries9$_i[0],
-        _obj3 = _Object$entries9$_i[1];
-      if (_key2 === 'accessories') {
-        for (var _i0 = 0, _Object$keys = Object.keys(_obj3 || {}); _i0 < _Object$keys.length; _i0++) {
-          var _sub3 = _Object$keys[_i0];
+    for (var _i13 = 0, _Object$entries0 = Object.entries(devices); _i13 < _Object$entries0.length; _i13++) {
+      var _Object$entries0$_i = _slicedToArray(_Object$entries0[_i13], 2),
+        _key4 = _Object$entries0$_i[0],
+        _obj3 = _Object$entries0$_i[1];
+      if (_key4 === 'accessories') {
+        for (var _i14 = 0, _Object$keys3 = Object.keys(_obj3 || {}); _i14 < _Object$keys3.length; _i14++) {
+          var _sub3 = _Object$keys3[_i14];
           addIfMissing("accessories.".concat(_sub3));
         }
-      } else if (_key2 === 'fiz') {
-        for (var _i1 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i1 < _Object$keys2.length; _i1++) {
-          var _sub4 = _Object$keys2[_i1];
+      } else if (_key4 === 'fiz') {
+        for (var _i15 = 0, _Object$keys4 = Object.keys(_obj3 || {}); _i15 < _Object$keys4.length; _i15++) {
+          var _sub4 = _Object$keys4[_i15];
           addIfMissing("fiz.".concat(_sub4));
         }
       } else if (_obj3 && _typeof(_obj3) === 'object' && !Array.isArray(_obj3)) {
-        addIfMissing(_key2);
+        addIfMissing(_key4);
       }
     }
   }
@@ -5403,9 +5655,9 @@ function resolveSchemaFieldConfig(category, attr) {
   if (!category) return schemaFieldConfigs['*'][attr] || null;
   var parts = category.split('.');
   while (parts.length) {
-    var _key3 = parts.join('.');
-    if (schemaFieldConfigs[_key3] && schemaFieldConfigs[_key3][attr]) {
-      return schemaFieldConfigs[_key3][attr];
+    var _key5 = parts.join('.');
+    if (schemaFieldConfigs[_key5] && schemaFieldConfigs[_key5][attr]) {
+      return schemaFieldConfigs[_key5][attr];
     }
     parts.pop();
   }
@@ -5521,18 +5773,18 @@ function getSchemaAttributesForCategory(category) {
   if (!deviceSchema) return [];
   var parts = category.split('.');
   var node = deviceSchema;
-  var _iterator9 = _createForOfIteratorHelper(parts),
-    _step9;
+  var _iterator13 = _createForOfIteratorHelper(parts),
+    _step13;
   try {
-    for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-      var p = _step9.value;
+    for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+      var p = _step13.value;
       node = node && node[p];
       if (!node) return [];
     }
   } catch (err) {
-    _iterator9.e(err);
+    _iterator13.e(err);
   } finally {
-    _iterator9.f();
+    _iterator13.f();
   }
   return Array.isArray(node.attributes) ? node.attributes : [];
 }
@@ -5544,26 +5796,26 @@ function getCombinedCategoryAttributes(category) {
   var skip = function skip(attr) {
     return !attr || exclude.includes(attr) || seen.has(attr);
   };
-  var _iterator0 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
-    _step0;
+  var _iterator14 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
+    _step14;
   try {
-    for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-      var attr = _step0.value;
+    for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+      var attr = _step14.value;
       if (skip(attr)) continue;
       seen.add(attr);
       attrs.push(attr);
     }
   } catch (err) {
-    _iterator0.e(err);
+    _iterator14.e(err);
   } finally {
-    _iterator0.f();
+    _iterator14.f();
   }
   if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
-    for (var _i10 = 0, _Object$keys3 = Object.keys(data); _i10 < _Object$keys3.length; _i10++) {
-      var _key4 = _Object$keys3[_i10];
-      if (skip(_key4)) continue;
-      seen.add(_key4);
-      attrs.push(_key4);
+    for (var _i16 = 0, _Object$keys5 = Object.keys(data); _i16 < _Object$keys5.length; _i16++) {
+      var _key6 = _Object$keys5[_i16];
+      if (skip(_key6)) continue;
+      seen.add(_key6);
+      attrs.push(_key6);
     }
   }
   return attrs;
@@ -5595,18 +5847,18 @@ function buildDynamicFields(category) {
   }
   var list = document.createElement('div');
   list.className = 'schema-attribute-list';
-  var _iterator1 = _createForOfIteratorHelper(attrs),
-    _step1;
+  var _iterator15 = _createForOfIteratorHelper(attrs),
+    _step15;
   try {
-    for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
-      var attr = _step1.value;
-      var _value2 = data && data[attr] !== undefined ? data[attr] : undefined;
-      list.appendChild(createSchemaField(category, attr, _value2));
+    for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+      var attr = _step15.value;
+      var _value3 = data && data[attr] !== undefined ? data[attr] : undefined;
+      list.appendChild(createSchemaField(category, attr, _value3));
     }
   } catch (err) {
-    _iterator1.e(err);
+    _iterator15.e(err);
   } finally {
-    _iterator1.f();
+    _iterator15.f();
   }
   dynamicFieldsDiv.appendChild(list);
 }
@@ -5627,11 +5879,11 @@ function collectDynamicFieldValues(category) {
     attrs = getCombinedCategoryAttributes(category, {}, exclude);
   }
   var result = {};
-  var _iterator10 = _createForOfIteratorHelper(attrs),
-    _step10;
+  var _iterator16 = _createForOfIteratorHelper(attrs),
+    _step16;
   try {
-    for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-      var attr = _step10.value;
+    for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+      var attr = _step16.value;
       if (exclude.includes(attr)) continue;
       var el = document.getElementById("attr-".concat(attr));
       if (el) {
@@ -5673,9 +5925,9 @@ function collectDynamicFieldValues(category) {
       }
     }
   } catch (err) {
-    _iterator10.e(err);
+    _iterator16.e(err);
   } finally {
-    _iterator10.f();
+    _iterator16.f();
   }
   return result;
 }
@@ -5932,8 +6184,8 @@ function formatAutoGearItemSummary(item) {
   return formatWithPlaceholders(baseTemplate, quantityText, nameText);
 }
 function formatWithPlaceholders(template) {
-  for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key5 = 1; _key5 < _len; _key5++) {
-    values[_key5 - 1] = arguments[_key5];
+  for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key7 = 1; _key7 < _len; _key7++) {
+    values[_key7 - 1] = arguments[_key7];
   }
   if (typeof template !== 'string') {
     return values.join(' ');
@@ -7001,20 +7253,20 @@ function countDeviceDatabaseEntries(collection) {
     return 0;
   }
   var total = 0;
-  for (var _i11 = 0, _Object$entries0 = Object.entries(collection); _i11 < _Object$entries0.length; _i11++) {
-    var _Object$entries0$_i = _slicedToArray(_Object$entries0[_i11], 2),
-      name = _Object$entries0$_i[0],
-      _value3 = _Object$entries0$_i[1];
+  for (var _i17 = 0, _Object$entries1 = Object.entries(collection); _i17 < _Object$entries1.length; _i17++) {
+    var _Object$entries1$_i = _slicedToArray(_Object$entries1[_i17], 2),
+      name = _Object$entries1$_i[0],
+      _value4 = _Object$entries1$_i[1];
     if (name === 'filterOptions' || name === 'None') {
       continue;
     }
-    if (!isPlainObjectValue(_value3)) {
+    if (!isPlainObjectValue(_value4)) {
       continue;
     }
-    if (isDeviceEntryObject(_value3)) {
+    if (isDeviceEntryObject(_value4)) {
       total += 1;
     } else {
-      total += countDeviceDatabaseEntries(_value3);
+      total += countDeviceDatabaseEntries(_value4);
     }
   }
   return total;
@@ -7024,19 +7276,19 @@ function looksLikeDeviceDatabase(candidate) {
     return false;
   }
   var matched = 0;
-  var _iterator11 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
-    _step11;
+  var _iterator17 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+    _step17;
   try {
-    for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-      var _key6 = _step11.value;
-      if (Object.prototype.hasOwnProperty.call(candidate, _key6)) {
+    for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+      var _key8 = _step17.value;
+      if (Object.prototype.hasOwnProperty.call(candidate, _key8)) {
         matched += 1;
       }
     }
   } catch (err) {
-    _iterator11.e(err);
+    _iterator17.e(err);
   } finally {
-    _iterator11.f();
+    _iterator17.f();
   }
   return matched >= 3;
 }
@@ -7069,11 +7321,11 @@ function validateDeviceDatabaseStructure(candidate) {
   }
   var errors = [];
   var missing = [];
-  var _iterator12 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
-    _step12;
+  var _iterator18 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+    _step18;
   try {
-    for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-      var category = _step12.value;
+    for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+      var category = _step18.value;
       if (category === 'fiz') {
         if (!isPlainObjectValue(candidate.fiz)) {
           missing.push('fiz');
@@ -7107,9 +7359,9 @@ function validateDeviceDatabaseStructure(candidate) {
       }
     }
   } catch (err) {
-    _iterator12.e(err);
+    _iterator18.e(err);
   } finally {
-    _iterator12.f();
+    _iterator18.f();
   }
   if (missing.length) {
     errors.push("Missing categories: ".concat(missing.join(', ')));
@@ -7118,10 +7370,10 @@ function validateDeviceDatabaseStructure(candidate) {
     if (!isPlainObjectValue(candidate.accessories)) {
       errors.push('Accessory collections must be objects.');
     } else {
-      for (var _i12 = 0, _Object$entries1 = Object.entries(candidate.accessories); _i12 < _Object$entries1.length; _i12++) {
-        var _Object$entries1$_i = _slicedToArray(_Object$entries1[_i12], 2),
-          subKey = _Object$entries1$_i[0],
-          subValue = _Object$entries1$_i[1];
+      for (var _i18 = 0, _Object$entries10 = Object.entries(candidate.accessories); _i18 < _Object$entries10.length; _i18++) {
+        var _Object$entries10$_i = _slicedToArray(_Object$entries10[_i18], 2),
+          subKey = _Object$entries10$_i[0],
+          subValue = _Object$entries10$_i[1];
         if (!isPlainObjectValue(subValue)) {
           errors.push("Accessory category \"".concat(subKey, "\" must be an object."));
         }
@@ -7132,10 +7384,10 @@ function validateDeviceDatabaseStructure(candidate) {
     errors.push('Filter options must be provided as an array.');
   }
   if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
-    for (var _i13 = 0, _Object$entries10 = Object.entries(candidate.fiz); _i13 < _Object$entries10.length; _i13++) {
-      var _Object$entries10$_i = _slicedToArray(_Object$entries10[_i13], 2),
-        _subKey = _Object$entries10$_i[0],
-        _subValue = _Object$entries10$_i[1];
+    for (var _i19 = 0, _Object$entries11 = Object.entries(candidate.fiz); _i19 < _Object$entries11.length; _i19++) {
+      var _Object$entries11$_i = _slicedToArray(_Object$entries11[_i19], 2),
+        _subKey = _Object$entries11$_i[0],
+        _subValue = _Object$entries11$_i[1];
       if (_subValue !== undefined && !isPlainObjectValue(_subValue)) {
         errors.push("FIZ category \"".concat(_subKey, "\" must be an object."));
       }
@@ -7147,20 +7399,20 @@ function validateDeviceDatabaseStructure(candidate) {
     if (!isPlainObjectValue(collection)) {
       return;
     }
-    for (var _i14 = 0, _Object$entries11 = Object.entries(collection); _i14 < _Object$entries11.length; _i14++) {
-      var _Object$entries11$_i = _slicedToArray(_Object$entries11[_i14], 2),
-        name = _Object$entries11$_i[0],
-        _value4 = _Object$entries11$_i[1];
+    for (var _i20 = 0, _Object$entries12 = Object.entries(collection); _i20 < _Object$entries12.length; _i20++) {
+      var _Object$entries12$_i = _slicedToArray(_Object$entries12[_i20], 2),
+        name = _Object$entries12$_i[0],
+        _value5 = _Object$entries12$_i[1];
       if (name === 'None' || name === 'filterOptions') {
         continue;
       }
       var nextPath = path.concat(name);
-      if (!isPlainObjectValue(_value4)) {
-        if (!Array.isArray(_value4)) {
+      if (!isPlainObjectValue(_value5)) {
+        if (!Array.isArray(_value5)) {
           structureErrors.push("".concat(nextPath.join('.'), " must be an object."));
         }
-      } else if (!isDeviceEntryObject(_value4)) {
-        _inspectCollections(_value4, nextPath);
+      } else if (!isDeviceEntryObject(_value5)) {
+        _inspectCollections(_value5, nextPath);
       }
       if (structureErrors.length >= MAX_DEVICE_IMPORT_ERRORS) {
         return;
@@ -7174,8 +7426,8 @@ function validateDeviceDatabaseStructure(candidate) {
     errors.push('The imported database does not contain any devices.');
   }
   var uniqueErrors = [];
-  for (var _i15 = 0, _errors = errors; _i15 < _errors.length; _i15++) {
-    var message = _errors[_i15];
+  for (var _i21 = 0, _errors = errors; _i21 < _errors.length; _i21++) {
+    var message = _errors[_i21];
     if (message && !uniqueErrors.includes(message)) {
       uniqueErrors.push(message);
     }
@@ -7248,18 +7500,18 @@ function serializeIntlOptions(options) {
     return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
   }
   var entries = [];
-  for (var _i16 = 0, _Object$entries12 = Object.entries(options); _i16 < _Object$entries12.length; _i16++) {
-    var _Object$entries12$_i = _slicedToArray(_Object$entries12[_i16], 2),
-      _key7 = _Object$entries12$_i[0],
-      _value5 = _Object$entries12$_i[1];
-    if (typeof _value5 === 'undefined') continue;
+  for (var _i22 = 0, _Object$entries13 = Object.entries(options); _i22 < _Object$entries13.length; _i22++) {
+    var _Object$entries13$_i = _slicedToArray(_Object$entries13[_i22], 2),
+      _key9 = _Object$entries13$_i[0],
+      _value6 = _Object$entries13$_i[1];
+    if (typeof _value6 === 'undefined') continue;
     var normalizedValue = void 0;
-    if (_value5 && _typeof(_value5) === 'object') {
-      normalizedValue = serializeIntlOptions(_value5);
+    if (_value6 && _typeof(_value6) === 'object') {
+      normalizedValue = serializeIntlOptions(_value6);
     } else {
-      normalizedValue = String(_value5);
+      normalizedValue = String(_value6);
     }
-    entries.push("".concat(_key7, ":").concat(normalizedValue));
+    entries.push("".concat(_key9, ":").concat(normalizedValue));
   }
   if (!entries.length) {
     return DEFAULT_INTL_CACHE_KEY;
@@ -7507,9 +7759,9 @@ function estimateBackupSize(data) {
   try {
     var snapshot = {};
     for (var i = 0; i < localStorage.length; i += 1) {
-      var _key8 = localStorage.key(i);
-      if (typeof _key8 !== 'string') continue;
-      snapshot[_key8] = localStorage.getItem(_key8);
+      var _key0 = localStorage.key(i);
+      if (typeof _key0 !== 'string') continue;
+      snapshot[_key0] = localStorage.getItem(_key0);
     }
     var payload = {
       version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : '',
@@ -8005,17 +8257,17 @@ var computeTokenMatchDetails = function computeTokenMatchDetails() {
   }
   var total = 0;
   var matched = 0;
-  var _iterator13 = _createForOfIteratorHelper(validQueryTokens),
-    _step13;
+  var _iterator19 = _createForOfIteratorHelper(validQueryTokens),
+    _step19;
   try {
-    for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-      var token = _step13.value;
+    for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+      var token = _step19.value;
       var best = 0;
-      var _iterator14 = _createForOfIteratorHelper(entryTokens),
-        _step14;
+      var _iterator20 = _createForOfIteratorHelper(entryTokens),
+        _step20;
       try {
-        for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-          var entryToken = _step14.value;
+        for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+          var entryToken = _step20.value;
           if (!entryToken) continue;
           if (entryToken === token) {
             best = 3;
@@ -8028,9 +8280,9 @@ var computeTokenMatchDetails = function computeTokenMatchDetails() {
           }
         }
       } catch (err) {
-        _iterator14.e(err);
+        _iterator20.e(err);
       } finally {
-        _iterator14.f();
+        _iterator20.f();
       }
       if (best > 0) {
         matched += 1;
@@ -8038,9 +8290,9 @@ var computeTokenMatchDetails = function computeTokenMatchDetails() {
       }
     }
   } catch (err) {
-    _iterator13.e(err);
+    _iterator19.e(err);
   } finally {
-    _iterator13.f();
+    _iterator19.f();
   }
   if (matched === 0) {
     return {
@@ -8070,35 +8322,35 @@ function findBestSearchMatch(map, key) {
     };
   };
   var flattened = [];
-  var _iterator15 = _createForOfIteratorHelper(map.entries()),
-    _step15;
+  var _iterator21 = _createForOfIteratorHelper(map.entries()),
+    _step21;
   try {
-    for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-      var _step15$value = _slicedToArray(_step15.value, 2),
-        _entryKey = _step15$value[0],
-        _entryValue2 = _step15$value[1];
+    for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+      var _step21$value = _slicedToArray(_step21.value, 2),
+        _entryKey = _step21$value[0],
+        _entryValue2 = _step21$value[1];
       if (!_entryValue2) continue;
       if (Array.isArray(_entryValue2)) {
-        var _iterator17 = _createForOfIteratorHelper(_entryValue2),
-          _step17;
+        var _iterator23 = _createForOfIteratorHelper(_entryValue2),
+          _step23;
         try {
-          for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-            var _value6 = _step17.value;
-            if (_value6) flattened.push([_entryKey, _value6]);
+          for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
+            var _value7 = _step23.value;
+            if (_value7) flattened.push([_entryKey, _value7]);
           }
         } catch (err) {
-          _iterator17.e(err);
+          _iterator23.e(err);
         } finally {
-          _iterator17.f();
+          _iterator23.f();
         }
       } else {
         flattened.push([_entryKey, _entryValue2]);
       }
     }
   } catch (err) {
-    _iterator15.e(err);
+    _iterator21.e(err);
   } finally {
-    _iterator15.f();
+    _iterator21.f();
   }
   if (hasKey) {
     var exactCandidates = flattened.filter(function (_ref38) {
@@ -8113,12 +8365,12 @@ function findBestSearchMatch(map, key) {
         score: Number.POSITIVE_INFINITY,
         matched: queryTokens.length
       };
-      var _iterator16 = _createForOfIteratorHelper(exactCandidates.slice(1)),
-        _step16;
+      var _iterator22 = _createForOfIteratorHelper(exactCandidates.slice(1)),
+        _step22;
       try {
-        for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-          var _step16$value = _slicedToArray(_step16.value, 2),
-            entryValue = _step16$value[1];
+        for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
+          var _step22$value = _slicedToArray(_step22.value, 2),
+            entryValue = _step22$value[1];
           if (!queryTokens.length) break;
           var details = computeTokenMatchDetails((entryValue === null || entryValue === void 0 ? void 0 : entryValue.tokens) || [], queryTokens);
           if (details.score > bestDetails.score || details.score === bestDetails.score && details.matched > bestDetails.matched) {
@@ -8127,9 +8379,9 @@ function findBestSearchMatch(map, key) {
           }
         }
       } catch (err) {
-        _iterator16.e(err);
+        _iterator22.e(err);
       } finally {
-        _iterator16.f();
+        _iterator22.f();
       }
       return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
     }
@@ -8150,8 +8402,8 @@ function findBestSearchMatch(map, key) {
   var bestPartialScore = Number.NEGATIVE_INFINITY;
   var bestPartialMatched = 0;
   var keyLength = hasKey ? key.length : 0;
-  for (var _i17 = 0, _flattened = flattened; _i17 < _flattened.length; _i17++) {
-    var _flattened$_i = _slicedToArray(_flattened[_i17], 2),
+  for (var _i23 = 0, _flattened = flattened; _i23 < _flattened.length; _i23++) {
+    var _flattened$_i = _slicedToArray(_flattened[_i23], 2),
       entryKey = _flattened$_i[0],
       _entryValue = _flattened$_i[1];
     if (!_entryValue) continue;
@@ -8371,20 +8623,20 @@ if (uiScaleRoot) {
     if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
       baseFontSize = computedFontSize;
     }
-    var _iterator18 = _createForOfIteratorHelper(uiScaleProperties),
-      _step18;
+    var _iterator24 = _createForOfIteratorHelper(uiScaleProperties),
+      _step24;
     try {
-      for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-        var prop = _step18.value;
-        var _value7 = parseFloat(computedStyle.getPropertyValue(prop));
-        if (Number.isFinite(_value7) && _value7 > 0) {
-          baseUIScaleValues[prop] = _value7;
+      for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
+        var prop = _step24.value;
+        var _value8 = parseFloat(computedStyle.getPropertyValue(prop));
+        if (Number.isFinite(_value8) && _value8 > 0) {
+          baseUIScaleValues[prop] = _value8;
         }
       }
     } catch (err) {
-      _iterator18.e(err);
+      _iterator24.e(err);
     } finally {
-      _iterator18.f();
+      _iterator24.f();
     }
   } catch (error) {
     console.warn('Unable to read computed styles for UI scaling', error);
@@ -8569,7 +8821,7 @@ function loadStoredCustomFonts() {
 }
 function _loadStoredCustomFonts() {
   _loadStoredCustomFonts = _asyncToGenerator(_regenerator().m(function _callee7() {
-    var stored, _iterator24, _step24, entry, normalized, _t5, _t6;
+    var stored, _iterator30, _step30, entry, normalized, _t5, _t6;
     return _regenerator().w(function (_context7) {
       while (1) switch (_context7.p = _context7.n) {
         case 0:
@@ -8580,15 +8832,15 @@ function _loadStoredCustomFonts() {
           }
           return _context7.a(2);
         case 1:
-          _iterator24 = _createForOfIteratorHelper(stored);
+          _iterator30 = _createForOfIteratorHelper(stored);
           _context7.p = 2;
-          _iterator24.s();
+          _iterator30.s();
         case 3:
-          if ((_step24 = _iterator24.n()).done) {
+          if ((_step30 = _iterator30.n()).done) {
             _context7.n = 8;
             break;
           }
-          entry = _step24.value;
+          entry = _step30.value;
           normalized = {
             id: entry.id,
             name: sanitizeCustomFontName(entry.name),
@@ -8614,10 +8866,10 @@ function _loadStoredCustomFonts() {
         case 9:
           _context7.p = 9;
           _t6 = _context7.v;
-          _iterator24.e(_t6);
+          _iterator30.e(_t6);
         case 10:
           _context7.p = 10;
-          _iterator24.f();
+          _iterator30.f();
           return _context7.f(10);
         case 11:
           return _context7.a(2);
@@ -8723,7 +8975,7 @@ function handleLocalFontFiles(_x7) {
 }
 function _handleLocalFontFiles() {
   _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee9(fileList) {
-    var added, unsupported, failed, persistFailure, _i58, _Array$from, file, dataUrl, result, message, _message5, _message6, _t7;
+    var added, unsupported, failed, persistFailure, _i64, _Array$from, file, dataUrl, result, message, _message5, _message6, _t7;
     return _regenerator().w(function (_context9) {
       while (1) switch (_context9.p = _context9.n) {
         case 0:
@@ -8741,13 +8993,13 @@ function _handleLocalFontFiles() {
           unsupported = [];
           failed = [];
           persistFailure = false;
-          _i58 = 0, _Array$from = Array.from(fileList);
+          _i64 = 0, _Array$from = Array.from(fileList);
         case 2:
-          if (!(_i58 < _Array$from.length)) {
+          if (!(_i64 < _Array$from.length)) {
             _context9.n = 9;
             break;
           }
-          file = _Array$from[_i58];
+          file = _Array$from[_i64];
           if (isSupportedFontFile(file)) {
             _context9.n = 3;
             break;
@@ -8783,7 +9035,7 @@ function _handleLocalFontFiles() {
           console.warn('Failed to import custom font', _t7);
           failed.push(file && typeof file.name === 'string' ? file.name : '');
         case 8:
-          _i58++;
+          _i64++;
           _context9.n = 2;
           break;
         case 9:
@@ -9072,7 +9324,7 @@ function requestLocalFonts() {
 }
 function _requestLocalFonts() {
   _requestLocalFonts = _asyncToGenerator(_regenerator().m(function _callee1() {
-    var fonts, added, duplicates, seenValues, _iterator25, _step25, font, rawName, name, _value9, _ensureFontFamilyOpti3, option, created, _t9, _t0;
+    var fonts, added, duplicates, seenValues, _iterator31, _step31, font, rawName, name, _value0, _ensureFontFamilyOpti3, option, created, _t9, _t0;
     return _regenerator().w(function (_context1) {
       while (1) switch (_context1.p = _context1.n) {
         case 0:
@@ -9098,15 +9350,15 @@ function _requestLocalFonts() {
           added = [];
           duplicates = [];
           seenValues = new Set();
-          _iterator25 = _createForOfIteratorHelper(fonts);
+          _iterator31 = _createForOfIteratorHelper(fonts);
           _context1.p = 5;
-          _iterator25.s();
+          _iterator31.s();
         case 6:
-          if ((_step25 = _iterator25.n()).done) {
+          if ((_step31 = _iterator31.n()).done) {
             _context1.n = 11;
             break;
           }
-          font = _step25.value;
+          font = _step31.value;
           rawName = font && (font.family || font.fullName || font.postscriptName);
           name = rawName ? String(rawName).trim() : '';
           if (name) {
@@ -9115,15 +9367,15 @@ function _requestLocalFonts() {
           }
           return _context1.a(3, 10);
         case 7:
-          _value9 = buildFontFamilyValue(name);
-          if (!seenValues.has(_value9)) {
+          _value0 = buildFontFamilyValue(name);
+          if (!seenValues.has(_value0)) {
             _context1.n = 8;
             break;
           }
           duplicates.push(name);
           return _context1.a(3, 10);
         case 8:
-          _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value9, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
+          _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value0, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
           if (option) {
             _context1.n = 9;
             break;
@@ -9148,10 +9400,10 @@ function _requestLocalFonts() {
         case 12:
           _context1.p = 12;
           _t9 = _context1.v;
-          _iterator25.e(_t9);
+          _iterator31.e(_t9);
         case 13:
           _context1.p = 13;
-          _iterator25.f();
+          _iterator31.f();
           return _context1.f(13);
         case 14:
           if (added.length > 0) {
@@ -9230,19 +9482,19 @@ function applyFontSize(size) {
     return;
   }
   var scale = numericSize / baseFontSize;
-  var _iterator19 = _createForOfIteratorHelper(uiScaleProperties),
-    _step19;
+  var _iterator25 = _createForOfIteratorHelper(uiScaleProperties),
+    _step25;
   try {
-    for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-      var _prop = _step19.value;
+    for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
+      var _prop = _step25.value;
       var baseValue = baseUIScaleValues[_prop];
       if (!Number.isFinite(baseValue) || baseValue <= 0) continue;
       document.documentElement.style.setProperty(_prop, "".concat(baseValue * scale, "px"));
     }
   } catch (err) {
-    _iterator19.e(err);
+    _iterator25.e(err);
   } finally {
-    _iterator19.f();
+    _iterator25.f();
   }
   document.documentElement.style.setProperty('--ui-scale', String(scale));
 }
@@ -9596,17 +9848,17 @@ function displayGearAndRequirements(html) {
       applyFilterSelectionsToGearList();
       renderFilterDetails();
       var findDevice = function findDevice(name) {
-        for (var _i18 = 0, _Object$entries13 = Object.entries(devices); _i18 < _Object$entries13.length; _i18++) {
-          var _Object$entries13$_i = _slicedToArray(_Object$entries13[_i18], 2),
-            catName = _Object$entries13$_i[0],
-            cat = _Object$entries13$_i[1];
+        for (var _i24 = 0, _Object$entries14 = Object.entries(devices); _i24 < _Object$entries14.length; _i24++) {
+          var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i24], 2),
+            catName = _Object$entries14$_i[0],
+            cat = _Object$entries14$_i[1];
           if (cat && _typeof(cat) === 'object') {
             if (cat[name]) return {
               info: cat[name],
               category: catName
             };
-            for (var _i19 = 0, _Object$values = Object.values(cat); _i19 < _Object$values.length; _i19++) {
-              var _sub5 = _Object$values[_i19];
+            for (var _i25 = 0, _Object$values4 = Object.values(cat); _i25 < _Object$values4.length; _i25++) {
+              var _sub5 = _Object$values4[_i25];
               if (_sub5 && _sub5[name]) return {
                 info: _sub5[name],
                 category: catName
@@ -13898,10 +14150,10 @@ function renderDeviceList(categoryKey, ulElement) {
     ulElement.appendChild(li);
   };
   if (categoryKey === "accessories.cables") {
-    for (var _i20 = 0, _Object$entries14 = Object.entries(categoryDevices); _i20 < _Object$entries14.length; _i20++) {
-      var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i20], 2),
-        subcat = _Object$entries14$_i[0],
-        devs = _Object$entries14$_i[1];
+    for (var _i26 = 0, _Object$entries15 = Object.entries(categoryDevices); _i26 < _Object$entries15.length; _i26++) {
+      var _Object$entries15$_i = _slicedToArray(_Object$entries15[_i26], 2),
+        subcat = _Object$entries15$_i[0],
+        devs = _Object$entries15$_i[1];
       for (var name in devs) {
         buildItem(name, devs[name], subcat);
       }
@@ -14164,20 +14416,20 @@ function populateSetupSelect() {
     if (autoA !== autoB) return autoA ? 1 : -1;
     return localeSort(a, b);
   });
-  var _iterator20 = _createForOfIteratorHelper(names),
-    _step20;
+  var _iterator26 = _createForOfIteratorHelper(names),
+    _step26;
   try {
-    for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-      var name = _step20.value;
+    for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
+      var name = _step26.value;
       var opt = document.createElement("option");
       opt.value = name;
       opt.textContent = name;
       setupSelect.appendChild(opt);
     }
   } catch (err) {
-    _iterator20.e(err);
+    _iterator26.e(err);
   } finally {
-    _iterator20.f();
+    _iterator26.f();
   }
 }
 populateSetupSelect();
@@ -14455,8 +14707,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     subcategoryFieldDiv.hidden = false;
     var subcats = Object.keys(((_devices$accessories3 = devices.accessories) === null || _devices$accessories3 === void 0 ? void 0 : _devices$accessories3.cables) || {});
     newSubcategorySelect.innerHTML = '';
-    for (var _i21 = 0, _subcats = subcats; _i21 < _subcats.length; _i21++) {
-      var sc = _subcats[_i21];
+    for (var _i27 = 0, _subcats = subcats; _i27 < _subcats.length; _i27++) {
+      var sc = _subcats[_i27];
       var opt = document.createElement('option');
       opt.value = sc;
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
@@ -14621,8 +14873,8 @@ newCategorySelect.addEventListener("change", function () {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     subcategoryFieldDiv.hidden = false;
     var subcats = Object.keys(((_devices$accessories4 = devices.accessories) === null || _devices$accessories4 === void 0 ? void 0 : _devices$accessories4.cables) || {});
-    for (var _i22 = 0, _subcats2 = subcats; _i22 < _subcats2.length; _i22++) {
-      var sc = _subcats2[_i22];
+    for (var _i28 = 0, _subcats2 = subcats; _i28 < _subcats2.length; _i28++) {
+      var sc = _subcats2[_i28];
       var opt = document.createElement('option');
       opt.value = sc;
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
@@ -14972,8 +15224,8 @@ addDeviceBtn.addEventListener("click", function () {
       return;
     }
     var _existing2 = editingSamePath && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
-    var _attrs = collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []);
-    targetCategory[name] = _objectSpread(_objectSpread(_objectSpread({}, _existing2), _attrs), {}, {
+    var _attrs2 = collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []);
+    targetCategory[name] = _objectSpread(_objectSpread(_objectSpread({}, _existing2), _attrs2), {}, {
       powerDrawWatts: _watt7
     });
   }
@@ -15661,8 +15913,8 @@ function generateConnectorSummary(device) {
     label: 'Audio',
     dir: 'I/O'
   }];
-  for (var _i23 = 0, _connectors = connectors; _i23 < _connectors.length; _i23++) {
-    var _connectors$_i = _connectors[_i23],
+  for (var _i29 = 0, _connectors = connectors; _i29 < _connectors.length; _i29++) {
+    var _connectors$_i = _connectors[_i29],
       items = _connectors$_i.items,
       icon = _connectors$_i.icon,
       cls = _connectors$_i.cls,
@@ -15778,8 +16030,8 @@ function addArriKNumber(name) {
   if (!name) return name;
   var d = typeof devices !== 'undefined' ? devices : {};
   var collections = [d.viewfinders, d.directorMonitors, d.iosVideo, d.videoAssist, d.media, d.lenses];
-  for (var _i24 = 0, _collections = collections; _i24 < _collections.length; _i24++) {
-    var col = _collections[_i24];
+  for (var _i30 = 0, _collections = collections; _i30 < _collections.length; _i30++) {
+    var col = _collections[_i30];
     if (col && col[name]) {
       var item = col[name];
       if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
@@ -15792,8 +16044,8 @@ function addArriKNumber(name) {
     var _findItem = function findItem(obj) {
       if (!obj) return null;
       if (obj[name]) return obj[name];
-      for (var _i25 = 0, _Object$values2 = Object.values(obj); _i25 < _Object$values2.length; _i25++) {
-        var val = _Object$values2[_i25];
+      for (var _i31 = 0, _Object$values5 = Object.values(obj); _i31 < _Object$values5.length; _i31++) {
+        var val = _Object$values5[_i31];
         if (val && _typeof(val) === 'object') {
           var found = _findItem(val);
           if (found) return found;
@@ -15801,8 +16053,8 @@ function addArriKNumber(name) {
       }
       return null;
     };
-    for (var _i26 = 0, _Object$values3 = Object.values(d.accessories); _i26 < _Object$values3.length; _i26++) {
-      var _col = _Object$values3[_i26];
+    for (var _i32 = 0, _Object$values6 = Object.values(d.accessories); _i32 < _Object$values6.length; _i32++) {
+      var _col = _Object$values6[_i32];
       var _item = _findItem(_col);
       if (_item) {
         if (_item.brand && _item.brand.toUpperCase().includes('ARRI') && _item.kNumber && !name.includes(_item.kNumber)) {
@@ -15883,11 +16135,11 @@ function suggestArriFizCables() {
     var _devices$accessories5;
     var cablesData = ((_devices$accessories5 = devices.accessories) === null || _devices$accessories5 === void 0 ? void 0 : _devices$accessories5.cables) || {};
     var chosen = null;
-    for (var _i27 = 0, _Object$entries15 = Object.entries(cablesData); _i27 < _Object$entries15.length; _i27++) {
+    for (var _i33 = 0, _Object$entries16 = Object.entries(cablesData); _i33 < _Object$entries16.length; _i33++) {
       var _data$lengthM, _cablesData$chosen$le;
-      var _Object$entries15$_i = _slicedToArray(_Object$entries15[_i27], 2),
-        name = _Object$entries15$_i[0],
-        data = _Object$entries15$_i[1];
+      var _Object$entries16$_i = _slicedToArray(_Object$entries16[_i33], 2),
+        name = _Object$entries16$_i[0],
+        data = _Object$entries16$_i[1];
       var connectors = [];
       if (Array.isArray(data.connectors)) connectors.push.apply(connectors, _toConsumableArray(data.connectors));
       if (data.from) connectors.push(data.from);
@@ -15958,10 +16210,10 @@ function collectAccessories() {
     var _devices$batteries$ba3;
     var mount = (_devices$batteries$ba3 = devices.batteries[batterySelect.value]) === null || _devices$batteries$ba3 === void 0 ? void 0 : _devices$batteries$ba3.mount_type;
     if (acc.powerPlates) {
-      for (var _i28 = 0, _Object$entries16 = Object.entries(acc.powerPlates); _i28 < _Object$entries16.length; _i28++) {
-        var _Object$entries16$_i = _slicedToArray(_Object$entries16[_i28], 2),
-          name = _Object$entries16$_i[0],
-          plate = _Object$entries16$_i[1];
+      for (var _i34 = 0, _Object$entries17 = Object.entries(acc.powerPlates); _i34 < _Object$entries17.length; _i34++) {
+        var _Object$entries17$_i = _slicedToArray(_Object$entries17[_i34], 2),
+          name = _Object$entries17$_i[0],
+          plate = _Object$entries17$_i[1];
         if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(cameraSelect.value))) {
           cameraSupport.push(name);
         }
@@ -15987,10 +16239,10 @@ function collectAccessories() {
       if (total > 0) {
         var counts = suggestChargerCounts(total);
         var findName = function findName(slots) {
-          for (var _i29 = 0, _Object$entries17 = Object.entries(acc.chargers); _i29 < _Object$entries17.length; _i29++) {
-            var _Object$entries17$_i = _slicedToArray(_Object$entries17[_i29], 2),
-              _name4 = _Object$entries17$_i[0],
-              charger = _Object$entries17$_i[1];
+          for (var _i35 = 0, _Object$entries18 = Object.entries(acc.chargers); _i35 < _Object$entries18.length; _i35++) {
+            var _Object$entries18$_i = _slicedToArray(_Object$entries18[_i35], 2),
+              _name4 = _Object$entries18$_i[0],
+              charger = _Object$entries18$_i[1];
             if (charger.mount === mount && charger.slots === slots) return _name4;
           }
           return null;
@@ -16008,10 +16260,10 @@ function collectAccessories() {
   }
   if (cameraSelect.value && acc.cages) {
     if (!cageSelect.value || cageSelect.value === 'None') {
-      for (var _i30 = 0, _Object$entries18 = Object.entries(acc.cages); _i30 < _Object$entries18.length; _i30++) {
-        var _Object$entries18$_i = _slicedToArray(_Object$entries18[_i30], 2),
-          _name5 = _Object$entries18$_i[0],
-          cage = _Object$entries18$_i[1];
+      for (var _i36 = 0, _Object$entries19 = Object.entries(acc.cages); _i36 < _Object$entries19.length; _i36++) {
+        var _Object$entries19$_i = _slicedToArray(_Object$entries19[_i36], 2),
+          _name5 = _Object$entries19$_i[0],
+          cage = _Object$entries19$_i[1];
         if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(_name5);
       }
     }
@@ -16024,10 +16276,10 @@ function collectAccessories() {
     var input = data === null || data === void 0 || (_data$power2 = data.power) === null || _data$power2 === void 0 || (_data$power2 = _data$power2.input) === null || _data$power2 === void 0 ? void 0 : _data$power2.type;
     var types = Array.isArray(input) ? input : input ? [input] : [];
     types.forEach(function (t) {
-      for (var _i31 = 0, _Object$entries19 = Object.entries(powerCableDb); _i31 < _Object$entries19.length; _i31++) {
-        var _Object$entries19$_i = _slicedToArray(_Object$entries19[_i31], 2),
-          _name6 = _Object$entries19$_i[0],
-          cable = _Object$entries19$_i[1];
+      for (var _i37 = 0, _Object$entries20 = Object.entries(powerCableDb); _i37 < _Object$entries20.length; _i37++) {
+        var _Object$entries20$_i = _slicedToArray(_Object$entries20[_i37], 2),
+          _name6 = _Object$entries20$_i[0],
+          cable = _Object$entries20$_i[1];
         var isExcluded = excludedCables.has(_name6);
         if (cable.to === t && (!isExcluded || includeExcluded)) target.push(_name6);
       }
@@ -16150,10 +16402,10 @@ function collectAccessories() {
       motorConns.forEach(function (mConn) {
         controllerConns.forEach(function (cConn) {
           if (mConn !== cConn) return;
-          for (var _i32 = 0, _Object$entries20 = Object.entries(fizCableDb); _i32 < _Object$entries20.length; _i32++) {
-            var _Object$entries20$_i = _slicedToArray(_Object$entries20[_i32], 2),
-              _name7 = _Object$entries20$_i[0],
-              cable = _Object$entries20$_i[1];
+          for (var _i38 = 0, _Object$entries21 = Object.entries(fizCableDb); _i38 < _Object$entries21.length; _i38++) {
+            var _Object$entries21$_i = _slicedToArray(_Object$entries21[_i38], 2),
+              _name7 = _Object$entries21$_i[0],
+              cable = _Object$entries21$_i[1];
             if (matchesCable(cable, mConn, cConn)) {
               var context = buildPairContext(motorEntry.name, controllerEntry.name);
               pushFizCable(_name7, context);
@@ -16564,22 +16816,22 @@ function analyzeAutoGearSegment(nodes) {
 function updateRawSegmentCount(nodes, info, newCount) {
   if (!nodes.length) return;
   var updated = false;
-  var _iterator21 = _createForOfIteratorHelper(nodes),
-    _step21;
+  var _iterator27 = _createForOfIteratorHelper(nodes),
+    _step27;
   try {
-    for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
-      var node = _step21.value;
+    for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
+      var node = _step27.value;
       if (node.nodeType === Node.TEXT_NODE) {
-        var _value8 = node.textContent || '';
-        if (/\d+x\s+/i.test(_value8)) {
-          node.textContent = _value8.replace(/^(\s*)(\d+)x\s+/, function (match, spaces) {
+        var _value9 = node.textContent || '';
+        if (/\d+x\s+/i.test(_value9)) {
+          node.textContent = _value9.replace(/^(\s*)(\d+)x\s+/, function (match, spaces) {
             return "".concat(spaces).concat(newCount, "x ");
           });
           updated = true;
           break;
         }
-        if (_value8.trim()) {
-          node.textContent = "".concat(newCount, "x ").concat(_value8.trim().replace(/^(\d+)x\s+/, ''));
+        if (_value9.trim()) {
+          node.textContent = "".concat(newCount, "x ").concat(_value9.trim().replace(/^(\d+)x\s+/, ''));
           updated = true;
           break;
         }
@@ -16595,9 +16847,9 @@ function updateRawSegmentCount(nodes, info, newCount) {
       }
     }
   } catch (err) {
-    _iterator21.e(err);
+    _iterator27.e(err);
   } finally {
-    _iterator21.f();
+    _iterator27.f();
   }
   if (!updated) {
     var first = nodes[0];
@@ -16673,8 +16925,8 @@ function addAutoGearItem(cell, item) {
   var name = item.name ? item.name.trim() : '';
   if (!name) return;
   var spans = Array.from(cell.querySelectorAll('.gear-item'));
-  for (var _i33 = 0, _spans = spans; _i33 < _spans.length; _i33++) {
-    var _span = _spans[_i33];
+  for (var _i39 = 0, _spans = spans; _i39 < _spans.length; _i39++) {
+    var _span = _spans[_i39];
     var spanName = _span.getAttribute('data-gear-name') || (_span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
     if (matchesAutoGearItem(name, spanName)) {
       var newCount = getSpanCount(_span) + quantity;
@@ -16729,8 +16981,8 @@ function findAutoGearCategoryCell(table, category) {
   var rawCategory = category && category.trim() ? category.trim() : '';
   var label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
   var bodies = Array.from(table.querySelectorAll('tbody.category-group'));
-  for (var _i34 = 0, _bodies = bodies; _i34 < _bodies.length; _i34++) {
-    var body = _bodies[_i34];
+  for (var _i40 = 0, _bodies = bodies; _i40 < _bodies.length; _i40++) {
+    var body = _bodies[_i40];
     if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
       if (body.dataset.autoCategory === rawCategory) {
         var cell = body.querySelector('tr:not(.category-row) td');
@@ -16784,8 +17036,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       }
       if (remaining > 0) {
         var gearCells = Array.from(table.querySelectorAll('tbody.category-group tr:not(.category-row) td'));
-        for (var _i35 = 0, _gearCells = gearCells; _i35 < _gearCells.length; _i35++) {
-          var cell = _gearCells[_i35];
+        for (var _i41 = 0, _gearCells = gearCells; _i41 < _gearCells.length; _i41++) {
+          var cell = _gearCells[_i41];
           if (cell === primaryCell) continue;
           remaining = removeAutoGearItem(cell, item, remaining);
           if (remaining <= 0) break;
@@ -16852,21 +17104,21 @@ function generateGearListHtml() {
     monitoringSupportAcc = _collectAccessories.monitoringSupport,
     riggingAcc = _collectAccessories.rigging;
   for (var i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4" to 1/4"');
-  for (var _i36 = 0; _i36 < 2; _i36++) riggingAcc.push('ULCS Bracket with 3/8" to 1/4"');
-  for (var _i37 = 0; _i37 < 2; _i37++) riggingAcc.push('Noga Arm');
-  for (var _i38 = 0; _i38 < 2; _i38++) riggingAcc.push('Mini Magic Arm');
-  for (var _i39 = 0; _i39 < 4; _i39++) riggingAcc.push('Cine Quick Release');
+  for (var _i42 = 0; _i42 < 2; _i42++) riggingAcc.push('ULCS Bracket with 3/8" to 1/4"');
+  for (var _i43 = 0; _i43 < 2; _i43++) riggingAcc.push('Noga Arm');
+  for (var _i44 = 0; _i44 < 2; _i44++) riggingAcc.push('Mini Magic Arm');
+  for (var _i45 = 0; _i45 < 4; _i45++) riggingAcc.push('Cine Quick Release');
   riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
-  for (var _i40 = 0; _i40 < 3; _i40++) riggingAcc.push('Spigot with male 3/8" and 1/4"');
-  for (var _i41 = 0; _i41 < 2; _i41++) riggingAcc.push('Clapper Stick');
-  for (var _i42 = 0; _i42 < 2; _i42++) riggingAcc.push('D-Tap Splitter');
+  for (var _i46 = 0; _i46 < 3; _i46++) riggingAcc.push('Spigot with male 3/8" and 1/4"');
+  for (var _i47 = 0; _i47 < 2; _i47++) riggingAcc.push('Clapper Stick');
+  for (var _i48 = 0; _i48 < 2; _i48++) riggingAcc.push('D-Tap Splitter');
   var cagesDb = ((_devices$accessories6 = devices.accessories) === null || _devices$accessories6 === void 0 ? void 0 : _devices$accessories6.cages) || {};
   var compatibleCages = [];
   if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
-    for (var _i43 = 0, _Object$entries21 = Object.entries(cagesDb); _i43 < _Object$entries21.length; _i43++) {
-      var _Object$entries21$_i = _slicedToArray(_Object$entries21[_i43], 2),
-        name = _Object$entries21$_i[0],
-        cage = _Object$entries21$_i[1];
+    for (var _i49 = 0, _Object$entries22 = Object.entries(cagesDb); _i49 < _Object$entries22.length; _i49++) {
+      var _Object$entries22$_i = _slicedToArray(_Object$entries22[_i49], 2),
+        name = _Object$entries22$_i[0],
+        cage = _Object$entries22$_i[1];
       if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) {
         compatibleCages.push(name);
       }
@@ -16890,7 +17142,7 @@ function generateGearListHtml() {
   };
   var hasGimbal = isScenarioActive('Gimbal');
   if (isAnyScenarioActive(['Trinity', 'Steadicam'])) {
-    for (var _i44 = 0; _i44 < 2; _i44++) {
+    for (var _i50 = 0; _i50 < 2; _i50++) {
       riggingAcc.push('D-Tap Splitter');
       riggingAcc.push('D-Tap Extension 50 cm (Steadicam/Trinity)');
     }
@@ -16929,10 +17181,10 @@ function generateGearListHtml() {
   if (info.mattebox && !needsSwingAway) {
     var _devices$accessories7;
     var matteboxes = ((_devices$accessories7 = devices.accessories) === null || _devices$accessories7 === void 0 ? void 0 : _devices$accessories7.matteboxes) || {};
-    for (var _i45 = 0, _Object$entries22 = Object.entries(matteboxes); _i45 < _Object$entries22.length; _i45++) {
-      var _Object$entries22$_i = _slicedToArray(_Object$entries22[_i45], 2),
-        _name8 = _Object$entries22$_i[0],
-        mb = _Object$entries22$_i[1];
+    for (var _i51 = 0, _Object$entries23 = Object.entries(matteboxes); _i51 < _Object$entries23.length; _i51++) {
+      var _Object$entries23$_i = _slicedToArray(_Object$entries23[_i51], 2),
+        _name8 = _Object$entries23$_i[0],
+        mb = _Object$entries23$_i[1];
       var normalize = function normalize(s) {
         return s.replace(/[-\s]/g, '').toLowerCase();
       };
@@ -17022,7 +17274,7 @@ function generateGearListHtml() {
     var rxName = selectedNames.video.replace(/ TX\b/, ' RX');
     if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
       var receivers = receiverCount || 1;
-      for (var _i46 = 0; _i46 < receivers; _i46++) {
+      for (var _i52 = 0; _i52 < receivers; _i52++) {
         monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
       }
     }
@@ -17500,13 +17752,13 @@ function generateGearListHtml() {
     return /V98micro/i.test(n);
   }) || 'Bebob V98micro';
   handheldPrefs.forEach(function (p) {
-    for (var _i47 = 0; _i47 < 3; _i47++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
+    for (var _i53 = 0; _i53 < 3; _i53++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
   });
   if (hasMotor) {
     var bebob150 = Object.keys(devices.batteries || {}).find(function (n) {
       return /V150micro/i.test(n);
     }) || 'Bebob V150micro';
-    for (var _i48 = 0; _i48 < 3; _i48++) monitoringBatteryItems.push("".concat(bebob150, " (Focus)"));
+    for (var _i54 = 0; _i54 < 3; _i54++) monitoringBatteryItems.push("".concat(bebob150, " (Focus)"));
   }
   var bebob290 = Object.keys(devices.batteries || {}).find(function (n) {
     return /V290RM-Cine/i.test(n);
@@ -17733,15 +17985,15 @@ function generateGearListHtml() {
     multiplier = 2;
   }
   var klappenMultiplier = multiplier % 2 === 0 ? multiplier : Math.max(1, multiplier - 1);
-  for (var _i49 = 0, _baseConsumables = baseConsumables; _i49 < _baseConsumables.length; _i49++) {
-    var item = _baseConsumables[_i49];
+  for (var _i55 = 0, _baseConsumables = baseConsumables; _i55 < _baseConsumables.length; _i55++) {
+    var item = _baseConsumables[_i55];
     var _count2 = item.count;
     if (item.noScale) {} else if (item.klappen) {
       _count2 *= klappenMultiplier;
     } else {
       _count2 *= multiplier;
     }
-    for (var _i50 = 0; _i50 < _count2; _i50++) consumables.push(item.name);
+    for (var _i56 = 0; _i56 < _count2; _i56++) consumables.push(item.name);
   }
   if (eyeLeatherCount) eyeLeatherCount *= multiplier;
   var needsRainProtection = isAnyScenarioActive(['Outdoor', 'Extreme rain', 'Rain Machine']);
@@ -17765,10 +18017,10 @@ function generateGearListHtml() {
     var monitorsUnder10 = _monitorSizes.filter(function (s) {
       return s <= 10;
     }).length;
-    for (var _i51 = 0; _i51 < monitorsAbove10 + 2; _i51++) consumables.push('CapIt Large');
-    for (var _i52 = 0; _i52 < monitorsUnder10 + 3; _i52++) consumables.push('CapIt Medium');
-    for (var _i53 = 0; _i53 < 3; _i53++) consumables.push('CapIt Small');
-    for (var _i54 = 0; _i54 < 10; _i54++) consumables.push('Duschhaube');
+    for (var _i57 = 0; _i57 < monitorsAbove10 + 2; _i57++) consumables.push('CapIt Large');
+    for (var _i58 = 0; _i58 < monitorsUnder10 + 3; _i58++) consumables.push('CapIt Medium');
+    for (var _i59 = 0; _i59 < 3; _i59++) consumables.push('CapIt Small');
+    for (var _i60 = 0; _i60 < 10; _i60++) consumables.push('Duschhaube');
     consumables.push('Magliner Rain Cover Transparent');
   }
   var needsHairDryer = isWinterShoot && isScenarioActive('Outdoor') || isScenarioActive('Extreme cold (snow)');
@@ -17783,8 +18035,8 @@ function generateGearListHtml() {
   }
   if (needsHandAndFeetWarmers) {
     var warmersCount = Math.max(shootDays, 1) * 2;
-    for (var _i55 = 0; _i55 < warmersCount; _i55++) miscItems.push('Hand Warmers');
-    for (var _i56 = 0; _i56 < warmersCount; _i56++) miscItems.push('Feet Warmers');
+    for (var _i61 = 0; _i61 < warmersCount; _i61++) miscItems.push('Hand Warmers');
+    for (var _i62 = 0; _i62 < warmersCount; _i62++) miscItems.push('Feet Warmers');
   }
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
@@ -18686,9 +18938,9 @@ function applySharedSetup(shared) {
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
     saveCurrentSession();
     if (Array.isArray(decoded.feedback) && decoded.feedback.length) {
-      var _key9 = getCurrentSetupKey();
+      var _key1 = getCurrentSetupKey();
       var fb = loadFeedbackSafe();
-      fb[_key9] = (fb[_key9] || []).concat(decoded.feedback);
+      fb[_key1] = (fb[_key1] || []).concat(decoded.feedback);
       saveFeedbackSafe(fb);
     }
     currentProjectInfo = decoded.projectInfo || null;
@@ -19537,9 +19789,9 @@ function captureStorageSnapshot(storage) {
     if (typeof storage.key === 'function' && typeof storage.length === 'number') {
       var length = storage.length;
       for (var i = 0; i < length; i++) {
-        var _key0 = storage.key(i);
-        if (typeof _key0 !== 'string') continue;
-        snapshot[_key0] = storage.getItem(_key0);
+        var _key10 = storage.key(i);
+        if (typeof _key10 !== 'string') continue;
+        snapshot[_key10] = storage.getItem(_key10);
       }
     } else if (typeof storage.keys === 'function') {
       var keys = storage.keys();
@@ -19622,24 +19874,24 @@ function extractFirstMatchingSnapshot(source, keys) {
     snapshot: null,
     keyUsed: null
   };
-  var _iterator22 = _createForOfIteratorHelper(keys),
-    _step22;
+  var _iterator28 = _createForOfIteratorHelper(keys),
+    _step28;
   try {
-    for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
-      var _key1 = _step22.value;
-      if (!Object.prototype.hasOwnProperty.call(source, _key1)) continue;
-      var snapshot = convertEntriesToSnapshot(source[_key1]);
+    for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+      var _key11 = _step28.value;
+      if (!Object.prototype.hasOwnProperty.call(source, _key11)) continue;
+      var snapshot = convertEntriesToSnapshot(source[_key11]);
       if (snapshot) {
         return {
           snapshot: snapshot,
-          keyUsed: _key1
+          keyUsed: _key11
         };
       }
     }
   } catch (err) {
-    _iterator22.e(err);
+    _iterator28.e(err);
   } finally {
-    _iterator22.f();
+    _iterator28.f();
   }
   return {
     snapshot: null,
@@ -19678,10 +19930,10 @@ function extractBackupSections(raw) {
   var settingsSnapshot = settingsResult.snapshot || buildLegacyStorageFromRoot(parsed, metadataKeys);
   var sessionSnapshot = sessionResult.snapshot;
   var dataSection = null;
-  for (var _i57 = 0, _arr = ['data', 'payload', 'plannerData', 'allData']; _i57 < _arr.length; _i57++) {
-    var _key10 = _arr[_i57];
-    if (isPlainObject(parsed[_key10])) {
-      dataSection = parsed[_key10];
+  for (var _i63 = 0, _arr = ['data', 'payload', 'plannerData', 'allData']; _i63 < _arr.length; _i63++) {
+    var _key12 = _arr[_i63];
+    if (isPlainObject(parsed[_key12])) {
+      dataSection = parsed[_key12];
       break;
     }
   }
@@ -20367,19 +20619,19 @@ if (helpButton && helpDialog) {
       var variants = HELP_SEARCH_ACCENT_VARIANTS.get(char) || '';
       var chars = new Set();
       var all = "".concat(char).concat(variants);
-      var _iterator23 = _createForOfIteratorHelper(all),
-        _step23;
+      var _iterator29 = _createForOfIteratorHelper(all),
+        _step29;
       try {
-        for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
-          var ch = _step23.value;
+        for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
+          var ch = _step29.value;
           chars.add(ch);
           var upper = ch.toUpperCase();
           if (upper) chars.add(upper);
         }
       } catch (err) {
-        _iterator23.e(err);
+        _iterator29.e(err);
       } finally {
-        _iterator23.f();
+        _iterator29.f();
       }
       var escaped = Array.from(chars).map(escapeRegExp).join('');
       return "[".concat(escaped, "]");
