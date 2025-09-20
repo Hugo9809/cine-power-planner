@@ -19058,10 +19058,10 @@ function saveCurrentGearList() {
 }
 
 function deleteCurrentGearList() {
-    if (!confirm(texts[currentLang].confirmDeleteGearList)) return;
-    if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return;
+    if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;
+    if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
     const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
-    if (!backupName) return;
+    if (!backupName) return false;
     const projectName = getCurrentProjectName();
     const storageKey = typeof projectName === 'string' ? projectName : '';
     if (typeof deleteProject === 'function') {
@@ -19141,6 +19141,21 @@ function deleteCurrentGearList() {
     }
     currentProjectInfo = null;
     updateGearListButtonVisibility();
+    if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+        const eventDetail = { projectName: storageKey, backupName, source: 'deleteCurrentGearList' };
+        try {
+            document.dispatchEvent(new CustomEvent('gearlist:deleted', { detail: eventDetail }));
+        } catch (error) {
+            if (typeof document.createEvent === 'function') {
+                const fallbackEvent = document.createEvent('CustomEvent');
+                fallbackEvent.initCustomEvent('gearlist:deleted', false, false, eventDetail);
+                document.dispatchEvent(fallbackEvent);
+            } else {
+                console.warn('Unable to dispatch gearlist:deleted event', error);
+            }
+        }
+    }
+    return true;
 }
 
 function ensureGearListActions() {
@@ -19234,6 +19249,26 @@ function ensureGearListActions() {
             }
         });
         gearListOutput._inputListenerBound = true;
+    }
+}
+
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+    const handlerKey = '__cameraPowerPlannerGearDeleteHandler';
+    if (!document[handlerKey]) {
+        const handleGearDeleteRequest = () => {
+            try {
+                deleteCurrentGearList();
+            } catch (error) {
+                console.warn('Failed to handle gear list deletion request', error);
+            }
+        };
+        document.addEventListener('gearlist:delete-requested', handleGearDeleteRequest);
+        Object.defineProperty(document, handlerKey, {
+            value: handleGearDeleteRequest,
+            configurable: true,
+            writable: false,
+            enumerable: false,
+        });
     }
 }
 

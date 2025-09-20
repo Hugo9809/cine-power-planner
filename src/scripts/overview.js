@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getCssVariableValue, iconMarkup */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getCssVariableValue, iconMarkup, deleteCurrentGearList */
 
 const getCssVarValue = (typeof getCssVariableValue === 'function'
     ? getCssVariableValue
@@ -300,6 +300,11 @@ function generatePrintableOverview() {
     const gearListHtmlCombined = projectSectionHtml || gearSectionHtml
         ? `${projectSectionHtml || ''}${gearSectionHtml || ''}`
         : '';
+    const deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
+    const deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
+    const gearListActionsHtml = gearListHtmlCombined
+        ? `<div class="overview-gear-actions"><button id="overviewDeleteGearListBtn" class="overview-delete-gear-btn" title="${escapeHtmlSafe(deleteGearListHelp)}" data-help="${escapeHtmlSafe(deleteGearListHelp)}">${escapeHtmlSafe(deleteGearListLabel)}</button></div>`
+        : '';
 
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
     const contentClass = customLogo ? 'logo-present' : '';
@@ -322,6 +327,7 @@ function generatePrintableOverview() {
             ${diagramSectionHtml}
 
             ${gearListHtmlCombined}
+            ${gearListActionsHtml}
             ${batteryTableHtmlWithBreak}
         </div>
     `;
@@ -348,6 +354,57 @@ function generatePrintableOverview() {
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             closeDialog(overviewDialog);
+        });
+    }
+
+    const overviewDeleteBtn = overviewDialog.querySelector('#overviewDeleteGearListBtn');
+    if (overviewDeleteBtn) {
+        const supportsCustomEvents = typeof document !== 'undefined' && typeof document.addEventListener === 'function';
+        if (supportsCustomEvents) {
+            function cleanup() {
+                document.removeEventListener('gearlist:deleted', handleGearListDeleted);
+                overviewDialog.removeEventListener('close', cleanup);
+            }
+            function handleGearListDeleted() {
+                cleanup();
+                if (overviewDialog && overviewDialog.open) {
+                    generatePrintableOverview();
+                }
+            }
+            document.addEventListener('gearlist:deleted', handleGearListDeleted);
+            overviewDialog.addEventListener('close', cleanup, { once: true });
+        }
+
+        overviewDeleteBtn.addEventListener('click', event => {
+            event.preventDefault();
+            let usedFallback = false;
+            if (typeof deleteCurrentGearList === 'function') {
+                try {
+                    const deleted = deleteCurrentGearList();
+                    if (!supportsCustomEvents && deleted) {
+                        generatePrintableOverview();
+                    }
+                    return;
+                } catch (error) {
+                    console.warn('Failed to delete gear list from overview button', error);
+                    usedFallback = true;
+                }
+            } else {
+                usedFallback = true;
+            }
+            if ((usedFallback || typeof deleteCurrentGearList !== 'function') && supportsCustomEvents) {
+                try {
+                    document.dispatchEvent(new CustomEvent('gearlist:delete-requested', { detail: { source: 'overview' } }));
+                } catch (error) {
+                    if (typeof document.createEvent === 'function') {
+                        const fallbackEvent = document.createEvent('CustomEvent');
+                        fallbackEvent.initCustomEvent('gearlist:delete-requested', false, false, { source: 'overview' });
+                        document.dispatchEvent(fallbackEvent);
+                    } else {
+                        console.warn('Unable to request gear list deletion from overview', error);
+                    }
+                }
+            }
         });
     }
 

@@ -115,6 +115,33 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 .overview-actions .back-btn {
   margin: 0;
 }
+.overview-gear-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 10px 0 20px;
+}
+.overview-gear-actions .overview-delete-gear-btn {
+  background: var(--danger-color);
+  color: var(--inverse-text-color);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.6em 1.2em;
+  font-family: inherit;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  cursor: pointer;
+  box-shadow: var(--panel-shadow);
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+.overview-gear-actions .overview-delete-gear-btn:hover,
+.overview-gear-actions .overview-delete-gear-btn:focus-visible {
+  filter: brightness(0.95);
+}
+.overview-gear-actions .overview-delete-gear-btn:active {
+  transform: translateY(1px);
+}
 .device-block-grid {
   display: grid;
   gap: 8px;
@@ -162,6 +189,12 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   }
   .overview-actions .print-btn,
   .overview-actions .back-btn {
+    width: 100%;
+  }
+  .overview-gear-actions {
+    justify-content: stretch;
+  }
+  .overview-gear-actions .overview-delete-gear-btn {
     width: 100%;
   }
   .device-category-container {

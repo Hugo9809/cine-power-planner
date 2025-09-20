@@ -62,6 +62,7 @@ describe('delete gear list action', () => {
 
     confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
 
+    confirmSpy.mockClear();
     saveSetupsMock.mockClear();
     deleteProjectMock.mockClear();
     saveSessionStateMock.mockClear();
@@ -76,7 +77,13 @@ describe('delete gear list action', () => {
     const deleteBtn = document.getElementById('deleteGearListBtn');
     expect(deleteBtn).not.toBeNull();
 
+    const deletedEvents = [];
+    const deletedListener = (event) => deletedEvents.push(event);
+    document.addEventListener('gearlist:deleted', deletedListener);
+
     deleteBtn.click();
+
+    document.removeEventListener('gearlist:deleted', deletedListener);
 
     expect(confirmSpy).toHaveBeenCalledTimes(2);
     expect(deleteProjectMock).toHaveBeenCalledWith('Project One');
@@ -107,5 +114,27 @@ describe('delete gear list action', () => {
 
     expect(env.utils.getCurrentProjectInfo()).toBeNull();
     expect(saveSessionStateMock.mock.calls.some(([state]) => state.projectInfo === null)).toBe(true);
+
+    expect(deletedEvents.length).toBe(1);
+    expect(deletedEvents[0]).toBeDefined();
+    expect(deletedEvents[0].detail.projectName).toBe('Project One');
+    expect(typeof deletedEvents[0].detail.backupName).toBe('string');
+    expect(deletedEvents[0].detail.source).toBe('deleteCurrentGearList');
+  });
+
+  test('dispatching gearlist:delete-requested triggers gear list deletion', () => {
+    const deletedEvents = [];
+    const deletedListener = (event) => deletedEvents.push(event);
+    document.addEventListener('gearlist:deleted', deletedListener);
+
+    confirmSpy.mockClear();
+
+    document.dispatchEvent(new CustomEvent('gearlist:delete-requested', { detail: { source: 'test' } }));
+
+    document.removeEventListener('gearlist:deleted', deletedListener);
+
+    expect(confirmSpy).toHaveBeenCalledTimes(2);
+    expect(deletedEvents.length).toBe(1);
+    expect(deletedEvents[0].detail.projectName).toBe('Project One');
   });
 });
