@@ -60,7 +60,7 @@ if (typeof window !== 'undefined') {
     }
   }
 }
-var APP_VERSION = "1.0.3";
+var APP_VERSION = "1.0.4";
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 var DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 var DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
