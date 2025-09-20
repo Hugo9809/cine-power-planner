@@ -310,6 +310,17 @@ function normalizeAutoGearTriggerValue(value) {
   return typeof value === 'string' ? value.trim().toLowerCase() : '';
 }
 
+function autoGearRuleMatteboxKey(rule) {
+  if (!rule || typeof rule !== 'object') return '';
+  const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox : [];
+  if (!matteboxList.length) return '';
+  return matteboxList
+    .map(normalizeAutoGearTriggerValue)
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b))
+    .join('|');
+}
+
 function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
@@ -984,9 +995,20 @@ function buildDefaultMatteboxAutoGearRules() {
 function ensureDefaultMatteboxAutoGearRules() {
   const defaults = buildDefaultMatteboxAutoGearRules();
   if (!defaults.length) return false;
-  const merged = mergeAutoGearRules(autoGearRules, defaults);
-  if (merged.length === autoGearRules.length) return false;
-  setAutoGearRules(merged);
+  const existingKeys = new Set(
+    autoGearRules
+      .map(autoGearRuleMatteboxKey)
+      .filter(Boolean)
+  );
+  const additions = defaults.filter(rule => {
+    const key = autoGearRuleMatteboxKey(rule);
+    if (!key) return false;
+    if (existingKeys.has(key)) return false;
+    existingKeys.add(key);
+    return true;
+  });
+  if (!additions.length) return false;
+  setAutoGearRules(autoGearRules.concat(additions));
   return true;
 }
 
@@ -17724,7 +17746,19 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         });
         if (!hasRuleWithoutScenario) return tableHtml;
     }
-    const triggered = autoGearRules.filter(rule => {
+    const touchesMatteboxCategory = (rule) => {
+        if (!rule || typeof rule !== 'object') return false;
+        const lists = [];
+        if (Array.isArray(rule.add)) lists.push(rule.add);
+        if (Array.isArray(rule.remove)) lists.push(rule.remove);
+        return lists.some(entries => entries.some(entry => {
+            if (!entry || typeof entry !== 'object') return false;
+            const category = typeof entry.category === 'string' ? entry.category.trim().toLowerCase() : '';
+            return category === 'matte box + filter';
+        }));
+    };
+
+    let triggered = autoGearRules.filter(rule => {
         const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
         if (scenarioList.length && !scenarioList.every(s => scenarios.includes(s))) {
             return false;
@@ -17741,6 +17775,20 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         return true;
     });
     if (!triggered.length) return tableHtml;
+
+    if (normalizedMattebox) {
+        triggered = triggered.filter(rule => {
+            if (!touchesMatteboxCategory(rule)) return true;
+            const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
+            if (!matteboxList.length) return false;
+            const normalizedTargets = matteboxList
+                .map(normalizeAutoGearTriggerValue)
+                .filter(Boolean);
+            if (!normalizedTargets.length) return false;
+            return normalizedTargets.includes(normalizedMattebox);
+        });
+        if (!triggered.length) return tableHtml;
+    }
     const container = document.createElement('div');
     container.innerHTML = tableHtml;
     const table = container.querySelector('.gear-table');
