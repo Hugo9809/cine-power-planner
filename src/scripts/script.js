@@ -43,6 +43,7 @@ if (typeof window !== 'undefined') {
 const APP_VERSION = "1.0.2";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
+const DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
 const AUTO_GEAR_RULES_KEY =
   typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined'
@@ -117,6 +118,53 @@ function persistDeviceSchema(schema) {
   }
 }
 
+function isValidDeviceSchema(candidate) {
+  return candidate && typeof candidate === 'object' && !Array.isArray(candidate);
+}
+
+async function loadDeviceSchemaFromCacheStorage() {
+  if (typeof caches === 'undefined' || !caches || typeof caches.match !== 'function') {
+    return null;
+  }
+
+  const candidates = new Set([DEVICE_SCHEMA_PATH]);
+  if (!DEVICE_SCHEMA_PATH.startsWith('./')) {
+    candidates.add(`./${DEVICE_SCHEMA_PATH}`);
+  }
+
+  if (typeof window !== 'undefined' && window.location) {
+    try {
+      candidates.add(new URL(DEVICE_SCHEMA_PATH, window.location.href).toString());
+    } catch (error) {
+      console.warn('Failed to resolve schema.json cache URL', error);
+    }
+  }
+
+  for (const url of candidates) {
+    try {
+      const response = await caches.match(url, { ignoreSearch: true });
+      if (response) {
+        return await response.clone().json();
+      }
+    } catch (error) {
+      console.warn('Failed to read schema.json from cache entry', url, error);
+    }
+  }
+
+  return null;
+}
+
+function finalizeDeviceSchemaLoad(candidate) {
+  if (isValidDeviceSchema(candidate)) {
+    deviceSchema = candidate;
+    persistDeviceSchema(candidate);
+  } else if (!deviceSchema) {
+    deviceSchema = cachedDeviceSchema || {};
+  }
+
+  populateCategoryOptions();
+}
+
 const cachedDeviceSchema = loadCachedDeviceSchema();
 
 let deviceSchema;
@@ -125,24 +173,36 @@ try {
 } catch {
   deviceSchema = cachedDeviceSchema;
   if (typeof fetch === 'function') {
-    fetch('src/data/schema.json')
-      .then(r => r.json())
-      .then(data => {
-        deviceSchema = data;
-        if (data && typeof data === 'object') {
-          persistDeviceSchema(data);
+    fetch(DEVICE_SCHEMA_PATH)
+      .then(response => {
+        if (!response || !response.ok) {
+          throw new Error(`Unexpected response when loading schema.json: ${response ? response.status : 'no response'}`);
         }
-        populateCategoryOptions();
+        return response.json();
       })
+      .then(finalizeDeviceSchemaLoad)
       .catch(error => {
         console.warn('Failed to fetch schema.json', error);
-        if (!deviceSchema) {
-          deviceSchema = cachedDeviceSchema || {};
+        if (typeof caches === 'undefined' || !caches || typeof caches.match !== 'function') {
+          finalizeDeviceSchemaLoad(deviceSchema);
+          return;
         }
-        populateCategoryOptions();
+
+        loadDeviceSchemaFromCacheStorage()
+          .then(schemaFromCache => {
+            if (isValidDeviceSchema(schemaFromCache)) {
+              finalizeDeviceSchemaLoad(schemaFromCache);
+            } else {
+              finalizeDeviceSchemaLoad(deviceSchema);
+            }
+          })
+          .catch(cacheError => {
+            console.warn('Failed to load schema.json from cache storage', cacheError);
+            finalizeDeviceSchemaLoad(deviceSchema);
+          });
       });
-  } else if (!deviceSchema) {
-    deviceSchema = cachedDeviceSchema || {};
+  } else {
+    finalizeDeviceSchemaLoad(deviceSchema);
   }
 }
 
