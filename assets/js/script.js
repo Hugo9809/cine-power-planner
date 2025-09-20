@@ -21893,5 +21893,12 @@ if (typeof module !== "undefined" && module.exports) {
     syncAutoGearRulesFromStorage,
     parseDeviceDatabaseImport,
     countDeviceDatabaseEntries,
+    sanitizeShareFilename,
+    ensureJsonExtension,
+    getDefaultShareFilename,
+    promptForSharedFilename,
+    confirmAutoGearSelection,
+    configureSharedImportOptions,
+    resolveSharedImportMode,
   };
 }
