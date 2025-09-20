@@ -204,7 +204,7 @@ const gear = {
       "model": "P133-9HSD",
       "screenSizeInches": 13.3,
       "brightnessNits": 400,
-      "powerDrawWatts": null,
+      "powerDrawWatts": 12,
       "power": {
         "input": [
           { "type": "DC" },
@@ -252,8 +252,8 @@ const gear = {
       "brand": "SWIT",
       "model": "S-1173F",
       "screenSizeInches": 17.3,
-      "brightnessNits": null,
-      "powerDrawWatts": null,
+      "brightnessNits": 300,
+      "powerDrawWatts": 32,
       "power": {
         "input": [
           { "type": "XLR 4-pin" },
@@ -348,7 +348,7 @@ const gear = {
       "model": "LMD-A170",
       "screenSizeInches": 17,
       "brightnessNits": null,
-      "powerDrawWatts": null,
+      "powerDrawWatts": 42,
       "power": {
         "input": [
           { "type": "AC" },
@@ -1061,7 +1061,12 @@ const gear = {
       "power": {
         "D-Tap to LEMO 2-pin": {
           "from": "D-Tap",
-          "to": "LEMO 2-pin"
+          "to": "LEMO 2-pin",
+          "lengthM": 0.5,
+          "connectors": [
+            "D-Tap",
+            "LEMO 0B 2-pin"
+          ]
         },
         "D-Tap Splitter 3-way": {
           "from": "D-Tap",
@@ -1069,6 +1074,11 @@ const gear = {
             "D-Tap",
             "D-Tap",
             "D-Tap"
+          ],
+          "lengthM": 0.2,
+          "connectors": [
+            "D-Tap input",
+            "D-Tap outputs"
           ]
         },
         "D-Tap to miniXLR (0.3 m)": {
@@ -1079,38 +1089,49 @@ const gear = {
       },
       "video": {
         "BNC SDI Cable": {
-          "type": "3G-SDI"
+          "type": "3G/6G-SDI",
+          "lengthM": 1,
+          "notes": "75 Ω, 3G/6G-SDI rated (typical)"
         },
         "HDMI Cable": {
-          "type": "HDMI"
+          "type": "HDMI",
+          "lengthM": 1,
+          "notes": "High Speed/18 Gbps (typical set use)"
         },
         "Ultraslim BNC Cable 0.3 m": {
           "type": "3G-SDI",
-          "lengthM": 0.3
+          "lengthM": 0.3,
+          "notes": "OD ~2.5–3.0 mm micro-coax for lightweight rigging"
         },
         "Ultraslim BNC Cable 0.5 m": {
           "type": "3G-SDI",
-          "lengthM": 0.5
+          "lengthM": 0.5,
+          "notes": "OD ~2.5–3.0 mm micro-coax for lightweight rigging"
         },
         "Ultraslim HDMI 0.5 m": {
           "type": "HDMI",
-          "lengthM": 0.5
+          "lengthM": 0.5,
+          "notes": "Flexible thin cable for gimbal/cage routing"
         },
         "BNC Cable 0.5 m": {
           "type": "3G-SDI",
-          "lengthM": 0.5
+          "lengthM": 0.5,
+          "notes": "75 Ω SDI patch"
         },
         "BNC Cable 1 m": {
           "type": "3G-SDI",
-          "lengthM": 1
+          "lengthM": 1,
+          "notes": "75 Ω SDI patch"
         },
         "BNC Cable 5 m": {
           "type": "3G-SDI",
-          "lengthM": 5
+          "lengthM": 5,
+          "notes": "75 Ω SDI run"
         },
         "BNC Cable 10 m": {
           "type": "3G-SDI",
-          "lengthM": 10
+          "lengthM": 10,
+          "notes": "75 Ω SDI run"
         },
         "BNC Drum 25 m": {
           "type": "3G-SDI",
@@ -1121,98 +1142,127 @@ const gear = {
       "fiz": {
         "LBUS to LBUS": {
           "brand": "ARRI",
-          "from": "LBUS (LEMO 4-pin)",
-          "to": "LBUS (LEMO 4-pin)",
+          "from": "LBUS",
+          "to": "LBUS",
           "connectors": [
-            "LEMO 4-pin",
-            "LEMO 4-pin"
+            "LEMO 0B 4-pin (LBUS)",
+            "LEMO 0B 4-pin (LBUS)"
           ],
-          "orientation": "straight",
-          "type": "LBUS cable",
+          "orientation": "straight-straight",
+          "type": "LBUS interconnect",
           "useCase": [
-            "Lens control daisy-chain"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
           ]
         },
         "LBUS to LBUS 0,2m": {
           "brand": "ARRI",
           "kNumber": "K2.0006749",
-          "from": "LBUS (LEMO 4-pin)",
-          "to": "LBUS (LEMO 4-pin)",
+          "from": "LBUS",
+          "to": "LBUS",
           "connectors": [
-            "LEMO 4-pin",
-            "LEMO 4-pin"
+            "LEMO 0B 4-pin (LBUS)",
+            "LEMO 0B 4-pin (LBUS)"
           ],
           "lengthM": 0.2,
-          "orientation": "straight",
-          "type": "LBUS cable",
+          "orientation": "straight-straight",
+          "type": "LBUS interconnect",
           "useCase": [
-            "Lens control daisy-chain"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
           ]
         },
         "LBUS to LBUS 0,3m": {
           "brand": "ARRI",
           "kNumber": "K2.0006750",
-          "from": "LBUS (LEMO 4-pin)",
-          "to": "LBUS (LEMO 4-pin)",
+          "from": "LBUS",
+          "to": "LBUS",
           "connectors": [
-            "LEMO 4-pin",
-            "LEMO 4-pin"
+            "LEMO 0B 4-pin (LBUS)",
+            "LEMO 0B 4-pin (LBUS)"
           ],
           "lengthM": 0.3,
-          "orientation": "straight",
-          "type": "LBUS cable",
+          "orientation": "straight-straight",
+          "type": "LBUS interconnect",
           "useCase": [
-            "Lens control daisy-chain"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
           ]
         },
         "LBUS to LBUS 0,4m": {
-          "from": "LBUS (LEMO 4-pin)",
-          "to": "LBUS (LEMO 4-pin)",
-          "lengthM": 0.4
+          "from": "LBUS",
+          "to": "LBUS",
+          "connectors": [
+            "LEMO 0B 4-pin (LBUS)",
+            "LEMO 0B 4-pin (LBUS)"
+          ],
+          "lengthM": 0.4,
+          "orientation": "straight-straight",
+          "type": "LBUS interconnect",
+          "useCase": [
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+          ]
         },
         "LBUS to LBUS 0,5m": {
           "brand": "ARRI",
           "kNumber": "K2.0006751",
-          "from": "LBUS (LEMO 4-pin)",
-          "to": "LBUS (LEMO 4-pin)",
+          "from": "LBUS",
+          "to": "LBUS",
           "connectors": [
-            "LEMO 4-pin",
-            "LEMO 4-pin"
+            "LEMO 0B 4-pin (LBUS)",
+            "LEMO 0B 4-pin (LBUS)"
           ],
           "lengthM": 0.5,
-          "orientation": "straight",
-          "type": "LBUS cable",
+          "orientation": "straight-straight",
+          "type": "LBUS interconnect",
           "useCase": [
-            "Lens control daisy-chain"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
           ]
         },
         "ARRI Right-Angle LBUS to LBUS 0,6m": {
           "brand": "ARRI",
           "kNumber": "K2.0013040",
           "connectors": [
-            "LEMO 4-pin RA",
-            "LEMO 4-pin RA"
+            "LEMO 0B 4-pin (LBUS) Right-Angle",
+            "LEMO 0B 4-pin (LBUS) Right-Angle"
           ],
           "lengthM": 0.6,
-          "orientation": "right-angle",
-          "type": "LBUS cable",
+          "from": "LBUS (Right-Angle)",
+          "to": "LBUS (Right-Angle)",
+          "orientation": "right-angle to right-angle",
+          "type": "LBUS interconnect",
           "useCase": [
-            "Lens control daisy-chain"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
           ]
         },
         "Cable UDM – SERIAL (7p) 1,5m": {
           "brand": "ARRI",
           "kNumber": "K2.65144.0",
-          "from": "Serial (LEMO 7-pin)",
-          "to": "Serial",
-          "lengthM": 1.5
+          "connectors": [
+            "LEMO 1B 7-pin (UDM Serial)",
+            "LEMO 0B 4-pin Serial"
+          ],
+          "from": "ARRI UDM-1",
+          "to": "ARRI UMC / LCUBE Serial",
+          "lengthM": 1.5,
+          "orientation": "straight to right-angle (UDM side usually RA)",
+          "type": "UDM Serial to UMC/LCUBE Serial",
+          "useCase": [
+            "Connect ARRI UDM-1 to ARRI UMC / LCUBE CUB-1"
+          ]
         },
         "Cable UDM – SERIAL (4p) 0,5m": {
           "brand": "ARRI",
           "kNumber": "K2.0025324",
-          "from": "SERIAL (LEMO 4-pin)",
-          "to": "Serial",
-          "lengthM": 0.5
+          "connectors": [
+            "LEMO 0B 4-pin (Serial)",
+            "LEMO 0B 4-pin (Serial)"
+          ],
+          "from": "ARRI UDM-1 Serial",
+          "to": "RIA-1 / ALEXA 35 Serial",
+          "lengthM": 0.5,
+          "orientation": "straight-straight",
+          "type": "UDM Serial to RIA/ALEXA 35 Serial",
+          "useCase": [
+            "Connect ARRI UDM-1 to SERIAL port on RIA-1 / ALEXA 35"
+          ]
         },
         "Cable CAM (7-pin) – LBUS 0,3m": {
           "brand": "ARRI",
@@ -1548,9 +1598,18 @@ const gear = {
         },
         "Cine RT to ARRI RIA-1 / ALEXA 35": {
           "brand": "Focusbug",
-          "from": "SERIAL (LEMO 4-pin)",
-          "to": "Serial",
-          "lengthM": 0.8
+          "connectors": [
+            "LEMO 6-pin (RA, Cine RT serial) + LEMO 2-pin power (RA)",
+            "LEMO 0B 4-pin (straight, Serial)"
+          ],
+          "from": "Cine RT Base (serial + power RA)",
+          "to": "ARRI RIA-1 / ALEXA 35 SERIAL",
+          "lengthM": 0.6,
+          "orientation": "RA (Cine RT side) to straight (RIA/ALEXA35)",
+          "type": "Serial + power Y-cable",
+          "useCase": [
+            "Connect Cine RT Base to ARRI RIA-1 or ALEXA 35 SERIAL with power injection"
+          ]
         },
         "D-Tap to Lemo-2-pin Cable 0,3m": {
           "lengthM": 0.3,
@@ -2106,7 +2165,8 @@ const gear = {
     },
     "videoAssist": {
       "Ovide Smart Assist": {
-        "brand": "Ovide"
+        "brand": "Ovide",
+        "screenSizeInches": 17
       },
       "Video Devices PIX-E5 5\" Recorder": {
         "brand": "Video Devices",
@@ -2116,33 +2176,37 @@ const gear = {
     "media": {
       "ARRI Codex Compact Drive 1TB": {
         "brand": "ARRI",
-        "kNumber": "K2.0024130",
+        "model": "Codex Compact Drive 1TB",
+        "kNumber": "K2.0044880",
         "capacityGb": 960,
         "capacityTb": 1,
         "interface": "PCIe, sustained ~8 Gb/s write"
       },
       "ARRI Codex Compact Drive 2TB": {
         "brand": "ARRI",
-        "kNumber": "K2.0023447",
+        "model": "Codex Compact Drive 2TB",
+        "kNumber": "K2.0044881",
         "capacityGb": 1920,
         "capacityTb": 2,
         "interface": "PCIe NVMe, up to 16 Gb/s write"
       },
       "ARRI Codex Compact Drive Express 1TB": {
         "brand": "ARRI",
-        "kNumber": "K2.0053843",
+        "model": "Codex Compact Drive Express 1TB",
+        "kNumber": "K2.0046663",
         "capacityGb": 960,
         "capacityTb": 1,
         "interface": "PCIe (ProRes-only)"
       },
       "ARRI Codex Compact Drive Reader (USB-C)": {
         "brand": "ARRI",
-        "kNumber": "K2.0024134",
+        "kNumber": "K2.0024130",
         "interface": "USB 3.1 Gen 2 (USB-C, ~8 Gb/s), bus-powered"
       },
       "OWC Atlas Ultra CFexpress Type B 1TB": {
         "brand": "OWC",
         "model": "Atlas Ultra 1TB",
+        "kNumber": "OWC CFXB1TBATLU",
         "capacityGb": 1024,
         "capacityTb": 1,
         "interface": "CFexpress Type B (PCIe)"
@@ -2150,6 +2214,7 @@ const gear = {
       "ProGrade Digital CFexpress Type B 1TB Gold": {
         "brand": "ProGrade",
         "model": "CFexpress Type B Gold 1TB",
+        "kNumber": "PGCFX128GBCE-GNAN (series uses capacity-specific SKUs)",
         "capacityGb": 1024,
         "capacityTb": 1,
         "interface": "CFexpress Type B (NVMe / PCIe)"
@@ -2157,6 +2222,7 @@ const gear = {
       "RED MINI-MAG 480GB": {
         "brand": "RED",
         "model": "MINI-MAG 480GB",
+        "kNumber": "750-0080",
         "capacityGb": 480,
         "capacityTb": 0.48,
         "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
@@ -2180,11 +2246,13 @@ const gear = {
       "Sony AXS-AR1 Card Reader": {
         "brand": "Sony",
         "model": "AXS-AR1 Card Reader",
+        "kNumber": "AXS-AR1",
         "interface": "USB 3.0"
       },
       "Sony SxS PRO+ 64GB card (E-Series)": {
         "brand": "Sony",
         "model": "SBP64E",
+        "kNumber": "SBS-64G1C",
         "capacityGb": 64,
         "capacityTb": 0.064,
         "interface": "SxS PRO+ (ExpressCard/34, PCI Express)"
