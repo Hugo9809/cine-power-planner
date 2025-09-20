@@ -3859,9 +3859,14 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 }
 .requirement-box .req-icon {
   --req-icon-size: calc(var(--font-size-relative-base) * var(--font-scale-xxxl));
-  font-size: var(--req-icon-size);
-  width: var(--req-icon-size);
-  height: var(--req-icon-size);
+  --icon-size: var(--req-icon-size);
+  font-size: var(--icon-size);
+  width: var(--icon-size);
+  height: var(--icon-size);
+  min-width: var(--icon-size);
+  min-height: var(--icon-size);
+  max-width: var(--icon-size);
+  max-height: var(--icon-size);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3871,8 +3876,10 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 }
 
 .requirement-box .req-icon svg {
-  width: 100%;
-  height: 100%;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  max-width: 100%;
+  max-height: 100%;
   display: block;
 }
 .requirement-box .req-label {

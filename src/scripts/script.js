@@ -16324,19 +16324,44 @@ function summarizeByType(list) {
     }, {});
 }
 
-function iconMarkup(glyph, className = 'info-icon') {
+function iconMarkup(glyph, classNameOrOptions = 'info-icon', options = null) {
   if (!glyph) return '';
+  let opts = {};
+  let resolvedClassName = 'info-icon';
+  if (typeof classNameOrOptions === 'string' || classNameOrOptions === null) {
+    resolvedClassName = classNameOrOptions || '';
+    if (options && typeof options === 'object') {
+      opts = options;
+    }
+  } else if (classNameOrOptions && typeof classNameOrOptions === 'object') {
+    opts = classNameOrOptions;
+    resolvedClassName = classNameOrOptions.className || 'info-icon';
+  }
+  if (typeof opts.className === 'string') {
+    resolvedClassName = opts.className;
+  }
+  const styleParts = [];
+  if (typeof opts.size === 'string' && opts.size.trim()) {
+    styleParts.push(`--icon-size: ${opts.size.trim()}`);
+  }
+  if (typeof opts.scale === 'string' && opts.scale.trim()) {
+    styleParts.push(`--icon-scale: ${opts.scale.trim()}`);
+  }
+  if (typeof opts.style === 'string' && opts.style.trim()) {
+    styleParts.push(opts.style.trim());
+  }
+  const styleAttr = styleParts.length ? ` style="${styleParts.join(';')}"` : '';
   const resolved = resolveIconGlyph(glyph);
   const classes = ['icon-glyph'];
-  if (className) classes.unshift(className);
+  if (resolvedClassName) classes.unshift(resolvedClassName);
   if (resolved.markup) {
     if (resolved.className) classes.push(resolved.className);
     const markup = ensureSvgHasAriaHidden(resolved.markup);
-    return `<span class="${classes.join(' ')}" aria-hidden="true">${markup}</span>`;
+    return `<span class="${classes.join(' ')}"${styleAttr} aria-hidden="true">${markup}</span>`;
   }
   const char = resolved.char || '';
   if (!char) return '';
-  return `<span class="${classes.join(' ')}" data-icon-font="${resolved.font}" aria-hidden="true">${char}</span>`;
+  return `<span class="${classes.join(' ')}"${styleAttr} data-icon-font="${resolved.font}" aria-hidden="true">${char}</span>`;
 }
 
 function applyIconGlyph(element, glyph) {
@@ -17737,7 +17762,10 @@ function generateGearListHtml(info = {}) {
         infoEntries.map(([k, v]) => {
             const value = escapeHtml(v).replace(/\n/g, '<br>');
             const label = projectLabels[k] || k;
-            const iconHtml = iconMarkup(projectFieldIcons[k], 'req-icon');
+            const iconHtml = iconMarkup(projectFieldIcons[k], {
+                className: 'req-icon',
+                size: 'var(--req-icon-size)'
+            });
             return `<div class="requirement-box" data-field="${k}">${iconHtml}<span class="req-label">${escapeHtml(label)}</span><span class="req-value">${value}</span></div>`;
         }).join('') + '</div>' : '';
     const requirementsHeading = projectFormTexts.heading || 'Project Requirements';
