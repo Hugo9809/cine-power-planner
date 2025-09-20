@@ -30,6 +30,17 @@ function generatePrintableOverview() {
     let deviceListHtml = '<div class="device-category-container">';
     const sections = {};
     const sectionOrder = [];
+    const printOutlineVarMap = {
+        category_cameras: '--camera-color',
+        category_monitors: '--monitor-color',
+        category_video: '--video-segment-color',
+        category_fiz_motors: '--motor-color',
+        category_fiz_controllers: '--controller-color',
+        category_fiz_distance: '--distance-color',
+        category_batteries: '--power-color',
+        category_batteryHotswaps: '--power-color',
+        category_viewfinders: '--monitor-color'
+    };
     const addToSection = (key, itemHtml) => {
         if (!sections[key]) {
             sections[key] = [];
@@ -73,18 +84,20 @@ function generatePrintableOverview() {
     processSelectForOverview(batterySelect, 'category_batteries', 'batteries'); // Handle battery separately for capacity
     processSelectForOverview(hotswapSelect, 'category_batteryHotswaps', 'batteryHotswaps');
 
-      sectionOrder.forEach(key => {
-          const heading = t[key] || key;
-          const icon = overviewSectionIcons[key] || '';
-          const iconHtml = icon && typeof iconMarkup === 'function'
+    sectionOrder.forEach(key => {
+        const heading = t[key] || key;
+        const icon = overviewSectionIcons[key] || '';
+        const iconHtml = icon && typeof iconMarkup === 'function'
             ? iconMarkup(icon, 'category-icon')
             : icon
-              ? `<span class="category-icon icon-glyph" data-icon-font="uicons" aria-hidden="true">${icon}</span>`
-              : '';
-          const gridClasses = (key === 'category_fiz_motors' || key === 'category_fiz_controllers') ? 'device-block-grid two-column' : 'device-block-grid single-column';
-        deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
-      });
-      deviceListHtml += '</div>';
+                ? `<span class="category-icon icon-glyph" data-icon-font="uicons" aria-hidden="true">${icon}</span>`
+                : '';
+        const gridClasses = (key === 'category_fiz_motors' || key === 'category_fiz_controllers') ? 'device-block-grid two-column' : 'device-block-grid single-column';
+        const colorVar = printOutlineVarMap[key];
+        const styleAttribute = colorVar ? ` style="--print-outline-color: var(${colorVar});"` : '';
+        deviceListHtml += `<div class="device-category"${styleAttribute}><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
+    });
+    deviceListHtml += '</div>';
 
     const breakdownHtml = breakdownListElem.innerHTML;
     const batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
