@@ -60,6 +60,8 @@ body.dark-mode {
   --power-color: #d33;
   --video-color: #369;
   --fiz-color: #090;
+  --status-warning-bg: #ffe066;
+  --status-warning-text-color: #000;
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-light);
   font-size: var(--font-size-base);
@@ -77,6 +79,8 @@ body.dark-mode {
   --panel-border: #ddd;
   --control-bg: #f0f0f0;
   --control-text: #333;
+  --status-warning-bg: #ffe066;
+  --status-warning-text-color: #000;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
