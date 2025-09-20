@@ -146,6 +146,9 @@
       legacy: legacyPrefix + 'autoGearActivePreset',
       modern: 'cameraPowerPlanner_autoGearActivePreset'
     }, {
+      legacy: legacyPrefix + 'autoGearAutoPreset',
+      modern: 'cameraPowerPlanner_autoGearAutoPreset'
+    }, {
       legacy: legacyPrefix + 'autoGearShowBackups',
       modern: 'cameraPowerPlanner_autoGearShowBackups'
     }, {
