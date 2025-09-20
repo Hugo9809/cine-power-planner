@@ -2631,7 +2631,6 @@ function setLanguage(lang) {
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
   setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
-  setButtonLabelWithIcon(clearSetupBtn, texts[lang].clearSetupBtn, ICON_GLYPHS.circleX);
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
   sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
@@ -2812,9 +2811,6 @@ function setLanguage(lang) {
 
   applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
   applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
-
-  clearSetupBtn.setAttribute("title", texts[lang].clearSetupBtn);
-  clearSetupBtn.setAttribute("data-help", texts[lang].clearSetupHelp);
 
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
@@ -5222,7 +5218,6 @@ const setupSelect     = document.getElementById("setupSelect");
 const setupNameInput  = document.getElementById("setupName");
 const saveSetupBtn    = document.getElementById("saveSetupBtn");
 const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
-const clearSetupBtn   = document.getElementById("clearSetupBtn");
 const shareSetupBtn   = document.getElementById("shareSetupBtn");
 const sharedLinkRow   = document.getElementById("sharedLinkRow");
 const sharedLinkInput = document.getElementById("sharedLinkInput");
@@ -15094,42 +15089,6 @@ deleteSetupBtn.addEventListener("click", () => {
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
   }
 });
-
-clearSetupBtn.addEventListener("click", () => {
-  if (
-    confirm(texts[currentLang].confirmClearSetup) &&
-    confirm(texts[currentLang].confirmClearSetupAgain)
-  ) {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('cameraPowerPlanner_session');
-    }
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem('cameraPowerPlanner_session');
-    }
-    setupSelect.value = "";
-    setupNameInput.value = "";
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect].forEach(sel => {
-      if (!sel) return;
-      const noneOption = Array.from(sel.options).find(opt => opt.value === "None");
-      if (noneOption) {
-        sel.value = "None";
-      } else {
-        sel.selectedIndex = 0;
-      }
-    });
-    const sbSel = getSliderBowlSelect();
-    if (sbSel) sbSel.value = '';
-    motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-    controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
-    updateBatteryPlateVisibility();
-    updateBatteryOptions();
-    clearProjectAutoGearRules();
-    renderAutoGearRulesList();
-    updateAutoGearCatalogOptions();
-    updateCalculations();
-  }
-});
-
 
 setupSelect.addEventListener("change", (event) => {
   const setupName = event.target.value;

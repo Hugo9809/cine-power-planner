@@ -331,7 +331,6 @@ const texts = {
     deleteSetupBtn: "Delete",
     saveSetupBtn: "Save",
     updateSetupBtn: "Update",
-    clearSetupBtn: "Clear Current Project",
     clearFilter: "Clear filter",
     shareSetupBtn: "Export Project",
     shareSetupPrompt: "Project file ready to export.",
@@ -590,8 +589,6 @@ const texts = {
       "Project \"{name}\" saved in this browser. It stays available after closing or reopening tabs unless you clear the browser cache.",
     alertNoSetupSelected: "Please select a saved project to delete.",
     alertSetupDeleted: "Project \"{name}\" deleted.",
-    confirmClearSetup: "Clear current project?",
-    confirmClearSetupAgain: "This will remove all selections. Are you sure?",
     confirmDeleteSetup: "Really delete project \"{name}\"?",
     confirmDeleteSetupAgain: "This will permanently delete the project. Are you sure?",
     confirmDeleteDevice: "Really delete device \"{name}\"?",
@@ -772,7 +769,6 @@ const texts = {
     batterySelectHelp: "Choose the battery model that will power the entire rig.",
     batteryPlateSelectHelp: "Choose the battery plate or adapter that connects the battery to the camera.",
     batteryHotswapSelectHelp: "Select the hot-swap buffer that keeps power during battery changes.",
-    clearSetupHelp: "Reset the planner by removing every selected device.",
     runtimeFeedbackBtnHelp:
       "Open a form where you can submit real-world runtime data for this configuration.",
     zoomOutHelp: "Zoom out of the project diagram to view more of the layout.",
@@ -888,7 +884,6 @@ const texts = {
     deleteSetupBtn: "Elimina",
     saveSetupBtn: "Salva",
     updateSetupBtn: "Aggiorna",
-    clearSetupBtn: "Cancella configurazione corrente",
     clearFilter: "Cancella filtro",
     shareSetupBtn: "Esporta progetto",
     shareSetupPrompt: "File di progetto pronto per l'esportazione.",
@@ -1132,8 +1127,6 @@ const texts = {
       "Setup \"{name}\" salvato nel browser. Rimane disponibile dopo aver chiuso o riaperto le schede finché non svuoti la cache del browser.",
     alertNoSetupSelected: "Selezionare una configurazione salvata da eliminare.",
     alertSetupDeleted: "Setup \"{name}\" eliminato.",
-    confirmClearSetup: "Cancella configurazione corrente?",
-    confirmClearSetupAgain: "Questo rimuoverà tutte le selezioni. Sei sicuro?",
     confirmDeleteSetup: "Elimina davvero setup \"{name}\"?",
     confirmDeleteSetupAgain: "Questo eliminerà definitivamente il progetto. Sei sicuro?",
     confirmDeleteDevice: "Elimina davvero il dispositivo \"{name}\"?",
@@ -1541,8 +1534,6 @@ const texts = {
     batterySelectHelp: "Seleziona la batteria che alimenta la configurazione.",
     batteryPlateSelectHelp: "Seleziona la piastra o l'adattatore della batteria.",
     batteryHotswapSelectHelp: "Seleziona l'unità di hotswap che mantiene l'alimentazione durante il cambio batteria.",
-    clearSetupHelp:
-      "Rimuove tutti i dispositivi dalla configurazione corrente.",
     runtimeFeedbackBtnHelp:
       "Invia la durata di funzionamento misurata per questa configurazione.",
     zoomOutHelp: "Allontana il diagramma di configurazione.",
@@ -1656,7 +1647,6 @@ const texts = {
     deleteSetupBtn: "Eliminar",
     saveSetupBtn: "Guardar",
     updateSetupBtn: "Actualizar",
-    clearSetupBtn: "Borrar proyecto actual",
     clearFilter: "Limpiar filtro",
     shareSetupBtn: "Exportar proyecto",
     shareSetupPrompt: "Archivo de proyecto listo para descargar.",
@@ -1911,8 +1901,6 @@ const texts = {
       "Proyecto \"{name}\" guardado en este navegador. Permanece disponible al cerrar o volver a abrir pestañas mientras no borres la caché del navegador.",
     alertNoSetupSelected: "Selecciona un proyecto para eliminar.",
     alertSetupDeleted: "Proyecto \"{name}\" eliminado.",
-    confirmClearSetup: "¿Borrar el proyecto actual?",
-    confirmClearSetupAgain: "Esto eliminará todas las selecciones del proyecto. ¿Estás seguro?",
     confirmDeleteSetup: "¿Eliminar el proyecto \"{name}\"?",
     confirmDeleteSetupAgain: "Esto eliminará permanentemente el proyecto. ¿Estás seguro?",
     confirmDeleteDevice: "¿Eliminar dispositivo \"{name}\"?",
@@ -2322,8 +2310,6 @@ const texts = {
     batterySelectHelp: "Selecciona la batería que alimenta la configuración.",
     batteryPlateSelectHelp: "Selecciona la placa o adaptador de batería.",
     batteryHotswapSelectHelp: "Selecciona el módulo de hotswap que mantiene la alimentación durante el cambio de baterías.",
-    clearSetupHelp:
-      "Borra todos los dispositivos de la configuración actual.",
     runtimeFeedbackBtnHelp:
       "Envía la duración de funcionamiento medida para esta configuración.",
     zoomOutHelp: "Alejar el diagrama de configuración.",
@@ -2438,7 +2424,6 @@ const texts = {
     deleteSetupBtn: "Supprimer",
     saveSetupBtn: "Enregistrer",
     updateSetupBtn: "Mettre à jour",
-    clearSetupBtn: "Effacer la configuration actuelle",
     clearFilter: "Effacer le filtre",
     shareSetupBtn: "Exporter le projet",
     shareSetupPrompt: "Fichier projet prêt à être téléchargé.",
@@ -2693,8 +2678,6 @@ const texts = {
       "Configuration \"{name}\" enregistrée dans ce navigateur. Elle reste disponible après avoir fermé ou rouvert des onglets tant que vous ne videz pas le cache du navigateur.",
     alertNoSetupSelected: "Sélectionnez une configuration à supprimer.",
     alertSetupDeleted: "Configuration \"{name}\" supprimée.",
-    confirmClearSetup: "Effacer la configuration actuelle ?",
-    confirmClearSetupAgain: "Cela supprimera toutes les sélections. Êtes-vous sûr ?",
     confirmDeleteSetup: "Supprimer la configuration \"{name}\" ?",
     confirmDeleteSetupAgain: "Cela supprimera définitivement le projet. Êtes-vous sûr ?",
     confirmDeleteDevice: "Supprimer l'appareil \"{name}\" ?",
@@ -3107,8 +3090,6 @@ const texts = {
     batteryPlateSelectHelp:
       "Sélectionnez la plaque ou l'adaptateur de batterie utilisé.",
     batteryHotswapSelectHelp: "Sélectionnez le module hotswap qui maintient l'alimentation lors du changement de batterie.",
-    clearSetupHelp:
-      "Efface tous les appareils de la configuration actuelle.",
     runtimeFeedbackBtnHelp:
       "Soumettez la durée de fonctionnement mesurée pour cette configuration.",
     zoomOutHelp: "Réduit le diagramme de configuration.",
@@ -3221,7 +3202,6 @@ const texts = {
     deleteSetupBtn: "Löschen",
     saveSetupBtn: "Speichern",
     updateSetupBtn: "Aktualisieren",
-    clearSetupBtn: "Aktuelles Projekt zurücksetzen",
     clearFilter: "Filter löschen",
     shareSetupBtn: "Projekt exportieren",
     shareSetupPrompt: "Projektdatei bereit zum Export.",
@@ -3477,8 +3457,6 @@ const texts = {
       "Projekt \"{name}\" in diesem Browser gespeichert. Es bleibt verfügbar, wenn Sie Tabs oder den Browser schließen und erneut öffnen, solange Sie den Browsercache nicht löschen.",
     alertNoSetupSelected: "Wählen Sie ein gespeichertes Projekt zum Löschen aus.",
     alertSetupDeleted: "Projekt \"{name}\" gelöscht.",
-    confirmClearSetup: "Aktuelles Projekt zurücksetzen?",
-    confirmClearSetupAgain: "Dadurch werden alle Auswahlen entfernt. Sind Sie sicher?",
     confirmDeleteSetup: "Projekt \"{name}\" wirklich löschen?",
     confirmDeleteSetupAgain: "Dadurch wird das Projekt dauerhaft gelöscht. Sind Sie sicher?",
     confirmDeleteDevice: "Gerät \"{name}\" wirklich löschen?",
@@ -3888,8 +3866,6 @@ const texts = {
     batterySelectHelp: "Wähle den Akku, der das Setup versorgt.",
     batteryPlateSelectHelp: "Wähle die Batterieplatte oder den Adapter aus.",
     batteryHotswapSelectHelp: "Wähle das Hotswap-Modul, das beim Akkutausch weiter mit Strom versorgt.",
-    clearSetupHelp:
-      "Entfernt alle Geräte aus dem aktuellen Projekt.",
     runtimeFeedbackBtnHelp:
       "Sende deine gemessene Laufzeit für dieses Projekt.",
     zoomOutHelp: "Verkleinert das Projekt-Diagramm.",
