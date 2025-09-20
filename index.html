@@ -1484,6 +1484,12 @@
               <strong>Required Scenarios</strong> are active.
             </li>
             <li>
+              Choose any combination of <strong>Required Scenarios</strong>, <strong>Mattebox options</strong>,
+              <strong>Camera handles</strong>, <strong>Viewfinder extension</strong> and <strong>Video distribution</strong>
+              values to define when the rule fires. All selected conditions must match the project before the automation runs,
+              and at least one condition is required to save a rule.
+            </li>
+            <li>
               Rules execute after the planner assembles the gear list, so your adjustments stack on top of built-in accessories
               and scenario packs.
             </li>
@@ -1500,6 +1506,10 @@
               category shown in the gear list to target the right row.
             </li>
             <li>
+              Tap <strong>Reset to factory additions</strong> whenever you want to restore the default helper rules that ship
+              with the planner.
+            </li>
+            <li>
               Save frequently used combinations as presets via the <strong>Preset</strong> menu, then switch or delete them as
               your workflow evolves.
             </li>
@@ -1511,6 +1521,10 @@
               When backups are visible, pick a timestamped snapshot from the <strong>Choose a backup</strong> dropdown to review
               its details and press <strong>Restore</strong> to roll back to that version. Each entry lists how many rules it
               contains so you can recover confidently even while offline.
+            </li>
+            <li>
+              <strong>Export rules</strong> downloads a JSON copy of your automation set; <strong>Import rules</strong> loads an
+              existing file so crews can sync configurations without relying on connectivity.
             </li>
             <li>
               Rules travel with backups and exports. Include them when sharing a project, then decide on import whether to apply
@@ -1532,6 +1546,11 @@
             <a
               class="help-link button-link"
               href="#settingsDialog"
+              data-help-target="#autoGearResetFactory"
+            >Reset to factory additions</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
               data-help-target="#autoGearRulesList"
             >Rules list</a>
             <a
@@ -1539,6 +1558,16 @@
               href="#settingsDialog"
               data-help-target="#autoGearPresetSelect"
             >Preset menu</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
+              data-help-target="#autoGearExport"
+            >Export rules</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
+              data-help-target="#autoGearImport"
+            >Import rules</a>
             <a
               class="help-link button-link"
               href="#settingsDialog"
@@ -2109,8 +2138,9 @@
               to reveal the editor. Name the rule so it is easy to recognise later.
             </p>
             <p>
-              Select one or more <strong>Required Scenarios</strong>; the rule only runs when every selected scenario is active
-              in the
+              Select at least one condition from <strong>Required Scenarios</strong>, <strong>Mattebox options</strong>,
+              <strong>Camera handles</strong>, <strong>Viewfinder extension</strong> or <strong>Video distribution</strong>.
+              The rule runs only when every chosen value is active in the
               <a
                 class="help-link"
                 href="#projectRequirementsOutput"
@@ -2121,7 +2151,9 @@
             </p>
             <p>
               Use the <strong>Remove these items</strong> list to hide entries the generator adds by default. Rules are stored in
-              Settings, included in backups and apply to printable gear lists and exported project bundles.
+              Settings, included in backups and apply to printable gear lists and exported project bundles. Use
+              <strong>Reset to factory additions</strong> to restore the built-in helpers, or download and reload JSON sets with
+              <strong>Export rules</strong> and <strong>Import rules</strong> when collaborating offline.
             </p>
           </details>
           <details
