@@ -7288,7 +7288,7 @@ function openInstallGuide(platform) {
   currentInstallGuidePlatform = platform;
   lastActiveBeforeInstallGuide = document.activeElement;
   renderInstallGuideContent(platform);
-  installGuideDialog.removeAttribute('hidden');
+  openDialog(installGuideDialog);
   const focusTarget = installGuideClose || installGuideDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
   if (focusTarget && typeof focusTarget.focus === 'function') {
     focusTarget.focus();
@@ -7297,7 +7297,7 @@ function openInstallGuide(platform) {
 
 function closeInstallGuide() {
   if (!installGuideDialog) return;
-  installGuideDialog.setAttribute('hidden', '');
+  closeDialog(installGuideDialog);
   currentInstallGuidePlatform = null;
   if (lastActiveBeforeInstallGuide && typeof lastActiveBeforeInstallGuide.focus === 'function') {
     lastActiveBeforeInstallGuide.focus();
@@ -7321,6 +7321,10 @@ function setupInstallBanner() {
       if (event.target === installGuideDialog) {
         closeInstallGuide();
       }
+    });
+    installGuideDialog.addEventListener('cancel', event => {
+      event.preventDefault();
+      closeInstallGuide();
     });
   }
 
@@ -7362,7 +7366,7 @@ function applyInstallTexts(lang) {
     installGuideClose.textContent = closeLabel;
     installGuideClose.setAttribute('aria-label', closeLabel);
   }
-  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
+  if (installGuideDialog && isDialogOpen(installGuideDialog) && currentInstallGuidePlatform) {
     renderInstallGuideContent(currentInstallGuidePlatform, lang);
   }
 }
@@ -7380,7 +7384,7 @@ function openIosPwaHelp() {
   if (!iosPwaHelpDialog) return;
   if (!shouldShowIosPwaHelp()) return;
   lastActiveBeforeIosHelp = document.activeElement;
-  iosPwaHelpDialog.removeAttribute('hidden');
+  openDialog(iosPwaHelpDialog);
   const focusTarget = iosPwaHelpClose || iosPwaHelpDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
   if (focusTarget && typeof focusTarget.focus === 'function') {
     focusTarget.focus();
@@ -7389,7 +7393,7 @@ function openIosPwaHelp() {
 
 function closeIosPwaHelp(storeDismissal = false) {
   if (!iosPwaHelpDialog) return;
-  iosPwaHelpDialog.setAttribute('hidden', '');
+  closeDialog(iosPwaHelpDialog);
   if (storeDismissal) {
     markIosPwaHelpDismissed();
   }
@@ -7412,16 +7416,20 @@ if (iosPwaHelpDialog) {
       closeIosPwaHelp(true);
     }
   });
+  iosPwaHelpDialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    closeIosPwaHelp(true);
+  });
 }
 
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape' && event.key !== 'Esc') return;
   let handled = false;
-  if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
+  if (iosPwaHelpDialog && isDialogOpen(iosPwaHelpDialog)) {
     closeIosPwaHelp(true);
     handled = true;
   }
-  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden')) {
+  if (installGuideDialog && isDialogOpen(installGuideDialog)) {
     closeInstallGuide();
     handled = true;
   }
@@ -19487,14 +19495,6 @@ function parseColorToRgb(color) {
   return null;
 }
 
-const createAccentTint = (alpha = 0.16) => {
-  const accentFallback = typeof accentColor === 'string' ? accentColor : '#001589';
-  const accentSource = getCssVariableValue('--accent-color', accentFallback);
-  const rgb = parseColorToRgb(accentSource);
-  if (!rgb) return null;
-  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
-};
-
 function showNotification(type, message) {
   if (typeof document === 'undefined') return;
   const id = 'backupNotificationContainer';
@@ -19502,36 +19502,38 @@ function showNotification(type, message) {
   if (!container) {
     container = document.createElement('div');
     container.id = id;
-    container.style.position = 'fixed';
-    container.style.top = '1rem';
-    container.style.right = '1rem';
-    container.style.zIndex = '10000';
+    container.className = 'app-toast-container';
+    container.setAttribute('role', 'region');
+    container.setAttribute('aria-live', 'polite');
+    container.setAttribute('aria-atomic', 'true');
     document.body.appendChild(container);
   }
-  const note = document.createElement('div');
-  note.textContent = message;
-  note.style.padding = '0.75rem 1.25rem';
-  note.style.marginTop = '0.5rem';
-  note.style.borderRadius = '0.75rem';
-  note.style.border = 'none';
-  note.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
-  let background;
-  let textColor;
-  if (type === 'error' || type === 'warning') {
-    const backgroundVar = type === 'error' ? '--status-error-bg' : '--status-warning-bg';
-    const fallbackBackground = type === 'error' ? '#fdd' : '#ffd';
-    background = getCssVariableValue(backgroundVar, fallbackBackground);
-    const textColorVar = type === 'error' ? '--status-error-text-color' : '--status-warning-text-color';
-    textColor = getCssVariableValue(textColorVar, '#000');
-  } else {
-    background = createAccentTint() || getCssVariableValue('--status-success-bg', '#dfd');
-    textColor = getCssVariableValue('--status-success-text-color', '#000');
-  }
-  note.style.background = background;
-  note.style.color = textColor;
-  container.appendChild(note);
+  const toastType = type === 'error' || type === 'warning' || type === 'success' ? type : 'info';
+  const toast = document.createElement('div');
+  toast.className = `app-toast app-toast--${toastType}`;
+  toast.setAttribute('role', toastType === 'error' ? 'alert' : 'status');
+
+  const icon = document.createElement('span');
+  icon.className = 'app-toast__icon icon-glyph icon-text';
+  icon.setAttribute('aria-hidden', 'true');
+  const iconSymbol = toastType === 'error'
+    ? '✕'
+    : toastType === 'warning'
+      ? '!'
+      : toastType === 'success'
+        ? '✓'
+        : 'ℹ';
+  icon.setAttribute('data-icon', iconSymbol);
+
+  const messageSpan = document.createElement('span');
+  messageSpan.className = 'app-toast__message';
+  messageSpan.textContent = message;
+
+  toast.appendChild(icon);
+  toast.appendChild(messageSpan);
+  container.appendChild(toast);
   setTimeout(() => {
-    note.remove();
+    toast.remove();
     if (!container.children.length) {
       container.remove();
     }

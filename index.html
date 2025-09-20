@@ -951,15 +951,14 @@
     </div>
   </dialog>
 
-  <div
+  <dialog
     id="installGuideDialog"
-    role="dialog"
+    class="app-modal"
     aria-modal="true"
     aria-labelledby="installGuideTitle"
     aria-describedby="installGuideIntro"
-    hidden
   >
-    <div class="modal-surface install-guide-content">
+    <div class="modal-surface modal-content install-guide-content">
       <h2 id="installGuideTitle">Install Cine Power Planner</h2>
       <p id="installGuideIntro">Add the planner to your Home Screen to use it like an app.</p>
       <ol id="installGuideSteps">
@@ -984,21 +983,20 @@
           devices.
         </p>
       </section>
-      <div class="button-row install-guide-actions">
+      <div class="button-row modal-actions install-guide-actions">
         <button id="installGuideClose" type="button">Close</button>
       </div>
     </div>
-  </div>
+  </dialog>
 
-  <div
+  <dialog
     id="iosPwaHelpDialog"
-    role="dialog"
+    class="app-modal"
     aria-modal="true"
     aria-labelledby="iosPwaHelpTitle"
     aria-describedby="iosPwaHelpIntro"
-    hidden
   >
-    <div class="modal-surface ios-pwa-help-content">
+    <div class="modal-surface modal-content ios-pwa-help-content">
       <h2 id="iosPwaHelpTitle">Keep your data when installing on iOS</h2>
       <p id="iosPwaHelpIntro">
         Safari keeps the browser tab and the installed app separate. To move your Cine Power Planner data into the app:
@@ -1013,11 +1011,11 @@
         After restoring once, all changes stay inside the installed app. Keep the backup if you plan to reinstall or switch
         devices.
       </p>
-      <div class="button-row ios-pwa-help-actions">
+      <div class="button-row modal-actions ios-pwa-help-actions">
         <button id="iosPwaHelpClose">Got it</button>
       </div>
     </div>
-  </div>
+  </dialog>
 
   <dialog
     id="helpDialog"
@@ -2351,8 +2349,8 @@
       </div>
     </div>
   </dialog>
-  <dialog id="shareDialog" aria-labelledby="shareDialogHeading">
-    <form id="shareForm" method="dialog">
+  <dialog id="shareDialog" class="app-modal" aria-labelledby="shareDialogHeading" aria-modal="true">
+    <form id="shareForm" method="dialog" class="modal-surface modal-content share-dialog-form">
       <h3 id="shareDialogHeading">Export Project</h3>
       <p id="shareFilenameMessage">Enter a name for the exported project file (default: project).</p>
       <div class="form-row">
@@ -2363,7 +2361,7 @@
         <input type="checkbox" id="shareIncludeAutoGear" />
         <span id="shareIncludeAutoGearText">Include automatic gear rules</span>
       </label>
-      <div class="dialog-actions">
+      <div class="button-row modal-actions">
         <button type="button" id="shareCancelBtn">Cancel</button>
         <button type="submit" id="shareConfirmBtn">Download</button>
       </div>
@@ -2371,7 +2369,7 @@
   </dialog>
 
   <dialog id="sharedImportDialog" class="app-modal" aria-labelledby="sharedImportDialogHeading" aria-modal="true">
-    <form id="sharedImportForm" method="dialog" class="modal-surface share-import-dialog">
+    <form id="sharedImportForm" method="dialog" class="modal-surface modal-content share-import-dialog">
       <h3 id="sharedImportDialogHeading">Automatic gear rules</h3>
       <p id="sharedImportDialogMessage">Choose how to apply the shared automatic gear rules from this project.</p>
       <fieldset id="sharedImportOptions" class="share-import-options">
@@ -2395,7 +2393,7 @@
           </option>
         </select>
       </fieldset>
-      <div class="dialog-actions">
+      <div class="button-row modal-actions">
         <button type="button" id="sharedImportCancelBtn">Cancel</button>
         <button type="submit" id="sharedImportConfirmBtn">Apply</button>
       </div>
@@ -2732,8 +2730,8 @@
     </form>
   </dialog>
 
-  <dialog id="feedbackDialog" aria-labelledby="feedbackDialogHeading">
-    <form id="feedbackForm" method="dialog">
+  <dialog id="feedbackDialog" class="app-modal" aria-labelledby="feedbackDialogHeading" aria-modal="true">
+    <form id="feedbackForm" method="dialog" class="modal-surface modal-surface-scrollable modal-content feedback-dialog-form">
       <h3 id="feedbackDialogHeading">User Runtime Feedback</h3>
 
       <fieldset>
@@ -2780,7 +2778,7 @@
         <div class="form-row"><label>Batteries Used per Day:<input type="number" id="fbBatteriesPerDay" name="fbBatteriesPerDay"></label></div>
       </fieldset>
 
-      <div class="form-row button-row">
+      <div class="button-row modal-actions">
         <button type="submit" id="fbSubmit">Save &amp; Submit</button>
         <button type="button" id="fbCancel"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel</button>
       </div>
@@ -2834,7 +2832,7 @@
       <option value="120"></option>
     </datalist>
   </dialog>
-  <dialog id="overviewDialog"></dialog>
+  <dialog id="overviewDialog" class="app-modal" aria-modal="true"></dialog>
   <script src="src/scripts/globalthis-polyfill.js"></script>
   <script src="src/data/devices/index.js"></script>
   <script src="src/data/devices/cameras.js"></script>

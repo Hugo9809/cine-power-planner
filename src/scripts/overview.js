@@ -256,8 +256,12 @@ function generatePrintableOverview() {
 
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
     const contentClass = customLogo ? 'logo-present' : '';
+    const surfaceClasses = ['modal-surface', 'modal-surface-scrollable', 'modal-content', 'overview-dialog-surface'];
+    if (contentClass) {
+        surfaceClasses.push(contentClass);
+    }
     const overviewHtml = `
-        <div id="overviewDialogContent" class="${contentClass}">
+        <div id="overviewDialogContent" class="${surfaceClasses.join(' ')}">
             <div class="overview-actions">
                 <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
                 <button id="printOverviewBtn" class="print-btn">${t.printBtn}</button>
