@@ -31,9 +31,24 @@
       return false;
     }
 
-    try {
+    var syntaxTest = function () {
       var test = new Function('var obj = { a: { b: 1 } }; var value = obj?.a?.b ?? 2; return value;');
       return test() === 1;
+    };
+
+    var overrideSource = null;
+    if (typeof window !== 'undefined') {
+      overrideSource = window;
+    } else if (typeof globalThis !== 'undefined') {
+      overrideSource = globalThis;
+    }
+
+    if (overrideSource && typeof overrideSource.__CINE_POWER_SYNTAX_TEST__ === 'function') {
+      syntaxTest = overrideSource.__CINE_POWER_SYNTAX_TEST__;
+    }
+
+    try {
+      return Boolean(syntaxTest());
     } catch (err) {
       var message = (err && err.message) || '';
       var isCspEvalError =
@@ -45,6 +60,24 @@
         // bundle in this case.
         return true;
       }
+
+      var isSyntaxError = false;
+      if (typeof SyntaxError !== 'undefined' && err instanceof SyntaxError) {
+        isSyntaxError = true;
+      } else if (typeof message === 'string' && message) {
+        isSyntaxError = /syntax|unexpected token|parse error|unterminated|invalid|expected/i.test(message);
+      }
+
+      if (!isSyntaxError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn(
+            'Modern bundle enabled despite unexpected error during syntax support detection.',
+            err,
+          );
+        }
+        return true;
+      }
+
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Legacy bundle enabled: falling back due to syntax support test failure.', err);
       }
@@ -124,9 +157,20 @@
 
   var scriptsToLoad = supportsModernFeatures() ? modernScripts : legacyScripts;
 
-  if (scriptsToLoad === legacyScripts) {
+  if (typeof window !== 'undefined' && scriptsToLoad === legacyScripts) {
     window.__CINE_POWER_LEGACY_BUNDLE__ = true;
   }
 
-  loadScriptsSequentially(scriptsToLoad);
+  if (typeof document !== 'undefined' && document) {
+    loadScriptsSequentially(scriptsToLoad);
+  }
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+      supportsModernFeatures: supportsModernFeatures,
+      loadScriptsSequentially: loadScriptsSequentially,
+      modernScripts: modernScripts,
+      legacyScripts: legacyScripts,
+    };
+  }
 })();
