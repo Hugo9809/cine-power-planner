@@ -262,10 +262,9 @@ function generatePrintableOverview() {
     diagramAreaHtml = areaClone.outerHTML;
   }
   var diagramLegendHtml = diagramLegend ? diagramLegend.outerHTML : '';
-  var diagramControlsHtml = document.querySelector('.diagram-controls') ? document.querySelector('.diagram-controls').outerHTML : '';
   var diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
   var diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
-  var diagramSectionHtml = diagramAreaHtml ? "<section id=\"setupDiagram\" class=\"diagram-section print-section\"><h2>".concat(t.setupDiagramHeading, "</h2>").concat(diagramDescHtml).concat(diagramAreaHtml).concat(diagramLegendHtml).concat(diagramControlsHtml).concat(diagramHintHtml, "</section>") : '';
+  var diagramSectionHtml = diagramAreaHtml ? "<section id=\"setupDiagram\" class=\"diagram-section print-section\"><h2>".concat(t.setupDiagramHeading, "</h2>").concat(diagramDescHtml).concat(diagramAreaHtml).concat(diagramLegendHtml).concat(diagramHintHtml, "</section>") : '';
   var batteryTableHtmlWithBreak = batteryTableHtml ? "<div class=\"page-break\"></div>".concat(batteryTableHtml) : '';
   var gearListCombined = getCurrentGearListHtml();
   if (!gearListCombined && currentProjectInfo) {
