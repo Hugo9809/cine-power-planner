@@ -8367,16 +8367,159 @@ const updateFeatureSearchValue = (newValue, originalNormalized) => {
   const trimmed = newValue.trim();
   if (!trimmed) {
     featureSearch.value = '';
+    restoreFeatureSearchDefaults();
     return;
   }
   if (originalNormalized && trimmed.toLowerCase() === originalNormalized) {
     return;
   }
   featureSearch.value = newValue;
+  restoreFeatureSearchDefaults();
 };
 const helpMap         = new Map();
 const deviceMap       = new Map();
 let runFeatureSearch = () => {};
+
+let featureSearchEntries = [];
+let featureSearchDefaultOptions = [];
+
+const renderFeatureListOptions = values => {
+  if (!featureList || !Array.isArray(values)) return;
+  const fragment = document.createDocumentFragment();
+  for (const value of values) {
+    if (!value) continue;
+    const option = document.createElement('option');
+    option.value = value;
+    fragment.appendChild(option);
+  }
+  featureList.innerHTML = '';
+  featureList.appendChild(fragment);
+};
+
+function restoreFeatureSearchDefaults() {
+  renderFeatureListOptions(featureSearchDefaultOptions);
+}
+
+const FEATURE_SEARCH_MATCH_PRIORITIES = {
+  none: 1,
+  partial: 2,
+  keySubset: 3,
+  keyPrefix: 4,
+  token: 5,
+  exactKey: 6
+};
+
+function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
+  if (!entry || !entry.key) return null;
+  const display = entry.display;
+  if (!display) return null;
+  const entryKey = entry.key;
+  const entryTokens = Array.isArray(entry.tokens) ? entry.tokens : [];
+  const validQueryTokens = Array.isArray(queryTokens)
+    ? queryTokens.filter(Boolean)
+    : [];
+  const tokenDetails = validQueryTokens.length
+    ? computeTokenMatchDetails(entryTokens, validQueryTokens)
+    : { score: 0, matched: 0 };
+
+  let bestType = 'none';
+  let bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
+  const updateType = type => {
+    const priority = FEATURE_SEARCH_MATCH_PRIORITIES[type] || FEATURE_SEARCH_MATCH_PRIORITIES.none;
+    if (priority > bestPriority) {
+      bestType = type;
+      bestPriority = priority;
+    }
+  };
+
+  if (queryKey) {
+    if (entryKey === queryKey) {
+      updateType('exactKey');
+    }
+    if (entryKey.startsWith(queryKey)) {
+      updateType('keyPrefix');
+    }
+    if (queryKey.startsWith(entryKey)) {
+      updateType('keySubset');
+    }
+    if (entryKey.includes(queryKey) || queryKey.includes(entryKey)) {
+      updateType('partial');
+    }
+  }
+
+  if (tokenDetails.score > 0) {
+    updateType('token');
+  }
+
+  return {
+    entry,
+    matchType: bestType,
+    priority: bestPriority,
+    tokenScore: tokenDetails.score,
+    tokenMatches: tokenDetails.matched,
+    keyDistance: queryKey
+      ? Math.abs(entryKey.length - queryKey.length)
+      : Number.POSITIVE_INFINITY,
+    keyLength: entryKey.length
+  };
+}
+
+function updateFeatureSearchSuggestions(query) {
+  if (!featureList) return;
+  const trimmed = typeof query === 'string' ? query.trim() : '';
+  if (!trimmed) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+
+  const queryKey = searchKey(trimmed);
+  const queryTokens = searchTokens(trimmed);
+  if (!queryKey && (!Array.isArray(queryTokens) || queryTokens.length === 0)) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+
+  const scored = featureSearchEntries
+    .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens))
+    .filter(Boolean);
+
+  if (scored.length === 0) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+
+  const meaningful = scored.filter(
+    item =>
+      item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none || item.tokenScore > 0
+  );
+
+  const candidates = (meaningful.length > 0 ? meaningful : scored).sort((a, b) => {
+    if (b.priority !== a.priority) return b.priority - a.priority;
+    if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
+    if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+    if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
+    if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
+    return a.entry.display.localeCompare(b.entry.display, undefined, {
+      sensitivity: 'base'
+    });
+  });
+
+  const values = [];
+  const seen = new Set();
+  for (const item of candidates.slice(0, 25)) {
+    const value = item.entry.display;
+    if (!value || seen.has(value)) continue;
+    seen.add(value);
+    values.push(value);
+  }
+
+  if (values.length === 0) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+
+  renderFeatureListOptions(values);
+}
 // Normalise strings for search comparisons by removing punctuation, diacritics
 // and treating symbols like “&”/“+” as their word equivalents. British and
 // American spelling variants are folded together so queries like “favourites”
@@ -8686,7 +8829,7 @@ const collectFeatureContexts = (element, baseLabelLower) => {
 };
 
 const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
-  if (!featureList || !element || !label) return null;
+  if (!element || !label) return null;
   const baseLabel = label.trim();
   if (!baseLabel) return null;
   const baseKey = searchKey(baseLabel);
@@ -8706,7 +8849,9 @@ const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
     baseLabel,
     displayLabel: combinedLabel,
     context: contextLabels,
-    tokens: searchTokens(combinedKeywords)
+    tokens: searchTokens(combinedKeywords),
+    key: baseKey,
+    optionValue: combinedLabel
   };
   const existing = featureMap.get(baseKey);
   if (!existing) {
@@ -8718,9 +8863,6 @@ const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
   } else if (existing.element !== element) {
     featureMap.set(baseKey, [existing, entry]);
   }
-  const opt = document.createElement('option');
-  opt.value = combinedLabel;
-  featureList.appendChild(opt);
   return entry;
 };
 
@@ -9694,7 +9836,11 @@ function populateFeatureSearch() {
   featureMap.clear();
   helpMap.clear();
   deviceMap.clear();
-  featureList.innerHTML = '';
+  featureSearchEntries = [];
+  featureSearchDefaultOptions = [];
+  const registerOption = value => {
+    if (value) featureSearchDefaultOptions.push(value);
+  };
   document
     .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
     .forEach(el => {
@@ -9702,7 +9848,18 @@ function populateFeatureSearch() {
       const name = el.textContent.trim();
       if (!name) return;
       const keywords = el.dataset?.searchKeywords || el.getAttribute('data-search-keywords') || '';
-      buildFeatureSearchEntry(el, { label: name, keywords });
+      const entry = buildFeatureSearchEntry(el, { label: name, keywords });
+      if (!entry || !entry.key) return;
+      const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
+      if (!display) return;
+      registerOption(display);
+      featureSearchEntries.push({
+        type: 'feature',
+        key: entry.key,
+        display,
+        tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+        value: entry
+      });
     });
   if (helpDialog) {
     helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
@@ -9712,14 +9869,22 @@ function populateFeatureSearch() {
       if (!label) return;
       const keywords = section.dataset.helpKeywords || '';
       const key = searchKey(label);
-      helpMap.set(key, {
+      const tokens = searchTokens(`${label} ${keywords}`.trim());
+      const helpEntry = {
         section,
         label,
-        tokens: searchTokens(`${label} ${keywords}`.trim())
+        tokens
+      };
+      helpMap.set(key, helpEntry);
+      const optionValue = `${label} (help)`;
+      registerOption(optionValue);
+      featureSearchEntries.push({
+        type: 'help',
+        key,
+        display: optionValue,
+        tokens,
+        value: helpEntry
       });
-      const opt = document.createElement('option');
-      opt.value = `${label} (help)`;
-      featureList.appendChild(opt);
     });
   }
 
@@ -9735,18 +9900,29 @@ function populateFeatureSearch() {
           sel.dataset?.searchKeywords ||
           sel.getAttribute('data-search-keywords') ||
           '';
-        deviceMap.set(key, {
+        const tokens = searchTokens(`${name} ${keywords}`.trim());
+        const deviceEntry = {
           select: sel,
           value: opt.value,
           label: name,
-          tokens: searchTokens(`${name} ${keywords}`.trim())
+          tokens
+        };
+        deviceMap.set(key, deviceEntry);
+        registerOption(name);
+        featureSearchEntries.push({
+          type: 'device',
+          key,
+          display: name,
+          tokens,
+          value: deviceEntry
         });
-        const dlOpt = document.createElement('option');
-        dlOpt.value = name;
-        featureList.appendChild(dlOpt);
       }
     });
   });
+  renderFeatureListOptions(featureSearchDefaultOptions);
+  if (featureSearch && featureSearch.value) {
+    updateFeatureSearchSuggestions(featureSearch.value);
+  }
 }
 
 function setEditProjectBtnText() {
@@ -21360,6 +21536,7 @@ if (helpButton && helpDialog) {
     const handle = () => runFeatureSearch(featureSearch.value);
     featureSearch.addEventListener('change', handle);
     featureSearch.addEventListener('input', () => {
+      updateFeatureSearchSuggestions(featureSearch.value);
       featureSearch.showPicker?.();
       if (featureSearchClear) {
         if (featureSearch.value) {
@@ -21377,6 +21554,7 @@ if (helpButton && helpDialog) {
         if (featureSearchClear) {
           featureSearchClear.setAttribute('hidden', '');
         }
+        restoreFeatureSearchDefaults();
         e.preventDefault();
       }
     });
@@ -21388,6 +21566,8 @@ if (helpButton && helpDialog) {
         featureSearch.value = '';
         featureSearchClear.setAttribute('hidden', '');
         focusFeatureSearchInput();
+        restoreFeatureSearchDefaults();
+        featureSearch.showPicker?.();
       }
     });
     if (featureSearch && featureSearch.value) {
@@ -22435,9 +22615,13 @@ if (typeof module !== "undefined" && module.exports) {
       featureMap,
       deviceMap,
       helpMap,
+      featureSearchEntries,
+      featureSearchDefaultOptions,
       featureSearchInput: featureSearch,
       featureSearchClearButton: featureSearchClear,
       featureListElement: featureList,
+      restoreFeatureSearchDefaults,
+      updateFeatureSearchSuggestions,
     },
     collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml,
