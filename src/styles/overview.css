@@ -158,8 +158,8 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 
 .diagram-controls button {
   min-width: var(--button-size);
-  height: var(--button-size);
   min-height: var(--button-size);
+  height: auto;
 }
 
 @media (max-width: 600px) {
