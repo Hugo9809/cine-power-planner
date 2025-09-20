@@ -73,6 +73,7 @@ safe.
 - [Data Safety & Offline Operation](#data-safety--offline-operation)
 - [Data & Storage Overview](#data--storage-overview)
 - [Backup & Recovery](#backup--recovery)
+- [Data Integrity Drills](#data-integrity-drills)
 - [Operational Checklists](#operational-checklists)
 - [Gear Lists & Reporting](#gear-lists--reporting)
 - [Automatic Gear Rules](#automatic-gear-rules)
@@ -361,6 +362,33 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Compare before overwriting** – when restoring from an older file, download a
   fresh backup of the current state first. Use a JSON-aware diff tool to review
   differences so you can merge notes manually if needed.
+
+## Data Integrity Drills
+
+Treat data protection as an ongoing habit so no crew member ever wonders whether
+the latest save or export is trustworthy. Pair the backup options above with a
+repeatable verification loop:
+
+- **Pre-flight validation (daily or before major edits).** Create a manual save,
+  export both a planner backup and a `.cpproject` bundle, then import each file
+  into a private browser profile. Confirm projects, automatic gear rules,
+  favorites and runtime dashboards match the source machine before deleting the
+  verification profile. This proves the full save → share → import chain is
+  intact.
+- **Offline rehearsal (weekly or before travel).** Launch the planner, trigger a
+  manual backup, disconnect from all networks and reload `index.html`. Verify
+  the offline indicator appears, locally stored Uicons and other assets stay
+  crisp and the imported verification project opens without errors. Reconnect
+  only after the restored project is confirmed.
+- **Change control check (after updating data or scripts).** When devices,
+  automatic rules or helper tools change, run `npm test` to rebuild confidence,
+  then repeat the pre-flight validation above. Archive the passing backup with a
+  changelog entry so future crews know which revisions were certified for
+  offline work.
+- **Redundancy rotation (monthly or before archiving).** Store the most recent
+  planner backup, a verified `.cpproject` bundle and a ZIP of the repository on
+  at least two physical media. Rotate which copy you open for spot-checks so you
+  catch media degradation before it causes data loss.
 
 ## Operational Checklists
 
