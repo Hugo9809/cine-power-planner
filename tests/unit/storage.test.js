@@ -64,6 +64,8 @@ const AUTO_GEAR_BACKUPS_KEY = 'cameraPowerPlanner_autoGearBackups';
 const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
+const CUSTOM_LOGO_KEY = 'customLogo';
 
 const BACKUP_SUFFIX = '__backup';
 const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
@@ -112,6 +114,16 @@ describe('device data storage', () => {
   test('saveDeviceData stores JSON in localStorage', () => {
     saveDeviceData(validDeviceData);
     expect(localStorage.getItem(DEVICE_KEY)).toBe(JSON.stringify(validDeviceData));
+  });
+
+  test('saveDeviceData(null) removes stored overrides and backup copy', () => {
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(validDeviceData));
+    localStorage.setItem(backupKeyFor(DEVICE_KEY), JSON.stringify(validDeviceData));
+
+    saveDeviceData(null);
+
+    expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
   });
 
   test('loadDeviceData returns parsed data if valid', () => {
@@ -560,6 +572,16 @@ describe('clearAllData', () => {
     saveAutoGearActivePresetId('preset-1');
     saveAutoGearBackupVisibility(true);
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
+    localStorage.setItem(CUSTOM_LOGO_KEY, 'data:image/svg+xml;base64,AAAA');
+    localStorage.setItem(backupKeyFor(CUSTOM_LOGO_KEY), 'data:image/svg+xml;base64,AAAA');
+    localStorage.setItem(
+      CUSTOM_FONT_KEY,
+      JSON.stringify([{ id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,BBBB' }]),
+    );
+    localStorage.setItem(
+      backupKeyFor(CUSTOM_FONT_KEY),
+      JSON.stringify([{ id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,BBBB' }]),
+    );
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
@@ -574,6 +596,8 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
+    expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBeNull();
+    expect(localStorage.getItem(CUSTOM_FONT_KEY)).toBeNull();
 
     expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
     expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBeNull();
@@ -584,6 +608,8 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_RULES_KEY))).toBeNull();
     expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_BACKUPS_KEY))).toBeNull();
     expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_PRESETS_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(CUSTOM_LOGO_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(CUSTOM_FONT_KEY))).toBeNull();
   });
 });
 
@@ -719,11 +745,33 @@ describe('export/import all data', () => {
       expect(localStorage.getItem('accentColor')).toBe('#00ff00');
       expect(localStorage.getItem('fontSize')).toBe('20');
       expect(localStorage.getItem('fontFamily')).toBe("'Other Font', serif");
-      expect(localStorage.getItem('language')).toBe('fr');
-      expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
-        { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
-      ]);
-    });
+    expect(localStorage.getItem('language')).toBe('fr');
+    expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
+      { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
+    ]);
+  });
+
+  test('importAllData clears stored device overrides when payload sets devices to null', () => {
+    saveDeviceData(validDeviceData);
+    expect(loadDeviceData()).toEqual(validDeviceData);
+
+    importAllData({ devices: null });
+
+    expect(loadDeviceData()).toBeNull();
+    expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
+  });
+
+  test('importAllData clears session state when payload sets session to null', () => {
+    saveSessionState({ camera: 'CamA' });
+    expect(loadSessionState()).toEqual({ camera: 'CamA' });
+
+    importAllData({ session: null });
+
+    expect(loadSessionState()).toBeNull();
+    expect(localStorage.getItem(SESSION_KEY)).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(SESSION_KEY))).toBeNull();
+  });
 
   test('importAllData handles legacy projects array', () => {
     const data = {

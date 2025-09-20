@@ -490,6 +490,20 @@ function loadSessionState() {
 }
 
 function saveSessionState(state) {
+  if (state === null || state === undefined) {
+    deleteFromStorage(
+      SAFE_LOCAL_STORAGE,
+      SESSION_STATE_KEY,
+      "Error deleting session state from localStorage:",
+    );
+    return;
+  }
+
+  if (!isPlainObject(state)) {
+    console.warn('Ignoring invalid session state payload. Expected a plain object.');
+    return;
+  }
+
   saveJSONToStorage(
     SAFE_LOCAL_STORAGE,
     SESSION_STATE_KEY,
@@ -562,6 +576,21 @@ function loadDeviceData() {
 }
 
 function saveDeviceData(deviceData) {
+  if (deviceData === null || deviceData === undefined) {
+    deleteFromStorage(
+      SAFE_LOCAL_STORAGE,
+      DEVICE_STORAGE_KEY,
+      "Error deleting device data from localStorage:",
+    );
+    console.log("Device data cleared from localStorage.");
+    return;
+  }
+
+  if (!isPlainObject(deviceData)) {
+    console.warn('Ignoring invalid device data payload. Expected a plain object.');
+    return;
+  }
+
   saveJSONToStorage(
     SAFE_LOCAL_STORAGE,
     DEVICE_STORAGE_KEY,
@@ -993,7 +1022,20 @@ function loadFavorites() {
 }
 
 function saveFavorites(favs) {
-  if (!isPlainObject(favs)) return;
+  if (favs === null || favs === undefined) {
+    deleteFromStorage(
+      SAFE_LOCAL_STORAGE,
+      FAVORITES_STORAGE_KEY,
+      "Error deleting favorites from localStorage:",
+    );
+    return;
+  }
+
+  if (!isPlainObject(favs)) {
+    console.warn('Ignoring invalid favorites payload. Expected a plain object.');
+    return;
+  }
+
   saveJSONToStorage(
     SAFE_LOCAL_STORAGE,
     FAVORITES_STORAGE_KEY,
@@ -1018,6 +1060,20 @@ function loadFeedback() {
 }
 
 function saveFeedback(feedback) {
+  if (feedback === null || feedback === undefined) {
+    deleteFromStorage(
+      SAFE_LOCAL_STORAGE,
+      FEEDBACK_STORAGE_KEY,
+      "Error deleting feedback from localStorage:",
+    );
+    return;
+  }
+
+  if (!isPlainObject(feedback)) {
+    console.warn('Ignoring invalid feedback payload. Expected a plain object.');
+    return;
+  }
+
   saveJSONToStorage(
     SAFE_LOCAL_STORAGE,
     FEEDBACK_STORAGE_KEY,
@@ -1171,6 +1227,8 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_FONT_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_LOGO_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
@@ -1364,62 +1422,64 @@ function importAllData(allData) {
     return;
   }
 
-  if (allData.devices) {
+  const hasOwn = (key) => Object.prototype.hasOwnProperty.call(allData, key);
+
+  if (hasOwn('devices')) {
     saveDeviceData(allData.devices);
   }
-  if (allData.setups) {
+  if (hasOwn('setups')) {
     saveSetups(allData.setups);
   }
-  if (allData.session) {
+  if (hasOwn('session')) {
     saveSessionState(allData.session);
   }
-  if (allData.feedback) {
+  if (hasOwn('feedback')) {
     saveFeedback(allData.feedback);
   }
-    if (allData.favorites) {
-      saveFavorites(allData.favorites);
-    }
-    if (isPlainObject(allData.preferences)) {
-      const prefs = allData.preferences;
-      const booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups'];
-      booleanPrefs.forEach((key) => {
-        if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
-          safeSetLocalStorage(key, prefs[key]);
-        }
-      });
-      const stringPrefs = ['accentColor', 'fontSize', 'fontFamily', 'language'];
-      stringPrefs.forEach((key) => {
-        if (Object.prototype.hasOwnProperty.call(prefs, key)) {
-          const value = prefs[key];
-          if (typeof value === 'string' && value) {
-            safeSetLocalStorage(key, value);
-          }
-        }
-      });
-    }
-    if (Object.prototype.hasOwnProperty.call(allData, 'customLogo')) {
-      const logo = allData.customLogo;
-      if (typeof logo === 'string' && logo) {
-        safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, logo);
-      } else {
-        safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, null);
+  if (hasOwn('favorites')) {
+    saveFavorites(allData.favorites);
+  }
+  if (isPlainObject(allData.preferences)) {
+    const prefs = allData.preferences;
+    const booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups'];
+    booleanPrefs.forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
+        safeSetLocalStorage(key, prefs[key]);
       }
-    }
-    if (Object.prototype.hasOwnProperty.call(allData, 'customFonts')) {
-      const fonts = normalizeCustomFontEntries(allData.customFonts);
-      if (fonts.length) {
-        try {
-          safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, JSON.stringify(fonts));
-        } catch (error) {
-          console.warn('Unable to store imported custom fonts', error);
+    });
+    const stringPrefs = ['accentColor', 'fontSize', 'fontFamily', 'language'];
+    stringPrefs.forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(prefs, key)) {
+        const value = prefs[key];
+        if (typeof value === 'string' && value) {
+          safeSetLocalStorage(key, value);
         }
-      } else {
-        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, null);
       }
+    });
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'customLogo')) {
+    const logo = allData.customLogo;
+    if (typeof logo === 'string' && logo) {
+      safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, logo);
+    } else {
+      safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, null);
     }
-    if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
-      saveAutoGearRules(allData.autoGearRules);
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'customFonts')) {
+    const fonts = normalizeCustomFontEntries(allData.customFonts);
+    if (fonts.length) {
+      try {
+        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, JSON.stringify(fonts));
+      } catch (error) {
+        console.warn('Unable to store imported custom fonts', error);
+      }
+    } else {
+      safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, null);
     }
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
+    saveAutoGearRules(allData.autoGearRules);
+  }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
     saveAutoGearBackups(allData.autoGearBackups);
   }
