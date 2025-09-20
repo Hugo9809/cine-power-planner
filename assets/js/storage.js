@@ -1158,25 +1158,28 @@ function clearAllData() {
 
 // --- Export/Import All Planner Data ---
   function readLocalStorageValue(key) {
-    if (typeof localStorage === 'undefined') return null;
+    if (!SAFE_LOCAL_STORAGE || typeof SAFE_LOCAL_STORAGE.getItem !== 'function') {
+      return null;
+    }
+
     try {
-      const value = localStorage.getItem(key);
+      const value = SAFE_LOCAL_STORAGE.getItem(key);
       if (value === null || value === undefined) {
         if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
           try {
-            const backupValue = localStorage.getItem(`${key}${STORAGE_BACKUP_SUFFIX}`);
+            const backupValue = SAFE_LOCAL_STORAGE.getItem(`${key}${STORAGE_BACKUP_SUFFIX}`);
             if (backupValue !== null && backupValue !== undefined) {
               return String(backupValue);
             }
           } catch (backupError) {
-            console.warn('Unable to read backup key for export', key, backupError);
+            console.warn('Unable to read backup key for export from storage', key, backupError);
           }
         }
         return null;
       }
       return String(value);
     } catch (error) {
-      console.warn('Unable to read localStorage key for backup', key, error);
+      console.warn('Unable to read storage key for backup', key, error);
       return null;
     }
   }
@@ -1297,25 +1300,29 @@ function clearAllData() {
   }
 
   function safeSetLocalStorage(key, value) {
-    if (typeof localStorage === 'undefined') return;
+    if (!SAFE_LOCAL_STORAGE || typeof SAFE_LOCAL_STORAGE.setItem !== 'function') {
+      return;
+    }
+
     const useBackup = RAW_STORAGE_BACKUP_KEYS.has(key);
     const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
+
     try {
       if (value === null || value === undefined) {
-        localStorage.removeItem(key);
+        SAFE_LOCAL_STORAGE.removeItem(key);
         if (useBackup) {
           try {
-            localStorage.removeItem(backupKey);
+            SAFE_LOCAL_STORAGE.removeItem(backupKey);
           } catch (backupError) {
             console.warn('Unable to remove backup key during import', backupKey, backupError);
           }
         }
       } else {
         const storedValue = String(value);
-        localStorage.setItem(key, storedValue);
+        SAFE_LOCAL_STORAGE.setItem(key, storedValue);
         if (useBackup) {
           try {
-            localStorage.setItem(backupKey, storedValue);
+            SAFE_LOCAL_STORAGE.setItem(backupKey, storedValue);
           } catch (backupError) {
             console.warn('Unable to update backup key during import', backupKey, backupError);
             alertStorageError();
@@ -1323,7 +1330,7 @@ function clearAllData() {
         }
       }
     } catch (error) {
-      console.warn('Unable to persist localStorage key during import', key, error);
+      console.warn('Unable to persist storage key during import', key, error);
       if (useBackup) {
         alertStorageError();
       }
