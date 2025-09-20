@@ -2187,8 +2187,9 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
+          "lengthMm": 75,
           "minFocusMeters": 0.7,
-          "weight_g": 970,
+          "weight_g": 1250,
           "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 85mm T1.3": {
@@ -2202,7 +2203,7 @@ const gear = {
           "lensType": "spherical",
           "mount": "PL",
           "lengthMm": 85,
-          "minFocusMeters": 0.9,
+          "minFocusMeters": 0.91,
           "weight_g": 1400,
           "notes": "Front Ø80 mm; S35"
         },
@@ -3331,7 +3332,7 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "lengthMm": 189,
-          "minFocusMeters": 0.36,
+          "minFocusMeters": 0.35,
           "weight_g": 3400,
           "imageCircleMm": 46.31
         },
@@ -3356,6 +3357,22 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "Cooke S7/i FF 60mm T2.5": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2.5,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "lengthMm": 160,
+          "minFocusMeters": 0.056,
+          "weight_g": 2200,
+          "imageCircleMm": 46.3,
+          "notes": "T2.5-T22"
         },
         "Cooke S7/i FF 75mm T2.0": {
           "brand": "Cooke",
