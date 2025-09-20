@@ -265,6 +265,47 @@
           "wattage"
         ]
       }
+    },
+    "fizConnectors": {
+      "attributes": [
+        "count",
+        "notes",
+        "type"
+      ]
+    },
+    "lensMount": {
+      "attributes": [
+        "mount",
+        "notes",
+        "type"
+      ]
+    },
+    "recordingMedia": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    },
+    "timecode": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "notes",
+        "type",
+        "version"
+      ]
+    },
+    "viewfinder": {
+      "attributes": [
+        "notes",
+        "resolution",
+        "size",
+        "type"
+      ]
     }
   },
   "directorMonitors": {
@@ -287,6 +328,18 @@
           "voltageRange"
         ]
       }
+    },
+    "videoInputs": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
     }
   },
   "filterOptions": {
@@ -355,6 +408,11 @@
           "type"
         ]
       }
+    },
+    "videoInputs": {
+      "attributes": [
+        "type"
+      ]
     }
   },
   "lenses": {
@@ -402,6 +460,21 @@
       "wirelessRX",
       "wirelessTx"
     ],
+    "audioInput": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "audioIo": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "audioOutput": {
+      "attributes": [
+        "portType"
+      ]
+    },
     "power": {
       "input": {
         "attributes": [
@@ -410,6 +483,21 @@
           "voltageRange"
         ]
       }
+    },
+    "videoInputs": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "portType"
+      ]
+    },
+    "wireless": {
+      "attributes": [
+        "portType"
+      ]
     }
   },
   "video": {
@@ -429,6 +517,17 @@
           "voltageRange"
         ]
       }
+    },
+    "videoInputs": {
+      "attributes": [
+        "type"
+      ]
+    },
+    "videoOutputs": {
+      "attributes": [
+        "notes",
+        "type"
+      ]
     }
   },
   "videoAssist": {
@@ -455,6 +554,26 @@
       "powerDrawWatts",
       "videoInputs",
       "videoOutputs"
-    ]
+    ],
+    "power": {
+      "batteryPlateSupport": {
+        "attributes": [
+          "mount",
+          "type"
+        ]
+      },
+      "input": {
+        "attributes": [
+          "notes",
+          "type",
+          "voltageRange"
+        ]
+      }
+    },
+    "videoOutputs": {
+      "attributes": [
+        "type"
+      ]
+    }
   }
 }
