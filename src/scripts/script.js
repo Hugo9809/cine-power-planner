@@ -4076,24 +4076,6 @@ const RESET_VIEW_ICON_SVG = `
   </svg>
 `.trim();
 
-const RENTAL_HOUSE_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M4.5 11.5 12 5l7.5 6.5" />
-      <path d="M6.75 10.75v8.75H11v-4h2v4h4.25V10.75" />
-      <circle cx="17.75" cy="17" r="1.75" />
-      <path d="M18.95 16.2 20 15.25V13.5" />
-      <line x1="18.9" y1="17.5" x2="20" y2="17.5" />
-    </g>
-  </svg>
-`.trim();
-
 const ASPECT_RATIO_ICON_SVG = `
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <g
@@ -4154,7 +4136,7 @@ const MONITORING_SUPPORT_ICON_SVG = `
 `.trim();
 
 const PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
-const RENTAL_HOUSE_ICON = Object.freeze({ markup: RENTAL_HOUSE_ICON_SVG, className: 'icon-svg' });
+const RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
 const ASPECT_RATIO_ICON = Object.freeze({ markup: ASPECT_RATIO_ICON_SVG, className: 'icon-svg' });
 const REQUIRED_SCENARIOS_ICON = Object.freeze({ markup: REQUIRED_SCENARIOS_ICON_SVG, className: 'icon-svg' });
 const MONITORING_SUPPORT_ICON = Object.freeze({ markup: MONITORING_SUPPORT_ICON_SVG, className: 'icon-svg' });
