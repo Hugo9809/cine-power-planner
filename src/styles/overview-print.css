@@ -318,6 +318,14 @@ body:not(.light-mode) .gear-table tbody {
   page-break-inside: avoid;
 }
 
+#overviewDialogContent .gear-table .category-row,
+#overviewDialogContent.dark-mode .gear-table .category-row,
+body:not(.light-mode) .gear-table .category-row {
+  break-after: avoid;
+  break-after: avoid-page;
+  page-break-after: avoid;
+}
+
 #overviewDialogContent .gear-table .gear-item {
   display: inline-flex;
   align-items: center;
