@@ -1346,6 +1346,20 @@ function clearAllData() {
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
+  const preferenceKeys = [
+    'darkMode',
+    'pinkMode',
+    'highContrast',
+    'showAutoBackups',
+    'accentColor',
+    'fontSize',
+    'fontFamily',
+    'language',
+    'iosPwaHelpShown',
+  ];
+  preferenceKeys.forEach((key) => {
+    deleteFromStorage(SAFE_LOCAL_STORAGE, key, msg, { disableBackup: true });
+  });
   console.log("All planner data cleared from storage.");
 }
 

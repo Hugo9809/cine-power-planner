@@ -8922,7 +8922,8 @@ const gearListOutput = document.getElementById("gearListOutput");
 const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
 
 // Load accent color from localStorage
-let accentColor = '#001589';
+const DEFAULT_ACCENT_COLOR = '#001589';
+let accentColor = DEFAULT_ACCENT_COLOR;
 let prevAccentColor = accentColor;
 const HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
 
@@ -18185,6 +18186,7 @@ function applyGearListSelectors(selectors) {
 }
 
 function saveCurrentGearList() {
+    if (factoryResetInProgress) return;
     const html = getCurrentGearListHtml();
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSliderBowlValue();
@@ -18576,7 +18578,7 @@ function refreshGearListIfVisible() {
 
 // --- SESSION STATE HANDLING ---
 function saveCurrentSession(options = {}) {
-  if (restoringSession) return;
+  if (restoringSession || factoryResetInProgress) return;
   const info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSliderBowlValue();
   info.easyrig = getEasyrigValue();
@@ -18607,6 +18609,7 @@ function saveCurrentSession(options = {}) {
 }
 
 function autoSaveCurrentSetup() {
+  if (factoryResetInProgress) return;
   if (!setupNameInput) return;
   const name = setupNameInput.value.trim();
   if (!name) {
@@ -18636,8 +18639,13 @@ function autoSaveCurrentSetup() {
 }
 
 let projectAutoSaveTimer = null;
+let factoryResetInProgress = false;
 
 function runProjectAutoSave() {
+  if (factoryResetInProgress) {
+    projectAutoSaveTimer = null;
+    return;
+  }
   if (restoringSession) return;
   projectAutoSaveTimer = null;
   const hasSetupName = Boolean(setupNameInput && setupNameInput.value.trim());
@@ -18649,6 +18657,13 @@ function runProjectAutoSave() {
 }
 
 function scheduleProjectAutoSave(immediate = false) {
+  if (factoryResetInProgress) {
+    if (projectAutoSaveTimer) {
+      clearTimeout(projectAutoSaveTimer);
+      projectAutoSaveTimer = null;
+    }
+    return;
+  }
   if (restoringSession) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
@@ -19033,7 +19048,10 @@ motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCu
 controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
 if (setupNameInput) setupNameInput.addEventListener("change", autoSaveCurrentSetup);
 
-const flushProjectAutoSaveOnExit = () => scheduleProjectAutoSave(true);
+const flushProjectAutoSaveOnExit = () => {
+  if (factoryResetInProgress) return;
+  scheduleProjectAutoSave(true);
+};
 if (typeof document !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
@@ -19649,7 +19667,9 @@ function parseColorToRgb(color) {
 }
 
 const createAccentTint = (alpha = 0.16) => {
-  const accentFallback = typeof accentColor === 'string' ? accentColor : '#001589';
+  const accentFallback = typeof accentColor === 'string'
+    ? accentColor
+    : DEFAULT_ACCENT_COLOR;
   const accentSource = getCssVariableValue('--accent-color', accentFallback);
   const rgb = parseColorToRgb(accentSource);
   if (!rgb) return null;
@@ -20185,7 +20205,80 @@ if (factoryResetButton) {
     }
 
     try {
+      factoryResetInProgress = true;
+      if (typeof globalThis !== 'undefined') {
+        try {
+          globalThis.__cameraPowerPlannerFactoryResetting = true;
+        } catch (flagError) {
+          console.warn('Unable to flag factory reset on global scope', flagError);
+        }
+      }
+      if (projectAutoSaveTimer) {
+        clearTimeout(projectAutoSaveTimer);
+        projectAutoSaveTimer = null;
+      }
+      try {
+        stopPinkModeIconRotation();
+        stopPinkModeAnimatedIcons();
+      } catch (animationError) {
+        console.warn('Failed to stop pink mode animations during factory reset', animationError);
+      }
       clearAllData();
+      try {
+        darkModeEnabled = false;
+        applyDarkMode(false);
+      } catch (darkError) {
+        console.warn('Failed to reset dark mode during factory reset', darkError);
+      }
+      try {
+        highContrastEnabled = false;
+        applyHighContrast(false);
+        if (settingsHighContrast) {
+          settingsHighContrast.checked = false;
+        }
+      } catch (contrastError) {
+        console.warn('Failed to reset high contrast during factory reset', contrastError);
+      }
+      try {
+        pinkModeEnabled = false;
+        applyPinkMode(false);
+        rememberSettingsPinkModeBaseline();
+      } catch (pinkError) {
+        console.warn('Failed to reset pink mode during factory reset', pinkError);
+      }
+      showAutoBackups = false;
+      if (settingsShowAutoBackups) {
+        settingsShowAutoBackups.checked = false;
+      }
+      try {
+        accentColor = DEFAULT_ACCENT_COLOR;
+        prevAccentColor = DEFAULT_ACCENT_COLOR;
+        clearAccentColorOverrides();
+        applyAccentColor(accentColor);
+        if (accentColorInput) {
+          accentColorInput.value = DEFAULT_ACCENT_COLOR;
+        }
+      } catch (accentError) {
+        console.warn('Failed to reset accent color during factory reset', accentError);
+      }
+      try {
+        fontSize = '16';
+        applyFontSize(fontSize);
+        if (settingsFontSize) {
+          settingsFontSize.value = fontSize;
+        }
+      } catch (fontSizeError) {
+        console.warn('Failed to reset font size during factory reset', fontSizeError);
+      }
+      try {
+        fontFamily = "'Ubuntu', sans-serif";
+        applyFontFamily(fontFamily);
+        if (settingsFontFamily) {
+          settingsFontFamily.value = fontFamily;
+        }
+      } catch (fontFamilyError) {
+        console.warn('Failed to reset font family during factory reset', fontFamilyError);
+      }
       if (settingsDialog) {
         settingsDialog.setAttribute('hidden', '');
       }
@@ -20199,6 +20292,14 @@ if (factoryResetButton) {
       }, 600);
     } catch (error) {
       console.error('Factory reset failed', error);
+      factoryResetInProgress = false;
+      if (typeof globalThis !== 'undefined') {
+        try {
+          delete globalThis.__cameraPowerPlannerFactoryResetting;
+        } catch (cleanupError) {
+          console.warn('Unable to clear factory reset flag from global scope', cleanupError);
+        }
+      }
       const errorMsg = langTexts.factoryResetError
         || 'Factory reset failed. Please try again.';
       showNotification('error', errorMsg);
