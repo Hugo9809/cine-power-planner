@@ -18,6 +18,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
       "Sony DVF-EL200 OLED Viewfinder": {
         "brand": "Sony",
         "model": "DVF-EL200 OLED Viewfinder",
+        "kNumber": "DVF-EL200",
         "compatible": ["Sony Venice", "Sony Venice 2", "Sony F55"],
         "isPersonalGear": false,
         "listOfOrigin": "240315_Detective_von_Fock_Equpment_B-Cam_Rental.pdf"
@@ -148,7 +149,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "model": "1303 HDR",
         "screenSizeInches": 13,
         "brightnessNits": 1500,
-        "powerDrawWatts": null,
+        "powerDrawWatts": 39,
         "power": {
           "input": [{
             "type": "XLR"
@@ -157,6 +158,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           }],
           "output": null
         },
+        "notes": "Typical draw ranges from 25-39 W depending on load.",
         "wirelessTx": false,
         "videoInputs": [{
           "type": "3G-SDI"
@@ -232,7 +234,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "model": "BM-U175",
         "screenSizeInches": 17.3,
         "brightnessNits": 300,
-        "powerDrawWatts": null,
+        "powerDrawWatts": 85,
         "power": {
           "input": [{
             "type": "XLR 4-pin"
@@ -366,8 +368,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "brand": "Sony",
         "model": "PVM-X1800",
         "screenSizeInches": 18.4,
-        "brightnessNits": null,
-        "powerDrawWatts": null,
+        "brightnessNits": 1000,
+        "powerDrawWatts": 98,
         "power": {
           "input": {
             "type": "AC"
@@ -431,13 +433,14 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "model": "DM242",
         "screenSizeInches": 24,
         "brightnessNits": 400,
-        "powerDrawWatts": null,
+        "powerDrawWatts": 35,
         "power": {
           "input": {
             "type": "AC"
           },
           "output": null
         },
+        "notes": "Rated 23-35 W depending on settings.",
         "wirelessTx": false,
         "videoInputs": [{
           "type": "3G-SDI",
@@ -457,13 +460,14 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "model": "DM170",
         "screenSizeInches": 17,
         "brightnessNits": null,
-        "powerDrawWatts": null,
+        "powerDrawWatts": 32,
         "power": {
           "input": {
             "type": "AC"
           },
           "output": null
         },
+        "notes": "Rated 21-32 W depending on configuration.",
         "wirelessTx": false,
         "videoInputs": [{
           "type": "3G-SDI"
@@ -475,7 +479,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "model": "XMP270",
         "screenSizeInches": 26.5,
         "brightnessNits": 1000,
-        "powerDrawWatts": null,
+        "powerDrawWatts": 220,
         "power": {
           "input": [{
             "type": "XLR 4-pin",
@@ -486,6 +490,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           }],
           "output": null
         },
+        "notes": "Consumes approximately 35-220 W depending on HDR mode.",
         "wirelessTx": false,
         "videoInputs": [{
           "type": "12G-SDI",
@@ -1028,10 +1033,12 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "kNumber": "K2.0017086"
         },
         "Tilta 95mm Polarizer Filter for Tilta Mirage": {
-          "brand": "Tilta"
+          "brand": "Tilta",
+          "kNumber": "MB-T16-POL"
         },
         "Schneider CF DIOPTER FULL GEN2": {
-          "brand": "Schneider"
+          "brand": "Schneider",
+          "kNumber": "68-000xxx"
         }
       },
       "rigging": {
@@ -1130,13 +1137,35 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         },
         "fiz": {
           "LBUS to LBUS": {
-            "from": "LBUS (LEMO 4-pin)",
-            "to": "LBUS (LEMO 4-pin)"
-          },
-          "LBUS to LBUS 0,3m": {
+            "brand": "ARRI",
             "from": "LBUS (LEMO 4-pin)",
             "to": "LBUS (LEMO 4-pin)",
-            "lengthM": 0.3
+            "connectors": ["LEMO 4-pin", "LEMO 4-pin"],
+            "orientation": "straight",
+            "type": "LBUS cable",
+            "useCase": ["Lens control daisy-chain"]
+          },
+          "LBUS to LBUS 0,2m": {
+            "brand": "ARRI",
+            "kNumber": "K2.0006749",
+            "from": "LBUS (LEMO 4-pin)",
+            "to": "LBUS (LEMO 4-pin)",
+            "connectors": ["LEMO 4-pin", "LEMO 4-pin"],
+            "lengthM": 0.2,
+            "orientation": "straight",
+            "type": "LBUS cable",
+            "useCase": ["Lens control daisy-chain"]
+          },
+          "LBUS to LBUS 0,3m": {
+            "brand": "ARRI",
+            "kNumber": "K2.0006750",
+            "from": "LBUS (LEMO 4-pin)",
+            "to": "LBUS (LEMO 4-pin)",
+            "connectors": ["LEMO 4-pin", "LEMO 4-pin"],
+            "lengthM": 0.3,
+            "orientation": "straight",
+            "type": "LBUS cable",
+            "useCase": ["Lens control daisy-chain"]
           },
           "LBUS to LBUS 0,4m": {
             "from": "LBUS (LEMO 4-pin)",
@@ -1144,9 +1173,24 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "lengthM": 0.4
           },
           "LBUS to LBUS 0,5m": {
+            "brand": "ARRI",
+            "kNumber": "K2.0006751",
             "from": "LBUS (LEMO 4-pin)",
             "to": "LBUS (LEMO 4-pin)",
-            "lengthM": 0.5
+            "connectors": ["LEMO 4-pin", "LEMO 4-pin"],
+            "lengthM": 0.5,
+            "orientation": "straight",
+            "type": "LBUS cable",
+            "useCase": ["Lens control daisy-chain"]
+          },
+          "ARRI Right-Angle LBUS to LBUS 0,6m": {
+            "brand": "ARRI",
+            "kNumber": "K2.0013040",
+            "connectors": ["LEMO 4-pin RA", "LEMO 4-pin RA"],
+            "lengthM": 0.6,
+            "orientation": "right-angle",
+            "type": "LBUS cable",
+            "useCase": ["Lens control daisy-chain"]
           },
           "Cable UDM – SERIAL (7p) 1,5m": {
             "brand": "ARRI",
@@ -1702,9 +1746,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
-          "lengthMm": 89,
-          "minFocusMeters": 0.25,
-          "weight_g": 1200,
+          "lengthMm": 95,
+          "minFocusMeters": 0.28,
+          "weight_g": 1600,
           "notes": "Front Ø80 mm; S35; T1.3-T16"
         },
         "ZEISS High Speed MK III 20mm T2.1": {
@@ -1727,9 +1771,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
-          "lengthMm": 66,
+          "lengthMm": 75,
           "minFocusMeters": 0.25,
-          "weight_g": 900,
+          "weight_g": 1100,
           "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 35mm T1.3": {
@@ -1772,8 +1816,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
+          "lengthMm": 75,
           "minFocusMeters": 0.7,
-          "weight_g": 970,
+          "weight_g": 1250,
           "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 85mm T1.3": {
@@ -1786,9 +1831,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
-          "lengthMm": 69,
-          "minFocusMeters": 0.92,
-          "weight_g": 1100,
+          "lengthMm": 85,
+          "minFocusMeters": 0.91,
+          "weight_g": 1400,
           "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 135mm T1.3": {
@@ -2244,15 +2289,75 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 420,
           "notes": "ARRI lists 1.8 m MOD from sensor plane (1.337 m from lens front) with LDS-2/Cooke /i metadata."
         },
+        "ARRI/ZEISS Ultra Prime 8mm T2.8": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 134,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 2000,
+          "lengthMm": 130
+        },
+        "ARRI/ZEISS Ultra Prime 10mm T2.1": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 156,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 2900,
+          "lengthMm": 172
+        },
+        "ARRI/ZEISS Ultra Prime 12mm T2.0": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 156,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 2000,
+          "lengthMm": 140
+        },
+        "ARRI/ZEISS Ultra Prime 14mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.22,
+          "weight_g": 1800,
+          "lengthMm": 112
+        },
         "ARRI/ZEISS Ultra Prime 16mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.25,
+          "weight_g": 1200,
+          "lengthMm": 94
         },
         "ARRI/ZEISS Ultra Prime 20mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2371,6 +2476,20 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "minFocusMeters": 1.5,
           "weight_g": 1600,
           "lengthMm": 119
+        },
+        "ARRI/ZEISS Ultra Prime 180mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 2.6,
+          "weight_g": 2600,
+          "lengthMm": 166
         },
         "ZEISS Master Prime 12mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -2517,6 +2636,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "ZEISS Master Prime 75mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL / LDS",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "weight_g": 2800,
+          "imageCircleMm": 46.3,
+          "lengthMm": 153,
+          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
+        },
         "ZEISS Master Prime 100mm T1.3": {
           "brand": "ZEISS/ARRI",
           "frontDiameterMm": 114,
@@ -2526,7 +2661,10 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 2900,
+          "lengthMm": 205
         },
         "ZEISS Master Prime 135mm T1.3": {
           "brand": "ZEISS/ARRI",
@@ -2941,7 +3079,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "lengthMm": 182,
+          "minFocusMeters": 0.36,
+          "weight_g": 3300,
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 32mm T2.0": {
           "brand": "Cooke",
@@ -2952,7 +3094,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "lengthMm": 189,
+          "minFocusMeters": 0.35,
+          "weight_g": 3400,
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 40mm T2.0": {
           "brand": "Cooke",
@@ -2963,7 +3109,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "lengthMm": 189,
+          "minFocusMeters": 0.45,
+          "weight_g": 3500,
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 50mm T2.0": {
           "brand": "Cooke",
@@ -2976,6 +3126,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "Cooke S7/i FF 60mm T2.5": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2.5,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "lengthMm": 160,
+          "minFocusMeters": 0.056,
+          "weight_g": 2200,
+          "imageCircleMm": 46.3,
+          "notes": "T2.5-T22"
+        },
         "Cooke S7/i FF 75mm T2.0": {
           "brand": "Cooke",
           "frontDiameterMm": 110,
@@ -2985,7 +3151,12 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.475,
+          "weight_g": 3300,
+          "lengthMm": 189,
+          "imageCircleMm": 46.31,
+          "notes": "T2.0-T22"
         },
         "Cooke S7/i FF 100mm T2.0": {
           "brand": "Cooke",

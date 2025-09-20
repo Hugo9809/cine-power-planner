@@ -28,6 +28,8 @@
     } else {
       root.style.setProperty('--link-color', color);
     }
+    root.style.setProperty('--logo-background-color', accentValue);
+    root.style.setProperty('--logo-accent-color', accentValue);
     if (body) {
       body.style.setProperty('--accent-color', accentValue);
       if (highContrastActive) {
@@ -35,6 +37,8 @@
       } else {
         body.style.setProperty('--link-color', color);
       }
+      body.style.setProperty('--logo-background-color', accentValue);
+      body.style.setProperty('--logo-accent-color', accentValue);
     }
   }
   function applyPreferences() {
@@ -75,6 +79,10 @@
       root.style.removeProperty('--link-color');
       body.style.removeProperty('--accent-color');
       body.style.removeProperty('--link-color');
+      root.style.removeProperty('--logo-background-color');
+      root.style.removeProperty('--logo-accent-color');
+      body.style.removeProperty('--logo-background-color');
+      body.style.removeProperty('--logo-accent-color');
     } else {
       applyAccent(accentColor, root, body);
     }
