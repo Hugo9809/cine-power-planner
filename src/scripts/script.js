@@ -4113,7 +4113,7 @@ const ICON_GLYPHS = Object.freeze({
   controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
   distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
   viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
-  camera: iconGlyph('\uF12D', ICON_FONT_KEYS.FILM),
+  camera: iconGlyph('\uE333', ICON_FONT_KEYS.UICONS),
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
   load: Object.freeze({ markup: LOAD_ICON_SVG, className: 'icon-svg' }),
