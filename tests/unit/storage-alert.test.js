@@ -156,4 +156,17 @@ describe('storage error alert handling', () => {
 
     expect(global.window.alert).toHaveBeenCalledTimes(1);
   });
+
+  test('legacy bundle shows the storage alert only once when failures repeat', () => {
+    const { saveDeviceData } = require('../../legacy/scripts/storage.js');
+
+    const payload = { cameras: {} };
+
+    controlledStorage.enableFailure(new Error('legacy setItem failed'));
+
+    saveDeviceData(payload);
+    saveDeviceData(payload);
+
+    expect(global.window.alert).toHaveBeenCalledTimes(1);
+  });
 });

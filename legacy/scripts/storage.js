@@ -40,6 +40,15 @@ var AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePres
 var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 var STORAGE_BACKUP_SUFFIX = '__backup';
 var RAW_STORAGE_BACKUP_KEYS = new Set([CUSTOM_FONT_STORAGE_KEY_NAME, CUSTOM_LOGO_STORAGE_KEY]);
+var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
+var storageErrorAlertShown = false;
+if (GLOBAL_SCOPE) {
+  if (typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
+    storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
+  } else {
+    GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = false;
+  }
+}
 var DEVICE_COLLECTION_KEYS = ['cameras', 'monitors', 'video', 'viewfinders', 'directorMonitors', 'iosVideo', 'videoAssist', 'media', 'lenses', 'batteries', 'batteryHotswaps', 'wirelessReceivers'];
 var FIZ_COLLECTION_KEYS = ['motors', 'handUnits', 'controllers', 'distance'];
 var ACCESSORY_COLLECTION_KEYS = ['chargers', 'cages', 'powerPlates', 'cameraSupport', 'matteboxes', 'filters', 'rigging', 'batteries', 'cables', 'videoAssist', 'media', 'tripodHeads', 'tripods', 'sliders', 'cameraStabiliser', 'grip', 'carts'];
@@ -207,6 +216,19 @@ function isPlainObject(val) {
   return val !== null && _typeof(val) === 'object' && !Array.isArray(val);
 }
 function alertStorageError() {
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
+    storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
+  }
+
+  if (storageErrorAlertShown) {
+    return;
+  }
+
+  storageErrorAlertShown = true;
+  if (GLOBAL_SCOPE) {
+    GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = true;
+  }
+
   if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
   var msg = 'Storage error: Unable to access local data. Changes may not be saved.';
   try {
