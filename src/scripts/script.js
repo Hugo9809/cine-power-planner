@@ -5077,6 +5077,8 @@ const sharedKeyMap = {
 
 let lastSharedSetupData = null;
 let lastSharedAutoGearRules = null;
+let sharedImportPreviousPresetId = '';
+let sharedImportProjectPresetActive = false;
 
 function cloneSharedImportValue(value) {
   if (value == null) return null;
@@ -5096,6 +5098,90 @@ function storeSharedImportData(data, rules) {
 function clearStoredSharedImportData() {
   lastSharedSetupData = null;
   lastSharedAutoGearRules = null;
+}
+
+function deactivateSharedImportProjectPreset() {
+  if (!sharedImportProjectPresetActive) return;
+  const targetPresetId = sharedImportPreviousPresetId || '';
+  setActiveAutoGearPresetId(targetPresetId, { persist: false, skipRender: true });
+  sharedImportProjectPresetActive = false;
+  sharedImportPreviousPresetId = '';
+  renderAutoGearPresetsControls();
+}
+
+function activateSharedImportProjectPreset(presetId) {
+  if (!presetId) return;
+  if (!sharedImportProjectPresetActive) {
+    sharedImportPreviousPresetId = activeAutoGearPresetId || '';
+  }
+  sharedImportProjectPresetActive = true;
+  setActiveAutoGearPresetId(presetId, { persist: false, skipRender: true });
+  renderAutoGearPresetsControls();
+}
+
+function getSharedImportProjectName(sharedData) {
+  if (!sharedData || typeof sharedData !== 'object') return '';
+  const projectName = sharedData.projectInfo && typeof sharedData.projectInfo.projectName === 'string'
+    ? sharedData.projectInfo.projectName.trim()
+    : '';
+  if (projectName) return projectName;
+  if (typeof sharedData.setupName === 'string') {
+    const normalized = sharedData.setupName.trim();
+    if (normalized) return normalized;
+  }
+  return '';
+}
+
+function getSharedImportPresetLabel(sharedData) {
+  const langTexts = texts[currentLang] || texts.en || {};
+  const fallback = langTexts.sharedImportAutoGearPresetFallback
+    || texts.en?.sharedImportAutoGearPresetFallback
+    || 'Shared automatic gear rules';
+  const projectName = getSharedImportProjectName(sharedData);
+  if (!projectName) {
+    return fallback;
+  }
+  const template = langTexts.sharedImportAutoGearPresetName
+    || texts.en?.sharedImportAutoGearPresetName
+    || '%s';
+  if (template.includes('%s')) {
+    return formatWithPlaceholders(template, projectName);
+  }
+  return `${template} ${projectName}`.trim();
+}
+
+function ensureSharedAutoGearPreset(rules, sharedData) {
+  const normalizedRules = Array.isArray(rules)
+    ? rules.map(normalizeAutoGearRule).filter(Boolean)
+    : [];
+  if (!normalizedRules.length) return null;
+  const label = getSharedImportPresetLabel(sharedData);
+  const fingerprint = createAutoGearRulesFingerprint(normalizedRules);
+  let preset = autoGearPresets.find(entry => entry.fingerprint === fingerprint) || null;
+  const fallback = texts[currentLang]?.sharedImportAutoGearPresetFallback
+    || texts.en?.sharedImportAutoGearPresetFallback
+    || 'Shared automatic gear rules';
+  if (preset) {
+    if (label && preset.label !== label && preset.label === fallback) {
+      preset = { ...preset, label };
+      autoGearPresets = autoGearPresets.map(entry => (entry.id === preset.id ? preset : entry));
+      autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+      persistAutoGearPresets(autoGearPresets);
+      renderAutoGearPresetsControls();
+    }
+    return preset;
+  }
+  const normalizedPreset = normalizeAutoGearPreset({
+    id: generateAutoGearId('preset'),
+    label,
+    rules: normalizedRules,
+  });
+  if (!normalizedPreset) return null;
+  autoGearPresets.push(normalizedPreset);
+  autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+  persistAutoGearPresets(autoGearPresets);
+  renderAutoGearPresetsControls();
+  return normalizedPreset;
 }
 
 function configureSharedImportOptions(sharedRules) {
@@ -6506,6 +6592,10 @@ function setAutoGearBackupsVisible(show) {
 
 function handleAutoGearPresetSelection(event) {
   if (!event || !autoGearPresetSelect) return;
+  if (sharedImportProjectPresetActive) {
+    sharedImportProjectPresetActive = false;
+    sharedImportPreviousPresetId = '';
+  }
   const presetId = event.target.value;
   if (!presetId) {
     setActiveAutoGearPresetId('', { persist: true });
@@ -18665,6 +18755,7 @@ function applySharedSetup(shared, options = {}) {
     const decoded = decodeSharedSetup(
       typeof shared === 'string' ? JSON.parse(shared) : shared
     );
+    deactivateSharedImportProjectPreset();
     const sharedRulesFromData = Array.isArray(decoded.autoGearRules) ? decoded.autoGearRules : null;
     const providedRules = Array.isArray(options.sharedAutoGearRules) && options.sharedAutoGearRules.length
       ? options.sharedAutoGearRules
@@ -18694,6 +18785,10 @@ function applySharedSetup(shared, options = {}) {
     if (applyGlobal) {
       if (hasProvidedRules) {
         const merged = mergeAutoGearRules(getBaseAutoGearRules(), providedRules);
+        const preset = ensureSharedAutoGearPreset(merged, decoded);
+        if (preset) {
+          setActiveAutoGearPresetId(preset.id, { persist: true, skipRender: true });
+        }
         setAutoGearRules(merged);
         autoGearUpdated = true;
       } else if (usingProjectAutoGearRules()) {
@@ -18703,14 +18798,20 @@ function applySharedSetup(shared, options = {}) {
     }
     if (applyProject) {
       if (hasProvidedRules) {
+        const preset = ensureSharedAutoGearPreset(providedRules, decoded);
+        if (preset) {
+          activateSharedImportProjectPreset(preset.id);
+        }
         useProjectAutoGearRules(providedRules);
       } else {
         clearProjectAutoGearRules();
+        deactivateSharedImportProjectPreset();
       }
       autoGearUpdated = true;
     } else if (!applyGlobal && (applyNoneOnly || !hasProvidedRules)) {
       if (usingProjectAutoGearRules()) {
         clearProjectAutoGearRules();
+        deactivateSharedImportProjectPreset();
         autoGearUpdated = true;
       }
     }
