@@ -1,3 +1,4 @@
+/* global getUiPreference */
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 const STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
@@ -774,8 +775,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
     try {
       restoreInput.dispatchEvent(new Event('change'));
 
-      expect(localStorage.getItem('language')).toBe('es');
-      expect(localStorage.getItem('darkMode')).toBe('true');
+      expect(getUiPreference('language')).toBe('es');
+      expect(getUiPreference('darkMode')).toBe('true');
       expect(sessionStorage.getItem('cameraPowerPlanner_session')).toBe(
         JSON.stringify({ activeSetup: 'Legacy' }),
       );

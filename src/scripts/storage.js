@@ -20,6 +20,19 @@ const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
+const UI_PREFERENCES_STORAGE_KEY = 'cameraPowerPlanner_uiPreferences';
+const UI_STATIC_PREFERENCE_KEYS = [
+  'darkMode',
+  'pinkMode',
+  'highContrast',
+  'showAutoBackups',
+  'accentColor',
+  'fontSize',
+  'fontFamily',
+  'language',
+  'customLogo',
+  'iosPwaHelpShown',
+];
 
 function ensureCustomFontStorageKeyName() {
   if (!GLOBAL_SCOPE) {
@@ -72,6 +85,7 @@ const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShow
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
+  UI_PREFERENCES_STORAGE_KEY,
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
 ]);
@@ -138,6 +152,7 @@ const PRIMARY_STORAGE_KEYS = [
 ];
 
 const SIMPLE_STORAGE_KEYS = [
+  UI_PREFERENCES_STORAGE_KEY,
   CUSTOM_LOGO_STORAGE_KEY,
   getCustomFontStorageKeyName(),
   'darkMode',
@@ -574,6 +589,248 @@ if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
     });
   } catch {
     GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
+  }
+}
+
+let uiPreferenceCache = null;
+
+function getUiPreferenceCandidateKeys() {
+  const keys = UI_STATIC_PREFERENCE_KEYS.slice();
+  const fontKey = getCustomFontStorageKeyName();
+  if (fontKey && !keys.includes(fontKey)) {
+    keys.push(fontKey);
+  }
+  return keys;
+}
+
+function parseUiPreferencePayload(raw, label) {
+  if (!raw) {
+    return { ok: false, value: null, reason: 'empty' };
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      console.warn(
+        `UI preferences payload${label ? ` (${label})` : ''} is not a plain object.`,
+      );
+      return { ok: false, value: null, reason: 'invalid' };
+    }
+    const normalized = Object.create(null);
+    Object.keys(parsed).forEach((key) => {
+      if (typeof key !== 'string' || !key) {
+        return;
+      }
+      const value = parsed[key];
+      if (value === null || value === undefined) {
+        return;
+      }
+      try {
+        normalized[key] = String(value);
+      } catch (stringError) {
+        console.warn('Unable to normalize stored UI preference value', key, stringError);
+      }
+    });
+    return { ok: true, value: normalized, reason: null };
+  } catch (error) {
+    console.warn('Unable to parse stored UI preferences', label || 'primary', error);
+    return { ok: false, value: null, reason: 'error' };
+  }
+}
+
+function readUiPreferenceCacheFromStorage() {
+  const storage = getSafeLocalStorage();
+  if (!storage || typeof storage.getItem !== 'function') {
+    return Object.create(null);
+  }
+
+  let primaryRaw = null;
+  try {
+    primaryRaw = storage.getItem(UI_PREFERENCES_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Unable to read stored UI preferences', error);
+  }
+
+  const primary = parseUiPreferencePayload(primaryRaw, 'primary');
+  if (primary.ok) {
+    return primary.value;
+  }
+
+  const shouldAttemptBackup = primary.reason === 'error' || primary.reason === 'invalid';
+  if (!shouldAttemptBackup) {
+    return Object.create(null);
+  }
+
+  let backupRaw = null;
+  try {
+    backupRaw = storage.getItem(`${UI_PREFERENCES_STORAGE_KEY}${STORAGE_BACKUP_SUFFIX}`);
+  } catch (error) {
+    console.warn('Unable to read UI preference backup', error);
+  }
+
+  const backup = parseUiPreferencePayload(backupRaw, 'backup');
+  if (backup.ok) {
+    return backup.value;
+  }
+
+  return Object.create(null);
+}
+
+function persistUiPreferenceCache(cache) {
+  const storage = getSafeLocalStorage();
+  if (!storage || typeof storage.setItem !== 'function') {
+    return false;
+  }
+
+  const keys = cache ? Object.keys(cache) : [];
+  try {
+    if (!keys.length) {
+      storage.removeItem(UI_PREFERENCES_STORAGE_KEY);
+      try {
+        storage.removeItem(`${UI_PREFERENCES_STORAGE_KEY}${STORAGE_BACKUP_SUFFIX}`);
+      } catch (backupCleanupError) {
+        console.warn('Unable to clear UI preference backup', backupCleanupError);
+      }
+    } else {
+      const payload = JSON.stringify(cache);
+      storage.setItem(UI_PREFERENCES_STORAGE_KEY, payload);
+      try {
+        storage.setItem(`${UI_PREFERENCES_STORAGE_KEY}${STORAGE_BACKUP_SUFFIX}`, payload);
+      } catch (backupError) {
+        console.warn('Unable to persist UI preference backup copy', backupError);
+      }
+    }
+    return true;
+  } catch (error) {
+    console.warn('Unable to persist UI preferences', error);
+    return false;
+  }
+}
+
+function ensureUiPreferenceCache() {
+  if (uiPreferenceCache) {
+    return uiPreferenceCache;
+  }
+  uiPreferenceCache = readUiPreferenceCacheFromStorage();
+  return uiPreferenceCache;
+}
+
+function migrateLegacyUiPreferenceKey(key, cache) {
+  if (!key) {
+    return;
+  }
+  const storage = getSafeLocalStorage();
+  if (!storage || typeof storage.getItem !== 'function') {
+    return;
+  }
+  let legacyValue = null;
+  try {
+    legacyValue = storage.getItem(key);
+  } catch (error) {
+    console.warn('Unable to read legacy UI preference key', key, error);
+    return;
+  }
+  if (legacyValue === null || legacyValue === undefined) {
+    return;
+  }
+  const target = cache || ensureUiPreferenceCache();
+  if (!Object.prototype.hasOwnProperty.call(target, key)) {
+    target[key] = String(legacyValue);
+    persistUiPreferenceCache(target);
+  }
+  try {
+    storage.removeItem(key);
+  } catch (removeError) {
+    console.warn('Unable to remove legacy UI preference key', key, removeError);
+  }
+}
+
+function migrateLegacyUiPreferences() {
+  const cache = ensureUiPreferenceCache();
+  const candidates = getUiPreferenceCandidateKeys();
+  candidates.forEach((key) => {
+    migrateLegacyUiPreferenceKey(key, cache);
+  });
+  persistUiPreferenceCache(cache);
+}
+
+function getUiPreference(key) {
+  if (typeof key !== 'string' || !key) {
+    return null;
+  }
+  const cache = ensureUiPreferenceCache();
+  if (Object.prototype.hasOwnProperty.call(cache, key)) {
+    return cache[key];
+  }
+  migrateLegacyUiPreferenceKey(key, cache);
+  if (Object.prototype.hasOwnProperty.call(cache, key)) {
+    return cache[key];
+  }
+  return null;
+}
+
+function setUiPreference(key, value) {
+  if (typeof key !== 'string' || !key) {
+    return false;
+  }
+  const cache = ensureUiPreferenceCache();
+  if (value === null || value === undefined) {
+    if (Object.prototype.hasOwnProperty.call(cache, key)) {
+      delete cache[key];
+      persistUiPreferenceCache(cache);
+      return true;
+    }
+    return false;
+  }
+  const stringValue = String(value);
+  if (cache[key] === stringValue) {
+    return true;
+  }
+  cache[key] = stringValue;
+  persistUiPreferenceCache(cache);
+  return true;
+}
+
+function removeUiPreference(key) {
+  return setUiPreference(key, null);
+}
+
+function listUiPreferenceKeys() {
+  const cache = ensureUiPreferenceCache();
+  return Object.keys(cache);
+}
+
+function clearUiPreferences(options = {}) {
+  uiPreferenceCache = Object.create(null);
+  persistUiPreferenceCache(uiPreferenceCache);
+  const { includeLegacy = false } = options || {};
+  if (!includeLegacy) {
+    return;
+  }
+  const storage = getSafeLocalStorage();
+  if (!storage || typeof storage.removeItem !== 'function') {
+    return;
+  }
+  const legacyKeys = getUiPreferenceCandidateKeys();
+  legacyKeys.forEach((key) => {
+    try {
+      storage.removeItem(key);
+    } catch (error) {
+      console.warn('Unable to remove legacy UI preference during clear', key, error);
+    }
+  });
+}
+
+migrateLegacyUiPreferences();
+
+if (GLOBAL_SCOPE) {
+  try {
+    GLOBAL_SCOPE.getUiPreference = getUiPreference;
+    GLOBAL_SCOPE.setUiPreference = setUiPreference;
+    GLOBAL_SCOPE.removeUiPreference = removeUiPreference;
+    GLOBAL_SCOPE.listUiPreferenceKeys = listUiPreferenceKeys;
+    GLOBAL_SCOPE.clearUiPreferences = clearUiPreferences;
+  } catch (uiPrefError) {
+    console.warn('Unable to expose UI preference helpers globally', uiPrefError);
   }
 }
 
@@ -2161,25 +2418,18 @@ function clearAllData() {
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
-  const preferenceKeys = [
-    'darkMode',
-    'pinkMode',
-    'highContrast',
-    'showAutoBackups',
-    'accentColor',
-    'fontSize',
-    'fontFamily',
-    'language',
-    'iosPwaHelpShown',
-  ];
-  preferenceKeys.forEach((key) => {
-    deleteFromStorage(safeStorage, key, msg, { disableBackup: true });
-  });
+  clearUiPreferences({ includeLegacy: true });
   console.log("All planner data cleared from storage.");
 }
 
 // --- Export/Import All Planner Data ---
   function readLocalStorageValue(key) {
+    if (typeof key === 'string') {
+      const uiValue = getUiPreference(key);
+      if (uiValue !== null && uiValue !== undefined) {
+        return String(uiValue);
+      }
+    }
     const storage = getSafeLocalStorage();
     if (!storage || typeof storage.getItem !== 'function') return null;
     try {
@@ -2318,41 +2568,6 @@ function clearAllData() {
     }
 
     return payload;
-  }
-
-  function safeSetLocalStorage(key, value) {
-    const storage = getSafeLocalStorage();
-    if (!storage) return;
-    const useBackup = RAW_STORAGE_BACKUP_KEYS.has(key);
-    const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
-    try {
-      if (value === null || value === undefined) {
-        storage.removeItem(key);
-        if (useBackup) {
-          try {
-            storage.removeItem(backupKey);
-          } catch (backupError) {
-            console.warn('Unable to remove backup key during import', backupKey, backupError);
-          }
-        }
-      } else {
-        const storedValue = String(value);
-        storage.setItem(key, storedValue);
-        if (useBackup) {
-          try {
-            storage.setItem(backupKey, storedValue);
-          } catch (backupError) {
-            console.warn('Unable to update backup key during import', backupKey, backupError);
-            alertStorageError();
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('Unable to persist storage key during import', key, error);
-      if (useBackup) {
-        alertStorageError();
-      }
-    }
   }
 
 function normalizeImportedBoolean(value) {
@@ -2522,7 +2737,7 @@ function importAllData(allData) {
     const booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups'];
     booleanPrefs.forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
-        safeSetLocalStorage(key, prefs[key]);
+        setUiPreference(key, prefs[key]);
       }
     });
     const stringPrefs = ['accentColor', 'fontSize', 'fontFamily', 'language'];
@@ -2530,7 +2745,7 @@ function importAllData(allData) {
       if (Object.prototype.hasOwnProperty.call(prefs, key)) {
         const value = prefs[key];
         if (typeof value === 'string' && value) {
-          safeSetLocalStorage(key, value);
+          setUiPreference(key, value);
         }
       }
     });
@@ -2538,24 +2753,21 @@ function importAllData(allData) {
   if (Object.prototype.hasOwnProperty.call(allData, 'customLogo')) {
     const logo = allData.customLogo;
     if (typeof logo === 'string' && logo) {
-      safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, logo);
+      setUiPreference(CUSTOM_LOGO_STORAGE_KEY, logo);
     } else {
-      safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, null);
+      removeUiPreference(CUSTOM_LOGO_STORAGE_KEY);
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'customFonts')) {
     const fonts = normalizeCustomFontEntries(allData.customFonts);
     if (fonts.length) {
       try {
-        safeSetLocalStorage(
-          getCustomFontStorageKeyName(),
-          JSON.stringify(fonts)
-        );
+        setUiPreference(getCustomFontStorageKeyName(), JSON.stringify(fonts));
       } catch (error) {
         console.warn('Unable to store imported custom fonts', error);
       }
     } else {
-      safeSetLocalStorage(getCustomFontStorageKeyName(), null);
+      removeUiPreference(getCustomFontStorageKeyName());
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
@@ -2653,5 +2865,10 @@ if (typeof module !== "undefined" && module.exports) {
     loadAutoGearBackupVisibility,
     saveAutoGearBackupVisibility,
     requestPersistentStorage,
+    getUiPreference,
+    setUiPreference,
+    removeUiPreference,
+    listUiPreferenceKeys,
+    clearUiPreferences,
   };
 }

@@ -51,6 +51,9 @@ const {
   saveAutoGearAutoPresetId,
   loadAutoGearBackupVisibility,
   saveAutoGearBackupVisibility,
+  getUiPreference,
+  setUiPreference,
+  clearUiPreferences,
 } = require('../../src/scripts/storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -69,6 +72,7 @@ const AUTO_GEAR_AUTO_PRESET_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
+const UI_PREFERENCES_KEY = 'cameraPowerPlanner_uiPreferences';
 
 const BACKUP_SUFFIX = '__backup';
 const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
@@ -387,6 +391,7 @@ describe('session state storage', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
+    clearUiPreferences({ includeLegacy: true });
   });
 
   test('saveSessionState stores JSON in localStorage', () => {
@@ -636,6 +641,7 @@ describe('clearAllData', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
+    clearUiPreferences({ includeLegacy: true });
   });
 
   test('removes all stored planner data', () => {
@@ -657,14 +663,12 @@ describe('clearAllData', () => {
     saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
-    localStorage.setItem(CUSTOM_LOGO_KEY, 'data:image/svg+xml;base64,AAAA');
-    localStorage.setItem(backupKeyFor(CUSTOM_LOGO_KEY), 'data:image/svg+xml;base64,AAAA');
-    localStorage.setItem(
+    setUiPreference('darkMode', true);
+    setUiPreference('accentColor', '#abcdef');
+    setUiPreference('language', 'es');
+    setUiPreference(CUSTOM_LOGO_KEY, 'data:image/svg+xml;base64,AAAA');
+    setUiPreference(
       CUSTOM_FONT_KEY,
-      JSON.stringify([{ id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,BBBB' }]),
-    );
-    localStorage.setItem(
-      backupKeyFor(CUSTOM_FONT_KEY),
       JSON.stringify([{ id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,BBBB' }]),
     );
     clearAllData();
@@ -682,8 +686,13 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
-    expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBeNull();
-    expect(localStorage.getItem(CUSTOM_FONT_KEY)).toBeNull();
+    expect(getUiPreference('darkMode')).toBeNull();
+    expect(getUiPreference('accentColor')).toBeNull();
+    expect(getUiPreference('language')).toBeNull();
+    expect(getUiPreference(CUSTOM_LOGO_KEY)).toBeNull();
+    expect(getUiPreference(CUSTOM_FONT_KEY)).toBeNull();
+    expect(localStorage.getItem(UI_PREFERENCES_KEY)).toBeNull();
+    expect(localStorage.getItem(`${UI_PREFERENCES_KEY}__backup`)).toBeNull();
 
     expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
     expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBeNull();
@@ -703,6 +712,7 @@ describe('export/import all data', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
+    clearUiPreferences({ includeLegacy: true });
   });
 
     test('exportAllData collects all planner data', () => {
@@ -712,17 +722,17 @@ describe('export/import all data', () => {
       saveFeedback({ note: 'hi' });
       saveProject('Proj', { gearList: '<ul></ul>' });
       saveFavorites({ cat: ['A'] });
-      localStorage.setItem('darkMode', 'true');
-      localStorage.setItem('pinkMode', 'true');
-      localStorage.setItem('highContrast', 'true');
-      localStorage.setItem('showAutoBackups', 'true');
-      localStorage.setItem('accentColor', '#ff00ff');
-      localStorage.setItem('fontSize', '18');
-      localStorage.setItem('fontFamily', "'My Font', sans-serif");
-      localStorage.setItem('language', 'de');
-      localStorage.setItem('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
-      localStorage.setItem(
-        'cameraPowerPlanner_customFonts',
+      setUiPreference('darkMode', true);
+      setUiPreference('pinkMode', true);
+      setUiPreference('highContrast', true);
+      setUiPreference('showAutoBackups', true);
+      setUiPreference('accentColor', '#ff00ff');
+      setUiPreference('fontSize', '18');
+      setUiPreference('fontFamily', "'My Font', sans-serif");
+      setUiPreference('language', 'de');
+      setUiPreference('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
+      setUiPreference(
+        CUSTOM_FONT_KEY,
         JSON.stringify([
           { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
         ]),
@@ -827,18 +837,18 @@ describe('export/import all data', () => {
     expect(loadAutoGearActivePresetId()).toBe('preset-restore');
     expect(loadAutoGearAutoPresetId()).toBe('preset-restore');
       expect(loadAutoGearBackupVisibility()).toBe(true);
-      expect(localStorage.getItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
-      expect(localStorage.getItem('darkMode')).toBe('true');
-      expect(localStorage.getItem('pinkMode')).toBe('false');
-      expect(localStorage.getItem('highContrast')).toBe('true');
-      expect(localStorage.getItem('showAutoBackups')).toBe('true');
-      expect(localStorage.getItem('accentColor')).toBe('#00ff00');
-      expect(localStorage.getItem('fontSize')).toBe('20');
-      expect(localStorage.getItem('fontFamily')).toBe("'Other Font', serif");
-    expect(localStorage.getItem('language')).toBe('fr');
-    expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
-      { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
-    ]);
+      expect(getUiPreference('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
+      expect(getUiPreference('darkMode')).toBe('true');
+      expect(getUiPreference('pinkMode')).toBe('false');
+      expect(getUiPreference('highContrast')).toBe('true');
+      expect(getUiPreference('showAutoBackups')).toBe('true');
+      expect(getUiPreference('accentColor')).toBe('#00ff00');
+      expect(getUiPreference('fontSize')).toBe('20');
+      expect(getUiPreference('fontFamily')).toBe("'Other Font', serif");
+      expect(getUiPreference('language')).toBe('fr');
+      expect(JSON.parse(getUiPreference(CUSTOM_FONT_KEY))).toEqual([
+        { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
+      ]);
   });
 
   test('importAllData clears stored device overrides when payload sets devices to null', () => {

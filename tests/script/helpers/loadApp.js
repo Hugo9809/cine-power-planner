@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const { createUiPreferenceStubs } = require('../../helpers/scriptEnvironment');
+
 function ensureTestDom() {
   if (typeof window.matchMedia !== 'function') {
     window.matchMedia = () => ({
@@ -56,6 +58,16 @@ function loadApp() {
   global.importAllData = jest.fn();
   global.clearAllData = jest.fn();
   global.showNotification = jest.fn();
+
+  const uiPreferenceStubs = createUiPreferenceStubs();
+  window.getUiPreference = uiPreferenceStubs.getUiPreference;
+  window.setUiPreference = uiPreferenceStubs.setUiPreference;
+  window.removeUiPreference = uiPreferenceStubs.removeUiPreference;
+  window.clearUiPreferences = uiPreferenceStubs.clearUiPreferences;
+  global.getUiPreference = window.getUiPreference;
+  global.setUiPreference = window.setUiPreference;
+  global.removeUiPreference = window.removeUiPreference;
+  global.clearUiPreferences = window.clearUiPreferences;
 
   return require('../../../src/scripts/script.js');
 }

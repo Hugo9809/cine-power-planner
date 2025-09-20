@@ -1,4 +1,13 @@
-const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
+const {
+  setupScriptEnvironment,
+  UI_PREFERENCES_STORAGE_KEY,
+} = require('../helpers/scriptEnvironment');
+
+function seedUiPreferences(preferences) {
+  const payload = JSON.stringify(preferences);
+  localStorage.setItem(UI_PREFERENCES_STORAGE_KEY, payload);
+  localStorage.setItem(`${UI_PREFERENCES_STORAGE_KEY}__backup`, payload);
+}
 
 describe('dark accent boost for bright custom colors', () => {
   let cleanup;
@@ -12,8 +21,10 @@ describe('dark accent boost for bright custom colors', () => {
   });
 
   test('enables boost when custom accent brightness is similar to pink in dark mode', () => {
-    localStorage.setItem('accentColor', '#ff6ab5');
-    localStorage.setItem('darkMode', 'true');
+    seedUiPreferences({
+      accentColor: '#ff6ab5',
+      darkMode: 'true',
+    });
 
     const { cleanup: clean } = setupScriptEnvironment();
     cleanup = clean;
@@ -24,8 +35,10 @@ describe('dark accent boost for bright custom colors', () => {
   });
 
   test('enables boost for bright custom accents in dark mode', () => {
-    localStorage.setItem('accentColor', '#ffee58');
-    localStorage.setItem('darkMode', 'true');
+    seedUiPreferences({
+      accentColor: '#ffee58',
+      darkMode: 'true',
+    });
 
     const { cleanup: clean } = setupScriptEnvironment();
     cleanup = clean;
@@ -36,8 +49,10 @@ describe('dark accent boost for bright custom colors', () => {
   });
 
   test('removes boost when accent color changes to a darker tone', () => {
-    localStorage.setItem('accentColor', '#ff6ab5');
-    localStorage.setItem('darkMode', 'true');
+    seedUiPreferences({
+      accentColor: '#ff6ab5',
+      darkMode: 'true',
+    });
 
     const { cleanup: clean } = setupScriptEnvironment();
     cleanup = clean;
@@ -52,8 +67,10 @@ describe('dark accent boost for bright custom colors', () => {
   });
 
   test('removes boost when leaving dark mode', () => {
-    localStorage.setItem('accentColor', '#ff6ab5');
-    localStorage.setItem('darkMode', 'true');
+    seedUiPreferences({
+      accentColor: '#ff6ab5',
+      darkMode: 'true',
+    });
 
     const { cleanup: clean } = setupScriptEnvironment();
     cleanup = clean;
@@ -68,8 +85,10 @@ describe('dark accent boost for bright custom colors', () => {
   });
 
   test('does not enable boost in light mode even with bright accent colors', () => {
-    localStorage.setItem('accentColor', '#ffee58');
-    localStorage.setItem('darkMode', 'false');
+    seedUiPreferences({
+      accentColor: '#ffee58',
+      darkMode: 'false',
+    });
 
     const { cleanup: clean } = setupScriptEnvironment();
     cleanup = clean;

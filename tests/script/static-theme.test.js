@@ -1,5 +1,7 @@
 const path = require('path');
 
+const UI_PREFERENCES_STORAGE_KEY = 'cameraPowerPlanner_uiPreferences';
+
 describe('static theme preferences', () => {
   let readyStateValue;
   let originalReadyStateDescriptor;
@@ -53,12 +55,17 @@ describe('static theme preferences', () => {
   };
 
   test('applies stored theme preferences immediately when DOM is ready', () => {
-    localStorage.setItem('highContrast', 'true');
-    localStorage.setItem('pinkMode', 'false');
-    localStorage.setItem('fontSize', '18');
-    localStorage.setItem('fontFamily', 'Atkinson Hyperlegible');
-    localStorage.setItem('darkMode', 'true');
-    localStorage.setItem('accentColor', '#ff8800');
+    const preferences = {
+      highContrast: 'true',
+      pinkMode: 'false',
+      fontSize: '18',
+      fontFamily: 'Atkinson Hyperlegible',
+      darkMode: 'true',
+      accentColor: '#ff8800',
+    };
+    const payload = JSON.stringify(preferences);
+    localStorage.setItem(UI_PREFERENCES_STORAGE_KEY, payload);
+    localStorage.setItem(`${UI_PREFERENCES_STORAGE_KEY}__backup`, payload);
 
     loadStaticTheme();
 
@@ -119,12 +126,10 @@ describe('static theme preferences', () => {
   });
 
   test('retains stored custom accent when pink mode is enabled', () => {
+    const payload = JSON.stringify({ pinkMode: 'true', accentColor: '#ff8800' });
     localStorage.getItem.mockImplementation(key => {
-      if (key === 'pinkMode') {
-        return 'true';
-      }
-      if (key === 'accentColor') {
-        return '#ff8800';
+      if (key === UI_PREFERENCES_STORAGE_KEY) {
+        return payload;
       }
       return null;
     });

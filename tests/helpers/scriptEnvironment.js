@@ -8,6 +8,140 @@ const translations = (() => {
   }
 })();
 
+const UI_PREFERENCES_STORAGE_KEY = 'cameraPowerPlanner_uiPreferences';
+const UI_PREFERENCES_BACKUP_KEY = `${UI_PREFERENCES_STORAGE_KEY}__backup`;
+
+function createUiPreferenceStubs(storage = typeof localStorage !== 'undefined' ? localStorage : undefined) {
+  let uiPreferencesCache = {};
+
+  const loadUiPreferencesFromStorage = () => {
+    if (!storage || typeof storage.getItem !== 'function') {
+      uiPreferencesCache = {};
+      return;
+    }
+    try {
+      const raw = storage.getItem(UI_PREFERENCES_STORAGE_KEY);
+      if (!raw) {
+        uiPreferencesCache = {};
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      uiPreferencesCache = parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+        ? { ...parsed }
+        : {};
+    } catch (error) {
+      console.warn('Test environment could not parse stored UI preferences', error);
+      uiPreferencesCache = {};
+    }
+  };
+
+  const persistUiPreferences = () => {
+    if (!storage || typeof storage.setItem !== 'function') {
+      return;
+    }
+    const keys = Object.keys(uiPreferencesCache);
+    if (!keys.length) {
+      try {
+        storage.removeItem(UI_PREFERENCES_STORAGE_KEY);
+        storage.removeItem(UI_PREFERENCES_BACKUP_KEY);
+      } catch (error) {
+        console.warn('Test environment could not clear stored UI preferences', error);
+      }
+      return;
+    }
+    const payload = JSON.stringify(uiPreferencesCache);
+    try {
+      storage.setItem(UI_PREFERENCES_STORAGE_KEY, payload);
+    } catch (error) {
+      console.warn('Test environment could not persist UI preferences', error);
+    }
+    try {
+      storage.setItem(UI_PREFERENCES_BACKUP_KEY, payload);
+    } catch (error) {
+      console.warn('Test environment could not persist UI preference backup', error);
+    }
+  };
+
+  loadUiPreferencesFromStorage();
+
+  const getUiPreference = jest.fn((key) => {
+    if (typeof key !== 'string' || !key) {
+      return null;
+    }
+    if (Object.prototype.hasOwnProperty.call(uiPreferencesCache, key)) {
+      return uiPreferencesCache[key];
+    }
+    if (!storage || typeof storage.getItem !== 'function') {
+      return null;
+    }
+    try {
+      return storage.getItem(key);
+    } catch (error) {
+      console.warn('Test environment could not read legacy preference', key, error);
+      return null;
+    }
+  });
+
+  const setUiPreference = jest.fn((key, value) => {
+    if (typeof key !== 'string' || !key) {
+      return;
+    }
+    if (value === null || value === undefined) {
+      delete uiPreferencesCache[key];
+    } else {
+      uiPreferencesCache[key] = String(value);
+    }
+    persistUiPreferences();
+  });
+
+  const removeUiPreference = jest.fn((key) => {
+    if (typeof key !== 'string' || !key) {
+      return;
+    }
+    if (Object.prototype.hasOwnProperty.call(uiPreferencesCache, key)) {
+      delete uiPreferencesCache[key];
+      persistUiPreferences();
+      return;
+    }
+    if (storage && typeof storage.removeItem === 'function') {
+      try {
+        storage.removeItem(key);
+      } catch (error) {
+        console.warn('Test environment could not remove legacy preference', key, error);
+      }
+    }
+  });
+
+  const clearUiPreferences = jest.fn(() => {
+    uiPreferencesCache = {};
+    if (storage && typeof storage.removeItem === 'function') {
+      try {
+        storage.removeItem(UI_PREFERENCES_STORAGE_KEY);
+        storage.removeItem(UI_PREFERENCES_BACKUP_KEY);
+      } catch (error) {
+        console.warn('Test environment could not clear UI preferences', error);
+      }
+    }
+  });
+
+  return {
+    getUiPreference,
+    setUiPreference,
+    removeUiPreference,
+    clearUiPreferences,
+    __getUiPreferencesCache: () => ({ ...uiPreferencesCache }),
+    __setUiPreferencesCache: (next) => {
+      if (next && typeof next === 'object' && !Array.isArray(next)) {
+        uiPreferencesCache = { ...next };
+      } else {
+        uiPreferencesCache = {};
+      }
+      persistUiPreferences();
+    },
+    __reloadUiPreferencesFromStorage: loadUiPreferencesFromStorage,
+  };
+}
+
 function createDeviceSkeleton() {
   return {
     cameras: {},
@@ -125,6 +259,15 @@ function setupScriptEnvironment(options = {}) {
     saveFavorites: jest.fn()
   };
 
+  const uiPreferenceStubs = createUiPreferenceStubs(
+    typeof localStorage !== 'undefined' ? localStorage : undefined
+  );
+
+  globalStubs.getUiPreference = uiPreferenceStubs.getUiPreference;
+  globalStubs.setUiPreference = uiPreferenceStubs.setUiPreference;
+  globalStubs.removeUiPreference = uiPreferenceStubs.removeUiPreference;
+  globalStubs.clearUiPreferences = uiPreferenceStubs.clearUiPreferences;
+
   if (options.devices) {
     mergeDeviceOverrides(globalStubs.devices, options.devices);
   }
@@ -160,4 +303,9 @@ function setupScriptEnvironment(options = {}) {
   return { utils, cleanup, globals: globalStubs };
 }
 
-module.exports = { setupScriptEnvironment, createDeviceSkeleton };
+module.exports = {
+  setupScriptEnvironment,
+  createDeviceSkeleton,
+  createUiPreferenceStubs,
+  UI_PREFERENCES_STORAGE_KEY,
+};

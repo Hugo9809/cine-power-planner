@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const { createUiPreferenceStubs } = require('../helpers/scriptEnvironment');
+
 const loadScript = () => {
   jest.resetModules();
 
@@ -52,6 +54,16 @@ const loadScript = () => {
   global.saveFavorites = jest.fn();
   global.exportAllData = jest.fn();
   global.importAllData = jest.fn();
+
+  const uiPreferenceStubs = createUiPreferenceStubs();
+  window.getUiPreference = uiPreferenceStubs.getUiPreference;
+  window.setUiPreference = uiPreferenceStubs.setUiPreference;
+  window.removeUiPreference = uiPreferenceStubs.removeUiPreference;
+  window.clearUiPreferences = uiPreferenceStubs.clearUiPreferences;
+  global.getUiPreference = window.getUiPreference;
+  global.setUiPreference = window.setUiPreference;
+  global.removeUiPreference = window.removeUiPreference;
+  global.clearUiPreferences = window.clearUiPreferences;
 
   return require('../../src/scripts/script.js');
 };

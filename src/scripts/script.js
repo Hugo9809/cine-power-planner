@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, getUiPreference, setUiPreference, removeUiPreference, clearUiPreferences */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -42,6 +42,7 @@ if (typeof window !== 'undefined') {
 
 const APP_VERSION = "1.0.4";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
+const UI_PREFERENCES_STORAGE_KEY = 'cameraPowerPlanner_uiPreferences';
 
 const DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
@@ -1379,9 +1380,7 @@ const DEFAULT_FILTER_SIZE = '4x5.65';
 
 let showAutoBackups = false;
 try {
-  if (typeof localStorage !== 'undefined') {
-    showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
-  }
+  showAutoBackups = getUiPreference('showAutoBackups') === 'true';
 } catch (e) {
   console.warn('Could not load auto backup visibility preference', e);
 }
@@ -2493,7 +2492,7 @@ let currentLang = "en";
 let updateHelpQuickLinksForLanguage;
 let lastRuntimeHours = null;
 try {
-  const savedLang = localStorage.getItem("language");
+  const savedLang = getUiPreference('language');
   const supported = ["en", "de", "es", "fr", "it"];
   if (savedLang && supported.includes(savedLang)) {
     currentLang = savedLang;
@@ -2518,7 +2517,7 @@ function setLanguage(lang) {
   currentLang = lang;
   // persist selected language
   try {
-    localStorage.setItem("language", lang);
+    setUiPreference('language', lang);
   } catch (e) {
     console.warn("Could not save language to localStorage", e);
   }
@@ -7734,7 +7733,7 @@ function isStandaloneDisplayMode() {
 
 function hasDismissedIosPwaHelp() {
   try {
-    return localStorage.getItem(IOS_PWA_HELP_STORAGE_KEY) === '1';
+    return getUiPreference(IOS_PWA_HELP_STORAGE_KEY) === '1';
   } catch (error) {
     console.warn('Could not read iOS PWA help dismissal flag', error);
     return false;
@@ -7743,7 +7742,7 @@ function hasDismissedIosPwaHelp() {
 
 function markIosPwaHelpDismissed() {
   try {
-    localStorage.setItem(IOS_PWA_HELP_STORAGE_KEY, '1');
+    setUiPreference(IOS_PWA_HELP_STORAGE_KEY, '1');
   } catch (error) {
     console.warn('Could not store iOS PWA help dismissal', error);
   }
@@ -8004,10 +8003,10 @@ function renderSettingsLogoPreview(dataUrl) {
 }
 
 function loadStoredLogoPreview() {
-  if (!settingsLogoPreview || typeof localStorage === 'undefined') return;
+  if (!settingsLogoPreview) return;
   let stored = null;
   try {
-    stored = localStorage.getItem('customLogo');
+    stored = getUiPreference('customLogo');
   } catch (e) {
     console.warn('Could not load custom logo preview', e);
   }
@@ -9603,7 +9602,7 @@ const clearAccentColorOverrides = () => {
 };
 
 try {
-  const storedAccent = localStorage.getItem('accentColor');
+  const storedAccent = getUiPreference('accentColor');
   if (storedAccent) {
     accentColor = storedAccent;
     applyAccentColor(accentColor);
@@ -9679,9 +9678,8 @@ const SUPPORTED_FONT_TYPES = new Set([
 const SUPPORTED_FONT_EXTENSIONS = ['.ttf', '.otf', '.ttc', '.woff', '.woff2'];
 
 function loadCustomFontMetadataFromStorage() {
-  if (typeof localStorage === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(customFontStorageKeyName);
+    const raw = getUiPreference(customFontStorageKeyName);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -9699,14 +9697,17 @@ function loadCustomFontMetadataFromStorage() {
 }
 
 function persistCustomFontsToStorage() {
-  if (typeof localStorage === 'undefined') return true;
   try {
     const payload = Array.from(customFontEntries.values()).map(entry => ({
       id: entry.id,
       name: entry.name,
       data: entry.data
     }));
-    localStorage.setItem(customFontStorageKeyName, JSON.stringify(payload));
+    if (payload.length) {
+      setUiPreference(customFontStorageKeyName, JSON.stringify(payload));
+    } else {
+      removeUiPreference(customFontStorageKeyName);
+    }
     return true;
   } catch (error) {
     console.warn('Could not save custom fonts', error);
@@ -10218,12 +10219,12 @@ function applyFontFamily(family) {
 }
 
 try {
-  const storedSize = localStorage.getItem('fontSize');
+  const storedSize = getUiPreference('fontSize');
   if (storedSize) {
     fontSize = storedSize;
     applyFontSize(fontSize);
   }
-  const storedFamily = localStorage.getItem('fontFamily');
+  const storedFamily = getUiPreference('fontFamily');
   if (storedFamily) {
     fontFamily = storedFamily;
     applyFontFamily(fontFamily);
@@ -19977,7 +19978,7 @@ function applyDarkMode(enabled) {
 
 let darkModeEnabled = false;
 try {
-  const stored = localStorage.getItem("darkMode");
+  const stored = getUiPreference('darkMode');
   if (stored !== null) {
     darkModeEnabled = stored === "true";
   } else if (typeof window.matchMedia === "function") {
@@ -19993,7 +19994,7 @@ if (darkModeToggle) {
     darkModeEnabled = !document.body.classList.contains("dark-mode");
     applyDarkMode(darkModeEnabled);
     try {
-      localStorage.setItem("darkMode", darkModeEnabled);
+      setUiPreference('darkMode', darkModeEnabled);
     } catch (e) {
       console.warn("Could not save dark mode preference", e);
     }
@@ -20022,7 +20023,7 @@ function applyHighContrast(enabled) {
 
 let highContrastEnabled = false;
 try {
-  highContrastEnabled = localStorage.getItem("highContrast") === "true";
+  highContrastEnabled = getUiPreference('highContrast') === 'true';
 } catch (e) {
   console.warn("Could not load high contrast preference", e);
 }
@@ -20145,7 +20146,7 @@ function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
   applyPinkMode(pinkModeEnabled);
   try {
-    localStorage.setItem('pinkMode', pinkModeEnabled);
+    setUiPreference('pinkMode', pinkModeEnabled);
   } catch (e) {
     console.warn('Could not save pink mode preference', e);
   }
@@ -20162,7 +20163,7 @@ function revertSettingsPinkModeIfNeeded() {
 }
 
 try {
-  pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
+  pinkModeEnabled = getUiPreference('pinkMode') === 'true';
 } catch (e) {
   console.warn('Could not load pink mode preference', e);
 }
@@ -20191,7 +20192,7 @@ if (settingsButton && settingsDialog) {
     if (settingsHighContrast) settingsHighContrast.checked = document.body.classList.contains('high-contrast');
     if (settingsShowAutoBackups) settingsShowAutoBackups.checked = showAutoBackups;
     if (accentColorInput) {
-      const stored = localStorage.getItem('accentColor');
+      const stored = getUiPreference('accentColor');
       accentColorInput.value = stored || accentColor;
     }
     if (settingsFontSize) settingsFontSize.value = fontSize;
@@ -20243,7 +20244,7 @@ if (settingsButton && settingsDialog) {
         const enabled = settingsDarkMode.checked;
         applyDarkMode(enabled);
         try {
-          localStorage.setItem('darkMode', enabled);
+          setUiPreference('darkMode', enabled);
         } catch (e) {
           console.warn('Could not save dark mode preference', e);
         }
@@ -20255,7 +20256,7 @@ if (settingsButton && settingsDialog) {
         const enabled = settingsHighContrast.checked;
         applyHighContrast(enabled);
         try {
-          localStorage.setItem('highContrast', enabled);
+          setUiPreference('highContrast', enabled);
         } catch (e) {
           console.warn('Could not save high contrast preference', e);
         }
@@ -20265,7 +20266,7 @@ if (settingsButton && settingsDialog) {
         const changed = enabled !== showAutoBackups;
         showAutoBackups = enabled;
         try {
-          localStorage.setItem('showAutoBackups', enabled);
+          setUiPreference('showAutoBackups', enabled);
         } catch (e) {
           console.warn('Could not save auto backup visibility preference', e);
         }
@@ -20289,7 +20290,7 @@ if (settingsButton && settingsDialog) {
         const color = accentColorInput.value;
         applyAccentColor(color);
         try {
-          localStorage.setItem('accentColor', color);
+          setUiPreference('accentColor', color);
         } catch (e) {
           console.warn('Could not save accent color', e);
         }
@@ -20300,7 +20301,7 @@ if (settingsButton && settingsDialog) {
         const size = settingsFontSize.value;
         applyFontSize(size);
         try {
-          localStorage.setItem('fontSize', size);
+          setUiPreference('fontSize', size);
         } catch (e) {
           console.warn('Could not save font size', e);
         }
@@ -20310,7 +20311,7 @@ if (settingsButton && settingsDialog) {
         const family = settingsFontFamily.value;
         applyFontFamily(family);
         try {
-          localStorage.setItem('fontFamily', family);
+          setUiPreference('fontFamily', family);
         } catch (e) {
           console.warn('Could not save font family', e);
         }
@@ -20322,7 +20323,7 @@ if (settingsButton && settingsDialog) {
           const reader = new FileReader();
           reader.onload = () => {
             try {
-              localStorage.setItem('customLogo', reader.result);
+              setUiPreference('customLogo', reader.result);
             } catch (e) {
               console.warn('Could not save custom logo', e);
             }
@@ -20632,6 +20633,7 @@ function captureStorageSnapshot(storage) {
 
 const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_'];
 const BACKUP_STORAGE_KNOWN_KEYS = new Set([
+  UI_PREFERENCES_STORAGE_KEY,
   'darkMode',
   'pinkMode',
   'highContrast',
@@ -20924,23 +20926,49 @@ if (restoreSettings && restoreSettingsInput) {
           alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
         }
         if (restoredSettings && typeof restoredSettings === 'object') {
+          const uiPreferenceKeys = new Set([
+            'darkMode',
+            'pinkMode',
+            'highContrast',
+            'showAutoBackups',
+            'accentColor',
+            'fontSize',
+            'fontFamily',
+            'language',
+            IOS_PWA_HELP_STORAGE_KEY,
+            'customLogo',
+            customFontStorageKeyName,
+          ]);
           const safeStorage = resolveSafeLocalStorage();
-          if (safeStorage && typeof safeStorage.setItem === 'function') {
-            Object.entries(restoredSettings).forEach(([k, v]) => {
-              if (typeof k !== 'string') return;
+          Object.entries(restoredSettings).forEach(([k, v]) => {
+            if (typeof k !== 'string') return;
+            if (uiPreferenceKeys.has(k)) {
               try {
                 if (v === null || v === undefined) {
-                  if (typeof safeStorage.removeItem === 'function') {
-                    safeStorage.removeItem(k);
-                  }
+                  removeUiPreference(k);
                 } else {
-                  safeStorage.setItem(k, String(v));
+                  setUiPreference(k, v);
                 }
-              } catch (storageError) {
-                console.warn('Failed to restore storage entry', k, storageError);
+              } catch (prefError) {
+                console.warn('Failed to restore UI preference', k, prefError);
               }
-            });
-          }
+              return;
+            }
+            if (!safeStorage || typeof safeStorage.setItem !== 'function') {
+              return;
+            }
+            try {
+              if (v === null || v === undefined) {
+                if (typeof safeStorage.removeItem === 'function') {
+                  safeStorage.removeItem(k);
+                }
+              } else {
+                safeStorage.setItem(k, String(v));
+              }
+            } catch (storageError) {
+              console.warn('Failed to restore storage entry', k, storageError);
+            }
+          });
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
           Object.entries(restoredSession).forEach(([key, value]) => {
@@ -20958,6 +20986,14 @@ if (restoreSettings && restoreSettingsInput) {
         syncAutoGearRulesFromStorage(data?.autoGearRules);
         const safeStorage = resolveSafeLocalStorage();
         const safeGetItem = (key) => {
+          try {
+            const uiValue = getUiPreference(key);
+            if (uiValue !== null && uiValue !== undefined) {
+              return uiValue;
+            }
+          } catch (uiReadError) {
+            console.warn('Failed to read UI preference during restore', key, uiReadError);
+          }
           if (!safeStorage || typeof safeStorage.getItem !== 'function') return null;
           try {
             return safeStorage.getItem(key);
@@ -21385,6 +21421,13 @@ async function clearCachesAndReload() {
           return false;
         });
       }));
+    }
+    if (typeof clearUiPreferences === 'function') {
+      try {
+        clearUiPreferences({ includeLegacy: true });
+      } catch (uiClearError) {
+        console.warn('Unable to clear UI preferences during forced reload', uiClearError);
+      }
     }
   } catch (error) {
     console.warn('Cache clear failed', error);
@@ -22575,7 +22618,7 @@ if (helpButton && helpDialog) {
       darkModeEnabled = !document.body.classList.contains('dark-mode');
       applyDarkMode(darkModeEnabled);
       try {
-        localStorage.setItem('darkMode', darkModeEnabled);
+        setUiPreference('darkMode', darkModeEnabled);
       } catch (err) {
         console.warn('Could not save dark mode preference', err);
       }

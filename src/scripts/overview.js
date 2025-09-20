@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getCssVariableValue, iconMarkup */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getCssVariableValue, iconMarkup, getUiPreference */
 
 const getCssVarValue = (typeof getCssVariableValue === 'function'
     ? getCssVariableValue
@@ -25,7 +25,7 @@ function generatePrintableOverview() {
     const locale = localeMap[lang] || 'en-US';
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const t = (typeof texts === 'object' && texts) ? (texts[lang] || texts.en || {}) : {};
-    const customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;
+    const customLogo = typeof getUiPreference === 'function' ? getUiPreference('customLogo') : null;
 
     let deviceListHtml = '<div class="device-category-container">';
     const sections = {};

@@ -3,7 +3,49 @@
   var HIGH_CONTRAST_ACCENT = '#ffffff';
   var storageErrorLogged = false;
 
+  var UI_PREFERENCES_STORAGE_KEY = 'cameraPowerPlanner_uiPreferences';
+  var cachedUiPrefs = null;
+
+  function getUiPreferencesSnapshot() {
+    if (cachedUiPrefs) {
+      return cachedUiPrefs;
+    }
+    if (!window || !window.localStorage) {
+      cachedUiPrefs = {};
+      return cachedUiPrefs;
+    }
+    try {
+      var raw = window.localStorage.getItem(UI_PREFERENCES_STORAGE_KEY);
+      if (!raw) {
+        cachedUiPrefs = {};
+        return cachedUiPrefs;
+      }
+      var parsed = JSON.parse(raw);
+      cachedUiPrefs = parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+        ? parsed
+        : {};
+    } catch (err) {
+      if (!storageErrorLogged) {
+        console.warn('Unable to read stored UI preferences', err);
+        storageErrorLogged = true;
+      }
+      cachedUiPrefs = {};
+    }
+    return cachedUiPrefs;
+  }
+
   function safeGet(key) {
+    try {
+      var prefs = getUiPreferencesSnapshot();
+      if (prefs && Object.prototype.hasOwnProperty.call(prefs, key)) {
+        return String(prefs[key]);
+      }
+    } catch (prefError) {
+      if (!storageErrorLogged) {
+        console.warn('Unable to read cached UI preference', prefError);
+        storageErrorLogged = true;
+      }
+    }
     try {
       return window.localStorage ? localStorage.getItem(key) : null;
     } catch (err) {
