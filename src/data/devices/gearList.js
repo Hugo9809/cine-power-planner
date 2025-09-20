@@ -2030,24 +2030,80 @@ const gear = {
       }
     },
     "media": {
+      "ARRI Codex Compact Drive 1TB": {
+        "brand": "ARRI",
+        "kNumber": "K2.0024130",
+        "capacityGb": 960,
+        "capacityTb": 1,
+        "interface": "PCIe, sustained ~8 Gb/s write"
+      },
       "ARRI Codex Compact Drive 2TB": {
         "brand": "ARRI",
         "kNumber": "K2.0023447",
-        "capacityTb": 2
+        "capacityGb": 1920,
+        "capacityTb": 2,
+        "interface": "PCIe NVMe, up to 16 Gb/s write"
+      },
+      "ARRI Codex Compact Drive Express 1TB": {
+        "brand": "ARRI",
+        "kNumber": "K2.0053843",
+        "capacityGb": 960,
+        "capacityTb": 1,
+        "interface": "PCIe (ProRes-only)"
       },
       "ARRI Codex Compact Drive Reader (USB-C)": {
         "brand": "ARRI",
         "kNumber": "K2.0024134",
-        "interface": "USB-C"
+        "interface": "USB 3.1 Gen 2 (USB-C, ~8 Gb/s), bus-powered"
+      },
+      "OWC Atlas Ultra CFexpress Type B 1TB": {
+        "brand": "OWC",
+        "model": "Atlas Ultra 1TB",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFexpress Type B (PCIe)"
+      },
+      "ProGrade Digital CFexpress Type B 1TB Gold": {
+        "brand": "ProGrade",
+        "model": "CFexpress Type B Gold 1TB",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFexpress Type B (NVMe / PCIe)"
+      },
+      "RED MINI-MAG 480GB": {
+        "brand": "RED",
+        "model": "MINI-MAG 480GB",
+        "capacityGb": 480,
+        "capacityTb": 0.48,
+        "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
+      },
+      "Sony AXS Memory Card 1TB (S24)": {
+        "brand": "Sony",
+        "model": "AXS-A1TS24",
+        "kNumber": "AXS-A1TS24",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "AXS (S24, up to 2.4 Gb/s write)"
       },
       "Sony AXS Memory Card 512GB": {
         "brand": "Sony",
-        "capacityGb": 512
+        "model": "AXS-A512S48",
+        "kNumber": "AXS-A512S48",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "AXS (S48, up to 4.8 Gb/s write)"
       },
       "Sony AXS-AR1 Card Reader": {
         "brand": "Sony",
         "model": "AXS-AR1 Card Reader",
         "interface": "USB 3.0"
+      },
+      "Sony SxS PRO+ 64GB card (E-Series)": {
+        "brand": "Sony",
+        "model": "SBP64E",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SxS PRO+ (ExpressCard/34, PCI Express)"
       }
     },
     "lenses": {
