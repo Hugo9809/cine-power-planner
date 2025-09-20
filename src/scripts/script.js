@@ -4479,7 +4479,7 @@ const ICON_GLYPHS = Object.freeze({
   screen: iconGlyph('\uF11D', ICON_FONT_KEYS.GADGET),
   brightness: iconGlyph('\uE2B3', ICON_FONT_KEYS.UICONS),
   wifi: iconGlyph('\uF4AC', ICON_FONT_KEYS.UICONS),
-  gears: iconGlyph('\uF205', ICON_FONT_KEYS.ESSENTIAL),
+  gears: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
   controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
   distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
   viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
@@ -11849,7 +11849,7 @@ const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
 const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
 const DIAGRAM_VIDEO_ICON = iconGlyph('\uF42A');
 const DIAGRAM_WIRELESS_ICON = iconGlyph('\uF4AC');
-const DIAGRAM_MOTORS_ICON = iconGlyph('\uF205', ICON_FONT_KEYS.ESSENTIAL);
+const DIAGRAM_MOTORS_ICON = iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS);
 const DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
 const DIAGRAM_DISTANCE_ICON = iconGlyph('\uEFB9');
 const DIAGRAM_POWER_OUTPUT_ICON = iconGlyph('\uE212');

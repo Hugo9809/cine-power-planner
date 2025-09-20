@@ -3924,7 +3924,7 @@ var ICON_GLYPHS = Object.freeze({
   screen: iconGlyph("\uF11D", ICON_FONT_KEYS.GADGET),
   brightness: iconGlyph("\uE2B3", ICON_FONT_KEYS.UICONS),
   wifi: iconGlyph("\uF4AC", ICON_FONT_KEYS.UICONS),
-  gears: iconGlyph("\uF205", ICON_FONT_KEYS.ESSENTIAL),
+  gears: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
   controller: iconGlyph("\uF117", ICON_FONT_KEYS.GADGET),
   distance: iconGlyph("\uEFB9", ICON_FONT_KEYS.UICONS),
   viewfinder: iconGlyph("\uF114", ICON_FONT_KEYS.FILM),
