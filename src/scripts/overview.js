@@ -253,11 +253,10 @@ function generatePrintableOverview() {
       diagramAreaHtml = areaClone.outerHTML;
     }
     const diagramLegendHtml = diagramLegend ? diagramLegend.outerHTML : '';
-    const diagramControlsHtml = document.querySelector('.diagram-controls') ? document.querySelector('.diagram-controls').outerHTML : '';
     const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
     const diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
     const diagramSectionHtml = diagramAreaHtml
-        ? `<section id="setupDiagram" class="diagram-section print-section"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramControlsHtml}${diagramHintHtml}</section>`
+        ? `<section id="setupDiagram" class="diagram-section print-section"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramHintHtml}</section>`
         : '';
     const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
 
