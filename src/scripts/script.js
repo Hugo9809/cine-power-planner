@@ -2659,6 +2659,19 @@ function setLanguage(lang) {
   generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
   generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
 
+  const deleteGearListHelp =
+    texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
+  if (deleteGearListProjectBtn) {
+    setButtonLabelWithIcon(
+      deleteGearListProjectBtn,
+      texts[lang].deleteGearListBtn,
+      ICON_GLYPHS.trash
+    );
+    deleteGearListProjectBtn.setAttribute("title", deleteGearListHelp);
+    deleteGearListProjectBtn.setAttribute("data-help", deleteGearListHelp);
+    deleteGearListProjectBtn.setAttribute("aria-label", deleteGearListHelp);
+  }
+
   const editProjectBtnElem = document.getElementById("editProjectBtn");
   if (editProjectBtnElem) {
     editProjectBtnElem.textContent = texts[lang].editProjectBtn;
@@ -9468,6 +9481,7 @@ const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
 const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 const generateGearListBtn = document.getElementById("generateGearListBtn");
+const deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
 const gearListOutput = document.getElementById("gearListOutput");
 const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
 
@@ -10393,9 +10407,15 @@ function updateGearListButtonVisibility() {
     gearListOutput.innerHTML.trim() !== '';
   if (hasGear) {
     generateGearListBtn.classList.add('hidden');
+    if (deleteGearListProjectBtn) {
+      deleteGearListProjectBtn.classList.remove('hidden');
+    }
     ensureEditProjectButton();
   } else {
     generateGearListBtn.classList.remove('hidden');
+    if (deleteGearListProjectBtn) {
+      deleteGearListProjectBtn.classList.add('hidden');
+    }
     const btn = document.getElementById('editProjectBtn');
     if (btn) btn.remove();
   }
@@ -16277,6 +16297,12 @@ generateGearListBtn.addEventListener('click', () => {
     populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
     openDialog(projectDialog);
 });
+
+if (deleteGearListProjectBtn) {
+    deleteGearListProjectBtn.addEventListener('click', () => {
+        deleteCurrentGearList();
+    });
+}
 
 if (projectCancelBtn) {
     projectCancelBtn.addEventListener('click', () => {
