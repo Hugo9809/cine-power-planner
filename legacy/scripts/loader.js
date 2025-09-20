@@ -1,5 +1,78 @@
 (function () {
   var OPTIONAL_CHAINING_FLAG = '__cinePowerOptionalChainingCheck__';
+  var MODERN_SUPPORT_STORAGE_KEY = 'cameraPowerPlanner_modernSupport';
+
+  function getLocalStorageSafely() {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    try {
+      if (!('localStorage' in window)) {
+        return null;
+      }
+
+      var storage = window.localStorage;
+      if (!storage) {
+        return null;
+      }
+
+      void storage.getItem;
+      return storage;
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+
+  function readModernSupportCache() {
+    var storage = getLocalStorageSafely();
+    if (!storage) {
+      return null;
+    }
+
+    try {
+      var value = storage.getItem(MODERN_SUPPORT_STORAGE_KEY);
+      if (value === 'true') {
+        return true;
+      }
+      if (value === 'false') {
+        return false;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
+  function writeModernSupportCache(value) {
+    var storage = getLocalStorageSafely();
+    if (!storage) {
+      return;
+    }
+
+    try {
+      if (value === null) {
+        storage.removeItem(MODERN_SUPPORT_STORAGE_KEY);
+      } else {
+        storage.setItem(MODERN_SUPPORT_STORAGE_KEY, value ? 'true' : 'false');
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function recordModernSupportResult(result, reason) {
+    if (result === true) {
+      writeModernSupportCache(true);
+      return;
+    }
+
+    if (reason === 'compatibility') {
+      writeModernSupportCache(false);
+    }
+  }
 
   function getGlobalScope() {
     if (typeof globalThis !== 'undefined') {
@@ -186,7 +259,18 @@
       return;
     }
 
+    var cachedSupport = readModernSupportCache();
+    if (cachedSupport === true) {
+      cb(true);
+      return;
+    }
+    if (cachedSupport === false) {
+      cb(false);
+      return;
+    }
+
     if (typeof Promise === 'undefined' || typeof Object.assign !== 'function') {
+      recordModernSupportResult(false, 'compatibility');
       cb(false);
       return;
     }
@@ -195,26 +279,31 @@
     var stringProto = String.prototype;
 
     if (typeof Array.from !== 'function' || typeof arrayProto.includes !== 'function') {
+      recordModernSupportResult(false, 'compatibility');
       cb(false);
       return;
     }
 
     if (typeof arrayProto.find !== 'function' || typeof arrayProto.findIndex !== 'function') {
+      recordModernSupportResult(false, 'compatibility');
       cb(false);
       return;
     }
 
     if (typeof arrayProto.flatMap !== 'function') {
+      recordModernSupportResult(false, 'compatibility');
       cb(false);
       return;
     }
 
     if (typeof Object.entries !== 'function' || typeof Object.fromEntries !== 'function') {
+      recordModernSupportResult(false, 'compatibility');
       cb(false);
       return;
     }
 
     if (typeof stringProto.includes !== 'function' || typeof stringProto.startsWith !== 'function') {
+      recordModernSupportResult(false, 'compatibility');
       cb(false);
       return;
     }
@@ -223,6 +312,7 @@
     var scriptElement = document.createElement('script');
 
     if (!('noModule' in scriptElement)) {
+      recordModernSupportResult(false, 'compatibility');
       cb(false);
       return;
     }
@@ -231,7 +321,7 @@
     var optionalCheckScript = document.createElement('script');
     var resolved = false;
 
-    function finalize(result) {
+    function finalize(result, reason) {
       if (resolved) {
         return;
       }
@@ -242,6 +332,7 @@
       }
 
       cleanupOptionalFlag(globalScope);
+      recordModernSupportResult(result, reason);
       cb(result);
     }
 
@@ -249,10 +340,10 @@
     optionalCheckScript.src = 'src/scripts/modern-support-check.mjs';
     optionalCheckScript.onload = function () {
       var supported = !!(globalScope && globalScope[OPTIONAL_CHAINING_FLAG]);
-      finalize(supported);
+      finalize(supported, supported ? 'supported' : 'compatibility');
     };
     optionalCheckScript.onerror = function () {
-      finalize(false);
+      finalize(false, 'load-error');
     };
 
     try {
@@ -261,7 +352,7 @@
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Unable to append modern support check script.', appendError);
       }
-      finalize(false);
+      finalize(false, 'load-error');
     }
   }
 

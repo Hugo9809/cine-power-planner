@@ -24,6 +24,7 @@ const ASSETS = [
   './src/scripts/storage.js',
   './src/scripts/translations.js',
   './src/scripts/loader.js',
+  './src/scripts/modern-support-check.mjs',
   './src/vendor/lz-string.min.js',
   './src/vendor/lottie-light.min.js',
   './legacy/polyfills/core-js-bundle.min.js',
