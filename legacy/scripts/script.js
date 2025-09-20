@@ -3382,7 +3382,7 @@ function setLanguage(lang) {
       updateHelpQuickLinksForLanguage(lang);
     }
   }
-  setButtonLabelWithIcon(document.getElementById("generateOverviewBtn"), texts[lang].generateOverviewBtn, ICON_GLYPHS.note);
+  setButtonLabelWithIcon(document.getElementById("generateOverviewBtn"), texts[lang].generateOverviewBtn, ICON_GLYPHS.overview);
   setButtonLabelWithIcon(document.getElementById("generateGearListBtn"), texts[lang].generateGearListBtn, ICON_GLYPHS.gears);
   setButtonLabelWithIcon(document.getElementById("shareSetupBtn"), texts[lang].shareSetupBtn, ICON_GLYPHS.fileExport);
   var exportRevert = document.getElementById("exportAndRevertBtn");
@@ -3785,6 +3785,7 @@ var ICON_GLYPHS = Object.freeze({
   audioIn: iconGlyph("\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
   audioOut: iconGlyph("\uF22F", ICON_FONT_KEYS.ESSENTIAL),
   note: iconGlyph("\uF13E", ICON_FONT_KEYS.ESSENTIAL),
+  overview: iconGlyph("\uF1F5", ICON_FONT_KEYS.UICONS),
   feedback: Object.freeze({
     markup: FEEDBACK_ICON_SVG,
     className: 'icon-svg'
