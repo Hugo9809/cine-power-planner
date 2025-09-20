@@ -2191,7 +2191,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.85,
+          "weight_g": 2900,
+          "lengthMm": 254.9,
+          "notes": "Canon lists FOV for a 26.2 × 13.8 mm S35 sensor area; image circle not published."
         },
         "Canon CN-E Flex Zoom 14-35mm T1.7": {
           "brand": "Canon",
@@ -2202,7 +2206,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 3400,
+          "lengthMm": 233.3,
+          "notes": "Constant T1.7 Flex Zoom for Super 35 coverage; Canon lists EF version at 241.3 mm / 3.4 kg."
         },
         "Canon CN-E Flex Zoom 31.5-95mm T1.7": {
           "brand": "Canon",
@@ -2213,7 +2221,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 3500,
+          "lengthMm": 238.4,
+          "notes": "Constant T1.7 Flex Zoom for Super 35 coverage; Canon lists EF version at 246.4 mm / 3.5 kg."
         },
         "Angénieux Ultra Compact FF 37-102mm T2.9": {
           "brand": "Angénieux",
@@ -2224,7 +2236,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 2600,
+          "imageCircleMm": 46.3,
+          "lengthMm": 235,
+          "notes": "Full-frame/VV coverage with Cooke /i metadata; 114 mm front."
         },
         "Angénieux Ultra Compact FF 21-56mm T2.9": {
           "brand": "Angénieux",
@@ -2257,7 +2274,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.2,
+          "weight_g": 2600,
+          "imageCircleMm": 30.4,
+          "lengthMm": 265,
+          "notes": "Convertible Type EZ-3 using Angénieux IRO: S35 block covers 30.4 mm image circle. Ships in PL with swaps to EF/E/RF."
         },
         "Angénieux Type EZ-3 68-250mm T3.5-4.5 (FF)": {
           "brand": "Angénieux",
@@ -2268,7 +2290,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.2,
+          "weight_g": 2600,
+          "imageCircleMm": 46.3,
+          "lengthMm": 265,
+          "notes": "Convertible Type EZ-3 using Angénieux IRO: FF/VV block covers 46.3 mm image circle. Ships in PL with swaps to EF/E/RF."
         },
         "ARRI Signature Prime 12mm T1.8": {
           "brand": "ARRI",
@@ -2451,7 +2478,12 @@ const gear = {
           "rodStandard": "19mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.45,
+          "weight_g": 3200,
+          "imageCircleMm": 46,
+          "lengthMm": 212,
+          "notes": "ARRI states 46 mm image circle coverage with LDS-2/Cooke /i lens data in-family."
         },
         "ARRI Signature Zoom 24-75mm T2.8": {
           "brand": "ARRI",
@@ -2462,7 +2494,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.7,
+          "weight_g": 3700,
+          "imageCircleMm": 46,
+          "lengthMm": 244,
+          "notes": "ARRI technical data for length, weight, and MOD; LDS-2/Cooke /i metadata compatible."
         },
         "ARRI Signature Zoom 45-135mm T2.8": {
           "brand": "ARRI",
@@ -2473,7 +2510,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 3600,
+          "imageCircleMm": 46,
+          "lengthMm": 300,
+          "notes": "ARRI technical data for 1 m MOD, 300 mm length, and 3.6 kg weight; LDS-2/Cooke /i metadata compatible."
         },
         "ARRI Signature Zoom 65-300mm T2.8": {
           "brand": "ARRI",
@@ -2484,7 +2526,12 @@ const gear = {
           "rodStandard": "19mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.8,
+          "weight_g": 8100,
+          "imageCircleMm": 46,
+          "lengthMm": 420,
+          "notes": "ARRI lists 1.8 m MOD from sensor plane (1.337 m from lens front) with LDS-2/Cooke /i metadata."
         },
         "ARRI/ZEISS Ultra Prime 16mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2655,7 +2702,7 @@ const gear = {
           "weight_g": 2600,
           "imageCircleMm": 43.3,
           "lengthMm": 198,
-          "notes": "Full-frame coverage; T2.9–22. Source: ZEISS Cinema Zoom brochure (accessed 2025-09-14)."
+          "notes": "Full-frame coverage; T2.9–22. Source: ZEISS Cinema Zoom brochure (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT."
         },
         "ZEISS Compact Zoom CZ.2 28-80mm T2.9": {
           "brand": "ZEISS",
@@ -2670,7 +2717,7 @@ const gear = {
           "weight_g": 2500,
           "imageCircleMm": 43.3,
           "lengthMm": 196,
-          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Sources: ZEISS brochure (accessed 2025-09-14); internal list."
+          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Sources: ZEISS brochure (accessed 2025-09-14); internal list. Interchangeable Mount System supports PL/EF/F/E/MFT."
         },
         "ZEISS Compact Zoom CZ.2 70-200mm T2.9": {
           "brand": "ZEISS",
@@ -2685,7 +2732,7 @@ const gear = {
           "weight_g": 2800,
           "imageCircleMm": 43.3,
           "lengthMm": 250,
-          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Source: ZEISS brochure (accessed 2025-09-14)."
+          "notes": "Full-frame coverage; T2.9–22. Appears in your PDF gear list. Source: ZEISS brochure (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT."
         },
         "ZEISS Lightweight Zoom LWZ.3 21-100mm T2.9-3.9": {
           "brand": "ZEISS",
@@ -2700,7 +2747,7 @@ const gear = {
           "weight_g": 2000,
           "imageCircleMm": 31.1,
           "lengthMm": 226,
-          "notes": "ANSI Super 35 coverage; 11 iris blades; T2.9–22; front Ø 114 mm. Source: ZEISS technical data (accessed 2025-09-14)."
+          "notes": "ANSI Super 35 coverage; 11 iris blades; T2.9–22; front Ø 114 mm. Source: ZEISS technical data (accessed 2025-09-14). Interchangeable Mount System supports PL/EF/F/E/MFT."
         },
         "ZEISS Nano Prime 18mm T1.5": {
           "brand": "ZEISS",
@@ -2770,7 +2817,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 2270,
+          "imageCircleMm": 46.3,
+          "lengthMm": 163,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 21mm T1.5": {
           "brand": "ZEISS",
@@ -2795,7 +2847,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.26,
+          "weight_g": 1420,
+          "imageCircleMm": 46.3,
+          "lengthMm": 119,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 29mm T1.5": {
           "brand": "ZEISS",
@@ -2805,7 +2862,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.33,
+          "weight_g": 1610,
+          "imageCircleMm": 46.3,
+          "lengthMm": 121,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 35mm T1.5": {
           "brand": "ZEISS",
@@ -2815,7 +2877,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.32,
+          "weight_g": 1400,
+          "imageCircleMm": 46.3,
+          "lengthMm": 119,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 40mm T1.5": {
           "brand": "ZEISS",
@@ -2825,7 +2892,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.42,
+          "weight_g": 1490,
+          "imageCircleMm": 46.3,
+          "lengthMm": 121,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 50mm T1.5": {
           "brand": "ZEISS",
@@ -2839,6 +2911,7 @@ const gear = {
           "minFocusMeters": 0.45,
           "weight_g": 1220,
           "imageCircleMm": 46.3,
+          "lengthMm": 119,
           "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 65mm T1.5": {
@@ -2849,7 +2922,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 1630,
+          "imageCircleMm": 46.3,
+          "lengthMm": 121,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 85mm T1.5": {
           "brand": "ZEISS",
@@ -2863,6 +2941,7 @@ const gear = {
           "minFocusMeters": 0.84,
           "weight_g": 1420,
           "imageCircleMm": 46.3,
+          "lengthMm": 119,
           "notes": "Appears in your PDF list. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 100mm T1.5": {
@@ -2873,7 +2952,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.1,
+          "weight_g": 1700,
+          "imageCircleMm": 46.3,
+          "lengthMm": 119,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "ZEISS Supreme Prime Radiance 135mm T1.5": {
           "brand": "ZEISS",
@@ -2883,7 +2967,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.4,
+          "weight_g": 2270,
+          "imageCircleMm": 46.3,
+          "lengthMm": 146,
+          "notes": "T1.5–22; FF coverage. Source: ZEISS Radiance technical data (accessed 2025-09-14)."
         },
         "Leitz Summicron-C 18mm T2.0": {
           "brand": "Leitz",
@@ -3092,7 +3181,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 3300,
+          "imageCircleMm": 46.3,
+          "lengthMm": 228,
+          "notes": "Front Ø114 mm; full-frame/VV coverage."
         },
         "Fujinon Premista 28-100mm T2.9": {
           "brand": "Fujinon",
@@ -3103,7 +3197,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "weight_g": 3800,
+          "imageCircleMm": 46.3,
+          "lengthMm": 255,
+          "notes": "Front Ø114 mm; full-frame/VV coverage."
         },
         "Fujinon Premista 80-250mm T2.9-3.5": {
           "brand": "Fujinon",
@@ -3114,7 +3213,12 @@ const gear = {
           "rodStandard": "19mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.5,
+          "weight_g": 3800,
+          "imageCircleMm": 46.3,
+          "lengthMm": 255,
+          "notes": "Front Ø114 mm; full-frame/VV coverage."
         },
         "DZOFilm Vespid 35mm T2.1": {
           "brand": "DZOFilm",
