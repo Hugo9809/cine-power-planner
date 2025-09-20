@@ -981,9 +981,28 @@ function buildDefaultMatteboxAutoGearRules() {
   ];
 }
 
+function ensureDefaultMatteboxAutoGearRules() {
+  const defaults = buildDefaultMatteboxAutoGearRules();
+  if (!defaults.length) return false;
+  const merged = mergeAutoGearRules(autoGearRules, defaults);
+  if (merged.length === autoGearRules.length) return false;
+  setAutoGearRules(merged);
+  return true;
+}
+
 function seedAutoGearRulesFromCurrentProject() {
-  if (autoGearRules.length) return;
-  if (hasSeededAutoGearDefaults()) return;
+  if (autoGearRules.length) {
+    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (addedDefaults && !hasSeededAutoGearDefaults()) {
+      markAutoGearDefaultsSeeded();
+    }
+    return;
+  }
+  if (hasSeededAutoGearDefaults()) {
+    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (addedDefaults) markAutoGearDefaultsSeeded();
+    return;
+  }
 
   const rules = [];
   const canGenerateRules = typeof generateGearListHtml === 'function'
@@ -1045,7 +1064,11 @@ function seedAutoGearRulesFromCurrentProject() {
   }
 
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
-  if (!rules.length) return;
+  if (!rules.length) {
+    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (addedDefaults) markAutoGearDefaultsSeeded();
+    return;
+  }
   setAutoGearRules(rules);
   markAutoGearDefaultsSeeded();
 }
