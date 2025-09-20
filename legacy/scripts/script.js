@@ -3757,7 +3757,7 @@ var RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
 var ASPECT_RATIO_ICON = iconGlyph('\uE71D', ICON_FONT_KEYS.UICONS);
 var REQUIRED_SCENARIOS_ICON = iconGlyph('\uF4D4', ICON_FONT_KEYS.UICONS);
 var MONITORING_SUPPORT_ICON = iconGlyph('\uEF0F', ICON_FONT_KEYS.UICONS);
-var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\" />\n  </svg>\n".trim();
+var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\" fill=\"currentColor\" stroke=\"currentColor\" stroke-width=\"0\" />\n  </svg>\n".trim();
 var ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph("\uE1A6", ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph("\uE1A9", ICON_FONT_KEYS.UICONS),

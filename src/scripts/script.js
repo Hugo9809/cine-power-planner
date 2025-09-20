@@ -4133,7 +4133,12 @@ const MONITORING_SUPPORT_ICON = iconGlyph('\uEF0F', ICON_FONT_KEYS.UICONS);
 
 const STAR_ICON_SVG = `
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z" />
+    <path
+      d="M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z"
+      fill="currentColor"
+      stroke="currentColor"
+      stroke-width="0"
+    />
   </svg>
 `.trim();
 
