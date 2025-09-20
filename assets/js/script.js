@@ -19432,6 +19432,13 @@ const BACKUP_DATA_KEYS = [
   'favorites',
   'autoGearRules',
   'autoGearSeeded',
+  'autoGearBackups',
+  'autoGearPresets',
+  'autoGearActivePresetId',
+  'autoGearShowBackups',
+  'customLogo',
+  'customFonts',
+  'preferences',
 ];
 
 function isPlainObject(value) {
