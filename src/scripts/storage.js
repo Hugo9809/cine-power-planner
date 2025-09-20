@@ -33,15 +33,20 @@ function ensureCustomFontStorageKeyName() {
         ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY
         : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
 
-  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== existingName) {
-    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = existingName;
+  let normalizedName = existingName;
+  if (existingName === 'cinePowerPlanner_customFonts') {
+    normalizedName = CUSTOM_FONT_STORAGE_KEY_DEFAULT;
   }
 
-  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME !== existingName) {
-    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME = existingName;
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== normalizedName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = normalizedName;
   }
 
-  return existingName;
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME !== normalizedName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME = normalizedName;
+  }
+
+  return normalizedName;
 }
 
 function getCustomFontStorageKeyName() {
@@ -308,6 +313,163 @@ function alertStorageError() {
   window.alert(msg);
 }
 
+function getWindowStorage(name) {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    return window[name];
+  } catch (error) {
+    console.warn(`Unable to access ${name} during legacy migration`, error);
+    return null;
+  }
+}
+
+function collectUniqueStorages(storages) {
+  const unique = [];
+  for (let i = 0; i < storages.length; i += 1) {
+    const storage = storages[i];
+    if (!storage || typeof storage.getItem !== 'function') {
+      continue;
+    }
+    if (!unique.includes(storage)) {
+      unique.push(storage);
+    }
+  }
+  return unique;
+}
+
+function migrateKeyBetweenStorages(source, target, legacyKey, modernKey, options = {}) {
+  if (!source || typeof source.getItem !== 'function') {
+    return false;
+  }
+
+  const { keepLegacy = false } = options;
+
+  let legacyValue;
+  try {
+    legacyValue = source.getItem(legacyKey);
+  } catch (error) {
+    console.warn(`Unable to read legacy storage key ${legacyKey}`, error);
+    return false;
+  }
+
+  if (legacyValue === null || legacyValue === undefined) {
+    return false;
+  }
+
+  const destination = target && typeof target.setItem === 'function' ? target : source;
+
+  try {
+    const existing = destination.getItem(modernKey);
+    if (existing !== null && existing !== undefined) {
+      if (!keepLegacy && source !== destination) {
+        try {
+          source.removeItem(legacyKey);
+        } catch (removeError) {
+          console.warn(`Unable to remove legacy storage key ${legacyKey}`, removeError);
+        }
+      }
+      return false;
+    }
+  } catch (readError) {
+    console.warn(`Unable to inspect destination storage for ${modernKey}`, readError);
+  }
+
+  try {
+    destination.setItem(modernKey, legacyValue);
+  } catch (writeError) {
+    console.warn(`Unable to migrate legacy storage key ${legacyKey}`, writeError);
+    return false;
+  }
+
+  if (!keepLegacy) {
+    try {
+      source.removeItem(legacyKey);
+    } catch (removeError) {
+      console.warn(`Unable to remove legacy storage key ${legacyKey} after migration`, removeError);
+    }
+  }
+
+  return true;
+}
+
+function migrateKeyInStorages(storages, preferredTarget, legacyKey, modernKey, options) {
+  let migrated = false;
+  for (let i = 0; i < storages.length; i += 1) {
+    if (migrateKeyBetweenStorages(storages[i], preferredTarget, legacyKey, modernKey, options)) {
+      migrated = true;
+    }
+  }
+  return migrated;
+}
+
+function migrateLegacyStorageKeys() {
+  const safeStorage = SAFE_LOCAL_STORAGE;
+  const localStorages = collectUniqueStorages([
+    getWindowStorage('localStorage'),
+    safeStorage,
+  ]);
+  const sessionStorages = collectUniqueStorages([
+    getWindowStorage('sessionStorage'),
+    typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+  ]);
+
+  const legacyPrefix = 'cinePowerPlanner_';
+
+  const mappings = [
+    { legacy: `${legacyPrefix}devices`, modern: DEVICE_STORAGE_KEY },
+    { legacy: `${legacyPrefix}setups`, modern: SETUP_STORAGE_KEY },
+    { legacy: `${legacyPrefix}session`, modern: SESSION_STATE_KEY, includeSession: true },
+    { legacy: `${legacyPrefix}feedback`, modern: FEEDBACK_STORAGE_KEY },
+    { legacy: `${legacyPrefix}project`, modern: PROJECT_STORAGE_KEY },
+    { legacy: `${legacyPrefix}projects`, modern: PROJECT_STORAGE_KEY },
+    { legacy: `${legacyPrefix}favorites`, modern: FAVORITES_STORAGE_KEY },
+    { legacy: `${legacyPrefix}schemaCache`, modern: DEVICE_SCHEMA_CACHE_KEY },
+    { legacy: `${legacyPrefix}autoGearRules`, modern: AUTO_GEAR_RULES_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearBackups`, modern: AUTO_GEAR_BACKUPS_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearSeeded`, modern: AUTO_GEAR_SEEDED_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearPresets`, modern: AUTO_GEAR_PRESETS_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearActivePreset`, modern: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearShowBackups`, modern: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY },
+    { legacy: `${legacyPrefix}customFonts`, modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT, updateFontKey: true },
+  ];
+
+  mappings.forEach(({ legacy, modern, includeSession = false, updateFontKey = false }) => {
+    const migratedLocal = migrateKeyInStorages(localStorages, safeStorage, legacy, modern);
+    migrateKeyInStorages(
+      localStorages,
+      safeStorage,
+      `${legacy}${STORAGE_BACKUP_SUFFIX}`,
+      `${modern}${STORAGE_BACKUP_SUFFIX}`,
+    );
+
+    if (includeSession) {
+      migrateKeyInStorages(sessionStorages, null, legacy, modern);
+      migrateKeyInStorages(
+        sessionStorages,
+        null,
+        `${legacy}${STORAGE_BACKUP_SUFFIX}`,
+        `${modern}${STORAGE_BACKUP_SUFFIX}`,
+      );
+    }
+
+    if (updateFontKey && migratedLocal && GLOBAL_SCOPE) {
+      if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === legacy) {
+        GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = modern;
+      }
+      if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === legacy) {
+        GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME = modern;
+      }
+    }
+  });
+}
+
+function applyLegacyStorageMigrations() {
+  migrateLegacyStorageKeys();
+}
+
 // Generic helpers for storage access
 function loadJSONFromStorage(
   storage,
@@ -547,8 +709,156 @@ function generateUniqueName(base, usedNames, normalizedNames) {
 // --- Session State Storage ---
 // Store the current session (unsaved setup) in localStorage so it survives
 // full app reloads.
+function collectStringValues(value) {
+  if (value === null || value === undefined) {
+    return [];
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? [trimmed] : [];
+  }
+  if (Array.isArray(value)) {
+    return value
+      .filter((item) => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter((item) => item);
+  }
+  if (isPlainObject(value)) {
+    return Object.values(value)
+      .filter((item) => typeof item === 'string')
+      .map((item) => item.trim())
+      .filter((item) => item);
+  }
+  return [];
+}
+
+function arraysEqual(a, b) {
+  if (a === b) {
+    return true;
+  }
+  if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) {
+    return false;
+  }
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function normalizeSessionStatePayload(raw) {
+  if (!isPlainObject(raw)) {
+    return { state: null, changed: false };
+  }
+
+  const state = { ...raw };
+  let changed = false;
+
+  const normalizeStringField = (key) => {
+    if (!Object.prototype.hasOwnProperty.call(state, key)) {
+      return;
+    }
+    const value = state[key];
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (trimmed !== value) {
+        state[key] = trimmed;
+        changed = true;
+      }
+      return;
+    }
+    if (value === null || value === undefined) {
+      state[key] = '';
+      changed = true;
+      return;
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      state[key] = String(value);
+      changed = true;
+      return;
+    }
+    state[key] = '';
+    changed = true;
+  };
+
+  [
+    'setupName',
+    'setupSelect',
+    'camera',
+    'monitor',
+    'video',
+    'cage',
+    'distance',
+    'batteryPlate',
+    'battery',
+    'batteryHotswap',
+    'sliderBowl',
+    'easyrig',
+  ].forEach(normalizeStringField);
+
+  const mergeArrayField = (targetKey, legacyKeys = []) => {
+    const values = [];
+    const keys = [targetKey, ...legacyKeys];
+    let hadLegacyData = false;
+
+    keys.forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(state, key)) {
+        const collected = collectStringValues(state[key]);
+        if (key !== targetKey) {
+          hadLegacyData = true;
+        }
+        if (collected.length) {
+          values.push(...collected);
+        }
+      }
+    });
+
+    keys.slice(1).forEach((legacyKey) => {
+      if (Object.prototype.hasOwnProperty.call(state, legacyKey)) {
+        delete state[legacyKey];
+        changed = true;
+      }
+    });
+
+    const unique = [];
+    const seen = new Set();
+    values.forEach((val) => {
+      if (!seen.has(val)) {
+        seen.add(val);
+        unique.push(val);
+      }
+    });
+
+    const hasTargetKey = Object.prototype.hasOwnProperty.call(state, targetKey);
+    const existing = hasTargetKey && Array.isArray(state[targetKey])
+      ? state[targetKey].filter((item) => typeof item === 'string').map((item) => item.trim()).filter((item) => item)
+      : [];
+
+    if (!hasTargetKey && !hadLegacyData && unique.length === 0 && existing.length === 0) {
+      return;
+    }
+
+    if (!arraysEqual(existing, unique)) {
+      state[targetKey] = unique;
+      changed = true;
+    }
+  };
+
+  mergeArrayField('motors', ['motor', 'motorSelect']);
+  mergeArrayField('controllers', ['controller', 'controllerSelect']);
+
+  if (Object.prototype.hasOwnProperty.call(state, 'projectInfo') && !isPlainObject(state.projectInfo)) {
+    state.projectInfo = null;
+    changed = true;
+  }
+
+  return { state, changed };
+}
+
 function loadSessionState() {
-  return loadWithMigration(
+  applyLegacyStorageMigrations();
+  const raw = loadWithMigration(
     SAFE_LOCAL_STORAGE,
     typeof sessionStorage !== 'undefined' ? sessionStorage : null,
     SESSION_STATE_KEY,
@@ -558,6 +868,20 @@ function loadSessionState() {
     "Error deleting session state from sessionStorage:",
     { validate: (value) => value === null || isPlainObject(value) },
   );
+  if (raw === null) {
+    return null;
+  }
+
+  const { state, changed } = normalizeSessionStatePayload(raw);
+  if (!state) {
+    return null;
+  }
+
+  if (changed) {
+    saveSessionState(state);
+  }
+
+  return state;
 }
 
 function saveSessionState(state) {
@@ -585,6 +909,7 @@ function saveSessionState(state) {
 
 // --- Device Data Storage ---
 function loadDeviceData() {
+  applyLegacyStorageMigrations();
   const parsedData = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     DEVICE_STORAGE_KEY,
@@ -716,6 +1041,7 @@ function normalizeSetups(rawData) {
 }
 
 function loadSetups() {
+  applyLegacyStorageMigrations();
   const parsedData = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     SETUP_STORAGE_KEY,
@@ -871,6 +1197,7 @@ function isNormalizedProjectEntry(entry) {
 }
 
 function readAllProjectsFromStorage() {
+  applyLegacyStorageMigrations();
   const parsed = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     PROJECT_STORAGE_KEY,
@@ -1120,6 +1447,7 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
 
 // --- Favorites Storage ---
 function loadFavorites() {
+  applyLegacyStorageMigrations();
   const parsed = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     FAVORITES_STORAGE_KEY,
@@ -1155,6 +1483,7 @@ function saveFavorites(favs) {
 
 // --- User Feedback Storage ---
 function loadFeedback() {
+  applyLegacyStorageMigrations();
   const parsed = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     FEEDBACK_STORAGE_KEY,
@@ -1194,6 +1523,7 @@ function saveFeedback(feedback) {
 
 // --- Automatic Gear Rules Storage ---
 function loadAutoGearRules() {
+  applyLegacyStorageMigrations();
   const parsed = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     AUTO_GEAR_RULES_STORAGE_KEY,
@@ -1215,6 +1545,7 @@ function saveAutoGearRules(rules) {
 }
 
 function loadAutoGearBackups() {
+  applyLegacyStorageMigrations();
   const parsed = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     AUTO_GEAR_BACKUPS_STORAGE_KEY,
@@ -1236,6 +1567,7 @@ function saveAutoGearBackups(backups) {
 }
 
 function loadAutoGearSeedFlag() {
+  applyLegacyStorageMigrations();
   return loadFlagFromStorage(
     SAFE_LOCAL_STORAGE,
     AUTO_GEAR_SEEDED_STORAGE_KEY,
@@ -1253,6 +1585,7 @@ function saveAutoGearSeedFlag(flag) {
 }
 
 function loadAutoGearPresets() {
+  applyLegacyStorageMigrations();
   const presets = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     AUTO_GEAR_PRESETS_STORAGE_KEY,
@@ -1274,6 +1607,7 @@ function saveAutoGearPresets(presets) {
 }
 
 function loadAutoGearActivePresetId() {
+  applyLegacyStorageMigrations();
   if (!SAFE_LOCAL_STORAGE) {
     return '';
   }
@@ -1334,6 +1668,7 @@ function saveAutoGearAutoPresetId(presetId) {
 }
 
 function loadAutoGearBackupVisibility() {
+  applyLegacyStorageMigrations();
   return loadFlagFromStorage(
     SAFE_LOCAL_STORAGE,
     AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,

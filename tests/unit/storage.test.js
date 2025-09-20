@@ -177,6 +177,18 @@ describe('device data storage', () => {
     expect(JSON.parse(localStorage.getItem(DEVICE_KEY))).toEqual(expected);
   });
 
+  test('loadDeviceData migrates legacy key prefix to current storage', () => {
+    const legacy = { cameras: {}, monitors: {} };
+    localStorage.setItem('cinePowerPlanner_devices', JSON.stringify(legacy));
+
+    const result = loadDeviceData();
+
+    expect(result).not.toBeNull();
+    const stored = JSON.parse(localStorage.getItem(DEVICE_KEY));
+    expect(stored).toEqual(result);
+    expect(localStorage.getItem('cinePowerPlanner_devices')).toBeNull();
+  });
+
   test('loadDeviceData replaces non-object categories with empty objects', () => {
     const corrupted = {
       cameras: null,
@@ -400,6 +412,45 @@ describe('session state storage', () => {
     expect(localStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(state));
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull();
   });
+
+  test('loadSessionState migrates legacy key prefix', () => {
+    const state = { camera: 'CamA', motors: ['MotorA'] };
+    localStorage.setItem('cinePowerPlanner_session', JSON.stringify(state));
+
+    const result = loadSessionState();
+
+    expect(result).toEqual({ camera: 'CamA', motors: ['MotorA'] });
+
+    expect(JSON.parse(localStorage.getItem(SESSION_KEY))).toEqual(result);
+    expect(localStorage.getItem('cinePowerPlanner_session')).toBeNull();
+  });
+
+  test('loadSessionState normalizes legacy session payloads', () => {
+    const legacyState = {
+      setupName: ' Legacy ',
+      motor: 'FocusMotor',
+      motors: [null, 'ZoomMotor', 7],
+      controller: { primary: 'FocusWheel' },
+      controllers: 'HandUnit',
+      projectInfo: 'invalid',
+      battery: ['Pack'],
+      sliderBowl: null,
+    };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(legacyState));
+
+    const result = loadSessionState();
+    const stored = JSON.parse(localStorage.getItem(SESSION_KEY));
+
+    expect(result.motors).toEqual(['ZoomMotor', 'FocusMotor']);
+    expect(result.controllers).toEqual(['HandUnit', 'FocusWheel']);
+    expect(result.setupName).toBe('Legacy');
+    expect(result.battery).toBe('');
+    expect(result.sliderBowl).toBe('');
+    expect(result.projectInfo).toBeNull();
+    expect(stored).toEqual(result);
+    expect(stored.motor).toBeUndefined();
+    expect(stored.controller).toBeUndefined();
+  });
 });
 
 describe('feedback storage', () => {
@@ -474,6 +525,17 @@ describe('project storage', () => {
     expect(loadProject('Missing')).toBeNull();
   });
 
+  test('loadProject migrates legacy key prefix to new storage', () => {
+    localStorage.setItem('cinePowerPlanner_project', JSON.stringify('<p>Legacy</p>'));
+
+    const projects = loadProject();
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+
+    expect(projects).toEqual({ '': { gearList: '<p>Legacy</p>', projectInfo: null } });
+    expect(stored).toEqual(projects);
+    expect(localStorage.getItem('cinePowerPlanner_project')).toBeNull();
+  });
+
   test('deleteProject removes individual projects and cleans up key when empty', () => {
     saveProject('Keep', { gearList: '<ul>Keep</ul>' });
     saveProject('Drop', { gearList: '<ul>Drop</ul>' });
@@ -526,6 +588,16 @@ describe('automatic gear storage', () => {
   test('loadAutoGearRules falls back to empty array when data malformed', () => {
     localStorage.setItem(AUTO_GEAR_RULES_KEY, JSON.stringify('oops'));
     expect(loadAutoGearRules()).toEqual([]);
+  });
+
+  test('loadAutoGearRules migrates legacy key prefix', () => {
+    const rules = [{ id: 'legacy', label: 'Legacy', scenarios: [], add: [], remove: [] }];
+    localStorage.setItem('cinePowerPlanner_autoGearRules', JSON.stringify(rules));
+
+    const loaded = loadAutoGearRules();
+    expect(loaded).toEqual(rules);
+    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_RULES_KEY))).toEqual(rules);
+    expect(localStorage.getItem('cinePowerPlanner_autoGearRules')).toBeNull();
   });
 
   test('loadAutoGearBackups returns stored backups and sanitises invalid payloads', () => {
