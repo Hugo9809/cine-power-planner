@@ -16038,7 +16038,7 @@ function generateConnectorSummary(device) {
     dir: 'In'
   }, {
     items: device.fizConnectors,
-    icon: ICON_GLYPHS.sliders,
+    icon: ICON_GLYPHS.gears,
     cls: 'fiz-conn',
     label: 'FIZ Port'
   }, {
