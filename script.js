@@ -3687,8 +3687,10 @@ function positionSvgMarkup(markup, centerX, centerY, size = 24) {
       .replace(/\s+y\s*=\s*"[^"]*"/gi, '')
       .trim();
     const additions = [];
-    if (!/\bwidth\s*=/.test(attrText)) additions.push(`width="${width}"`);
-    if (!/\bheight\s*=/.test(attrText)) additions.push(`height="${height}"`);
+    const hasWidth = /(?:^|\s)width\s*=/i.test(attrText);
+    const hasHeight = /(?:^|\s)height\s*=/i.test(attrText);
+    if (!hasWidth) additions.push(`width="${width}"`);
+    if (!hasHeight) additions.push(`height="${height}"`);
     additions.push(`x="-${formatSvgCoordinate(half)}"`);
     additions.push(`y="-${formatSvgCoordinate(half)}"`);
     attrText = [attrText, ...additions].filter(Boolean).join(' ').trim();
