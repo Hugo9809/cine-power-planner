@@ -1,3 +1,9 @@
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var getCssVarValue = typeof getCssVariableValue === 'function' ? getCssVariableValue : function (name) {
   var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -93,12 +99,6 @@ function generatePrintableOverview() {
     success: 'status-message--success',
     info: 'status-message--info'
   };
-  var severityClassList = [];
-  for (var level in severityClassMap) {
-    if (Object.prototype.hasOwnProperty.call(severityClassMap, level)) {
-      severityClassList.push(severityClassMap[level]);
-    }
-  }
   var extractSeverityClass = function extractSeverityClass(element) {
     if (!element) return '';
     var datasetLevel = element.dataset ? element.dataset.statusLevel : element.getAttribute && element.getAttribute('data-status-level');
@@ -106,22 +106,16 @@ function generatePrintableOverview() {
       return severityClassMap[datasetLevel];
     }
     if (element.classList) {
-      for (var i = 0; i < severityClassList.length; i++) {
-        if (element.classList.contains(severityClassList[i])) {
-          return severityClassList[i];
-        }
-      }
+      return Object.values(severityClassMap).find(function (cls) {
+        return element.classList.contains(cls);
+      }) || '';
     }
-    if (typeof element.getAttribute === 'function') {
-      var classAttr = element.getAttribute('class') || '';
-      if (classAttr) {
-        var classParts = classAttr.split(/\s+/);
-        for (var _i3 = 0; _i3 < severityClassList.length; _i3++) {
-          if (classParts.indexOf(severityClassList[_i3]) !== -1) {
-            return severityClassList[_i3];
-          }
-        }
-      }
+    var classAttr = typeof element.getAttribute === 'function' ? element.getAttribute('class') : '';
+    if (classAttr) {
+      var classes = classAttr.split(/\s+/);
+      return Object.values(severityClassMap).find(function (cls) {
+        return classes.includes(cls);
+      }) || '';
     }
     return '';
   };
@@ -266,6 +260,21 @@ function generatePrintableOverview() {
   var diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
   var diagramSectionHtml = diagramAreaHtml ? "<section id=\"setupDiagram\" class=\"diagram-section print-section\"><h2>".concat(t.setupDiagramHeading, "</h2>").concat(diagramDescHtml).concat(diagramAreaHtml).concat(diagramLegendHtml).concat(diagramHintHtml, "</section>") : '';
   var batteryTableHtmlWithBreak = batteryTableHtml ? "<div class=\"page-break\"></div>".concat(batteryTableHtml) : '';
+  var hasGeneratedGearList = function () {
+    if (typeof document === 'undefined') return false;
+    var container = document.getElementById('gearListOutput');
+    if (!container) return false;
+    if (container.classList && container.classList.contains('hidden')) {
+      return false;
+    }
+    var trimmed = typeof container.innerHTML === 'string' ? container.innerHTML.trim() : '';
+    if (!trimmed) return false;
+    if (typeof container.querySelector === 'function') {
+      var table = container.querySelector('.gear-table');
+      if (table) return true;
+    }
+    return true;
+  }();
   var gearListCombined = getCurrentGearListHtml();
   if (!gearListCombined && currentProjectInfo) {
     gearListCombined = generateGearListHtml(currentProjectInfo);
@@ -280,27 +289,90 @@ function generatePrintableOverview() {
     if (parts.projectHtml) {
       projectSectionHtml = "<section id=\"projectRequirementsOutput\" class=\"print-section project-requirements-section\">".concat(parts.projectHtml, "</section>");
     }
-    if (parts.gearHtml) {
+    if (parts.gearHtml && hasGeneratedGearList) {
       gearSectionHtml = "<section id=\"gearListOutput\" class=\"gear-list-section\">".concat(parts.gearHtml, "</section>");
     }
   }
   var gearListHtmlCombined = projectSectionHtml || gearSectionHtml ? "".concat(projectSectionHtml || '').concat(gearSectionHtml || '') : '';
+  var deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
+  var deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
+  var gearListActionsHtml = gearListHtmlCombined ? "<div class=\"overview-gear-actions\"><button id=\"overviewDeleteGearListBtn\" class=\"overview-delete-gear-btn\" title=\"".concat(escapeHtmlSafe(deleteGearListHelp), "\" data-help=\"").concat(escapeHtmlSafe(deleteGearListHelp), "\">").concat(escapeHtmlSafe(deleteGearListLabel), "</button></div>") : '';
   var logoHtml = customLogo ? "<img id=\"printLogo\" src=\"".concat(customLogo, "\" alt=\"Logo\" />") : '';
   var contentClass = customLogo ? 'logo-present' : '';
-  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\">").concat(t.backToAppBtn, "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\">").concat(t.printBtn, "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>Generated on: ").concat(dateTimeString, "</em></p>\n\n            <h2>").concat(t.overviewDeviceSelectionHeading || t.deviceSelectionHeading, "</h2>\n            ").concat(deviceListHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtmlCombined, "\n            ").concat(batteryTableHtmlWithBreak, "\n        </div>\n    ");
+  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\">").concat(t.backToAppBtn, "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\">").concat(t.printBtn, "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>Generated on: ").concat(dateTimeString, "</em></p>\n\n            <h2>").concat(t.overviewDeviceSelectionHeading || t.deviceSelectionHeading, "</h2>\n            ").concat(deviceListHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtmlCombined, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryTableHtmlWithBreak, "\n        </div>\n    ");
   var overviewDialog = document.getElementById('overviewDialog');
   overviewDialog.innerHTML = overviewHtml;
   var content = overviewDialog.querySelector('#overviewDialogContent');
-  if (document.body.classList.contains('dark-mode')) {
-    content.classList.add('dark-mode');
-  }
-  if (document.body.classList.contains('pink-mode')) {
-    content.classList.add('pink-mode');
-  }
+  var applyThemeClasses = function applyThemeClasses(target) {
+    if (!target || typeof document === 'undefined') return;
+    var themeClasses = ['dark-mode', 'light-mode', 'pink-mode', 'dark-accent-boost', 'high-contrast'];
+    var activeClasses = new Set([].concat(_toConsumableArray(document.documentElement ? Array.from(document.documentElement.classList) : []), _toConsumableArray(document.body ? Array.from(document.body.classList) : [])));
+    themeClasses.forEach(function (themeClass) {
+      target.classList.toggle(themeClass, activeClasses.has(themeClass));
+    });
+  };
+  applyThemeClasses(content);
   var closeBtn = overviewDialog.querySelector('#closeOverviewBtn');
   if (closeBtn) {
     closeBtn.addEventListener('click', function () {
       closeDialog(overviewDialog);
+    });
+  }
+  var overviewDeleteBtn = overviewDialog.querySelector('#overviewDeleteGearListBtn');
+  if (overviewDeleteBtn) {
+    var supportsCustomEvents = typeof document !== 'undefined' && typeof document.addEventListener === 'function';
+    if (supportsCustomEvents) {
+      function cleanup() {
+        document.removeEventListener('gearlist:deleted', handleGearListDeleted);
+        overviewDialog.removeEventListener('close', cleanup);
+      }
+      function handleGearListDeleted() {
+        cleanup();
+        if (overviewDialog && overviewDialog.open) {
+          generatePrintableOverview();
+        }
+      }
+      document.addEventListener('gearlist:deleted', handleGearListDeleted);
+      overviewDialog.addEventListener('close', cleanup, {
+        once: true
+      });
+    }
+    overviewDeleteBtn.addEventListener('click', function (event) {
+      event.preventDefault();
+      var usedFallback = false;
+      if (typeof deleteCurrentGearList === 'function') {
+        try {
+          var deleted = deleteCurrentGearList();
+          if (!supportsCustomEvents && deleted) {
+            generatePrintableOverview();
+          }
+          return;
+        } catch (error) {
+          console.warn('Failed to delete gear list from overview button', error);
+          usedFallback = true;
+        }
+      } else {
+        usedFallback = true;
+      }
+      if ((usedFallback || typeof deleteCurrentGearList !== 'function') && supportsCustomEvents) {
+        try {
+          document.dispatchEvent(new CustomEvent('gearlist:delete-requested', {
+            detail: {
+              source: 'overview'
+            }
+          }));
+        } catch (error) {
+          if (typeof document.createEvent === 'function') {
+            var fallbackEvent = document.createEvent('CustomEvent');
+            fallbackEvent.initCustomEvent('gearlist:delete-requested', false, false, {
+              source: 'overview'
+            });
+            document.dispatchEvent(fallbackEvent);
+          } else {
+            console.warn('Unable to request gear list deletion from overview', error);
+          }
+        }
+      }
     });
   }
   var removePrintMediaListener = null;

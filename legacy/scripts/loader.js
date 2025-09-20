@@ -26,7 +26,10 @@
     try {
       var test = new Function('var obj = { a: { b: 1 } }; var value = obj?.a?.b ?? 2; return value;');
       return test() === 1;
-    } catch (error) {
+    } catch (err) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Legacy bundle enabled: falling back due to syntax support test failure.', err);
+      }
       return false;
     }
   }
