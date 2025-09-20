@@ -2117,9 +2117,9 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
-          "lengthMm": 89,
-          "minFocusMeters": 0.25,
-          "weight_g": 1200,
+          "lengthMm": 95,
+          "minFocusMeters": 0.28,
+          "weight_g": 1600,
           "notes": "Front Ø80 mm; S35; T1.3-T16"
         },
         "ZEISS High Speed MK III 20mm T2.1": {
@@ -2142,9 +2142,9 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
-          "lengthMm": 66,
+          "lengthMm": 75,
           "minFocusMeters": 0.25,
-          "weight_g": 900,
+          "weight_g": 1100,
           "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 35mm T1.3": {
@@ -2201,9 +2201,9 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "mount": "PL",
-          "lengthMm": 69,
-          "minFocusMeters": 0.92,
-          "weight_g": 1100,
+          "lengthMm": 85,
+          "minFocusMeters": 0.9,
+          "weight_g": 1400,
           "notes": "Front Ø80 mm; S35"
         },
         "ZEISS High Speed MK III 135mm T1.3": {
@@ -3314,7 +3314,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "lengthMm": 182,
+          "minFocusMeters": 0.36,
+          "weight_g": 3300,
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 32mm T2.0": {
           "brand": "Cooke",
@@ -3325,7 +3329,11 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "lengthMm": 189,
+          "minFocusMeters": 0.36,
+          "weight_g": 3400,
+          "imageCircleMm": 46.31
         },
         "Cooke S7/i FF 40mm T2.0": {
           "brand": "Cooke",
