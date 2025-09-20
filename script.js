@@ -19346,6 +19346,10 @@ const BACKUP_DATA_KEYS = [
   'gearList',
   'favorites',
   'autoGearRules',
+  'autoGearBackups',
+  'autoGearPresets',
+  'autoGearActivePresetId',
+  'autoGearShowBackups',
   'autoGearSeeded',
 ];
 

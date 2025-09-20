@@ -528,6 +528,19 @@ describe('applyAutoGearRulesToTableHtml', () => {
       },
     ];
 
+    const legacyBackups = [
+      {
+        id: 'legacy-backup-1',
+        label: 'Legacy snapshot',
+        createdAt: '2023-10-15T08:30:00Z',
+        rules: legacyRules,
+      },
+    ];
+
+    const legacyPresets = [
+      { id: 'legacy-preset', label: 'Legacy bundle', rules: legacyRules },
+    ];
+
     const legacyData = {
       version: '0.9.0',
       storage: [
@@ -551,6 +564,11 @@ describe('applyAutoGearRulesToTableHtml', () => {
         Legacy: { name: 'Legacy', items: [] },
       },
       autoGearRules: legacyRules,
+      autoGearBackups: legacyBackups,
+      autoGearSeeded: true,
+      autoGearPresets: legacyPresets,
+      autoGearActivePresetId: 'legacy-preset',
+      autoGearShowBackups: true,
     };
 
     const fileContent = JSON.stringify(legacyData);
@@ -584,6 +602,11 @@ describe('applyAutoGearRulesToTableHtml', () => {
         expect.objectContaining({
           setups: legacyData.setups,
           autoGearRules: legacyData.autoGearRules,
+          autoGearBackups: legacyData.autoGearBackups,
+          autoGearSeeded: legacyData.autoGearSeeded,
+          autoGearPresets: legacyData.autoGearPresets,
+          autoGearActivePresetId: legacyData.autoGearActivePresetId,
+          autoGearShowBackups: legacyData.autoGearShowBackups,
         }),
       );
 
