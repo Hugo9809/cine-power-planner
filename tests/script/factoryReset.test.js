@@ -23,7 +23,6 @@ describe('factory reset cleanup', () => {
     const cameraSelect = document.getElementById('cameraSelect');
     const gearListOutput = document.getElementById('gearListOutput');
     const projectRequirementsOutput = document.getElementById('projectRequirementsOutput');
-    const projectNameInput = document.getElementById('projectName');
 
     const customRules = [
       {
@@ -39,8 +38,7 @@ describe('factory reset cleanup', () => {
     syncAutoGearRulesFromStorage(customRules);
     expect(getAutoGearRules().some((rule) => rule.label === 'Custom Reset Rule')).toBe(true);
 
-    setCurrentProjectInfo({ projectName: 'Active project' });
-    projectNameInput.value = 'Active project';
+    setCurrentProjectInfo({ productionCompany: 'Active project' });
 
     setupNameInput.value = 'Main setup';
     const customOption = new Option('Main setup', 'Main setup');
@@ -65,7 +63,6 @@ describe('factory reset cleanup', () => {
     resetPlannerStateAfterFactoryReset();
 
     expect(getCurrentProjectInfo()).toBeNull();
-    expect(projectNameInput.value).toBe('');
     expect(setupNameInput.value).toBe('');
     expect(setupSelect.value).toBe('');
     expect(Array.from(setupSelect.options).some((opt) => opt.value === 'Main setup')).toBe(false);

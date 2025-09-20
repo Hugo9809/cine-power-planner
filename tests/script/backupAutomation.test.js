@@ -116,7 +116,7 @@ describe('automated backups', () => {
 
     const { autoBackup } = loadApp();
 
-    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Epic Shoot' } } };
+    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Main Setup' } } };
     global.loadSetups.mockImplementation(() => setupsStore);
     global.saveSetups.mockImplementation((next) => next);
 
@@ -128,9 +128,6 @@ describe('automated backups', () => {
     setupSelect.appendChild(option);
     setupSelect.value = 'Main Setup';
     setupNameInput.value = 'Main Setup';
-
-    const projectNameInput = document.getElementById('projectName');
-    projectNameInput.value = 'Epic Shoot';
 
     const gearListOutput = document.getElementById('gearListOutput');
     gearListOutput.classList.remove('hidden');
@@ -149,14 +146,14 @@ describe('automated backups', () => {
     expect(projectCalls.length).toBeGreaterThan(0);
     expect(projectCalls[projectCalls.length - 1][1]).toEqual(
       expect.objectContaining({
-        projectInfo: expect.objectContaining({ projectName: 'Epic Shoot' }),
+        projectInfo: expect.objectContaining({ projectName: 'Main Setup' }),
         gearList: expect.stringContaining('Alexa 35'),
       }),
     );
 
     expect(setupsStore[backupKey]).toEqual(
       expect.objectContaining({
-        projectInfo: expect.objectContaining({ projectName: 'Epic Shoot' }),
+        projectInfo: expect.objectContaining({ projectName: 'Main Setup' }),
         gearList: expect.stringContaining('Alexa 35'),
       }),
     );
@@ -169,7 +166,7 @@ describe('automated backups', () => {
 
     const { autoBackup } = loadApp();
 
-    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Epic Shoot' } } };
+    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Main Setup' } } };
     global.loadSetups.mockImplementation(() => setupsStore);
     global.saveSetups.mockImplementation(() => {});
 
