@@ -1787,14 +1787,34 @@ if (storedDevices) {
 }
 unifyDevices(devices);
 
-function getSupportedBatteryPlates(name) {
+function getBatteryPlateSupport(name) {
   const cam = devices.cameras[name];
   if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
-  return cam.power.batteryPlateSupport.map(bp => bp.type);
+  return cam.power.batteryPlateSupport.filter(Boolean);
+}
+
+function getSupportedBatteryPlates(name) {
+  return getBatteryPlateSupport(name)
+    .map(bp => bp.type)
+    .filter(Boolean);
+}
+
+function getAvailableBatteryPlates(name) {
+  const support = getBatteryPlateSupport(name);
+  if (!support.length) return [];
+  const nativeTypes = new Set(
+    support
+      .filter(bp => bp.mount === 'native' && bp.type)
+      .map(bp => bp.type)
+  );
+  if (nativeTypes.size === 1 && nativeTypes.has('B-Mount')) {
+    return ['B-Mount'];
+  }
+  return [...new Set(getSupportedBatteryPlates(name))];
 }
 
 function supportsMountCamera(name, mountType) {
-  return getSupportedBatteryPlates(name).includes(mountType);
+  return getAvailableBatteryPlates(name).includes(mountType);
 }
 
 function supportsBMountCamera(name) {
@@ -1823,7 +1843,7 @@ function getHotswapsByMount(mountType) {
 
 function getSelectedPlate() {
   const camName = cameraSelect.value;
-  const plates = getSupportedBatteryPlates(camName);
+  const plates = getAvailableBatteryPlates(camName);
   if (!plates.length) return null;
   return batteryPlateSelect.value || (plates.includes('V-Mount') ? 'V-Mount' : plates[0]);
 }
@@ -2020,7 +2040,7 @@ function connectionLabel(outType, inType) {
 
 function updateBatteryPlateVisibility() {
   const camName = cameraSelect.value;
-  const plates = getSupportedBatteryPlates(camName);
+  const plates = getAvailableBatteryPlates(camName);
   const current = batteryPlateSelect.value;
   batteryPlateSelect.innerHTML = '';
   if (plates.length) {

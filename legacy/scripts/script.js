@@ -1699,15 +1699,37 @@ if (storedDevices) {
   devices = merged;
 }
 unifyDevices(devices);
-function getSupportedBatteryPlates(name) {
+function getBatteryPlateSupport(name) {
   var cam = devices.cameras[name];
   if (!cam || !cam.power || !Array.isArray(cam.power.batteryPlateSupport)) return [];
-  return cam.power.batteryPlateSupport.map(function (bp) {
-    return bp.type;
-  });
+  return cam.power.batteryPlateSupport.filter(Boolean);
+}
+function getSupportedBatteryPlates(name) {
+  return getBatteryPlateSupport(name)
+    .map(function (bp) {
+      return bp.type;
+    })
+    .filter(Boolean);
+}
+function getAvailableBatteryPlates(name) {
+  var support = getBatteryPlateSupport(name);
+  if (!support.length) return [];
+  var nativeTypes = new Set(
+    support
+      .filter(function (bp) {
+        return bp.mount === 'native' && bp.type;
+      })
+      .map(function (bp) {
+        return bp.type;
+      })
+  );
+  if (nativeTypes.size === 1 && nativeTypes.has('B-Mount')) {
+    return ['B-Mount'];
+  }
+  return Array.from(new Set(getSupportedBatteryPlates(name)));
 }
 function supportsMountCamera(name, mountType) {
-  return getSupportedBatteryPlates(name).includes(mountType);
+  return getAvailableBatteryPlates(name).includes(mountType);
 }
 function supportsBMountCamera(name) {
   return supportsMountCamera(name, 'B-Mount');
@@ -1737,7 +1759,7 @@ function getHotswapsByMount(mountType) {
 }
 function getSelectedPlate() {
   var camName = cameraSelect.value;
-  var plates = getSupportedBatteryPlates(camName);
+  var plates = getAvailableBatteryPlates(camName);
   if (!plates.length) return null;
   return batteryPlateSelect.value || (plates.includes('V-Mount') ? 'V-Mount' : plates[0]);
 }
@@ -1936,7 +1958,7 @@ function connectionLabel(outType, inType) {
 }
 function updateBatteryPlateVisibility() {
   var camName = cameraSelect.value;
-  var plates = getSupportedBatteryPlates(camName);
+  var plates = getAvailableBatteryPlates(camName);
   var current = batteryPlateSelect.value;
   batteryPlateSelect.innerHTML = '';
   if (plates.length) {
