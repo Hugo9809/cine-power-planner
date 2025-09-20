@@ -39,9 +39,29 @@ safe.
   themes, typography controls, custom logos and hover help make the interface
   approachable on set and in prep.
 
+## Core Principles
+
+- **Offline always.** The full application, including icons, legal pages and
+  helper tools, ships in this repository. Open `index.html` from disk or a
+  private intranet and the service worker keeps every locally stored asset in
+  sync so you are never forced online.
+- **No hidden data paths.** Saves, shareable bundles, imports, backups and
+  restores all happen inside the browser. Nothing leaves your machine unless
+  you export it.
+- **Redundant safety nets.** Manual saves, background auto-saves, periodic
+  auto-backups, forced pre-restore backups and human-readable JSON exports work
+  together so user data cannot disappear silently.
+- **Predictable updates.** Refreshes only apply when you trigger them. Cached
+  versions remain available until you approve a **Force reload**, keeping
+  planning sessions stable even when crews stay offline for extended periods.
+- **Consistent presentation.** Locally bundled Uicons, OpenMoji assets and
+  typography files guarantee identical visuals whether you run the planner on a
+  stage workstation or a field laptop with no connectivity.
+
 ## Table of Contents
 
 - [Overview](#overview)
+- [Core Principles](#core-principles)
 - [Translations](#translations)
 - [What’s New](#whats-new)
 - [Quick Start](#quick-start)
@@ -129,11 +149,18 @@ See the language-specific README files for release details in other locales.
 4. Confirm offline operation by loading the planner once, closing the tab,
    disconnecting from the network (or toggling Airplane Mode) and reopening
    `index.html`. The offline indicator in the header should light up briefly
-   while cached files load.
+   while cached files load and the interface should match the last session
+   exactly.
 5. Create a project, add devices from the dropdowns and generate a printable
-   overview or gear list to brief collaborators.
-6. Use **Settings → Backup & Restore → Backup** before closing your first
+   overview or gear list to brief collaborators. Use the runtime dashboard to
+   verify battery expectations before you export.
+6. Visit **Settings → Backup & Restore → Backup** before closing your first
    session so you have a baseline snapshot to compare against future changes.
+   Import that backup into a private browser profile to confirm the restore
+   path works end to end.
+7. Practice exporting a project bundle and re-importing it on another machine
+   or browser profile. Verifying the full save → share → import loop in advance
+   keeps teams confident that no data will be lost when you are offline on set.
 
 ## Everyday Workflow
 
