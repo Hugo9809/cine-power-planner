@@ -1292,11 +1292,21 @@ function setupResponsiveControls() {
   mql.addEventListener('change', relocate);
   relocate();
 }
-if (typeof window !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', function () {
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  var runLayoutInitialization = function runLayoutInitialization() {
     setupSideMenu();
     setupResponsiveControls();
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    var onReady = function onReady() {
+      document.removeEventListener('DOMContentLoaded', onReady);
+      runLayoutInitialization();
+    };
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    runLayoutInitialization();
+  }
 }
 var escapeDiv;
 function escapeHtml(str) {

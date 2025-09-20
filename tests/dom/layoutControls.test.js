@@ -88,6 +88,27 @@ describe('side menu accessibility controls', () => {
   });
 });
 
+describe('side menu automatic initialization', () => {
+  test('toggle opens the menu when the script loads after DOM ready', () => {
+    const env = setupScriptEnvironment({ readyState: 'complete' });
+    try {
+      const toggle = document.getElementById('menuToggle');
+      const menu = document.getElementById('sideMenu');
+
+      expect(toggle).not.toBeNull();
+      expect(menu).not.toBeNull();
+      expect(menu.classList.contains('open')).toBe(false);
+
+      toggle.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+
+      expect(menu.classList.contains('open')).toBe(true);
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    } finally {
+      env?.cleanup();
+    }
+  });
+});
+
 describe('responsive control relocation', () => {
   let env;
   let originalMatchMedia;
