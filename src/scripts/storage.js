@@ -1049,8 +1049,46 @@ function createProjectImporter() {
   };
 }
 
+function tryParseJSONLike(value) {
+  if (typeof value !== "string") {
+    return { success: false, parsed: null };
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return { success: false, parsed: null };
+  }
+
+  const firstChar = trimmed[0];
+  const lastChar = trimmed[trimmed.length - 1];
+  let expectedClosing = null;
+  if (firstChar === "{") {
+    expectedClosing = "}";
+  } else if (firstChar === "[") {
+    expectedClosing = "]";
+  } else if (firstChar === "\"") {
+    expectedClosing = "\"";
+  }
+
+  if (!expectedClosing || lastChar !== expectedClosing) {
+    return { success: false, parsed: null };
+  }
+
+  try {
+    return { success: true, parsed: JSON.parse(trimmed) };
+  } catch (error) {
+    void error;
+    return { success: false, parsed: null };
+  }
+}
+
 function importProjectCollection(collection, ensureImporter, fallbackLabel = "Imported project") {
   if (typeof collection === "string") {
+    const parsed = tryParseJSONLike(collection);
+    if (parsed.success) {
+      return importProjectCollection(parsed.parsed, ensureImporter, fallbackLabel);
+    }
+
     ensureImporter()("", collection);
     return true;
   }
@@ -1491,6 +1529,146 @@ function clearAllData() {
     return SAFE_LOCAL_STORAGE;
   }
 
+function normalizeImportedBoolean(value) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return null;
+    }
+    if (normalized === "true" || normalized === "1" || normalized === "yes" || normalized === "on") {
+      return true;
+    }
+    if (normalized === "false" || normalized === "0" || normalized === "no" || normalized === "off") {
+      return false;
+    }
+    return null;
+  }
+
+  if (typeof value === "number") {
+    if (Number.isNaN(value)) {
+      return null;
+    }
+    return value !== 0;
+  }
+
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i += 1) {
+      const normalized = normalizeImportedBoolean(value[i]);
+      if (normalized !== null) {
+        return normalized;
+      }
+    }
+    return null;
+  }
+
+  if (isPlainObject(value)) {
+    if (Object.prototype.hasOwnProperty.call(value, "value")) {
+      return normalizeImportedBoolean(value.value);
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "enabled")) {
+      return normalizeImportedBoolean(value.enabled);
+    }
+  }
+
+  return null;
+}
+
+function normalizeImportedArray(value, fallbackKeys = [], filterFn = null) {
+  if (Array.isArray(value)) {
+    return filterFn
+      ? value.filter((entry) => filterFn(entry))
+      : value.filter((entry) => entry !== null && entry !== undefined);
+  }
+
+  if (typeof value === "string") {
+    const parsed = tryParseJSONLike(value);
+    if (parsed.success) {
+      return normalizeImportedArray(parsed.parsed, fallbackKeys, filterFn);
+    }
+    return [];
+  }
+
+  if (isPlainObject(value)) {
+    for (let i = 0; i < fallbackKeys.length; i += 1) {
+      const key = fallbackKeys[i];
+      if (!Object.prototype.hasOwnProperty.call(value, key)) {
+        continue;
+      }
+      const extracted = normalizeImportedArray(value[key], fallbackKeys, filterFn);
+      if (extracted.length) {
+        return extracted;
+      }
+    }
+
+    const entries = Object.values(value);
+    if (entries.length) {
+      return filterFn
+        ? entries.filter((entry) => filterFn(entry))
+        : entries.filter((entry) => entry !== null && entry !== undefined);
+    }
+  }
+
+  return [];
+}
+
+function normalizeImportedAutoGearRules(value) {
+  return normalizeImportedArray(
+    value,
+    ["rules", "items", "entries", "list", "values", "data"],
+    (entry) => entry !== null && typeof entry === "object",
+  );
+}
+
+function normalizeImportedAutoGearBackups(value) {
+  return normalizeImportedArray(
+    value,
+    ["backups", "entries", "items", "list", "values", "data"],
+    (entry) => entry !== null && typeof entry === "object",
+  );
+}
+
+function normalizeImportedAutoGearPresets(value) {
+  return normalizeImportedArray(
+    value,
+    ["presets", "entries", "items", "list", "values", "data"],
+    (entry) => entry !== null && typeof entry === "object",
+  );
+}
+
+function normalizeImportedPresetId(value) {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return Number.isNaN(value) ? "" : String(value);
+  }
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i += 1) {
+      const candidate = normalizeImportedPresetId(value[i]);
+      if (candidate) {
+        return candidate;
+      }
+    }
+    return "";
+  }
+  if (isPlainObject(value)) {
+    if (typeof value.id === "string" && value.id) {
+      return value.id;
+    }
+    if (typeof value.value === "string") {
+      return value.value;
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "name")) {
+      return normalizeImportedPresetId(value.name);
+    }
+  }
+  return "";
+}
+
 function importAllData(allData) {
   if (!isPlainObject(allData)) {
     return;
@@ -1555,24 +1733,36 @@ function importAllData(allData) {
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
-    saveAutoGearRules(allData.autoGearRules);
+    const rules = normalizeImportedAutoGearRules(allData.autoGearRules);
+    saveAutoGearRules(rules);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
-    saveAutoGearBackups(allData.autoGearBackups);
+    const backups = normalizeImportedAutoGearBackups(allData.autoGearBackups);
+    saveAutoGearBackups(backups);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
-    saveAutoGearSeedFlag(allData.autoGearSeeded);
+    const flag = normalizeImportedBoolean(allData.autoGearSeeded);
+    if (flag === null) {
+      saveAutoGearSeedFlag(Boolean(allData.autoGearSeeded));
+    } else {
+      saveAutoGearSeedFlag(flag);
+    }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearPresets')) {
-    saveAutoGearPresets(allData.autoGearPresets);
+    const presets = normalizeImportedAutoGearPresets(allData.autoGearPresets);
+    saveAutoGearPresets(presets);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearActivePresetId')) {
-    saveAutoGearActivePresetId(
-      typeof allData.autoGearActivePresetId === 'string' ? allData.autoGearActivePresetId : ''
-    );
+    const presetId = normalizeImportedPresetId(allData.autoGearActivePresetId);
+    saveAutoGearActivePresetId(typeof presetId === 'string' ? presetId : '');
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearShowBackups')) {
-    saveAutoGearBackupVisibility(Boolean(allData.autoGearShowBackups));
+    const visibility = normalizeImportedBoolean(allData.autoGearShowBackups);
+    if (visibility === null) {
+      saveAutoGearBackupVisibility(Boolean(allData.autoGearShowBackups));
+    } else {
+      saveAutoGearBackupVisibility(visibility);
+    }
   }
 
   let importProjectEntry = null;
