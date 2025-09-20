@@ -64,6 +64,77 @@ const autoGearBackupDateFormatter =
     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
     : null;
 
+const structuredCloneFn =
+  typeof globalThis === 'object' && typeof globalThis.structuredClone === 'function'
+    ? globalThis.structuredClone
+    : null;
+
+let warnedAboutStructuredCloneFallback = false;
+
+function normalizeCloneForJsonSemantics(value, parentIsArray = false) {
+  if (value === null) return null;
+  const valueType = typeof value;
+  if (valueType === 'undefined') {
+    return parentIsArray ? null : undefined;
+  }
+  if (valueType === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (valueType === 'bigint') {
+    throw new TypeError('Cannot clone BigInt values');
+  }
+  if (valueType === 'function' || valueType === 'symbol') {
+    return parentIsArray ? null : undefined;
+  }
+  if (valueType !== 'object') {
+    return value;
+  }
+  if (value instanceof Date) {
+    return value.toJSON();
+  }
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i += 1) {
+      const normalized = normalizeCloneForJsonSemantics(value[i], true);
+      value[i] = normalized === undefined ? null : normalized;
+    }
+    return value;
+  }
+  const proto = Object.getPrototypeOf(value);
+  if (proto !== Object.prototype && proto !== null) {
+    // Fall back to JSON semantics for objects with custom prototypes.
+    throw new TypeError('Unsupported object prototype for deep cloning');
+  }
+  const keys = Object.keys(value);
+  for (const key of keys) {
+    const normalized = normalizeCloneForJsonSemantics(value[key], false);
+    if (normalized === undefined) {
+      delete value[key];
+    } else {
+      value[key] = normalized;
+    }
+  }
+  return value;
+}
+
+function deepClone(value) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+  if (structuredCloneFn) {
+    try {
+      const cloned = structuredCloneFn(value);
+      return normalizeCloneForJsonSemantics(cloned);
+    } catch (error) {
+      if (!warnedAboutStructuredCloneFallback) {
+        console.warn('structuredClone failed, falling back to JSON cloning', error);
+        warnedAboutStructuredCloneFallback = true;
+      }
+    }
+  }
+  const jsonClone = JSON.parse(JSON.stringify(value));
+  return jsonClone;
+}
+
 const schemaStorage = (() => {
   if (typeof window === 'undefined') return null;
   try {
@@ -1540,7 +1611,7 @@ function unifyDevices(devicesData) {
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
 // "already declared" errors if the script is loaded multiple times.
 if (window.defaultDevices === undefined) {
-  window.defaultDevices = JSON.parse(JSON.stringify(devices));
+  window.defaultDevices = deepClone(devices);
   unifyDevices(window.defaultDevices);
 }
 
@@ -1549,7 +1620,7 @@ let storedDevices = loadDeviceData();
 if (storedDevices) {
   // Merge stored devices with the defaults so that categories missing
   // from saved data (e.g. FIZ) fall back to the built-in definitions.
-  const merged = JSON.parse(JSON.stringify(window.defaultDevices));
+  const merged = deepClone(window.defaultDevices);
   for (const [key, value] of Object.entries(storedDevices)) {
     if (key === 'fiz' && value && typeof value === 'object') {
       merged.fiz = merged.fiz || {};
@@ -5037,7 +5108,7 @@ let lastSharedAutoGearRules = null;
 function cloneSharedImportValue(value) {
   if (value == null) return null;
   try {
-    return JSON.parse(JSON.stringify(value));
+    return deepClone(value);
   } catch (error) {
     console.warn('Failed to clone shared import value', error);
     return null;
@@ -13457,7 +13528,7 @@ function renderSetupDiagram() {
     }
   }
 
-  lastDiagramPositions = JSON.parse(JSON.stringify(pos));
+  lastDiagramPositions = deepClone(pos);
 
   attachDiagramPopups(nodeMap);
 
