@@ -3968,7 +3968,7 @@ const ICON_GLYPHS = Object.freeze({
   feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG, className: 'icon-svg' }),
   resetView: Object.freeze({ markup: RESET_VIEW_ICON_SVG, className: 'icon-svg' }),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
-  sun: iconGlyph('\uF1F7', ICON_FONT_KEYS.UICONS),
+  sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
   circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
   star: Object.freeze({
