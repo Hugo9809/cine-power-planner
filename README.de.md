@@ -4,6 +4,48 @@ Dieses browserbasierte Werkzeug hilft dir bei der Planung professioneller Kamera
 
 Sämtliche Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheinstellungen, Projekte, eigene Geräte, Favoriten und Laufzeit-Feedback werden im Browser gespeichert, und Service-Worker-Updates stammen direkt aus diesem Repository. Du kannst Cine Power Planner offline von der lokalen Festplatte öffnen oder intern hosten, damit jede Abteilung dieselbe geprüfte Version nutzt.
 
+## Auf einen Blick
+
+- **Netzwerkfrei planen.** Alle Symbole, Schriften und Hilfsskripte liegen in diesem Repository, sodass du `index.html` direkt
+  öffnen und offline arbeiten kannst.
+- **Projekte bleiben lokal.** Speicherstände, Laufzeit-Feedback, eigene Geräte, Favoriten und Gerätelisten bleiben auf dem
+  Gerät; Backups und teilbare Bundles sind menschenlesbare JSON-Dateien.
+- **Updates bewusst steuern.** Der Service Worker aktualisiert sich erst, nachdem du **Neu laden erzwingen** gedrückt hast –
+  ideal für Reisen und Drehs mit wenig Verbindung.
+- **Mehrstufige Sicherheitsnetze.** Manuelle Speicherungen, Auto-Saves und automatisch erzeugte Zeitstempel-Backups erleichtern
+  Wiederherstellungsproben vor dem Dreh.
+
+## Schnellstart
+
+1. Lade das Repository herunter oder klone es und öffne `index.html` in einem modernen Browser.
+2. (Optional) Stelle den Ordner lokal bereit (zum Beispiel mit `npx http-server` oder `python -m http.server`), damit sich der
+   Service Worker registriert und Assets für den Offline-Betrieb zwischenspeichert.
+3. Lade den Planner einmal, schließe den Tab, trenne die Verbindung und öffne `index.html` erneut. Das Offline-Badge sollte
+   kurz aufleuchten, während das zwischengespeicherte Interface lädt.
+4. Lege ein Projekt an, drücke **Enter** (oder **Strg+S**/`⌘S`) zum Speichern und beobachte das automatische Backup, das nach
+   wenigen Minuten im Projektmenü erscheint.
+5. Exportiere **Einstellungen → Backup & Wiederherstellung → Backup**, importiere die Datei in einem privaten Browserprofil und
+   prüfe, ob Projekte, Favoriten und eigene Geräte vollständig zurückkehren.
+6. Übe den Export einer `.cpproject`-Datei und den Import auf einem zweiten Gerät oder Profil, damit die Kette Speichern →
+   Teilen → Importieren vor dem Set-Einsatz geprüft ist.
+
+## Zentrale Arbeitsabläufe
+
+- **Rig planen.** Kombiniere Kameras, Platten, Funkstrecken, Monitore, Motoren und Zubehör, während Verbrauchs- und Laufzeitwerte
+  sofort mitlaufen.
+- **Versionen sichern.** Halte Projekte bewusst fest und lass automatisch Zeitstempel-Backups alle zehn Minuten entstehen.
+- **Sicher teilen.** Exportiere `.cpproject`-Bundles, die offline bleiben, beim Import validiert werden und auf Wunsch automatische
+  Gear-Regeln enthalten.
+- **Alles sichern.** Vollständige Planner-Backups beinhalten Projekte, Favoriten, eigene Geräte, Laufzeitdaten und UI-Präferenzen,
+  damit kein Kontext verloren geht.
+
+## Datensicherheit im Offline-Betrieb
+
+- Prüfe regelmäßig die Offline-Bereitschaft: Anwendung laden, Verbindung trennen, aktualisieren und sicherstellen, dass Projekte
+  erreichbar bleiben.
+- Bewahre redundante Backups auf beschrifteten Datenträgern auf und importiere sie nach jedem Export in einem zweiten Profil.
+- Erstelle vor Updates oder größeren Datenänderungen ein manuelles Backup und teste die Wiederherstellung.
+
 ---
 
 ## 🌍 Sprachen

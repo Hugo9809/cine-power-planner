@@ -8,6 +8,48 @@ browser, and service worker updates are driven directly by this repository. Run
 the planner offline from disk or host it internally so every department uses the
 same audited version.
 
+## At a glance
+
+- **Plan without a network.** Every icon, font and helper script ships inside this repository so you can open `index.html`
+  directly and work offline.
+- **Keep projects on-device.** Saves, runtime feedback, custom devices, favorites and gear lists remain local; backups and
+  shareable bundles are human-readable JSON.
+- **Stay in control of updates.** The service worker only refreshes after you press **Force reload**, keeping crews on a trusted
+  build during travel.
+- **Rely on layered safety nets.** Manual saves, auto-saves and timestamped auto-backups make it easy to rehearse recovery before
+  a shoot.
+
+## Quick start
+
+1. Download or clone the repository and open `index.html` in a modern browser.
+2. (Optional) Serve the folder locally (for example with `npx http-server` or `python -m http.server`) so the service worker
+   registers and caches assets for offline use.
+3. Load the planner once, close the tab, go offline and reopen `index.html`. The offline badge should flash briefly while the
+   cached interface loads.
+4. Create a project, press **Enter** (or **Ctrl+S**/`⌘S`) to save and watch for the automatic backup that appears after a few
+   minutes.
+5. Export **Settings → Backup & Restore → Backup**, import the file in a private browser profile and confirm every project,
+   favorite and custom device restores correctly.
+6. Practice exporting a `.cpproject` bundle and importing it on another machine or profile so the save → share → import loop is
+   proven before you arrive on set.
+
+## Core workflows
+
+- **Plan a rig.** Combine cameras, plates, wireless links, monitors, motors and accessories while watching draw calculations and
+  runtime estimates update instantly.
+- **Save versions.** Maintain explicit project snapshots and let timestamped auto-backups capture in-progress work every 10
+  minutes.
+- **Share securely.** Export `.cpproject` bundles that stay offline, validate schema on import and optionally include automatic
+  gear rules.
+- **Back up everything.** Full planner backups include projects, favorites, custom devices, runtime data and UI preferences so no
+  context is lost.
+
+## Protecting data offline
+
+- Verify offline readiness regularly: load the app, disconnect, refresh and confirm your projects stay accessible.
+- Keep redundant backups on labelled storage and re-import them in a secondary profile after every export.
+- Before applying updates or major data edits, capture a manual backup and confirm it restores cleanly.
+
 ---
 
 ## 🌍 Languages

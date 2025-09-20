@@ -4,6 +4,49 @@ Questo strumento basato sul browser ti aiuta a pianificare progetti camera profe
 
 Tutta la pianificazione, gli input e gli export restano sul dispositivo davanti a te. Lingua, progetti, dispositivi personalizzati, preferiti e feedback sulle autonomie vivono nel browser, e gli aggiornamenti del service worker arrivano direttamente da questo repository. Avvia Cine Power Planner offline dal disco o ospitalo internamente così che ogni reparto utilizzi la stessa versione verificata.
 
+## A colpo d'occhio
+
+- **Pianifica senza rete.** Tutte le icone, i font e gli script ausiliari sono inclusi in questo repository; apri `index.html`
+  direttamente e lavora offline.
+- **I progetti restano sul dispositivo.** Salvataggi, feedback sulle autonomie, attrezzature personalizzate, preferiti e liste
+  di attrezzatura restano locali; backup e pacchetti condivisibili sono file JSON leggibili.
+- **Controlla gli aggiornamenti.** Il service worker si aggiorna solo dopo aver premuto **Forza ricarica**, mantenendo la
+  produzione su una versione affidabile durante gli spostamenti.
+- **Rete di sicurezza a più livelli.** Salvataggi manuali, auto-save e backup automatici con timestamp rendono semplice provare
+  il ripristino prima delle riprese.
+
+## Avvio rapido
+
+1. Scarica o clona il repository e apri `index.html` in un browser moderno.
+2. (Opzionale) Servi la cartella in locale (ad esempio con `npx http-server` o `python -m http.server`) così il service worker
+   si registra e memorizza nella cache le risorse per l'uso offline.
+3. Carica il planner una volta, chiudi la scheda, disconnettiti dalla rete e riapri `index.html`. L'indicatore offline dovrebbe
+   lampeggiare brevemente mentre viene caricata l'interfaccia in cache.
+4. Crea un progetto, premi **Invio** (o **Ctrl+S**/`⌘S`) per salvare e controlla il backup automatico che appare nel selettore
+   dopo qualche minuto.
+5. Esporta **Impostazioni → Backup e ripristino → Backup**, importa il file in un profilo privato del browser e verifica che
+   progetti, preferiti e attrezzature personalizzate si ripristinino correttamente.
+6. Esercitati a esportare un pacchetto `.cpproject` e a importarlo su un'altra macchina o profilo per validare la catena salvataggio →
+   condivisione → importazione prima di arrivare sul set.
+
+## Flussi di lavoro principali
+
+- **Pianificare un rig.** Combina camere, piastre, collegamenti wireless, monitor, motori e accessori osservando aggiornarsi
+  all'istante consumi e stime di autonomia.
+- **Salvare versioni.** Mantieni istantanee esplicite dei progetti e lascia che backup automatici con timestamp catturino il
+  lavoro in corso ogni 10 minuti.
+- **Condividere in sicurezza.** Esporta pacchetti `.cpproject` che restano offline, convalidano lo schema in import e possono
+  includere regole automatiche per l'attrezzatura.
+- **Eseguire backup completi.** I backup del planner includono progetti, preferiti, attrezzature personalizzate, dati sulle
+  autonomie e preferenze dell'interfaccia in modo da non perdere contesto.
+
+## Proteggere i dati offline
+
+- Verifica regolarmente la prontezza offline: carica l'applicazione, disconnettiti, aggiorna e assicurati che i progetti restino
+  accessibili.
+- Conserva copie ridondanti su supporti etichettati e importale in un secondo profilo dopo ogni esportazione.
+- Prima di applicare aggiornamenti o modifiche importanti ai dati, crea un backup manuale e assicurati che il ripristino sia pulito.
+
 ---
 
 ## 🌍 Lingue

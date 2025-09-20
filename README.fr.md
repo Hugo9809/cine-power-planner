@@ -4,6 +4,49 @@ Cet outil basé sur le navigateur aide à planifier des projets caméra professi
 
 L’ensemble de la planification, des saisies et des exports reste sur votre appareil. La langue, les projets, les appareils personnalisés, les favoris et les retours d’autonomie sont stockés dans votre navigateur, et les mises à jour du service worker proviennent directement de ce dépôt. Lancez Cine Power Planner hors ligne depuis le disque ou hébergez-le en interne pour que chaque département exploite la même version auditée.
 
+## En bref
+
+- **Planifiez sans réseau.** Toutes les icônes, polices et scripts d’assistance sont fournis dans ce dépôt ; ouvrez simplement
+  `index.html` pour travailler hors ligne.
+- **Les projets restent sur l’appareil.** Sauvegardes, retours d’autonomie, appareils personnalisés, favoris et listes de
+  matériel demeurent locaux ; les sauvegardes et paquets partageables sont des JSON lisibles.
+- **Gardez la main sur les mises à jour.** Le service worker ne se met à jour qu’après avoir cliqué sur **Forcer le rechargement**,
+  maintenant l’équipe sur une version fiable en déplacement.
+- **Filets de sécurité en cascade.** Sauvegardes manuelles, enregistrements automatiques et copies horodatées facilitent les
+  exercices de restauration avant le tournage.
+
+## Démarrage rapide
+
+1. Téléchargez ou clonez le dépôt et ouvrez `index.html` dans un navigateur moderne.
+2. (Optionnel) Servez le dossier en local (par exemple avec `npx http-server` ou `python -m http.server`) pour que le service
+   worker s’enregistre et mette en cache les ressources pour l’usage hors ligne.
+3. Chargez le planner une fois, fermez l’onglet, coupez la connexion et rouvrez `index.html`. L’indicateur hors ligne doit
+   clignoter brièvement pendant le chargement de l’interface en cache.
+4. Créez un projet, appuyez sur **Entrée** (ou **Ctrl+S**/`⌘S`) pour sauvegarder et surveillez la sauvegarde automatique qui
+   apparaît dans le sélecteur après quelques minutes.
+5. Exportez **Paramètres → Sauvegarde & Restauration → Sauvegarder**, importez le fichier dans un profil de navigation privé et
+   confirmez que projets, favoris et appareils personnalisés se restaurent correctement.
+6. Entraînez-vous à exporter un paquet `.cpproject` et à l’importer sur un autre appareil ou profil pour valider la chaîne
+   sauvegarde → partage → import avant d’arriver sur le plateau.
+
+## Flux de travail essentiels
+
+- **Planifier un rig.** Combinez caméras, plaques, liaisons sans fil, moniteurs, moteurs et accessoires tout en suivant en temps
+  réel la consommation et les estimations d’autonomie.
+- **Sauvegarder des versions.** Conservez des instantanés explicites et laissez les sauvegardes automatiques horodatées capturer
+  le travail en cours toutes les 10 minutes.
+- **Partager en toute sécurité.** Exportez des paquets `.cpproject` hors ligne qui valident le schéma à l’import et peuvent inclure
+  des règles automatiques de matériel.
+- **Sauvegarder l’ensemble.** Les sauvegardes complètes incluent projets, favoris, appareils personnalisés, données d’autonomie
+  et préférences d’interface pour ne perdre aucun contexte.
+
+## Protéger les données hors ligne
+
+- Vérifiez régulièrement la préparation hors ligne : chargez l’application, coupez la connexion, actualisez et assurez-vous que
+  vos projets restent accessibles.
+- Conservez des sauvegardes redondantes sur des supports étiquetés et réimportez-les dans un deuxième profil après chaque export.
+- Avant toute mise à jour ou modification importante, créez une sauvegarde manuelle et vérifiez que la restauration est propre.
+
 ---
 
 ## 🌍 Langues
