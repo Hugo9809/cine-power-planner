@@ -1869,7 +1869,6 @@ body.pink-mode .auto-gear-rule-title,
   }
 }
 
-#featureSearchClear .icon-glyph,
 #helpSearchClear .icon-glyph,
 .clear-input-btn .icon-glyph,
 .controls button .icon-glyph {
@@ -2561,7 +2560,6 @@ body.pink-mode #topBar #logo .logo-center {
 }
 
 #featureSearchContainer {
-  position: relative;
   width: 100%;
   max-width: 300px;
 }
@@ -2569,32 +2567,8 @@ body.pink-mode #topBar #logo .logo-center {
 #featureSearch {
   width: 100%;
   max-width: 300px;
-  padding: 2px 2em 2px 6px;
+  padding: 2px 10px 2px 6px;
   height: var(--button-size);
-}
-
-#featureSearchClear {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  margin: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: var(--font-size-base);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--button-size);
-  height: var(--button-size);
-  padding: 0;
-  line-height: 1;
-  color: inherit;
-}
-
-#featureSearchClear[hidden] {
-  display: none;
 }
 
 .controls select,

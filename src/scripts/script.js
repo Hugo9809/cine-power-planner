@@ -3651,14 +3651,6 @@ function setLanguage(lang) {
       texts[lang].featureSearchHelp || texts[lang].featureSearchLabel
     );
   }
-  if (featureSearchClear) {
-    featureSearchClear.setAttribute("title", texts[lang].featureSearchClear);
-    featureSearchClear.setAttribute("aria-label", texts[lang].featureSearchClear);
-    featureSearchClear.setAttribute(
-      "data-help",
-      texts[lang].featureSearchClearHelp || texts[lang].featureSearchClear
-    );
-  }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
@@ -8778,7 +8770,6 @@ const supportLink = document.getElementById("supportLink");
 const settingsSave    = document.getElementById("settingsSave");
 const settingsCancel  = document.getElementById("settingsCancel");
 const featureSearch   = document.getElementById("featureSearch");
-const featureSearchClear = document.getElementById("featureSearchClear");
 const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
 const normalizeSearchValue = value =>
@@ -22529,41 +22520,17 @@ if (helpButton && helpDialog) {
     featureSearch.addEventListener('input', () => {
       updateFeatureSearchSuggestions(featureSearch.value);
       featureSearch.showPicker?.();
-      if (featureSearchClear) {
-        if (featureSearch.value) {
-          featureSearchClear.removeAttribute('hidden');
-        } else {
-          featureSearchClear.setAttribute('hidden', '');
-        }
-      }
     });
     featureSearch.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         handle();
       } else if (e.key === 'Escape' && featureSearch.value) {
         featureSearch.value = '';
-        if (featureSearchClear) {
-          featureSearchClear.setAttribute('hidden', '');
-        }
         restoreFeatureSearchDefaults();
+        featureSearch.showPicker?.();
         e.preventDefault();
       }
     });
-  }
-
-  if (featureSearchClear) {
-    featureSearchClear.addEventListener('click', () => {
-      if (featureSearch) {
-        featureSearch.value = '';
-        featureSearchClear.setAttribute('hidden', '');
-        focusFeatureSearchInput();
-        restoreFeatureSearchDefaults();
-        featureSearch.showPicker?.();
-      }
-    });
-    if (featureSearch && featureSearch.value) {
-      featureSearchClear.removeAttribute('hidden');
-    }
   }
 
   // Wire up button clicks and search field interactions
@@ -23623,7 +23590,6 @@ if (typeof module !== "undefined" && module.exports) {
       featureSearchEntries,
       featureSearchDefaultOptions,
       featureSearchInput: featureSearch,
-      featureSearchClearButton: featureSearchClear,
       featureListElement: featureList,
       restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions,
