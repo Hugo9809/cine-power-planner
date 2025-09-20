@@ -3612,7 +3612,7 @@ function setLanguage(lang) {
   setButtonLabelWithIcon(
     document.getElementById("generateGearListBtn"),
     texts[lang].generateGearListBtn,
-    ICON_GLYPHS.gears
+    ICON_GLYPHS.gearList
   );
   setButtonLabelWithIcon(
     document.getElementById("shareSetupBtn"),
@@ -4174,6 +4174,7 @@ const ICON_GLYPHS = Object.freeze({
   audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
   note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
   overview: iconGlyph('\uF1F5', ICON_FONT_KEYS.UICONS),
+  gearList: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
   feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG, className: 'icon-svg' }),
   resetView: Object.freeze({ markup: RESET_VIEW_ICON_SVG, className: 'icon-svg' }),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
@@ -20965,6 +20966,7 @@ async function clearCachesAndReload() {
         const { location } = window;
         const hasReplace = location && typeof location.replace === 'function';
         const hasReload = location && typeof location.reload === 'function';
+        let navigationTriggered = false;
         if (hasReplace) {
           const paramName = 'forceReload';
           const timestamp = Date.now().toString(36);
@@ -20985,9 +20987,9 @@ async function clearCachesAndReload() {
             href += '?' + paramName + '=' + timestamp;
           }
           location.replace(href + hash);
-          return;
+          navigationTriggered = true;
         }
-        if (hasReload) {
+        if (!navigationTriggered && hasReload) {
           location.reload();
         }
       }
