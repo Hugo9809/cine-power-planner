@@ -178,6 +178,57 @@
     }
   }
 
+  function isSyntaxErrorEvent(event) {
+    if (!event) {
+      return false;
+    }
+
+    var error = event;
+    if (typeof event === 'object' && event !== null) {
+      if (event.error && typeof event.error === 'object') {
+        error = event.error;
+      }
+    }
+
+    if (error && typeof error.name === 'string' && error.name === 'SyntaxError') {
+      return true;
+    }
+
+    if (typeof SyntaxError !== 'undefined' && error instanceof SyntaxError) {
+      return true;
+    }
+
+    var message = '';
+    if (event && typeof event.message === 'string' && event.message) {
+      message = event.message;
+    } else if (error && typeof error.message === 'string' && error.message) {
+      message = error.message;
+    }
+
+    if (!message) {
+      return false;
+    }
+
+    var lower = message.toLowerCase();
+    if (lower.indexOf('unexpected token') !== -1) {
+      return true;
+    }
+    if (lower.indexOf('unexpected character') !== -1) {
+      return true;
+    }
+    if (lower.indexOf('cannot use optional chaining') !== -1) {
+      return true;
+    }
+    if (lower.indexOf('invalid or unexpected token') !== -1) {
+      return true;
+    }
+    if (lower.indexOf('failed to parse module') !== -1) {
+      return true;
+    }
+
+    return false;
+  }
+
   function supportsModernFeatures(callback) {
     var cb = typeof callback === 'function' ? callback : function () {};
 
@@ -249,10 +300,24 @@
     optionalCheckScript.src = 'src/scripts/modern-support-check.mjs';
     optionalCheckScript.onload = function () {
       var supported = !!(globalScope && globalScope[OPTIONAL_CHAINING_FLAG]);
+      if (!supported) {
+        supported = true;
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Modern support check module loaded without reporting support flag. Assuming modern feature support.');
+        }
+      }
       finalize(supported);
     };
-    optionalCheckScript.onerror = function () {
-      finalize(false);
+    optionalCheckScript.onerror = function (event) {
+      var supported = !isSyntaxErrorEvent(event);
+      if (!supported) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Modern support check failed due to syntax error. Falling back to legacy bundle.', event);
+        }
+      } else if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Modern support check could not be loaded. Assuming modern feature support.', event);
+      }
+      finalize(supported);
     };
 
     try {
@@ -261,7 +326,7 @@
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Unable to append modern support check script.', appendError);
       }
-      finalize(false);
+      finalize(true);
     }
   }
 
