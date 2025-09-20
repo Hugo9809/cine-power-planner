@@ -19707,8 +19707,37 @@ if (restoreSettings && restoreSettingsInput) {
   restoreSettingsInput.addEventListener('change', () => {
     const file = restoreSettingsInput.files[0];
     if (!file) return;
-    createSettingsBackup();
+
+    const langTexts = texts[currentLang] || {};
+    const fallbackTexts = texts.en || {};
+
+    let backupFileName = null;
+    try {
+      backupFileName = createSettingsBackup(false, new Date());
+    } catch (error) {
+      console.error('Backup before restore failed', error);
+    }
+
+    if (!backupFileName) {
+      const failureMessage = langTexts.restoreBackupFailed
+        || fallbackTexts.restoreBackupFailed
+        || 'Backup failed. Restore cancelled.';
+      showNotification('error', failureMessage);
+      alert(failureMessage);
+      restoreSettingsInput.value = '';
+      return;
+    }
+
+    showNotification('success', 'Full app backup downloaded');
+
     const reader = new FileReader();
+    const resetInput = () => {
+      try {
+        restoreSettingsInput.value = '';
+      } catch (resetError) {
+        void resetError;
+      }
+    };
     reader.onload = e => {
       try {
         const parsed = JSON.parse(e.target.result);
@@ -19777,6 +19806,11 @@ if (restoreSettings && restoreSettingsInput) {
       } catch (err) {
         console.warn('Restore failed', err);
       }
+      resetInput();
+    };
+    reader.onerror = err => {
+      console.warn('Failed to read restore file', err);
+      resetInput();
     };
     reader.readAsText(file);
   });
