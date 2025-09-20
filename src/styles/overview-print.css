@@ -175,7 +175,8 @@ p {
 .print-btn,
 .back-btn,
 .favorite-toggle,
-.overview-actions {
+.overview-actions,
+.overview-gear-actions {
   display: none !important;
 }
 
