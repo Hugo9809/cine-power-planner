@@ -642,6 +642,14 @@ describe('automatic gear storage', () => {
     expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
     expect(loadAutoGearAutoPresetId()).toBe('');
   });
+
+  test('loadAutoGearAutoPresetId migrates legacy key prefix', () => {
+    localStorage.setItem('cinePowerPlanner_autoGearAutoPreset', 'legacy-auto');
+
+    expect(loadAutoGearAutoPresetId()).toBe('legacy-auto');
+    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBe('legacy-auto');
+    expect(localStorage.getItem('cinePowerPlanner_autoGearAutoPreset')).toBeNull();
+  });
 });
 
 describe('clearAllData', () => {
