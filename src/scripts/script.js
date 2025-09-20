@@ -1277,11 +1277,21 @@ function setupResponsiveControls() {
   relocate();
 }
 
-if (typeof window !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    setupSideMenu();
-    setupResponsiveControls();
-  });
+function initializeLayoutControls() {
+  setupSideMenu();
+  setupResponsiveControls();
+}
+
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  const runLayoutInitialization = () => {
+    initializeLayoutControls();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runLayoutInitialization, { once: true });
+  } else {
+    runLayoutInitialization();
+  }
 }
 
 /**
