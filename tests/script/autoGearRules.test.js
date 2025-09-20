@@ -533,6 +533,39 @@ describe('applyAutoGearRulesToTableHtml', () => {
     );
   });
 
+  test('supports signed quick entries when adding automatic gear items', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
+    if (firstSelectable) firstSelectable.selected = true;
+
+    const ruleNameInput = document.getElementById('autoGearRuleName');
+    ruleNameInput.value = 'Signed quick entries';
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = 'Monitoring';
+
+    const addNameInput = document.getElementById('autoGearAddName');
+    addNameInput.value = '+Director handheld monitor;-Obsolete director monitor';
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+
+    document.getElementById('autoGearSaveRule').click();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const savedRule = stored.find(rule => rule.label === 'Signed quick entries');
+    expect(savedRule).toBeDefined();
+    expect(savedRule.add).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: 'Director handheld monitor', category: 'Monitoring' })
+    ]));
+    expect(savedRule.remove).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: 'Obsolete director monitor', category: 'Monitoring' })
+    ]));
+  });
+
   test('allows creating a mattebox-only automatic gear rule', () => {
     env = setupScriptEnvironment();
 
@@ -567,6 +600,77 @@ describe('applyAutoGearRulesToTableHtml', () => {
           viewfinderExtension: [],
           videoDistribution: [],
         })
+      ])
+    );
+  });
+
+  test('adds screen size, selector and notes details to applied gear items', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    const matteboxSelect = document.getElementById('autoGearMattebox');
+    const matteboxOption = Array.from(matteboxSelect.options).find(opt => opt.value);
+    const matteboxValue = matteboxOption ? matteboxOption.value : '';
+    if (matteboxOption) matteboxOption.selected = true;
+
+    const ruleNameInput = document.getElementById('autoGearRuleName');
+    ruleNameInput.value = 'Monitor package';
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = 'Monitoring';
+    document.getElementById('autoGearAddName').value = 'Director monitor station';
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddScreenSize').value = '17"';
+    document.getElementById('autoGearAddSelectorType').value = 'monitor';
+    document.getElementById('autoGearAddSelectorDefault').value = 'SmallHD Ultra 7';
+    document.getElementById('autoGearAddSelectorInclude').checked = true;
+    document.getElementById('autoGearAddNotes').value = 'incl. Directors cage';
+
+    document.getElementById('autoGearAddItemButton').click();
+    document.getElementById('autoGearSaveRule').click();
+
+    const storedRules = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const savedRule = storedRules.find(rule => rule.label === 'Monitor package');
+    expect(savedRule).toBeDefined();
+    if (!savedRule) return;
+    expect(savedRule.mattebox).toEqual(expect.arrayContaining([matteboxValue]));
+    expect(savedRule.add).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        name: 'Director monitor station',
+        category: 'Monitoring',
+        screenSize: '17"',
+        selectorType: 'monitor',
+        selectorDefault: 'SmallHD Ultra 7',
+        selectorEnabled: true,
+        notes: 'incl. Directors cage'
+      })
+    ]));
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Monitoring</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { mattebox: matteboxValue });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entry = container.querySelector('[data-gear-name="Director monitor station"]');
+    expect(entry).not.toBeNull();
+    expect(entry.textContent).toContain('17"');
+    expect(entry.textContent).toContain('incl. Directors cage');
+    const select = entry.querySelector('select');
+    expect(select).not.toBeNull();
+    expect(select.value).toBe('SmallHD Ultra 7');
+    expect(Array.from(select.options || [])).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ value: 'SmallHD Ultra 7' })
       ])
     );
   });

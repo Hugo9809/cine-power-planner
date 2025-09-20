@@ -854,6 +854,30 @@
                   <label for="autoGearAddQuantity" id="autoGearAddQuantityLabel">Qty</label>
                   <input type="number" id="autoGearAddQuantity" min="1" value="1" />
                 </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearAddScreenSize" id="autoGearAddScreenSizeLabel">Screen size</label>
+                  <input type="text" id="autoGearAddScreenSize" inputmode="decimal" />
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearAddSelectorType" id="autoGearAddSelectorTypeLabel">Selector</label>
+                  <select id="autoGearAddSelectorType">
+                    <option value="none">No selector</option>
+                    <option value="monitor">Monitor selector</option>
+                    <option value="directorMonitor">Director monitor selector</option>
+                  </select>
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearAddSelectorDefault" id="autoGearAddSelectorDefaultLabel">Default item</label>
+                  <input type="text" id="autoGearAddSelectorDefault" list="autoGearMonitorCatalog" />
+                </div>
+                <div class="auto-gear-field auto-gear-checkbox-field">
+                  <input type="checkbox" id="autoGearAddSelectorInclude" />
+                  <label for="autoGearAddSelectorInclude" id="autoGearAddSelectorIncludeLabel">Include selector</label>
+                </div>
+                <div class="auto-gear-field auto-gear-notes-field">
+                  <label for="autoGearAddNotes" id="autoGearAddNotesLabel">Notes</label>
+                  <textarea id="autoGearAddNotes" rows="2"></textarea>
+                </div>
                 <button type="button" id="autoGearAddItemButton">Add item</button>
               </div>
               <ul id="autoGearAddList" class="auto-gear-item-list"></ul>
@@ -873,6 +897,30 @@
                   <label for="autoGearRemoveQuantity" id="autoGearRemoveQuantityLabel">Qty</label>
                   <input type="number" id="autoGearRemoveQuantity" min="1" value="1" />
                 </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearRemoveScreenSize" id="autoGearRemoveScreenSizeLabel">Screen size</label>
+                  <input type="text" id="autoGearRemoveScreenSize" inputmode="decimal" />
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearRemoveSelectorType" id="autoGearRemoveSelectorTypeLabel">Selector</label>
+                  <select id="autoGearRemoveSelectorType">
+                    <option value="none">No selector</option>
+                    <option value="monitor">Monitor selector</option>
+                    <option value="directorMonitor">Director monitor selector</option>
+                  </select>
+                </div>
+                <div class="auto-gear-field">
+                  <label for="autoGearRemoveSelectorDefault" id="autoGearRemoveSelectorDefaultLabel">Default item</label>
+                  <input type="text" id="autoGearRemoveSelectorDefault" list="autoGearMonitorCatalog" />
+                </div>
+                <div class="auto-gear-field auto-gear-checkbox-field">
+                  <input type="checkbox" id="autoGearRemoveSelectorInclude" />
+                  <label for="autoGearRemoveSelectorInclude" id="autoGearRemoveSelectorIncludeLabel">Include selector</label>
+                </div>
+                <div class="auto-gear-field auto-gear-notes-field">
+                  <label for="autoGearRemoveNotes" id="autoGearRemoveNotesLabel">Notes</label>
+                  <textarea id="autoGearRemoveNotes" rows="2"></textarea>
+                </div>
                 <button type="button" id="autoGearRemoveItemButton">Add removal</button>
               </div>
               <ul id="autoGearRemoveList" class="auto-gear-item-list"></ul>
@@ -884,6 +932,7 @@
           </div>
         </div>
         <datalist id="autoGearItemCatalog"></datalist>
+        <datalist id="autoGearMonitorCatalog"></datalist>
       </section>
       <section class="settings-section" aria-labelledby="accessibilityHeading">
         <h3 id="accessibilityHeading">Accessibility</h3>
