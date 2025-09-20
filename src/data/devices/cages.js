@@ -36,6 +36,9 @@ const cageData = {
     "material": "aluminum alloy",
     "weight_g": 300,
     "kNumber": "2203B",
+    "rodStandard": [
+      "15mm LWS"
+    ],
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16",
@@ -55,7 +58,10 @@ const cageData = {
       "Blackmagic BMPCC 6K G2"
     ],
     "material": "aluminum",
-    "weight_g": null,
+    "weight_g": 2268,
+    "rodStandard": [
+      "15mm LWS"
+    ],
     "mounting_points": [
       "3/8\"-16 (front)",
       "ARRI locating"
@@ -76,6 +82,9 @@ const cageData = {
     "weight_g": 160,
     "batteryMount": "none",
     "kNumber": "TA-T17-FCC-G",
+    "rodStandard": [
+      "15mm LWS (via single-rod holder / base options)"
+    ],
     "mounting_points": [
       "ARCA QR plate",
       "1/4\"-20",
@@ -94,7 +103,7 @@ const cageData = {
       "Sony FX6"
     ],
     "material": "Aluminum",
-    "weight_g": null,
+    "weight_g": 81,
     "kNumber": "3186",
     "mounting_points": [
       "ARRI rosette",

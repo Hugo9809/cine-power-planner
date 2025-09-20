@@ -144,7 +144,8 @@ const batteryData = {
     "capacity": 260,
     "pinA": 18,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1500
   },
   "Swit HB-A290B (B-Mount)": {
     "capacity": 290,
@@ -157,7 +158,8 @@ const batteryData = {
     "capacity": 290,
     "pinA": 10,
     "dtapA": 3.75,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1578
   },
   "Swit BIVO-98 (B-Mount)": {
     "capacity": 98,
@@ -286,13 +288,15 @@ const batteryData = {
     "capacity": 147,
     "pinA": 20,
     "dtapA": 7.14,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 998
   },
   "Core SWX Helix Max 360Wh (V-Mount)": {
     "capacity": 360,
     "pinA": 20,
     "dtapA": 7.14,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1633
   },
   "Core SWX Helix Max 98Wh (B-Mount)": {
     "capacity": 98,
@@ -454,7 +458,8 @@ const batteryData = {
     "capacity": 196,
     "pinA": 14,
     "dtapA": 5.56,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1100
   },
   "IDX CUE-D95 (V-Mount)": {
     "capacity": 91,
