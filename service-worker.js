@@ -23,6 +23,7 @@ const ASSETS = [
   './src/scripts/script.js',
   './src/scripts/storage.js',
   './src/scripts/translations.js',
+  './src/data/schema-inline.js',
   './src/vendor/lz-string.min.js',
   './src/vendor/lottie-light.min.js',
   './src/data/index.js',

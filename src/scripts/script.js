@@ -44,6 +44,16 @@ const APP_VERSION = "1.0.2";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
+const GLOBAL_SCOPE =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+          ? self
+          : null;
 const AUTO_GEAR_RULES_KEY =
   typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_RULES_STORAGE_KEY
@@ -117,14 +127,31 @@ function persistDeviceSchema(schema) {
   }
 }
 
+const inlineDeviceSchema = (() => {
+  if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+    return null;
+  }
+  const schema = GLOBAL_SCOPE.CINE_POWER_PLANNER_DEVICE_SCHEMA;
+  return schema && typeof schema === 'object' ? schema : null;
+})();
+
 const cachedDeviceSchema = loadCachedDeviceSchema();
 
-let deviceSchema;
+if (inlineDeviceSchema) {
+  persistDeviceSchema(inlineDeviceSchema);
+}
+
+let deviceSchema = inlineDeviceSchema || cachedDeviceSchema;
 try {
   deviceSchema = require('../data/schema.json');
+  if (deviceSchema && typeof deviceSchema === 'object') {
+    persistDeviceSchema(deviceSchema);
+  }
 } catch {
-  deviceSchema = cachedDeviceSchema;
-  if (typeof fetch === 'function') {
+  if (!deviceSchema) {
+    deviceSchema = inlineDeviceSchema || cachedDeviceSchema;
+  }
+  if (!inlineDeviceSchema && typeof fetch === 'function') {
     fetch('src/data/schema.json')
       .then(r => r.json())
       .then(data => {
@@ -142,7 +169,7 @@ try {
         populateCategoryOptions();
       });
   } else if (!deviceSchema) {
-    deviceSchema = cachedDeviceSchema || {};
+    deviceSchema = inlineDeviceSchema || cachedDeviceSchema || {};
   }
 }
 
