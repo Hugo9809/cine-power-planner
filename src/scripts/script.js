@@ -9496,22 +9496,28 @@ const searchTokens = str => {
     .replace(/\bdegrees?\b/g, ' deg ')
     .replace(/[×✕✖✗✘]/g, ' x by ');
   const tokens = new Set();
+  const initialWords = [];
   const addToken = token => {
     if (!token) return;
     const cleaned = token.replace(/[^a-z0-9]+/g, '');
     if (cleaned) tokens.add(cleaned);
   };
-  const processParts = strToProcess => {
+  const processParts = (strToProcess, collectInitials = false) => {
     strToProcess.split(/\s+/).forEach(part => {
       if (!part) return;
       addToken(part);
       part
         .split(/[^a-z0-9]+/)
         .filter(Boolean)
-        .forEach(segment => addToken(segment));
+        .forEach(segment => {
+          addToken(segment);
+          if (collectInitials && /^[a-z]/.test(segment)) {
+            initialWords.push(segment);
+          }
+        });
     });
   };
-  processParts(normalized);
+  processParts(normalized, true);
   const spellingNormalized = normalizeSpellingVariants(normalized);
   if (spellingNormalized !== normalized) {
     processParts(spellingNormalized);
@@ -9519,6 +9525,20 @@ const searchTokens = str => {
   const markNormalized = normaliseMarkVariants(spellingNormalized);
   if (markNormalized !== spellingNormalized) {
     processParts(markNormalized);
+  }
+  if (initialWords.length >= 2) {
+    const MAX_INITIALISM_LENGTH = 6;
+    const initials = initialWords.map(word => word[0]).filter(Boolean);
+    const limit = Math.min(initials.length, MAX_INITIALISM_LENGTH);
+    for (let start = 0; start < limit; start++) {
+      let current = '';
+      for (let index = start; index < limit; index++) {
+        current += initials[index];
+        if (current.length >= 2) {
+          addToken(current);
+        }
+      }
+    }
   }
   const markPattern = /\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g;
   let match;
