@@ -2,7 +2,10 @@
 /* General styles */
 :root {
   color-scheme: light dark;
-  --accent-color: #001589;
+  --brand-accent-color: #001589;
+  --accent-color: var(--brand-accent-color);
+  --logo-background-color: var(--accent-color);
+  --logo-accent-color: var(--brand-accent-color);
   --link-color: var(--accent-color);
   --background-color: #f9f9f9;
   --surface-color: #ffffff;
@@ -115,6 +118,7 @@ body.pink-mode {
   --accent-color: #ff69b4;
   --link-color: #ff69b4;
   --icon-color: var(--accent-color);
+  --logo-accent-color: var(--brand-accent-color);
 }
 
 html {
@@ -2495,7 +2499,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 }
 
 body.pink-mode #topBar #logo .logo-center {
-  fill: transparent !important;
+  fill: #fff !important;
 }
 
 #topBar .feature-search {
@@ -3980,6 +3984,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 }
 #overviewDialogContent.pink-mode {
   --accent-color: #ff69b4;
+  --logo-accent-color: var(--brand-accent-color);
 }
 #overviewDialogContent.dark-mode {
   background-color: var(--background-color);
