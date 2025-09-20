@@ -430,4 +430,57 @@ describe('global feature search helpers', () => {
 
     expect(result?.value?.label).toContain('Monitor');
   });
+
+  test('findBestSearchMatch picks the highest scoring keyPrefix candidate', () => {
+    const map = new Map();
+    map.set(
+      searchKey('Monitoring Services'),
+      {
+        label: 'Monitoring Services',
+        tokens: searchTokens('Monitoring Services support crew')
+      }
+    );
+    map.set(
+      searchKey('Monitoring Settings'),
+      {
+        label: 'Monitoring Settings',
+        tokens: searchTokens('Monitoring Settings zebra focus peaking')
+      }
+    );
+
+    const result = findBestSearchMatch(
+      map,
+      searchKey('monitoring se zebra'),
+      searchTokens('monitoring se zebra')
+    );
+
+    expect(['keyPrefix', 'token']).toContain(result?.matchType);
+    expect(result?.value?.label).toBe('Monitoring Settings');
+  });
+
+  test('findBestSearchMatch prefers more specific keySubset matches on ties', () => {
+    const map = new Map();
+    map.set(
+      searchKey('Help'),
+      {
+        label: 'Help',
+        tokens: ['help', 'search']
+      }
+    );
+    map.set(
+      searchKey('Help Search'),
+      {
+        label: 'Help Search',
+        tokens: ['help', 'search']
+      }
+    );
+
+    const result = findBestSearchMatch(
+      map,
+      searchKey('help search shortcuts'),
+      searchTokens('help search shortcuts')
+    );
+
+    expect(result?.value?.label).toBe('Help Search');
+  });
 });
