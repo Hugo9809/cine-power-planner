@@ -1,8 +1,8 @@
 # 🎥 Cine Power Planner
 
-Cet outil accessible dans le navigateur aide à planifier des projets caméra professionnels alimentés par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, l’**intensité demandée** (à 14,4 V et 12 V) et l’**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise en toute sécurité.
+Cet outil basé sur le navigateur aide à planifier des projets caméra professionnels alimentés par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, l’**intensité demandée** (à 14,4 V et 12 V) et l’**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise en toute sécurité.
 
-Toute la planification, les saisies et les exports restent sur votre appareil. La langue, les projets, les appareils personnalisés, les favoris et les retours d’autonomie sont stockés dans votre navigateur, et les mises à jour du service worker proviennent directement de ce dépôt. Lancez le planner hors ligne depuis le disque ou hébergez-le en interne pour que chaque département utilise la même version auditée.
+L’ensemble de la planification, des saisies et des exports reste sur votre appareil. La langue, les projets, les appareils personnalisés, les favoris et les retours d’autonomie sont stockés dans votre navigateur, et les mises à jour du service worker proviennent directement de ce dépôt. Lancez le planner hors ligne depuis le disque ou hébergez-le en interne pour que chaque département exploite la même version auditée.
 
 ---
 
@@ -13,15 +13,15 @@ Toute la planification, les saisies et les exports restent sur votre appareil. L
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-L’application adopte automatiquement la langue de votre navigateur lors de la première visite. Vous pouvez ensuite changer de langue à tout moment depuis l’angle supérieur droit ; le choix est mémorisé pour la prochaine session.
+L’application adopte automatiquement la langue de votre navigateur lors de la première visite. Vous pouvez ensuite changer de langue à tout moment depuis l’angle supérieur droit, et le choix est mémorisé pour la prochaine session.
 
 ---
 
 ## 🆕 Nouveautés
-- Les réglages d’accent et de typographie permettent d’ajuster couleur d’accent, taille de base et famille de police, aux côtés des thèmes sombre, rose et à fort contraste.
-- Les raccourcis clavier de la recherche globale focalisent le champ instantanément avec / ou Ctrl+K (⌘K sur macOS), même lorsqu’il se trouve dans le menu latéral replié.
+- Les réglages d’accent et de typographie dans Paramètres permettent d’ajuster couleur d’accent, taille de base et famille de police, aux côtés des thèmes sombre, rose et à fort contraste.
+- Les raccourcis clavier de la recherche globale placent le focus sur le champ instantanément avec / ou Ctrl+K (⌘K sur macOS), même lorsqu’il se trouve dans le menu latéral replié.
 - Le bouton **Forcer le rechargement** vide les fichiers mis en cache par le service worker afin de mettre à jour l’application hors ligne sans effacer projets ou appareils.
-- Les icônes en forme d’étoile épinglent caméras, batteries et accessoires favoris en haut des listes et les incluent dans les sauvegardes.
+- Les icônes en forme d’étoile fixent caméras, batteries et accessoires favoris en haut des listes et les incluent dans les sauvegardes.
 - Le flux de **Réinitialisation d’usine** télécharge automatiquement une sauvegarde avant de supprimer projets, appareils et paramètres stockés.
 - La liste de matériel et l’aperçu imprimable affichent le nom du projet pour une référence immédiate.
 - Importez un logo personnalisé pour les aperçus imprimables et les sauvegardes.
@@ -42,7 +42,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Tableau de pondération visuel pour analyser l’impact des réglages sur chaque mesure, trié par poids avec pourcentages précis.
 - Générateur de liste de matériel qui agrège équipements choisis et exigences du projet.
 - Les exigences de projet sont sauvegardées avec chaque configuration pour conserver tout le contexte.
-- Les boutons en forme de fourche dupliquent instantanément les entrées personnalisées dans les formulaires de liste de matériel.
+- Les boutons en forme de fourche dupliquent désormais instantanément les entrées personnalisées dans les formulaires de liste de matériel.
 
 ---
 
@@ -56,14 +56,14 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - **Adaptez l’outil à votre équipe.** Basculez instantanément entre français, anglais, allemand, espagnol et italien, ajustez taille et police, choisissez une couleur d’accent personnalisée, importez un logo d’impression et alternez thème clair, sombre, rose ou à fort contraste. Menus filtrables, favoris épinglés, boutons de duplication et aides contextuelles gardent un rythme rapide sur le plateau.
 
 ### ✅ Gestion de projet
-- Enregistrez, chargez et supprimez plusieurs projets caméra (Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton reste inactif tant qu’aucun nom n’est saisi).
-- Des instantanés automatiques sont créés toutes les 10 minutes tant que le planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires en guise de rappel.
-- Téléchargez un fichier JSON regroupant sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; importez-le via le sélecteur de projet pour tout restaurer d’un coup.
-- Les données sont stockées localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez l’option **Réinitialisation d’usine** pour enregistrer automatiquement une copie avant d’effacer projets et modifications d’appareils.
+- Enregistrez, chargez et supprimez plusieurs projets caméra (appuyez sur Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton reste inactif tant qu’aucun nom n’est saisi).
+- Des instantanés automatiques se créent toutes les 10 minutes tant que le planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires en guise de rappel.
+- Téléchargez un fichier JSON qui regroupe sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; importez-le via le sélecteur de projet pour tout restaurer d’un coup.
+- Les données se stockent localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez l’option **Réinitialisation d’usine** pour enregistrer automatiquement une copie avant d’effacer projets et modifications d’appareils.
 - Générez des aperçus imprimables pour chaque projet et ajoutez un logo personnalisé afin d’aligner exports et sauvegardes sur l’identité de votre production.
 - Les exigences de projet sont enregistrées avec chaque projet afin que la liste de matériel conserve l’intégralité du contexte.
-- Fonctionne entièrement hors ligne grâce au service worker : langue, thème, données d’appareil et favoris persistent entre les sessions.
-- Mise en page responsive adaptée aux ordinateurs, tablettes et téléphones.
+- Fonctionne intégralement hors ligne grâce au service worker : langue, thème, données d’appareil et favoris persistent entre les sessions.
+- Mise en page responsive qui s’adapte aux ordinateurs, tablettes et téléphones.
 - Sur les caméras compatibles, choisissez des plaques **V‑Mount**, **B‑Mount** ou **Gold-Mount** ; la liste des batteries se met à jour automatiquement.
 
 ### 🧭 Aperçu de l’interface
@@ -91,19 +91,19 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Les boutons de duplication dupliquent instantanément les lignes de formulaire, et les favoris épinglés maintiennent le matériel clé en tête de liste – pratique quand le temps est compté.
 
 ### 📋 Liste de matériel
-Le générateur transforme vos sélections en une liste de préparation catégorisée :
+Le générateur transforme vos sélections en une liste de préparation classée par catégorie :
 
 - Cliquez sur **Générer la liste de matériel** pour compiler équipement choisi et exigences du projet dans un tableau.
-- Le tableau se met à jour automatiquement lorsque sélections ou exigences évoluent.
+- Le tableau se met à jour dès que sélections ou exigences évoluent.
 - Les éléments sont regroupés par catégorie (caméra, optique, alimentation, monitoring, rigging, machinerie, accessoires, consommables) et les doublons sont fusionnés avec leur quantité.
 - Câbles, structures et accessoires requis pour moniteurs, moteurs, gimbals et scénarios météo sont ajoutés automatiquement.
-- Les scénarios sélectionnés injectent l’équipement associé :
+- Les scénarios sélectionnés ajoutent l’équipement associé :
   - *Handheld* + *Easyrig* ajoute une poignée télescopique pour un soutien stable.
   - *Gimbal* ajoute le gimbal choisi, des bras articulés, des spigots et des pare-soleil ou kits de filtres.
   - *Outdoor* fournit spigots, parapluies et housses de pluie CapIt.
   - Les scénarios *Vehicle* et *Steadicam* ajoutent fixations, bras isolants et ventouses selon le besoin.
 - Les sélections d’optique incluent diamètre frontal, poids, données de rods et mise au point minimale, ajoutent supports d’objectif et adaptateurs de matte box, et signalent les standards incompatibles.
-- Les lignes de batteries reflètent les quantités calculées et incluent plaques ou appareils de hotswap lorsque nécessaire.
+- Les lignes de batteries reprennent les quantités calculées et incluent plaques ou appareils de hotswap lorsque nécessaire.
 - Les préférences de monitoring attribuent des moniteurs par défaut pour chaque rôle (réalisateur, DoP, pointeur, etc.) avec jeux de câbles et récepteurs sans fil.
 - Le formulaire **Exigences du projet** alimente la liste :
   - **Nom du projet**, **société de production**, **loueur** et **DoP** apparaissent dans l’en-tête des exigences imprimées.
@@ -116,7 +116,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
   - Les sélections de **boutons utilisateur** et **préférences trépied** sont listées pour référence rapide.
 - Les éléments de chaque catégorie sont triés alphabétiquement et affichent une info-bulle au survol.
 - La liste de matériel est incluse dans les aperçus imprimables et les fichiers de projet exportés.
-- Les listes sont sauvegardées automatiquement avec le projet et incluses dans exports et sauvegardes.
+- Les listes sont enregistrées automatiquement avec le projet et incluses dans exports et sauvegardes.
 - **Supprimer la liste de matériel** efface la liste enregistrée et masque la sortie.
 - Les formulaires fournissent des boutons en forme de fourche pour dupliquer instantanément les entrées.
 
@@ -205,7 +205,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 
 ---
 
-## ▶️ Mode d’emploi
+## ▶️ Guide d’utilisation
 1. **Lancez l’application :** ouvrez `index.html` dans un navigateur moderne – aucun serveur requis.
 2. **Explorez la barre supérieure :** changez de langue, activez les thèmes sombre ou rose, ouvrez Paramètres pour régler accent et typographie et lancez l’aide avec ? ou Ctrl+/.
 3. **Sélectionnez les appareils :** choisissez l’équipement par catégorie via les menus déroulants ; saisissez pour filtrer, épinglez vos favoris et laissez les scénarios préconfigurés ajouter automatiquement les accessoires.
@@ -217,7 +217,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 
 ## 📱 Installer l’application
 
-Le planner est une Progressive Web App installable directement depuis le navigateur :
+Le planner est une application web progressive installable directement depuis le navigateur :
 
 - **Chrome/Edge (bureau) :** cliquez sur l’icône d’installation dans la barre d’adresse.
 - **Android :** ouvrez le menu du navigateur et choisissez *Ajouter à l’écran d’accueil*.
@@ -227,7 +227,7 @@ Une fois installée, l’application se lance depuis l’écran d’accueil, fon
 
 ## 📡 Utilisation hors ligne & stockage
 
-Servir l’application via HTTP(S) installe un service worker qui met chaque fichier en cache pour que Cine Power Planner fonctionne totalement hors ligne et se mette à jour en arrière-plan. Projets, retours d’autonomie et préférences (langue, thème, mode rose et listes enregistrées) sont stockés dans le `localStorage` du navigateur. Effacer les données du site supprime toutes les informations, et la boîte de dialogue Paramètres propose un flux de **Réinitialisation d’usine** qui sauvegarde automatiquement une copie avant le nettoyage complet. L’en-tête affiche un badge hors ligne dès que la connexion tombe, et l’action 🔄 **Forcer le rechargement** actualise les fichiers en cache sans toucher aux projets enregistrés.
+Servir l’application via HTTP(S) installe un service worker qui met en cache chaque fichier pour que Cine Power Planner fonctionne totalement hors ligne et se mette à jour en arrière-plan. Projets, retours d’autonomie et préférences (langue, thème, mode rose et listes enregistrées) sont stockés dans le `localStorage` du navigateur. Effacer les données du site supprime toutes les informations, et la boîte de dialogue Paramètres propose un flux de **Réinitialisation d’usine** qui sauvegarde automatiquement une copie avant le nettoyage complet. L’en-tête affiche un badge hors ligne dès que la connexion tombe, et l’action 🔄 **Forcer le rechargement** actualise les fichiers en cache sans toucher aux projets enregistrés.
 
 ---
 
@@ -273,4 +273,4 @@ Ajoutez `--help` à l’un de ces scripts pour afficher les options disponibles.
 Exécutez `npm run help` pour obtenir un rappel rapide des scripts de maintenance et de l’ordre recommandé.
 
 ## 🤝 Contribuer
-Les contributions sont les bienvenues ! Ouvrez un ticket ou proposez une pull request. Lors de corrections de données, joindre des sauvegardes de projet ou des mesures d’autonomie aide à maintenir un catalogue fiable pour tous.
+Les contributions sont les bienvenues ! Ouvrez un ticket ou proposez une pull request. Lors de corrections de données, joignez des sauvegardes de projet ou des mesures d’autonomie pour aider à maintenir un catalogue fiable pour tous.
