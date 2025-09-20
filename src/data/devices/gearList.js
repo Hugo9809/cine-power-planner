@@ -2729,6 +2729,20 @@ const gear = {
           "lengthMm": 420,
           "notes": "ARRI lists 1.8 m MOD from sensor plane (1.337 m from lens front) with LDS-2/Cooke /i metadata."
         },
+        "ARRI/ZEISS Ultra Prime 8mm T2.8": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 134,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 2000,
+          "lengthMm": 130
+        },
         "ARRI/ZEISS Ultra Prime 10mm T2.1": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 156,
@@ -2739,9 +2753,23 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "minFocusMeters": 0.36,
+          "minFocusMeters": 0.35,
           "weight_g": 2900,
-          "lengthMm": 143
+          "lengthMm": 172
+        },
+        "ARRI/ZEISS Ultra Prime 12mm T2.0": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 156,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.3,
+          "weight_g": 2000,
+          "lengthMm": 140
         },
         "ARRI/ZEISS Ultra Prime 14mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2753,19 +2781,23 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical",
-          "minFocusMeters": 0.23,
+          "minFocusMeters": 0.22,
           "weight_g": 1800,
-          "lengthMm": 140
+          "lengthMm": 112
         },
         "ARRI/ZEISS Ultra Prime 16mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.25,
+          "weight_g": 1200,
+          "lengthMm": 94
         },
         "ARRI/ZEISS Ultra Prime 20mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -3531,7 +3563,12 @@ const gear = {
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.475,
+          "weight_g": 3300,
+          "lengthMm": 189,
+          "imageCircleMm": 46.31,
+          "notes": "T2.0-T22"
         },
         "Cooke S7/i FF 100mm T2.0": {
           "brand": "Cooke",
