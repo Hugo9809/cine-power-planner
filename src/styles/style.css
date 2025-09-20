@@ -981,6 +981,7 @@ main.legal-content {
 .modal-surface-scrollable {
   max-height: 80vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #installGuideDialog {
@@ -992,6 +993,8 @@ main.legal-content {
   justify-content: center;
   z-index: 205;
   padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #iosPwaHelpDialog {
@@ -1003,6 +1006,8 @@ main.legal-content {
   justify-content: center;
   z-index: 210;
   padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #feedbackDialog {
