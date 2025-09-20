@@ -230,6 +230,8 @@ const texts = {
     autoGearListRemove: "Remove",
     autoGearEmptyList: "No items yet.",
     autoGearCustomCategory: "Custom Additions",
+    autoGearRuleTooltipNamed: "Added by automatic gear rule “%s”.",
+    autoGearRuleTooltipUnnamed: "Added by an automatic gear rule.",
     accessibilityHeading: "Accessibility",
     accessibilityHeadingHelp:
       "Adjust contrast and other options that improve legibility.",
@@ -1406,6 +1408,8 @@ const texts = {
     autoGearListRemove: "Rimuovi",
     autoGearEmptyList: "Nessun elemento al momento.",
     autoGearCustomCategory: "Aggiunte personalizzate",
+    autoGearRuleTooltipNamed: "Aggiunto dalla regola automatica “%s”.",
+    autoGearRuleTooltipUnnamed: "Aggiunto da una regola automatica.",
     accessibilityHeading: "Accessibilità",
     accessibilityHeadingHelp:
       "Regola le opzioni che migliorano la leggibilità, come il contrasto elevato.",
@@ -2183,6 +2187,8 @@ const texts = {
     autoGearListRemove: "Eliminar",
     autoGearEmptyList: "Sin elementos todavía.",
     autoGearCustomCategory: "Adiciones personalizadas",
+    autoGearRuleTooltipNamed: "Añadido por la regla automática “%s”.",
+    autoGearRuleTooltipUnnamed: "Añadido por una regla automática.",
     accessibilityHeading: "Accesibilidad",
     accessibilityHeadingHelp:
       "Ajusta opciones que mejoran la legibilidad, como el alto contraste.",
@@ -2963,6 +2969,8 @@ const texts = {
     autoGearListRemove: "Retirer",
     autoGearEmptyList: "Aucun élément pour l’instant.",
     autoGearCustomCategory: "Ajouts personnalisés",
+    autoGearRuleTooltipNamed: "Ajouté par la règle automatique « %s ».",
+    autoGearRuleTooltipUnnamed: "Ajouté par une règle automatique.",
     accessibilityHeading: "Accessibilité",
     accessibilityHeadingHelp:
       "Ajustez les options qui améliorent la lisibilité, comme le contraste élevé.",
@@ -3744,6 +3752,8 @@ const texts = {
     autoGearListRemove: "Entfernen",
     autoGearEmptyList: "Noch keine Geräte.",
     autoGearCustomCategory: "Eigene Ergänzungen",
+    autoGearRuleTooltipNamed: "Hinzugefügt durch die automatische Regel „%s“.",
+    autoGearRuleTooltipUnnamed: "Hinzugefügt durch eine automatische Regel.",
     accessibilityHeading: "Barrierefreiheit",
     accessibilityHeadingHelp:
       "Passe Optionen für bessere Lesbarkeit wie hohen Kontrast an.",
