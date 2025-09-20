@@ -70,10 +70,56 @@ const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
+const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
 ]);
+
+function createStorageMigrationBackup(storage, key, originalValue) {
+  if (!storage || typeof storage.setItem !== 'function') {
+    return;
+  }
+  if (originalValue === null || originalValue === undefined) {
+    return;
+  }
+
+  const backupKey = `${key}${STORAGE_MIGRATION_BACKUP_SUFFIX}`;
+  let hasExistingBackup = false;
+
+  if (typeof storage.getItem === 'function') {
+    try {
+      const existing = storage.getItem(backupKey);
+      if (existing !== null && existing !== undefined) {
+        hasExistingBackup = true;
+      }
+    } catch (inspectionError) {
+      console.warn(`Unable to inspect migration backup for ${key}`, inspectionError);
+    }
+  }
+
+  if (hasExistingBackup) {
+    return;
+  }
+
+  let serialized;
+  try {
+    serialized = JSON.stringify({
+      createdAt: new Date().toISOString(),
+      data: originalValue,
+    });
+  } catch (serializationError) {
+    console.warn(`Unable to serialize migration backup for ${key}`, serializationError);
+    return;
+  }
+
+  try {
+    storage.setItem(backupKey, serialized);
+    console.log(`Stored migration backup for ${key}.`);
+  } catch (writeError) {
+    console.warn(`Unable to create migration backup for ${key}`, writeError);
+  }
+}
 
 const PRIMARY_STORAGE_KEYS = [
   DEVICE_STORAGE_KEY,
@@ -760,6 +806,13 @@ function deleteFromStorage(storage, key, errorMessage, options = {}) {
       alertStorageError();
     }
   }
+
+  const migrationBackupKey = `${key}${STORAGE_MIGRATION_BACKUP_SUFFIX}`;
+  try {
+    storage.removeItem(migrationBackupKey);
+  } catch (migrationError) {
+    console.warn(`Unable to remove migration backup for ${key}`, migrationError);
+  }
 }
 
 function loadFlagFromStorage(storage, key, errorMessage) {
@@ -1006,6 +1059,7 @@ function loadSessionState() {
   }
 
   if (changed) {
+    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, raw);
     saveSessionState(state);
   }
 
@@ -1087,6 +1141,7 @@ function loadDeviceData() {
   }
 
   if (changed) {
+    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, parsedData);
     saveJSONToStorage(
       SAFE_LOCAL_STORAGE,
       DEVICE_STORAGE_KEY,
@@ -1182,6 +1237,7 @@ function loadSetups() {
   );
   const { data: setups, changed } = normalizeSetups(parsedData);
   if (changed) {
+    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, parsedData);
     saveJSONToStorage(
       SAFE_LOCAL_STORAGE,
       SETUP_STORAGE_KEY,
@@ -1339,11 +1395,12 @@ function readAllProjectsFromStorage() {
         || isPlainObject(value),
     },
   );
+  const originalValue = parsed;
   const projects = {};
   let changed = false;
 
   if (parsed === null || parsed === undefined) {
-    return { projects, changed: false };
+    return { projects, changed: false, originalValue };
   }
 
   if (typeof parsed === "string") {
@@ -1351,7 +1408,7 @@ function readAllProjectsFromStorage() {
     if (normalized) {
       projects[""] = normalized;
     }
-    return { projects, changed: true };
+    return { projects, changed: true, originalValue };
   }
 
   if (Array.isArray(parsed)) {
@@ -1371,11 +1428,11 @@ function readAllProjectsFromStorage() {
       const unique = generateUniqueName(candidate, usedNames, normalizedNames);
       projects[unique] = normalized;
     });
-    return { projects, changed: true };
+    return { projects, changed: true, originalValue };
   }
 
   if (!isPlainObject(parsed)) {
-    return { projects, changed: true };
+    return { projects, changed: true, originalValue };
   }
 
   const keys = Object.keys(parsed);
@@ -1387,7 +1444,7 @@ function readAllProjectsFromStorage() {
     if (normalized) {
       projects[""] = normalized;
     }
-    return { projects, changed: true };
+    return { projects, changed: true, originalValue };
   }
 
   keys.forEach((key) => {
@@ -1402,7 +1459,7 @@ function readAllProjectsFromStorage() {
     }
   });
 
-  return { projects, changed };
+  return { projects, changed, originalValue };
 }
 
 function persistAllProjects(projects, successMessage) {
@@ -1416,8 +1473,9 @@ function persistAllProjects(projects, successMessage) {
 }
 
 function loadProject(name) {
-  const { projects, changed } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue } = readAllProjectsFromStorage();
   if (changed && SAFE_LOCAL_STORAGE) {
+    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
     persistAllProjects(projects);
   }
   if (name === undefined) {
@@ -1430,7 +1488,10 @@ function loadProject(name) {
 function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
-  const { projects } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue } = readAllProjectsFromStorage();
+  if (changed && SAFE_LOCAL_STORAGE) {
+    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
+  }
   projects[name || ""] = normalized;
   persistAllProjects(projects, "Project saved to localStorage.");
 }
@@ -1446,7 +1507,10 @@ function deleteProject(name) {
   }
 
   const key = name || "";
-  const { projects } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue } = readAllProjectsFromStorage();
+  if (changed && SAFE_LOCAL_STORAGE) {
+    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
+  }
   if (!Object.prototype.hasOwnProperty.call(projects, key)) {
     return;
   }
@@ -1463,7 +1527,10 @@ function deleteProject(name) {
 }
 
 function createProjectImporter() {
-  const { projects } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue } = readAllProjectsFromStorage();
+  if (changed && SAFE_LOCAL_STORAGE) {
+    createStorageMigrationBackup(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, originalValue);
+  }
   const usedNames = new Set(Object.keys(projects));
   const normalizedNames = new Set(
     [...usedNames].map((name) => name.trim().toLowerCase()),
