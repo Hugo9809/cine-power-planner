@@ -4431,27 +4431,6 @@ const LOAD_ICON_SVG = `
   </svg>
 `.trim();
 
-const RESET_VIEW_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M12 4.75A7.25 7.25 0 0 1 19.25 12" />
-      <path d="M19.25 12A7.25 7.25 0 0 1 12 19.25" />
-      <path d="M12 19.25A7.25 7.25 0 0 1 4.75 12" />
-      <path d="M4.75 12A7.25 7.25 0 0 1 12 4.75" />
-      <line x1="12" y1="8.75" x2="12" y2="15.25" />
-      <line x1="8.75" y1="12" x2="15.25" y2="12" />
-    </g>
-    <circle cx="12" cy="12" r="1.35" fill="currentColor" />
-    <path d="M12 2.75 13.35 4.75h-2.7Z" fill="currentColor" stroke="none" />
-  </svg>
-`.trim();
-
 const PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
 const RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
 const ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
@@ -4498,7 +4477,7 @@ const ICON_GLYPHS = Object.freeze({
   overview: iconGlyph('\uF1F5', ICON_FONT_KEYS.UICONS),
   gearList: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
   feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG, className: 'icon-svg' }),
-  resetView: Object.freeze({ markup: RESET_VIEW_ICON_SVG, className: 'icon-svg' }),
+  resetView: iconGlyph('\uEB6D', ICON_FONT_KEYS.UICONS),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
   sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
