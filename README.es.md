@@ -1,302 +1,299 @@
 # 🎥 Cine Power Planner
 
-Esta herramienta basada en el navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada de la batería**, al tiempo que comprueba que el paquete puede suministrar la potencia necesaria.
+This browser based tool helps plan professional camera projects powered by V‑Mount, B‑Mount or Gold-Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
 
-Toda la planificación, los datos introducidos y las exportaciones permanecen en
-el dispositivo que tienes delante. El idioma, los proyectos, los equipos
-personalizados, los favoritos y los comentarios de autonomía viven en tu
-navegador, y las actualizaciones del service worker provienen directamente de
-este repositorio. Puedes ejecutar la app sin conexión desde el disco o alojarla
-internamente para que cada departamento trabaje con la misma versión auditada.
+All planning, inputs and exports stay on the device in front of you. Language
+choice, projects, custom equipment, favorites and runtime feedback live in your
+browser, and service worker updates are driven directly by this repository. Run
+the planner offline from disk or host it internally so every department uses the
+same audited version.
 
 ---
 
-## 🌍 Idiomas
+## 🌍 Languages
 - 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-La aplicación usa automáticamente el idioma de tu navegador en la primera visita y puedes cambiarlo desde la esquina superior derecha. La elección se recuerda para tu próxima sesión.
+The app automatically uses your browser language on first load, and you can switch the language in the top right corner. The choice is remembered for your next visit.
 
 ---
 
-## 🆕 Novedades recientes
-- Los controles de acento y tipografía en Ajustes te permiten modificar el color de acento, el tamaño base de la fuente y la tipografía, junto con los temas oscuro, rosa y de alto contraste.
-- Los atajos de teclado para la búsqueda global te permiten pulsar / o Ctrl+K (⌘K en macOS) para enfocarla al instante, incluso cuando está dentro del menú lateral móvil.
-- El botón de recarga forzada borra los archivos en caché del *service worker* para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
-- Los iconos de estrella en cada selector fijan las cámaras, baterías y accesorios favoritos en la parte superior de la lista y los conservan en las copias de seguridad.
-- El flujo de **Restablecimiento de fábrica** descarga una copia de seguridad automáticamente antes de borrar los proyectos, ajustes y dispositivos guardados.
-- La lista de equipo y la vista imprimible muestran el nombre del proyecto para consultarlo rápidamente.
-- Sube un logotipo personalizado para que aparezca en las vistas imprimibles y en las copias de seguridad.
-- Las copias de seguridad incluyen los favoritos y crean una copia automática antes de restaurar.
-- Las entradas del equipo cuentan ahora con un campo de correo electrónico.
-- Opción de tema de alto contraste para mejorar la legibilidad.
-- Los formularios de dispositivos rellenan los campos de categoría dinámicamente según los atributos del esquema.
-- Rediseño de la interfaz con mejor contraste y espaciado para una experiencia más limpia en cualquier dispositivo.
-- Exportar proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, y vuelve a cargarlo mediante Importar para restaurarlo todo de una vez.
-- Iconos únicos para los escenarios obligatorios que ayudan a distinguir los requisitos del proyecto.
-- Diagrama de proyecto interactivo que permite arrastrar dispositivos, hacer zoom, ajustar nodos a la cuadrícula y exportar la disposición como SVG o JPG.
-- Tema rosa lúdico que se mantiene entre visitas.
-- Diálogo de ayuda con búsqueda y secciones paso a paso y un FAQ; ábrelo con ?, H, F1 o Ctrl+/.
-- Ayudas contextuales al pasar el cursor por botones, campos, menús y encabezados.
-- Barra de búsqueda global para saltar a funciones, selectores de dispositivos o temas de ayuda.
-- Compatibilidad con cámaras con placas de batería V-, B- o Gold-Mount.
-- Envía comentarios de autonomía con temperatura para mejorar las estimaciones.
-- Panel visual de ponderación de autonomías para inspeccionar cómo influyen los ajustes en cada informe, ahora ordenado por peso y con porcentajes exactos.
-- Genera listas de equipo para compilar el material seleccionado y los requisitos del proyecto.
-- Guarda los requisitos de proyecto con cada proyecto para que las listas de equipo conserven el contexto.
-- Duplica entradas de usuario en los formularios de la lista de equipo con los botones de bifurcar para copiar campos al instante.
+## 🆕 Recent Features
+- Accent and typography controls in Settings let you adjust the accent color, base font size and typeface alongside dark, pink and high contrast themes.
+- Keyboard shortcuts for the global search let you press / or Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it sits inside the collapsed mobile side menu.
+- Force reload button clears cached service worker files so the offline app refreshes without deleting saved projects or devices.
+- Star icons in every selector pin favorite cameras, batteries and accessories to the top of the list and keep them in backups.
+- Factory reset workflow automatically downloads a backup before wiping stored projects, custom devices and settings.
+- Gear list and printable overview display the project name for quick reference.
+- Upload a custom logo for printed overviews and backups.
+- Backups include favorites and create an automatic backup before restore.
+- Crew list entries now feature an email field.
+- High contrast theme option for improved readability.
+- Device forms populate category fields dynamically based on schema attributes.
+- Revamped interface design with improved contrast and spacing for a cleaner experience on any device.
+- Simplified project sharing – download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices, then load it to restore the full setup.
+- Unique icons for required scenarios to distinguish project requirements.
+- Interactive project diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
+- Playful pink accent theme that persists between visits.
+- Searchable help dialog with step-by-step sections and a FAQ; open with ?, H, F1 or Ctrl+/.
+- Contextual hover help for buttons, fields, dropdowns and headers.
+- Global search bar to jump to features, device selectors or help topics.
+- Support for cameras with V-, B- or Gold-Mount battery plates.
+- Submit user runtime feedback with temperature for better estimates.
+- Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
+- Generate gear lists to compile selected gear and project requirements.
+- Save project requirements with each project so gear lists retain full context.
+- Duplicate user entries in gear list forms using fork buttons to copy fields instantly.
 
 ---
 
-## 🔧 Funciones
+## 🔧 Features
 
-### ✨ Destacados ampliados
+### ✨ Expanded highlights
 
-- **Planifica rigs complejos sin conjeturas.** Combina cámaras, placas de
-  batería, enlaces inalámbricos, monitores, motores y accesorios mientras ves el
-  consumo total a 14,4 V/12 V (y 33,6 V/21,6 V para B‑Mount) junto a autonomías
-  realistas basadas en datos de campo ponderados. El panel de comparación de
-  baterías avisa de sobrecargas antes de que el equipo salga rumbo al rodaje.
-- **Mantén alineados a todos los departamentos.** Guarda varios proyectos con
-  requisitos, contactos del equipo, escenarios y notas. Las listas imprimibles
-  agrupan el material por categoría, fusionan duplicados, muestran metadatos
-  técnicos e incluyen accesorios condicionados por escenarios para que cámara,
-  iluminación y grip compartan el mismo contexto.
-- **Trabaja con confianza en cualquier lugar.** Abre `index.html` directamente o
-  sirve la carpeta por HTTPS para activar el service worker. La caché sin
-  conexión conserva idioma, temas, favoritos y proyectos, y **Forzar recarga**
-  actualiza los recursos almacenados sin tocar tus datos.
-- **Adapta el planner a tu equipo.** Cambia al instante entre español, inglés,
-  alemán, italiano y francés, ajusta el tamaño y la tipografía, define un color
-  de acento propio, sube un logotipo para impresión y alterna entre tema claro,
-  oscuro, rosa o de alto contraste. Los desplegables con búsqueda, favoritos
-  fijados, botones de bifurcación y ayudas flotantes mantienen ágil el trabajo en
-  set.
+- **Build complex rigs without guesswork.** Combine cameras, battery plates,
+  wireless links, monitors, motors and accessories while tracking total draw at
+  14.4 V/12 V (and 33.6 V/21.6 V for B‑Mount) plus realistic runtimes from
+  weighted field data. The battery comparison panel flags overloads before the
+  wrong kit goes on the truck.
+- **Keep every department aligned.** Save multiple projects with requirements,
+  crew contacts, scenarios and notes. Printable gear lists group equipment by
+  category, merge duplicates, surface technical metadata and include
+  scenario-driven accessories so camera, lighting and grip teams stay synced.
+- **Work confidently anywhere.** Open `index.html` directly or serve the folder
+  over HTTPS to enable the service worker. Offline caching preserves language,
+  themes, favorites and projects, and **Force reload** refreshes cached assets
+  without touching stored data.
+- **Tailor the planner to your crew.** Switch instantly between English,
+  Deutsch, Español, Italiano and Français, adjust font size and typeface, pick a
+  custom accent color, upload a print logo and toggle dark, pink or
+  high-contrast themes. Type-to-search selectors, pinned favorites, fork buttons
+  and hover help keep on-set workflows fast.
 
-### ✅ Gestión de proyectos
-- Guarda, carga y elimina múltiples proyectos de cámara (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
-- Se crean instantáneas automáticas cada 10 minutos mientras el planificador está abierto, y el diálogo de Ajustes puede programar exportaciones de copias de seguridad cada hora como recordatorio para archivar los datos.
-- Descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; cárgalo mediante el selector de Importar proyecto para restaurarlo todo de una vez.
-- Los datos se almacenan localmente mediante `localStorage`, y los favoritos se conservan en las copias de seguridad; utiliza la opción de **Restablecimiento de fábrica** en Ajustes para guardar automáticamente una copia de seguridad antes de limpiar proyectos en caché y ediciones de dispositivos.
-- Genera vistas imprimibles para cualquier proyecto guardado y añade un logotipo personalizado para que las exportaciones y copias coincidan con la identidad de tu producción.
-- Guarda los requisitos de proyecto junto con cada proyecto para que las listas de equipo conserven el contexto completo.
-- Funciona totalmente sin conexión con el *service worker* instalado: idioma, tema, datos de dispositivos y favoritos persisten entre sesiones.
-- El diseño adaptable se ajusta sin esfuerzo a escritorios, tabletas y teléfonos.
-- En las cámaras compatibles elige placas **V‑Mount**, **B‑Mount** o **Gold-Mount**; la lista de baterías se adapta automáticamente.
+### ✅ Project Management
+- Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
+- Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
+- Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices; load it through the Import Project picker to restore everything in one step.
+- Data is stored locally via `localStorage` and favorites are preserved in backups; use the **Factory reset** option in Settings to capture a backup automatically before wiping cached projects and device edits.
+- Generate printable overviews for any saved project and add a custom logo so exports and backups match your production branding.
+- Save project requirements along with each project so gear lists retain full context.
+- Works fully offline with the installed service worker—language, theme, device data and favorites persist between sessions.
+- Responsive layout adapts seamlessly across desktops, tablets and phones.
+- Choose **V‑Mount**, **B‑Mount** or **Gold‑Mount** plates on supported cameras; the battery list adapts automatically.
 
-### 🧭 Descripción de la interfaz
-- **Resumen rápido:**
-  - **Búsqueda global** (`/` o `Ctrl+K`/`⌘K`) salta a funciones, selectores o
-    temas de ayuda incluso cuando el menú lateral está contraído.
-  - **Centro de ayuda** (`?`, `H`, `F1` o `Ctrl+/`) ofrece guías filtrables,
-    preguntas frecuentes, accesos directos y el modo de ayuda flotante.
-  - **Diagrama del proyecto** visualiza conexiones; mantén pulsada Mayús al
-    descargar para guardar un JPG en lugar de SVG y ver avisos de
-    compatibilidad.
-  - **Comparador de baterías** muestra el rendimiento de cada pack compatible y
-    resalta riesgos de sobrecarga.
-  - **Generador de listas** crea tablas por categoría con metadatos, correos de
-    la crew y añadidos según escenario listos para imprimir.
-  - **Indicador sin conexión y Forzar recarga** reflejan el estado de la
-    conexión y renuevan archivos en caché sin borrar proyectos.
-- Un enlace de salto y un indicador sin conexión mantienen la interfaz accesible con teclado y pantallas táctiles: la insignia aparece cuando el navegador pierde la conexión.
-- La barra de búsqueda global salta a funciones, selectores de dispositivos o temas de ayuda; pulsa Enter para activar el resultado resaltado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (el menú lateral se abre automáticamente en pantallas pequeñas) y pulsa Escape o × para limpiar la consulta.
-- Los controles de la barra superior permiten cambiar el idioma, alternar los temas oscuro y rosa y abrir Ajustes con opciones de color de acento, tamaño y familia tipográfica, modo de alto contraste y carga de logotipo, además de herramientas para copia de seguridad, restauración y Restablecimiento de fábrica que guardan una copia antes de borrar los datos.
-- El botón de Ayuda abre un diálogo con búsqueda, secciones paso a paso, atajos de teclado, preguntas frecuentes y un modo de ayuda emergente opcional; también puede activarse con ?, H, F1 o Ctrl+/ incluso mientras escribes.
-- El botón de recarga forzada (🔄) borra los archivos del *service worker* en caché para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
-- En pantallas pequeñas, un menú lateral plegable replica cada sección principal para navegar rápidamente.
+### 🧭 Interface Overview
+- **Quick reference:**
+  - **Global search** (`/` or `Ctrl+K`/`⌘K`) jumps to features, selectors or help
+    topics even when the side drawer is collapsed.
+  - **Help center** (`?`, `H`, `F1` or `Ctrl+/`) surfaces searchable guides,
+    FAQs, shortcuts and the optional hover-help mode.
+  - **Project diagram** visualizes connections; hold Shift when downloading to
+    save a JPG snapshot instead of SVG while seeing compatibility notices.
+  - **Battery comparison** reveals how compatible packs perform and highlights
+    overload risks before call time.
+  - **Gear list generator** outputs categorized tables with metadata, crew
+    emails and scenario-driven accessories ready for print or PDF.
+  - **Offline badge & Force reload** show connectivity status and refresh cached
+    assets without clearing projects.
+- A skip link and offline indicator keep the layout accessible on keyboard and touch devices—the badge appears whenever the browser loses its connection.
+- The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result, use / or Ctrl+K (⌘K on macOS) to focus it from anywhere (the side menu opens automatically on small screens) and press Escape or tap × to clear the query.
+- Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup, restore and Factory reset tools that back up data before wiping it.
+- The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
+- The Force reload button (🔄) clears cached service worker files so the offline app updates without deleting saved projects or custom devices.
+- On smaller screens a collapsible side menu mirrors every major section for quick navigation.
 
-### ♿ Personalización y accesibilidad
-- Las preferencias de tema incluyen modo oscuro, acentos rosas lúdicos y un interruptor dedicado de alto contraste para mejorar la legibilidad.
-- Los cambios en el color de acento, el tamaño base de la fuente y la tipografía se aplican al instante y persisten en el navegador, lo que te permite adaptarlo a la identidad del estudio o a necesidades de accesibilidad.
-- Los atajos de teclado integrados cubren la búsqueda global (/ o Ctrl+K/⌘K), la ayuda ( ?, H, F1, Ctrl+/ ), el guardado (Enter o Ctrl+S/⌘S), el modo oscuro (D) y el modo rosa (P).
-- El modo de ayuda al pasar el cursor convierte cada botón, campo, menú y encabezado en una descripción emergente bajo demanda para que las personas nuevas aprendan rápidamente.
-- Las entradas con búsqueda incremental, los controles visibles al enfocar y los iconos de estrella junto a los selectores permiten filtrar listas largas y fijar dispositivos favoritos en la parte superior.
-- Sube un logotipo para las impresiones, configura roles de monitorización por
-  defecto y ajusta los presets de requisitos del proyecto para que las
-  exportaciones respeten la identidad de la productora.
-- Los botones de bifurcación duplican filas de formularios de inmediato y los
-  favoritos fijados mantienen el equipo habitual en la parte alta de cada
-  selector, algo clave cuando el tiempo en set es limitado.
+### ♿ Customization & Accessibility
+- Theme preferences include dark mode, playful pink accents and a dedicated high contrast switch for improved readability.
+- Accent color, base font size and typeface changes apply instantly and persist in the browser, letting you match studio branding or accessibility needs.
+- Built-in keyboard shortcuts cover global search (/ or Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
+- Hover-help mode turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
+- Type-to-search inputs, focus-visible controls and star icons beside selectors let you filter long lists quickly and pin favourite devices to the top.
+- Upload a custom logo for printouts, configure default monitoring roles and tweak project requirement presets so exports match your production branding.
+- Fork buttons duplicate gear list rows instantly, and pinned favourites keep go-to equipment at the top of selectors for faster data entry on set.
 
-### 📋 Lista de equipo
-El generador transforma tus selecciones en una lista de empaquetado categorizada:
+### 📋 Gear List
+The generator turns your selections into a categorized packing list:
 
-- Haz clic en **Generar lista de equipo** para compilar el material elegido y los requisitos del proyecto en una tabla.
-- La tabla se actualiza automáticamente cuando cambian las selecciones de dispositivos o los requisitos.
-- Los elementos se agrupan por categoría (cámara, óptica, alimentación, monitorización, rigging, grip, accesorios, consumibles) y los duplicados se combinan con sus cantidades.
-- Se añaden cables, rigging y accesorios necesarios para monitores, motores, gimbals y escenarios meteorológicos.
-- Las selecciones de escenarios añaden equipo relacionado:
-  - *Handheld* + *Easyrig* inserta una empuñadura telescópica para un soporte estable.
-  - *Gimbal* añade el gimbal seleccionado, brazos articulados, espigas y parasoles o kits de filtros.
-  - *Outdoor* aporta espigas, paraguas y fundas CapIt para lluvia.
-  - Los escenarios *Vehicle* y *Steadicam* incluyen monturas, brazos de aislamiento y ventosas cuando corresponde.
-- Las selecciones de óptica incluyen diámetro frontal, peso, datos de barras y enfoque mínimo, añaden soportes de lente y adaptadores de matte box, y avisan sobre estándares de barras incompatibles.
-- Las filas de baterías reflejan los recuentos del calculador de alimentación e incluyen placas de *hotswap* o dispositivos seleccionados cuando se necesitan.
-- Las preferencias de monitorización asignan monitores predeterminados para cada rol (Director, DoP, foco, etc.) con juegos de cables y receptores inalámbricos.
-- El formulario de **Requisitos del proyecto** alimenta la lista:
-  - **Nombre del proyecto**, **productora**, **casa de alquiler** y **DoP** aparecen en el encabezado de los requisitos impresos.
-  - Las entradas de **Equipo** recogen nombres, roles y direcciones de correo electrónico para que la información de contacto viaje con el proyecto.
-  - **Días de preparación** y **días de rodaje** aportan notas de planificación y, junto con escenarios exteriores, sugieren equipo para la climatología.
-  - Los **escenarios obligatorios** añaden rigging, gimbals y protección climática correspondiente.
-  - **Empuñadura de cámara** y **extensión de visor** insertan las piezas seleccionadas o los soportes de extensión.
-  - Las opciones de **matte box** y **filtros** agregan el sistema elegido con bandejas, adaptadores de pinza o filtros necesarios.
-  - Las configuraciones de **monitorización**, **distribución de vídeo** y **visor** añaden monitores, cables y superposiciones para cada rol.
-  - Las selecciones de **botones de usuario** y **preferencias de trípode** se listan para una referencia rápida.
-- Los elementos dentro de cada categoría se ordenan alfabéticamente y muestran descripciones al pasar el cursor.
-- La lista de equipo se incluye en las vistas imprimibles y en los archivos de proyectos exportados.
-- Las listas de equipo se guardan automáticamente con el proyecto y forman parte de los archivos exportados y de las copias de seguridad.
-- **Eliminar lista de equipo** borra la lista guardada y oculta la salida.
-- Los formularios de la lista de equipo incluyen botones de bifurcar para duplicar entradas de usuario al instante.
+- Click **Generate Gear List** to compile chosen gear and project requirements into a table.
+- The table updates automatically when device selections or requirements change.
+- Items are grouped by category (camera, lens, power, monitoring, rigging, grip, accessories, consumables) and duplicates are merged with counts.
+- Required cables, rigging and accessories are added for monitors, motors, gimbals and weather scenarios.
+- Scenario selections inject related gear:
+  - *Handheld* + *Easyrig* inserts a telescopic handle for stable support.
+  - *Gimbal* adds the selected gimbal, friction arms, spigots and sunshades or filter kits.
+  - *Outdoor* supplies spigots, umbrellas and CapIt rain covers.
+  - *Vehicle* and *Steadicam* scenarios pack in mounts, isolation arms and suction gear where applicable.
+- Lens selections append front diameter, weight, rod data and minimum focus, add lens supports and matte box adapters, and warn about incompatible rod standards.
+- Battery rows mirror counts from the power calculator and include hotswap plates or chosen hotswap devices when required.
+- Monitoring preferences assign default monitors for each role (Director, DoP, Focus, etc.) with cable sets and wireless receivers.
+- The **Project Requirements** form feeds the list:
+  - **Project Name**, **Production Company**, **Rental House** and **DoP** appear in the heading of the printed requirements.
+  - **Crew** entries capture names, roles and email addresses so contact info travels with the project.
+  - **Prep Days** and **Shooting Days** supply schedule notes and, when paired with outdoor scenarios, suggest weather gear.
+  - **Required Scenarios** append matching rigging, gimbals and weather protection.
+  - **Camera Handle** and **Viewfinder Extension** insert the chosen handle parts or extension brackets.
+  - **Matte Box** and **Filter** choices inject the selected system with any needed trays, clamp adapters or filters.
+  - **Monitoring Configuration**, **Video Distribution** and **Viewfinder** settings add monitors, cables and overlays for each role.
+  - **User Button** selections and **Tripod Preferences** are listed for quick reference.
+- Items inside each category are sorted alphabetically and display tooltips on hover.
+- The gear list is included in printable overviews and exported project files.
+- Gear lists save automatically with the project and are included in exported project files and backups.
+- **Delete Gear List** removes the saved list and hides the output.
+- Gear list forms provide fork buttons to duplicate user entries instantly.
 
-### 📦 Categorías de dispositivos
-- **Cámara** (1)
-- **Monitor** (opcional)
-- **Transmisor inalámbrico** (opcional)
-- **Motores FIZ** (0–4)
-- **Controladores FIZ** (0–4)
-- **Sensor de distancia** (0–1)
-- **Placa de batería** (solo en cámaras que aceptan V‑ o B‑Mount)
-- **Batería V‑Mount** (0–1)
+### 📦 Device Categories
+- **Camera** (1)
+- **Monitor** (optional)
+- **Wireless Transmitter** (optional)
+- **FIZ Motors** (0–4)
+- **FIZ Controllers** (0–4)
+- **Distance Sensor** (0–1)
+- **Battery Plate** (only on cameras that accept V‑ or B‑Mount)
+- **V‑Mount Battery** (0–1)
 
-### ⚙️ Cálculos de energía
-- Consumo total en vatios
-- Corriente demandada a 14,4 V y 12 V
-- Autonomía estimada de la batería en horas usando la media ponderada de los comentarios de personas usuarias
-- Número de baterías necesarias para un rodaje de 10 h (incluida la de repuesto)
-- Nota de temperatura para ajustar la autonomía en condiciones de calor o frío
+### ⚙️ Power Calculations
+- Total consumption in watts
+- Current draw at 14.4 V and 12 V
+- Estimated battery runtime in hours using weighted user feedback
+- Required battery count for a 10 h shoot (incl. spare)
+- Temperature note to adjust runtime for hot or cold conditions
 
-### 🔋 Comprobación de entrega de batería
-- Avisa si la corriente demandada supera la salida de la batería (pin o D‑Tap)
-- Indica cuando el consumo está cerca del límite (80 % de uso)
+### 🔋 Battery Output Check
+- Warns if current draw exceeds the battery output (Pin or D‑Tap)
+- Indicates when draw is close to the limit (80 % usage)
 
-### 📊 Comparación de baterías (opcional)
-- Compara estimaciones de autonomía entre todas las baterías
-- Gráficos de barras para consulta rápida
+### 📊 Battery Comparison (optional)
+- Compare runtime estimates across all batteries
+- Visual bar graph for quick reference
 
-### 🖼 Diagrama del proyecto
-- Visualiza las conexiones de alimentación y vídeo de los dispositivos seleccionados.
-- Advierte cuando las marcas FIZ son incompatibles.
-- Arrastra nodos para reorganizar el esquema, haz zoom con los botones y descarga el diagrama como SVG o JPG.
-- Mantén pulsado Shift al hacer clic en Descargar para exportar una instantánea JPG en lugar de SVG.
-- Pasa el cursor o toca los dispositivos para ver detalles emergentes.
-- Utiliza iconos de [OpenMoji](https://openmoji.org/) cuando hay conexión, con emoji como alternativa: 🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 vídeo, ⚙️ motor, 🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería.
+### 🖼 Project Diagram
+- Visualize power and video connections for the selected devices
+- Warns when FIZ brands are incompatible
+- Drag nodes to rearrange the layout, zoom with the buttons and download the diagram as SVG or JPG
+- Hold Shift while clicking Download to export a JPG snapshot instead of SVG
+- Hover or tap devices to see popup details
+- Uses [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji:
+  🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
+  🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
 
-### 🧮 Ponderación de datos de autonomía
-- Los tiempos de batería aportados por la comunidad refinan la estimación de autonomía.
-- Cada registro se ajusta por temperatura, escalando desde ×1 a 25 °C hasta:
-  - ×1,25 a 0 °C
-  - ×1,6 a −10 °C
-  - ×2 a −20 °C
-- Los ajustes de cámara influyen en el peso:
-  - Multiplicadores de resolución: ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1; resoluciones menores se escalan a 1080p.
-  - La frecuencia de cuadro escala linealmente desde 24 fps (por ejemplo, 48 fps = ×2).
-  - Wi‑Fi activado suma un 10 %.
-  - Factores de códec: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1,1; DNx/AVID ×1,2; All‑Intra ×1,3; H.264/AVC ×1,5; H.265/HEVC ×1,7.
-  - Las entradas de monitores por debajo del brillo especificado se ponderan según su relación de brillo.
-- El peso final refleja la cuota de consumo de cada dispositivo, de modo que los proyectos equivalentes cuentan más.
-- Se usa la media ponderada cuando hay al menos tres entradas disponibles.
-- Un panel ordena los registros por peso y muestra el porcentaje que aporta cada uno para compararlos rápidamente.
+### 🧮 Runtime data weighting
+- User-submitted battery runtimes refine the runtime estimate.
+- Each entry is adjusted for temperature, scaling from ×1 at 25 °C to:
+  - ×1.25 at 0 °C
+  - ×1.6 at −10 °C
+  - ×2 at −20 °C
+- Camera settings influence the weight:
+  - Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled to 1080p
+  - Frame rate scales linearly from 24 fps (e.g. 48 fps = ×2)
+  - Wi‑Fi enabled adds 10 %
+  - Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7
+  - Monitor entries below the specified brightness are weighted by their brightness ratio
+- The final weight reflects each device's share of the total power draw, so matching projects count more.
+- The weighted average is used once at least three entries are available.
+- A dashboard orders entries by weight and displays each one's share percentage for quick comparison.
 
-### 🔍 Búsqueda y filtrado
-- Escribe dentro de los menús desplegables para encontrar entradas rápidamente.
-- Filtra las listas de dispositivos con un cuadro de búsqueda.
-- Utiliza la barra de búsqueda global en la parte superior para saltar a funciones, dispositivos o temas de ayuda; pulsa Enter para navegar, usa / o Ctrl+K (⌘K en macOS) para enfocarla al instante y pulsa Escape o × para limpiar.
-- Pulsa '/' o Ctrl+F (⌘F en macOS) para enfocar al instante el cuadro de búsqueda más cercano.
-- Haz clic en la estrella junto a cualquier selector para fijar favoritos, mantenerlos en la parte superior de la lista y sincronizarlos con las copias de seguridad.
+### 🔍 Search & Filtering
+- Type inside dropdowns to quickly find entries
+- Filter device lists with a search box
+- Use the global search bar at the top to jump to features, devices or help topics; press Enter to navigate, use / or Ctrl+K (⌘K on macOS) to focus it instantly and press Escape or × to clear.
+- Press '/' or Ctrl+F (⌘F on macOS) to focus the nearest search box instantly.
+- Click the star beside any selector to pin favourites so they stay at the top of the list and sync with backups.
 
-### 🛠 Editor de la base de datos de dispositivos
-- Añade, edita o elimina dispositivos en todas las categorías.
-- Importa o exporta la base de datos completa como JSON.
-- Vuelve a la base de datos predeterminada de `assets/data/index.js`.
+### 🛠 Device Database Editor
+- Add, edit or delete devices in all categories
+- Import or export the full database as JSON
+- Revert to the default database from `assets/data/index.js`
 
-### 🌓 Modo oscuro
-- Actívalo con el botón de la luna junto al selector de idioma.
-- La preferencia se guarda en tu navegador.
+### 🌓 Dark Mode
+- Toggle via the moon button next to the language selector.
+- Preference is stored in your browser.
 
-### 🦄 Modo rosa
-- Haz clic en el botón del unicornio (el modo rosa alterna iconos de unicornio cada 30 segundos con una suave animación emergente y vuelve al caballo cuando lo desactivas) o pulsa **P** para activar un acento rosa lúdico.
-- Funciona en los temas claro y oscuro y persiste entre visitas.
+### 🦄 Pink Mode
+- Click the unicorn button (pink mode cycles through unicorn icons every 30 seconds with a gentle pop animation and switches back to the horse icon when you leave the theme) or press **P** for a playful pink accent.
+- Works in both light and dark themes and persists between visits.
 
-### ⚫ Modo de alto contraste
-- Activa un tema de alto contraste para mejorar la legibilidad.
+### ⚫ High Contrast Mode
+- Toggle a high contrast theme for improved readability.
 
-### 📝 Comentarios de autonomía
-- Haz clic en <strong>Enviar comentarios de autonomía</strong> debajo de la autonomía para añadir tu propia medición.
-- Incluye la temperatura si quieres una ponderación más precisa.
-- Las entradas se guardan en tu navegador y mejoran las estimaciones futuras.
-- Un panel dedicado ordena los envíos según su peso, muestra porcentajes de
-  contribución y resalta valores atípicos para que el equipo evalúe los datos de
-  campo rápidamente.
+### 📝 User Runtime Feedback
+- Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.
+- Optionally include temperature for more accurate weighting.
+- Entries are saved in your browser and improve future estimates.
+- A dashboard orders submissions by weight, shows contribution percentages and
+  highlights outliers so crews can review field data quickly.
 
-### ❓ Ayuda con búsqueda
-- Ábrela mediante el botón <strong>?</strong> o pulsa <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> o <kbd>Ctrl+/</kbd>.
-- Usa el campo de búsqueda para filtrar temas al instante; la consulta se restablece al cerrar el diálogo.
-- Cierra con <kbd>Escape</kbd> o haciendo clic fuera del diálogo.
+### ❓ Searchable Help
+- Open via the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl+/</kbd>.
+- Use the search field to filter topics instantly; the query resets when the dialog closes.
+- Close with <kbd>Escape</kbd> or by clicking outside the dialog.
 
 ---
 
-## ▶️ Cómo usarlo
-1. **Inicia la aplicación:** abre `index.html` en cualquier navegador moderno; no necesita servidor.
-2. **Explora la barra superior:** cambia de idioma, alterna los temas oscuro o rosa, abre Ajustes para modificar acento y tipografías, y lanza el diálogo de ayuda con ? o Ctrl+/.
-3. **Selecciona los dispositivos:** elige el equipo de cada categoría con los menús desplegables; escribe para filtrar, haz clic en la estrella para fijar favoritos y deja que los escenarios preconfigurados rellenen los accesorios automáticamente.
-4. **Consulta los cálculos:** verás consumo total, corriente y autonomía cuando selecciones una batería; los avisos resaltan cuando se supera la entrega permitida.
-5. **Guarda y exporta proyectos:** pon nombre y guarda tu configuración, las copias automáticas capturan instantáneas y el botón Exportar descarga un paquete JSON para el equipo, mientras que Importar lo restaura.
-6. **Genera listas de equipo:** pulsa **Generar lista de equipo** para convertir los requisitos en una lista categorizada con descripciones y accesorios.
-7. **Gestiona los datos de dispositivos:** haz clic en “Editar datos de dispositivos…” para abrir el editor, modificar dispositivos, exportar/importar JSON o volver a los valores predeterminados.
-8. **Envía comentarios de autonomía:** usa “Enviar comentarios de autonomía” para registrar mediciones de campo y refinar las estimaciones ponderadas.
+## ▶️ How to Use
+1. **Launch App:** Open `index.html` in any modern browser – no server required.
+2. **Explore the Top Bar:** Switch language, toggle dark or pink themes, open Settings for accent and typography options, and start the searchable help dialog with ? or Ctrl+/.
+3. **Select Devices:** Choose gear from each category using the dropdowns—type to filter, click the star to pin favourites and let scenario presets fill in accessories automatically.
+4. **View Calculations:** See total draw, current and runtime once a battery is selected; warnings highlight when output limits are exceeded.
+5. **Save & Export Projects:** Name and save your configuration, auto-backups capture snapshots, and the Export button downloads a JSON bundle for collaborators while the Import button restores them.
+6. **Generate Gear Lists:** Press **Generate Gear List** to turn project requirements into a categorized packing list with tooltips and accessory packs.
+7. **Manage Device Data:** Click “Edit Device Data…” to open the database editor, modify devices, export/import JSON or revert to the defaults.
+8. **Submit Runtime Feedback:** Use “Submit User Runtime Feedback” to record field measurements and refine weighted estimates.
 
-## 📱 Instalar como aplicación
+## 📱 Install as an App
 
-El planificador es una aplicación web progresiva y puede instalarse directamente desde tu navegador:
+The planner is a Progressive Web App and can be installed directly from your browser:
 
-- **Chrome/Edge (escritorio):** haz clic en el icono de instalación de la barra de direcciones.
-- **Android:** abre el menú del navegador y elige *Añadir a la pantalla de inicio*.
-- **iOS/iPadOS Safari:** toca el botón *Compartir* y selecciona *Añadir a pantalla de inicio*.
+- **Chrome/Edge (desktop):** Click the install icon in the address bar.
+- **Android:** Open the browser menu and choose *Add to Home Screen*.
+- **iOS/iPadOS Safari:** Tap the *Share* button and select *Add to Home Screen*.
 
-Una vez instalada, la aplicación se abre desde tu pantalla de inicio, funciona sin conexión y se actualiza automáticamente.
+Once installed, the app launches from your home screen, works offline and updates itself automatically.
 
-## 📡 Uso sin conexión y almacenamiento de datos
+## 📡 Offline Use & Data Storage
 
-Servir la aplicación mediante HTTP(S) instala un *service worker* que almacena en caché cada archivo, de modo que Cine Power Planner funciona sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas de equipo guardadas) viven en el `localStorage` del navegador. Al borrar los datos del sitio en el navegador se elimina toda la información almacenada, y el diálogo de Ajustes incluye un flujo de **Restablecimiento de fábrica** que guarda automáticamente una copia antes de realizar la misma limpieza completa.
-La cabecera muestra un indicador sin conexión cuando se pierde la red, y la
-acción 🔄 **Forzar recarga** actualiza los recursos en caché sin afectar a los
-proyectos guardados.
+Serving the app over HTTP(S) installs a service worker that caches every file
+so Cine Power Planner works fully offline and updates in the background. Projects,
+runtime submissions and preferences (language, theme, pink mode and saved gear
+lists) live in your browser's `localStorage`. Clearing the site's data in the
+browser removes all stored information, and the Settings dialog includes a
+**Factory reset** workflow that saves a backup automatically before clearing everything. The header shows an
+offline badge whenever connectivity drops, and the 🔄 **Force reload** action
+refreshes cached assets without disturbing saved projects.
 
 ---
 
-## 🗂️ Estructura de archivos
+## 🗂️ File Structure
 ```bash
-index.html                 # Maquetación principal en HTML
-assets/css/style.css       # Estilos y diseño base
-assets/css/overview.css    # Estilos de la vista de resumen
-assets/css/overview-print.css # Ajustes de impresión para la vista general
-assets/js/script.js        # Lógica de la aplicación
-assets/js/storage.js       # Utilidades para LocalStorage
-assets/js/static-theme.js  # Lógica de tema compartida para las páginas legales
-assets/data/index.js       # Lista predeterminada de dispositivos
-assets/data/devices/       # Catálogos de dispositivos por categoría
-assets/data/schema.json    # Esquema generado para validaciones
-assets/vendor/             # Bibliotecas de terceros incluidas
-legal/                     # Páginas legales sin conexión
-tools/                     # Scripts de mantenimiento de datos
-tests/                     # Suite de pruebas de Jest
+index.html                 # Main HTML layout
+assets/css/style.css       # Core styles and layout
+assets/css/overview.css    # Printable overview styling
+assets/css/overview-print.css # Print overrides for the overview
+assets/js/script.js        # Application logic
+assets/js/storage.js       # LocalStorage helpers
+assets/js/static-theme.js  # Shared theme logic for legal pages
+assets/data/index.js       # Default device list
+assets/data/devices/       # Device catalogs by category
+assets/data/schema.json    # Generated schema for selectors
+assets/vendor/             # Bundled third-party libraries
+legal/                     # Offline legal documents
+tools/                     # Data maintenance scripts
+tests/                     # Jest test suite
 ```
-Las fuentes se incluyen localmente mediante `fonts.css`, así que una vez que los recursos están en caché la aplicación funciona completamente sin conexión.
+Fonts are bundled locally via `fonts.css`, so once the assets are cached the application works entirely offline.
 
-## 🛠️ Desarrollo
-Requiere Node.js 18 o posterior.
+## 🛠️ Development
+Requires Node.js 18 or later.
 
 ```bash
 npm install
-npm run lint     # ejecuta solo ESLint
-npm test         # ejecuta linting, comprobaciones de datos y pruebas de Jest
+npm run lint     # run ESLint alone
+npm test         # runs linting, data checks and Jest tests
 ```
 
-Después de editar los datos de dispositivos, regenera la base de datos normalizada:
+After editing device data, regenerate the normalized database:
 
 ```bash
 npm run normalize
@@ -305,11 +302,11 @@ npm run check-consistency
 npm run generate-schema
 ```
 
-Añade `--help` a cualquiera de los scripts anteriores para ver los detalles de uso.
+Add `--help` to any of the above scripts for usage details.
 
-Ejecuta `npm run help` cuando necesites un resumen rápido de los scripts de mantenimiento y su orden sugerido.
+Run `npm run help` whenever you need a quick reminder of the maintenance commands and their suggested order.
 
-## 🤝 Contribuciones
-¡Se agradecen las contribuciones! Puedes abrir un issue o enviar un *pull request* en GitHub.
-Si informas de datos incorrectos, adjuntar copias de seguridad de proyectos o
-mediciones de autonomía ayuda a mantener el catálogo fiable para todos.
+## 🤝 Contributing
+Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
+When reporting data corrections, attaching project backups or runtime samples
+helps keep the catalog accurate for everyone.
