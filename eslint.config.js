@@ -2,11 +2,11 @@ const js = require('@eslint/js');
 const globals = require('globals');
 
 module.exports = [
-  { ignores: ['vendor/**', 'src/vendor/**'] },
+  { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**'] },
   js.configs.recommended,
   {
     files: ['**/*.js'],
-    ignores: ['node_modules/**', 'vendor/**', 'src/vendor/**'],
+    ignores: ['node_modules/**', 'vendor/**', 'src/vendor/**', 'legacy/**'],
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'script',

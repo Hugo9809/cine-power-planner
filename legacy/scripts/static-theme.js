@@ -2,7 +2,6 @@
   var DEFAULT_ACCENT = '#001589';
   var HIGH_CONTRAST_ACCENT = '#ffffff';
   var storageErrorLogged = false;
-
   function safeGet(key) {
     try {
       return window.localStorage ? localStorage.getItem(key) : null;
@@ -14,27 +13,21 @@
       return null;
     }
   }
-
   function updateThemeColor(isDark) {
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
       meta.setAttribute('content', isDark ? '#1c1c1e' : '#f9f9f9');
     }
   }
-
   function applyAccent(color, root, body) {
-    var highContrastActive =
-      root.classList.contains('high-contrast') ||
-      (body && body.classList.contains('high-contrast'));
+    var highContrastActive = root.classList.contains('high-contrast') || body && body.classList.contains('high-contrast');
     var accentValue = highContrastActive ? HIGH_CONTRAST_ACCENT : color;
-
     root.style.setProperty('--accent-color', accentValue);
     if (highContrastActive) {
       root.style.removeProperty('--link-color');
     } else {
       root.style.setProperty('--link-color', color);
     }
-
     if (body) {
       body.style.setProperty('--accent-color', accentValue);
       if (highContrastActive) {
@@ -44,31 +37,25 @@
       }
     }
   }
-
   function applyPreferences() {
     var root = document.documentElement;
     var body = document.body;
     if (!root || !body) {
       return;
     }
-
     var highContrastEnabled = safeGet('highContrast') === 'true';
     root.classList.toggle('high-contrast', highContrastEnabled);
     body.classList.toggle('high-contrast', highContrastEnabled);
-
     var pinkModeEnabled = safeGet('pinkMode') === 'true';
     body.classList.toggle('pink-mode', pinkModeEnabled);
-
     var storedFontSize = safeGet('fontSize');
     if (storedFontSize) {
       root.style.fontSize = storedFontSize + 'px';
     }
-
     var storedFontFamily = safeGet('fontFamily');
     if (storedFontFamily) {
       root.style.setProperty('--font-family', storedFontFamily);
     }
-
     var storedDarkMode = safeGet('darkMode');
     if (storedDarkMode === null && typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
       storedDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'true' : 'false';
@@ -79,7 +66,6 @@
     root.classList.toggle('light-mode', !darkModeEnabled);
     body.classList.toggle('light-mode', !darkModeEnabled);
     updateThemeColor(darkModeEnabled);
-
     var accentColor = safeGet('accentColor') || DEFAULT_ACCENT;
     if (pinkModeEnabled) {
       root.style.removeProperty('--accent-color');
@@ -90,7 +76,6 @@
       applyAccent(accentColor, root, body);
     }
   }
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', applyPreferences);
   } else {

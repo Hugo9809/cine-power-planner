@@ -10,6 +10,7 @@
     "normalize": "node tools/normalizeData.js",
     "unify-ports": "node tools/unifyPorts.js",
     "generate-schema": "node tools/generateSchema.js",
+    "build:legacy": "node tools/buildLegacy.js",
     "test": "npm run lint && npm run check-consistency && npm run test:jest",
     "test:jest": "node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand",
     "test:unit": "node --max-old-space-size=1024 ./node_modules/jest/bin/jest.js --runInBand --selectProjects unit",
@@ -22,12 +23,17 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@babel/cli": "^7.26.0",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
     "@eslint/js": "^9.31.0",
     "eslint": "^9.31.0",
     "globals": "^16.3.0",
     "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.4",
-    "jest-localstorage-mock": "^2.4.26"
+    "jest-localstorage-mock": "^2.4.26",
+    "core-js-bundle": "^3.39.0",
+    "regenerator-runtime": "^0.14.1"
   },
   "dependencies": {
     "lottie-web": "^5.13.0",

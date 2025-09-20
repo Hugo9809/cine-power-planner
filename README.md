@@ -558,6 +558,13 @@ npm run test:dom    # lightweight DOM utilities (1.5 GB heap cap)
 npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
 ```
 
+### Legacy browser bundle
+
+Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`
+to regenerate the transpiled ES5 bundle served to older browsers. The command
+rebuilds everything inside `legacy/` and refreshes the local polyfill copies so
+offline usage stays reliable.
+
 ### File structure
 
 ```

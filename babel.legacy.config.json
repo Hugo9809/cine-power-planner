@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/babelrc",
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "browsers": [
+            "defaults",
+            "ie 11"
+          ]
+        },
+        "bugfixes": true,
+        "modules": false,
+        "loose": false
+      }
+    ]
+  ],
+  "comments": false,
+  "compact": false
+}
