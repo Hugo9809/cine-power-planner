@@ -145,6 +145,40 @@ describe('global feature search helpers', () => {
     expect(result?.value.label).toBe('12V Power Input');
   });
 
+  test('searchTokens expose initialism tokens', () => {
+    const tokens = searchTokens('Battery Management System');
+    expect(tokens).toEqual(
+      expect.arrayContaining(['bm', 'bms', 'ms'])
+    );
+  });
+
+  test('findBestSearchMatch resolves initialism queries', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('Battery Management System'),
+      {
+        label: 'Battery Management System',
+        tokens: searchTokens('Battery Management System')
+      }
+    );
+
+    entries.set(
+      searchKey('Battery Status Monitor'),
+      {
+        label: 'Battery Status Monitor',
+        tokens: searchTokens('Battery Status Monitor')
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('bms'),
+      searchTokens('bms')
+    );
+
+    expect(result?.value.label).toBe('Battery Management System');
+  });
+
   test('searchKey normalizes degree and multiplication symbols', () => {
     expect(searchKey('35° Tilt Module')).toBe(
       searchKey('35 deg tilt module')
