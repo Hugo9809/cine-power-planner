@@ -85,6 +85,7 @@
   --offline-indicator-border: rgba(245, 247, 250, 0.2);
   --line-height-base: 1.6;
   --line-height-supporting: 1.5;
+  --line-height-relaxed: 1.65;
   --status-error-bg: #ff8a80;
   --status-warning-bg: #ffd24d;
   --status-success-bg: #dfd;
@@ -3989,7 +3990,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
-  line-height: var(--line-height-supporting);
+  line-height: var(--line-height-relaxed);
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -4071,7 +4072,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   background: var(--panel-bg);
-  line-height: var(--line-height-supporting);
+  line-height: var(--line-height-relaxed);
   break-inside: avoid;
   page-break-inside: avoid;
 }
