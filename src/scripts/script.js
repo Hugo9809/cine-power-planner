@@ -11091,6 +11091,7 @@ const DIAGRAM_CAMERA_ICON = iconGlyph('\uE333');
 const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
 const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
 const DIAGRAM_VIDEO_ICON = iconGlyph('\uF373');
+const DIAGRAM_WIRELESS_ICON = iconGlyph('\uF4AC');
 const DIAGRAM_MOTORS_ICON = iconGlyph('\uE8AF');
 const DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
 const DIAGRAM_DISTANCE_ICON = iconGlyph('\uEFB9');
@@ -11121,7 +11122,7 @@ const diagramIcons = {
   camera: DIAGRAM_CAMERA_ICON,
   monitor: DIAGRAM_MONITOR_ICON,
   viewfinder: DIAGRAM_VIEWFINDER_ICON,
-  video: DIAGRAM_VIDEO_ICON,
+  video: DIAGRAM_WIRELESS_ICON,
   motors: DIAGRAM_MOTORS_ICON,
   controllers: DIAGRAM_CONTROLLER_ICON,
   handle: DIAGRAM_CONTROLLER_ICON,
