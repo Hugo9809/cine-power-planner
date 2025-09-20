@@ -557,6 +557,8 @@ main.legal-content {
 
 .person-row button {
   flex: 0 0 auto;
+  margin: 0;
+  align-self: stretch;
 }
 
 #dynamicFields {
@@ -969,6 +971,10 @@ main.legal-content {
 }
 .period-row span {
   white-space: nowrap;
+}
+
+.period-row button {
+  margin: 0;
 }
 
 @media (max-width: 600px) {
