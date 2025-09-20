@@ -28,6 +28,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
   const stripRuleIds = rule => ({
     label: rule.label,
     scenarios: rule.scenarios,
+    mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
     add: rule.add.map(({ name, category, quantity }) => ({ name, category, quantity })),
     remove: rule.remove.map(({ name, category, quantity }) => ({ name, category, quantity })),
   });
@@ -223,6 +224,50 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(items[0].classList.contains('auto-gear-item')).toBe(true);
   });
 
+  test('applies mattebox-triggered rules when the selection matches', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-mattebox',
+          label: 'Clamp-on defaults',
+          scenarios: [],
+          mattebox: ['Clamp On'],
+          add: [
+            {
+              id: 'add-mattebox',
+              name: 'ARRI LMB 4x5 Clamp-On (3-Stage)',
+              category: 'Matte box + filter',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Matte box + filter</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { mattebox: 'Clamp On' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="ARRI LMB 4x5 Clamp-On (3-Stage)"]');
+    expect(entries).toHaveLength(1);
+    expect(entries[0].classList.contains('auto-gear-item')).toBe(true);
+    expect(entries[0].textContent).toContain('1x');
+  });
+
   test('saving a rule shows a confirmation notification', () => {
     env = setupScriptEnvironment();
 
@@ -260,6 +305,41 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(stored).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ label: 'Test confirmation' })
+      ])
+    );
+  });
+
+  test('allows creating a mattebox-only automatic gear rule', () => {
+    env = setupScriptEnvironment();
+
+    const addRuleButton = document.getElementById('autoGearAddRule');
+    addRuleButton.click();
+
+    const ruleNameInput = document.getElementById('autoGearRuleName');
+    ruleNameInput.value = 'Clamp-on extras';
+
+    const matteboxSelect = document.getElementById('autoGearMattebox');
+    const clampOption = Array.from(matteboxSelect.options).find(opt => opt.value === 'Clamp On');
+    if (clampOption) {
+      clampOption.selected = true;
+    }
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = 'Matte box + filter';
+    document.getElementById('autoGearAddName').value = 'Spare clamp adapter';
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+
+    document.getElementById('autoGearSaveRule').click();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(stored).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'Clamp-on extras',
+          scenarios: [],
+          mattebox: ['Clamp On'],
+        })
       ])
     );
   });
