@@ -6,6 +6,7 @@
   --accent-color: var(--brand-accent-color);
   --logo-background-color: var(--accent-color);
   --logo-accent-color: var(--brand-accent-color);
+  --logo-center-color: #ffffff;
   --link-color: var(--accent-color);
   --background-color: #f9f9f9;
   --surface-color: #ffffff;
@@ -118,8 +119,12 @@ body.pink-mode {
   --accent-color: #ff69b4;
   --link-color: #ff69b4;
   --icon-color: var(--accent-color);
-  --logo-accent-color: var(--accent-color);
-  --logo-background-color: var(--brand-accent-color);
+  --logo-accent-color: #ff3b9d;
+  --logo-accent-color: color-mix(in srgb, var(--accent-color) 90%, #a50058);
+  --logo-background-color: #ff9dd0;
+  --logo-background-color: color-mix(in srgb, var(--accent-color) 45%, white);
+  --logo-center-color: #fff3fa;
+  --logo-center-color: color-mix(in srgb, var(--accent-color) 15%, white);
 }
 
 html {
@@ -2518,7 +2523,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 }
 
 body.pink-mode #topBar #logo .logo-center {
-  fill: #fff !important;
+  fill: var(--logo-center-color) !important;
 }
 
 #topBar .feature-search {
