@@ -20228,6 +20228,14 @@ function isPlainObject(value) {
 function normalizeStoredValue(value) {
   if (typeof value === 'string') return value;
   if (value === undefined || value === null) return '';
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch (error) {
+      console.warn('Failed to serialize stored value for backup compatibility', error);
+      return '';
+    }
+  }
   try {
     return String(value);
   } catch (error) {
@@ -22806,6 +22814,7 @@ if (typeof module !== "undefined" && module.exports) {
     autoBackup,
     createSettingsBackup,
     captureStorageSnapshot,
+    extractBackupSections,
     searchKey,
     searchTokens,
     findBestSearchMatch,
