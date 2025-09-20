@@ -430,4 +430,30 @@ describe('global feature search helpers', () => {
 
     expect(result?.value?.label).toContain('Monitor');
   });
+
+  test('findBestSearchMatch prefers the most specific key subset match', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('Battery Summary'),
+      {
+        label: 'Battery Summary',
+        tokens: searchTokens('Battery Summary')
+      }
+    );
+    entries.set(
+      searchKey('Battery Summary Chart'),
+      {
+        label: 'Battery Summary Chart',
+        tokens: searchTokens('Battery Summary Chart')
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('Battery Summary Chart View'),
+      searchTokens('Battery Summary Chart View')
+    );
+
+    expect(result?.value?.label).toBe('Battery Summary Chart');
+  });
 });

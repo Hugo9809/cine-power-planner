@@ -8511,45 +8511,92 @@ function findBestSearchMatch(map, key, tokens = []) {
 
   let bestTokenMatch = null;
   let bestTokenScore = 0;
-  let keyPrefixMatch = null;
-  let partialMatch = null;
+  let bestTokenDelta = Number.POSITIVE_INFINITY;
+  let bestKeyPrefixMatch = null;
+  let bestKeyPrefixScore = Number.NEGATIVE_INFINITY;
+  let bestKeyPrefixDelta = Number.POSITIVE_INFINITY;
+  let bestKeySubsetMatch = null;
+  let bestKeySubsetScore = Number.NEGATIVE_INFINITY;
+  let bestKeySubsetDelta = Number.POSITIVE_INFINITY;
+  let bestPartialMatch = null;
+  let bestPartialScore = Number.NEGATIVE_INFINITY;
+  let bestPartialDelta = Number.POSITIVE_INFINITY;
 
   for (const [entryKey, entryValue] of flattened) {
+    const entryTokens = entryValue?.tokens || [];
+    const tokenScore = queryTokens.length > 0
+      ? tokenMatchScore(entryTokens, queryTokens)
+      : 0;
+
     if (hasKey && entryKey.startsWith(key)) {
-      const score =
-        queryTokens.length > 0
-          ? tokenMatchScore(entryValue?.tokens || [], queryTokens)
-          : Number.POSITIVE_INFINITY;
-      return toResult(entryKey, entryValue, 'keyPrefix', score);
+      const score = queryTokens.length > 0 ? tokenScore : Number.POSITIVE_INFINITY;
+      const delta = Math.abs(entryKey.length - key.length);
+      if (
+        !bestKeyPrefixMatch ||
+        score > bestKeyPrefixScore ||
+        (score === bestKeyPrefixScore && delta < bestKeyPrefixDelta) ||
+        (score === bestKeyPrefixScore &&
+          delta === bestKeyPrefixDelta &&
+          entryKey.length < (bestKeyPrefixMatch.key?.length || Number.POSITIVE_INFINITY))
+      ) {
+        bestKeyPrefixMatch = toResult(entryKey, entryValue, 'keyPrefix', score);
+        bestKeyPrefixScore = score;
+        bestKeyPrefixDelta = delta;
+      }
+      continue;
     }
 
     if (queryTokens.length) {
-      const score = tokenMatchScore(entryValue?.tokens || [], queryTokens);
-      if (score > bestTokenScore) {
-        bestTokenScore = score;
-        bestTokenMatch = toResult(entryKey, entryValue, 'token', score);
+      const delta = Math.abs(entryKey.length - key.length);
+      if (
+        tokenScore > bestTokenScore ||
+        (tokenScore === bestTokenScore && delta < bestTokenDelta)
+      ) {
+        bestTokenScore = tokenScore;
+        bestTokenDelta = delta;
+        bestTokenMatch = toResult(entryKey, entryValue, 'token', tokenScore);
       }
     }
 
-    if (hasKey && !keyPrefixMatch && key.startsWith(entryKey)) {
-      keyPrefixMatch = toResult(entryKey, entryValue, 'keySubset', 0);
+    if (hasKey && key.startsWith(entryKey)) {
+      const delta = Math.max(0, key.length - entryKey.length);
+      if (
+        !bestKeySubsetMatch ||
+        tokenScore > bestKeySubsetScore ||
+        (tokenScore === bestKeySubsetScore && delta < bestKeySubsetDelta)
+      ) {
+        bestKeySubsetMatch = toResult(entryKey, entryValue, 'keySubset', tokenScore);
+        bestKeySubsetScore = tokenScore;
+        bestKeySubsetDelta = delta;
+      }
     } else if (
       hasKey &&
-      !partialMatch &&
       (entryKey.includes(key) || key.includes(entryKey))
     ) {
-      partialMatch = toResult(entryKey, entryValue, 'partial', 0);
+      const delta = Math.abs(entryKey.length - key.length);
+      if (
+        !bestPartialMatch ||
+        tokenScore > bestPartialScore ||
+        (tokenScore === bestPartialScore && delta < bestPartialDelta)
+      ) {
+        bestPartialMatch = toResult(entryKey, entryValue, 'partial', tokenScore);
+        bestPartialScore = tokenScore;
+        bestPartialDelta = delta;
+      }
     }
   }
 
+  if (bestKeyPrefixMatch) {
+    return bestKeyPrefixMatch;
+  }
   if (bestTokenMatch && bestTokenScore > 0) {
     return bestTokenMatch;
   }
-  if (keyPrefixMatch) {
-    return keyPrefixMatch;
+  if (bestKeySubsetMatch) {
+    return bestKeySubsetMatch;
   }
-  if (partialMatch) {
-    return partialMatch;
+  if (bestPartialMatch) {
+    return bestPartialMatch;
   }
   return null;
 }
