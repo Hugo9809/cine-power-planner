@@ -844,6 +844,100 @@ describe('export/import all data', () => {
     importAllData(data);
     expect(loadProject('')).toEqual({ gearList: '<p></p>', projectInfo: null });
   });
+
+  test('importAllData normalizes automatic gear booleans from strings', () => {
+    importAllData({
+      autoGearSeeded: 'false',
+      autoGearShowBackups: '1',
+    });
+
+    expect(loadAutoGearSeedFlag()).toBe(false);
+    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(loadAutoGearBackupVisibility()).toBe(true);
+    expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBe('1');
+  });
+
+  test('importAllData accepts automatic gear data stored as object maps', () => {
+    const payload = {
+      autoGearRules: {
+        first: { id: 'first', label: 'First', scenarios: ['Indoor'], add: [], remove: [] },
+      },
+      autoGearBackups: {
+        keep: { id: 'backup-keep', label: 'Keep', createdAt: 123, rules: [] },
+        skip: null,
+      },
+    };
+
+    importAllData(payload);
+
+    expect(loadAutoGearRules()).toEqual([
+      payload.autoGearRules.first,
+    ]);
+    expect(loadAutoGearBackups()).toEqual([
+      { id: 'backup-keep', label: 'Keep', createdAt: 123, rules: [] },
+    ]);
+  });
+
+  test('importAllData accepts automatic gear data stored as JSON strings', () => {
+    const rules = [
+      { id: 'rule-json', label: 'JSON', scenarios: [], add: [], remove: [] },
+    ];
+    const backups = [
+      { id: 'backup-json', label: 'Backup', createdAt: 456, rules: [] },
+    ];
+    const presets = [
+      { id: 'preset-json', label: 'Preset', rules: [] },
+    ];
+
+    importAllData({
+      autoGearRules: JSON.stringify(rules),
+      autoGearBackups: JSON.stringify({ backups }),
+      autoGearPresets: JSON.stringify({ entries: presets }),
+    });
+
+    expect(loadAutoGearRules()).toEqual(rules);
+    expect(loadAutoGearBackups()).toEqual(backups);
+    expect(loadAutoGearPresets()).toEqual(presets);
+  });
+
+  test('importAllData extracts preset id from object payloads', () => {
+    importAllData({ autoGearActivePresetId: { id: 'preset-object', value: 'ignored' } });
+    expect(loadAutoGearActivePresetId()).toBe('preset-object');
+  });
+
+  test('importAllData parses JSON project strings', () => {
+    importAllData({
+      project: JSON.stringify({
+        Legacy: { gearList: '<div>Legacy</div>' },
+        WithInfo: { gearList: '<div>Info</div>', projectInfo: { projectName: 'WithInfo' } },
+      }),
+    });
+
+    const projects = loadProject();
+    expect(projects.Legacy).toEqual({ gearList: '<div>Legacy</div>', projectInfo: null });
+    expect(projects.WithInfo).toEqual({
+      gearList: '<div>Info</div>',
+      projectInfo: { projectName: 'WithInfo' },
+    });
+  });
+
+  test('importAllData parses project JSON arrays stored as strings', () => {
+    importAllData({
+      project: JSON.stringify([
+        { name: 'JsonProject', gearList: '<section>JSON</section>' },
+        '<article>Inline</article>',
+      ]),
+    });
+
+    const projects = loadProject();
+    expect(projects.JsonProject).toEqual({
+      gearList: '<section>JSON</section>',
+      projectInfo: null,
+    });
+    const inlineEntry = Object.entries(projects).find(([, value]) => value.gearList === '<article>Inline</article>');
+    expect(inlineEntry).toBeDefined();
+    expect(inlineEntry[1]).toEqual({ gearList: '<article>Inline</article>', projectInfo: null });
+  });
 });
 
 afterAll(() => {
