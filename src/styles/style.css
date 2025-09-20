@@ -72,7 +72,7 @@
   --divider-color: #eee;
   --diagram-gridline-color: var(--divider-color);
   --diagram-button-active-bg: #ddd;
-  --warning-color: #ffb300;
+  --warning-color: #ff9f1c;
   --warning-text-color: #000000;
   --danger-color: #f44336;
   --danger-overlay-color: rgba(244, 67, 54, 0.4);
@@ -85,7 +85,7 @@
   --line-height-base: 1.6;
   --line-height-supporting: 1.5;
   --status-error-bg: #fdd;
-  --status-warning-bg: #ffe69b;
+  --status-warning-bg: #ffe066;
   --status-success-bg: #dfd;
   --status-border-color: #ccc;
   --status-error-text-color: #000;
@@ -3301,11 +3301,11 @@ html.dark-mode,
   --info-color: #7ec8ff;
   --neutral-color: #bbbbbb;
   --status-error-bg: rgba(255, 102, 102, 0.2);
-  --status-warning-bg: rgba(255, 207, 120, 0.35);
+  --status-warning-bg: rgba(255, 193, 71, 0.5);
   --status-success-bg: rgba(102, 187, 106, 0.2);
   --status-border-color: #444;
   --status-error-text-color: #f0f0f0;
-  --status-warning-text-color: #fff7db;
+  --status-warning-text-color: #fff3b8;
   --status-success-text-color: #f0f0f0;
   --diagram-node-fill: #444;
   --power-color: #ff6666;
@@ -3464,11 +3464,11 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
     --info-color: #7ec8ff;
     --neutral-color: #bbbbbb;
     --status-error-bg: rgba(255, 102, 102, 0.2);
-    --status-warning-bg: rgba(255, 207, 120, 0.35);
+    --status-warning-bg: rgba(255, 193, 71, 0.5);
     --status-success-bg: rgba(102, 187, 106, 0.2);
     --status-border-color: #444;
     --status-error-text-color: #f0f0f0;
-    --status-warning-text-color: #fff7db;
+    --status-warning-text-color: #fff3b8;
     --status-success-text-color: #f0f0f0;
     --favorite-inactive-color: var(--control-text);
     --diagram-node-fill: #444;
