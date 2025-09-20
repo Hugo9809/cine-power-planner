@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_MATTEBOX_SEEDED_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -69,6 +69,10 @@ const AUTO_GEAR_BACKUP_VISIBILITY_KEY =
   typeof AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearShowBackups';
+const AUTO_GEAR_MATTEBOX_SEEDED_KEY =
+  typeof AUTO_GEAR_MATTEBOX_SEEDED_STORAGE_KEY !== 'undefined'
+    ? AUTO_GEAR_MATTEBOX_SEEDED_STORAGE_KEY
+    : 'cameraPowerPlanner_autoGearMatteboxSeeded';
 const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_LIMIT = 12;
 const autoGearBackupDateFormatter =
@@ -230,6 +234,16 @@ const LEGAL_LINKS = {
 };
 
 const AUTO_GEAR_CUSTOM_CATEGORY = '';
+const AUTO_GEAR_TRIGGER_PREFIXES = {
+  scenario: 'scenario::',
+  mattebox: 'mattebox::',
+};
+const AUTO_GEAR_TRIGGER_TYPE_ORDER = ['scenario', 'mattebox'];
+const AUTO_GEAR_MATTEBOX_DISPLAY_MAP = {
+  clampon: 'Clamp On',
+  swingaway: 'Swing Away',
+  rodbased: 'Rod based',
+};
 const GEAR_LIST_CATEGORIES = [
   'Camera',
   'Camera Support',
@@ -295,18 +309,79 @@ function normalizeAutoGearItem(entry) {
   return { id, name, category, quantity };
 }
 
+function normalizeMatteboxTriggerValue(value) {
+  if (typeof value !== 'string') return '';
+  const compact = value.replace(/[^a-z0-9]+/gi, '').toLowerCase();
+  if (!compact) return '';
+  if (compact.includes('clampon')) return 'clampon';
+  if (compact.includes('swingaway')) return 'swingaway';
+  if (compact.includes('lws') || compact.includes('rod')) return 'rodbased';
+  return compact;
+}
+
+function formatAutoGearTrigger(type, rawValue) {
+  if (type === 'mattebox') {
+    const value = normalizeMatteboxTriggerValue(rawValue);
+    return value ? `${AUTO_GEAR_TRIGGER_PREFIXES.mattebox}${value}` : '';
+  }
+  const value = typeof rawValue === 'string' ? rawValue.trim() : '';
+  return value;
+}
+
+function parseAutoGearTrigger(token) {
+  if (typeof token !== 'string') {
+    return { type: 'scenario', value: '' };
+  }
+  const trimmed = token.trim();
+  if (!trimmed) {
+    return { type: 'scenario', value: '' };
+  }
+  if (trimmed.startsWith(AUTO_GEAR_TRIGGER_PREFIXES.scenario)) {
+    return { type: 'scenario', value: trimmed.slice(AUTO_GEAR_TRIGGER_PREFIXES.scenario.length) };
+  }
+  if (trimmed.startsWith(AUTO_GEAR_TRIGGER_PREFIXES.mattebox)) {
+    return { type: 'mattebox', value: trimmed.slice(AUTO_GEAR_TRIGGER_PREFIXES.mattebox.length) };
+  }
+  return { type: 'scenario', value: trimmed };
+}
+
+function normalizeAutoGearTrigger(token) {
+  const parsed = parseAutoGearTrigger(token);
+  const value = parsed.type === 'mattebox'
+    ? normalizeMatteboxTriggerValue(parsed.value)
+    : (typeof parsed.value === 'string' ? parsed.value.trim() : '');
+  return value ? formatAutoGearTrigger(parsed.type, value) : '';
+}
+
+function compareAutoGearTriggers(a, b) {
+  const parsedA = parseAutoGearTrigger(a);
+  const parsedB = parseAutoGearTrigger(b);
+  const typeIndexA = AUTO_GEAR_TRIGGER_TYPE_ORDER.indexOf(parsedA.type);
+  const typeIndexB = AUTO_GEAR_TRIGGER_TYPE_ORDER.indexOf(parsedB.type);
+  if (typeIndexA !== typeIndexB) {
+    return typeIndexA - typeIndexB;
+  }
+  const valueA = parsedA.type === 'mattebox'
+    ? normalizeMatteboxTriggerValue(parsedA.value)
+    : parsedA.value;
+  const valueB = parsedB.type === 'mattebox'
+    ? normalizeMatteboxTriggerValue(parsedB.value)
+    : parsedB.value;
+  return String(valueA).localeCompare(String(valueB), undefined, { sensitivity: 'base' });
+}
+
 function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
   const label = typeof rule.label === 'string' ? rule.label.trim() : '';
   const scenarios = Array.isArray(rule.scenarios)
-    ? Array.from(new Set(rule.scenarios.map(s => (typeof s === 'string' ? s.trim() : '')).filter(Boolean)))
+    ? Array.from(new Set(rule.scenarios.map(normalizeAutoGearTrigger).filter(Boolean)))
     : [];
   if (!scenarios.length) return null;
   const add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
   const remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
   if (!add.length && !remove.length) return null;
-  return { id, label, scenarios: scenarios.sort((a, b) => a.localeCompare(b)), add, remove };
+  return { id, label, scenarios: scenarios.sort(compareAutoGearTriggers), add, remove };
 }
 
 function autoGearItemSnapshot(item) {
@@ -331,14 +406,16 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     .sort((a, b) => autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)));
   return {
     label: normalized.label || '',
-    scenarios: normalized.scenarios.slice().sort((a, b) => a.localeCompare(b)),
+    scenarios: normalized.scenarios.slice().sort(compareAutoGearTriggers),
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove),
   };
 }
 
 function autoGearRuleSortKey(rule) {
-  const scenarioKey = Array.isArray(rule.scenarios) ? rule.scenarios.join('|') : '';
+  const scenarioKey = Array.isArray(rule.scenarios)
+    ? rule.scenarios.map(normalizeAutoGearTrigger).sort(compareAutoGearTriggers).join('|')
+    : '';
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
   return `${scenarioKey}|${rule.label || ''}|${addKey}|${removeKey}`;
@@ -577,6 +654,15 @@ function readAutoGearRulesFromStorage() {
 }
 
 let autoGearRules = readAutoGearRulesFromStorage();
+if (!hasSeededMatteboxAutoGearDefaults()) {
+  const merged = mergeAutoGearRules(autoGearRules, createDefaultMatteboxAutoGearRules());
+  const addedMatteboxRules = merged.length !== autoGearRules.length;
+  autoGearRules = merged;
+  if (addedMatteboxRules) {
+    persistAutoGearRules();
+  }
+  markMatteboxAutoGearDefaultsSeeded();
+}
 let baseAutoGearRules = autoGearRules.slice();
 let projectScopedAutoGearRules = null;
 let autoGearBackups = readAutoGearBackupsFromStorage();
@@ -700,7 +786,9 @@ function autoGearRuleSignature(rule) {
     : [];
   return stableStringify({
     label: typeof rule.label === 'string' ? rule.label : '',
-    scenarios: Array.isArray(rule.scenarios) ? rule.scenarios : [],
+    scenarios: Array.isArray(rule.scenarios)
+      ? rule.scenarios.map(normalizeAutoGearTrigger).sort(compareAutoGearTriggers)
+      : [],
     add: normalizeList(rule.add),
     remove: normalizeList(rule.remove),
   });
@@ -720,6 +808,43 @@ function mergeAutoGearRules(existing, incoming) {
     seen.add(signature);
   });
   return normalizedExisting;
+}
+
+function createDefaultMatteboxAutoGearRules() {
+  const category = 'Matte box + filter';
+  const makeRule = (label, trigger, items) => ({
+    label,
+    scenarios: [formatAutoGearTrigger('mattebox', trigger)],
+    add: items.map(name => ({ name, category, quantity: 1 })),
+    remove: [],
+  });
+  return [
+    makeRule('Mattebox – Clamp On', 'Clamp On', [
+      'ARRI LMB 4x5 Clamp-On (3-Stage)',
+      'ARRI LMB 4x5 / LMB-6 Tray Catcher',
+      'ARRI LMB 4x5 Side Flags',
+      'ARRI LMB Flag Holders',
+      'ARRI LMB 4x5 Set of Mattes spherical',
+      'ARRI LMB Accessory Adapter',
+      'ARRI Anti-Reflection Frame 4x5.65',
+      'ARRI LMB 4x5 Clamp Adapter Set Pro',
+    ]),
+    makeRule('Mattebox – Rod based', 'Rod based', [
+      'ARRI LMB 4x5 15mm LWS Set 3-Stage',
+      'ARRI LMB 19mm Studio Rod Adapter',
+      'ARRI LMB 4x5 / LMB-6 Tray Catcher',
+      'ARRI LMB 4x5 Side Flags',
+      'ARRI LMB Flag Holders',
+      'ARRI LMB 4x5 Set of Mattes spherical',
+      'ARRI LMB Accessory Adapter',
+      'ARRI Anti-Reflection Frame 4x5.65',
+    ]),
+    makeRule('Mattebox – Swing Away', 'Swing Away', [
+      'ARRI LMB 4x5 Pro Set',
+      'ARRI LMB 19mm Studio Rod Adapter',
+      'ARRI LMB 4x5 / LMB-6 Tray Catcher',
+    ]),
+  ];
 }
 
 function looksLikeGearName(name) {
@@ -775,6 +900,34 @@ function clearAutoGearDefaultsSeeded() {
     localStorage.removeItem(AUTO_GEAR_SEEDED_KEY);
   } catch (error) {
     console.warn('Failed to clear automatic gear seed flag', error);
+  }
+}
+
+function hasSeededMatteboxAutoGearDefaults() {
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    return localStorage.getItem(AUTO_GEAR_MATTEBOX_SEEDED_KEY) === '1';
+  } catch (error) {
+    console.warn('Failed to read automatic mattebox gear seed flag', error);
+    return false;
+  }
+}
+
+function markMatteboxAutoGearDefaultsSeeded() {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(AUTO_GEAR_MATTEBOX_SEEDED_KEY, '1');
+  } catch (error) {
+    console.warn('Failed to persist automatic mattebox gear seed flag', error);
+  }
+}
+
+function clearMatteboxAutoGearDefaultsSeeded() {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.removeItem(AUTO_GEAR_MATTEBOX_SEEDED_KEY);
+  } catch (error) {
+    console.warn('Failed to clear automatic mattebox gear seed flag', error);
   }
 }
 
@@ -903,9 +1056,11 @@ function seedAutoGearRulesFromCurrentProject() {
     if (!adjusted.add.length && !adjusted.remove.length) return;
     rules.push({ id: generateAutoGearId('rule'), label: combinedLabel, scenarios: combo.slice(), add: adjusted.add, remove: adjusted.remove });
   });
-  if (!rules.length) return;
-  setAutoGearRules(rules);
+  const mergedRules = mergeAutoGearRules(rules, createDefaultMatteboxAutoGearRules());
+  if (!mergedRules.length) return;
+  setAutoGearRules(mergedRules);
   markAutoGearDefaultsSeeded();
+  markMatteboxAutoGearDefaultsSeeded();
 }
 
 function resetAutoGearRulesToFactoryAdditions() {
@@ -925,6 +1080,7 @@ function resetAutoGearRulesToFactoryAdditions() {
   try {
     setAutoGearRules([]);
     clearAutoGearDefaultsSeeded();
+    clearMatteboxAutoGearDefaultsSeeded();
     closeAutoGearEditor();
     seedAutoGearRulesFromCurrentProject();
     const updatedRules = getAutoGearRules();
@@ -6352,8 +6508,7 @@ function refreshAutoGearScenarioOptions(selected) {
   const selectedValues = Array.from(
     new Set(
       candidateValues
-        .filter(value => typeof value === 'string')
-        .map(value => value.trim())
+        .map(normalizeAutoGearTrigger)
         .filter(Boolean)
     )
   );
@@ -6368,9 +6523,10 @@ function refreshAutoGearScenarioOptions(selected) {
     Array.from(source.options).forEach(opt => {
       if (!opt.value) return;
       const option = document.createElement('option');
-      option.value = opt.value;
+      const triggerValue = formatAutoGearTrigger('scenario', opt.value);
+      option.value = triggerValue;
       option.textContent = opt.textContent;
-      if (selectedValues.includes(opt.value)) {
+      if (selectedValues.includes(triggerValue)) {
         option.selected = true;
       }
       autoGearScenariosSelect.appendChild(option);
@@ -6378,12 +6534,35 @@ function refreshAutoGearScenarioOptions(selected) {
     });
   }
 
+  if (typeof document !== 'undefined') {
+    const matteboxElement = document.getElementById('mattebox');
+    if (matteboxElement) {
+      const matteboxLabel = texts[currentLang]?.projectFields?.mattebox
+        || texts.en?.projectFields?.mattebox
+        || 'Mattebox';
+      Array.from(matteboxElement.options || []).forEach(opt => {
+        const normalized = normalizeMatteboxTriggerValue(opt.value);
+        if (!normalized) return;
+        const triggerValue = formatAutoGearTrigger('mattebox', opt.value);
+        const option = document.createElement('option');
+        option.value = triggerValue;
+        const text = opt.textContent ? opt.textContent.trim() : opt.value;
+        option.textContent = `${matteboxLabel}: ${text}`;
+        if (selectedValues.includes(triggerValue)) {
+          option.selected = true;
+        }
+        autoGearScenariosSelect.appendChild(option);
+        hasOptions = true;
+      });
+    }
+  }
+
   if (!hasOptions) {
     const placeholder = document.createElement('option');
     placeholder.value = '';
     placeholder.textContent = texts[currentLang]?.autoGearScenarioPlaceholder
       || texts.en?.autoGearScenarioPlaceholder
-      || 'Select scenarios';
+      || 'Select triggers';
     placeholder.disabled = true;
     placeholder.selected = true;
     autoGearScenariosSelect.appendChild(placeholder);
@@ -6395,7 +6574,7 @@ function refreshAutoGearScenarioOptions(selected) {
       if (!exists) {
         const fallbackOption = document.createElement('option');
         fallbackOption.value = value;
-        fallbackOption.textContent = value;
+        fallbackOption.textContent = getAutoGearTriggerDisplayText(value) || value;
         fallbackOption.selected = true;
         autoGearScenariosSelect.appendChild(fallbackOption);
       }
@@ -6846,6 +7025,49 @@ function renderAutoGearBackupControls() {
   applyAutoGearBackupVisibility();
 }
 
+function getMatteboxTriggerDisplayValue(normalizedValue) {
+  const canonical = normalizeMatteboxTriggerValue(normalizedValue);
+  if (!canonical) return '';
+  let select = null;
+  if (typeof document !== 'undefined') {
+    select = document.getElementById('mattebox');
+  }
+  if (select) {
+    const option = Array.from(select.options || []).find(opt => {
+      return normalizeMatteboxTriggerValue(opt.value) === canonical;
+    });
+    if (option && option.textContent) {
+      return option.textContent.trim();
+    }
+  }
+  if (AUTO_GEAR_MATTEBOX_DISPLAY_MAP[canonical]) {
+    return AUTO_GEAR_MATTEBOX_DISPLAY_MAP[canonical];
+  }
+  return canonical;
+}
+
+function getAutoGearTriggerDisplayText(trigger) {
+  const { type, value } = parseAutoGearTrigger(trigger);
+  if (!value) return '';
+  if (type === 'mattebox') {
+    const matteboxLabel = texts[currentLang]?.projectFields?.mattebox
+      || texts.en?.projectFields?.mattebox
+      || 'Mattebox';
+    const displayValue = getMatteboxTriggerDisplayValue(value) || value;
+    return `${matteboxLabel}: ${displayValue}`;
+  }
+  if (typeof document !== 'undefined') {
+    const select = document.getElementById('requiredScenarios');
+    if (select) {
+      const option = Array.from(select.options || []).find(opt => opt.value === value);
+      if (option && option.textContent) {
+        return option.textContent.trim();
+      }
+    }
+  }
+  return value;
+}
+
 function renderAutoGearRulesList() {
   if (!autoGearRulesList) return;
   autoGearRulesList.innerHTML = '';
@@ -6867,14 +7089,17 @@ function renderAutoGearRulesList() {
     info.className = 'auto-gear-rule-info';
     const title = document.createElement('p');
     title.className = 'auto-gear-rule-title';
-    title.textContent = rule.label || rule.scenarios.join(' + ');
+    const triggerTexts = Array.isArray(rule.scenarios)
+      ? rule.scenarios.map(getAutoGearTriggerDisplayText).filter(Boolean)
+      : [];
+    title.textContent = rule.label || triggerTexts.join(' + ');
     info.appendChild(title);
-    const scenarioLabel = texts[currentLang]?.projectFields?.requiredScenarios
-      || texts.en?.projectFields?.requiredScenarios
-      || 'Required Scenarios';
+    const scenarioLabel = texts[currentLang]?.autoGearScenariosLabel
+      || texts.en?.autoGearScenariosLabel
+      || 'Triggers';
     const scenarioMeta = document.createElement('p');
     scenarioMeta.className = 'auto-gear-rule-meta';
-    scenarioMeta.textContent = `${scenarioLabel}: ${rule.scenarios.join(' + ')}`;
+    scenarioMeta.textContent = `${scenarioLabel}: ${triggerTexts.join(' + ')}`;
     info.appendChild(scenarioMeta);
     const addSummary = formatAutoGearCount(rule.add.length, 'autoGearAddsCountOne', 'autoGearAddsCountOther');
     const removeSummary = formatAutoGearCount(rule.remove.length, 'autoGearRemovalsCountOne', 'autoGearRemovalsCountOther');
@@ -17030,44 +17255,98 @@ function findAutoGearCategoryCell(table, category) {
     return null;
 }
 
-function applyAutoGearRulesToTableHtml(tableHtml, info) {
-    if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
-    const scenarios = info && info.requiredScenarios
-        ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
-        : [];
-    if (!scenarios.length) {
-        const hasRuleWithoutScenario = autoGearRules.some(rule => !rule.scenarios.length);
-        if (!hasRuleWithoutScenario) return tableHtml;
-    }
-    const triggered = autoGearRules.filter(rule => rule.scenarios.every(s => scenarios.includes(s)));
-    if (!triggered.length) return tableHtml;
-    const container = document.createElement('div');
-    container.innerHTML = tableHtml;
-    const table = container.querySelector('.gear-table');
-    if (!table) return tableHtml;
-    triggered.forEach(rule => {
-        rule.remove.forEach(item => {
-            let remaining = normalizeAutoGearQuantity(item.quantity);
-            if (remaining <= 0) return;
-            const primaryCell = findAutoGearCategoryCell(table, item.category);
-            if (primaryCell) {
-                remaining = removeAutoGearItem(primaryCell, item, remaining);
-            }
-            if (remaining > 0) {
-                const gearCells = Array.from(table.querySelectorAll('tbody.category-group tr:not(.category-row) td'));
-                for (const cell of gearCells) {
-                    if (cell === primaryCell) continue;
-                    remaining = removeAutoGearItem(cell, item, remaining);
-                    if (remaining <= 0) break;
-                }
-            }
-        });
-        rule.add.forEach(item => {
-            const cell = ensureAutoGearCategory(table, item.category);
-            if (cell) addAutoGearItem(cell, item);
-        });
+function buildAutoGearTriggerContext(info) {
+  const triggers = new Set();
+  const scenarioValues = [];
+  if (info && typeof info.requiredScenarios === 'string' && info.requiredScenarios.trim()) {
+    info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean).forEach(value => {
+      const trigger = formatAutoGearTrigger('scenario', value);
+      if (trigger) {
+        triggers.add(trigger);
+        scenarioValues.push(value);
+      }
     });
-    return container.innerHTML;
+  }
+  const rawMattebox = typeof info?.mattebox === 'string' ? info.mattebox.trim() : '';
+  const matteboxNormalized = normalizeMatteboxTriggerValue(rawMattebox);
+  if (matteboxNormalized) {
+    const trigger = formatAutoGearTrigger('mattebox', rawMattebox);
+    if (trigger) triggers.add(trigger);
+  }
+  return { triggers, scenarioValues, matteboxNormalized };
+}
+
+function collectClampAdapterDiameters(info) {
+  if (!info || typeof info.lenses !== 'string' || !info.lenses.trim()) return [];
+  if (!devices || !devices.lenses) return [];
+  const lensNames = info.lenses.split(',').map(s => s.trim()).filter(Boolean);
+  const values = new Set();
+  lensNames.forEach(name => {
+    const lens = devices.lenses[name];
+    const rawDiameter = lens && (lens.frontDiameterMm ?? lens.frontDiameterMM);
+    const numericDiameter = typeof rawDiameter === 'string'
+      ? parseFloat(rawDiameter)
+      : rawDiameter;
+    if (Number.isFinite(numericDiameter)) {
+      values.add(numericDiameter);
+    }
+  });
+  return Array.from(values).sort((a, b) => a - b);
+}
+
+function applyMatteboxDynamicAdditions(table, info, context, triggeredRules) {
+  if (!table || context.matteboxNormalized !== 'clampon') return;
+  const clampTrigger = formatAutoGearTrigger('mattebox', 'Clamp On');
+  const clampRuleActive = triggeredRules.some(rule => Array.isArray(rule.scenarios) && rule.scenarios.includes(clampTrigger));
+  if (!clampRuleActive) return;
+  const diameters = collectClampAdapterDiameters(info);
+  if (!diameters.length) return;
+  const category = 'Matte box + filter';
+  const cell = ensureAutoGearCategory(table, category);
+  if (!cell) return;
+  diameters.forEach(diameter => {
+    addAutoGearItem(cell, { name: `ARRI LMB 4x5 Clamp Adapter ${diameter}mm`, category, quantity: 1 });
+  });
+}
+
+function applyAutoGearRulesToTableHtml(tableHtml, info) {
+  if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
+  const context = buildAutoGearTriggerContext(info || {});
+  if (!context.triggers.size) return tableHtml;
+  const triggered = autoGearRules.filter(rule => {
+    const ruleTriggers = Array.isArray(rule.scenarios) ? rule.scenarios : [];
+    if (!ruleTriggers.length) return false;
+    return ruleTriggers.every(trigger => context.triggers.has(trigger));
+  });
+  if (!triggered.length) return tableHtml;
+  const container = document.createElement('div');
+  container.innerHTML = tableHtml;
+  const table = container.querySelector('.gear-table');
+  if (!table) return tableHtml;
+  triggered.forEach(rule => {
+    rule.remove.forEach(item => {
+      let remaining = normalizeAutoGearQuantity(item.quantity);
+      if (remaining <= 0) return;
+      const primaryCell = findAutoGearCategoryCell(table, item.category);
+      if (primaryCell) {
+        remaining = removeAutoGearItem(primaryCell, item, remaining);
+      }
+      if (remaining > 0) {
+        const gearCells = Array.from(table.querySelectorAll('tbody.category-group tr:not(.category-row) td'));
+        for (const cell of gearCells) {
+          if (cell === primaryCell) continue;
+          remaining = removeAutoGearItem(cell, item, remaining);
+          if (remaining <= 0) break;
+        }
+      }
+    });
+    rule.add.forEach(item => {
+      const cell = ensureAutoGearCategory(table, item.category);
+      if (cell) addAutoGearItem(cell, item);
+    });
+  });
+  applyMatteboxDynamicAdditions(table, info, context, triggered);
+  return container.innerHTML;
 }
 
 function generateGearListHtml(info = {}) {
@@ -17163,47 +17442,8 @@ function generateGearListHtml(info = {}) {
         return Math.max(max, lens && lens.frontDiameterMm || 0);
     }, 0);
     const parsedFilters = parseFilterTokens(info.filter);
-    const filterTypes = parsedFilters.map(f => f.type);
-    const needsSwingAway = filterTypes.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
     let filterSelections = collectFilterAccessories(parsedFilters);
     const filterSelectHtml = buildFilterSelectHtml(parsedFilters);
-    if (info.mattebox && !needsSwingAway) {
-        const matteboxes = devices.accessories?.matteboxes || {};
-        for (const [name, mb] of Object.entries(matteboxes)) {
-            const normalize = s => s.replace(/[-\s]/g, '').toLowerCase();
-            if (mb.type && normalize(mb.type) === normalize(info.mattebox)) {
-                filterSelections.unshift(name);
-                if (name === 'ARRI LMB 4x5 Pro Set') {
-                    filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
-                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                } else if (name === 'ARRI LMB 4x5 15mm LWS Set 3-Stage') {
-                    filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
-                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                    filterSelections.push('ARRI LMB 4x5 Side Flags');
-                    filterSelections.push('ARRI LMB Flag Holders');
-                    filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
-                    filterSelections.push('ARRI LMB Accessory Adapter');
-                    filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
-                } else if (name === 'ARRI LMB 4x5 Clamp-On (3-Stage)') {
-                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                    filterSelections.push('ARRI LMB 4x5 Side Flags');
-                    filterSelections.push('ARRI LMB Flag Holders');
-                    filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
-                    filterSelections.push('ARRI LMB Accessory Adapter');
-                    filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
-                    filterSelections.push('ARRI LMB 4x5 Clamp Adapter Set Pro');
-                    const lensNames = info.lenses
-                        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
-                        : [];
-                    const diameters = [...new Set(lensNames
-                        .map(n => devices.lenses && devices.lenses[n] && devices.lenses[n].frontDiameterMm)
-                        .filter(Boolean))];
-                    diameters.forEach(d => filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${d}mm`));
-                }
-                break;
-            }
-        }
-    }
     viewfinderExtSelections.forEach(vf => supportAccNoCages.push(vf));
     if (isAnyScenarioActive(['Rain Machine', 'Extreme rain'])) {
         filterSelections.push('Schulz Sprayoff Micro');
