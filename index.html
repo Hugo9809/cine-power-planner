@@ -1390,7 +1390,9 @@
             <li>Tune the interface with dark mode, high contrast, pink accents and a custom accent color to match your production.</li>
             <li>Adjust the base font size or pick a different typeface. Add local fonts from your computer when the browser supports it.</li>
             <li>Upload an SVG logo to brand printable overviews and configuration backups.</li>
-            <li>Use <strong>Backup</strong> to download a JSON snapshot of settings, projects, custom devices, favorites and runtime feedback; <strong>Restore</strong> loads a saved snapshot.</li>
+            <li>
+              Use <strong>Backup</strong> to download a JSON snapshot of settings, projects, custom devices, favorites, automatic gear rules and runtime feedback; <strong>Restore</strong> captures a fresh safety copy first and then loads the selected file.
+            </li>
           </ul>
           <div class="help-link-group" aria-label="Settings shortcuts">
             <a class="help-link button-link" href="#settingsButton" data-help-target="#settingsButton">Open Settings</a>
@@ -1533,7 +1535,7 @@
         <section
           data-help-section
           id="autoGearRulesHelp"
-          data-help-keywords="automatic gear rules auto add remove custom scenario requirements generator list automation"
+          data-help-keywords="automatic gear rules auto add remove custom scenario requirements generator list automation backup restore snapshots history"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="film">&#xF129;</span>Automatic Gear Rules</h3>
           <ul>
@@ -1563,7 +1565,12 @@
             </li>
             <li>
               Background automatic backups capture rule changes every 10 minutes. Toggle <strong>Show automatic backups</strong>
-              to reveal the list, inspect timestamps and restore a snapshot if something goes wrong.
+              to reveal the timeline inside Automatic Gear Rules.
+            </li>
+            <li>
+              When backups are visible, pick a timestamped snapshot from the <strong>Choose a backup</strong> dropdown to review
+              its details and press <strong>Restore</strong> to roll back to that version. Each entry lists how many rules it
+              contains so you can recover confidently even while offline.
             </li>
             <li>
               Rules travel with backups and exports. Include them when sharing a project, then decide on import whether to apply
@@ -1597,6 +1604,18 @@
               href="#settingsDialog"
               data-help-target="#autoGearShowBackups"
             >Show automatic backups</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
+              data-help-target="#autoGearBackupSelect"
+              data-help-highlight="#autoGearBackupsSection"
+            >Choose a backup</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
+              data-help-target="#autoGearBackupRestore"
+              data-help-highlight="#autoGearBackupsSection"
+            >Restore backup</a>
           </div>
         </section>
         <section
