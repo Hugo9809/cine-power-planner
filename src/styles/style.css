@@ -4209,6 +4209,36 @@ body.dark-mode.pink-mode #gearListOutput h2,
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+#gearListFilterDetails .filter-detail-size select {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  min-width: 3.5rem;
+  font: inherit;
+}
+
+#gearListFilterDetails .filter-detail-size select:focus-visible {
+  outline: none;
+}
+
+#gearListFilterDetails .filter-detail-size:hover {
+  border-color: var(--accent-color);
+  background-color: var(--panel-bg);
+}
+
+#gearListFilterDetails .filter-detail-size:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 1px var(--accent-color);
+  background-color: var(--panel-bg);
 }
 
 #gearListFilterDetails .filter-detail-values {
@@ -4236,11 +4266,48 @@ body.dark-mode.pink-mode #gearListOutput h2,
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  background-color: transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+#gearListFilterDetails .filter-value-option:hover {
+  border-color: var(--accent-color);
+  background-color: var(--panel-bg);
+}
+
+#gearListFilterDetails .filter-value-option:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 1px var(--accent-color);
+  background-color: var(--panel-bg);
+}
+
+@supports (color: color-mix(in srgb, #000 50%, white)) {
+  #gearListFilterDetails .filter-detail-size:focus-within {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 12%, var(--panel-bg));
+  }
+
+  #gearListFilterDetails .filter-value-option:hover {
+    background-color: color-mix(in srgb, var(--accent-color) 8%, var(--panel-bg));
+  }
+
+  #gearListFilterDetails .filter-value-option:focus-within {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent);
+    background-color: color-mix(in srgb, var(--accent-color) 12%, var(--panel-bg));
+  }
 }
 
 #gearListFilterDetails .filter-value-option input[type="checkbox"] {
   margin: 0;
   padding: 0;
+  accent-color: var(--accent-color);
+}
+
+#gearListFilterDetails .filter-value-option input[type="checkbox"]:focus-visible {
+  outline: none;
 }
 
 #gearListOutput .select-wrapper,
