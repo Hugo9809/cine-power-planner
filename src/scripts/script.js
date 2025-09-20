@@ -16382,7 +16382,7 @@ function generateConnectorSummary(device) {
     const connectors = [
         { items: device.power?.powerDistributionOutputs, icon: ICON_GLYPHS.bolt, cls: 'power-conn', label: 'Power', dir: 'Out' },
         { items: powerInputTypes(device).map(t => ({ type: t })), icon: ICON_GLYPHS.plug, cls: 'power-conn', label: 'Power', dir: 'In' },
-        { items: device.fizConnectors, icon: ICON_GLYPHS.sliders, cls: 'fiz-conn', label: 'FIZ Port' },
+        { items: device.fizConnectors, icon: ICON_GLYPHS.gears, cls: 'fiz-conn', label: 'FIZ Port' },
         { items: device.video?.inputs || device.videoInputs, icon: ICON_GLYPHS.screen, cls: 'video-conn', label: 'Video', dir: 'In' },
         { items: device.video?.outputs || device.videoOutputs, icon: ICON_GLYPHS.screen, cls: 'video-conn', label: 'Video', dir: 'Out' },
         { items: device.timecode, icon: ICON_GLYPHS.timecode, cls: 'neutral-conn', label: 'Timecode' },
