@@ -311,13 +311,19 @@ function generatePrintableOverview() {
     overviewDialog.innerHTML = overviewHtml;
     const content = overviewDialog.querySelector('#overviewDialogContent');
 
-    // Match current theme for on-screen overview; print stylesheet will override
-    if (document.body.classList.contains('dark-mode')) {
-        content.classList.add('dark-mode');
-    }
-    if (document.body.classList.contains('pink-mode')) {
-        content.classList.add('pink-mode');
-    }
+    const applyThemeClasses = (target) => {
+        if (!target || typeof document === 'undefined') return;
+        const themeClasses = ['dark-mode', 'light-mode', 'pink-mode', 'dark-accent-boost', 'high-contrast'];
+        const activeClasses = new Set([
+            ...(document.documentElement ? Array.from(document.documentElement.classList) : []),
+            ...(document.body ? Array.from(document.body.classList) : []),
+        ]);
+        themeClasses.forEach(themeClass => {
+            target.classList.toggle(themeClass, activeClasses.has(themeClass));
+        });
+    };
+
+    applyThemeClasses(content);
 
     const closeBtn = overviewDialog.querySelector('#closeOverviewBtn');
     if (closeBtn) {
