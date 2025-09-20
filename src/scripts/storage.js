@@ -43,6 +43,17 @@ const RAW_STORAGE_BACKUP_KEYS = new Set([
   CUSTOM_LOGO_STORAGE_KEY,
 ]);
 
+const STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
+
+let storageErrorAlertShown = false;
+if (GLOBAL_SCOPE) {
+  if (typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
+    storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
+  } else {
+    GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = false;
+  }
+}
+
 const DEVICE_COLLECTION_KEYS = [
   'cameras',
   'monitors',
@@ -241,6 +252,19 @@ function isPlainObject(val) {
 }
 
 function alertStorageError() {
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
+    storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
+  }
+
+  if (storageErrorAlertShown) {
+    return;
+  }
+
+  storageErrorAlertShown = true;
+  if (GLOBAL_SCOPE) {
+    GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = true;
+  }
+
   if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
   let msg = 'Storage error: Unable to access local data. Changes may not be saved.';
   try {
