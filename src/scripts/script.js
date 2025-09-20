@@ -15441,17 +15441,36 @@ deleteSetupBtn.addEventListener("click", () => {
 
 setupSelect.addEventListener("change", (event) => {
   const setupName = event.target.value;
-  if (lastSetupName && typeof saveProject === 'function') {
-    const previousRules = getProjectScopedAutoGearRules();
+  const typedName =
+    setupNameInput && typeof setupNameInput.value === 'string'
+      ? setupNameInput.value.trim()
+      : '';
+  const previousKey =
+    (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '')
+    || typedName
+    || '';
+
+  if (typeof saveProject === 'function') {
+    const info = projectForm ? collectProjectFormData() : {};
+    if (info) {
+      info.sliderBowl = getSliderBowlValue();
+      info.easyrig = getEasyrigValue();
+    }
+    const previousProjectInfo = deriveProjectInfo(info);
+    currentProjectInfo = previousProjectInfo;
     const previousPayload = {
-      projectInfo: currentProjectInfo,
+      projectInfo: previousProjectInfo,
       gearList: getCurrentGearListHtml()
     };
+    const previousRules = getProjectScopedAutoGearRules();
     if (previousRules && previousRules.length) {
       previousPayload.autoGearRules = previousRules;
     }
-    saveProject(lastSetupName, previousPayload);
+    saveProject(previousKey, previousPayload);
   }
+
+  displayGearAndRequirements('');
+  currentProjectInfo = null;
   if (setupName === "") { // "-- New Setup --" selected
     setupNameInput.value = "";
     [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(sel => {
@@ -19433,10 +19452,10 @@ function saveCurrentGearList() {
     info.sliderBowl = getSliderBowlValue();
     info.easyrig = getEasyrigValue();
     currentProjectInfo = deriveProjectInfo(info);
-    const projectName = getCurrentProjectName();
+    const projectStorageKey = getCurrentProjectStorageKey({ allowTyped: true });
     const storageKey = getCurrentProjectStorageKey();
     const projectRules = getProjectScopedAutoGearRules();
-    if (typeof saveProject === 'function') {
+    if (typeof saveProject === 'function' && typeof projectStorageKey === 'string') {
         const payload = {
             projectInfo: currentProjectInfo,
             gearList: html
@@ -19444,7 +19463,7 @@ function saveCurrentGearList() {
         if (projectRules && projectRules.length) {
             payload.autoGearRules = projectRules;
         }
-        saveProject(projectName, payload);
+        saveProject(projectStorageKey, payload);
     }
 
     if (!storageKey) return;
