@@ -123,7 +123,9 @@ if (typeof self !== 'undefined') {
 
     const isNavigationRequest = event.request.mode === 'navigate';
 
-    const isAppIconRequest = event.request.destination === 'image' && event.request.url.includes('/src/icons/');
+    const requestUrl = new URL(event.request.url);
+    const isSameOrigin = requestUrl.origin === self.location.origin;
+    const isAppIconRequest = isSameOrigin && requestUrl.pathname.includes('/src/icons/');
     if (isAppIconRequest) {
       event.respondWith((async () => {
         const cache = await caches.open(CACHE_NAME);

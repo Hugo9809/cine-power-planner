@@ -569,7 +569,7 @@ if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
       configurable: true,
       get: getSafeLocalStorage,
     });
-  } catch (defineError) {
+  } catch {
     GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
   }
 }
