@@ -154,6 +154,7 @@ var hasStoredEntries = function hasStoredEntries(storage) {
   }
   return false;
 };
+var SAFE_LOCAL_STORAGE_TYPE = 'unknown';
 var SAFE_LOCAL_STORAGE = function () {
   var TEST_KEY = '__storage_test__';
   var verifyStorage = function verifyStorage(storage) {
@@ -178,7 +179,10 @@ var SAFE_LOCAL_STORAGE = function () {
     try {
       if ('localStorage' in window) {
         var storage = verifyStorage(window.localStorage);
-        if (storage) return storage;
+        if (storage) {
+          SAFE_LOCAL_STORAGE_TYPE = 'local';
+          return storage;
+        }
       }
     } catch (e) {
       console.warn('localStorage is unavailable:', e);
@@ -188,6 +192,7 @@ var SAFE_LOCAL_STORAGE = function () {
         var _storage = verifyStorage(window.sessionStorage);
         if (_storage) {
           console.warn('Falling back to sessionStorage; data persists for this tab only.');
+          SAFE_LOCAL_STORAGE_TYPE = 'session';
           return _storage;
         }
       }
@@ -195,6 +200,7 @@ var SAFE_LOCAL_STORAGE = function () {
       console.warn('sessionStorage fallback is unavailable:', e);
     }
   }
+  SAFE_LOCAL_STORAGE_TYPE = 'memory';
   alertStorageError();
   var memoryStore = {};
   return {
@@ -326,7 +332,24 @@ if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
 function isPlainObject(val) {
   return val !== null && _typeof(val) === 'object' && !Array.isArray(val);
 }
-function alertStorageError() {
+function alertStorageError(reason) {
+  var storageType = typeof SAFE_LOCAL_STORAGE_TYPE === 'string' ? SAFE_LOCAL_STORAGE_TYPE : null;
+  var shouldDisplay = false;
+
+  if (typeof reason === 'string') {
+    if (reason === 'migration-read') {
+      shouldDisplay = Boolean(storageType && storageType !== 'local');
+    } else {
+      return;
+    }
+  } else {
+    shouldDisplay = Boolean(storageType && storageType !== 'local');
+  }
+
+  if (!shouldDisplay) {
+    return;
+  }
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   }

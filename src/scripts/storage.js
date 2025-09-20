@@ -664,6 +664,15 @@ function alertStorageError(reason) {
     return;
   }
 
+  const storageType =
+    safeLocalStorageInfo && typeof safeLocalStorageInfo === 'object'
+      ? safeLocalStorageInfo.type
+      : null;
+
+  if (!storageType || storageType === 'local') {
+    return;
+  }
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   }

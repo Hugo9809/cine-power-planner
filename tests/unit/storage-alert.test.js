@@ -144,7 +144,7 @@ describe('storage error alert handling', () => {
     }
   });
 
-  test('shows the storage alert only once even when failures repeat', () => {
+  test('does not show the storage alert when localStorage remains available', () => {
     const { saveDeviceData } = require('../../src/scripts/storage');
 
     const payload = { cameras: {} };
@@ -154,18 +154,41 @@ describe('storage error alert handling', () => {
     saveDeviceData(payload);
     saveDeviceData(payload);
 
+    expect(global.window.alert).not.toHaveBeenCalled();
+  });
+
+  test('shows the storage alert once when migration reads fail on fallback storage', () => {
+    Object.defineProperty(win, 'localStorage', {
+      configurable: true,
+      get() {
+        throw new Error('blocked');
+      },
+    });
+
+    const { loadSessionState } = require('../../src/scripts/storage');
+
+    controlledStorage.enableFailure(new Error('getItem failed'));
+
+    loadSessionState();
+    loadSessionState();
+
     expect(global.window.alert).toHaveBeenCalledTimes(1);
   });
 
-  test('legacy bundle shows the storage alert only once when failures repeat', () => {
-    const { saveDeviceData } = require('../../legacy/scripts/storage.js');
+  test('legacy bundle shows the storage alert once when migration reads fail on fallback storage', () => {
+    Object.defineProperty(win, 'localStorage', {
+      configurable: true,
+      get() {
+        throw new Error('blocked');
+      },
+    });
 
-    const payload = { cameras: {} };
+    const { loadSessionState } = require('../../legacy/scripts/storage.js');
 
-    controlledStorage.enableFailure(new Error('legacy setItem failed'));
+    controlledStorage.enableFailure(new Error('legacy getItem failed'));
 
-    saveDeviceData(payload);
-    saveDeviceData(payload);
+    loadSessionState();
+    loadSessionState();
 
     expect(global.window.alert).toHaveBeenCalledTimes(1);
   });
