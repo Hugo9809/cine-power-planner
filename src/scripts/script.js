@@ -4221,9 +4221,9 @@ const RESET_VIEW_ICON_SVG = `
 
 const PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
 const RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
-const ASPECT_RATIO_ICON = iconGlyph('\uE71D', ICON_FONT_KEYS.UICONS);
+const ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
 const REQUIRED_SCENARIOS_ICON = iconGlyph('\uF4D4', ICON_FONT_KEYS.UICONS);
-const MONITORING_SUPPORT_ICON = iconGlyph('\uEF0F', ICON_FONT_KEYS.UICONS);
+const MONITORING_SUPPORT_ICON = iconGlyph('\uEFFC', ICON_FONT_KEYS.UICONS);
 
 const STAR_ICON_SVG = `
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -5030,12 +5030,12 @@ const projectFieldIcons = {
   crew: iconGlyph('\uF404', ICON_FONT_KEYS.UICONS),
   prepDays: iconGlyph('\uE312', ICON_FONT_KEYS.UICONS),
   shootingDays: iconGlyph('\uE311', ICON_FONT_KEYS.UICONS),
-  deliveryResolution: iconGlyph('\uE5BA', ICON_FONT_KEYS.UICONS),
+  deliveryResolution: iconGlyph('\uEF69', ICON_FONT_KEYS.UICONS),
   recordingResolution: ICON_GLYPHS.camera,
   aspectRatio: ASPECT_RATIO_ICON,
-  codec: iconGlyph('\uE7C9', ICON_FONT_KEYS.UICONS),
+  codec: iconGlyph('\uE7A6', ICON_FONT_KEYS.UICONS),
   baseFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
-  sensorMode: iconGlyph('\uF034', ICON_FONT_KEYS.UICONS),
+  sensorMode: iconGlyph('\uF037', ICON_FONT_KEYS.UICONS),
   requiredScenarios: REQUIRED_SCENARIOS_ICON,
   lenses: iconGlyph('\uE0A3', ICON_FONT_KEYS.UICONS),
   cameraHandle: iconGlyph('\uF2DC', ICON_FONT_KEYS.UICONS),
