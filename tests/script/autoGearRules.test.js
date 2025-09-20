@@ -268,6 +268,46 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entries[0].textContent).toContain('1x');
   });
 
+  test('seeds default mattebox rules when they are missing', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-existing',
+          label: 'Existing scenario rule',
+          scenarios: ['Outdoor'],
+          mattebox: [],
+          add: [
+            {
+              id: 'add-existing',
+              name: 'Rain Cover',
+              category: 'Miscellaneous',
+              quantity: 1,
+            },
+          ],
+          remove: [],
+        },
+      ])
+    );
+    localStorage.setItem('cameraPowerPlanner_autoGearSeeded', '1');
+
+    env = setupScriptEnvironment();
+    const { getAutoGearRules, setLanguage } = env.utils;
+
+    setLanguage('en');
+
+    const rules = getAutoGearRules();
+    const matteboxTriggers = rules
+      .filter(rule => Array.isArray(rule.mattebox) && rule.mattebox.length)
+      .map(rule => rule.mattebox.join(' + '));
+
+    expect(matteboxTriggers).toEqual(expect.arrayContaining([
+      'Swing Away',
+      'Rod based',
+      'Clamp On',
+    ]));
+  });
+
   test('saving a rule shows a confirmation notification', () => {
     env = setupScriptEnvironment();
 
