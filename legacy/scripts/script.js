@@ -20368,51 +20368,167 @@ function clearCachesAndReload() {
 }
 function _clearCachesAndReload() {
   _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee11() {
-    var regs, keys, _t11;
+    var registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window, location, hasReplace, hasReload, paramName, timestamp, href, hash, hashIndex, pattern, replacement, _t11, _t12, _t13, _t14;
     return _regenerator().w(function (_context11) {
       while (1) switch (_context11.p = _context11.n) {
         case 0:
           _context11.p = 0;
-          if (!(typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.getRegistrations)) {
-            _context11.n = 2;
+          if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
+            _context11.n = 12;
             break;
           }
-          _context11.n = 1;
-          return navigator.serviceWorker.getRegistrations();
-        case 1:
-          regs = _context11.v;
+          registrations = [];
+          _navigator = navigator, serviceWorker = _navigator.serviceWorker;
+          _context11.p = 1;
+          if (!(typeof serviceWorker.getRegistrations === 'function')) {
+            _context11.n = 3;
+            break;
+          }
           _context11.n = 2;
-          return Promise.all(regs.map(function (reg) {
-            return reg.unregister();
-          }));
+          return serviceWorker.getRegistrations();
         case 2:
-          if (!(typeof caches !== "undefined")) {
-            _context11.n = 4;
+          regs = _context11.v;
+          if (Array.isArray(regs)) {
+            regs.forEach(function (reg) {
+              return registrations.push(reg);
+            });
+          }
+          _context11.n = 9;
+          break;
+        case 3:
+          if (!(typeof serviceWorker.getRegistration === 'function')) {
+            _context11.n = 5;
             break;
           }
-          _context11.n = 3;
-          return caches.keys();
-        case 3:
-          keys = _context11.v;
           _context11.n = 4;
-          return Promise.all(keys.map(function (key) {
-            return caches.delete(key);
-          }));
+          return serviceWorker.getRegistration();
         case 4:
-          _context11.n = 6;
+          reg = _context11.v;
+          if (reg) {
+            registrations.push(reg);
+          }
+          _context11.n = 9;
           break;
         case 5:
-          _context11.p = 5;
-          _t11 = _context11.v;
-          console.warn("Cache clear failed", _t11);
-        case 6:
+          if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
+            _context11.n = 9;
+            break;
+          }
           _context11.p = 6;
-          window.location.reload(true);
-          return _context11.f(6);
+          _context11.n = 7;
+          return serviceWorker.ready;
         case 7:
+          readyReg = _context11.v;
+          if (readyReg) {
+            registrations.push(readyReg);
+          }
+          _context11.n = 9;
+          break;
+        case 8:
+          _context11.p = 8;
+          _t11 = _context11.v;
+          console.warn('Failed to await active service worker', _t11);
+        case 9:
+          _context11.n = 11;
+          break;
+        case 10:
+          _context11.p = 10;
+          _t12 = _context11.v;
+          console.warn('Failed to query service worker registrations', _t12);
+        case 11:
+          if (!registrations.length) {
+            _context11.n = 12;
+            break;
+          }
+          _context11.n = 12;
+          return Promise.all(registrations.map(function (reg) {
+            if (!reg || typeof reg.unregister !== 'function') {
+              return Promise.resolve();
+            }
+            return reg.unregister().catch(function (unregisterError) {
+              console.warn('Service worker unregister failed', unregisterError);
+            });
+          }));
+        case 12:
+          if (!(typeof caches !== 'undefined' && caches && typeof caches.keys === 'function')) {
+            _context11.n = 14;
+            break;
+          }
+          _context11.n = 13;
+          return caches.keys();
+        case 13:
+          keys = _context11.v;
+          _context11.n = 14;
+          return Promise.all(keys.map(function (key) {
+            if (!key || typeof caches.delete !== 'function') {
+              return Promise.resolve(false);
+            }
+            return caches.delete(key).catch(function (cacheError) {
+              console.warn('Failed to delete cache', key, cacheError);
+              return false;
+            });
+          }));
+        case 14:
+          _context11.n = 16;
+          break;
+        case 15:
+          _context11.p = 15;
+          _t13 = _context11.v;
+          console.warn('Cache clear failed', _t13);
+        case 16:
+          _context11.p = 16;
+          _context11.p = 17;
+          if (!(typeof window !== 'undefined' && window.location)) {
+            _context11.n = 19;
+            break;
+          }
+          _window = window, location = _window.location;
+          hasReplace = location && typeof location.replace === 'function';
+          hasReload = location && typeof location.reload === 'function';
+          if (!hasReplace) {
+            _context11.n = 18;
+            break;
+          }
+          paramName = 'forceReload';
+          timestamp = Date.now().toString(36);
+          href = location.href || '';
+          hash = '';
+          hashIndex = href.indexOf('#');
+          if (hashIndex !== -1) {
+            hash = href.slice(hashIndex);
+            href = href.slice(0, hashIndex);
+          }
+          pattern = new RegExp('([?&])' + paramName + '=[^&]*');
+          replacement = '$1' + paramName + '=' + timestamp;
+          if (pattern.test(href)) {
+            href = href.replace(pattern, replacement);
+          } else if (href.indexOf('?') !== -1) {
+            href += '&' + paramName + '=' + timestamp;
+          } else if (href) {
+            href += '?' + paramName + '=' + timestamp;
+          }
+          location.replace(href + hash);
+          return _context11.a(2);
+        case 18:
+          if (hasReload) {
+            location.reload();
+          }
+        case 19:
+          _context11.n = 21;
+          break;
+        case 20:
+          _context11.p = 20;
+          _t14 = _context11.v;
+          console.warn('Forced reload failed', _t14);
+          if (typeof window !== 'undefined' && window.location && typeof window.location.reload === 'function') {
+            window.location.reload();
+          }
+        case 21:
+          return _context11.f(16);
+        case 22:
           return _context11.a(2);
       }
-    }, _callee11, null, [[0, 5, 6, 7]]);
+    }, _callee11, null, [[17, 20], [6, 8], [1, 10], [0, 15, 16, 22]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
