@@ -8,6 +8,21 @@ B‑Mount or Gold‑Mount rigs, model runtime expectations, capture project
 requirements and export shareable bundles—entirely inside your browser, even
 when you are offline.
 
+## At a Glance
+
+- **Plan offline-first.** Build V‑Mount, B‑Mount or Gold‑Mount setups directly
+  in your browser. Every icon, font and helper script ships with the
+  repository so nothing relies on external CDNs or network access.
+- **Keep data on-device.** Projects, runtime feedback, favorites, custom
+  devices, gear lists and settings stay local. Backups and shareable bundles are
+  human-readable JSON files you control.
+- **Verify safety nets quickly.** Manual saves, background auto-saves and
+  timestamped auto-backups layer together so you can rehearse recovery before
+  leaving for set.
+- **Approve updates intentionally.** The service worker waits for you to
+  confirm a refresh, keeping teams on a known-good revision during travel or
+  low-connectivity shoots.
+
 ## Overview
 
 ### Built for crews
@@ -60,6 +75,7 @@ safe.
 
 ## Table of Contents
 
+- [At a Glance](#at-a-glance)
 - [Overview](#overview)
 - [Core Principles](#core-principles)
 - [Translations](#translations)
@@ -148,21 +164,19 @@ See the language-specific README files for release details in other locales.
    ```
    The app then caches itself for offline use and applies updates when you
    approve them.
-4. Confirm offline operation by loading the planner once, closing the tab,
-   disconnecting from the network (or toggling Airplane Mode) and reopening
-   `index.html`. The offline indicator in the header should light up briefly
-   while cached files load and the interface should match the last session
-   exactly.
-5. Create a project, add devices from the dropdowns and generate a printable
-   overview or gear list to brief collaborators. Use the runtime dashboard to
-   verify battery expectations before you export.
-6. Visit **Settings → Backup & Restore → Backup** before closing your first
-   session so you have a baseline snapshot to compare against future changes.
-   Import that backup into a private browser profile to confirm the restore
-   path works end to end.
-7. Practice exporting a project bundle and re-importing it on another machine
-   or browser profile. Verifying the full save → share → import loop in advance
-   keeps teams confident that no data will be lost when you are offline on set.
+4. Load the planner once, close the tab, disconnect from the network (or toggle
+   Airplane Mode) and reopen `index.html`. The offline indicator in the header
+   should flash briefly while cached files load. Confirm the interface mirrors
+   the last session exactly.
+5. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
+   manual save and review the project selector to see the timestamped
+   auto-backup that appears after a few minutes.
+6. Export **Settings → Backup & Restore → Backup** and import the resulting
+   `planner-backup.json` file into a private browser profile. Verifying the
+   restore path early proves that no saves are stranded on a single machine.
+7. Practice exporting a `.cpproject` bundle and re-importing it on a secondary
+   machine or profile. Rehearsing the full save → share → import loop keeps
+   crews confident that offline workflows are airtight.
 
 ## Everyday Workflow
 
