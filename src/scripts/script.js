@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -11336,10 +11336,20 @@ function checkSetupChanged() {
   const fallbackTexts = texts.en || {};
   const saveLabel = langTexts.saveSetupBtn || fallbackTexts.saveSetupBtn || '';
   const updateLabel = langTexts.updateSetupBtn || fallbackTexts.updateSetupBtn || saveLabel;
+  const typedName = setupNameInput && typeof setupNameInput.value === 'string'
+    ? setupNameInput.value.trim()
+    : '';
+  const selectedName = setupSelect && typeof setupSelect.value === 'string'
+    ? setupSelect.value
+    : '';
+  if (selectedName && typedName && typedName !== selectedName) {
+    setButtonLabelWithIcon(saveSetupBtn, updateLabel);
+    return;
+  }
   if (
     loadedSetupState &&
-    setupSelect.value &&
-    setupNameInput.value.trim() === setupSelect.value
+    selectedName &&
+    typedName === selectedName
   ) {
     const currentSignature = computeSetupSignature(getCurrentSetupState());
     if (currentSignature !== loadedSetupStateSignature) {
@@ -15369,8 +15379,8 @@ if (skipLink) {
 
 // Setup management
 saveSetupBtn.addEventListener("click", () => {
-  const setupName = setupNameInput.value.trim();
-  if (!setupName) {
+  const typedName = setupNameInput.value.trim();
+  if (!typedName) {
     alert(texts[currentLang].alertSetupName);
     return;
   }
@@ -15389,18 +15399,82 @@ saveSetupBtn.addEventListener("click", () => {
   if (gearListHtml) {
     currentSetup.gearList = gearListHtml;
   }
+
+  const selectedName = setupSelect ? setupSelect.value : '';
+  const renamingExisting = Boolean(selectedName && typedName && selectedName !== typedName);
   let setups = getSetups();
-  setups[setupName] = currentSetup;
+  let finalName = typedName;
+  let storedProjectSnapshot = null;
+
+  if (renamingExisting) {
+    if (typeof loadProject === 'function') {
+      try {
+        storedProjectSnapshot = loadProject(selectedName);
+      } catch (error) {
+        console.warn('Failed to load project data while renaming setup', error);
+      }
+    }
+
+    if (typeof renameSetup === 'function') {
+      try {
+        const renamed = renameSetup(selectedName, typedName);
+        if (typeof renamed === 'string' && renamed) {
+          finalName = renamed;
+        }
+      } catch (error) {
+        console.warn('Failed to rename setup in storage', error);
+      }
+      setups = getSetups();
+    } else if (Object.prototype.hasOwnProperty.call(setups, selectedName)) {
+      setups[typedName] = setups[selectedName];
+      delete setups[selectedName];
+      finalName = typedName;
+    }
+  }
+
+  setups[finalName] = currentSetup;
   storeSetups(setups);
+
+  if (renamingExisting && storedProjectSnapshot && typeof saveProject === 'function') {
+    try {
+      saveProject(finalName, storedProjectSnapshot);
+    } catch (error) {
+      console.warn('Failed to preserve project data during setup rename', error);
+    }
+  }
+
   populateSetupSelect();
-  setupSelect.value = setupName; // Select the newly saved setup
+  setupNameInput.value = finalName;
+  setupSelect.value = finalName; // Select the saved setup (new or renamed)
+  lastSetupName = finalName;
   saveCurrentSession(); // Persist selection so refreshes restore this setup
   storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
   // Ensure the current gear list stays persisted with the project so setups
   // remain in sync with the automatically saved table.
   saveCurrentGearList();
-  alert(texts[currentLang].alertSetupSaved.replace("{name}", setupName));
+
+  if (renamingExisting && selectedName && selectedName !== finalName) {
+    if (typeof deleteProject === 'function') {
+      try {
+        deleteProject(selectedName);
+      } catch (error) {
+        console.warn('Failed to remove old project entry during setup rename', error);
+      }
+    } else if (typeof saveProject === 'function') {
+      try {
+        saveProject(selectedName, { projectInfo: null, gearList: '' });
+      } catch (error) {
+        console.warn('Failed to clear legacy project entry during setup rename', error);
+      }
+    }
+  }
+
+  if (saveSetupBtn) {
+    saveSetupBtn.disabled = !setupNameInput.value.trim();
+  }
+
+  alert(texts[currentLang].alertSetupSaved.replace("{name}", finalName));
 });
 
 deleteSetupBtn.addEventListener("click", () => {
