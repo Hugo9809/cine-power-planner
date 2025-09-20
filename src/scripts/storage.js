@@ -1,6 +1,17 @@
 // storage.js - Handles reading from and writing to localStorage.
 /* global texts, currentLang */
 
+const GLOBAL_SCOPE =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+          ? self
+          : null;
+
 const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
@@ -8,7 +19,16 @@ const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
-const CUSTOM_FONT_STORAGE_KEY = 'cameraPowerPlanner_customFonts';
+const CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
+const CUSTOM_FONT_STORAGE_KEY_NAME =
+  GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === 'string'
+    ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY
+    : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+
+if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== 'string') {
+  GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = CUSTOM_FONT_STORAGE_KEY_NAME;
+}
+
 const CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
@@ -19,7 +39,7 @@ const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShow
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
-  CUSTOM_FONT_STORAGE_KEY,
+  CUSTOM_FONT_STORAGE_KEY_NAME,
   CUSTOM_LOGO_STORAGE_KEY,
 ]);
 
@@ -1227,7 +1247,7 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_FONT_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_FONT_STORAGE_KEY_NAME, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_LOGO_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
@@ -1330,7 +1350,7 @@ function clearAllData() {
   }
 
   function readStoredCustomFonts() {
-    const raw = readLocalStorageValue(CUSTOM_FONT_STORAGE_KEY);
+    const raw = readLocalStorageValue(CUSTOM_FONT_STORAGE_KEY_NAME);
     if (!raw) {
       return [];
     }
@@ -1469,12 +1489,12 @@ function importAllData(allData) {
     const fonts = normalizeCustomFontEntries(allData.customFonts);
     if (fonts.length) {
       try {
-        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, JSON.stringify(fonts));
+        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, JSON.stringify(fonts));
       } catch (error) {
         console.warn('Unable to store imported custom fonts', error);
       }
     } else {
-      safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, null);
+      safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, null);
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
