@@ -2351,8 +2351,14 @@
       </div>
     </div>
   </dialog>
-  <dialog id="shareDialog" aria-labelledby="shareDialogHeading">
-    <form id="shareForm" method="dialog">
+  <dialog
+    id="shareDialog"
+    class="app-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="shareDialogHeading"
+  >
+    <form id="shareForm" method="dialog" class="modal-surface share-dialog">
       <h3 id="shareDialogHeading">Export Project</h3>
       <p id="shareFilenameMessage">Enter a name for the exported project file (default: project).</p>
       <div class="form-row">
@@ -2732,8 +2738,14 @@
     </form>
   </dialog>
 
-  <dialog id="feedbackDialog" aria-labelledby="feedbackDialogHeading">
-    <form id="feedbackForm" method="dialog">
+  <dialog
+    id="feedbackDialog"
+    class="app-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="feedbackDialogHeading"
+  >
+    <form id="feedbackForm" method="dialog" class="modal-surface modal-surface-scrollable feedback-dialog">
       <h3 id="feedbackDialogHeading">User Runtime Feedback</h3>
 
       <fieldset>
