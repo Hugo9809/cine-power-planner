@@ -7,9 +7,22 @@ describe('applyAutoGearRulesToTableHtml', () => {
   let env;
   const originalAlert = window.alert;
   const originalFileReader = window.FileReader;
+  const originalCreateObjectURL = window.URL && window.URL.createObjectURL;
+  const originalRevokeObjectURL = window.URL && window.URL.revokeObjectURL;
+  let fakeTimersActive = false;
 
   beforeEach(() => {
     window.alert = jest.fn();
+    fakeTimersActive = false;
+    if (!window.URL) {
+      window.URL = {};
+    }
+    if (typeof window.URL.createObjectURL !== 'function') {
+      window.URL.createObjectURL = jest.fn(() => 'blob:auto-gear');
+    }
+    if (typeof window.URL.revokeObjectURL !== 'function') {
+      window.URL.revokeObjectURL = jest.fn();
+    }
   });
 
   const stripRuleIds = rule => ({
@@ -20,7 +33,18 @@ describe('applyAutoGearRulesToTableHtml', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    if (fakeTimersActive) {
+      try {
+        jest.runOnlyPendingTimers();
+        jest.clearAllTimers();
+      } catch {
+        // Ignore if fake timers are not active
+      }
+      jest.useRealTimers();
+      fakeTimersActive = false;
+    } else {
+      jest.useRealTimers();
+    }
     env?.cleanup();
     localStorage.clear();
     window.alert = originalAlert;
@@ -28,6 +52,16 @@ describe('applyAutoGearRulesToTableHtml', () => {
       delete window.FileReader;
     } else {
       window.FileReader = originalFileReader;
+    }
+    if (typeof originalCreateObjectURL === 'function') {
+      window.URL.createObjectURL = originalCreateObjectURL;
+    } else {
+      delete window.URL.createObjectURL;
+    }
+    if (typeof originalRevokeObjectURL === 'function') {
+      window.URL.revokeObjectURL = originalRevokeObjectURL;
+    } else {
+      delete window.URL.revokeObjectURL;
     }
   });
 
@@ -332,6 +366,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
   });
 
   test('automatic backups capture snapshots after rules change', () => {
+    fakeTimersActive = true;
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-06T12:00:00Z'));
     env = setupScriptEnvironment();
@@ -368,10 +403,10 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const backupOptions = Array.from(backupSelect.options).filter(option => option.value);
     expect(backupOptions.length).toBeGreaterThan(0);
 
-    jest.useRealTimers();
   });
 
   test('restoring an automatic backup replaces the current rules', () => {
+    fakeTimersActive = true;
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-06T12:00:00Z'));
     env = setupScriptEnvironment();
@@ -421,7 +456,6 @@ describe('applyAutoGearRulesToTableHtml', () => {
       ])
     );
 
-    jest.useRealTimers();
   });
 
   test('restoring a backup updates automatic gear rules immediately', () => {
@@ -718,6 +752,106 @@ describe('applyAutoGearRulesToTableHtml', () => {
       promptSpy.mockRestore();
       confirmSpy.mockRestore();
     }
+  });
+
+  test('creates and updates an autosaved preset when rules change without manual presets', () => {
+    env = setupScriptEnvironment();
+
+    const starterRule = {
+      id: 'rule-dawn',
+      label: 'Dawn coverage',
+      scenarios: ['Sunrise'],
+      add: [
+        { id: 'add-led', name: 'LED Panel', category: 'Lighting', quantity: 1 }
+      ],
+      remove: [],
+    };
+
+    env.utils.syncAutoGearRulesFromStorage([starterRule]);
+
+    const storedPresetsRaw = localStorage.getItem('cameraPowerPlanner_autoGearPresets');
+    expect(storedPresetsRaw).toBeTruthy();
+    const storedPresets = JSON.parse(storedPresetsRaw);
+    expect(storedPresets).toHaveLength(1);
+    const autoPreset = storedPresets[0];
+    expect(autoPreset.label).toBe(window.texts.en.autoGearAutoPresetLabel);
+    expect(autoPreset.rules.map(stripRuleIds)).toEqual([stripRuleIds(starterRule)]);
+
+    const autoPresetId = localStorage.getItem('cameraPowerPlanner_autoGearAutoPreset');
+    expect(autoPresetId).toBe(autoPreset.id);
+    expect(localStorage.getItem('cameraPowerPlanner_autoGearActivePreset')).toBe(autoPreset.id);
+
+    const updatedRule = {
+      id: 'rule-dusk',
+      label: 'Dusk variation',
+      scenarios: ['Sunset'],
+      add: [
+        { id: 'add-battery', name: 'Spare Battery', category: 'Power', quantity: 2 }
+      ],
+      remove: [],
+    };
+
+    env.utils.syncAutoGearRulesFromStorage([updatedRule]);
+
+    const updatedPresets = JSON.parse(localStorage.getItem('cameraPowerPlanner_autoGearPresets'));
+    expect(updatedPresets).toHaveLength(1);
+    const updatedAutoPreset = updatedPresets.find(preset => preset.id === autoPresetId);
+    expect(updatedAutoPreset).toBeDefined();
+    expect(updatedAutoPreset.rules.map(stripRuleIds)).toEqual([stripRuleIds(updatedRule)]);
+  });
+
+  test('stops autosaving once a manual preset is created', () => {
+    env = setupScriptEnvironment();
+
+    const initialRule = {
+      id: 'rule-initial',
+      label: 'Initial rule',
+      scenarios: ['Studio'],
+      add: [
+        { id: 'add-diffusion', name: 'Diffusion Panel', category: 'Lighting', quantity: 1 }
+      ],
+      remove: [],
+    };
+
+    env.utils.syncAutoGearRulesFromStorage([initialRule]);
+
+    const autoPresetId = localStorage.getItem('cameraPowerPlanner_autoGearAutoPreset');
+    expect(autoPresetId).toBeTruthy();
+
+    const saveButton = document.getElementById('autoGearSavePreset');
+    const promptSpy = jest.spyOn(window, 'prompt').mockReturnValue('Manual preset');
+
+    try {
+      saveButton.click();
+    } finally {
+      promptSpy.mockRestore();
+    }
+
+    expect(localStorage.getItem('cameraPowerPlanner_autoGearAutoPreset')).toBeNull();
+
+    const storedAfterSaveRaw = localStorage.getItem('cameraPowerPlanner_autoGearPresets');
+    expect(storedAfterSaveRaw).toBeTruthy();
+    const storedAfterSave = JSON.parse(storedAfterSaveRaw);
+    const autosavedPreset = storedAfterSave.find(preset => preset.id === autoPresetId);
+    expect(autosavedPreset).toBeDefined();
+    const autosavedRulesBefore = autosavedPreset.rules.map(stripRuleIds);
+
+    const newRule = {
+      id: 'rule-followup',
+      label: 'Follow-up rule',
+      scenarios: ['Studio'],
+      add: [
+        { id: 'add-cable', name: 'Extension Cable', category: 'Power', quantity: 2 }
+      ],
+      remove: [],
+    };
+
+    env.utils.syncAutoGearRulesFromStorage([newRule]);
+
+    const finalPresets = JSON.parse(localStorage.getItem('cameraPowerPlanner_autoGearPresets'));
+    const autosavedFinal = finalPresets.find(preset => preset.id === autoPresetId);
+    expect(autosavedFinal).toBeDefined();
+    expect(autosavedFinal.rules.map(stripRuleIds)).toEqual(autosavedRulesBefore);
   });
 
   test('keeps automatic backups hidden until explicitly enabled', () => {

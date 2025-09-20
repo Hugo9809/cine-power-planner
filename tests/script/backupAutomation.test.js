@@ -19,6 +19,9 @@ function defaultDeviceSetup() {
   }
 }
 
+const originalCreateObjectURL = typeof URL !== 'undefined' ? URL.createObjectURL : undefined;
+const originalRevokeObjectURL = typeof URL !== 'undefined' ? URL.revokeObjectURL : undefined;
+
 const loadApp = () => {
   jest.resetModules();
 
@@ -61,20 +64,53 @@ const loadApp = () => {
   return require('../../src/scripts/script.js');
 };
 
+let fakeTimersActive = false;
+
 beforeEach(() => {
   document.body.innerHTML = '';
   localStorage.clear();
   sessionStorage.clear();
   jest.clearAllMocks();
   defaultDeviceSetup();
+  fakeTimersActive = false;
+  if (typeof URL !== 'undefined') {
+    if (typeof URL.createObjectURL !== 'function') {
+      URL.createObjectURL = () => 'blob:backup';
+    }
+    if (typeof URL.revokeObjectURL !== 'function') {
+      URL.revokeObjectURL = () => {};
+    }
+  }
 });
 
 describe('automated backups', () => {
   afterEach(() => {
-    jest.useRealTimers();
+    if (fakeTimersActive) {
+      try {
+        jest.runOnlyPendingTimers();
+        jest.clearAllTimers();
+      } catch {
+        // Ignore when fake timers were not active
+      }
+      jest.useRealTimers();
+      fakeTimersActive = false;
+    } else {
+      jest.useRealTimers();
+    }
+    if (typeof originalCreateObjectURL === 'function') {
+      URL.createObjectURL = originalCreateObjectURL;
+    } else if (typeof URL !== 'undefined') {
+      delete URL.createObjectURL;
+    }
+    if (typeof originalRevokeObjectURL === 'function') {
+      URL.revokeObjectURL = originalRevokeObjectURL;
+    } else if (typeof URL !== 'undefined') {
+      delete URL.revokeObjectURL;
+    }
   });
 
   test('autoBackup captures setup and project state', () => {
+    fakeTimersActive = true;
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-06T12:30:00'));
 
@@ -127,6 +163,7 @@ describe('automated backups', () => {
   });
 
   test('auto backups stay hidden until explicitly shown', () => {
+    fakeTimersActive = true;
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-06T12:30:00'));
 
@@ -163,6 +200,7 @@ describe('automated backups', () => {
   });
 
   test('auto backups include unsaved setup names from the input field', () => {
+    fakeTimersActive = true;
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2024-05-06T12:30:00'));
 
