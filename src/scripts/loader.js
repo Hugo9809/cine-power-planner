@@ -4,7 +4,11 @@
       return true;
     }
 
-    if (typeof Promise === 'undefined' || typeof Object.assign !== 'function') {
+    if (typeof Promise === 'undefined' || typeof Promise.resolve !== 'function') {
+      return false;
+    }
+
+    if (typeof Object.assign !== 'function' || typeof Object.entries !== 'function' || typeof Object.fromEntries !== 'function') {
       return false;
     }
 
@@ -23,46 +27,59 @@
       return false;
     }
 
-    if (typeof Object.entries !== 'function' || typeof Object.fromEntries !== 'function') {
-      return false;
-    }
-
     if (typeof stringProto.includes !== 'function' || typeof stringProto.startsWith !== 'function') {
       return false;
     }
 
-    try {
-      var test = new Function('var obj = { a: { b: 1 } }; var value = obj?.a?.b ?? 2; return value;');
-      return test() === 1;
-    } catch (err) {
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Legacy bundle enabled: falling back due to syntax support test failure.', err);
-      }
+    if (typeof globalThis === 'undefined') {
       return false;
     }
+
+    if (typeof window.Symbol === 'undefined' || typeof window.Set === 'undefined') {
+      return false;
+    }
+
+    return true;
   }
 
-  function loadScriptsSequentially(urls) {
+  function loadScriptsSequentially(urls, options) {
     var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var index = 0;
+    var aborted = false;
+    var onFailure = options && typeof options.onFailure === 'function' ? options.onFailure : null;
+
+    function handleFailure(url, event) {
+      if (aborted) {
+        return;
+      }
+      aborted = true;
+      if (onFailure) {
+        onFailure(url, event);
+      }
+    }
 
     function next() {
-      if (index >= urls.length) {
+      if (aborted || index >= urls.length) {
         return;
       }
 
+      var url = urls[index];
       var script = document.createElement('script');
-      script.src = urls[index];
+      script.src = url;
       script.async = false;
       script.defer = false;
       script.onload = function () {
+        if (aborted) {
+          return;
+        }
         index += 1;
         next();
       };
       script.onerror = function (event) {
-        console.error('Failed to load script:', urls[index], event && event.error);
-        index += 1;
-        next();
+        if (typeof console !== 'undefined' && typeof console.error === 'function') {
+          console.error('Failed to load script:', url, event && event.error);
+        }
+        handleFailure(url, event);
       };
       head.appendChild(script);
     }
@@ -71,6 +88,7 @@
   }
 
   var modernScripts = [
+    'src/scripts/feature-check.js',
     'src/scripts/globalthis-polyfill.js',
     'src/data/devices/index.js',
     'src/data/devices/cameras.js',
@@ -112,11 +130,76 @@
     'legacy/scripts/overview.js'
   ];
 
-  var scriptsToLoad = supportsModernFeatures() ? modernScripts : legacyScripts;
+  var legacyBundleLoaded = false;
 
-  if (scriptsToLoad === legacyScripts) {
-    window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+  function loadLegacyBundle(reason) {
+    if (legacyBundleLoaded) {
+      return;
+    }
+    legacyBundleLoaded = true;
+
+    if (typeof window !== 'undefined') {
+      try {
+        window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+        if (reason) {
+          window.__CINE_POWER_LEGACY_REASON__ = reason;
+        }
+      } catch {
+        window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+        if (reason) {
+          window.__CINE_POWER_LEGACY_REASON__ = reason;
+        }
+      }
+    }
+
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      var parts = ['Legacy bundle enabled.'];
+      if (reason) {
+        if (reason.message) {
+          parts.push(reason.message);
+        } else if (reason.type) {
+          parts.push('Reason: ' + reason.type);
+        }
+        if (reason.script) {
+          parts.push('Script: ' + reason.script);
+        }
+      }
+      console.warn(parts.join(' '));
+    }
+
+    loadScriptsSequentially(legacyScripts);
   }
 
-  loadScriptsSequentially(scriptsToLoad);
+  if (!supportsModernFeatures()) {
+    loadLegacyBundle({
+      type: 'feature-detection',
+      message: 'Required modern browser features are unavailable.',
+    });
+    return;
+  }
+
+  loadScriptsSequentially(modernScripts, {
+    onFailure: function (failedUrl, event) {
+      var details = { type: 'load-error' };
+      if (failedUrl) {
+        details.script = failedUrl;
+      }
+
+      var message = 'Falling back to legacy bundle because a modern script failed to load.';
+      if (event) {
+        var errorMessage = null;
+        if (event.message && typeof event.message === 'string') {
+          errorMessage = event.message;
+        } else if (event.error && typeof event.error.message === 'string') {
+          errorMessage = event.error.message;
+        }
+        if (errorMessage) {
+          message += ' ' + errorMessage;
+        }
+      }
+      details.message = message;
+
+      loadLegacyBundle(details);
+    },
+  });
 })();
