@@ -283,7 +283,10 @@ function loadJSONFromStorage(
     return primary.value;
   }
 
-  const shouldAttemptBackup = useBackup && (shouldAlert || restoreIfMissing);
+  const missingPrimary = !primary.ok && primary.reason === 'missing';
+
+  const shouldAttemptBackup =
+    useBackup && (shouldAlert || restoreIfMissing || missingPrimary);
 
   if (shouldAttemptBackup) {
     let backupRaw = null;
@@ -296,7 +299,7 @@ function loadJSONFromStorage(
 
     const backup = parseRawValue(backupRaw, 'backup');
     if (backup.ok) {
-      if (shouldAlert) {
+      if (shouldAlert || missingPrimary) {
         console.warn(`Recovered ${key} from backup copy.`);
       }
       if (backup.raw !== null && backup.raw !== undefined) {
