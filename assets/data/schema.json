@@ -10,23 +10,6 @@
       ]
     },
     "cables": {
-      "cables": {
-        "attributes": [
-          "brand",
-          "compatibleCameras",
-          "compatibleControllers",
-          "compatibleDevices",
-          "connectors",
-          "from",
-          "kNumber",
-          "lengthM",
-          "notes",
-          "orientation",
-          "to",
-          "type",
-          "useCase"
-        ]
-      },
       "fiz": {
         "attributes": [
           "brand",
@@ -87,6 +70,7 @@
         "brand",
         "compatible",
         "diameterMm",
+        "dimensionsMm",
         "kNumber",
         "lengthMm",
         "rodStandard"
@@ -125,30 +109,14 @@
         "brand"
       ]
     },
-    "lenses": {
-      "attributes": [
-        "brand",
-        "clampOn",
-        "frontDiameterMm",
-        "imageCircleMm",
-        "lengthMm",
-        "lensType",
-        "minFocusMeters",
-        "mount",
-        "needsLensSupport",
-        "notes",
-        "rodLengthCm",
-        "rodStandard",
-        "tStop",
-        "weight_g"
-      ]
-    },
     "matteboxes": {
       "attributes": [
         "brand",
         "compatible",
         "diameterMm",
         "kNumber",
+        "model",
+        "note",
         "provenance",
         "sideFlags",
         "stages",
@@ -302,7 +270,6 @@
   },
   "iosVideo": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "notes",
@@ -332,7 +299,6 @@
   },
   "monitors": {
     "attributes": [
-      "brand",
       "audioInput",
       "audioIo",
       "audioOutput",
@@ -351,7 +317,6 @@
   },
   "video": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "power",
@@ -372,7 +337,6 @@
   },
   "wirelessReceivers": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "power",
