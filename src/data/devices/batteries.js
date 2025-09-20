@@ -81,7 +81,8 @@ const batteryData = {
     "capacity": 294,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1800
   },
   "Bebob B480cine (B-Mount)": {
     "capacity": 475,
@@ -94,7 +95,8 @@ const batteryData = {
     "capacity": 86,
     "pinA": 20,
     "dtapA": 5,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 720
   },
   "Bebob B155cineML (B-Mount)": {
     "capacity": 156,
@@ -135,7 +137,8 @@ const batteryData = {
     "capacity": 290,
     "pinA": 18,
     "dtapA": 10,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1530
   },
   "Swit PB-H260S (V-Mount)": {
     "capacity": 260,
@@ -147,7 +150,8 @@ const batteryData = {
     "capacity": 290,
     "pinA": 10,
     "dtapA": 3.75,
-    "mount_type": "B-Mount"
+    "mount_type": "B-Mount",
+    "weight_g": 1500
   },
   "Swit PB-H290B (B-Mount)": {
     "capacity": 290,
@@ -216,7 +220,8 @@ const batteryData = {
     "capacity": 240,
     "pinA": 10,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1740
   },
   "Anton/Bauer Dionic XT90 (V-Mount)": {
     "capacity": 99,
@@ -236,7 +241,8 @@ const batteryData = {
     "capacity": 240,
     "pinA": 12,
     "dtapA": 5,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 1680
   },
   "Anton/Bauer Dionic 26V 98Wh (B-Mount)": {
     "capacity": 98,
@@ -421,7 +427,8 @@ const batteryData = {
     "capacity": 145,
     "pinA": 10,
     "dtapA": 5.56,
-    "mount_type": "V-Mount"
+    "mount_type": "V-Mount",
+    "weight_g": 650
   },
   "IDX DUO-C98 (V-Mount)": {
     "capacity": 97,

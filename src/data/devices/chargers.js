@@ -20,6 +20,7 @@ const chargerData = {
     mount: "V-Mount",
     slots: 2,
     inputVoltageV: "90-264",
+    inputConnector: "IEC AC",
     chargeModes: ["Simultaneous"],
     perBayCurrentA: 2.5,
     chargingSpeedAmps: 2.5,
@@ -33,6 +34,7 @@ const chargerData = {
     mount: "V-Mount",
     slots: 4,
     inputVoltageV: "90-264",
+    inputConnector: "IEC AC",
     chargeModes: ["Simultaneous"],
     perBayCurrentA: 2.5,
     chargingSpeedAmps: 2.5,
@@ -48,6 +50,7 @@ const chargerData = {
     chargeModes: ["Simultaneous"],
     perBayCurrentA: 1.9,
     chargingSpeedAmps: 1.9,
+    totalPowerW: 60,
     dimensions_mm: [223, 230, 75],
     weight_g: 1600,
     notes: "Supports Li-Ion, NiMH, and Ni-Cd batteries; 14-20V output range; LED status indicators"
@@ -79,6 +82,7 @@ const chargerData = {
     chargeModes: ["Simultaneous"],
     perBayCurrentA: 2.7,
     chargingSpeedAmps: 2.7,
+    totalPowerW: 200,
     weight_g: 3000,
     notes: "Each channel operates independently; delivers up to 3A when charging fewer than four batteries"
   },

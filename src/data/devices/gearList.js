@@ -16,6 +16,7 @@ const gear = {
     "Sony DVF-EL200 OLED Viewfinder": {
       "brand": "Sony",
       "model": "DVF-EL200 OLED Viewfinder",
+      "kNumber": "DVF-EL200",
       "compatible": [
         "Sony Venice",
         "Sony Venice 2",
@@ -155,7 +156,7 @@ const gear = {
       "model": "1303 HDR",
       "screenSizeInches": 13,
       "brightnessNits": 1500,
-      "powerDrawWatts": null,
+      "powerDrawWatts": 39,
       "power": {
         "input": [
           { "type": "XLR" },
@@ -163,6 +164,7 @@ const gear = {
         ],
         "output": null
       },
+      "notes": "Typical draw ranges from 25-39 W depending on load.",
       "wirelessTx": false,
       "videoInputs": [
         { "type": "3G-SDI" },
@@ -227,7 +229,7 @@ const gear = {
       "model": "BM-U175",
       "screenSizeInches": 17.3,
       "brightnessNits": 300,
-      "powerDrawWatts": null,
+      "powerDrawWatts": 85,
       "power": {
         "input": [
           { "type": "XLR 4-pin" },
@@ -328,8 +330,8 @@ const gear = {
       "brand": "Sony",
       "model": "PVM-X1800",
       "screenSizeInches": 18.4,
-      "brightnessNits": null,
-      "powerDrawWatts": null,
+      "brightnessNits": 1000,
+      "powerDrawWatts": 98,
       "power": {
         "input": { "type": "AC" },
         "output": null
@@ -384,11 +386,12 @@ const gear = {
       "model": "DM242",
       "screenSizeInches": 24,
       "brightnessNits": 400,
-      "powerDrawWatts": null,
+      "powerDrawWatts": 35,
       "power": {
         "input": { "type": "AC" },
         "output": null
       },
+      "notes": "Rated 23-35 W depending on settings.",
       "wirelessTx": false,
       "videoInputs": [
         { "type": "3G-SDI", "notes": "2x" },
@@ -404,11 +407,12 @@ const gear = {
       "model": "DM170",
       "screenSizeInches": 17,
       "brightnessNits": null,
-      "powerDrawWatts": null,
+      "powerDrawWatts": 32,
       "power": {
         "input": { "type": "AC" },
         "output": null
       },
+      "notes": "Rated 21-32 W depending on configuration.",
       "wirelessTx": false,
       "videoInputs": [
         { "type": "3G-SDI" }
@@ -420,7 +424,7 @@ const gear = {
       "model": "XMP270",
       "screenSizeInches": 26.5,
       "brightnessNits": 1000,
-      "powerDrawWatts": null,
+      "powerDrawWatts": 220,
       "power": {
         "input": [
           { "type": "XLR 4-pin", "notes": "24V DC" },
@@ -428,6 +432,7 @@ const gear = {
         ],
         "output": null
       },
+      "notes": "Consumes approximately 35-220 W depending on HDR mode.",
       "wirelessTx": false,
       "videoInputs": [
         { "type": "12G-SDI", "notes": "4x" }
@@ -992,10 +997,12 @@ const gear = {
         "kNumber": "K2.0017086"
       },
       "Tilta 95mm Polarizer Filter for Tilta Mirage": {
-        "brand": "Tilta"
+        "brand": "Tilta",
+        "kNumber": "MB-T16-POL"
       },
       "Schneider CF DIOPTER FULL GEN2": {
-        "brand": "Schneider"
+        "brand": "Schneider",
+        "kNumber": "68-000xxx"
       }
     },
     "rigging": {
@@ -1098,13 +1105,50 @@ const gear = {
       },
       "fiz": {
         "LBUS to LBUS": {
-          "from": "LBUS (LEMO 4-pin)",
-          "to": "LBUS (LEMO 4-pin)"
-        },
-        "LBUS to LBUS 0,3m": {
+          "brand": "ARRI",
           "from": "LBUS (LEMO 4-pin)",
           "to": "LBUS (LEMO 4-pin)",
-          "lengthM": 0.3
+          "connectors": [
+            "LEMO 4-pin",
+            "LEMO 4-pin"
+          ],
+          "orientation": "straight",
+          "type": "LBUS cable",
+          "useCase": [
+            "Lens control daisy-chain"
+          ]
+        },
+        "LBUS to LBUS 0,2m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0006749",
+          "from": "LBUS (LEMO 4-pin)",
+          "to": "LBUS (LEMO 4-pin)",
+          "connectors": [
+            "LEMO 4-pin",
+            "LEMO 4-pin"
+          ],
+          "lengthM": 0.2,
+          "orientation": "straight",
+          "type": "LBUS cable",
+          "useCase": [
+            "Lens control daisy-chain"
+          ]
+        },
+        "LBUS to LBUS 0,3m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0006750",
+          "from": "LBUS (LEMO 4-pin)",
+          "to": "LBUS (LEMO 4-pin)",
+          "connectors": [
+            "LEMO 4-pin",
+            "LEMO 4-pin"
+          ],
+          "lengthM": 0.3,
+          "orientation": "straight",
+          "type": "LBUS cable",
+          "useCase": [
+            "Lens control daisy-chain"
+          ]
         },
         "LBUS to LBUS 0,4m": {
           "from": "LBUS (LEMO 4-pin)",
@@ -1112,9 +1156,34 @@ const gear = {
           "lengthM": 0.4
         },
         "LBUS to LBUS 0,5m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0006751",
           "from": "LBUS (LEMO 4-pin)",
           "to": "LBUS (LEMO 4-pin)",
-          "lengthM": 0.5
+          "connectors": [
+            "LEMO 4-pin",
+            "LEMO 4-pin"
+          ],
+          "lengthM": 0.5,
+          "orientation": "straight",
+          "type": "LBUS cable",
+          "useCase": [
+            "Lens control daisy-chain"
+          ]
+        },
+        "ARRI Right-Angle LBUS to LBUS 0,6m": {
+          "brand": "ARRI",
+          "kNumber": "K2.0013040",
+          "connectors": [
+            "LEMO 4-pin RA",
+            "LEMO 4-pin RA"
+          ],
+          "lengthM": 0.6,
+          "orientation": "right-angle",
+          "type": "LBUS cable",
+          "useCase": [
+            "Lens control daisy-chain"
+          ]
         },
         "Cable UDM – SERIAL (7p) 1,5m": {
           "brand": "ARRI",
