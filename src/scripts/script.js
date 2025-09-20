@@ -11091,7 +11091,8 @@ const DIAGRAM_CAMERA_ICON = iconGlyph('\uE333');
 const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
 const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
 const DIAGRAM_VIDEO_ICON = iconGlyph('\uF373');
-const DIAGRAM_MOTORS_ICON = iconGlyph('\uE8AF');
+const DIAGRAM_FIZ_MOTOR_ICON = iconGlyph('\uE5A3');
+const DIAGRAM_TORQUE_ICON = iconGlyph('\uE8AF');
 const DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
 const DIAGRAM_DISTANCE_ICON = iconGlyph('\uEFB9');
 const DIAGRAM_POWER_OUTPUT_ICON = iconGlyph('\uE212');
@@ -11104,13 +11105,13 @@ const DIAGRAM_AUDIO_IO_ICON = iconGlyph('\uF487');
 const diagramConnectorIcons = Object.freeze({
   powerOut: DIAGRAM_POWER_OUTPUT_ICON,
   powerIn: DIAGRAM_POWER_INPUT_ICON,
-  fiz: DIAGRAM_MOTORS_ICON,
+  fiz: DIAGRAM_FIZ_MOTOR_ICON,
   video: DIAGRAM_VIDEO_ICON,
   timecode: DIAGRAM_TIMECODE_ICON,
   audioIn: DIAGRAM_AUDIO_IN_ICON,
   audioOut: DIAGRAM_AUDIO_OUT_ICON,
   audioIo: DIAGRAM_AUDIO_IO_ICON,
-  torque: DIAGRAM_MOTORS_ICON,
+  torque: DIAGRAM_TORQUE_ICON,
   controller: DIAGRAM_CONTROLLER_ICON,
   powerSpec: DIAGRAM_POWER_OUTPUT_ICON,
   powerSource: DIAGRAM_POWER_INPUT_ICON
@@ -11122,7 +11123,7 @@ const diagramIcons = {
   monitor: DIAGRAM_MONITOR_ICON,
   viewfinder: DIAGRAM_VIEWFINDER_ICON,
   video: DIAGRAM_VIDEO_ICON,
-  motors: DIAGRAM_MOTORS_ICON,
+  motors: DIAGRAM_FIZ_MOTOR_ICON,
   controllers: DIAGRAM_CONTROLLER_ICON,
   handle: DIAGRAM_CONTROLLER_ICON,
   distance: DIAGRAM_DISTANCE_ICON
