@@ -79,6 +79,21 @@ describe('utility function tests', () => {
     expect(labels.some(l => /Serial/.test(l))).toBe(true);
   });
 
+  test('renderSetupDiagram adds camera SVG icon with explicit sizing', () => {
+    const { renderSetupDiagram } = utils;
+    devices.cameras.CamIcon = { powerDrawWatts: 15 };
+    addOpt('cameraSelect', 'CamIcon');
+    renderSetupDiagram();
+    const cameraIcon = document.querySelector(
+      '#setupDiagram .diagram-node[data-node="camera"] .node-icon-svg svg'
+    );
+    expect(cameraIcon).not.toBeNull();
+    expect(cameraIcon.getAttribute('width')).toBe('24');
+    expect(cameraIcon.getAttribute('height')).toBe('24');
+    expect(cameraIcon.getAttribute('x')).toBe('-12');
+    expect(cameraIcon.getAttribute('y')).toBe('-12');
+  });
+
   test('normalizePowerPortType handles case-insensitive mappings', () => {
     const { normalizePowerPortType } = utils;
     expect(normalizePowerPortType('dc input')).toEqual(['DC IN']);
