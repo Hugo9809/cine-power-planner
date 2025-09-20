@@ -582,6 +582,14 @@ describe('clearAllData', () => {
       backupKeyFor(CUSTOM_FONT_KEY),
       JSON.stringify([{ id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,BBBB' }]),
     );
+    localStorage.setItem('darkMode', 'true');
+    localStorage.setItem('pinkMode', 'true');
+    localStorage.setItem('highContrast', 'true');
+    localStorage.setItem('showAutoBackups', 'true');
+    localStorage.setItem('accentColor', '#00ff00');
+    localStorage.setItem('fontSize', '18');
+    localStorage.setItem('fontFamily', "'My Font', sans-serif");
+    localStorage.setItem('language', 'de');
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
@@ -598,6 +606,14 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
     expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBeNull();
     expect(localStorage.getItem(CUSTOM_FONT_KEY)).toBeNull();
+    expect(localStorage.getItem('darkMode')).toBeNull();
+    expect(localStorage.getItem('pinkMode')).toBeNull();
+    expect(localStorage.getItem('highContrast')).toBeNull();
+    expect(localStorage.getItem('showAutoBackups')).toBeNull();
+    expect(localStorage.getItem('accentColor')).toBeNull();
+    expect(localStorage.getItem('fontSize')).toBeNull();
+    expect(localStorage.getItem('fontFamily')).toBeNull();
+    expect(localStorage.getItem('language')).toBeNull();
 
     expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
     expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBeNull();

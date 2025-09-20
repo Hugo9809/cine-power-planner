@@ -63,6 +63,17 @@ const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 
+const PREFERENCE_STORAGE_KEYS = Object.freeze([
+  'darkMode',
+  'pinkMode',
+  'highContrast',
+  'showAutoBackups',
+  'accentColor',
+  'fontSize',
+  'fontFamily',
+  'language',
+]);
+
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
@@ -1308,6 +1319,9 @@ function clearAllData() {
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
+  PREFERENCE_STORAGE_KEYS.forEach((key) => {
+    deleteFromStorage(SAFE_LOCAL_STORAGE, key, msg, { disableBackup: true });
+  });
   console.log("All planner data cleared from storage.");
 }
 
