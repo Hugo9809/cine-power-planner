@@ -3525,6 +3525,15 @@ function setLanguage(lang) {
   if (autoGearMatteboxSelect) {
     refreshAutoGearMatteboxOptions(autoGearEditorDraft?.mattebox);
   }
+  if (autoGearCameraHandleSelect) {
+    refreshAutoGearCameraHandleOptions(autoGearEditorDraft?.cameraHandle);
+  }
+  if (autoGearViewfinderExtensionSelect) {
+    refreshAutoGearViewfinderExtensionOptions(autoGearEditorDraft?.viewfinderExtension);
+  }
+  if (autoGearVideoDistributionSelect) {
+    refreshAutoGearVideoDistributionOptions(autoGearEditorDraft?.videoDistribution);
+  }
   seedAutoGearRulesFromCurrentProject();
   renderAutoGearRulesList();
   renderAutoGearDraftLists();
@@ -20673,6 +20682,10 @@ if (settingsButton && settingsDialog) {
     if (autoGearEditor) {
       closeAutoGearEditor();
       refreshAutoGearScenarioOptions();
+      refreshAutoGearMatteboxOptions();
+      refreshAutoGearCameraHandleOptions();
+      refreshAutoGearViewfinderExtensionOptions();
+      refreshAutoGearVideoDistributionOptions();
       populateAutoGearCategorySelect(autoGearAddCategorySelect, '');
       populateAutoGearCategorySelect(autoGearRemoveCategorySelect, '');
       renderAutoGearRulesList();
