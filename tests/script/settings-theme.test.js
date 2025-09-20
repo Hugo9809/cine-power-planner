@@ -11,7 +11,7 @@ describe('settings dialog theme interactions', () => {
     localStorage.clear();
   });
 
-  test('closing settings keeps pink mode accent overrides cleared', () => {
+  test('closing settings keeps custom accent overrides while pink mode stays active', () => {
     localStorage.setItem('pinkMode', 'true');
     localStorage.setItem('accentColor', '#ff8800');
 
@@ -30,6 +30,29 @@ describe('settings dialog theme interactions', () => {
     settingsCancel.click();
 
     expect(document.body.classList.contains('pink-mode')).toBe(true);
+    expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('#ff8800');
+    expect(document.documentElement.style.getPropertyValue('--link-color')).toBe('#ff8800');
+    expect(document.body.style.getPropertyValue('--accent-color')).toBe('#ff8800');
+    expect(document.body.style.getPropertyValue('--link-color')).toBe('#ff8800');
+  });
+
+  test('pink mode without custom accent continues to rely on theme defaults', () => {
+    localStorage.setItem('pinkMode', 'true');
+
+    const { cleanup: clean } = setupScriptEnvironment();
+    cleanup = clean;
+
+    expect(document.body.classList.contains('pink-mode')).toBe(true);
+
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsCancel = document.getElementById('settingsCancel');
+
+    expect(settingsButton).toBeTruthy();
+    expect(settingsCancel).toBeTruthy();
+
+    settingsButton.click();
+    settingsCancel.click();
+
     expect(document.documentElement.style.getPropertyValue('--accent-color')).toBe('');
     expect(document.documentElement.style.getPropertyValue('--link-color')).toBe('');
     expect(document.body.style.getPropertyValue('--accent-color')).toBe('');

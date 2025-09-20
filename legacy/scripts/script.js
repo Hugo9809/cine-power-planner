@@ -8688,9 +8688,14 @@ var runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
 var generateGearListBtn = document.getElementById("generateGearListBtn");
 var gearListOutput = document.getElementById("gearListOutput");
 var projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
-var accentColor = '#001589';
+var DEFAULT_ACCENT_COLOR = '#001589';
+var accentColor = DEFAULT_ACCENT_COLOR;
 var prevAccentColor = accentColor;
 var HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
+var DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
+var normalizeAccentValue = function normalizeAccentValue(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+};
 var DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
 var PINK_REFERENCE_COLOR = '#ff69b4';
 var PINK_LUMINANCE_TOLERANCE = 0.06;
@@ -8758,6 +8763,13 @@ function refreshDarkModeAccentBoost() {
 }
 var isHighContrastActive = function isHighContrastActive() {
   return typeof document !== 'undefined' && (document.documentElement.classList.contains('high-contrast') || document.body && document.body.classList.contains('high-contrast'));
+};
+var hasCustomAccentSelection = function hasCustomAccentSelection() {
+  var normalized = normalizeAccentValue(accentColor);
+  return normalized && normalized !== DEFAULT_ACCENT_NORMALIZED;
+};
+var shouldPreserveAccentInPinkMode = function shouldPreserveAccentInPinkMode() {
+  return hasCustomAccentSelection() || isHighContrastActive();
 };
 var applyAccentColor = function applyAccentColor(color) {
   var highContrast = isHighContrastActive();
@@ -9743,7 +9755,11 @@ if (settingsFontFamily) {
 }
 var revertAccentColor = function revertAccentColor() {
   if (document.body && document.body.classList.contains('pink-mode')) {
-    clearAccentColorOverrides();
+    if (shouldPreserveAccentInPinkMode()) {
+      applyAccentColor(prevAccentColor);
+    } else {
+      clearAccentColorOverrides();
+    }
     return;
   }
   applyAccentColor(prevAccentColor);
@@ -19424,7 +19440,7 @@ function applyHighContrast(enabled) {
       document.body.classList.remove("high-contrast");
     }
     document.documentElement.classList.remove("high-contrast");
-    if (document.body && document.body.classList.contains('pink-mode')) {
+    if (document.body && document.body.classList.contains('pink-mode') && !hasCustomAccentSelection()) {
       clearAccentColorOverrides();
     } else {
       applyAccentColor(accentColor);
@@ -19509,12 +19525,17 @@ function startPinkModeIconRotation() {
   }, PINK_MODE_ICON_INTERVAL_MS);
 }
 function applyPinkMode(enabled) {
+  var preserveAccent = shouldPreserveAccentInPinkMode();
   if (enabled) {
     document.body.classList.add("pink-mode");
     if (accentColorInput) {
       accentColorInput.disabled = true;
     }
-    clearAccentColorOverrides();
+    if (preserveAccent) {
+      applyAccentColor(accentColor);
+    } else {
+      clearAccentColorOverrides();
+    }
     if (pinkModeToggle) {
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
@@ -19907,7 +19928,7 @@ function parseColorToRgb(color) {
 }
 var createAccentTint = function createAccentTint() {
   var alpha = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.16;
-  var accentFallback = typeof accentColor === 'string' ? accentColor : '#001589';
+  var accentFallback = typeof accentColor === 'string' ? accentColor : DEFAULT_ACCENT_COLOR;
   var accentSource = getCssVariableValue('--accent-color', accentFallback);
   var rgb = parseColorToRgb(accentSource);
   if (!rgb) return null;

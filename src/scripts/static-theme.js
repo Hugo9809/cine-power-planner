@@ -80,8 +80,13 @@
     body.classList.toggle('light-mode', !darkModeEnabled);
     updateThemeColor(darkModeEnabled);
 
-    var accentColor = safeGet('accentColor') || DEFAULT_ACCENT;
-    if (pinkModeEnabled) {
+    var storedAccent = safeGet('accentColor');
+    var accentColor = storedAccent || DEFAULT_ACCENT;
+    var hasCustomAccent =
+      typeof storedAccent === 'string' &&
+      storedAccent.trim().toLowerCase() !== DEFAULT_ACCENT.toLowerCase();
+    var shouldPreserveAccent = hasCustomAccent || highContrastEnabled;
+    if (pinkModeEnabled && !shouldPreserveAccent) {
       root.style.removeProperty('--accent-color');
       root.style.removeProperty('--link-color');
       body.style.removeProperty('--accent-color');
