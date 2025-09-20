@@ -339,7 +339,16 @@ function normalizeAutoGearRule(rule) {
   var mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort(function (a, b) {
     return a.localeCompare(b);
   });
-  if (!scenarios.length && !mattebox.length) return null;
+  var cameraHandle = normalizeAutoGearTriggerList(rule.cameraHandle).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  var viewfinderExtension = normalizeAutoGearTriggerList(rule.viewfinderExtension).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  var videoDistribution = normalizeAutoGearTriggerList(rule.videoDistribution).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  if (!scenarios.length && !mattebox.length && !cameraHandle.length && !viewfinderExtension.length && !videoDistribution.length) return null;
   var add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
   var remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
   if (!add.length && !remove.length) return null;
@@ -348,6 +357,9 @@ function normalizeAutoGearRule(rule) {
     label: label,
     scenarios: scenarios,
     mattebox: mattebox,
+    cameraHandle: cameraHandle,
+    viewfinderExtension: viewfinderExtension,
+    videoDistribution: videoDistribution,
     add: add,
     remove: remove
   };
@@ -388,6 +400,15 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     mattebox: normalized.mattebox.slice().sort(function (a, b) {
       return a.localeCompare(b);
     }),
+    cameraHandle: normalized.cameraHandle.slice().sort(function (a, b) {
+      return a.localeCompare(b);
+    }),
+    viewfinderExtension: normalized.viewfinderExtension.slice().sort(function (a, b) {
+      return a.localeCompare(b);
+    }),
+    videoDistribution: normalized.videoDistribution.slice().sort(function (a, b) {
+      return a.localeCompare(b);
+    }),
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove)
   };
@@ -395,9 +416,12 @@ function snapshotAutoGearRuleForFingerprint(rule) {
 function autoGearRuleSortKey(rule) {
   var scenarioKey = Array.isArray(rule.scenarios) ? rule.scenarios.join('|') : '';
   var matteboxKey = Array.isArray(rule.mattebox) ? rule.mattebox.join('|') : '';
+  var cameraHandleKey = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.join('|') : '';
+  var viewfinderKey = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.join('|') : '';
+  var videoDistributionKey = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.join('|') : '';
   var addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   var removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return "".concat(scenarioKey, "|").concat(matteboxKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
+  return "".concat(scenarioKey, "|").concat(matteboxKey, "|").concat(cameraHandleKey, "|").concat(viewfinderKey, "|").concat(videoDistributionKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
 }
 function createAutoGearRulesFingerprint(rules) {
   var snapshot = (Array.isArray(rules) ? rules : []).map(snapshotAutoGearRuleForFingerprint).filter(Boolean).sort(function (a, b) {
@@ -3229,19 +3253,52 @@ function setLanguage(lang) {
       autoGearMatteboxSelect.setAttribute('aria-label', _label17);
     }
   }
+  if (autoGearCameraHandleLabel) {
+    var _texts$en49, _texts$en50;
+    var _label18 = texts[lang].autoGearCameraHandleLabel || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.autoGearCameraHandleLabel) || autoGearCameraHandleLabel.textContent;
+    autoGearCameraHandleLabel.textContent = _label18;
+    var _help11 = texts[lang].autoGearCameraHandleHelp || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.autoGearCameraHandleHelp) || _label18;
+    autoGearCameraHandleLabel.setAttribute('data-help', _help11);
+    if (autoGearCameraHandleSelect) {
+      autoGearCameraHandleSelect.setAttribute('data-help', _help11);
+      autoGearCameraHandleSelect.setAttribute('aria-label', _label18);
+    }
+  }
+  if (autoGearViewfinderExtensionLabel) {
+    var _texts$en51, _texts$en52;
+    var _label19 = texts[lang].autoGearViewfinderExtensionLabel || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.autoGearViewfinderExtensionLabel) || autoGearViewfinderExtensionLabel.textContent;
+    autoGearViewfinderExtensionLabel.textContent = _label19;
+    var _help12 = texts[lang].autoGearViewfinderExtensionHelp || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.autoGearViewfinderExtensionHelp) || _label19;
+    autoGearViewfinderExtensionLabel.setAttribute('data-help', _help12);
+    if (autoGearViewfinderExtensionSelect) {
+      autoGearViewfinderExtensionSelect.setAttribute('data-help', _help12);
+      autoGearViewfinderExtensionSelect.setAttribute('aria-label', _label19);
+    }
+  }
+  if (autoGearVideoDistributionLabel) {
+    var _texts$en53, _texts$en54;
+    var _label20 = texts[lang].autoGearVideoDistributionLabel || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.autoGearVideoDistributionLabel) || autoGearVideoDistributionLabel.textContent;
+    autoGearVideoDistributionLabel.textContent = _label20;
+    var _help13 = texts[lang].autoGearVideoDistributionHelp || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.autoGearVideoDistributionHelp) || _label20;
+    autoGearVideoDistributionLabel.setAttribute('data-help', _help13);
+    if (autoGearVideoDistributionSelect) {
+      autoGearVideoDistributionSelect.setAttribute('data-help', _help13);
+      autoGearVideoDistributionSelect.setAttribute('aria-label', _label20);
+    }
+  }
   if (autoGearAddItemsHeading) {
-    var _texts$en49;
-    autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en49 = texts.en) === null || _texts$en49 === void 0 ? void 0 : _texts$en49.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
+    var _texts$en55;
+    autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
   }
   if (autoGearAddItemLabel) {
-    var _texts$en50, _texts$en51;
-    var _label18 = texts[lang].autoGearAddItemLabel || ((_texts$en50 = texts.en) === null || _texts$en50 === void 0 ? void 0 : _texts$en50.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
-    var hint = texts[lang].autoGearAddMultipleHint || ((_texts$en51 = texts.en) === null || _texts$en51 === void 0 ? void 0 : _texts$en51.autoGearAddMultipleHint) || '';
-    var helpText = hint ? "".concat(_label18, " \u2013 ").concat(hint) : _label18;
-    autoGearAddItemLabel.textContent = _label18;
+    var _texts$en56, _texts$en57;
+    var _label21 = texts[lang].autoGearAddItemLabel || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.autoGearAddItemLabel) || autoGearAddItemLabel.textContent;
+    var hint = texts[lang].autoGearAddMultipleHint || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.autoGearAddMultipleHint) || '';
+    var helpText = hint ? "".concat(_label21, " \u2013 ").concat(hint) : _label21;
+    autoGearAddItemLabel.textContent = _label21;
     autoGearAddItemLabel.setAttribute('data-help', helpText);
     if (autoGearAddNameInput) {
-      autoGearAddNameInput.setAttribute('aria-label', _label18);
+      autoGearAddNameInput.setAttribute('aria-label', _label21);
       autoGearAddNameInput.setAttribute('data-help', helpText);
       if (hint) {
         autoGearAddNameInput.setAttribute('placeholder', hint);
@@ -3251,40 +3308,40 @@ function setLanguage(lang) {
     }
   }
   if (autoGearAddCategoryLabel) {
-    var _texts$en52;
-    var _label19 = texts[lang].autoGearAddCategoryLabel || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
-    autoGearAddCategoryLabel.textContent = _label19;
+    var _texts$en58;
+    var _label22 = texts[lang].autoGearAddCategoryLabel || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.autoGearAddCategoryLabel) || autoGearAddCategoryLabel.textContent;
+    autoGearAddCategoryLabel.textContent = _label22;
     if (autoGearAddCategorySelect) {
-      autoGearAddCategorySelect.setAttribute('aria-label', _label19);
+      autoGearAddCategorySelect.setAttribute('aria-label', _label22);
     }
   }
   if (autoGearAddQuantityLabel) {
-    var _texts$en53;
-    var _label20 = texts[lang].autoGearAddQuantityLabel || ((_texts$en53 = texts.en) === null || _texts$en53 === void 0 ? void 0 : _texts$en53.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
-    autoGearAddQuantityLabel.textContent = _label20;
+    var _texts$en59;
+    var _label23 = texts[lang].autoGearAddQuantityLabel || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.autoGearAddQuantityLabel) || autoGearAddQuantityLabel.textContent;
+    autoGearAddQuantityLabel.textContent = _label23;
     if (autoGearAddQuantityInput) {
-      autoGearAddQuantityInput.setAttribute('aria-label', _label20);
+      autoGearAddQuantityInput.setAttribute('aria-label', _label23);
     }
   }
   if (autoGearAddItemButton) {
-    var _texts$en54;
-    var _label21 = texts[lang].autoGearAddItemButton || ((_texts$en54 = texts.en) === null || _texts$en54 === void 0 ? void 0 : _texts$en54.autoGearAddItemButton) || autoGearAddItemButton.textContent;
-    autoGearAddItemButton.textContent = _label21;
-    autoGearAddItemButton.setAttribute('data-help', _label21);
+    var _texts$en60;
+    var _label24 = texts[lang].autoGearAddItemButton || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.autoGearAddItemButton) || autoGearAddItemButton.textContent;
+    autoGearAddItemButton.textContent = _label24;
+    autoGearAddItemButton.setAttribute('data-help', _label24);
   }
   if (autoGearRemoveItemsHeading) {
-    var _texts$en55;
-    autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
+    var _texts$en61;
+    autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.autoGearRemoveItemsHeading) || autoGearRemoveItemsHeading.textContent;
   }
   if (autoGearRemoveItemLabel) {
-    var _texts$en56, _texts$en57;
-    var _label22 = texts[lang].autoGearRemoveItemLabel || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
-    var _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en57 = texts.en) === null || _texts$en57 === void 0 ? void 0 : _texts$en57.autoGearRemoveMultipleHint) || '';
-    var _helpText = _hint ? "".concat(_label22, " \u2013 ").concat(_hint) : _label22;
-    autoGearRemoveItemLabel.textContent = _label22;
+    var _texts$en62, _texts$en63;
+    var _label25 = texts[lang].autoGearRemoveItemLabel || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.autoGearRemoveItemLabel) || autoGearRemoveItemLabel.textContent;
+    var _hint = texts[lang].autoGearRemoveMultipleHint || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.autoGearRemoveMultipleHint) || '';
+    var _helpText = _hint ? "".concat(_label25, " \u2013 ").concat(_hint) : _label25;
+    autoGearRemoveItemLabel.textContent = _label25;
     autoGearRemoveItemLabel.setAttribute('data-help', _helpText);
     if (autoGearRemoveNameInput) {
-      autoGearRemoveNameInput.setAttribute('aria-label', _label22);
+      autoGearRemoveNameInput.setAttribute('aria-label', _label25);
       autoGearRemoveNameInput.setAttribute('data-help', _helpText);
       if (_hint) {
         autoGearRemoveNameInput.setAttribute('placeholder', _hint);
@@ -3294,38 +3351,38 @@ function setLanguage(lang) {
     }
   }
   if (autoGearRemoveCategoryLabel) {
-    var _texts$en58;
-    var _label23 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
-    autoGearRemoveCategoryLabel.textContent = _label23;
+    var _texts$en64;
+    var _label26 = texts[lang].autoGearRemoveCategoryLabel || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.autoGearRemoveCategoryLabel) || autoGearRemoveCategoryLabel.textContent;
+    autoGearRemoveCategoryLabel.textContent = _label26;
     if (autoGearRemoveCategorySelect) {
-      autoGearRemoveCategorySelect.setAttribute('aria-label', _label23);
+      autoGearRemoveCategorySelect.setAttribute('aria-label', _label26);
     }
   }
   if (autoGearRemoveQuantityLabel) {
-    var _texts$en59;
-    var _label24 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
-    autoGearRemoveQuantityLabel.textContent = _label24;
+    var _texts$en65;
+    var _label27 = texts[lang].autoGearRemoveQuantityLabel || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.autoGearRemoveQuantityLabel) || autoGearRemoveQuantityLabel.textContent;
+    autoGearRemoveQuantityLabel.textContent = _label27;
     if (autoGearRemoveQuantityInput) {
-      autoGearRemoveQuantityInput.setAttribute('aria-label', _label24);
+      autoGearRemoveQuantityInput.setAttribute('aria-label', _label27);
     }
   }
   if (autoGearRemoveItemButton) {
-    var _texts$en60;
-    var _label25 = texts[lang].autoGearRemoveItemButton || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.autoGearRemoveItemButton) || autoGearRemoveItemButton.textContent;
-    autoGearRemoveItemButton.textContent = _label25;
-    autoGearRemoveItemButton.setAttribute('data-help', _label25);
+    var _texts$en66;
+    var _label28 = texts[lang].autoGearRemoveItemButton || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.autoGearRemoveItemButton) || autoGearRemoveItemButton.textContent;
+    autoGearRemoveItemButton.textContent = _label28;
+    autoGearRemoveItemButton.setAttribute('data-help', _label28);
   }
   if (autoGearSaveRuleButton) {
-    var _texts$en61;
-    var _label26 = texts[lang].autoGearSaveRule || ((_texts$en61 = texts.en) === null || _texts$en61 === void 0 ? void 0 : _texts$en61.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
-    setButtonLabelWithIcon(autoGearSaveRuleButton, _label26);
-    autoGearSaveRuleButton.setAttribute('data-help', _label26);
+    var _texts$en67;
+    var _label29 = texts[lang].autoGearSaveRule || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.autoGearSaveRule) || autoGearSaveRuleButton.textContent;
+    setButtonLabelWithIcon(autoGearSaveRuleButton, _label29);
+    autoGearSaveRuleButton.setAttribute('data-help', _label29);
   }
   if (autoGearCancelEditButton) {
-    var _texts$en62;
-    var _label27 = texts[lang].autoGearCancelEdit || ((_texts$en62 = texts.en) === null || _texts$en62 === void 0 ? void 0 : _texts$en62.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
-    setButtonLabelWithIcon(autoGearCancelEditButton, _label27, ICON_GLYPHS.circleX);
-    autoGearCancelEditButton.setAttribute('data-help', _label27);
+    var _texts$en68;
+    var _label30 = texts[lang].autoGearCancelEdit || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.autoGearCancelEdit) || autoGearCancelEditButton.textContent;
+    setButtonLabelWithIcon(autoGearCancelEditButton, _label30, ICON_GLYPHS.circleX);
+    autoGearCancelEditButton.setAttribute('data-help', _label30);
   }
   if (autoGearAddCategorySelect) {
     populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearAddCategorySelect.value);
@@ -3426,17 +3483,17 @@ function setLanguage(lang) {
     supportLink.setAttribute("title", supportHelp);
   }
   if (settingsSave) {
-    var _texts$en63;
-    var _label28 = texts[lang].saveSettings || ((_texts$en63 = texts.en) === null || _texts$en63 === void 0 ? void 0 : _texts$en63.saveSettings) || settingsSave.textContent;
-    setButtonLabelWithIcon(settingsSave, _label28);
-    var saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label28;
+    var _texts$en69;
+    var _label31 = texts[lang].saveSettings || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.saveSettings) || settingsSave.textContent;
+    setButtonLabelWithIcon(settingsSave, _label31);
+    var saveHelp = texts[lang].saveSettingsHelp || texts[lang].saveSettings || _label31;
     settingsSave.setAttribute("data-help", saveHelp);
     settingsSave.setAttribute("title", saveHelp);
     settingsSave.setAttribute("aria-label", saveHelp);
   }
   if (settingsCancel) {
-    var _texts$en64;
-    var _cancelLabel = texts[lang].cancelSettings || ((_texts$en64 = texts.en) === null || _texts$en64 === void 0 ? void 0 : _texts$en64.cancelSettings) || settingsCancel.textContent;
+    var _texts$en70;
+    var _cancelLabel = texts[lang].cancelSettings || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.cancelSettings) || settingsCancel.textContent;
     setButtonLabelWithIcon(settingsCancel, _cancelLabel, ICON_GLYPHS.circleX);
     var cancelHelp = texts[lang].cancelSettingsHelp || texts[lang].cancelSettings || _cancelLabel;
     settingsCancel.setAttribute("data-help", cancelHelp);
@@ -3445,8 +3502,8 @@ function setLanguage(lang) {
   }
   var menuToggle = document.getElementById("menuToggle");
   if (menuToggle) {
-    var _texts$en65;
-    var menuLabel = texts[lang].menuToggleLabel || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
+    var _texts$en71;
+    var menuLabel = texts[lang].menuToggleLabel || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.menuToggleLabel) || menuToggle.getAttribute("aria-label") || "Menu";
     menuToggle.setAttribute("title", menuLabel);
     menuToggle.setAttribute("aria-label", menuLabel);
     var menuHelp = texts[lang].menuToggleHelp || menuLabel;
@@ -4584,24 +4641,24 @@ function setButtonLabelWithIcon(button, label) {
   button.innerHTML = "".concat(iconHtml).concat(safeLabel);
 }
 function createCrewRow() {
-  var _texts$en67, _texts$currentLang2;
+  var _texts$en73, _texts$currentLang2;
   var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (!crewContainer) return;
   var row = document.createElement('div');
   row.className = 'person-row';
   var roleSel = document.createElement('select');
   crewRoles.forEach(function (r) {
-    var _texts$currentLang, _texts$en66;
+    var _texts$currentLang, _texts$en72;
     var opt = document.createElement('option');
     opt.value = r;
-    var roleLabels = ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.crewRoles) || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.crewRoles) || {};
+    var roleLabels = ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.crewRoles) || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.crewRoles) || {};
     opt.textContent = roleLabels[r] || r;
     roleSel.appendChild(opt);
   });
   if (data.role) roleSel.value = data.role;
   var nameInput = document.createElement('input');
   nameInput.type = 'text';
-  var fallbackProjectForm = ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.projectForm) || {};
+  var fallbackProjectForm = ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.projectForm) || {};
   var projectFormTexts = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.projectForm) || fallbackProjectForm;
   nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
   nameInput.className = 'person-name';
@@ -4965,21 +5022,21 @@ function getSharedImportProjectName(sharedData) {
   return '';
 }
 function getSharedImportPresetLabel(sharedData) {
-  var _texts$en68, _texts$en69;
+  var _texts$en74, _texts$en75;
   var langTexts = texts[currentLang] || texts.en || {};
-  var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en68 = texts.en) === null || _texts$en68 === void 0 ? void 0 : _texts$en68.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+  var fallback = langTexts.sharedImportAutoGearPresetFallback || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
   var projectName = getSharedImportProjectName(sharedData);
   if (!projectName) {
     return fallback;
   }
-  var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en69 = texts.en) === null || _texts$en69 === void 0 ? void 0 : _texts$en69.sharedImportAutoGearPresetName) || '%s';
+  var template = langTexts.sharedImportAutoGearPresetName || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75.sharedImportAutoGearPresetName) || '%s';
   if (template.includes('%s')) {
     return formatWithPlaceholders(template, projectName);
   }
   return "".concat(template, " ").concat(projectName).trim();
 }
 function ensureSharedAutoGearPreset(rules, sharedData) {
-  var _texts$currentLang3, _texts$en70;
+  var _texts$currentLang3, _texts$en76;
   var normalizedRules = Array.isArray(rules) ? rules.map(normalizeAutoGearRule).filter(Boolean) : [];
   if (!normalizedRules.length) return null;
   var label = getSharedImportPresetLabel(sharedData);
@@ -4987,7 +5044,7 @@ function ensureSharedAutoGearPreset(rules, sharedData) {
   var preset = autoGearPresets.find(function (entry) {
     return entry.fingerprint === fingerprint;
   }) || null;
-  var fallback = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.sharedImportAutoGearPresetFallback) || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
+  var fallback = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.sharedImportAutoGearPresetFallback) || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.sharedImportAutoGearPresetFallback) || 'Shared automatic gear rules';
   if (preset) {
     if (label && preset.label !== label && preset.label === fallback) {
       preset = _objectSpread(_objectSpread({}, preset), {}, {
@@ -5866,10 +5923,10 @@ function createSchemaField(category, attr, value) {
   if (inputType === 'boolean') {
     var _row = document.createElement('div');
     _row.className = 'form-row schema-form-row';
-    var _label29 = document.createElement('label');
-    _label29.setAttribute('for', attrId);
-    _label29.textContent = labelText;
-    _row.appendChild(_label29);
+    var _label32 = document.createElement('label');
+    _label32.setAttribute('for', attrId);
+    _label32.textContent = labelText;
+    _row.appendChild(_label32);
     var _controlContainer = document.createElement('div');
     _controlContainer.className = 'schema-control schema-control--checkbox';
     var _inlineWrap = document.createElement('div');
@@ -5934,10 +5991,10 @@ function createSchemaField(category, attr, value) {
   }
   controlContainer.appendChild(inlineWrap);
   if (config.help) {
-    var _help11 = document.createElement('p');
-    _help11.className = 'schema-field-help';
-    _help11.textContent = config.help;
-    controlContainer.appendChild(_help11);
+    var _help14 = document.createElement('p');
+    _help14.className = 'schema-field-help';
+    _help14.textContent = config.help;
+    controlContainer.appendChild(_help14);
   }
   row.appendChild(controlContainer);
   return row;
@@ -6184,6 +6241,12 @@ var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
 var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
 var autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
 var autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
+var autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle');
+var autoGearCameraHandleLabel = document.getElementById('autoGearCameraHandleLabel');
+var autoGearViewfinderExtensionSelect = document.getElementById('autoGearViewfinderExtension');
+var autoGearViewfinderExtensionLabel = document.getElementById('autoGearViewfinderExtensionLabel');
+var autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDistribution');
+var autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
 var autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
 var autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
 var autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
@@ -6232,6 +6295,9 @@ function createAutoGearDraft(rule) {
       label: rule.label || '',
       scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
       mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
+      cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
+      viewfinderExtension: Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.slice() : [],
+      videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
       add: Array.isArray(rule.add) ? rule.add.map(function (item) {
         return _objectSpread({}, item);
       }) : [],
@@ -6245,6 +6311,9 @@ function createAutoGearDraft(rule) {
     label: '',
     scenarios: [],
     mattebox: [],
+    cameraHandle: [],
+    viewfinderExtension: [],
+    videoDistribution: [],
     add: [],
     remove: []
   };
@@ -6276,10 +6345,10 @@ function refreshAutoGearScenarioOptions(selected) {
     });
   }
   if (!hasOptions) {
-    var _texts$currentLang4, _texts$en71;
+    var _texts$currentLang4, _texts$en77;
     var placeholder = document.createElement('option');
     placeholder.value = '';
-    placeholder.textContent = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.autoGearScenarioPlaceholder) || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.autoGearScenarioPlaceholder) || 'Select scenarios';
+    placeholder.textContent = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.autoGearScenarioPlaceholder) || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.autoGearScenarioPlaceholder) || 'Select scenarios';
     placeholder.disabled = true;
     placeholder.selected = true;
     autoGearScenariosSelect.appendChild(placeholder);
@@ -6330,10 +6399,10 @@ function refreshAutoGearMatteboxOptions(selected) {
     });
   }
   if (!hasOptions) {
-    var _texts$currentLang5, _texts$en72;
+    var _texts$currentLang5, _texts$en78;
     var placeholder = document.createElement('option');
     placeholder.value = '';
-    placeholder.textContent = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.autoGearMatteboxPlaceholder) || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.autoGearMatteboxPlaceholder) || 'Select mattebox options';
+    placeholder.textContent = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.autoGearMatteboxPlaceholder) || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.autoGearMatteboxPlaceholder) || 'Select mattebox options';
     placeholder.disabled = true;
     placeholder.selected = true;
     autoGearMatteboxSelect.appendChild(placeholder);
@@ -6357,8 +6426,182 @@ function refreshAutoGearMatteboxOptions(selected) {
   var visibleCount = selectableOptions.length ? Math.min(6, Math.max(selectableOptions.length, 4)) : 1;
   autoGearMatteboxSelect.size = visibleCount;
 }
+function refreshAutoGearCameraHandleOptions(selected) {
+  var _autoGearEditorDraft5;
+  if (!autoGearCameraHandleSelect) return;
+  var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray((_autoGearEditorDraft5 = autoGearEditorDraft) === null || _autoGearEditorDraft5 === void 0 ? void 0 : _autoGearEditorDraft5.cameraHandle) ? autoGearEditorDraft.cameraHandle : [];
+  var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
+    return typeof value === 'string';
+  }).map(function (value) {
+    return value.trim();
+  }).filter(Boolean)));
+  autoGearCameraHandleSelect.innerHTML = '';
+  autoGearCameraHandleSelect.multiple = true;
+  var source = document.getElementById('cameraHandle');
+  var hasOptions = false;
+  if (source) {
+    Array.from(source.options).forEach(function (opt) {
+      if (!opt.value) return;
+      var option = document.createElement('option');
+      option.value = opt.value;
+      option.textContent = opt.textContent;
+      if (selectedValues.includes(opt.value)) {
+        option.selected = true;
+      }
+      autoGearCameraHandleSelect.appendChild(option);
+      hasOptions = true;
+    });
+  }
+  if (!hasOptions) {
+    var _texts$currentLang6, _texts$en79;
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.autoGearCameraHandlePlaceholder) || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.autoGearCameraHandlePlaceholder) || 'Select camera handles';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearCameraHandleSelect.appendChild(placeholder);
+  } else {
+    selectedValues.forEach(function (value) {
+      var exists = Array.from(autoGearCameraHandleSelect.options || []).some(function (option) {
+        return option && option.value === value;
+      });
+      if (!exists) {
+        var fallbackOption = document.createElement('option');
+        fallbackOption.value = value;
+        fallbackOption.textContent = value;
+        fallbackOption.selected = true;
+        autoGearCameraHandleSelect.appendChild(fallbackOption);
+      }
+    });
+  }
+  var selectableOptions = Array.from(autoGearCameraHandleSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  });
+  var visibleCount = selectableOptions.length ? Math.min(6, Math.max(selectableOptions.length, 3)) : 1;
+  autoGearCameraHandleSelect.size = visibleCount;
+}
+function resolveViewfinderOptionValue(option) {
+  if (!option) return '';
+  var raw = typeof option.value === 'string' ? option.value : '';
+  return raw ? raw : '__none__';
+}
+function getViewfinderFallbackLabel(value) {
+  if (value === '__none__') {
+    var _texts$currentLang7, _texts$en80;
+    return ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.viewfinderExtensionNone) || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.viewfinderExtensionNone) || 'No';
+  }
+  return value;
+}
+function refreshAutoGearViewfinderExtensionOptions(selected) {
+  var _autoGearEditorDraft6;
+  if (!autoGearViewfinderExtensionSelect) return;
+  var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray((_autoGearEditorDraft6 = autoGearEditorDraft) === null || _autoGearEditorDraft6 === void 0 ? void 0 : _autoGearEditorDraft6.viewfinderExtension) ? autoGearEditorDraft.viewfinderExtension : [];
+  var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
+    return typeof value === 'string';
+  }).map(function (value) {
+    return value.trim();
+  }).filter(Boolean)));
+  autoGearViewfinderExtensionSelect.innerHTML = '';
+  autoGearViewfinderExtensionSelect.multiple = true;
+  var source = document.getElementById('viewfinderExtension');
+  var hasOptions = false;
+  if (source) {
+    Array.from(source.options).forEach(function (opt) {
+      var option = document.createElement('option');
+      var value = resolveViewfinderOptionValue(opt);
+      option.value = value;
+      option.textContent = opt.textContent;
+      if (selectedValues.includes(value)) {
+        option.selected = true;
+      }
+      autoGearViewfinderExtensionSelect.appendChild(option);
+      hasOptions = true;
+    });
+  }
+  if (!hasOptions) {
+    var _texts$currentLang8, _texts$en81;
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.autoGearViewfinderExtensionPlaceholder) || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearViewfinderExtensionPlaceholder) || 'Select viewfinder extension options';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearViewfinderExtensionSelect.appendChild(placeholder);
+  } else {
+    selectedValues.forEach(function (value) {
+      var exists = Array.from(autoGearViewfinderExtensionSelect.options || []).some(function (option) {
+        return option && option.value === value;
+      });
+      if (!exists) {
+        var fallbackOption = document.createElement('option');
+        fallbackOption.value = value;
+        fallbackOption.textContent = getViewfinderFallbackLabel(value);
+        fallbackOption.selected = true;
+        autoGearViewfinderExtensionSelect.appendChild(fallbackOption);
+      }
+    });
+  }
+  var selectableOptions = Array.from(autoGearViewfinderExtensionSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  });
+  var visibleCount = selectableOptions.length ? Math.min(4, Math.max(selectableOptions.length, 2)) : 1;
+  autoGearViewfinderExtensionSelect.size = visibleCount;
+}
+function refreshAutoGearVideoDistributionOptions(selected) {
+  var _autoGearEditorDraft7;
+  if (!autoGearVideoDistributionSelect) return;
+  var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray((_autoGearEditorDraft7 = autoGearEditorDraft) === null || _autoGearEditorDraft7 === void 0 ? void 0 : _autoGearEditorDraft7.videoDistribution) ? autoGearEditorDraft.videoDistribution : [];
+  var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
+    return typeof value === 'string';
+  }).map(function (value) {
+    return value.trim();
+  }).filter(Boolean)));
+  autoGearVideoDistributionSelect.innerHTML = '';
+  autoGearVideoDistributionSelect.multiple = true;
+  var source = document.getElementById('videoDistribution');
+  var hasOptions = false;
+  if (source) {
+    Array.from(source.options).forEach(function (opt) {
+      if (!opt.value) return;
+      var option = document.createElement('option');
+      option.value = opt.value;
+      option.textContent = opt.textContent;
+      if (selectedValues.includes(opt.value)) {
+        option.selected = true;
+      }
+      autoGearVideoDistributionSelect.appendChild(option);
+      hasOptions = true;
+    });
+  }
+  if (!hasOptions) {
+    var _texts$currentLang9, _texts$en82;
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.autoGearVideoDistributionPlaceholder) || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.autoGearVideoDistributionPlaceholder) || 'Select video distribution options';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearVideoDistributionSelect.appendChild(placeholder);
+  } else {
+    selectedValues.forEach(function (value) {
+      var exists = Array.from(autoGearVideoDistributionSelect.options || []).some(function (option) {
+        return option && option.value === value;
+      });
+      if (!exists) {
+        var fallbackOption = document.createElement('option');
+        fallbackOption.value = value;
+        fallbackOption.textContent = value;
+        fallbackOption.selected = true;
+        autoGearVideoDistributionSelect.appendChild(fallbackOption);
+      }
+    });
+  }
+  var selectableOptions = Array.from(autoGearVideoDistributionSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  });
+  var visibleCount = selectableOptions.length ? Math.min(8, Math.max(selectableOptions.length, 4)) : 1;
+  autoGearVideoDistributionSelect.size = visibleCount;
+}
 function populateAutoGearCategorySelect(select, currentValue) {
-  var _texts$currentLang6, _texts$en73;
+  var _texts$currentLang0, _texts$en83;
   if (!select) return;
   var current = typeof currentValue === 'string' ? currentValue : '';
   select.innerHTML = '';
@@ -6371,7 +6614,7 @@ function populateAutoGearCategorySelect(select, currentValue) {
   });
   var customOpt = document.createElement('option');
   customOpt.value = AUTO_GEAR_CUSTOM_CATEGORY;
-  customOpt.textContent = ((_texts$currentLang6 = texts[currentLang]) === null || _texts$currentLang6 === void 0 ? void 0 : _texts$currentLang6.autoGearCustomCategory) || ((_texts$en73 = texts.en) === null || _texts$en73 === void 0 ? void 0 : _texts$en73.autoGearCustomCategory) || 'Custom Additions';
+  customOpt.textContent = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.autoGearCustomCategory) || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearCustomCategory) || 'Custom Additions';
   if (!current) customOpt.selected = true;
   select.appendChild(customOpt);
 }
@@ -6386,32 +6629,32 @@ function updateAutoGearCatalogOptions() {
   });
 }
 function formatAutoGearCount(count, singularKey, pluralKey) {
-  var _texts$en75;
+  var _texts$en85;
   var langTexts = texts[currentLang] || texts.en || {};
   if (count === 1) {
-    var _texts$en74;
-    var _template = langTexts[singularKey] || ((_texts$en74 = texts.en) === null || _texts$en74 === void 0 ? void 0 : _texts$en74[singularKey]);
+    var _texts$en84;
+    var _template = langTexts[singularKey] || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84[singularKey]);
     return _template ? _template.replace('%s', '1') : '1';
   }
-  var template = langTexts[pluralKey] || ((_texts$en75 = texts.en) === null || _texts$en75 === void 0 ? void 0 : _texts$en75[pluralKey]);
+  var template = langTexts[pluralKey] || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85[pluralKey]);
   return template ? template.replace('%s', String(count)) : String(count);
 }
 function formatAutoGearItemSummary(item) {
-  var _texts$en76, _texts$en77, _texts$en78;
+  var _texts$en86, _texts$en87, _texts$en88;
   if (!item || _typeof(item) !== 'object') return '';
   var langTexts = texts[currentLang] || texts.en || {};
   var quantity = normalizeAutoGearQuantity(item.quantity);
   var name = typeof item.name === 'string' ? item.name : '';
   var rawCategory = typeof item.category === 'string' ? item.category.trim() : '';
-  var categoryLabel = rawCategory ? rawCategory : langTexts.autoGearCustomCategory || ((_texts$en76 = texts.en) === null || _texts$en76 === void 0 ? void 0 : _texts$en76.autoGearCustomCategory) || '';
+  var categoryLabel = rawCategory ? rawCategory : langTexts.autoGearCustomCategory || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearCustomCategory) || '';
   var quantityText = String(quantity);
   var nameText = name || '';
   if (!nameText) return quantityText;
-  var withCategoryTemplate = langTexts.autoGearItemSummaryWithCategory || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.autoGearItemSummaryWithCategory) || '%s × %s (%s)';
+  var withCategoryTemplate = langTexts.autoGearItemSummaryWithCategory || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearItemSummaryWithCategory) || '%s × %s (%s)';
   if (categoryLabel) {
     return formatWithPlaceholders(withCategoryTemplate, quantityText, nameText, categoryLabel);
   }
-  var baseTemplate = langTexts.autoGearItemSummary || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.autoGearItemSummary) || '%s × %s';
+  var baseTemplate = langTexts.autoGearItemSummary || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearItemSummary) || '%s × %s';
   return formatWithPlaceholders(baseTemplate, quantityText, nameText);
 }
 function formatWithPlaceholders(template) {
@@ -6426,14 +6669,14 @@ function formatWithPlaceholders(template) {
   }, template);
 }
 function formatAutoGearRuleCount(count) {
-  var _texts$en80;
+  var _texts$en90;
   var langTexts = texts[currentLang] || texts.en || {};
   if (count === 1) {
-    var _texts$en79;
-    var _template2 = langTexts.autoGearRulesCountOne || ((_texts$en79 = texts.en) === null || _texts$en79 === void 0 ? void 0 : _texts$en79.autoGearRulesCountOne);
+    var _texts$en89;
+    var _template2 = langTexts.autoGearRulesCountOne || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearRulesCountOne);
     return _template2 ? _template2.replace('%s', '1') : '1';
   }
-  var template = langTexts.autoGearRulesCountOther || ((_texts$en80 = texts.en) === null || _texts$en80 === void 0 ? void 0 : _texts$en80.autoGearRulesCountOther);
+  var template = langTexts.autoGearRulesCountOther || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearRulesCountOther);
   return template ? template.replace('%s', String(count)) : String(count);
 }
 function formatAutoGearBackupTime(isoString) {
@@ -6453,21 +6696,21 @@ function formatAutoGearBackupTime(isoString) {
   return date.toISOString();
 }
 function formatAutoGearBackupMeta(backup) {
-  var _texts$en81, _texts$en82;
+  var _texts$en91, _texts$en92;
   if (!backup) return '';
   var langTexts = texts[currentLang] || texts.en || {};
   var timeLabel = formatAutoGearBackupTime(backup.createdAt);
   var ruleCount = Array.isArray(backup.rules) ? backup.rules.length : 0;
-  var rulesLabel = ruleCount === 0 ? langTexts.autoGearBackupClearsRules || ((_texts$en81 = texts.en) === null || _texts$en81 === void 0 ? void 0 : _texts$en81.autoGearBackupClearsRules) || 'Clears all rules' : formatAutoGearRuleCount(ruleCount);
-  var template = langTexts.autoGearBackupMeta || ((_texts$en82 = texts.en) === null || _texts$en82 === void 0 ? void 0 : _texts$en82.autoGearBackupMeta);
+  var rulesLabel = ruleCount === 0 ? langTexts.autoGearBackupClearsRules || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearBackupClearsRules) || 'Clears all rules' : formatAutoGearRuleCount(ruleCount);
+  var template = langTexts.autoGearBackupMeta || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearBackupMeta);
   if (template && template.includes('%s')) {
     return formatWithPlaceholders(template, timeLabel, rulesLabel);
   }
   return "".concat(timeLabel, " \xB7 ").concat(rulesLabel);
 }
 function getAutoGearBackupSelectPlaceholder() {
-  var _texts$currentLang7, _texts$en83;
-  return ((_texts$currentLang7 = texts[currentLang]) === null || _texts$currentLang7 === void 0 ? void 0 : _texts$currentLang7.autoGearBackupSelectPlaceholder) || ((_texts$en83 = texts.en) === null || _texts$en83 === void 0 ? void 0 : _texts$en83.autoGearBackupSelectPlaceholder) || 'Select a backup to restore';
+  var _texts$currentLang1, _texts$en93;
+  return ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.autoGearBackupSelectPlaceholder) || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearBackupSelectPlaceholder) || 'Select a backup to restore';
 }
 function updateAutoGearBackupRestoreButtonState() {
   if (!autoGearBackupRestoreButton) return;
@@ -6481,9 +6724,9 @@ function getAutoGearPresetById(presetId) {
   }) || null;
 }
 function getAutoGearAutoPresetLabel() {
-  var _texts$en84;
+  var _texts$en94;
   var langTexts = texts[currentLang] || texts.en || {};
-  return langTexts.autoGearAutoPresetLabel || ((_texts$en84 = texts.en) === null || _texts$en84 === void 0 ? void 0 : _texts$en84.autoGearAutoPresetLabel) || 'Autosaved rules';
+  return langTexts.autoGearAutoPresetLabel || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearAutoPresetLabel) || 'Autosaved rules';
 }
 function setAutoGearAutoPresetId(presetId) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -6645,9 +6888,9 @@ function alignActiveAutoGearPreset() {
   }
 }
 function renderAutoGearPresetsControls() {
-  var _texts$currentLang8, _texts$en85;
+  var _texts$currentLang10, _texts$en95;
   if (!autoGearPresetSelect) return;
-  var placeholderText = ((_texts$currentLang8 = texts[currentLang]) === null || _texts$currentLang8 === void 0 ? void 0 : _texts$currentLang8.autoGearPresetPlaceholder) || ((_texts$en85 = texts.en) === null || _texts$en85 === void 0 ? void 0 : _texts$en85.autoGearPresetPlaceholder) || 'Custom rules';
+  var placeholderText = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.autoGearPresetPlaceholder) || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearPresetPlaceholder) || 'Custom rules';
   var presets = sortAutoGearPresets(autoGearPresets.slice());
   autoGearPresets = presets;
   autoGearPresetSelect.innerHTML = '';
@@ -6711,7 +6954,7 @@ function setAutoGearBackupsVisible(show) {
   }
 }
 function handleAutoGearPresetSelection(event) {
-  var _texts$currentLang9, _texts$en86, _texts$currentLang0, _texts$en87;
+  var _texts$currentLang11, _texts$en96, _texts$currentLang12, _texts$en97;
   if (!event || !autoGearPresetSelect) return;
   if (sharedImportProjectPresetActive) {
     sharedImportProjectPresetActive = false;
@@ -6732,7 +6975,7 @@ function handleAutoGearPresetSelection(event) {
     renderAutoGearPresetsControls();
     return;
   }
-  var confirmTemplate = ((_texts$currentLang9 = texts[currentLang]) === null || _texts$currentLang9 === void 0 ? void 0 : _texts$currentLang9.autoGearPresetApplyConfirm) || ((_texts$en86 = texts.en) === null || _texts$en86 === void 0 ? void 0 : _texts$en86.autoGearPresetApplyConfirm) || "Replace your automatic gear rules with the preset \"".concat(preset.label, "\"?");
+  var confirmTemplate = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearPresetApplyConfirm) || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearPresetApplyConfirm) || "Replace your automatic gear rules with the preset \"".concat(preset.label, "\"?");
   var confirmMessage = confirmTemplate.includes('%s') ? formatWithPlaceholders(confirmTemplate, preset.label) : confirmTemplate;
   var confirmed = true;
   if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
@@ -6745,18 +6988,18 @@ function handleAutoGearPresetSelection(event) {
   setAutoGearRules(preset.rules);
   updateAutoGearCatalogOptions();
   renderAutoGearRulesList();
-  var appliedMessage = ((_texts$currentLang0 = texts[currentLang]) === null || _texts$currentLang0 === void 0 ? void 0 : _texts$currentLang0.autoGearPresetApplied) || ((_texts$en87 = texts.en) === null || _texts$en87 === void 0 ? void 0 : _texts$en87.autoGearPresetApplied) || 'Preset applied.';
+  var appliedMessage = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearPresetApplied) || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearPresetApplied) || 'Preset applied.';
   showNotification('success', appliedMessage);
 }
 function handleAutoGearSavePreset() {
-  var _texts$currentLang1, _texts$en88, _texts$currentLang14, _texts$en93;
+  var _texts$currentLang13, _texts$en98, _texts$currentLang18, _texts$en103;
   var rules = getAutoGearRules();
   var activePreset = getAutoGearPresetById(activeAutoGearPresetId);
-  var promptTemplate = ((_texts$currentLang1 = texts[currentLang]) === null || _texts$currentLang1 === void 0 ? void 0 : _texts$currentLang1.autoGearPresetNamePrompt) || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearPresetNamePrompt) || 'Name this preset';
+  var promptTemplate = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearPresetNamePrompt) || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearPresetNamePrompt) || 'Name this preset';
   var defaultName = activePreset ? activePreset.label : '';
   if (typeof window === 'undefined' || typeof window.prompt !== 'function') {
-    var _texts$currentLang10, _texts$en89;
-    var requiredMessage = ((_texts$currentLang10 = texts[currentLang]) === null || _texts$currentLang10 === void 0 ? void 0 : _texts$currentLang10.autoGearPresetNameRequired) || ((_texts$en89 = texts.en) === null || _texts$en89 === void 0 ? void 0 : _texts$en89.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+    var _texts$currentLang14, _texts$en99;
+    var requiredMessage = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearPresetNameRequired) || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
     if (typeof window !== 'undefined' && typeof window.alert === 'function') {
       window.alert(requiredMessage);
     }
@@ -6766,8 +7009,8 @@ function handleAutoGearSavePreset() {
   if (response === null) return;
   var trimmed = response.trim();
   if (!trimmed) {
-    var _texts$currentLang11, _texts$en90;
-    var _requiredMessage = ((_texts$currentLang11 = texts[currentLang]) === null || _texts$currentLang11 === void 0 ? void 0 : _texts$currentLang11.autoGearPresetNameRequired) || ((_texts$en90 = texts.en) === null || _texts$en90 === void 0 ? void 0 : _texts$en90.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+    var _texts$currentLang15, _texts$en100;
+    var _requiredMessage = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearPresetNameRequired) || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
     if (typeof window.alert === 'function') {
       window.alert(_requiredMessage);
     }
@@ -6779,8 +7022,8 @@ function handleAutoGearSavePreset() {
   });
   var targetId = (activePreset === null || activePreset === void 0 ? void 0 : activePreset.id) || '';
   if (existingByName && existingByName.id !== targetId) {
-    var _texts$currentLang12, _texts$en91;
-    var overwriteTemplate = ((_texts$currentLang12 = texts[currentLang]) === null || _texts$currentLang12 === void 0 ? void 0 : _texts$currentLang12.autoGearPresetOverwriteConfirm) || ((_texts$en91 = texts.en) === null || _texts$en91 === void 0 ? void 0 : _texts$en91.autoGearPresetOverwriteConfirm) || "Replace the existing preset \"".concat(normalizedName, "\"?");
+    var _texts$currentLang16, _texts$en101;
+    var overwriteTemplate = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearPresetOverwriteConfirm) || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearPresetOverwriteConfirm) || "Replace the existing preset \"".concat(normalizedName, "\"?");
     var overwriteMessage = overwriteTemplate.includes('%s') ? formatWithPlaceholders(overwriteTemplate, normalizedName) : overwriteTemplate;
     var overwriteConfirmed = true;
     if (typeof window.confirm === 'function') {
@@ -6798,8 +7041,8 @@ function handleAutoGearSavePreset() {
     rules: rules
   });
   if (!normalizedPreset) {
-    var _texts$currentLang13, _texts$en92;
-    var _requiredMessage2 = ((_texts$currentLang13 = texts[currentLang]) === null || _texts$currentLang13 === void 0 ? void 0 : _texts$currentLang13.autoGearPresetNameRequired) || ((_texts$en92 = texts.en) === null || _texts$en92 === void 0 ? void 0 : _texts$en92.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+    var _texts$currentLang17, _texts$en102;
+    var _requiredMessage2 = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearPresetNameRequired) || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
     if (typeof window.alert === 'function') {
       window.alert(_requiredMessage2);
     }
@@ -6826,15 +7069,15 @@ function handleAutoGearSavePreset() {
     skipRender: true
   });
   renderAutoGearPresetsControls();
-  var savedMessage = ((_texts$currentLang14 = texts[currentLang]) === null || _texts$currentLang14 === void 0 ? void 0 : _texts$currentLang14.autoGearPresetSaved) || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.autoGearPresetSaved) || 'Automatic gear preset saved.';
+  var savedMessage = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearPresetSaved) || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearPresetSaved) || 'Automatic gear preset saved.';
   showNotification('success', savedMessage);
 }
 function handleAutoGearDeletePreset() {
-  var _texts$currentLang15, _texts$en94, _texts$currentLang16, _texts$en95;
+  var _texts$currentLang19, _texts$en104, _texts$currentLang20, _texts$en105;
   if (!activeAutoGearPresetId) return;
   var preset = getAutoGearPresetById(activeAutoGearPresetId);
   var label = preset ? preset.label : '';
-  var confirmTemplate = ((_texts$currentLang15 = texts[currentLang]) === null || _texts$currentLang15 === void 0 ? void 0 : _texts$currentLang15.autoGearPresetDeleteConfirm) || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearPresetDeleteConfirm) || 'Delete this preset?';
+  var confirmTemplate = ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearPresetDeleteConfirm) || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearPresetDeleteConfirm) || 'Delete this preset?';
   var confirmMessage = label && confirmTemplate.includes('%s') ? formatWithPlaceholders(confirmTemplate, label) : confirmTemplate;
   var confirmed = true;
   if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
@@ -6857,7 +7100,7 @@ function handleAutoGearDeletePreset() {
     skipRender: true
   });
   renderAutoGearPresetsControls();
-  var deletedMessage = ((_texts$currentLang16 = texts[currentLang]) === null || _texts$currentLang16 === void 0 ? void 0 : _texts$currentLang16.autoGearPresetDeleted) || ((_texts$en95 = texts.en) === null || _texts$en95 === void 0 ? void 0 : _texts$en95.autoGearPresetDeleted) || 'Automatic gear preset deleted.';
+  var deletedMessage = ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearPresetDeleted) || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearPresetDeleted) || 'Automatic gear preset deleted.';
   showNotification('success', deletedMessage);
 }
 function handleAutoGearShowBackupsToggle() {
@@ -6914,15 +7157,15 @@ function renderAutoGearRulesList() {
   autoGearRulesList.innerHTML = '';
   var rules = getAutoGearRules();
   if (!rules.length) {
-    var _texts$currentLang17, _texts$en96;
+    var _texts$currentLang21, _texts$en106;
     var empty = document.createElement('p');
     empty.className = 'auto-gear-empty';
-    empty.textContent = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.autoGearNoRules) || ((_texts$en96 = texts.en) === null || _texts$en96 === void 0 ? void 0 : _texts$en96.autoGearNoRules) || 'No custom rules yet.';
+    empty.textContent = ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearNoRules) || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearNoRules) || 'No custom rules yet.';
     autoGearRulesList.appendChild(empty);
     return;
   }
   rules.forEach(function (rule) {
-    var _texts$currentLang21, _texts$en100, _texts$currentLang22, _texts$en101;
+    var _texts$currentLang28, _texts$en113, _texts$currentLang29, _texts$en114;
     var wrapper = document.createElement('div');
     wrapper.className = 'auto-gear-rule';
     wrapper.dataset.ruleId = rule.id;
@@ -6932,24 +7175,53 @@ function renderAutoGearRulesList() {
     title.className = 'auto-gear-rule-title';
     var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios : [];
     var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox : [];
-    var fallbackTitle = scenarioList.length ? scenarioList.join(' + ') : matteboxList.length ? matteboxList.join(' + ') : '';
+    var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle : [];
+    var rawViewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension : [];
+    var viewfinderDisplayList = rawViewfinderList.map(getViewfinderFallbackLabel);
+    var videoDistributionList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution : [];
+    var fallbackSource = scenarioList.length ? scenarioList : matteboxList.length ? matteboxList : cameraHandleList.length ? cameraHandleList : viewfinderDisplayList.length ? viewfinderDisplayList : videoDistributionList.length ? videoDistributionList : [];
+    var fallbackTitle = fallbackSource.length ? fallbackSource.join(' + ') : '';
     title.textContent = rule.label || fallbackTitle;
     info.appendChild(title);
     if (scenarioList.length) {
-      var _texts$currentLang18, _texts$en97;
-      var scenarioLabel = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 || (_texts$currentLang18 = _texts$currentLang18.projectFields) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.requiredScenarios) || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 || (_texts$en97 = _texts$en97.projectFields) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.requiredScenarios) || 'Required Scenarios';
+      var _texts$currentLang22, _texts$en107;
+      var scenarioLabel = ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 || (_texts$currentLang22 = _texts$currentLang22.projectFields) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.requiredScenarios) || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 || (_texts$en107 = _texts$en107.projectFields) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.requiredScenarios) || 'Required Scenarios';
       var scenarioMeta = document.createElement('p');
       scenarioMeta.className = 'auto-gear-rule-meta';
       scenarioMeta.textContent = "".concat(scenarioLabel, ": ").concat(scenarioList.join(' + '));
       info.appendChild(scenarioMeta);
     }
     if (matteboxList.length) {
-      var _texts$currentLang19, _texts$en98;
-      var matteboxLabelText = ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearMatteboxLabel) || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearMatteboxLabel) || 'Mattebox options';
+      var _texts$currentLang23, _texts$en108;
+      var matteboxLabelText = ((_texts$currentLang23 = texts[currentLang]) === null || _texts$currentLang23 === void 0 ? void 0 : _texts$currentLang23.autoGearMatteboxLabel) || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearMatteboxLabel) || 'Mattebox options';
       var matteboxMeta = document.createElement('p');
       matteboxMeta.className = 'auto-gear-rule-meta';
       matteboxMeta.textContent = "".concat(matteboxLabelText, ": ").concat(matteboxList.join(' + '));
       info.appendChild(matteboxMeta);
+    }
+    if (cameraHandleList.length) {
+      var _texts$currentLang24, _texts$en109;
+      var cameraHandleLabelText = ((_texts$currentLang24 = texts[currentLang]) === null || _texts$currentLang24 === void 0 ? void 0 : _texts$currentLang24.autoGearCameraHandleLabel) || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearCameraHandleLabel) || 'Camera handles';
+      var cameraHandleMeta = document.createElement('p');
+      cameraHandleMeta.className = 'auto-gear-rule-meta';
+      cameraHandleMeta.textContent = "".concat(cameraHandleLabelText, ": ").concat(cameraHandleList.join(' + '));
+      info.appendChild(cameraHandleMeta);
+    }
+    if (rawViewfinderList.length) {
+      var _texts$currentLang25, _texts$en110;
+      var viewfinderLabelText = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearViewfinderExtensionLabel) || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearViewfinderExtensionLabel) || 'Viewfinder extension';
+      var viewfinderMeta = document.createElement('p');
+      viewfinderMeta.className = 'auto-gear-rule-meta';
+      viewfinderMeta.textContent = "".concat(viewfinderLabelText, ": ").concat(viewfinderDisplayList.join(' + '));
+      info.appendChild(viewfinderMeta);
+    }
+    if (videoDistributionList.length) {
+      var _texts$currentLang26, _texts$en111;
+      var videoDistLabelText = ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearVideoDistributionLabel) || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearVideoDistributionLabel) || 'Video distribution';
+      var videoDistMeta = document.createElement('p');
+      videoDistMeta.className = 'auto-gear-rule-meta';
+      videoDistMeta.textContent = "".concat(videoDistLabelText, ": ").concat(videoDistributionList.join(' + '));
+      info.appendChild(videoDistMeta);
     }
     var addSummary = formatAutoGearCount(rule.add.length, 'autoGearAddsCountOne', 'autoGearAddsCountOther');
     var removeSummary = formatAutoGearCount(rule.remove.length, 'autoGearRemovalsCountOne', 'autoGearRemovalsCountOther');
@@ -6958,10 +7230,10 @@ function renderAutoGearRulesList() {
     countsMeta.textContent = "".concat(addSummary, " \xB7 ").concat(removeSummary);
     info.appendChild(countsMeta);
     if (rule.add.length) {
-      var _texts$currentLang20, _texts$en99;
+      var _texts$currentLang27, _texts$en112;
       var addsLabel = document.createElement('p');
       addsLabel.className = 'auto-gear-rule-meta auto-gear-rule-items-label';
-      addsLabel.textContent = ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearAddsListLabel) || ((_texts$en99 = texts.en) === null || _texts$en99 === void 0 ? void 0 : _texts$en99.autoGearAddsListLabel) || 'Adds';
+      addsLabel.textContent = ((_texts$currentLang27 = texts[currentLang]) === null || _texts$currentLang27 === void 0 ? void 0 : _texts$currentLang27.autoGearAddsListLabel) || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearAddsListLabel) || 'Adds';
       info.appendChild(addsLabel);
       var addList = document.createElement('ul');
       addList.className = 'auto-gear-rule-items';
@@ -6980,7 +7252,7 @@ function renderAutoGearRulesList() {
     editBtn.type = 'button';
     editBtn.className = 'auto-gear-edit';
     editBtn.dataset.ruleId = rule.id;
-    var editLabel = ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.editBtn) || ((_texts$en100 = texts.en) === null || _texts$en100 === void 0 ? void 0 : _texts$en100.editBtn) || 'Edit';
+    var editLabel = ((_texts$currentLang28 = texts[currentLang]) === null || _texts$currentLang28 === void 0 ? void 0 : _texts$currentLang28.editBtn) || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.editBtn) || 'Edit';
     editBtn.textContent = editLabel;
     editBtn.setAttribute('data-help', editLabel);
     actions.appendChild(editBtn);
@@ -6988,7 +7260,7 @@ function renderAutoGearRulesList() {
     deleteBtn.type = 'button';
     deleteBtn.className = 'auto-gear-delete';
     deleteBtn.dataset.ruleId = rule.id;
-    var deleteLabel = ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.autoGearDeleteRule) || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearDeleteRule) || 'Delete';
+    var deleteLabel = ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearDeleteRule) || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearDeleteRule) || 'Delete';
     deleteBtn.textContent = deleteLabel;
     deleteBtn.setAttribute('data-help', deleteLabel);
     actions.appendChild(deleteBtn);
@@ -7006,19 +7278,19 @@ function renderAutoGearDraftLists() {
     if (!element) return;
     element.innerHTML = '';
     if (!items.length) {
-      var _texts$currentLang23, _texts$en102;
+      var _texts$currentLang30, _texts$en115;
       var empty = document.createElement('li');
       empty.className = 'auto-gear-empty';
-      empty.textContent = ((_texts$currentLang23 = texts[currentLang]) === null || _texts$currentLang23 === void 0 ? void 0 : _texts$currentLang23.autoGearEmptyList) || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearEmptyList) || 'No items yet.';
+      empty.textContent = ((_texts$currentLang30 = texts[currentLang]) === null || _texts$currentLang30 === void 0 ? void 0 : _texts$currentLang30.autoGearEmptyList) || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearEmptyList) || 'No items yet.';
       element.appendChild(empty);
       return;
     }
     items.forEach(function (item) {
-      var _texts$currentLang24, _texts$en103, _texts$currentLang25, _texts$en104;
+      var _texts$currentLang31, _texts$en116, _texts$currentLang32, _texts$en117;
       var li = document.createElement('li');
       li.className = 'auto-gear-item';
       var span = document.createElement('span');
-      var categoryLabel = item.category && item.category.trim() ? item.category : ((_texts$currentLang24 = texts[currentLang]) === null || _texts$currentLang24 === void 0 ? void 0 : _texts$currentLang24.autoGearCustomCategory) || ((_texts$en103 = texts.en) === null || _texts$en103 === void 0 ? void 0 : _texts$en103.autoGearCustomCategory) || 'Custom Additions';
+      var categoryLabel = item.category && item.category.trim() ? item.category : ((_texts$currentLang31 = texts[currentLang]) === null || _texts$currentLang31 === void 0 ? void 0 : _texts$currentLang31.autoGearCustomCategory) || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearCustomCategory) || 'Custom Additions';
       span.textContent = "".concat(categoryLabel, " \u2013 ").concat(item.quantity, "x ").concat(item.name);
       li.appendChild(span);
       var removeBtn = document.createElement('button');
@@ -7026,7 +7298,7 @@ function renderAutoGearDraftLists() {
       removeBtn.className = 'auto-gear-remove-entry';
       removeBtn.dataset.listType = type;
       removeBtn.dataset.itemId = item.id;
-      var removeLabel = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearListRemove) || ((_texts$en104 = texts.en) === null || _texts$en104 === void 0 ? void 0 : _texts$en104.autoGearListRemove) || 'Remove';
+      var removeLabel = ((_texts$currentLang32 = texts[currentLang]) === null || _texts$currentLang32 === void 0 ? void 0 : _texts$currentLang32.autoGearListRemove) || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearListRemove) || 'Remove';
       removeBtn.textContent = removeLabel;
       removeBtn.setAttribute('data-help', removeLabel);
       li.appendChild(removeBtn);
@@ -7050,6 +7322,9 @@ function openAutoGearEditor(ruleId) {
   }
   refreshAutoGearScenarioOptions(autoGearEditorDraft.scenarios);
   refreshAutoGearMatteboxOptions(autoGearEditorDraft.mattebox);
+  refreshAutoGearCameraHandleOptions(autoGearEditorDraft.cameraHandle);
+  refreshAutoGearViewfinderExtensionOptions(autoGearEditorDraft.viewfinderExtension);
+  refreshAutoGearVideoDistributionOptions(autoGearEditorDraft.videoDistribution);
   populateAutoGearCategorySelect(autoGearAddCategorySelect, ((_autoGearEditorDraft$ = autoGearEditorDraft.add[0]) === null || _autoGearEditorDraft$ === void 0 ? void 0 : _autoGearEditorDraft$.category) || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, ((_autoGearEditorDraft$2 = autoGearEditorDraft.remove[0]) === null || _autoGearEditorDraft$2 === void 0 ? void 0 : _autoGearEditorDraft$2.category) || '');
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
@@ -7066,6 +7341,9 @@ function closeAutoGearEditor() {
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
   refreshAutoGearScenarioOptions([]);
   refreshAutoGearMatteboxOptions([]);
+  refreshAutoGearCameraHandleOptions([]);
+  refreshAutoGearViewfinderExtensionOptions([]);
+  refreshAutoGearVideoDistributionOptions([]);
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
@@ -7080,8 +7358,8 @@ function addAutoGearDraftItem(type) {
   if (!nameInput || !categorySelect || !quantityInput) return;
   var parsedNames = parseAutoGearDraftNames(nameInput.value);
   if (!parsedNames.length) {
-    var _texts$currentLang26, _texts$en105;
-    var message = ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearItemNameRequired) || ((_texts$en105 = texts.en) === null || _texts$en105 === void 0 ? void 0 : _texts$en105.autoGearItemNameRequired) || 'Enter an item name first.';
+    var _texts$currentLang33, _texts$en118;
+    var message = ((_texts$currentLang33 = texts[currentLang]) === null || _texts$currentLang33 === void 0 ? void 0 : _texts$currentLang33.autoGearItemNameRequired) || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearItemNameRequired) || 'Enter an item name first.';
     window.alert(message);
     return;
   }
@@ -7103,7 +7381,7 @@ function addAutoGearDraftItem(type) {
   updateAutoGearCatalogOptions();
 }
 function saveAutoGearRuleFromEditor() {
-  var _texts$currentLang30, _texts$en109;
+  var _texts$currentLang37, _texts$en122;
   if (!autoGearEditorDraft) return;
   var scenarios = autoGearScenariosSelect ? Array.from(autoGearScenariosSelect.selectedOptions || []).map(function (option) {
     return option.value;
@@ -7111,9 +7389,20 @@ function saveAutoGearRuleFromEditor() {
   var matteboxSelections = autoGearMatteboxSelect ? Array.from(autoGearMatteboxSelect.selectedOptions || []).map(function (option) {
     return option.value;
   }).filter(Boolean) : [];
-  if (!scenarios.length && !matteboxSelections.length) {
-    var _texts$currentLang27, _texts$en106, _texts$currentLang28, _texts$en107;
-    var message = ((_texts$currentLang27 = texts[currentLang]) === null || _texts$currentLang27 === void 0 ? void 0 : _texts$currentLang27.autoGearRuleConditionRequired) || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearRuleConditionRequired) || ((_texts$currentLang28 = texts[currentLang]) === null || _texts$currentLang28 === void 0 ? void 0 : _texts$currentLang28.autoGearRuleScenarioRequired) || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearRuleScenarioRequired) || 'Select at least one scenario or mattebox option.';
+  var cameraHandleSelections = autoGearCameraHandleSelect ? Array.from(autoGearCameraHandleSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(Boolean) : [];
+  var viewfinderSelections = autoGearViewfinderExtensionSelect ? Array.from(autoGearViewfinderExtensionSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var videoDistributionSelections = autoGearVideoDistributionSelect ? Array.from(autoGearVideoDistributionSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(Boolean) : [];
+  if (!scenarios.length && !matteboxSelections.length && !cameraHandleSelections.length && !viewfinderSelections.length && !videoDistributionSelections.length) {
+    var _texts$currentLang34, _texts$en119, _texts$currentLang35, _texts$en120;
+    var message = ((_texts$currentLang34 = texts[currentLang]) === null || _texts$currentLang34 === void 0 ? void 0 : _texts$currentLang34.autoGearRuleConditionRequired) || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearRuleConditionRequired) || ((_texts$currentLang35 = texts[currentLang]) === null || _texts$currentLang35 === void 0 ? void 0 : _texts$currentLang35.autoGearRuleScenarioRequired) || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearRuleScenarioRequired) || 'Select at least one scenario, mattebox option, camera handle, viewfinder extension or video distribution before saving.';
     window.alert(message);
     return;
   }
@@ -7122,9 +7411,12 @@ function saveAutoGearRuleFromEditor() {
   }
   autoGearEditorDraft.scenarios = scenarios;
   autoGearEditorDraft.mattebox = matteboxSelections;
+  autoGearEditorDraft.cameraHandle = cameraHandleSelections;
+  autoGearEditorDraft.viewfinderExtension = viewfinderSelections;
+  autoGearEditorDraft.videoDistribution = videoDistributionSelections;
   if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
-    var _texts$currentLang29, _texts$en108;
-    var _message = ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearRuleNeedsItems) || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearRuleNeedsItems) || 'Add at least one item to add or remove.';
+    var _texts$currentLang36, _texts$en121;
+    var _message = ((_texts$currentLang36 = texts[currentLang]) === null || _texts$currentLang36 === void 0 ? void 0 : _texts$currentLang36.autoGearRuleNeedsItems) || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearRuleNeedsItems) || 'Add at least one item to add or remove.';
     window.alert(_message);
     return;
   }
@@ -7142,18 +7434,18 @@ function saveAutoGearRuleFromEditor() {
   setAutoGearRules(rules);
   updateAutoGearCatalogOptions();
   renderAutoGearRulesList();
-  var successMessage = ((_texts$currentLang30 = texts[currentLang]) === null || _texts$currentLang30 === void 0 ? void 0 : _texts$currentLang30.autoGearRuleSaved) || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearRuleSaved) || 'Automatic gear rule saved.';
+  var successMessage = ((_texts$currentLang37 = texts[currentLang]) === null || _texts$currentLang37 === void 0 ? void 0 : _texts$currentLang37.autoGearRuleSaved) || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearRuleSaved) || 'Automatic gear rule saved.';
   showNotification('success', successMessage);
   closeAutoGearEditor();
 }
 function deleteAutoGearRule(ruleId) {
-  var _texts$currentLang31, _texts$en110;
+  var _texts$currentLang38, _texts$en123;
   var rules = getAutoGearRules();
   var index = rules.findIndex(function (rule) {
     return rule.id === ruleId;
   });
   if (index < 0) return;
-  var confirmation = ((_texts$currentLang31 = texts[currentLang]) === null || _texts$currentLang31 === void 0 ? void 0 : _texts$currentLang31.autoGearDeleteConfirm) || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearDeleteConfirm) || 'Delete this rule?';
+  var confirmation = ((_texts$currentLang38 = texts[currentLang]) === null || _texts$currentLang38 === void 0 ? void 0 : _texts$currentLang38.autoGearDeleteConfirm) || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearDeleteConfirm) || 'Delete this rule?';
   if (!window.confirm(confirmation)) return;
   var backupName = ensureAutoBackupBeforeDeletion('delete automatic gear rule');
   if (!backupName) return;
@@ -7186,8 +7478,8 @@ function importAutoGearRulesFromData(data) {
   renderAutoGearRulesList();
   updateAutoGearCatalogOptions();
   if (!options.silent) {
-    var _texts$currentLang32, _texts$en111;
-    var message = ((_texts$currentLang32 = texts[currentLang]) === null || _texts$currentLang32 === void 0 ? void 0 : _texts$currentLang32.autoGearImportSuccess) || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearImportSuccess) || 'Automatic gear rules imported.';
+    var _texts$currentLang39, _texts$en124;
+    var message = ((_texts$currentLang39 = texts[currentLang]) === null || _texts$currentLang39 === void 0 ? void 0 : _texts$currentLang39.autoGearImportSuccess) || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearImportSuccess) || 'Automatic gear rules imported.';
     showNotification('success', message);
   }
   return getAutoGearRules();
@@ -7201,7 +7493,7 @@ function formatAutoGearExportFilename(date) {
 function exportAutoGearRules() {
   if (typeof document === 'undefined') return null;
   try {
-    var _texts$currentLang33, _texts$en112;
+    var _texts$currentLang40, _texts$en125;
     var rules = getBaseAutoGearRules();
     var payload = {
       type: 'camera-power-planner/auto-gear-rules',
@@ -7227,13 +7519,13 @@ function exportAutoGearRules() {
     if (typeof URL.revokeObjectURL === 'function') {
       URL.revokeObjectURL(url);
     }
-    var message = ((_texts$currentLang33 = texts[currentLang]) === null || _texts$currentLang33 === void 0 ? void 0 : _texts$currentLang33.autoGearExportSuccess) || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearExportSuccess) || 'Automatic gear rules downloaded.';
+    var message = ((_texts$currentLang40 = texts[currentLang]) === null || _texts$currentLang40 === void 0 ? void 0 : _texts$currentLang40.autoGearExportSuccess) || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearExportSuccess) || 'Automatic gear rules downloaded.';
     showNotification('success', message);
     return fileName;
   } catch (error) {
-    var _texts$currentLang34, _texts$en113;
+    var _texts$currentLang41, _texts$en126;
     console.warn('Automatic gear rules export failed', error);
-    var _message2 = ((_texts$currentLang34 = texts[currentLang]) === null || _texts$currentLang34 === void 0 ? void 0 : _texts$currentLang34.autoGearExportError) || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearExportError) || 'Automatic gear rules export failed.';
+    var _message2 = ((_texts$currentLang41 = texts[currentLang]) === null || _texts$currentLang41 === void 0 ? void 0 : _texts$currentLang41.autoGearExportError) || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearExportError) || 'Automatic gear rules export failed.';
     showNotification('error', _message2);
     return null;
   }
@@ -7253,38 +7545,38 @@ function createAutoGearBackup() {
   };
   var updatedBackups = [entry].concat(_toConsumableArray(autoGearBackups)).slice(0, AUTO_GEAR_BACKUP_LIMIT);
   try {
-    var _texts$currentLang35, _texts$en114;
+    var _texts$currentLang42, _texts$en127;
     persistAutoGearBackups(updatedBackups);
     autoGearBackups = updatedBackups;
     autoGearRulesLastBackupSignature = signature;
     autoGearRulesLastPersistedSignature = signature;
     autoGearRulesDirtySinceBackup = false;
     renderAutoGearBackupControls();
-    var message = ((_texts$currentLang35 = texts[currentLang]) === null || _texts$currentLang35 === void 0 ? void 0 : _texts$currentLang35.autoGearBackupSaved) || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearBackupSaved) || 'Automatic gear backup saved.';
+    var message = ((_texts$currentLang42 = texts[currentLang]) === null || _texts$currentLang42 === void 0 ? void 0 : _texts$currentLang42.autoGearBackupSaved) || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.autoGearBackupSaved) || 'Automatic gear backup saved.';
     showNotification('success', message);
     return true;
   } catch (error) {
-    var _texts$currentLang36, _texts$en115;
+    var _texts$currentLang43, _texts$en128;
     console.warn('Automatic gear backup failed', error);
     autoGearRulesDirtySinceBackup = true;
-    var _message3 = ((_texts$currentLang36 = texts[currentLang]) === null || _texts$currentLang36 === void 0 ? void 0 : _texts$currentLang36.autoGearBackupFailed) || ((_texts$en115 = texts.en) === null || _texts$en115 === void 0 ? void 0 : _texts$en115.autoGearBackupFailed) || 'Automatic gear backup failed.';
+    var _message3 = ((_texts$currentLang43 = texts[currentLang]) === null || _texts$currentLang43 === void 0 ? void 0 : _texts$currentLang43.autoGearBackupFailed) || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.autoGearBackupFailed) || 'Automatic gear backup failed.';
     showNotification('error', _message3);
     return false;
   }
 }
 function restoreAutoGearBackup(backupId) {
-  var _texts$currentLang37, _texts$en116;
+  var _texts$currentLang44, _texts$en129;
   if (!backupId) return false;
   var backup = autoGearBackups.find(function (entry) {
     return entry.id === backupId;
   });
   if (!backup) return false;
-  var confirmation = ((_texts$currentLang37 = texts[currentLang]) === null || _texts$currentLang37 === void 0 ? void 0 : _texts$currentLang37.autoGearBackupRestoreConfirm) || ((_texts$en116 = texts.en) === null || _texts$en116 === void 0 ? void 0 : _texts$en116.autoGearBackupRestoreConfirm) || 'Replace your automatic gear rules with this backup?';
+  var confirmation = ((_texts$currentLang44 = texts[currentLang]) === null || _texts$currentLang44 === void 0 ? void 0 : _texts$currentLang44.autoGearBackupRestoreConfirm) || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearBackupRestoreConfirm) || 'Replace your automatic gear rules with this backup?';
   if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
     if (!window.confirm(confirmation)) return false;
   }
   try {
-    var _texts$currentLang38, _texts$en117;
+    var _texts$currentLang45, _texts$en130;
     setAutoGearRules(Array.isArray(backup.rules) ? backup.rules : []);
     closeAutoGearEditor();
     renderAutoGearRulesList();
@@ -7292,23 +7584,23 @@ function restoreAutoGearBackup(backupId) {
     autoGearRulesLastBackupSignature = stableStringify(backup.rules || []);
     autoGearRulesLastPersistedSignature = autoGearRulesLastBackupSignature;
     autoGearRulesDirtySinceBackup = false;
-    var message = ((_texts$currentLang38 = texts[currentLang]) === null || _texts$currentLang38 === void 0 ? void 0 : _texts$currentLang38.autoGearBackupRestoreSuccess) || ((_texts$en117 = texts.en) === null || _texts$en117 === void 0 ? void 0 : _texts$en117.autoGearBackupRestoreSuccess) || 'Automatic gear backup restored.';
+    var message = ((_texts$currentLang45 = texts[currentLang]) === null || _texts$currentLang45 === void 0 ? void 0 : _texts$currentLang45.autoGearBackupRestoreSuccess) || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearBackupRestoreSuccess) || 'Automatic gear backup restored.';
     showNotification('success', message);
     return true;
   } catch (error) {
-    var _texts$currentLang39, _texts$en118;
+    var _texts$currentLang46, _texts$en131;
     console.warn('Failed to restore automatic gear backup', error);
-    var _message4 = ((_texts$currentLang39 = texts[currentLang]) === null || _texts$currentLang39 === void 0 ? void 0 : _texts$currentLang39.autoGearBackupRestoreError) || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearBackupRestoreError) || 'Automatic gear backup restore failed.';
+    var _message4 = ((_texts$currentLang46 = texts[currentLang]) === null || _texts$currentLang46 === void 0 ? void 0 : _texts$currentLang46.autoGearBackupRestoreError) || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearBackupRestoreError) || 'Automatic gear backup restore failed.';
     showNotification('error', _message4);
     return false;
   }
 }
 function handleAutoGearImportSelection(event) {
-  var _texts$currentLang40, _texts$en119;
+  var _texts$currentLang47, _texts$en132;
   var input = event === null || event === void 0 ? void 0 : event.target;
   var file = input && input.files && input.files[0];
   if (!file) return;
-  var confirmation = ((_texts$currentLang40 = texts[currentLang]) === null || _texts$currentLang40 === void 0 ? void 0 : _texts$currentLang40.autoGearImportConfirm) || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearImportConfirm) || 'Replace your automatic gear rules with the imported file?';
+  var confirmation = ((_texts$currentLang47 = texts[currentLang]) === null || _texts$currentLang47 === void 0 ? void 0 : _texts$currentLang47.autoGearImportConfirm) || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.autoGearImportConfirm) || 'Replace your automatic gear rules with the imported file?';
   if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
     if (!window.confirm(confirmation)) {
       if (input) input.value = '';
@@ -7316,8 +7608,8 @@ function handleAutoGearImportSelection(event) {
     }
   }
   if (typeof FileReader === 'undefined') {
-    var _texts$currentLang41, _texts$en120;
-    var errorMsg = ((_texts$currentLang41 = texts[currentLang]) === null || _texts$currentLang41 === void 0 ? void 0 : _texts$currentLang41.autoGearImportError) || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+    var _texts$currentLang48, _texts$en133;
+    var errorMsg = ((_texts$currentLang48 = texts[currentLang]) === null || _texts$currentLang48 === void 0 ? void 0 : _texts$currentLang48.autoGearImportError) || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
     showNotification('error', errorMsg);
     if (input) input.value = '';
     return;
@@ -7330,17 +7622,17 @@ function handleAutoGearImportSelection(event) {
       var parsed = JSON.parse(typeof text === 'string' ? text : '');
       importAutoGearRulesFromData(parsed);
     } catch (error) {
-      var _texts$currentLang42, _texts$en121;
+      var _texts$currentLang49, _texts$en134;
       console.warn('Automatic gear rules import failed', error);
-      var _errorMsg = ((_texts$currentLang42 = texts[currentLang]) === null || _texts$currentLang42 === void 0 ? void 0 : _texts$currentLang42.autoGearImportError) || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+      var _errorMsg = ((_texts$currentLang49 = texts[currentLang]) === null || _texts$currentLang49 === void 0 ? void 0 : _texts$currentLang49.autoGearImportError) || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
       showNotification('error', _errorMsg);
     } finally {
       if (input) input.value = '';
     }
   };
   reader.onerror = function () {
-    var _texts$currentLang43, _texts$en122;
-    var errorMsg = ((_texts$currentLang43 = texts[currentLang]) === null || _texts$currentLang43 === void 0 ? void 0 : _texts$currentLang43.autoGearImportError) || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+    var _texts$currentLang50, _texts$en135;
+    var errorMsg = ((_texts$currentLang50 = texts[currentLang]) === null || _texts$currentLang50 === void 0 ? void 0 : _texts$currentLang50.autoGearImportError) || ((_texts$en135 = texts.en) === null || _texts$en135 === void 0 ? void 0 : _texts$en135.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
     showNotification('error', errorMsg);
     if (input) input.value = '';
   };
@@ -8172,14 +8464,14 @@ function estimateBackupSize(data) {
   }
 }
 function formatSizeText(lang, langTexts, bytes) {
-  var _texts$en124;
+  var _texts$en137;
   var resolved = resolveLanguageCode(lang);
   if (!Number.isFinite(bytes) || bytes <= 0) {
-    var _texts$en123;
+    var _texts$en136;
     var zero = formatNumberForLang(resolved, 0, {
       maximumFractionDigits: 0
     });
-    var _template3 = langTexts.storageTotalSizeValue || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.storageTotalSizeValue) || '~%s KB';
+    var _template3 = langTexts.storageTotalSizeValue || ((_texts$en136 = texts.en) === null || _texts$en136 === void 0 ? void 0 : _texts$en136.storageTotalSizeValue) || '~%s KB';
     return _template3.replace('%s', zero);
   }
   var kilobytes = bytes / 1024;
@@ -8200,7 +8492,7 @@ function formatSizeText(lang, langTexts, bytes) {
     };
   }
   var formatted = formatNumberForLang(resolved, kilobytes, options);
-  var template = langTexts.storageTotalSizeValue || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.storageTotalSizeValue) || '~%s KB';
+  var template = langTexts.storageTotalSizeValue || ((_texts$en137 = texts.en) === null || _texts$en137 === void 0 ? void 0 : _texts$en137.storageTotalSizeValue) || '~%s KB';
   return template.replace('%s', formatted);
 }
 function formatDeviceCategories(lang, categories) {
@@ -8269,7 +8561,7 @@ function createSummaryItemElement(item) {
   return li;
 }
 function updateStorageSummary() {
-  var _texts$en125, _texts$en126, _texts$en127;
+  var _texts$en138, _texts$en139, _texts$en140;
   if (!storageSummaryList) return;
   while (storageSummaryList.firstChild) {
     storageSummaryList.removeChild(storageSummaryList.firstChild);
@@ -8307,7 +8599,7 @@ function updateStorageSummary() {
     label: langTexts.storageKeyDevices || 'Custom or modified devices',
     value: formatCountText(lang, langTexts, 'storageDevicesCount', deviceSummary.total),
     description: langTexts.storageKeyDevicesDesc || '',
-    extra: deviceSummary.total > 0 && deviceSummary.categories.length ? (langTexts.storageDeviceCategories || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.storageDeviceCategories) || 'Affected categories: %s').replace('%s', formatDeviceCategories(lang, deviceSummary.categories)) : null
+    extra: deviceSummary.total > 0 && deviceSummary.categories.length ? (langTexts.storageDeviceCategories || ((_texts$en138 = texts.en) === null || _texts$en138 === void 0 ? void 0 : _texts$en138.storageDeviceCategories) || 'Affected categories: %s').replace('%s', formatDeviceCategories(lang, deviceSummary.categories)) : null
   }, {
     storageKey: 'cameraPowerPlanner_favorites',
     label: langTexts.storageKeyFavorites || 'Pinned favorites',
@@ -8321,7 +8613,7 @@ function updateStorageSummary() {
   }, {
     storageKey: 'cameraPowerPlanner_session',
     label: langTexts.storageKeySession || 'Unsaved session',
-    value: hasSession ? langTexts.storageSessionStored || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.storageSessionStored) || 'Stored' : langTexts.storageSessionNotStored || ((_texts$en127 = texts.en) === null || _texts$en127 === void 0 ? void 0 : _texts$en127.storageSessionNotStored) || 'Not stored',
+    value: hasSession ? langTexts.storageSessionStored || ((_texts$en139 = texts.en) === null || _texts$en139 === void 0 ? void 0 : _texts$en139.storageSessionStored) || 'Stored' : langTexts.storageSessionNotStored || ((_texts$en140 = texts.en) === null || _texts$en140 === void 0 ? void 0 : _texts$en140.storageSessionNotStored) || 'Not stored',
     description: langTexts.storageKeySessionDesc || ''
   }, {
     storageKey: 'localStorage',
@@ -10752,8 +11044,8 @@ var feedbackForm = document.getElementById("feedbackForm");
 var feedbackCancelBtn = document.getElementById("fbCancel");
 var feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
 if (feedbackCancelBtn) {
-  var _feedbackCancelBtn$te, _texts$currentLang44, _texts$en128;
-  var cancelLabel = ((_feedbackCancelBtn$te = feedbackCancelBtn.textContent) === null || _feedbackCancelBtn$te === void 0 ? void 0 : _feedbackCancelBtn$te.trim()) || ((_texts$currentLang44 = texts[currentLang]) === null || _texts$currentLang44 === void 0 ? void 0 : _texts$currentLang44.cancelEditBtn) || ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.cancelEditBtn) || 'Cancel';
+  var _feedbackCancelBtn$te, _texts$currentLang51, _texts$en141;
+  var cancelLabel = ((_feedbackCancelBtn$te = feedbackCancelBtn.textContent) === null || _feedbackCancelBtn$te === void 0 ? void 0 : _feedbackCancelBtn$te.trim()) || ((_texts$currentLang51 = texts[currentLang]) === null || _texts$currentLang51 === void 0 ? void 0 : _texts$currentLang51.cancelEditBtn) || ((_texts$en141 = texts.en) === null || _texts$en141 === void 0 ? void 0 : _texts$en141.cancelEditBtn) || 'Cancel';
   setButtonLabelWithIcon(feedbackCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
 }
 var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : function () {
@@ -10818,6 +11110,7 @@ var DIAGRAM_CAMERA_ICON = iconGlyph("\uE333");
 var DIAGRAM_MONITOR_ICON = iconGlyph("\uEFFC");
 var DIAGRAM_VIEWFINDER_ICON = iconGlyph("\uE338");
 var DIAGRAM_VIDEO_ICON = iconGlyph("\uF373");
+var DIAGRAM_WIRELESS_ICON = iconGlyph("\uF4AC");
 var DIAGRAM_MOTORS_ICON = iconGlyph("\uE8AF");
 var DIAGRAM_CONTROLLER_ICON = iconGlyph("\uE52A");
 var DIAGRAM_DISTANCE_ICON = iconGlyph("\uEFB9");
@@ -10846,7 +11139,7 @@ var diagramIcons = {
   camera: DIAGRAM_CAMERA_ICON,
   monitor: DIAGRAM_MONITOR_ICON,
   viewfinder: DIAGRAM_VIEWFINDER_ICON,
-  video: DIAGRAM_VIDEO_ICON,
+  video: DIAGRAM_WIRELESS_ICON,
   motors: DIAGRAM_MOTORS_ICON,
   controllers: DIAGRAM_CONTROLLER_ICON,
   handle: DIAGRAM_CONTROLLER_ICON,
@@ -14036,13 +14329,13 @@ function renderSetupDiagram() {
       fizId = _powerTarget.id,
       name = _powerTarget.name;
     var powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
-    var _label30 = formatConnLabel('D-Tap', fizPowerPort(name));
+    var _label33 = formatConnLabel('D-Tap', fizPowerPort(name));
     var skipBatt = isArri(camName) && isArriOrCmotion(name);
     if (powerSrc && !skipBatt) {
       pushEdge({
         from: powerSrc,
         to: fizId,
-        label: _label30,
+        label: _label33,
         fromSide: 'bottom-left',
         toSide: 'bottom',
         route: 'down-right-up'
@@ -17629,17 +17922,23 @@ function getAutoGearRuleDisplayLabel(rule) {
   if (scenarioList.length) return scenarioList.join(' + ');
   var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
   if (matteboxList.length) return matteboxList.join(' + ');
+  var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
+  if (cameraHandleList.length) return cameraHandleList.join(' + ');
+  var viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean).map(getViewfinderFallbackLabel) : [];
+  if (viewfinderList.length) return viewfinderList.join(' + ');
+  var videoDistributionList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
+  if (videoDistributionList.length) return videoDistributionList.join(' + ');
   return '';
 }
 function formatAutoGearRuleTooltip(rule) {
-  var _texts$en129;
+  var _texts$en142;
   var langTexts = texts[currentLang] || texts.en || {};
-  var unnamedTemplate = langTexts.autoGearRuleTooltipUnnamed || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.autoGearRuleTooltipUnnamed) || 'Added by automatic gear rule';
+  var unnamedTemplate = langTexts.autoGearRuleTooltipUnnamed || ((_texts$en142 = texts.en) === null || _texts$en142 === void 0 ? void 0 : _texts$en142.autoGearRuleTooltipUnnamed) || 'Added by automatic gear rule';
   if (!rule || _typeof(rule) !== 'object') return unnamedTemplate;
   var label = getAutoGearRuleDisplayLabel(rule);
   if (label) {
-    var _texts$en130;
-    var namedTemplate = langTexts.autoGearRuleTooltipNamed || ((_texts$en130 = texts.en) === null || _texts$en130 === void 0 ? void 0 : _texts$en130.autoGearRuleTooltipNamed) || "".concat(unnamedTemplate, ": %s");
+    var _texts$en143;
+    var namedTemplate = langTexts.autoGearRuleTooltipNamed || ((_texts$en143 = texts.en) === null || _texts$en143 === void 0 ? void 0 : _texts$en143.autoGearRuleTooltipNamed) || "".concat(unnamedTemplate, ": %s");
     return namedTemplate.replace('%s', label);
   }
   return unnamedTemplate;
@@ -17684,7 +17983,7 @@ function addAutoGearItem(cell, item, rule) {
   cell.appendChild(span);
 }
 function ensureAutoGearCategory(table, category) {
-  var _texts$currentLang45, _texts$en131;
+  var _texts$currentLang52, _texts$en144;
   var rawCategory = category && category.trim() ? category.trim() : '';
   var label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
   var existing = Array.from(table.querySelectorAll('tbody.category-group')).find(function (body) {
@@ -17704,7 +18003,7 @@ function ensureAutoGearCategory(table, category) {
   var headerRow = document.createElement('tr');
   headerRow.className = 'category-row';
   var headerCell = document.createElement('td');
-  var labelText = rawCategory ? rawCategory : ((_texts$currentLang45 = texts[currentLang]) === null || _texts$currentLang45 === void 0 ? void 0 : _texts$currentLang45.autoGearCustomCategory) || ((_texts$en131 = texts.en) === null || _texts$en131 === void 0 ? void 0 : _texts$en131.autoGearCustomCategory) || 'Custom Additions';
+  var labelText = rawCategory ? rawCategory : ((_texts$currentLang52 = texts[currentLang]) === null || _texts$currentLang52 === void 0 ? void 0 : _texts$currentLang52.autoGearCustomCategory) || ((_texts$en144 = texts.en) === null || _texts$en144 === void 0 ? void 0 : _texts$en144.autoGearCustomCategory) || 'Custom Additions';
   headerCell.textContent = labelText;
   headerRow.appendChild(headerCell);
   body.appendChild(headerRow);
@@ -17751,6 +18050,19 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   }).filter(Boolean) : [];
   var selectedMattebox = info && typeof info.mattebox === 'string' ? info.mattebox.trim() : '';
   var normalizedMattebox = normalizeAutoGearTriggerValue(selectedMattebox);
+  var cameraHandles = info && typeof info.cameraHandle === 'string' ? info.cameraHandle.split(',').map(function (s) {
+    return s.trim();
+  }).filter(Boolean) : [];
+  var normalizedCameraHandles = cameraHandles.map(normalizeAutoGearTriggerValue).filter(Boolean);
+  var cameraHandleSet = new Set(normalizedCameraHandles);
+  var rawViewfinderExtension = info && typeof info.viewfinderExtension === 'string' ? info.viewfinderExtension.trim() : '';
+  var hasViewfinderSelection = Boolean(rawViewfinderExtension);
+  var normalizedViewfinderExtension = hasViewfinderSelection ? normalizeAutoGearTriggerValue(rawViewfinderExtension) : '__none__';
+  var videoDistribution = info && typeof info.videoDistribution === 'string' ? info.videoDistribution.split(',').map(function (s) {
+    return s.trim();
+  }).filter(Boolean) : [];
+  var normalizedVideoDistribution = videoDistribution.map(normalizeAutoGearTriggerValue).filter(Boolean);
+  var videoDistributionSet = new Set(normalizedVideoDistribution);
   if (!scenarios.length) {
     var hasRuleWithoutScenario = autoGearRules.some(function (rule) {
       var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
@@ -17784,6 +18096,32 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!normalizedTargets.length) return false;
       if (!normalizedMattebox) return false;
       if (!normalizedTargets.includes(normalizedMattebox)) return false;
+    }
+    var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
+    if (cameraHandleList.length) {
+      var _normalizedTargets = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets.length) return false;
+      if (!_normalizedTargets.every(function (target) {
+        return cameraHandleSet.has(target);
+      })) return false;
+    }
+    var viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
+    if (viewfinderList.length) {
+      var _normalizedTargets2 = viewfinderList.map(function (value) {
+        return value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value);
+      }).filter(function (value) {
+        return value || value === '__none__';
+      });
+      if (!_normalizedTargets2.length) return false;
+      if (!_normalizedTargets2.includes(normalizedViewfinderExtension)) return false;
+    }
+    var videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
+    if (videoDistList.length) {
+      var _normalizedTargets3 = videoDistList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets3.length) return false;
+      if (!_normalizedTargets3.every(function (target) {
+        return videoDistributionSet.has(target);
+      })) return false;
     }
     return true;
   });
@@ -17829,7 +18167,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   return container.innerHTML;
 }
 function generateGearListHtml() {
-  var _devices$accessories6, _texts$currentLang46, _texts$en132, _texts$currentLang47, _texts$en133, _texts$currentLang48, _texts$en134, _devices$accessories7;
+  var _devices$accessories6, _texts$currentLang53, _texts$en145, _texts$currentLang54, _texts$en146, _texts$currentLang55, _texts$en147, _devices$accessories7;
   var info = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var getText = function getText(sel) {
     return sel && sel.options && sel.selectedIndex >= 0 ? sel.options[sel.selectedIndex].text.trim() : '';
@@ -18062,7 +18400,7 @@ function generateGearListHtml() {
     supportAccNoCages.push('ARRI KK.0037820 Handle Extension Set');
   }
   var projectInfo = _objectSpread({}, info);
-  var crewRoleLabels = ((_texts$currentLang46 = texts[currentLang]) === null || _texts$currentLang46 === void 0 ? void 0 : _texts$currentLang46.crewRoles) || ((_texts$en132 = texts.en) === null || _texts$en132 === void 0 ? void 0 : _texts$en132.crewRoles) || {};
+  var crewRoleLabels = ((_texts$currentLang53 = texts[currentLang]) === null || _texts$currentLang53 === void 0 ? void 0 : _texts$currentLang53.crewRoles) || ((_texts$en145 = texts.en) === null || _texts$en145 === void 0 ? void 0 : _texts$en145.crewRoles) || {};
   if (Array.isArray(info.people)) {
     var crewEntries = info.people.filter(function (p) {
       return p.role && p.name;
@@ -18090,8 +18428,8 @@ function generateGearListHtml() {
   delete projectInfo.frameGuides;
   delete projectInfo.aspectMaskOpacity;
   var projectTitle = escapeHtml(info.projectName || setupNameInput.value);
-  var projectLabels = ((_texts$currentLang47 = texts[currentLang]) === null || _texts$currentLang47 === void 0 ? void 0 : _texts$currentLang47.projectFields) || ((_texts$en133 = texts.en) === null || _texts$en133 === void 0 ? void 0 : _texts$en133.projectFields) || {};
-  var projectFormTexts = ((_texts$currentLang48 = texts[currentLang]) === null || _texts$currentLang48 === void 0 ? void 0 : _texts$currentLang48.projectForm) || ((_texts$en134 = texts.en) === null || _texts$en134 === void 0 ? void 0 : _texts$en134.projectForm) || {};
+  var projectLabels = ((_texts$currentLang54 = texts[currentLang]) === null || _texts$currentLang54 === void 0 ? void 0 : _texts$currentLang54.projectFields) || ((_texts$en146 = texts.en) === null || _texts$en146 === void 0 ? void 0 : _texts$en146.projectFields) || {};
+  var projectFormTexts = ((_texts$currentLang55 = texts[currentLang]) === null || _texts$currentLang55 === void 0 ? void 0 : _texts$currentLang55.projectForm) || ((_texts$en147 = texts.en) === null || _texts$en147 === void 0 ? void 0 : _texts$en147.projectForm) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2']);
   var infoEntries = Object.entries(projectInfo).filter(function (_ref64) {
     var _ref65 = _slicedToArray(_ref64, 2),
@@ -19188,29 +19526,26 @@ function ensureGearListActions() {
   if (!actions) {
     actions = document.createElement('div');
     actions.id = 'gearListActions';
-    var _deleteBtn = document.createElement('button');
-    _deleteBtn.id = 'deleteGearListBtn';
-    var _autoSaveNote = document.createElement('p');
-    _autoSaveNote.id = 'gearListAutosaveNote';
-    _autoSaveNote.className = 'gear-list-autosave-note';
-    actions.append(_deleteBtn, _autoSaveNote);
     gearListOutput.appendChild(actions);
-    _deleteBtn.addEventListener('click', deleteCurrentGearList);
   }
-  var deleteBtn = document.getElementById('deleteGearListBtn');
+  var existingDeleteBtn = actions.querySelector('#deleteGearListBtn');
+  if (existingDeleteBtn) {
+    existingDeleteBtn.removeEventListener('click', deleteCurrentGearList);
+    existingDeleteBtn.remove();
+  }
   var autoSaveNote = document.getElementById('gearListAutosaveNote');
-  var deleteHelp = texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn;
-  if (autoSaveNote) {
-    var noteText = texts[currentLang].gearListAutosaveNote || 'Gear lists save automatically with the project.';
-    autoSaveNote.textContent = noteText;
-    autoSaveNote.setAttribute('title', noteText);
-    autoSaveNote.setAttribute('data-help', noteText);
+  if (!autoSaveNote) {
+    autoSaveNote = document.createElement('p');
+    autoSaveNote.id = 'gearListAutosaveNote';
+    autoSaveNote.className = 'gear-list-autosave-note';
+    actions.appendChild(autoSaveNote);
+  } else if (!actions.contains(autoSaveNote)) {
+    actions.appendChild(autoSaveNote);
   }
-  if (deleteBtn) {
-    deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
-    deleteBtn.setAttribute('title', deleteHelp);
-    deleteBtn.setAttribute('data-help', deleteHelp);
-  }
+  var noteText = texts[currentLang].gearListAutosaveNote || 'Gear lists save automatically with the project.';
+  autoSaveNote.textContent = noteText;
+  autoSaveNote.setAttribute('title', noteText);
+  autoSaveNote.setAttribute('data-help', noteText);
   if (!gearListOutput._filterListenerBound) {
     gearListOutput.addEventListener('change', function (e) {
       var target = e.target;
@@ -19826,9 +20161,15 @@ function applySharedSetup(shared) {
       if (activeRules && activeRules.length) {
         payload.autoGearRules = activeRules;
       }
-      saveProject(getCurrentProjectStorageKey({
+      var storageKey = getCurrentProjectStorageKey({
         allowTyped: true
-      }), payload);
+      });
+      var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
+      var selectedName = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value.trim() : '';
+      if (typedName && typedName !== selectedName) {
+        storageKey = typedName;
+      }
+      saveProject(storageKey, payload);
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);
@@ -22891,12 +23232,12 @@ function buildFilterGearEntries() {
       case 'Pol':
         {
           var _resolveFilterDisplay2 = resolveFilterDisplayInfo(type, sizeValue),
-            _label31 = _resolveFilterDisplay2.label,
+            _label34 = _resolveFilterDisplay2.label,
             _gearName = _resolveFilterDisplay2.gearName;
           entries.push({
             id: idBase,
             gearName: _gearName,
-            label: _label31,
+            label: _label34,
             type: type,
             size: sizeValue,
             values: []
@@ -22906,13 +23247,13 @@ function buildFilterGearEntries() {
       case 'Rota-Pol':
         {
           var _resolveFilterDisplay3 = resolveFilterDisplayInfo(type, sizeValue),
-            _label32 = _resolveFilterDisplay3.label,
+            _label35 = _resolveFilterDisplay3.label,
             _gearName2 = _resolveFilterDisplay3.gearName;
-          var displaySize = _label32.includes(sizeValue) ? '' : sizeValue;
+          var displaySize = _label35.includes(sizeValue) ? '' : sizeValue;
           entries.push({
             id: idBase,
             gearName: _gearName2,
-            label: _label32,
+            label: _label35,
             type: type,
             size: displaySize,
             values: []
@@ -22923,13 +23264,13 @@ function buildFilterGearEntries() {
       case 'ND Grad SE':
         {
           var _resolveFilterDisplay4 = resolveFilterDisplayInfo(type, sizeValue),
-            _label33 = _resolveFilterDisplay4.label,
+            _label36 = _resolveFilterDisplay4.label,
             _gearName3 = _resolveFilterDisplay4.gearName;
           var gradValues = values == null ? (getFilterValueConfig(type).defaults || []).slice() : Array.isArray(values) ? values.slice() : [];
           entries.push({
             id: idBase,
             gearName: _gearName3,
-            label: _label33,
+            label: _label36,
             type: type,
             size: sizeValue,
             values: gradValues
@@ -22939,13 +23280,13 @@ function buildFilterGearEntries() {
       default:
         {
           var _resolveFilterDisplay5 = resolveFilterDisplayInfo(type, sizeValue),
-            _label34 = _resolveFilterDisplay5.label,
+            _label37 = _resolveFilterDisplay5.label,
             _gearName4 = _resolveFilterDisplay5.gearName;
           var filterValues = values == null ? (getFilterValueConfig(type).defaults || []).slice() : Array.isArray(values) ? values.slice() : [];
           entries.push({
             id: idBase,
             gearName: _gearName4,
-            label: _label34,
+            label: _label37,
             type: type,
             size: sizeValue,
             values: filterValues
@@ -23352,6 +23693,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveCurrentSession: saveCurrentSession,
     restoreSessionState: restoreSessionState,
     displayGearAndRequirements: displayGearAndRequirements,
+    deleteCurrentGearList: deleteCurrentGearList,
     ensureGearListActions: ensureGearListActions,
     bindGearListEasyrigListener: bindGearListEasyrigListener,
     populateSelect: populateSelect,

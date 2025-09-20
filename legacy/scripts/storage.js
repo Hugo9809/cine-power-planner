@@ -103,7 +103,7 @@ function createStorageMigrationBackup(storage, key, originalValue) {
     console.warn("Unable to create migration backup for ".concat(key), writeError);
   }
 }
-var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY];
+var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY];
 var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
 var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
 var storageErrorAlertShown = false;
@@ -718,6 +718,9 @@ function migrateLegacyStorageKeys() {
   }, {
     legacy: "".concat(legacyPrefix, "autoGearActivePreset"),
     modern: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "autoGearAutoPreset"),
+    modern: AUTO_GEAR_AUTO_PRESET_STORAGE_KEY
   }, {
     legacy: "".concat(legacyPrefix, "autoGearShowBackups"),
     modern: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
@@ -1897,6 +1900,7 @@ function saveAutoGearActivePresetId(presetId) {
   }
 }
 function loadAutoGearAutoPresetId() {
+  applyLegacyStorageMigrations();
   var safeStorage = getSafeLocalStorage();
   if (!safeStorage) {
     return '';
