@@ -123,6 +123,28 @@ if (typeof self !== 'undefined') {
 
     const isNavigationRequest = event.request.mode === 'navigate';
 
+    const isAppIconRequest = event.request.destination === 'image' && event.request.url.includes('/src/icons/');
+    if (isAppIconRequest) {
+      event.respondWith((async () => {
+        const cache = await caches.open(CACHE_NAME);
+
+        try {
+          const response = await fetch(event.request, { cache: 'no-store' });
+          if (response && response.ok) {
+            await cache.put(event.request, response.clone());
+          }
+          return response;
+        } catch (error) {
+          const cachedResponse = await cache.match(event.request);
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          throw error;
+        }
+      })());
+      return;
+    }
+
     event.respondWith((async () => {
       const cacheMatchOptions = isNavigationRequest ? { ignoreSearch: true } : undefined;
       const cachedResponse = await caches.match(event.request, cacheMatchOptions);
