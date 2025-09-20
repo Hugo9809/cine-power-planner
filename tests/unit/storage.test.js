@@ -751,6 +751,59 @@ describe('export/import all data', () => {
     ]);
   });
 
+  test('importAllData normalizes legacy automatic gear payloads', () => {
+    const rules = [
+      { id: 'rule-legacy', label: 'Legacy', scenarios: [], add: [], remove: [] }
+    ];
+
+    const data = {
+      project: {
+        data: {
+          Legacy: { projectHtml: '<div>Legacy</div>', gearHtml: '<ul></ul>' }
+        },
+      },
+      autoGearRules: { data: { autoGearRules: rules } },
+      autoGearBackups: {
+        first: {
+          label: 'First snapshot',
+          timestamp: 1111,
+          data: { autoGearRules: rules },
+        },
+        second: JSON.stringify({
+          id: 'backup-second',
+          label: 'Second snapshot',
+          rules,
+        }),
+      },
+      autoGearPresets: {
+        presetOne: {
+          name: 'Legacy preset',
+          data: { autoGearRules: rules },
+        },
+      },
+    };
+
+    importAllData(data);
+
+    expect(loadProject('Legacy')).toEqual({
+      gearList: { projectHtml: '<div>Legacy</div>', gearHtml: '<ul></ul>' },
+      projectInfo: null,
+    });
+
+    expect(loadAutoGearRules()).toEqual(rules);
+
+    const storedBackups = loadAutoGearBackups();
+    expect(storedBackups.length).toBe(2);
+    expect(storedBackups[0].rules).toEqual(rules);
+    expect(storedBackups[1].rules).toEqual(rules);
+    expect(new Set(storedBackups.map((entry) => entry.id)).size).toBe(2);
+
+    const storedPresets = loadAutoGearPresets();
+    expect(storedPresets).toHaveLength(1);
+    expect(storedPresets[0].rules).toEqual(rules);
+    expect(storedPresets[0].label).toBeTruthy();
+  });
+
   test('importAllData clears stored device overrides when payload sets devices to null', () => {
     saveDeviceData(validDeviceData);
     expect(loadDeviceData()).toEqual(validDeviceData);

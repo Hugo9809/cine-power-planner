@@ -277,6 +277,57 @@ function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
 }
 
+function maybeParseJSONForImport(value) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return value;
+  }
+
+  const firstChar = trimmed[0];
+  if (firstChar !== '{' && firstChar !== '[') {
+    return value;
+  }
+
+  try {
+    return JSON.parse(trimmed);
+  } catch (error) {
+    console.warn('Failed to parse JSON string for import compatibility', error);
+    return value;
+  }
+}
+
+function unwrapImportContainer(value, depth = 0) {
+  if (depth > 5) {
+    return value;
+  }
+
+  const parsed = maybeParseJSONForImport(value);
+  if (parsed !== value) {
+    return unwrapImportContainer(parsed, depth + 1);
+  }
+
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  const containerKeys = ['data', 'value', 'payload', 'contents'];
+  for (let index = 0; index < containerKeys.length; index += 1) {
+    const key = containerKeys[index];
+    if (Object.prototype.hasOwnProperty.call(value, key)) {
+      const next = value[key];
+      if (next !== value) {
+        return unwrapImportContainer(next, depth + 1);
+      }
+    }
+  }
+
+  return value;
+}
+
 function alertStorageError() {
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
@@ -1050,14 +1101,20 @@ function createProjectImporter() {
 }
 
 function importProjectCollection(collection, ensureImporter, fallbackLabel = "Imported project") {
-  if (typeof collection === "string") {
-    ensureImporter()("", collection);
+  const resolved = unwrapImportContainer(collection);
+
+  if (resolved !== collection) {
+    return importProjectCollection(resolved, ensureImporter, fallbackLabel);
+  }
+
+  if (typeof resolved === "string") {
+    ensureImporter()("", resolved);
     return true;
   }
 
-  if (Array.isArray(collection)) {
+  if (Array.isArray(resolved)) {
     const importProject = ensureImporter();
-    collection.forEach((proj, idx) => {
+    resolved.forEach((proj, idx) => {
       if (proj === null || proj === undefined) return;
       const rawName =
         isPlainObject(proj) && typeof proj.name === "string"
@@ -1068,9 +1125,22 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
     return true;
   }
 
-  if (isPlainObject(collection)) {
+  if (isPlainObject(resolved)) {
+    if (Array.isArray(resolved.projects)) {
+      return importProjectCollection(resolved.projects, ensureImporter, fallbackLabel);
+    }
+    if (Array.isArray(resolved.items)) {
+      return importProjectCollection(resolved.items, ensureImporter, fallbackLabel);
+    }
+    if (isPlainObject(resolved.project)) {
+      return importProjectCollection(resolved.project, ensureImporter, fallbackLabel);
+    }
+    if (isPlainObject(resolved.projects)) {
+      return importProjectCollection(resolved.projects, ensureImporter, fallbackLabel);
+    }
+
     const importProject = ensureImporter();
-    Object.entries(collection).forEach(([name, proj]) => {
+    Object.entries(resolved).forEach(([name, proj]) => {
       importProject(name, proj);
     });
     return true;
@@ -1279,6 +1349,328 @@ function saveAutoGearBackupVisibility(flag) {
     Boolean(flag),
     "Error saving automatic gear backup visibility to localStorage:",
   );
+}
+
+function normalizeImportedAutoGearRules(payload, depth = 0) {
+  if (depth > 6) {
+    return null;
+  }
+
+  if (payload === null || payload === undefined) {
+    return [];
+  }
+
+  const resolved = unwrapImportContainer(payload, depth + 1);
+  if (Array.isArray(resolved)) {
+    return resolved;
+  }
+
+  if (!isPlainObject(resolved)) {
+    return null;
+  }
+
+  const candidateKeys = ['rules', 'autoGearRules', 'items', 'entries'];
+  for (let index = 0; index < candidateKeys.length; index += 1) {
+    const key = candidateKeys[index];
+    if (Object.prototype.hasOwnProperty.call(resolved, key)) {
+      const normalized = normalizeImportedAutoGearRules(resolved[key], depth + 1);
+      if (normalized !== null) {
+        return normalized;
+      }
+    }
+  }
+
+  return null;
+}
+
+function normalizeImportedAutoGearBackupEntry(entry, fallbackId, depth = 0) {
+  if (depth > 6) {
+    return null;
+  }
+
+  const parsed = maybeParseJSONForImport(entry);
+  if (parsed !== entry) {
+    return normalizeImportedAutoGearBackupEntry(parsed, fallbackId, depth + 1);
+  }
+
+  if (parsed === null || parsed === undefined) {
+    return null;
+  }
+
+  if (Array.isArray(parsed)) {
+    return {
+      id: typeof fallbackId === 'string' ? fallbackId : '',
+      label: typeof fallbackId === 'string' ? fallbackId : '',
+      createdAt: null,
+      rules: parsed,
+    };
+  }
+
+  if (!isPlainObject(parsed)) {
+    return null;
+  }
+
+  const normalized = { ...parsed };
+  const candidateKeys = ['rules', 'autoGearRules', 'data', 'items', 'entries'];
+  for (let index = 0; index < candidateKeys.length; index += 1) {
+    const key = candidateKeys[index];
+    if (!Object.prototype.hasOwnProperty.call(normalized, key)) {
+      continue;
+    }
+    const extracted = normalizeImportedAutoGearRules(normalized[key], depth + 1);
+    if (extracted !== null) {
+      normalized.rules = extracted;
+      break;
+    }
+  }
+
+  if (!Array.isArray(normalized.rules)) {
+    normalized.rules = [];
+  }
+
+  if (normalized.createdAt === undefined && normalized.timestamp !== undefined) {
+    normalized.createdAt = normalized.timestamp;
+  }
+
+  let id = typeof normalized.id === 'string' ? normalized.id.trim() : '';
+  if (!id && typeof fallbackId === 'string') {
+    id = fallbackId.trim();
+  }
+  if (!id && typeof normalized.name === 'string') {
+    id = normalized.name.trim();
+  }
+  if (!id && typeof normalized.label === 'string') {
+    id = normalized.label.trim();
+  }
+
+  const createdAt = normalized.createdAt;
+  if (!id && (typeof createdAt === 'number' || typeof createdAt === 'string')) {
+    id = `backup-${createdAt}`;
+  }
+  if (!id && (typeof normalized.timestamp === 'number' || typeof normalized.timestamp === 'string')) {
+    id = `backup-${normalized.timestamp}`;
+  }
+
+  if (id) {
+    normalized.id = id;
+  }
+
+  if (typeof normalized.label !== 'string' || !normalized.label.trim()) {
+    if (typeof normalized.name === 'string' && normalized.name.trim()) {
+      normalized.label = normalized.name.trim();
+    } else if (id) {
+      normalized.label = id;
+    } else {
+      normalized.label = '';
+    }
+  }
+
+  return normalized;
+}
+
+function normalizeImportedAutoGearBackups(payload, depth = 0) {
+  if (depth > 6) {
+    return null;
+  }
+
+  if (payload === null || payload === undefined) {
+    return [];
+  }
+
+  const resolved = unwrapImportContainer(payload, depth + 1);
+  const result = [];
+
+  const addEntry = (entry, fallbackId) => {
+    const normalized = normalizeImportedAutoGearBackupEntry(entry, fallbackId, depth + 1);
+    if (normalized) {
+      result.push(normalized);
+    }
+  };
+
+  if (Array.isArray(resolved)) {
+    resolved.forEach((entry, index) => {
+      addEntry(entry, `imported-backup-${index + 1}`);
+    });
+  } else if (isPlainObject(resolved)) {
+    if (Array.isArray(resolved.autoGearBackups)) {
+      return normalizeImportedAutoGearBackups(resolved.autoGearBackups, depth + 1);
+    }
+    if (isPlainObject(resolved.autoGearBackups)) {
+      return normalizeImportedAutoGearBackups(resolved.autoGearBackups, depth + 1);
+    }
+    if (Array.isArray(resolved.backups)) {
+      return normalizeImportedAutoGearBackups(resolved.backups, depth + 1);
+    }
+    if (isPlainObject(resolved.backups)) {
+      return normalizeImportedAutoGearBackups(resolved.backups, depth + 1);
+    }
+    if (Array.isArray(resolved.items)) {
+      return normalizeImportedAutoGearBackups(resolved.items, depth + 1);
+    }
+    if (isPlainObject(resolved.items)) {
+      return normalizeImportedAutoGearBackups(resolved.items, depth + 1);
+    }
+
+    Object.entries(resolved).forEach(([key, entry]) => {
+      addEntry(entry, key);
+    });
+  } else {
+    return null;
+  }
+
+  if (!result.length) {
+    return [];
+  }
+
+  const seen = new Set();
+  result.forEach((entry, index) => {
+    let id = typeof entry.id === 'string' ? entry.id.trim() : '';
+    if (!id) {
+      id = `imported-backup-${index + 1}`;
+    }
+    let unique = id;
+    let suffix = 2;
+    while (seen.has(unique)) {
+      unique = `${id}-${suffix}`;
+      suffix += 1;
+    }
+    entry.id = unique;
+    seen.add(unique);
+
+    if (typeof entry.label !== 'string' || !entry.label.trim()) {
+      entry.label = unique;
+    }
+  });
+
+  return result;
+}
+
+function normalizeImportedAutoGearPresets(payload, depth = 0) {
+  if (depth > 6) {
+    return null;
+  }
+
+  if (payload === null || payload === undefined) {
+    return [];
+  }
+
+  const resolved = unwrapImportContainer(payload, depth + 1);
+
+  const result = [];
+  const addPreset = (preset, fallbackId) => {
+    const parsed = maybeParseJSONForImport(preset);
+    if (parsed !== preset) {
+      addPreset(parsed, fallbackId);
+      return;
+    }
+
+    if (!isPlainObject(parsed)) {
+      return;
+    }
+
+    const normalized = { ...parsed };
+    let resolvedRules = null;
+    const candidateKeys = ['rules', 'autoGearRules', 'data', 'items', 'entries'];
+    for (let index = 0; index < candidateKeys.length; index += 1) {
+      const key = candidateKeys[index];
+      if (!Object.prototype.hasOwnProperty.call(normalized, key)) {
+        continue;
+      }
+      const extracted = normalizeImportedAutoGearRules(normalized[key], depth + 1);
+      if (extracted !== null) {
+        resolvedRules = extracted;
+        break;
+      }
+    }
+
+    if (resolvedRules !== null) {
+      normalized.rules = resolvedRules;
+    } else if (!Array.isArray(normalized.rules)) {
+      normalized.rules = [];
+    }
+
+    let id = typeof normalized.id === 'string' ? normalized.id.trim() : '';
+    if (!id && typeof fallbackId === 'string') {
+      id = fallbackId.trim();
+    }
+    if (!id && typeof normalized.name === 'string') {
+      id = normalized.name.trim();
+    }
+    if (!id && typeof normalized.label === 'string') {
+      id = normalized.label.trim();
+    }
+    if (!id) {
+      id = `preset-${result.length + 1}`;
+    }
+    normalized.id = id;
+
+    if (typeof normalized.label !== 'string' || !normalized.label.trim()) {
+      if (typeof normalized.name === 'string' && normalized.name.trim()) {
+        normalized.label = normalized.name.trim();
+      } else {
+        normalized.label = id;
+      }
+    }
+
+    result.push(normalized);
+  };
+
+  if (Array.isArray(resolved)) {
+    resolved.forEach((preset, index) => {
+      addPreset(preset, `preset-${index + 1}`);
+    });
+  } else if (isPlainObject(resolved)) {
+    if (Array.isArray(resolved.autoGearPresets)) {
+      return normalizeImportedAutoGearPresets(resolved.autoGearPresets, depth + 1);
+    }
+    if (isPlainObject(resolved.autoGearPresets)) {
+      return normalizeImportedAutoGearPresets(resolved.autoGearPresets, depth + 1);
+    }
+    if (Array.isArray(resolved.presets)) {
+      return normalizeImportedAutoGearPresets(resolved.presets, depth + 1);
+    }
+    if (isPlainObject(resolved.presets)) {
+      return normalizeImportedAutoGearPresets(resolved.presets, depth + 1);
+    }
+    if (Array.isArray(resolved.items)) {
+      return normalizeImportedAutoGearPresets(resolved.items, depth + 1);
+    }
+    if (isPlainObject(resolved.items)) {
+      return normalizeImportedAutoGearPresets(resolved.items, depth + 1);
+    }
+
+    Object.entries(resolved).forEach(([key, preset]) => {
+      addPreset(preset, key);
+    });
+  } else {
+    return null;
+  }
+
+  if (!result.length) {
+    return [];
+  }
+
+  const seen = new Set();
+  result.forEach((preset, index) => {
+    let id = typeof preset.id === 'string' ? preset.id.trim() : '';
+    if (!id) {
+      id = `preset-${index + 1}`;
+    }
+    let unique = id;
+    let suffix = 2;
+    while (seen.has(unique)) {
+      unique = `${id}-${suffix}`;
+      suffix += 1;
+    }
+    preset.id = unique;
+    seen.add(unique);
+
+    if (typeof preset.label !== 'string' || !preset.label.trim()) {
+      preset.label = unique;
+    }
+  });
+
+  return result;
 }
 
 // --- Clear All Stored Data ---
@@ -1555,16 +1947,31 @@ function importAllData(allData) {
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
-    saveAutoGearRules(allData.autoGearRules);
+    const normalizedRules = normalizeImportedAutoGearRules(allData.autoGearRules);
+    if (normalizedRules !== null) {
+      saveAutoGearRules(normalizedRules);
+    } else {
+      console.warn('Ignoring incompatible automatic gear rules payload during import.');
+    }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
-    saveAutoGearBackups(allData.autoGearBackups);
+    const normalizedBackups = normalizeImportedAutoGearBackups(allData.autoGearBackups);
+    if (normalizedBackups !== null) {
+      saveAutoGearBackups(normalizedBackups);
+    } else {
+      console.warn('Ignoring incompatible automatic gear backups payload during import.');
+    }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     saveAutoGearSeedFlag(allData.autoGearSeeded);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearPresets')) {
-    saveAutoGearPresets(allData.autoGearPresets);
+    const normalizedPresets = normalizeImportedAutoGearPresets(allData.autoGearPresets);
+    if (normalizedPresets !== null) {
+      saveAutoGearPresets(normalizedPresets);
+    } else {
+      console.warn('Ignoring incompatible automatic gear presets payload during import.');
+    }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearActivePresetId')) {
     saveAutoGearActivePresetId(
