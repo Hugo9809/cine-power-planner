@@ -10824,6 +10824,46 @@ function getCurrentSetupState() {
   return state;
 }
 
+function hasAnyDeviceSelection(state) {
+  if (!state) return false;
+  const isMeaningfulSelection = (value) => {
+    if (Array.isArray(value)) {
+      return value.some((item) => isMeaningfulSelection(item));
+    }
+    if (value == null) return false;
+    const normalized = typeof value === 'string' ? value.trim() : value;
+    if (!normalized) return false;
+    if (typeof normalized === 'string' && normalized.toLowerCase() === 'none') {
+      return false;
+    }
+    return true;
+  };
+
+  const primarySelections = [
+    state.camera,
+    state.monitor,
+    state.video,
+    state.cage,
+    state.batteryPlate,
+    state.battery,
+    state.batteryHotswap
+  ];
+
+  if (primarySelections.some((value) => isMeaningfulSelection(value))) {
+    return true;
+  }
+
+  if (isMeaningfulSelection(state.motors)) {
+    return true;
+  }
+
+  if (isMeaningfulSelection(state.controllers)) {
+    return true;
+  }
+
+  return false;
+}
+
 function checkSetupChanged() {
   if (!saveSetupBtn) return;
   const langTexts = texts[currentLang] || {};
@@ -14805,6 +14845,16 @@ saveSetupBtn.addEventListener("click", () => {
     return;
   }
   const currentSetup = { ...getCurrentSetupState() };
+  const langTexts = texts[currentLang] || {};
+  const fallbackTexts = texts.en || {};
+  if (!hasAnyDeviceSelection(currentSetup)) {
+    const message =
+      langTexts.alertSetupNeedsDevice ||
+      fallbackTexts.alertSetupNeedsDevice ||
+      'Please select at least one device before saving a project.';
+    alert(message);
+    return;
+  }
   const gearListHtml = getCurrentGearListHtml();
   if (gearListHtml) {
     currentSetup.gearList = gearListHtml;
