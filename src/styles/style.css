@@ -4093,12 +4093,18 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 
 #gearListOutput .cage-select-wrapper {
   display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+#gearListOutput .cage-select-wrapper > span {
+  white-space: nowrap;
 }
 
 #gearListOutput .cage-select-wrapper select {
+  flex: 0 1 auto;
   max-width: 100%;
 }
 
@@ -4339,6 +4345,14 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   #projectRequirementsOutput select {
     width: 100%;
     max-width: 100%;
+  }
+  #gearListOutput .cage-select-wrapper {
+    width: 100%;
+  }
+  #gearListOutput .cage-select-wrapper select {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
   }
   #gearListOutput .select-wrapper,
   #projectRequirementsOutput .select-wrapper {
