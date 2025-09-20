@@ -6,6 +6,8 @@ const texts = {
     tagline: "Plan your film rig and calculate power consumption & battery life.",
     skipToContent: "Skip to content",
     offlineIndicator: "Offline",
+    offlineIndicatorHelp:
+      "Appears when the planner is offline. All projects, backups and device data stay stored on this device so you can keep working.",
     installBannerText: "Install Cine Power Planner on your device for quick access.",
     installHelpTitleIos: "Install Cine Power Planner on iOS",
     installHelpTitleAndroid: "Install Cine Power Planner on Android",
@@ -68,6 +70,11 @@ const texts = {
     existingDevicesHeading: "Existing Devices",
     darkModeLabel: "Toggle dark mode",
     pinkModeLabel: "Toggle pink mode",
+    menuToggleLabel: "Menu",
+    menuToggleHelp:
+      "Open the sidebar to jump between planner sections or reveal controls on smaller screens. Click again to close it.",
+    sideMenuHelp:
+      "Sidebar navigation listing planner sections. Select a section to scroll there and the menu closes automatically.",
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
     featureSearchHelp:
@@ -720,7 +727,7 @@ const texts = {
       "Scroll to the “%s” section in the help dialog.",
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
-      "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations.",
+      "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations. You can open Settings while hover help is active to explore preferences without leaving this mode.",
     setupSelectHelp:
       "Pick a previously saved configuration or select '-- New Project --' to start from scratch.",
     setupNameHelp:
@@ -772,6 +779,8 @@ const texts = {
     tagline: "Pianifica la tua configurazione cinematografica e calcola il consumo energetico e l'autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Non in linea",
+    offlineIndicatorHelp:
+      "Compare quando il planner è offline. Tutti i progetti, i backup e i dati dei dispositivi restano salvati su questo dispositivo così puoi continuare a lavorare.",
     installBannerText: "Installa Cine Power Planner sul tuo dispositivo per un accesso rapido.",
     installHelpTitleIos: "Installa Cine Power Planner su iOS",
     installHelpTitleAndroid: "Installa Cine Power Planner su Android",
@@ -834,6 +843,11 @@ const texts = {
     existingDevicesHeading: "Dispositivi esistenti",
     darkModeLabel: "Attiva modalità scura",
     pinkModeLabel: "Attiva modalità rosa",
+    menuToggleLabel: "Menu",
+    menuToggleHelp:
+      "Apri la barra laterale per raggiungere rapidamente le sezioni del planner o mostrare i controlli sugli schermi piccoli. Premi di nuovo per chiuderla.",
+    sideMenuHelp:
+      "Navigazione laterale con le sezioni del planner. Seleziona una sezione per scorrere fino a essa e chiudere automaticamente il menu.",
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
@@ -1468,7 +1482,7 @@ const texts = {
       "Scorri fino alla sezione “%s” nella finestra di aiuto.",
     hoverHelpButtonLabel: "Passa il mouse per aiuto",
     hoverHelpButtonHelp:
-      "Attiva l'aiuto al passaggio del mouse così, spostando il cursore su pulsanti, campi, menu a discesa o intestazioni, vengono mostrate brevi spiegazioni.",
+      "Attiva l'aiuto al passaggio del mouse così, spostando il cursore su pulsanti, campi, menu a discesa o intestazioni, vengono mostrate brevi spiegazioni. Puoi aprire Impostazioni mentre l'aiuto è attivo per esplorare le preferenze senza uscire da questa modalità.",
     setupSelectHelp:
       "Scegli una configurazione salvata da caricare o inizia una nuova.",
     setupNameHelp: "Inserisci un nome per la configurazione corrente.",
@@ -1514,6 +1528,8 @@ const texts = {
     tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
+    offlineIndicatorHelp:
+      "Aparece cuando el planificador está sin conexión. Todos los proyectos, copias de seguridad y datos de dispositivos permanecen guardados en este dispositivo para que puedas seguir trabajando.",
     installBannerText: "Instala Cine Power Planner en tu dispositivo para acceder rápidamente.",
     installHelpTitleIos: "Instala Cine Power Planner en iOS",
     installHelpTitleAndroid: "Instala Cine Power Planner en Android",
@@ -1577,6 +1593,11 @@ const texts = {
     existingDevicesHeading: "Dispositivos Existentes",
     darkModeLabel: "Alternar modo oscuro",
     pinkModeLabel: "Alternar modo rosa",
+    menuToggleLabel: "Menú",
+    menuToggleHelp:
+      "Abre la barra lateral para saltar entre las secciones del planificador o mostrar los controles en pantallas pequeñas. Pulsa de nuevo para cerrarla.",
+    sideMenuHelp:
+      "Navegación lateral con las secciones del planificador. Elige una sección para desplazarte allí y cerrar automáticamente el menú.",
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
@@ -2224,7 +2245,7 @@ const texts = {
       "Desplázate a la sección “%s” dentro del cuadro de ayuda.",
     hoverHelpButtonLabel: "Pasa el cursor para ayuda",
     hoverHelpButtonHelp:
-      "Activa la ayuda al pasar el cursor para que al moverlo sobre botones, campos, menús desplegables o encabezados aparezcan breves explicaciones.",
+      "Activa la ayuda al pasar el cursor para que al moverlo sobre botones, campos, menús desplegables o encabezados aparezcan breves explicaciones. Puedes abrir Ajustes mientras la ayuda está activa para explorar las preferencias sin salir de este modo.",
     setupSelectHelp:
       "Elige una configuración guardada para cargarla o comienza una nueva.",
     setupNameHelp: "Introduce un nombre para la configuración actual.",
@@ -2271,6 +2292,8 @@ const texts = {
     tagline: "Planifiez votre équipement de tournage et calculez la consommation énergétique et l'autonomie des batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
+    offlineIndicatorHelp:
+      "S’affiche lorsque le planificateur est hors ligne. Tous les projets, sauvegardes et données d’appareil restent stockés sur cet appareil afin que vous puissiez continuer à travailler.",
     installBannerText: "Installez Cine Power Planner sur votre appareil pour un accès rapide.",
     installHelpTitleIos: "Installer Cine Power Planner sur iOS",
     installHelpTitleAndroid: "Installer Cine Power Planner sur Android",
@@ -2334,6 +2357,11 @@ const texts = {
     existingDevicesHeading: "Appareils existants",
     darkModeLabel: "Basculer en mode sombre",
     pinkModeLabel: "Basculer en mode rose",
+    menuToggleLabel: "Menu",
+    menuToggleHelp:
+      "Ouvre la barre latérale pour passer rapidement d’une section du planificateur à l’autre ou afficher les commandes sur les petits écrans. Cliquez de nouveau pour la fermer.",
+    sideMenuHelp:
+      "Navigation latérale listant les sections du planificateur. Choisissez une section pour y faire défiler la page et fermer automatiquement le menu.",
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et d’aide",
     featureSearchHelp:
@@ -2982,7 +3010,7 @@ const texts = {
       "Faites défiler jusqu'à la section « %s » dans la fenêtre d'aide.",
     hoverHelpButtonLabel: "Survoler pour obtenir de l'aide",
     hoverHelpButtonHelp:
-      "Active l'aide au survol pour qu'en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, des explications brèves apparaissent.",
+      "Active l'aide au survol pour qu'en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, des explications brèves apparaissent. Vous pouvez ouvrir Paramètres pendant que l'aide au survol est active afin d'explorer les préférences sans quitter ce mode.",
     setupSelectHelp:
       "Choisissez une configuration enregistrée à charger ou commencez-en une nouvelle.",
     setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
@@ -3094,6 +3122,11 @@ const texts = {
     existingDevicesHeading: "Vorhandene Geräte",
     darkModeLabel: "Dunkelmodus umschalten",
     pinkModeLabel: "Pinkmodus umschalten",
+    menuToggleLabel: "Menü",
+    menuToggleHelp:
+      "Öffnet die Seitenleiste, um schnell zwischen den Planerbereichen zu wechseln oder die Bedienelemente auf kleinen Bildschirmen einzublenden. Nochmal klicken schließt sie wieder.",
+    sideMenuHelp:
+      "Seitenleiste mit den Bereichen des Planers. Wähle einen Bereich aus, um dorthin zu scrollen; das Menü schließt sich dabei automatisch.",
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
     featureSearchHelp:
@@ -3742,7 +3775,7 @@ const texts = {
       "Zum Abschnitt „%s“ im Hilfedialog scrollen.",
     hoverHelpButtonLabel: "Für Hilfe darüberfahren",
     hoverHelpButtonHelp:
-      "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen erscheinen.",
+      "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen erscheinen. Du kannst die Einstellungen öffnen, während die Hover-Hilfe aktiv ist, um Optionen zu erkunden, ohne den Modus zu verlassen.",
     setupSelectHelp:
       "Wähle ein gespeichertes Projekt zum Laden oder starte ein neues.",
     setupNameHelp: "Gib einen Namen für das aktuelle Projekt ein.",
