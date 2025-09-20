@@ -734,11 +734,11 @@ const texts = {
     generateGearListHelp:
       "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
     shareSetupHelp:
-      "Download a JSON file of the current project to share with others.",
+      "Download a Cine Power Planner project bundle (.json) with your selections, project requirements, gear list, runtime feedback, favorites, custom devices and optional automatic gear rules so you can share it offline.",
     applySharedLinkHelp:
-      "Load the configuration from the selected project file.",
+      "Load the configuration from the selected project bundle. If automatic gear rules are included you'll choose how to apply them before import finishes.",
     sharedLinkHelp:
-      "Choose a previously saved project JSON file to load.",
+      "Choose an exported Cine Power Planner project bundle (.json) to import.",
     cameraSelectHelp: "Choose the camera body that anchors your rig.",
     monitorSelectHelp: "Choose an on-board or wireless monitor to include.",
     videoSelectHelp: "Choose a transmitter/receiver pair or other wireless video link.",
@@ -1479,10 +1479,11 @@ const texts = {
     generateGearListHelp:
       "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
     shareSetupHelp:
-      "Scarica un file JSON del progetto corrente per condividerlo.",
-    applySharedLinkHelp: "Carica la configurazione dal file di progetto selezionato.",
+      "Scarica un bundle di progetto Cine Power Planner (.json) con selezioni, requisiti, lista attrezzatura, feedback runtime, preferiti, dispositivi personalizzati e, se abilitate, le regole automatiche, per condividerlo offline.",
+    applySharedLinkHelp:
+      "Carica la configurazione dal bundle di progetto selezionato; se include regole automatiche potrai scegliere come applicarle prima del ripristino.",
     sharedLinkHelp:
-      "Seleziona un file JSON di progetto condiviso da caricare.",
+      "Seleziona un bundle di progetto Cine Power Planner (.json) esportato da caricare.",
     cameraSelectHelp: "Seleziona la fotocamera per la tua configurazione.",
     monitorSelectHelp: "Seleziona un monitor da includere.",
     videoSelectHelp: "Seleziona un sistema video wireless da includere.",
@@ -2235,10 +2236,11 @@ const texts = {
     generateGearListHelp:
       "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
     shareSetupHelp:
-      "Descarga un archivo JSON del proyecto actual para compartirlo.",
-    applySharedLinkHelp: "Carga la configuración desde el archivo de proyecto seleccionado.",
+      "Descarga un paquete de proyecto de Cine Power Planner (.json) con tus selecciones, requisitos, lista de equipo, comentarios de autonomía, favoritos, dispositivos personalizados y, si lo indicas, las reglas automáticas, para compartirlo sin conexión.",
+    applySharedLinkHelp:
+      "Carga la configuración desde el paquete de proyecto seleccionado; si incluye reglas automáticas podrás decidir cómo aplicarlas antes de completar la importación.",
     sharedLinkHelp:
-      "Selecciona un archivo JSON de proyecto compartido para cargarlo.",
+      "Selecciona un paquete de proyecto (.json) exportado de Cine Power Planner para importarlo.",
     cameraSelectHelp: "Selecciona la cámara para tu configuración.",
     monitorSelectHelp: "Selecciona un monitor para incluir.",
     videoSelectHelp: "Selecciona un sistema de video inalámbrico para incluir.",
@@ -2993,10 +2995,11 @@ const texts = {
     generateGearListHelp:
       "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
     shareSetupHelp:
-      "Téléchargez un fichier JSON du projet actuel pour le partager.",
-    applySharedLinkHelp: "Chargez la configuration depuis le fichier projet sélectionné.",
+      "Téléchargez un bundle de projet Cine Power Planner (.json) contenant vos sélections, exigences, liste de matériel, retours d’autonomie, favoris, appareils personnalisés et, si activé, vos règles automatiques pour le partager hors ligne.",
+    applySharedLinkHelp:
+      "Chargez la configuration depuis le bundle de projet sélectionné ; si des règles automatiques sont incluses, vous déciderez comment les appliquer avant la fin de l’import.",
     sharedLinkHelp:
-      "Choisissez un fichier JSON de projet partagé à charger.",
+      "Choisissez un bundle de projet Cine Power Planner (.json) exporté à importer.",
     cameraSelectHelp: "Sélectionnez la caméra pour votre configuration.",
     monitorSelectHelp: "Sélectionnez un moniteur à inclure.",
     videoSelectHelp: "Sélectionnez un système vidéo sans fil à inclure.",
@@ -3753,10 +3756,11 @@ const texts = {
     generateGearListHelp:
       "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp:
-      "Lädt eine JSON-Datei des aktuellen Projekts zum Teilen herunter.",
-    applySharedLinkHelp: "Lädt die Konfiguration aus der ausgewählten Projektdatei.",
+      "Lade ein Cine Power Planner Projektpaket (.json) mit deinen Auswahlen, Anforderungen, Gear-Liste, Laufzeit-Feedback, Favoriten, eigenen Geräten und – falls aktiviert – den automatischen Gear-Regeln herunter, um es offline zu teilen.",
+    applySharedLinkHelp:
+      "Lade die Konfiguration aus dem ausgewählten Projektpaket; wenn automatische Gear-Regeln enthalten sind, kannst du vor dem Import entscheiden, wie sie übernommen werden.",
     sharedLinkHelp:
-      "Wähle eine zuvor geteilte Projektdatei aus, um sie zu laden.",
+      "Wähle ein exportiertes Cine Power Planner Projektpaket (.json) zum Import aus.",
     cameraSelectHelp: "Wähle die Kamera für dein Setup.",
     monitorSelectHelp: "Wähle einen Monitor, der enthalten sein soll.",
     videoSelectHelp: "Wähle ein drahtloses Videosystem aus.",

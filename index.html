@@ -1157,6 +1157,7 @@
             <li>Automatic snapshots save the current project every 10 minutes and hourly full-app backups download timestamped JSON archives so you always have a recovery point.</li>
             <li>Force reload clears cached files and updates the app without deleting saved data.</li>
             <li>Cameras with both V- and B-Mount plates let you swap battery types; the list updates automatically.</li>
+            <li>Audit storage usage inside Settings → Data &amp; Storage to see project counts, auto backups, favorites, runtime notes, custom device categories and approximate backup size at a glance.</li>
           </ul>
           <div class="help-link-group" aria-label="Jump to key features">
             <a
@@ -1292,7 +1293,7 @@
                 data-help-target="#shareSetupBtn"
                 data-help-highlight="#setup-manager"
               ><strong>Export Project</strong></a>
-              downloads a JSON file containing your selections, project requirements, gear list, runtime feedback and any custom devices so you can back up or share the setup.
+              downloads a JSON bundle containing your selections, project requirements, gear list, runtime feedback, favorites, custom devices and—when enabled—your automatic gear rules so you can back up or share the setup offline.
             </li>
             <li>
               Open
@@ -1318,7 +1319,7 @@
                 data-help-target="#applySharedLinkBtn"
                 data-help-highlight="#setup-manager"
               ><strong>Import</strong></a>
-              to restore a shared configuration.
+              to restore a shared configuration. If the bundle includes automatic gear rules, decide whether to skip them, apply them only to the imported project or merge them into your global rules before the import finishes.
             </li>
             <li>
               Use
@@ -1444,6 +1445,23 @@
         </section>
         <section
           data-help-section
+          id="dataStorageHelp"
+          data-help-keywords="data storage dashboard usage totals backups summary favorites feedback devices size"
+        >
+          <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF10B;</span>Data &amp; Storage Dashboard</h3>
+          <ul>
+            <li>Open Settings → Data &amp; Storage to see how many saved projects, automatic backups, gear list snapshots, favorites and runtime feedback entries live on this device.</li>
+            <li>Review which custom device categories are in use and whether any unsaved session data is stored in the background.</li>
+            <li>The dashboard estimates backup size so you know how much space an export will occupy before downloading.</li>
+            <li>Use the panel as an audit log before resetting or archiving to ensure nothing important is left behind.</li>
+          </ul>
+          <div class="help-link-group" aria-label="Data and storage shortcuts">
+            <a class="help-link button-link" href="#settingsDialog" data-help-target="#dataHeading">Settings → Data &amp; Storage</a>
+            <a class="help-link button-link" href="#settingsDialog" data-help-target="#storageSummaryList">Storage summary</a>
+          </div>
+        </section>
+        <section
+          data-help-section
           id="projectRequirementsHelp"
           data-help-keywords="project requirements brief notes metadata crew schedule prep shoot forms multi-select documentation"
         >
@@ -1555,9 +1573,9 @@
               <strong>Remove these items</strong> hides entries the generator would normally include—match the item name and
               category shown in the gear list to target the right row.
             </li>
-            <li>
-              Rules live in Settings, are included in backups and apply to printable gear lists and exported project bundles.
-            </li>
+            <li>Save and recall complete rule sets with <strong>Save preset</strong> and <strong>Delete preset</strong>, or export/import them as JSON when you need to share automation offline.</li>
+            <li>Background snapshots capture every change; enable <strong>Show automatic backups</strong> to surface those copies in the Saved Projects menu for manual recovery.</li>
+            <li>Rules live in Settings, are included in backups and travel with exported project bundles when you choose to include them.</li>
           </ul>
           <div class="help-link-group" aria-label="Automatic gear rule controls">
             <a
@@ -1576,6 +1594,21 @@
               href="#settingsDialog"
               data-help-target="#autoGearRulesList"
             >Rules list</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
+              data-help-target="#autoGearShowBackups"
+            >Automatic backups toggle</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
+              data-help-target="#autoGearExport"
+            >Export rules</a>
+            <a
+              class="help-link button-link"
+              href="#settingsDialog"
+              data-help-target="#autoGearImport"
+            >Import rules</a>
           </div>
         </section>
         <section
@@ -2072,7 +2105,7 @@
                 data-help-target="#shareSetupBtn"
                 data-help-highlight="#setup-manager"
               ><em>Export Project</em></a>
-              to download a JSON file with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the
+              to download a Cine Power Planner project bundle (`.json`) containing your selections, project requirements, gear list, runtime feedback, favorites, custom devices and (if enabled) automatic gear rules. Send the bundle to collaborators or keep it as a backup, then choose it in the
               <a
                 class="help-link"
                 href="#setup-manager"
@@ -2086,7 +2119,7 @@
                 data-help-target="#applySharedLinkBtn"
                 data-help-highlight="#setup-manager"
               ><em>Import</em></a>
-              to restore it.
+              to restore it. When a bundle carries automatic gear rules you can choose whether to skip them, apply them only to the imported project or merge them into all projects before the import completes.
             </p>
           </details>
           <details
