@@ -659,7 +659,27 @@ function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
 }
 
-function alertStorageError() {
+function shouldDisplayStorageAlert(reason) {
+  if (!reason) {
+    return true;
+  }
+
+  if (reason === 'migration-read') {
+    if (typeof safeLocalStorageInfo !== 'undefined' && safeLocalStorageInfo) {
+      if (safeLocalStorageInfo.type && safeLocalStorageInfo.type !== 'memory') {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function alertStorageError(reason) {
+  if (!shouldDisplayStorageAlert(reason)) {
+    return;
+  }
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   }
