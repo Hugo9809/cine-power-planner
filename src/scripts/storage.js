@@ -75,6 +75,36 @@ const RAW_STORAGE_BACKUP_KEYS = new Set([
   CUSTOM_LOGO_STORAGE_KEY,
 ]);
 
+const PRIMARY_STORAGE_KEYS = [
+  DEVICE_STORAGE_KEY,
+  SETUP_STORAGE_KEY,
+  SESSION_STATE_KEY,
+  FEEDBACK_STORAGE_KEY,
+  PROJECT_STORAGE_KEY,
+  FAVORITES_STORAGE_KEY,
+  DEVICE_SCHEMA_CACHE_KEY,
+  AUTO_GEAR_RULES_STORAGE_KEY,
+  AUTO_GEAR_SEEDED_STORAGE_KEY,
+  AUTO_GEAR_BACKUPS_STORAGE_KEY,
+  AUTO_GEAR_PRESETS_STORAGE_KEY,
+  AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
+  AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+];
+
+const SIMPLE_STORAGE_KEYS = [
+  CUSTOM_LOGO_STORAGE_KEY,
+  getCustomFontStorageKeyName(),
+  'darkMode',
+  'pinkMode',
+  'highContrast',
+  'showAutoBackups',
+  'accentColor',
+  'fontSize',
+  'fontFamily',
+  'language',
+  'iosPwaHelpShown',
+];
+
 const STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
 
 let storageErrorAlertShown = false;
@@ -139,10 +169,108 @@ const getStorageManager = () =>
 const SAFE_LOCAL_STORAGE = (() => {
   const TEST_KEY = '__storage_test__';
 
+  const QUOTA_ERROR_NAMES = new Set([
+    'QuotaExceededError',
+    'NS_ERROR_DOM_QUOTA_REACHED',
+  ]);
+  const QUOTA_ERROR_CODES = new Set([22, 1014]);
+  const QUOTA_ERROR_NUMBERS = new Set([22, 1014]);
+
+  const isQuotaExceededError = (error) => {
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+    if (typeof error.code === 'number' && QUOTA_ERROR_CODES.has(error.code)) {
+      return true;
+    }
+    if (typeof error.number === 'number' && QUOTA_ERROR_NUMBERS.has(error.number)) {
+      return true;
+    }
+    if (typeof error.name === 'string' && QUOTA_ERROR_NAMES.has(error.name)) {
+      return true;
+    }
+    return false;
+  };
+
+  const hasStoredEntries = (storage) => {
+    if (!storage) return false;
+
+    try {
+      if (typeof storage.length === 'number' && storage.length > 0) {
+        return true;
+      }
+    } catch (lengthError) {
+      console.warn('Unable to read storage length after quota error', lengthError);
+    }
+
+    if (typeof storage.getItem === 'function') {
+      try {
+        for (let i = 0; i < PRIMARY_STORAGE_KEYS.length; i += 1) {
+          const key = PRIMARY_STORAGE_KEYS[i];
+          if (storage.getItem(key) !== null) {
+            return true;
+          }
+          const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
+          if (storage.getItem(backupKey) !== null) {
+            return true;
+          }
+        }
+
+        for (let i = 0; i < SIMPLE_STORAGE_KEYS.length; i += 1) {
+          const key = SIMPLE_STORAGE_KEYS[i];
+          if (storage.getItem(key) !== null) {
+            return true;
+          }
+          if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
+            const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
+            if (storage.getItem(backupKey) !== null) {
+              return true;
+            }
+          }
+        }
+      } catch (inspectionError) {
+        console.warn('Unable to inspect known storage keys after quota error', inspectionError);
+      }
+    }
+
+    if (typeof storage.key === 'function') {
+      try {
+        const length = typeof storage.length === 'number' ? storage.length : 0;
+        for (let index = 0; index < length; index += 1) {
+          const candidate = storage.key(index);
+          if (typeof candidate === 'string' && candidate) {
+            return true;
+          }
+        }
+      } catch (iterationError) {
+        console.warn('Unable to iterate storage keys after quota error', iterationError);
+      }
+    }
+
+    return false;
+  };
+
   const verifyStorage = (storage) => {
     if (!storage) return null;
-    storage.setItem(TEST_KEY, '1');
-    storage.removeItem(TEST_KEY);
+    try {
+      storage.setItem(TEST_KEY, '1');
+    } catch (error) {
+      if (isQuotaExceededError(error) && hasStoredEntries(storage)) {
+        console.warn(
+          'localStorage quota exceeded. Existing planner data will remain available but new saves may fail.',
+          error,
+        );
+        return storage;
+      }
+      throw error;
+    }
+
+    try {
+      storage.removeItem(TEST_KEY);
+    } catch (cleanupError) {
+      console.warn('Unable to clean up storage test key', cleanupError);
+    }
+
     return storage;
   };
 
