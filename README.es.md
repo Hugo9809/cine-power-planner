@@ -211,7 +211,7 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 ### 🛠 Editor de la base de datos de dispositivos
 - Añade, edita o elimina dispositivos en todas las categorías.
 - Importa o exporta la base de datos completa como JSON.
-- Vuelve a la base de datos predeterminada de `assets/data/index.js`.
+- Vuelve a la base de datos predeterminada de `web/data/index.js`.
 
 ### 🌓 Modo oscuro
 - Actívalo con el botón de la luna junto al selector de idioma.
@@ -271,16 +271,16 @@ proyectos guardados.
 ## 🗂️ Estructura de archivos
 ```bash
 index.html                 # Maquetación principal en HTML
-assets/css/style.css       # Estilos y diseño base
-assets/css/overview.css    # Estilos de la vista de resumen
-assets/css/overview-print.css # Ajustes de impresión para la vista general
-assets/js/script.js        # Lógica de la aplicación
-assets/js/storage.js       # Utilidades para LocalStorage
-assets/js/static-theme.js  # Lógica de tema compartida para las páginas legales
-assets/data/index.js       # Lista predeterminada de dispositivos
-assets/data/devices/       # Catálogos de dispositivos por categoría
-assets/data/schema.json    # Esquema generado para validaciones
-assets/vendor/             # Bibliotecas de terceros incluidas
+web/styles/style.css       # Estilos y diseño base
+web/styles/overview.css    # Estilos de la vista de resumen
+web/styles/overview-print.css # Ajustes de impresión para la vista general
+web/scripts/script.js        # Lógica de la aplicación
+web/scripts/storage.js       # Utilidades para LocalStorage
+web/scripts/static-theme.js  # Lógica de tema compartida para las páginas legales
+web/data/index.js       # Lista predeterminada de dispositivos
+web/data/devices/       # Catálogos de dispositivos por categoría
+web/data/schema.json    # Esquema generado para validaciones
+web/vendor/             # Bibliotecas de terceros incluidas
 legal/                     # Páginas legales sin conexión
 tools/                     # Scripts de mantenimiento de datos
 tests/                     # Suite de pruebas de Jest

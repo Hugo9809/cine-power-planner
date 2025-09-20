@@ -114,7 +114,7 @@ try {
 } catch {
   deviceSchema = cachedDeviceSchema;
   if (typeof fetch === 'function') {
-    fetch('assets/data/schema.json')
+    fetch('web/data/schema.json')
       .then(r => r.json())
       .then(data => {
         deviceSchema = data;
@@ -3959,11 +3959,11 @@ const HORSE_ICON_SVG = `
 `.trim();
 
 const PINK_MODE_ICON_FILES = Object.freeze([
-  'assets/illustrations/unicorns/unicorn.svg',
-  'assets/illustrations/unicorns/unicorn-2.svg',
-  'assets/illustrations/unicorns/celebrate.svg',
-  'assets/illustrations/unicorns/sunglasses.svg',
-  'assets/illustrations/unicorns/toy.svg'
+  'web/illustrations/unicorns/unicorn.svg',
+  'web/illustrations/unicorns/unicorn-2.svg',
+  'web/illustrations/unicorns/celebrate.svg',
+  'web/illustrations/unicorns/sunglasses.svg',
+  'web/illustrations/unicorns/toy.svg'
 ]);
 
 function createPinkModeIconImageMarkup(path) {
@@ -3979,22 +3979,22 @@ const PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(
 );
 
 const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-  'assets/animations/cat.json',
-  'assets/animations/cup.json',
-  'assets/animations/cupcake.json',
-  'assets/animations/flamingo.json',
-  'assets/animations/float.json',
-  'assets/animations/float-2.json',
-  'assets/animations/fox.json',
-  'assets/animations/heart.json',
-  'assets/animations/horn.json',
-  'assets/animations/invitation.json',
-  'assets/animations/mask.json',
-  'assets/animations/rainbow.json',
-  'assets/animations/rocking-horse.json',
-  'assets/animations/slippers.json',
-  'assets/animations/sunglasses.json',
-  'assets/animations/unicorn.json'
+  'web/animations/cat.json',
+  'web/animations/cup.json',
+  'web/animations/cupcake.json',
+  'web/animations/flamingo.json',
+  'web/animations/float.json',
+  'web/animations/float-2.json',
+  'web/animations/fox.json',
+  'web/animations/heart.json',
+  'web/animations/horn.json',
+  'web/animations/invitation.json',
+  'web/animations/mask.json',
+  'web/animations/rainbow.json',
+  'web/animations/rocking-horse.json',
+  'web/animations/slippers.json',
+  'web/animations/sunglasses.json',
+  'web/animations/unicorn.json'
 ]);
 
 const pinkModeIcons = {

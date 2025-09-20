@@ -19,7 +19,7 @@ const mockData = {
   }
 };
 
-jest.mock('../../assets/data', () => mockData);
+jest.mock('../../web/data', () => mockData);
 
 const { normalizeAll } = require('../../tools/normalizeData');
 

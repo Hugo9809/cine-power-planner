@@ -48,7 +48,7 @@ describe('static theme preferences', () => {
 
   const loadStaticTheme = () => {
     // Resolve the module relative to the repository root rather than the test file.
-    const staticThemePath = path.join(__dirname, '..', '..', 'assets/js/static-theme.js');
+    const staticThemePath = path.join(__dirname, '..', '..', 'web/scripts/static-theme.js');
     require(staticThemePath);
   };
 

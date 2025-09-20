@@ -2,7 +2,7 @@ const { getHtmlBody } = require('./domUtils');
 
 const translations = (() => {
   try {
-    return require('../../assets/js/translations.js');
+    return require('../../web/scripts/translations.js');
   } catch {
     return null;
   }
@@ -143,7 +143,7 @@ function setupScriptEnvironment(options = {}) {
 
   let utils;
   jest.isolateModules(() => {
-    utils = require('../../assets/js/script.js');
+    utils = require('../../web/scripts/script.js');
   });
 
   restoreReadyState(readyStateDescriptor);

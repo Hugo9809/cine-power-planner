@@ -213,7 +213,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 ### 🛠 Éditeur de la base d’appareils
 - Ajoutez, modifiez ou supprimez des appareils dans toutes les catégories.
 - Importez ou exportez la base complète au format JSON.
-- Revenez à la base par défaut issue de `assets/data/index.js`.
+- Revenez à la base par défaut issue de `web/data/index.js`.
 
 ### 🌓 Mode sombre
 - Activez-le via le bouton lune près du sélecteur de langue.
@@ -273,16 +273,16 @@ projets enregistrés.
 ## 🗂️ Structure des fichiers
 ```bash
 index.html                 # Mise en page HTML principale
-assets/css/style.css       # Styles et mise en page
-assets/css/overview.css    # Styles de l’aperçu imprimable
-assets/css/overview-print.css # Ajustements d’impression pour l’aperçu
-assets/js/script.js        # Logique applicative
-assets/js/storage.js       # Helpers LocalStorage
-assets/js/static-theme.js  # Logique de thème partagée pour les pages légales
-assets/data/index.js       # Liste d’appareils par défaut
-assets/data/devices/       # Catalogues d’appareils par catégorie
-assets/data/schema.json    # Schéma généré pour les sélecteurs
-assets/vendor/             # Bibliothèques tierces incluses
+web/styles/style.css       # Styles et mise en page
+web/styles/overview.css    # Styles de l’aperçu imprimable
+web/styles/overview-print.css # Ajustements d’impression pour l’aperçu
+web/scripts/script.js        # Logique applicative
+web/scripts/storage.js       # Helpers LocalStorage
+web/scripts/static-theme.js  # Logique de thème partagée pour les pages légales
+web/data/index.js       # Liste d’appareils par défaut
+web/data/devices/       # Catalogues d’appareils par catégorie
+web/data/schema.json    # Schéma généré pour les sélecteurs
+web/vendor/             # Bibliothèques tierces incluses
 legal/                     # Pages légales hors ligne
 tools/                     # Scripts de maintenance des données
 tests/                     # Suite de tests Jest

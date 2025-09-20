@@ -210,7 +210,7 @@ Il generatore converte le tue scelte in una lista di carico categorizzata:
 ### 🛠 Editor del database dispositivi
 - Aggiungi, modifica o elimina dispositivi in tutte le categorie.
 - Importa o esporta l’intero database in formato JSON.
-- Ripristina il database predefinito da `assets/data/index.js`.
+- Ripristina il database predefinito da `web/data/index.js`.
 
 ### 🌓 Modalità scura
 - Attivala con il pulsante a forma di luna accanto al selettore della lingua.
@@ -269,16 +269,16 @@ L’intestazione mostra un badge offline non appena cade la connessione, e l’a
 ## 🗂️ Struttura dei file
 ```bash
 index.html                 # Layout HTML principale
-assets/css/style.css       # Stili e layout
-assets/css/overview.css    # Stili della panoramica stampabile
-assets/css/overview-print.css # Regole di stampa per la panoramica
-assets/js/script.js        # Logica dell’applicazione
-assets/js/storage.js       # Helper per LocalStorage
-assets/js/static-theme.js  # Logica di tema condivisa per le pagine legali
-assets/data/index.js       # Elenco dispositivi predefinito
-assets/data/devices/       # Cataloghi dei dispositivi per categoria
-assets/data/schema.json    # Schema generato per i selettori
-assets/vendor/             # Librerie di terze parti incluse
+web/styles/style.css       # Stili e layout
+web/styles/overview.css    # Stili della panoramica stampabile
+web/styles/overview-print.css # Regole di stampa per la panoramica
+web/scripts/script.js        # Logica dell’applicazione
+web/scripts/storage.js       # Helper per LocalStorage
+web/scripts/static-theme.js  # Logica di tema condivisa per le pagine legali
+web/data/index.js       # Elenco dispositivi predefinito
+web/data/devices/       # Cataloghi dei dispositivi per categoria
+web/data/schema.json    # Schema generato per i selettori
+web/vendor/             # Librerie di terze parti incluse
 legal/                     # Pagine legali offline
 tools/                     # Script di manutenzione dei dati
 tests/                     # Suite di test Jest

@@ -1,4 +1,4 @@
-const devices = require('../../assets/data');
+const devices = require('../../web/data');
 
 describe('cages data', () => {
   test('every cage specifies handle_extension_compatible', () => {

@@ -12,7 +12,7 @@ test('load shared project button aligns with input', () => {
   });
   const { window } = dom;
   const { document } = window;
-  const stylePath = path.join(__dirname, '../../assets/css/style.css');
+  const stylePath = path.join(__dirname, '../../web/styles/style.css');
   let styleContent = fs.readFileSync(stylePath, 'utf8');
   styleContent = styleContent.replace(/@import[^;]+;/, '');
   const styleEl = document.createElement('style');

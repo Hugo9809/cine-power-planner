@@ -30,8 +30,8 @@ const loadApp = () => {
   const bodyHtml = bodyMatch ? bodyMatch[1] : '';
   document.body.innerHTML = bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, '');
 
-  const { texts, categoryNames, gearItems } = require('../../assets/js/translations.js');
-  const devicesData = require('../../assets/data');
+  const { texts, categoryNames, gearItems } = require('../../web/scripts/translations.js');
+  const devicesData = require('../../web/data');
 
   window.texts = texts;
   global.texts = texts;
@@ -58,7 +58,7 @@ const loadApp = () => {
   global.clearAllData = jest.fn();
   global.showNotification = jest.fn();
 
-  return require('../../assets/js/script.js');
+  return require('../../web/scripts/script.js');
 };
 
 beforeEach(() => {

@@ -25,7 +25,7 @@ describe('requestPersistentStorage', () => {
   });
 
   test('resolves unsupported when StorageManager is unavailable', async () => {
-    const { requestPersistentStorage } = require('../../assets/js/storage');
+    const { requestPersistentStorage } = require('../../web/scripts/storage');
     const result = await requestPersistentStorage();
     expect(result).toEqual(
       expect.objectContaining({
@@ -45,7 +45,7 @@ describe('requestPersistentStorage', () => {
         persist,
       },
     };
-    const { requestPersistentStorage } = require('../../assets/js/storage');
+    const { requestPersistentStorage } = require('../../web/scripts/storage');
     const result = await requestPersistentStorage();
     expect(persist).not.toHaveBeenCalled();
     expect(result).toEqual(
@@ -66,7 +66,7 @@ describe('requestPersistentStorage', () => {
         persist,
       },
     };
-    const { requestPersistentStorage } = require('../../assets/js/storage');
+    const { requestPersistentStorage } = require('../../web/scripts/storage');
     const first = await requestPersistentStorage();
     expect(persist).toHaveBeenCalledTimes(1);
     expect(first).toEqual(
@@ -91,7 +91,7 @@ describe('requestPersistentStorage', () => {
         persist,
       },
     };
-    const { requestPersistentStorage } = require('../../assets/js/storage');
+    const { requestPersistentStorage } = require('../../web/scripts/storage');
     const result = await requestPersistentStorage();
     expect(result.supported).toBe(true);
     expect(result.granted).toBe(false);

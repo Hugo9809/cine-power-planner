@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const devices = require('../assets/data');
+const devices = require('../web/data');
 
 function isDeviceObject(obj) {
   return Object.values(obj).some((v) => v === null || typeof v !== 'object' || Array.isArray(v));
@@ -54,15 +54,15 @@ if (require.main === module) {
       [
         'Usage: node generateSchema.js [options]',
         '',
-        'Generates assets/data/schema.json from assets/data/index.js.',
+        'Generates web/data/schema.json from web/data/index.js.',
         '',
         'The output lists attributes found in each device category so editors and tests can validate new entries.',
-        'It writes the schema to assets/data/schema.json without modifying assets/data/index.js.',
+        'It writes the schema to web/data/schema.json without modifying web/data/index.js.',
         '',
         'Recommended workflow:',
-        '  1. Run `npm run normalize` followed by `npm run unify-ports` to update assets/data/index.js.',
+        '  1. Run `npm run normalize` followed by `npm run unify-ports` to update web/data/index.js.',
         '  2. Execute this script (`npm run generate-schema`) to keep the schema synchronized.',
-        '  3. Commit assets/data/schema.json alongside assets/data/index.js so CI and editors share the same expectations.',
+        '  3. Commit web/data/schema.json alongside web/data/index.js so CI and editors share the same expectations.',
         '',
         'Examples:',
         '  npm run generate-schema',
@@ -76,8 +76,8 @@ if (require.main === module) {
     process.exit(0);
   }
   const schema = buildSchema(devices);
-  fs.writeFileSync(path.join(__dirname, '../assets/data/schema.json'), JSON.stringify(schema, null, 2));
-  console.log('assets/data/schema.json generated');
+  fs.writeFileSync(path.join(__dirname, '../web/data/schema.json'), JSON.stringify(schema, null, 2));
+  console.log('web/data/schema.json generated');
 } else {
   module.exports = { buildSchema, isDeviceObject, isDeviceMap };
 }
