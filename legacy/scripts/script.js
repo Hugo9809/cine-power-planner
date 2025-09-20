@@ -17367,6 +17367,8 @@ function generateGearListHtml() {
       riggingAcc.push('D-Tap Splitter');
       riggingAcc.push('D-Tap Extension 50 cm (Steadicam/Trinity)');
     }
+    riggingAcc.push('D-Tap Extension 50 cm (Spare)');
+    riggingAcc.push('D-Tap Extension 50 cm (Spare)');
   }
   var handleSelections = info.cameraHandle ? info.cameraHandle.split(',').map(function (r) {
     return r.trim();
@@ -17701,7 +17703,17 @@ function generateGearListHtml() {
               count = _ref105[1];
             return sum + count;
           }, 0);
-          if (_spareCount2 > 0) ctxParts.push("".concat(_spareCount2, "x Spare"));
+          if (_spareCount2 > 0) {
+            ctxParts.push("".concat(_spareCount2, "x Spare"));
+          } else if (base === 'D-Tap Extension 50 cm') {
+            var usedCount = _realEntries2.reduce(function (sum, _ref106) {
+              var _ref107 = _slicedToArray(_ref106, 2),
+                count = _ref107[1];
+              return sum + count;
+            }, 0);
+            var remaining = total - usedCount;
+            if (remaining > 0) ctxParts.push("".concat(remaining, "x Spare"));
+          }
         }
       }
       var ctxStr = ctxParts.length ? " (".concat(ctxParts.join(', '), ")") : '';
