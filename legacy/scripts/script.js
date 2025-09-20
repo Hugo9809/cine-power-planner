@@ -4594,7 +4594,7 @@ var PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
 var projectFieldIcons = {
   productionCompany: PRODUCTION_COMPANY_ICON,
   rentalHouse: RENTAL_HOUSE_ICON,
-  crew: iconGlyph("\uE638", ICON_FONT_KEYS.UICONS),
+  crew: iconGlyph("\uF404", ICON_FONT_KEYS.UICONS),
   prepDays: iconGlyph("\uE312", ICON_FONT_KEYS.UICONS),
   shootingDays: iconGlyph("\uE311", ICON_FONT_KEYS.UICONS),
   deliveryResolution: iconGlyph("\uE5BA", ICON_FONT_KEYS.UICONS),
