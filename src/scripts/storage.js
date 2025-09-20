@@ -136,6 +136,7 @@ const PRIMARY_STORAGE_KEYS = [
   AUTO_GEAR_BACKUPS_STORAGE_KEY,
   AUTO_GEAR_PRESETS_STORAGE_KEY,
   AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
+  AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
   AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
 ];
 
@@ -831,6 +832,7 @@ function migrateLegacyStorageKeys() {
     { legacy: `${legacyPrefix}autoGearSeeded`, modern: AUTO_GEAR_SEEDED_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearPresets`, modern: AUTO_GEAR_PRESETS_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearActivePreset`, modern: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearAutoPreset`, modern: AUTO_GEAR_AUTO_PRESET_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearShowBackups`, modern: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY },
     { legacy: `${legacyPrefix}customFonts`, modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT, updateFontKey: true },
   ];
@@ -2198,6 +2200,7 @@ function saveAutoGearActivePresetId(presetId) {
 }
 
 function loadAutoGearAutoPresetId() {
+  applyLegacyStorageMigrations();
   const safeStorage = getSafeLocalStorage();
   if (!safeStorage) {
     return '';
