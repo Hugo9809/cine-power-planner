@@ -65,6 +65,9 @@ const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 
+const BACKUP_SUFFIX = '__backup';
+const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
+
 const validDeviceData = {
   cameras: {},
   monitors: {},
@@ -203,6 +206,17 @@ describe('device data storage', () => {
     localStorage.setItem(DEVICE_KEY, JSON.stringify(5));
     expect(loadDeviceData()).toBeNull();
   });
+
+  test('loadDeviceData restores data from backup when primary payload is corrupted', () => {
+    saveDeviceData(validDeviceData);
+    const backupKey = backupKeyFor(DEVICE_KEY);
+    expect(localStorage.getItem(backupKey)).toBe(JSON.stringify(validDeviceData));
+
+    localStorage.setItem(DEVICE_KEY, '{invalid-json');
+
+    expect(loadDeviceData()).toEqual(validDeviceData);
+    expect(localStorage.getItem(DEVICE_KEY)).toBe(JSON.stringify(validDeviceData));
+  });
 });
 
 describe('setup storage', () => {
@@ -248,6 +262,17 @@ describe('setup storage', () => {
   test('loadSetups returns empty object for primitive data', () => {
     localStorage.setItem(SETUP_KEY, JSON.stringify(5));
     expect(loadSetups()).toEqual({});
+  });
+
+  test('loadSetups recovers from backup when stored data is corrupted', () => {
+    const setups = { A: { foo: 1 } };
+    saveSetups(setups);
+    expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBe(JSON.stringify(setups));
+
+    localStorage.setItem(SETUP_KEY, '{bad-json');
+
+    expect(loadSetups()).toEqual(setups);
+    expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual(setups);
   });
 
   test('loadSetups removes entries that are not plain objects', () => {
@@ -497,7 +522,8 @@ describe('automatic gear storage', () => {
     expect(loadAutoGearBackups()).toEqual(backups);
 
     localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify('oops'));
-    expect(loadAutoGearBackups()).toEqual([]);
+    expect(loadAutoGearBackups()).toEqual(backups);
+    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY))).toEqual(backups);
   });
 
   test('saveAutoGearSeedFlag toggles the persisted flag', () => {
@@ -548,6 +574,16 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
+
+    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(FEEDBACK_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(PROJECT_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(SESSION_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(FAVORITES_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_RULES_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_BACKUPS_KEY))).toBeNull();
+    expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_PRESETS_KEY))).toBeNull();
   });
 });
 

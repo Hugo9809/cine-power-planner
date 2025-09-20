@@ -17,6 +17,12 @@ const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 
+const STORAGE_BACKUP_SUFFIX = '__backup';
+const RAW_STORAGE_BACKUP_KEYS = new Set([
+  CUSTOM_FONT_STORAGE_KEY,
+  CUSTOM_LOGO_STORAGE_KEY,
+]);
+
 const DEVICE_COLLECTION_KEYS = [
   'cameras',
   'monitors',
@@ -222,22 +228,130 @@ function alertStorageError() {
 }
 
 // Generic helpers for storage access
-function loadJSONFromStorage(storage, key, errorMessage, defaultValue = null) {
+function loadJSONFromStorage(
+  storage,
+  key,
+  errorMessage,
+  defaultValue = null,
+  options = {},
+) {
   if (!storage) return defaultValue;
+
+  const {
+    disableBackup = false,
+    backupKey,
+    validate,
+    restoreIfMissing = false,
+  } = options || {};
+
+  const fallbackKey = typeof backupKey === 'string' && backupKey
+    ? backupKey
+    : `${key}${STORAGE_BACKUP_SUFFIX}`;
+  const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
+
+  let shouldAlert = false;
+
+  const parseRawValue = (raw, label) => {
+    if (raw === null || raw === undefined) {
+      return { ok: false, reason: 'missing' };
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      if (typeof validate === 'function' && !validate(parsed)) {
+        console.warn(`${errorMessage} Invalid data${label ? ` (${label})` : ''}.`);
+        shouldAlert = true;
+        return { ok: false, reason: 'invalid' };
+      }
+      return { ok: true, value: parsed, raw };
+    } catch (err) {
+      console.error(`${errorMessage}${label ? ` (${label})` : ''}`, err);
+      shouldAlert = true;
+      return { ok: false, reason: 'error' };
+    }
+  };
+
+  let primaryRaw = null;
   try {
-    const raw = storage.getItem(key);
-    return raw ? JSON.parse(raw) : defaultValue;
-  } catch (e) {
-    console.error(errorMessage, e);
-    alertStorageError();
-    return defaultValue;
+    primaryRaw = storage.getItem(key);
+  } catch (err) {
+    console.error(`${errorMessage} (read)`, err);
+    shouldAlert = true;
   }
+
+  const primary = parseRawValue(primaryRaw, '');
+  if (primary.ok) {
+    return primary.value;
+  }
+
+  const shouldAttemptBackup = useBackup && (shouldAlert || restoreIfMissing);
+
+  if (shouldAttemptBackup) {
+    let backupRaw = null;
+    try {
+      backupRaw = storage.getItem(fallbackKey);
+    } catch (err) {
+      console.error(`${errorMessage} (backup read)`, err);
+      shouldAlert = true;
+    }
+
+    const backup = parseRawValue(backupRaw, 'backup');
+    if (backup.ok) {
+      if (shouldAlert) {
+        console.warn(`Recovered ${key} from backup copy.`);
+      }
+      if (backup.raw !== null && backup.raw !== undefined) {
+        try {
+          storage.setItem(key, backup.raw);
+        } catch (restoreError) {
+          console.warn(`Unable to restore primary copy for ${key} from backup`, restoreError);
+        }
+      }
+      return backup.value;
+    }
+  }
+
+  if (shouldAlert) {
+    alertStorageError();
+  }
+
+  return defaultValue;
 }
 
-function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
+function saveJSONToStorage(
+  storage,
+  key,
+  value,
+  errorMessage,
+  successMessage,
+  options = {},
+) {
   if (!storage) return;
+
+  const { disableBackup = false, backupKey } = options || {};
+  const fallbackKey = typeof backupKey === 'string' && backupKey
+    ? backupKey
+    : `${key}${STORAGE_BACKUP_SUFFIX}`;
+  const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
+
+  let serialized;
   try {
-    storage.setItem(key, JSON.stringify(value));
+    serialized = JSON.stringify(value);
+  } catch (serializationError) {
+    console.error(errorMessage, serializationError);
+    alertStorageError();
+    return;
+  }
+
+  try {
+    storage.setItem(key, serialized);
+    if (useBackup) {
+      try {
+        storage.setItem(fallbackKey, serialized);
+      } catch (backupError) {
+        console.warn(`Unable to update backup copy for ${key}`, backupError);
+        alertStorageError();
+      }
+    }
     if (successMessage) {
       console.log(successMessage);
     }
@@ -248,13 +362,29 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
 }
 
 // Generic helper to delete a key from storage with consistent error handling
-function deleteFromStorage(storage, key, errorMessage) {
+function deleteFromStorage(storage, key, errorMessage, options = {}) {
   if (!storage) return;
+
+  const { disableBackup = false, backupKey } = options || {};
+  const fallbackKey = typeof backupKey === 'string' && backupKey
+    ? backupKey
+    : `${key}${STORAGE_BACKUP_SUFFIX}`;
+  const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
+
   try {
     storage.removeItem(key);
   } catch (e) {
     console.error(errorMessage, e);
     alertStorageError();
+  }
+
+  if (useBackup) {
+    try {
+      storage.removeItem(fallbackKey);
+    } catch (backupError) {
+      console.error(`${errorMessage} (backup)`, backupError);
+      alertStorageError();
+    }
   }
 }
 
@@ -293,12 +423,13 @@ function loadWithMigration(
   primaryLoadMsg,
   fallbackLoadMsg,
   saveMsg,
-  deleteMsg
+  deleteMsg,
+  loadOptions,
 ) {
-  const value = loadJSONFromStorage(primary, key, primaryLoadMsg);
+  const value = loadJSONFromStorage(primary, key, primaryLoadMsg, null, loadOptions);
   if (value !== null) return value;
   if (!fallback) return null;
-  const migrated = loadJSONFromStorage(fallback, key, fallbackLoadMsg);
+  const migrated = loadJSONFromStorage(fallback, key, fallbackLoadMsg, null, loadOptions);
   if (migrated !== null) {
     saveJSONToStorage(primary, key, migrated, saveMsg);
     deleteFromStorage(fallback, key, deleteMsg);
@@ -341,6 +472,7 @@ function loadSessionState() {
     "Error loading session state from sessionStorage:",
     "Error saving session state to localStorage:",
     "Error deleting session state from sessionStorage:",
+    { validate: (value) => value === null || isPlainObject(value) },
   );
 }
 
@@ -359,6 +491,8 @@ function loadDeviceData() {
     SAFE_LOCAL_STORAGE,
     DEVICE_STORAGE_KEY,
     "Error loading device data from localStorage:",
+    null,
+    { validate: (value) => value === null || isPlainObject(value) },
   );
   if (!isPlainObject(parsedData)) {
     return null;
@@ -468,6 +602,11 @@ function loadSetups() {
     SAFE_LOCAL_STORAGE,
     SETUP_STORAGE_KEY,
     "Error loading setups from localStorage:",
+    null,
+    {
+      validate: (value) =>
+        value === null || Array.isArray(value) || isPlainObject(value),
+    },
   );
   const { data: setups, changed } = normalizeSetups(parsedData);
   if (changed && SAFE_LOCAL_STORAGE) {
@@ -614,6 +753,13 @@ function readAllProjectsFromStorage() {
     PROJECT_STORAGE_KEY,
     "Error loading project from localStorage:",
     null,
+    {
+      validate: (value) =>
+        value === null
+        || typeof value === "string"
+        || Array.isArray(value)
+        || isPlainObject(value),
+    },
   );
   const projects = {};
   let changed = false;
@@ -818,6 +964,7 @@ function loadFavorites() {
     FAVORITES_STORAGE_KEY,
     "Error loading favorites from localStorage:",
     {},
+    { validate: (value) => value === null || isPlainObject(value) },
   );
   return isPlainObject(parsed) ? parsed : {};
 }
@@ -838,6 +985,8 @@ function loadFeedback() {
     SAFE_LOCAL_STORAGE,
     FEEDBACK_STORAGE_KEY,
     "Error loading feedback from localStorage:",
+    null,
+    { validate: (value) => value === null || isPlainObject(value) },
   );
   if (isPlainObject(parsed)) {
     return parsed;
@@ -862,6 +1011,7 @@ function loadAutoGearRules() {
     AUTO_GEAR_RULES_STORAGE_KEY,
     "Error loading automatic gear rules from localStorage:",
     [],
+    { validate: (value) => value === null || Array.isArray(value) },
   );
   return Array.isArray(parsed) ? parsed : [];
 }
@@ -882,6 +1032,7 @@ function loadAutoGearBackups() {
     AUTO_GEAR_BACKUPS_STORAGE_KEY,
     "Error loading automatic gear rule backups from localStorage:",
     [],
+    { validate: (value) => value === null || Array.isArray(value) },
   );
   return Array.isArray(parsed) ? parsed : [];
 }
@@ -919,6 +1070,7 @@ function loadAutoGearPresets() {
     AUTO_GEAR_PRESETS_STORAGE_KEY,
     "Error loading automatic gear presets from localStorage:",
     [],
+    { validate: (value) => value === null || Array.isArray(value) },
   );
   return Array.isArray(presets) ? presets : [];
 }
@@ -1009,7 +1161,20 @@ function clearAllData() {
     if (typeof localStorage === 'undefined') return null;
     try {
       const value = localStorage.getItem(key);
-      return value === null || value === undefined ? null : String(value);
+      if (value === null || value === undefined) {
+        if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
+          try {
+            const backupValue = localStorage.getItem(`${key}${STORAGE_BACKUP_SUFFIX}`);
+            if (backupValue !== null && backupValue !== undefined) {
+              return String(backupValue);
+            }
+          } catch (backupError) {
+            console.warn('Unable to read backup key for export', key, backupError);
+          }
+        }
+        return null;
+      }
+      return String(value);
     } catch (error) {
       console.warn('Unable to read localStorage key for backup', key, error);
       return null;
@@ -1133,14 +1298,35 @@ function clearAllData() {
 
   function safeSetLocalStorage(key, value) {
     if (typeof localStorage === 'undefined') return;
+    const useBackup = RAW_STORAGE_BACKUP_KEYS.has(key);
+    const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
     try {
       if (value === null || value === undefined) {
         localStorage.removeItem(key);
+        if (useBackup) {
+          try {
+            localStorage.removeItem(backupKey);
+          } catch (backupError) {
+            console.warn('Unable to remove backup key during import', backupKey, backupError);
+          }
+        }
       } else {
-        localStorage.setItem(key, String(value));
+        const storedValue = String(value);
+        localStorage.setItem(key, storedValue);
+        if (useBackup) {
+          try {
+            localStorage.setItem(backupKey, storedValue);
+          } catch (backupError) {
+            console.warn('Unable to update backup key during import', backupKey, backupError);
+            alertStorageError();
+          }
+        }
       }
     } catch (error) {
       console.warn('Unable to persist localStorage key during import', key, error);
+      if (useBackup) {
+        alertStorageError();
+      }
     }
   }
 
