@@ -20874,18 +20874,98 @@ if (factoryResetButton) {
 
 async function clearCachesAndReload() {
   try {
-    if (typeof navigator !== "undefined" && navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(reg => reg.unregister()));
+    if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
+      const registrations = [];
+      const { serviceWorker } = navigator;
+      try {
+        if (typeof serviceWorker.getRegistrations === 'function') {
+          const regs = await serviceWorker.getRegistrations();
+          if (Array.isArray(regs)) {
+            regs.forEach(reg => registrations.push(reg));
+          }
+        } else if (typeof serviceWorker.getRegistration === 'function') {
+          const reg = await serviceWorker.getRegistration();
+          if (reg) {
+            registrations.push(reg);
+          }
+        } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
+          try {
+            const readyReg = await serviceWorker.ready;
+            if (readyReg) {
+              registrations.push(readyReg);
+            }
+          } catch (readyError) {
+            console.warn('Failed to await active service worker', readyError);
+          }
+        }
+      } catch (queryError) {
+        console.warn('Failed to query service worker registrations', queryError);
+      }
+
+      if (registrations.length) {
+        await Promise.all(registrations.map(reg => {
+          if (!reg || typeof reg.unregister !== 'function') {
+            return Promise.resolve();
+          }
+          return reg.unregister().catch(unregisterError => {
+            console.warn('Service worker unregister failed', unregisterError);
+          });
+        }));
+      }
     }
-    if (typeof caches !== "undefined") {
+
+    if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {
       const keys = await caches.keys();
-      await Promise.all(keys.map(key => caches.delete(key)));
+      await Promise.all(keys.map(key => {
+        if (!key || typeof caches.delete !== 'function') {
+          return Promise.resolve(false);
+        }
+        return caches.delete(key).catch(cacheError => {
+          console.warn('Failed to delete cache', key, cacheError);
+          return false;
+        });
+      }));
     }
-  } catch (e) {
-    console.warn("Cache clear failed", e);
+  } catch (error) {
+    console.warn('Cache clear failed', error);
   } finally {
-    window.location.reload(true);
+    try {
+      if (typeof window !== 'undefined' && window.location) {
+        const { location } = window;
+        const hasReplace = location && typeof location.replace === 'function';
+        const hasReload = location && typeof location.reload === 'function';
+        if (hasReplace) {
+          const paramName = 'forceReload';
+          const timestamp = Date.now().toString(36);
+          let href = location.href || '';
+          let hash = '';
+          const hashIndex = href.indexOf('#');
+          if (hashIndex !== -1) {
+            hash = href.slice(hashIndex);
+            href = href.slice(0, hashIndex);
+          }
+          const pattern = new RegExp('([?&])' + paramName + '=[^&]*');
+          const replacement = '$1' + paramName + '=' + timestamp;
+          if (pattern.test(href)) {
+            href = href.replace(pattern, replacement);
+          } else if (href.indexOf('?') !== -1) {
+            href += '&' + paramName + '=' + timestamp;
+          } else if (href) {
+            href += '?' + paramName + '=' + timestamp;
+          }
+          location.replace(href + hash);
+          return;
+        }
+        if (hasReload) {
+          location.reload();
+        }
+      }
+    } catch (reloadError) {
+      console.warn('Forced reload failed', reloadError);
+      if (typeof window !== 'undefined' && window.location && typeof window.location.reload === 'function') {
+        window.location.reload();
+      }
+    }
   }
 }
 
