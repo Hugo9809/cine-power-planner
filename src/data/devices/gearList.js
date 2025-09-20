@@ -2838,10 +2838,14 @@ const gear = {
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.38,
+          "weight_g": 1000,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 50mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2854,17 +2858,22 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical",
           "minFocusMeters": 0.6,
-          "weight_g": 1000
+          "weight_g": 1000,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 65mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.65,
+          "weight_g": 1100,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 85mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2885,16 +2894,35 @@ const gear = {
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 1200,
+          "lengthMm": 91
+        },
+        "ARRI/ZEISS Ultra Prime 135mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 1.5,
+          "weight_g": 1600,
+          "lengthMm": 119
         },
         "ARRI/ZEISS Ultra Prime 180mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 114,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,

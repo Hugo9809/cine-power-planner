@@ -2293,10 +2293,14 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.38,
+          "weight_g": 1000,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 50mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2309,17 +2313,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical",
           "minFocusMeters": 0.6,
-          "weight_g": 1000
+          "weight_g": 1000,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 65mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.65,
+          "weight_g": 1100,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 85mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2340,10 +2349,28 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1,
+          "weight_g": 1200,
+          "lengthMm": 91
+        },
+        "ARRI/ZEISS Ultra Prime 135mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 1.5,
+          "weight_g": 1600,
+          "lengthMm": 119
         },
         "ZEISS Master Prime 12mm T1.3": {
           "brand": "ZEISS/ARRI",
