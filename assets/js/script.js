@@ -110,11 +110,11 @@ const cachedDeviceSchema = loadCachedDeviceSchema();
 
 let deviceSchema;
 try {
-  deviceSchema = require('./schema.json');
+  deviceSchema = require('../data/schema.json');
 } catch {
   deviceSchema = cachedDeviceSchema;
   if (typeof fetch === 'function') {
-    fetch('schema.json')
+    fetch('assets/data/schema.json')
       .then(r => r.json())
       .then(data => {
         deviceSchema = data;
@@ -137,24 +137,24 @@ try {
 
 const LEGAL_LINKS = {
   de: {
-    imprint: "impressum.html",
-    privacy: "datenschutz.html",
+    imprint: "legal/impressum.html",
+    privacy: "legal/datenschutz.html",
   },
   en: {
-    imprint: "impressum-en.html",
-    privacy: "datenschutz-en.html",
+    imprint: "legal/impressum-en.html",
+    privacy: "legal/datenschutz-en.html",
   },
   es: {
-    imprint: "impressum-es.html",
-    privacy: "datenschutz-es.html",
+    imprint: "legal/impressum-es.html",
+    privacy: "legal/datenschutz-es.html",
   },
   fr: {
-    imprint: "impressum-fr.html",
-    privacy: "datenschutz-fr.html",
+    imprint: "legal/impressum-fr.html",
+    privacy: "legal/datenschutz-fr.html",
   },
   it: {
-    imprint: "impressum-it.html",
-    privacy: "datenschutz-it.html",
+    imprint: "legal/impressum-it.html",
+    privacy: "legal/datenschutz-it.html",
   },
 };
 
@@ -3959,11 +3959,11 @@ const HORSE_ICON_SVG = `
 `.trim();
 
 const PINK_MODE_ICON_FILES = Object.freeze([
-  'unicorns/unicorn.svg',
-  'unicorns/unicorn-2.svg',
-  'unicorns/celebrate.svg',
-  'unicorns/sunglasses.svg',
-  'unicorns/toy.svg'
+  'assets/illustrations/unicorns/unicorn.svg',
+  'assets/illustrations/unicorns/unicorn-2.svg',
+  'assets/illustrations/unicorns/celebrate.svg',
+  'assets/illustrations/unicorns/sunglasses.svg',
+  'assets/illustrations/unicorns/toy.svg'
 ]);
 
 function createPinkModeIconImageMarkup(path) {
@@ -3979,22 +3979,22 @@ const PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(
 );
 
 const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-  'animated icons/cat.json',
-  'animated icons/cup.json',
-  'animated icons/cupcake.json',
-  'animated icons/flamingo.json',
-  'animated icons/float.json',
-  'animated icons/float-2.json',
-  'animated icons/fox.json',
-  'animated icons/heart.json',
-  'animated icons/horn.json',
-  'animated icons/invitation.json',
-  'animated icons/mask.json',
-  'animated icons/rainbow.json',
-  'animated icons/rocking-horse.json',
-  'animated icons/slippers.json',
-  'animated icons/sunglasses.json',
-  'animated icons/unicorn.json'
+  'assets/animations/cat.json',
+  'assets/animations/cup.json',
+  'assets/animations/cupcake.json',
+  'assets/animations/flamingo.json',
+  'assets/animations/float.json',
+  'assets/animations/float-2.json',
+  'assets/animations/fox.json',
+  'assets/animations/heart.json',
+  'assets/animations/horn.json',
+  'assets/animations/invitation.json',
+  'assets/animations/mask.json',
+  'assets/animations/rainbow.json',
+  'assets/animations/rocking-horse.json',
+  'assets/animations/slippers.json',
+  'assets/animations/sunglasses.json',
+  'assets/animations/unicorn.json'
 ]);
 
 const pinkModeIcons = {

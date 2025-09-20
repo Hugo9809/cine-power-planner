@@ -201,7 +201,7 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 ### 🛠 Geräte-Datenbank-Editor
 - Geräte in allen Kategorien hinzufügen, bearbeiten oder löschen.
 - Gesamte Datenbank als JSON importieren oder exportieren.
-- Zur Standarddatenbank aus `data.js` zurückkehren.
+- Zur Standarddatenbank aus `assets/data/index.js` zurückkehren.
 
 ### 🌓 Dunkelmodus
 - Über die Mondschaltfläche neben dem Sprachmenü umschalten.
@@ -259,17 +259,20 @@ anzutasten.
 
 ## 🗂️ Verzeichnisstruktur
 ```bash
-index.html       # Zentrales HTML-Layout
-style.css        # Styles und Layout
-script.js        # Anwendungslogik
-data.js          # Standard-Geräteliste
-storage.js       # Hilfsfunktionen für LocalStorage
-README.*.md      # Dokumentation in mehreren Sprachen
-checkConsistency.js  # Prüft Pflichtfelder in den Gerätedaten
-normalizeData.js     # Bereinigt Einträge und vereinheitlicht Portnamen
-generateSchema.js    # Baut schema.json aus data.js neu
-unifyPorts.js        # Vereinheitlicht ältere Portbezeichnungen
-tests/               # Jest-Test-Suite
+index.html                 # Zentrales HTML-Layout
+assets/css/style.css       # Styles und Layout
+assets/css/overview.css    # Gestaltung der Übersicht
+assets/css/overview-print.css # Druck-Styles für die Übersicht
+assets/js/script.js        # Anwendungslogik
+assets/js/storage.js       # Hilfsfunktionen für LocalStorage
+assets/js/static-theme.js  # Gemeinsame Theme-Logik für die Rechtstexte
+assets/data/index.js       # Standard-Geräteliste
+assets/data/devices/       # Gerätekataloge nach Kategorie
+assets/data/schema.json    # Generiertes Schema für Auswahllisten
+assets/vendor/             # Gebündelte Drittanbieter-Bibliotheken
+legal/                     # Offline-Rechtstexte
+tools/                     # Skripte zur Datenpflege
+tests/                     # Jest-Test-Suite
 ```
 Schriftarten werden lokal über `fonts.css` eingebunden; sind die Assets einmal im Cache, funktioniert die Anwendung komplett offline.
 

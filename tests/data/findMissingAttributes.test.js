@@ -1,4 +1,4 @@
-const { findMissingAttributes, listCategories, buildAttributeMap, formatReport } = require('../../findMissingAttributes');
+const { findMissingAttributes, listCategories, buildAttributeMap, formatReport } = require('../../tools/findMissingAttributes');
 
 describe('findMissingAttributes utility', () => {
   const schema = {

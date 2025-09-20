@@ -8,7 +8,7 @@ const {
   cleanTypeName,
   cleanPort,
   splitOutside
-} = require('../../unifyPorts.js');
+} = require('../../tools/unifyPorts.js');
 
 describe('cleanVoltageRange', () => {
   it('removes spaces around hyphen', () => {

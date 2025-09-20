@@ -211,7 +211,7 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 ### 🛠 Editor de la base de datos de dispositivos
 - Añade, edita o elimina dispositivos en todas las categorías.
 - Importa o exporta la base de datos completa como JSON.
-- Vuelve a la base de datos predeterminada de `data.js`.
+- Vuelve a la base de datos predeterminada de `assets/data/index.js`.
 
 ### 🌓 Modo oscuro
 - Actívalo con el botón de la luna junto al selector de idioma.
@@ -270,17 +270,20 @@ proyectos guardados.
 
 ## 🗂️ Estructura de archivos
 ```bash
-index.html       # Maquetación principal en HTML
-style.css        # Estilos y diseño
-script.js        # Lógica de la aplicación
-data.js          # Lista predeterminada de dispositivos
-storage.js       # Utilidades para LocalStorage
-README.*.md      # Documentación en varios idiomas
-checkConsistency.js  # Verifica campos obligatorios en los datos de dispositivos
-normalizeData.js     # Limpia entradas y unifica nombres de conectores
-generateSchema.js    # Reconstruye schema.json a partir de data.js
-unifyPorts.js        # Armoniza nombres de puertos heredados
-tests/               # Suite de pruebas de Jest
+index.html                 # Maquetación principal en HTML
+assets/css/style.css       # Estilos y diseño base
+assets/css/overview.css    # Estilos de la vista de resumen
+assets/css/overview-print.css # Ajustes de impresión para la vista general
+assets/js/script.js        # Lógica de la aplicación
+assets/js/storage.js       # Utilidades para LocalStorage
+assets/js/static-theme.js  # Lógica de tema compartida para las páginas legales
+assets/data/index.js       # Lista predeterminada de dispositivos
+assets/data/devices/       # Catálogos de dispositivos por categoría
+assets/data/schema.json    # Esquema generado para validaciones
+assets/vendor/             # Bibliotecas de terceros incluidas
+legal/                     # Páginas legales sin conexión
+tools/                     # Scripts de mantenimiento de datos
+tests/                     # Suite de pruebas de Jest
 ```
 Las fuentes se incluyen localmente mediante `fonts.css`, así que una vez que los recursos están en caché la aplicación funciona completamente sin conexión.
 

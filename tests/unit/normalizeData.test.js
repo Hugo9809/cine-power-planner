@@ -19,9 +19,9 @@ const mockData = {
   }
 };
 
-jest.mock('../../data.js', () => mockData);
+jest.mock('../../assets/data', () => mockData);
 
-const { normalizeAll } = require('../../normalizeData');
+const { normalizeAll } = require('../../tools/normalizeData');
 
 beforeEach(() => {
   // reset to original mock data before each test

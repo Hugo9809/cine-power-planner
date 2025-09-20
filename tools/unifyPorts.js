@@ -1,5 +1,6 @@
 const fs = require('fs');
-let devices = require('./data.js');
+const path = require('path');
+let devices = require('../assets/data');
 
 // Caches for expensive normalization steps to avoid repeated regex work
 const typeNameCache = new Map();
@@ -331,7 +332,7 @@ if (require.main === module) {
       [
         'Usage: node unifyPorts.js [options]',
         '',
-        'Normalizes connector and port definitions in data.js and overwrites the file.',
+        'Normalizes connector and port definitions in assets/data/index.js and overwrites the file.',
         '',
         'Key actions:',
         '  - Converts legacy powerInput strings into structured power.input entries.',
@@ -344,7 +345,7 @@ if (require.main === module) {
         '  3. Regenerate schema.json afterwards with `npm run generate-schema`.',
         '  4. Re-run Jest data tests (`npm run test:data`) to confirm selector expectations still pass.',
         '',
-        'The script updates data.js in place. Review the diff and commit it together with schema changes.',
+        'The script updates assets/data/index.js in place. Review the diff and commit it together with schema changes.',
         '',
         'Examples:',
         '  npm run unify-ports',
@@ -368,7 +369,7 @@ if (require.main === module) {
   normalizeCollection(devices.fiz.distance, normalizeFiz);
   deepClean(devices);
   fs.writeFileSync(
-    'data.js',
+    path.join(__dirname, '../assets/data/index.js'),
     'let devices=' +
       JSON.stringify(devices, null, 2) +
       ';\nif (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n'
