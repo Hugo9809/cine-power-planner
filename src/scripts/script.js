@@ -6682,7 +6682,7 @@ function refreshAutoGearMatteboxOptions(selected) {
 
   const selectableOptions = Array.from(autoGearMatteboxSelect.options || []).filter(option => !option.disabled);
   const visibleCount = selectableOptions.length
-    ? Math.min(4, Math.max(selectableOptions.length, 3))
+    ? Math.min(6, Math.max(selectableOptions.length, 4))
     : 1;
   autoGearMatteboxSelect.size = visibleCount;
 }
