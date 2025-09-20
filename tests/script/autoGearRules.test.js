@@ -233,6 +233,9 @@ describe('applyAutoGearRulesToTableHtml', () => {
           label: 'Clamp-on defaults',
           scenarios: [],
           mattebox: ['Clamp On'],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: [],
           add: [
             {
               id: 'add-mattebox',
@@ -266,6 +269,187 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entries).toHaveLength(1);
     expect(entries[0].classList.contains('auto-gear-item')).toBe(true);
     expect(entries[0].textContent).toContain('1x');
+  });
+
+  test('applies camera handle-triggered rules when selections include all handles', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-handles',
+          label: 'Handle package',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: ['Hand Grips', 'Handle Extension'],
+          viewfinderExtension: [],
+          videoDistribution: [],
+          add: [
+            {
+              id: 'add-handle',
+              name: 'ARRI Handgrip Set',
+              category: 'Rigging',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Rigging</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { cameraHandle: 'Hand Grips, Handle Extension' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="ARRI Handgrip Set"]');
+    expect(entries).toHaveLength(1);
+    expect(entries[0].classList.contains('auto-gear-item')).toBe(true);
+  });
+
+  test('applies viewfinder extension rules for matching selections', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-viewfinder',
+          label: 'Viewfinder accessories',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: ['ARRI VEB-3 Viewfinder Extension Bracket'],
+          videoDistribution: [],
+          add: [
+            {
+              id: 'add-viewfinder',
+              name: 'Extra VF Support Clamp',
+              category: 'Camera Support',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Camera Support</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { viewfinderExtension: 'ARRI VEB-3 Viewfinder Extension Bracket' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="Extra VF Support Clamp"]');
+    expect(entries).toHaveLength(1);
+  });
+
+  test('applies viewfinder extension rules when no extension is selected', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-viewfinder-none',
+          label: 'Default viewfinder kit',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: ['__none__'],
+          videoDistribution: [],
+          add: [
+            {
+              id: 'add-viewfinder-none',
+              name: 'Standard VF Cable',
+              category: 'Camera Support',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Camera Support</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { viewfinderExtension: '' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="Standard VF Cable"]');
+    expect(entries).toHaveLength(1);
+  });
+
+  test('applies video distribution-triggered rules when the selection matches', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-video',
+          label: 'Village streaming',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: ['IOS Video'],
+          add: [
+            {
+              id: 'add-video',
+              name: 'Apple TV 4K',
+              category: 'Monitoring',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Monitoring</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { videoDistribution: 'IOS Video' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="Apple TV 4K"]');
+    expect(entries).toHaveLength(1);
   });
 
   test('seeds default mattebox rules when they are missing', () => {
@@ -379,6 +563,111 @@ describe('applyAutoGearRulesToTableHtml', () => {
           label: 'Clamp-on extras',
           scenarios: [],
           mattebox: ['Clamp On'],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: [],
+        })
+      ])
+    );
+  });
+
+  test('allows creating a camera handle automatic gear rule', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    document.getElementById('autoGearRuleName').value = 'Handle additions';
+
+    const handleSelect = document.getElementById('autoGearCameraHandle');
+    const gripsOption = Array.from(handleSelect.options).find(opt => opt.value === 'Hand Grips');
+    if (gripsOption) gripsOption.selected = true;
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = 'Rigging';
+    document.getElementById('autoGearAddName').value = 'Spare rosette adapter';
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+
+    document.getElementById('autoGearSaveRule').click();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(stored).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'Handle additions',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: ['Hand Grips'],
+          viewfinderExtension: [],
+          videoDistribution: [],
+        })
+      ])
+    );
+  });
+
+  test('allows creating a viewfinder extension automatic gear rule', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    document.getElementById('autoGearRuleName').value = 'Viewfinder support';
+
+    const vfSelect = document.getElementById('autoGearViewfinderExtension');
+    const bracketOption = Array.from(vfSelect.options).find(opt => opt.value.includes('Viewfinder Extension Bracket'));
+    if (bracketOption) bracketOption.selected = true;
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = 'Camera Support';
+    document.getElementById('autoGearAddName').value = 'Extra VF cable clamp';
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+
+    document.getElementById('autoGearSaveRule').click();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(stored).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'Viewfinder support',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: ['ARRI VEB-3 Viewfinder Extension Bracket'],
+          videoDistribution: [],
+        })
+      ])
+    );
+  });
+
+  test('allows creating a video distribution automatic gear rule', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    document.getElementById('autoGearRuleName').value = 'Wireless village';
+
+    const videoSelect = document.getElementById('autoGearVideoDistribution');
+    const iosOption = Array.from(videoSelect.options).find(opt => opt.value === 'IOS Video');
+    if (iosOption) iosOption.selected = true;
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = 'Monitoring';
+    document.getElementById('autoGearAddName').value = 'Additional iPad receivers';
+    document.getElementById('autoGearAddQuantity').value = '2';
+    document.getElementById('autoGearAddItemButton').click();
+
+    document.getElementById('autoGearSaveRule').click();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(stored).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: 'Wireless village',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: ['IOS Video'],
         })
       ])
     );
