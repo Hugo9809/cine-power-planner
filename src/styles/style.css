@@ -23,6 +23,7 @@
   --main-top-padding-multiplier: 1.5;
   --gap-size: 10px;
   --button-size: 24px;
+  --button-icon-size: var(--icon-size-md);
   --form-control-font-size: var(--font-size-relative-base);
   --form-label-width: 150px;
   --form-label-min-width: 120px;
@@ -1793,7 +1794,7 @@ html.high-contrast .icon-glyph.diagram-camera-icon svg .diagram-camera-icon__len
 #helpSearchClear .icon-glyph,
 .clear-input-btn .icon-glyph,
 .controls button .icon-glyph {
-  --icon-size: var(--icon-size-lg);
+  --icon-size: var(--button-icon-size);
 }
 
 .help-icon,
@@ -1833,7 +1834,7 @@ body.pink-mode .favorite-toggle.favorited:active {
 .category-icon.icon-glyph,
 .scenario-icon.icon-glyph,
 .icon-box .icon.icon-glyph {
-  --icon-size: var(--icon-size-md);
+  --icon-size: var(--button-icon-size);
 }
 
 #hoverHelpTooltip {
