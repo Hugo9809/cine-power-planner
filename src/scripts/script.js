@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -19548,15 +19548,48 @@ function formatFullBackupFilename(date) {
   };
 }
 
+function resolveSafeLocalStorage() {
+  if (typeof getSafeLocalStorage === 'function') {
+    try {
+      const storage = getSafeLocalStorage();
+      if (storage) {
+        return storage;
+      }
+    } catch (error) {
+      console.warn('Unable to obtain safe local storage reference', error);
+    }
+  }
+  if (typeof SAFE_LOCAL_STORAGE !== 'undefined') {
+    return SAFE_LOCAL_STORAGE;
+  }
+  if (typeof localStorage !== 'undefined') {
+    return localStorage;
+  }
+  return null;
+}
+
 function captureStorageSnapshot(storage) {
   const snapshot = Object.create(null);
   if (!storage) return snapshot;
   try {
-    const length = typeof storage.length === 'number' ? storage.length : 0;
-    for (let i = 0; i < length; i++) {
-      const key = storage.key(i);
-      if (typeof key !== 'string') continue;
-      snapshot[key] = storage.getItem(key);
+    if (typeof storage.key === 'function' && typeof storage.length === 'number') {
+      const length = storage.length;
+      for (let i = 0; i < length; i++) {
+        const key = storage.key(i);
+        if (typeof key !== 'string') continue;
+        snapshot[key] = storage.getItem(key);
+      }
+    } else if (typeof storage.keys === 'function') {
+      const keys = storage.keys();
+      keys.forEach((key) => {
+        if (typeof key !== 'string') return;
+        snapshot[key] = storage.getItem(key);
+      });
+    } else if (typeof storage.forEach === 'function') {
+      storage.forEach((value, key) => {
+        if (typeof key !== 'string') return;
+        snapshot[key] = value;
+      });
     }
   } catch (error) {
     console.warn('Failed to snapshot storage', error);
@@ -19766,7 +19799,8 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
     const shouldNotify = isEvent ? true : Boolean(notify);
     const { iso, fileName } = formatFullBackupFilename(timestamp);
-    const settings = captureStorageSnapshot(typeof localStorage !== 'undefined' ? localStorage : null);
+    const safeStorage = resolveSafeLocalStorage();
+    const settings = captureStorageSnapshot(safeStorage);
     const sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
     const backup = {
       version: APP_VERSION,
@@ -19848,13 +19882,23 @@ if (restoreSettings && restoreSettingsInput) {
           alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
         }
         if (restoredSettings && typeof restoredSettings === 'object') {
-          Object.entries(restoredSettings).forEach(([k, v]) => {
-            try {
-              localStorage.setItem(k, v);
-            } catch (storageError) {
-              console.warn('Failed to restore localStorage entry', k, storageError);
-            }
-          });
+          const safeStorage = resolveSafeLocalStorage();
+          if (safeStorage && typeof safeStorage.setItem === 'function') {
+            Object.entries(restoredSettings).forEach(([k, v]) => {
+              if (typeof k !== 'string') return;
+              try {
+                if (v === null || v === undefined) {
+                  if (typeof safeStorage.removeItem === 'function') {
+                    safeStorage.removeItem(k);
+                  }
+                } else {
+                  safeStorage.setItem(k, String(v));
+                }
+              } catch (storageError) {
+                console.warn('Failed to restore storage entry', k, storageError);
+              }
+            });
+          }
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
           Object.entries(restoredSession).forEach(([key, value]) => {
@@ -19870,10 +19914,20 @@ if (restoreSettings && restoreSettingsInput) {
           importAllData(data);
         }
         syncAutoGearRulesFromStorage(data?.autoGearRules);
-        applyDarkMode(localStorage.getItem('darkMode') === 'true');
-        applyPinkMode(localStorage.getItem('pinkMode') === 'true');
-        applyHighContrast(localStorage.getItem('highContrast') === 'true');
-        showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
+        const safeStorage = resolveSafeLocalStorage();
+        const safeGetItem = (key) => {
+          if (!safeStorage || typeof safeStorage.getItem !== 'function') return null;
+          try {
+            return safeStorage.getItem(key);
+          } catch (error) {
+            console.warn('Failed to read restored storage key', key, error);
+            return null;
+          }
+        };
+        applyDarkMode(safeGetItem('darkMode') === 'true');
+        applyPinkMode(safeGetItem('pinkMode') === 'true');
+        applyHighContrast(safeGetItem('highContrast') === 'true');
+        showAutoBackups = safeGetItem('showAutoBackups') === 'true';
         const prevValue = setupSelect ? setupSelect.value : '';
         const prevName = setupNameInput ? setupNameInput.value : '';
         populateSetupSelect();
@@ -19890,14 +19944,14 @@ if (restoreSettings && restoreSettingsInput) {
         if (settingsShowAutoBackups) {
           settingsShowAutoBackups.checked = showAutoBackups;
         }
-        const color = localStorage.getItem('accentColor');
+        const color = safeGetItem('accentColor');
         if (color) {
           document.documentElement.style.setProperty('--accent-color', color);
           document.documentElement.style.setProperty('--link-color', color);
           accentColor = color;
           prevAccentColor = color;
         }
-        const lang = localStorage.getItem('language');
+        const lang = safeGetItem('language');
         if (lang) setLanguage(lang);
         alert(texts[currentLang].restoreSuccess);
       } catch (err) {
