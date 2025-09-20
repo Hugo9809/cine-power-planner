@@ -21307,6 +21307,143 @@ function extractBackupSections(raw) {
   };
 }
 
+function triggerBackupDownload(url, fileName) {
+  if (typeof document === 'undefined') {
+    return false;
+  }
+
+  let anchor;
+  try {
+    anchor = document.createElement('a');
+  } catch (error) {
+    console.warn('Failed to create backup download link', error);
+    return false;
+  }
+
+  if (!anchor || typeof anchor.click !== 'function' || !('download' in anchor)) {
+    return false;
+  }
+
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.rel = 'noopener';
+
+  if (anchor.style) {
+    try {
+      if (typeof anchor.style.setProperty === 'function') {
+        anchor.style.setProperty('display', 'none');
+      } else {
+        anchor.style.display = 'none';
+      }
+    } catch (styleError) {
+      void styleError;
+    }
+  }
+
+  const parent = document.body || document.documentElement || document.head;
+  let appended = false;
+  if (parent && typeof parent.appendChild === 'function') {
+    try {
+      parent.appendChild(anchor);
+      appended = true;
+    } catch (appendError) {
+      void appendError;
+    }
+  }
+
+  try {
+    anchor.click();
+  } catch (clickError) {
+    console.warn('Failed to trigger backup download link', clickError);
+    if (appended && anchor.parentNode && typeof anchor.parentNode.removeChild === 'function') {
+      try {
+        anchor.parentNode.removeChild(anchor);
+      } catch (removeError) {
+        void removeError;
+      }
+    }
+    return false;
+  }
+
+  if (appended && anchor.parentNode && typeof anchor.parentNode.removeChild === 'function') {
+    try {
+      anchor.parentNode.removeChild(anchor);
+    } catch (removeError2) {
+      void removeError2;
+    }
+  }
+
+  return true;
+}
+
+function encodeBackupDataUrl(payload) {
+  try {
+    return `data:application/json;charset=utf-8,${encodeURIComponent(payload)}`;
+  } catch (error) {
+    console.warn('Failed to encode backup data URL', error);
+    return null;
+  }
+}
+
+function downloadBackupPayload(payload, fileName) {
+  if (typeof payload !== 'string') {
+    return false;
+  }
+
+  let blob = null;
+  if (typeof Blob !== 'undefined') {
+    try {
+      blob = new Blob([payload], { type: 'application/json' });
+    } catch (blobError) {
+      console.warn('Failed to create backup blob', blobError);
+      blob = null;
+    }
+  }
+
+  if (blob) {
+    if (typeof navigator !== 'undefined' && typeof navigator.msSaveOrOpenBlob === 'function') {
+      try {
+        navigator.msSaveOrOpenBlob(blob, fileName);
+        return true;
+      } catch (msError) {
+        console.warn('Saving backup via msSaveOrOpenBlob failed', msError);
+      }
+    }
+
+    if (typeof URL !== 'undefined' && URL && typeof URL.createObjectURL === 'function') {
+      let objectUrl = null;
+      try {
+        objectUrl = URL.createObjectURL(blob);
+      } catch (urlError) {
+        console.warn('Failed to create backup object URL', urlError);
+        objectUrl = null;
+      }
+
+      if (objectUrl) {
+        const triggered = triggerBackupDownload(objectUrl, fileName);
+        try {
+          if (typeof URL.revokeObjectURL === 'function') {
+            URL.revokeObjectURL(objectUrl);
+          }
+        } catch (revokeError) {
+          console.warn('Failed to revoke backup object URL', revokeError);
+        }
+
+        if (triggered) {
+          return true;
+        }
+      }
+    }
+  }
+
+  const dataUrl = encodeBackupDataUrl(payload);
+  if (dataUrl) {
+    return triggerBackupDownload(dataUrl, fileName);
+  }
+
+  return false;
+}
+
 function createSettingsBackup(notify = true, timestamp = new Date()) {
   try {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
@@ -21322,13 +21459,11 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
       sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
       data: typeof exportAllData === 'function' ? exportAllData() : {},
     };
-    const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
+    const payload = JSON.stringify(backup);
+    const downloaded = downloadBackupPayload(payload, fileName);
+    if (!downloaded) {
+      throw new Error('No supported download method available');
+    }
     if (shouldNotify) {
       showNotification('success', 'Full app backup downloaded');
     }

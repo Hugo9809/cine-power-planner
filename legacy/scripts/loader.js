@@ -1,3 +1,4 @@
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   var OPTIONAL_CHAINING_FLAG = '__cinePowerOptionalChainingCheck__';
   function getGlobalScope() {
@@ -189,8 +190,10 @@
       return false;
     }
     var error = event;
-    if (typeof event === 'object' && event !== null && event.error && typeof event.error === 'object') {
-      error = event.error;
+    if (_typeof(event) === 'object' && event !== null) {
+      if (event.error && _typeof(event.error) === 'object') {
+        error = event.error;
+      }
     }
     if (error && typeof error.name === 'string' && error.name === 'SyntaxError') {
       return true;

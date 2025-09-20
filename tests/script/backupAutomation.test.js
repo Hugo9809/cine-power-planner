@@ -292,4 +292,46 @@ describe('automated backups', () => {
     global.Blob = originalBlob;
     document.createElement.mockRestore();
   });
+
+  test('createSettingsBackup falls back to data URLs when object URLs fail', () => {
+    const { createSettingsBackup } = loadApp();
+
+    localStorage.setItem('cameraPowerPlanner_devices', '{"lights":{}}');
+
+    const originalCreateObjectURL = URL.createObjectURL;
+    const createObjectURLSpy = jest
+      .spyOn(URL, 'createObjectURL')
+      .mockImplementation(() => {
+        throw new Error('object URL unavailable');
+      });
+    const revokeSpy = jest
+      .spyOn(URL, 'revokeObjectURL')
+      .mockImplementation(() => {});
+
+    const originalCreateElement = document.createElement.bind(document);
+    const anchors = [];
+    jest.spyOn(document, 'createElement').mockImplementation(tagName => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = jest.fn(() => anchors.push(element));
+      }
+      return element;
+    });
+
+    const fileName = createSettingsBackup(false, new Date('2024-05-06T10:00:00Z'));
+
+    expect(typeof fileName).toBe('string');
+    expect(createObjectURLSpy).toHaveBeenCalledTimes(1);
+    expect(revokeSpy).not.toHaveBeenCalled();
+    expect(anchors).toHaveLength(1);
+    const anchor = anchors[0];
+    expect(anchor.download).toBe(fileName);
+    expect(anchor.href.startsWith('data:application/json;charset=utf-8,')).toBe(true);
+    expect(anchor.click).toHaveBeenCalledTimes(1);
+
+    createObjectURLSpy.mockRestore();
+    revokeSpy.mockRestore();
+    document.createElement.mockRestore();
+    URL.createObjectURL = originalCreateObjectURL;
+  });
 });
