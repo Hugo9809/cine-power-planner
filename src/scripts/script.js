@@ -40,7 +40,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const APP_VERSION = "1.0.3";
+const APP_VERSION = "1.0.4";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
 const DEVICE_SCHEMA_PATH = 'src/data/schema.json';
