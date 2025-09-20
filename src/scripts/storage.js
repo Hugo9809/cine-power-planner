@@ -70,6 +70,8 @@ const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+const MAX_AUTO_BACKUPS = 50;
+const MAX_DELETION_BACKUPS = 20;
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
@@ -662,6 +664,136 @@ function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
 }
 
+function getAutoBackupTimestamp(name) {
+  if (typeof name !== 'string') {
+    return Number.NEGATIVE_INFINITY;
+  }
+
+  let match = null;
+  if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+    match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
+    if (!match) {
+      return Number.NEGATIVE_INFINITY;
+    }
+    const [, year, month, day, hour, minute] = match;
+    const date = new Date(
+      Number.parseInt(year, 10),
+      Number.parseInt(month, 10) - 1,
+      Number.parseInt(day, 10),
+      Number.parseInt(hour, 10),
+      Number.parseInt(minute, 10),
+      0,
+      0,
+    );
+    const time = date.getTime();
+    return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+  }
+
+  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
+    match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
+    if (!match) {
+      return Number.NEGATIVE_INFINITY;
+    }
+    const [, year, month, day, hour, minute, second] = match;
+    const date = new Date(
+      Number.parseInt(year, 10),
+      Number.parseInt(month, 10) - 1,
+      Number.parseInt(day, 10),
+      Number.parseInt(hour, 10),
+      Number.parseInt(minute, 10),
+      Number.parseInt(second, 10),
+      0,
+    );
+    const time = date.getTime();
+    return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+  }
+
+  return Number.NEGATIVE_INFINITY;
+}
+
+function collectAutoBackupEntries(container, prefix) {
+  if (!isPlainObject(container) || typeof prefix !== 'string') {
+    return [];
+  }
+
+  return Object.keys(container)
+    .filter((key) => typeof key === 'string' && key.startsWith(prefix))
+    .map((key) => ({ key, timestamp: getAutoBackupTimestamp(key) }))
+    .sort((a, b) => {
+      if (a.timestamp !== b.timestamp) {
+        return a.timestamp - b.timestamp;
+      }
+      return a.key.localeCompare(b.key);
+    });
+}
+
+function enforceAutoBackupLimits(container) {
+  if (!isPlainObject(container)) {
+    return [];
+  }
+
+  const removed = [];
+
+  const autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  if (autoBackups.length > MAX_AUTO_BACKUPS) {
+    while (autoBackups.length > MAX_AUTO_BACKUPS) {
+      const entry = autoBackups.shift();
+      if (!entry) {
+        break;
+      }
+      delete container[entry.key];
+      removed.push(entry.key);
+    }
+  }
+
+  const deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  if (deletionBackups.length > MAX_DELETION_BACKUPS) {
+    while (deletionBackups.length > MAX_DELETION_BACKUPS) {
+      const entry = deletionBackups.shift();
+      if (!entry) {
+        break;
+      }
+      delete container[entry.key];
+      removed.push(entry.key);
+    }
+  }
+
+  if (removed.length > 0) {
+    console.warn(
+      `Removed ${removed.length} older automatic backup${removed.length > 1 ? 's' : ''} to stay within storage limits.`,
+      removed,
+    );
+  }
+
+  return removed;
+}
+
+function removeOldestAutoBackupEntry(container) {
+  if (!isPlainObject(container)) {
+    return null;
+  }
+
+  const autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  if (autoBackups.length > 0) {
+    const oldest = autoBackups.shift();
+    if (oldest) {
+      delete container[oldest.key];
+      return oldest.key;
+    }
+  }
+
+  const deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  if (deletionBackups.length > 0) {
+    const oldest = deletionBackups.shift();
+    if (oldest) {
+      delete container[oldest.key];
+      return oldest.key;
+    }
+  }
+
+  return null;
+}
+
 function shouldDisplayStorageAlert(reason) {
   if (!reason) {
     return true;
@@ -975,36 +1107,81 @@ function saveJSONToStorage(
 ) {
   if (!storage) return;
 
-  const { disableBackup = false, backupKey } = options || {};
+  const { disableBackup = false, backupKey, onQuotaExceeded } = options || {};
   const fallbackKey = typeof backupKey === 'string' && backupKey
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
 
-  let serialized;
-  try {
-    serialized = JSON.stringify(value);
-  } catch (serializationError) {
-    console.error(errorMessage, serializationError);
-    alertStorageError();
-    return;
-  }
+  const serializeValue = () => {
+    try {
+      return JSON.stringify(value);
+    } catch (serializationError) {
+      console.error(errorMessage, serializationError);
+      alertStorageError();
+      return null;
+    }
+  };
 
-  try {
-    storage.setItem(key, serialized);
+  const writeSerialized = (payload) => {
+    storage.setItem(key, payload);
     if (useBackup) {
       try {
-        storage.setItem(fallbackKey, serialized);
+        storage.setItem(fallbackKey, payload);
       } catch (backupError) {
         console.warn(`Unable to update backup copy for ${key}`, backupError);
         alertStorageError();
       }
     }
+  };
+
+  const logSuccess = () => {
     if (successMessage) {
       console.log(successMessage);
     }
-  } catch (e) {
-    console.error(errorMessage, e);
+  };
+
+  let serialized = serializeValue();
+  if (serialized === null) {
+    return;
+  }
+
+  try {
+    writeSerialized(serialized);
+    logSuccess();
+    return;
+  } catch (error) {
+    if (isQuotaExceededError(error) && typeof onQuotaExceeded === 'function') {
+      let handled = false;
+      try {
+        handled = onQuotaExceeded(error, {
+          storage,
+          key,
+          value,
+          serialized,
+        }) === true;
+      } catch (handlerError) {
+        console.error(`Error while handling quota exceed for ${key}`, handlerError);
+      }
+
+      if (handled) {
+        serialized = serializeValue();
+        if (serialized === null) {
+          return;
+        }
+        try {
+          writeSerialized(serialized);
+          logSuccess();
+          return;
+        } catch (retryError) {
+          console.error(errorMessage, retryError);
+          alertStorageError();
+          return;
+        }
+      }
+    }
+
+    console.error(errorMessage, error);
     alertStorageError();
   }
 }
@@ -1493,6 +1670,7 @@ function loadSetups() {
 
 function saveSetups(setups) {
   const { data: normalizedSetups } = normalizeSetups(setups);
+  enforceAutoBackupLimits(normalizedSetups);
   const safeStorage = getSafeLocalStorage();
   saveJSONToStorage(
     safeStorage,
@@ -1500,6 +1678,18 @@ function saveSetups(setups) {
     normalizedSetups,
     "Error saving setups to localStorage:",
     "Setups saved to localStorage.",
+    {
+      onQuotaExceeded: () => {
+        const removedKey = removeOldestAutoBackupEntry(normalizedSetups);
+        if (!removedKey) {
+          return false;
+        }
+        console.warn(
+          `Removed automatic backup "${removedKey}" to free up storage space before saving setups.`,
+        );
+        return true;
+      },
+    },
   );
 }
 
@@ -1709,12 +1899,25 @@ function readAllProjectsFromStorage() {
 
 function persistAllProjects(projects, successMessage) {
   const safeStorage = getSafeLocalStorage();
+  enforceAutoBackupLimits(projects);
   saveJSONToStorage(
     safeStorage,
     PROJECT_STORAGE_KEY,
     projects,
     "Error saving project to localStorage:",
     successMessage,
+    {
+      onQuotaExceeded: () => {
+        const removedKey = removeOldestAutoBackupEntry(projects);
+        if (!removedKey) {
+          return false;
+        }
+        console.warn(
+          `Removed automatic project backup "${removedKey}" to free up storage space before saving projects.`,
+        );
+        return true;
+      },
+    },
   );
 }
 
