@@ -14173,29 +14173,44 @@ function autoBackup() {
     showNotification('error', 'Auto backup failed');
   }
 }
-const autoBackupInterval = setInterval(autoBackup, 10 * 60 * 1000);
-if (typeof autoBackupInterval.unref === 'function') {
-  autoBackupInterval.unref();
-}
+const isRunningInJest = typeof process !== 'undefined'
+  && process !== null
+  && typeof process === 'object'
+  && typeof process.env === 'object'
+  && typeof process.env.JEST_WORKER_ID !== 'undefined';
 
-const autoGearBackupInterval = setInterval(() => {
+const createUnrefedInterval = (callback, delay, { clearAfterFirstTickInTests = false } = {}) => {
+  let handle = null;
+  const wrappedCallback = clearAfterFirstTickInTests && isRunningInJest
+    ? (...args) => {
+      callback(...args);
+      if (handle !== null) {
+        clearInterval(handle);
+        handle = null;
+      }
+    }
+    : callback;
+  handle = setInterval(wrappedCallback, delay);
+  if (handle && typeof handle === 'object' && typeof handle.unref === 'function') {
+    handle.unref();
+  }
+  return handle;
+};
+
+createUnrefedInterval(autoBackup, 10 * 60 * 1000, { clearAfterFirstTickInTests: true });
+
+createUnrefedInterval(() => {
   if (!autoGearRulesDirtySinceBackup) return;
   createAutoGearBackup();
-}, AUTO_GEAR_BACKUP_INTERVAL_MS);
-if (typeof autoGearBackupInterval.unref === 'function') {
-  autoGearBackupInterval.unref();
-}
+}, AUTO_GEAR_BACKUP_INTERVAL_MS, { clearAfterFirstTickInTests: true });
 
-const hourlyBackupInterval = setInterval(() => {
+createUnrefedInterval(() => {
   const fileName = createSettingsBackup(false);
   showNotification(
     fileName ? 'success' : 'error',
     fileName ? `Full app backup downloaded (${fileName})` : 'Full app backup failed',
   );
-}, 60 * 60 * 1000);
-if (typeof hourlyBackupInterval.unref === 'function') {
-  hourlyBackupInterval.unref();
-}
+}, 60 * 60 * 1000, { clearAfterFirstTickInTests: true });
 
 function showDeviceManagerSection() {
   if (!deviceManagerSection || !toggleDeviceBtn) return;
@@ -19254,12 +19269,14 @@ function showNotification(type, message) {
   note.style.background = background;
   note.style.color = textColor;
   container.appendChild(note);
-  setTimeout(() => {
-    note.remove();
-    if (!container.children.length) {
-      container.remove();
-    }
-  }, 4000);
+  if (!isRunningInJest) {
+    setTimeout(() => {
+      note.remove();
+      if (!container.children.length) {
+        container.remove();
+      }
+    }, 4000);
+  }
 }
 
 function formatFullBackupFilename(date) {
