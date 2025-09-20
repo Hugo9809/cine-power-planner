@@ -536,17 +536,29 @@ describe('project storage', () => {
     expect(localStorage.getItem('cinePowerPlanner_project')).toBeNull();
   });
 
-  test('deleteProject removes individual projects and cleans up key when empty', () => {
+  test('deleteProject removes individual projects and stores an automatic backup before deleting', () => {
     saveProject('Keep', { gearList: '<ul>Keep</ul>' });
     saveProject('Drop', { gearList: '<ul>Drop</ul>' });
 
     deleteProject('Drop');
     expect(loadProject('Drop')).toBeNull();
     expect(loadProject('Keep')).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
-    expect(localStorage.getItem(PROJECT_KEY)).not.toBeNull();
+    const afterFirstDeletion = loadProject();
+    const dropBackupKey = Object.keys(afterFirstDeletion).find((name) => name.includes('Drop'));
+    expect(dropBackupKey).toBeDefined();
+    expect(afterFirstDeletion[dropBackupKey]).toEqual({ gearList: '<ul>Drop</ul>', projectInfo: null });
 
     deleteProject('Keep');
-    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
+    expect(loadProject('Keep')).toBeNull();
+    const storedRaw = localStorage.getItem(PROJECT_KEY);
+    expect(storedRaw).not.toBeNull();
+    const storedProjects = JSON.parse(storedRaw);
+    const backupKeys = Object.keys(storedProjects);
+    expect(backupKeys.length).toBeGreaterThanOrEqual(2);
+    expect(backupKeys.every((name) => name.startsWith('auto-backup-'))).toBe(true);
+    const keepBackupKey = backupKeys.find((name) => name.includes('Keep'));
+    expect(keepBackupKey).toBeDefined();
+    expect(storedProjects[keepBackupKey]).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
   });
 
   test('deleteProject without a name clears all stored projects', () => {

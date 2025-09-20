@@ -68,6 +68,8 @@ const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
@@ -1730,6 +1732,90 @@ function loadProject(name) {
   return Object.prototype.hasOwnProperty.call(projects, key) ? projects[key] : null;
 }
 
+function sanitizeProjectNameForBackup(name) {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  const collapsed = name.replace(/\s+/g, ' ').trim();
+  if (!collapsed) {
+    return '';
+  }
+  if (collapsed.length <= 120) {
+    return collapsed;
+  }
+  return collapsed.slice(0, 120);
+}
+
+function formatAutoBackupTimestamp(date) {
+  const pad = (value) => String(value).padStart(2, '0');
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join('-');
+}
+
+function generateDeletionBackupMetadata(projectName, projects) {
+  const now = new Date();
+  const timestamp = formatAutoBackupTimestamp(now);
+  const sanitizedName = sanitizeProjectNameForBackup(projectName);
+  const baseName = sanitizedName
+    ? `${AUTO_BACKUP_DELETION_PREFIX}${timestamp}-${sanitizedName}`
+    : `${AUTO_BACKUP_DELETION_PREFIX}${timestamp}`;
+  const usedNames = new Set(Object.keys(projects));
+  if (!usedNames.has(baseName)) {
+    return { name: baseName };
+  }
+  let suffix = 2;
+  let candidate = `${baseName}-${suffix}`;
+  while (usedNames.has(candidate)) {
+    suffix += 1;
+    candidate = `${baseName}-${suffix}`;
+  }
+  return { name: candidate };
+}
+
+function cloneProjectEntryForBackup(entry) {
+  if (entry === undefined) {
+    return undefined;
+  }
+  if (entry === null || typeof entry !== 'object') {
+    return entry;
+  }
+  try {
+    return JSON.parse(JSON.stringify(entry));
+  } catch (error) {
+    console.warn('Unable to deep clone project for backup', error);
+    return { ...entry };
+  }
+}
+
+function maybeCreateProjectDeletionBackup(projects, key) {
+  if (!projects || !Object.prototype.hasOwnProperty.call(projects, key)) {
+    return { status: 'missing' };
+  }
+  if (typeof key === 'string' && key.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+    return { status: 'skipped' };
+  }
+  const entry = projects[key];
+  if (entry === undefined) {
+    return { status: 'missing' };
+  }
+  const { name: backupName } = generateDeletionBackupMetadata(key, projects);
+  if (!backupName) {
+    return { status: 'failed' };
+  }
+  const cloned = cloneProjectEntryForBackup(entry);
+  if (cloned === undefined) {
+    return { status: 'failed' };
+  }
+  projects[backupName] = cloned;
+  return { status: 'created', backupName };
+}
+
 function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
@@ -1765,6 +1851,12 @@ function deleteProject(name) {
   if (!Object.prototype.hasOwnProperty.call(projects, key)) {
     return;
   }
+  const backupOutcome = maybeCreateProjectDeletionBackup(projects, key);
+  if (backupOutcome.status === 'failed') {
+    console.warn(`Automatic backup before deleting project "${key}" failed. Deletion aborted.`);
+    alertStorageError();
+    return;
+  }
   delete projects[key];
   if (Object.keys(projects).length === 0) {
     deleteFromStorage(
@@ -1774,6 +1866,11 @@ function deleteProject(name) {
     );
   } else {
     persistAllProjects(projects);
+    if (backupOutcome.status === 'created' && backupOutcome.backupName) {
+      console.log(
+        `Stored automatic backup "${backupOutcome.backupName}" before deleting project "${key}".`,
+      );
+    }
   }
 }
 
