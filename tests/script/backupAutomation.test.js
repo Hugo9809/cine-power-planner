@@ -162,6 +162,32 @@ describe('automated backups', () => {
     expect(visibleValues).toContain(backupKey);
   });
 
+  test('auto backups include unsaved setup names from the input field', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T12:30:00'));
+
+    const { autoBackup } = loadApp();
+
+    const setupsStore = {};
+    global.loadSetups.mockImplementation(() => setupsStore);
+    global.saveSetups.mockImplementation((next) => next);
+
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+    setupSelect.value = '';
+    setupNameInput.value = '  Fresh Concept  ';
+
+    const gearListOutput = document.getElementById('gearListOutput');
+    gearListOutput.classList.remove('hidden');
+    gearListOutput.innerHTML = '<h3>Gear List</h3><table class="gear-table"><tr><td>1x Alexa 35</td></tr></table>';
+
+    autoBackup();
+
+    const autoKeys = Object.keys(setupsStore).filter((name) => name.startsWith('auto-backup-'));
+    expect(autoKeys).toHaveLength(1);
+    expect(autoKeys[0]).toMatch(/-Fresh Concept$/);
+  });
+
   test('createSettingsBackup includes session storage snapshot', async () => {
     const { createSettingsBackup } = loadApp();
 

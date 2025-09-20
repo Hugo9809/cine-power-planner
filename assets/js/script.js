@@ -14294,8 +14294,14 @@ function autoBackup() {
     const pad = (n) => String(n).padStart(2, '0');
     const now = new Date();
     const baseName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const projectName = setupSelect.value ? `-${setupSelect.value}` : '';
-    const backupName = `${baseName}${projectName}`;
+    const activeNameRaw = setupSelect.value
+      || (setupNameInput && typeof setupNameInput.value === 'string'
+        ? setupNameInput.value.trim()
+        : '');
+    const normalizedName = activeNameRaw
+      ? activeNameRaw.replace(/\s+/g, ' ').trim()
+      : '';
+    const backupName = normalizedName ? `${baseName}-${normalizedName}` : baseName;
     const currentSetup = { ...getCurrentSetupState() };
     const gearListHtml = getCurrentGearListHtml();
     if (gearListHtml) {
