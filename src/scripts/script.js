@@ -299,18 +299,28 @@ function normalizeAutoGearItem(entry) {
   return { id, name, category, quantity };
 }
 
+function normalizeAutoGearTriggerList(values) {
+  if (!Array.isArray(values)) return [];
+  return Array.from(new Set(values
+    .map(value => (typeof value === 'string' ? value.trim() : ''))
+    .filter(Boolean)));
+}
+
+function normalizeAutoGearTriggerValue(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
 function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
   const label = typeof rule.label === 'string' ? rule.label.trim() : '';
-  const scenarios = Array.isArray(rule.scenarios)
-    ? Array.from(new Set(rule.scenarios.map(s => (typeof s === 'string' ? s.trim() : '')).filter(Boolean)))
-    : [];
-  if (!scenarios.length) return null;
+  const scenarios = normalizeAutoGearTriggerList(rule.scenarios).sort((a, b) => a.localeCompare(b));
+  const mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort((a, b) => a.localeCompare(b));
+  if (!scenarios.length && !mattebox.length) return null;
   const add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
   const remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
   if (!add.length && !remove.length) return null;
-  return { id, label, scenarios: scenarios.sort((a, b) => a.localeCompare(b)), add, remove };
+  return { id, label, scenarios, mattebox, add, remove };
 }
 
 function autoGearItemSnapshot(item) {
@@ -336,6 +346,7 @@ function snapshotAutoGearRuleForFingerprint(rule) {
   return {
     label: normalized.label || '',
     scenarios: normalized.scenarios.slice().sort((a, b) => a.localeCompare(b)),
+    mattebox: normalized.mattebox.slice().sort((a, b) => a.localeCompare(b)),
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove),
   };
@@ -343,9 +354,10 @@ function snapshotAutoGearRuleForFingerprint(rule) {
 
 function autoGearRuleSortKey(rule) {
   const scenarioKey = Array.isArray(rule.scenarios) ? rule.scenarios.join('|') : '';
+  const matteboxKey = Array.isArray(rule.mattebox) ? rule.mattebox.join('|') : '';
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${scenarioKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${scenarioKey}|${matteboxKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -752,6 +764,7 @@ function autoGearRuleSignature(rule) {
   return stableStringify({
     label: typeof rule.label === 'string' ? rule.label : '',
     scenarios: Array.isArray(rule.scenarios) ? rule.scenarios : [],
+    mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
     add: normalizeList(rule.add),
     remove: normalizeList(rule.remove),
   });
@@ -910,6 +923,64 @@ function subtractScenarioContributions(diff, scenarioKeys, scenarioDiffMap) {
   return { add: adjust(diff.add, 'add'), remove: adjust(diff.remove, 'remove') };
 }
 
+function buildDefaultMatteboxAutoGearRules() {
+  const category = 'Matte box + filter';
+  const createItems = names => names.map(name => ({
+    id: generateAutoGearId('item'),
+    name,
+    category,
+    quantity: 1,
+  }));
+  return [
+    {
+      id: generateAutoGearId('rule'),
+      label: 'Mattebox: Swing Away',
+      scenarios: [],
+      mattebox: ['Swing Away'],
+      add: createItems([
+        'ARRI LMB 4x5 Pro Set',
+        'ARRI LMB 19mm Studio Rod Adapter',
+        'ARRI LMB 4x5 / LMB-6 Tray Catcher',
+      ]),
+      remove: [],
+    },
+    {
+      id: generateAutoGearId('rule'),
+      label: 'Mattebox: Rod based',
+      scenarios: [],
+      mattebox: ['Rod based'],
+      add: createItems([
+        'ARRI LMB 4x5 15mm LWS Set 3-Stage',
+        'ARRI LMB 19mm Studio Rod Adapter',
+        'ARRI LMB 4x5 / LMB-6 Tray Catcher',
+        'ARRI LMB 4x5 Side Flags',
+        'ARRI LMB Flag Holders',
+        'ARRI LMB 4x5 Set of Mattes spherical',
+        'ARRI LMB Accessory Adapter',
+        'ARRI Anti-Reflection Frame 4x5.65',
+      ]),
+      remove: [],
+    },
+    {
+      id: generateAutoGearId('rule'),
+      label: 'Mattebox: Clamp On',
+      scenarios: [],
+      mattebox: ['Clamp On'],
+      add: createItems([
+        'ARRI LMB 4x5 Clamp-On (3-Stage)',
+        'ARRI LMB 4x5 / LMB-6 Tray Catcher',
+        'ARRI LMB 4x5 Side Flags',
+        'ARRI LMB Flag Holders',
+        'ARRI LMB 4x5 Set of Mattes spherical',
+        'ARRI LMB Accessory Adapter',
+        'ARRI Anti-Reflection Frame 4x5.65',
+        'ARRI LMB 4x5 Clamp Adapter Set Pro',
+      ]),
+      remove: [],
+    }
+  ];
+}
+
 function seedAutoGearRulesFromCurrentProject() {
   if (autoGearRules.length) return;
   if (hasSeededAutoGearDefaults()) return;
@@ -954,6 +1025,7 @@ function seedAutoGearRulesFromCurrentProject() {
     if (!adjusted.add.length && !adjusted.remove.length) return;
     rules.push({ id: generateAutoGearId('rule'), label: combinedLabel, scenarios: combo.slice(), add: adjusted.add, remove: adjusted.remove });
   });
+  buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
   if (!rules.length) return;
   setAutoGearRules(rules);
   markAutoGearDefaultsSeeded();
@@ -3153,6 +3225,16 @@ function setLanguage(lang) {
       autoGearScenariosSelect.setAttribute('aria-label', label);
     }
   }
+  if (autoGearMatteboxLabel) {
+    const label = texts[lang].autoGearMatteboxLabel || texts.en?.autoGearMatteboxLabel || autoGearMatteboxLabel.textContent;
+    autoGearMatteboxLabel.textContent = label;
+    const help = texts[lang].autoGearMatteboxHelp || texts.en?.autoGearMatteboxHelp || label;
+    autoGearMatteboxLabel.setAttribute('data-help', help);
+    if (autoGearMatteboxSelect) {
+      autoGearMatteboxSelect.setAttribute('data-help', help);
+      autoGearMatteboxSelect.setAttribute('aria-label', label);
+    }
+  }
   if (autoGearAddItemsHeading) {
     autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || texts.en?.autoGearAddItemsHeading || autoGearAddItemsHeading.textContent;
   }
@@ -3247,6 +3329,9 @@ function setLanguage(lang) {
   }
   if (autoGearScenariosSelect) {
     refreshAutoGearScenarioOptions(autoGearEditorDraft?.scenarios);
+  }
+  if (autoGearMatteboxSelect) {
+    refreshAutoGearMatteboxOptions(autoGearEditorDraft?.mattebox);
   }
   seedAutoGearRulesFromCurrentProject();
   renderAutoGearRulesList();
@@ -6336,6 +6421,8 @@ const autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 const autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
 const autoGearScenariosSelect = document.getElementById('autoGearScenarios');
 const autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
+const autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
+const autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
 const autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
 const autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
 const autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
@@ -6385,11 +6472,12 @@ function createAutoGearDraft(rule) {
       id: rule.id,
       label: rule.label || '',
       scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
+      mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
       add: Array.isArray(rule.add) ? rule.add.map(item => ({ ...item })) : [],
       remove: Array.isArray(rule.remove) ? rule.remove.map(item => ({ ...item })) : [],
     };
   }
-  return { id: generateAutoGearId('rule'), label: '', scenarios: [], add: [], remove: [] };
+  return { id: generateAutoGearId('rule'), label: '', scenarios: [], mattebox: [], add: [], remove: [] };
 }
 
 function refreshAutoGearScenarioOptions(selected) {
@@ -6461,6 +6549,75 @@ function refreshAutoGearScenarioOptions(selected) {
     ? Math.min(6, Math.max(selectableOptions.length, 3))
     : 1;
   autoGearScenariosSelect.size = visibleCount;
+}
+
+function refreshAutoGearMatteboxOptions(selected) {
+  if (!autoGearMatteboxSelect) return;
+
+  const candidateValues = Array.isArray(selected)
+    ? selected
+    : typeof selected === 'string' && selected
+      ? [selected]
+      : Array.isArray(autoGearEditorDraft?.mattebox)
+        ? autoGearEditorDraft.mattebox
+        : [];
+
+  const selectedValues = Array.from(new Set(
+    candidateValues
+      .filter(value => typeof value === 'string')
+      .map(value => value.trim())
+      .filter(Boolean)
+  ));
+
+  autoGearMatteboxSelect.innerHTML = '';
+  autoGearMatteboxSelect.multiple = true;
+
+  const source = document.getElementById('mattebox');
+  let hasOptions = false;
+
+  if (source) {
+    Array.from(source.options).forEach(opt => {
+      if (!opt.value) return;
+      const option = document.createElement('option');
+      option.value = opt.value;
+      option.textContent = opt.textContent;
+      if (selectedValues.includes(opt.value)) {
+        option.selected = true;
+      }
+      autoGearMatteboxSelect.appendChild(option);
+      hasOptions = true;
+    });
+  }
+
+  if (!hasOptions) {
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = texts[currentLang]?.autoGearMatteboxPlaceholder
+      || texts.en?.autoGearMatteboxPlaceholder
+      || 'Select mattebox options';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearMatteboxSelect.appendChild(placeholder);
+  } else {
+    selectedValues.forEach(value => {
+      const exists = Array.from(autoGearMatteboxSelect.options || []).some(
+        option => option && option.value === value
+      );
+      if (!exists) {
+        const fallbackOption = document.createElement('option');
+        fallbackOption.value = value;
+        fallbackOption.textContent = value;
+        fallbackOption.selected = true;
+        autoGearMatteboxSelect.appendChild(fallbackOption);
+      }
+    });
+  }
+
+  const selectableOptions = Array.from(autoGearMatteboxSelect.options || []).filter(option => !option.disabled);
+  const visibleCount = selectableOptions.length
+    ? Math.min(4, Math.max(selectableOptions.length, 3))
+    : 1;
+  autoGearMatteboxSelect.size = visibleCount;
 }
 
 function populateAutoGearCategorySelect(select, currentValue) {
@@ -7025,15 +7182,31 @@ function renderAutoGearRulesList() {
     info.className = 'auto-gear-rule-info';
     const title = document.createElement('p');
     title.className = 'auto-gear-rule-title';
-    title.textContent = rule.label || rule.scenarios.join(' + ');
+    const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios : [];
+    const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox : [];
+    const fallbackTitle = scenarioList.length
+      ? scenarioList.join(' + ')
+      : (matteboxList.length ? matteboxList.join(' + ') : '');
+    title.textContent = rule.label || fallbackTitle;
     info.appendChild(title);
-    const scenarioLabel = texts[currentLang]?.projectFields?.requiredScenarios
-      || texts.en?.projectFields?.requiredScenarios
-      || 'Required Scenarios';
-    const scenarioMeta = document.createElement('p');
-    scenarioMeta.className = 'auto-gear-rule-meta';
-    scenarioMeta.textContent = `${scenarioLabel}: ${rule.scenarios.join(' + ')}`;
-    info.appendChild(scenarioMeta);
+    if (scenarioList.length) {
+      const scenarioLabel = texts[currentLang]?.projectFields?.requiredScenarios
+        || texts.en?.projectFields?.requiredScenarios
+        || 'Required Scenarios';
+      const scenarioMeta = document.createElement('p');
+      scenarioMeta.className = 'auto-gear-rule-meta';
+      scenarioMeta.textContent = `${scenarioLabel}: ${scenarioList.join(' + ')}`;
+      info.appendChild(scenarioMeta);
+    }
+    if (matteboxList.length) {
+      const matteboxLabelText = texts[currentLang]?.autoGearMatteboxLabel
+        || texts.en?.autoGearMatteboxLabel
+        || 'Mattebox options';
+      const matteboxMeta = document.createElement('p');
+      matteboxMeta.className = 'auto-gear-rule-meta';
+      matteboxMeta.textContent = `${matteboxLabelText}: ${matteboxList.join(' + ')}`;
+      info.appendChild(matteboxMeta);
+    }
     const addSummary = formatAutoGearCount(rule.add.length, 'autoGearAddsCountOne', 'autoGearAddsCountOther');
     const removeSummary = formatAutoGearCount(rule.remove.length, 'autoGearRemovalsCountOne', 'autoGearRemovalsCountOther');
     const countsMeta = document.createElement('p');
@@ -7138,6 +7311,7 @@ function openAutoGearEditor(ruleId) {
     autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
   }
   refreshAutoGearScenarioOptions(autoGearEditorDraft.scenarios);
+  refreshAutoGearMatteboxOptions(autoGearEditorDraft.mattebox);
   populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearEditorDraft.add[0]?.category || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearEditorDraft.remove[0]?.category || '');
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
@@ -7154,6 +7328,7 @@ function closeAutoGearEditor() {
   autoGearEditorDraft = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
   refreshAutoGearScenarioOptions([]);
+  refreshAutoGearMatteboxOptions([]);
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
@@ -7197,10 +7372,17 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(Boolean)
     : [];
-  if (!scenarios.length) {
-    const message = texts[currentLang]?.autoGearRuleScenarioRequired
+  const matteboxSelections = autoGearMatteboxSelect
+    ? Array.from(autoGearMatteboxSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(Boolean)
+    : [];
+  if (!scenarios.length && !matteboxSelections.length) {
+    const message = texts[currentLang]?.autoGearRuleConditionRequired
+      || texts.en?.autoGearRuleConditionRequired
+      || texts[currentLang]?.autoGearRuleScenarioRequired
       || texts.en?.autoGearRuleScenarioRequired
-      || 'Select at least one scenario.';
+      || 'Select at least one scenario or mattebox option.';
     window.alert(message);
     return;
   }
@@ -7208,6 +7390,7 @@ function saveAutoGearRuleFromEditor() {
     autoGearEditorDraft.label = autoGearRuleNameInput.value.trim();
   }
   autoGearEditorDraft.scenarios = scenarios;
+  autoGearEditorDraft.mattebox = matteboxSelections;
   if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
     const message = texts[currentLang]?.autoGearRuleNeedsItems
       || texts.en?.autoGearRuleNeedsItems
@@ -17193,11 +17376,35 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     const scenarios = info && info.requiredScenarios
         ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
         : [];
+    const selectedMattebox = info && typeof info.mattebox === 'string'
+        ? info.mattebox.trim()
+        : '';
+    const normalizedMattebox = normalizeAutoGearTriggerValue(selectedMattebox);
     if (!scenarios.length) {
-        const hasRuleWithoutScenario = autoGearRules.some(rule => !rule.scenarios.length);
+        const hasRuleWithoutScenario = autoGearRules.some(rule => {
+            const scenarioList = Array.isArray(rule.scenarios)
+                ? rule.scenarios.filter(Boolean)
+                : [];
+            return scenarioList.length === 0;
+        });
         if (!hasRuleWithoutScenario) return tableHtml;
     }
-    const triggered = autoGearRules.filter(rule => rule.scenarios.every(s => scenarios.includes(s)));
+    const triggered = autoGearRules.filter(rule => {
+        const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
+        if (scenarioList.length && !scenarioList.every(s => scenarios.includes(s))) {
+            return false;
+        }
+        const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
+        if (matteboxList.length) {
+            const normalizedTargets = matteboxList
+                .map(normalizeAutoGearTriggerValue)
+                .filter(Boolean);
+            if (!normalizedTargets.length) return false;
+            if (!normalizedMattebox) return false;
+            if (!normalizedTargets.includes(normalizedMattebox)) return false;
+        }
+        return true;
+    });
     if (!triggered.length) return tableHtml;
     const container = document.createElement('div');
     container.innerHTML = tableHtml;
@@ -17326,40 +17533,15 @@ function generateGearListHtml(info = {}) {
     let filterSelections = collectFilterAccessories(parsedFilters);
     const filterSelectHtml = buildFilterSelectHtml(parsedFilters);
     if (info.mattebox && !needsSwingAway) {
-        const matteboxes = devices.accessories?.matteboxes || {};
-        for (const [name, mb] of Object.entries(matteboxes)) {
-            const normalize = s => s.replace(/[-\s]/g, '').toLowerCase();
-            if (mb.type && normalize(mb.type) === normalize(info.mattebox)) {
-                filterSelections.unshift(name);
-                if (name === 'ARRI LMB 4x5 Pro Set') {
-                    filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
-                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                } else if (name === 'ARRI LMB 4x5 15mm LWS Set 3-Stage') {
-                    filterSelections.push('ARRI LMB 19mm Studio Rod Adapter');
-                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                    filterSelections.push('ARRI LMB 4x5 Side Flags');
-                    filterSelections.push('ARRI LMB Flag Holders');
-                    filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
-                    filterSelections.push('ARRI LMB Accessory Adapter');
-                    filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
-                } else if (name === 'ARRI LMB 4x5 Clamp-On (3-Stage)') {
-                    filterSelections.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
-                    filterSelections.push('ARRI LMB 4x5 Side Flags');
-                    filterSelections.push('ARRI LMB Flag Holders');
-                    filterSelections.push('ARRI LMB 4x5 Set of Mattes spherical');
-                    filterSelections.push('ARRI LMB Accessory Adapter');
-                    filterSelections.push('ARRI Anti-Reflection Frame 4x5.65');
-                    filterSelections.push('ARRI LMB 4x5 Clamp Adapter Set Pro');
-                    const lensNames = info.lenses
-                        ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
-                        : [];
-                    const diameters = [...new Set(lensNames
-                        .map(n => devices.lenses && devices.lenses[n] && devices.lenses[n].frontDiameterMm)
-                        .filter(Boolean))];
-                    diameters.forEach(d => filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${d}mm`));
-                }
-                break;
-            }
+        const matteboxSelection = info.mattebox.toLowerCase();
+        if (matteboxSelection.includes('clamp')) {
+            const lensNames = info.lenses
+                ? info.lenses.split(',').map(s => s.trim()).filter(Boolean)
+                : [];
+            const diameters = [...new Set(lensNames
+                .map(n => devices.lenses && devices.lenses[n] && devices.lenses[n].frontDiameterMm)
+                .filter(Boolean))];
+            diameters.forEach(d => filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${d}mm`));
         }
     }
     viewfinderExtSelections.forEach(vf => supportAccNoCages.push(vf));
@@ -22464,9 +22646,6 @@ function collectFilterAccessories(filters = []) {
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
-        items.push('ARRI LMB 4x5 Pro Set');
-        items.push('ARRI LMB 19mm Studio Rod Adapter');
-        items.push('ARRI LMB 4x5 / LMB-6 Tray Catcher');
         break;
       default:
         break;

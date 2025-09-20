@@ -157,6 +157,12 @@ const texts = {
     autoGearScenariosHelp:
       "Pick every scenario that must be selected for this rule to apply. Hold Ctrl (Cmd on Mac) to choose multiple.",
     autoGearScenarioPlaceholder: "Select scenarios",
+    autoGearMatteboxLabel: "Mattebox options",
+    autoGearMatteboxHelp:
+      "Apply this rule when these mattebox choices are selected.",
+    autoGearMatteboxPlaceholder: "Select mattebox options",
+    autoGearRuleConditionRequired:
+      "Select at least one scenario or mattebox option before saving.",
     autoGearAddItemsHeading: "Add these items",
     autoGearAddItemLabel: "Item",
     autoGearAddCategoryLabel: "Category",
@@ -1325,6 +1331,12 @@ const texts = {
     autoGearScenariosHelp:
       "Seleziona tutti gli scenari che devono essere attivi perché la regola si applichi. Tieni premuto Ctrl (Cmd su Mac) per sceglierne più di uno.",
     autoGearScenarioPlaceholder: "Seleziona scenari",
+    autoGearMatteboxLabel: "Opzioni matte box",
+    autoGearMatteboxHelp:
+      "Applica la regola quando sono selezionate queste opzioni di matte box.",
+    autoGearMatteboxPlaceholder: "Seleziona opzioni matte box",
+    autoGearRuleConditionRequired:
+      "Seleziona almeno uno scenario o un'opzione di matte box prima di salvare.",
     autoGearAddItemsHeading: "Aggiungi questi elementi",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoria",
@@ -2096,6 +2108,12 @@ const texts = {
     autoGearScenariosHelp:
       "Selecciona todos los escenarios que deben estar activos para que se aplique esta regla. Mantén pulsado Ctrl (Cmd en Mac) para elegir varios.",
     autoGearScenarioPlaceholder: "Selecciona escenarios",
+    autoGearMatteboxLabel: "Opciones de matte box",
+    autoGearMatteboxHelp:
+      "Aplica la regla cuando se eligen estas opciones de matte box.",
+    autoGearMatteboxPlaceholder: "Selecciona opciones de matte box",
+    autoGearRuleConditionRequired:
+      "Selecciona al menos un escenario u opción de matte box antes de guardar.",
     autoGearAddItemsHeading: "Agregar estos elementos",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoría",
@@ -2870,6 +2888,12 @@ const texts = {
     autoGearScenariosHelp:
       "Sélectionnez tous les scénarios qui doivent être actifs pour appliquer cette règle. Maintenez Ctrl (Cmd sur Mac) pour en choisir plusieurs.",
     autoGearScenarioPlaceholder: "Sélectionnez des scénarios",
+    autoGearMatteboxLabel: "Options de matte box",
+    autoGearMatteboxHelp:
+      "Appliquer la règle lorsque ces options de matte box sont sélectionnées.",
+    autoGearMatteboxPlaceholder: "Sélectionnez des options de matte box",
+    autoGearRuleConditionRequired:
+      "Sélectionnez au moins un scénario ou une option de matte box avant d’enregistrer.",
     autoGearAddItemsHeading: "Ajouter ces éléments",
     autoGearAddItemLabel: "Élément",
     autoGearAddCategoryLabel: "Catégorie",
@@ -3645,6 +3669,12 @@ const texts = {
     autoGearScenariosHelp:
       "Wähle alle Szenarien, die aktiv sein müssen, damit diese Regel greift. Halte Strg (Cmd auf dem Mac) gedrückt, um mehrere auszuwählen.",
     autoGearScenarioPlaceholder: "Szenarien auswählen",
+    autoGearMatteboxLabel: "Mattebox-Optionen",
+    autoGearMatteboxHelp:
+      "Regel anwenden, wenn diese Mattebox-Optionen gewählt sind.",
+    autoGearMatteboxPlaceholder: "Mattebox-Optionen auswählen",
+    autoGearRuleConditionRequired:
+      "Wähle mindestens ein Szenario oder eine Mattebox-Option, bevor du speicherst.",
     autoGearAddItemsHeading: "Diese Geräte hinzufügen",
     autoGearAddItemLabel: "Gerät",
     autoGearAddCategoryLabel: "Kategorie",
