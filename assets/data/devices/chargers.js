@@ -16,6 +16,111 @@ const chargerData = {
     slots: 4,
     chargingSpeedAmps: 2
   },
+  "bebob VS2-RL": {
+    mount: "V-Mount",
+    slots: 2,
+    inputVoltageV: "90-264",
+    chargeModes: ["Simultaneous"],
+    perBayCurrentA: 2.5,
+    chargingSpeedAmps: 2.5,
+    totalPowerW: 82.5,
+    outputs: ["4-pin XLR DC output"],
+    dimensions_mm: [110, 231, 141],
+    weight_g: 1000,
+    notes: "Li-Ion, includes Powerbase function; 47-63Hz input"
+  },
+  "bebob VS4": {
+    mount: "V-Mount",
+    slots: 4,
+    inputVoltageV: "90-264",
+    chargeModes: ["Simultaneous"],
+    perBayCurrentA: 2.5,
+    chargingSpeedAmps: 2.5,
+    totalPowerW: 165,
+    dimensions_mm: [145, 225, 270],
+    weight_g: 1900,
+    notes: "Supports bebob/IDX/Sony Li-Ion batteries; Powerbase function"
+  },
+  "SWIT SC-304S": {
+    mount: "V-Mount",
+    slots: 2,
+    inputVoltageV: "100-240",
+    chargeModes: ["Simultaneous"],
+    perBayCurrentA: 1.9,
+    chargingSpeedAmps: 1.9,
+    dimensions_mm: [223, 230, 75],
+    weight_g: 1600,
+    notes: "Supports Li-Ion, NiMH, and Ni-Cd batteries; 14-20V output range; LED status indicators"
+  },
+  "SWIT PC-P461S": {
+    mount: "V-Mount",
+    slots: 4,
+    chargeModes: ["Simultaneous"],
+    perBayCurrentA: 6,
+    chargingSpeedAmps: 6,
+    notes: "Supports 14.4V and 28.8V smart batteries with 100W/6A fast charge per bay; color LCD status display"
+  },
+  "SWIT PC-U130S": {
+    mount: "V-Mount",
+    slots: 1,
+    inputVoltageV: "100-240",
+    chargeModes: ["Single-channel"],
+    perBayCurrentA: 3,
+    chargingSpeedAmps: 3,
+    totalPowerW: 50,
+    dimensions_mm: [110, 50, 32],
+    weight_g: 260,
+    notes: "Portable Li-Ion travel charger with LED indicator; not compatible with IDX batteries"
+  },
+  "IDX VL-4Se": {
+    mount: "V-Mount",
+    slots: 4,
+    inputVoltageV: "100-240",
+    chargeModes: ["Simultaneous"],
+    perBayCurrentA: 2.7,
+    chargingSpeedAmps: 2.7,
+    weight_g: 3000,
+    notes: "Each channel operates independently; delivers up to 3A when charging fewer than four batteries"
+  },
+  "IDX VL-4X": {
+    mount: "V-Mount",
+    slots: 4,
+    chargeModes: ["Sequential", "Mixed"],
+    perBayCurrentA: 2.7,
+    chargingSpeedAmps: 2.7,
+    totalPowerW: 220,
+    dimensions_mm: [249, 178, 91],
+    weight_g: 1100,
+    outputs: ["16.8V DC"],
+    notes: "Fanless cooling with overvoltage protection"
+  },
+  "Anton/Bauer Performance Dual Charger V-Mount": {
+    mount: "V-Mount",
+    slots: 2,
+    inputVoltageV: "100-240",
+    chargeModes: ["Simultaneous"],
+    outputs: ["4-pin XLR DC 16V"],
+    dimensions_mm: [290, 220, 220],
+    weight_g: 3200,
+    notes: "Multi-chemistry charger with touchscreen status display and optional WiFi monitoring"
+  },
+  "Anton/Bauer VM2 Charger": {
+    mount: "V-Mount",
+    slots: 2,
+    chargeModes: ["Simultaneous"],
+    notes: "Compact dual-bay charger with LED indicators"
+  },
+  "SWIT S-3822S": {
+    mount: "V-Mount",
+    slots: 2,
+    inputVoltageV: "100-240",
+    chargeModes: ["Simultaneous"],
+    perBayCurrentA: 3,
+    chargingSpeedAmps: 3,
+    weight_g: 1000,
+    outputs: ["4-pin XLR DC 16.8V (90W)"],
+    notes: "Fast dual charger with selectable 90W XLR DC output; height varies with battery plate"
+  },
   "Single B-Mount Charger": {
     mount: "B-Mount",
     slots: 1,
