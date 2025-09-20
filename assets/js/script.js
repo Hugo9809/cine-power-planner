@@ -6084,6 +6084,12 @@ const iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
 const settingsButton  = document.getElementById("settingsButton");
 const settingsDialog  = document.getElementById("settingsDialog");
+if (settingsButton) {
+  settingsButton.setAttribute('data-allow-hover-help', '');
+}
+if (settingsDialog) {
+  settingsDialog.setAttribute('data-allow-hover-help', '');
+}
 const settingsLanguage = document.getElementById("settingsLanguage");
 const settingsDarkMode = document.getElementById("settingsDarkMode");
 const settingsPinkMode = document.getElementById("settingsPinkMode");
@@ -20581,19 +20587,101 @@ if (helpButton && helpDialog) {
   };
 
   // Hover help mode displays a tooltip describing whichever element the user
-  // points at. It is triggered from a button inside the dialog and uses the
-  // same data-help/aria-* attributes that power the dialog content.
+  // points at or focuses. It is triggered from a button inside the dialog and
+  // uses the same data-help/aria-* attributes that power the dialog content.
   let hoverHelpActive = false;
   let hoverHelpTooltip;
+  let hoverHelpCurrentTarget = null;
+
+  const HOVER_HELP_TARGET_SELECTOR =
+    '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby]';
+
+  const findHoverHelpTarget = start => {
+    if (!start) return null;
+    const el = start.closest(HOVER_HELP_TARGET_SELECTOR);
+    if (!el || el.tagName === 'SECTION') {
+      return null;
+    }
+    return el;
+  };
+
+  const collectHoverHelpText = el => {
+    if (!el) return [];
+    const parts = [];
+    const addText = value => {
+      if (typeof value !== 'string') return;
+      const trimmed = value.trim();
+      if (!trimmed) return;
+      if (!parts.includes(trimmed)) parts.push(trimmed);
+    };
+
+    addText(el.getAttribute('data-help'));
+    addText(el.getAttribute('aria-label'));
+    addText(el.getAttribute('title'));
+
+    const applyFromIds = ids => {
+      if (!ids) return;
+      ids
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach(id => {
+          const ref = document.getElementById(id);
+          if (!ref) return;
+          addText(ref.getAttribute('data-help'));
+          addText(ref.getAttribute('aria-label'));
+          addText(ref.getAttribute('title'));
+          addText(ref.textContent);
+        });
+    };
+
+    applyFromIds(el.getAttribute('aria-labelledby'));
+    addText(el.getAttribute('alt'));
+    applyFromIds(el.getAttribute('aria-describedby'));
+
+    return parts;
+  };
+
+  const positionHoverHelpTooltip = target => {
+    if (!hoverHelpTooltip || !target) return;
+    const rect = target.getBoundingClientRect();
+    const topBase = Number.isFinite(rect.bottom) && rect.bottom ? rect.bottom : rect.top;
+    const leftBase = Number.isFinite(rect.left) ? rect.left : 0;
+    const top = (Number.isFinite(topBase) ? topBase : 0) + window.scrollY + 10;
+    const left = leftBase + window.scrollX;
+    hoverHelpTooltip.style.top = `${top}px`;
+    hoverHelpTooltip.style.left = `${left}px`;
+  };
+
+  const hideHoverHelpTooltip = () => {
+    if (!hoverHelpTooltip) return;
+    hoverHelpTooltip.setAttribute('hidden', '');
+  };
+
+  const updateHoverHelpTooltip = target => {
+    hoverHelpCurrentTarget = target || null;
+    if (!hoverHelpActive || !hoverHelpTooltip || !target) {
+      hideHoverHelpTooltip();
+      return;
+    }
+    const textParts = collectHoverHelpText(target);
+    if (!textParts.length) {
+      hideHoverHelpTooltip();
+      return;
+    }
+    hoverHelpTooltip.textContent = textParts.join(' ');
+    positionHoverHelpTooltip(target);
+    hoverHelpTooltip.removeAttribute('hidden');
+  };
 
   const canInteractDuringHoverHelp = target => {
     if (!hoverHelpActive || !target) return false;
-    return !!target.closest('#settingsButton, #settingsDialog');
+    return !!target.closest('[data-allow-hover-help], #settingsButton, #settingsDialog');
   };
 
   // Exit hover-help mode and clean up tooltip/cursor state
   const stopHoverHelp = () => {
     hoverHelpActive = false;
+    hoverHelpCurrentTarget = null;
     if (hoverHelpTooltip) {
       hoverHelpTooltip.remove();
       hoverHelpTooltip = null;
@@ -20611,51 +20699,39 @@ if (helpButton && helpDialog) {
     document.body.classList.add('hover-help-active');
     hoverHelpTooltip = document.createElement('div');
     hoverHelpTooltip.id = 'hoverHelpTooltip';
+    hoverHelpTooltip.setAttribute('role', 'tooltip');
     hoverHelpTooltip.setAttribute('hidden', '');
     document.body.appendChild(hoverHelpTooltip);
   };
 
+  const refreshTooltipPosition = () => {
+    if (hoverHelpActive && hoverHelpTooltip && hoverHelpCurrentTarget) {
+      positionHoverHelpTooltip(hoverHelpCurrentTarget);
+    }
+  };
+
   document.addEventListener('mouseover', e => {
-    // When hover-help is active, locate the nearest element with descriptive
-    // attributes and show its text content in a custom tooltip.
     if (!hoverHelpActive || !hoverHelpTooltip) return;
-    const el = e.target.closest(
-      '[data-help], [aria-label], [title], [aria-labelledby], [alt]'
-    );
-    // Ignore non-descriptive elements such as generic sections
-    if (!el || el.tagName === 'SECTION') {
-      hoverHelpTooltip.setAttribute('hidden', '');
-      return;
-    }
-    let text =
-      el.getAttribute('data-help') ||
-      el.getAttribute('aria-label') ||
-      el.getAttribute('title');
-    if (!text) {
-      // Fallback to a linked label if aria-labelledby is used
-      const labelled = el.getAttribute('aria-labelledby');
-      if (labelled) {
-        const labelEl = document.getElementById(labelled);
-        if (labelEl)
-          text =
-            labelEl.getAttribute('data-help') ||
-            labelEl.getAttribute('aria-label') ||
-            labelEl.getAttribute('title') ||
-            labelEl.textContent.trim();
-      }
-    }
-    if (!text) text = el.getAttribute('alt');
-    if (!text) {
-      hoverHelpTooltip.setAttribute('hidden', '');
-      return;
-    }
-    // Show the full help text instead of truncating at 200 characters
-    hoverHelpTooltip.textContent = text;
-    const rect = el.getBoundingClientRect();
-    hoverHelpTooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
-    hoverHelpTooltip.style.left = `${rect.left + window.scrollX}px`;
-    hoverHelpTooltip.removeAttribute('hidden');
+    const target = findHoverHelpTarget(e.target);
+    updateHoverHelpTooltip(target);
   });
+
+  document.addEventListener('focusin', e => {
+    if (!hoverHelpActive || !hoverHelpTooltip) return;
+    const target = findHoverHelpTarget(e.target);
+    updateHoverHelpTooltip(target);
+  });
+
+  document.addEventListener('focusout', e => {
+    if (!hoverHelpActive || !hoverHelpTooltip) return;
+    if (!e.relatedTarget || !findHoverHelpTarget(e.relatedTarget)) {
+      hoverHelpCurrentTarget = null;
+      hideHoverHelpTooltip();
+    }
+  });
+
+  window.addEventListener('scroll', refreshTooltipPosition, true);
+  window.addEventListener('resize', refreshTooltipPosition);
 
   // Prevent interacting with controls like dropdowns while hover help is active
   document.addEventListener(
@@ -20902,6 +20978,9 @@ if (helpButton && helpDialog) {
       // When the dialog is open, / or Ctrl+F moves focus to the search box
       e.preventDefault();
       if (helpSearch) helpSearch.focus();
+    } else if (e.key === ',' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (settingsButton) settingsButton.click();
     } else if (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       focusFeatureSearchInput();
