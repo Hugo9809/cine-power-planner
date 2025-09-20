@@ -4321,6 +4321,8 @@ body.dark-mode.pink-mode #gearListOutput h2,
 #gearListOutput .select-wrapper .favorite-toggle,
 #projectRequirementsOutput .select-wrapper .favorite-toggle {
   flex: 0 0 auto;
+  margin-inline-end: var(--gap-size);
+  margin-right: var(--gap-size);
 }
 
 #gearListActions {
