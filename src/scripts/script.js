@@ -12796,30 +12796,73 @@ function getTimecodes() {
     if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
     const wrapper = ensureSelectWrapper(selectElem);
     const gearItem = selectElem.closest('.gear-item');
-    if (!selectElem._favInit && gearItem) {
-      const toggles = Array.from(gearItem.querySelectorAll('.favorite-toggle'));
-      const existingForSelect = toggles.find(btn => btn.getAttribute('data-fav-select-id') === selectElem.id);
-      if (existingForSelect) {
-        selectElem._favButton = existingForSelect;
-        selectElem._favInit = true;
-      } else if (toggles.length > 0) {
-        selectElem._favInit = true;
+
+    function cleanupFavoriteButton(btn) {
+      if (!btn) return;
+      if (btn._favListener) {
+        btn.removeEventListener('click', btn._favListener);
+        btn._favListener = null;
       }
+      btn.remove();
     }
-    if (!selectElem._favInit) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'favorite-toggle';
-      btn.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
-      btn.setAttribute('aria-pressed', 'false');
-      btn.setAttribute('data-fav-select-id', selectElem.id);
-      btn.addEventListener('click', () => toggleFavorite(selectElem));
-      const targetWrapper = wrapper || ensureSelectWrapper(selectElem);
-      if (targetWrapper) targetWrapper.appendChild(btn); else selectElem.after(btn);
-      selectElem._favButton = btn;
-      selectElem._favInit = true;
-      selectElem.addEventListener('change', () => updateFavoriteButton(selectElem));
+
+    let favoriteButton =
+      selectElem._favButton && selectElem._favButton.isConnected ? selectElem._favButton : null;
+
+    if (wrapper) {
+      const wrapperButtons = Array.from(wrapper.querySelectorAll('.favorite-toggle'));
+      if (favoriteButton && !wrapperButtons.includes(favoriteButton)) {
+        favoriteButton = null;
+      }
+      if (!favoriteButton && wrapperButtons.length > 0) {
+        [favoriteButton] = wrapperButtons;
+      }
+      wrapperButtons.forEach(btn => {
+        if (btn !== favoriteButton) cleanupFavoriteButton(btn);
+      });
     }
+
+    if (gearItem) {
+      Array.from(gearItem.querySelectorAll('.favorite-toggle'))
+        .filter(
+          btn =>
+            btn !== favoriteButton && btn.getAttribute('data-fav-select-id') === selectElem.id
+        )
+        .forEach(cleanupFavoriteButton);
+    }
+
+    if (!favoriteButton) {
+      favoriteButton = document.createElement('button');
+      if (wrapper) {
+        wrapper.appendChild(favoriteButton);
+      } else {
+        selectElem.after(favoriteButton);
+      }
+    } else if (wrapper && favoriteButton.parentElement !== wrapper) {
+      wrapper.appendChild(favoriteButton);
+    }
+
+    if (favoriteButton._favListener) {
+      favoriteButton.removeEventListener('click', favoriteButton._favListener);
+    }
+    favoriteButton.type = 'button';
+    favoriteButton.className = 'favorite-toggle';
+    favoriteButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
+    favoriteButton.setAttribute('aria-pressed', 'false');
+    favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
+    const clickHandler = () => toggleFavorite(selectElem);
+    favoriteButton.addEventListener('click', clickHandler);
+    favoriteButton._favListener = clickHandler;
+
+    if (!selectElem._favChangeListener) {
+      const changeListener = () => updateFavoriteButton(selectElem);
+      selectElem.addEventListener('change', changeListener);
+      selectElem._favChangeListener = changeListener;
+    }
+
+    selectElem._favButton = favoriteButton;
+    selectElem._favInit = true;
+
     if (selectElem._favButton) {
       selectElem._favButton.setAttribute('data-fav-select-id', selectElem.id);
       selectElem._favButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
@@ -12829,6 +12872,7 @@ function getTimecodes() {
         texts[currentLang].favoriteToggleHelp || texts[currentLang].favoriteToggleLabel
       );
     }
+
     applyFavoritesToSelect(selectElem);
     updateFavoriteButton(selectElem);
     adjustGearListSelectWidth(selectElem);
