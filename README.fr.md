@@ -2,7 +2,7 @@
 
 Cet outil basé sur le navigateur aide à planifier des projets caméra professionnels alimentés par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, l’**intensité demandée** (à 14,4 V et 12 V) et l’**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise en toute sécurité.
 
-L’ensemble de la planification, des saisies et des exports reste sur votre appareil. La langue, les projets, les appareils personnalisés, les favoris et les retours d’autonomie sont stockés dans votre navigateur, et les mises à jour du service worker proviennent directement de ce dépôt. Lancez le planner hors ligne depuis le disque ou hébergez-le en interne pour que chaque département exploite la même version auditée.
+L’ensemble de la planification, des saisies et des exports reste sur votre appareil. La langue, les projets, les appareils personnalisés, les favoris et les retours d’autonomie sont stockés dans votre navigateur, et les mises à jour du service worker proviennent directement de ce dépôt. Lancez Cine Power Planner hors ligne depuis le disque ou hébergez-le en interne pour que chaque département exploite la même version auditée.
 
 ---
 
@@ -57,7 +57,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 
 ### ✅ Gestion de projet
 - Enregistrez, chargez et supprimez plusieurs projets caméra (appuyez sur Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton reste inactif tant qu’aucun nom n’est saisi).
-- Des instantanés automatiques se créent toutes les 10 minutes tant que le planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires en guise de rappel.
+- Des instantanés automatiques se créent toutes les 10 minutes tant que Cine Power Planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires en guise de rappel.
 - Téléchargez un fichier JSON qui regroupe sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; importez-le via le sélecteur de projet pour tout restaurer d’un coup.
 - Les données se stockent localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez l’option **Réinitialisation d’usine** pour enregistrer automatiquement une copie avant d’effacer projets et modifications d’appareils.
 - Générez des aperçus imprimables pour chaque projet et ajoutez un logo personnalisé afin d’aligner exports et sauvegardes sur l’identité de votre production.
@@ -217,7 +217,7 @@ Le générateur transforme vos sélections en une liste de préparation classée
 
 ## 📱 Installer l’application
 
-Le planner est une application web progressive installable directement depuis le navigateur :
+Cine Power Planner est une application web progressive installable directement depuis le navigateur :
 
 - **Chrome/Edge (bureau) :** cliquez sur l’icône d’installation dans la barre d’adresse.
 - **Android :** ouvrez le menu du navigateur et choisissez *Ajouter à l’écran d’accueil*.

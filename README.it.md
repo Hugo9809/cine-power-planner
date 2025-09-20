@@ -2,7 +2,7 @@
 
 Questo strumento basato sul browser ti aiuta a pianificare progetti camera professionali alimentati da batterie V‑Mount, B‑Mount o Gold-Mount. Calcola il **consumo totale**, la **corrente assorbita** (a 14,4 V e 12 V) e l’**autonomia stimata**, verificando che il pacco batteria possa erogare in sicurezza la potenza richiesta.
 
-Tutta la pianificazione, gli input e gli export restano sul dispositivo davanti a te. Lingua, progetti, dispositivi personalizzati, preferiti e feedback sulle autonomie vivono nel browser, e gli aggiornamenti del service worker arrivano direttamente da questo repository. Avvia il planner offline dal disco o ospitalo internamente così che ogni reparto utilizzi la stessa versione verificata.
+Tutta la pianificazione, gli input e gli export restano sul dispositivo davanti a te. Lingua, progetti, dispositivi personalizzati, preferiti e feedback sulle autonomie vivono nel browser, e gli aggiornamenti del service worker arrivano direttamente da questo repository. Avvia Cine Power Planner offline dal disco o ospitalo internamente così che ogni reparto utilizzi la stessa versione verificata.
 
 ---
 
@@ -53,11 +53,11 @@ Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dal
 - **Progetta rig complessi senza tentativi.** Combina camere, piastre batteria, link wireless, monitor, motori e accessori tenendo sotto controllo il consumo totale a 14,4 V/12 V (e 33,6 V/21,6 V per B‑Mount) e autonomie realistiche basate su dati di campo ponderati. Il pannello di confronto batterie segnala eventuali sovraccarichi prima che l’attrezzatura parta.
 - **Mantieni allineati tutti i reparti.** Salva più progetti con requisiti, contatti della troupe, scenari e note. Le liste stampabili raggruppano il materiale per categoria, uniscono i duplicati, mostrano metadati tecnici e aggiungono accessori legati agli scenari così che camera, luce e grip condividano lo stesso contesto.
 - **Lavora con serenità ovunque.** Apri `index.html` direttamente oppure servi la cartella via HTTPS per attivare il service worker. La cache offline conserva lingua, temi, preferiti e progetti, e **Forza ricarica** aggiorna gli asset senza toccare i dati salvati.
-- **Adatta il planner alla tua troupe.** Passa subito tra italiano, inglese, tedesco, spagnolo e francese, regola dimensione e font, scegli un colore accento personale, carica un logo per la stampa e alterna tema chiaro, scuro, rosa o ad alto contrasto. Selettori con ricerca, preferiti fissati, pulsanti di duplicazione e guide contestuali mantengono il ritmo sul set.
+- **Adatta Cine Power Planner alla tua troupe.** Passa subito tra italiano, inglese, tedesco, spagnolo e francese, regola dimensione e font, scegli un colore accento personale, carica un logo per la stampa e alterna tema chiaro, scuro, rosa o ad alto contrasto. Selettori con ricerca, preferiti fissati, pulsanti di duplicazione e guide contestuali mantengono il ritmo sul set.
 
 ### ✅ Gestione dei progetti
 - Salva, carica e cancella più progetti (premi Invio o Ctrl+S/⌘S per salvare rapidamente; il pulsante rimane disattivato finché non inserisci un nome).
-- Vengono creati snapshot automatici ogni 10 minuti mentre il planner è aperto, e nelle Impostazioni puoi attivare export orari di backup come promemoria.
+- Vengono creati snapshot automatici ogni 10 minuti mentre Cine Power Planner è aperto, e nelle Impostazioni puoi attivare export orari di backup come promemoria.
 - Scarica un file JSON che raggruppa selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati; importalo dal selettore per ripristinare tutto in un passo.
 - I dati si salvano localmente tramite `localStorage` e i preferiti vengono inclusi nei backup; l’opzione **Ripristino di fabbrica** scarica automaticamente una copia prima di cancellare progetti e modifiche ai dispositivi.
 - Genera anteprime stampabili per ogni progetto e aggiungi un logo personalizzato così esportazioni e backup rispettano l’identità della produzione.
@@ -217,7 +217,7 @@ Il generatore trasforma le tue scelte in una lista di carico ordinata per catego
 
 ## 📱 Installare come applicazione
 
-Il planner è un’applicazione web progressiva installabile direttamente dal browser:
+Cine Power Planner è un’applicazione web progressiva installabile direttamente dal browser:
 
 - **Chrome/Edge (desktop):** fai clic sull’icona di installazione nella barra degli indirizzi.
 - **Android:** apri il menu del browser e scegli *Aggiungi alla schermata Home*.
