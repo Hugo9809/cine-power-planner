@@ -179,7 +179,7 @@ Le générateur transforme vos sélections en une liste de préparation classée
 ### 🛠 Éditeur de la base d’appareils
 - Ajoutez, modifiez ou supprimez des appareils dans toutes les catégories
 - Importez ou exportez la base complète au format JSON
-- Revenez à la base par défaut depuis `assets/data/index.js`
+- Revenez à la base par défaut depuis `src/data/index.js`
 
 ### 🌓 Mode sombre
 - Activez-le via le bouton lune près du sélecteur de langue
@@ -234,16 +234,16 @@ Servir l’application via HTTP(S) installe un service worker qui met en cache c
 ## 🗂️ Structure des fichiers
 ```bash
 index.html                 # Mise en page HTML principale
-assets/css/style.css       # Styles et mise en page
-assets/css/overview.css    # Styles de l’aperçu imprimable
-assets/css/overview-print.css # Ajustements d’impression pour l’aperçu
-assets/js/script.js        # Logique applicative
-assets/js/storage.js       # Helpers LocalStorage
-assets/js/static-theme.js  # Logique de thème partagée pour les pages légales
-assets/data/index.js       # Liste d’appareils par défaut
-assets/data/devices/       # Catalogues d’appareils par catégorie
-assets/data/schema.json    # Schéma généré pour les sélecteurs
-assets/vendor/             # Bibliothèques tierces incluses
+src/styles/style.css       # Styles et mise en page
+src/styles/overview.css    # Styles de l’aperçu imprimable
+src/styles/overview-print.css # Ajustements d’impression pour l’aperçu
+src/scripts/script.js        # Logique applicative
+src/scripts/storage.js       # Helpers LocalStorage
+src/scripts/static-theme.js  # Logique de thème partagée pour les pages légales
+src/data/index.js       # Liste d’appareils par défaut
+src/data/devices/       # Catalogues d’appareils par catégorie
+src/data/schema.json    # Schéma généré pour les sélecteurs
+src/vendor/             # Bibliothèques tierces incluses
 legal/                     # Pages légales hors ligne
 tools/                     # Scripts de maintenance des données
 tests/                     # Suite de tests Jest

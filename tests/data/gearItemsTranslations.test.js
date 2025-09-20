@@ -1,4 +1,4 @@
-const { gearItems } = require('../../assets/js/translations');
+const { gearItems } = require('../../src/scripts/translations');
 
 describe('gear item translation coverage', () => {
   const languages = ['en', 'it', 'es', 'fr', 'de'];

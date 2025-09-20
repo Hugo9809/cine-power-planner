@@ -179,7 +179,7 @@ Der Generator verwandelt deine Auswahl in eine nach Kategorien sortierte Packlis
 ### 🛠 Geräte-Datenbank-Editor
 - Geräte in allen Kategorien hinzufügen, bearbeiten oder löschen
 - Gesamte Datenbank als JSON importieren oder exportieren
-- Zur Standarddatenbank aus `assets/data/index.js` zurückkehren
+- Zur Standarddatenbank aus `src/data/index.js` zurückkehren
 
 ### 🌓 Dunkelmodus
 - Über die Mondschaltfläche neben dem Sprachmenü umschalten
@@ -234,16 +234,16 @@ Beim Ausliefern über HTTP(S) installiert sich ein Service Worker, der alle Date
 ## 🗂️ Verzeichnisstruktur
 ```bash
 index.html                 # Zentrales HTML-Layout
-assets/css/style.css       # Styles und Layout
-assets/css/overview.css    # Gestaltung der Übersicht
-assets/css/overview-print.css # Druck-Styles für die Übersicht
-assets/js/script.js        # Anwendungslogik
-assets/js/storage.js       # Hilfsfunktionen für LocalStorage
-assets/js/static-theme.js  # Gemeinsame Theme-Logik für die Rechtstexte
-assets/data/index.js       # Standard-Geräteliste
-assets/data/devices/       # Gerätekataloge nach Kategorie
-assets/data/schema.json    # Generiertes Schema für Auswahllisten
-assets/vendor/             # Gebündelte Drittanbieter-Bibliotheken
+src/styles/style.css       # Styles und Layout
+src/styles/overview.css    # Gestaltung der Übersicht
+src/styles/overview-print.css # Druck-Styles für die Übersicht
+src/scripts/script.js        # Anwendungslogik
+src/scripts/storage.js       # Hilfsfunktionen für LocalStorage
+src/scripts/static-theme.js  # Gemeinsame Theme-Logik für die Rechtstexte
+src/data/index.js       # Standard-Geräteliste
+src/data/devices/       # Gerätekataloge nach Kategorie
+src/data/schema.json    # Generiertes Schema für Auswahllisten
+src/vendor/             # Gebündelte Drittanbieter-Bibliotheken
 legal/                     # Offline-Rechtstexte
 tools/                     # Skripte zur Datenpflege
 tests/                     # Jest-Test-Suite
