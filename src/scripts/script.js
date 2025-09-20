@@ -18166,7 +18166,6 @@ function collectProjectFormData() {
     const proGaffWidth2 = getGearValue('gearListProGaffWidth2');
 
     const info = {
-        projectName: getValue('projectName'),
         productionCompany: getValue('productionCompany'),
         rentalHouse: getValue('rentalHouse'),
         ...(people.length ? { people } : {}),
@@ -18228,6 +18227,11 @@ function collectProjectFormData() {
         info.proGaffWidth2 = proGaffWidth2 || '';
     }
 
+    const currentProjectName = getCurrentProjectName();
+    if (currentProjectName) {
+        info.projectName = currentProjectName;
+    }
+
     return info;
 }
 
@@ -18252,7 +18256,6 @@ function populateProjectForm(info = {}) {
     populateSensorModeDropdown(info.sensorMode);
     populateCodecDropdown(info.codec);
 
-    setVal('projectName', info.projectName);
     setVal('productionCompany', info.productionCompany);
     setVal('rentalHouse', info.rentalHouse);
     if (crewContainer) {
@@ -19116,7 +19119,8 @@ function generateGearListHtml(info = {}) {
     delete projectInfo.viewfinderSettings;
     delete projectInfo.frameGuides;
     delete projectInfo.aspectMaskOpacity;
-    const projectTitle = escapeHtml(info.projectName || setupNameInput.value);
+    const projectTitleSource = getCurrentProjectName() || info.projectName || '';
+    const projectTitle = escapeHtml(projectTitleSource);
     const projectLabels = texts[currentLang]?.projectFields || texts.en?.projectFields || {};
     const projectFormTexts = texts[currentLang]?.projectForm || texts.en?.projectForm || {};
     const excludedFields = new Set([
