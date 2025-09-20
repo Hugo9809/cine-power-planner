@@ -10304,10 +10304,10 @@ const diagramCssLight = `
 .node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
-.node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
-.node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
-.node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
+.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
+.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
+.node-icon[data-icon-font='film']{font-family:'FilmIndustryIconsV2',system-ui,sans-serif;}
+.node-icon[data-icon-font='gadget']{font-family:'GadgetIconsV2',system-ui,sans-serif;}
 .node-icon-svg{color:#333;pointer-events:none;}
 .node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}
 .node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.2;stroke:none;}
@@ -10328,10 +10328,10 @@ const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraight',system-ui,sans-serif;font-style:normal;}
-.node-icon[data-icon-font='essential']{font-family:'EssentialIcons',system-ui,sans-serif;}
-.node-icon[data-icon-font='film']{font-family:'FilmIndustryIcons',system-ui,sans-serif;}
-.node-icon[data-icon-font='gadget']{font-family:'GadgetIcons',system-ui,sans-serif;}
+.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
+.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
+.node-icon[data-icon-font='film']{font-family:'FilmIndustryIconsV2',system-ui,sans-serif;}
+.node-icon[data-icon-font='gadget']{font-family:'GadgetIconsV2',system-ui,sans-serif;}
 .node-icon-svg{color:#fff;pointer-events:none;}
 .node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}
 .node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.3;stroke:none;}

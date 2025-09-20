@@ -31,7 +31,7 @@
   --form-label-width: 150px;
   --form-label-min-width: 120px;
   --form-action-width: 110px;
-  --font-family: 'Ubuntu', 'UiconsThinStraight', sans-serif;
+  --font-family: 'Ubuntu', 'UiconsThinStraightV2', sans-serif;
   /* Typography */
   --font-size-base: 1rem;
   --font-size-relative-base: 1em;
@@ -1683,7 +1683,7 @@ body.pink-mode .auto-gear-rule-title,
 }
 
 .icon-glyph {
-  font-family: 'UiconsThinStraight';
+  font-family: 'UiconsThinStraightV2';
   font-style: normal;
   font-weight: var(--font-weight-regular);
   display: inline-flex;
@@ -1702,19 +1702,19 @@ body.pink-mode .auto-gear-rule-title,
 }
 
 .icon-glyph[data-icon-font='uicons'] {
-  font-family: 'UiconsThinStraight';
+  font-family: 'UiconsThinStraightV2';
 }
 
 .icon-glyph[data-icon-font='essential'] {
-  font-family: 'EssentialIcons';
+  font-family: 'EssentialIconsV2';
 }
 
 .icon-glyph[data-icon-font='film'] {
-  font-family: 'FilmIndustryIcons';
+  font-family: 'FilmIndustryIconsV2';
 }
 
 .icon-glyph[data-icon-font='gadget'] {
-  font-family: 'GadgetIcons';
+  font-family: 'GadgetIconsV2';
 }
 
 .icon-glyph.icon-text {
@@ -2980,20 +2980,20 @@ body.pink-mode #topBar #logo .logo-center {
 
 #setupDiagram .node-icon {
   font-size: var(--font-size-diagram-icon);
-  font-family: 'UiconsThinStraight', system-ui, sans-serif;
+  font-family: 'UiconsThinStraightV2', system-ui, sans-serif;
   font-style: normal;
 }
 
 #setupDiagram .node-icon[data-icon-font='essential'] {
-  font-family: 'EssentialIcons', system-ui, sans-serif;
+  font-family: 'EssentialIconsV2', system-ui, sans-serif;
 }
 
 #setupDiagram .node-icon[data-icon-font='film'] {
-  font-family: 'FilmIndustryIcons', system-ui, sans-serif;
+  font-family: 'FilmIndustryIconsV2', system-ui, sans-serif;
 }
 
 #setupDiagram .node-icon[data-icon-font='gadget'] {
-  font-family: 'GadgetIcons', system-ui, sans-serif;
+  font-family: 'GadgetIconsV2', system-ui, sans-serif;
 }
 
 #setupDiagram .node-icon-svg {
@@ -3033,7 +3033,7 @@ html.high-contrast #setupDiagram .node-icon-svg svg .diagram-camera-icon__lens {
 }
 
 #setupDiagram .node-icon[data-icon-font='uicons'] {
-  font-family: 'UiconsThinStraight', system-ui, sans-serif;
+  font-family: 'UiconsThinStraightV2', system-ui, sans-serif;
 }
 #setupDiagram .conn {
   stroke: none;
