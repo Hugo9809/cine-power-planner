@@ -60,6 +60,10 @@ body.dark-mode {
   --power-color: #d33;
   --video-color: #369;
   --fiz-color: #090;
+  --power-conn-bg: rgba(244, 67, 54, 0.15);
+  --fiz-conn-bg: rgba(76, 175, 80, 0.15);
+  --video-conn-bg: rgba(33, 150, 243, 0.15);
+  --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ffe066;
   --status-warning-text-color: #000;
   font-family: 'Ubuntu', sans-serif;
@@ -79,6 +83,10 @@ body.dark-mode {
   --panel-border: #ddd;
   --control-bg: #f0f0f0;
   --control-text: #333;
+  --power-conn-bg: rgba(244, 67, 54, 0.15);
+  --fiz-conn-bg: rgba(76, 175, 80, 0.15);
+  --video-conn-bg: rgba(33, 150, 243, 0.15);
+  --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ffe066;
   --status-warning-text-color: #000;
   --diagram-node-fill: #f0f0f0;
@@ -368,10 +376,42 @@ body:not(.light-mode) .gear-table .category-row td {
 }
 
 
-.device-block,
 .device-category {
-  border: 1px solid var(--text-color);
+  background: var(--panel-bg) !important;
+  border: 1px solid var(--panel-border) !important;
   box-shadow: var(--panel-shadow);
+}
+
+.device-block {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid var(--control-text) !important;
+  box-shadow: var(--panel-shadow);
+}
+
+.connector-block,
+.info-box {
+  background: var(--panel-bg) !important;
+  box-shadow: var(--panel-shadow);
+}
+
+.power-conn {
+  background-color: var(--power-conn-bg) !important;
+  border: 1px solid var(--power-color) !important;
+}
+
+.fiz-conn {
+  background-color: var(--fiz-conn-bg) !important;
+  border: 1px dashed var(--fiz-color) !important;
+}
+
+.video-conn {
+  background-color: var(--video-conn-bg) !important;
+  border: 1px dotted var(--video-color) !important;
+}
+
+.neutral-conn {
+  background-color: var(--neutral-conn-bg) !important;
+  border: 1px double var(--control-text) !important;
 }
 
 #overviewDialogContent .barContainer {
@@ -404,22 +444,6 @@ body:not(.light-mode) .gear-table .category-row td {
   min-width: var(--button-size) !important;
   min-height: var(--button-size) !important;
   height: auto !important;
-}
-
-.power-conn {
-  border: 1px solid var(--text-color);
-}
-
-.fiz-conn {
-  border: 1px dashed var(--text-color);
-}
-
-.video-conn {
-  border: 1px dotted var(--text-color);
-}
-
-.neutral-conn {
-  border: 1px double var(--text-color);
 }
 
 .warning {
