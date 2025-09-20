@@ -239,7 +239,33 @@
       "videoOutputs",
       "viewfinder",
       "weight_g"
-    ]
+    ],
+    "power": {
+      "batteryPlateSupport": {
+        "attributes": [
+          "mount",
+          "notes",
+          "type"
+        ]
+      },
+      "input": {
+        "attributes": [
+          "notes",
+          "powerDrawWatts",
+          "type",
+          "voltageRange"
+        ]
+      },
+      "powerDistributionOutputs": {
+        "attributes": [
+          "current",
+          "notes",
+          "type",
+          "voltage",
+          "wattage"
+        ]
+      }
+    }
   },
   "directorMonitors": {
     "attributes": [
@@ -252,7 +278,16 @@
       "videoInputs",
       "videoOutputs",
       "wirelessTx"
-    ]
+    ],
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "type",
+          "voltageRange"
+        ]
+      }
+    }
   },
   "filterOptions": {
     "attributes": []
@@ -312,7 +347,15 @@
       "powerDrawWatts",
       "videoInputs",
       "videoOutputs"
-    ]
+    ],
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "type"
+        ]
+      }
+    }
   },
   "lenses": {
     "attributes": [
@@ -358,7 +401,16 @@
       "wireless",
       "wirelessRX",
       "wirelessTx"
-    ]
+    ],
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "portType",
+          "voltageRange"
+        ]
+      }
+    }
   },
   "video": {
     "attributes": [
@@ -368,7 +420,16 @@
       "powerDrawWatts",
       "videoInputs",
       "videoOutputs"
-    ]
+    ],
+    "power": {
+      "input": {
+        "attributes": [
+          "notes",
+          "type",
+          "voltageRange"
+        ]
+      }
+    }
   },
   "videoAssist": {
     "attributes": [
