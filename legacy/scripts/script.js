@@ -312,23 +312,42 @@ function normalizeAutoGearItem(entry) {
     quantity: quantity
   };
 }
+function normalizeAutoGearTriggerList(values) {
+  if (!Array.isArray(values)) return [];
+  return Array.from(new Set(values.map(function (value) {
+    return typeof value === 'string' ? value.trim() : '';
+  }).filter(Boolean)));
+}
+function normalizeAutoGearTriggerValue(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+function autoGearRuleMatteboxKey(rule) {
+  if (!rule || _typeof(rule) !== 'object') return '';
+  var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox : [];
+  if (!matteboxList.length) return '';
+  return matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean).sort(function (a, b) {
+    return a.localeCompare(b);
+  }).join('|');
+}
 function normalizeAutoGearRule(rule) {
   if (!rule || _typeof(rule) !== 'object') return null;
   var id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
   var label = typeof rule.label === 'string' ? rule.label.trim() : '';
-  var scenarios = Array.isArray(rule.scenarios) ? Array.from(new Set(rule.scenarios.map(function (s) {
-    return typeof s === 'string' ? s.trim() : '';
-  }).filter(Boolean))) : [];
-  if (!scenarios.length) return null;
+  var scenarios = normalizeAutoGearTriggerList(rule.scenarios).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  var mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  if (!scenarios.length && !mattebox.length) return null;
   var add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
   var remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
   if (!add.length && !remove.length) return null;
   return {
     id: id,
     label: label,
-    scenarios: scenarios.sort(function (a, b) {
-      return a.localeCompare(b);
-    }),
+    scenarios: scenarios,
+    mattebox: mattebox,
     add: add,
     remove: remove
   };
@@ -366,15 +385,19 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     scenarios: normalized.scenarios.slice().sort(function (a, b) {
       return a.localeCompare(b);
     }),
+    mattebox: normalized.mattebox.slice().sort(function (a, b) {
+      return a.localeCompare(b);
+    }),
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove)
   };
 }
 function autoGearRuleSortKey(rule) {
   var scenarioKey = Array.isArray(rule.scenarios) ? rule.scenarios.join('|') : '';
+  var matteboxKey = Array.isArray(rule.mattebox) ? rule.mattebox.join('|') : '';
   var addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   var removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return "".concat(scenarioKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
+  return "".concat(scenarioKey, "|").concat(matteboxKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
 }
 function createAutoGearRulesFingerprint(rules) {
   var snapshot = (Array.isArray(rules) ? rules : []).map(snapshotAutoGearRuleForFingerprint).filter(Boolean).sort(function (a, b) {
@@ -770,6 +793,7 @@ function autoGearRuleSignature(rule) {
   return stableStringify({
     label: typeof rule.label === 'string' ? rule.label : '',
     scenarios: Array.isArray(rule.scenarios) ? rule.scenarios : [],
+    mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
     add: normalizeList(rule.add),
     remove: normalizeList(rule.remove)
   });
@@ -943,73 +967,144 @@ function subtractScenarioContributions(diff, scenarioKeys, scenarioDiffMap) {
     remove: adjust(diff.remove, 'remove')
   };
 }
+function buildDefaultMatteboxAutoGearRules() {
+  var category = 'Matte box + filter';
+  var createItems = function createItems(names) {
+    return names.map(function (name) {
+      return {
+        id: generateAutoGearId('item'),
+        name: name,
+        category: category,
+        quantity: 1
+      };
+    });
+  };
+  return [{
+    id: generateAutoGearId('rule'),
+    label: 'Mattebox: Swing Away',
+    scenarios: [],
+    mattebox: ['Swing Away'],
+    add: createItems(['ARRI LMB 4x5 Pro Set', 'ARRI LMB 19mm Studio Rod Adapter', 'ARRI LMB 4x5 / LMB-6 Tray Catcher']),
+    remove: []
+  }, {
+    id: generateAutoGearId('rule'),
+    label: 'Mattebox: Rod based',
+    scenarios: [],
+    mattebox: ['Rod based'],
+    add: createItems(['ARRI LMB 4x5 15mm LWS Set 3-Stage', 'ARRI LMB 19mm Studio Rod Adapter', 'ARRI LMB 4x5 / LMB-6 Tray Catcher', 'ARRI LMB 4x5 Side Flags', 'ARRI LMB Flag Holders', 'ARRI LMB 4x5 Set of Mattes spherical', 'ARRI LMB Accessory Adapter', 'ARRI Anti-Reflection Frame 4x5.65']),
+    remove: []
+  }, {
+    id: generateAutoGearId('rule'),
+    label: 'Mattebox: Clamp On',
+    scenarios: [],
+    mattebox: ['Clamp On'],
+    add: createItems(['ARRI LMB 4x5 Clamp-On (3-Stage)', 'ARRI LMB 4x5 / LMB-6 Tray Catcher', 'ARRI LMB 4x5 Side Flags', 'ARRI LMB Flag Holders', 'ARRI LMB 4x5 Set of Mattes spherical', 'ARRI LMB Accessory Adapter', 'ARRI Anti-Reflection Frame 4x5.65', 'ARRI LMB 4x5 Clamp Adapter Set Pro']),
+    remove: []
+  }];
+}
+function ensureDefaultMatteboxAutoGearRules() {
+  var defaults = buildDefaultMatteboxAutoGearRules();
+  if (!defaults.length) return false;
+  var existingKeys = new Set(autoGearRules.map(autoGearRuleMatteboxKey).filter(Boolean));
+  var additions = defaults.filter(function (rule) {
+    var key = autoGearRuleMatteboxKey(rule);
+    if (!key) return false;
+    if (existingKeys.has(key)) return false;
+    existingKeys.add(key);
+    return true;
+  });
+  if (!additions.length) return false;
+  setAutoGearRules(autoGearRules.concat(additions));
+  return true;
+}
 function seedAutoGearRulesFromCurrentProject() {
-  if (autoGearRules.length) return;
-  if (hasSeededAutoGearDefaults()) return;
-  if (typeof generateGearListHtml !== 'function' || typeof collectProjectFormData !== 'function') return;
-  if (!requiredScenariosSelect) return;
-  var baseInfo = collectProjectFormData ? collectProjectFormData() : {};
-  if (!baseInfo || _typeof(baseInfo) !== 'object') return;
-  var baselineHtml = generateGearListHtml(_objectSpread(_objectSpread({}, baseInfo), {}, {
-    requiredScenarios: ''
-  }));
-  var baselineMap = parseGearTableForAutoRules(baselineHtml);
-  if (!baselineMap) return;
-  var scenarioValues = Array.from(requiredScenariosSelect.options || []).map(function (opt) {
-    return opt.value;
-  }).filter(Boolean);
-  if (!scenarioValues.length) return;
-  var scenarioDiffMap = new Map();
+  if (autoGearRules.length) {
+    var addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (addedDefaults && !hasSeededAutoGearDefaults()) {
+      markAutoGearDefaultsSeeded();
+    }
+    return;
+  }
+  if (hasSeededAutoGearDefaults()) {
+    var restoredDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (restoredDefaults) markAutoGearDefaultsSeeded();
+    return;
+  }
   var rules = [];
-  scenarioValues.forEach(function (value) {
-    var scenarioHtml = generateGearListHtml(_objectSpread(_objectSpread({}, baseInfo), {}, {
-      requiredScenarios: value
-    }));
-    var scenarioMap = parseGearTableForAutoRules(scenarioHtml);
-    if (!scenarioMap) return;
-    var diff = diffGearTableMaps(baselineMap, scenarioMap);
-    var add = cloneAutoGearItems(diff.add);
-    var remove = cloneAutoGearItems(diff.remove);
-    if (!add.length && !remove.length) return;
-    scenarioDiffMap.set(value, {
-      add: add,
-      remove: remove
-    });
-    rules.push({
-      id: generateAutoGearId('rule'),
-      label: value,
-      scenarios: [value],
-      add: add,
-      remove: remove
-    });
+  var canGenerateRules = typeof generateGearListHtml === 'function' && typeof collectProjectFormData === 'function';
+  if (canGenerateRules && requiredScenariosSelect) {
+    var baseInfo = collectProjectFormData ? collectProjectFormData() : {};
+    if (baseInfo && _typeof(baseInfo) === 'object') {
+      var scenarioValues = Array.from(requiredScenariosSelect.options || []).map(function (opt) {
+        return opt.value;
+      }).filter(Boolean);
+      if (scenarioValues.length) {
+        var baselineHtml = generateGearListHtml(_objectSpread(_objectSpread({}, baseInfo), {}, {
+          requiredScenarios: ''
+        }));
+        var baselineMap = parseGearTableForAutoRules(baselineHtml);
+        if (baselineMap) {
+          var scenarioDiffMap = new Map();
+          scenarioValues.forEach(function (value) {
+            var scenarioHtml = generateGearListHtml(_objectSpread(_objectSpread({}, baseInfo), {}, {
+              requiredScenarios: value
+            }));
+            var scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+            if (!scenarioMap) return;
+            var diff = diffGearTableMaps(baselineMap, scenarioMap);
+            var add = cloneAutoGearItems(diff.add);
+            var remove = cloneAutoGearItems(diff.remove);
+            if (!add.length && !remove.length) return;
+            scenarioDiffMap.set(value, {
+              add: add,
+              remove: remove
+            });
+            rules.push({
+              id: generateAutoGearId('rule'),
+              label: value,
+              scenarios: [value],
+              add: add,
+              remove: remove
+            });
+          });
+          var comboCandidates = [['Handheld', 'Easyrig'], ['Slider', 'Undersling mode']].filter(function (combo) {
+            return combo.every(function (value) {
+              return scenarioValues.includes(value);
+            });
+          });
+          comboCandidates.forEach(function (combo) {
+            var combinedLabel = combo.join(' + ');
+            var scenarioHtml = generateGearListHtml(_objectSpread(_objectSpread({}, baseInfo), {}, {
+              requiredScenarios: combo.join(', ')
+            }));
+            var scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+            if (!scenarioMap) return;
+            var diff = diffGearTableMaps(baselineMap, scenarioMap);
+            var adjusted = subtractScenarioContributions({
+              add: cloneAutoGearItems(diff.add),
+              remove: cloneAutoGearItems(diff.remove)
+            }, combo, scenarioDiffMap);
+            if (!adjusted.add.length && !adjusted.remove.length) return;
+            rules.push({
+              id: generateAutoGearId('rule'),
+              label: combinedLabel,
+              scenarios: combo.slice(),
+              add: adjusted.add,
+              remove: adjusted.remove
+            });
+          });
+        }
+      }
+    }
+  }
+  buildDefaultMatteboxAutoGearRules().forEach(function (rule) {
+    rules.push(rule);
   });
-  var comboCandidates = [['Handheld', 'Easyrig'], ['Slider', 'Undersling mode']].filter(function (combo) {
-    return combo.every(function (value) {
-      return scenarioValues.includes(value);
-    });
-  });
-  comboCandidates.forEach(function (combo) {
-    var combinedLabel = combo.join(' + ');
-    var scenarioHtml = generateGearListHtml(_objectSpread(_objectSpread({}, baseInfo), {}, {
-      requiredScenarios: combo.join(', ')
-    }));
-    var scenarioMap = parseGearTableForAutoRules(scenarioHtml);
-    if (!scenarioMap) return;
-    var diff = diffGearTableMaps(baselineMap, scenarioMap);
-    var adjusted = subtractScenarioContributions({
-      add: cloneAutoGearItems(diff.add),
-      remove: cloneAutoGearItems(diff.remove)
-    }, combo, scenarioDiffMap);
-    if (!adjusted.add.length && !adjusted.remove.length) return;
-    rules.push({
-      id: generateAutoGearId('rule'),
-      label: combinedLabel,
-      scenarios: combo.slice(),
-      add: adjusted.add,
-      remove: adjusted.remove
-    });
-  });
-  if (!rules.length) return;
+  if (!rules.length) {
+    var seededDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (seededDefaults) markAutoGearDefaultsSeeded();
+    return;
+  }
   setAutoGearRules(rules);
   markAutoGearDefaultsSeeded();
 }
@@ -3128,6 +3223,17 @@ function setLanguage(lang) {
       autoGearScenariosSelect.setAttribute('aria-label', _label16);
     }
   }
+  if (autoGearMatteboxLabel) {
+    var _texts$en47, _texts$en48;
+    var _label17 = texts[lang].autoGearMatteboxLabel || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.autoGearMatteboxLabel) || autoGearMatteboxLabel.textContent;
+    var _help2 = texts[lang].autoGearMatteboxHelp || ((_texts$en48 = texts.en) === null || _texts$en48 === void 0 ? void 0 : _texts$en48.autoGearMatteboxHelp) || _label17;
+    autoGearMatteboxLabel.textContent = _label17;
+    autoGearMatteboxLabel.setAttribute('data-help', _help2);
+    if (autoGearMatteboxSelect) {
+      autoGearMatteboxSelect.setAttribute('aria-label', _label17);
+      autoGearMatteboxSelect.setAttribute('data-help', _help2);
+    }
+  }
   if (autoGearAddItemsHeading) {
     var _texts$en47;
     autoGearAddItemsHeading.textContent = texts[lang].autoGearAddItemsHeading || ((_texts$en47 = texts.en) === null || _texts$en47 === void 0 ? void 0 : _texts$en47.autoGearAddItemsHeading) || autoGearAddItemsHeading.textContent;
@@ -3235,6 +3341,10 @@ function setLanguage(lang) {
   if (autoGearScenariosSelect) {
     var _autoGearEditorDraft;
     refreshAutoGearScenarioOptions((_autoGearEditorDraft = autoGearEditorDraft) === null || _autoGearEditorDraft === void 0 ? void 0 : _autoGearEditorDraft.scenarios);
+  }
+  if (autoGearMatteboxSelect) {
+    var _autoGearEditorDraft2;
+    refreshAutoGearMatteboxOptions((_autoGearEditorDraft2 = autoGearEditorDraft) === null || _autoGearEditorDraft2 === void 0 ? void 0 : _autoGearEditorDraft2.mattebox);
   }
   seedAutoGearRulesFromCurrentProject();
   renderAutoGearRulesList();
@@ -6085,6 +6195,8 @@ var autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
 var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
 var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
+var autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
+var autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
 var autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
 var autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
 var autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
@@ -6132,6 +6244,7 @@ function createAutoGearDraft(rule) {
       id: rule.id,
       label: rule.label || '',
       scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
+      mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
       add: Array.isArray(rule.add) ? rule.add.map(function (item) {
         return _objectSpread({}, item);
       }) : [],
@@ -6144,6 +6257,7 @@ function createAutoGearDraft(rule) {
     id: generateAutoGearId('rule'),
     label: '',
     scenarios: [],
+    mattebox: [],
     add: [],
     remove: []
   };
@@ -6201,6 +6315,60 @@ function refreshAutoGearScenarioOptions(selected) {
   });
   var visibleCount = selectableOptions.length ? Math.min(6, Math.max(selectableOptions.length, 3)) : 1;
   autoGearScenariosSelect.size = visibleCount;
+}
+function refreshAutoGearMatteboxOptions(selected) {
+  var _autoGearEditorDraft3;
+  if (!autoGearMatteboxSelect) return;
+  var candidateValues = Array.isArray(selected) ? selected : typeof selected === 'string' && selected ? [selected] : Array.isArray((_autoGearEditorDraft3 = autoGearEditorDraft) === null || _autoGearEditorDraft3 === void 0 ? void 0 : _autoGearEditorDraft3.mattebox) ? autoGearEditorDraft.mattebox : [];
+  var selectedValues = Array.from(new Set(candidateValues.filter(function (value) {
+    return typeof value === 'string';
+  }).map(function (value) {
+    return value.trim();
+  }).filter(Boolean)));
+  autoGearMatteboxSelect.innerHTML = '';
+  autoGearMatteboxSelect.multiple = true;
+  var source = document.getElementById('mattebox');
+  var hasOptions = false;
+  if (source) {
+    Array.from(source.options).forEach(function (opt) {
+      if (!opt.value) return;
+      var option = document.createElement('option');
+      option.value = opt.value;
+      option.textContent = opt.textContent;
+      if (selectedValues.includes(opt.value)) {
+        option.selected = true;
+      }
+      autoGearMatteboxSelect.appendChild(option);
+      hasOptions = true;
+    });
+  }
+  if (!hasOptions) {
+    var _texts$currentLang5, _texts$en70;
+    var placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = ((_texts$currentLang5 = texts[currentLang]) === null || _texts$currentLang5 === void 0 ? void 0 : _texts$currentLang5.autoGearMatteboxPlaceholder) || ((_texts$en70 = texts.en) === null || _texts$en70 === void 0 ? void 0 : _texts$en70.autoGearMatteboxPlaceholder) || 'Select mattebox options';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearMatteboxSelect.appendChild(placeholder);
+  } else {
+    selectedValues.forEach(function (value) {
+      var exists = Array.from(autoGearMatteboxSelect.options || []).some(function (option) {
+        return option && option.value === value;
+      });
+      if (!exists) {
+        var fallbackOption = document.createElement('option');
+        fallbackOption.value = value;
+        fallbackOption.textContent = value;
+        fallbackOption.selected = true;
+        autoGearMatteboxSelect.appendChild(fallbackOption);
+      }
+    });
+  }
+  var selectableOptions = Array.from(autoGearMatteboxSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  });
+  var visibleCount = selectableOptions.length ? Math.min(4, Math.max(selectableOptions.length, 3)) : 1;
+  autoGearMatteboxSelect.size = visibleCount;
 }
 function populateAutoGearCategorySelect(select, currentValue) {
   var _texts$currentLang5, _texts$en70;
@@ -6774,13 +6942,26 @@ function renderAutoGearRulesList() {
     info.className = 'auto-gear-rule-info';
     var title = document.createElement('p');
     title.className = 'auto-gear-rule-title';
-    title.textContent = rule.label || rule.scenarios.join(' + ');
+    var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios : [];
+    var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox : [];
+    var fallbackTitle = scenarioList.length ? scenarioList.join(' + ') : matteboxList.length ? matteboxList.join(' + ') : '';
+    title.textContent = rule.label || fallbackTitle;
     info.appendChild(title);
-    var scenarioLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 || (_texts$currentLang17 = _texts$currentLang17.projectFields) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.requiredScenarios) || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 || (_texts$en93 = _texts$en93.projectFields) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.requiredScenarios) || 'Required Scenarios';
-    var scenarioMeta = document.createElement('p');
-    scenarioMeta.className = 'auto-gear-rule-meta';
-    scenarioMeta.textContent = "".concat(scenarioLabel, ": ").concat(rule.scenarios.join(' + '));
-    info.appendChild(scenarioMeta);
+    if (scenarioList.length) {
+      var scenarioLabel = ((_texts$currentLang17 = texts[currentLang]) === null || _texts$currentLang17 === void 0 || (_texts$currentLang17 = _texts$currentLang17.projectFields) === null || _texts$currentLang17 === void 0 ? void 0 : _texts$currentLang17.requiredScenarios) || ((_texts$en93 = texts.en) === null || _texts$en93 === void 0 || (_texts$en93 = _texts$en93.projectFields) === null || _texts$en93 === void 0 ? void 0 : _texts$en93.requiredScenarios) || 'Required Scenarios';
+      var scenarioMeta = document.createElement('p');
+      scenarioMeta.className = 'auto-gear-rule-meta';
+      scenarioMeta.textContent = "".concat(scenarioLabel, ": ").concat(scenarioList.join(' + '));
+      info.appendChild(scenarioMeta);
+    }
+    if (matteboxList.length) {
+      var _texts$currentLang18, _texts$en94;
+      var matteboxLabelText = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearMatteboxLabel) || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearMatteboxLabel) || 'Mattebox options';
+      var matteboxMeta = document.createElement('p');
+      matteboxMeta.className = 'auto-gear-rule-meta';
+      matteboxMeta.textContent = "".concat(matteboxLabelText, ": ").concat(matteboxList.join(' + '));
+      info.appendChild(matteboxMeta);
+    }
     var addSummary = formatAutoGearCount(rule.add.length, 'autoGearAddsCountOne', 'autoGearAddsCountOther');
     var removeSummary = formatAutoGearCount(rule.remove.length, 'autoGearRemovalsCountOne', 'autoGearRemovalsCountOther');
     var countsMeta = document.createElement('p');
@@ -6788,10 +6969,10 @@ function renderAutoGearRulesList() {
     countsMeta.textContent = "".concat(addSummary, " \xB7 ").concat(removeSummary);
     info.appendChild(countsMeta);
     if (rule.add.length) {
-      var _texts$currentLang18, _texts$en94;
+      var _texts$currentLang21, _texts$en97;
       var addsLabel = document.createElement('p');
       addsLabel.className = 'auto-gear-rule-meta auto-gear-rule-items-label';
-      addsLabel.textContent = ((_texts$currentLang18 = texts[currentLang]) === null || _texts$currentLang18 === void 0 ? void 0 : _texts$currentLang18.autoGearAddsListLabel) || ((_texts$en94 = texts.en) === null || _texts$en94 === void 0 ? void 0 : _texts$en94.autoGearAddsListLabel) || 'Adds';
+      addsLabel.textContent = ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearAddsListLabel) || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearAddsListLabel) || 'Adds';
       info.appendChild(addsLabel);
       var addList = document.createElement('ul');
       addList.className = 'auto-gear-rule-items';
@@ -6851,6 +7032,7 @@ function renderAutoGearDraftLists() {
       var categoryLabel = item.category && item.category.trim() ? item.category : ((_texts$currentLang22 = texts[currentLang]) === null || _texts$currentLang22 === void 0 ? void 0 : _texts$currentLang22.autoGearCustomCategory) || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearCustomCategory) || 'Custom Additions';
       span.textContent = "".concat(categoryLabel, " \u2013 ").concat(item.quantity, "x ").concat(item.name);
       li.appendChild(span);
+      var _texts$currentLang20, _texts$en96;
       var removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'auto-gear-remove-entry';
@@ -6879,6 +7061,7 @@ function openAutoGearEditor(ruleId) {
     autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
   }
   refreshAutoGearScenarioOptions(autoGearEditorDraft.scenarios);
+  refreshAutoGearMatteboxOptions(autoGearEditorDraft.mattebox);
   populateAutoGearCategorySelect(autoGearAddCategorySelect, ((_autoGearEditorDraft$ = autoGearEditorDraft.add[0]) === null || _autoGearEditorDraft$ === void 0 ? void 0 : _autoGearEditorDraft$.category) || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, ((_autoGearEditorDraft$2 = autoGearEditorDraft.remove[0]) === null || _autoGearEditorDraft$2 === void 0 ? void 0 : _autoGearEditorDraft$2.category) || '');
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
@@ -6894,6 +7077,7 @@ function closeAutoGearEditor() {
   autoGearEditorDraft = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
   refreshAutoGearScenarioOptions([]);
+  refreshAutoGearMatteboxOptions([]);
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
@@ -6936,9 +7120,12 @@ function saveAutoGearRuleFromEditor() {
   var scenarios = autoGearScenariosSelect ? Array.from(autoGearScenariosSelect.selectedOptions || []).map(function (option) {
     return option.value;
   }).filter(Boolean) : [];
-  if (!scenarios.length) {
+  var matteboxSelections = autoGearMatteboxSelect ? Array.from(autoGearMatteboxSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(Boolean) : [];
+  if (!scenarios.length && !matteboxSelections.length) {
     var _texts$currentLang25, _texts$en101;
-    var message = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearRuleScenarioRequired) || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearRuleScenarioRequired) || 'Select at least one scenario.';
+    var message = ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearRuleConditionRequired) || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearRuleConditionRequired) || ((_texts$currentLang25 = texts[currentLang]) === null || _texts$currentLang25 === void 0 ? void 0 : _texts$currentLang25.autoGearRuleScenarioRequired) || ((_texts$en101 = texts.en) === null || _texts$en101 === void 0 ? void 0 : _texts$en101.autoGearRuleScenarioRequired) || 'Select at least one scenario or mattebox option.';
     window.alert(message);
     return;
   }
@@ -6946,6 +7133,7 @@ function saveAutoGearRuleFromEditor() {
     autoGearEditorDraft.label = autoGearRuleNameInput.value.trim();
   }
   autoGearEditorDraft.scenarios = scenarios;
+  autoGearEditorDraft.mattebox = matteboxSelections;
   if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
     var _texts$currentLang26, _texts$en102;
     var _message = ((_texts$currentLang26 = texts[currentLang]) === null || _texts$currentLang26 === void 0 ? void 0 : _texts$currentLang26.autoGearRuleNeedsItems) || ((_texts$en102 = texts.en) === null || _texts$en102 === void 0 ? void 0 : _texts$en102.autoGearRuleNeedsItems) || 'Add at least one item to add or remove.';
@@ -17139,7 +17327,28 @@ function removeAutoGearItem(cell, item, remainingOverride) {
   }
   return remaining;
 }
-function addAutoGearItem(cell, item) {
+function getAutoGearRuleDisplayLabel(rule) {
+  if (!rule || _typeof(rule) !== 'object') return '';
+  var label = typeof rule.label === 'string' ? rule.label.trim() : '';
+  if (label) return label;
+  var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
+  if (scenarioList.length) return scenarioList.join(' + ');
+  var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
+  if (matteboxList.length) return matteboxList.join(' + ');
+  return '';
+}
+function formatAutoGearRuleTooltip(rule) {
+  var _texts$currentLang41, _texts$en122, _texts$currentLang42, _texts$en123;
+  var unnamedTemplate = ((_texts$currentLang41 = texts[currentLang]) === null || _texts$currentLang41 === void 0 ? void 0 : _texts$currentLang41.autoGearRuleTooltipUnnamed) || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearRuleTooltipUnnamed) || 'Added by automatic gear rule';
+  if (!rule || _typeof(rule) !== 'object') return unnamedTemplate;
+  var label = getAutoGearRuleDisplayLabel(rule);
+  if (label) {
+    var namedTemplate = ((_texts$currentLang42 = texts[currentLang]) === null || _texts$currentLang42 === void 0 ? void 0 : _texts$currentLang42.autoGearRuleTooltipNamed) || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearRuleTooltipNamed) || "".concat(unnamedTemplate, ": %s");
+    return namedTemplate.replace('%s', label);
+  }
+  return unnamedTemplate;
+}
+function addAutoGearItem(cell, item, rule) {
   if (!cell) return;
   var quantity = normalizeAutoGearQuantity(item.quantity);
   if (quantity <= 0) return;
@@ -17161,6 +17370,19 @@ function addAutoGearItem(cell, item) {
   var span = document.createElement('span');
   span.className = 'gear-item auto-gear-item';
   span.setAttribute('data-gear-name', name);
+  if (rule && _typeof(rule) === 'object') {
+    if (rule.id) {
+      span.dataset.autoGearRuleId = rule.id;
+    }
+    var ruleLabel = getAutoGearRuleDisplayLabel(rule);
+    if (ruleLabel) {
+      span.dataset.autoGearRuleLabel = ruleLabel;
+    }
+    var tooltip = formatAutoGearRuleTooltip(rule);
+    if (tooltip) {
+      span.title = tooltip;
+    }
+  }
   var displayName = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
   span.textContent = "".concat(quantity, "x ").concat(displayName);
   cell.appendChild(span);
@@ -17231,18 +17453,56 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var scenarios = info && info.requiredScenarios ? info.requiredScenarios.split(',').map(function (s) {
     return s.trim();
   }).filter(Boolean) : [];
+  var selectedMattebox = info && typeof info.mattebox === 'string' ? info.mattebox.trim() : '';
+  var normalizedMattebox = normalizeAutoGearTriggerValue(selectedMattebox);
   if (!scenarios.length) {
     var hasRuleWithoutScenario = autoGearRules.some(function (rule) {
-      return !rule.scenarios.length;
+      var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
+      return scenarioList.length === 0;
     });
     if (!hasRuleWithoutScenario) return tableHtml;
   }
-  var triggered = autoGearRules.filter(function (rule) {
-    return rule.scenarios.every(function (s) {
-      return scenarios.includes(s);
+  var touchesMatteboxCategory = function touchesMatteboxCategory(rule) {
+    if (!rule || _typeof(rule) !== 'object') return false;
+    var lists = [];
+    if (Array.isArray(rule.add)) lists.push(rule.add);
+    if (Array.isArray(rule.remove)) lists.push(rule.remove);
+    return lists.some(function (entries) {
+      return entries.some(function (entry) {
+        if (!entry || _typeof(entry) !== 'object') return false;
+        var category = typeof entry.category === 'string' ? entry.category.trim().toLowerCase() : '';
+        return category === 'matte box + filter';
+      });
     });
+  };
+  var triggered = autoGearRules.filter(function (rule) {
+    var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
+    if (scenarioList.length && !scenarioList.every(function (s) {
+      return scenarios.includes(s);
+    })) {
+      return false;
+    }
+    var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
+    if (matteboxList.length) {
+      var normalizedTargets = matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!normalizedTargets.length) return false;
+      if (!normalizedMattebox) return false;
+      if (!normalizedTargets.includes(normalizedMattebox)) return false;
+    }
+    return true;
   });
   if (!triggered.length) return tableHtml;
+  if (normalizedMattebox) {
+    triggered = triggered.filter(function (rule) {
+      if (!touchesMatteboxCategory(rule)) return true;
+      var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
+      if (!matteboxList.length) return false;
+      var normalizedTargets = matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!normalizedTargets.length) return false;
+      return normalizedTargets.includes(normalizedMattebox);
+    });
+    if (!triggered.length) return tableHtml;
+  }
   var container = document.createElement('div');
   container.innerHTML = tableHtml;
   var table = container.querySelector('.gear-table');
@@ -17267,7 +17527,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     });
     rule.add.forEach(function (item) {
       var cell = ensureAutoGearCategory(table, item.category);
-      if (cell) addAutoGearItem(cell, item);
+      if (cell) addAutoGearItem(cell, item, rule);
     });
   });
   return container.innerHTML;
