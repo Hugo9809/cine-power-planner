@@ -571,46 +571,142 @@ function normalizeProject(data) {
   return null;
 }
 
-function loadProject(name) {
+const LEGACY_PROJECT_ROOT_KEYS = new Set([
+  "gearList",
+  "projectInfo",
+  "projectHtml",
+  "gearHtml",
+  "autoGearRules",
+]);
+
+const NORMALIZED_PROJECT_KEYS = new Set(["gearList", "projectInfo", "autoGearRules"]);
+
+function isNormalizedProjectEntry(entry) {
+  if (!isPlainObject(entry)) {
+    return false;
+  }
+  const keys = Object.keys(entry);
+  if (!keys.every((key) => NORMALIZED_PROJECT_KEYS.has(key))) {
+    return false;
+  }
+  const { gearList, projectInfo } = entry;
+  if (
+    typeof gearList !== "string" &&
+    !(isPlainObject(gearList) &&
+      Object.keys(gearList).every((key) => typeof gearList[key] === "string"))
+  ) {
+    return false;
+  }
+  if (projectInfo !== null && !isPlainObject(projectInfo)) {
+    return false;
+  }
+  if (Object.prototype.hasOwnProperty.call(entry, "autoGearRules")) {
+    return Array.isArray(entry.autoGearRules) && entry.autoGearRules.length > 0;
+  }
+  return true;
+}
+
+function readAllProjectsFromStorage() {
   const parsed = loadJSONFromStorage(
     SAFE_LOCAL_STORAGE,
     PROJECT_STORAGE_KEY,
     "Error loading project from localStorage:",
-    {},
+    null,
   );
-  // Legacy single-project format
-  if (Object.prototype.hasOwnProperty.call(parsed || {}, "gearList") ||
-      Object.prototype.hasOwnProperty.call(parsed || {}, "projectInfo") ||
-      Object.prototype.hasOwnProperty.call(parsed || {}, "projectHtml") ||
-      typeof parsed === "string") {
-    const legacy = normalizeProject(parsed);
-    if (name === undefined || name === "") return legacy;
-    return null;
+  const projects = {};
+  let changed = false;
+
+  if (parsed === null || parsed === undefined) {
+    return { projects, changed: false };
   }
-  if (!isPlainObject(parsed)) return name === undefined ? {} : null;
-  if (name === undefined) {
-    const all = {};
-    Object.entries(parsed).forEach(([k, v]) => {
-      const norm = normalizeProject(v);
-      if (norm) all[k] = norm;
+
+  if (typeof parsed === "string") {
+    const normalized = normalizeProject(parsed);
+    if (normalized) {
+      projects[""] = normalized;
+    }
+    return { projects, changed: true };
+  }
+
+  if (Array.isArray(parsed)) {
+    const usedNames = new Set();
+    const normalizedNames = new Set();
+    parsed.forEach((item, index) => {
+      const normalized = normalizeProject(item);
+      if (!normalized) {
+        changed = true;
+        return;
+      }
+      const baseName =
+        isPlainObject(item) && typeof item.name === "string"
+          ? item.name.trim()
+          : `Project ${index + 1}`;
+      const candidate = baseName || `Project ${index + 1}`;
+      const unique = generateUniqueName(candidate, usedNames, normalizedNames);
+      projects[unique] = normalized;
     });
-    return all;
+    return { projects, changed: true };
   }
-  return normalizeProject(parsed[name]);
+
+  if (!isPlainObject(parsed)) {
+    return { projects, changed: true };
+  }
+
+  const keys = Object.keys(parsed);
+  const maybeLegacy =
+    keys.length > 0 && keys.every((key) => LEGACY_PROJECT_ROOT_KEYS.has(key));
+
+  if (maybeLegacy) {
+    const normalized = normalizeProject(parsed);
+    if (normalized) {
+      projects[""] = normalized;
+    }
+    return { projects, changed: true };
+  }
+
+  keys.forEach((key) => {
+    const normalized = normalizeProject(parsed[key]);
+    if (normalized) {
+      projects[key] = normalized;
+      if (!isNormalizedProjectEntry(parsed[key])) {
+        changed = true;
+      }
+    } else {
+      changed = true;
+    }
+  });
+
+  return { projects, changed };
+}
+
+function persistAllProjects(projects, successMessage) {
+  saveJSONToStorage(
+    SAFE_LOCAL_STORAGE,
+    PROJECT_STORAGE_KEY,
+    projects,
+    "Error saving project to localStorage:",
+    successMessage,
+  );
+}
+
+function loadProject(name) {
+  const { projects, changed } = readAllProjectsFromStorage();
+  if (changed && SAFE_LOCAL_STORAGE) {
+    persistAllProjects(projects);
+  }
+  if (name === undefined) {
+    return projects;
+  }
+  const key = name || "";
+  return Object.prototype.hasOwnProperty.call(projects, key) ? projects[key] : null;
 }
 
 function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
-  const all = loadProject();
-  all[name || ""] = normalized;
-  saveJSONToStorage(
-    SAFE_LOCAL_STORAGE,
-    PROJECT_STORAGE_KEY,
-    all,
-    "Error saving project to localStorage:",
-    "Project saved to localStorage.",
-  );
+  const { projects } = readAllProjectsFromStorage();
+  projects[name || ""] = normalized;
+  persistAllProjects(projects, "Project saved to localStorage.");
 }
 
 function deleteProject(name) {
@@ -622,27 +718,27 @@ function deleteProject(name) {
     );
     return;
   }
-  const all = loadProject();
-  delete all[name || ""];
-  if (Object.keys(all).length === 0) {
+
+  const key = name || "";
+  const { projects } = readAllProjectsFromStorage();
+  if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+    return;
+  }
+  delete projects[key];
+  if (Object.keys(projects).length === 0) {
     deleteFromStorage(
       SAFE_LOCAL_STORAGE,
       PROJECT_STORAGE_KEY,
       "Error deleting project from localStorage:",
     );
   } else {
-    saveJSONToStorage(
-      SAFE_LOCAL_STORAGE,
-      PROJECT_STORAGE_KEY,
-      all,
-      "Error saving project to localStorage:",
-    );
+    persistAllProjects(projects);
   }
 }
 
 function createProjectImporter() {
-  const existing = loadProject();
-  const usedNames = new Set(Object.keys(existing));
+  const { projects } = readAllProjectsFromStorage();
+  const usedNames = new Set(Object.keys(projects));
   const normalizedNames = new Set(
     [...usedNames].map((name) => name.trim().toLowerCase()),
   );
@@ -677,7 +773,7 @@ function createProjectImporter() {
       return;
     }
 
-    const baseName = candidates.find((name) => name) || fallback;
+    const baseName = candidates.find((candidate) => candidate) || fallback;
     const uniqueName = generateUniqueName(baseName, usedNames, normalizedNames);
     saveProject(uniqueName, normalizedProject);
   };
