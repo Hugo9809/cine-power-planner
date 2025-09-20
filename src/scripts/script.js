@@ -29,6 +29,17 @@ try {
   // overview generation not needed in test environments without module support
 }
 
+if (typeof window !== 'undefined') {
+  const lottie = window.lottie;
+  if (lottie && typeof lottie.useWebWorker === 'function') {
+    try {
+      lottie.useWebWorker(false);
+    } catch (error) {
+      console.warn('Unable to disable Lottie web workers', error);
+    }
+  }
+}
+
 const APP_VERSION = "1.0.2";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 
