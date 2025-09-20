@@ -20086,12 +20086,95 @@ if (helpButton && helpDialog) {
   // markup, highlighting matches and hiding entries that do not include the
   // query. A message is shown if nothing matches and the clear button is
   // toggled based on the presence of a query.
+  const HELP_SEARCH_ACCENT_VARIANTS = new Map([
+    ['a', 'àáâãäåāăąǎȁȃȧậắằẵẳấầẫẩảạæ'],
+    ['b', 'ḃɓ'],
+    ['c', 'çćĉċčƈ'],
+    ['d', 'ďđḍḑḓ'],
+    ['e', 'èéêëēĕėęěȅȇẹẻẽếềểễệ'],
+    ['f', 'ƒḟ'],
+    ['g', 'ğģĝġǵḡ'],
+    ['h', 'ĥħḣḥḧẖ'],
+    ['i', 'ìíîïĩīĭįıỉị'],
+    ['j', 'ĵǰ'],
+    ['k', 'ķƙḱḳḵ'],
+    ['l', 'ĺļľłḷḽ'],
+    ['m', 'ḿṁṃ'],
+    ['n', 'ñńņňǹṅṇṋ'],
+    ['o', 'òóôõöōŏőøǒȍȏơộớờỡởợọỏœ'],
+    ['p', 'ṕṗ'],
+    ['q', 'ʠ'],
+    ['r', 'ŕŗřȑȓṛṙ'],
+    ['s', 'śŝşšșṡṣ'],
+    ['t', 'ţťțṫṭṯ'],
+    ['u', 'ùúûüũūŭůűųǔȕȗưựứừữửụủ'],
+    ['v', 'ṽṿ'],
+    ['w', 'ŵẁẃẅẇẉ'],
+    ['x', 'ẋẍ'],
+    ['y', 'ýÿŷỳỷỹỵ'],
+    ['z', 'źżžẑẓẕ']
+  ]);
+
+  const normaliseHelpSearchText = str => {
+    if (!str) return '';
+    let normalized = String(str).toLowerCase();
+    if (typeof normalized.normalize === 'function') {
+      normalized = normalized.normalize('NFD');
+    }
+    normalized = normalized
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/ß/g, 'ss')
+      .replace(/æ/g, 'ae')
+      .replace(/œ/g, 'oe')
+      .replace(/ø/g, 'o')
+      .replace(/&/g, 'and')
+      .replace(/\+/g, 'plus')
+      .replace(/[°º˚]/g, 'deg')
+      .replace(/\bdegrees?\b/g, 'deg')
+      .replace(/[×✕✖✗✘]/g, 'x');
+    normalized = normalizeSpellingVariants(normalized);
+    normalized = normaliseMarkVariants(normalized);
+    return normalized.replace(/[^a-z0-9]+/g, '');
+  };
+
+  const buildHelpHighlightPattern = normalized => {
+    if (!normalized) return null;
+    const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const parts = [];
+    const addLetterPattern = char => {
+      const variants = HELP_SEARCH_ACCENT_VARIANTS.get(char) || '';
+      const chars = new Set();
+      const all = `${char}${variants}`;
+      for (const ch of all) {
+        chars.add(ch);
+        const upper = ch.toUpperCase();
+        if (upper) chars.add(upper);
+      }
+      const escaped = Array.from(chars)
+        .map(escapeRegExp)
+        .join('');
+      return `[${escaped}]`;
+    };
+    const letters = Array.from(normalized);
+    letters.forEach((char, index) => {
+      if (index > 0) parts.push('\\s*');
+      if (/[a-z]/.test(char)) {
+        parts.push(addLetterPattern(char));
+      } else if (/[0-9]/.test(char)) {
+        parts.push(char);
+      } else {
+        parts.push(escapeRegExp(char));
+      }
+    });
+    return `(${parts.join('')})`;
+  };
+
   const filterHelp = () => {
     // Bail out early if the search input is missing
     if (!helpSearch) return;
     const rawQuery = helpSearch.value.trim();
-    const normalizedQuery = rawQuery.replace(/\s+/g, '');
-    const query = normalizedQuery.toLowerCase();
+    const normalizedQuery = normaliseHelpSearchText(rawQuery);
+    const hasQuery = normalizedQuery.length > 0;
     // Treat sections and FAQ items uniformly so the same logic can filter both
     const sections = Array.from(
       helpDialog.querySelectorAll('[data-help-section]')
@@ -20099,12 +20182,8 @@ if (helpButton && helpDialog) {
     const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
     const elements = sections.concat(items);
     let anyVisible = false;
-    // Prepare a regex pattern to wrap matches in <mark>; escape to avoid
-    // breaking on special characters in the query and allow flexible
-    // whitespace matching between characters.
-    const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const highlightPattern = normalizedQuery
-      ? `(${escapeRegExp(normalizedQuery).split('').join('\\s*')})`
+    const highlightPattern = hasQuery
+      ? buildHelpHighlightPattern(normalizedQuery)
       : null;
     const highlightMatches = (root, pattern) => {
       if (
@@ -20126,7 +20205,7 @@ if (helpButton && helpDialog) {
       textNodes.forEach(node => {
         const text = node.textContent;
         if (!text) return;
-        const regex = new RegExp(pattern, 'ig');
+        const regex = new RegExp(pattern, 'giu');
         const firstMatch = regex.exec(text);
         if (!firstMatch) return;
         const frag = document.createDocumentFragment();
@@ -20171,20 +20250,22 @@ if (helpButton && helpDialog) {
       } else {
         el.innerHTML = el.dataset.origHtml;
       }
-      const text = el.textContent.toLowerCase().replace(/\s+/g, '');
-      const keywordText = (el.dataset.helpKeywords || '')
-        .toLowerCase()
-        .replace(/\s+/g, '');
+      const text = normaliseHelpSearchText(el.textContent || '');
+      const keywordText = normaliseHelpSearchText(
+        el.dataset.helpKeywords || ''
+      );
       const matches =
-        !query || text.includes(query) || keywordText.includes(query);
+        !hasQuery ||
+        text.includes(normalizedQuery) ||
+        keywordText.includes(normalizedQuery);
       if (matches) {
-        if (query && highlightPattern) {
+        if (hasQuery && highlightPattern) {
           // Highlight the matching text while preserving the rest of the content
           highlightMatches(el, highlightPattern);
         }
         el.removeAttribute('hidden');
         if (isFaqItem) {
-          if (query) {
+          if (hasQuery) {
             el.setAttribute('open', '');
           } else if (el.dataset.defaultOpen === 'true') {
             el.setAttribute('open', '');
@@ -20212,7 +20293,7 @@ if (helpButton && helpDialog) {
     }
     if (helpSearchClear) {
       // Only show the clear button when there is text in the search box
-      if (query) {
+      if (hasQuery) {
         helpSearchClear.removeAttribute('hidden');
       } else {
         helpSearchClear.setAttribute('hidden', '');
