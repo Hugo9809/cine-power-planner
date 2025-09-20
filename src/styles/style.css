@@ -4076,6 +4076,12 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   page-break-inside: avoid;
 }
 
+.gear-table .category-row {
+  break-after: avoid;
+  break-after: avoid-page;
+  page-break-after: avoid;
+}
+
 .gear-table .auto-gear-item {
   margin: 0;
   padding: 0;
