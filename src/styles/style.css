@@ -119,6 +119,7 @@ body.pink-mode {
   --link-color: #ff69b4;
   --icon-color: var(--accent-color);
   --logo-accent-color: var(--accent-color);
+  --diagram-node-fill: #ffe4f2;
 }
 
 html {
@@ -3401,6 +3402,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) h2 {
 
 body.dark-mode.pink-mode {
   --link-color: var(--inverse-text-color);
+  --diagram-node-fill: #4a1530;
 }
 .dark-mode section,
 .dark-mode .device-category,
