@@ -1,54 +1,267 @@
 (function () {
-  function supportsModernFeatures() {
+  var OPTIONAL_CHAINING_FLAG = '__cinePowerOptionalChainingCheck__';
+
+  function getGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    return null;
+  }
+
+  function collectStorages(names) {
+    var storages = [];
     if (typeof window === 'undefined') {
-      return true;
+      return storages;
+    }
+
+    for (var i = 0; i < names.length; i += 1) {
+      var storage = null;
+      try {
+        storage = window[names[i]];
+      } catch (error) {
+        void error;
+        storage = null;
+      }
+
+      if (!storage || typeof storage.getItem !== 'function' || typeof storage.setItem !== 'function') {
+        continue;
+      }
+
+      var alreadyAdded = false;
+      for (var j = 0; j < storages.length; j += 1) {
+        if (storages[j] === storage) {
+          alreadyAdded = true;
+          break;
+        }
+      }
+
+      if (!alreadyAdded) {
+        storages.push(storage);
+      }
+    }
+
+    return storages;
+  }
+
+  function migrateKey(storage, legacyKey, modernKey) {
+    if (!storage || typeof storage.getItem !== 'function' || typeof storage.setItem !== 'function') {
+      return false;
+    }
+
+    var legacyValue;
+    try {
+      legacyValue = storage.getItem(legacyKey);
+    } catch (readError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to read legacy storage key during migration:', legacyKey, readError);
+      }
+      return false;
+    }
+
+    if (legacyValue === null || typeof legacyValue === 'undefined') {
+      return false;
+    }
+
+    try {
+      var existing = storage.getItem(modernKey);
+      if (existing !== null && typeof existing !== 'undefined') {
+        return false;
+      }
+    } catch (inspectionError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to inspect modern storage key during migration:', modernKey, inspectionError);
+      }
+    }
+
+    try {
+      storage.setItem(modernKey, legacyValue);
+    } catch (writeError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to migrate legacy storage key:', legacyKey, writeError);
+      }
+      return false;
+    }
+
+    try {
+      storage.removeItem(legacyKey);
+    } catch (removeError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to remove legacy storage key after migration:', legacyKey, removeError);
+      }
+    }
+
+    return true;
+  }
+
+  function migrateKeyWithBackups(storages, legacyKey, modernKey) {
+    var migrated = false;
+    var backupSuffix = '__backup';
+
+    for (var i = 0; i < storages.length; i += 1) {
+      if (migrateKey(storages[i], legacyKey, modernKey)) {
+        migrated = true;
+      }
+
+      migrateKey(storages[i], legacyKey + backupSuffix, modernKey + backupSuffix);
+    }
+
+    return migrated;
+  }
+
+  function migrateLegacyStorageKeys() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    var localStorages = collectStorages(['localStorage']);
+    var sessionStorages = collectStorages(['sessionStorage']);
+
+    if (!localStorages.length && !sessionStorages.length) {
+      return;
+    }
+
+    var legacyPrefix = 'cinePowerPlanner_';
+    var mappings = [
+      { legacy: legacyPrefix + 'devices', modern: 'cameraPowerPlanner_devices' },
+      { legacy: legacyPrefix + 'setups', modern: 'cameraPowerPlanner_setups' },
+      { legacy: legacyPrefix + 'session', modern: 'cameraPowerPlanner_session', includeSession: true },
+      { legacy: legacyPrefix + 'feedback', modern: 'cameraPowerPlanner_feedback' },
+      { legacy: legacyPrefix + 'project', modern: 'cameraPowerPlanner_project' },
+      { legacy: legacyPrefix + 'projects', modern: 'cameraPowerPlanner_project' },
+      { legacy: legacyPrefix + 'favorites', modern: 'cameraPowerPlanner_favorites' },
+      { legacy: legacyPrefix + 'schemaCache', modern: 'cameraPowerPlanner_schemaCache' },
+      { legacy: legacyPrefix + 'autoGearRules', modern: 'cameraPowerPlanner_autoGearRules' },
+      { legacy: legacyPrefix + 'autoGearBackups', modern: 'cameraPowerPlanner_autoGearBackups' },
+      { legacy: legacyPrefix + 'autoGearSeeded', modern: 'cameraPowerPlanner_autoGearSeeded' },
+      { legacy: legacyPrefix + 'autoGearPresets', modern: 'cameraPowerPlanner_autoGearPresets' },
+      { legacy: legacyPrefix + 'autoGearActivePreset', modern: 'cameraPowerPlanner_autoGearActivePreset' },
+      { legacy: legacyPrefix + 'autoGearShowBackups', modern: 'cameraPowerPlanner_autoGearShowBackups' },
+      { legacy: legacyPrefix + 'customFonts', modern: 'cameraPowerPlanner_customFonts', updateFontKey: true }
+    ];
+
+    var globalScope = getGlobalScope();
+
+    for (var i = 0; i < mappings.length; i += 1) {
+      var mapping = mappings[i];
+      var migratedLocal = migrateKeyWithBackups(localStorages, mapping.legacy, mapping.modern);
+
+      if (mapping.includeSession) {
+        migrateKeyWithBackups(sessionStorages, mapping.legacy, mapping.modern);
+      }
+
+      if (mapping.updateFontKey && migratedLocal && globalScope) {
+        if (typeof globalScope.CUSTOM_FONT_STORAGE_KEY === 'string' && globalScope.CUSTOM_FONT_STORAGE_KEY === mapping.legacy) {
+          globalScope.CUSTOM_FONT_STORAGE_KEY = mapping.modern;
+        }
+        if (typeof globalScope.CUSTOM_FONT_STORAGE_KEY_NAME === 'string' && globalScope.CUSTOM_FONT_STORAGE_KEY_NAME === mapping.legacy) {
+          globalScope.CUSTOM_FONT_STORAGE_KEY_NAME = mapping.modern;
+        }
+      }
+    }
+  }
+
+  function cleanupOptionalFlag(scope) {
+    if (!scope) {
+      return;
+    }
+    try {
+      delete scope[OPTIONAL_CHAINING_FLAG];
+    } catch (deleteError) {
+      void deleteError;
+      scope[OPTIONAL_CHAINING_FLAG] = undefined;
+    }
+  }
+
+  function supportsModernFeatures(callback) {
+    var cb = typeof callback === 'function' ? callback : function () {};
+
+    if (typeof window === 'undefined') {
+      cb(true);
+      return;
     }
 
     if (typeof Promise === 'undefined' || typeof Object.assign !== 'function') {
-      return false;
+      cb(false);
+      return;
     }
 
     var arrayProto = Array.prototype;
     var stringProto = String.prototype;
 
     if (typeof Array.from !== 'function' || typeof arrayProto.includes !== 'function') {
-      return false;
+      cb(false);
+      return;
     }
 
     if (typeof arrayProto.find !== 'function' || typeof arrayProto.findIndex !== 'function') {
-      return false;
+      cb(false);
+      return;
     }
 
     if (typeof arrayProto.flatMap !== 'function') {
-      return false;
+      cb(false);
+      return;
     }
 
     if (typeof Object.entries !== 'function' || typeof Object.fromEntries !== 'function') {
-      return false;
+      cb(false);
+      return;
     }
 
     if (typeof stringProto.includes !== 'function' || typeof stringProto.startsWith !== 'function') {
-      return false;
+      cb(false);
+      return;
     }
 
+    var globalScope = getGlobalScope();
+    var scriptElement = document.createElement('script');
+
+    if (!('noModule' in scriptElement)) {
+      cb(false);
+      return;
+    }
+
+    var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+    var optionalCheckScript = document.createElement('script');
+    var resolved = false;
+
+    function finalize(result) {
+      if (resolved) {
+        return;
+      }
+      resolved = true;
+
+      if (optionalCheckScript.parentNode) {
+        optionalCheckScript.parentNode.removeChild(optionalCheckScript);
+      }
+
+      cleanupOptionalFlag(globalScope);
+      cb(result);
+    }
+
+    optionalCheckScript.type = 'module';
+    optionalCheckScript.src = 'src/scripts/modern-support-check.mjs';
+    optionalCheckScript.onload = function () {
+      var supported = !!(globalScope && globalScope[OPTIONAL_CHAINING_FLAG]);
+      finalize(supported);
+    };
+    optionalCheckScript.onerror = function () {
+      finalize(false);
+    };
+
     try {
-      var test = new Function('var obj = { a: { b: 1 } }; var value = obj?.a?.b ?? 2; return value;');
-      return test() === 1;
-    } catch (err) {
-      var message = (err && err.message) || '';
-      var isCspEvalError =
-        (typeof EvalError !== 'undefined' && err instanceof EvalError) ||
-        (typeof message === 'string' && message.indexOf('unsafe-eval') !== -1);
-      if (isCspEvalError) {
-        // Treat CSP "unsafe-eval" restrictions as a sign that modern syntax
-        // is supported but blocked. We can safely continue to load the modern
-        // bundle in this case.
-        return true;
-      }
+      head.appendChild(optionalCheckScript);
+    } catch (appendError) {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Legacy bundle enabled: falling back due to syntax support test failure.', err);
+        console.warn('Unable to append modern support check script.', appendError);
       }
-      return false;
+      finalize(false);
     }
   }
 
@@ -122,11 +335,25 @@
     'legacy/scripts/overview.js'
   ];
 
-  var scriptsToLoad = supportsModernFeatures() ? modernScripts : legacyScripts;
+  function startLoading() {
+    supportsModernFeatures(function (supportsModern) {
+      var scriptsToLoad = supportsModern ? modernScripts : legacyScripts;
 
-  if (scriptsToLoad === legacyScripts) {
-    window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+      if (!supportsModern) {
+        window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+      }
+
+      loadScriptsSequentially(scriptsToLoad);
+    });
   }
 
-  loadScriptsSequentially(scriptsToLoad);
+  try {
+    migrateLegacyStorageKeys();
+  } catch (migrationError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Legacy storage migration failed during loader startup.', migrationError);
+    }
+  }
+
+  startLoading();
 })();
