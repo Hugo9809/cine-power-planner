@@ -20229,7 +20229,7 @@ function copyTextToClipboardBestEffort(text) {
 
     try {
       textarea.focus();
-    } catch (focusError) {
+    } catch {
       // Ignore focus errors on platforms that disallow programmatic focus.
     }
 
@@ -20238,18 +20238,18 @@ function copyTextToClipboardBestEffort(text) {
       if (typeof textarea.setSelectionRange === 'function') {
         textarea.setSelectionRange(0, textarea.value.length);
       }
-    } catch (selectionError) {
+    } catch {
       // Ignore selection errors; execCommand may still succeed.
     }
 
     if (typeof document.execCommand === 'function') {
       try {
         document.execCommand('copy');
-      } catch (execError) {
+      } catch {
         // Ignore execCommand failures to avoid breaking the export flow.
       }
     }
-  } catch (error) {
+  } catch {
     // Ignore clipboard fallback errors.
   } finally {
     if (textarea && textarea.parentNode) {
@@ -20262,7 +20262,7 @@ function copyTextToClipboardBestEffort(text) {
     ) {
       try {
         previousActiveElement.focus();
-      } catch (focusRestoreError) {
+      } catch {
         // Ignore focus restoration errors.
       }
     }
