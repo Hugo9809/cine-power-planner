@@ -2978,6 +2978,9 @@ body.pink-mode #topBar #logo .logo-center {
   font-family: 'UiconsThinStraightV2', system-ui, sans-serif;
   font-style: normal;
 }
+#setupDiagram .node-icon[data-icon-font='essential'] {
+  font-family: 'EssentialIconsV2', system-ui, sans-serif;
+}
 #setupDiagram .conn {
   stroke: none;
 }

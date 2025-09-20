@@ -11394,6 +11394,7 @@ const diagramCssLight = `
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
 .node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
+.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
 .conn.blue{fill:#369;}
@@ -11412,6 +11413,7 @@ const diagramCssDark = `
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
 .node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
+.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
@@ -11435,7 +11437,7 @@ const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
 const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
 const DIAGRAM_VIDEO_ICON = iconGlyph('\uF373');
 const DIAGRAM_WIRELESS_ICON = iconGlyph('\uF4AC');
-const DIAGRAM_MOTORS_ICON = iconGlyph('\uE5A3');
+const DIAGRAM_MOTORS_ICON = iconGlyph('\uF205', ICON_FONT_KEYS.ESSENTIAL);
 const DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
 const DIAGRAM_DISTANCE_ICON = iconGlyph('\uEFB9');
 const DIAGRAM_POWER_OUTPUT_ICON = iconGlyph('\uE212');
