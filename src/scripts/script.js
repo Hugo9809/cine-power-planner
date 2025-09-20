@@ -4440,16 +4440,15 @@ const RESET_VIEW_ICON_SVG = `
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <line x1="12" y1="4.75" x2="12" y2="9.75" />
-      <polyline points="10.75 8.5 12 9.75 13.25 8.5" />
-      <line x1="12" y1="19.25" x2="12" y2="14.25" />
-      <polyline points="10.75 15.5 12 14.25 13.25 15.5" />
-      <line x1="4.75" y1="12" x2="9.75" y2="12" />
-      <polyline points="8.5 10.75 9.75 12 8.5 13.25" />
-      <line x1="19.25" y1="12" x2="14.25" y2="12" />
-      <polyline points="15.5 10.75 14.25 12 15.5 13.25" />
+      <path d="M12 4.75A7.25 7.25 0 0 1 19.25 12" />
+      <path d="M19.25 12A7.25 7.25 0 0 1 12 19.25" />
+      <path d="M12 19.25A7.25 7.25 0 0 1 4.75 12" />
+      <path d="M4.75 12A7.25 7.25 0 0 1 12 4.75" />
+      <line x1="12" y1="8.75" x2="12" y2="15.25" />
+      <line x1="8.75" y1="12" x2="15.25" y2="12" />
     </g>
     <circle cx="12" cy="12" r="1.35" fill="currentColor" />
+    <path d="M12 2.75 13.35 4.75h-2.7Z" fill="currentColor" stroke="none" />
   </svg>
 `.trim();
 
