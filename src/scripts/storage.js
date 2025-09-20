@@ -61,6 +61,7 @@ const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
 const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
+const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
@@ -1302,6 +1303,36 @@ function saveAutoGearActivePresetId(presetId) {
   }
 }
 
+function loadAutoGearAutoPresetId() {
+  if (!SAFE_LOCAL_STORAGE) {
+    return '';
+  }
+  try {
+    const value = SAFE_LOCAL_STORAGE.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+    return typeof value === 'string' ? value : '';
+  } catch (error) {
+    console.error('Error loading automatic gear auto preset from localStorage:', error);
+    alertStorageError();
+    return '';
+  }
+}
+
+function saveAutoGearAutoPresetId(presetId) {
+  if (!SAFE_LOCAL_STORAGE) {
+    return;
+  }
+  try {
+    if (presetId) {
+      SAFE_LOCAL_STORAGE.setItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, presetId);
+    } else {
+      SAFE_LOCAL_STORAGE.removeItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+    }
+  } catch (error) {
+    console.error('Error saving automatic gear auto preset to localStorage:', error);
+    alertStorageError();
+  }
+}
+
 function loadAutoGearBackupVisibility() {
   return loadFlagFromStorage(
     SAFE_LOCAL_STORAGE,
@@ -1334,6 +1365,7 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
+  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
   deleteFromStorage(
     SAFE_LOCAL_STORAGE,
@@ -1483,6 +1515,7 @@ function clearAllData() {
       autoGearSeeded: loadAutoGearSeedFlag(),
       autoGearPresets: loadAutoGearPresets(),
       autoGearActivePresetId: loadAutoGearActivePresetId(),
+      autoGearAutoPresetId: loadAutoGearAutoPresetId(),
       autoGearShowBackups: loadAutoGearBackupVisibility(),
     };
 
@@ -1770,6 +1803,11 @@ function importAllData(allData) {
     const presetId = normalizeImportedPresetId(allData.autoGearActivePresetId);
     saveAutoGearActivePresetId(typeof presetId === 'string' ? presetId : '');
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearAutoPresetId')) {
+    saveAutoGearAutoPresetId(
+      typeof allData.autoGearAutoPresetId === 'string' ? allData.autoGearAutoPresetId : ''
+    );
+  }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearShowBackups')) {
     const visibility = normalizeImportedBoolean(allData.autoGearShowBackups);
     if (visibility === null) {
@@ -1831,6 +1869,8 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearPresets,
     loadAutoGearActivePresetId,
     saveAutoGearActivePresetId,
+    loadAutoGearAutoPresetId,
+    saveAutoGearAutoPresetId,
     loadAutoGearBackupVisibility,
     saveAutoGearBackupVisibility,
     requestPersistentStorage,

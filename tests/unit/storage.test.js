@@ -47,6 +47,8 @@ const {
   saveAutoGearPresets,
   loadAutoGearActivePresetId,
   saveAutoGearActivePresetId,
+  loadAutoGearAutoPresetId,
+  saveAutoGearAutoPresetId,
   loadAutoGearBackupVisibility,
   saveAutoGearBackupVisibility,
 } = require('../../src/scripts/storage');
@@ -63,6 +65,7 @@ const AUTO_GEAR_SEEDED_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_KEY = 'cameraPowerPlanner_autoGearBackups';
 const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
+const AUTO_GEAR_AUTO_PRESET_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
@@ -546,6 +549,15 @@ describe('automatic gear storage', () => {
     expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
     expect(loadAutoGearSeedFlag()).toBe(false);
   });
+
+  test('loadAutoGearAutoPresetId reflects persisted value', () => {
+    saveAutoGearAutoPresetId('preset-auto');
+    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBe('preset-auto');
+    expect(loadAutoGearAutoPresetId()).toBe('preset-auto');
+    saveAutoGearAutoPresetId('');
+    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
+    expect(loadAutoGearAutoPresetId()).toBe('');
+  });
 });
 
 describe('clearAllData', () => {
@@ -570,6 +582,7 @@ describe('clearAllData', () => {
       { id: 'preset-1', label: 'Outdoor tweaks', rules: [] }
     ]);
     saveAutoGearActivePresetId('preset-1');
+    saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     localStorage.setItem(CUSTOM_LOGO_KEY, 'data:image/svg+xml;base64,AAAA');
@@ -594,6 +607,7 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_PRESETS_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
     expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBeNull();
@@ -658,6 +672,7 @@ describe('export/import all data', () => {
     ];
     saveAutoGearPresets(presets);
     saveAutoGearActivePresetId('preset-1');
+    saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
@@ -671,6 +686,7 @@ describe('export/import all data', () => {
         autoGearSeeded: true,
         autoGearPresets: presets,
         autoGearActivePresetId: 'preset-1',
+        autoGearAutoPresetId: 'preset-auto',
         autoGearShowBackups: true,
         preferences: {
           darkMode: true,
@@ -708,6 +724,7 @@ describe('export/import all data', () => {
           { id: 'preset-restore', label: 'Restore tweaks', rules: [] }
         ],
         autoGearActivePresetId: 'preset-restore',
+        autoGearAutoPresetId: 'preset-restore',
         autoGearShowBackups: true,
         preferences: {
           darkMode: true,
@@ -734,8 +751,9 @@ describe('export/import all data', () => {
     expect(loadAutoGearRules()).toEqual(data.autoGearRules);
     expect(loadAutoGearBackups()).toEqual(data.autoGearBackups);
       expect(loadAutoGearSeedFlag()).toBe(true);
-      expect(loadAutoGearPresets()).toEqual(data.autoGearPresets);
-      expect(loadAutoGearActivePresetId()).toBe('preset-restore');
+    expect(loadAutoGearPresets()).toEqual(data.autoGearPresets);
+    expect(loadAutoGearActivePresetId()).toBe('preset-restore');
+    expect(loadAutoGearAutoPresetId()).toBe('preset-restore');
       expect(loadAutoGearBackupVisibility()).toBe(true);
       expect(localStorage.getItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
       expect(localStorage.getItem('darkMode')).toBe('true');
