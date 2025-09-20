@@ -1,8 +1,8 @@
 # 🎥 Cine Power Planner
 
-Dieses browserbasierte Werkzeug unterstützt dich bei der Planung professioneller Kamera-Setups mit V‑Mount-, B‑Mount- oder Gold-Mount-Akkus. Es berechnet den **Gesamtverbrauch**, die **Stromaufnahme** (bei 14,4 V und 12 V) sowie die **geschätzte Laufzeit** und prüft gleichzeitig, ob der Akku die benötigte Leistung zuverlässig liefern kann.
+Dieses browserbasierte Werkzeug hilft dir bei der Planung professioneller Kamera-Setups mit V‑Mount-, B‑Mount- oder Gold-Mount-Akkus. Es berechnet den **Gesamtverbrauch**, die **Stromaufnahme** (bei 14,4 V und 12 V) sowie die **geschätzte Laufzeit** und prüft gleichzeitig, ob der Akku die benötigte Leistung zuverlässig liefern kann.
 
-Alle Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheinstellungen, Projekte, eigene Geräte, Favoriten und Laufzeit-Feedback werden im Browser gespeichert, und Service-Worker-Updates kommen direkt aus diesem Repository. Du kannst den Planner offline von der lokalen Festplatte öffnen oder intern hosten, damit jede Abteilung dieselbe geprüfte Version nutzt.
+Sämtliche Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheinstellungen, Projekte, eigene Geräte, Favoriten und Laufzeit-Feedback werden im Browser gespeichert, und Service-Worker-Updates stammen direkt aus diesem Repository. Du kannst den Planner offline von der lokalen Festplatte öffnen oder intern hosten, damit jede Abteilung dieselbe geprüfte Version nutzt.
 
 ---
 
@@ -13,26 +13,26 @@ Alle Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheinstellun
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-Beim ersten Start übernimmt die App automatisch die Sprache deines Browsers. Über das Menü oben rechts kannst du jederzeit umschalten – die Auswahl wird für den nächsten Besuch gespeichert.
+Beim ersten Start übernimmt die Anwendung automatisch die Sprache deines Browsers. Über das Menü oben rechts kannst du jederzeit umschalten – die Auswahl bleibt für den nächsten Besuch erhalten.
 
 ---
 
 ## 🆕 Neueste Funktionen
-- Akzent- und Typografie-Regler in den Einstellungen lassen dich Akzentfarbe, Grundschriftgröße und Schriftfamilie sowie die Themes Dunkel, Pink und Hoher Kontrast einstellen.
-- Tastenkürzel für die globale Suche fokussieren das Feld sofort mit / oder Strg+K (⌘K auf macOS) – selbst wenn es im eingeklappten mobilen Seitenmenü steckt.
-- Die Aktion „Neu laden erzwingen" leert zwischengespeicherte Service-Worker-Dateien, damit sich die Offline-App aktualisiert, ohne Projekte oder Geräte zu löschen.
-- Sternsymbole in jeder Auswahl pinnen Lieblingskameras, ‑akkus und ‑zubehör oben an und nehmen sie in Backups auf.
+- Akzent- und Typografie-Regler in den Einstellungen erlauben dir Akzentfarbe, Grundschriftgröße und Schriftfamilie sowie die Themes Dunkel, Pink und Hoher Kontrast einstellen.
+- Tastenkürzel für die globale Suche setzen den Fokus sofort mit / oder Strg+K (⌘K auf macOS) – selbst wenn es im eingeklappten mobilen Seitenmenü steckt.
+- Die Aktion „Neu laden erzwingen" leert zwischengespeicherte Service-Worker-Dateien, damit sich die Offline-Anwendung aktualisiert, ohne Projekte oder Geräte zu löschen.
+- Sternsymbole neben jeder Auswahl pinnen Lieblingskameras, ‑akkus und ‑zubehör oben an und nehmen sie in Backups auf.
 - Der **Werkseinstellungen**-Workflow lädt automatisch eine Sicherung herunter, bevor gespeicherte Projekte, Geräte und Einstellungen gelöscht werden.
-- Geräteliste und druckbare Übersicht zeigen den Projektnamen als schnellen Referenzpunkt.
+- Geräteliste und druckbare Übersicht zeigen den Projektnamen als schnelle Referenz.
 - Lade ein eigenes Logo hoch, das in druckbaren Übersichten und Backups erscheint.
 - Backups enthalten Favoriten und erstellen vor jeder Wiederherstellung eine automatische Sicherung.
 - Crew-Einträge besitzen jetzt ein Feld für E-Mail-Adressen.
 - Neues High-Contrast-Theme für bessere Lesbarkeit.
-- Geräteformulare füllen Kategorien dynamisch anhand der Schema-Attribute aus.
-- Überarbeitetes Interface mit verbessertem Kontrast und großzügigerem Spacing für ein klares Erlebnis auf jedem Gerät.
-- Projekte lassen sich einfacher teilen: Lade eine JSON-Datei mit Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigenen Geräten herunter und importiere sie anschließend, um alles wiederherzustellen.
+- Geräteformulare füllen die Kategorien dynamisch anhand der Schema-Attribute aus.
+- Überarbeitete Oberfläche mit verbessertem Kontrast und großzügigerem Spacing für ein klares Erlebnis auf jedem Gerät.
+- Projekt-Sharing wurde vereinfacht: Lade eine JSON-Datei mit Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigenen Geräten herunter und importiere sie anschließend, um alles wiederherzustellen.
 - Eigene Symbole für verpflichtende Szenarien machen Projektanforderungen auf einen Blick sichtbar.
-- Interaktives Projekt-Diagramm zum Verschieben, Zoomen, Rastern und Exportieren als SVG oder JPG.
+- Interaktives Projekt-Diagramm zum Verschieben, Zoomen, Einrasten und Exportieren als SVG oder JPG.
 - Verspieltes pinkes Akzent-Theme, das zwischen Besuchen erhalten bleibt.
 - Durchsuchbarer Hilfedialog mit Schritt-für-Schritt-Bereichen und FAQ; öffne ihn mit ?, H, F1 oder Strg+/.
 - Kontextuelle Hover-Hilfe für Schaltflächen, Felder, Dropdowns und Überschriften.
@@ -56,10 +56,10 @@ Beim ersten Start übernimmt die App automatisch die Sprache deines Browsers. Ü
 - **Planner auf das Team zuschneiden.** Wechsle sofort zwischen Deutsch, Englisch, Spanisch, Italienisch und Französisch, passe Schriftgröße und -familie an, wähle eine eigene Akzentfarbe, lade ein Drucklogo hoch und schalte zwischen hellem, dunklem, pinkem oder kontrastreichem Theme. Tippen-zum-Suchen, angepinnte Favoriten, Duplizieren-Buttons und Hover-Hilfe sparen Zeit am Set.
 
 ### ✅ Projektverwaltung
-- Speichere, lade und lösche mehrere Kameraprojekte (Enter oder Strg+S/⌘S speichert schnell; der Button bleibt deaktiviert, bis ein Name eingetragen ist).
-- Alle zehn Minuten entstehen automatisch Schnappschüsse, solange der Planner geöffnet ist; im Einstellungsdialog lassen sich stündliche Backup-Exporte als Erinnerung aktivieren.
-- Lade eine JSON-Datei herunter, die Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigene Geräte bündelt; über den Import-Picker stellst du alles in einem Schritt wieder her.
-- Daten liegen lokal im `localStorage`, Favoriten landen ebenfalls in Backups; die Option **Werkseinstellungen** erstellt vor dem Zurücksetzen automatisch eine Sicherung.
+- Speichere, lade und lösche mehrere Kameraprojekte (drücke Enter oder Strg+S/⌘S zum schnellen Speichern; der Button bleibt deaktiviert, bis ein Name eingetragen ist).
+- Alle zehn Minuten entstehen automatisch Sicherungsschnappschüsse, solange der Planner geöffnet ist; im Einstellungsdialog lassen sich stündliche Backup-Exporte als Erinnerung aktivieren.
+- Lade eine JSON-Datei herunter, die Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigene Geräte bündelt; über den Import-Picker holst du alles in einem Schritt zurück.
+- Die Daten liegen lokal im `localStorage`, Favoriten landen ebenfalls in Backups; die Option **Werkseinstellungen** legt vor dem Zurücksetzen automatisch eine Sicherung ab.
 - Erstelle druckbare Übersichten für jedes gespeicherte Projekt und füge ein individuelles Logo hinzu, damit Exporte und Backups zum Produktionsbranding passen.
 - Projektanforderungen werden gemeinsam mit dem Projekt gespeichert, sodass Gerätelisten den kompletten Kontext behalten.
 - Funktioniert vollständig offline dank installiertem Service Worker – Sprache, Theme, Gerätedaten und Favoriten bleiben erhalten.
@@ -78,7 +78,7 @@ Beim ersten Start übernimmt die App automatisch die Sprache deines Browsers. Ü
 - Die globale Suche springt zu Funktionen, Geräteselektoren oder Hilfethemen; drücke Enter für das markierte Ergebnis, / oder Strg+K (⌘K auf macOS) zum sofortigen Fokussieren (auf kleinen Displays öffnet sich das Seitenmenü automatisch) und Escape oder × zum Zurücksetzen.
 - Oben findest du Sprachumschaltung, Toggles für dunkles und pinkes Theme sowie den Einstellungsdialog mit Akzentfarbe, Schriftgröße, Schriftfamilie, High-Contrast-Schalter und Logo-Upload plus Backup-, Restore- und Werkseinstellungen-Tools, die vor dem Löschen eine Sicherung anlegen.
 - Die Hilfe-Schaltfläche öffnet einen durchsuchbaren Dialog mit Schritt-für-Schritt-Anleitungen, Tastenkürzeln, FAQ und optionalem Hover-Hilfemodus; erreichbar auch mit ?, H, F1 oder Strg+/ – selbst während der Eingabe.
-- Die Aktualisieren-Schaltfläche (🔄) löscht zwischengespeicherte Service-Worker-Dateien, damit sich die Offline-App erneuert, ohne Projekte oder Geräte zu verlieren.
+- Die Aktualisieren-Schaltfläche (🔄) löscht zwischengespeicherte Service-Worker-Dateien, damit sich die Offline-Anwendung erneuert, ohne Projekte oder Geräte zu verlieren.
 - Auf kleineren Bildschirmen spiegelt ein einklappbares Seitenmenü alle wichtigen Bereiche für schnellen Zugriff.
 
 ### ♿ Anpassung & Barrierefreiheit
@@ -91,21 +91,21 @@ Beim ersten Start übernimmt die App automatisch die Sprache deines Browsers. Ü
 - Gabel-Symbole duplizieren Formularzeilen sofort, und angepinnte Favoriten halten beliebte Geräte oben in der Liste – ideal für schnelle Eingaben am Set.
 
 ### 📋 Geräteliste
-Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
+Der Generator verwandelt deine Auswahl in eine nach Kategorien sortierte Packliste:
 
 - Klicke auf **Geräteliste erstellen**, um ausgewähltes Equipment und Projektanforderungen in einer Tabelle zu bündeln.
 - Die Tabelle aktualisiert sich automatisch, sobald Geräteauswahl oder Anforderungen wechseln.
 - Einträge werden nach Kategorien gruppiert (Kamera, Optik, Strom, Monitoring, Rigging, Grip, Zubehör, Verbrauchsmaterial) und Duplikate zusammengeführt.
 - Benötigte Kabel, Rigging und Zubehör für Monitore, Motoren, Gimbals und Wetterszenarien werden automatisch ergänzt.
-- Szenario-Auswahlen fügen passendes Equipment hinzu:
+- Szenario-Auswahlen ergänzen passendes Equipment:
   - *Handheld* + *Easyrig* ergänzt einen teleskopischen Griff für stabilen Halt.
   - *Gimbal* fügt den gewählten Gimbal, Magic-Arms, Spigots sowie Sonnenblenden oder Filtersets hinzu.
   - *Outdoor* liefert Spigots, Schirme und CapIt-Regenhauben.
   - Die Szenarien *Vehicle* und *Steadicam* bringen Halterungen, Iso-Arme und Saugnäpfe mit, wo nötig.
-- Objektiv-Auswahlen enthalten Frontdurchmesser, Gewicht, Rod-Daten und Mindestfokus, ergänzen Linsensupports und Matte-Box-Adapter und warnen vor inkompatiblen Rod-Standards.
+- Objektiv-Auswahlen listen Frontdurchmesser, Gewicht, Rod-Daten und Mindestfokus, ergänzen Linsensupports und Matte-Box-Adapter und warnen vor inkompatiblen Rod-Standards.
 - Akkuzeilen spiegeln die Mengen aus dem Stromrechner und berücksichtigen Hotswap-Platten oder ausgewählte Hotswap-Geräte.
 - Monitoring-Präferenzen weisen Standardmonitore für jede Rolle (Regie, DoP, Fokus usw.) mit Kabelsets und Funkempfängern zu.
-- Das Formular **Projektanforderungen** speist die Liste:
+- Das Formular **Projektanforderungen** liefert die Daten für die Liste:
   - **Projektname**, **Produktion**, **Verleih** und **DoP** erscheinen in der Kopfzeile der gedruckten Anforderungen.
   - **Crew**-Einträge erfassen Namen, Rollen und E-Mail-Adressen, damit Kontaktdaten mit dem Projekt reisen.
   - **Prep-Tage** und **Drehtage** liefern Planungsnotizen und empfehlen bei Außenszenarien Wetter-Equipment.
@@ -114,9 +114,9 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
   - Optionen für **Matte Box** und **Filter** ergänzen das gewünschte System samt nötiger Trays, Clamp-Adapter oder Filter.
   - Einstellungen für **Monitoring**, **Videoverteilung** und **Sucher** fügen Monitore, Kabel und Overlays für jede Rolle hinzu.
   - **User Buttons** und **Stativ-Präferenzen** werden für schnellen Zugriff aufgeführt.
-- Innerhalb der Kategorien sind Einträge alphabetisch sortiert und zeigen beim Hover Tooltips an.
+- Innerhalb der Kategorien sind die Einträge alphabetisch sortiert und zeigen beim Hover Tooltips an.
 - Die Geräteliste ist Teil der druckbaren Übersichten und der exportierten Projektdateien.
-- Gerätelisten werden automatisch mit dem Projekt gespeichert und in exportierte Dateien sowie Backups aufgenommen.
+- Gerätelisten werden automatisch mit dem Projekt gespeichert und sowohl in Exporten als auch in Backups abgelegt.
 - **Geräteliste löschen** entfernt die gespeicherte Liste und blendet die Ausgabe aus.
 - In den Formularen stehen Gabel-Schaltflächen bereit, um Benutzereinträge sofort zu duplizieren.
 
@@ -205,8 +205,8 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 
 ---
 
-## ▶️ So nutzt du die App
-1. **App starten:** Öffne `index.html` in einem modernen Browser – kein Server nötig.
+## ▶️ So nutzt du die Anwendung
+1. **Anwendung starten:** Öffne `index.html` in einem modernen Browser – kein Server nötig.
 2. **Top-Bar erkunden:** Sprache wechseln, Dunkel- oder Rosa-Theme umschalten, Einstellungen für Akzent und Typografie öffnen und den Hilfedialog mit ? oder Strg+/ starten.
 3. **Geräte auswählen:** Wähle über Dropdowns das Equipment je Kategorie; tippe zum Filtern, pinne Favoriten mit dem Stern und lass Szenario-Voreinstellungen Zubehör automatisch ergänzen.
 4. **Berechnungen ansehen:** Gesamtverbrauch, Strom und Laufzeit erscheinen, sobald ein Akku gewählt ist; Warnungen markieren überschrittene Grenzen.
@@ -215,19 +215,19 @@ Der Generator verwandelt deine Auswahl in eine kategorisierte Packliste:
 7. **Gerätedaten verwalten:** Über „Gerätedaten bearbeiten…" den Editor öffnen, Geräte anpassen, JSON exportieren/importieren oder auf Standardwerte zurücksetzen.
 8. **Laufzeit-Feedback senden:** Mit „Nutzer-Laufzeit-Feedback senden" Messwerte aus der Praxis erfassen und die Gewichtung verbessern.
 
-## 📱 Als App installieren
+## 📱 Als Anwendung installieren
 
-Der Planner ist eine Progressive Web App und lässt sich direkt aus dem Browser installieren:
+Der Planner ist eine Progressive-Web-App und lässt sich direkt aus dem Browser installieren:
 
 - **Chrome/Edge (Desktop):** Auf das Installationssymbol in der Adressleiste klicken.
 - **Android:** Browsermenü öffnen und *Zum Startbildschirm hinzufügen* wählen.
 - **iOS/iPadOS Safari:** Auf *Teilen* tippen und *Zum Home-Bildschirm* auswählen.
 
-Nach der Installation startet die App vom Startbildschirm, funktioniert offline und aktualisiert sich automatisch.
+Nach der Installation startet die Anwendung vom Startbildschirm, funktioniert offline und aktualisiert sich automatisch.
 
 ## 📡 Offline-Nutzung & Datenspeicherung
 
-Beim Ausliefern über HTTP(S) installiert sich ein Service Worker, der alle Dateien cached, sodass Cine Power Planner vollständig offline läuft und Updates im Hintergrund lädt. Projekte, Laufzeit-Einreichungen und Einstellungen (Sprache, Theme, Rosa-Modus, gespeicherte Gerätelisten) liegen im `localStorage` deines Browsers. Das Löschen der Seitendaten entfernt alle Informationen; im Einstellungsdialog gibt es dafür den Workflow **Werkseinstellungen**, der vor dem Leeren automatisch eine Sicherung speichert. Die Kopfzeile zeigt ein Offline-Badge, sobald die Verbindung wegfällt, und die Aktion 🔄 **Neu laden erzwingen** aktualisiert gecachte Assets, ohne Projekte anzutasten.
+Beim Ausliefern über HTTP(S) installiert sich ein Service Worker, der alle Dateien zwischenspeichert, sodass Cine Power Planner vollständig offline läuft und Updates im Hintergrund lädt. Projekte, Laufzeit-Einreichungen und Einstellungen (Sprache, Theme, Rosa-Modus, gespeicherte Gerätelisten) liegen im `localStorage` deines Browsers. Das Löschen der Seitendaten entfernt alle Informationen; im Einstellungsdialog gibt es dafür den Workflow **Werkseinstellungen**, der vor dem Leeren automatisch eine Sicherung speichert. Die Kopfzeile blendet ein Offline-Badge ein, sobald die Verbindung wegfällt, und die Aktion 🔄 **Neu laden erzwingen** aktualisiert gecachte Assets, ohne Projekte anzutasten.
 
 ---
 
@@ -273,4 +273,4 @@ Mit `--help` zeigen die Skripte weitere Optionen an.
 `npm run help` liefert eine kompakte Übersicht der Wartungsskripte und ihrer empfohlenen Reihenfolge.
 
 ## 🤝 Mitmachen
-Beiträge sind jederzeit willkommen! Eröffne gerne ein Issue oder sende einen Pull Request. Für Datenkorrekturen helfen Projekt-Backups oder Laufzeitbeispiele, damit der Gerätekatalog für alle verlässlich bleibt.
+Beiträge sind jederzeit willkommen! Eröffne gerne ein Issue oder sende einen Pull Request. Für Datenkorrekturen helfen angehängte Projekt-Backups oder Laufzeitbeispiele, damit der Gerätekatalog für alle verlässlich bleibt.

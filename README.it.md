@@ -1,8 +1,8 @@
 # 🎥 Cine Power Planner
 
-Questo strumento basato sul browser aiuta a pianificare progetti camera professionali alimentati da batterie V‑Mount, B‑Mount o Gold-Mount. Calcola il **consumo totale**, la **corrente assorbita** (a 14,4 V e 12 V) e l’**autonomia stimata**, verificando che il pacco batteria possa erogare in sicurezza la potenza richiesta.
+Questo strumento basato sul browser ti aiuta a pianificare progetti camera professionali alimentati da batterie V‑Mount, B‑Mount o Gold-Mount. Calcola il **consumo totale**, la **corrente assorbita** (a 14,4 V e 12 V) e l’**autonomia stimata**, verificando che il pacco batteria possa erogare in sicurezza la potenza richiesta.
 
-Tutta la pianificazione, i dati inseriti e gli export restano sul dispositivo davanti a te. Lingua, progetti, dispositivi personalizzati, preferiti e feedback sulle autonomie vivono nel browser, e gli aggiornamenti del service worker arrivano direttamente da questo repository. Avvia il planner offline dal disco o ospitalo internamente così che ogni reparto utilizzi la stessa versione verificata.
+Tutta la pianificazione, gli input e gli export restano sul dispositivo davanti a te. Lingua, progetti, dispositivi personalizzati, preferiti e feedback sulle autonomie vivono nel browser, e gli aggiornamenti del service worker arrivano direttamente da questo repository. Avvia il planner offline dal disco o ospitalo internamente così che ogni reparto utilizzi la stessa versione verificata.
 
 ---
 
@@ -13,23 +13,23 @@ Tutta la pianificazione, i dati inseriti e gli export restano sul dispositivo da
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-Al primo avvio l’app adotta la lingua del browser; puoi cambiarla dall’angolo in alto a destra e la scelta verrà ricordata per la visita successiva.
+Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dall’angolo in alto a destra e la scelta viene ricordata per la visita successiva.
 
 ---
 
 ## 🆕 Novità
-- I controlli di accento e tipografia nelle Impostazioni permettono di regolare colore, dimensione base e famiglia del font insieme ai temi scuro, rosa e ad alto contrasto.
-- Le scorciatoie per la ricerca globale mettono a fuoco il campo all’istante con / o Ctrl+K (⌘K su macOS), anche quando è nascosto nel menu laterale compresso.
-- Il pulsante **Forza ricarica** cancella i file del service worker in cache per aggiornare l’app offline senza eliminare progetti o dispositivi salvati.
-- Le icone a stella in ogni selettore fissano videocamere, batterie e accessori preferiti in cima alla lista e li includono nei backup.
+- I controlli di accento e tipografia nelle Impostazioni consentono di regolare colore, dimensione base e famiglia del font insieme ai temi scuro, rosa e ad alto contrasto.
+- Le scorciatoie della ricerca globale portano il focus sul campo all’istante con / o Ctrl+K (⌘K su macOS), anche quando è nascosto nel menu laterale compresso.
+- Il pulsante **Forza ricarica** cancella i file del service worker in cache per aggiornare l’applicazione offline senza eliminare progetti o dispositivi salvati.
+- Le icone a stella di ogni selettore fissano videocamere, batterie e accessori preferiti in cima alla lista e li includono nei backup.
 - Il flusso di **Ripristino di fabbrica** scarica automaticamente una copia di sicurezza prima di rimuovere progetti, dispositivi e impostazioni memorizzati.
 - La lista attrezzatura e l’anteprima stampabile mostrano il nome del progetto per un riferimento veloce.
 - Puoi caricare un logo personalizzato che apparirà nelle stampe e nei backup.
 - I backup includono i preferiti e creano automaticamente una copia prima del ripristino.
-- Le schede della troupe includono ora un campo e-mail.
+- Le schede della troupe includono ora un campo e-mail dedicato.
 - Nuovo tema ad alto contrasto per migliorare la leggibilità.
 - I moduli dei dispositivi compilano le categorie in modo dinamico partendo dallo schema.
-- Interfaccia ridisegnata con più contrasto e spaziatura per un’esperienza più pulita su qualsiasi dispositivo.
+- Interfaccia ridisegnata con contrasto maggiore e spaziature più generose per un’esperienza più pulita su qualsiasi dispositivo.
 - Condividere i progetti è più semplice: scarica un file JSON con selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati, quindi importalo per ripristinare tutto.
 - Icone dedicate per gli scenari obbligatori evidenziano subito i requisiti del progetto.
 - Diagramma del progetto interattivo per trascinare i dispositivi, fare zoom, allineare alla griglia ed esportare in SVG o JPG.
@@ -57,13 +57,13 @@ Al primo avvio l’app adotta la lingua del browser; puoi cambiarla dall’angol
 
 ### ✅ Gestione dei progetti
 - Salva, carica e cancella più progetti (premi Invio o Ctrl+S/⌘S per salvare rapidamente; il pulsante rimane disattivato finché non inserisci un nome).
-- Vengono creati automaticamente snapshot ogni 10 minuti mentre il planner è aperto, e nelle Impostazioni puoi attivare export orari di backup come promemoria.
-- Scarica un file JSON che raccoglie selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati; importalo dal selettore per ripristinare tutto in un passo.
-- I dati sono archiviati localmente tramite `localStorage` e i preferiti vengono inclusi nei backup; l’opzione **Ripristino di fabbrica** salva automaticamente una copia prima di cancellare progetti e modifiche ai dispositivi.
+- Vengono creati snapshot automatici ogni 10 minuti mentre il planner è aperto, e nelle Impostazioni puoi attivare export orari di backup come promemoria.
+- Scarica un file JSON che raggruppa selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati; importalo dal selettore per ripristinare tutto in un passo.
+- I dati si salvano localmente tramite `localStorage` e i preferiti vengono inclusi nei backup; l’opzione **Ripristino di fabbrica** scarica automaticamente una copia prima di cancellare progetti e modifiche ai dispositivi.
 - Genera anteprime stampabili per ogni progetto e aggiungi un logo personalizzato così esportazioni e backup rispettano l’identità della produzione.
 - I requisiti di progetto vengono salvati con il progetto, così la lista attrezzatura conserva il contesto completo.
-- Funziona completamente offline grazie al service worker: lingua, tema, dati dei dispositivi e preferiti persistono tra le sessioni.
-- Layout responsive che si adatta a desktop, tablet e smartphone.
+- Funziona interamente offline grazie al service worker: lingua, tema, dati dei dispositivi e preferiti persistono tra le sessioni.
+- Il layout responsive si adatta a desktop, tablet e smartphone.
 - Sulle videocamere compatibili puoi scegliere piastre **V‑Mount**, **B‑Mount** o **Gold-Mount**; l’elenco delle batterie si aggiorna automaticamente.
 
 ### 🧭 Panoramica dell’interfaccia
@@ -78,7 +78,7 @@ Al primo avvio l’app adotta la lingua del browser; puoi cambiarla dall’angol
 - La barra di ricerca globale consente di raggiungere funzioni, selettori o argomenti di aiuto; premi Invio per aprire il risultato evidenziato, usa / o Ctrl+K (⌘K su macOS) per focalizzarla subito (su schermi piccoli il menu laterale si apre automaticamente) e premi Esc o × per cancellare la ricerca.
 - I controlli della barra superiore offrono cambio lingua, temi scuro e rosa e la finestra Impostazioni con colore accento, dimensione e famiglia del font, modalità ad alto contrasto e caricamento del logo, oltre agli strumenti di backup, ripristino e Ripristino di fabbrica che salvano una copia prima di cancellare i dati.
 - Il pulsante di aiuto apre un dialogo ricercabile con sezioni guidate, scorciatoie da tastiera, FAQ e una modalità di suggerimenti al passaggio del mouse; lo puoi aprire anche con ?, H, F1 o Ctrl+/ mentre digiti.
-- Il pulsante di ricarica forzata (🔄) elimina i file del service worker in cache così l’app offline si aggiorna senza perdere progetti o dispositivi.
+- Il pulsante di ricarica forzata (🔄) elimina i file del service worker in cache così l’applicazione offline si aggiorna senza perdere progetti o dispositivi.
 - Su schermi piccoli un menu laterale a scomparsa replica ogni sezione principale per navigare rapidamente.
 
 ### ♿ Personalizzazione e accessibilità
@@ -91,10 +91,10 @@ Al primo avvio l’app adotta la lingua del browser; puoi cambiarla dall’angol
 - I pulsanti a forchetta duplicano le righe dei moduli all’istante e i preferiti fissati mantengono l’attrezzatura abituale in cima alle liste, utile quando il tempo è limitato.
 
 ### 📋 Lista attrezzatura
-Il generatore trasforma le tue scelte in una lista di carico suddivisa per categorie:
+Il generatore trasforma le tue scelte in una lista di carico ordinata per categorie:
 
 - Clicca su **Genera lista attrezzatura** per raccogliere l’equipaggiamento selezionato e i requisiti del progetto in una tabella.
-- La tabella si aggiorna automaticamente quando cambiano selezioni o requisiti.
+- La tabella si aggiorna non appena cambiano selezioni o requisiti.
 - Gli elementi sono raggruppati per categoria (camera, ottiche, alimentazione, monitoraggio, rigging, grip, accessori, consumabili) e i duplicati sono uniti con la quantità corretta.
 - Cavi, rigging e accessori necessari per monitor, motori, gimbal e scenari meteo vengono aggiunti automaticamente.
 - Gli scenari selezionati aggiungono l’attrezzatura correlata:
@@ -102,8 +102,8 @@ Il generatore trasforma le tue scelte in una lista di carico suddivisa per categ
   - *Gimbal* aggiunge il gimbal scelto, bracci articolati, spigot e paraluce o kit filtri.
   - *Outdoor* fornisce spigot, ombrelli e coperture antipioggia CapIt.
   - Gli scenari *Vehicle* e *Steadicam* includono staffe, bracci di isolamento e ventose quando necessari.
-- Le selezioni delle ottiche riportano diametro frontale, peso, dati dei rod e fuoco minimo, aggiungono supporti per lenti e adattatori matte box e segnalano standard incompatibili.
-- Le righe delle batterie riflettono i conteggi del calcolatore di potenza e includono piastre o dispositivi di hotswap quando richiesti.
+- Le selezioni delle ottiche riportano diametro frontale, peso, dati dei rod e fuoco minimo, aggiungono i supporti per lenti e gli adattatori matte box e segnalano eventuali standard incompatibili.
+- Le righe delle batterie riprendono i conteggi del calcolatore di potenza e includono piastre o dispositivi di hotswap quando richiesti.
 - Le preferenze di monitoraggio assegnano monitor predefiniti a ogni ruolo (regista, DoP, fuochista, ecc.) con set di cavi e ricevitori wireless.
 - Il modulo **Requisiti del progetto** alimenta la lista:
   - **Nome del progetto**, **casa di produzione**, **noleggio** e **DoP** compaiono nell’intestazione delle specifiche stampate.
@@ -116,7 +116,7 @@ Il generatore trasforma le tue scelte in una lista di carico suddivisa per categ
   - Le scelte dei **pulsanti personalizzati** e delle **preferenze treppiede** vengono elencate per riferimento rapido.
 - All’interno di ogni categoria gli elementi sono ordinati alfabeticamente e mostrano un tooltip al passaggio del mouse.
 - La lista attrezzatura è inclusa nelle anteprime stampabili e nei file di progetto esportati.
-- Le liste vengono salvate automaticamente con il progetto e fanno parte sia degli export sia dei backup.
+- Le liste vengono salvate automaticamente insieme al progetto e sono incluse sia negli export sia nei backup.
 - **Elimina lista attrezzatura** cancella la lista salvata e nasconde l’output.
 - I moduli includono pulsanti a forchetta per duplicare le voci inserite al volo.
 
@@ -206,7 +206,7 @@ Il generatore trasforma le tue scelte in una lista di carico suddivisa per categ
 ---
 
 ## ▶️ Come usarlo
-1. **Avvia l’app:** apri `index.html` in un browser moderno; non serve alcun server.
+1. **Avvia l’applicazione:** apri `index.html` in un browser moderno; non serve alcun server.
 2. **Esplora la barra superiore:** cambia lingua, alterna i temi scuro o rosa, apri Impostazioni per regolare accento e tipografia e lancia l’aiuto con ? o Ctrl+/.
 3. **Seleziona i dispositivi:** scegli l’attrezzatura per ogni categoria dai menu; digita per filtrare, fissa i preferiti con la stella e lascia che gli scenari compilino gli accessori.
 4. **Consulta i calcoli:** dopo aver scelto una batteria vedrai consumo, corrente e autonomia; gli avvisi evidenziano eventuali superamenti dei limiti.
@@ -215,19 +215,19 @@ Il generatore trasforma le tue scelte in una lista di carico suddivisa per categ
 7. **Gestisci i dati dei dispositivi:** clicca su “Modifica dati dispositivi…” per aprire l’editor, aggiornare il catalogo, esportare/importare JSON o tornare ai valori predefiniti.
 8. **Invia feedback di autonomia:** usa “Invia feedback di autonomia” per registrare misurazioni reali e perfezionare le medie ponderate.
 
-## 📱 Installare come app
+## 📱 Installare come applicazione
 
-Il planner è una Progressive Web App installabile direttamente dal browser:
+Il planner è un’applicazione web progressiva installabile direttamente dal browser:
 
 - **Chrome/Edge (desktop):** fai clic sull’icona di installazione nella barra degli indirizzi.
 - **Android:** apri il menu del browser e scegli *Aggiungi alla schermata Home*.
 - **iOS/iPadOS Safari:** tocca *Condividi* e seleziona *Aggiungi alla schermata Home*.
 
-Una volta installata, l’app si avvia dalla schermata Home, funziona offline e si aggiorna automaticamente.
+Una volta installata, l’applicazione si avvia dalla schermata Home, funziona offline e si aggiorna automaticamente.
 
 ## 📡 Uso offline e archiviazione
 
-Servire l’app via HTTP(S) installa un service worker che memorizza in cache ogni file, così Cine Power Planner funziona completamente offline e si aggiorna in background. Progetti, feedback di autonomia e preferenze (lingua, tema, modalità rosa e liste salvate) risiedono nel `localStorage` del browser. Cancellare i dati del sito elimina tutte le informazioni e il menu Impostazioni offre un flusso di **Ripristino di fabbrica** che salva automaticamente un backup prima della stessa pulizia completa. L’intestazione mostra un badge offline quando la connessione cade e l’azione 🔄 **Forza ricarica** aggiorna i file in cache senza toccare i progetti.
+Servire l’applicazione via HTTP(S) installa un service worker che memorizza in cache ogni file, così Cine Power Planner funziona completamente offline e si aggiorna in background. Progetti, feedback di autonomia e preferenze (lingua, tema, modalità rosa e liste salvate) risiedono nel `localStorage` del browser. Cancellare i dati del sito elimina tutte le informazioni e il menu Impostazioni offre un flusso di **Ripristino di fabbrica** che salva automaticamente un backup prima della stessa pulizia completa. L’intestazione mostra un badge offline quando la connessione cade e l’azione 🔄 **Forza ricarica** aggiorna i file in cache senza toccare i progetti.
 
 ---
 
@@ -248,7 +248,7 @@ legal/                     # Pagine legali offline
 tools/                     # Script di manutenzione dei dati
 tests/                     # Suite di test Jest
 ```
-I font sono inclusi localmente tramite `fonts.css`; una volta in cache, l’app funziona interamente offline.
+I font sono inclusi localmente tramite `fonts.css`; una volta in cache, l’applicazione funziona interamente offline.
 
 ## 🛠️ Sviluppo
 Richiede Node.js 18 o successivo.
@@ -273,4 +273,4 @@ Aggiungi `--help` a uno qualsiasi degli script per visualizzare le opzioni dispo
 Esegui `npm run help` per un riepilogo rapido dei comandi di manutenzione e dell’ordine consigliato.
 
 ## 🤝 Contribuire
-Contributi di ogni tipo sono benvenuti! Apri una issue o invia una pull request. Per correzioni sui dati, allegare backup di progetto o misure di autonomia aiuta a mantenere un catalogo accurato per tutti.
+Contributi di ogni tipo sono benvenuti! Apri una issue o invia una pull request. Per correzioni sui dati, allega backup di progetto o misure di autonomia per mantenere un catalogo accurato per tutti.

@@ -1,8 +1,8 @@
 # 🎥 Cine Power Planner
 
-Esta herramienta en el navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada** mientras comprueba que la batería pueda suministrar con seguridad la potencia necesaria.
+Esta herramienta basada en navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada** mientras comprueba que la batería pueda suministrar con seguridad la potencia necesaria.
 
-Toda la planificación, los datos introducidos y las exportaciones permanecen en tu dispositivo. El idioma, los proyectos, el equipo personalizado, los favoritos y los comentarios de autonomía se guardan en tu navegador, y las actualizaciones del service worker provienen directamente de este repositorio. Ejecuta el planner sin conexión desde el disco o aloja la carpeta internamente para que cada departamento use la misma versión auditada.
+Toda la planificación, las entradas y las exportaciones permanecen en tu dispositivo. El idioma, los proyectos, el equipo personalizado, los favoritos y los comentarios de autonomía se guardan en tu navegador, y las actualizaciones del service worker provienen directamente de este repositorio. Ejecuta el planner sin conexión desde el disco o aloja la carpeta internamente para que cada departamento use la misma versión auditada.
 
 ---
 
@@ -13,23 +13,23 @@ Toda la planificación, los datos introducidos y las exportaciones permanecen en
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-La app adopta automáticamente el idioma de tu navegador en la primera visita y puedes cambiarlo desde la esquina superior derecha. La elección se recuerda para la siguiente sesión.
+La aplicación adopta automáticamente el idioma de tu navegador en la primera visita y puedes cambiarlo desde la esquina superior derecha. El ajuste se guarda para la siguiente sesión.
 
 ---
 
 ## 🆕 Novedades recientes
-- Los controles de acento y tipografía en Ajustes te permiten definir el color de acento, el tamaño base y la familia tipográfica junto con los temas oscuro, rosa y de alto contraste.
-- Los atajos de teclado para la búsqueda global enfocan el campo al instante con / o Ctrl+K (⌘K en macOS), incluso cuando está dentro del menú lateral móvil contraído.
-- El botón **Forzar recarga** vacía los archivos en caché del service worker para que la app sin conexión se actualice sin borrar proyectos ni dispositivos guardados.
-- Las estrellas en cada selector fijan cámaras, baterías y accesorios favoritos en la parte superior de la lista y los incluyen en las copias de seguridad.
+- Los controles de acento y tipografía en Ajustes permiten definir el color de acento, el tamaño base y la familia tipográfica junto con los temas oscuro, rosa y de alto contraste.
+- Los atajos de teclado de la búsqueda global enfocan el campo al instante con / o Ctrl+K (⌘K en macOS), incluso cuando está dentro del menú lateral móvil contraído.
+- El botón **Forzar recarga** vacía los archivos en caché del service worker para que la aplicación sin conexión se actualice sin borrar proyectos ni dispositivos guardados.
+- Las estrellas de cada selector fijan cámaras, baterías y accesorios favoritos en la parte superior de la lista y los incluyen en las copias de seguridad.
 - El flujo de **Restablecimiento de fábrica** descarga automáticamente una copia de seguridad antes de eliminar proyectos, dispositivos y ajustes almacenados.
 - La lista de equipo y la vista imprimible muestran el nombre del proyecto para consultarlo rápidamente.
 - Sube un logotipo personalizado para que aparezca en las vistas imprimibles y en las copias de seguridad.
 - Las copias de seguridad incluyen los favoritos y generan automáticamente una copia antes de restaurar.
-- Los registros del equipo cuentan ahora con un campo de correo electrónico.
+- Las fichas del equipo incluyen ahora un campo de correo electrónico.
 - Nuevo tema de alto contraste para mejorar la legibilidad.
 - Los formularios de dispositivos rellenan las categorías de forma dinámica según los atributos del esquema.
-- Interfaz rediseñada con mayor contraste y espacios más generosos para una experiencia más limpia en cualquier dispositivo.
+- Interfaz rediseñada con más contraste y espacios más generosos para una experiencia más limpia en cualquier dispositivo.
 - Compartir proyectos es más sencillo: descarga un archivo JSON con selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, e impórtalo para restaurarlo todo.
 - Iconos propios para los escenarios obligatorios que muestran de inmediato los requisitos del proyecto.
 - Diagrama de proyecto interactivo para arrastrar dispositivos, hacer zoom, alinear a la cuadrícula y exportar como SVG o JPG.
@@ -39,10 +39,10 @@ La app adopta automáticamente el idioma de tu navegador en la primera visita y 
 - Barra de búsqueda global para saltar a funciones, selectores de dispositivos o temas de ayuda.
 - Compatibilidad con cámaras con placas V‑, B‑ o Gold-Mount.
 - Envía comentarios de autonomía con temperatura para perfeccionar las estimaciones.
-- Panel visual de ponderación de autonomías que muestra cómo influyen los ajustes en cada medición, ordenado por peso con porcentajes precisos.
+- Panel visual que pondera las autonomías y muestra cómo influyen los ajustes en cada medición, ordenado por peso con porcentajes precisos.
 - Generador de listas de equipo que reúne el material seleccionado y los requisitos del proyecto.
 - Guarda los requisitos de proyecto con cada proyecto para conservar el contexto completo en las listas de equipo.
-- Duplica las entradas personalizadas en los formularios de la lista de equipo con los botones de bifurcación.
+- Duplica al instante las entradas personalizadas en los formularios de la lista de equipo con los botones en forma de horquilla.
 
 ---
 
@@ -50,19 +50,19 @@ La app adopta automáticamente el idioma de tu navegador en la primera visita y 
 
 ### ✨ Destacados ampliados
 
-- **Diseña rigs complejos sin adivinar.** Combina cámaras, placas de batería, enlaces inalámbricos, monitores, motores y accesorios mientras controlas el consumo total a 14,4 V/12 V (y 33,6 V/21,6 V en B‑Mount) junto a autonomías realistas basadas en datos de campo ponderados. El panel de comparación de baterías avisa de sobrecargas antes de que el equipo salga al rodaje.
-- **Mantén alineados a todos los departamentos.** Guarda varios proyectos con requisitos, contactos del equipo, escenarios y notas. Las listas imprimibles agrupan el material por categoría, fusionan duplicados, muestran metadatos técnicos e incluyen accesorios condicionados por los escenarios para que cámara, iluminación y grip trabajen con el mismo contexto.
-- **Trabaja con confianza en cualquier lugar.** Abre `index.html` directamente o sirve la carpeta por HTTPS para activar el service worker. La caché sin conexión conserva idioma, temas, favoritos y proyectos, y **Forzar recarga** actualiza los recursos almacenados sin tocar tus datos.
-- **Adapta el planner a tu equipo.** Cambia al instante entre español, inglés, alemán, italiano y francés, ajusta el tamaño de la fuente y la tipografía, define un color de acento, sube un logotipo para impresión y alterna entre temas claro, oscuro, rosa o de alto contraste. Los selectores con búsqueda, los favoritos fijados, los botones de duplicar y las ayudas flotantes mantienen ágil el trabajo en set.
+- **Diseña rigs complejos sin adivinar.** Combina cámaras, placas de batería, enlaces inalámbricos, monitores, motores y accesorios mientras supervisas el consumo total a 14,4 V/12 V (y 33,6 V/21,6 V en B‑Mount) junto a autonomías realistas basadas en datos de campo ponderados. El panel de comparación de baterías avisa de sobrecargas antes de que el equipo salga al rodaje.
+- **Mantén coordinados a todos los departamentos.** Guarda varios proyectos con requisitos, contactos del equipo, escenarios y notas. Las listas imprimibles agrupan el material por categoría, fusionan duplicados, muestran metadatos técnicos e incluyen accesorios condicionados por los escenarios para que cámara, iluminación y grip trabajen con el mismo contexto.
+- **Trabaja con seguridad estés donde estés.** Abre `index.html` directamente o sirve la carpeta por HTTPS para activar el service worker. La caché sin conexión conserva idioma, temas, favoritos y proyectos, y **Forzar recarga** actualiza los recursos almacenados sin tocar tus datos.
+- **Ajusta el planner a tu equipo.** Cambia al instante entre español, inglés, alemán, italiano y francés, ajusta el tamaño de la fuente y la tipografía, define un color de acento, sube un logotipo para impresión y alterna entre temas claro, oscuro, rosa o de alto contraste. Los selectores con búsqueda, los favoritos fijados, los botones de duplicar y las ayudas flotantes mantienen ágil el trabajo en set.
 
 ### ✅ Gestión de proyectos
 - Guarda, carga y elimina múltiples proyectos (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
-- Se crean instantáneas automáticas cada 10 minutos mientras el planner está abierto, y el cuadro de Ajustes puede lanzar exportaciones de copias de seguridad cada hora como recordatorio.
-- Descarga un archivo JSON que incluye selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; impórtalo mediante el selector de proyectos para recuperarlo todo de una vez.
-- Los datos se almacenan localmente mediante `localStorage`, y los favoritos se conservan en las copias de seguridad; usa la opción **Restablecimiento de fábrica** para guardar automáticamente una copia antes de limpiar proyectos y dispositivos guardados.
-- Genera vistas imprimibles para cualquier proyecto y añade un logotipo personalizado para que exportaciones y copias coincidan con tu identidad de producción.
+- Se generan instantáneas automáticas cada 10 minutos mientras el planner está abierto, y el cuadro de Ajustes puede lanzar exportaciones de copias de seguridad cada hora como recordatorio.
+- Descarga un archivo JSON que reúne selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; impórtalo mediante el selector de proyectos para recuperarlo todo de una vez.
+- Los datos se guardan localmente mediante `localStorage`, y los favoritos se incluyen en las copias de seguridad; usa la opción **Restablecimiento de fábrica** para descargar automáticamente una copia antes de limpiar proyectos y dispositivos guardados.
+- Genera vistas imprimibles de cualquier proyecto y añade un logotipo personalizado para que exportaciones y copias coincidan con tu identidad de producción.
 - Los requisitos de proyecto se guardan junto a cada proyecto, de modo que la lista de equipo mantiene todo el contexto.
-- Funciona completamente sin conexión gracias al service worker: idioma, tema, datos de dispositivos y favoritos persisten entre sesiones.
+- Funciona íntegramente sin conexión gracias al service worker: idioma, tema, datos de dispositivos y favoritos persisten entre sesiones.
 - El diseño adaptable responde sin esfuerzo en ordenadores, tabletas y teléfonos.
 - En las cámaras compatibles puedes elegir placas **V‑Mount**, **B‑Mount** o **Gold-Mount**; la lista de baterías se actualiza automáticamente.
 
@@ -78,7 +78,7 @@ La app adopta automáticamente el idioma de tu navegador en la primera visita y 
 - La barra de búsqueda global salta a funciones, selectores de dispositivos o temas de ayuda; pulsa Enter para abrir el resultado destacado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (el menú lateral se abre automáticamente en pantallas pequeñas) y pulsa Escape o × para limpiar la consulta.
 - Los controles superiores permiten cambiar de idioma, alternar los temas oscuro y rosa y abrir Ajustes con opciones de color de acento, tamaño y familia tipográfica, modo de alto contraste y carga de logotipo, además de herramientas para copia de seguridad, restauración y Restablecimiento de fábrica que guardan una copia antes de borrar datos.
 - El botón de Ayuda abre un diálogo con búsqueda, secciones guiadas, atajos de teclado, FAQ y un modo de ayuda emergente opcional; también puedes abrirlo con ?, H, F1 o Ctrl+/ incluso mientras escribes.
-- El botón de recarga forzada (🔄) borra los archivos del service worker almacenados en caché para que la app sin conexión se actualice sin perder proyectos ni dispositivos.
+- El botón de recarga forzada (🔄) borra los archivos del service worker almacenados en caché para que la aplicación sin conexión se actualice sin perder proyectos ni dispositivos.
 - En pantallas pequeñas, un menú lateral plegable replica cada sección principal para navegar con rapidez.
 
 ### ♿ Personalización y accesibilidad
@@ -93,19 +93,19 @@ La app adopta automáticamente el idioma de tu navegador en la primera visita y 
 ### 📋 Lista de equipo
 El generador convierte tus selecciones en una lista de empaque categorizada:
 
-- Pulsa **Generar lista de equipo** para combinar el equipo elegido y los requisitos del proyecto en una tabla.
-- La tabla se actualiza automáticamente cuando cambian las selecciones o los requisitos.
+- Haz clic en **Generar lista de equipo** para combinar el equipo elegido y los requisitos del proyecto en una tabla.
+- La tabla se actualiza en cuanto cambian las selecciones o los requisitos.
 - Los elementos se agrupan por categoría (cámara, óptica, alimentación, monitorización, rigging, grip, accesorios, consumibles) y los duplicados se fusionan con sus cantidades.
 - Se añaden cables, rigging y accesorios necesarios para monitores, motores, gimbals y escenarios meteorológicos.
-- Las selecciones de escenarios añaden el equipo relacionado:
+- Las selecciones de escenarios agregan el equipo relacionado:
   - *Handheld* + *Easyrig* incorpora una empuñadura telescópica para un soporte estable.
   - *Gimbal* suma el gimbal seleccionado, brazos articulados, espigas y parasoles o kits de filtros.
   - *Outdoor* aporta espigas, paraguas y fundas de lluvia CapIt.
   - Los escenarios *Vehicle* y *Steadicam* incluyen montajes, brazos de aislamiento y ventosas cuando corresponde.
-- Las selecciones de óptica incluyen diámetro frontal, peso, datos de varillas y enfoque mínimo, añaden soportes de lente y adaptadores de matte box y avisan de estándares incompatibles.
+- Las selecciones de óptica aportan diámetro frontal, peso, datos de varillas y enfoque mínimo, añaden soportes de lente y adaptadores de matte box y avisan de estándares incompatibles.
 - Las filas de baterías reflejan los cálculos del módulo de potencia e incluyen placas o dispositivos de hotswap cuando son necesarios.
 - Las preferencias de monitorización asignan monitores predeterminados para cada rol (director, DoP, foco, etc.) con juegos de cables y receptores inalámbricos.
-- El formulario de **Requisitos del proyecto** alimenta la lista:
+- El formulario de **Requisitos del proyecto** nutre la lista:
   - **Nombre del proyecto**, **productora**, **casa de alquiler** y **DoP** aparecen en el encabezado de los requisitos impresos.
   - Las entradas de **equipo** recogen nombres, roles y correos electrónicos para que la información de contacto acompañe al proyecto.
   - **Días de preparación** y **días de rodaje** aportan notas de calendario y, combinados con escenarios exteriores, proponen equipo para la climatología.
@@ -114,9 +114,9 @@ El generador convierte tus selecciones en una lista de empaque categorizada:
   - Las opciones de **matte box** y **filtros** agregan el sistema elegido con bandejas, adaptadores de pinza o filtros necesarios.
   - Las configuraciones de **monitorización**, **distribución de vídeo** y **visor** añaden monitores, cables y overlays para cada rol.
   - Las selecciones de **botones de usuario** y **preferencias de trípode** se listan para referencia rápida.
-- Los elementos dentro de cada categoría se ordenan alfabéticamente y muestran descripciones emergentes al pasar el cursor.
+- Los elementos de cada categoría se ordenan alfabéticamente y muestran descripciones emergentes al pasar el cursor.
 - La lista de equipo se incluye en las vistas imprimibles y en los archivos de proyecto exportados.
-- Las listas de equipo se guardan automáticamente con el proyecto y forman parte de los archivos exportados y de las copias de seguridad.
+- Las listas de equipo se guardan automáticamente con el proyecto y se incluyen tanto en los archivos exportados como en las copias de seguridad.
 - **Eliminar lista de equipo** borra la lista guardada y oculta la salida.
 - Los formularios incluyen botones de bifurcación para duplicar entradas personalizadas al instante.
 
@@ -186,7 +186,7 @@ El generador convierte tus selecciones en una lista de empaque categorizada:
 - La preferencia se guarda en tu navegador
 
 ### 🦄 Modo rosa
-- Haz clic en el botón del unicornio (el modo rosa rota iconos cada 30 segundos con una animación suave y vuelve al caballo al salir) o pulsa **P** para activar un acento rosa lúdico
+- Haz clic en el botón del unicornio (el modo rosa rota iconos cada 30 segundos con una animación suave y vuelve al caballo cuando sales) o pulsa **P** para activar un acento rosa lúdico
 - Funciona en los temas claro y oscuro y persiste entre visitas
 
 ### ⚫ Modo de alto contraste
@@ -206,7 +206,7 @@ El generador convierte tus selecciones en una lista de empaque categorizada:
 ---
 
 ## ▶️ Cómo usarlo
-1. **Inicia la app:** abre `index.html` en cualquier navegador moderno; no necesita servidor.
+1. **Inicia la aplicación:** abre `index.html` en cualquier navegador moderno; no necesita servidor.
 2. **Explora la barra superior:** cambia de idioma, alterna los temas oscuro o rosa, abre Ajustes para modificar acento y tipografía y lanza la ayuda con ? o Ctrl+/.
 3. **Selecciona los dispositivos:** elige el equipo de cada categoría en los menús desplegables; escribe para filtrar, fija favoritos con la estrella y deja que los escenarios rellenen los accesorios automáticamente.
 4. **Consulta los cálculos:** verás consumo, corriente y autonomía en cuanto elijas una batería; las alertas señalan cuando se superan los límites.
@@ -215,19 +215,19 @@ El generador convierte tus selecciones en una lista de empaque categorizada:
 7. **Gestiona los datos de dispositivos:** haz clic en “Editar datos de dispositivos…” para abrir el editor, ajustar el catálogo, exportar/importar JSON o volver a los valores predeterminados.
 8. **Envía comentarios de autonomía:** usa “Enviar comentarios de autonomía” para registrar mediciones reales y refinar los promedios ponderados.
 
-## 📱 Instalar como app
+## 📱 Instalar como aplicación
 
-El planner es una Progressive Web App y puede instalarse directamente desde el navegador:
+El planner es una aplicación web progresiva y puede instalarse directamente desde el navegador:
 
 - **Chrome/Edge (escritorio):** haz clic en el icono de instalación de la barra de direcciones.
 - **Android:** abre el menú del navegador y elige *Añadir a pantalla de inicio*.
 - **iOS/iPadOS Safari:** toca *Compartir* y selecciona *Añadir a pantalla de inicio*.
 
-Una vez instalada, la app se abre desde la pantalla de inicio, funciona sin conexión y se actualiza automáticamente.
+Una vez instalada, la aplicación se abre desde la pantalla de inicio, funciona sin conexión y se actualiza automáticamente.
 
 ## 📡 Uso sin conexión y almacenamiento
 
-Servir la app mediante HTTP(S) instala un service worker que almacena en caché cada archivo, de modo que Cine Power Planner funciona completamente sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas guardadas) se almacenan en el `localStorage` del navegador. Borrar los datos del sitio elimina toda la información, y el cuadro de Ajustes incluye un flujo de **Restablecimiento de fábrica** que guarda automáticamente una copia antes de efectuar la limpieza. La cabecera muestra un indicador sin conexión cuando la red falla y la acción 🔄 **Forzar recarga** actualiza los recursos en caché sin tocar los proyectos guardados.
+Servir la aplicación mediante HTTP(S) instala un service worker que almacena en caché cada archivo, de modo que Cine Power Planner funciona completamente sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas guardadas) se almacenan en el `localStorage` del navegador. Borrar los datos del sitio elimina toda la información, y el cuadro de Ajustes incluye un flujo de **Restablecimiento de fábrica** que guarda automáticamente una copia antes de efectuar la limpieza. La cabecera muestra un indicador sin conexión cuando la red falla y la acción 🔄 **Forzar recarga** actualiza los recursos en caché sin tocar los proyectos guardados.
 
 ---
 
@@ -273,4 +273,4 @@ Añade `--help` a cualquiera de los scripts anteriores para ver las opciones dis
 Ejecuta `npm run help` para obtener un recordatorio rápido de los scripts de mantenimiento y del orden recomendado.
 
 ## 🤝 Contribuciones
-Las contribuciones son bienvenidas. Abre un issue o envía un pull request. Si informas de correcciones de datos, adjuntar copias de seguridad o mediciones de autonomía ayuda a mantener el catálogo fiable para todos.
+Las contribuciones son bienvenidas. Abre una incidencia o envía un pull request. Si informas de correcciones de datos, adjuntar copias de seguridad o mediciones de autonomía ayuda a mantener el catálogo fiable para todos.
