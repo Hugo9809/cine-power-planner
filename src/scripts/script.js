@@ -19245,31 +19245,27 @@ function ensureGearListActions() {
     if (!actions) {
         actions = document.createElement('div');
         actions.id = 'gearListActions';
-        const deleteBtn = document.createElement('button');
-        deleteBtn.id = 'deleteGearListBtn';
-        const autoSaveNote = document.createElement('p');
+        gearListOutput.appendChild(actions);
+    }
+    const existingDeleteBtn = actions.querySelector('#deleteGearListBtn');
+    if (existingDeleteBtn) {
+        existingDeleteBtn.removeEventListener('click', deleteCurrentGearList);
+        existingDeleteBtn.remove();
+    }
+    let autoSaveNote = document.getElementById('gearListAutosaveNote');
+    if (!autoSaveNote) {
+        autoSaveNote = document.createElement('p');
         autoSaveNote.id = 'gearListAutosaveNote';
         autoSaveNote.className = 'gear-list-autosave-note';
-        actions.append(deleteBtn, autoSaveNote);
-        gearListOutput.appendChild(actions);
-        deleteBtn.addEventListener('click', deleteCurrentGearList);
+        actions.appendChild(autoSaveNote);
+    } else if (!actions.contains(autoSaveNote)) {
+        actions.appendChild(autoSaveNote);
     }
-    // Update texts for current language
-    const deleteBtn = document.getElementById('deleteGearListBtn');
-    const autoSaveNote = document.getElementById('gearListAutosaveNote');
-    const deleteHelp = texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn;
-    if (autoSaveNote) {
-        const noteText = texts[currentLang].gearListAutosaveNote
-            || 'Gear lists save automatically with the project.';
-        autoSaveNote.textContent = noteText;
-        autoSaveNote.setAttribute('title', noteText);
-        autoSaveNote.setAttribute('data-help', noteText);
-    }
-    if (deleteBtn) {
-        deleteBtn.textContent = texts[currentLang].deleteGearListBtn;
-        deleteBtn.setAttribute('title', deleteHelp);
-        deleteBtn.setAttribute('data-help', deleteHelp);
-    }
+    const noteText = texts[currentLang].gearListAutosaveNote
+        || 'Gear lists save automatically with the project.';
+    autoSaveNote.textContent = noteText;
+    autoSaveNote.setAttribute('title', noteText);
+    autoSaveNote.setAttribute('data-help', noteText);
 
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
@@ -19893,7 +19889,17 @@ function applySharedSetup(shared, options = {}) {
       if (activeRules && activeRules.length) {
         payload.autoGearRules = activeRules;
       }
-      saveProject(getCurrentProjectStorageKey({ allowTyped: true }), payload);
+      let storageKey = getCurrentProjectStorageKey({ allowTyped: true });
+      const typedName = setupNameInput && typeof setupNameInput.value === 'string'
+        ? setupNameInput.value.trim()
+        : '';
+      const selectedName = setupSelect && typeof setupSelect.value === 'string'
+        ? setupSelect.value.trim()
+        : '';
+      if (typedName && typedName !== selectedName) {
+        storageKey = typedName;
+      }
+      saveProject(storageKey, payload);
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);
@@ -23602,6 +23608,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveCurrentSession,
     restoreSessionState,
     displayGearAndRequirements,
+    deleteCurrentGearList,
     ensureGearListActions,
     bindGearListEasyrigListener,
     populateSelect,

@@ -73,15 +73,24 @@ describe('delete gear list action', () => {
     env?.cleanup();
   });
 
-  test('removes persisted gear list for the active project', () => {
+  test('deleteCurrentGearList removes persisted gear list for the active project', () => {
     const deleteBtn = document.getElementById('deleteGearListBtn');
-    expect(deleteBtn).not.toBeNull();
+    expect(deleteBtn).toBeNull();
+
+    const actions = document.getElementById('gearListActions');
+    expect(actions).not.toBeNull();
+
+    const autosaveNote = document.getElementById('gearListAutosaveNote');
+    expect(autosaveNote).not.toBeNull();
+
+    expect(typeof env.utils.deleteCurrentGearList).toBe('function');
 
     const deletedEvents = [];
     const deletedListener = (event) => deletedEvents.push(event);
     document.addEventListener('gearlist:deleted', deletedListener);
 
-    deleteBtn.click();
+    const result = env.utils.deleteCurrentGearList();
+    expect(result).toBe(true);
 
     document.removeEventListener('gearlist:deleted', deletedListener);
 

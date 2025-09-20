@@ -4318,10 +4318,6 @@ body.dark-mode.pink-mode #gearListOutput h2,
   margin-bottom: 1rem;
 }
 
-#gearListActions button {
-  margin: 0;
-}
-
 #gearListActions .gear-list-autosave-note {
   flex-basis: 100%;
   margin: 0;
