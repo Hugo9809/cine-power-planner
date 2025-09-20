@@ -213,7 +213,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 ### 🛠 Éditeur de la base d’appareils
 - Ajoutez, modifiez ou supprimez des appareils dans toutes les catégories.
 - Importez ou exportez la base complète au format JSON.
-- Revenez à la base par défaut issue de `assets/data/index.js`.
+- Revenez à la base par défaut issue de `public/data/index.js`.
 
 ### 🌓 Mode sombre
 - Activez-le via le bouton lune près du sélecteur de langue.
@@ -273,17 +273,18 @@ projets enregistrés.
 ## 🗂️ Structure des fichiers
 ```bash
 index.html                 # Mise en page HTML principale
-assets/css/style.css       # Styles et mise en page
-assets/css/overview.css    # Styles de l’aperçu imprimable
-assets/css/overview-print.css # Ajustements d’impression pour l’aperçu
-assets/js/script.js        # Logique applicative
-assets/js/storage.js       # Helpers LocalStorage
-assets/js/static-theme.js  # Logique de thème partagée pour les pages légales
-assets/data/index.js       # Liste d’appareils par défaut
-assets/data/devices/       # Catalogues d’appareils par catégorie
-assets/data/schema.json    # Schéma généré pour les sélecteurs
-assets/vendor/             # Bibliothèques tierces incluses
-legal/                     # Pages légales hors ligne
+public/styles/style.css       # Styles et mise en page
+public/styles/overview.css    # Styles de l’aperçu imprimable
+public/styles/overview-print.css # Ajustements d’impression pour l’aperçu
+public/scripts/script.js        # Logique applicative
+public/scripts/storage.js       # Helpers LocalStorage
+public/scripts/static-theme.js  # Logique de thème partagée pour les pages légales
+public/data/index.js       # Liste d’appareils par défaut
+public/data/devices/       # Catalogues d’appareils par catégorie
+public/data/schema.json    # Schéma généré pour les sélecteurs
+public/vendor/             # Bibliothèques tierces incluses
+public/icons/              # Icônes PWA pour manifestes et raccourcis
+public/legal/              # Pages légales hors ligne
 tools/                     # Scripts de maintenance des données
 tests/                     # Suite de tests Jest
 ```

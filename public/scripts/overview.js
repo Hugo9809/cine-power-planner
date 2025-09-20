@@ -340,10 +340,10 @@ function generatePrintableOverview() {
 <meta charset="utf-8">
 <meta name="color-scheme" content="light dark">
 <title></title>
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="stylesheet" href="assets/css/overview.css">
-<link rel="stylesheet" href="assets/css/overview-print.css" media="print">
-<link rel="stylesheet" href="overview-print.css" media="screen">
+<link rel="stylesheet" href="public/styles/style.css">
+<link rel="stylesheet" href="public/styles/overview.css">
+<link rel="stylesheet" href="public/styles/overview-print.css" media="print">
+<link rel="stylesheet" href="public/styles/overview-print.css" media="screen">
 </head>
 <body></body>
 </html>`);

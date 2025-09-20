@@ -49,7 +49,7 @@ const {
   saveAutoGearActivePresetId,
   loadAutoGearBackupVisibility,
   saveAutoGearBackupVisibility,
-} = require('../../assets/js/storage');
+} = require('../../public/scripts/storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
 const SETUP_KEY = 'cameraPowerPlanner_setups';

@@ -211,7 +211,7 @@ El generador transforma tus selecciones en una lista de empaquetado categorizada
 ### 🛠 Editor de la base de datos de dispositivos
 - Añade, edita o elimina dispositivos en todas las categorías.
 - Importa o exporta la base de datos completa como JSON.
-- Vuelve a la base de datos predeterminada de `assets/data/index.js`.
+- Vuelve a la base de datos predeterminada de `public/data/index.js`.
 
 ### 🌓 Modo oscuro
 - Actívalo con el botón de la luna junto al selector de idioma.
@@ -271,17 +271,18 @@ proyectos guardados.
 ## 🗂️ Estructura de archivos
 ```bash
 index.html                 # Maquetación principal en HTML
-assets/css/style.css       # Estilos y diseño base
-assets/css/overview.css    # Estilos de la vista de resumen
-assets/css/overview-print.css # Ajustes de impresión para la vista general
-assets/js/script.js        # Lógica de la aplicación
-assets/js/storage.js       # Utilidades para LocalStorage
-assets/js/static-theme.js  # Lógica de tema compartida para las páginas legales
-assets/data/index.js       # Lista predeterminada de dispositivos
-assets/data/devices/       # Catálogos de dispositivos por categoría
-assets/data/schema.json    # Esquema generado para validaciones
-assets/vendor/             # Bibliotecas de terceros incluidas
-legal/                     # Páginas legales sin conexión
+public/styles/style.css       # Estilos y diseño base
+public/styles/overview.css    # Estilos de la vista de resumen
+public/styles/overview-print.css # Ajustes de impresión para la vista general
+public/scripts/script.js        # Lógica de la aplicación
+public/scripts/storage.js       # Utilidades para LocalStorage
+public/scripts/static-theme.js  # Lógica de tema compartida para las páginas legales
+public/data/index.js       # Lista predeterminada de dispositivos
+public/data/devices/       # Catálogos de dispositivos por categoría
+public/data/schema.json    # Esquema generado para validaciones
+public/vendor/             # Bibliotecas de terceros incluidas
+public/icons/              # Iconos PWA para manifiestos y accesos directos
+public/legal/              # Páginas legales sin conexión
 tools/                     # Scripts de mantenimiento de datos
 tests/                     # Suite de pruebas de Jest
 ```

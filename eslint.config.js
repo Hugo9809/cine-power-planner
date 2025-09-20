@@ -2,7 +2,7 @@ const js = require('@eslint/js');
 const globals = require('globals');
 
 module.exports = [
-  { ignores: ['vendor/**', 'assets/vendor/**'] },
+  { ignores: ['vendor/**', 'public/vendor/**'] },
   js.configs.recommended,
   {
     files: ['**/*.js'],
@@ -20,7 +20,7 @@ module.exports = [
     },
   },
   {
-    files: ['assets/js/script.js'],
+    files: ['public/scripts/script.js'],
     languageOptions: {
       globals: {
         devices: 'writable',

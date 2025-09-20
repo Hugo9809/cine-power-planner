@@ -1,18 +1,19 @@
 {
   "name": "Cine Power Planner",
   "short_name": "Cine Power Planner",
-  "start_url": ".",
+  "start_url": "../index.html",
+  "scope": "../",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#1a1a1a",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "icons/app-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     },
     {
-      "src": "icon.png",
+      "src": "icons/app-icon.png",
       "sizes": "1024x1024",
       "type": "image/png"
     }

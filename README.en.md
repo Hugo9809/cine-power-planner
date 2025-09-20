@@ -205,7 +205,7 @@ The generator turns your selections into a categorized packing list:
 ### 🛠 Device Database Editor
 - Add, edit or delete devices in all categories
 - Import or export the full database as JSON
-- Revert to the default database from `assets/data/index.js`
+- Revert to the default database from `public/data/index.js`
 
 ### 🌓 Dark Mode
 - Toggle via the moon button next to the language selector.
@@ -268,17 +268,18 @@ refreshes cached assets without disturbing saved projects.
 ## 🗂️ File Structure
 ```bash
 index.html                 # Main HTML layout
-assets/css/style.css       # Core styles and layout
-assets/css/overview.css    # Printable overview styling
-assets/css/overview-print.css # Print overrides for the overview
-assets/js/script.js        # Application logic
-assets/js/storage.js       # LocalStorage helpers
-assets/js/static-theme.js  # Shared theme logic for legal pages
-assets/data/index.js       # Default device list
-assets/data/devices/       # Device catalogs by category
-assets/data/schema.json    # Generated schema for selectors
-assets/vendor/             # Bundled third-party libraries
-legal/                     # Offline legal documents
+public/styles/style.css       # Core styles and layout
+public/styles/overview.css    # Printable overview styling
+public/styles/overview-print.css # Print overrides for the overview
+public/scripts/script.js        # Application logic
+public/scripts/storage.js       # LocalStorage helpers
+public/scripts/static-theme.js  # Shared theme logic for legal pages
+public/data/index.js       # Default device list
+public/data/devices/       # Device catalogs by category
+public/data/schema.json    # Generated schema for selectors
+public/vendor/             # Bundled third-party libraries
+public/icons/              # PWA icons for manifests and shortcuts
+public/legal/              # Offline legal documents
 tools/                     # Data maintenance scripts
 tests/                     # Jest test suite
 ```

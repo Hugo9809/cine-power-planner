@@ -113,8 +113,8 @@ try {
   deviceSchema = require('../data/schema.json');
 } catch {
   deviceSchema = cachedDeviceSchema;
-  if (typeof fetch === 'function') {
-    fetch('assets/data/schema.json')
+  if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
+    window.fetch('public/data/schema.json')
       .then(r => r.json())
       .then(data => {
         deviceSchema = data;
@@ -137,24 +137,24 @@ try {
 
 const LEGAL_LINKS = {
   de: {
-    imprint: "legal/impressum.html",
-    privacy: "legal/datenschutz.html",
+    imprint: "public/legal/impressum.html",
+    privacy: "public/legal/datenschutz.html",
   },
   en: {
-    imprint: "legal/impressum-en.html",
-    privacy: "legal/datenschutz-en.html",
+    imprint: "public/legal/impressum-en.html",
+    privacy: "public/legal/datenschutz-en.html",
   },
   es: {
-    imprint: "legal/impressum-es.html",
-    privacy: "legal/datenschutz-es.html",
+    imprint: "public/legal/impressum-es.html",
+    privacy: "public/legal/datenschutz-es.html",
   },
   fr: {
-    imprint: "legal/impressum-fr.html",
-    privacy: "legal/datenschutz-fr.html",
+    imprint: "public/legal/impressum-fr.html",
+    privacy: "public/legal/datenschutz-fr.html",
   },
   it: {
-    imprint: "legal/impressum-it.html",
-    privacy: "legal/datenschutz-it.html",
+    imprint: "public/legal/impressum-it.html",
+    privacy: "public/legal/datenschutz-it.html",
   },
 };
 
@@ -3959,11 +3959,11 @@ const HORSE_ICON_SVG = `
 `.trim();
 
 const PINK_MODE_ICON_FILES = Object.freeze([
-  'assets/illustrations/unicorns/unicorn.svg',
-  'assets/illustrations/unicorns/unicorn-2.svg',
-  'assets/illustrations/unicorns/celebrate.svg',
-  'assets/illustrations/unicorns/sunglasses.svg',
-  'assets/illustrations/unicorns/toy.svg'
+  'public/illustrations/unicorns/unicorn.svg',
+  'public/illustrations/unicorns/unicorn-2.svg',
+  'public/illustrations/unicorns/celebrate.svg',
+  'public/illustrations/unicorns/sunglasses.svg',
+  'public/illustrations/unicorns/toy.svg'
 ]);
 
 function createPinkModeIconImageMarkup(path) {
@@ -3979,22 +3979,22 @@ const PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(
 );
 
 const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
-  'assets/animations/cat.json',
-  'assets/animations/cup.json',
-  'assets/animations/cupcake.json',
-  'assets/animations/flamingo.json',
-  'assets/animations/float.json',
-  'assets/animations/float-2.json',
-  'assets/animations/fox.json',
-  'assets/animations/heart.json',
-  'assets/animations/horn.json',
-  'assets/animations/invitation.json',
-  'assets/animations/mask.json',
-  'assets/animations/rainbow.json',
-  'assets/animations/rocking-horse.json',
-  'assets/animations/slippers.json',
-  'assets/animations/sunglasses.json',
-  'assets/animations/unicorn.json'
+  'public/animations/cat.json',
+  'public/animations/cup.json',
+  'public/animations/cupcake.json',
+  'public/animations/flamingo.json',
+  'public/animations/float.json',
+  'public/animations/float-2.json',
+  'public/animations/fox.json',
+  'public/animations/heart.json',
+  'public/animations/horn.json',
+  'public/animations/invitation.json',
+  'public/animations/mask.json',
+  'public/animations/rainbow.json',
+  'public/animations/rocking-horse.json',
+  'public/animations/slippers.json',
+  'public/animations/sunglasses.json',
+  'public/animations/unicorn.json'
 ]);
 
 const pinkModeIcons = {
@@ -4086,12 +4086,12 @@ function setPinkModeIconSequence(markupList) {
 }
 
 async function loadPinkModeIconsFromFiles() {
-  if (typeof fetch !== 'function') {
+  if (typeof window === 'undefined' || typeof window.fetch !== 'function') {
     return;
   }
   const responses = await Promise.all(
     PINK_MODE_ICON_FILES.map(path =>
-      fetch(path)
+      window.fetch(path)
         .then(response => (response.ok ? response.text() : null))
         .catch(() => null)
     )
@@ -4109,13 +4109,13 @@ async function loadPinkModeAnimatedIconTemplates() {
   if (pinkModeAnimatedIconTemplatesPromise) {
     return pinkModeAnimatedIconTemplatesPromise;
   }
-  if (typeof fetch !== 'function') {
+  if (typeof window === 'undefined' || typeof window.fetch !== 'function') {
     pinkModeAnimatedIconTemplates = Object.freeze([]);
     return pinkModeAnimatedIconTemplates;
   }
   pinkModeAnimatedIconTemplatesPromise = Promise.all(
     PINK_MODE_ANIMATED_ICON_FILES.map(path =>
-      fetch(path)
+      window.fetch(path)
         .then(response => (response.ok ? response.text() : null))
         .catch(() => null)
     )

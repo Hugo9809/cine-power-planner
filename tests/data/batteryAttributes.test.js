@@ -1,4 +1,4 @@
-const devices = require('../../assets/data');
+const devices = require('../../public/data');
 
 test('batteries expose pinA attribute', () => {
   const batteryGroups = [devices.batteries || {}, (devices.accessories && devices.accessories.batteries) || {}];

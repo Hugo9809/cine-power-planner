@@ -1,6 +1,6 @@
 # Cine Power Planner
 
-![Cine Power Planner icon](icon.svg)
+![Cine Power Planner icon](public/icons/app-icon.svg)
 
 Cine Power Planner is a standalone web app for building, auditing and sharing
 professional camera power plans that never leave your machine. Plan V‑Mount,
@@ -482,17 +482,18 @@ npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
 
 ```
 index.html                 # Main HTML layout
-assets/css/style.css       # Core styles and layout
-assets/css/overview.css    # Printable overview styling
-assets/css/overview-print.css # Print overrides for the overview dialog
-assets/js/script.js        # Application logic
-assets/js/storage.js       # Local storage helpers
-assets/js/static-theme.js  # Shared theme logic for legal pages
-assets/data/index.js       # Default device list
-assets/data/devices/       # Device catalogs by category
-assets/data/schema.json    # Schema used for validation
-assets/vendor/             # Bundled third-party libraries
-legal/                     # Offline legal documents
+public/styles/style.css       # Core styles and layout
+public/styles/overview.css    # Printable overview styling
+public/styles/overview-print.css # Print overrides for the overview dialog
+public/scripts/script.js        # Application logic
+public/scripts/storage.js       # Local storage helpers
+public/scripts/static-theme.js  # Shared theme logic for legal pages
+public/data/index.js       # Default device list
+public/data/devices/       # Device catalogs by category
+public/data/schema.json    # Schema used for validation
+public/vendor/             # Bundled third-party libraries
+public/icons/              # PWA icons for manifests and shortcuts
+public/legal/              # Offline legal documents
 tools/                     # Data maintenance scripts
 tests/                     # Jest test suites
 ```

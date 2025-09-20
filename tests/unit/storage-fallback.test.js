@@ -52,7 +52,7 @@ describe('storage fallback when localStorage is unavailable', () => {
   });
 
   test('uses in-memory store to save and load data', () => {
-    const { saveFeedback, loadFeedback } = require('../../assets/js/storage');
+    const { saveFeedback, loadFeedback } = require('../../public/scripts/storage');
     const data = { msg: 'hi' };
     saveFeedback(data);
     expect(loadFeedback()).toEqual(data);
