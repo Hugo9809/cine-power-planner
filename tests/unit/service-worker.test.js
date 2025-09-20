@@ -2,16 +2,16 @@ const { ASSETS, CACHE_NAME } = require('../../service-worker.js');
 
 describe('service worker configuration', () => {
   test('caches overview assets for offline usage', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./assets/css/overview.css', './assets/css/overview-print.css', './assets/js/overview.js']));
+    expect(ASSETS).toEqual(expect.arrayContaining(['./src/styles/overview.css', './src/styles/overview-print.css', './src/scripts/overview.js']));
   });
 
   test('caches runtime JavaScript dependencies for offline usage', () => {
     expect(ASSETS).toEqual(
       expect.arrayContaining([
-        './assets/js/globalthis-polyfill.js',
-        './assets/data/devices/batteryHotswaps.js',
-        './assets/data/devices/chargers.js',
-        './assets/data/devices/wirelessReceivers.js',
+        './src/scripts/globalthis-polyfill.js',
+        './src/data/devices/batteryHotswaps.js',
+        './src/data/devices/chargers.js',
+        './src/data/devices/wirelessReceivers.js',
       ]),
     );
   });
@@ -34,11 +34,11 @@ describe('service worker configuration', () => {
   });
 
   test('caches the device schema for offline editing', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./assets/data/schema.json']));
+    expect(ASSETS).toEqual(expect.arrayContaining(['./src/data/schema.json']));
   });
 
   test('caches the shared theme helper for legal pages', () => {
-    expect(ASSETS).toEqual(expect.arrayContaining(['./assets/js/static-theme.js']));
+    expect(ASSETS).toEqual(expect.arrayContaining(['./src/scripts/static-theme.js']));
   });
 
   test('exposes a cache name', () => {

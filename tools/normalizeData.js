@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-let devices = require('../assets/data');
+let devices = require('../src/data');
 
 function forEachCamera(cb) {
   const cameras = devices.cameras;
@@ -367,7 +367,7 @@ function save() {
     JSON.stringify(devices, null, 2) +
     ';\n' +
     'if (typeof module !== "undefined" && module.exports) { module.exports = devices; }\n';
-  const filePath = path.join(__dirname, '../assets/data/index.js');
+  const filePath = path.join(__dirname, '../src/data/index.js');
   fs.writeFileSync(filePath, content);
 }
 
@@ -390,7 +390,7 @@ if (require.main === module) {
       [
         'Usage: node normalizeData.js [options]',
         '',
-        'Cleans and expands device data, then overwrites assets/data/index.js with the result.',
+        'Cleans and expands device data, then overwrites src/data/index.js with the result.',
         '',
         'What it does:',
         '  - Harmonizes connector names across cameras, motors and controllers (LBUS, LEMO, Hirose, etc.).',
@@ -398,12 +398,12 @@ if (require.main === module) {
         '  - Rebuilds derived fields such as power distribution outputs and video port lists.',
         '',
         'Recommended workflow:',
-        '  1. Run `npm run check-consistency` after editing assets/data/devices/ files to catch missing metadata.',
+        '  1. Run `npm run check-consistency` after editing src/data/devices/ files to catch missing metadata.',
         '  2. Run this script (`npm run normalize`) to regenerate derived values.',
         '  3. Follow up with `npm run unify-ports` so connector metadata stays aligned.',
         '  4. Finish with `npm run generate-schema` to refresh schema.json.',
         '',
-        'The script modifies assets/data/index.js in place. Review the diff and commit it together with schema updates.',
+        'The script modifies src/data/index.js in place. Review the diff and commit it together with schema updates.',
         '',
         'Examples:',
         '  npm run normalize',

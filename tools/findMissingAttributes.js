@@ -1,5 +1,5 @@
-const data = require('../assets/data');
-const schema = require('../assets/data/schema.json');
+const data = require('../src/data');
+const schema = require('../src/data/schema.json');
 
 function buildAttributeMap(node, parentPath = []) {
   const map = {};
@@ -39,7 +39,7 @@ function getValueAtPath(obj, path) {
 function findMissingAttributes(categoryPath, dataset = data, attributeMap = ATTRIBUTE_MAP) {
   const attributes = attributeMap[categoryPath];
   if (!attributes) {
-    throw new Error(`Category "${categoryPath}" is not defined in assets/data/schema.json`);
+    throw new Error(`Category "${categoryPath}" is not defined in src/data/schema.json`);
   }
 
   const collection = getValueAtPath(dataset, categoryPath);
@@ -102,9 +102,9 @@ if (require.main === module) {
         'Usage: node findMissingAttributes.js <category-path> [--json]',
         '',
         'Options:',
-        '  --all        Check every category defined in assets/data/schema.json',
+        '  --all        Check every category defined in src/data/schema.json',
         '  --json       Output results as JSON',
-        '  --list       List all category paths available in assets/data/schema.json',
+        '  --list       List all category paths available in src/data/schema.json',
         '',
         'Examples:',
         '  node findMissingAttributes.js cameras',

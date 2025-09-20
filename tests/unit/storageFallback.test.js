@@ -28,7 +28,7 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
       },
     });
 
-    storageModule = require('../../assets/js/storage');
+    storageModule = require('../../src/scripts/storage');
   });
 
   afterEach(() => {
