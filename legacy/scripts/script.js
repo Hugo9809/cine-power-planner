@@ -21888,7 +21888,7 @@ function createFilterValueSelect(type, selected) {
     opts = _getFilterValueConfig.opts,
     _getFilterValueConfig2 = _getFilterValueConfig.defaults,
     defaults = _getFilterValueConfig2 === void 0 ? [] : _getFilterValueConfig2;
-  var selectedVals = Array.isArray(selected) && selected.length ? selected.slice() : defaults.slice();
+  var selectedVals = Array.isArray(selected) ? selected.slice() : defaults.slice();
   var syncOption = function syncOption(option, isSelected) {
     option.selected = isSelected;
     if (isSelected) {
@@ -22031,7 +22031,7 @@ function buildFilterGearEntries() {
             size: '',
             values: []
           });
-          var diopterValues = Array.isArray(values) && values.length ? values.slice() : (getFilterValueConfig(type).defaults || []).slice();
+          var diopterValues = values == null ? (getFilterValueConfig(type).defaults || []).slice() : Array.isArray(values) ? values.slice() : [];
           entries.push({
             id: "".concat(idBase, "-set"),
             gearName: 'Schneider CF DIOPTER FULL GEN2',
@@ -22169,7 +22169,7 @@ function createFilterStorageValueSelect(type, selected) {
     opts = _getFilterValueConfig3.opts,
     _getFilterValueConfig4 = _getFilterValueConfig3.defaults,
     defaults = _getFilterValueConfig4 === void 0 ? [] : _getFilterValueConfig4;
-  var chosen = Array.isArray(selected) && selected.length ? selected.slice() : defaults.slice();
+  var chosen = Array.isArray(selected) ? selected.slice() : defaults.slice();
   opts.forEach(function (value) {
     var opt = document.createElement('option');
     opt.value = value;
@@ -22260,7 +22260,7 @@ function renderGearListFilterDetails(details) {
         opts = _getFilterValueConfig5.opts,
         _getFilterValueConfig6 = _getFilterValueConfig5.defaults,
         defaults = _getFilterValueConfig6 === void 0 ? [] : _getFilterValueConfig6;
-      var currentValues = Array.isArray(values) && values.length ? values : defaults;
+      var currentValues = values == null ? defaults : Array.isArray(values) ? values : [];
       opts.forEach(function (value) {
         var lbl = document.createElement('label');
         lbl.className = 'filter-value-option';
@@ -22330,7 +22330,7 @@ function renderFilterDetails() {
       type: type,
       label: label,
       size: size,
-      values: Array.isArray(prev.values) ? prev.values.slice() : undefined,
+      values: Array.isArray(prev.values) ? prev.values.slice() : [],
       needsSize: needsSize,
       needsValues: needsValues
     };
@@ -22370,36 +22370,47 @@ function collectFilterSelections() {
     var prev = existingMap[type] || {};
     var size = sizeSel ? sizeSel.value : prev.size || DEFAULT_FILTER_SIZE;
     var vals;
+    var needsValues = filterTypeNeedsValueSelect(type);
     if (valSel) {
       vals = Array.from(valSel.selectedOptions).map(function (o) {
         return o.value;
       });
     } else if (Array.isArray(prev.values) && prev.values.length) {
-      vals = prev.values;
+      vals = prev.values.slice();
     } else {
       vals = [];
     }
-    return "".concat(type, ":").concat(size).concat(vals && vals.length ? ':' + vals.join('|') : '');
+    var valueSegment = '';
+    if (needsValues) {
+      valueSegment = vals.length ? ":".concat(vals.join('|')) : ':!';
+    }
+    return "".concat(type, ":").concat(size).concat(valueSegment);
   });
   return tokens.join(',');
 }
 function parseFilterTokens(str) {
   if (!str) return [];
   return str.split(',').map(function (s) {
-    var _s$split$map = s.split(':').map(function (p) {
-        return p.trim();
-      }),
-      _s$split$map2 = _slicedToArray(_s$split$map, 3),
-      type = _s$split$map2[0],
-      _s$split$map2$ = _s$split$map2[1],
-      size = _s$split$map2$ === void 0 ? DEFAULT_FILTER_SIZE : _s$split$map2$,
-      vals = _s$split$map2[2];
+    var parts = s.split(':').map(function (p) {
+      return p.trim();
+    });
+    var type = parts[0];
+    var size = parts[1] || DEFAULT_FILTER_SIZE;
+    var vals = parts.length > 2 ? parts[2] : undefined;
+    var values;
+    if (vals === undefined) {
+      values = undefined;
+    } else if (vals === '' || vals === '!') {
+      values = [];
+    } else {
+      values = vals.split('|').map(function (v) {
+        return v.trim();
+      }).filter(Boolean);
+    }
     return {
       type: type,
       size: size,
-      values: vals ? vals.split('|').map(function (v) {
-        return v.trim();
-      }) : undefined
+      values: values
     };
   }).filter(function (t) {
     return t.type;
