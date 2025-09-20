@@ -570,6 +570,8 @@ if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
       get: getSafeLocalStorage,
     });
   } catch (defineError) {
+    // Reference the caught error to satisfy linting while preserving the silent fallback.
+    void defineError;
     GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
   }
 }
