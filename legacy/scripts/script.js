@@ -3383,7 +3383,7 @@ function setLanguage(lang) {
     }
   }
   setButtonLabelWithIcon(document.getElementById("generateOverviewBtn"), texts[lang].generateOverviewBtn, ICON_GLYPHS.overview);
-  setButtonLabelWithIcon(document.getElementById("generateGearListBtn"), texts[lang].generateGearListBtn, ICON_GLYPHS.gears);
+  setButtonLabelWithIcon(document.getElementById("generateGearListBtn"), texts[lang].generateGearListBtn, ICON_GLYPHS.gearList);
   setButtonLabelWithIcon(document.getElementById("shareSetupBtn"), texts[lang].shareSetupBtn, ICON_GLYPHS.fileExport);
   var exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) {
@@ -3752,6 +3752,13 @@ var MONITORING_SUPPORT_ICON = Object.freeze({
   className: 'icon-svg'
 });
 var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\" />\n  </svg>\n".trim();
+var NOTE_ICON = iconGlyph("\uF13E", ICON_FONT_KEYS.ESSENTIAL);
+var OVERVIEW_ICON = NOTE_ICON;
+var GEAR_LIST_ICON_SVG = "\n  <svg\n    viewBox=\"0 0 24 24\"\n    xmlns=\"http://www.w3.org/2000/svg\"\n    aria-hidden=\"true\"\n    focusable=\"false\"\n    stroke-width=\"1.5\"\n    stroke-linecap=\"round\"\n    stroke-linejoin=\"round\"\n  >\n    <rect x=\"6.75\" y=\"5.5\" width=\"10.5\" height=\"13.5\" rx=\"2\" />\n    <path d=\"M9.75 3.5h4.5\" />\n    <path d=\"M9.5 9h6\" />\n    <path d=\"M9.5 12.75l1.5 1.5 2.75-2.75\" />\n    <path d=\"M9.5 16.25l1.5 1.5 2.75-2.75\" />\n  </svg>\n".trim();
+var GEAR_LIST_ICON = Object.freeze({
+  markup: GEAR_LIST_ICON_SVG,
+  className: 'icon-svg'
+});
 var ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph("\uE1A6", ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph("\uE1A9", ICON_FONT_KEYS.UICONS),
@@ -3780,8 +3787,9 @@ var ICON_GLYPHS = Object.freeze({
   timecode: iconGlyph("\uF10E", ICON_FONT_KEYS.FILM),
   audioIn: iconGlyph("\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
   audioOut: iconGlyph("\uF22F", ICON_FONT_KEYS.ESSENTIAL),
-  note: iconGlyph("\uF13E", ICON_FONT_KEYS.ESSENTIAL),
-  overview: iconGlyph("\uF1F5", ICON_FONT_KEYS.UICONS),
+  note: NOTE_ICON,
+  overview: OVERVIEW_ICON,
+  gearList: GEAR_LIST_ICON,
   feedback: Object.freeze({
     markup: FEEDBACK_ICON_SVG,
     className: 'icon-svg'

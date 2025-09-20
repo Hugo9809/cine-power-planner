@@ -3612,7 +3612,7 @@ function setLanguage(lang) {
   setButtonLabelWithIcon(
     document.getElementById("generateGearListBtn"),
     texts[lang].generateGearListBtn,
-    ICON_GLYPHS.gears
+    ICON_GLYPHS.gearList
   );
   setButtonLabelWithIcon(
     document.getElementById("shareSetupBtn"),
@@ -4165,6 +4165,27 @@ const STAR_ICON_SVG = `
   </svg>
 `.trim();
 
+const NOTE_ICON = iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL);
+const OVERVIEW_ICON = NOTE_ICON;
+const GEAR_LIST_ICON_SVG = `
+  <svg
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    focusable="false"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <rect x="6.75" y="5.5" width="10.5" height="13.5" rx="2" />
+    <path d="M9.75 3.5h4.5" />
+    <path d="M9.5 9h6" />
+    <path d="M9.5 12.75l1.5 1.5 2.75-2.75" />
+    <path d="M9.5 16.25l1.5 1.5 2.75-2.75" />
+  </svg>
+`.trim();
+const GEAR_LIST_ICON = Object.freeze({ markup: GEAR_LIST_ICON_SVG, className: 'icon-svg' });
+
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -4190,8 +4211,9 @@ const ICON_GLYPHS = Object.freeze({
   timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
   audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
   audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
-  note: iconGlyph('\uF13E', ICON_FONT_KEYS.ESSENTIAL),
-  overview: iconGlyph('\uF1F5', ICON_FONT_KEYS.UICONS),
+  note: NOTE_ICON,
+  overview: OVERVIEW_ICON,
+  gearList: GEAR_LIST_ICON,
   feedback: Object.freeze({ markup: FEEDBACK_ICON_SVG, className: 'icon-svg' }),
   resetView: Object.freeze({ markup: RESET_VIEW_ICON_SVG, className: 'icon-svg' }),
   pin: iconGlyph('\uF1EF', ICON_FONT_KEYS.ESSENTIAL),
