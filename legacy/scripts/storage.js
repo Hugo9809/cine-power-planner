@@ -2,17 +2,17 @@ function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLim
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -27,10 +27,30 @@ var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
-var CUSTOM_FONT_STORAGE_KEY_NAME = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === 'string' ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
-if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== 'string') {
-  GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = CUSTOM_FONT_STORAGE_KEY_NAME;
+function ensureCustomFontStorageKeyName() {
+  if (!GLOBAL_SCOPE) {
+    return CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+  }
+  var existingName = typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === 'string' ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME : typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === 'string' ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+  var normalizedName = existingName;
+  if (existingName === 'cinePowerPlanner_customFonts') {
+    normalizedName = CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+  }
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== normalizedName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = normalizedName;
+  }
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME !== normalizedName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME = normalizedName;
+  }
+  return normalizedName;
 }
+function getCustomFontStorageKeyName() {
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === 'string') {
+    return GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME;
+  }
+  return ensureCustomFontStorageKeyName();
+}
+ensureCustomFontStorageKeyName();
 var CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
 var AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 var AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
@@ -39,36 +59,52 @@ var AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 var AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 var AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+var AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+var AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 var STORAGE_BACKUP_SUFFIX = '__backup';
-var RAW_STORAGE_BACKUP_KEYS = new Set([CUSTOM_FONT_STORAGE_KEY_NAME, CUSTOM_LOGO_STORAGE_KEY]);
-var PRIMARY_STORAGE_KEYS = [
-  DEVICE_STORAGE_KEY,
-  SETUP_STORAGE_KEY,
-  SESSION_STATE_KEY,
-  FEEDBACK_STORAGE_KEY,
-  PROJECT_STORAGE_KEY,
-  FAVORITES_STORAGE_KEY,
-  DEVICE_SCHEMA_CACHE_KEY,
-  AUTO_GEAR_RULES_STORAGE_KEY,
-  AUTO_GEAR_SEEDED_STORAGE_KEY,
-  AUTO_GEAR_BACKUPS_STORAGE_KEY,
-  AUTO_GEAR_PRESETS_STORAGE_KEY,
-  AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
-  AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
-];
-var SIMPLE_STORAGE_KEYS = [
-  CUSTOM_LOGO_STORAGE_KEY,
-  CUSTOM_FONT_STORAGE_KEY_NAME,
-  'darkMode',
-  'pinkMode',
-  'highContrast',
-  'showAutoBackups',
-  'accentColor',
-  'fontSize',
-  'fontFamily',
-  'language',
-  'iosPwaHelpShown'
-];
+var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
+var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY]);
+function createStorageMigrationBackup(storage, key, originalValue) {
+  if (!storage || typeof storage.setItem !== 'function') {
+    return;
+  }
+  if (originalValue === null || originalValue === undefined) {
+    return;
+  }
+  var backupKey = "".concat(key).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+  var hasExistingBackup = false;
+  if (typeof storage.getItem === 'function') {
+    try {
+      var existing = storage.getItem(backupKey);
+      if (existing !== null && existing !== undefined) {
+        hasExistingBackup = true;
+      }
+    } catch (inspectionError) {
+      console.warn("Unable to inspect migration backup for ".concat(key), inspectionError);
+    }
+  }
+  if (hasExistingBackup) {
+    return;
+  }
+  var serialized;
+  try {
+    serialized = JSON.stringify({
+      createdAt: new Date().toISOString(),
+      data: originalValue
+    });
+  } catch (serializationError) {
+    console.warn("Unable to serialize migration backup for ".concat(key), serializationError);
+    return;
+  }
+  try {
+    storage.setItem(backupKey, serialized);
+    console.log("Stored migration backup for ".concat(key, "."));
+  } catch (writeError) {
+    console.warn("Unable to create migration backup for ".concat(key), writeError);
+  }
+}
+var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY];
+var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
 var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
 var storageErrorAlertShown = false;
 if (GLOBAL_SCOPE) {
@@ -84,11 +120,12 @@ var ACCESSORY_COLLECTION_KEYS = ['chargers', 'cages', 'powerPlates', 'cameraSupp
 var getStorageManager = function getStorageManager() {
   return typeof navigator !== 'undefined' && navigator && _typeof(navigator.storage) === 'object' ? navigator.storage : null;
 };
+var STORAGE_TEST_KEY = '__storage_test__';
 var QUOTA_ERROR_NAMES = new Set(['QuotaExceededError', 'NS_ERROR_DOM_QUOTA_REACHED']);
 var QUOTA_ERROR_CODES = new Set([22, 1014]);
 var QUOTA_ERROR_NUMBERS = new Set([22, 1014]);
-var isQuotaExceededError = function isQuotaExceededError(error) {
-  if (!error || 'object' !== _typeof(error)) {
+function isQuotaExceededError(error) {
+  if (!error || _typeof(error) !== 'object') {
     return false;
   }
   if (typeof error.code === 'number' && QUOTA_ERROR_CODES.has(error.code)) {
@@ -101,8 +138,8 @@ var isQuotaExceededError = function isQuotaExceededError(error) {
     return true;
   }
   return false;
-};
-var hasStoredEntries = function hasStoredEntries(storage) {
+}
+function hasStoredEntries(storage) {
   if (!storage) return false;
   try {
     if (typeof storage.length === 'number' && storage.length > 0) {
@@ -118,19 +155,19 @@ var hasStoredEntries = function hasStoredEntries(storage) {
         if (storage.getItem(key) !== null) {
           return true;
         }
-        var backupKey = key + STORAGE_BACKUP_SUFFIX;
+        var backupKey = "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
         if (storage.getItem(backupKey) !== null) {
           return true;
         }
       }
-      for (var j = 0; j < SIMPLE_STORAGE_KEYS.length; j += 1) {
-        var simpleKey = SIMPLE_STORAGE_KEYS[j];
-        if (storage.getItem(simpleKey) !== null) {
+      for (var _i = 0; _i < SIMPLE_STORAGE_KEYS.length; _i += 1) {
+        var _key = SIMPLE_STORAGE_KEYS[_i];
+        if (storage.getItem(_key) !== null) {
           return true;
         }
-        if (RAW_STORAGE_BACKUP_KEYS.has(simpleKey)) {
-          var simpleBackupKey = simpleKey + STORAGE_BACKUP_SUFFIX;
-          if (storage.getItem(simpleBackupKey) !== null) {
+        if (RAW_STORAGE_BACKUP_KEYS.has(_key)) {
+          var _backupKey = "".concat(_key).concat(STORAGE_BACKUP_SUFFIX);
+          if (storage.getItem(_backupKey) !== null) {
             return true;
           }
         }
@@ -153,49 +190,26 @@ var hasStoredEntries = function hasStoredEntries(storage) {
     }
   }
   return false;
-};
-var SAFE_LOCAL_STORAGE = function () {
-  var TEST_KEY = '__storage_test__';
-  var verifyStorage = function verifyStorage(storage) {
-    if (!storage) return null;
-    try {
-      storage.setItem(TEST_KEY, '1');
-    } catch (error) {
-      if (isQuotaExceededError(error) && hasStoredEntries(storage)) {
-        console.warn('localStorage quota exceeded. Existing planner data will remain available but new saves may fail.', error);
-        return storage;
-      }
-      throw error;
+}
+function verifyStorage(storage) {
+  if (!storage) return null;
+  try {
+    storage.setItem(STORAGE_TEST_KEY, '1');
+  } catch (error) {
+    if (isQuotaExceededError(error) && hasStoredEntries(storage)) {
+      console.warn('localStorage quota exceeded. Existing planner data will remain available but new saves may fail.', error);
+      return storage;
     }
-    try {
-      storage.removeItem(TEST_KEY);
-    } catch (cleanupError) {
-      console.warn('Unable to clean up storage test key', cleanupError);
-    }
-    return storage;
-  };
-  if (typeof window !== 'undefined') {
-    try {
-      if ('localStorage' in window) {
-        var storage = verifyStorage(window.localStorage);
-        if (storage) return storage;
-      }
-    } catch (e) {
-      console.warn('localStorage is unavailable:', e);
-    }
-    try {
-      if ('sessionStorage' in window) {
-        var _storage = verifyStorage(window.sessionStorage);
-        if (_storage) {
-          console.warn('Falling back to sessionStorage; data persists for this tab only.');
-          return _storage;
-        }
-      }
-    } catch (e) {
-      console.warn('sessionStorage fallback is unavailable:', e);
-    }
+    throw error;
   }
-  alertStorageError();
+  try {
+    storage.removeItem(STORAGE_TEST_KEY);
+  } catch (cleanupError) {
+    console.warn('Unable to clean up storage test key', cleanupError);
+  }
+  return storage;
+}
+function createMemoryStorage() {
   var memoryStore = {};
   return {
     get length() {
@@ -221,7 +235,218 @@ var SAFE_LOCAL_STORAGE = function () {
       return Object.keys(memoryStore);
     }
   };
-}();
+}
+function initializeSafeLocalStorage() {
+  if (typeof window !== 'undefined') {
+    var candidate = null;
+    try {
+      if ('localStorage' in window) {
+        candidate = window.localStorage;
+        var storage = verifyStorage(candidate);
+        if (storage) {
+          lastFailedUpgradeCandidate = null;
+          return {
+            storage: storage,
+            type: 'local'
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('localStorage is unavailable:', e);
+      if (candidate) {
+        lastFailedUpgradeCandidate = candidate;
+      }
+    }
+    try {
+      if ('sessionStorage' in window) {
+        var _storage = verifyStorage(window.sessionStorage);
+        if (_storage) {
+          console.warn('Falling back to sessionStorage; data persists for this tab only.');
+          return {
+            storage: _storage,
+            type: 'session'
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('sessionStorage fallback is unavailable:', e);
+    }
+  }
+  alertStorageError();
+  return {
+    storage: createMemoryStorage(),
+    type: 'memory'
+  };
+}
+var lastFailedUpgradeCandidate = null;
+var safeLocalStorageInfo = initializeSafeLocalStorage();
+function migrateSnapshotToStorage(snapshot, target) {
+  if (!snapshot || !target || typeof target.setItem !== 'function') {
+    return;
+  }
+  Object.keys(snapshot).forEach(function (key) {
+    var value = snapshot[key];
+    if (value === null || value === undefined) {
+      return;
+    }
+    var existing = null;
+    try {
+      existing = target.getItem(key);
+    } catch (readError) {
+      console.warn('Unable to inspect localStorage during upgrade', key, readError);
+    }
+    if (existing !== null && existing !== undefined && existing !== value) {
+      createStorageMigrationBackup(target, key, existing);
+    }
+    try {
+      target.setItem(key, value);
+    } catch (writeError) {
+      console.warn('Unable to migrate storage key during upgrade', key, writeError);
+    }
+  });
+}
+function clearMigratedKeys(snapshot, source) {
+  if (!snapshot || !source || typeof source.removeItem !== 'function') {
+    return;
+  }
+  Object.keys(snapshot).forEach(function (key) {
+    try {
+      source.removeItem(key);
+    } catch (error) {
+      console.warn('Unable to remove migrated storage key from fallback', key, error);
+    }
+  });
+}
+function snapshotStorageEntries(storage) {
+  var snapshot = Object.create(null);
+  if (!storage) {
+    return snapshot;
+  }
+  var captureKey = function captureKey(key) {
+    if (typeof key !== 'string' || !key) {
+      return;
+    }
+    var value;
+    try {
+      if (typeof storage.getItem === 'function') {
+        value = storage.getItem(key);
+      } else if (Object.prototype.hasOwnProperty.call(storage, key)) {
+        value = storage[key];
+      }
+    } catch (error) {
+      console.warn('Unable to read storage key during snapshot', key, error);
+      alertStorageError('migration-read');
+      return;
+    }
+    if (value === null || value === undefined) {
+      return;
+    }
+    snapshot[key] = String(value);
+  };
+  if (typeof storage.key === 'function' && typeof storage.length === 'number') {
+    for (var index = 0; index < storage.length; index += 1) {
+      captureKey(storage.key(index));
+    }
+    return snapshot;
+  }
+  if (typeof storage.keys === 'function') {
+    try {
+      var keys = storage.keys();
+      if (Array.isArray(keys)) {
+        keys.forEach(captureKey);
+      }
+    } catch (error) {
+      console.warn('Unable to enumerate storage keys during snapshot', error);
+      alertStorageError('migration-read');
+    }
+    return snapshot;
+  }
+  if (typeof storage.forEach === 'function') {
+    try {
+      storage.forEach(function (value, key) {
+        if (typeof key !== 'string') {
+          return;
+        }
+        if (value === null || value === undefined) {
+          return;
+        }
+        snapshot[key] = String(value);
+      });
+    } catch (error) {
+      console.warn('Unable to iterate storage entries during snapshot', error);
+      alertStorageError('migration-read');
+    }
+    return snapshot;
+  }
+  Object.keys(storage).forEach(captureKey);
+  return snapshot;
+}
+function attemptLocalStorageUpgrade() {
+  if (!safeLocalStorageInfo || safeLocalStorageInfo.type === 'local') {
+    return safeLocalStorageInfo.storage;
+  }
+  if (typeof window === 'undefined') {
+    return safeLocalStorageInfo.storage;
+  }
+  var candidate;
+  try {
+    if (!('localStorage' in window)) {
+      return safeLocalStorageInfo.storage;
+    }
+    candidate = window.localStorage;
+  } catch (error) {
+    console.warn('Unable to access localStorage during upgrade attempt', error);
+    lastFailedUpgradeCandidate = null;
+    return safeLocalStorageInfo.storage;
+  }
+  if (candidate && candidate === lastFailedUpgradeCandidate) {
+    return safeLocalStorageInfo.storage;
+  }
+  var verified;
+  try {
+    verified = verifyStorage(candidate);
+  } catch (verificationError) {
+    console.warn('localStorage upgrade verification failed', verificationError);
+    lastFailedUpgradeCandidate = candidate;
+    return safeLocalStorageInfo.storage;
+  }
+  if (!verified || verified === safeLocalStorageInfo.storage) {
+    if (!verified) {
+      lastFailedUpgradeCandidate = candidate;
+    } else {
+      lastFailedUpgradeCandidate = null;
+    }
+    return safeLocalStorageInfo.storage;
+  }
+  var snapshot = snapshotStorageEntries(safeLocalStorageInfo.storage);
+  migrateSnapshotToStorage(snapshot, verified);
+  clearMigratedKeys(snapshot, safeLocalStorageInfo.storage);
+  safeLocalStorageInfo = {
+    storage: verified,
+    type: 'local'
+  };
+  lastFailedUpgradeCandidate = null;
+  return verified;
+}
+function getSafeLocalStorage() {
+  if (!safeLocalStorageInfo || !safeLocalStorageInfo.storage) {
+    safeLocalStorageInfo = initializeSafeLocalStorage();
+  }
+  if (safeLocalStorageInfo.type !== 'local') {
+    attemptLocalStorageUpgrade();
+  }
+  return safeLocalStorageInfo.storage;
+}
+if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
+  try {
+    Object.defineProperty(GLOBAL_SCOPE, 'SAFE_LOCAL_STORAGE', {
+      configurable: true,
+      get: getSafeLocalStorage
+    });
+  } catch (_unused) {
+    GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
+  }
+}
 var persistentStorageRequestPromise = null;
 function requestPersistentStorage() {
   if (persistentStorageRequestPromise) {
@@ -330,7 +555,6 @@ function shouldDisplayStorageAlert(reason) {
   if (!reason) {
     return true;
   }
-
   if (reason === 'migration-read') {
     if (typeof safeLocalStorageInfo !== 'undefined' && safeLocalStorageInfo) {
       if (safeLocalStorageInfo.type && safeLocalStorageInfo.type !== 'memory') {
@@ -338,28 +562,22 @@ function shouldDisplayStorageAlert(reason) {
       }
     }
   }
-
   return true;
 }
-
 function alertStorageError(reason) {
   if (!shouldDisplayStorageAlert(reason)) {
     return;
   }
-
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   }
-
   if (storageErrorAlertShown) {
     return;
   }
-
   storageErrorAlertShown = true;
   if (GLOBAL_SCOPE) {
     GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = true;
   }
-
   if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
   var msg = 'Storage error: Unable to access local data. Changes may not be saved.';
   try {
@@ -373,17 +591,180 @@ function alertStorageError(reason) {
   }
   window.alert(msg);
 }
+function getWindowStorage(name) {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  try {
+    return window[name];
+  } catch (error) {
+    console.warn("Unable to access ".concat(name, " during legacy migration"), error);
+    return null;
+  }
+}
+function collectUniqueStorages(storages) {
+  var unique = [];
+  for (var i = 0; i < storages.length; i += 1) {
+    var storage = storages[i];
+    if (!storage || typeof storage.getItem !== 'function') {
+      continue;
+    }
+    if (!unique.includes(storage)) {
+      unique.push(storage);
+    }
+  }
+  return unique;
+}
+function migrateKeyBetweenStorages(source, target, legacyKey, modernKey) {
+  var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+  if (!source || typeof source.getItem !== 'function') {
+    return false;
+  }
+  var _options$keepLegacy = options.keepLegacy,
+    keepLegacy = _options$keepLegacy === void 0 ? false : _options$keepLegacy;
+  var legacyValue;
+  try {
+    legacyValue = source.getItem(legacyKey);
+  } catch (error) {
+    console.warn("Unable to read legacy storage key ".concat(legacyKey), error);
+    alertStorageError('migration-read');
+    return false;
+  }
+  if (legacyValue === null || legacyValue === undefined) {
+    return false;
+  }
+  var destination = target && typeof target.setItem === 'function' ? target : source;
+  try {
+    var existing = destination.getItem(modernKey);
+    if (existing !== null && existing !== undefined) {
+      if (!keepLegacy && source !== destination) {
+        try {
+          source.removeItem(legacyKey);
+        } catch (removeError) {
+          console.warn("Unable to remove legacy storage key ".concat(legacyKey), removeError);
+        }
+      }
+      return false;
+    }
+  } catch (readError) {
+    console.warn("Unable to inspect destination storage for ".concat(modernKey), readError);
+  }
+  try {
+    destination.setItem(modernKey, legacyValue);
+  } catch (writeError) {
+    console.warn("Unable to migrate legacy storage key ".concat(legacyKey), writeError);
+    return false;
+  }
+  if (!keepLegacy) {
+    try {
+      source.removeItem(legacyKey);
+    } catch (removeError) {
+      console.warn("Unable to remove legacy storage key ".concat(legacyKey, " after migration"), removeError);
+    }
+  }
+  return true;
+}
+function migrateKeyInStorages(storages, preferredTarget, legacyKey, modernKey, options) {
+  var migrated = false;
+  for (var i = 0; i < storages.length; i += 1) {
+    if (migrateKeyBetweenStorages(storages[i], preferredTarget, legacyKey, modernKey, options)) {
+      migrated = true;
+    }
+  }
+  return migrated;
+}
+function migrateLegacyStorageKeys() {
+  var safeStorage = getSafeLocalStorage();
+  var localStorages = collectUniqueStorages([getWindowStorage('localStorage'), safeStorage]);
+  var sessionStorages = collectUniqueStorages([getWindowStorage('sessionStorage'), typeof sessionStorage !== 'undefined' ? sessionStorage : null]);
+  var legacyPrefix = 'cinePowerPlanner_';
+  var mappings = [{
+    legacy: "".concat(legacyPrefix, "devices"),
+    modern: DEVICE_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "setups"),
+    modern: SETUP_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "session"),
+    modern: SESSION_STATE_KEY,
+    includeSession: true
+  }, {
+    legacy: "".concat(legacyPrefix, "feedback"),
+    modern: FEEDBACK_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "project"),
+    modern: PROJECT_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "projects"),
+    modern: PROJECT_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "favorites"),
+    modern: FAVORITES_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "schemaCache"),
+    modern: DEVICE_SCHEMA_CACHE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "autoGearRules"),
+    modern: AUTO_GEAR_RULES_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "autoGearBackups"),
+    modern: AUTO_GEAR_BACKUPS_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "autoGearSeeded"),
+    modern: AUTO_GEAR_SEEDED_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "autoGearPresets"),
+    modern: AUTO_GEAR_PRESETS_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "autoGearActivePreset"),
+    modern: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "autoGearShowBackups"),
+    modern: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
+  }, {
+    legacy: "".concat(legacyPrefix, "customFonts"),
+    modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT,
+    updateFontKey: true
+  }];
+  mappings.forEach(function (_ref2) {
+    var legacy = _ref2.legacy,
+      modern = _ref2.modern,
+      _ref2$includeSession = _ref2.includeSession,
+      includeSession = _ref2$includeSession === void 0 ? false : _ref2$includeSession,
+      _ref2$updateFontKey = _ref2.updateFontKey,
+      updateFontKey = _ref2$updateFontKey === void 0 ? false : _ref2$updateFontKey;
+    var migratedLocal = migrateKeyInStorages(localStorages, safeStorage, legacy, modern);
+    migrateKeyInStorages(localStorages, safeStorage, "".concat(legacy).concat(STORAGE_BACKUP_SUFFIX), "".concat(modern).concat(STORAGE_BACKUP_SUFFIX));
+    if (includeSession) {
+      migrateKeyInStorages(sessionStorages, null, legacy, modern);
+      migrateKeyInStorages(sessionStorages, null, "".concat(legacy).concat(STORAGE_BACKUP_SUFFIX), "".concat(modern).concat(STORAGE_BACKUP_SUFFIX));
+    }
+    if (updateFontKey && migratedLocal && GLOBAL_SCOPE) {
+      if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === legacy) {
+        GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = modern;
+      }
+      if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === legacy) {
+        GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME = modern;
+      }
+    }
+  });
+}
+function applyLegacyStorageMigrations() {
+  migrateLegacyStorageKeys();
+}
 function loadJSONFromStorage(storage, key, errorMessage) {
   var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
   var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
   if (!storage) return defaultValue;
-  var _ref2 = options || {},
-    _ref2$disableBackup = _ref2.disableBackup,
-    disableBackup = _ref2$disableBackup === void 0 ? false : _ref2$disableBackup,
-    backupKey = _ref2.backupKey,
-    validate = _ref2.validate,
-    _ref2$restoreIfMissin = _ref2.restoreIfMissing,
-    restoreIfMissing = _ref2$restoreIfMissin === void 0 ? false : _ref2$restoreIfMissin;
+  var _ref3 = options || {},
+    _ref3$disableBackup = _ref3.disableBackup,
+    disableBackup = _ref3$disableBackup === void 0 ? false : _ref3$disableBackup,
+    backupKey = _ref3.backupKey,
+    validate = _ref3.validate,
+    _ref3$restoreIfMissin = _ref3.restoreIfMissing,
+    restoreIfMissing = _ref3$restoreIfMissin === void 0 ? false : _ref3$restoreIfMissin,
+    _ref3$alertOnFailure = _ref3.alertOnFailure,
+    alertOnFailure = _ref3$alertOnFailure === void 0 ? null : _ref3$alertOnFailure;
   var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
   var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
   var shouldAlert = false;
@@ -455,17 +836,17 @@ function loadJSONFromStorage(storage, key, errorMessage) {
     }
   }
   if (shouldAlert) {
-    alertStorageError();
+    alertStorageError(alertOnFailure);
   }
   return defaultValue;
 }
 function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
   var options = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
   if (!storage) return;
-  var _ref3 = options || {},
-    _ref3$disableBackup = _ref3.disableBackup,
-    disableBackup = _ref3$disableBackup === void 0 ? false : _ref3$disableBackup,
-    backupKey = _ref3.backupKey;
+  var _ref4 = options || {},
+    _ref4$disableBackup = _ref4.disableBackup,
+    disableBackup = _ref4$disableBackup === void 0 ? false : _ref4$disableBackup,
+    backupKey = _ref4.backupKey;
   var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
   var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
   var serialized;
@@ -497,10 +878,10 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
 function deleteFromStorage(storage, key, errorMessage) {
   var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   if (!storage) return;
-  var _ref4 = options || {},
-    _ref4$disableBackup = _ref4.disableBackup,
-    disableBackup = _ref4$disableBackup === void 0 ? false : _ref4$disableBackup,
-    backupKey = _ref4.backupKey;
+  var _ref5 = options || {},
+    _ref5$disableBackup = _ref5.disableBackup,
+    disableBackup = _ref5$disableBackup === void 0 ? false : _ref5$disableBackup,
+    backupKey = _ref5.backupKey;
   var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
   var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
   try {
@@ -516,6 +897,12 @@ function deleteFromStorage(storage, key, errorMessage) {
       console.error("".concat(errorMessage, " (backup)"), backupError);
       alertStorageError();
     }
+  }
+  var migrationBackupKey = "".concat(key).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+  try {
+    storage.removeItem(migrationBackupKey);
+  } catch (migrationError) {
+    console.warn("Unable to remove migration backup for ".concat(key), migrationError);
   }
 }
 function loadFlagFromStorage(storage, key, errorMessage) {
@@ -545,7 +932,10 @@ function loadWithMigration(primary, fallback, key, primaryLoadMsg, fallbackLoadM
   var value = loadJSONFromStorage(primary, key, primaryLoadMsg, null, loadOptions);
   if (value !== null) return value;
   if (!fallback) return null;
-  var migrated = loadJSONFromStorage(fallback, key, fallbackLoadMsg, null, loadOptions);
+  var fallbackOptions = _objectSpread(_objectSpread({}, loadOptions || {}), {}, {
+    alertOnFailure: 'migration-read'
+  });
+  var migrated = loadJSONFromStorage(fallback, key, fallbackLoadMsg, null, fallbackOptions);
   if (migrated !== null) {
     saveJSONToStorage(primary, key, migrated, saveMsg);
     deleteFromStorage(fallback, key, deleteMsg);
@@ -569,26 +959,180 @@ function generateUniqueName(base, usedNames, normalizedNames) {
   normalized.add(candidate);
   return name;
 }
+function collectStringValues(value) {
+  if (value === null || value === undefined) {
+    return [];
+  }
+  if (typeof value === 'string') {
+    var trimmed = value.trim();
+    return trimmed ? [trimmed] : [];
+  }
+  if (Array.isArray(value)) {
+    return value.filter(function (item) {
+      return typeof item === 'string';
+    }).map(function (item) {
+      return item.trim();
+    }).filter(function (item) {
+      return item;
+    });
+  }
+  if (isPlainObject(value)) {
+    return Object.values(value).filter(function (item) {
+      return typeof item === 'string';
+    }).map(function (item) {
+      return item.trim();
+    }).filter(function (item) {
+      return item;
+    });
+  }
+  return [];
+}
+function arraysEqual(a, b) {
+  if (a === b) {
+    return true;
+  }
+  if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) {
+    return false;
+  }
+  for (var i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+function normalizeSessionStatePayload(raw) {
+  if (!isPlainObject(raw)) {
+    return {
+      state: null,
+      changed: false
+    };
+  }
+  var state = _objectSpread({}, raw);
+  var changed = false;
+  var normalizeStringField = function normalizeStringField(key) {
+    if (!Object.prototype.hasOwnProperty.call(state, key)) {
+      return;
+    }
+    var value = state[key];
+    if (typeof value === 'string') {
+      var trimmed = value.trim();
+      if (trimmed !== value) {
+        state[key] = trimmed;
+        changed = true;
+      }
+      return;
+    }
+    if (value === null || value === undefined) {
+      state[key] = '';
+      changed = true;
+      return;
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      state[key] = String(value);
+      changed = true;
+      return;
+    }
+    state[key] = '';
+    changed = true;
+  };
+  ['setupName', 'setupSelect', 'camera', 'monitor', 'video', 'cage', 'distance', 'batteryPlate', 'battery', 'batteryHotswap', 'sliderBowl', 'easyrig'].forEach(normalizeStringField);
+  var mergeArrayField = function mergeArrayField(targetKey) {
+    var legacyKeys = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var values = [];
+    var keys = [targetKey].concat(_toConsumableArray(legacyKeys));
+    var hadLegacyData = false;
+    keys.forEach(function (key) {
+      if (Object.prototype.hasOwnProperty.call(state, key)) {
+        var collected = collectStringValues(state[key]);
+        if (key !== targetKey) {
+          hadLegacyData = true;
+        }
+        if (collected.length) {
+          values.push.apply(values, _toConsumableArray(collected));
+        }
+      }
+    });
+    keys.slice(1).forEach(function (legacyKey) {
+      if (Object.prototype.hasOwnProperty.call(state, legacyKey)) {
+        delete state[legacyKey];
+        changed = true;
+      }
+    });
+    var unique = [];
+    var seen = new Set();
+    values.forEach(function (val) {
+      if (!seen.has(val)) {
+        seen.add(val);
+        unique.push(val);
+      }
+    });
+    var hasTargetKey = Object.prototype.hasOwnProperty.call(state, targetKey);
+    var existing = hasTargetKey && Array.isArray(state[targetKey]) ? state[targetKey].filter(function (item) {
+      return typeof item === 'string';
+    }).map(function (item) {
+      return item.trim();
+    }).filter(function (item) {
+      return item;
+    }) : [];
+    if (!hasTargetKey && !hadLegacyData && unique.length === 0 && existing.length === 0) {
+      return;
+    }
+    if (!arraysEqual(existing, unique)) {
+      state[targetKey] = unique;
+      changed = true;
+    }
+  };
+  mergeArrayField('motors', ['motor', 'motorSelect']);
+  mergeArrayField('controllers', ['controller', 'controllerSelect']);
+  if (Object.prototype.hasOwnProperty.call(state, 'projectInfo') && !isPlainObject(state.projectInfo)) {
+    state.projectInfo = null;
+    changed = true;
+  }
+  return {
+    state: state,
+    changed: changed
+  };
+}
 function loadSessionState() {
-  return loadWithMigration(SAFE_LOCAL_STORAGE, typeof sessionStorage !== 'undefined' ? sessionStorage : null, SESSION_STATE_KEY, "Error loading session state from localStorage:", "Error loading session state from sessionStorage:", "Error saving session state to localStorage:", "Error deleting session state from sessionStorage:", {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var raw = loadWithMigration(safeStorage, typeof sessionStorage !== 'undefined' ? sessionStorage : null, SESSION_STATE_KEY, "Error loading session state from localStorage:", "Error loading session state from sessionStorage:", "Error saving session state to localStorage:", "Error deleting session state from sessionStorage:", {
     validate: function validate(value) {
       return value === null || isPlainObject(value);
     }
   });
+  if (raw === null) {
+    return null;
+  }
+  var _normalizeSessionStat = normalizeSessionStatePayload(raw),
+    state = _normalizeSessionStat.state,
+    changed = _normalizeSessionStat.changed;
+  if (!state) {
+    return null;
+  }
+  if (changed) {
+    createStorageMigrationBackup(safeStorage, SESSION_STATE_KEY, raw);
+    saveSessionState(state);
+  }
+  return state;
 }
 function saveSessionState(state) {
+  var safeStorage = getSafeLocalStorage();
   if (state === null || state === undefined) {
-    deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, "Error deleting session state from localStorage:");
+    deleteFromStorage(safeStorage, SESSION_STATE_KEY, "Error deleting session state from localStorage:");
     return;
   }
   if (!isPlainObject(state)) {
     console.warn('Ignoring invalid session state payload. Expected a plain object.');
     return;
   }
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, state, "Error saving session state to localStorage:");
+  saveJSONToStorage(safeStorage, SESSION_STATE_KEY, state, "Error saving session state to localStorage:");
 }
 function loadDeviceData() {
-  var parsedData = loadJSONFromStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, "Error loading device data from localStorage:", null, {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsedData = loadJSONFromStorage(safeStorage, DEVICE_STORAGE_KEY, "Error loading device data from localStorage:", null, {
     validate: function validate(value) {
       return value === null || isPlainObject(value);
     }
@@ -626,14 +1170,16 @@ function loadDeviceData() {
     changed = true;
   }
   if (changed) {
-    saveJSONToStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, data, "Error updating device data in localStorage during normalization:");
+    createStorageMigrationBackup(safeStorage, DEVICE_STORAGE_KEY, parsedData);
+    saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, data, "Error updating device data in localStorage during normalization:");
   }
   console.log("Device data loaded from localStorage.");
   return data;
 }
 function saveDeviceData(deviceData) {
+  var safeStorage = getSafeLocalStorage();
   if (deviceData === null || deviceData === undefined) {
-    deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, "Error deleting device data from localStorage:");
+    deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, "Error deleting device data from localStorage:");
     console.log("Device data cleared from localStorage.");
     return;
   }
@@ -641,7 +1187,7 @@ function saveDeviceData(deviceData) {
     console.warn('Ignoring invalid device data payload. Expected a plain object.');
     return;
   }
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, deviceData, "Error saving device data to localStorage:", "Device data saved to localStorage.");
+  saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, deviceData, "Error saving device data to localStorage:", "Device data saved to localStorage.");
 }
 function normalizeSetups(rawData) {
   if (!rawData) {
@@ -696,7 +1242,9 @@ function normalizeSetups(rawData) {
   };
 }
 function loadSetups() {
-  var parsedData = loadJSONFromStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, "Error loading setups from localStorage:", null, {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsedData = loadJSONFromStorage(safeStorage, SETUP_STORAGE_KEY, "Error loading setups from localStorage:", null, {
     validate: function validate(value) {
       return value === null || Array.isArray(value) || isPlainObject(value);
     }
@@ -705,21 +1253,23 @@ function loadSetups() {
     setups = _normalizeSetups.data,
     changed = _normalizeSetups.changed;
   if (changed) {
-    saveJSONToStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, setups, "Error updating setups in localStorage during normalization:");
+    createStorageMigrationBackup(safeStorage, SETUP_STORAGE_KEY, parsedData);
+    saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, setups, "Error updating setups in localStorage during normalization:");
   }
   return setups;
 }
 function saveSetups(setups) {
   var _normalizeSetups2 = normalizeSetups(setups),
     normalizedSetups = _normalizeSetups2.data;
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, normalizedSetups, "Error saving setups to localStorage:", "Setups saved to localStorage.");
+  var safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, normalizedSetups, "Error saving setups to localStorage:", "Setups saved to localStorage.");
 }
 function updateSetups(callback) {
   var setups = loadSetups();
-  var _ref5 = callback(setups) || {},
-    result = _ref5.result,
-    _ref5$changed = _ref5.changed,
-    changed = _ref5$changed === void 0 ? true : _ref5$changed;
+  var _ref6 = callback(setups) || {},
+    result = _ref6.result,
+    _ref6$changed = _ref6.changed,
+    changed = _ref6$changed === void 0 ? true : _ref6$changed;
   if (changed) {
     saveSetups(setups);
   }
@@ -840,17 +1390,21 @@ function isNormalizedProjectEntry(entry) {
   return true;
 }
 function readAllProjectsFromStorage() {
-  var parsed = loadJSONFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, "Error loading project from localStorage:", null, {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsed = loadJSONFromStorage(safeStorage, PROJECT_STORAGE_KEY, "Error loading project from localStorage:", null, {
     validate: function validate(value) {
       return value === null || typeof value === "string" || Array.isArray(value) || isPlainObject(value);
     }
   });
+  var originalValue = parsed;
   var projects = {};
   var changed = false;
   if (parsed === null || parsed === undefined) {
     return {
       projects: projects,
-      changed: false
+      changed: false,
+      originalValue: originalValue
     };
   }
   if (typeof parsed === "string") {
@@ -860,7 +1414,8 @@ function readAllProjectsFromStorage() {
     }
     return {
       projects: projects,
-      changed: true
+      changed: true,
+      originalValue: originalValue
     };
   }
   if (Array.isArray(parsed)) {
@@ -879,13 +1434,15 @@ function readAllProjectsFromStorage() {
     });
     return {
       projects: projects,
-      changed: true
+      changed: true,
+      originalValue: originalValue
     };
   }
   if (!isPlainObject(parsed)) {
     return {
       projects: projects,
-      changed: true
+      changed: true,
+      originalValue: originalValue
     };
   }
   var keys = Object.keys(parsed);
@@ -899,7 +1456,8 @@ function readAllProjectsFromStorage() {
     }
     return {
       projects: projects,
-      changed: true
+      changed: true,
+      originalValue: originalValue
     };
   }
   keys.forEach(function (key) {
@@ -915,17 +1473,24 @@ function readAllProjectsFromStorage() {
   });
   return {
     projects: projects,
-    changed: changed
+    changed: changed,
+    originalValue: originalValue
   };
 }
 function persistAllProjects(projects, successMessage) {
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, projects, "Error saving project to localStorage:", successMessage);
+  var safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, projects, "Error saving project to localStorage:", successMessage);
 }
 function loadProject(name) {
   var _readAllProjectsFromS = readAllProjectsFromStorage(),
     projects = _readAllProjectsFromS.projects,
-    changed = _readAllProjectsFromS.changed;
-  if (changed && SAFE_LOCAL_STORAGE) {
+    changed = _readAllProjectsFromS.changed,
+    originalValue = _readAllProjectsFromS.originalValue;
+  if (changed) {
+    var safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
     persistAllProjects(projects);
   }
   if (name === undefined) {
@@ -934,6 +1499,96 @@ function loadProject(name) {
   var key = name || "";
   return Object.prototype.hasOwnProperty.call(projects, key) ? projects[key] : null;
 }
+function sanitizeProjectNameForBackup(name) {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  var collapsed = name.replace(/\s+/g, ' ').trim();
+  if (!collapsed) {
+    return '';
+  }
+  if (collapsed.length <= 120) {
+    return collapsed;
+  }
+  return collapsed.slice(0, 120);
+}
+function formatAutoBackupTimestamp(date) {
+  var pad = function pad(value) {
+    return String(value).padStart(2, '0');
+  };
+  return [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate()), pad(date.getHours()), pad(date.getMinutes()), pad(date.getSeconds())].join('-');
+}
+function generateDeletionBackupMetadata(projectName, projects) {
+  var now = new Date();
+  var timestamp = formatAutoBackupTimestamp(now);
+  var sanitizedName = sanitizeProjectNameForBackup(projectName);
+  var baseName = sanitizedName ? "".concat(AUTO_BACKUP_DELETION_PREFIX).concat(timestamp, "-").concat(sanitizedName) : "".concat(AUTO_BACKUP_DELETION_PREFIX).concat(timestamp);
+  var usedNames = new Set(Object.keys(projects));
+  if (!usedNames.has(baseName)) {
+    return {
+      name: baseName
+    };
+  }
+  var suffix = 2;
+  var candidate = "".concat(baseName, "-").concat(suffix);
+  while (usedNames.has(candidate)) {
+    suffix += 1;
+    candidate = "".concat(baseName, "-").concat(suffix);
+  }
+  return {
+    name: candidate
+  };
+}
+function cloneProjectEntryForBackup(entry) {
+  if (entry === undefined) {
+    return undefined;
+  }
+  if (entry === null || _typeof(entry) !== 'object') {
+    return entry;
+  }
+  try {
+    return JSON.parse(JSON.stringify(entry));
+  } catch (error) {
+    console.warn('Unable to deep clone project for backup', error);
+    return _objectSpread({}, entry);
+  }
+}
+function maybeCreateProjectDeletionBackup(projects, key) {
+  if (!projects || !Object.prototype.hasOwnProperty.call(projects, key)) {
+    return {
+      status: 'missing'
+    };
+  }
+  if (typeof key === 'string' && key.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+    return {
+      status: 'skipped'
+    };
+  }
+  var entry = projects[key];
+  if (entry === undefined) {
+    return {
+      status: 'missing'
+    };
+  }
+  var _generateDeletionBack = generateDeletionBackupMetadata(key, projects),
+    backupName = _generateDeletionBack.name;
+  if (!backupName) {
+    return {
+      status: 'failed'
+    };
+  }
+  var cloned = cloneProjectEntryForBackup(entry);
+  if (cloned === undefined) {
+    return {
+      status: 'failed'
+    };
+  }
+  projects[backupName] = cloned;
+  return {
+    status: 'created',
+    backupName: backupName
+  };
+}
 function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   var normalized = normalizeProject(project) || {
@@ -941,31 +1596,64 @@ function saveProject(name, project) {
     projectInfo: null
   };
   var _readAllProjectsFromS2 = readAllProjectsFromStorage(),
-    projects = _readAllProjectsFromS2.projects;
+    projects = _readAllProjectsFromS2.projects,
+    changed = _readAllProjectsFromS2.changed,
+    originalValue = _readAllProjectsFromS2.originalValue;
+  if (changed) {
+    var safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
+  }
   projects[name || ""] = normalized;
   persistAllProjects(projects, "Project saved to localStorage.");
 }
 function deleteProject(name) {
   if (name === undefined) {
-    deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
+    deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
     return;
   }
   var key = name || "";
   var _readAllProjectsFromS3 = readAllProjectsFromStorage(),
-    projects = _readAllProjectsFromS3.projects;
+    projects = _readAllProjectsFromS3.projects,
+    changed = _readAllProjectsFromS3.changed,
+    originalValue = _readAllProjectsFromS3.originalValue;
+  if (changed) {
+    var safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
+  }
   if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+    return;
+  }
+  var backupOutcome = maybeCreateProjectDeletionBackup(projects, key);
+  if (backupOutcome.status === 'failed') {
+    console.warn("Automatic backup before deleting project \"".concat(key, "\" failed. Deletion aborted."));
+    alertStorageError();
     return;
   }
   delete projects[key];
   if (Object.keys(projects).length === 0) {
-    deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
+    deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
   } else {
     persistAllProjects(projects);
+    if (backupOutcome.status === 'created' && backupOutcome.backupName) {
+      console.log("Stored automatic backup \"".concat(backupOutcome.backupName, "\" before deleting project \"").concat(key, "\"."));
+    }
   }
 }
 function createProjectImporter() {
   var _readAllProjectsFromS4 = readAllProjectsFromStorage(),
-    projects = _readAllProjectsFromS4.projects;
+    projects = _readAllProjectsFromS4.projects,
+    changed = _readAllProjectsFromS4.changed,
+    originalValue = _readAllProjectsFromS4.originalValue;
+  if (changed) {
+    var safeStorage = getSafeLocalStorage();
+    if (safeStorage) {
+      createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
+    }
+  }
   var usedNames = new Set(Object.keys(projects));
   var normalizedNames = new Set(_toConsumableArray(usedNames).map(function (name) {
     return name.trim().toLowerCase();
@@ -1002,9 +1690,56 @@ function createProjectImporter() {
     saveProject(uniqueName, normalizedProject);
   };
 }
+function tryParseJSONLike(value) {
+  if (typeof value !== "string") {
+    return {
+      success: false,
+      parsed: null
+    };
+  }
+  var trimmed = value.trim();
+  if (!trimmed) {
+    return {
+      success: false,
+      parsed: null
+    };
+  }
+  var firstChar = trimmed[0];
+  var lastChar = trimmed[trimmed.length - 1];
+  var expectedClosing = null;
+  if (firstChar === "{") {
+    expectedClosing = "}";
+  } else if (firstChar === "[") {
+    expectedClosing = "]";
+  } else if (firstChar === "\"") {
+    expectedClosing = "\"";
+  }
+  if (!expectedClosing || lastChar !== expectedClosing) {
+    return {
+      success: false,
+      parsed: null
+    };
+  }
+  try {
+    return {
+      success: true,
+      parsed: JSON.parse(trimmed)
+    };
+  } catch (error) {
+    void error;
+    return {
+      success: false,
+      parsed: null
+    };
+  }
+}
 function importProjectCollection(collection, ensureImporter) {
   var fallbackLabel = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "Imported project";
   if (typeof collection === "string") {
+    var parsed = tryParseJSONLike(collection);
+    if (parsed.success) {
+      return importProjectCollection(parsed.parsed, ensureImporter, fallbackLabel);
+    }
     ensureImporter()("", collection);
     return true;
   }
@@ -1019,10 +1754,10 @@ function importProjectCollection(collection, ensureImporter) {
   }
   if (isPlainObject(collection)) {
     var _importProject = ensureImporter();
-    Object.entries(collection).forEach(function (_ref6) {
-      var _ref7 = _slicedToArray(_ref6, 2),
-        name = _ref7[0],
-        proj = _ref7[1];
+    Object.entries(collection).forEach(function (_ref7) {
+      var _ref8 = _slicedToArray(_ref7, 2),
+        name = _ref8[0],
+        proj = _ref8[1];
       _importProject(name, proj);
     });
     return true;
@@ -1030,7 +1765,9 @@ function importProjectCollection(collection, ensureImporter) {
   return false;
 }
 function loadFavorites() {
-  var parsed = loadJSONFromStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, "Error loading favorites from localStorage:", {}, {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsed = loadJSONFromStorage(safeStorage, FAVORITES_STORAGE_KEY, "Error loading favorites from localStorage:", {}, {
     validate: function validate(value) {
       return value === null || isPlainObject(value);
     }
@@ -1038,18 +1775,21 @@ function loadFavorites() {
   return isPlainObject(parsed) ? parsed : {};
 }
 function saveFavorites(favs) {
+  var safeStorage = getSafeLocalStorage();
   if (favs === null || favs === undefined) {
-    deleteFromStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, "Error deleting favorites from localStorage:");
+    deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, "Error deleting favorites from localStorage:");
     return;
   }
   if (!isPlainObject(favs)) {
     console.warn('Ignoring invalid favorites payload. Expected a plain object.');
     return;
   }
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, favs, "Error saving favorites to localStorage:");
+  saveJSONToStorage(safeStorage, FAVORITES_STORAGE_KEY, favs, "Error saving favorites to localStorage:");
 }
 function loadFeedback() {
-  var parsed = loadJSONFromStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, "Error loading feedback from localStorage:", null, {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsed = loadJSONFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, "Error loading feedback from localStorage:", null, {
     validate: function validate(value) {
       return value === null || isPlainObject(value);
     }
@@ -1060,18 +1800,21 @@ function loadFeedback() {
   return {};
 }
 function saveFeedback(feedback) {
+  var safeStorage = getSafeLocalStorage();
   if (feedback === null || feedback === undefined) {
-    deleteFromStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, "Error deleting feedback from localStorage:");
+    deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, "Error deleting feedback from localStorage:");
     return;
   }
   if (!isPlainObject(feedback)) {
     console.warn('Ignoring invalid feedback payload. Expected a plain object.');
     return;
   }
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, feedback, "Error saving feedback to localStorage:", "Feedback saved to localStorage.");
+  saveJSONToStorage(safeStorage, FEEDBACK_STORAGE_KEY, feedback, "Error saving feedback to localStorage:", "Feedback saved to localStorage.");
 }
 function loadAutoGearRules() {
-  var parsed = loadJSONFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, "Error loading automatic gear rules from localStorage:", [], {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsed = loadJSONFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, "Error loading automatic gear rules from localStorage:", [], {
     validate: function validate(value) {
       return value === null || Array.isArray(value);
     }
@@ -1080,10 +1823,13 @@ function loadAutoGearRules() {
 }
 function saveAutoGearRules(rules) {
   var safeRules = Array.isArray(rules) ? rules : [];
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, safeRules, "Error saving automatic gear rules to localStorage:");
+  var safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, safeRules, "Error saving automatic gear rules to localStorage:");
 }
 function loadAutoGearBackups() {
-  var parsed = loadJSONFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, "Error loading automatic gear rule backups from localStorage:", [], {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsed = loadJSONFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, "Error loading automatic gear rule backups from localStorage:", [], {
     validate: function validate(value) {
       return value === null || Array.isArray(value);
     }
@@ -1092,16 +1838,22 @@ function loadAutoGearBackups() {
 }
 function saveAutoGearBackups(backups) {
   var safeBackups = Array.isArray(backups) ? backups : [];
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, safeBackups, "Error saving automatic gear rule backups to localStorage:");
+  var safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, safeBackups, "Error saving automatic gear rule backups to localStorage:");
 }
 function loadAutoGearSeedFlag() {
-  return loadFlagFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, "Error loading automatic gear seed flag from localStorage:");
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  return loadFlagFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, "Error loading automatic gear seed flag from localStorage:");
 }
 function saveAutoGearSeedFlag(flag) {
-  saveFlagToStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, Boolean(flag), "Error saving automatic gear seed flag to localStorage:");
+  var safeStorage = getSafeLocalStorage();
+  saveFlagToStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, Boolean(flag), "Error saving automatic gear seed flag to localStorage:");
 }
 function loadAutoGearPresets() {
-  var presets = loadJSONFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, "Error loading automatic gear presets from localStorage:", [], {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var presets = loadJSONFromStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, "Error loading automatic gear presets from localStorage:", [], {
     validate: function validate(value) {
       return value === null || Array.isArray(value);
     }
@@ -1110,14 +1862,17 @@ function loadAutoGearPresets() {
 }
 function saveAutoGearPresets(presets) {
   var safePresets = Array.isArray(presets) ? presets : [];
-  saveJSONToStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, safePresets, "Error saving automatic gear presets to localStorage:");
+  var safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, safePresets, "Error saving automatic gear presets to localStorage:");
 }
 function loadAutoGearActivePresetId() {
-  if (!SAFE_LOCAL_STORAGE) {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return '';
   }
   try {
-    var value = SAFE_LOCAL_STORAGE.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+    var value = safeStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear active preset from localStorage:', error);
@@ -1126,14 +1881,15 @@ function loadAutoGearActivePresetId() {
   }
 }
 function saveAutoGearActivePresetId(presetId) {
-  if (!SAFE_LOCAL_STORAGE) {
+  var safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return;
   }
   try {
     if (presetId) {
-      SAFE_LOCAL_STORAGE.setItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, presetId);
+      safeStorage.setItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, presetId);
     } else {
-      SAFE_LOCAL_STORAGE.removeItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+      safeStorage.removeItem(AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
     }
   } catch (error) {
     console.error('Error saving automatic gear active preset to localStorage:', error);
@@ -1141,11 +1897,12 @@ function saveAutoGearActivePresetId(presetId) {
   }
 }
 function loadAutoGearAutoPresetId() {
-  if (!SAFE_LOCAL_STORAGE) {
+  var safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return '';
   }
   try {
-    var value = SAFE_LOCAL_STORAGE.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+    var value = safeStorage.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear auto preset from localStorage:', error);
@@ -1154,14 +1911,15 @@ function loadAutoGearAutoPresetId() {
   }
 }
 function saveAutoGearAutoPresetId(presetId) {
-  if (!SAFE_LOCAL_STORAGE) {
+  var safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
     return;
   }
   try {
     if (presetId) {
-      SAFE_LOCAL_STORAGE.setItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, presetId);
+      safeStorage.setItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, presetId);
     } else {
-      SAFE_LOCAL_STORAGE.removeItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+      safeStorage.removeItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
     }
   } catch (error) {
     console.error('Error saving automatic gear auto preset to localStorage:', error);
@@ -1169,36 +1927,123 @@ function saveAutoGearAutoPresetId(presetId) {
   }
 }
 function loadAutoGearBackupVisibility() {
-  return loadFlagFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, "Error loading automatic gear backup visibility from localStorage:");
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  return loadFlagFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, "Error loading automatic gear backup visibility from localStorage:");
 }
 function saveAutoGearBackupVisibility(flag) {
-  saveFlagToStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, Boolean(flag), "Error saving automatic gear backup visibility to localStorage:");
+  var safeStorage = getSafeLocalStorage();
+  saveFlagToStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, Boolean(flag), "Error saving automatic gear backup visibility to localStorage:");
 }
 function clearAllData() {
   var msg = "Error clearing storage:";
-  deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, SETUP_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, FEEDBACK_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, FAVORITES_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, PROJECT_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_RULES_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_FONT_STORAGE_KEY_NAME, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_LOGO_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
+  var safeStorage = getSafeLocalStorage();
+  deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FEEDBACK_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, PROJECT_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
+  deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
+  deleteFromStorage(safeStorage, SESSION_STATE_KEY, msg);
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
+  var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+  preferenceKeys.forEach(function (key) {
+    deleteFromStorage(safeStorage, key, msg, {
+      disableBackup: true
+    });
+  });
+  var storageCandidates = collectUniqueStorages([safeStorage, typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null, getWindowStorage('localStorage'), typeof localStorage !== 'undefined' ? localStorage : null]);
+  var sessionCandidates = collectUniqueStorages([typeof sessionStorage !== 'undefined' ? sessionStorage : null, getWindowStorage('sessionStorage')]);
+  var prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
+  var collectKeysWithPrefixes = function collectKeysWithPrefixes(storage) {
+    if (!storage) {
+      return [];
+    }
+    var keys = [];
+    if (typeof storage.key === 'function' && typeof storage.length === 'number') {
+      var _loop = function _loop() {
+        var candidateKey = null;
+        try {
+          candidateKey = storage.key(index);
+        } catch (error) {
+          console.warn('Unable to inspect storage key during factory reset', error);
+        }
+        if (typeof candidateKey === 'string' && prefixedKeys.some(function (prefix) {
+          return candidateKey.startsWith(prefix);
+        })) {
+          keys.push(candidateKey);
+        }
+      };
+      for (var index = 0; index < storage.length; index += 1) {
+        _loop();
+      }
+      return keys;
+    }
+    if (typeof storage.keys === 'function') {
+      try {
+        var candidateKeys = storage.keys();
+        if (Array.isArray(candidateKeys)) {
+          candidateKeys.forEach(function (candidateKey) {
+            if (typeof candidateKey === 'string' && prefixedKeys.some(function (prefix) {
+              return candidateKey.startsWith(prefix);
+            })) {
+              keys.push(candidateKey);
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Unable to enumerate storage keys during factory reset', error);
+      }
+      return keys;
+    }
+    if (typeof storage.forEach === 'function') {
+      try {
+        storage.forEach(function (value, candidateKey) {
+          if (typeof candidateKey === 'string' && prefixedKeys.some(function (prefix) {
+            return candidateKey.startsWith(prefix);
+          })) {
+            keys.push(candidateKey);
+          }
+        });
+      } catch (error) {
+        console.warn('Unable to iterate storage entries during factory reset', error);
+      }
+      return keys;
+    }
+    return keys;
+  };
+  var deletePrefixedKeys = function deletePrefixedKeys(storages) {
+    storages.forEach(function (storage) {
+      var keysToRemove = collectKeysWithPrefixes(storage);
+      if (!keysToRemove.length) {
+        return;
+      }
+      keysToRemove.forEach(function (key) {
+        try {
+          deleteFromStorage(storage, key, msg);
+        } catch (error) {
+          console.warn('Unable to remove legacy storage key during factory reset', key, error);
+        }
+      });
+    });
+  };
+  deletePrefixedKeys(storageCandidates);
+  deletePrefixedKeys(sessionCandidates);
   console.log("All planner data cleared from storage.");
 }
 function readLocalStorageValue(key) {
-  var storage = SAFE_LOCAL_STORAGE;
+  var storage = getSafeLocalStorage();
   if (!storage || typeof storage.getItem !== 'function') return null;
   try {
     var value = storage.getItem(key);
@@ -1278,7 +2123,7 @@ function normalizeCustomFontEntries(entries) {
   });
 }
 function readStoredCustomFonts() {
-  var raw = readLocalStorageValue(CUSTOM_FONT_STORAGE_KEY_NAME);
+  var raw = readLocalStorageValue(getCustomFontStorageKeyName());
   if (!raw) {
     return [];
   }
@@ -1321,7 +2166,7 @@ function exportAllData() {
   return payload;
 }
 function safeSetLocalStorage(key, value) {
-  var storage = SAFE_LOCAL_STORAGE;
+  var storage = getSafeLocalStorage();
   if (!storage) return;
   var useBackup = RAW_STORAGE_BACKUP_KEYS.has(key);
   var backupKey = "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
@@ -1354,8 +2199,130 @@ function safeSetLocalStorage(key, value) {
     }
   }
 }
-function getSafeLocalStorage() {
-  return SAFE_LOCAL_STORAGE;
+function normalizeImportedBoolean(value) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+  if (typeof value === "string") {
+    var normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return null;
+    }
+    if (normalized === "true" || normalized === "1" || normalized === "yes" || normalized === "on") {
+      return true;
+    }
+    if (normalized === "false" || normalized === "0" || normalized === "no" || normalized === "off") {
+      return false;
+    }
+    return null;
+  }
+  if (typeof value === "number") {
+    if (Number.isNaN(value)) {
+      return null;
+    }
+    return value !== 0;
+  }
+  if (Array.isArray(value)) {
+    for (var i = 0; i < value.length; i += 1) {
+      var _normalized3 = normalizeImportedBoolean(value[i]);
+      if (_normalized3 !== null) {
+        return _normalized3;
+      }
+    }
+    return null;
+  }
+  if (isPlainObject(value)) {
+    if (Object.prototype.hasOwnProperty.call(value, "value")) {
+      return normalizeImportedBoolean(value.value);
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "enabled")) {
+      return normalizeImportedBoolean(value.enabled);
+    }
+  }
+  return null;
+}
+function normalizeImportedArray(value) {
+  var fallbackKeys = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var filterFn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  if (Array.isArray(value)) {
+    return filterFn ? value.filter(function (entry) {
+      return filterFn(entry);
+    }) : value.filter(function (entry) {
+      return entry !== null && entry !== undefined;
+    });
+  }
+  if (typeof value === "string") {
+    var parsed = tryParseJSONLike(value);
+    if (parsed.success) {
+      return normalizeImportedArray(parsed.parsed, fallbackKeys, filterFn);
+    }
+    return [];
+  }
+  if (isPlainObject(value)) {
+    for (var i = 0; i < fallbackKeys.length; i += 1) {
+      var key = fallbackKeys[i];
+      if (!Object.prototype.hasOwnProperty.call(value, key)) {
+        continue;
+      }
+      var extracted = normalizeImportedArray(value[key], fallbackKeys, filterFn);
+      if (extracted.length) {
+        return extracted;
+      }
+    }
+    var entries = Object.values(value);
+    if (entries.length) {
+      return filterFn ? entries.filter(function (entry) {
+        return filterFn(entry);
+      }) : entries.filter(function (entry) {
+        return entry !== null && entry !== undefined;
+      });
+    }
+  }
+  return [];
+}
+function normalizeImportedAutoGearRules(value) {
+  return normalizeImportedArray(value, ["rules", "items", "entries", "list", "values", "data"], function (entry) {
+    return entry !== null && _typeof(entry) === "object";
+  });
+}
+function normalizeImportedAutoGearBackups(value) {
+  return normalizeImportedArray(value, ["backups", "entries", "items", "list", "values", "data"], function (entry) {
+    return entry !== null && _typeof(entry) === "object";
+  });
+}
+function normalizeImportedAutoGearPresets(value) {
+  return normalizeImportedArray(value, ["presets", "entries", "items", "list", "values", "data"], function (entry) {
+    return entry !== null && _typeof(entry) === "object";
+  });
+}
+function normalizeImportedPresetId(value) {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return Number.isNaN(value) ? "" : String(value);
+  }
+  if (Array.isArray(value)) {
+    for (var i = 0; i < value.length; i += 1) {
+      var candidate = normalizeImportedPresetId(value[i]);
+      if (candidate) {
+        return candidate;
+      }
+    }
+    return "";
+  }
+  if (isPlainObject(value)) {
+    if (typeof value.id === "string" && value.id) {
+      return value.id;
+    }
+    if (typeof value.value === "string") {
+      return value.value;
+    }
+    if (Object.prototype.hasOwnProperty.call(value, "name")) {
+      return normalizeImportedPresetId(value.name);
+    }
+  }
+  return "";
 }
 function importAllData(allData) {
   if (!isPlainObject(allData)) {
@@ -1409,34 +2376,48 @@ function importAllData(allData) {
     var fonts = normalizeCustomFontEntries(allData.customFonts);
     if (fonts.length) {
       try {
-        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, JSON.stringify(fonts));
+        safeSetLocalStorage(getCustomFontStorageKeyName(), JSON.stringify(fonts));
       } catch (error) {
         console.warn('Unable to store imported custom fonts', error);
       }
     } else {
-      safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, null);
+      safeSetLocalStorage(getCustomFontStorageKeyName(), null);
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
-    saveAutoGearRules(allData.autoGearRules);
+    var rules = normalizeImportedAutoGearRules(allData.autoGearRules);
+    saveAutoGearRules(rules);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
-    saveAutoGearBackups(allData.autoGearBackups);
+    var backups = normalizeImportedAutoGearBackups(allData.autoGearBackups);
+    saveAutoGearBackups(backups);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
-    saveAutoGearSeedFlag(allData.autoGearSeeded);
+    var flag = normalizeImportedBoolean(allData.autoGearSeeded);
+    if (flag === null) {
+      saveAutoGearSeedFlag(Boolean(allData.autoGearSeeded));
+    } else {
+      saveAutoGearSeedFlag(flag);
+    }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearPresets')) {
-    saveAutoGearPresets(allData.autoGearPresets);
+    var presets = normalizeImportedAutoGearPresets(allData.autoGearPresets);
+    saveAutoGearPresets(presets);
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearActivePresetId')) {
-    saveAutoGearActivePresetId(typeof allData.autoGearActivePresetId === 'string' ? allData.autoGearActivePresetId : '');
+    var presetId = normalizeImportedPresetId(allData.autoGearActivePresetId);
+    saveAutoGearActivePresetId(typeof presetId === 'string' ? presetId : '');
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearAutoPresetId')) {
     saveAutoGearAutoPresetId(typeof allData.autoGearAutoPresetId === 'string' ? allData.autoGearAutoPresetId : '');
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearShowBackups')) {
-    saveAutoGearBackupVisibility(Boolean(allData.autoGearShowBackups));
+    var visibility = normalizeImportedBoolean(allData.autoGearShowBackups);
+    if (visibility === null) {
+      saveAutoGearBackupVisibility(Boolean(allData.autoGearShowBackups));
+    } else {
+      saveAutoGearBackupVisibility(visibility);
+    }
   }
   var importProjectEntry = null;
   var ensureProjectImporter = function ensureProjectImporter() {

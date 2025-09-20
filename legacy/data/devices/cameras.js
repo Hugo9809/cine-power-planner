@@ -2085,7 +2085,7 @@
         "type": "3.5mm Stereo",
         "notes": "Can be used for Timecode input"
       }],
-      "weight_g": null,
+      "weight_g": 1700,
       "recordingCodecs": ["Blackmagic RAW", "H.264 Proxy (sidecar)"],
       "sensorModes": ["Full Frame 6K 3:2 (Open Gate)", "FF 17:9/16:9 windows"],
       "resolutions": ["6048x4032 (6K 3:2)", "6000x3164 (6K 17:9)", "4096x2160 (DCI 4K)", "3840x2160 (UHD 4K)", "1920x1080 (HD)"]
@@ -2143,7 +2143,7 @@
         "type": "3.5mm Stereo",
         "notes": "Can be used for Timecode input"
       }],
-      "weight_g": null,
+      "weight_g": 2100,
       "recordingCodecs": ["Blackmagic RAW (12K)", "H.264 Proxy (sidecar)"],
       "sensorModes": ["Full Frame 12K 3:2 (Open Gate)", "FF 17:9/16:9 windows"],
       "resolutions": ["12288x8040 (12K 3:2)", "8192x4320 (8K)", "4096x2160 (DCI 4K)", "3840x2160 (UHD 4K)"]
@@ -2855,6 +2855,7 @@
         "type": "BNC",
         "notes": "Timecode In/Out"
       }],
+      "weight_g": 1800,
       "recordingCodecs": ["REDCODE RAW (HQ/MQ/LQ)", "Apple ProRes 4444 XQ/4444/422HQ/422/422LT (up to 4K)"],
       "sensorModes": ["VV 8K (global shutter)", "S35 window (6K/4K)"],
       "resolutions": ["8192x4320 (8K)", "7168x3780 (7K)", "6144x3240 (6K)", "4096x2160 (4K)", "2048x1080 (2K)"]
@@ -3078,6 +3079,7 @@
         "type": "BNC",
         "notes": "Timecode In/Out"
       }],
+      "weight_g": 2200,
       "recordingCodecs": ["REDCODE RAW"],
       "sensorModes": ["Super 35 6K", "Windowed 5K/4K/3K/2K"],
       "resolutions": ["6144x3160 (6K)", "5120x2700 (5K)", "4096x2160 (4K)", "3072x1620 (3K)", "2048x1080 (2K)"]
@@ -3189,6 +3191,7 @@
         "type": "BNC",
         "notes": "Timecode In/Out"
       }],
+      "weight_g": 2200,
       "recordingCodecs": ["REDCODE RAW"],
       "sensorModes": ["Super 35 5K", "Windowed 4K/3K/2K"],
       "resolutions": ["5120x2700 (5K)", "4096x2160 (4K)", "3072x1620 (3K)", "2048x1080 (2K)"]
