@@ -20001,11 +20001,57 @@ function exportDiagramSvg() {
   var serializer = new XMLSerializer();
   return serializer.serializeToString(clone);
 }
+function copyTextToClipboardBestEffort(text) {
+  if (typeof text !== 'string' || !text) {
+    return;
+  }
+  if (typeof navigator !== 'undefined' && navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+    navigator.clipboard.writeText(text).catch(function () {});
+    return;
+  }
+  if (typeof document === 'undefined' || !document || !document.body || typeof document.createElement !== 'function') {
+    return;
+  }
+  var textarea = null;
+  var previousActiveElement = document.activeElement;
+  try {
+    textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    try {
+      textarea.focus();
+    } catch (focusError) {}
+    try {
+      textarea.select();
+      if (typeof textarea.setSelectionRange === 'function') {
+        textarea.setSelectionRange(0, textarea.value.length);
+      }
+    } catch (selectionError) {}
+    if (typeof document.execCommand === 'function') {
+      try {
+        document.execCommand('copy');
+      } catch (execError) {}
+    }
+  } catch (error) {} finally {
+    if (textarea && textarea.parentNode) {
+      textarea.parentNode.removeChild(textarea);
+    }
+    if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+      try {
+        previousActiveElement.focus();
+      } catch (focusRestoreError) {}
+    }
+  }
+}
 if (downloadDiagramBtn) {
   downloadDiagramBtn.addEventListener('click', function (e) {
     var source = exportDiagramSvg();
     if (!source) return;
-    navigator.clipboard.writeText(source).catch(function () {});
+    copyTextToClipboardBestEffort(source);
     var pad = function pad(n) {
       return String(n).padStart(2, '0');
     };

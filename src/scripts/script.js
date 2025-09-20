@@ -20191,12 +20191,90 @@ function exportDiagramSvg() {
   return serializer.serializeToString(clone);
 }
 
+function copyTextToClipboardBestEffort(text) {
+  if (typeof text !== 'string' || !text) {
+    return;
+  }
+
+  if (
+    typeof navigator !== 'undefined' &&
+    navigator &&
+    navigator.clipboard &&
+    typeof navigator.clipboard.writeText === 'function'
+  ) {
+    navigator.clipboard.writeText(text).catch(() => {});
+    return;
+  }
+
+  if (
+    typeof document === 'undefined' ||
+    !document ||
+    !document.body ||
+    typeof document.createElement !== 'function'
+  ) {
+    return;
+  }
+
+  let textarea = null;
+  const previousActiveElement = document.activeElement;
+
+  try {
+    textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+
+    try {
+      textarea.focus();
+    } catch (focusError) {
+      // Ignore focus errors on platforms that disallow programmatic focus.
+    }
+
+    try {
+      textarea.select();
+      if (typeof textarea.setSelectionRange === 'function') {
+        textarea.setSelectionRange(0, textarea.value.length);
+      }
+    } catch (selectionError) {
+      // Ignore selection errors; execCommand may still succeed.
+    }
+
+    if (typeof document.execCommand === 'function') {
+      try {
+        document.execCommand('copy');
+      } catch (execError) {
+        // Ignore execCommand failures to avoid breaking the export flow.
+      }
+    }
+  } catch (error) {
+    // Ignore clipboard fallback errors.
+  } finally {
+    if (textarea && textarea.parentNode) {
+      textarea.parentNode.removeChild(textarea);
+    }
+
+    if (
+      previousActiveElement &&
+      typeof previousActiveElement.focus === 'function'
+    ) {
+      try {
+        previousActiveElement.focus();
+      } catch (focusRestoreError) {
+        // Ignore focus restoration errors.
+      }
+    }
+  }
+}
+
 if (downloadDiagramBtn) {
   downloadDiagramBtn.addEventListener('click', (e) => {
     const source = exportDiagramSvg();
     if (!source) return;
 
-    navigator.clipboard.writeText(source).catch(() => {});
+    copyTextToClipboardBestEffort(source);
     const pad = n => String(n).padStart(2, '0');
     const now = new Date();
     const datePart = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}`;
