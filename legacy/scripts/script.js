@@ -3476,11 +3476,6 @@ function setLanguage(lang) {
     featureSearch.setAttribute("aria-label", texts[lang].featureSearchLabel);
     featureSearch.setAttribute("data-help", texts[lang].featureSearchHelp || texts[lang].featureSearchLabel);
   }
-  if (featureSearchClear) {
-    featureSearchClear.setAttribute("title", texts[lang].featureSearchClear);
-    featureSearchClear.setAttribute("aria-label", texts[lang].featureSearchClear);
-    featureSearchClear.setAttribute("data-help", texts[lang].featureSearchClearHelp || texts[lang].featureSearchClear);
-  }
   if (helpButton) {
     helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
     helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
@@ -8384,7 +8379,6 @@ var supportLink = document.getElementById("supportLink");
 var settingsSave = document.getElementById("settingsSave");
 var settingsCancel = document.getElementById("settingsCancel");
 var featureSearch = document.getElementById("featureSearch");
-var featureSearchClear = document.getElementById("featureSearchClear");
 var featureList = document.getElementById("featureList");
 var featureMap = new Map();
 var normalizeSearchValue = function normalizeSearchValue(value) {
@@ -21756,37 +21750,15 @@ if (helpButton && helpDialog) {
     featureSearch.addEventListener('input', function () {
       var _featureSearch$showPi2;
       (_featureSearch$showPi2 = featureSearch.showPicker) === null || _featureSearch$showPi2 === void 0 || _featureSearch$showPi2.call(featureSearch);
-      if (featureSearchClear) {
-        if (featureSearch.value) {
-          featureSearchClear.removeAttribute('hidden');
-        } else {
-          featureSearchClear.setAttribute('hidden', '');
-        }
-      }
     });
     featureSearch.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         handle();
       } else if (e.key === 'Escape' && featureSearch.value) {
         featureSearch.value = '';
-        if (featureSearchClear) {
-          featureSearchClear.setAttribute('hidden', '');
-        }
         e.preventDefault();
       }
     });
-  }
-  if (featureSearchClear) {
-    featureSearchClear.addEventListener('click', function () {
-      if (featureSearch) {
-        featureSearch.value = '';
-        featureSearchClear.setAttribute('hidden', '');
-        focusFeatureSearchInput();
-      }
-    });
-    if (featureSearch && featureSearch.value) {
-      featureSearchClear.removeAttribute('hidden');
-    }
   }
   helpButton.addEventListener('click', toggleHelp);
   if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelp);
@@ -22854,7 +22826,6 @@ if (typeof module !== "undefined" && module.exports) {
       deviceMap: deviceMap,
       helpMap: helpMap,
       featureSearchInput: featureSearch,
-      featureSearchClearButton: featureSearchClear,
       featureListElement: featureList
     },
     collectAutoGearCatalogNames: collectAutoGearCatalogNames,
