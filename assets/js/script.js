@@ -8437,12 +8437,19 @@ const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
   return entry;
 };
 
-const tokenMatchScore = (entryTokens = [], queryTokens = []) => {
-  if (!Array.isArray(entryTokens) || entryTokens.length === 0) return 0;
+const computeTokenMatchDetails = (entryTokens = [], queryTokens = []) => {
+  if (!Array.isArray(entryTokens) || entryTokens.length === 0) {
+    return { score: 0, matched: 0 };
+  }
+  const validQueryTokens = Array.isArray(queryTokens)
+    ? queryTokens.filter(Boolean)
+    : [];
+  if (validQueryTokens.length === 0) {
+    return { score: 0, matched: 0 };
+  }
   let total = 0;
   let matched = 0;
-  for (const token of queryTokens) {
-    if (!token) continue;
+  for (const token of validQueryTokens) {
     let best = 0;
     for (const entryToken of entryTokens) {
       if (!entryToken) continue;
@@ -8461,8 +8468,10 @@ const tokenMatchScore = (entryTokens = [], queryTokens = []) => {
       total += best;
     }
   }
-  if (matched === 0) return 0;
-  return total;
+  if (matched === 0) {
+    return { score: 0, matched: 0 };
+  }
+  return { score: total, matched };
 };
 
 function findBestSearchMatch(map, key, tokens = []) {
@@ -8470,11 +8479,12 @@ function findBestSearchMatch(map, key, tokens = []) {
   const hasKey = Boolean(key);
   if (!hasKey && queryTokens.length === 0) return null;
 
-  const toResult = (entryKey, entryValue, matchType, score = 0) => ({
+  const toResult = (entryKey, entryValue, matchType, score = 0, matchedCount = 0) => ({
     key: entryKey,
     value: entryValue,
     matchType,
-    score
+    score,
+    matchedCount
   });
 
   const flattened = [];
@@ -8493,63 +8503,123 @@ function findBestSearchMatch(map, key, tokens = []) {
     const exactCandidates = flattened.filter(([entryKey]) => entryKey === key);
     if (exactCandidates.length) {
       let bestEntry = exactCandidates[0][1];
-      let bestScore = queryTokens.length > 0
-        ? tokenMatchScore(bestEntry?.tokens || [], queryTokens)
-        : Number.POSITIVE_INFINITY;
-      if (queryTokens.length) {
-        for (const [, entryValue] of exactCandidates.slice(1)) {
-          const score = tokenMatchScore(entryValue?.tokens || [], queryTokens);
-          if (score > bestScore) {
-            bestScore = score;
-            bestEntry = entryValue;
-          }
+      let bestDetails = queryTokens.length > 0
+        ? computeTokenMatchDetails(bestEntry?.tokens || [], queryTokens)
+        : { score: Number.POSITIVE_INFINITY, matched: queryTokens.length };
+      for (const [, entryValue] of exactCandidates.slice(1)) {
+        if (!queryTokens.length) break;
+        const details = computeTokenMatchDetails(entryValue?.tokens || [], queryTokens);
+        if (
+          details.score > bestDetails.score ||
+          (details.score === bestDetails.score && details.matched > bestDetails.matched)
+        ) {
+          bestDetails = details;
+          bestEntry = entryValue;
         }
       }
-      return toResult(key, bestEntry, 'exactKey', bestScore);
+      return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
     }
   }
 
   let bestTokenMatch = null;
   let bestTokenScore = 0;
-  let keyPrefixMatch = null;
-  let partialMatch = null;
+  let bestTokenMatched = 0;
+  let bestTokenKeyDistance = Number.POSITIVE_INFINITY;
+  let bestPrefixMatch = null;
+  let bestPrefixScore = Number.NEGATIVE_INFINITY;
+  let bestPrefixMatched = 0;
+  let bestPrefixLength = Number.POSITIVE_INFINITY;
+  let bestSubsetMatch = null;
+  let bestSubsetScore = Number.NEGATIVE_INFINITY;
+  let bestSubsetMatched = 0;
+  let bestSubsetLength = -1;
+  let bestPartialMatch = null;
+  let bestPartialScore = Number.NEGATIVE_INFINITY;
+  let bestPartialMatched = 0;
+
+  const keyLength = hasKey ? key.length : 0;
 
   for (const [entryKey, entryValue] of flattened) {
-    if (hasKey && entryKey.startsWith(key)) {
-      const score =
-        queryTokens.length > 0
-          ? tokenMatchScore(entryValue?.tokens || [], queryTokens)
-          : Number.POSITIVE_INFINITY;
-      return toResult(entryKey, entryValue, 'keyPrefix', score);
-    }
+    if (!entryValue) continue;
+    const entryTokens = entryValue?.tokens || [];
+    const tokenDetails = queryTokens.length
+      ? computeTokenMatchDetails(entryTokens, queryTokens)
+      : { score: 0, matched: 0 };
 
-    if (queryTokens.length) {
-      const score = tokenMatchScore(entryValue?.tokens || [], queryTokens);
-      if (score > bestTokenScore) {
-        bestTokenScore = score;
-        bestTokenMatch = toResult(entryKey, entryValue, 'token', score);
+    if (hasKey && entryKey.startsWith(key)) {
+      const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
+      const candidate = toResult(entryKey, entryValue, 'keyPrefix', score, tokenDetails.matched);
+      if (
+        !bestPrefixMatch ||
+        score > bestPrefixScore ||
+        (score === bestPrefixScore &&
+          (tokenDetails.matched > bestPrefixMatched ||
+            (tokenDetails.matched === bestPrefixMatched && entryKey.length < bestPrefixLength)))
+      ) {
+        bestPrefixMatch = candidate;
+        bestPrefixScore = score;
+        bestPrefixMatched = tokenDetails.matched;
+        bestPrefixLength = entryKey.length;
       }
     }
 
-    if (hasKey && !keyPrefixMatch && key.startsWith(entryKey)) {
-      keyPrefixMatch = toResult(entryKey, entryValue, 'keySubset', 0);
+    if (queryTokens.length) {
+      const distance = hasKey ? Math.abs(entryKey.length - keyLength) : Number.POSITIVE_INFINITY;
+      if (
+        tokenDetails.score > bestTokenScore ||
+        (tokenDetails.score === bestTokenScore &&
+          (tokenDetails.matched > bestTokenMatched ||
+            (tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)))
+      ) {
+        bestTokenMatch = toResult(entryKey, entryValue, 'token', tokenDetails.score, tokenDetails.matched);
+        bestTokenScore = tokenDetails.score;
+        bestTokenMatched = tokenDetails.matched;
+        bestTokenKeyDistance = distance;
+      }
+    }
+
+    if (hasKey && key.startsWith(entryKey)) {
+      const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
+      const candidate = toResult(entryKey, entryValue, 'keySubset', score, tokenDetails.matched);
+      if (
+        !bestSubsetMatch ||
+        score > bestSubsetScore ||
+        (score === bestSubsetScore &&
+          (entryKey.length > bestSubsetLength || tokenDetails.matched > bestSubsetMatched))
+      ) {
+        bestSubsetMatch = candidate;
+        bestSubsetScore = score;
+        bestSubsetMatched = tokenDetails.matched;
+        bestSubsetLength = entryKey.length;
+      }
     } else if (
       hasKey &&
-      !partialMatch &&
       (entryKey.includes(key) || key.includes(entryKey))
     ) {
-      partialMatch = toResult(entryKey, entryValue, 'partial', 0);
+      const candidate = toResult(entryKey, entryValue, 'partial', tokenDetails.score, tokenDetails.matched);
+      if (
+        !bestPartialMatch ||
+        tokenDetails.score > bestPartialScore ||
+        (tokenDetails.score === bestPartialScore && tokenDetails.matched > bestPartialMatched)
+      ) {
+        bestPartialMatch = candidate;
+        bestPartialScore = tokenDetails.score;
+        bestPartialMatched = tokenDetails.matched;
+      }
     }
   }
 
   if (bestTokenMatch && bestTokenScore > 0) {
     return bestTokenMatch;
   }
-  if (keyPrefixMatch) {
-    return keyPrefixMatch;
+  if (bestPrefixMatch) {
+    return bestPrefixMatch;
   }
-  if (partialMatch) {
-    return partialMatch;
+  if (bestSubsetMatch) {
+    return bestSubsetMatch;
+  }
+  if (bestPartialMatch) {
+    return bestPartialMatch;
   }
   return null;
 }
