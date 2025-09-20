@@ -119,8 +119,8 @@ body.pink-mode {
   --accent-color: #ff69b4;
   --link-color: #ff69b4;
   --icon-color: var(--accent-color);
-  --logo-accent-color: var(--accent-color);
-  --logo-background-color: var(--accent-color);
+  --logo-accent-color: #f255a8;
+  --logo-background-color: #f255a8;
   --logo-center-color: #ffffff;
 }
 

@@ -1,5 +1,5 @@
 // storage.js - Handles reading from and writing to localStorage.
-/* global texts, currentLang */
+/* global texts, currentLang, SAFE_LOCAL_STORAGE */
 
 const GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
