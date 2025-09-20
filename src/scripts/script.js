@@ -13024,6 +13024,11 @@ function updateCalculations() {
   const totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
   totalPowerElem.textContent = totalWatt.toFixed(1);
 
+  const accessoryWatt = monitorW + videoW + motorsW + controllersW + distanceW;
+  const usesDtapLoad = accessoryWatt > 0;
+  const dtapVoltage = 12;
+  const dtapCurrent = usesDtapLoad && dtapVoltage > 0 ? accessoryWatt / dtapVoltage : 0;
+
   const segments = [
     { power: cameraW, className: "camera", label: texts[currentLang].cameraLabel },
     { power: monitorW, className: "monitor", label: texts[currentLang].monitorLabel },
@@ -13173,18 +13178,18 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         .replace("{max}", maxPinA);
       pinSeverity = 'warning';
     }
-    if (!bMountCam) {
-      if (totalCurrentLow > maxDtapA) {
-        dtapWarnElem.textContent = texts[currentLang].warnDTapExceeded
-          .replace("{current}", totalCurrentLow.toFixed(2))
-          .replace("{max}", maxDtapA);
-        dtapSeverity = 'danger';
-      } else if (totalCurrentLow > maxDtapA * 0.8) {
-        dtapWarnElem.textContent = texts[currentLang].warnDTapNear
-          .replace("{current}", totalCurrentLow.toFixed(2))
-          .replace("{max}", maxDtapA);
-        dtapSeverity = 'warning';
-      }
+    const normalizedDtapA = typeof maxDtapA === 'number' && isFinite(maxDtapA) ? maxDtapA : 0;
+    const dtapCurrentDisplay = Math.abs(dtapCurrent) < 0.005 ? '0.00' : dtapCurrent.toFixed(2);
+    if (dtapCurrent > normalizedDtapA) {
+      dtapWarnElem.textContent = texts[currentLang].warnDTapExceeded
+        .replace("{current}", dtapCurrentDisplay)
+        .replace("{max}", normalizedDtapA);
+      dtapSeverity = 'danger';
+    } else if (dtapCurrent > normalizedDtapA * 0.8 && normalizedDtapA > 0) {
+      dtapWarnElem.textContent = texts[currentLang].warnDTapNear
+        .replace("{current}", dtapCurrentDisplay)
+        .replace("{max}", normalizedDtapA);
+      dtapSeverity = 'warning';
     }
     // Show max current capability and status (OK/Warning) for Pin and D-Tap
     if (pinWarnElem.textContent === "") {
@@ -13194,17 +13199,12 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     } else {
       setStatusLevel(pinWarnElem, pinSeverity || 'warning');
     }
-    if (!bMountCam) {
-      if (dtapWarnElem.textContent === "") {
-        dtapWarnElem.textContent = texts[currentLang].dtapOk
-          .replace("{max}", maxDtapA);
-        setStatusLevel(dtapWarnElem, 'success');
-      } else {
-        setStatusLevel(dtapWarnElem, dtapSeverity || 'warning');
-      }
+    if (dtapWarnElem.textContent === "") {
+      dtapWarnElem.textContent = texts[currentLang].dtapOk
+        .replace("{max}", normalizedDtapA);
+      setStatusLevel(dtapWarnElem, 'success');
     } else {
-      dtapWarnElem.textContent = "";
-      setStatusLevel(dtapWarnElem, null);
+      setStatusLevel(dtapWarnElem, dtapSeverity || 'warning');
     }
   }
 
@@ -13216,6 +13216,10 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     const plateFilter = getSelectedPlate();
     const supportsB = supportsBMountCamera(camName);
     const supportsGold = supportsGoldMountCamera(camName);
+    const dtapLoadActive = usesDtapLoad && dtapCurrent > 0;
+    const dtapWithinLimit = (limit) => {
+      return dtapLoadActive && typeof limit === 'number' && isFinite(limit) && dtapCurrent <= limit;
+    };
     let selectedCandidate = null;
     if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
       const selData = devices.batteries[selectedBatteryName];
@@ -13225,7 +13229,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         (supportsGold || selData.mount_type !== 'Gold-Mount')
       ) {
         const pinOK_sel = totalCurrentLow <= selData.pinA;
-        const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
+        const dtapOK_sel = dtapWithinLimit(selData.dtapA);
         if (pinOK_sel || dtapOK_sel) {
           const selHours = selData.capacity / totalWatt;
           let selMethod;
@@ -13248,7 +13252,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       if (!plateFilter && !supportsB && battData.mount_type === 'B-Mount') continue;
       if (!plateFilter && !supportsGold && battData.mount_type === 'Gold-Mount') continue;
       const canPin = totalCurrentLow <= battData.pinA;
-      const canDTap = !bMountCam && totalCurrentLow <= battData.dtapA;
+      const canDTap = dtapWithinLimit(battData.dtapA);
 
       if (canPin) {
         const hours = battData.capacity / totalWatt;
