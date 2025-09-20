@@ -20,14 +20,40 @@ const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
-const CUSTOM_FONT_STORAGE_KEY_NAME =
-  GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === 'string'
-    ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY
-    : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
 
-if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== 'string') {
-  GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = CUSTOM_FONT_STORAGE_KEY_NAME;
+function ensureCustomFontStorageKeyName() {
+  if (!GLOBAL_SCOPE) {
+    return CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+  }
+
+  const existingName =
+    typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === 'string'
+      ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME
+      : typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY === 'string'
+        ? GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY
+        : CUSTOM_FONT_STORAGE_KEY_DEFAULT;
+
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY !== existingName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY = existingName;
+  }
+
+  if (GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME !== existingName) {
+    GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME = existingName;
+  }
+
+  return existingName;
 }
+
+function getCustomFontStorageKeyName() {
+  if (GLOBAL_SCOPE &&
+      typeof GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME === 'string') {
+    return GLOBAL_SCOPE.CUSTOM_FONT_STORAGE_KEY_NAME;
+  }
+
+  return ensureCustomFontStorageKeyName();
+}
+
+ensureCustomFontStorageKeyName();
 
 const CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
@@ -39,7 +65,7 @@ const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShow
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
-  CUSTOM_FONT_STORAGE_KEY_NAME,
+  getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
 ]);
 
@@ -1271,7 +1297,11 @@ function clearAllData() {
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_PRESETS_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
-  deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_FONT_STORAGE_KEY_NAME, msg);
+  deleteFromStorage(
+    SAFE_LOCAL_STORAGE,
+    getCustomFontStorageKeyName(),
+    msg
+  );
   deleteFromStorage(SAFE_LOCAL_STORAGE, CUSTOM_LOGO_STORAGE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, DEVICE_SCHEMA_CACHE_KEY, msg);
   deleteFromStorage(SAFE_LOCAL_STORAGE, SESSION_STATE_KEY, msg);
@@ -1374,7 +1404,7 @@ function clearAllData() {
   }
 
   function readStoredCustomFonts() {
-    const raw = readLocalStorageValue(CUSTOM_FONT_STORAGE_KEY_NAME);
+    const raw = readLocalStorageValue(getCustomFontStorageKeyName());
     if (!raw) {
       return [];
     }
@@ -1513,12 +1543,15 @@ function importAllData(allData) {
     const fonts = normalizeCustomFontEntries(allData.customFonts);
     if (fonts.length) {
       try {
-        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, JSON.stringify(fonts));
+        safeSetLocalStorage(
+          getCustomFontStorageKeyName(),
+          JSON.stringify(fonts)
+        );
       } catch (error) {
         console.warn('Unable to store imported custom fonts', error);
       }
     } else {
-      safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY_NAME, null);
+      safeSetLocalStorage(getCustomFontStorageKeyName(), null);
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
