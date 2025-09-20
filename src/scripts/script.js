@@ -12772,36 +12772,56 @@ function getTimecodes() {
       .forEach(selectElem => adjustGearListSelectWidth(selectElem));
   }
 
+  function ensureSelectWrapper(selectElem) {
+    if (!selectElem) return null;
+    let wrapper = selectElem.parentElement;
+    if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
+      if (wrapper && wrapper.tagName === 'LABEL') {
+        const label = wrapper;
+        wrapper = document.createElement('div');
+        wrapper.className = 'select-wrapper';
+        label.parentElement.insertBefore(wrapper, label.nextSibling);
+        wrapper.appendChild(selectElem);
+      } else {
+        wrapper = document.createElement('div');
+        wrapper.className = 'select-wrapper';
+        selectElem.insertAdjacentElement('beforebegin', wrapper);
+        wrapper.appendChild(selectElem);
+      }
+    }
+    return wrapper;
+  }
+
   function initFavoritableSelect(selectElem) {
     if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
+    const wrapper = ensureSelectWrapper(selectElem);
+    const gearItem = selectElem.closest('.gear-item');
+    if (!selectElem._favInit && gearItem) {
+      const toggles = Array.from(gearItem.querySelectorAll('.favorite-toggle'));
+      const existingForSelect = toggles.find(btn => btn.getAttribute('data-fav-select-id') === selectElem.id);
+      if (existingForSelect) {
+        selectElem._favButton = existingForSelect;
+        selectElem._favInit = true;
+      } else if (toggles.length > 0) {
+        selectElem._favInit = true;
+      }
+    }
     if (!selectElem._favInit) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'favorite-toggle';
       btn.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
       btn.setAttribute('aria-pressed', 'false');
+      btn.setAttribute('data-fav-select-id', selectElem.id);
       btn.addEventListener('click', () => toggleFavorite(selectElem));
-      let wrapper = selectElem.parentElement;
-      if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
-        if (wrapper && wrapper.tagName === 'LABEL') {
-          const label = wrapper;
-          wrapper = document.createElement('div');
-          wrapper.className = 'select-wrapper';
-          label.parentElement.insertBefore(wrapper, label.nextSibling);
-          wrapper.appendChild(selectElem);
-        } else {
-          wrapper = document.createElement('div');
-          wrapper.className = 'select-wrapper';
-          selectElem.insertAdjacentElement('beforebegin', wrapper);
-          wrapper.appendChild(selectElem);
-        }
-      }
-      wrapper.appendChild(btn);
+      const targetWrapper = wrapper || ensureSelectWrapper(selectElem);
+      if (targetWrapper) targetWrapper.appendChild(btn); else selectElem.after(btn);
       selectElem._favButton = btn;
       selectElem._favInit = true;
       selectElem.addEventListener('change', () => updateFavoriteButton(selectElem));
     }
     if (selectElem._favButton) {
+      selectElem._favButton.setAttribute('data-fav-select-id', selectElem.id);
       selectElem._favButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
       selectElem._favButton.setAttribute('title', texts[currentLang].favoriteToggleLabel);
       selectElem._favButton.setAttribute(
