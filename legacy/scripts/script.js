@@ -6367,7 +6367,7 @@ function refreshAutoGearMatteboxOptions(selected) {
   var selectableOptions = Array.from(autoGearMatteboxSelect.options || []).filter(function (option) {
     return !option.disabled;
   });
-  var visibleCount = selectableOptions.length ? Math.min(4, Math.max(selectableOptions.length, 3)) : 1;
+  var visibleCount = selectableOptions.length ? Math.min(6, Math.max(selectableOptions.length, 4)) : 1;
   autoGearMatteboxSelect.size = visibleCount;
 }
 function populateAutoGearCategorySelect(select, currentValue) {
