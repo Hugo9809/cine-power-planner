@@ -17910,6 +17910,9 @@ function generateGearListHtml(info = {}) {
             riggingAcc.push('D-Tap Splitter');
             riggingAcc.push('D-Tap Extension 50 cm (Steadicam/Trinity)');
         }
+        for (let i = 0; i < 2; i++) {
+            riggingAcc.push('D-Tap Extension 50 cm (Spare)');
+        }
     }
     const handleSelections = info.cameraHandle
         ? info.cameraHandle.split(',').map(r => r.trim()).filter(Boolean)
@@ -18157,7 +18160,13 @@ function generateGearListHtml(info = {}) {
                         const spareCount = Object.entries(ctxCounts)
                             .filter(([c]) => c && c.toLowerCase() === 'spare')
                             .reduce((sum, [, count]) => sum + count, 0);
-                        if (spareCount > 0) ctxParts.push(`${spareCount}x Spare`);
+                        if (spareCount > 0) {
+                            ctxParts.push(`${spareCount}x Spare`);
+                        } else if (base === 'D-Tap Extension 50 cm') {
+                            const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
+                            const remaining = total - usedCount;
+                            if (remaining > 0) ctxParts.push(`${remaining}x Spare`);
+                        }
                     }
                 }
                 const ctxStr = ctxParts.length ? ` (${ctxParts.join(', ')})` : '';
