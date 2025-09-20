@@ -98,13 +98,41 @@ function generatePrintableOverview() {
     `;
 
     // Get current warning messages with their colors
-    let warningHtml = '';
-    if (pinWarnElem.textContent.trim() !== '') {
-        warningHtml += `<p style="color: ${pinWarnElem.style.color}; font-weight: var(--font-weight-bold);">${pinWarnElem.textContent}</p>`;
-    }
-    if (dtapWarnElem.textContent.trim() !== '') {
-        warningHtml += `<p style="color: ${dtapWarnElem.style.color}; font-weight: var(--font-weight-bold);">${dtapWarnElem.textContent}</p>`;
-    }
+    const severityClassMap = {
+        danger: 'status-message--danger',
+        warning: 'status-message--warning',
+        success: 'status-message--success',
+        info: 'status-message--info'
+    };
+    const extractSeverityClass = (element) => {
+        if (!element) return '';
+        const datasetLevel = element.dataset ? element.dataset.statusLevel : element.getAttribute && element.getAttribute('data-status-level');
+        if (datasetLevel && severityClassMap[datasetLevel]) {
+            return severityClassMap[datasetLevel];
+        }
+        if (element.classList) {
+            return Object.values(severityClassMap).find(cls => element.classList.contains(cls)) || '';
+        }
+        const classAttr = typeof element.getAttribute === 'function' ? element.getAttribute('class') : '';
+        if (classAttr) {
+            const classes = classAttr.split(/\s+/);
+            return Object.values(severityClassMap).find(cls => classes.includes(cls)) || '';
+        }
+        return '';
+    };
+    const buildStatusMarkup = (element) => {
+        if (!element || element.textContent.trim() === '') {
+            return '';
+        }
+        const classes = ['status-message'];
+        const severityClass = extractSeverityClass(element);
+        if (severityClass) {
+            classes.push(severityClass);
+        }
+        return `<p class="${classes.join(' ')}">${escapeHtmlSafe(element.textContent)}</p>`;
+    };
+
+    const warningHtml = buildStatusMarkup(pinWarnElem) + buildStatusMarkup(dtapWarnElem);
 
     const resultsSectionHtml = `
         <section id="resultsSection" class="results-section print-section">

@@ -87,13 +87,56 @@ function generatePrintableOverview() {
   var breakdownHtml = breakdownListElem.innerHTML;
   var batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
   var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(totalPowerElem.textContent, " W</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(totalCurrent144Elem.textContent, " A</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(totalCurrent12Elem.textContent, " A</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(batteryLifeElem.textContent, " ").concat(batteryLifeUnitElem ? batteryLifeUnitElem.textContent : '', "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(batteryCountElem.textContent, "</p>\n    ");
-  var warningHtml = '';
-  if (pinWarnElem.textContent.trim() !== '') {
-    warningHtml += "<p style=\"color: ".concat(pinWarnElem.style.color, "; font-weight: var(--font-weight-bold);\">").concat(pinWarnElem.textContent, "</p>");
+  var severityClassMap = {
+    danger: 'status-message--danger',
+    warning: 'status-message--warning',
+    success: 'status-message--success',
+    info: 'status-message--info'
+  };
+  var severityClassList = [];
+  for (var level in severityClassMap) {
+    if (Object.prototype.hasOwnProperty.call(severityClassMap, level)) {
+      severityClassList.push(severityClassMap[level]);
+    }
   }
-  if (dtapWarnElem.textContent.trim() !== '') {
-    warningHtml += "<p style=\"color: ".concat(dtapWarnElem.style.color, "; font-weight: var(--font-weight-bold);\">").concat(dtapWarnElem.textContent, "</p>");
-  }
+  var extractSeverityClass = function extractSeverityClass(element) {
+    if (!element) return '';
+    var datasetLevel = element.dataset ? element.dataset.statusLevel : element.getAttribute && element.getAttribute('data-status-level');
+    if (datasetLevel && severityClassMap[datasetLevel]) {
+      return severityClassMap[datasetLevel];
+    }
+    if (element.classList) {
+      for (var i = 0; i < severityClassList.length; i++) {
+        if (element.classList.contains(severityClassList[i])) {
+          return severityClassList[i];
+        }
+      }
+    }
+    if (typeof element.getAttribute === 'function') {
+      var classAttr = element.getAttribute('class') || '';
+      if (classAttr) {
+        var classParts = classAttr.split(/\s+/);
+        for (var _i3 = 0; _i3 < severityClassList.length; _i3++) {
+          if (classParts.indexOf(severityClassList[_i3]) !== -1) {
+            return severityClassList[_i3];
+          }
+        }
+      }
+    }
+    return '';
+  };
+  var buildStatusMarkup = function buildStatusMarkup(element) {
+    if (!element || element.textContent.trim() === '') {
+      return '';
+    }
+    var classes = ['status-message'];
+    var severityClass = extractSeverityClass(element);
+    if (severityClass) {
+      classes.push(severityClass);
+    }
+    return "<p class=\"".concat(classes.join(' '), "\">").concat(escapeHtmlSafe(element.textContent), "</p>");
+  };
+  var warningHtml = buildStatusMarkup(pinWarnElem) + buildStatusMarkup(dtapWarnElem);
   var resultsSectionHtml = "\n        <section id=\"resultsSection\" class=\"results-section print-section\">\n            <h2>".concat(t.resultsHeading, "</h2>\n            <div class=\"results-body\">\n                ").concat(resultsHtml, "\n                ").concat(warningHtml ? "<div class=\"results-warnings\">".concat(warningHtml, "</div>") : '', "\n            </div>\n        </section>\n    ");
   var batteryTableHtml = '';
   var totalWatt = parseFloat(totalPowerElem.textContent);

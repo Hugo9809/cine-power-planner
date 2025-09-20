@@ -249,6 +249,44 @@ textarea {
   display: none !important;
 }
 
+.status-message {
+  margin-top: 0.75em;
+}
+
+.status-message:empty {
+  display: none;
+}
+
+.status-message--info,
+.status-message--success,
+.status-message--warning,
+.status-message--danger {
+  padding: 0.5em 0.75em;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--status-border-color);
+  background-color: var(--panel-bg);
+  display: block;
+}
+
+.status-message--info {
+  color: var(--text-color);
+}
+
+.status-message--success {
+  background-color: var(--status-success-bg);
+  color: var(--status-success-text-color);
+}
+
+.status-message--warning {
+  background-color: var(--status-warning-bg);
+  color: var(--status-warning-text-color);
+}
+
+.status-message--danger {
+  background-color: var(--status-error-bg);
+  color: var(--status-error-text-color);
+}
+
 /* Improve keyboard accessibility by clearly showing focus outlines for links, inputs, and textareas */
 button:focus,
 a:focus,
@@ -275,13 +313,6 @@ textarea:focus-visible {
 
 .flex-1 {
   flex: 1;
-}
-
-#pinWarning,
-#dtapWarning,
-#compatWarning {
-  color: var(--danger-color);
-  font-weight: var(--font-weight-bold);
 }
 
 #exportOutput {

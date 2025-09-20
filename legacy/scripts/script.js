@@ -2084,6 +2084,65 @@ function detectBrand(name) {
   }
   return 'other';
 }
+var STATUS_CLASS_BY_LEVEL = {
+  info: 'status-message--info',
+  success: 'status-message--success',
+  warning: 'status-message--warning',
+  danger: 'status-message--danger'
+};
+function getStatusClassList() {
+  var classes = [];
+  for (var key in STATUS_CLASS_BY_LEVEL) {
+    if (Object.prototype.hasOwnProperty.call(STATUS_CLASS_BY_LEVEL, key)) {
+      classes.push(STATUS_CLASS_BY_LEVEL[key]);
+    }
+  }
+  return classes;
+}
+function setStatusLevel(element, level) {
+  if (!element) return;
+  var severityClasses = getStatusClassList();
+  if (element.classList) {
+    severityClasses.forEach(function (cls) {
+      element.classList.remove(cls);
+    });
+  } else if (typeof element.className === 'string') {
+    var remaining = element.className.split(/\s+/).filter(Boolean).filter(function (cls) {
+      return severityClasses.indexOf(cls) === -1;
+    });
+    element.className = remaining.join(' ');
+  }
+  var normalized = level && STATUS_CLASS_BY_LEVEL[level] ? level : null;
+  if (normalized) {
+    var severityClass = STATUS_CLASS_BY_LEVEL[normalized];
+    if (element.classList) {
+      if (!element.classList.contains('status-message')) {
+        element.classList.add('status-message');
+      }
+      element.classList.add(severityClass);
+    } else if (typeof element.className === 'string') {
+      var classes = element.className.split(/\s+/).filter(Boolean);
+      if (classes.indexOf('status-message') === -1) {
+        classes.push('status-message');
+      }
+      classes.push(severityClass);
+      var unique = [];
+      classes.forEach(function (cls) {
+        if (unique.indexOf(cls) === -1) unique.push(cls);
+      });
+      element.className = unique.join(' ');
+    }
+    if (element.dataset && typeof element.dataset === 'object') {
+      element.dataset.statusLevel = normalized;
+    } else if (element.setAttribute) {
+      element.setAttribute('data-status-level', normalized);
+    }
+  } else if (element.dataset && element.dataset.statusLevel) {
+    delete element.dataset.statusLevel;
+  } else if (element.removeAttribute) {
+    element.removeAttribute('data-status-level');
+  }
+}
 function checkFizCompatibility() {
   var brands = new Set();
   motorSelects.forEach(function (sel) {
@@ -2121,9 +2180,10 @@ function checkFizCompatibility() {
   }
   if (incompatible) {
     compatElem.textContent = texts[currentLang].incompatibleFIZWarning;
-    compatElem.style.color = 'red';
+    setStatusLevel(compatElem, 'danger');
   } else {
     compatElem.textContent = '';
+    setStatusLevel(compatElem, null);
   }
 }
 function checkFizController() {
@@ -2154,7 +2214,7 @@ function checkFizController() {
   });
   if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
     compatElem.textContent = texts[currentLang].amiraCforceRemoteWarning;
-    compatElem.style.color = 'red';
+    setStatusLevel(compatElem, 'danger');
     return;
   }
   var cameraHasLBUS = Array.isArray(cam === null || cam === void 0 ? void 0 : cam.fizConnectors) && cam.fizConnectors.some(function (fc) {
@@ -2180,7 +2240,7 @@ function checkFizController() {
   });
   if (needController && !hasController) {
     compatElem.textContent = texts[currentLang].missingFIZControllerWarning;
-    compatElem.style.color = 'red';
+    setStatusLevel(compatElem, 'danger');
   }
 }
 function checkArriCompatibility() {
@@ -2258,9 +2318,9 @@ function checkArriCompatibility() {
   if (msg) {
     compatElem.textContent = msg;
     if (msg === texts[currentLang].arriUMC4Warning) {
-      compatElem.style.color = 'orange';
+      setStatusLevel(compatElem, 'warning');
     } else {
-      compatElem.style.color = 'red';
+      setStatusLevel(compatElem, 'danger');
     }
   }
 }
@@ -4540,6 +4600,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
     powerDiagramBarElem.innerHTML = "";
     powerDiagramLegendElem.innerHTML = "";
     maxPowerTextElem.textContent = "";
+    setStatusLevel(maxPowerTextElem, null);
     return;
   }
   powerDiagramElem.classList.remove("hidden");
@@ -4584,7 +4645,7 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
   powerDiagramBarElem.appendChild(limit);
   powerDiagramElem.classList.toggle("over", total > availableWatt);
   maxPowerTextElem.textContent = "".concat(texts[currentLang].availablePowerLabel, " ").concat(availableWatt.toFixed(0), " W");
-  maxPowerTextElem.style.color = total > availableWatt ? "red" : "";
+  setStatusLevel(maxPowerTextElem, total > availableWatt ? 'danger' : null);
 }
 var setupSelect = document.getElementById("setupSelect");
 var setupNameInput = document.getElementById("setupName");
@@ -12286,12 +12347,12 @@ function updateCalculations() {
     batteryLifeElem.textContent = "–";
     batteryCountElem.textContent = "–";
     pinWarnElem.textContent = "";
-    pinWarnElem.style.color = "";
+    setStatusLevel(pinWarnElem, null);
     dtapWarnElem.textContent = "";
-    dtapWarnElem.style.color = "";
+    setStatusLevel(dtapWarnElem, null);
     if (hotswapWarnElem) {
       hotswapWarnElem.textContent = "";
-      hotswapWarnElem.style.color = "";
+      setStatusLevel(hotswapWarnElem, null);
     }
     lastRuntimeHours = null;
     drawPowerDiagram(0, segments, 0);
@@ -12305,16 +12366,16 @@ function updateCalculations() {
     if (hsData && typeof hsData.pinA === 'number') {
       if (hsData.pinA < maxPinA) {
         hotswapWarnElem.textContent = texts[currentLang].warnHotswapLower.replace("{max}", hsData.pinA).replace("{batt}", battData.pinA);
-        hotswapWarnElem.style.color = "orange";
+        setStatusLevel(hotswapWarnElem, 'warning');
         maxPinA = hsData.pinA;
       } else {
         hotswapWarnElem.textContent = "";
-        hotswapWarnElem.style.color = "";
+        setStatusLevel(hotswapWarnElem, null);
       }
     } else {
       if (hotswapWarnElem) {
         hotswapWarnElem.textContent = "";
-        hotswapWarnElem.style.color = "";
+        setStatusLevel(hotswapWarnElem, null);
       }
     }
     var availableWatt = maxPinA * lowV;
@@ -12337,48 +12398,36 @@ function updateCalculations() {
     var dtapSeverity = "";
     if (totalCurrentLow > maxPinA) {
       pinWarnElem.textContent = texts[currentLang].warnPinExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA);
-      pinSeverity = texts[currentLang].warnPinExceededLevel;
+      pinSeverity = 'danger';
     } else if (totalCurrentLow > maxPinA * 0.8) {
       pinWarnElem.textContent = texts[currentLang].warnPinNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA);
-      pinSeverity = texts[currentLang].warnPinNearLevel;
+      pinSeverity = 'warning';
     }
     if (!bMountCam) {
       if (totalCurrentLow > maxDtapA) {
         dtapWarnElem.textContent = texts[currentLang].warnDTapExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA);
-        dtapSeverity = texts[currentLang].warnDTapExceededLevel;
+        dtapSeverity = 'danger';
       } else if (totalCurrentLow > maxDtapA * 0.8) {
         dtapWarnElem.textContent = texts[currentLang].warnDTapNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA);
-        dtapSeverity = texts[currentLang].warnDTapNearLevel;
+        dtapSeverity = 'warning';
       }
     }
     if (pinWarnElem.textContent === "") {
       pinWarnElem.textContent = texts[currentLang].pinOk.replace("{max}", maxPinA);
-      pinWarnElem.style.color = "green";
+      setStatusLevel(pinWarnElem, 'success');
     } else {
-      if (pinSeverity === texts[currentLang].warnPinExceededLevel) {
-        pinWarnElem.style.color = "red";
-      } else if (pinSeverity === texts[currentLang].warnPinNearLevel) {
-        pinWarnElem.style.color = "orange";
-      } else {
-        pinWarnElem.style.color = "";
-      }
+      setStatusLevel(pinWarnElem, pinSeverity || 'warning');
     }
     if (!bMountCam) {
       if (dtapWarnElem.textContent === "") {
         dtapWarnElem.textContent = texts[currentLang].dtapOk.replace("{max}", maxDtapA);
-        dtapWarnElem.style.color = "green";
+        setStatusLevel(dtapWarnElem, 'success');
       } else {
-        if (dtapSeverity === texts[currentLang].warnDTapExceededLevel) {
-          dtapWarnElem.style.color = "red";
-        } else if (dtapSeverity === texts[currentLang].warnDTapNearLevel) {
-          dtapWarnElem.style.color = "orange";
-        } else {
-          dtapWarnElem.style.color = "";
-        }
+        setStatusLevel(dtapWarnElem, dtapSeverity || 'warning');
       }
     } else {
       dtapWarnElem.textContent = "";
-      dtapWarnElem.style.color = "";
+      setStatusLevel(dtapWarnElem, null);
     }
   }
   if (totalWatt > 0) {
@@ -15462,6 +15511,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   if (shareLinkMessage) {
     shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
+    setStatusLevel(shareLinkMessage, 'success');
     shareLinkMessage.classList.remove('hidden');
     setTimeout(function () {
       return shareLinkMessage.classList.add('hidden');
