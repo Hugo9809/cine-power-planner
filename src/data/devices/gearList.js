@@ -1000,6 +1000,21 @@ const gear = {
         "brand": "Tilta",
         "kNumber": "MB-T16-POL"
       },
+      "BPM Filter Set": {
+        "brand": "Tiffen"
+      },
+      "WPM Filter Set": {
+        "brand": "Tiffen"
+      },
+      "PM Filter Set": {
+        "brand": "Tiffen"
+      },
+      "IRND Filter": {
+        "brand": "ARRI"
+      },
+      "FSND Filter Set": {
+        "brand": "ARRI"
+      },
       "Schneider CF DIOPTER FULL GEN2": {
         "brand": "Schneider",
         "kNumber": "68-000xxx"
