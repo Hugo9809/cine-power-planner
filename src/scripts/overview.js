@@ -261,6 +261,26 @@ function generatePrintableOverview() {
         : '';
     const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
 
+    // Only surface the gear list in the overview when the generator has
+    // produced visible output in the main interface.
+    const hasGeneratedGearList = (() => {
+        if (typeof document === 'undefined') return false;
+        const container = document.getElementById('gearListOutput');
+        if (!container) return false;
+        if (container.classList && container.classList.contains('hidden')) {
+            return false;
+        }
+        const trimmed = typeof container.innerHTML === 'string'
+            ? container.innerHTML.trim()
+            : '';
+        if (!trimmed) return false;
+        if (typeof container.querySelector === 'function') {
+            const table = container.querySelector('.gear-table');
+            if (table) return true;
+        }
+        return true;
+    })();
+
     let gearListCombined = getCurrentGearListHtml();
     if (!gearListCombined && currentProjectInfo) {
         gearListCombined = generateGearListHtml(currentProjectInfo);
@@ -274,7 +294,7 @@ function generatePrintableOverview() {
         if (parts.projectHtml) {
             projectSectionHtml = `<section id="projectRequirementsOutput" class="print-section project-requirements-section">${parts.projectHtml}</section>`;
         }
-        if (parts.gearHtml) {
+        if (parts.gearHtml && hasGeneratedGearList) {
             gearSectionHtml = `<section id="gearListOutput" class="gear-list-section">${parts.gearHtml}</section>`;
         }
     }
