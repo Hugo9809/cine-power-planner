@@ -87,6 +87,7 @@
         "brand",
         "compatible",
         "diameterMm",
+        "dimensionsMm",
         "kNumber",
         "lengthMm",
         "rodStandard"
@@ -149,6 +150,8 @@
         "compatible",
         "diameterMm",
         "kNumber",
+        "model",
+        "note",
         "provenance",
         "sideFlags",
         "stages",
@@ -302,7 +305,6 @@
   },
   "iosVideo": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "notes",
@@ -330,9 +332,18 @@
       "weight_g"
     ]
   },
-  "monitors": {
+  "media": {
     "attributes": [
       "brand",
+      "capacityGb",
+      "capacityTb",
+      "interface",
+      "kNumber",
+      "model"
+    ]
+  },
+  "monitors": {
+    "attributes": [
       "audioInput",
       "audioIo",
       "audioOutput",
@@ -351,13 +362,18 @@
   },
   "video": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "power",
       "powerDrawWatts",
       "videoInputs",
       "videoOutputs"
+    ]
+  },
+  "videoAssist": {
+    "attributes": [
+      "brand",
+      "screenSizeInches"
     ]
   },
   "viewfinders": {
@@ -372,7 +388,6 @@
   },
   "wirelessReceivers": {
     "attributes": [
-      "brand",
       "frequency",
       "latencyMs",
       "power",
