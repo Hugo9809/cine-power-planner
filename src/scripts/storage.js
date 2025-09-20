@@ -660,7 +660,7 @@ function isPlainObject(val) {
 }
 
 function alertStorageError(reason) {
-  if (reason !== 'migration-read') {
+  if (reason && reason !== 'migration-read') {
     return;
   }
 
@@ -1728,6 +1728,99 @@ function saveProject(name, project) {
   persistAllProjects(projects, "Project saved to localStorage.");
 }
 
+function createProjectDeletionBackup(projects, key, options = {}) {
+  if (!isPlainObject(projects)) {
+    return null;
+  }
+  if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+    return null;
+  }
+
+  const config = typeof options === "object" && options !== null ? options : {};
+  const rawName = typeof key === "string" ? key : "";
+  const normalizedName = rawName.replace(/\s+/g, " ").trim();
+  const skipAutoBackups = config.skipAutoBackupNames !== false;
+  if (skipAutoBackups && normalizedName.startsWith("auto-backup-")) {
+    return null;
+  }
+
+  const entry = projects[key];
+  if (!isPlainObject(entry)) {
+    return null;
+  }
+
+  let serializedEntry;
+  try {
+    serializedEntry = JSON.stringify(entry);
+  } catch (serializationError) {
+    console.warn(
+      "Unable to serialize project for automatic backup before deletion",
+      serializationError,
+    );
+    return null;
+  }
+
+  const pad = (value) => String(value).padStart(2, "0");
+  const timestamp =
+    config.timestamp instanceof Date && !Number.isNaN(config.timestamp.getTime())
+      ? config.timestamp
+      : new Date();
+  const baseName = `auto-backup-${timestamp.getFullYear()}-${pad(timestamp.getMonth() + 1)}-${pad(timestamp.getDate())}-${pad(timestamp.getHours())}-${pad(timestamp.getMinutes())}`;
+
+  const makeCandidate = (suffix) => {
+    const suffixPart = suffix ? `-${suffix}` : "";
+    return normalizedName
+      ? `${baseName}-${normalizedName}${suffixPart}`
+      : `${baseName}${suffixPart}`;
+  };
+
+  let candidate = makeCandidate("");
+  let suffix = 2;
+  while (Object.prototype.hasOwnProperty.call(projects, candidate)) {
+    let matchesExisting = false;
+    try {
+      matchesExisting = JSON.stringify(projects[candidate]) === serializedEntry;
+    } catch (comparisonError) {
+      console.warn(
+        "Unable to compare existing automatic backup during deletion",
+        comparisonError,
+      );
+    }
+    if (matchesExisting) {
+      return candidate;
+    }
+    candidate = makeCandidate(suffix++);
+  }
+
+  let backupPayload = null;
+  if (typeof structuredClone === "function") {
+    try {
+      backupPayload = structuredClone(entry);
+    } catch (cloneError) {
+      console.warn(
+        "structuredClone failed for automatic project backup before deletion",
+        cloneError,
+      );
+      backupPayload = null;
+    }
+  }
+
+  if (!backupPayload) {
+    try {
+      backupPayload = JSON.parse(serializedEntry);
+    } catch (cloneError) {
+      console.warn(
+        "Unable to clone project for automatic backup before deletion",
+        cloneError,
+      );
+      return null;
+    }
+  }
+
+  projects[candidate] = backupPayload;
+  return candidate;
+}
+
 function deleteProject(name) {
   if (name === undefined) {
     deleteFromStorage(
@@ -1749,6 +1842,8 @@ function deleteProject(name) {
   if (!Object.prototype.hasOwnProperty.call(projects, key)) {
     return;
   }
+
+  createProjectDeletionBackup(projects, key);
   delete projects[key];
   if (Object.keys(projects).length === 0) {
     deleteFromStorage(

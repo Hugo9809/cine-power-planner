@@ -536,16 +536,49 @@ describe('project storage', () => {
     expect(localStorage.getItem('cinePowerPlanner_project')).toBeNull();
   });
 
-  test('deleteProject removes individual projects and cleans up key when empty', () => {
-    saveProject('Keep', { gearList: '<ul>Keep</ul>' });
-    saveProject('Drop', { gearList: '<ul>Drop</ul>' });
+  test('deleteProject creates automatic backups before removing entries', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2024, 5, 1, 12, 34));
 
-    deleteProject('Drop');
-    expect(loadProject('Drop')).toBeNull();
-    expect(loadProject('Keep')).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
-    expect(localStorage.getItem(PROJECT_KEY)).not.toBeNull();
+    try {
+      saveProject('Keep', { gearList: '<ul>Keep</ul>' });
+      saveProject('Drop', { gearList: '<ul>Drop</ul>', projectInfo: { notes: 'Important' } });
 
-    deleteProject('Keep');
+      deleteProject('Drop');
+
+      expect(loadProject('Drop')).toBeNull();
+      expect(loadProject('Keep')).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
+
+      const storedAfterDrop = JSON.parse(localStorage.getItem(PROJECT_KEY));
+      const dropBackups = Object.keys(storedAfterDrop).filter((key) => key.startsWith('auto-backup-'));
+      expect(dropBackups).toHaveLength(1);
+      const dropBackupKey = dropBackups[0];
+      expect(storedAfterDrop[dropBackupKey]).toEqual({
+        gearList: '<ul>Drop</ul>',
+        projectInfo: { notes: 'Important' },
+      });
+
+      deleteProject('Keep');
+
+      const storedAfterKeep = JSON.parse(localStorage.getItem(PROJECT_KEY));
+      const backupKeys = Object.keys(storedAfterKeep);
+      expect(backupKeys).toHaveLength(2);
+      expect(backupKeys.every((key) => key.startsWith('auto-backup-'))).toBe(true);
+      expect(storedAfterKeep[dropBackupKey]).toEqual({
+        gearList: '<ul>Drop</ul>',
+        projectInfo: { notes: 'Important' },
+      });
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('deleteProject skips new backups when removing existing auto-backup entries', () => {
+    const backupName = 'auto-backup-2024-05-30-09-15-Scene';
+    saveProject(backupName, { gearList: '<ul>Scene</ul>' });
+
+    deleteProject(backupName);
+
     expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
   });
 
