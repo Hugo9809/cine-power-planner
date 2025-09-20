@@ -7740,17 +7740,74 @@ function summarizeCustomDevices() {
   return { total, categories };
 }
 
-function computeGearListCount(projectData) {
+function hasGearListContent(entry) {
+  if (!entry) return false;
+  if (typeof entry === 'string') {
+    return entry.trim().length > 0;
+  }
+  if (!isPlainObjectValue(entry)) {
+    return false;
+  }
+
+  if (typeof entry.gearList === 'string') {
+    return entry.gearList.trim().length > 0;
+  }
+
+  if (isPlainObjectValue(entry.gearList)) {
+    return Object.values(entry.gearList).some((value) => (
+      typeof value === 'string' && value.trim().length > 0
+    ));
+  }
+
+  const legacyProjectHtml = typeof entry.projectHtml === 'string' && entry.projectHtml.trim().length > 0;
+  const legacyGearHtml = typeof entry.gearHtml === 'string' && entry.gearHtml.trim().length > 0;
+  if (legacyProjectHtml || legacyGearHtml) {
+    return true;
+  }
+
+  return false;
+}
+
+function computeGearListCount(projectData, setupsData) {
+  let count = 0;
+  const countedNames = new Set();
+
+  const addCount = (name, candidate) => {
+    if (!hasGearListContent(candidate)) {
+      return;
+    }
+    const normalizedName = typeof name === 'string' ? name : '';
+    if (countedNames.has(normalizedName)) {
+      return;
+    }
+    countedNames.add(normalizedName);
+    count += 1;
+  };
+
   if (typeof projectData === 'string') {
-    return projectData.trim() ? 1 : 0;
+    addCount('', projectData);
+  } else if (Array.isArray(projectData)) {
+    projectData.forEach((entry, index) => {
+      const key = isPlainObjectValue(entry) && typeof entry.name === 'string'
+        ? entry.name
+        : `legacy-${index}`;
+      addCount(key, entry);
+    });
+  } else if (isPlainObjectValue(projectData)) {
+    Object.entries(projectData).forEach(([name, entry]) => {
+      addCount(name, entry);
+    });
+  } else {
+    addCount('', projectData);
   }
-  if (Array.isArray(projectData)) {
-    return projectData.reduce((count, entry) => (entry ? count + 1 : count), 0);
+
+  if (isPlainObjectValue(setupsData)) {
+    Object.entries(setupsData).forEach(([name, setup]) => {
+      addCount(name, setup);
+    });
   }
-  if (isPlainObjectValue(projectData)) {
-    return Object.values(projectData).reduce((count, entry) => (entry ? count + 1 : count), 0);
-  }
-  return 0;
+
+  return count;
 }
 
 function computeFavoritesCount(favorites) {
@@ -7893,7 +7950,7 @@ function updateStorageSummary() {
   const projectNames = Object.keys(setups);
   const totalProjects = projectNames.length;
   const autoBackups = projectNames.filter((name) => typeof name === 'string' && name.startsWith('auto-backup-')).length;
-  const gearListCount = computeGearListCount(data.project);
+  const gearListCount = computeGearListCount(data.project, setups);
   const favoritesCount = computeFavoritesCount(data.favorites);
   const feedbackCount = computeFeedbackCount(data.feedback);
   const sessionData = data.session;
@@ -21492,6 +21549,7 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentProjectInfo,
     crewRoles,
     formatFullBackupFilename,
+    computeGearListCount,
     autoBackup,
     createSettingsBackup,
     captureStorageSnapshot,
