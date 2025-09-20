@@ -2815,6 +2815,19 @@ const gear = {
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "ARRI/ZEISS Ultra Prime 180mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.9,
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 2.6,
+          "weight_g": 2600,
+          "lengthMm": 166
+        },
         "ZEISS Master Prime 12mm T1.3": {
           "brand": "ZEISS/ARRI",
           "frontDiameterMm": 156,
@@ -2959,6 +2972,22 @@ const gear = {
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "ZEISS Master Prime 75mm T1.3": {
+          "brand": "ZEISS/ARRI",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 1.3,
+          "mount": "PL / LDS",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.8,
+          "weight_g": 2800,
+          "imageCircleMm": 46.3,
+          "lengthMm": 153,
+          "notes": "Front Ø114 mm. Data from ZEISS Master Prime technical specifications."
         },
         "ZEISS Master Prime 100mm T1.3": {
           "brand": "ZEISS/ARRI",
