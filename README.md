@@ -186,7 +186,7 @@ Use Cine Power Planner end-to-end with the following routine:
   remove unused versions. You’ll be asked to confirm before anything leaves the
   browser, ensuring you do not lose a project by accident.
 
-## Exports & Imports
+## Sharing & Imports
 
 - **Project bundles travel light.** Click **Export Project** to download a
   `.cpproject` file containing the active project, favorites and any referenced
@@ -209,6 +209,9 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Synchronize with checklists.** When a teammate sends you an updated bundle,
   import it, review the `Updated at` timestamps in the sidebar and archive the
   previous bundle in your storage system to maintain a clear history.
+- **Share without losing context.** Bundles remember language, theme, custom
+  logo and other personalization choices so the recipient opens the project in a
+  familiar state even if they stay offline.
 
 ## Interface Tour
 
@@ -519,8 +522,9 @@ consistency checks and unit tests all pass.
 
 ## Acknowledgements
 
-The planner uses the OpenMoji icon set when a network connection is available
-and relies on lz-string to compactly store projects in URLs.
+The planner ships with locally stored Uicons, OpenMoji assets and other bundled
+artwork so icons stay available without a network connection, and relies on
+lz-string to compactly store projects in URLs and backups.
 
 ## License
 
