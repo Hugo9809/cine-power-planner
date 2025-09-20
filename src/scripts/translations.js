@@ -585,6 +585,7 @@ const texts = {
     noBatterySupports: "No battery can supply this load.",
 
     alertSetupName: "Please enter a name for the project.",
+    alertSetupNeedsDevice: "Please select at least one device before saving a project.",
     alertSetupSaved:
       "Project \"{name}\" saved in this browser. It stays available after closing or reopening tabs unless you clear the browser cache.",
     alertNoSetupSelected: "Please select a saved project to delete.",
@@ -1126,6 +1127,7 @@ const texts = {
     batteryCountTempLabel: "Batterie necessarie",
     noBatterySupports: "Nessuna batteria può fornire questo carico.",
     alertSetupName: "Immettere un nome per l'installazione.",
+    alertSetupNeedsDevice: "Seleziona almeno un dispositivo prima di salvare un progetto.",
     alertSetupSaved:
       "Setup \"{name}\" salvato nel browser. Rimane disponibile dopo aver chiuso o riaperto le schede finché non svuoti la cache del browser.",
     alertNoSetupSelected: "Selezionare una configurazione salvata da eliminare.",
@@ -1904,6 +1906,7 @@ const texts = {
     noBatterySupports: "Ninguna batería puede suministrar esta carga.",
 
     alertSetupName: "Ingresa un nombre para el proyecto.",
+    alertSetupNeedsDevice: "Selecciona al menos un dispositivo antes de guardar un proyecto.",
     alertSetupSaved:
       "Proyecto \"{name}\" guardado en este navegador. Permanece disponible al cerrar o volver a abrir pestañas mientras no borres la caché del navegador.",
     alertNoSetupSelected: "Selecciona un proyecto para eliminar.",
@@ -2685,6 +2688,7 @@ const texts = {
     noBatterySupports: "Aucune batterie ne peut fournir cette charge.",
 
     alertSetupName: "Veuillez saisir un nom pour la configuration.",
+    alertSetupNeedsDevice: "Veuillez sélectionner au moins un appareil avant d'enregistrer un projet.",
     alertSetupSaved:
       "Configuration \"{name}\" enregistrée dans ce navigateur. Elle reste disponible après avoir fermé ou rouvert des onglets tant que vous ne videz pas le cache du navigateur.",
     alertNoSetupSelected: "Sélectionnez une configuration à supprimer.",
@@ -3468,6 +3472,7 @@ const texts = {
     noBatterySupports: "Kein Akku kann diese Last liefern.",
 
     alertSetupName: "Bitte einen Namen für das Projekt eingeben.",
+    alertSetupNeedsDevice: "Bitte mindestens ein Gerät auswählen, bevor du ein Projekt speicherst.",
     alertSetupSaved:
       "Projekt \"{name}\" in diesem Browser gespeichert. Es bleibt verfügbar, wenn Sie Tabs oder den Browser schließen und erneut öffnen, solange Sie den Browsercache nicht löschen.",
     alertNoSetupSelected: "Wählen Sie ein gespeichertes Projekt zum Löschen aus.",
