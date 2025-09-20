@@ -3011,7 +3011,7 @@ const cameraData = {
         "notes": "Can be used for Timecode input"
       }
     ],
-    "weight_g": null,
+    "weight_g": 1700,
     "recordingCodecs": [
       "Blackmagic RAW",
       "H.264 Proxy (sidecar)"
@@ -3100,7 +3100,7 @@ const cameraData = {
         "notes": "Can be used for Timecode input"
       }
     ],
-    "weight_g": null,
+    "weight_g": 2100,
     "recordingCodecs": [
       "Blackmagic RAW (12K)",
       "H.264 Proxy (sidecar)"
@@ -4167,6 +4167,7 @@ const cameraData = {
         "notes": "Timecode In/Out"
       }
     ],
+    "weight_g": 1800,
     "recordingCodecs": [
       "REDCODE RAW (HQ/MQ/LQ)",
       "Apple ProRes 4444 XQ/4444/422HQ/422/422LT (up to 4K)"
@@ -4516,6 +4517,7 @@ const cameraData = {
         "notes": "Timecode In/Out"
       }
     ],
+    "weight_g": 2200,
     "recordingCodecs": [
       "REDCODE RAW"
     ],
@@ -4685,6 +4687,7 @@ const cameraData = {
         "notes": "Timecode In/Out"
       }
     ],
+    "weight_g": 2200,
     "recordingCodecs": [
       "REDCODE RAW"
     ],

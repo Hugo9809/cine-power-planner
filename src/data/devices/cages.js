@@ -10,6 +10,7 @@ const cageData = {
     "material": "aluminum, steel",
     "weight_g": 187.3,
     "batteryMount": "none",
+    "kNumber": "TA-T11-FCC",
     "rodStandard": [
       "15mm LWS (via bracket in kit)"
     ],
@@ -34,6 +35,7 @@ const cageData = {
     ],
     "material": "aluminum alloy",
     "weight_g": 300,
+    "kNumber": "2203B",
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16",
@@ -73,6 +75,7 @@ const cageData = {
     "material": "aluminum, silicone",
     "weight_g": 160,
     "batteryMount": "none",
+    "kNumber": "TA-T17-FCC-G",
     "mounting_points": [
       "ARCA QR plate",
       "1/4\"-20",
@@ -90,8 +93,9 @@ const cageData = {
     "compatible": [
       "Sony FX6"
     ],
-    "material": null,
+    "material": "Aluminum",
     "weight_g": null,
+    "kNumber": "3186",
     "mounting_points": [
       "ARRI rosette",
       "1/4\"-20",
@@ -181,6 +185,10 @@ const cageData = {
     ],
     "material": null,
     "weight_g": null,
+    "batteryMount": "NP-FW50 adapter",
+    "rodStandard": [
+      "15mm LWS"
+    ],
     "mounting_points": [
       "1/4\"-20",
       "3/8\"-16"
