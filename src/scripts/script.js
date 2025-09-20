@@ -2300,7 +2300,7 @@ function setLanguage(lang) {
   setButtonLabelWithIcon(
     applySharedLinkBtn,
     texts[lang].loadSharedLinkBtn,
-    ICON_GLYPHS.load
+    ICON_GLYPHS.fileImport
   );
 
   // Descriptive hover help for setup management controls
@@ -2662,9 +2662,9 @@ function setLanguage(lang) {
   }
   setButtonLabelWithIcon(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
   cancelEditBtn.setAttribute('data-help', texts[lang].cancelEditBtnHelp);
-  exportBtn.textContent = texts[lang].exportDataBtn;
+  setButtonLabelWithIcon(exportBtn, texts[lang].exportDataBtn, ICON_GLYPHS.fileExport);
   exportBtn.setAttribute('data-help', texts[lang].exportDataBtnHelp);
-  importDataBtn.textContent = texts[lang].importDataBtn; // New translation for import button
+  setButtonLabelWithIcon(importDataBtn, texts[lang].importDataBtn, ICON_GLYPHS.fileImport);
   importDataBtn.setAttribute('data-help', texts[lang].importDataBtnHelp);
   // Placeholders for inputs
   setupNameInput.placeholder = texts[lang].setupNameLabel.replace(":", "");
@@ -3360,7 +3360,7 @@ function setLanguage(lang) {
   setButtonLabelWithIcon(
     document.getElementById("shareSetupBtn"),
     texts[lang].shareSetupBtn,
-    ICON_GLYPHS.share
+    ICON_GLYPHS.fileExport
   );
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) {
@@ -3945,6 +3945,8 @@ const ICON_GLYPHS = Object.freeze({
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
   load: Object.freeze({ markup: LOAD_ICON_SVG, className: 'icon-svg' }),
+  fileExport: iconGlyph('\uF423', ICON_FONT_KEYS.UICONS),
+  fileImport: iconGlyph('\uF425', ICON_FONT_KEYS.UICONS),
   save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
   share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
   magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
