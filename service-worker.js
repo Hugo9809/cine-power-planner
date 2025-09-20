@@ -128,6 +128,29 @@ if (typeof self !== 'undefined') {
     self.clients.claim();
   });
 
+  function shouldBypassCache(request) {
+    if (!request) {
+      return false;
+    }
+
+    const { cache } = request;
+    if (cache === 'reload' || cache === 'no-store') {
+      return true;
+    }
+
+    const cacheControl = request.headers && request.headers.get('Cache-Control');
+    if (cacheControl && /no-cache|max-age=0/i.test(cacheControl)) {
+      return true;
+    }
+
+    const pragma = request.headers && request.headers.get('Pragma');
+    if (pragma && /no-cache/i.test(pragma)) {
+      return true;
+    }
+
+    return false;
+  }
+
   self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') {
       return;
@@ -138,6 +161,7 @@ if (typeof self !== 'undefined') {
     const requestUrl = new URL(event.request.url);
     const isSameOrigin = requestUrl.origin === self.location.origin;
     const isAppIconRequest = isSameOrigin && requestUrl.pathname.includes('/src/icons/');
+    const bypassCache = shouldBypassCache(event.request);
     if (isAppIconRequest) {
       event.respondWith((async () => {
         const cache = await caches.open(CACHE_NAME);
@@ -161,6 +185,39 @@ if (typeof self !== 'undefined') {
 
     event.respondWith((async () => {
       const cacheMatchOptions = isNavigationRequest ? { ignoreSearch: true } : undefined;
+
+      if (bypassCache) {
+        try {
+          const freshResponse = await fetch(event.request, { cache: 'no-store' });
+          if (freshResponse && freshResponse.ok && isSameOrigin) {
+            try {
+              const cache = await caches.open(CACHE_NAME);
+              await cache.put(event.request, freshResponse.clone());
+            } catch (cacheError) {
+              console.warn('Unable to store fresh response in cache', cacheError);
+            }
+          }
+          if (freshResponse) {
+            return freshResponse;
+          }
+        } catch (networkError) {
+          const cachedFallback = await caches.match(event.request, cacheMatchOptions);
+          if (cachedFallback) {
+            return cachedFallback;
+          }
+
+          if (isNavigationRequest) {
+            const cache = await caches.open(CACHE_NAME);
+            const fallback = await cache.match('./index.html') || await cache.match('./');
+            if (fallback) {
+              return fallback;
+            }
+          }
+
+          throw networkError;
+        }
+      }
+
       const cachedResponse = await caches.match(event.request, cacheMatchOptions);
       if (cachedResponse) {
         return cachedResponse;
