@@ -2633,7 +2633,6 @@ function setLanguage(lang) {
   setupNameLabelElem.textContent = texts[lang].setupNameLabel;
   setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
   setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
-  setButtonLabelWithIcon(clearSetupBtn, texts[lang].clearSetupBtn, ICON_GLYPHS.circleX);
   var sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
   sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
   sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
@@ -2761,8 +2760,6 @@ function setLanguage(lang) {
   }
   applySharedLinkBtn.setAttribute("title", texts[lang].loadSharedLinkBtn);
   applySharedLinkBtn.setAttribute("data-help", texts[lang].applySharedLinkHelp);
-  clearSetupBtn.setAttribute("title", texts[lang].clearSetupBtn);
-  clearSetupBtn.setAttribute("data-help", texts[lang].clearSetupHelp);
   runtimeFeedbackBtn.setAttribute("title", texts[lang].runtimeFeedbackBtn);
   runtimeFeedbackBtn.setAttribute("data-help", texts[lang].runtimeFeedbackBtnHelp);
   setButtonLabelWithIcon(runtimeFeedbackBtn, texts[lang].runtimeFeedbackBtn, ICON_GLYPHS.feedback);
@@ -4850,7 +4847,6 @@ var setupSelect = document.getElementById("setupSelect");
 var setupNameInput = document.getElementById("setupName");
 var saveSetupBtn = document.getElementById("saveSetupBtn");
 var deleteSetupBtn = document.getElementById("deleteSetupBtn");
-var clearSetupBtn = document.getElementById("clearSetupBtn");
 var shareSetupBtn = document.getElementById("shareSetupBtn");
 var sharedLinkRow = document.getElementById("sharedLinkRow");
 var sharedLinkInput = document.getElementById("sharedLinkInput");
@@ -14681,43 +14677,6 @@ deleteSetupBtn.addEventListener("click", function () {
     });
     updateCalculations();
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
-  }
-});
-clearSetupBtn.addEventListener("click", function () {
-  if (confirm(texts[currentLang].confirmClearSetup) && confirm(texts[currentLang].confirmClearSetupAgain)) {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('cameraPowerPlanner_session');
-    }
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem('cameraPowerPlanner_session');
-    }
-    setupSelect.value = "";
-    setupNameInput.value = "";
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect].forEach(function (sel) {
-      if (!sel) return;
-      var noneOption = Array.from(sel.options).find(function (opt) {
-        return opt.value === "None";
-      });
-      if (noneOption) {
-        sel.value = "None";
-      } else {
-        sel.selectedIndex = 0;
-      }
-    });
-    var sbSel = getSliderBowlSelect();
-    if (sbSel) sbSel.value = '';
-    motorSelects.forEach(function (sel) {
-      if (sel.options.length) sel.value = "None";
-    });
-    controllerSelects.forEach(function (sel) {
-      if (sel.options.length) sel.value = "None";
-    });
-    updateBatteryPlateVisibility();
-    updateBatteryOptions();
-    clearProjectAutoGearRules();
-    renderAutoGearRulesList();
-    updateAutoGearCatalogOptions();
-    updateCalculations();
   }
 });
 setupSelect.addEventListener("change", function (event) {

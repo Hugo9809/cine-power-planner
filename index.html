@@ -207,7 +207,6 @@
             Import Project
           </button>
         </div>
-        <button id="clearSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Clear Current Project</button>
       </div>
     </div>
     <p id="shareLinkMessage" class="hidden status-message" role="status" aria-live="polite"></p>
@@ -1212,14 +1211,14 @@
                 data-help-target="#deleteSetupBtn"
                 data-help-highlight="#setup-manager"
               ><strong>Delete</strong></a>
-              to remove the saved entry or
+              to remove the saved entry or pick
               <a
                 class="help-link button-link"
                 href="#setup-manager"
-                data-help-target="#clearSetupBtn"
+                data-help-target="#setupSelect"
                 data-help-highlight="#setup-manager"
-              ><strong>Clear Current Project</strong></a>
-              to wipe the current selection without touching saved copies.
+              ><strong>-- New Project --</strong></a>
+              from the Saved Projects menu to wipe the current selection without touching saved copies.
             </li>
             <li>
               <a
@@ -2019,13 +2018,13 @@
                 data-help-target="#deleteSetupBtn"
                 data-help-highlight="#setup-manager"
               >Delete</a>
-              to remove it entirely or choose
+              to remove it entirely or pick
               <a
                 class="help-link"
                 href="#setup-manager"
-                data-help-target="#clearSetupBtn"
+                data-help-target="#setupSelect"
                 data-help-highlight="#setup-manager"
-              >Clear Current Project</a>
+              >-- New Project --</a>
               to start fresh without touching saved copies.
             </p>
           </details>
