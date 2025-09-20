@@ -185,7 +185,7 @@ Le générateur transforme vos sélections en une liste de préparation catégor
 - Faites glisser les nœuds pour réorganiser le schéma, zoomez avec les boutons et exportez le diagramme en SVG ou JPG.
 - Maintenez Shift enfoncé lors du clic sur Télécharger pour exporter une image JPG plutôt qu’un SVG.
 - Survolez ou touchez un appareil pour afficher sa fiche détaillée.
-- Utilise les icônes [OpenMoji](https://openmoji.org/) lorsqu’une connexion est disponible et se replie sur les emoji : 🔋 batterie, 🎥 caméra, 🖥️ moniteur, 📡 vidéo, ⚙️ moteur, 🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie.
+- Utilise les icônes OpenMoji lorsqu’une connexion est disponible et se replie sur les emoji : 🔋 batterie, 🎥 caméra, 🖥️ moniteur, 📡 vidéo, ⚙️ moteur, 🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie.
 
 ### 🧮 Pondération des données d’autonomie
 - Les autonomies remontées par les utilisateurs affinent l’estimation.
