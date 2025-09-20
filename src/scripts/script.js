@@ -5826,6 +5826,40 @@ function getCurrentProjectName() {
   }
   return (setupSelect && setupSelect.value) || '';
 }
+
+function getCurrentProjectStorageKey(options = {}) {
+  const typedName =
+    setupNameInput && typeof setupNameInput.value === 'string'
+      ? setupNameInput.value.trim()
+      : '';
+  const selectedName =
+    setupSelect && typeof setupSelect.value === 'string'
+      ? setupSelect.value.trim()
+      : '';
+
+  if (selectedName) {
+    return selectedName;
+  }
+
+  if (!setupSelect) {
+    return options.allowTyped && typedName ? typedName : '';
+  }
+
+  if (options.allowTyped && typedName) {
+    return typedName;
+  }
+
+  if (
+    typedName &&
+    Array.from((setupSelect && setupSelect.options) || []).some(
+      option => option && option.value === typedName
+    )
+  ) {
+    return typedName;
+  }
+
+  return '';
+}
 const newCategorySelect  = document.getElementById("newCategory");
 const newSubcategorySelect = document.getElementById("newSubcategory");
 const subcategoryFieldDiv = document.getElementById("subcategoryField");
@@ -19048,6 +19082,7 @@ function saveCurrentGearList() {
     info.easyrig = getEasyrigValue();
     currentProjectInfo = deriveProjectInfo(info);
     const projectName = getCurrentProjectName();
+    const storageKey = getCurrentProjectStorageKey();
     const projectRules = getProjectScopedAutoGearRules();
     if (typeof saveProject === 'function') {
         const payload = {
@@ -19060,10 +19095,10 @@ function saveCurrentGearList() {
         saveProject(projectName, payload);
     }
 
-    if (!projectName) return;
+    if (!storageKey) return;
 
     const setups = getSetups();
-    const existing = setups[projectName];
+    const existing = setups[storageKey];
     if (!existing && !html && !currentProjectInfo && !(projectRules && projectRules.length)) {
         return;
     }
@@ -19105,10 +19140,10 @@ function saveCurrentGearList() {
     }
 
     if (!existing) {
-        setups[projectName] = setup;
+        setups[storageKey] = setup;
         storeSetups(setups);
     } else if (changed) {
-        setups[projectName] = setup;
+        setups[storageKey] = setup;
         storeSetups(setups);
     }
 }
@@ -19118,8 +19153,7 @@ function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
     const backupName = ensureAutoBackupBeforeDeletion('delete gear list');
     if (!backupName) return false;
-    const projectName = getCurrentProjectName();
-    const storageKey = typeof projectName === 'string' ? projectName : '';
+    const storageKey = getCurrentProjectStorageKey();
     if (typeof deleteProject === 'function') {
         deleteProject(storageKey);
     } else if (typeof saveProject === 'function') {
@@ -19664,17 +19698,33 @@ function restoreSessionState() {
     }
   }
   if (gearListOutput || projectRequirementsOutput) {
-    const projectName = getCurrentProjectName();
+    const typedName = getCurrentProjectName();
+    const storageKey = getCurrentProjectStorageKey();
     const fetchStoredProject = name =>
       typeof loadProject === 'function' && typeof name === 'string'
         ? loadProject(name)
         : null;
     const hasProjectPayload = project =>
       project && (project.gearList || project.projectInfo);
-    let storedProject = fetchStoredProject(projectName);
+    const candidateNames = [];
+    if (typedName) {
+      candidateNames.push(typedName);
+    }
+    if (storageKey || storageKey === '') {
+      if (!candidateNames.includes(storageKey)) {
+        candidateNames.push(storageKey);
+      }
+    }
+    let storedProject = null;
+    for (const name of candidateNames) {
+      storedProject = fetchStoredProject(name);
+      if (hasProjectPayload(storedProject)) {
+        break;
+      }
+    }
     if (!hasProjectPayload(storedProject) && state) {
       const fallbackName = typeof state.setupSelect === 'string' ? state.setupSelect.trim() : '';
-      if (fallbackName && fallbackName !== projectName) {
+      if (fallbackName && !candidateNames.includes(fallbackName)) {
         const fallbackProject = fetchStoredProject(fallbackName);
         if (hasProjectPayload(fallbackProject)) {
           storedProject = fallbackProject;
@@ -19852,7 +19902,7 @@ function applySharedSetup(shared, options = {}) {
       if (activeRules && activeRules.length) {
         payload.autoGearRules = activeRules;
       }
-      saveProject(getCurrentProjectName(), payload);
+      saveProject(getCurrentProjectStorageKey({ allowTyped: true }), payload);
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);
