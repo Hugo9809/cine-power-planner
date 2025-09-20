@@ -161,8 +161,20 @@ const texts = {
     autoGearMatteboxHelp:
       "Apply this rule when these mattebox choices are selected.",
     autoGearMatteboxPlaceholder: "Select mattebox options",
+    autoGearCameraHandleLabel: "Camera handles",
+    autoGearCameraHandleHelp:
+      "Apply this rule when these camera handle options are selected.",
+    autoGearCameraHandlePlaceholder: "Select camera handles",
+    autoGearViewfinderExtensionLabel: "Viewfinder extension",
+    autoGearViewfinderExtensionHelp:
+      "Apply this rule when these viewfinder extension choices are selected.",
+    autoGearViewfinderExtensionPlaceholder: "Select viewfinder extension options",
+    autoGearVideoDistributionLabel: "Video distribution",
+    autoGearVideoDistributionHelp:
+      "Apply this rule when these video distribution preferences are selected.",
+    autoGearVideoDistributionPlaceholder: "Select video distribution options",
     autoGearRuleConditionRequired:
-      "Select at least one scenario or mattebox option before saving.",
+      "Select at least one scenario, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
     autoGearAddItemsHeading: "Add these items",
     autoGearAddItemLabel: "Item",
     autoGearAddCategoryLabel: "Category",
@@ -1332,8 +1344,20 @@ const texts = {
     autoGearMatteboxHelp:
       "Applica la regola quando sono selezionate queste opzioni di matte box.",
     autoGearMatteboxPlaceholder: "Seleziona opzioni matte box",
+    autoGearCameraHandleLabel: "Maniglie camera",
+    autoGearCameraHandleHelp:
+      "Applica la regola quando sono selezionate queste opzioni di maniglie camera.",
+    autoGearCameraHandlePlaceholder: "Seleziona maniglie camera",
+    autoGearViewfinderExtensionLabel: "Prolunga mirino",
+    autoGearViewfinderExtensionHelp:
+      "Applica la regola quando sono selezionate queste scelte di prolunga mirino.",
+    autoGearViewfinderExtensionPlaceholder: "Seleziona opzioni di prolunga mirino",
+    autoGearVideoDistributionLabel: "Distribuzione video",
+    autoGearVideoDistributionHelp:
+      "Applica la regola quando sono selezionate queste preferenze di distribuzione video.",
+    autoGearVideoDistributionPlaceholder: "Seleziona opzioni di distribuzione video",
     autoGearRuleConditionRequired:
-      "Seleziona almeno uno scenario o un'opzione di matte box prima di salvare.",
+      "Seleziona almeno uno scenario, un'opzione di matte box, una maniglia camera, una prolunga mirino o una distribuzione video prima di salvare.",
     autoGearAddItemsHeading: "Aggiungi questi elementi",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoria",
@@ -2107,8 +2131,20 @@ const texts = {
     autoGearMatteboxHelp:
       "Aplica la regla cuando se eligen estas opciones de matte box.",
     autoGearMatteboxPlaceholder: "Selecciona opciones de matte box",
+    autoGearCameraHandleLabel: "Empuñaduras de cámara",
+    autoGearCameraHandleHelp:
+      "Aplica la regla cuando se eligen estas opciones de empuñadura de cámara.",
+    autoGearCameraHandlePlaceholder: "Selecciona empuñaduras de cámara",
+    autoGearViewfinderExtensionLabel: "Extensión de visor",
+    autoGearViewfinderExtensionHelp:
+      "Aplica la regla cuando se eligen estas opciones de extensión de visor.",
+    autoGearViewfinderExtensionPlaceholder: "Selecciona opciones de extensión de visor",
+    autoGearVideoDistributionLabel: "Distribución de vídeo",
+    autoGearVideoDistributionHelp:
+      "Aplica la regla cuando se eligen estas preferencias de distribución de vídeo.",
+    autoGearVideoDistributionPlaceholder: "Selecciona opciones de distribución de vídeo",
     autoGearRuleConditionRequired:
-      "Selecciona al menos un escenario u opción de matte box antes de guardar.",
+      "Selecciona al menos un escenario, una opción de matte box, una empuñadura de cámara, una extensión de visor o una distribución de vídeo antes de guardar.",
     autoGearAddItemsHeading: "Agregar estos elementos",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoría",
@@ -2885,8 +2921,20 @@ const texts = {
     autoGearMatteboxHelp:
       "Appliquer la règle lorsque ces options de matte box sont sélectionnées.",
     autoGearMatteboxPlaceholder: "Sélectionnez des options de matte box",
+    autoGearCameraHandleLabel: "Poignées caméra",
+    autoGearCameraHandleHelp:
+      "Appliquer la règle lorsque ces options de poignée caméra sont sélectionnées.",
+    autoGearCameraHandlePlaceholder: "Sélectionnez des poignées caméra",
+    autoGearViewfinderExtensionLabel: "Extension viseur",
+    autoGearViewfinderExtensionHelp:
+      "Appliquer la règle lorsque ces choix d’extension de viseur sont sélectionnés.",
+    autoGearViewfinderExtensionPlaceholder: "Sélectionnez des options d’extension de viseur",
+    autoGearVideoDistributionLabel: "Distribution vidéo",
+    autoGearVideoDistributionHelp:
+      "Appliquer la règle lorsque ces préférences de distribution vidéo sont sélectionnées.",
+    autoGearVideoDistributionPlaceholder: "Sélectionnez des options de distribution vidéo",
     autoGearRuleConditionRequired:
-      "Sélectionnez au moins un scénario ou une option de matte box avant d’enregistrer.",
+      "Sélectionnez au moins un scénario, une option de matte box, une poignée caméra, une extension de viseur ou une distribution vidéo avant d’enregistrer.",
     autoGearAddItemsHeading: "Ajouter ces éléments",
     autoGearAddItemLabel: "Élément",
     autoGearAddCategoryLabel: "Catégorie",
@@ -3664,8 +3712,20 @@ const texts = {
     autoGearMatteboxHelp:
       "Regel anwenden, wenn diese Mattebox-Optionen gewählt sind.",
     autoGearMatteboxPlaceholder: "Mattebox-Optionen auswählen",
+    autoGearCameraHandleLabel: "Kamera-Handgriffe",
+    autoGearCameraHandleHelp:
+      "Regel anwenden, wenn diese Kamera-Handgriff-Optionen ausgewählt sind.",
+    autoGearCameraHandlePlaceholder: "Kamera-Handgriffe auswählen",
+    autoGearViewfinderExtensionLabel: "Sucher-Verlängerung",
+    autoGearViewfinderExtensionHelp:
+      "Regel anwenden, wenn diese Sucher-Verlängerungsoptionen ausgewählt sind.",
+    autoGearViewfinderExtensionPlaceholder: "Sucher-Verlängerungsoptionen auswählen",
+    autoGearVideoDistributionLabel: "Videoverteilung",
+    autoGearVideoDistributionHelp:
+      "Regel anwenden, wenn diese Videoverteilungsoptionen ausgewählt sind.",
+    autoGearVideoDistributionPlaceholder: "Videoverteilungsoptionen auswählen",
     autoGearRuleConditionRequired:
-      "Wähle mindestens ein Szenario oder eine Mattebox-Option, bevor du speicherst.",
+      "Wähle mindestens ein Szenario, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung oder eine Videoverteilung, bevor du speicherst.",
     autoGearAddItemsHeading: "Diese Geräte hinzufügen",
     autoGearAddItemLabel: "Gerät",
     autoGearAddCategoryLabel: "Kategorie",
