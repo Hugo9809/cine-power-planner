@@ -22769,7 +22769,7 @@ function createFilterValueSelect(type, selected) {
   sel.multiple = true;
   sel.setAttribute('multiple', '');
   const { opts, defaults = [] } = getFilterValueConfig(type);
-  const selectedVals = Array.isArray(selected) && selected.length
+  const selectedVals = Array.isArray(selected)
     ? selected.slice()
     : defaults.slice();
   const syncOption = (option, isSelected) => {
@@ -22881,9 +22881,9 @@ function buildFilterGearEntries(filters = []) {
           size: '',
           values: []
         });
-        const diopterValues = Array.isArray(values) && values.length
-          ? values.slice()
-          : (getFilterValueConfig(type).defaults || []).slice();
+        const diopterValues = values == null
+          ? (getFilterValueConfig(type).defaults || []).slice()
+          : (Array.isArray(values) ? values.slice() : []);
         entries.push({
           id: `${idBase}-set`,
           gearName: 'Schneider CF DIOPTER FULL GEN2',
@@ -23013,7 +23013,7 @@ function createFilterStorageValueSelect(type, selected) {
   select.hidden = true;
   select.setAttribute('aria-hidden', 'true');
   const { opts, defaults = [] } = getFilterValueConfig(type);
-  const chosen = Array.isArray(selected) && selected.length ? selected.slice() : defaults.slice();
+  const chosen = Array.isArray(selected) ? selected.slice() : defaults.slice();
   opts.forEach(value => {
     const opt = document.createElement('option');
     opt.value = value;
@@ -23092,7 +23092,7 @@ function renderGearListFilterDetails(details) {
       optionsWrap.className = 'filter-values-container';
       optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
       const { opts, defaults = [] } = getFilterValueConfig(type);
-      const currentValues = Array.isArray(values) && values.length ? values : defaults;
+      const currentValues = values == null ? defaults : (Array.isArray(values) ? values : []);
       opts.forEach(value => {
         const lbl = document.createElement('label');
         lbl.className = 'filter-value-option';
@@ -23162,7 +23162,7 @@ function renderFilterDetails() {
       type,
       label,
       size,
-      values: Array.isArray(prev.values) ? prev.values.slice() : undefined,
+      values: Array.isArray(prev.values) ? prev.values.slice() : [],
       needsSize,
       needsValues
     };
@@ -23200,14 +23200,19 @@ function collectFilterSelections() {
     const prev = existingMap[type] || {};
     const size = sizeSel ? sizeSel.value : (prev.size || DEFAULT_FILTER_SIZE);
     let vals;
+    const needsValues = filterTypeNeedsValueSelect(type);
     if (valSel) {
       vals = Array.from(valSel.selectedOptions).map(o => o.value);
     } else if (Array.isArray(prev.values) && prev.values.length) {
-      vals = prev.values;
+      vals = prev.values.slice();
     } else {
       vals = [];
     }
-    return `${type}:${size}${vals && vals.length ? ':' + vals.join('|') : ''}`;
+    let valueSegment = '';
+    if (needsValues) {
+      valueSegment = vals.length ? `:${vals.join('|')}` : ':!';
+    }
+    return `${type}:${size}${valueSegment}`;
   });
   return tokens.join(',');
 }
@@ -23215,8 +23220,19 @@ function collectFilterSelections() {
 function parseFilterTokens(str) {
   if (!str) return [];
   return str.split(',').map(s => {
-    const [type, size = DEFAULT_FILTER_SIZE, vals] = s.split(':').map(p => p.trim());
-    return { type, size, values: vals ? vals.split('|').map(v => v.trim()) : undefined };
+    const parts = s.split(':').map(p => p.trim());
+    const type = parts[0];
+    const size = parts[1] || DEFAULT_FILTER_SIZE;
+    const vals = parts.length > 2 ? parts[2] : undefined;
+    let values;
+    if (vals === undefined) {
+      values = undefined;
+    } else if (vals === '' || vals === '!') {
+      values = [];
+    } else {
+      values = vals.split('|').map(v => v.trim()).filter(Boolean);
+    }
+    return { type, size, values };
   }).filter(t => t.type);
 }
 
