@@ -769,23 +769,23 @@ const texts = {
   },
   it: {
     appTitle: "Cine Power Planner",
-    tagline: "Pianifica la tua configurazione cinematografica e calcola il consumo energetico e l'autonomia delle batterie.",
+    tagline: "Pianifica il tuo set cinematografico e calcola consumi energetici e autonomia delle batterie.",
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Non in linea",
     installBannerText: "Installa Cine Power Planner sul tuo dispositivo per un accesso rapido.",
     installHelpTitleIos: "Installa Cine Power Planner su iOS",
     installHelpTitleAndroid: "Installa Cine Power Planner su Android",
-    installHelpIntroIos: "Aggiungi il planner alla schermata Home per usarlo come un'app.",
-    installHelpIntroAndroid: "Aggiungi il planner alla schermata Home per usarlo come un'app.",
+    installHelpIntroIos: "Aggiungi Cine Power Planner alla schermata Home per usarlo come app.",
+    installHelpIntroAndroid: "Aggiungi Cine Power Planner alla schermata Home per usarlo come app.",
     installHelpStepsIos: [
       "Apri Cine Power Planner in Safari.",
       "Tocca il pulsante Condividi.",
-      "Scegli Aggiungi alla schermata Home e conferma.",
+      "Seleziona Aggiungi alla schermata Home e conferma.",
     ],
     installHelpStepsAndroid: [
       "Apri Cine Power Planner in Chrome.",
       "Tocca il menu del browser (⋮).",
-      "Scegli Aggiungi alla schermata Home e conferma.",
+      "Seleziona Aggiungi alla schermata Home e conferma.",
     ],
     installHelpNoteIos: "Dopo l'installazione, avvia Cine Power Planner dalla schermata Home.",
     installHelpNoteAndroid:
@@ -837,13 +837,13 @@ const texts = {
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
-      "Digita per andare alle funzionalità, ai dispositivi o aprire gli argomenti di aiuto correlati. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque e usa Esc o × per cancellare la ricerca.",
+      "Digita per trovare funzionalità, dispositivi o argomenti di aiuto correlati. Premi Invio per aprire il risultato selezionato; usa / oppure Ctrl+K (Cmd+K su Mac) per portare il focus sulla ricerca ovunque e Esc o × per cancellare rapidamente.",
     featureSearchClear: "Cancella ricerca",
     featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati. Premi Esc per cancellare rapidamente.",
     darkModeHelp:
-      "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
+      "Passa tra tema chiaro e scuro. Premi D per attivare o disattivare rapidamente. La preferenza viene salvata.",
     pinkModeHelp:
-      "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
+      "Attiva un tema rosa giocoso. Con la modalità rosa l’icona dell’unicorno cambia ogni 30 secondi con una leggera animazione pop; funziona sia con il tema chiaro sia con quello scuro e viene ricordata per le sessioni future.",
     reloadAppLabel: "Ricarica",
     reloadAppHelp: "Svuota la cache e ricarica l'app senza eliminare i dati salvati.",
 
@@ -1511,23 +1511,23 @@ const texts = {
   },
   es: {
     appTitle: "Cine Power Planner",
-    tagline: "Planifica tu equipo de rodaje y calcula el consumo de energía y la autonomía de las baterías.",
+    tagline: "Planifica tu equipo de rodaje y calcula el consumo energético y la autonomía de las baterías.",
     skipToContent: "Saltar al contenido",
     offlineIndicator: "Sin conexión",
     installBannerText: "Instala Cine Power Planner en tu dispositivo para acceder rápidamente.",
     installHelpTitleIos: "Instala Cine Power Planner en iOS",
     installHelpTitleAndroid: "Instala Cine Power Planner en Android",
-    installHelpIntroIos: "Añade el planner a la pantalla de inicio para usarlo como una aplicación.",
-    installHelpIntroAndroid: "Añade el planner a la pantalla de inicio para usarlo como una aplicación.",
+    installHelpIntroIos: "Añade Cine Power Planner a la pantalla de inicio para usarlo como aplicación.",
+    installHelpIntroAndroid: "Añade Cine Power Planner a la pantalla de inicio para usarlo como aplicación.",
     installHelpStepsIos: [
       "Abre Cine Power Planner en Safari.",
       "Toca el botón Compartir.",
-      "Elige Añadir a pantalla de inicio y confirma.",
+      "Pulsa \"Añadir a pantalla de inicio\" y confirma.",
     ],
     installHelpStepsAndroid: [
       "Abre Cine Power Planner en Chrome.",
       "Toca el menú del navegador (⋮).",
-      "Elige Añadir a pantalla de inicio y confirma.",
+      "Pulsa \"Añadir a pantalla de inicio\" y confirma.",
     ],
     installHelpNoteIos: "Después de la instalación, abre Cine Power Planner desde la pantalla de inicio.",
     installHelpNoteAndroid:
@@ -1580,13 +1580,13 @@ const texts = {
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
-      "Escribe para ir a funciones, dispositivos o temas de ayuda relacionados. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y usa Esc o × para borrar la búsqueda.",
+      "Escribe para encontrar funciones, dispositivos o temas de ayuda relacionados. Pulsa Intro para abrir el resultado seleccionado; usa / o Ctrl+K (Cmd+K en Mac) para centrarte en la búsqueda desde cualquier lugar y Esc o × para borrar la consulta al instante.",
     featureSearchClear: "Borrar búsqueda",
     featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo. Pulsa Esc para borrar rápidamente.",
     darkModeHelp:
-      "Alterna entre temas claro y oscuro; pulsa D para cambiar. La preferencia se guarda.",
+      "Alterna entre temas claro y oscuro. Pulsa D para activar o desactivar al instante. La preferencia se guarda.",
     pinkModeHelp:
-      "Añade un tema rosa divertido. Cuando el modo rosa está activo, el icono del unicornio cambia cada 30 segundos con una suave animación emergente, y el ajuste funciona en modo claro u oscuro y se recuerda para la próxima vez.",
+      "Activa un tema rosa con un toque divertido. Cuando el modo rosa está activo, el icono del unicornio cambia cada 30 segundos con una suave animación emergente; es compatible con los modos claro y oscuro y queda guardado para la próxima vez.",
     reloadAppLabel: "Forzar recarga",
     reloadAppHelp: "Borra la caché y recarga la aplicación sin eliminar los datos guardados.",
 
@@ -2268,23 +2268,23 @@ const texts = {
   },
   fr: {
     appTitle: "Cine Power Planner",
-    tagline: "Planifiez votre équipement de tournage et calculez la consommation énergétique et l'autonomie des batteries.",
+    tagline: "Planifiez votre configuration de tournage et calculez la consommation d’énergie et l’autonomie des batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
     installBannerText: "Installez Cine Power Planner sur votre appareil pour un accès rapide.",
     installHelpTitleIos: "Installer Cine Power Planner sur iOS",
     installHelpTitleAndroid: "Installer Cine Power Planner sur Android",
-    installHelpIntroIos: "Ajoutez le planner à votre écran d’accueil pour l’utiliser comme une application.",
-    installHelpIntroAndroid: "Ajoutez le planner à votre écran d’accueil pour l’utiliser comme une application.",
+    installHelpIntroIos: "Ajoutez Cine Power Planner à votre écran d’accueil pour l’utiliser comme une application.",
+    installHelpIntroAndroid: "Ajoutez Cine Power Planner à votre écran d’accueil pour l’utiliser comme une application.",
     installHelpStepsIos: [
       "Ouvrez Cine Power Planner dans Safari.",
       "Touchez le bouton Partager.",
-      "Choisissez Ajouter à l’écran d’accueil et confirmez.",
+      "Sélectionnez « Ajouter à l’écran d’accueil » et confirmez.",
     ],
     installHelpStepsAndroid: [
       "Ouvrez Cine Power Planner dans Chrome.",
       "Touchez le menu du navigateur (⋮).",
-      "Choisissez Ajouter à l’écran d’accueil et confirmez.",
+      "Sélectionnez « Ajouter à l’écran d’accueil » et confirmez.",
     ],
     installHelpNoteIos: "Une fois installée, lancez Cine Power Planner depuis l’écran d’accueil.",
     installHelpNoteAndroid:
@@ -2337,13 +2337,13 @@ const texts = {
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l'aide",
     featureSearchHelp:
-      "Tapez pour accéder aux fonctionnalités, appareils ou sujets d'aide associés. Appuyez sur Entrée pour naviguer, sur / ou Ctrl+K (Cmd+K sur Mac) pour placer le focus sur la recherche où que vous soyez, puis sur Échap ou × pour effacer la requête.",
+      "Saisissez du texte pour trouver des fonctionnalités, des appareils ou des sujets d’aide associés. Appuyez sur Entrée pour ouvrir le résultat sélectionné; utilisez / ou Ctrl+K (Cmd+K sur Mac) pour placer le focus sur la recherche où que vous soyez, puis Échap ou × pour effacer instantanément.",
     featureSearchClear: "Effacer la recherche",
     featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats. Appuyez sur Échap pour effacer rapidement.",
     darkModeHelp:
-      "Basculer entre thème clair et sombre; appuyez sur D pour changer. Le choix est mémorisé.",
+      "Alternez entre thème clair et thème sombre. Appuyez sur D pour activer ou désactiver rapidement. Le choix est mémorisé.",
     pinkModeHelp:
-      "Ajoute un thème rose ludique. Lorsque le mode rose est actif, l’icône de licorne change toutes les 30 secondes avec une animation de pop douce, et le réglage fonctionne en mode clair ou sombre et est mémorisé pour la prochaine fois.",
+      "Activez un thème rose ludique. Lorsque le mode rose est actif, l’icône licorne change toutes les 30 secondes avec une animation douce; le réglage fonctionne avec les thèmes clair et sombre et reste mémorisé pour les prochaines sessions.",
     reloadAppLabel: "Recharger",
     reloadAppHelp: "Vider le cache et recharger l'application sans supprimer les données enregistrées.",
 
@@ -3028,23 +3028,23 @@ const texts = {
   },
   de: {
     appTitle: "Cine Power Planner",
-    tagline: "Plane dein Film-Setup und berechne Stromverbrauch und Akkulaufzeit.",
+    tagline: "Plane dein Film-Setup und berechne Stromverbrauch sowie Akkulaufzeit.",
     skipToContent: "Zum Inhalt springen",
     offlineIndicator: "Offline",
     installBannerText: "Installiere Cine Power Planner auf deinem Gerät für schnellen Zugriff.",
     installHelpTitleIos: "Cine Power Planner auf iOS installieren",
     installHelpTitleAndroid: "Cine Power Planner auf Android installieren",
-    installHelpIntroIos: "Füge den Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
-    installHelpIntroAndroid: "Füge den Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
+    installHelpIntroIos: "Füge Cine Power Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
+    installHelpIntroAndroid: "Füge Cine Power Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
     installHelpStepsIos: [
       "Öffne Cine Power Planner in Safari.",
       "Tippe auf die Teilen-Taste.",
-      "Wähle Zum Startbildschirm hinzufügen und bestätige.",
+      "Wähle \"Zum Startbildschirm hinzufügen\" und bestätige.",
     ],
     installHelpStepsAndroid: [
       "Öffne Cine Power Planner in Chrome.",
       "Tippe auf das Browsermenü (⋮).",
-      "Wähle Zum Startbildschirm hinzufügen und bestätige.",
+      "Wähle \"Zum Startbildschirm hinzufügen\" und bestätige.",
     ],
     installHelpNoteIos: "Nach der Installation startest du Cine Power Planner über den Home-Bildschirm.",
     installHelpNoteAndroid:
@@ -3097,13 +3097,13 @@ const texts = {
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
     featureSearchHelp:
-      "Tippen, um zu Funktionen, Geräten oder Hilfethemen zu springen. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, und verwende Esc oder ×, um die Eingabe zu löschen.",
+      "Tippe, um Funktionen, Geräte oder passende Hilfethemen zu finden. Drücke Enter, um das markierte Ergebnis zu öffnen; verwende / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, und Esc oder × zum sofortigen Leeren.",
     featureSearchClear: "Suche löschen",
     featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen. Drücke Esc, um schnell zu löschen.",
     darkModeHelp:
-      "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
+      "Wechsle zwischen hellem und dunklem Design. Drücke D zum schnellen Umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:
-      "Füge ein verspieltes pinkes Akzentthema hinzu. Während der Pinkmodus aktiv ist, wechselt das Einhorn-Symbol alle 30 Sekunden mit einer sanften Pop-Animation, und die Einstellung funktioniert in hellen wie dunklen Modi und bleibt für das nächste Mal gespeichert.",
+      "Aktiviere ein verspieltes pinkes Akzentdesign. Solange der Pinkmodus aktiv ist, wechselt das Einhorn-Symbol alle 30 Sekunden mit einer sanften Pop-Animation; die Einstellung funktioniert in hellen wie dunklen Designs und bleibt für zukünftige Sitzungen erhalten.",
     reloadAppLabel: "Neu laden",
     reloadAppHelp: "Cache leeren und Anwendung neu laden, ohne gespeicherte Daten zu entfernen.",
 
