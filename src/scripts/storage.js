@@ -659,11 +659,7 @@ function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
 }
 
-function alertStorageError(reason) {
-  if (reason !== 'migration-read') {
-    return;
-  }
-
+function alertStorageError() {
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   }

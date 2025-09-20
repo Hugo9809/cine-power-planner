@@ -11041,17 +11041,20 @@ function getDiagramCss(includeDark = true) {
 }
 
 // Dedicated Uicons for the setup diagram.
+const DIAGRAM_BATTERY_ICON = iconGlyph('\uE1A6');
+const DIAGRAM_CAMERA_ICON = iconGlyph('\uE333');
 const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
 const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
+const DIAGRAM_VIDEO_ICON = iconGlyph('\uF373');
 const DIAGRAM_MOTORS_ICON = iconGlyph('\uE8AF');
 const DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
+const DIAGRAM_DISTANCE_ICON = iconGlyph('\uEFB9');
 const DIAGRAM_POWER_OUTPUT_ICON = iconGlyph('\uE212');
 const DIAGRAM_POWER_INPUT_ICON = iconGlyph('\uEE71');
 const DIAGRAM_TIMECODE_ICON = iconGlyph('\uE46F');
 const DIAGRAM_AUDIO_IN_ICON = iconGlyph('\uE6B7');
 const DIAGRAM_AUDIO_OUT_ICON = iconGlyph('\uECB5');
 const DIAGRAM_AUDIO_IO_ICON = iconGlyph('\uF487');
-const DIAGRAM_VIDEO_ICON = DIAGRAM_MONITOR_ICON;
 
 const diagramConnectorIcons = Object.freeze({
   powerOut: DIAGRAM_POWER_OUTPUT_ICON,
@@ -11069,15 +11072,15 @@ const diagramConnectorIcons = Object.freeze({
 });
 
 const diagramIcons = {
-  battery: ICON_GLYPHS.batteryBolt,
-  camera: ICON_GLYPHS.camera,
+  battery: DIAGRAM_BATTERY_ICON,
+  camera: DIAGRAM_CAMERA_ICON,
   monitor: DIAGRAM_MONITOR_ICON,
   viewfinder: DIAGRAM_VIEWFINDER_ICON,
-  video: ICON_GLYPHS.wifi,
+  video: DIAGRAM_VIDEO_ICON,
   motors: DIAGRAM_MOTORS_ICON,
   controllers: DIAGRAM_CONTROLLER_ICON,
   handle: DIAGRAM_CONTROLLER_ICON,
-  distance: ICON_GLYPHS.distance
+  distance: DIAGRAM_DISTANCE_ICON
 };
 
 // Map overview section keys to diagram icons
@@ -11096,7 +11099,7 @@ const overviewSectionIcons = {
 
 const cameraProjectLegendIcon = document.getElementById('cameraProjectLegendIcon');
 if (cameraProjectLegendIcon) {
-  applyIconGlyph(cameraProjectLegendIcon, diagramIcons.camera);
+  applyIconGlyph(cameraProjectLegendIcon, DIAGRAM_CAMERA_ICON);
 }
 
 // Load an image and optionally strip a solid background using Canvas
@@ -16789,9 +16792,9 @@ function generateConnectorSummary(device) {
     if (device.mount_type) {
         specHtml += `<span class="info-box power-conn">Mount: ${escapeHtml(String(device.mount_type))}</span>`;
     }
-    if (typeof device.screenSizeInches === 'number') {
-        specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.screen)}Screen: ${device.screenSizeInches}"</span>`;
-    }
+  if (typeof device.screenSizeInches === 'number') {
+    specHtml += `<span class="info-box video-conn">${iconMarkup(DIAGRAM_MONITOR_ICON)}Screen: ${device.screenSizeInches}"</span>`;
+  }
     if (typeof device.brightnessNits === 'number') {
         specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.brightness)}Brightness: ${device.brightnessNits} nits</span>`;
     }

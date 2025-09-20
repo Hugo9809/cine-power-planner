@@ -10611,27 +10611,50 @@ var manualPositions = {};
 var lastDiagramPositions = {};
 var gridSnap = false;
 var cleanupDiagramInteractions = null;
-var diagramCssLight = "\n.node-box{fill:#f0f0f0;stroke:none;}\n.node-box.first-fiz{stroke:none;}\n.first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}\n.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n.node-icon[data-icon-font='film']{font-family:'FilmIndustryIconsV2',system-ui,sans-serif;}\n.node-icon[data-icon-font='gadget']{font-family:'GadgetIconsV2',system-ui,sans-serif;}\n.node-icon-svg{color:#333;pointer-events:none;}\n.node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}\n.node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.2;stroke:none;}\n.conn{stroke:none;}\n.conn.red{fill:#d33;}\n.conn.blue{fill:#369;}\n.conn.green{fill:#090;}\ntext{font-family:system-ui,sans-serif;}\n.edge-label{font-size:var(--font-size-diagram-label, 10px);}\nline{stroke:#333;stroke-width:2px;}\npath.edge-path{stroke:#333;stroke-width:2px;fill:none;}\npath.power{stroke:#d33;}\npath.video{stroke:#369;}\npath.fiz{stroke:#090;}\n.diagram-placeholder{font-style:italic;color:#666;margin:0;}\n";
-var diagramCssDark = "\n.node-box{fill:#444;stroke:none;}\n.node-box.first-fiz{stroke:none;}\n.first-fiz-highlight{stroke:url(#firstFizGrad);}\n.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n.node-icon[data-icon-font='film']{font-family:'FilmIndustryIconsV2',system-ui,sans-serif;}\n.node-icon[data-icon-font='gadget']{font-family:'GadgetIconsV2',system-ui,sans-serif;}\n.node-icon-svg{color:#fff;pointer-events:none;}\n.node-icon-svg svg{width:24px;height:24px;display:block;stroke:currentColor;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;fill:none;}\n.node-icon-svg svg .diagram-camera-icon__lens{fill:currentColor;fill-opacity:0.3;stroke:none;}\ntext{fill:#fff;font-family:system-ui,sans-serif;}\nline{stroke:#fff;}\npath.edge-path{stroke:#fff;}\npath.power{stroke:#ff6666;}\npath.video{stroke:#7ec8ff;}\npath.fiz{stroke:#6f6;}\n.conn.red{fill:#ff6666;}\n.conn.blue{fill:#7ec8ff;}\n.conn.green{fill:#6f6;}\n.diagram-placeholder{color:#bbb;}\n";
+var diagramCssLight = "\n.node-box{fill:#f0f0f0;stroke:none;}\n.node-box.first-fiz{stroke:none;}\n.first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}\n.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n.conn{stroke:none;}\n.conn.red{fill:#d33;}\n.conn.blue{fill:#369;}\n.conn.green{fill:#090;}\ntext{font-family:system-ui,sans-serif;}\n.edge-label{font-size:var(--font-size-diagram-label, 10px);}\nline{stroke:#333;stroke-width:2px;}\npath.edge-path{stroke:#333;stroke-width:2px;fill:none;}\npath.power{stroke:#d33;}\npath.video{stroke:#369;}\npath.fiz{stroke:#090;}\n.diagram-placeholder{font-style:italic;color:#666;margin:0;}\n";
+var diagramCssDark = "\n.node-box{fill:#444;stroke:none;}\n.node-box.first-fiz{stroke:none;}\n.first-fiz-highlight{stroke:url(#firstFizGrad);}\n.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\ntext{fill:#fff;font-family:system-ui,sans-serif;}\nline{stroke:#fff;}\npath.edge-path{stroke:#fff;}\npath.power{stroke:#ff6666;}\npath.video{stroke:#7ec8ff;}\npath.fiz{stroke:#6f6;}\n.conn.red{fill:#ff6666;}\n.conn.blue{fill:#7ec8ff;}\n.conn.green{fill:#6f6;}\n.diagram-placeholder{color:#bbb;}\n";
 function getDiagramCss() {
   var includeDark = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
   return diagramCssLight + (includeDark ? "@media (prefers-color-scheme: dark){".concat(diagramCssDark, "}") : '');
 }
-var CAMERA_DIAGRAM_ICON_SVG = "\n  <svg\n    viewBox=\"0 0 24 24\"\n    class=\"diagram-camera-icon-svg\"\n    aria-hidden=\"true\"\n    focusable=\"false\"\n    fill=\"none\"\n    stroke=\"currentColor\"\n    stroke-width=\"1.5\"\n    stroke-linecap=\"round\"\n    stroke-linejoin=\"round\"\n  >\n    <rect x=\"3\" y=\"7\" width=\"18\" height=\"12\" rx=\"2\" ry=\"2\" />\n    <path d=\"M7.5 7V5.75A1.75 1.75 0 0 1 9.25 4h2.8a1 1 0 0 1 .78.38L13.9 7\" />\n    <circle cx=\"12\" cy=\"13\" r=\"3.2\" />\n    <circle cx=\"12\" cy=\"13\" r=\"1.6\" class=\"diagram-camera-icon__lens\" />\n    <path d=\"M18.5 10.25 20.75 8.5A1 1 0 0 1 22 9.35v7.3a1 1 0 0 1-1.25.86L18.5 15.75\" />\n  </svg>\n".trim();
+var DIAGRAM_BATTERY_ICON = iconGlyph('\uE1A6');
+var DIAGRAM_CAMERA_ICON = iconGlyph('\uE333');
+var DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
+var DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
+var DIAGRAM_VIDEO_ICON = iconGlyph('\uF373');
+var DIAGRAM_MOTORS_ICON = iconGlyph('\uE8AF');
+var DIAGRAM_CONTROLLER_ICON = iconGlyph('\uE52A');
+var DIAGRAM_DISTANCE_ICON = iconGlyph('\uEFB9');
+var DIAGRAM_POWER_OUTPUT_ICON = iconGlyph('\uE212');
+var DIAGRAM_POWER_INPUT_ICON = iconGlyph('\uEE71');
+var DIAGRAM_TIMECODE_ICON = iconGlyph('\uE46F');
+var DIAGRAM_AUDIO_IN_ICON = iconGlyph('\uE6B7');
+var DIAGRAM_AUDIO_OUT_ICON = iconGlyph('\uECB5');
+var DIAGRAM_AUDIO_IO_ICON = iconGlyph('\uF487');
+var diagramConnectorIcons = Object.freeze({
+  powerOut: DIAGRAM_POWER_OUTPUT_ICON,
+  powerIn: DIAGRAM_POWER_INPUT_ICON,
+  fiz: DIAGRAM_MOTORS_ICON,
+  video: DIAGRAM_VIDEO_ICON,
+  timecode: DIAGRAM_TIMECODE_ICON,
+  audioIn: DIAGRAM_AUDIO_IN_ICON,
+  audioOut: DIAGRAM_AUDIO_OUT_ICON,
+  audioIo: DIAGRAM_AUDIO_IO_ICON,
+  torque: DIAGRAM_MOTORS_ICON,
+  controller: DIAGRAM_CONTROLLER_ICON,
+  powerSpec: DIAGRAM_POWER_OUTPUT_ICON,
+  powerSource: DIAGRAM_POWER_INPUT_ICON
+});
 var diagramIcons = {
-  battery: ICON_GLYPHS.batteryBolt,
-  camera: Object.freeze({
-    markup: CAMERA_DIAGRAM_ICON_SVG,
-    className: 'icon-svg diagram-camera-icon',
-    size: 24
-  }),
-  monitor: ICON_GLYPHS.screen,
-  viewfinder: ICON_GLYPHS.viewfinder,
-  video: ICON_GLYPHS.wifi,
-  motors: ICON_GLYPHS.gears,
-  controllers: ICON_GLYPHS.controller,
-  handle: ICON_GLYPHS.controller,
-  distance: ICON_GLYPHS.distance
+  battery: DIAGRAM_BATTERY_ICON,
+  camera: DIAGRAM_CAMERA_ICON,
+  monitor: DIAGRAM_MONITOR_ICON,
+  viewfinder: DIAGRAM_VIEWFINDER_ICON,
+  video: DIAGRAM_VIDEO_ICON,
+  motors: DIAGRAM_MOTORS_ICON,
+  controllers: DIAGRAM_CONTROLLER_ICON,
+  handle: DIAGRAM_CONTROLLER_ICON,
+  distance: DIAGRAM_DISTANCE_ICON
 };
 var overviewSectionIcons = {
   category_batteries: diagramIcons.battery,
@@ -10646,7 +10669,7 @@ var overviewSectionIcons = {
 };
 var cameraProjectLegendIcon = document.getElementById('cameraProjectLegendIcon');
 if (cameraProjectLegendIcon) {
-  applyIconGlyph(cameraProjectLegendIcon, diagramIcons.camera);
+  applyIconGlyph(cameraProjectLegendIcon, DIAGRAM_CAMERA_ICON);
 }
 var generateOverviewBtn = document.getElementById('generateOverviewBtn');
 var videoOutputOptions = ['3G-SDI', '6G-SDI', '12G-SDI', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI'];
@@ -16261,7 +16284,7 @@ function generateConnectorSummary(device) {
   var portHtml = '';
   var connectors = [{
     items: (_device$power = device.power) === null || _device$power === void 0 ? void 0 : _device$power.powerDistributionOutputs,
-    icon: ICON_GLYPHS.bolt,
+    icon: diagramConnectorIcons.powerOut,
     cls: 'power-conn',
     label: 'Power',
     dir: 'Out'
@@ -16271,37 +16294,37 @@ function generateConnectorSummary(device) {
         type: t
       };
     }),
-    icon: ICON_GLYPHS.plug,
+    icon: diagramConnectorIcons.powerIn,
     cls: 'power-conn',
     label: 'Power',
     dir: 'In'
   }, {
     items: device.fizConnectors,
-    icon: ICON_GLYPHS.gears,
+    icon: diagramConnectorIcons.fiz,
     cls: 'fiz-conn',
     label: 'FIZ Port'
   }, {
     items: ((_device$video = device.video) === null || _device$video === void 0 ? void 0 : _device$video.inputs) || device.videoInputs,
-    icon: ICON_GLYPHS.screen,
+    icon: diagramConnectorIcons.video,
     cls: 'video-conn',
     label: 'Video',
     dir: 'In'
   }, {
     items: ((_device$video2 = device.video) === null || _device$video2 === void 0 ? void 0 : _device$video2.outputs) || device.videoOutputs,
-    icon: ICON_GLYPHS.screen,
+    icon: diagramConnectorIcons.video,
     cls: 'video-conn',
     label: 'Video',
     dir: 'Out'
   }, {
     items: device.timecode,
-    icon: ICON_GLYPHS.timecode,
+    icon: diagramConnectorIcons.timecode,
     cls: 'neutral-conn',
     label: 'Timecode'
   }, {
     items: (_device$audioInput = device.audioInput) !== null && _device$audioInput !== void 0 && _device$audioInput.portType ? [{
       type: device.audioInput.portType
     }] : undefined,
-    icon: ICON_GLYPHS.audioIn,
+    icon: diagramConnectorIcons.audioIn,
     cls: 'neutral-conn',
     label: 'Audio',
     dir: 'In'
@@ -16309,7 +16332,7 @@ function generateConnectorSummary(device) {
     items: (_device$audioOutput = device.audioOutput) !== null && _device$audioOutput !== void 0 && _device$audioOutput.portType ? [{
       type: device.audioOutput.portType
     }] : undefined,
-    icon: ICON_GLYPHS.audioOut,
+    icon: diagramConnectorIcons.audioOut,
     cls: 'neutral-conn',
     label: 'Audio',
     dir: 'Out'
@@ -16317,7 +16340,7 @@ function generateConnectorSummary(device) {
     items: (_device$audioIo = device.audioIo) !== null && _device$audioIo !== void 0 && _device$audioIo.portType ? [{
       type: device.audioIo.portType
     }] : undefined,
-    icon: ICON_GLYPHS.sliders,
+    icon: diagramConnectorIcons.audioIo,
     cls: 'neutral-conn',
     label: 'Audio',
     dir: 'I/O'
@@ -16333,7 +16356,7 @@ function generateConnectorSummary(device) {
   }
   var specHtml = '';
   if (typeof device.powerDrawWatts === 'number') {
-    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.bolt), "Power: ").concat(device.powerDrawWatts, " W</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(diagramConnectorIcons.powerSpec), "Power: ").concat(device.powerDrawWatts, " W</span>");
   }
   if ((_device$power2 = device.power) !== null && _device$power2 !== void 0 && (_device$power2 = _device$power2.input) !== null && _device$power2 !== void 0 && _device$power2.voltageRange) {
     specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryBolt), "Voltage: ").concat(escapeHtml(String(device.power.input.voltageRange)), "V</span>");
@@ -16351,7 +16374,7 @@ function generateConnectorSummary(device) {
     specHtml += "<span class=\"info-box power-conn\">Mount: ".concat(escapeHtml(String(device.mount_type)), "</span>");
   }
   if (typeof device.screenSizeInches === 'number') {
-    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(ICON_GLYPHS.screen), "Screen: ").concat(device.screenSizeInches, "\"</span>");
+    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(DIAGRAM_MONITOR_ICON), "Screen: ").concat(device.screenSizeInches, "\"</span>");
   }
   if (typeof device.brightnessNits === 'number') {
     specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(ICON_GLYPHS.brightness), "Brightness: ").concat(device.brightnessNits, " nits</span>");
@@ -16360,13 +16383,13 @@ function generateConnectorSummary(device) {
     specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(ICON_GLYPHS.wifi), "Wireless: ").concat(device.wirelessTx, "</span>");
   }
   if (device.internalController) {
-    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(ICON_GLYPHS.controller), "Controller: Internal</span>");
+    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(diagramConnectorIcons.controller), "Controller: Internal</span>");
   }
   if (typeof device.torqueNm === 'number') {
-    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(ICON_GLYPHS.gears), "Torque: ").concat(device.torqueNm, " Nm</span>");
+    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(diagramConnectorIcons.torque), "Torque: ").concat(device.torqueNm, " Nm</span>");
   }
   if (device.powerSource) {
-    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.plug), "Power Source: ").concat(escapeHtml(String(device.powerSource)), "</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(diagramConnectorIcons.powerSource), "Power Source: ").concat(escapeHtml(String(device.powerSource)), "</span>");
   }
   var extraHtml = '';
   if (Array.isArray((_device$power3 = device.power) === null || _device$power3 === void 0 ? void 0 : _device$power3.batteryPlateSupport) && device.power.batteryPlateSupport.length) {
