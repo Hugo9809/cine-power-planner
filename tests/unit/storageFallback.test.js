@@ -248,3 +248,129 @@ describe('SAFE_LOCAL_STORAGE quota handling', () => {
   });
 });
 
+describe('SAFE_LOCAL_STORAGE upgrade behaviour', () => {
+  let originalWindow;
+  let originalLocalStorageDescriptor;
+  let originalGlobalLocalStorage;
+
+  beforeEach(() => {
+    jest.resetModules();
+
+    originalWindow = typeof global.window === 'undefined' ? undefined : global.window;
+    if (!global.window) {
+      global.window = {};
+    }
+
+    originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(global.window, 'localStorage');
+    originalGlobalLocalStorage = global.localStorage;
+
+    Object.defineProperty(global.window, 'localStorage', {
+      configurable: true,
+      get() {
+        throw new Error('blocked');
+      },
+    });
+
+    if (!global.sessionStorage) {
+      const memoryStore = {};
+      global.sessionStorage = {
+        get length() {
+          return Object.keys(memoryStore).length;
+        },
+        key: jest.fn((index) => {
+          const keys = Object.keys(memoryStore);
+          return index >= 0 && index < keys.length ? keys[index] : null;
+        }),
+        getItem: jest.fn((key) =>
+          Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null,
+        ),
+        setItem: jest.fn((key, value) => {
+          memoryStore[key] = String(value);
+        }),
+        removeItem: jest.fn((key) => {
+          delete memoryStore[key];
+        }),
+        clear: jest.fn(() => {
+          Object.keys(memoryStore).forEach((key) => delete memoryStore[key]);
+        }),
+      };
+    }
+
+    Object.defineProperty(global.window, 'sessionStorage', {
+      configurable: true,
+      value: global.sessionStorage,
+    });
+
+    if (typeof global.sessionStorage.clear === 'function') {
+      global.sessionStorage.clear();
+    }
+  });
+
+  afterEach(() => {
+    jest.resetModules();
+
+    if (originalLocalStorageDescriptor) {
+      Object.defineProperty(global.window, 'localStorage', originalLocalStorageDescriptor);
+    } else if (global.window) {
+      delete global.window.localStorage;
+    }
+
+    if (originalGlobalLocalStorage !== undefined) {
+      global.localStorage = originalGlobalLocalStorage;
+    } else {
+      delete global.localStorage;
+    }
+
+    if (originalWindow === undefined) {
+      delete global.window;
+    } else {
+      global.window = originalWindow;
+    }
+  });
+
+  test('upgrades fallback storage to localStorage when it becomes available', () => {
+    const { saveFavorites, loadFavorites, getSafeLocalStorage } = require('../../src/scripts/storage');
+
+    saveFavorites({ cameraSelect: ['Alexa Mini'] });
+
+    const workingStore = (() => {
+      const memory = {};
+      return {
+        get length() {
+          return Object.keys(memory).length;
+        },
+        key: jest.fn((index) => {
+          const keys = Object.keys(memory);
+          return index >= 0 && index < keys.length ? keys[index] : null;
+        }),
+        getItem: jest.fn((key) => (Object.prototype.hasOwnProperty.call(memory, key) ? memory[key] : null)),
+        setItem: jest.fn((key, value) => {
+          memory[key] = String(value);
+        }),
+        removeItem: jest.fn((key) => {
+          delete memory[key];
+        }),
+        clear: jest.fn(() => {
+          Object.keys(memory).forEach((key) => delete memory[key]);
+        }),
+      };
+    })();
+
+    Object.defineProperty(global.window, 'localStorage', {
+      configurable: true,
+      value: workingStore,
+    });
+    global.localStorage = workingStore;
+
+    const upgraded = getSafeLocalStorage();
+
+    expect(upgraded).toBe(workingStore);
+    expect(workingStore.setItem).toHaveBeenCalledWith(
+      'cameraPowerPlanner_favorites',
+      JSON.stringify({ cameraSelect: ['Alexa Mini'] }),
+    );
+
+    expect(loadFavorites()).toEqual({ cameraSelect: ['Alexa Mini'] });
+  });
+});
+
