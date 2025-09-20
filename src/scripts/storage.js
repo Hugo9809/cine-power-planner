@@ -538,8 +538,13 @@ function loadDeviceData() {
     changed = true;
   }
 
-  if (changed && SAFE_LOCAL_STORAGE) {
-    SAFE_LOCAL_STORAGE.setItem(DEVICE_STORAGE_KEY, JSON.stringify(data));
+  if (changed) {
+    saveJSONToStorage(
+      SAFE_LOCAL_STORAGE,
+      DEVICE_STORAGE_KEY,
+      data,
+      "Error updating device data in localStorage during normalization:",
+    );
   }
 
   console.log("Device data loaded from localStorage.");
@@ -612,8 +617,13 @@ function loadSetups() {
     },
   );
   const { data: setups, changed } = normalizeSetups(parsedData);
-  if (changed && SAFE_LOCAL_STORAGE) {
-    SAFE_LOCAL_STORAGE.setItem(SETUP_STORAGE_KEY, JSON.stringify(setups));
+  if (changed) {
+    saveJSONToStorage(
+      SAFE_LOCAL_STORAGE,
+      SETUP_STORAGE_KEY,
+      setups,
+      "Error updating setups in localStorage during normalization:",
+    );
   }
   return setups;
 }
