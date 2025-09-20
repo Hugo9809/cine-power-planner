@@ -1810,7 +1810,11 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodStandard": "19mm",
           "rodLengthCm": 45,
           "needsLensSupport": true,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 1.2,
+          "weight_g": 7300,
+          "imageCircleMm": 31.4,
+          "lengthMm": 377.4
         },
         "LOMO Anamorphic RF 35mm T2.5": {
           "brand": "LOMO",
@@ -2255,10 +2259,14 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.28,
+          "weight_g": 1200,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 24mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2295,10 +2303,13 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 1000
         },
         "ARRI/ZEISS Ultra Prime 65mm T1.9": {
           "brand": "ARRI/ZEISS",
@@ -2315,10 +2326,14 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "frontDiameterMm": 95,
           "clampOn": true,
           "tStop": 1.9,
+          "mount": "PL",
           "rodStandard": "15mm",
           "rodLengthCm": 30,
           "needsLensSupport": false,
-          "lensType": "spherical"
+          "lensType": "spherical",
+          "minFocusMeters": 0.9,
+          "weight_g": 1200,
+          "lengthMm": 91
         },
         "ARRI/ZEISS Ultra Prime 100mm T1.9": {
           "brand": "ARRI/ZEISS",
