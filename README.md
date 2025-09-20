@@ -73,6 +73,7 @@ safe.
 - [Data Safety & Offline Operation](#data-safety--offline-operation)
 - [Data & Storage Overview](#data--storage-overview)
 - [Backup & Recovery](#backup--recovery)
+- [Operational Checklists](#operational-checklists)
 - [Gear Lists & Reporting](#gear-lists--reporting)
 - [Automatic Gear Rules](#automatic-gear-rules)
 - [Runtime Intelligence](#runtime-intelligence)
@@ -360,6 +361,58 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Compare before overwriting** – when restoring from an older file, download a
   fresh backup of the current state first. Use a JSON-aware diff tool to review
   differences so you can merge notes manually if needed.
+
+## Operational Checklists
+
+Use the following repeatable routines to keep projects, backups and offline
+assets in sync on every machine that runs Cine Power Planner. Each checklist is
+designed so crews can confirm that saving, sharing, importing, backup and
+restore paths all function before heading to set and again before wrapping. A
+print-friendly version lives in `docs/operations-checklist.md` for quick field
+reference.
+
+### Pre-shoot readiness
+
+1. **Confirm the right repository revision.** Open `index.html`, press the
+   **Force reload** button and verify the app reports the expected version in
+   **Settings → About**. Launch the legal pages once to warm up locally stored
+   Uicons, OpenMoji artwork and typography files.
+2. **Load critical projects.** Open the active production plan plus a recent
+   `auto-backup-…` snapshot. Confirm gear lists, runtime feedback and favorites
+   appear correctly in both.
+3. **Exercise the save pipeline.** Make a small edit, press `Enter` or
+   `Ctrl+S`/`⌘S` to save, then export a `planner-backup.json` file. Restore that
+   backup into a private browsing window or secondary profile and confirm the
+   project selector matches the source machine.
+4. **Test sharing flows.** Export a `.cpproject` bundle, import it into the
+   verification profile and ensure automatic gear rules, custom devices and the
+   offline indicator load as expected. Delete the profile afterwards.
+5. **Simulate no-connectivity operation.** Disconnect from the network or toggle
+   Airplane Mode, refresh the planner and confirm the offline badge appears,
+   icons stay crisp and previously verified projects remain accessible.
+6. **Archive sign-off artifacts.** Store the verified backup, bundle and a copy
+   of the repository ZIP on redundant media so the crew can rebuild the exact
+   environment even without internet access.
+
+### Wrap-day handoff
+
+1. **Capture a final manual backup.** With the project still open, export a
+   `planner-backup.json` file plus the latest `.cpproject` bundle and label them
+   with the date, location and shoot day.
+2. **Validate imports.** Restore both files on a verification machine to ensure
+   no corruption occurred during export. Keep the verification instance offline
+   to mimic field conditions.
+3. **Log changes for the archive.** Record which auto backups were promoted to
+   manual saves, which custom devices were added and which automatic gear rules
+   changed. Store the notes alongside the backups so future crews understand the
+   delta.
+4. **Refresh cached assets intentionally.** Once everything is archived, trigger
+   **Force reload** so the next session starts with current assets, then open the
+   help dialog and legal pages to recache any large documents before going
+   offline again.
+5. **Hand off redundant media.** Deliver encrypted copies of the backups,
+   bundles and repository snapshot to the production’s storage team and retain a
+   second copy per your organization’s data retention policy.
 
 ## Gear Lists & Reporting
 
