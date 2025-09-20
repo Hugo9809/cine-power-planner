@@ -8,6 +8,8 @@ const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
+const CUSTOM_FONT_STORAGE_KEY = 'cameraPowerPlanner_customFonts';
+const CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
@@ -907,22 +909,144 @@ function clearAllData() {
 }
 
 // --- Export/Import All Planner Data ---
-function exportAllData() {
-  return {
-    devices: loadDeviceData(),
-    setups: loadSetups(),
-    session: loadSessionState(),
-    feedback: loadFeedback(),
-    project: loadProject(),
-    favorites: loadFavorites(),
-    autoGearRules: loadAutoGearRules(),
-    autoGearBackups: loadAutoGearBackups(),
-    autoGearSeeded: loadAutoGearSeedFlag(),
-    autoGearPresets: loadAutoGearPresets(),
-    autoGearActivePresetId: loadAutoGearActivePresetId(),
-    autoGearShowBackups: loadAutoGearBackupVisibility(),
-  };
-}
+  function readLocalStorageValue(key) {
+    if (typeof localStorage === 'undefined') return null;
+    try {
+      const value = localStorage.getItem(key);
+      return value === null || value === undefined ? null : String(value);
+    } catch (error) {
+      console.warn('Unable to read localStorage key for backup', key, error);
+      return null;
+    }
+  }
+
+  function parseStoredBoolean(value) {
+    if (value === null) return null;
+    if (value === 'true' || value === '1') return true;
+    if (value === 'false' || value === '0') return false;
+    return null;
+  }
+
+  function collectPreferenceSnapshot() {
+    const preferences = {};
+
+    const darkMode = parseStoredBoolean(readLocalStorageValue('darkMode'));
+    if (darkMode !== null) {
+      preferences.darkMode = darkMode;
+    }
+
+    const pinkMode = parseStoredBoolean(readLocalStorageValue('pinkMode'));
+    if (pinkMode !== null) {
+      preferences.pinkMode = pinkMode;
+    }
+
+    const highContrast = parseStoredBoolean(readLocalStorageValue('highContrast'));
+    if (highContrast !== null) {
+      preferences.highContrast = highContrast;
+    }
+
+    const showAutoBackups = parseStoredBoolean(readLocalStorageValue('showAutoBackups'));
+    if (showAutoBackups !== null) {
+      preferences.showAutoBackups = showAutoBackups;
+    }
+
+    const accentColor = readLocalStorageValue('accentColor');
+    if (accentColor) {
+      preferences.accentColor = accentColor;
+    }
+
+    const fontSize = readLocalStorageValue('fontSize');
+    if (fontSize) {
+      preferences.fontSize = fontSize;
+    }
+
+    const fontFamily = readLocalStorageValue('fontFamily');
+    if (fontFamily) {
+      preferences.fontFamily = fontFamily;
+    }
+
+    const language = readLocalStorageValue('language');
+    if (language) {
+      preferences.language = language;
+    }
+
+    return preferences;
+  }
+
+  function normalizeCustomFontEntries(entries) {
+    if (!Array.isArray(entries)) {
+      return [];
+    }
+    return entries
+      .map((entry) => ({
+        id: entry && typeof entry.id === 'string' ? entry.id : null,
+        name: entry && typeof entry.name === 'string' ? entry.name : '',
+        data: entry && typeof entry.data === 'string' ? entry.data : '',
+      }))
+      .filter((entry) => entry.id && entry.name && entry.data);
+  }
+
+  function readStoredCustomFonts() {
+    const raw = readLocalStorageValue(CUSTOM_FONT_STORAGE_KEY);
+    if (!raw) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      return normalizeCustomFontEntries(parsed);
+    } catch (error) {
+      console.warn('Failed to parse stored custom fonts for backup', error);
+      return [];
+    }
+  }
+
+  function exportAllData() {
+    const payload = {
+      devices: loadDeviceData(),
+      setups: loadSetups(),
+      session: loadSessionState(),
+      feedback: loadFeedback(),
+      project: loadProject(),
+      favorites: loadFavorites(),
+      autoGearRules: loadAutoGearRules(),
+      autoGearBackups: loadAutoGearBackups(),
+      autoGearSeeded: loadAutoGearSeedFlag(),
+      autoGearPresets: loadAutoGearPresets(),
+      autoGearActivePresetId: loadAutoGearActivePresetId(),
+      autoGearShowBackups: loadAutoGearBackupVisibility(),
+    };
+
+    const preferences = collectPreferenceSnapshot();
+    if (Object.keys(preferences).length) {
+      payload.preferences = preferences;
+    }
+
+    const customLogo = readLocalStorageValue(CUSTOM_LOGO_STORAGE_KEY);
+    if (customLogo) {
+      payload.customLogo = customLogo;
+    }
+
+    const customFonts = readStoredCustomFonts();
+    if (customFonts.length) {
+      payload.customFonts = customFonts;
+    }
+
+    return payload;
+  }
+
+  function safeSetLocalStorage(key, value) {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      if (value === null || value === undefined) {
+        localStorage.removeItem(key);
+      } else {
+        localStorage.setItem(key, String(value));
+      }
+    } catch (error) {
+      console.warn('Unable to persist localStorage key during import', key, error);
+    }
+  }
 
 function importAllData(allData) {
   if (!isPlainObject(allData)) {
@@ -941,12 +1065,50 @@ function importAllData(allData) {
   if (allData.feedback) {
     saveFeedback(allData.feedback);
   }
-  if (allData.favorites) {
-    saveFavorites(allData.favorites);
-  }
-  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
-    saveAutoGearRules(allData.autoGearRules);
-  }
+    if (allData.favorites) {
+      saveFavorites(allData.favorites);
+    }
+    if (isPlainObject(allData.preferences)) {
+      const prefs = allData.preferences;
+      const booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups'];
+      booleanPrefs.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
+          safeSetLocalStorage(key, prefs[key]);
+        }
+      });
+      const stringPrefs = ['accentColor', 'fontSize', 'fontFamily', 'language'];
+      stringPrefs.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(prefs, key)) {
+          const value = prefs[key];
+          if (typeof value === 'string' && value) {
+            safeSetLocalStorage(key, value);
+          }
+        }
+      });
+    }
+    if (Object.prototype.hasOwnProperty.call(allData, 'customLogo')) {
+      const logo = allData.customLogo;
+      if (typeof logo === 'string' && logo) {
+        safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, logo);
+      } else {
+        safeSetLocalStorage(CUSTOM_LOGO_STORAGE_KEY, null);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(allData, 'customFonts')) {
+      const fonts = normalizeCustomFontEntries(allData.customFonts);
+      if (fonts.length) {
+        try {
+          safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, JSON.stringify(fonts));
+        } catch (error) {
+          console.warn('Unable to store imported custom fonts', error);
+        }
+      } else {
+        safeSetLocalStorage(CUSTOM_FONT_STORAGE_KEY, null);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
+      saveAutoGearRules(allData.autoGearRules);
+    }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
     saveAutoGearBackups(allData.autoGearBackups);
   }
