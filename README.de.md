@@ -2,7 +2,7 @@
 
 Dieses browserbasierte Werkzeug hilft dir bei der Planung professioneller Kamera-Setups mit V‑Mount-, B‑Mount- oder Gold-Mount-Akkus. Es berechnet den **Gesamtverbrauch**, die **Stromaufnahme** (bei 14,4 V und 12 V) sowie die **geschätzte Laufzeit** und prüft gleichzeitig, ob der Akku die benötigte Leistung zuverlässig liefern kann.
 
-Sämtliche Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheinstellungen, Projekte, eigene Geräte, Favoriten und Laufzeit-Feedback werden im Browser gespeichert, und Service-Worker-Updates stammen direkt aus diesem Repository. Du kannst den Planner offline von der lokalen Festplatte öffnen oder intern hosten, damit jede Abteilung dieselbe geprüfte Version nutzt.
+Sämtliche Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheinstellungen, Projekte, eigene Geräte, Favoriten und Laufzeit-Feedback werden im Browser gespeichert, und Service-Worker-Updates stammen direkt aus diesem Repository. Du kannst Cine Power Planner offline von der lokalen Festplatte öffnen oder intern hosten, damit jede Abteilung dieselbe geprüfte Version nutzt.
 
 ---
 
@@ -53,11 +53,11 @@ Beim ersten Start übernimmt die Anwendung automatisch die Sprache deines Browse
 - **Komplexe Rigs ohne Ratespiel bauen.** Kombiniere Kameras, Akkuplatten, Funkstrecken, Monitore, Motoren und Zubehör und verfolge Gesamtverbrauch sowie Stromaufnahme bei 14,4 V/12 V (bzw. 33,6 V/21,6 V bei B‑Mount) mit realistischen Laufzeiten aus gewichteten Felddaten. Das Batterie-Vergleichspanel warnt vor Überlastungen, bevor falsches Equipment eingepackt wird.
 - **Alle Gewerke auf Stand halten.** Speichere mehrere Projekte mit Anforderungen, Crew-Kontakten, Szenarien und Notizen. Druckbare Gerätelisten gruppieren Equipment nach Kategorie, führen Duplikate zusammen, zeigen technische Metadaten und berücksichtigen Szenario-Zubehör, damit Kamera-, Licht- und Grip-Teams synchron bleiben.
 - **Überall produktiv arbeiten.** Öffne `index.html` direkt oder liefere den Ordner über HTTPS aus, um den Service Worker zu aktivieren. Offline-Caching bewahrt Sprache, Themes, Favoriten und Projekte, und **Neu laden erzwingen** aktualisiert Assets, ohne gespeicherte Daten anzutasten.
-- **Planner auf das Team zuschneiden.** Wechsle sofort zwischen Deutsch, Englisch, Spanisch, Italienisch und Französisch, passe Schriftgröße und -familie an, wähle eine eigene Akzentfarbe, lade ein Drucklogo hoch und schalte zwischen hellem, dunklem, pinkem oder kontrastreichem Theme. Tippen-zum-Suchen, angepinnte Favoriten, Duplizieren-Buttons und Hover-Hilfe sparen Zeit am Set.
+- **Cine Power Planner auf das Team zuschneiden.** Wechsle sofort zwischen Deutsch, Englisch, Spanisch, Italienisch und Französisch, passe Schriftgröße und -familie an, wähle eine eigene Akzentfarbe, lade ein Drucklogo hoch und schalte zwischen hellem, dunklem, pinkem oder kontrastreichem Theme. Tippen-zum-Suchen, angepinnte Favoriten, Duplizieren-Buttons und Hover-Hilfe sparen Zeit am Set.
 
 ### ✅ Projektverwaltung
 - Speichere, lade und lösche mehrere Kameraprojekte (drücke Enter oder Strg+S/⌘S zum schnellen Speichern; der Button bleibt deaktiviert, bis ein Name eingetragen ist).
-- Alle zehn Minuten entstehen automatisch Sicherungsschnappschüsse, solange der Planner geöffnet ist; im Einstellungsdialog lassen sich stündliche Backup-Exporte als Erinnerung aktivieren.
+- Alle zehn Minuten entstehen automatisch Sicherungsschnappschüsse, solange Cine Power Planner geöffnet ist; im Einstellungsdialog lassen sich stündliche Backup-Exporte als Erinnerung aktivieren.
 - Lade eine JSON-Datei herunter, die Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigene Geräte bündelt; über den Import-Picker holst du alles in einem Schritt zurück.
 - Die Daten liegen lokal im `localStorage`, Favoriten landen ebenfalls in Backups; die Option **Werkseinstellungen** legt vor dem Zurücksetzen automatisch eine Sicherung ab.
 - Erstelle druckbare Übersichten für jedes gespeicherte Projekt und füge ein individuelles Logo hinzu, damit Exporte und Backups zum Produktionsbranding passen.
@@ -217,7 +217,7 @@ Der Generator verwandelt deine Auswahl in eine nach Kategorien sortierte Packlis
 
 ## 📱 Als Anwendung installieren
 
-Der Planner ist eine Progressive-Web-App und lässt sich direkt aus dem Browser installieren:
+Cine Power Planner ist eine Progressive-Web-App und lässt sich direkt aus dem Browser installieren:
 
 - **Chrome/Edge (Desktop):** Auf das Installationssymbol in der Adressleiste klicken.
 - **Android:** Browsermenü öffnen und *Zum Startbildschirm hinzufügen* wählen.

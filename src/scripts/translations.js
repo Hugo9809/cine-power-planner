@@ -806,12 +806,12 @@ const texts = {
     skipToContent: "Vai al contenuto",
     offlineIndicator: "Non in linea",
     offlineIndicatorHelp:
-      "Compare quando il planner è offline. Tutti i progetti, i backup e i dati dei dispositivi restano salvati su questo dispositivo così puoi continuare a lavorare.",
+      "Compare quando l’app è offline. Tutti i progetti, i backup e i dati dei dispositivi restano salvati su questo dispositivo così puoi continuare a lavorare.",
     installBannerText: "Installa Cine Power Planner sul tuo dispositivo per un accesso rapido.",
     installHelpTitleIos: "Installa Cine Power Planner su iOS",
     installHelpTitleAndroid: "Installa Cine Power Planner su Android",
-    installHelpIntroIos: "Aggiungi il planner alla schermata Home per usarlo come un'app.",
-    installHelpIntroAndroid: "Aggiungi il planner alla schermata Home per usarlo come un'app.",
+    installHelpIntroIos: "Aggiungi Cine Power Planner alla schermata Home per usarlo come app.",
+    installHelpIntroAndroid: "Aggiungi Cine Power Planner alla schermata Home per usarlo come app.",
     installHelpStepsIos: [
       "Apri Cine Power Planner in Safari.",
       "Tocca il pulsante Condividi.",
@@ -871,9 +871,9 @@ const texts = {
     pinkModeLabel: "Attiva modalità rosa",
     menuToggleLabel: "Menu",
     menuToggleHelp:
-      "Apri la barra laterale per raggiungere rapidamente le sezioni del planner o mostrare i controlli sugli schermi piccoli. Premi di nuovo per chiuderla.",
+      "Apri la barra laterale per raggiungere rapidamente le sezioni dell’app o mostrare i controlli sugli schermi piccoli. Premi di nuovo per chiuderla.",
     sideMenuHelp:
-      "Navigazione laterale con le sezioni del planner. Seleziona una sezione per scorrere fino a essa e chiudere automaticamente il menu.",
+      "Navigazione laterale con le sezioni dell’app. Seleziona una sezione per scorrere fino a essa e chiudere automaticamente il menu.",
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
@@ -1375,7 +1375,7 @@ const texts = {
     autoGearCancelEdit: "Annulla",
     autoGearResetFactoryButton: "Ripristina aggiunte di fabbrica",
     autoGearResetFactoryHelp:
-      "Ripristina le regole automatiche generate dagli scenari predefiniti del planner.",
+      "Ripristina le regole automatiche generate dagli scenari predefiniti dell’app.",
     autoGearResetFactoryConfirm:
       "Sostituire le regole automatiche con le aggiunte predefinite?",
     autoGearResetFactoryDone:
@@ -1449,13 +1449,13 @@ const texts = {
       "Carica uno snapshot JSON esportato in precedenza per ripristinare dati e impostazioni.",
     factoryResetButton: "Ripristino di fabbrica",
     factoryResetButtonHelp:
-      "Crea un backup e cancella tutti i dati del planner dopo la conferma.",
-    confirmFactoryReset: "Creare un backup e cancellare tutti i dati del planner?",
+      "Crea un backup e cancella tutti i dati dell’app dopo la conferma.",
+    confirmFactoryReset: "Creare un backup e cancellare tutti i dati dell’app?",
     confirmFactoryResetAgain:
       "Ultimo avviso: tutti i progetti, dispositivi, impostazioni e feedback salvati verranno eliminati. Continuare?",
     factoryResetBackupFailed: "Backup non riuscito. I dati non sono stati eliminati.",
     factoryResetSuccess:
-      "Backup scaricato. Tutti i dati del planner sono stati cancellati. Ricaricamento in corso…",
+      "Backup scaricato. Tutti i dati dell’app sono stati cancellati. Ricaricamento in corso…",
     factoryResetError: "Ripristino di fabbrica non riuscito. Riprova.",
     preDeleteBackupSuccess:
       "Backup automatico salvato. Puoi ripristinarlo da Progetti salvati.",
@@ -1468,7 +1468,7 @@ const texts = {
       "Tutto ciò che segue rimane in questo browser finché non lo esporti o lo elimini.",
     storageSummaryFootnote:
       "I backup scaricano ogni voce in JSON leggibile.",
-    storageSummaryEmpty: "Nessun dato del planner è attualmente salvato.",
+    storageSummaryEmpty: "Nessun dato dell’app è attualmente salvato.",
     storageKeyProjects: "Progetti salvati",
     storageKeyProjectsDesc: "Configurazioni salvate da Gestione progetto.",
     storageProjectsCountOne: "%s progetto",
@@ -1518,7 +1518,7 @@ const texts = {
     helpButtonTitle: "Aiuto (premi ?, H, F1 o Ctrl+/)",
     helpButtonHelp: "Apri la finestra di aiuto (premi ?, H, F1 o Ctrl+/).",
     helpClose: "Chiudi (Esc)",
-    helpCloseHelp: "Chiudi la finestra di aiuto e torna al planner (premi Esc).",
+    helpCloseHelp: "Chiudi la finestra di aiuto e torna all’app (premi Esc).",
     helpTitle: "Come usare",
     helpSearchPlaceholder: "Cerca negli argomenti dell'aiuto...",
     helpSearchLabel: "Cerca negli argomenti dell'aiuto",
@@ -1584,8 +1584,8 @@ const texts = {
     installBannerText: "Instala Cine Power Planner en tu dispositivo para acceder rápidamente.",
     installHelpTitleIos: "Instala Cine Power Planner en iOS",
     installHelpTitleAndroid: "Instala Cine Power Planner en Android",
-    installHelpIntroIos: "Añade el planner a la pantalla de inicio para usarlo como una aplicación.",
-    installHelpIntroAndroid: "Añade el planner a la pantalla de inicio para usarlo como una aplicación.",
+    installHelpIntroIos: "Añade Cine Power Planner a la pantalla de inicio para usarlo como una aplicación.",
+    installHelpIntroAndroid: "Añade Cine Power Planner a la pantalla de inicio para usarlo como una aplicación.",
     installHelpStepsIos: [
       "Abre Cine Power Planner en Safari.",
       "Toca el botón Compartir.",
@@ -2373,8 +2373,8 @@ const texts = {
     installBannerText: "Installez Cine Power Planner sur votre appareil pour un accès rapide.",
     installHelpTitleIos: "Installer Cine Power Planner sur iOS",
     installHelpTitleAndroid: "Installer Cine Power Planner sur Android",
-    installHelpIntroIos: "Ajoutez le planner à votre écran d’accueil pour l’utiliser comme une application.",
-    installHelpIntroAndroid: "Ajoutez le planner à votre écran d’accueil pour l’utiliser comme une application.",
+    installHelpIntroIos: "Ajoutez Cine Power Planner à votre écran d’accueil pour l’utiliser comme une application.",
+    installHelpIntroAndroid: "Ajoutez Cine Power Planner à votre écran d’accueil pour l’utiliser comme une application.",
     installHelpStepsIos: [
       "Ouvrez Cine Power Planner dans Safari.",
       "Touchez le bouton Partager.",
@@ -3163,8 +3163,8 @@ const texts = {
     installBannerText: "Installiere Cine Power Planner auf deinem Gerät für schnellen Zugriff.",
     installHelpTitleIos: "Cine Power Planner auf iOS installieren",
     installHelpTitleAndroid: "Cine Power Planner auf Android installieren",
-    installHelpIntroIos: "Füge den Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
-    installHelpIntroAndroid: "Füge den Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
+    installHelpIntroIos: "Füge Cine Power Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
+    installHelpIntroAndroid: "Füge Cine Power Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",
     installHelpStepsIos: [
       "Öffne Cine Power Planner in Safari.",
       "Tippe auf die Teilen-Taste.",
@@ -3658,7 +3658,7 @@ const texts = {
       "Bestimme die Grundschriftgröße für bessere Lesbarkeit oder mehr Platz auf dem Bildschirm.",
     fontFamilySetting: "Schrift",
     fontFamilySettingHelp:
-      "Wähle die im Planner verwendete Schrift. Hinzugefügte lokale Fonts erscheinen in der Liste.",
+      "Wähle die im Planer verwendete Schrift. Hinzugefügte lokale Fonts erscheinen in der Liste.",
     bundledFontsGroup: "Mitgelieferte Schriften",
     localFontsGroup: "Lokale Schriften",
     localFontsButton: "Lokale Schrift hinzufügen…",
@@ -3743,7 +3743,7 @@ const texts = {
     autoGearCancelEdit: "Abbrechen",
     autoGearResetFactoryButton: "Auf Werks-Ergänzungen zurücksetzen",
     autoGearResetFactoryHelp:
-      "Stellt die automatisch erzeugten Regeln aus den Standardszenarien des Planners wieder her.",
+      "Stellt die automatisch erzeugten Regeln aus den Standardszenarien des Planers wieder her.",
     autoGearResetFactoryConfirm:
       "Automatische Gear-Regeln durch die Standard-Ergänzungen ersetzen?",
     autoGearResetFactoryDone:
@@ -3817,13 +3817,13 @@ const texts = {
       "Importiere eine zuvor exportierte JSON-Sicherung, um Daten und Einstellungen wiederherzustellen.",
     factoryResetButton: "Werkseinstellungen",
     factoryResetButtonHelp:
-      "Erstellt ein Backup und löscht nach Bestätigung alle Planner-Daten.",
-    confirmFactoryReset: "Backup erstellen und alle Planner-Daten löschen?",
+      "Erstellt ein Backup und löscht nach Bestätigung alle Planer-Daten.",
+    confirmFactoryReset: "Backup erstellen und alle Planer-Daten löschen?",
     confirmFactoryResetAgain:
       "Letzte Warnung: Alle gespeicherten Projekte, Geräte, Einstellungen und Rückmeldungen werden gelöscht. Fortfahren?",
     factoryResetBackupFailed: "Backup fehlgeschlagen. Daten wurden nicht gelöscht.",
     factoryResetSuccess:
-      "Backup heruntergeladen. Alle Planner-Daten wurden gelöscht. Seite wird neu geladen…",
+      "Backup heruntergeladen. Alle Planer-Daten wurden gelöscht. Seite wird neu geladen…",
     factoryResetError: "Zurücksetzen auf Werkseinstellungen fehlgeschlagen. Bitte erneut versuchen.",
     preDeleteBackupSuccess:
       "Automatische Sicherung gespeichert. Du kannst sie in Gespeicherte Projekte wiederherstellen.",
@@ -3831,12 +3831,12 @@ const texts = {
     restoreBackupFailed: "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
     dataHeading: "Daten & Speicherung",
     dataHeadingHelp:
-      "Zeigt, welche Planner-Daten lokal gespeichert sind und wie groß Sicherungen werden.",
+      "Zeigt, welche Planer-Daten lokal gespeichert sind und wie groß Sicherungen werden.",
     storageSummaryIntro:
       "Alles unten bleibt in diesem Browser, bis du es exportierst oder löschst.",
     storageSummaryFootnote:
       "Backups laden jede Position als gut lesbares JSON herunter.",
-    storageSummaryEmpty: "Derzeit sind keine Planner-Daten gespeichert.",
+    storageSummaryEmpty: "Derzeit sind keine Planer-Daten gespeichert.",
     storageKeyProjects: "Gespeicherte Projekte",
     storageKeyProjectsDesc: "Konfigurationen aus Projekt verwalten.",
     storageProjectsCountOne: "%s Projekt",

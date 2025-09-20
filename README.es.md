@@ -2,7 +2,7 @@
 
 Esta herramienta basada en navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada** mientras comprueba que la batería pueda suministrar con seguridad la potencia necesaria.
 
-Toda la planificación, las entradas y las exportaciones permanecen en tu dispositivo. El idioma, los proyectos, el equipo personalizado, los favoritos y los comentarios de autonomía se guardan en tu navegador, y las actualizaciones del service worker provienen directamente de este repositorio. Ejecuta el planner sin conexión desde el disco o aloja la carpeta internamente para que cada departamento use la misma versión auditada.
+Toda la planificación, las entradas y las exportaciones permanecen en tu dispositivo. El idioma, los proyectos, el equipo personalizado, los favoritos y los comentarios de autonomía se guardan en tu navegador, y las actualizaciones del service worker provienen directamente de este repositorio. Ejecuta Cine Power Planner sin conexión desde el disco o aloja la carpeta internamente para que cada departamento use la misma versión auditada.
 
 ---
 
@@ -53,11 +53,11 @@ La aplicación adopta automáticamente el idioma de tu navegador en la primera v
 - **Diseña rigs complejos sin adivinar.** Combina cámaras, placas de batería, enlaces inalámbricos, monitores, motores y accesorios mientras supervisas el consumo total a 14,4 V/12 V (y 33,6 V/21,6 V en B‑Mount) junto a autonomías realistas basadas en datos de campo ponderados. El panel de comparación de baterías avisa de sobrecargas antes de que el equipo salga al rodaje.
 - **Mantén coordinados a todos los departamentos.** Guarda varios proyectos con requisitos, contactos del equipo, escenarios y notas. Las listas imprimibles agrupan el material por categoría, fusionan duplicados, muestran metadatos técnicos e incluyen accesorios condicionados por los escenarios para que cámara, iluminación y grip trabajen con el mismo contexto.
 - **Trabaja con seguridad estés donde estés.** Abre `index.html` directamente o sirve la carpeta por HTTPS para activar el service worker. La caché sin conexión conserva idioma, temas, favoritos y proyectos, y **Forzar recarga** actualiza los recursos almacenados sin tocar tus datos.
-- **Ajusta el planner a tu equipo.** Cambia al instante entre español, inglés, alemán, italiano y francés, ajusta el tamaño de la fuente y la tipografía, define un color de acento, sube un logotipo para impresión y alterna entre temas claro, oscuro, rosa o de alto contraste. Los selectores con búsqueda, los favoritos fijados, los botones de duplicar y las ayudas flotantes mantienen ágil el trabajo en set.
+- **Ajusta Cine Power Planner a tu equipo.** Cambia al instante entre español, inglés, alemán, italiano y francés, ajusta el tamaño de la fuente y la tipografía, define un color de acento, sube un logotipo para impresión y alterna entre temas claro, oscuro, rosa o de alto contraste. Los selectores con búsqueda, los favoritos fijados, los botones de duplicar y las ayudas flotantes mantienen ágil el trabajo en set.
 
 ### ✅ Gestión de proyectos
 - Guarda, carga y elimina múltiples proyectos (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
-- Se generan instantáneas automáticas cada 10 minutos mientras el planner está abierto, y el cuadro de Ajustes puede lanzar exportaciones de copias de seguridad cada hora como recordatorio.
+- Se generan instantáneas automáticas cada 10 minutos mientras Cine Power Planner está abierto, y el cuadro de Ajustes puede lanzar exportaciones de copias de seguridad cada hora como recordatorio.
 - Descarga un archivo JSON que reúne selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; impórtalo mediante el selector de proyectos para recuperarlo todo de una vez.
 - Los datos se guardan localmente mediante `localStorage`, y los favoritos se incluyen en las copias de seguridad; usa la opción **Restablecimiento de fábrica** para descargar automáticamente una copia antes de limpiar proyectos y dispositivos guardados.
 - Genera vistas imprimibles de cualquier proyecto y añade un logotipo personalizado para que exportaciones y copias coincidan con tu identidad de producción.
@@ -217,7 +217,7 @@ El generador convierte tus selecciones en una lista de empaque categorizada:
 
 ## 📱 Instalar como aplicación
 
-El planner es una aplicación web progresiva y puede instalarse directamente desde el navegador:
+Cine Power Planner es una aplicación web progresiva y puede instalarse directamente desde el navegador:
 
 - **Chrome/Edge (escritorio):** haz clic en el icono de instalación de la barra de direcciones.
 - **Android:** abre el menú del navegador y elige *Añadir a pantalla de inicio*.
