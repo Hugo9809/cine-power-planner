@@ -3911,9 +3911,9 @@ var LOAD_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/20
 var RESET_VIEW_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <g\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <line x1=\"12\" y1=\"4.75\" x2=\"12\" y2=\"9.75\" />\n      <polyline points=\"10.75 8.5 12 9.75 13.25 8.5\" />\n      <line x1=\"12\" y1=\"19.25\" x2=\"12\" y2=\"14.25\" />\n      <polyline points=\"10.75 15.5 12 14.25 13.25 15.5\" />\n      <line x1=\"4.75\" y1=\"12\" x2=\"9.75\" y2=\"12\" />\n      <polyline points=\"8.5 10.75 9.75 12 8.5 13.25\" />\n      <line x1=\"19.25\" y1=\"12\" x2=\"14.25\" y2=\"12\" />\n      <polyline points=\"15.5 10.75 14.25 12 15.5 13.25\" />\n    </g>\n    <circle cx=\"12\" cy=\"12\" r=\"1.35\" fill=\"currentColor\" />\n  </svg>\n".trim();
 var PRODUCTION_COMPANY_ICON = iconGlyph("\uE2D5", ICON_FONT_KEYS.UICONS);
 var RENTAL_HOUSE_ICON = iconGlyph("\uEA09", ICON_FONT_KEYS.UICONS);
-var ASPECT_RATIO_ICON = iconGlyph("\uE71D", ICON_FONT_KEYS.UICONS);
+var ASPECT_RATIO_ICON = iconGlyph("\uE86E", ICON_FONT_KEYS.UICONS);
 var REQUIRED_SCENARIOS_ICON = iconGlyph("\uF4D4", ICON_FONT_KEYS.UICONS);
-var MONITORING_SUPPORT_ICON = iconGlyph("\uEF0F", ICON_FONT_KEYS.UICONS);
+var MONITORING_SUPPORT_ICON = iconGlyph("\uEFFC", ICON_FONT_KEYS.UICONS);
 var STAR_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n    <path\n      d=\"M12 17.25 6.545 20.2 7.9 13.975 3 9.45l6.272-.7L12 3l2.728 5.75L21 9.45l-4.9 4.525 1.355 6.225Z\"\n      fill=\"currentColor\"\n      stroke=\"currentColor\"\n      stroke-width=\"0\"\n    />\n  </svg>\n".trim();
 var ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph("\uE1A6", ICON_FONT_KEYS.UICONS),
@@ -4616,12 +4616,12 @@ var projectFieldIcons = {
   crew: iconGlyph("\uF404", ICON_FONT_KEYS.UICONS),
   prepDays: iconGlyph("\uE312", ICON_FONT_KEYS.UICONS),
   shootingDays: iconGlyph("\uE311", ICON_FONT_KEYS.UICONS),
-  deliveryResolution: iconGlyph("\uE5BA", ICON_FONT_KEYS.UICONS),
+  deliveryResolution: iconGlyph("\uEF69", ICON_FONT_KEYS.UICONS),
   recordingResolution: ICON_GLYPHS.camera,
   aspectRatio: ASPECT_RATIO_ICON,
-  codec: iconGlyph("\uE7C9", ICON_FONT_KEYS.UICONS),
+  codec: iconGlyph("\uE7A6", ICON_FONT_KEYS.UICONS),
   baseFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),
-  sensorMode: iconGlyph("\uF034", ICON_FONT_KEYS.UICONS),
+  sensorMode: iconGlyph("\uF037", ICON_FONT_KEYS.UICONS),
   requiredScenarios: REQUIRED_SCENARIOS_ICON,
   lenses: iconGlyph("\uE0A3", ICON_FONT_KEYS.UICONS),
   cameraHandle: iconGlyph("\uF2DC", ICON_FONT_KEYS.UICONS),
