@@ -4502,7 +4502,7 @@ var projectFieldIcons = {
   monitoringConfiguration: iconGlyph("\uF0D0", ICON_FONT_KEYS.UICONS),
   monitorUserButtons: iconGlyph("\uF0D1", ICON_FONT_KEYS.UICONS),
   cameraUserButtons: iconGlyph("\uF0D1", ICON_FONT_KEYS.UICONS),
-  viewfinderUserButtons: iconGlyph("\uF0D2", ICON_FONT_KEYS.UICONS)
+  viewfinderUserButtons: iconGlyph("\uF0D1", ICON_FONT_KEYS.UICONS)
 };
 function setButtonLabelWithIcon(button, label) {
   var glyph = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ICON_GLYPHS.save;
