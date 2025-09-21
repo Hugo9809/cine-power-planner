@@ -66,6 +66,35 @@ describe('applyAutoGearRulesToTableHtml', () => {
     }
   });
 
+  test('rule editor selectors allow multiple choices and show expanded lists', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    const selectorIds = [
+      'autoGearScenarios',
+      'autoGearMattebox',
+      'autoGearCameraHandle',
+      'autoGearViewfinderExtension',
+      'autoGearVideoDistribution',
+      'autoGearCamera',
+      'autoGearMonitor',
+      'autoGearWireless',
+      'autoGearMotors',
+      'autoGearControllers',
+      'autoGearDistance',
+    ];
+
+    selectorIds.forEach(id => {
+      const select = document.getElementById(id);
+      expect(select).not.toBeNull();
+      if (!select) return;
+      expect(select.multiple).toBe(true);
+      const visibleRows = Number.parseInt(select.getAttribute('size') || '0', 10);
+      expect(visibleRows).toBeGreaterThanOrEqual(8);
+    });
+  });
+
   test('removes matching gear without duplicating categories', () => {
     localStorage.setItem(
       STORAGE_KEY,

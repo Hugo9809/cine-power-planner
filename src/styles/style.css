@@ -1645,11 +1645,23 @@ body.pink-mode .auto-gear-rule-title,
   vertical-align: top;
 }
 
-.auto-gear-selector {
+.auto-gear-selector,
+.auto-gear-multiselect {
   width: 100%;
   height: auto;
   max-height: 18rem;
   overflow-y: auto;
+}
+
+.auto-gear-multiselect {
+  min-height: 14rem;
+  max-height: min(24rem, 60vh);
+}
+
+@media (max-width: 640px) {
+  .auto-gear-multiselect {
+    min-height: 12rem;
+  }
 }
 
 .auto-gear-selector-hint {
