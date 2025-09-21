@@ -5334,7 +5334,7 @@ const projectFieldIcons = {
   deliveryResolution: iconGlyph('\uEF69', ICON_FONT_KEYS.UICONS),
   recordingResolution: ICON_GLYPHS.camera,
   aspectRatio: ASPECT_RATIO_ICON,
-  codec: iconGlyph('\uE7A6', ICON_FONT_KEYS.UICONS),
+  codec: ICON_GLYPHS.timecode,
   baseFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
   sensorMode: ICON_GLYPHS.sensor,
   requiredScenarios: REQUIRED_SCENARIOS_ICON,
