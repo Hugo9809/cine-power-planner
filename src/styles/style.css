@@ -2322,7 +2322,9 @@ button {
 
 .share-import-group button {
   margin: 0;
-  align-self: center;
+  flex: 1 1 100%;
+  width: 100%;
+  align-self: stretch;
 }
 button:hover {
   background-color: var(--control-hover-bg);
