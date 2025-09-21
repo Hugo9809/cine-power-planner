@@ -6463,6 +6463,7 @@ let lastSharedSetupData = null;
 let lastSharedAutoGearRules = null;
 let sharedImportPreviousPresetId = '';
 let sharedImportProjectPresetActive = false;
+let sharedImportPreparedForImport = false;
 
 function cloneSharedImportValue(value) {
   if (value == null) return null;
@@ -6482,6 +6483,7 @@ function storeSharedImportData(data, rules) {
 function clearStoredSharedImportData() {
   lastSharedSetupData = null;
   lastSharedAutoGearRules = null;
+  sharedImportPreparedForImport = false;
 }
 
 function resetSharedImportStateForFactoryReset() {
@@ -6649,6 +6651,8 @@ function processSharedProjectData(data) {
     sharedImportPromptActive = false;
     const parsed = typeof data === 'string' ? JSON.parse(data) : data;
     const sharedRules = Array.isArray(parsed.autoGearRules) ? parsed.autoGearRules : null;
+    sharedImportPreparedForImport = false;
+    prepareSharedImportContext();
     storeSharedImportData(parsed, sharedRules);
     const hasRules = configureSharedImportOptions(sharedRules);
     const shouldPrompt = hasRules && sharedImportRulesDiffer(sharedRules) && !!sharedImportDialog;
@@ -6676,6 +6680,56 @@ function readSharedProjectFile(file) {
     alert(texts[currentLang].invalidSharedLink);
   };
   reader.readAsText(file);
+}
+
+function prepareSharedImportContext() {
+  if (sharedImportPreparedForImport) {
+    return;
+  }
+  sharedImportPreparedForImport = true;
+
+  try {
+    if (typeof scheduleProjectAutoSave === 'function') {
+      scheduleProjectAutoSave(true);
+    } else if (typeof saveCurrentSession === 'function') {
+      saveCurrentSession();
+      if (typeof saveCurrentGearList === 'function') {
+        saveCurrentGearList();
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to persist current project before shared import', error);
+  }
+
+  let selectionCleared = false;
+  if (setupSelect && typeof setupSelect.dispatchEvent === 'function') {
+    try {
+      const currentValue = typeof setupSelect.value === 'string' ? setupSelect.value : '';
+      const typedName = setupNameInput && typeof setupNameInput.value === 'string'
+        ? setupNameInput.value.trim()
+        : '';
+      const previousSelection = typeof lastSetupName === 'string' ? lastSetupName : '';
+      const shouldDispatch = Boolean(currentValue || previousSelection || typedName);
+      setupSelect.value = '';
+      if (shouldDispatch) {
+        setupSelect.dispatchEvent(new Event('change'));
+      }
+      selectionCleared = true;
+    } catch (error) {
+      console.warn('Failed to reset setup selection before shared import', error);
+    }
+  }
+
+  if (selectionCleared && setupNameInput) {
+    try {
+      if (setupNameInput.value) {
+        setupNameInput.value = '';
+        setupNameInput.dispatchEvent(new Event('input'));
+      }
+    } catch (error) {
+      console.warn('Failed to reset setup name before shared import', error);
+    }
+  }
 }
 
 function reapplySharedImportSelection() {
