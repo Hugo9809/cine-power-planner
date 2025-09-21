@@ -63,6 +63,8 @@ La aplicación adopta automáticamente el idioma de tu navegador en la primera v
 ---
 
 ## 🆕 Novedades recientes
+- Las reglas automáticas de equipo permiten definir adiciones o retiradas según el escenario, exportarlas y restaurarlas junto con los paquetes compartidos.
+- El panel de datos y almacenamiento revisa proyectos guardados, listas, dispositivos personalizados, favoritos y comentarios de autonomía desde Ajustes.
 - Los controles de acento y tipografía en Ajustes permiten definir el color de acento, el tamaño base y la familia tipográfica junto con los temas oscuro, rosa y de alto contraste.
 - Los atajos de teclado de la búsqueda global enfocan el campo al instante con / o Ctrl+K (⌘K en macOS), incluso cuando está dentro del menú lateral móvil contraído.
 - El botón **Forzar recarga** vacía los archivos en caché del service worker para que la aplicación sin conexión se actualice sin borrar proyectos ni dispositivos guardados.

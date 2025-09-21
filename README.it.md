@@ -61,6 +61,8 @@ Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dal
 ---
 
 ## 🆕 Novità
+- Le regole automatiche dell'attrezzatura consentono di definire aggiunte o rimozioni guidate dallo scenario, esportarle e ripristinarle insieme ai bundle condivisi.
+- Il cruscotto Dati e archiviazione controlla progetti salvati, elenchi, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente nelle Impostazioni.
 - I controlli di accento e tipografia nelle Impostazioni consentono di regolare colore, dimensione base e famiglia del font insieme ai temi scuro, rosa e ad alto contrasto.
 - Le scorciatoie della ricerca globale portano il focus sul campo all’istante con / o Ctrl+K (⌘K su macOS), anche quando è nascosto nel menu laterale compresso.
 - Il pulsante **Forza ricarica** cancella i file del service worker in cache per aggiornare l’applicazione offline senza eliminare progetti o dispositivi salvati.

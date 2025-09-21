@@ -64,6 +64,8 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
+- Automatic gear rules let you design scenario-driven additions or removals, export the configuration and restore it alongside project bundles.
+- Data & storage dashboard audits saved projects, gear lists, custom devices, favorites and runtime feedback directly inside Settings.
 - Accent and typography controls in Settings let you adjust the accent color, base font size and typeface alongside dark, pink and high contrast themes.
 - Keyboard shortcuts for the global search let you press / or Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it sits inside the collapsed mobile side menu.
 - Force reload button clears cached service worker files so the offline app refreshes without deleting saved projects or devices.
