@@ -799,6 +799,7 @@ describe('export/import all data', () => {
       localStorage.setItem('fontSize', '18');
       localStorage.setItem('fontFamily', "'My Font', sans-serif");
       localStorage.setItem('language', 'de');
+      localStorage.setItem('iosPwaHelpShown', 'true');
       localStorage.setItem('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
       localStorage.setItem(
         'cameraPowerPlanner_customFonts',
@@ -848,6 +849,7 @@ describe('export/import all data', () => {
           fontSize: '18',
           fontFamily: "'My Font', sans-serif",
           language: 'de',
+          iosPwaHelpShown: true,
         },
         customLogo: 'data:image/svg+xml;base64,PHN2Zw==',
         customFonts: [
@@ -886,6 +888,7 @@ describe('export/import all data', () => {
           fontSize: '20',
           fontFamily: "'Other Font', serif",
           language: 'fr',
+          iosPwaHelpShown: true,
         },
         customLogo: 'data:image/svg+xml;base64,PE1PQ0s+',
         customFonts: [
@@ -914,7 +917,8 @@ describe('export/import all data', () => {
       expect(localStorage.getItem('accentColor')).toBe('#00ff00');
       expect(localStorage.getItem('fontSize')).toBe('20');
       expect(localStorage.getItem('fontFamily')).toBe("'Other Font', serif");
-    expect(localStorage.getItem('language')).toBe('fr');
+      expect(localStorage.getItem('language')).toBe('fr');
+      expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
     expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
       { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
     ]);
