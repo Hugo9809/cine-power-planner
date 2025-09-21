@@ -838,6 +838,53 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(stored[0].label).toBe('Shared grip tweak');
   });
 
+  test('shared rule merging keeps distinct video distribution triggers', () => {
+    env = setupScriptEnvironment();
+
+    const { importAutoGearRulesFromData, applySharedSetup, getAutoGearRules } = env.utils;
+
+    const baseRule = {
+      id: 'base-video-rule',
+      label: 'Wireless village',
+      scenarios: ['Village'],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      videoDistribution: [],
+      add: [
+        { id: 'base-add', name: 'Village monitor kit', category: 'Monitoring', quantity: 1 }
+      ],
+      remove: [],
+    };
+
+    importAutoGearRulesFromData([baseRule], { silent: true });
+
+    const sharedRule = {
+      id: 'shared-video-rule',
+      label: 'Wireless village',
+      scenarios: ['Village'],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      videoDistribution: ['IOS Video'],
+      add: [
+        { id: 'base-add', name: 'Village monitor kit', category: 'Monitoring', quantity: 1 }
+      ],
+      remove: [],
+    };
+
+    applySharedSetup({ setupName: 'Shared import' }, {
+      sharedAutoGearRules: [sharedRule],
+      autoGearMode: ['global'],
+    });
+
+    const merged = getAutoGearRules();
+    expect(merged).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: 'base-video-rule', videoDistribution: [] }),
+      expect.objectContaining({ id: 'shared-video-rule', videoDistribution: ['IOS Video'] }),
+    ]));
+  });
+
   test('rule editor accepts multiple additions at once', () => {
     env = setupScriptEnvironment();
 

@@ -913,21 +913,9 @@ function getBaseAutoGearRules() {
 }
 
 function autoGearRuleSignature(rule) {
-  if (!rule || typeof rule !== 'object') return '';
-  const normalizeList = list => Array.isArray(list)
-    ? list.map(item => ({
-        name: typeof item.name === 'string' ? item.name : '',
-        category: typeof item.category === 'string' ? item.category : '',
-        quantity: normalizeAutoGearQuantity(item.quantity),
-      }))
-    : [];
-  return stableStringify({
-    label: typeof rule.label === 'string' ? rule.label : '',
-    scenarios: Array.isArray(rule.scenarios) ? rule.scenarios : [],
-    mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
-    add: normalizeList(rule.add),
-    remove: normalizeList(rule.remove),
-  });
+  const snapshot = snapshotAutoGearRuleForFingerprint(rule);
+  if (!snapshot) return '';
+  return stableStringify(snapshot);
 }
 
 function mergeAutoGearRules(existing, incoming) {
