@@ -158,6 +158,118 @@ async function loadDeviceSchemaFromCacheStorage() {
   return null;
 }
 
+function handleSchemaLoadFailure(baseSchema, error, message) {
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    if (message && typeof error !== 'undefined') {
+      console.warn(message, error);
+    } else if (message) {
+      console.warn(message);
+    } else if (typeof error !== 'undefined') {
+      console.warn('Failed to fetch schema.json', error);
+    }
+  }
+
+  if (typeof caches === 'undefined' || !caches || typeof caches.match !== 'function') {
+    finalizeDeviceSchemaLoad(baseSchema);
+    return;
+  }
+
+  loadDeviceSchemaFromCacheStorage()
+    .then(schemaFromCache => {
+      if (isValidDeviceSchema(schemaFromCache)) {
+        finalizeDeviceSchemaLoad(schemaFromCache);
+      } else {
+        finalizeDeviceSchemaLoad(baseSchema);
+      }
+    })
+    .catch(cacheError => {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to load schema.json from cache storage', cacheError);
+      }
+      finalizeDeviceSchemaLoad(baseSchema);
+    });
+}
+
+function loadDeviceSchemaViaLegacyRequest(fallbackSchema) {
+  if (typeof XMLHttpRequest === 'undefined') {
+    finalizeDeviceSchemaLoad(fallbackSchema);
+    return;
+  }
+
+  try {
+    const request = new XMLHttpRequest();
+    let resolved = false;
+
+    const fallbackToCache = (error, message) => {
+      if (resolved) {
+        return;
+      }
+      resolved = true;
+      handleSchemaLoadFailure(fallbackSchema, error, message);
+    };
+
+    request.open('GET', DEVICE_SCHEMA_PATH, true);
+
+    if ('responseType' in request) {
+      try {
+        request.responseType = 'json';
+      } catch (typeError) {
+        void typeError;
+      }
+    }
+
+    request.onreadystatechange = () => {
+      if (request.readyState !== 4 || resolved) {
+        return;
+      }
+
+      const status = request.status;
+      if ((status >= 200 && status < 300) || status === 0) {
+        let payload = null;
+
+        if (request.response && typeof request.response === 'object') {
+          payload = request.response;
+        }
+
+        if (!payload && typeof request.responseText === 'string' && request.responseText) {
+          try {
+            payload = JSON.parse(request.responseText);
+          } catch (parseError) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('Unable to parse schema.json response text from legacy request', parseError);
+            }
+          }
+        }
+
+        if (isValidDeviceSchema(payload)) {
+          resolved = true;
+          finalizeDeviceSchemaLoad(payload);
+          return;
+        }
+
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Legacy schema request returned invalid data. Falling back to cache.');
+        }
+        fallbackToCache();
+        return;
+      }
+
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Legacy schema request failed with status', status);
+      }
+      fallbackToCache();
+    };
+
+    request.onerror = event => {
+      fallbackToCache(event, 'Legacy schema request encountered an error');
+    };
+
+    request.send(null);
+  } catch (xhrError) {
+    handleSchemaLoadFailure(fallbackSchema, xhrError, 'Legacy schema request threw an exception');
+  }
+}
+
 /**
  * Final step once a schema candidate has been retrieved.
  *
@@ -198,25 +310,10 @@ try {
       })
       .then(finalizeDeviceSchemaLoad)
       .catch(error => {
-        console.warn('Failed to fetch schema.json', error);
-        if (typeof caches === 'undefined' || !caches || typeof caches.match !== 'function') {
-          finalizeDeviceSchemaLoad(deviceSchema);
-          return;
-        }
-
-        loadDeviceSchemaFromCacheStorage()
-          .then(schemaFromCache => {
-            if (isValidDeviceSchema(schemaFromCache)) {
-              finalizeDeviceSchemaLoad(schemaFromCache);
-            } else {
-              finalizeDeviceSchemaLoad(deviceSchema);
-            }
-          })
-          .catch(cacheError => {
-            console.warn('Failed to load schema.json from cache storage', cacheError);
-            finalizeDeviceSchemaLoad(deviceSchema);
-          });
+        handleSchemaLoadFailure(deviceSchema, error, 'Failed to fetch schema.json');
       });
+  } else if (typeof XMLHttpRequest === 'function') {
+    loadDeviceSchemaViaLegacyRequest(deviceSchema);
   } else {
     finalizeDeviceSchemaLoad(deviceSchema);
   }
