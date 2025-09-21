@@ -452,6 +452,51 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entries).toHaveLength(1);
   });
 
+  test('applies video distribution rules when no distribution is selected', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-video-none',
+          label: 'Baseline monitors',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: ['__none__'],
+          add: [
+            {
+              id: 'add-video-none',
+              name: 'HDMI Switcher',
+              category: 'Monitoring',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Monitoring</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { videoDistribution: '' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="HDMI Switcher"]');
+    expect(entries).toHaveLength(1);
+  });
+
   test('seeds default mattebox rules when they are missing', () => {
     localStorage.setItem(
       STORAGE_KEY,

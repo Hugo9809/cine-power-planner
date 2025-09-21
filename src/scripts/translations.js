@@ -173,6 +173,7 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Apply this rule when these video distribution preferences are selected.",
     autoGearVideoDistributionPlaceholder: "Select video distribution options",
+    autoGearVideoDistributionNone: "No video distribution selected",
     autoGearRuleConditionRequired:
       "Select at least one scenario, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
     autoGearAddItemsHeading: "Add these items",
@@ -1379,6 +1380,7 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Applica la regola quando sono selezionate queste preferenze di distribuzione video.",
     autoGearVideoDistributionPlaceholder: "Seleziona opzioni di distribuzione video",
+    autoGearVideoDistributionNone: "Nessuna distribuzione video selezionata",
     autoGearRuleConditionRequired:
       "Seleziona almeno uno scenario, un'opzione di matte box, una maniglia camera, una prolunga mirino o una distribuzione video prima di salvare.",
     autoGearAddItemsHeading: "Aggiungi questi elementi",
@@ -2186,6 +2188,7 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Aplica la regla cuando se eligen estas preferencias de distribución de vídeo.",
     autoGearVideoDistributionPlaceholder: "Selecciona opciones de distribución de vídeo",
+    autoGearVideoDistributionNone: "Sin distribución de vídeo seleccionada",
     autoGearRuleConditionRequired:
       "Selecciona al menos un escenario, una opción de matte box, una empuñadura de cámara, una extensión de visor o una distribución de vídeo antes de guardar.",
     autoGearAddItemsHeading: "Agregar estos elementos",
@@ -2996,6 +2999,7 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Appliquer la règle lorsque ces préférences de distribution vidéo sont sélectionnées.",
     autoGearVideoDistributionPlaceholder: "Sélectionnez des options de distribution vidéo",
+    autoGearVideoDistributionNone: "Aucune distribution vidéo sélectionnée",
     autoGearRuleConditionRequired:
       "Sélectionnez au moins un scénario, une option de matte box, une poignée caméra, une extension de viseur ou une distribution vidéo avant d’enregistrer.",
     autoGearAddItemsHeading: "Ajouter ces éléments",
@@ -3809,6 +3813,7 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Regel anwenden, wenn diese Videoverteilungsoptionen ausgewählt sind.",
     autoGearVideoDistributionPlaceholder: "Videoverteilungsoptionen auswählen",
+    autoGearVideoDistributionNone: "Keine Videoverteilung ausgewählt",
     autoGearRuleConditionRequired:
       "Wähle mindestens ein Szenario, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung oder eine Videoverteilung, bevor du speicherst.",
     autoGearAddItemsHeading: "Diese Geräte hinzufügen",
