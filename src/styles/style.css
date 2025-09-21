@@ -1994,6 +1994,8 @@ body.pink-mode .favorite-toggle.favorited:active {
   color: var(--inverse-text-color);
   padding: 4px 8px;
   border-radius: 4px;
+  /* Allow icon glyphs from all local fonts to render inside hover help */
+  font-family: var(--font-family), 'EssentialIconsV2', 'FilmIndustryIconsV2', 'GadgetIconsV2';
   font-size: calc(var(--font-size-base) * var(--font-scale-compact));
   pointer-events: none;
   /* Allow longer hover help descriptions */
