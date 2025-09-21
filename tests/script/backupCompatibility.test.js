@@ -25,5 +25,14 @@ describe('backup compatibility utilities', () => {
     );
     expect(sections.settings.darkMode).toBe('true');
   });
+
+  test('sanitizeBackupPayload removes UTF-8 BOM characters', () => {
+    const { sanitizeBackupPayload } = loadApp();
+
+    const bomPayload = '\ufeff{"version":"1.0.0"}';
+    const sanitized = sanitizeBackupPayload(bomPayload);
+
+    expect(sanitized).toBe('{"version":"1.0.0"}');
+  });
 });
 

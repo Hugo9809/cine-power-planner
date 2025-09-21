@@ -439,4 +439,114 @@ describe('automated backups', () => {
       delete restoreInput.files;
     }
   });
+
+  test('restore handles backup payloads with a UTF-8 BOM prefix', () => {
+    const { APP_VERSION } = loadApp();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    expect(restoreInput).not.toBeNull();
+
+    const fakeFile = { name: 'bom-backup.json' };
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    const originalAlert = window.alert;
+    const originalFileReader = window.FileReader;
+    window.alert = jest.fn();
+
+    const bomContent = `\uFEFF${JSON.stringify({
+      version: APP_VERSION,
+      settings: { darkMode: 'true' },
+    })}`;
+
+    const readerInstance = {
+      onload: null,
+      onerror: null,
+      readAsText: jest.fn(function readAsText() {
+        if (typeof this.onload === 'function') {
+          this.onload({ target: { result: bomContent } });
+        }
+      }),
+    };
+    window.FileReader = jest.fn(() => readerInstance);
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      const textsByLang = window.texts || {};
+      const storedLang = localStorage.getItem('language') || 'en';
+      const expectedSuccess =
+        (textsByLang[storedLang] && textsByLang[storedLang].restoreSuccess)
+        || (textsByLang.en && textsByLang.en.restoreSuccess);
+
+      expect(window.alert).toHaveBeenCalledWith(expectedSuccess);
+      expect(localStorage.getItem('darkMode')).toBe('true');
+    } finally {
+      window.alert = originalAlert;
+      window.FileReader = originalFileReader;
+      delete restoreInput.files;
+    }
+  });
+
+  test('restore falls back to file.text when FileReader is unavailable', async () => {
+    const { APP_VERSION } = loadApp();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    expect(restoreInput).not.toBeNull();
+
+    const restoreData = {
+      version: APP_VERSION,
+      settings: {
+        language: 'de',
+      },
+      data: {
+        restoreFallback: true,
+      },
+    };
+
+    const fakeFile = {
+      name: 'fallback-backup.json',
+      text: jest.fn(() => Promise.resolve(JSON.stringify(restoreData))),
+    };
+
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    const originalAlert = window.alert;
+    const originalFileReader = window.FileReader;
+    window.alert = jest.fn();
+    delete window.FileReader;
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(fakeFile.text).toHaveBeenCalledTimes(1);
+      expect(window.importAllData).toHaveBeenCalledWith(expect.objectContaining({ restoreFallback: true }));
+
+      const textsByLang = window.texts || {};
+      const storedLang = localStorage.getItem('language') || 'en';
+      const expectedSuccess =
+        (textsByLang[storedLang] && textsByLang[storedLang].restoreSuccess)
+        || (textsByLang.en && textsByLang.en.restoreSuccess);
+
+      expect(window.alert).toHaveBeenCalledWith(expectedSuccess);
+      expect(localStorage.getItem('language')).toBe('de');
+    } finally {
+      window.alert = originalAlert;
+      if (typeof originalFileReader === 'undefined') {
+        delete window.FileReader;
+      } else {
+        window.FileReader = originalFileReader;
+      }
+      delete restoreInput.files;
+    }
+  });
 });
