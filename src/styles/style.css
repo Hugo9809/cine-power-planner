@@ -4484,7 +4484,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
   flex-direction: column;
   gap: 0.375rem;
   margin-top: 0.375rem;
-  line-height: var(--line-height-supporting);
+  line-height: var(--line-height-relaxed);
 }
 
 #gearListFilterDetails.hidden {
@@ -4520,7 +4520,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-regular);
   padding: 0.125rem 0.375rem;
   border-radius: var(--border-radius);
   background-color: transparent;
@@ -4561,7 +4561,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
 }
 
 #gearListFilterDetails .filter-detail-sublabel {
-  font-weight: 500;
+  font-weight: var(--font-weight-regular);
 }
 
 #gearListFilterDetails .filter-detail-sublabel::after {
