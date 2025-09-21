@@ -794,6 +794,8 @@ describe('export/import all data', () => {
       localStorage.setItem('darkMode', 'true');
       localStorage.setItem('pinkMode', 'true');
       localStorage.setItem('highContrast', 'true');
+      localStorage.setItem('reduceMotion', 'true');
+      localStorage.setItem('relaxedSpacing', 'true');
       localStorage.setItem('showAutoBackups', 'true');
       localStorage.setItem('accentColor', '#ff00ff');
       localStorage.setItem('fontSize', '18');
@@ -844,6 +846,8 @@ describe('export/import all data', () => {
           darkMode: true,
           pinkMode: true,
           highContrast: true,
+          reduceMotion: true,
+          relaxedSpacing: true,
           showAutoBackups: true,
           accentColor: '#ff00ff',
           fontSize: '18',
@@ -922,6 +926,8 @@ describe('export/import all data', () => {
           darkMode: true,
           pinkMode: false,
           highContrast: true,
+          reduceMotion: false,
+          relaxedSpacing: true,
           showAutoBackups: true,
           accentColor: '#00ff00',
           fontSize: '20',
@@ -952,6 +958,8 @@ describe('export/import all data', () => {
       expect(localStorage.getItem('darkMode')).toBe('true');
       expect(localStorage.getItem('pinkMode')).toBe('false');
       expect(localStorage.getItem('highContrast')).toBe('true');
+      expect(localStorage.getItem('reduceMotion')).toBe('false');
+      expect(localStorage.getItem('relaxedSpacing')).toBe('true');
       expect(localStorage.getItem('showAutoBackups')).toBe('true');
       expect(localStorage.getItem('accentColor')).toBe('#00ff00');
       expect(localStorage.getItem('fontSize')).toBe('20');

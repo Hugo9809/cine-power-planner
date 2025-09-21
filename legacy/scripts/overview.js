@@ -243,7 +243,15 @@ function generatePrintableOverview() {
   var content = overviewDialog.querySelector('#overviewDialogContent');
   var applyThemeClasses = function applyThemeClasses(target) {
     if (!target || typeof document === 'undefined') return;
-    var themeClasses = ['dark-mode', 'light-mode', 'pink-mode', 'dark-accent-boost', 'high-contrast'];
+    var themeClasses = [
+      'dark-mode',
+      'light-mode',
+      'pink-mode',
+      'dark-accent-boost',
+      'high-contrast',
+      'reduce-motion',
+      'relaxed-spacing',
+    ];
     var activeClasses = new Set([].concat(_toConsumableArray(document.documentElement ? Array.from(document.documentElement.classList) : []), _toConsumableArray(document.body ? Array.from(document.body.classList) : [])));
     themeClasses.forEach(function (themeClass) {
       target.classList.toggle(themeClass, activeClasses.has(themeClass));

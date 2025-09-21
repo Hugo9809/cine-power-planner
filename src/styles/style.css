@@ -130,6 +130,50 @@ body.pink-mode {
   --logo-center-color: #ffffff;
 }
 
+html.reduce-motion,
+body.reduce-motion {
+  scroll-behavior: auto;
+}
+
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  transition-delay: 0ms !important;
+}
+
+body.relaxed-spacing {
+  --line-height-base: 1.75;
+  --line-height-supporting: 1.7;
+  --gap-size: 14px;
+  --form-label-width: 170px;
+  --form-label-min-width: 140px;
+  --button-size: 30px;
+  --button-line-height: 1.45;
+  --button-icon-gap: 0.7em;
+}
+
+body.relaxed-spacing .form-row {
+  margin: 8px 0;
+}
+
+body.relaxed-spacing .settings-hint {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+}
+
+body.relaxed-spacing input:not([type='checkbox']):not([type='radio']),
+body.relaxed-spacing select,
+body.relaxed-spacing textarea {
+  padding: 0.65em 0.9em;
+}
+
+body.relaxed-spacing .button-link,
+body.relaxed-spacing .button-link:visited {
+  padding: 0 16px;
+}
+
 html {
   font-size: clamp(14px, 1vw + 10px, 16px);
 }

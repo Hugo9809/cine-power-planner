@@ -223,6 +223,12 @@ var texts = {
     accessibilityHeadingHelp: "Adjust contrast and other options that improve legibility.",
     highContrastSetting: "High contrast",
     highContrastSettingHelp: "Increase contrast for text and outlines to boost readability in any theme.",
+    reduceMotionSetting: "Reduce motion",
+    reduceMotionSettingHelp:
+      "Limit color and interface animations so transitions feel steady for motion-sensitive users.",
+    relaxedSpacingSetting: "Relaxed spacing",
+    relaxedSpacingSettingHelp:
+      "Increase line spacing and control padding to make text easier to scan and tap.",
     backupHeading: "Backup & Restore",
     backupHeadingHelp: "Manage full backups of settings, saved projects, custom devices and runtime feedback.",
     showAutoBackupsSetting: "Show auto backups in project list",
@@ -1316,6 +1322,12 @@ var texts = {
     accessibilityHeadingHelp: "Regola le opzioni che migliorano la leggibilità, come il contrasto elevato.",
     highContrastSetting: "Alto contrasto",
     highContrastSettingHelp: "Aumenta il contrasto di testi e contorni per una lettura più agevole in qualsiasi tema.",
+    reduceMotionSetting: "Riduci animazioni",
+    reduceMotionSettingHelp:
+      "Limita le animazioni di colori e interfaccia per rendere le transizioni più stabili a chi è sensibile al movimento.",
+    relaxedSpacingSetting: "Spaziatura ampia",
+    relaxedSpacingSettingHelp:
+      "Aumenta l'interlinea e l'imbottitura dei controlli per facilitare la lettura e l'uso con il tocco.",
     backupHeading: "Backup e ripristino",
     backupHeadingHelp: "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati e feedback.",
     showAutoBackupsSetting: "Mostra i salvataggi automatici nell'elenco progetti",
@@ -2032,6 +2044,12 @@ var texts = {
     accessibilityHeadingHelp: "Ajusta opciones que mejoran la legibilidad, como el alto contraste.",
     highContrastSetting: "Alto contraste",
     highContrastSettingHelp: "Incrementa el contraste del texto y los bordes para facilitar la lectura con cualquier tema.",
+    reduceMotionSetting: "Reducir movimiento",
+    reduceMotionSettingHelp:
+      "Limita las animaciones de color e interfaz para que las transiciones sean más estables para las personas sensibles al movimiento.",
+    relaxedSpacingSetting: "Espaciado amplio",
+    relaxedSpacingSettingHelp:
+      "Aumenta el interlineado y el acolchado de los controles para facilitar la lectura y ampliar las zonas táctiles.",
     backupHeading: "Copia de seguridad y restaurar",
     backupHeadingHelp: "Gestiona copias de seguridad completas de ajustes, proyectos guardados, dispositivos personalizados y comentarios.",
     showAutoBackupsSetting: "Mostrar las copias de seguridad automáticas en la lista de proyectos",
@@ -2748,6 +2766,12 @@ var texts = {
     accessibilityHeadingHelp: "Ajustez les options qui améliorent la lisibilité, comme le contraste élevé.",
     highContrastSetting: "Contraste élevé",
     highContrastSettingHelp: "Augmentez le contraste du texte et des contours pour une lecture plus confortable quel que soit le thème.",
+    reduceMotionSetting: "Réduire les animations",
+    reduceMotionSettingHelp:
+      "Limite les animations de couleurs et d'interface pour que les transitions restent stables pour les personnes sensibles au mouvement.",
+    relaxedSpacingSetting: "Espacement élargi",
+    relaxedSpacingSettingHelp:
+      "Augmente l'interligne et le rembourrage des contrôles afin de faciliter la lecture et d'agrandir les zones d'action.",
     backupHeading: "Sauvegarde et restauration",
     backupHeadingHelp: "Gérez des sauvegardes complètes des réglages, projets enregistrés, appareils personnalisés et retours.",
     showAutoBackupsSetting: "Afficher les sauvegardes automatiques dans la liste des projets",
@@ -3464,6 +3488,12 @@ var texts = {
     accessibilityHeadingHelp: "Passe Optionen für bessere Lesbarkeit wie hohen Kontrast an.",
     highContrastSetting: "Hoher Kontrast",
     highContrastSettingHelp: "Erhöht den Kontrast von Text und Konturen für bessere Lesbarkeit in allen Themes.",
+    reduceMotionSetting: "Bewegung reduzieren",
+    reduceMotionSettingHelp:
+      "Begrenzt Farb- und Oberflächenanimationen, damit Übergänge für bewegungsempfindliche Nutzer ruhiger wirken.",
+    relaxedSpacingSetting: "Großzügige Abstände",
+    relaxedSpacingSettingHelp:
+      "Vergrößert Zeilenabstand und Elementabstand, damit Text besser lesbar ist und Klickflächen leichter zu treffen sind.",
     backupHeading: "Sichern & Wiederherstellen",
     backupHeadingHelp: "Verwalte vollständige Sicherungen von Einstellungen, Projekten, eigenen Geräten und Feedback.",
     showAutoBackupsSetting: "Automatische Sicherungen in der Projektliste anzeigen",

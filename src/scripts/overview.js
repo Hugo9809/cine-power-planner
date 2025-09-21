@@ -323,7 +323,15 @@ function generatePrintableOverview() {
 
     const applyThemeClasses = (target) => {
         if (!target || typeof document === 'undefined') return;
-        const themeClasses = ['dark-mode', 'light-mode', 'pink-mode', 'dark-accent-boost', 'high-contrast'];
+        const themeClasses = [
+            'dark-mode',
+            'light-mode',
+            'pink-mode',
+            'dark-accent-boost',
+            'high-contrast',
+            'reduce-motion',
+            'relaxed-spacing',
+        ];
         const activeClasses = new Set([
             ...(document.documentElement ? Array.from(document.documentElement.classList) : []),
             ...(document.body ? Array.from(document.body.classList) : []),
