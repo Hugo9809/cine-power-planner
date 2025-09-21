@@ -1238,20 +1238,16 @@ main.legal-content {
   align-items: center;
   gap: 8px;
   position: relative;
-  padding: 8px 8px 12px;
-  margin-bottom: 8px;
-  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
-  border-radius: calc(var(--border-radius) * 0.9);
-  background: color-mix(in srgb, var(--surface-color) 82%, var(--panel-bg));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--panel-border) 12%, transparent);
+  padding: 0;
+  margin: 0 0 8px;
 }
 
 .settings-tabs-container::before,
 .settings-tabs-container::after {
   content: '';
   position: absolute;
-  top: 8px;
-  bottom: 16px;
+  top: 0;
+  bottom: 0;
   width: 28px;
   pointer-events: none;
   opacity: 0;
@@ -1260,12 +1256,12 @@ main.legal-content {
 }
 
 .settings-tabs-container::before {
-  left: 8px;
+  left: 0;
   background: linear-gradient(to right, var(--surface-color) 5%, transparent 90%);
 }
 
 .settings-tabs-container::after {
-  right: 8px;
+  right: 0;
   background: linear-gradient(to left, var(--surface-color) 5%, transparent 90%);
 }
 
@@ -1282,7 +1278,7 @@ main.legal-content {
   flex-wrap: nowrap;
   gap: 12px;
   align-items: center;
-  padding: 6px 0;
+  padding: 4px 0;
   margin: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -1348,9 +1344,9 @@ main.legal-content {
 }
 
 body.high-contrast .settings-tabs-container {
-  background: var(--surface-color);
+  background: none;
+  border: none;
   box-shadow: none;
-  border: 1px solid var(--panel-border);
 }
 
 body.high-contrast .settings-tabs-container::before,
