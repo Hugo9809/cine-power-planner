@@ -2164,16 +2164,16 @@ body.dark-mode .help-callout {
 .category-icon,
 .scenario-icon,
 .icon-box .icon {
-  margin-right: var(--icon-gap);
+  margin-inline-end: var(--icon-gap);
 }
 
 button .btn-icon:only-child {
-  margin-right: 0;
+  margin-inline-end: 0;
 }
 
 button .btn-icon:not(:only-child),
 .button-link .btn-icon:not(:only-child) {
-  margin-right: var(--button-icon-gap);
+  margin-inline-end: var(--button-icon-gap);
 }
 
 .favorite-icon.icon-glyph {

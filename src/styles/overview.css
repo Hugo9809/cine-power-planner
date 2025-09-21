@@ -210,7 +210,7 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
     grid-template-columns: 1fr;
   }
 }
-.category-icon { margin-right: 4px; }
+.category-icon { margin-inline-end: 4px; }
 .category-icon.icon-glyph {
   --icon-size: var(--icon-size-md);
 }
@@ -231,7 +231,7 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 }
 
 .diagram-controls button .btn-icon:only-child {
-  margin-right: 0;
+  margin-inline-end: 0;
 }
 
 .diagram-controls button {
