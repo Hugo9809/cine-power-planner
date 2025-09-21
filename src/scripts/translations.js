@@ -1642,9 +1642,9 @@ const texts = {
       "Chiudi le Impostazioni senza salvare; colori e logo tornano allo stato precedente.",
     helpButtonLabel: "Aiuto",
     helpButtonTitle: "Aiuto (premi ?, H, F1 o Ctrl+/)",
-    helpButtonHelp: "Apri la finestra di aiuto (premi ?, H, F1 o Ctrl+/).",
+    helpButtonHelp: "Apri la guida con istruzioni passo dopo passo, suggerimenti e scorciatoie (premi ?, H, F1 o Ctrl+/).",
     helpClose: "Chiudi (Esc)",
-    helpCloseHelp: "Chiudi la finestra di aiuto e torna all’app (premi Esc).",
+    helpCloseHelp: "Chiudi la guida e torna subito all’app (premi Esc).",
     helpTitle: "Come usare",
     helpSearchPlaceholder: "Cerca negli argomenti dell'aiuto...",
     helpSearchLabel: "Cerca negli argomenti dell'aiuto",
@@ -1653,17 +1653,17 @@ const texts = {
     helpNoResults: "Nessun risultato trovato. Prova con parole chiave più brevi oppure cancella la ricerca per vedere tutti gli argomenti.",
     helpSearchClear: "Cancella ricerca",
     helpSearchHelp:
-      "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti dell'aiuto. I collegamenti rapidi si aggiornano mentre scrivi. Premi '/' o Ctrl+F (Cmd+F su Mac) per focalizzare rapidamente la casella di ricerca.",
+      "Digita parole chiave o varianti ortografiche per filtrare all’istante gli argomenti della guida; i collegamenti rapidi si aggiornano mentre scrivi. Premi '/' o Ctrl+F (Cmd+F su Mac) per portare subito il focus sul campo di ricerca.",
     helpSearchClearHelp: "Cancella la ricerca corrente.",
     helpQuickLinksHeading: "Vai a un argomento",
     helpQuickLinksAriaLabel: "Navigazione rapida degli argomenti di aiuto",
     helpQuickLinksHelp:
-      "Vai direttamente a una sezione della guida. I pulsanti mostrano solo gli argomenti visibili alla ricerca corrente.",
+      "Salta direttamente a qualsiasi sezione della guida. I pulsanti si aggiornano in base ai risultati filtrati dalla ricerca.",
     helpQuickLinkButtonHelp:
       "Scorri fino alla sezione “%s” nella finestra di aiuto.",
     hoverHelpButtonLabel: "Passa il mouse per aiuto",
     hoverHelpButtonHelp:
-      "Attiva l'aiuto al passaggio del mouse così, spostando il cursore su pulsanti, campi, menu a discesa o intestazioni, vengono mostrate brevi spiegazioni. Puoi aprire Impostazioni mentre l'aiuto è attivo per esplorare le preferenze senza uscire da questa modalità.",
+      "Attiva l’aiuto contestuale al passaggio del mouse: posizionando il cursore su pulsanti, campi, menu a discesa o intestazioni compaiono brevi spiegazioni. Puoi aprire Impostazioni mentre la modalità è attiva per esplorare le preferenze senza uscirne.",
     setupSelectHelp:
       "Scegli una configurazione salvata da caricare o inizia una nuova.",
     setupNameHelp: "Inserisci un nome per la configurazione corrente.",
@@ -2495,9 +2495,9 @@ const texts = {
     helpButtonLabel: "Ayuda",
     helpButtonTitle: "Ayuda (presiona ?, H, F1 o Ctrl+/)",
     helpButtonHelp:
-      "Abre el cuadro de ayuda (presiona ?, H, F1 o Ctrl+/).",
+      "Abre la guía con instrucciones paso a paso, consejos y atajos (presiona ?, H, F1 o Ctrl+/).",
     helpClose: "Cerrar (Esc)",
-    helpCloseHelp: "Cierra el cuadro de ayuda y regresa al planificador (presiona Esc).",
+    helpCloseHelp: "Cierra la guía y vuelve enseguida al planificador (presiona Esc).",
     helpTitle: "Cómo usar",
     helpSearchPlaceholder: "Buscar temas de ayuda...",
     helpSearchLabel: "Buscar temas de ayuda",
@@ -2506,17 +2506,17 @@ const texts = {
     helpNoResults: "No se encontraron resultados. Prueba con palabras clave más cortas o borra la búsqueda para ver todos los temas.",
     helpSearchClear: "Borrar búsqueda",
     helpSearchHelp:
-      "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos rápidos se actualizan mientras escribes. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para enfocar rápidamente el campo de búsqueda.",
+      "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda; los accesos rápidos se actualizan mientras escribes. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para enfocar de inmediato el campo de búsqueda.",
     helpSearchClearHelp: "Borra la consulta de búsqueda actual.",
     helpQuickLinksHeading: "Ir a un tema",
     helpQuickLinksAriaLabel: "Navegación rápida por los temas de ayuda",
     helpQuickLinksHelp:
-      "Ve directamente a una sección de la ayuda. Los botones solo muestran los temas que coinciden con la búsqueda actual.",
+      "Salta directamente a cualquier sección de la ayuda. Los botones se actualizan para mostrar solo los temas que coinciden con la búsqueda actual.",
     helpQuickLinkButtonHelp:
       "Desplázate a la sección “%s” dentro del cuadro de ayuda.",
     hoverHelpButtonLabel: "Pasa el cursor para ayuda",
     hoverHelpButtonHelp:
-      "Activa la ayuda al pasar el cursor para que al moverlo sobre botones, campos, menús desplegables o encabezados aparezcan breves explicaciones. Puedes abrir Ajustes mientras la ayuda está activa para explorar las preferencias sin salir de este modo.",
+      "Activa la ayuda contextual al pasar el cursor: al moverlo sobre botones, campos, menús desplegables o encabezados aparecen explicaciones breves. Puedes abrir Ajustes mientras el modo está activo para explorar las preferencias sin salir de él.",
     setupSelectHelp:
       "Elige una configuración guardada para cargarla o comienza una nueva.",
     setupNameHelp: "Introduce un nombre para la configuración actual.",
@@ -3350,9 +3350,9 @@ const texts = {
     helpButtonLabel: "Aide",
     helpButtonTitle: "Aide (appuyez sur ?, H, F1 ou Ctrl+/)",
     helpButtonHelp:
-      "Ouvrir la fenêtre d'aide (appuyez sur ?, H, F1 ou Ctrl+/).",
+      "Ouvre le centre d’aide avec tutoriels, astuces et raccourcis (appuyez sur ?, H, F1 ou Ctrl+/).",
     helpClose: "Fermer (Échap)",
-    helpCloseHelp: "Fermez la fenêtre d'aide et revenez au planificateur (appuyez sur Échap).",
+    helpCloseHelp: "Ferme le centre d’aide et revient aussitôt au planificateur (appuyez sur Échap).",
     helpTitle: "Comment utiliser",
     helpSearchPlaceholder: "Rechercher des sujets d'aide...",
     helpSearchLabel: "Rechercher des sujets d'aide",
@@ -3361,17 +3361,17 @@ const texts = {
     helpNoResults: "Aucun résultat trouvé. Essayez avec des mots-clés plus courts ou effacez la recherche pour afficher tous les sujets.",
     helpSearchClear: "Effacer la recherche",
     helpSearchHelp:
-      "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour cibler rapidement le champ de recherche.",
+      "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d’aide ; les liens rapides se mettent à jour pendant la saisie. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour cibler immédiatement le champ de recherche.",
     helpSearchClearHelp: "Effacer la requête de recherche en cours.",
     helpQuickLinksHeading: "Accéder à un sujet",
     helpQuickLinksAriaLabel: "Navigation rapide des sujets d'aide",
     helpQuickLinksHelp:
-      "Accédez directement à une section de l'aide. Les boutons n'affichent que les sujets correspondant à votre recherche actuelle.",
+      "Accédez directement à n’importe quelle section du centre d’aide. Les boutons s’actualisent en fonction des résultats filtrés par la recherche.",
     helpQuickLinkButtonHelp:
       "Faites défiler jusqu'à la section « %s » dans la fenêtre d'aide.",
     hoverHelpButtonLabel: "Survoler pour obtenir de l'aide",
     hoverHelpButtonHelp:
-      "Active l'aide au survol pour qu'en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, des explications brèves apparaissent. Vous pouvez ouvrir Paramètres pendant que l'aide au survol est active afin d'explorer les préférences sans quitter ce mode.",
+      "Active l’aide contextuelle au survol : en passant le curseur sur les boutons, champs, menus déroulants ou en-têtes, de brèves explications apparaissent. Vous pouvez ouvrir Paramètres pendant que le mode est actif pour explorer les préférences sans le quitter.",
     setupSelectHelp:
       "Choisissez une configuration enregistrée à charger ou commencez-en une nouvelle.",
     setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
@@ -4207,9 +4207,9 @@ const texts = {
       "Schließt die Einstellungen ohne zu speichern; Farben und Logo werden zurückgesetzt.",
     helpButtonLabel: "Hilfe",
     helpButtonTitle: "Hilfe (Drücke ?, H, F1 oder Strg+/)",
-    helpButtonHelp: "Öffnet den Hilfedialog (drücke ?, H, F1 oder Strg+/).",
+    helpButtonHelp: "Öffnet den Hilfedialog mit Schritt-für-Schritt-Anleitungen, Tipps und Tastenkürzeln (drücke ?, H, F1 oder Strg+/).",
     helpClose: "Schließen (Esc)",
-    helpCloseHelp: "Schließt den Hilfedialog und kehrt zum Planer zurück (Esc drücken).",
+    helpCloseHelp: "Schließt den Hilfedialog und bringt dich sofort zurück zum Planer (Esc drücken).",
     helpTitle: "Bedienung",
     helpSearchPlaceholder: "Hilfe-Themen durchsuchen...",
     helpSearchLabel: "Hilfe-Themen durchsuchen",
@@ -4218,17 +4218,17 @@ const texts = {
     helpNoResults: "Keine Ergebnisse gefunden. Verwende kürzere Suchbegriffe oder lösche die Suche, um alle Themen anzuzeigen.",
     helpSearchClear: "Suche löschen",
     helpSearchHelp:
-      "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich beim Tippen. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld schnell zu fokussieren.",
+      "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern; die Schnellzugriffe aktualisieren sich beim Tippen. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren.",
     helpSearchClearHelp: "Lösche die aktuelle Suchanfrage.",
     helpQuickLinksHeading: "Zum Thema springen",
     helpQuickLinksAriaLabel: "Schnellnavigation der Hilfethemen",
     helpQuickLinksHelp:
-      "Springe direkt zu einem Abschnitt im Hilfedialog. Die Schaltflächen zeigen nur Themen, die zur aktuellen Suche passen.",
+      "Springe direkt zu einem Abschnitt des Hilfedialogs. Die Schaltflächen aktualisieren sich basierend auf den gefilterten Suchergebnissen.",
     helpQuickLinkButtonHelp:
       "Zum Abschnitt „%s“ im Hilfedialog scrollen.",
     hoverHelpButtonLabel: "Für Hilfe darüberfahren",
     hoverHelpButtonHelp:
-      "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen erscheinen. Du kannst die Einstellungen öffnen, während die Hover-Hilfe aktiv ist, um Optionen zu erkunden, ohne den Modus zu verlassen.",
+      "Aktiviere die Hover-Hilfe, damit beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften kurze Erklärungen eingeblendet werden. Du kannst die Einstellungen öffnen, während der Modus aktiv ist, um Optionen zu erkunden, ohne ihn zu verlassen.",
     setupSelectHelp:
       "Wähle ein gespeichertes Projekt zum Laden oder starte ein neues.",
     setupNameHelp: "Gib einen Namen für das aktuelle Projekt ein.",
