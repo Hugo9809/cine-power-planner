@@ -131,4 +131,61 @@ describe('factory reset cleanup', () => {
     expect(uploadedOptionsAfter.length).toBe(0);
     expect(document.getElementById(styleId)).toBeNull();
   });
+
+  test('resetPlannerStateAfterFactoryReset clears shared project import state', () => {
+    const app = loadApp();
+    const {
+      resetPlannerStateAfterFactoryReset,
+      configureSharedImportOptions,
+      __sharedImportInternals,
+    } = app;
+
+    const sharedImportModeSelect = document.getElementById('sharedImportModeSelect');
+    const projectOption = document.getElementById('sharedImportModeProjectOption');
+    const globalOption = document.getElementById('sharedImportModeGlobalOption');
+    const sharedLinkInput = document.getElementById('sharedLinkInput');
+    const sharedImportDialog = document.getElementById('sharedImportDialog');
+
+    configureSharedImportOptions([
+      { id: 'rule-reset', label: 'Shared Rule', add: [], remove: [] },
+    ]);
+    expect(projectOption.disabled).toBe(false);
+    expect(globalOption.disabled).toBe(false);
+    sharedImportModeSelect.value = 'project';
+    sharedImportDialog.setAttribute('open', '');
+
+    let mockFileInputValue = 'dummy';
+    Object.defineProperty(sharedLinkInput, 'value', {
+      configurable: true,
+      get: () => mockFileInputValue,
+      set: (next) => {
+        mockFileInputValue = next;
+      },
+    });
+    const removeListenerSpy = jest.spyOn(sharedLinkInput, 'removeEventListener');
+    const listener = jest.fn();
+
+    __sharedImportInternals.setPendingSharedLinkListenerForTest(listener);
+    __sharedImportInternals.setLastSharedSetupDataForTest({ id: 'shared' });
+    __sharedImportInternals.setLastSharedAutoGearRulesForTest([{ id: 'rule-reset' }]);
+    __sharedImportInternals.setProjectPresetActiveForTest(true);
+    __sharedImportInternals.setPreviousPresetIdForTest('preset-123');
+    __sharedImportInternals.setPromptActiveForTest(true);
+
+    resetPlannerStateAfterFactoryReset();
+
+    expect(__sharedImportInternals.getLastSharedSetupData()).toBeNull();
+    expect(__sharedImportInternals.getLastSharedAutoGearRules()).toBeNull();
+    expect(__sharedImportInternals.isProjectPresetActive()).toBe(false);
+    expect(__sharedImportInternals.getPreviousPresetId()).toBe('');
+    expect(__sharedImportInternals.isPromptActive()).toBe(false);
+    expect(__sharedImportInternals.getPendingSharedLinkListener()).toBeNull();
+
+    expect(sharedImportModeSelect.value).toBe('none');
+    expect(projectOption.disabled).toBe(true);
+    expect(globalOption.disabled).toBe(true);
+    expect(sharedLinkInput.value).toBe('');
+    expect(removeListenerSpy).toHaveBeenCalledWith('change', listener);
+    expect(sharedImportDialog.hasAttribute('open')).toBe(false);
+  });
 });

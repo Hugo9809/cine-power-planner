@@ -5823,6 +5823,29 @@ function clearStoredSharedImportData() {
   lastSharedAutoGearRules = null;
 }
 
+function resetSharedImportStateForFactoryReset() {
+  clearStoredSharedImportData();
+  sharedImportPromptActive = false;
+  if (sharedImportDialog) {
+    closeDialog(sharedImportDialog);
+  }
+  if (typeof configureSharedImportOptions === 'function') {
+    configureSharedImportOptions([]);
+  }
+  if (sharedLinkInput) {
+    if (
+      pendingSharedLinkListener
+      && typeof sharedLinkInput.removeEventListener === 'function'
+    ) {
+      sharedLinkInput.removeEventListener('change', pendingSharedLinkListener);
+    }
+    sharedLinkInput.value = '';
+  }
+  pendingSharedLinkListener = null;
+  sharedImportPreviousPresetId = '';
+  sharedImportProjectPresetActive = false;
+}
+
 function deactivateSharedImportProjectPreset() {
   if (!sharedImportProjectPresetActive) return;
   const targetPresetId = sharedImportPreviousPresetId || '';
@@ -23018,6 +23041,12 @@ function resetPlannerStateAfterFactoryReset() {
   }
 
   try {
+    resetSharedImportStateForFactoryReset();
+  } catch (error) {
+    console.warn('Failed to reset shared import state during factory reset', error);
+  }
+
+  try {
     updateAutoGearCatalogOptions();
   } catch (error) {
     console.warn('Failed to refresh automatic gear catalog during factory reset', error);
@@ -25533,6 +25562,32 @@ if (typeof module !== "undefined" && module.exports) {
     __customFontInternals: {
       addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
       getEntries: () => Array.from(customFontEntries.values()),
+    },
+    __sharedImportInternals: {
+      getLastSharedSetupData: () => lastSharedSetupData,
+      setLastSharedSetupDataForTest: (value) => {
+        lastSharedSetupData = value;
+      },
+      getLastSharedAutoGearRules: () => lastSharedAutoGearRules,
+      setLastSharedAutoGearRulesForTest: (value) => {
+        lastSharedAutoGearRules = value;
+      },
+      isProjectPresetActive: () => sharedImportProjectPresetActive,
+      setProjectPresetActiveForTest: (value) => {
+        sharedImportProjectPresetActive = !!value;
+      },
+      getPreviousPresetId: () => sharedImportPreviousPresetId,
+      setPreviousPresetIdForTest: (value) => {
+        sharedImportPreviousPresetId = typeof value === 'string' ? value : '';
+      },
+      isPromptActive: () => sharedImportPromptActive,
+      setPromptActiveForTest: (value) => {
+        sharedImportPromptActive = !!value;
+      },
+      getPendingSharedLinkListener: () => pendingSharedLinkListener,
+      setPendingSharedLinkListenerForTest: (listener) => {
+        pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
+      },
     },
     collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml,
