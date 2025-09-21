@@ -1,4 +1,4 @@
-var APP_VERSION = "1.0.4";
+var APP_VERSION = "1.0.5";
 var manualQueryParamWarningShown = false;
 function getQueryParam(search, key) {
   if (!key) {
