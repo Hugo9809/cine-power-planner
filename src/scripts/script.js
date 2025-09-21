@@ -4569,6 +4569,18 @@ const STAR_ICON_SVG = `
   </svg>
 `.trim();
 
+const UBUNTU_ADD_ICON = Object.freeze({
+  char: '+',
+  markup: '+',
+  className: 'icon-text ubuntu-math-icon ubuntu-math-icon-add'
+});
+
+const UBUNTU_MINUS_ICON = Object.freeze({
+  char: '−',
+  markup: '−',
+  className: 'icon-text ubuntu-math-icon ubuntu-math-icon-minus'
+});
+
 const ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
@@ -4587,8 +4599,8 @@ const ICON_GLYPHS = Object.freeze({
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
   load: iconGlyph('\uE0E0', ICON_FONT_KEYS.UICONS),
-  add: iconGlyph('\uE02E', ICON_FONT_KEYS.UICONS),
-  minus: iconGlyph('\uE9E0', ICON_FONT_KEYS.UICONS),
+  add: UBUNTU_ADD_ICON,
+  minus: UBUNTU_MINUS_ICON,
   check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
   fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
   fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),

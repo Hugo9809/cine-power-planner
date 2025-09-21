@@ -1860,6 +1860,12 @@ body.dark-mode .help-callout {
   font-weight: var(--font-weight-light);
 }
 
+.icon-glyph.ubuntu-math-icon {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+}
+
 .icon-glyph.icon-svg {
   font-family: inherit;
 }
