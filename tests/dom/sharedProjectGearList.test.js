@@ -1,3 +1,4 @@
+const LZString = require('lz-string');
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 describe('shared project gear list handling', () => {
@@ -11,7 +12,8 @@ describe('shared project gear list handling', () => {
         saveSessionState: jest.fn(),
         loadSessionState: jest.fn(() => ({})),
         saveSetups: jest.fn(),
-        loadSetups: jest.fn(() => ({}))
+        loadSetups: jest.fn(() => ({})),
+        updateCalculations: jest.fn()
       }
     });
   });
@@ -97,5 +99,50 @@ describe('shared project gear list handling', () => {
     const importedCalls = globals.saveProject.mock.calls.filter(([name]) => name === 'Imported Project');
     expect(importedCalls.length).toBeGreaterThan(0);
     expect(importedCalls.some(([, data]) => data.gearList.includes('Imported'))).toBe(true);
+  });
+
+  test('applySharedSetupFromUrl falls back when URLSearchParams is unavailable', () => {
+    const { utils, globals } = env;
+    const sharedData = {
+      setupName: 'Imported URL Project',
+      projectInfo: { projectName: 'Imported URL Project' },
+      gearList: '<div id="gearList">Shared Gear</div>'
+    };
+
+    const encoded = utils.encodeSharedSetup(sharedData);
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(encoded));
+
+    globals.saveProject.mockClear();
+    globals.updateCalculations.mockClear();
+
+    const originalHref = window.location.href;
+    const expectedPathname = window.location.pathname;
+    const originalURLSearchParams = global.URLSearchParams;
+
+    const encodedSharedValue = encodeURIComponent(compressed);
+    window.history.replaceState(null, '', `?shared=${encodedSharedValue}&lang=en`);
+
+    delete global.URLSearchParams;
+
+    const replaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+
+    try {
+      utils.applySharedSetupFromUrl();
+
+      expect(globals.saveProject).toHaveBeenCalled();
+      const lastCall = globals.saveProject.mock.calls[globals.saveProject.mock.calls.length - 1];
+      expect(lastCall[1]).toEqual(expect.objectContaining({
+        projectInfo: expect.objectContaining({ projectName: 'Imported URL Project' })
+      }));
+      expect(replaceSpy).toHaveBeenCalledWith(null, '', expectedPathname);
+    } finally {
+      replaceSpy.mockRestore();
+      if (typeof originalURLSearchParams === 'undefined') {
+        delete global.URLSearchParams;
+      } else {
+        global.URLSearchParams = originalURLSearchParams;
+      }
+      window.history.replaceState(null, '', originalHref);
+    }
   });
 });
