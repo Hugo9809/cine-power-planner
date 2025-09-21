@@ -13823,7 +13823,7 @@ const diagramCssLight = `
 .node-box{fill:#f0f0f0;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}
-.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
 .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
 .conn{stroke:none;}
 .conn.red{fill:#d33;}
@@ -13842,7 +13842,7 @@ const diagramCssDark = `
 .node-box{fill:#444;stroke:none;}
 .node-box.first-fiz{stroke:none;}
 .first-fiz-highlight{stroke:url(#firstFizGrad);}
-.node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
+.node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
 .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
 .edge-label{font-size:var(--font-size-diagram-label, 11px);}
