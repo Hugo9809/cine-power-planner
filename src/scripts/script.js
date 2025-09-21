@@ -427,6 +427,22 @@ function isAutoGearMonitoringCategory(value) {
   return value.trim().toLowerCase() === 'monitoring';
 }
 
+function setAutoGearFieldVisibility(field, control, visible) {
+  if (!field) return;
+  if (visible) {
+    field.removeAttribute('hidden');
+    field.removeAttribute('aria-hidden');
+    field.removeAttribute('inert');
+  } else {
+    field.setAttribute('hidden', '');
+    field.setAttribute('aria-hidden', 'true');
+    field.setAttribute('inert', '');
+  }
+  if (control) {
+    control.disabled = !visible;
+  }
+}
+
 function updateAutoGearMonitorFieldGroup(group) {
   if (!group || !group.select) return;
   const {
@@ -441,18 +457,21 @@ function updateAutoGearMonitorFieldGroup(group) {
     selectorIncludeCheckbox,
   } = group;
   const isMonitoring = isAutoGearMonitoringCategory(select.value || '');
-  const managedFields = [screenSizeField, selectorTypeField, selectorDefaultField, selectorIncludeField];
-  managedFields.forEach(field => {
-    if (!field) return;
-    if (isMonitoring) {
-      field.removeAttribute('hidden');
-    } else {
-      field.setAttribute('hidden', '');
-    }
-  });
+  const selectorType = selectorTypeSelect
+    ? normalizeAutoGearSelectorType(selectorTypeSelect.value)
+    : 'none';
+  const showSelectorExtras = isMonitoring && selectorType !== 'none';
+
+  setAutoGearFieldVisibility(screenSizeField, screenSizeInput, isMonitoring);
+  setAutoGearFieldVisibility(selectorTypeField, selectorTypeSelect, isMonitoring);
+  setAutoGearFieldVisibility(selectorDefaultField, selectorDefaultInput, showSelectorExtras);
+  setAutoGearFieldVisibility(selectorIncludeField, selectorIncludeCheckbox, showSelectorExtras);
+
   if (!isMonitoring) {
     if (screenSizeInput) screenSizeInput.value = '';
     if (selectorTypeSelect) selectorTypeSelect.value = 'none';
+  }
+  if (!showSelectorExtras) {
     if (selectorDefaultInput) selectorDefaultInput.value = '';
     if (selectorIncludeCheckbox) selectorIncludeCheckbox.checked = false;
   }
@@ -463,12 +482,19 @@ function normalizeAutoGearItem(entry) {
   const name = normalizeAutoGearText(entry.name);
   if (!name) return null;
   const category = normalizeAutoGearText(entry.category);
+  const isMonitoringCategory = isAutoGearMonitoringCategory(category);
   const quantity = normalizeAutoGearQuantity(entry.quantity);
   const id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('item');
-  const screenSize = normalizeAutoGearText(entry.screenSize);
-  const selectorType = normalizeAutoGearSelectorType(entry.selectorType);
-  const selectorDefault = normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault);
-  const selectorEnabled = !!entry.selectorEnabled;
+  const screenSize = isMonitoringCategory ? normalizeAutoGearText(entry.screenSize) : '';
+  const selectorType = isMonitoringCategory
+    ? normalizeAutoGearSelectorType(entry.selectorType)
+    : 'none';
+  const selectorDefault = isMonitoringCategory
+    ? normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault)
+    : '';
+  const selectorEnabled = isMonitoringCategory && selectorType !== 'none'
+    ? !!entry.selectorEnabled
+    : false;
   const notes = normalizeAutoGearText(entry.notes);
   return { id, name, category, quantity, screenSize, selectorType, selectorDefault, selectorEnabled, notes };
 }
@@ -8836,7 +8862,6 @@ function openAutoGearEditor(ruleId) {
   refreshAutoGearVideoDistributionOptions(autoGearEditorDraft.videoDistribution);
   populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearEditorDraft.add[0]?.category || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearEditorDraft.remove[0]?.category || '');
-  syncAutoGearMonitorFieldVisibility();
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearAddScreenSizeInput) autoGearAddScreenSizeInput.value = '';
@@ -8851,6 +8876,7 @@ function openAutoGearEditor(ruleId) {
   if (autoGearRemoveSelectorDefaultInput) autoGearRemoveSelectorDefaultInput.value = '';
   if (autoGearRemoveSelectorIncludeCheckbox) autoGearRemoveSelectorIncludeCheckbox.checked = false;
   if (autoGearRemoveNotesInput) autoGearRemoveNotesInput.value = '';
+  syncAutoGearMonitorFieldVisibility();
   renderAutoGearDraftLists();
   if (autoGearRuleNameInput) autoGearRuleNameInput.focus();
 }
@@ -8947,6 +8973,7 @@ function addAutoGearDraftItem(type) {
   if (notesInput) notesInput.value = '';
   renderAutoGearDraftLists();
   updateAutoGearCatalogOptions();
+  syncAutoGearMonitorFieldVisibility();
 }
 
 function saveAutoGearRuleFromEditor() {
@@ -22720,8 +22747,14 @@ if (autoGearAddItemButton) {
   if (autoGearAddCategorySelect) {
     autoGearAddCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
   }
+  if (autoGearAddSelectorTypeSelect) {
+    autoGearAddSelectorTypeSelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
+  }
   if (autoGearRemoveCategorySelect) {
     autoGearRemoveCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
+  }
+  if (autoGearRemoveSelectorTypeSelect) {
+    autoGearRemoveSelectorTypeSelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
   }
   if (autoGearEditor) {
     autoGearEditor.addEventListener('click', event => {
