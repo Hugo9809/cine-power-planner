@@ -84,18 +84,19 @@ function generatePrintableOverview() {
     processSelectForOverview(batterySelect, 'category_batteries', 'batteries'); // Handle battery separately for capacity
     processSelectForOverview(hotswapSelect, 'category_batteryHotswaps', 'batteryHotswaps');
 
-      sectionOrder.forEach(key => {
-          const heading = t[key] || key;
-          const icon = overviewSectionIcons[key] || '';
-          const iconHtml = icon && typeof iconMarkup === 'function'
-            ? iconMarkup(icon, 'category-icon')
-            : icon
-              ? `<span class="category-icon icon-glyph" data-icon-font="uicons" aria-hidden="true">${icon}</span>`
-              : '';
-          const gridClasses = (key === 'category_fiz_motors' || key === 'category_fiz_controllers') ? 'device-block-grid two-column' : 'device-block-grid single-column';
-        deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
-      });
-      deviceListHtml += '</div>';
+    sectionOrder.forEach(key => {
+      const heading = t[key] || key;
+      const icon = overviewSectionIcons[key] || '';
+      const iconHtml = icon && typeof iconMarkup === 'function'
+        ? iconMarkup(icon, 'category-icon')
+        : icon
+          ? `<span class="category-icon icon-glyph" data-icon-font="uicons" aria-hidden="true">${icon}</span>`
+          : '';
+      const isFizList = key === 'category_fiz_motors' || key === 'category_fiz_controllers';
+      const gridClasses = isFizList ? 'device-block-grid two-column fiz-single-column' : 'device-block-grid single-column';
+      deviceListHtml += `<div class="device-category"><h3>${iconHtml}${heading}</h3><div class="${gridClasses}">${sections[key].join('')}</div></div>`;
+    });
+    deviceListHtml += '</div>';
 
     const breakdownHtml = breakdownListElem.innerHTML;
     const batteryLifeUnitElem = document.getElementById("batteryLifeUnit");

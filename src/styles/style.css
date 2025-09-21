@@ -4398,6 +4398,9 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 #overviewDialogContent .device-block-grid.two-column {
   grid-template-columns: repeat(2, 1fr);
 }
+#overviewDialogContent .device-block-grid.fiz-single-column {
+  grid-template-columns: 1fr;
+}
 
 @media screen and (max-width: 600px) {
   #overviewDialogContent .device-category-container {

@@ -76,7 +76,8 @@ function generatePrintableOverview() {
     var heading = t[key] || key;
     var icon = overviewSectionIcons[key] || '';
     var iconHtml = icon && typeof iconMarkup === 'function' ? iconMarkup(icon, 'category-icon') : icon ? "<span class=\"category-icon icon-glyph\" data-icon-font=\"uicons\" aria-hidden=\"true\">".concat(icon, "</span>") : '';
-    var gridClasses = key === 'category_fiz_motors' || key === 'category_fiz_controllers' ? 'device-block-grid two-column' : 'device-block-grid single-column';
+    var isFizList = key === 'category_fiz_motors' || key === 'category_fiz_controllers';
+    var gridClasses = isFizList ? 'device-block-grid two-column fiz-single-column' : 'device-block-grid single-column';
     deviceListHtml += "<div class=\"device-category\"><h3>".concat(iconHtml).concat(heading, "</h3><div class=\"").concat(gridClasses, "\">").concat(sections[key].join(''), "</div></div>");
   });
   deviceListHtml += '</div>';
