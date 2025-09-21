@@ -227,6 +227,10 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   flex-wrap: wrap;
 }
 
+.diagram-controls button .btn-icon:only-child {
+  margin-right: 0;
+}
+
 .diagram-controls button {
   min-width: var(--button-size);
   min-height: var(--button-size);

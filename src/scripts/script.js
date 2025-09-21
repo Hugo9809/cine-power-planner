@@ -4118,13 +4118,13 @@ function setLanguage(lang) {
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
   }
   if (zoomInBtn) {
-    setButtonLabelWithIcon(zoomInBtn, texts[lang].zoomInLabel, ICON_GLYPHS.add);
+    setButtonLabelWithIcon(zoomInBtn, '', ICON_GLYPHS.add);
     zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("data-help", texts[lang].zoomInHelp);
   }
   if (zoomOutBtn) {
-    setButtonLabelWithIcon(zoomOutBtn, texts[lang].zoomOutLabel, ICON_GLYPHS.minus);
+    setButtonLabelWithIcon(zoomOutBtn, '', ICON_GLYPHS.minus);
     zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("data-help", texts[lang].zoomOutHelp);

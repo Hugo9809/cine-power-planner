@@ -423,6 +423,10 @@ body:not(.light-mode) .gear-table .category-row td {
   height: auto !important;
 }
 
+#overviewDialogContent .diagram-controls button .btn-icon:only-child {
+  margin-right: 0 !important;
+}
+
 .warning {
   font-weight: var(--font-weight-bold);
 }

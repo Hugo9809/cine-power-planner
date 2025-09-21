@@ -3164,7 +3164,7 @@ function parseSnapshotJSONValue(entry) {
     }
     try {
       return JSON.parse(trimmed);
-    } catch (error) {
+    } catch {
       return raw;
     }
   }
