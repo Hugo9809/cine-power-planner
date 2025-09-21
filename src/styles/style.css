@@ -1922,6 +1922,10 @@ body.pink-mode .auto-gear-rule-title,
   margin-right: 0.3em;
 }
 
+button .btn-icon:only-child {
+  margin-right: 0;
+}
+
 .favorite-icon.icon-glyph {
   --icon-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
 }
