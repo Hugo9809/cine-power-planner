@@ -21666,7 +21666,10 @@ function generateGearListHtml(info = {}) {
             const diameters = [...new Set(lensNames
                 .map(n => devices.lenses && devices.lenses[n] && devices.lenses[n].frontDiameterMm)
                 .filter(Boolean))];
-            diameters.forEach(d => filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${d}mm`));
+            diameters.forEach(diameterMm => {
+                filterSelections.push(`ARRI LMB 4x5 Clamp Adapter ${diameterMm}mm`);
+                filterSelections.push(`Clamp-on backing ${diameterMm}mm`);
+            });
         }
     }
     viewfinderExtSelections.forEach(vf => supportAccNoCages.push(vf));
