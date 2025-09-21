@@ -17844,6 +17844,10 @@ function generateConnectorSummary(device) {
   if (device.power?.input?.voltageRange) {
     specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}Voltage: ${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
   }
+  if (typeof device.weight_g === 'number') {
+    const weightLabel = `${device.weight_g} g`;
+    specHtml += `<span class="info-box neutral-conn">${iconMarkup(ICON_GLYPHS.gears)}Weight: ${escapeHtml(weightLabel)}</span>`;
+  }
   if (typeof device.capacity === 'number') {
         specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}Capacity: ${device.capacity} Wh</span>`;
     }
@@ -17875,6 +17879,42 @@ function generateConnectorSummary(device) {
     specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSource)}Power Source: ${escapeHtml(String(device.powerSource))}</span>`;
   }
 
+  const uniqueList = list => {
+    if (!Array.isArray(list)) return [];
+    const seen = new Set();
+    const values = [];
+    list.forEach(entry => {
+      const str = entry != null ? String(entry).trim() : '';
+      if (!str || seen.has(str)) return;
+      seen.add(str);
+      values.push(escapeHtml(str));
+    });
+    return values;
+  };
+
+  const appendListBox = (html, values, label, cls, icon) => {
+    const formatted = uniqueList(values);
+    if (!formatted.length) return html;
+    const iconHtml = iconMarkup(icon);
+    return `${html}<span class="info-box ${cls}">${iconHtml}${label}: ${formatted.join(', ')}</span>`;
+  };
+
+  let recordingHtml = '';
+  if (Array.isArray(device.sensorModes)) {
+    recordingHtml = appendListBox(recordingHtml, device.sensorModes, 'Sensor Modes', 'video-conn', ICON_GLYPHS.sensor);
+  }
+  if (Array.isArray(device.resolutions)) {
+    recordingHtml = appendListBox(recordingHtml, device.resolutions, 'Resolutions', 'video-conn', ICON_GLYPHS.screen);
+  }
+  if (Array.isArray(device.recordingCodecs)) {
+    recordingHtml = appendListBox(recordingHtml, device.recordingCodecs, 'Codecs', 'video-conn', ICON_GLYPHS.camera);
+  }
+  if (Array.isArray(device.recordingMedia)) {
+    const mediaTypes = device.recordingMedia
+      .map(item => (item && item.type ? item.type : ''));
+    recordingHtml = appendListBox(recordingHtml, mediaTypes, 'Media', 'video-conn', ICON_GLYPHS.save);
+  }
+
     let extraHtml = '';
     if (Array.isArray(device.power?.batteryPlateSupport) && device.power.batteryPlateSupport.length) {
         const types = device.power.batteryPlateSupport.map(p => {
@@ -17882,10 +17922,6 @@ function generateConnectorSummary(device) {
             return `${escapeHtml(p.type)}${mount}`;
         });
         extraHtml += `<span class="info-box power-conn">Battery Plate: ${types.join(', ')}</span>`;
-    }
-    if (Array.isArray(device.recordingMedia) && device.recordingMedia.length) {
-        const types = device.recordingMedia.map(m => escapeHtml(m.type));
-        extraHtml += `<span class="info-box video-conn">Media: ${types.join(', ')}</span>`;
     }
     if (Array.isArray(device.viewfinder) && device.viewfinder.length) {
         const types = device.viewfinder.map(v => escapeHtml(v.type));
@@ -17919,6 +17955,7 @@ function generateConnectorSummary(device) {
 
     html += section('Ports', portHtml);
     html += section('Specs', specHtml);
+    html += section('Recording', recordingHtml);
     html += section('Extras', extraHtml);
     if (lensHtml) html += `<div class="info-label">Lens Mount</div>${lensHtml}`;
 
