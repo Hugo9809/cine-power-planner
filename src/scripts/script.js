@@ -2880,7 +2880,7 @@ function setLanguage(lang) {
     const confirmLabel = texts[lang].shareDialogConfirm
       || texts.en?.shareDialogConfirm
       || shareConfirmBtn.textContent;
-    shareConfirmBtn.textContent = confirmLabel;
+    setButtonLabelWithIcon(shareConfirmBtn, confirmLabel, ICON_GLYPHS.fileExport);
     shareConfirmBtn.setAttribute('title', confirmLabel);
     shareConfirmBtn.setAttribute('aria-label', confirmLabel);
     shareConfirmBtn.setAttribute('data-help', texts[lang].shareSetupHelp);
@@ -2890,7 +2890,7 @@ function setLanguage(lang) {
     const cancelLabel = texts[lang].shareDialogCancel
       || texts.en?.shareDialogCancel
       || shareCancelBtn.textContent;
-    shareCancelBtn.textContent = cancelLabel;
+    setButtonLabelWithIcon(shareCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
     shareCancelBtn.setAttribute('title', cancelLabel);
     shareCancelBtn.setAttribute('aria-label', cancelLabel);
   }
@@ -2929,14 +2929,14 @@ function setLanguage(lang) {
     const label = texts[lang].sharedImportDialogConfirm
       || texts.en?.sharedImportDialogConfirm
       || sharedImportConfirmBtn.textContent;
-    sharedImportConfirmBtn.textContent = label;
+    setButtonLabelWithIcon(sharedImportConfirmBtn, label, ICON_GLYPHS.check);
     sharedImportConfirmBtn.setAttribute('data-help', label);
   }
   if (sharedImportCancelBtn) {
     const label = texts[lang].sharedImportDialogCancel
       || texts.en?.sharedImportDialogCancel
       || sharedImportCancelBtn.textContent;
-    sharedImportCancelBtn.textContent = label;
+    setButtonLabelWithIcon(sharedImportCancelBtn, label, ICON_GLYPHS.circleX);
     sharedImportCancelBtn.setAttribute('data-help', label);
   }
   if (sharedImportLegend) {
@@ -3206,12 +3206,12 @@ function setLanguage(lang) {
   updateDeviceManagerLocalization(lang);
   // Toggle device manager button text (depends on current visibility)
   if (deviceManagerSection.classList.contains('hidden')) {
-    toggleDeviceBtn.textContent = texts[lang].toggleDeviceManager;
+    setButtonLabelWithIcon(toggleDeviceBtn, texts[lang].toggleDeviceManager, ICON_GLYPHS.gears);
     toggleDeviceBtn.setAttribute("title", texts[lang].toggleDeviceManager);
     toggleDeviceBtn.setAttribute("data-help", texts[lang].toggleDeviceManagerHelp);
     toggleDeviceBtn.setAttribute("aria-expanded", "false");
   } else {
-    toggleDeviceBtn.textContent = texts[lang].hideDeviceManager;
+    setButtonLabelWithIcon(toggleDeviceBtn, texts[lang].hideDeviceManager, ICON_GLYPHS.minus);
     toggleDeviceBtn.setAttribute("title", texts[lang].hideDeviceManager);
     toggleDeviceBtn.setAttribute("data-help", texts[lang].hideDeviceManagerHelp);
     toggleDeviceBtn.setAttribute("aria-expanded", "true");
@@ -3364,7 +3364,7 @@ function setLanguage(lang) {
       (texts.en && texts.en.localFontsButton) ||
       localFontsButton.textContent;
     if (localFontsLabel) {
-      localFontsButton.textContent = localFontsLabel;
+      setButtonLabelWithIcon(localFontsButton, localFontsLabel, ICON_GLYPHS.add);
       localFontsButton.setAttribute('aria-label', localFontsLabel);
       localFontsButton.setAttribute('title', localFontsLabel);
     }
@@ -3424,7 +3424,7 @@ function setLanguage(lang) {
     const label = texts[lang].autoGearSavePresetButton
       || texts.en?.autoGearSavePresetButton
       || autoGearSavePresetButton.textContent;
-    autoGearSavePresetButton.textContent = label;
+    setButtonLabelWithIcon(autoGearSavePresetButton, label, ICON_GLYPHS.save);
     autoGearSavePresetButton.setAttribute('data-help', label);
     autoGearSavePresetButton.setAttribute('aria-label', label);
   }
@@ -3432,13 +3432,13 @@ function setLanguage(lang) {
     const label = texts[lang].autoGearDeletePresetButton
       || texts.en?.autoGearDeletePresetButton
       || autoGearDeletePresetButton.textContent;
-    autoGearDeletePresetButton.textContent = label;
+    setButtonLabelWithIcon(autoGearDeletePresetButton, label, ICON_GLYPHS.trash);
     autoGearDeletePresetButton.setAttribute('data-help', label);
     autoGearDeletePresetButton.setAttribute('aria-label', label);
   }
   if (autoGearAddRuleBtn) {
     const label = texts[lang].autoGearAddRule || texts.en?.autoGearAddRule || autoGearAddRuleBtn.textContent;
-    autoGearAddRuleBtn.textContent = label;
+    setButtonLabelWithIcon(autoGearAddRuleBtn, label, ICON_GLYPHS.add);
     const help = texts[lang].autoGearHeadingHelp || texts.en?.autoGearHeadingHelp || label;
     autoGearAddRuleBtn.setAttribute('data-help', help);
   }
@@ -3449,7 +3449,7 @@ function setLanguage(lang) {
     const help = texts[lang].autoGearResetFactoryHelp
       || texts.en?.autoGearResetFactoryHelp
       || label;
-    autoGearResetFactoryButton.textContent = label;
+    setButtonLabelWithIcon(autoGearResetFactoryButton, label, ICON_GLYPHS.reload);
     autoGearResetFactoryButton.setAttribute('data-help', help);
     autoGearResetFactoryButton.setAttribute('title', help);
     autoGearResetFactoryButton.setAttribute('aria-label', label);
@@ -3461,7 +3461,7 @@ function setLanguage(lang) {
     const help = texts[lang].autoGearExportHelp
       || texts.en?.autoGearExportHelp
       || label;
-    autoGearExportButton.textContent = label;
+    setButtonLabelWithIcon(autoGearExportButton, label, ICON_GLYPHS.fileExport);
     autoGearExportButton.setAttribute('data-help', help);
     autoGearExportButton.setAttribute('title', help);
     autoGearExportButton.setAttribute('aria-label', label);
@@ -3473,7 +3473,7 @@ function setLanguage(lang) {
     const help = texts[lang].autoGearImportHelp
       || texts.en?.autoGearImportHelp
       || label;
-    autoGearImportButton.textContent = label;
+    setButtonLabelWithIcon(autoGearImportButton, label, ICON_GLYPHS.fileImport);
     autoGearImportButton.setAttribute('data-help', help);
     autoGearImportButton.setAttribute('title', help);
     autoGearImportButton.setAttribute('aria-label', label);
@@ -3526,7 +3526,7 @@ function setLanguage(lang) {
     const label = texts[lang].autoGearBackupRestore
       || texts.en?.autoGearBackupRestore
       || autoGearBackupRestoreButton.textContent;
-    autoGearBackupRestoreButton.textContent = label;
+    setButtonLabelWithIcon(autoGearBackupRestoreButton, label, ICON_GLYPHS.fileImport);
     autoGearBackupRestoreButton.setAttribute('aria-label', label);
     autoGearBackupRestoreButton.setAttribute('title', label);
   }
@@ -3677,7 +3677,7 @@ function setLanguage(lang) {
   }
   if (autoGearAddItemButton) {
     const label = texts[lang].autoGearAddItemButton || texts.en?.autoGearAddItemButton || autoGearAddItemButton.textContent;
-    autoGearAddItemButton.textContent = label;
+    setButtonLabelWithIcon(autoGearAddItemButton, label, ICON_GLYPHS.add);
     autoGearAddItemButton.setAttribute('data-help', label);
   }
   if (autoGearRemoveItemsHeading) {
@@ -3758,7 +3758,7 @@ function setLanguage(lang) {
   }
   if (autoGearRemoveItemButton) {
     const label = texts[lang].autoGearRemoveItemButton || texts.en?.autoGearRemoveItemButton || autoGearRemoveItemButton.textContent;
-    autoGearRemoveItemButton.textContent = label;
+    setButtonLabelWithIcon(autoGearRemoveItemButton, label, ICON_GLYPHS.minus);
     autoGearRemoveItemButton.setAttribute('data-help', label);
   }
   if (autoGearSaveRuleButton) {
@@ -3858,17 +3858,19 @@ function setLanguage(lang) {
     }
   }
   if (backupSettings) {
-    backupSettings.textContent = texts[lang].backupSettings;
+    const backupLabel = texts[lang].backupSettings;
+    setButtonLabelWithIcon(backupSettings, backupLabel, ICON_GLYPHS.fileExport);
     const backupHelp =
-      texts[lang].backupSettingsHelp || texts[lang].backupSettings;
+      texts[lang].backupSettingsHelp || backupLabel;
     backupSettings.setAttribute("data-help", backupHelp);
     backupSettings.setAttribute("title", backupHelp);
     backupSettings.setAttribute("aria-label", backupHelp);
   }
   if (restoreSettings) {
-    restoreSettings.textContent = texts[lang].restoreSettings;
+    const restoreLabel = texts[lang].restoreSettings;
+    setButtonLabelWithIcon(restoreSettings, restoreLabel, ICON_GLYPHS.fileImport);
     const restoreHelp =
-      texts[lang].restoreSettingsHelp || texts[lang].restoreSettings;
+      texts[lang].restoreSettingsHelp || restoreLabel;
     restoreSettings.setAttribute("data-help", restoreHelp);
     restoreSettings.setAttribute("title", restoreHelp);
     restoreSettings.setAttribute("aria-label", restoreHelp);
@@ -3877,7 +3879,7 @@ function setLanguage(lang) {
     const resetLabel = texts[lang].factoryResetButton || "Factory reset";
     const resetHelp =
       texts[lang].factoryResetButtonHelp || resetLabel;
-    factoryResetButton.textContent = resetLabel;
+    setButtonLabelWithIcon(factoryResetButton, resetLabel, ICON_GLYPHS.reload);
     factoryResetButton.setAttribute("data-help", resetHelp);
     factoryResetButton.setAttribute("title", resetHelp);
     factoryResetButton.setAttribute("aria-label", resetHelp);
@@ -3963,13 +3965,13 @@ function setLanguage(lang) {
         texts[lang].helpButtonTitle ||
         texts[lang].helpButtonLabel
     );
-    if (hoverHelpButton) {
-      hoverHelpButton.textContent = texts[lang].hoverHelpButtonLabel;
-      hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
-      hoverHelpButton.setAttribute(
-        "data-help",
-        texts[lang].hoverHelpButtonHelp || texts[lang].hoverHelpButtonLabel
-      );
+  if (hoverHelpButton) {
+    setButtonLabelWithIcon(hoverHelpButton, texts[lang].hoverHelpButtonLabel, ICON_GLYPHS.note);
+    hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
+    hoverHelpButton.setAttribute(
+      "data-help",
+      texts[lang].hoverHelpButtonHelp || texts[lang].hoverHelpButtonLabel
+    );
     }
     if (helpSearch) {
       helpSearch.setAttribute("placeholder", texts[lang].helpSearchPlaceholder);
@@ -3988,7 +3990,7 @@ function setLanguage(lang) {
       );
     }
     if (closeHelpBtn) {
-      closeHelpBtn.textContent = texts[lang].helpClose;
+      setButtonLabelWithIcon(closeHelpBtn, texts[lang].helpClose, ICON_GLYPHS.circleX);
       closeHelpBtn.setAttribute("title", texts[lang].helpClose);
       closeHelpBtn.setAttribute("aria-label", texts[lang].helpClose);
       closeHelpBtn.setAttribute(
@@ -4023,7 +4025,7 @@ function setLanguage(lang) {
   );
   const exportRevert = document.getElementById("exportAndRevertBtn");
   if (exportRevert) {
-    exportRevert.textContent = texts[lang].exportAndRevertBtn;
+    setButtonLabelWithIcon(exportRevert, texts[lang].exportAndRevertBtn, ICON_GLYPHS.reload);
     exportRevert.setAttribute('data-help', texts[lang].exportAndRevertBtnHelp);
   }
 
@@ -4047,11 +4049,13 @@ function setLanguage(lang) {
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
   }
   if (zoomInBtn) {
+    setButtonLabelWithIcon(zoomInBtn, texts[lang].zoomInLabel, ICON_GLYPHS.add);
     zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("data-help", texts[lang].zoomInHelp);
   }
   if (zoomOutBtn) {
+    setButtonLabelWithIcon(zoomOutBtn, texts[lang].zoomOutLabel, ICON_GLYPHS.minus);
     zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("data-help", texts[lang].zoomOutHelp);
@@ -4131,7 +4135,10 @@ function setLanguage(lang) {
     }
     if (projectSubmitBtn) {
       const submitText = projectFormTexts.submit || fallbackProjectForm.submit;
-      if (submitText) projectSubmitBtn.textContent = submitText;
+      if (submitText) {
+        setButtonLabelWithIcon(projectSubmitBtn, submitText, ICON_GLYPHS.check);
+        projectSubmitBtn.setAttribute('aria-label', submitText);
+      }
     }
     const crewPlaceholders = {
       name: projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder,
@@ -4156,6 +4163,29 @@ function setLanguage(lang) {
       const emailInput = row.querySelector('.person-email');
       if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
     });
+    const stripTrailingPunctuation = value => (typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '') : value);
+    const addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
+    if (addPersonBtn) {
+      const crewLabel = stripTrailingPunctuation(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
+      const label = `${addEntryLabel} ${crewLabel}`.trim();
+      setButtonLabelWithIcon(addPersonBtn, label, ICON_GLYPHS.add);
+      addPersonBtn.setAttribute('aria-label', label);
+      addPersonBtn.setAttribute('data-help', label);
+    }
+    if (addPrepBtn) {
+      const prepLabel = stripTrailingPunctuation(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
+      const label = `${addEntryLabel} ${prepLabel}`.trim();
+      setButtonLabelWithIcon(addPrepBtn, label, ICON_GLYPHS.add);
+      addPrepBtn.setAttribute('aria-label', label);
+      addPrepBtn.setAttribute('data-help', label);
+    }
+    if (addShootBtn) {
+      const shootLabel = stripTrailingPunctuation(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
+      const label = `${addEntryLabel} ${shootLabel}`.trim();
+      setButtonLabelWithIcon(addShootBtn, label, ICON_GLYPHS.add);
+      addShootBtn.setAttribute('aria-label', label);
+      addShootBtn.setAttribute('data-help', label);
+    }
   }
   if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
   if (iosPwaHelpIntro) iosPwaHelpIntro.textContent = texts[lang].iosPwaHelpIntro;
@@ -4165,8 +4195,9 @@ function setLanguage(lang) {
   if (iosPwaHelpStep4) iosPwaHelpStep4.textContent = texts[lang].iosPwaHelpStep4;
   if (iosPwaHelpNote) iosPwaHelpNote.textContent = texts[lang].iosPwaHelpNote;
   if (iosPwaHelpClose) {
-    iosPwaHelpClose.textContent = texts[lang].iosPwaHelpClose;
-    iosPwaHelpClose.setAttribute('aria-label', texts[lang].iosPwaHelpClose);
+    const closeText = texts[lang].iosPwaHelpClose;
+    setButtonLabelWithIcon(iosPwaHelpClose, closeText, ICON_GLYPHS.check);
+    iosPwaHelpClose.setAttribute('aria-label', closeText);
   }
 
   document.querySelectorAll('.favorite-toggle').forEach(btn => {
@@ -4456,6 +4487,53 @@ const LOAD_ICON_SVG = `
   </svg>
 `.trim();
 
+const PLUS_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      d="M12 5v14"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M5 12h14"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`.trim();
+
+const MINUS_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      d="M5 12h14"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`.trim();
+
+const CHECK_ICON_SVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path
+      d="M5 12.5 9.5 17 19 7.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+`.trim();
+
 const PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
 const RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
 const ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
@@ -4491,6 +4569,9 @@ const ICON_GLYPHS = Object.freeze({
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
   load: Object.freeze({ markup: LOAD_ICON_SVG, className: 'icon-svg' }),
+  add: Object.freeze({ markup: PLUS_ICON_SVG, className: 'icon-svg' }),
+  minus: Object.freeze({ markup: MINUS_ICON_SVG, className: 'icon-svg' }),
+  check: Object.freeze({ markup: CHECK_ICON_SVG, className: 'icon-svg' }),
   fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
   fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
   save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
@@ -5325,7 +5406,17 @@ function createCrewRow(data = {}) {
   emailInput.value = data.email || '';
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  const removeBase = texts[currentLang]?.projectForm?.removeEntry
+    || texts.en?.projectForm?.removeEntry
+    || 'Remove';
+  const crewHeading = texts[currentLang]?.projectForm?.crewHeading
+    || texts.en?.projectForm?.crewHeading
+    || 'Crew';
+  const removeCrewLabel = `${removeBase} ${crewHeading}`.trim();
+  removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
+  removeBtn.setAttribute('aria-label', removeCrewLabel);
+  removeBtn.setAttribute('title', removeCrewLabel);
+  removeBtn.setAttribute('data-help', removeCrewLabel);
   removeBtn.addEventListener('click', () => {
     row.remove();
     scheduleProjectAutoSave(true);
@@ -5352,7 +5443,15 @@ function createPrepRow(data = {}) {
   end.setAttribute('aria-labelledby', 'prepLabel');
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  const removeBase = texts[currentLang]?.projectForm?.removeEntry
+    || texts.en?.projectForm?.removeEntry
+    || 'Remove';
+  const prepLabelText = texts[currentLang]?.projectForm?.prepLabel || texts.en?.projectForm?.prepLabel || 'Prep';
+  const removePrepLabel = `${removeBase} ${prepLabelText}`.trim();
+  removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
+  removeBtn.setAttribute('aria-label', removePrepLabel);
+  removeBtn.setAttribute('title', removePrepLabel);
+  removeBtn.setAttribute('data-help', removePrepLabel);
   removeBtn.addEventListener('click', () => {
     row.remove();
     scheduleProjectAutoSave(true);
@@ -5379,7 +5478,15 @@ function createShootRow(data = {}) {
   end.setAttribute('aria-labelledby', 'shootLabel');
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  const removeBase = texts[currentLang]?.projectForm?.removeEntry
+    || texts.en?.projectForm?.removeEntry
+    || 'Remove';
+  const shootLabelText = texts[currentLang]?.projectForm?.shootLabel || texts.en?.projectForm?.shootLabel || 'Shoot';
+  const removeShootLabel = `${removeBase} ${shootLabelText}`.trim();
+  removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
+  removeBtn.setAttribute('aria-label', removeShootLabel);
+  removeBtn.setAttribute('title', removeShootLabel);
+  removeBtn.setAttribute('data-help', removeShootLabel);
   removeBtn.addEventListener('click', () => {
     row.remove();
     scheduleProjectAutoSave(true);
@@ -8747,8 +8854,9 @@ function applyInstallTexts(lang) {
   }
   const closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose;
   if (installGuideClose && closeLabel) {
-    installGuideClose.textContent = closeLabel;
+    setButtonLabelWithIcon(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
     installGuideClose.setAttribute('aria-label', closeLabel);
+    installGuideClose.setAttribute('title', closeLabel);
   }
   if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
     renderInstallGuideContent(currentInstallGuidePlatform, lang);
@@ -11809,6 +11917,7 @@ const feedbackDialog = document.getElementById("feedbackDialog");
 const feedbackForm = document.getElementById("feedbackForm");
 const feedbackCancelBtn = document.getElementById("fbCancel");
 const feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
+const feedbackSubmitBtn = document.getElementById("fbSubmit");
 if (feedbackCancelBtn) {
   const cancelLabel =
     feedbackCancelBtn.textContent?.trim() ||
@@ -11816,6 +11925,18 @@ if (feedbackCancelBtn) {
     texts.en?.cancelEditBtn ||
     'Cancel';
   setButtonLabelWithIcon(feedbackCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
+}
+if (feedbackUseLocationBtn) {
+  const locationLabel = feedbackUseLocationBtn.textContent?.trim() || 'Use Current Location';
+  setButtonLabelWithIcon(feedbackUseLocationBtn, locationLabel, ICON_GLYPHS.pin);
+}
+if (feedbackSubmitBtn) {
+  const submitLabel =
+    feedbackSubmitBtn.textContent?.trim() ||
+    texts[currentLang]?.feedbackSubmit ||
+    texts.en?.feedbackSubmit ||
+    'Save & Submit';
+  setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.save);
 }
 const loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
 const saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
@@ -14597,6 +14718,10 @@ function renderFeedbackTable(currentKey) {
 
   const maxWeight = Math.max(...breakdown.filter(Boolean).map(b => b.weight), 0);
   let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '<th></th></tr>';
+  const deleteFeedbackLabel =
+    texts[currentLang]?.deleteSetupBtn ||
+    texts.en?.deleteSetupBtn ||
+    'Delete';
   entries.forEach((entry, index) => {
     html += '<tr>';
     columns.forEach(c => {
@@ -14624,13 +14749,15 @@ function renderFeedbackTable(currentKey) {
         html += `<td>${escapeHtml(entry[c.key] || '')}</td>`;
       }
     });
-    html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">Delete</button></td>`;
+    html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">${iconMarkup(ICON_GLYPHS.trash, 'btn-icon')}${escapeHtml(deleteFeedbackLabel)}</button></td>`;
     html += '</tr>';
   });
   table.innerHTML = html;
   table.classList.remove('hidden');
   if (container) container.classList.remove('hidden');
   table.querySelectorAll('.deleteFeedbackBtn').forEach(btn => {
+    btn.setAttribute('aria-label', deleteFeedbackLabel);
+    btn.setAttribute('title', deleteFeedbackLabel);
     btn.addEventListener('click', () => {
       const key = decodeURIComponent(btn.dataset.key);
       const idx = parseInt(btn.dataset.index, 10);

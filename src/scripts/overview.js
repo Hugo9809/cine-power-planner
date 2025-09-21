@@ -303,7 +303,7 @@ function generatePrintableOverview() {
     const deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
     const deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
     const gearListActionsHtml = gearListHtmlCombined
-        ? `<div class="overview-gear-actions"><button id="overviewDeleteGearListBtn" class="overview-delete-gear-btn" title="${escapeHtmlSafe(deleteGearListHelp)}" data-help="${escapeHtmlSafe(deleteGearListHelp)}">${escapeHtmlSafe(deleteGearListLabel)}</button></div>`
+        ? `<div class="overview-gear-actions"><button id="overviewDeleteGearListBtn" class="overview-delete-gear-btn" title="${escapeHtmlSafe(deleteGearListHelp)}" data-help="${escapeHtmlSafe(deleteGearListHelp)}"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF254;</span>${escapeHtmlSafe(deleteGearListLabel)}</button></div>`
         : '';
 
     const logoHtml = customLogo ? `<img id="printLogo" src="${customLogo}" alt="Logo" />` : '';
@@ -311,8 +311,8 @@ function generatePrintableOverview() {
     const overviewHtml = `
         <div id="overviewDialogContent" class="${contentClass}">
             <div class="overview-actions">
-                <button id="closeOverviewBtn" class="back-btn">${t.backToAppBtn}</button>
-                <button id="printOverviewBtn" class="print-btn">${t.printBtn}</button>
+                <button id="closeOverviewBtn" class="back-btn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>${escapeHtmlSafe(t.backToAppBtn)}</button>
+                <button id="printOverviewBtn" class="print-btn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>${escapeHtmlSafe(t.printBtn)}</button>
             </div>
             ${logoHtml}
             <h1>${t.overviewTitle}</h1>
