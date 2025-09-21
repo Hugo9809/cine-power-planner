@@ -3377,6 +3377,96 @@ function setLanguage(lang) {
       texts[lang].settingsHeadingHelp || texts[lang].settingsHeading
     );
   }
+  if (settingsTablist) {
+    const sectionsLabel =
+      texts[lang].settingsSectionsLabel ||
+      texts.en?.settingsSectionsLabel ||
+      settingsTablist.getAttribute('aria-label') ||
+      texts[lang].settingsHeading ||
+      'Settings sections';
+    settingsTablist.setAttribute('aria-label', sectionsLabel);
+  }
+  const applySettingsTabLabel = (button, labelValue, helpValue) => {
+    if (!button) return;
+    const label = labelValue || button.textContent || '';
+    button.textContent = label;
+    button.setAttribute('aria-label', label);
+    const help = helpValue || label;
+    button.setAttribute('data-help', help);
+    button.setAttribute('title', help);
+  };
+  if (settingsTabGeneral) {
+    const generalLabel =
+      texts[lang].settingsTabGeneral ||
+      texts.en?.settingsTabGeneral ||
+      settingsTabGeneral.textContent ||
+      'General';
+    const generalHelp =
+      texts[lang].settingsTabGeneralHelp ||
+      texts.en?.settingsTabGeneralHelp ||
+      texts[lang].settingsHeadingHelp ||
+      generalLabel;
+    applySettingsTabLabel(settingsTabGeneral, generalLabel, generalHelp);
+    if (generalSettingsHeading) {
+      generalSettingsHeading.textContent = generalLabel;
+      generalSettingsHeading.setAttribute('data-help', generalHelp);
+    }
+  }
+  applySettingsTabLabel(
+    settingsTabAutoGear,
+    texts[lang].settingsTabAutoGear ||
+      texts.en?.settingsTabAutoGear ||
+      texts[lang].autoGearHeading ||
+      texts.en?.autoGearHeading,
+    texts[lang].settingsTabAutoGearHelp ||
+      texts.en?.settingsTabAutoGearHelp ||
+      texts[lang].autoGearHeadingHelp ||
+      texts.en?.autoGearHeadingHelp
+  );
+  applySettingsTabLabel(
+    settingsTabAccessibility,
+    texts[lang].settingsTabAccessibility ||
+      texts.en?.settingsTabAccessibility ||
+      texts[lang].accessibilityHeading ||
+      texts.en?.accessibilityHeading,
+    texts[lang].settingsTabAccessibilityHelp ||
+      texts.en?.settingsTabAccessibilityHelp ||
+      texts[lang].accessibilityHeadingHelp ||
+      texts.en?.accessibilityHeadingHelp
+  );
+  applySettingsTabLabel(
+    settingsTabBackup,
+    texts[lang].settingsTabBackup ||
+      texts.en?.settingsTabBackup ||
+      texts[lang].backupHeading ||
+      texts.en?.backupHeading,
+    texts[lang].settingsTabBackupHelp ||
+      texts.en?.settingsTabBackupHelp ||
+      texts[lang].backupHeadingHelp ||
+      texts.en?.backupHeadingHelp
+  );
+  applySettingsTabLabel(
+    settingsTabData,
+    texts[lang].settingsTabData ||
+      texts.en?.settingsTabData ||
+      texts[lang].dataHeading ||
+      texts.en?.dataHeading,
+    texts[lang].settingsTabDataHelp ||
+      texts.en?.settingsTabDataHelp ||
+      texts[lang].dataHeadingHelp ||
+      texts.en?.dataHeadingHelp
+  );
+  applySettingsTabLabel(
+    settingsTabAbout,
+    texts[lang].settingsTabAbout ||
+      texts.en?.settingsTabAbout ||
+      texts[lang].aboutHeading ||
+      texts.en?.aboutHeading,
+    texts[lang].settingsTabAboutHelp ||
+      texts.en?.settingsTabAboutHelp ||
+      texts[lang].aboutHeadingHelp ||
+      texts.en?.aboutHeadingHelp
+  );
   const settingsLanguageLabel = document.getElementById("settingsLanguageLabel");
   if (settingsLanguageLabel) {
     settingsLanguageLabel.textContent = texts[lang].languageSetting;
@@ -7012,6 +7102,20 @@ if (settingsButton) {
 if (settingsDialog) {
   settingsDialog.setAttribute('data-allow-hover-help', '');
 }
+const settingsTablist = document.getElementById('settingsTablist');
+const settingsTabButtons = settingsTablist
+  ? Array.from(settingsTablist.querySelectorAll('[role="tab"]'))
+  : [];
+const settingsTabPanels = settingsDialog
+  ? Array.from(settingsDialog.querySelectorAll('.settings-panel'))
+  : [];
+const settingsTabGeneral = document.getElementById('settingsTab-general');
+const settingsTabAutoGear = document.getElementById('settingsTab-autoGear');
+const settingsTabAccessibility = document.getElementById('settingsTab-accessibility');
+const settingsTabBackup = document.getElementById('settingsTab-backup');
+const settingsTabData = document.getElementById('settingsTab-data');
+const settingsTabAbout = document.getElementById('settingsTab-about');
+const generalSettingsHeading = document.getElementById('generalSettingsHeading');
 const settingsLanguage = document.getElementById("settingsLanguage");
 const settingsDarkMode = document.getElementById("settingsDarkMode");
 const settingsPinkMode = document.getElementById("settingsPinkMode");
@@ -7025,6 +7129,109 @@ const localFontsGroup = document.getElementById("localFontsGroup");
 const bundledFontGroup = document.getElementById("bundledFontOptions");
 const settingsLogo = document.getElementById("settingsLogo");
 const settingsLogoPreview = document.getElementById("settingsLogoPreview");
+
+let activeSettingsTabId = '';
+if (settingsTabButtons.length) {
+  const initiallySelected = settingsTabButtons.find(button => button.getAttribute('aria-selected') === 'true');
+  activeSettingsTabId = initiallySelected?.id || settingsTabButtons[0].id;
+  try {
+    const storedTab = localStorage.getItem('settingsActiveTab');
+    if (storedTab && settingsTabButtons.some(button => button.id === storedTab)) {
+      activeSettingsTabId = storedTab;
+    }
+  } catch (e) {
+    console.warn('Could not load settings tab preference', e);
+  }
+}
+
+function activateSettingsTab(tabId, options = {}) {
+  if (!settingsTabButtons.length) return;
+  const { focusTab = false } = options || {};
+  let target = settingsTabButtons.find(button => button.id === tabId);
+  if (!target) {
+    target = settingsTabButtons[0];
+  }
+  if (!target) return;
+
+  settingsTabButtons.forEach(button => {
+    const selected = button === target;
+    button.setAttribute('aria-selected', selected ? 'true' : 'false');
+    button.tabIndex = selected ? 0 : -1;
+    if (selected && focusTab) {
+      try {
+        button.focus({ preventScroll: true });
+      } catch {
+        button.focus();
+      }
+    }
+    button.classList.toggle('active', selected);
+  });
+
+  settingsTabPanels.forEach(panel => {
+    if (!panel) return;
+    const labelledBy = panel.getAttribute('aria-labelledby');
+    if (labelledBy === target.id) {
+      panel.removeAttribute('hidden');
+    } else {
+      panel.setAttribute('hidden', '');
+    }
+  });
+
+  if (
+    settingsTablist &&
+    typeof settingsTablist.scrollWidth === 'number' &&
+    typeof settingsTablist.clientWidth === 'number' &&
+    settingsTablist.scrollWidth > settingsTablist.clientWidth + 4 &&
+    typeof target.scrollIntoView === 'function'
+  ) {
+    try {
+      target.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    } catch {
+      target.scrollIntoView();
+    }
+  }
+
+  activeSettingsTabId = target.id;
+  try {
+    localStorage.setItem('settingsActiveTab', activeSettingsTabId);
+  } catch (e) {
+    console.warn('Could not save settings tab preference', e);
+  }
+}
+
+if (settingsTabButtons.length) {
+  activateSettingsTab(activeSettingsTabId);
+  settingsTabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      activateSettingsTab(button.id);
+    });
+    button.addEventListener('keydown', event => {
+      const { key } = event;
+      if (!key) return;
+      if (!['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown', 'Home', 'End'].includes(key)) {
+        return;
+      }
+      event.preventDefault();
+      const currentIndex = settingsTabButtons.indexOf(button);
+      if (currentIndex === -1) return;
+      let nextIndex = currentIndex;
+      if (key === 'ArrowLeft' || key === 'ArrowUp') {
+        nextIndex = (currentIndex - 1 + settingsTabButtons.length) % settingsTabButtons.length;
+      } else if (key === 'ArrowRight' || key === 'ArrowDown') {
+        nextIndex = (currentIndex + 1) % settingsTabButtons.length;
+      } else if (key === 'Home') {
+        nextIndex = 0;
+      } else if (key === 'End') {
+        nextIndex = settingsTabButtons.length - 1;
+      }
+      const nextTab = settingsTabButtons[nextIndex];
+      if (nextTab) {
+        activateSettingsTab(nextTab.id, { focusTab: true });
+      }
+    });
+  });
+}
+
 const autoGearHeadingElem = document.getElementById('autoGearHeading');
 const autoGearDescriptionElem = document.getElementById('autoGearDescription');
 const autoGearRulesList = document.getElementById('autoGearRulesList');
@@ -22041,10 +22248,14 @@ if (settingsButton && settingsDialog) {
       renderAutoGearDraftLists();
       updateAutoGearCatalogOptions();
     }
+    if (activeSettingsTabId) {
+      activateSettingsTab(activeSettingsTabId);
+    }
     settingsDialog.removeAttribute('hidden');
     openDialog(settingsDialog);
     // Focus the first control except the language selector to avoid opening it automatically
-    const first = settingsDialog.querySelector('input, select:not(#settingsLanguage)');
+    const activePanel = settingsDialog.querySelector('.settings-panel:not([hidden])');
+    const first = activePanel?.querySelector('input:not([type="hidden"]), select:not(#settingsLanguage), textarea');
     if (first) {
       try {
         first.focus({ preventScroll: true });
@@ -23678,6 +23889,13 @@ if (helpButton && helpDialog) {
     if (!element) return;
 
     const settingsSection = element.closest('#settingsDialog');
+    const settingsPanel = element.closest('.settings-panel');
+    if (settingsPanel) {
+      const tabId = settingsPanel.getAttribute('aria-labelledby');
+      if (tabId) {
+        activateSettingsTab(tabId);
+      }
+    }
     if (settingsSection && !isDialogOpen(settingsDialog)) {
       settingsButton?.click?.();
     }

@@ -101,6 +101,10 @@ const texts = {
     settingsHeading: "Settings",
     settingsHeadingHelp:
       "Adjust language, themes, typography, accessibility preferences and backups in one place.",
+    settingsSectionsLabel: "Settings sections",
+    settingsTabGeneral: "General",
+    settingsTabGeneralHelp:
+      "Adjust language, theme, typography and branding preferences.",
     languageSetting: "Language",
     settingsLanguageHelp:
       "Choose the interface language. Changes apply immediately and are remembered for next time.",
@@ -1320,6 +1324,10 @@ const texts = {
     settingsHeading: "Impostazioni",
     settingsHeadingHelp:
       "Configura lingua, temi, tipografia, accessibilità e backup da un'unica schermata.",
+    settingsSectionsLabel: "Sezioni impostazioni",
+    settingsTabGeneral: "Generali",
+    settingsTabGeneralHelp:
+      "Regola lingua, tema, tipografia e branding.",
     languageSetting: "Lingua",
     settingsLanguageHelp:
       "Scegli la lingua dell'interfaccia. Le modifiche sono immediate e vengono ricordate alla visita successiva.",
@@ -2140,6 +2148,10 @@ const texts = {
     settingsHeading: "Ajustes",
     settingsHeadingHelp:
       "Configura idioma, temas, tipografía, accesibilidad y copias de seguridad desde un único panel.",
+    settingsSectionsLabel: "Secciones de configuración",
+    settingsTabGeneral: "General",
+    settingsTabGeneralHelp:
+      "Ajusta idioma, tema, tipografía y opciones de marca.",
     languageSetting: "Idioma",
     settingsLanguageHelp:
       "Elige el idioma de la interfaz. Los cambios se aplican al instante y se recuerdan para la próxima visita.",
@@ -2962,6 +2974,10 @@ const texts = {
     settingsHeading: "Paramètres",
     settingsHeadingHelp:
       "Configurez langue, thèmes, typographie, accessibilité et sauvegardes depuis un seul panneau.",
+    settingsSectionsLabel: "Sections des paramètres",
+    settingsTabGeneral: "Général",
+    settingsTabGeneralHelp:
+      "Ajustez la langue, le thème, la typographie et l'identité visuelle.",
     languageSetting: "Langue",
     settingsLanguageHelp:
       "Choisissez la langue de l’interface. Les modifications sont instantanées et mémorisées pour la prochaine visite.",
@@ -3788,6 +3804,10 @@ const texts = {
     settingsHeading: "Einstellungen",
     settingsHeadingHelp:
       "Konfiguriere Sprache, Themes, Typografie, Barrierefreiheit und Backups zentral.",
+    settingsSectionsLabel: "Einstellungsbereiche",
+    settingsTabGeneral: "Allgemein",
+    settingsTabGeneralHelp:
+      "Sprache, Erscheinungsbild, Typografie und Branding anpassen.",
     languageSetting: "Sprache",
     settingsLanguageHelp:
       "Wähle die Oberflächensprache. Änderungen wirken sofort und werden gespeichert.",

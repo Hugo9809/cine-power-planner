@@ -1229,6 +1229,56 @@ main.legal-content {
   gap: 20px;
 }
 
+.settings-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 0 8px;
+  border-bottom: 1px solid var(--panel-border);
+  margin-bottom: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.settings-tab {
+  appearance: none;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.settings-tab:hover,
+.settings-tab:focus-visible {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.settings-tab[aria-selected="true"] {
+  background-color: color-mix(in srgb, var(--accent-color) 18%, var(--panel-bg));
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-color) 30%, transparent);
+}
+
+.settings-panel[hidden] {
+  display: none;
+}
+
 .settings-section {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
