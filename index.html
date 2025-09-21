@@ -1675,7 +1675,7 @@
         <section
           data-help-section
           id="savingAndSharing"
-          data-help-keywords="save saving project projects share sharing export import backup restore safety offline data management json download recover undo history verify verification checklist data safety integrity redundancy"
+          data-help-keywords="save saving project projects share sharing export import backup restore safety offline data management json download recover undo history verify verification checklist data safety integrity redundancy autosave snapshot timeline auto-backup auto backups hourly schedule"
         >
           <h3>
             <span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Saving, Sharing &amp; Restoring Projects
@@ -1718,6 +1718,43 @@
               to confirm your share, import, backup and restore workflows are ready before you leave the browser.
             </li>
           </ul>
+          <div
+            id="automaticSafetyCopies"
+            class="help-callout"
+            role="note"
+            aria-label="Automatic safety copies"
+          >
+            <h4>Automatic safety copies</h4>
+            <ul>
+              <li>
+                <strong>Auto snapshots</strong> capture the active project every 10 minutes. Enable
+                <a
+                  class="help-link"
+                  href="#settingsDialog"
+                  data-help-target="#settingsShowAutoBackups"
+                >Show auto backups in project list</a>
+                to reveal the timestamped <code>auto-backup-…</code> entries beneath your regular saves and convert any snapshot
+                into a permanent project with <strong>Save</strong>.
+              </li>
+              <li>
+                <strong>Hourly full-app backups</strong> download JSON archives named with the current time (for example,
+                “2024-06-15T14-00-00 full app backup.json”). Each file contains saved projects, automatic gear rules, device
+                edits, preferences, favorites and runtime logs so you can copy them to external storage for offline safekeeping.
+              </li>
+              <li>
+                <strong>Restore safeguards</strong> always create a brand-new safety backup before applying the file you choose,
+                giving you an immediate rollback point if you need to undo the restore.
+              </li>
+              <li>
+                Combine the automatic layers with manual <strong>Export project</strong> and Device Database <strong>Export</strong>
+                files when sharing work or moving between machines without internet access.
+              </li>
+            </ul>
+            <p class="help-callout-note">
+              Tip: Verify important archives by importing them on a spare profile or computer before going on set so you know
+              every recovery path works offline.
+            </p>
+          </div>
           <div
             id="projectDataSafetyChecklist"
             class="help-callout"
@@ -1780,6 +1817,12 @@
               href="#settingsDialog"
               data-help-target="#restoreSettings"
             >Open Restore</a>
+            <a
+              class="help-link button-link"
+              href="#automaticSafetyCopies"
+              data-help-target="#automaticSafetyCopies"
+              data-help-highlight="#automaticSafetyCopies"
+            >Automatic safety copies</a>
             <a
               class="help-link button-link"
               href="#projectDataSafetyChecklist"
@@ -2600,30 +2643,41 @@
           </details>
           <details
             class="faq-item"
-            data-help-keywords="auto backup automatic snapshot restore recover hourly download show saved projects setting"
+            data-help-keywords="auto backup automatic snapshot restore recover hourly download show saved projects setting safety net redundancy full app before restore factory reset"
           >
             <summary>How do automatic backups work?</summary>
             <p>
-              The planner saves a timestamped auto backup every 10 minutes. Turn on
-              <a class="help-link" href="#settingsDialog" data-help-target="#settingsShowAutoBackups">Show auto backups in project list</a>
-              inside Settings → Backup &amp; Restore to reveal them in the
-              <a
-                class="help-link"
-                href="#setup-manager"
-                data-help-target="#setupSelect"
-                data-help-highlight="#setup-manager"
-              >Saved Projects</a>
-              dropdown.
+              Cine Power Planner layers three automatic safety nets alongside your manual saves:
             </p>
+            <ul>
+              <li>
+                <strong>Auto snapshots</strong> capture the active project every 10 minutes. Enable
+                <a class="help-link" href="#settingsDialog" data-help-target="#settingsShowAutoBackups">Show auto backups in project list</a>
+                in Settings → Backup &amp; Restore to reveal the timestamped <code>auto-backup-…</code> entries beneath the
+                <a
+                  class="help-link"
+                  href="#setup-manager"
+                  data-help-target="#setupSelect"
+                  data-help-highlight="#setup-manager"
+                >Saved Projects</a>
+                dropdown so you can load, review and rename them.
+              </li>
+              <li>
+                <strong>Hourly full-app backups</strong> download JSON archives (for example, “2024-06-15T14-00-00 full app backup.json”) that bundle every project, automatic gear rule, device edit, favorite and runtime log. Keep at least two copies on separate drives so you always have an offline recovery point.
+              </li>
+              <li>
+                <strong>Restore safeguards</strong> run whenever you restore or perform a factory reset. The planner creates a fresh “before” backup automatically so you can revert immediately if the new file is not what you expected.
+              </li>
+            </ul>
             <p>
-              Choose an auto backup to inspect it; press
+              Open any auto snapshot to inspect it; press
               <a
                 class="help-link"
                 href="#setup-manager"
                 data-help-target="#saveSetupBtn"
                 data-help-highlight="#setup-manager"
               >Save</a>
-              if you want to keep the snapshot as a regular project. A full JSON export also downloads every hour (“Full app backup downloaded …”) so you have an offline safety copy you can archive or delete as needed.
+              if you want to keep the snapshot as a regular project. Archive the hourly downloads once verified, or delete them after you have stored redundant copies elsewhere.
             </p>
           </details>
           <details
