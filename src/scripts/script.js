@@ -158,6 +158,16 @@ async function loadDeviceSchemaFromCacheStorage() {
   return null;
 }
 
+/**
+ * Final step once a schema candidate has been retrieved.
+ *
+ * The schema can come from different places (bundled JSON, fetch, cache
+ * storage, localStorage fallback). Centralizing the logic in a single helper
+ * keeps the success path easy to reason about and guarantees that we only
+ * call `populateCategoryOptions` once we have a valid object to work with.
+ *
+ * @param {unknown} candidate Potentially parsed schema object.
+ */
 function finalizeDeviceSchemaLoad(candidate) {
   if (isValidDeviceSchema(candidate)) {
     deviceSchema = candidate;
@@ -175,6 +185,8 @@ let deviceSchema;
 try {
   deviceSchema = require('../data/schema.json');
 } catch {
+  // Falling back to the cached copy allows the app to keep functioning when
+  // users are offline, which is critical for field usage.
   deviceSchema = cachedDeviceSchema;
   if (typeof fetch === 'function') {
     fetch(DEVICE_SCHEMA_PATH)
@@ -257,6 +269,17 @@ const GEAR_LIST_CATEGORIES = [
 const AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor'];
 const AUTO_GEAR_SELECTOR_TYPE_SET = new Set(AUTO_GEAR_SELECTOR_TYPES);
 
+/**
+ * Produce a deterministic-looking id for Auto Gear rules/presets.
+ *
+ * The IDs are stored alongside user data in localStorage, so we use the
+ * strongest source of randomness that is available without requiring network
+ * access. When `crypto.randomUUID` is not present we fall back to a timestamp
+ * + Math.random combination to avoid collisions.
+ *
+ * @param {string} [prefix]
+ * @returns {string}
+ */
 function generateAutoGearId(prefix) {
   const base = prefix || 'rule';
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -265,11 +288,31 @@ function generateAutoGearId(prefix) {
   return `${base}-${Math.random().toString(36).slice(2)}-${Date.now()}`;
 }
 
+/**
+ * Ensure that quantity values loaded from user input always resolve to a
+ * positive integer. Keeping this logic in one place protects every feature
+ * that relies on the quantity (lists, backups, exports, etc.) against
+ * malformed form data.
+ *
+ * @param {unknown} value
+ * @returns {number}
+ */
 function normalizeAutoGearQuantity(value) {
   const num = parseInt(value, 10);
   return Number.isFinite(num) && num > 0 ? num : 1;
 }
 
+/**
+ * Convert the multi-line textarea input for Auto Gear lists into a structured
+ * array.
+ *
+ * Besides providing a nicer UI this helper also keeps the import/export
+ * behaviour easy to audit because the exact parsing rules are documented in
+ * one place.
+ *
+ * @param {unknown} value
+ * @returns {Array<{ name: string, quantity?: number, listType?: 'add'|'remove' }>} Parsed entries.
+ */
 function parseAutoGearDraftNames(value) {
   if (typeof value !== 'string') return [];
   const raw = value.trim();
@@ -295,6 +338,15 @@ function parseAutoGearDraftNames(value) {
     .filter(Boolean);
 }
 
+/**
+ * Shared helper that normalizes free-text fields used across the Auto Gear UI
+ * and persistence layer. Normalization protects user data from spurious
+ * whitespace differences when synchronizing or restoring from backups.
+ *
+ * @param {unknown} value Raw input value.
+ * @param {{ collapseWhitespace?: boolean }} [options]
+ * @returns {string}
+ */
 function normalizeAutoGearText(value, { collapseWhitespace = true } = {}) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return String(value);
@@ -305,12 +357,29 @@ function normalizeAutoGearText(value, { collapseWhitespace = true } = {}) {
   return trimmed.replace(/\s+/g, ' ');
 }
 
+/**
+ * Normalize selector types to one of the supported strings so that stored
+ * rules remain compatible even if the list of valid selectors is extended in
+ * the future.
+ *
+ * @param {unknown} value
+ * @returns {'none'|'monitor'|'directorMonitor'}
+ */
 function normalizeAutoGearSelectorType(value) {
   const candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
   if (!candidate) return 'none';
   return AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate) ? candidate : 'none';
 }
 
+/**
+ * Make sure the default value for selector inputs is both human readable and
+ * validated against the available options so that restoring backups never
+ * yields an impossible selection.
+ *
+ * @param {'none'|'monitor'|'directorMonitor'} type
+ * @param {unknown} value
+ * @returns {string}
+ */
 function normalizeAutoGearSelectorDefault(type, value) {
   const text = normalizeAutoGearText(value);
   if (!text) return '';
