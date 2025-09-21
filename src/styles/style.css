@@ -23,12 +23,26 @@
   --panel-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   --panel-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.12);
   --border-radius: 5px;
-  --page-padding: 20px;
+  --spacing-2xs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 5px;
+  --spacing-md: 8px;
+  --spacing-lg: 10px;
+  --spacing-xl: 15px;
+  --spacing-xxl: 20px;
+  --page-padding: var(--spacing-xxl);
   --main-top-padding-multiplier: 1.5;
-  --gap-size: 10px;
+  --gap-size: var(--spacing-lg);
   --button-size: 24px;
   --button-icon-size: var(--icon-size-md);
   --button-line-height: 1.25;
+  --button-padding-block: 0;
+  --button-padding-inline: var(--spacing-md);
+  --button-margin-block-start: var(--spacing-lg);
+  --button-margin-inline: var(--spacing-sm);
+  --button-margin-block-end: var(--spacing-sm);
+  --button-link-padding-block: var(--button-padding-block);
+  --button-link-padding-inline: 12px;
   --icon-gap: 0.3em;
   --button-icon-gap: 0.55em;
   --form-control-font-size: var(--font-size-relative-base);
@@ -36,6 +50,12 @@
   --form-label-min-width: 120px;
   --form-action-width: 110px;
   --font-family: 'Ubuntu', 'UiconsThinStraightV2', sans-serif;
+  --cluster-gap: var(--gap-size);
+  --section-padding: var(--spacing-xl);
+  --section-margin-block-start: 1.5em;
+  --paragraph-spacing: 1em;
+  --tagline-padding-inline: var(--section-padding);
+  --form-row-margin-block: var(--spacing-sm);
   /* Typography */
   --font-size-base: 1rem;
   --font-size-relative-base: 1em;
@@ -111,7 +131,7 @@
 }
 @media (max-width: 600px) {
   :root {
-    --page-padding: 5px;
+    --page-padding: var(--spacing-sm);
   }
   main {
     max-width: none;
@@ -153,10 +173,8 @@ body.relaxed-spacing {
   --button-size: 30px;
   --button-line-height: 1.45;
   --button-icon-gap: 0.7em;
-}
-
-body.relaxed-spacing .form-row {
-  margin: 8px 0;
+  --form-row-margin-block: 8px;
+  --button-link-padding-inline: 16px;
 }
 
 body.relaxed-spacing .settings-hint {
@@ -167,11 +185,6 @@ body.relaxed-spacing input:not([type='checkbox']):not([type='radio']),
 body.relaxed-spacing select,
 body.relaxed-spacing textarea {
   padding: 0.65em 0.9em;
-}
-
-body.relaxed-spacing .button-link,
-body.relaxed-spacing .button-link:visited {
-  padding: 0 16px;
 }
 
 html {
@@ -356,12 +369,12 @@ textarea:focus-visible {
 }
 
 .button-group {
-  margin-bottom: 10px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .button-row {
   display: flex;
-  gap: 10px;
+  gap: var(--cluster-gap);
 }
 
 .flex-1 {
@@ -372,7 +385,7 @@ textarea:focus-visible {
   display: none;
   width: 100%;
   height: 100px;
-  margin-top: 10px;
+  margin-top: var(--spacing-lg);
 }
 h1, h2, h3 {
   font-family: var(--font-family);
@@ -410,11 +423,16 @@ h3 {
 /* Paragraph text */
 p {
   line-height: var(--line-height-base);
+  margin: 0 0 var(--paragraph-spacing);
+}
+
+p + p {
+  margin-top: var(--paragraph-spacing);
 }
 
 #tagline {
   margin: 0 0 1em;
-  padding: 0 15px;
+  padding: 0 var(--tagline-padding-inline);
 }
 
 a {
@@ -524,7 +542,7 @@ main.legal-content {
 .static-nav {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--cluster-gap);
 }
 
 .button-link,
@@ -534,7 +552,7 @@ main.legal-content {
   justify-content: center;
   min-height: var(--button-size);
   height: auto;
-  padding: 0 12px;
+  padding: var(--button-link-padding-block) var(--button-link-padding-inline);
   border-radius: var(--border-radius);
   background-color: var(--control-bg);
   color: var(--control-text);
@@ -560,7 +578,7 @@ main.legal-content {
 .form-row {
   display: flex;
   align-items: center;
-  margin: 5px 0;
+  margin: var(--form-row-margin-block) 0;
   gap: var(--gap-size);
   flex-wrap: wrap; /* allow inputs to wrap on smaller screens */
 }
@@ -1183,8 +1201,8 @@ main.legal-content {
 #feedbackForm .button-row {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  gap: var(--cluster-gap);
+  margin-top: var(--spacing-lg);
 }
 
 #installGuideDialog[hidden] {
@@ -1796,7 +1814,7 @@ body.pink-mode .auto-gear-rule-title,
 
 .settings-content .button-row {
   display: flex;
-  gap: 10px;
+  gap: var(--cluster-gap);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -1972,6 +1990,7 @@ body.pink-mode .auto-gear-rule-title,
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.75rem;
+  --button-link-padding-inline: 8px;
 }
 
 .help-link-group .button-link,
@@ -1979,7 +1998,6 @@ body.pink-mode .auto-gear-rule-title,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 8px;
   min-height: var(--button-size);
   border-radius: var(--border-radius);
   background-color: var(--control-bg);
@@ -2652,8 +2670,8 @@ section {
   background-color: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
-  padding: 15px;
-  margin-top: 1.5em;
+  padding: var(--section-padding);
+  margin-top: var(--section-margin-block-start);
   box-shadow: var(--panel-shadow);
   transition: transform 0.2s;
 }
@@ -2669,8 +2687,9 @@ button {
   color: var(--control-text);
   border: none;
   border-radius: var(--border-radius);
-  padding: 0 8px;
-  margin: 10px 5px 5px;
+  padding: var(--button-padding-block) var(--button-padding-inline);
+  margin: var(--button-margin-block-start) var(--button-margin-inline)
+    var(--button-margin-block-end);
   cursor: pointer;
   font-size: var(--form-control-font-size);
   min-height: var(--button-size);
@@ -2733,8 +2752,8 @@ input[type="file"]::-webkit-file-upload-button {
   color: var(--control-text);
   border: none;
   border-radius: var(--border-radius);
-  padding: 0 8px;
-  margin-right: 5px;
+  padding: var(--button-padding-block) var(--button-padding-inline);
+  margin-inline-end: var(--spacing-sm);
   cursor: pointer;
   font-size: var(--form-control-font-size);
   height: 100%;
