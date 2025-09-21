@@ -5149,9 +5149,38 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   if (!layer) {
     return false;
   }
-  let availableTemplates = templates;
-  if (templates.length > 1 && pinkModeAnimatedIconLastTemplateName) {
-    const filteredTemplates = templates.filter(
+  const sanitizedTemplates = templates.filter(Boolean);
+  if (!sanitizedTemplates.length) {
+    return false;
+  }
+
+  const activeTemplateNames = new Set();
+  for (const instance of pinkModeAnimatedIconInstances) {
+    if (!instance) {
+      continue;
+    }
+    const templateName =
+      typeof instance.templateName === 'string' && instance.templateName
+        ? instance.templateName
+        : null;
+    if (templateName) {
+      activeTemplateNames.add(templateName);
+    }
+  }
+
+  let availableTemplates = sanitizedTemplates.filter(template => {
+    if (!template || typeof template.name !== 'string') {
+      return true;
+    }
+    return !activeTemplateNames.has(template.name);
+  });
+
+  if (!availableTemplates.length) {
+    return false;
+  }
+
+  if (availableTemplates.length > 1 && pinkModeAnimatedIconLastTemplateName) {
+    const filteredTemplates = availableTemplates.filter(
       template => template && template.name !== pinkModeAnimatedIconLastTemplateName
     );
     if (filteredTemplates.length) {
@@ -5294,7 +5323,8 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   const instance = {
     container,
     animation: animationInstance,
-    destroyed: false
+    destroyed: false,
+    templateName: typeof template.name === 'string' ? template.name : null
   };
 
   container.addEventListener(
