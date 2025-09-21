@@ -5388,6 +5388,59 @@ function setButtonLabelWithIcon(button, label, glyph = ICON_GLYPHS.save) {
   button.innerHTML = `${iconHtml}${safeLabel}`;
 }
 
+function getLocalizedPathText(path, fallback = '') {
+  if (!path) return fallback;
+  const keys = Array.isArray(path) ? path : typeof path === 'string' ? [path] : [];
+  if (!keys.length) return fallback;
+  const langTexts = (texts && texts[currentLang]) || {};
+  const fallbackTexts = (texts && texts.en) || {};
+  const resolve = (source) => keys.reduce((acc, key) => {
+    if (acc && Object.prototype.hasOwnProperty.call(acc, key)) {
+      return acc[key];
+    }
+    return undefined;
+  }, source);
+  const localized = resolve(langTexts);
+  if (localized !== undefined && localized !== null && localized !== '') {
+    return String(localized);
+  }
+  const fallbackValue = resolve(fallbackTexts);
+  if (fallbackValue !== undefined && fallbackValue !== null && fallbackValue !== '') {
+    return String(fallbackValue);
+  }
+  return fallback;
+}
+
+function configureIconOnlyButton(button, glyph, options = {}) {
+  if (!button) return;
+  const {
+    contextPaths = [],
+    fallbackContext = '',
+    actionKey = 'addEntry'
+  } = options || {};
+  setButtonLabelWithIcon(button, '', glyph || ICON_GLYPHS.add);
+  const actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
+  const paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
+  let contextLabel = '';
+  for (const path of paths) {
+    if (!path) continue;
+    const resolved = getLocalizedPathText(path, '');
+    if (resolved) {
+      contextLabel = resolved;
+      break;
+    }
+  }
+  if (!contextLabel && typeof fallbackContext === 'string') {
+    contextLabel = fallbackContext;
+  }
+  const normalizedContext = contextLabel ? contextLabel.replace(/[:：]\s*$/, '').trim() : '';
+  const combinedLabel = [actionLabel, normalizedContext].filter(Boolean).join(' ').trim();
+  if (combinedLabel) {
+    button.setAttribute('aria-label', combinedLabel);
+    button.setAttribute('title', combinedLabel);
+  }
+}
+
 function createCrewRow(data = {}) {
   if (!crewContainer) return;
   const row = document.createElement('div');
@@ -12468,14 +12521,22 @@ function createVideoOutputRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createVideoOutputRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (videoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12523,14 +12584,22 @@ function createMonitorVideoInputRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createMonitorVideoInputRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (monitorVideoInputsContainer.children.length > 1) row.remove();
   });
@@ -12578,14 +12647,22 @@ function createMonitorVideoOutputRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createMonitorVideoOutputRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (monitorVideoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12633,14 +12710,22 @@ function createViewfinderVideoInputRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createViewfinderVideoInputRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (viewfinderVideoInputsContainer && viewfinderVideoInputsContainer.children.length > 1) row.remove();
   });
@@ -12690,14 +12775,22 @@ function createViewfinderVideoOutputRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createViewfinderVideoOutputRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (viewfinderVideoOutputsContainer && viewfinderVideoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12750,14 +12843,22 @@ function createVideoInputRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createVideoInputRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (videoVideoInputsContainer.children.length > 1) row.remove();
   });
@@ -12803,14 +12904,22 @@ function createVideoIOOutputRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createVideoIOOutputRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (videoVideoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12857,14 +12966,22 @@ function createFizConnectorRow(value = '') {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
+    fallbackContext: 'FIZ Connector',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createFizConnectorRow());
   });
   row.appendChild(addBtn);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
+    fallbackContext: 'FIZ Connector',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (fizConnectorContainer.children.length > 1) row.remove();
   });
@@ -12958,7 +13075,11 @@ function createRecordingMediaRow(type = '', notes = '') {
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['mediaHeading', ['cameraMediaLabel']],
+    fallbackContext: 'Recording Media',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createRecordingMediaRow());
   });
@@ -12966,7 +13087,11 @@ function createRecordingMediaRow(type = '', notes = '') {
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['mediaHeading', ['cameraMediaLabel']],
+    fallbackContext: 'Recording Media',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (cameraMediaContainer.children.length > 1) row.remove();
   });
@@ -13149,7 +13274,11 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
+    fallbackContext: 'Battery Plates',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createBatteryPlateRow());
   });
@@ -13157,7 +13286,11 @@ function createBatteryPlateRow(type = '', mount = 'native', notes = '') {
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
+    fallbackContext: 'Battery Plates',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (batteryPlatesContainer.children.length > 1) row.remove();
   });
@@ -13278,7 +13411,11 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+    fallbackContext: 'Viewfinder',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createViewfinderRow());
   });
@@ -13286,7 +13423,11 @@ function createViewfinderRow(type = '', resolution = '', connector = '', notes =
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+    fallbackContext: 'Viewfinder',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (viewfinderContainer.children.length > 1) row.remove();
   });
@@ -13394,7 +13535,11 @@ function createLensMountRow(type = '', mount = 'native') {
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
+    fallbackContext: 'Lens Mount',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createLensMountRow());
   });
@@ -13402,7 +13547,11 @@ function createLensMountRow(type = '', mount = 'native') {
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
+    fallbackContext: 'Lens Mount',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (lensMountContainer.children.length > 1) row.remove();
   });
@@ -13601,7 +13750,11 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
+    fallbackContext: 'Power Distribution',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createPowerDistRow());
   });
@@ -13609,7 +13762,11 @@ function createPowerDistRow(type = '', voltage = '', current = '', wattage = '',
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
+    fallbackContext: 'Power Distribution',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (powerDistContainer.children.length > 1) row.remove();
   });
@@ -13712,7 +13869,11 @@ function createTimecodeRow(type = '', notes = '') {
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
+    fallbackContext: 'Timecode',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', () => {
     row.after(createTimecodeRow());
   });
@@ -13720,7 +13881,11 @@ function createTimecodeRow(type = '', notes = '') {
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
+    fallbackContext: 'Timecode',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', () => {
     if (timecodeContainer.children.length > 1) row.remove();
   });
