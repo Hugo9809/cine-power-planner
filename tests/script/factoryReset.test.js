@@ -100,4 +100,35 @@ describe('factory reset cleanup', () => {
     const rulesAfterReset = getAutoGearRules();
     expect(rulesAfterReset.some((rule) => rule.label === 'Custom Reset Rule')).toBe(false);
   });
+
+  test('resetPlannerStateAfterFactoryReset removes uploaded custom fonts', async () => {
+    const app = loadApp();
+    const { resetPlannerStateAfterFactoryReset, __customFontInternals } = app;
+    const fontSelect = document.getElementById('settingsFontFamily');
+
+    await __customFontInternals.addFromData(
+      'Factory Reset Font',
+      'data:font/woff;base64,AAAA',
+      { persist: false },
+    );
+
+    expect(__customFontInternals.getEntries().length).toBe(1);
+
+    const uploadedOptionsBefore = Array.from(fontSelect.options).filter(
+      (option) => option?.dataset?.source === 'uploaded',
+    );
+    expect(uploadedOptionsBefore.length).toBeGreaterThan(0);
+    const fontId = uploadedOptionsBefore[0].dataset.fontId;
+    const styleId = `customFontStyle-${fontId}`;
+    expect(document.getElementById(styleId)).not.toBeNull();
+
+    resetPlannerStateAfterFactoryReset();
+
+    expect(__customFontInternals.getEntries().length).toBe(0);
+    const uploadedOptionsAfter = Array.from(fontSelect.options).filter(
+      (option) => option?.dataset?.source === 'uploaded',
+    );
+    expect(uploadedOptionsAfter.length).toBe(0);
+    expect(document.getElementById(styleId)).toBeNull();
+  });
 });
