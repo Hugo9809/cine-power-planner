@@ -15610,8 +15610,9 @@ function enableDiagramInteractions() {
   const root = svg.querySelector('#diagramRoot') || svg;
   const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
   const MAX_SCALE = isTouchDevice ? Infinity : 3;
+  const INITIAL_SCALE = 0.9;
   let pan = { x: 0, y: 0 };
-  let scale = 1;
+  let scale = INITIAL_SCALE;
   let panning = false;
   let panStart = { x: 0, y: 0 };
   const getPos = e => {
@@ -15638,7 +15639,7 @@ function enableDiagramInteractions() {
   if (resetViewBtn) {
     resetViewBtn.onclick = () => {
       pan = { x: 0, y: 0 };
-      scale = 1;
+      scale = INITIAL_SCALE;
       apply();
       manualPositions = {};
       renderSetupDiagram();
@@ -15742,6 +15743,8 @@ function enableDiagramInteractions() {
     window.removeEventListener('mouseup', onDragEnd);
     window.removeEventListener('touchend', onDragEnd);
   };
+
+  apply();
 }
 
 function updateDiagramLegend() {
