@@ -28,6 +28,7 @@
   --gap-size: 10px;
   --button-size: 24px;
   --button-icon-size: var(--icon-size-md);
+  --button-line-height: 1.25;
   --icon-gap: 0.3em;
   --button-icon-gap: 0.55em;
   --form-control-font-size: var(--font-size-relative-base);
@@ -2719,6 +2720,8 @@ button {
   font-size: var(--form-control-font-size);
   min-height: var(--button-size);
   height: auto;
+  /* Keep single-line buttons consistent in every locale without preventing wrapping */
+  line-height: var(--button-line-height);
   display: inline-flex;
   align-items: center;
   justify-content: center;
