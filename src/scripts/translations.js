@@ -117,6 +117,13 @@ const texts = {
     accentColorSetting: "Accent color",
     accentColorHelp:
       "Pick the accent color used for buttons, highlights and diagrams. The choice is saved with your settings.",
+    temperatureUnitSetting: "Temperature unit",
+    temperatureUnitSettingHelp:
+      "Choose whether temperatures are shown in Celsius or Fahrenheit throughout the app.",
+    temperatureUnitCelsius: "Celsius (°C)",
+    temperatureUnitFahrenheit: "Fahrenheit (°F)",
+    temperatureUnitSymbolCelsius: "°C",
+    temperatureUnitSymbolFahrenheit: "°F",
     fontSizeSetting: "Font size",
     fontSizeSettingHelp:
       "Set the base interface font size to improve readability or fit more information on screen.",
@@ -641,7 +648,7 @@ const texts = {
     runtimeUserCountNote: "Based on {count} user reports for this project.",
     temperatureNoteHeading: "Temperature impact on runtime:",
     temperatureNoteHelp: "Shows how different temperatures affect battery runtime.",
-    temperatureLabel: "Temperature (°C)",
+    temperatureLabel: "Temperature",
     batteryCountTempLabel: "Batteries needed",
 
     noBatterySupports: "No battery can supply this load.",
@@ -1198,7 +1205,7 @@ const texts = {
     runtimeUserCountNote: "Basato su {count} dati utente per questa configurazione.",
     temperatureNoteHeading: "Impatto della temperatura sull'autonomia:",
     temperatureNoteHelp: "Mostra come la temperatura influisce sull'autonomia della batteria.",
-    temperatureLabel: "Temperatura (°C)",
+    temperatureLabel: "Temperatura",
     batteryCountTempLabel: "Batterie necessarie",
     noBatterySupports: "Nessuna batteria può fornire questo carico.",
     alertSetupName: "Immettere un nome per l'installazione.",
@@ -1360,6 +1367,13 @@ const texts = {
     accentColorSetting: "Colore evidenza",
     accentColorHelp:
       "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma. La scelta viene salvata.",
+    temperatureUnitSetting: "Unità di temperatura",
+    temperatureUnitSettingHelp:
+      "Scegli se mostrare le temperature in Celsius o Fahrenheit in tutta l'app.",
+    temperatureUnitCelsius: "Celsius (°C)",
+    temperatureUnitFahrenheit: "Fahrenheit (°F)",
+    temperatureUnitSymbolCelsius: "°C",
+    temperatureUnitSymbolFahrenheit: "°F",
     fontSizeSetting: "Dimensione carattere",
     fontSizeSettingHelp:
       "Imposta la dimensione base del carattere per migliorare la leggibilità o avere più spazio sullo schermo.",
@@ -2021,7 +2035,7 @@ const texts = {
     runtimeUserCountNote: "Basado en {count} datos de usuarios para esta configuración.",
     temperatureNoteHeading: "Efecto de la temperatura en la autonomía:",
     temperatureNoteHelp: "Muestra cómo la temperatura afecta la autonomía de la batería.",
-    temperatureLabel: "Temperatura (°C)",
+    temperatureLabel: "Temperatura",
     batteryCountTempLabel: "Baterías necesarias",
 
     noBatterySupports: "Ninguna batería puede suministrar esta carga.",
@@ -2186,6 +2200,13 @@ const texts = {
     accentColorSetting: "Color de acento",
     accentColorHelp:
       "Selecciona el color de acento usado en botones, destacados y diagramas. Se guarda con tus ajustes.",
+    temperatureUnitSetting: "Unidad de temperatura",
+    temperatureUnitSettingHelp:
+      "Elige si mostrar las temperaturas en grados Celsius o Fahrenheit en toda la aplicación.",
+    temperatureUnitCelsius: "Celsius (°C)",
+    temperatureUnitFahrenheit: "Fahrenheit (°F)",
+    temperatureUnitSymbolCelsius: "°C",
+    temperatureUnitSymbolFahrenheit: "°F",
     fontSizeSetting: "Tamaño de fuente",
     fontSizeSettingHelp:
       "Define el tamaño base de fuente para mejorar la legibilidad o mostrar más información.",
@@ -2849,7 +2870,7 @@ const texts = {
     runtimeUserCountNote: "Basé sur {count} données utilisateur pour cette configuration.",
     temperatureNoteHeading: "Impact de la température sur l’autonomie :",
     temperatureNoteHelp: "Indique comment la température influe sur l’autonomie de la batterie.",
-    temperatureLabel: "Température (°C)",
+    temperatureLabel: "Température",
     batteryCountTempLabel: "Batteries nécessaires",
 
     noBatterySupports: "Aucune batterie ne peut fournir cette charge.",
@@ -3014,6 +3035,13 @@ const texts = {
     accentColorSetting: "Couleur d’accent",
     accentColorHelp:
       "Sélectionnez la couleur d’accent utilisée pour les boutons, les surlignages et le diagramme. Elle est enregistrée.",
+    temperatureUnitSetting: "Unité de température",
+    temperatureUnitSettingHelp:
+      "Choisissez d'afficher les températures en Celsius ou en Fahrenheit dans toute l'application.",
+    temperatureUnitCelsius: "Celsius (°C)",
+    temperatureUnitFahrenheit: "Fahrenheit (°F)",
+    temperatureUnitSymbolCelsius: "°C",
+    temperatureUnitSymbolFahrenheit: "°F",
     fontSizeSetting: "Taille de police",
     fontSizeSettingHelp:
       "Définissez la taille de police de base pour améliorer la lisibilité ou afficher plus d’informations.",
@@ -3681,7 +3709,7 @@ const texts = {
     runtimeUserCountNote: "Basierend auf {count} Nutzereinträgen für dieses Projekt.",
     temperatureNoteHeading: "Temperatureinfluss auf die Laufzeit:",
     temperatureNoteHelp: "Zeigt, wie die Temperatur die Laufzeit des Akkus beeinflusst.",
-    temperatureLabel: "Temperatur (°C)",
+    temperatureLabel: "Temperatur",
     batteryCountTempLabel: "Benötigte Akkus",
 
     noBatterySupports: "Kein Akku kann diese Last liefern.",
@@ -3846,6 +3874,13 @@ const texts = {
     accentColorSetting: "Akzentfarbe",
     accentColorHelp:
       "Wähle die Akzentfarbe für Buttons, Hervorhebungen und Diagramm. Die Auswahl wird gespeichert.",
+    temperatureUnitSetting: "Temperatureinheit",
+    temperatureUnitSettingHelp:
+      "Wählen Sie, ob Temperaturen in Celsius oder Fahrenheit in der gesamten App angezeigt werden.",
+    temperatureUnitCelsius: "Celsius (°C)",
+    temperatureUnitFahrenheit: "Fahrenheit (°F)",
+    temperatureUnitSymbolCelsius: "°C",
+    temperatureUnitSymbolFahrenheit: "°F",
     fontSizeSetting: "Schriftgröße",
     fontSizeSettingHelp:
       "Bestimme die Grundschriftgröße für bessere Lesbarkeit oder mehr Platz auf dem Bildschirm.",

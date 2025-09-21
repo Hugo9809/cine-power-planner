@@ -919,6 +919,13 @@
             <input type="color" id="accentColorInput" value="#001589" />
           </div>
           <div class="form-row">
+            <label for="settingsTemperatureUnit" id="settingsTemperatureUnitLabel">Temperature unit</label>
+            <select id="settingsTemperatureUnit">
+              <option value="celsius">Celsius (°C)</option>
+              <option value="fahrenheit">Fahrenheit (°F)</option>
+            </select>
+          </div>
+          <div class="form-row">
             <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
             <select id="settingsFontSize">
               <option value="12">12px (Smaller)</option>
@@ -3262,7 +3269,12 @@
 
       <fieldset>
         <legend><span class="legend-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF262;</span>Environment</legend>
-        <div class="form-row"><label>Temp (°C):<select id="fbTemperature" name="fbTemperature"></select></label></div>
+        <div class="form-row">
+          <label id="fbTemperatureLabel" for="fbTemperature">
+            <span id="fbTemperatureLabelText">Temp (°C):</span>
+          </label>
+          <select id="fbTemperature" name="fbTemperature"></select>
+        </div>
         <div class="form-row"><label>Charging:<select id="fbCharging" name="fbCharging"><option value="yes">Yes</option><option value="no">No</option></select></label></div>
         <div class="form-row"><label>Runtime (hrs):<input type="number" step="0.01" id="fbRuntime" name="fbRuntime" required></label></div>
         <div class="form-row"><label>Batteries Used per Day:<input type="number" id="fbBatteriesPerDay" name="fbBatteriesPerDay"></label></div>
