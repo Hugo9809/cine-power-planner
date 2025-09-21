@@ -1236,8 +1236,8 @@ main.legal-content {
 
 .settings-tabs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -1246,68 +1246,63 @@ main.legal-content {
 
 .settings-tab {
   appearance: none;
-  border: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
-  border-radius: calc(var(--border-radius) * 0.9);
-  background: color-mix(in srgb, var(--panel-bg) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
+  border-radius: calc(var(--border-radius) * 0.8);
+  background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
   color: inherit;
   font: inherit;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  padding: 10px 12px;
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0.005em;
+  padding: 8px 10px;
   cursor: pointer;
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
-    box-shadow 0.25s ease, transform 0.25s ease;
+    transform 0.25s ease;
   white-space: normal;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   position: relative;
   isolation: isolate;
-  min-height: 92px;
+  min-height: 80px;
 }
 
 .settings-tab:hover,
 .settings-tab:focus-visible {
   border-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
   background: color-mix(in srgb, var(--accent-color) 12%, var(--panel-bg));
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-color) 15%, transparent);
 }
 
 .settings-tab[aria-selected="true"] {
   background: color-mix(in srgb, var(--accent-color) 18%, var(--panel-bg));
   border-color: color-mix(in srgb, var(--accent-color) 65%, transparent);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent-color) 22%, transparent);
 }
 
 .settings-tab.active {
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent-color) 22%, transparent);
+  transform: translateY(-1px);
 }
 
 .settings-tab:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 28%, transparent),
-    0 8px 20px color-mix(in srgb, var(--accent-color) 18%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--accent-color) 70%, currentColor);
+  outline-offset: 2px;
 }
 
 .settings-tab-icon {
-  --icon-size: 22px;
-  inline-size: 36px;
-  block-size: 36px;
-  min-inline-size: 36px;
-  min-block-size: 36px;
+  --icon-size: 20px;
+  inline-size: 32px;
+  block-size: 32px;
+  min-inline-size: 32px;
+  min-block-size: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--accent-color) 14%, transparent);
   color: color-mix(in srgb, var(--accent-color) 60%, currentColor);
-  flex: 0 0 36px;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-color) 10%, transparent);
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease,
-    box-shadow 0.2s ease;
+  flex: 0 0 32px;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .settings-tab:hover .settings-tab-icon,
@@ -1315,20 +1310,18 @@ main.legal-content {
   background: color-mix(in srgb, var(--accent-color) 26%, transparent);
   color: var(--accent-color);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-color) 22%, transparent);
 }
 
 .settings-tab[aria-selected="true"] .settings-tab-icon,
 .settings-tab.active .settings-tab-icon {
   background: color-mix(in srgb, var(--accent-color) 32%, transparent);
   color: var(--accent-color);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent-color) 24%, transparent);
   transform: translateY(-1px) scale(1.02);
 }
 
 .settings-tab-label {
   font-size: 0.92rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-regular);
   line-height: 1.25;
   letter-spacing: 0.01em;
   color: currentColor;
@@ -1337,7 +1330,40 @@ main.legal-content {
 .settings-tab[aria-selected="true"] .settings-tab-label,
 .settings-tab:hover .settings-tab-label,
 .settings-tab:focus-visible .settings-tab-label {
-  color: color-mix(in srgb, var(--accent-color) 72%, currentColor);
+  color: color-mix(in srgb, var(--accent-color) 65%, currentColor);
+}
+
+body:not(.dark-mode) .settings-tab {
+  color: color-mix(in srgb, var(--accent-color) 75%, var(--text-color));
+  background: color-mix(in srgb, var(--accent-color) 10%, var(--surface-color));
+  border-color: color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+body:not(.dark-mode) .settings-tab:hover,
+body:not(.dark-mode) .settings-tab:focus-visible {
+  color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 18%, var(--surface-color));
+  border-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
+}
+
+body:not(.dark-mode) .settings-tab[aria-selected="true"],
+body:not(.dark-mode) .settings-tab.active {
+  color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 26%, var(--surface-color));
+  border-color: color-mix(in srgb, var(--accent-color) 65%, transparent);
+}
+
+body:not(.dark-mode) .settings-tab-icon {
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  color: var(--accent-color);
+}
+
+body:not(.dark-mode) .settings-tab:hover .settings-tab-icon,
+body:not(.dark-mode) .settings-tab:focus-visible .settings-tab-icon,
+body:not(.dark-mode) .settings-tab[aria-selected="true"] .settings-tab-icon,
+body:not(.dark-mode) .settings-tab.active .settings-tab-icon {
+  background: color-mix(in srgb, var(--accent-color) 28%, transparent);
+  color: var(--accent-color);
 }
 
 body.high-contrast .settings-tab {
@@ -1363,11 +1389,11 @@ body.high-contrast .settings-tab-icon {
 
 @media (max-width: 600px) {
   .settings-tabs {
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
   .settings-tab {
-    min-height: 88px;
-    padding: 9px 10px;
+    min-height: 74px;
+    padding: 7px 9px;
   }
 }
 
