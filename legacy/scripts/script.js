@@ -1,3 +1,48 @@
+  var APP_VERSION = "1.0.4";
+
+  try {
+    if (typeof window !== 'undefined') {
+      window.APP_VERSION = APP_VERSION;
+    }
+  } catch (versionGlobalError) {
+    void versionGlobalError;
+  }
+
+  (function updateLegacyVersionLabel() {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    var aboutVersionElem = document.getElementById('aboutVersion');
+    if (!aboutVersionElem) {
+      return;
+    }
+
+    var docLang = '';
+    try {
+      docLang = document.documentElement && document.documentElement.lang;
+    } catch (langDetectionError) {
+      void langDetectionError;
+    }
+
+    var dictionaries = typeof texts === 'object' && texts ? texts : null;
+    var languageKey = docLang && dictionaries && dictionaries[docLang] ? docLang : 'en';
+    var dictionary = dictionaries && dictionaries[languageKey] ? dictionaries[languageKey] : null;
+    if (!dictionary && dictionaries) {
+      var fallbackKeys = Object.keys(dictionaries);
+      for (var i = 0; i < fallbackKeys.length; i += 1) {
+        var key = fallbackKeys[i];
+        if (key && dictionaries[key] && typeof dictionaries[key].versionLabel === 'string') {
+          dictionary = dictionaries[key];
+          break;
+        }
+      }
+    }
+
+    var label = dictionary && dictionary.versionLabel ? dictionary.versionLabel : 'Version';
+    aboutVersionElem.textContent = label + ' ' + APP_VERSION;
+  })();
+
   if (settingsTablist) {
     var sectionsLabel =
       texts[lang].settingsSectionsLabel ||
