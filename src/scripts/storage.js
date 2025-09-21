@@ -728,6 +728,74 @@ function collectAutoBackupEntries(container, prefix) {
     });
 }
 
+function createStableValueSignature(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (value === undefined) {
+    return 'undefined';
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(item => createStableValueSignature(item)).join(',')}]`;
+  }
+  if (isPlainObject(value)) {
+    const keys = Object.keys(value).sort();
+    const entries = keys.map(key => `${JSON.stringify(key)}:${createStableValueSignature(value[key])}`);
+    return `{${entries.join(',')}}`;
+  }
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return 'number:NaN';
+    }
+    if (!Number.isFinite(value)) {
+      return value > 0 ? 'number:Infinity' : 'number:-Infinity';
+    }
+    return `number:${value}`;
+  }
+  if (typeof value === 'bigint') {
+    return `bigint:${value.toString()}`;
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'boolean:true' : 'boolean:false';
+  }
+  if (typeof value === 'string') {
+    return `string:${value}`;
+  }
+  if (typeof value === 'symbol') {
+    return `symbol:${String(value)}`;
+  }
+  if (typeof value === 'function') {
+    return `function:${value.name || 'anonymous'}`;
+  }
+  return `${typeof value}:${String(value)}`;
+}
+
+function removeDuplicateAutoBackupEntries(container, entries) {
+  if (!isPlainObject(container) || !Array.isArray(entries) || entries.length < 2) {
+    return [];
+  }
+
+  const removedKeys = [];
+  const seenSignatures = new Map();
+
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    if (!entry || typeof entry.key !== 'string') {
+      continue;
+    }
+    const signature = createStableValueSignature(container[entry.key]);
+    if (seenSignatures.has(signature)) {
+      delete container[entry.key];
+      entries.splice(index, 1);
+      removedKeys.push(entry.key);
+    } else {
+      seenSignatures.set(signature, entry.key);
+    }
+  }
+
+  return removedKeys;
+}
+
 function enforceAutoBackupLimits(container) {
   if (!isPlainObject(container)) {
     return [];
@@ -737,6 +805,7 @@ function enforceAutoBackupLimits(container) {
 
   const autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > MAX_AUTO_BACKUPS) {
+    removed.push(...removeDuplicateAutoBackupEntries(container, autoBackups));
     while (autoBackups.length > MAX_AUTO_BACKUPS) {
       const entry = autoBackups.shift();
       if (!entry) {
@@ -749,6 +818,7 @@ function enforceAutoBackupLimits(container) {
 
   const deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
   if (deletionBackups.length > MAX_DELETION_BACKUPS) {
+    removed.push(...removeDuplicateAutoBackupEntries(container, deletionBackups));
     while (deletionBackups.length > MAX_DELETION_BACKUPS) {
       const entry = deletionBackups.shift();
       if (!entry) {
