@@ -522,11 +522,45 @@ function normalizeAutoGearRule(rule) {
   const viewfinderExtension = normalizeAutoGearTriggerList(rule.viewfinderExtension).sort((a, b) => a.localeCompare(b));
   const videoDistribution = normalizeVideoDistributionTriggerList(rule.videoDistribution)
     .sort((a, b) => a.localeCompare(b));
-  if (!scenarios.length && !mattebox.length && !cameraHandle.length && !viewfinderExtension.length && !videoDistribution.length) return null;
+  const camera = normalizeAutoGearTriggerList(rule.camera).sort((a, b) => a.localeCompare(b));
+  const monitor = normalizeAutoGearTriggerList(rule.monitor).sort((a, b) => a.localeCompare(b));
+  const wireless = normalizeAutoGearTriggerList(rule.wireless).sort((a, b) => a.localeCompare(b));
+  const motors = normalizeAutoGearTriggerList(rule.motors).sort((a, b) => a.localeCompare(b));
+  const controllers = normalizeAutoGearTriggerList(rule.controllers).sort((a, b) => a.localeCompare(b));
+  const distance = normalizeAutoGearTriggerList(rule.distance).sort((a, b) => a.localeCompare(b));
+  if (
+    !scenarios.length
+    && !mattebox.length
+    && !cameraHandle.length
+    && !viewfinderExtension.length
+    && !videoDistribution.length
+    && !camera.length
+    && !monitor.length
+    && !wireless.length
+    && !motors.length
+    && !controllers.length
+    && !distance.length
+  ) return null;
   const add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
   const remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
   if (!add.length && !remove.length) return null;
-  return { id, label, scenarios, mattebox, cameraHandle, viewfinderExtension, videoDistribution, add, remove };
+  return {
+    id,
+    label,
+    scenarios,
+    mattebox,
+    cameraHandle,
+    viewfinderExtension,
+    videoDistribution,
+    camera,
+    monitor,
+    wireless,
+    motors,
+    controllers,
+    distance,
+    add,
+    remove,
+  };
 }
 
 function autoGearItemSnapshot(item) {
@@ -591,6 +625,12 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     cameraHandle: normalized.cameraHandle.slice().sort((a, b) => a.localeCompare(b)),
     viewfinderExtension: normalized.viewfinderExtension.slice().sort((a, b) => a.localeCompare(b)),
     videoDistribution: normalized.videoDistribution.slice().sort((a, b) => a.localeCompare(b)),
+    camera: normalized.camera.slice().sort((a, b) => a.localeCompare(b)),
+    monitor: normalized.monitor.slice().sort((a, b) => a.localeCompare(b)),
+    wireless: normalized.wireless.slice().sort((a, b) => a.localeCompare(b)),
+    motors: normalized.motors.slice().sort((a, b) => a.localeCompare(b)),
+    controllers: normalized.controllers.slice().sort((a, b) => a.localeCompare(b)),
+    distance: normalized.distance.slice().sort((a, b) => a.localeCompare(b)),
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove),
   };
@@ -602,9 +642,15 @@ function autoGearRuleSortKey(rule) {
   const cameraHandleKey = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.join('|') : '';
   const viewfinderKey = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.join('|') : '';
   const videoDistributionKey = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.join('|') : '';
+  const cameraKey = Array.isArray(rule.camera) ? rule.camera.join('|') : '';
+  const monitorKey = Array.isArray(rule.monitor) ? rule.monitor.join('|') : '';
+  const wirelessKey = Array.isArray(rule.wireless) ? rule.wireless.join('|') : '';
+  const motorsKey = Array.isArray(rule.motors) ? rule.motors.join('|') : '';
+  const controllersKey = Array.isArray(rule.controllers) ? rule.controllers.join('|') : '';
+  const distanceKey = Array.isArray(rule.distance) ? rule.distance.join('|') : '';
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${videoDistributionKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -1184,6 +1230,12 @@ function cloneAutoGearRule(rule) {
     videoDistribution: Array.isArray(rule.videoDistribution)
       ? rule.videoDistribution.slice()
       : [],
+    camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+    monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+    wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
+    motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
+    controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
+    distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
     add: Array.isArray(rule.add) ? rule.add.map(cloneAutoGearRuleItem) : [],
     remove: Array.isArray(rule.remove) ? rule.remove.map(cloneAutoGearRuleItem) : [],
   };
@@ -4153,6 +4205,66 @@ function setLanguage(lang) {
     if (autoGearVideoDistributionSelect) {
       autoGearVideoDistributionSelect.setAttribute('data-help', help);
       autoGearVideoDistributionSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearCameraLabel) {
+    const label = texts[lang].autoGearCameraLabel || texts.en?.autoGearCameraLabel || autoGearCameraLabel.textContent;
+    autoGearCameraLabel.textContent = label;
+    const help = texts[lang].autoGearCameraHelp || texts.en?.autoGearCameraHelp || label;
+    autoGearCameraLabel.setAttribute('data-help', help);
+    if (autoGearCameraSelect) {
+      autoGearCameraSelect.setAttribute('data-help', help);
+      autoGearCameraSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearMonitorLabel) {
+    const label = texts[lang].autoGearMonitorLabel || texts.en?.autoGearMonitorLabel || autoGearMonitorLabel.textContent;
+    autoGearMonitorLabel.textContent = label;
+    const help = texts[lang].autoGearMonitorHelp || texts.en?.autoGearMonitorHelp || label;
+    autoGearMonitorLabel.setAttribute('data-help', help);
+    if (autoGearMonitorSelect) {
+      autoGearMonitorSelect.setAttribute('data-help', help);
+      autoGearMonitorSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearWirelessLabel) {
+    const label = texts[lang].autoGearWirelessLabel || texts.en?.autoGearWirelessLabel || autoGearWirelessLabel.textContent;
+    autoGearWirelessLabel.textContent = label;
+    const help = texts[lang].autoGearWirelessHelp || texts.en?.autoGearWirelessHelp || label;
+    autoGearWirelessLabel.setAttribute('data-help', help);
+    if (autoGearWirelessSelect) {
+      autoGearWirelessSelect.setAttribute('data-help', help);
+      autoGearWirelessSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearMotorsLabel) {
+    const label = texts[lang].autoGearMotorsLabel || texts.en?.autoGearMotorsLabel || autoGearMotorsLabel.textContent;
+    autoGearMotorsLabel.textContent = label;
+    const help = texts[lang].autoGearMotorsHelp || texts.en?.autoGearMotorsHelp || label;
+    autoGearMotorsLabel.setAttribute('data-help', help);
+    if (autoGearMotorsSelect) {
+      autoGearMotorsSelect.setAttribute('data-help', help);
+      autoGearMotorsSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearControllersLabel) {
+    const label = texts[lang].autoGearControllersLabel || texts.en?.autoGearControllersLabel || autoGearControllersLabel.textContent;
+    autoGearControllersLabel.textContent = label;
+    const help = texts[lang].autoGearControllersHelp || texts.en?.autoGearControllersHelp || label;
+    autoGearControllersLabel.setAttribute('data-help', help);
+    if (autoGearControllersSelect) {
+      autoGearControllersSelect.setAttribute('data-help', help);
+      autoGearControllersSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearDistanceLabel) {
+    const label = texts[lang].autoGearDistanceLabel || texts.en?.autoGearDistanceLabel || autoGearDistanceLabel.textContent;
+    autoGearDistanceLabel.textContent = label;
+    const help = texts[lang].autoGearDistanceHelp || texts.en?.autoGearDistanceHelp || label;
+    autoGearDistanceLabel.setAttribute('data-help', help);
+    if (autoGearDistanceSelect) {
+      autoGearDistanceSelect.setAttribute('data-help', help);
+      autoGearDistanceSelect.setAttribute('aria-label', label);
     }
   }
   if (autoGearAddItemsHeading) {
@@ -7757,6 +7869,18 @@ const autoGearViewfinderExtensionSelect = document.getElementById('autoGearViewf
 const autoGearViewfinderExtensionLabel = document.getElementById('autoGearViewfinderExtensionLabel');
 const autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDistribution');
 const autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
+const autoGearCameraSelect = document.getElementById('autoGearCamera');
+const autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
+const autoGearMonitorSelect = document.getElementById('autoGearMonitor');
+const autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
+const autoGearWirelessSelect = document.getElementById('autoGearWireless');
+const autoGearWirelessLabel = document.getElementById('autoGearWirelessLabel');
+const autoGearMotorsSelect = document.getElementById('autoGearMotors');
+const autoGearMotorsLabel = document.getElementById('autoGearMotorsLabel');
+const autoGearControllersSelect = document.getElementById('autoGearControllers');
+const autoGearControllersLabel = document.getElementById('autoGearControllersLabel');
+const autoGearDistanceSelect = document.getElementById('autoGearDistance');
+const autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
 const autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
 const autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
 const autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
@@ -7901,6 +8025,12 @@ function createAutoGearDraft(rule) {
       cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
       viewfinderExtension: Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.slice() : [],
       videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
+      camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+      monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+      wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
+      motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
+      controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
+      distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
       add: Array.isArray(rule.add) ? rule.add.map(cloneAutoGearDraftItem) : [],
       remove: Array.isArray(rule.remove) ? rule.remove.map(cloneAutoGearDraftItem) : [],
     };
@@ -7913,6 +8043,12 @@ function createAutoGearDraft(rule) {
     cameraHandle: [],
     viewfinderExtension: [],
     videoDistribution: [],
+    camera: [],
+    monitor: [],
+    wireless: [],
+    motors: [],
+    controllers: [],
+    distance: [],
     add: [],
     remove: [],
   };
@@ -8312,6 +8448,252 @@ function refreshAutoGearVideoDistributionOptions(selected) {
     ? Math.min(8, Math.max(selectableOptions.length, 4))
     : 1;
   autoGearVideoDistributionSelect.size = visibleCount;
+}
+
+function collectAutoGearSelectedValues(selected, key) {
+  const candidateValues = Array.isArray(selected)
+    ? selected
+    : typeof selected === 'string' && selected
+      ? [selected]
+      : Array.isArray(autoGearEditorDraft?.[key])
+        ? autoGearEditorDraft[key]
+        : [];
+  return Array.from(new Set(
+    candidateValues
+      .filter(value => typeof value === 'string')
+      .map(value => value.trim())
+      .filter(Boolean)
+  ));
+}
+
+function refreshAutoGearCameraOptions(selected) {
+  if (!autoGearCameraSelect) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, 'camera');
+
+  autoGearCameraSelect.innerHTML = '';
+  autoGearCameraSelect.multiple = true;
+
+  const seen = new Set();
+  const addOption = value => {
+    if (!value || seen.has(value)) return;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearCameraSelect.appendChild(option);
+    seen.add(value);
+  };
+
+  if (cameraSelect) {
+    Array.from(cameraSelect.options || []).forEach(opt => {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      const label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) addOption(value);
+  });
+
+  const visibleCount = Array.from(autoGearCameraSelect.options || []).filter(option => !option.disabled).length;
+  autoGearCameraSelect.size = visibleCount ? Math.min(6, Math.max(visibleCount, 3)) : 1;
+}
+
+function refreshAutoGearMonitorOptions(selected) {
+  if (!autoGearMonitorSelect) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, 'monitor');
+
+  autoGearMonitorSelect.innerHTML = '';
+  autoGearMonitorSelect.multiple = true;
+
+  const seen = new Set();
+  const addOption = value => {
+    if (!value || seen.has(value)) return;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearMonitorSelect.appendChild(option);
+    seen.add(value);
+  };
+
+  if (monitorSelect) {
+    Array.from(monitorSelect.options || []).forEach(opt => {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      const label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) addOption(value);
+  });
+
+  const visibleCount = Array.from(autoGearMonitorSelect.options || []).filter(option => !option.disabled).length;
+  autoGearMonitorSelect.size = visibleCount ? Math.min(6, Math.max(visibleCount, 3)) : 1;
+}
+
+function refreshAutoGearWirelessOptions(selected) {
+  if (!autoGearWirelessSelect) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, 'wireless');
+
+  autoGearWirelessSelect.innerHTML = '';
+  autoGearWirelessSelect.multiple = true;
+
+  const seen = new Set();
+  const addOption = value => {
+    if (!value || seen.has(value)) return;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearWirelessSelect.appendChild(option);
+    seen.add(value);
+  };
+
+  if (videoSelect) {
+    Array.from(videoSelect.options || []).forEach(opt => {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      const label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) addOption(value);
+  });
+
+  const visibleCount = Array.from(autoGearWirelessSelect.options || []).filter(option => !option.disabled).length;
+  autoGearWirelessSelect.size = visibleCount ? Math.min(6, Math.max(visibleCount, 3)) : 1;
+}
+
+function refreshAutoGearMotorsOptions(selected) {
+  if (!autoGearMotorsSelect) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, 'motors');
+
+  autoGearMotorsSelect.innerHTML = '';
+  autoGearMotorsSelect.multiple = true;
+
+  const seen = new Set();
+  const addOption = value => {
+    if (!value || seen.has(value)) return;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearMotorsSelect.appendChild(option);
+    seen.add(value);
+  };
+
+  const sourceSelects = Array.isArray(motorSelects) ? motorSelects : [];
+  sourceSelects.forEach(sel => {
+    Array.from(sel?.options || []).forEach(opt => {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      const label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  });
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) addOption(value);
+  });
+
+  const visibleCount = Array.from(autoGearMotorsSelect.options || []).filter(option => !option.disabled).length;
+  autoGearMotorsSelect.size = visibleCount ? Math.min(6, Math.max(visibleCount, 3)) : 1;
+}
+
+function refreshAutoGearControllersOptions(selected) {
+  if (!autoGearControllersSelect) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, 'controllers');
+
+  autoGearControllersSelect.innerHTML = '';
+  autoGearControllersSelect.multiple = true;
+
+  const seen = new Set();
+  const addOption = value => {
+    if (!value || seen.has(value)) return;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearControllersSelect.appendChild(option);
+    seen.add(value);
+  };
+
+  const sourceSelects = Array.isArray(controllerSelects) ? controllerSelects : [];
+  sourceSelects.forEach(sel => {
+    Array.from(sel?.options || []).forEach(opt => {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      const label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  });
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) addOption(value);
+  });
+
+  const visibleCount = Array.from(autoGearControllersSelect.options || []).filter(option => !option.disabled).length;
+  autoGearControllersSelect.size = visibleCount ? Math.min(6, Math.max(visibleCount, 3)) : 1;
+}
+
+function refreshAutoGearDistanceOptions(selected) {
+  if (!autoGearDistanceSelect) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, 'distance');
+
+  autoGearDistanceSelect.innerHTML = '';
+  autoGearDistanceSelect.multiple = true;
+
+  const seen = new Set();
+  const addOption = value => {
+    if (!value || seen.has(value)) return;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearDistanceSelect.appendChild(option);
+    seen.add(value);
+  };
+
+  if (distanceSelect) {
+    Array.from(distanceSelect.options || []).forEach(opt => {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      const label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) addOption(value);
+  });
+
+  const visibleCount = Array.from(autoGearDistanceSelect.options || []).filter(option => !option.disabled).length;
+  autoGearDistanceSelect.size = visibleCount ? Math.min(6, Math.max(visibleCount, 3)) : 1;
 }
 
 function populateAutoGearCategorySelect(select, currentValue) {
@@ -8937,15 +9319,27 @@ function renderAutoGearRulesList() {
     const viewfinderDisplayList = rawViewfinderList.map(getViewfinderFallbackLabel);
     const videoDistributionList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution : [];
     const videoDistributionDisplayList = videoDistributionList.map(getVideoDistributionFallbackLabel);
+    const cameraList = Array.isArray(rule.camera) ? rule.camera : [];
+    const monitorList = Array.isArray(rule.monitor) ? rule.monitor : [];
+    const wirelessList = Array.isArray(rule.wireless) ? rule.wireless : [];
+    const motorsList = Array.isArray(rule.motors) ? rule.motors : [];
+    const controllersList = Array.isArray(rule.controllers) ? rule.controllers : [];
+    const distanceList = Array.isArray(rule.distance) ? rule.distance : [];
+    const fallbackCandidates = [
+      cameraList,
+      monitorList,
+      wirelessList,
+      motorsList,
+      controllersList,
+      distanceList,
+      matteboxList,
+      cameraHandleList,
+      viewfinderDisplayList,
+      videoDistributionDisplayList,
+    ];
     const fallbackSource = scenarioList.length
       ? scenarioList
-      : (matteboxList.length
-        ? matteboxList
-        : (cameraHandleList.length
-          ? cameraHandleList
-          : (viewfinderDisplayList.length
-            ? viewfinderDisplayList
-            : (videoDistributionDisplayList.length ? videoDistributionDisplayList : []))));
+      : (fallbackCandidates.find(list => Array.isArray(list) && list.length) || []);
     const fallbackTitle = fallbackSource.length ? fallbackSource.join(' + ') : '';
     title.textContent = rule.label || fallbackTitle;
     info.appendChild(title);
@@ -8957,6 +9351,60 @@ function renderAutoGearRulesList() {
       scenarioMeta.className = 'auto-gear-rule-meta';
       scenarioMeta.textContent = `${scenarioLabel}: ${scenarioList.join(' + ')}`;
       info.appendChild(scenarioMeta);
+    }
+    if (cameraList.length) {
+      const cameraLabelText = texts[currentLang]?.autoGearCameraLabel
+        || texts.en?.autoGearCameraLabel
+        || 'Camera selection';
+      const cameraMeta = document.createElement('p');
+      cameraMeta.className = 'auto-gear-rule-meta';
+      cameraMeta.textContent = `${cameraLabelText}: ${cameraList.join(' + ')}`;
+      info.appendChild(cameraMeta);
+    }
+    if (monitorList.length) {
+      const monitorLabelText = texts[currentLang]?.autoGearMonitorLabel
+        || texts.en?.autoGearMonitorLabel
+        || 'Onboard monitors';
+      const monitorMeta = document.createElement('p');
+      monitorMeta.className = 'auto-gear-rule-meta';
+      monitorMeta.textContent = `${monitorLabelText}: ${monitorList.join(' + ')}`;
+      info.appendChild(monitorMeta);
+    }
+    if (wirelessList.length) {
+      const wirelessLabelText = texts[currentLang]?.autoGearWirelessLabel
+        || texts.en?.autoGearWirelessLabel
+        || 'Wireless transmitters';
+      const wirelessMeta = document.createElement('p');
+      wirelessMeta.className = 'auto-gear-rule-meta';
+      wirelessMeta.textContent = `${wirelessLabelText}: ${wirelessList.join(' + ')}`;
+      info.appendChild(wirelessMeta);
+    }
+    if (motorsList.length) {
+      const motorsLabelText = texts[currentLang]?.autoGearMotorsLabel
+        || texts.en?.autoGearMotorsLabel
+        || 'FIZ motors';
+      const motorsMeta = document.createElement('p');
+      motorsMeta.className = 'auto-gear-rule-meta';
+      motorsMeta.textContent = `${motorsLabelText}: ${motorsList.join(' + ')}`;
+      info.appendChild(motorsMeta);
+    }
+    if (controllersList.length) {
+      const controllersLabelText = texts[currentLang]?.autoGearControllersLabel
+        || texts.en?.autoGearControllersLabel
+        || 'FIZ controllers';
+      const controllersMeta = document.createElement('p');
+      controllersMeta.className = 'auto-gear-rule-meta';
+      controllersMeta.textContent = `${controllersLabelText}: ${controllersList.join(' + ')}`;
+      info.appendChild(controllersMeta);
+    }
+    if (distanceList.length) {
+      const distanceLabelText = texts[currentLang]?.autoGearDistanceLabel
+        || texts.en?.autoGearDistanceLabel
+        || 'FIZ distance devices';
+      const distanceMeta = document.createElement('p');
+      distanceMeta.className = 'auto-gear-rule-meta';
+      distanceMeta.textContent = `${distanceLabelText}: ${distanceList.join(' + ')}`;
+      info.appendChild(distanceMeta);
     }
     if (matteboxList.length) {
       const matteboxLabelText = texts[currentLang]?.autoGearMatteboxLabel
@@ -9099,6 +9547,12 @@ function openAutoGearEditor(ruleId) {
   refreshAutoGearCameraHandleOptions(autoGearEditorDraft.cameraHandle);
   refreshAutoGearViewfinderExtensionOptions(autoGearEditorDraft.viewfinderExtension);
   refreshAutoGearVideoDistributionOptions(autoGearEditorDraft.videoDistribution);
+  refreshAutoGearCameraOptions(autoGearEditorDraft.camera);
+  refreshAutoGearMonitorOptions(autoGearEditorDraft.monitor);
+  refreshAutoGearWirelessOptions(autoGearEditorDraft.wireless);
+  refreshAutoGearMotorsOptions(autoGearEditorDraft.motors);
+  refreshAutoGearControllersOptions(autoGearEditorDraft.controllers);
+  refreshAutoGearDistanceOptions(autoGearEditorDraft.distance);
   populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearEditorDraft.add[0]?.category || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearEditorDraft.remove[0]?.category || '');
   syncAutoGearMonitorFieldVisibility();
@@ -9130,6 +9584,12 @@ function closeAutoGearEditor() {
   refreshAutoGearCameraHandleOptions([]);
   refreshAutoGearViewfinderExtensionOptions([]);
   refreshAutoGearVideoDistributionOptions([]);
+  refreshAutoGearCameraOptions([]);
+  refreshAutoGearMonitorOptions([]);
+  refreshAutoGearWirelessOptions([]);
+  refreshAutoGearMotorsOptions([]);
+  refreshAutoGearControllersOptions([]);
+  refreshAutoGearDistanceOptions([]);
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearAddScreenSizeInput) autoGearAddScreenSizeInput.value = '';
@@ -9244,12 +9704,48 @@ function saveAutoGearRuleFromEditor() {
   if (videoDistributionSelections.includes('__none__') && videoDistributionSelections.length > 1) {
     videoDistributionSelections = videoDistributionSelections.filter(value => value !== '__none__');
   }
+  const cameraSelections = autoGearCameraSelect
+    ? Array.from(autoGearCameraSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const monitorSelections = autoGearMonitorSelect
+    ? Array.from(autoGearMonitorSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const wirelessSelections = autoGearWirelessSelect
+    ? Array.from(autoGearWirelessSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const motorSelections = autoGearMotorsSelect
+    ? Array.from(autoGearMotorsSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const controllerSelections = autoGearControllersSelect
+    ? Array.from(autoGearControllersSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const distanceSelections = autoGearDistanceSelect
+    ? Array.from(autoGearDistanceSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
   if (
     !scenarios.length
     && !matteboxSelections.length
     && !cameraHandleSelections.length
     && !viewfinderSelections.length
     && !videoDistributionSelections.length
+    && !cameraSelections.length
+    && !monitorSelections.length
+    && !wirelessSelections.length
+    && !motorSelections.length
+    && !controllerSelections.length
+    && !distanceSelections.length
   ) {
     const message = texts[currentLang]?.autoGearRuleConditionRequired
       || texts.en?.autoGearRuleConditionRequired
@@ -9267,6 +9763,12 @@ function saveAutoGearRuleFromEditor() {
   autoGearEditorDraft.cameraHandle = cameraHandleSelections;
   autoGearEditorDraft.viewfinderExtension = viewfinderSelections;
   autoGearEditorDraft.videoDistribution = videoDistributionSelections;
+  autoGearEditorDraft.camera = cameraSelections;
+  autoGearEditorDraft.monitor = monitorSelections;
+  autoGearEditorDraft.wireless = wirelessSelections;
+  autoGearEditorDraft.motors = motorSelections;
+  autoGearEditorDraft.controllers = controllerSelections;
+  autoGearEditorDraft.distance = distanceSelections;
   if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
     const message = texts[currentLang]?.autoGearRuleNeedsItems
       || texts.en?.autoGearRuleNeedsItems
@@ -20038,11 +20540,23 @@ function removeAutoGearItem(cell, item, remainingOverride) {
 }
 
 function getAutoGearRuleDisplayLabel(rule) {
-    if (!rule || typeof rule !== 'object') return '';
+  if (!rule || typeof rule !== 'object') return '';
   const label = typeof rule.label === 'string' ? rule.label.trim() : '';
   if (label) return label;
   const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
   if (scenarioList.length) return scenarioList.join(' + ');
+  const cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
+  if (cameraList.length) return cameraList.join(' + ');
+  const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
+  if (monitorList.length) return monitorList.join(' + ');
+  const wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
+  if (wirelessList.length) return wirelessList.join(' + ');
+  const motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
+  if (motorsList.length) return motorsList.join(' + ');
+  const controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
+  if (controllersList.length) return controllersList.join(' + ');
+  const distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
+  if (distanceList.length) return distanceList.join(' + ');
   const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
   if (matteboxList.length) return matteboxList.join(' + ');
   const cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
@@ -20280,6 +20794,52 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     ? normalizedVideoDistributionRaw.filter(value => value !== '__none__')
     : ['__none__'];
   const videoDistributionSet = new Set(normalizedVideoDistribution);
+  const rawCameraSelection = info && typeof info.cameraSelection === 'string'
+      ? info.cameraSelection.trim()
+      : '';
+  const normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
+  const rawMonitorSelection = info && typeof info.monitorSelection === 'string'
+      ? info.monitorSelection.trim()
+      : '';
+  const normalizedMonitorSelection = normalizeAutoGearTriggerValue(rawMonitorSelection);
+  const rawWirelessSelection = info && typeof info.wirelessSelection === 'string'
+      ? info.wirelessSelection.trim()
+      : '';
+  const normalizedWirelessSelection = normalizeAutoGearTriggerValue(rawWirelessSelection);
+  const rawMotorSelections = [];
+  if (info) {
+    if (Array.isArray(info.motorSelections)) {
+      rawMotorSelections.push(...info.motorSelections);
+    }
+    if (Array.isArray(info.motors)) {
+      rawMotorSelections.push(...info.motors);
+    }
+  }
+  const normalizedMotorSet = new Set(
+    rawMotorSelections
+      .filter(value => typeof value === 'string')
+      .map(value => normalizeAutoGearTriggerValue(value))
+      .filter(Boolean)
+  );
+  const rawControllerSelections = [];
+  if (info) {
+    if (Array.isArray(info.controllerSelections)) {
+      rawControllerSelections.push(...info.controllerSelections);
+    }
+    if (Array.isArray(info.controllers)) {
+      rawControllerSelections.push(...info.controllers);
+    }
+  }
+  const normalizedControllerSet = new Set(
+    rawControllerSelections
+      .filter(value => typeof value === 'string')
+      .map(value => normalizeAutoGearTriggerValue(value))
+      .filter(Boolean)
+  );
+  const rawDistanceSelection = info && typeof info.distanceSelection === 'string'
+      ? info.distanceSelection.trim()
+      : '';
+  const normalizedDistanceSelection = normalizeAutoGearTriggerValue(rawDistanceSelection);
   if (!scenarios.length) {
     const hasRuleWithoutScenario = autoGearRules.some(rule => {
       const scenarioList = Array.isArray(rule.scenarios)
@@ -20308,18 +20868,70 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         }
         const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
         if (matteboxList.length) {
-            const normalizedTargets = matteboxList
-                .map(normalizeAutoGearTriggerValue)
-                .filter(Boolean);
-            if (!normalizedTargets.length) return false;
-            if (!normalizedMattebox) return false;
-            if (!normalizedTargets.includes(normalizedMattebox)) return false;
+          const normalizedTargets = matteboxList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedMattebox) return false;
+          if (!normalizedTargets.includes(normalizedMattebox)) return false;
+        }
+        const cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
+        if (cameraList.length) {
+          const normalizedTargets = cameraList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedCameraSelection) return false;
+          if (!normalizedTargets.includes(normalizedCameraSelection)) return false;
+        }
+        const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
+        if (monitorList.length) {
+          const normalizedTargets = monitorList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedMonitorSelection) return false;
+          if (!normalizedTargets.includes(normalizedMonitorSelection)) return false;
+        }
+        const wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
+        if (wirelessList.length) {
+          const normalizedTargets = wirelessList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedWirelessSelection) return false;
+          if (!normalizedTargets.includes(normalizedWirelessSelection)) return false;
+        }
+        const motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
+        if (motorsList.length) {
+          const normalizedTargets = motorsList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedTargets.every(target => normalizedMotorSet.has(target))) return false;
+        }
+        const controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
+        if (controllersList.length) {
+          const normalizedTargets = controllersList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedTargets.every(target => normalizedControllerSet.has(target))) return false;
+        }
+        const distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
+        if (distanceList.length) {
+          const normalizedTargets = distanceList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedDistanceSelection) return false;
+          if (!normalizedTargets.includes(normalizedDistanceSelection)) return false;
         }
         const cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
         if (cameraHandleList.length) {
-            const normalizedTargets = cameraHandleList
-                .map(normalizeAutoGearTriggerValue)
-                .filter(Boolean);
+          const normalizedTargets = cameraHandleList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
             if (!normalizedTargets.length) return false;
             if (!normalizedTargets.every(target => cameraHandleSet.has(target))) return false;
         }
@@ -21399,7 +22011,16 @@ function generateGearListHtml(info = {}) {
     let body = `<h2>${projectTitle}</h2>`;
     if (infoHtml) body += infoHtml;
     const tableHtml = '<table class="gear-table">' + categoryGroups.join('') + '</table>';
-    const adjustedTable = applyAutoGearRulesToTableHtml(tableHtml, info);
+    const infoForRules = {
+        ...info,
+        cameraSelection: selectedNames.camera,
+        monitorSelection: selectedNames.monitor,
+        wirelessSelection: selectedNames.video,
+        motorSelections: selectedNames.motors.slice(),
+        controllerSelections: selectedNames.controllers.slice(),
+        distanceSelection: selectedNames.distance,
+    };
+    const adjustedTable = applyAutoGearRulesToTableHtml(tableHtml, infoForRules);
     body += '<h3>Gear List</h3>' + adjustedTable;
     return body;
 }
@@ -22895,6 +23516,12 @@ if (settingsButton && settingsDialog) {
       refreshAutoGearCameraHandleOptions();
       refreshAutoGearViewfinderExtensionOptions();
       refreshAutoGearVideoDistributionOptions();
+      refreshAutoGearCameraOptions();
+      refreshAutoGearMonitorOptions();
+      refreshAutoGearWirelessOptions();
+      refreshAutoGearMotorsOptions();
+      refreshAutoGearControllersOptions();
+      refreshAutoGearDistanceOptions();
       populateAutoGearCategorySelect(autoGearAddCategorySelect, '');
       populateAutoGearCategorySelect(autoGearRemoveCategorySelect, '');
       renderAutoGearRulesList();

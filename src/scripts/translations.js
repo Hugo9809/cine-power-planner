@@ -188,8 +188,26 @@ const texts = {
       "Apply this rule when these video distribution preferences are selected.",
     autoGearVideoDistributionPlaceholder: "Select video distribution options",
     autoGearVideoDistributionNone: "No video distribution selected",
+    autoGearCameraLabel: "Camera selection",
+    autoGearCameraHelp:
+      "Apply this rule when these camera bodies are selected.",
+    autoGearMonitorLabel: "Onboard monitors",
+    autoGearMonitorHelp:
+      "Apply this rule when these onboard monitors are selected.",
+    autoGearWirelessLabel: "Wireless transmitters",
+    autoGearWirelessHelp:
+      "Apply this rule when these wireless transmitters are selected.",
+    autoGearMotorsLabel: "FIZ motors",
+    autoGearMotorsHelp:
+      "Apply this rule when these FIZ motors are selected.",
+    autoGearControllersLabel: "FIZ controllers",
+    autoGearControllersHelp:
+      "Apply this rule when these FIZ controllers are selected.",
+    autoGearDistanceLabel: "FIZ distance devices",
+    autoGearDistanceHelp:
+      "Apply this rule when these distance devices are selected.",
     autoGearRuleConditionRequired:
-      "Select at least one scenario, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
+      "Select at least one scenario, camera, monitor, wireless transmitter, motor, controller, distance device, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
     autoGearAddItemsHeading: "Add these items",
     autoGearAddItemLabel: "Item",
     autoGearAddCategoryLabel: "Category",
