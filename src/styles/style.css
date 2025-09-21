@@ -1666,6 +1666,16 @@ body.pink-mode .auto-gear-rule-title,
   border-radius: var(--border-radius);
 }
 
+#helpResultsSummary {
+  margin: 0 0 12px;
+  color: var(--muted-text-color);
+  font-size: 0.95rem;
+}
+
+#helpResultsSummary[hidden] {
+  display: none;
+}
+
 #helpQuickLinks[hidden] {
   display: none;
 }

@@ -3009,6 +3009,7 @@ if (typeof texts === 'undefined') {
 // Determine initial language (default English)
 let currentLang = "en";
 let updateHelpQuickLinksForLanguage;
+let updateHelpResultsSummaryText;
 let lastRuntimeHours = null;
 try {
   const savedLang = localStorage.getItem("language");
@@ -4429,6 +4430,9 @@ function setLanguage(lang) {
       document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
     }
     if (helpNoResults) helpNoResults.textContent = texts[lang].helpNoResults;
+    if (typeof updateHelpResultsSummaryText === 'function') {
+      updateHelpResultsSummaryText();
+    }
     if (typeof updateHelpQuickLinksForLanguage === 'function') {
       updateHelpQuickLinksForLanguage(lang);
     }
@@ -7291,6 +7295,7 @@ const helpDialog      = document.getElementById("helpDialog");
 const closeHelpBtn    = document.getElementById("closeHelp");
 const helpSearch      = document.getElementById("helpSearch");
 const helpNoResults   = document.getElementById("helpNoResults");
+const helpResultsSummary = document.getElementById("helpResultsSummary");
 const helpSearchClear = document.getElementById("helpSearchClear");
 const helpSectionsContainer = document.getElementById("helpSections");
 const helpQuickLinksNav = document.getElementById("helpQuickLinks");
@@ -24501,9 +24506,73 @@ if (helpButton && helpDialog) {
     return `(${parts.join('')})`;
   };
 
+  updateHelpResultsSummaryText = ({
+    totalCount,
+    visibleCount,
+    hasQuery,
+    queryText
+  } = {}) => {
+    if (!helpResultsSummary) return;
+    if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
+      helpResultsSummary.dataset.totalCount = String(totalCount);
+    }
+    if (typeof visibleCount === 'number' && Number.isFinite(visibleCount)) {
+      helpResultsSummary.dataset.visibleCount = String(visibleCount);
+    }
+    if (typeof hasQuery === 'boolean') {
+      helpResultsSummary.dataset.hasQuery = hasQuery ? 'true' : 'false';
+    }
+    if (typeof queryText === 'string') {
+      helpResultsSummary.dataset.query = queryText;
+    }
+    const storedTotal = Number(helpResultsSummary.dataset.totalCount || 0);
+    if (!storedTotal) {
+      helpResultsSummary.textContent = '';
+      helpResultsSummary.setAttribute('hidden', '');
+      return;
+    }
+    const storedVisible = Number(
+      helpResultsSummary.dataset.visibleCount || 0
+    );
+    const storedHasQuery = helpResultsSummary.dataset.hasQuery === 'true';
+    const storedQuery = helpResultsSummary.dataset.query || '';
+    const langTexts = (texts && texts[currentLang]) || {};
+    const fallbackTexts = (texts && texts.en) || {};
+    let summaryText = '';
+    if (storedHasQuery) {
+      const template =
+        langTexts.helpResultsSummaryFiltered ||
+        fallbackTexts.helpResultsSummaryFiltered;
+      if (template) {
+        summaryText = template
+          .replace('%1$s', storedVisible)
+          .replace('%2$s', storedTotal)
+          .replace('%3$s', storedQuery);
+      } else if (storedQuery) {
+        summaryText = `Showing ${storedVisible} of ${storedTotal} help topics for “${storedQuery}”.`;
+      } else {
+        summaryText = `Showing ${storedVisible} of ${storedTotal} help topics.`;
+      }
+    } else {
+      const template =
+        langTexts.helpResultsSummaryAll ||
+        fallbackTexts.helpResultsSummaryAll;
+      if (template) {
+        summaryText = template.replace('%s', storedTotal);
+      } else {
+        summaryText = `All ${storedTotal} help topics are shown.`;
+      }
+    }
+    helpResultsSummary.textContent = summaryText;
+    helpResultsSummary.removeAttribute('hidden');
+  };
+
   const filterHelp = () => {
     // Bail out early if the search input is missing
-    if (!helpSearch) return;
+    if (!helpSearch) {
+      if (helpResultsSummary) helpResultsSummary.setAttribute('hidden', '');
+      return;
+    }
     const rawQuery = helpSearch.value.trim();
     const normalizedQuery = normaliseHelpSearchText(rawQuery);
     const hasQuery = normalizedQuery.length > 0;
@@ -24513,7 +24582,8 @@ if (helpButton && helpDialog) {
     );
     const items = Array.from(helpDialog.querySelectorAll('.faq-item'));
     const elements = sections.concat(items);
-    let anyVisible = false;
+    const totalCount = elements.length;
+    let visibleCount = 0;
     const highlightPattern = hasQuery
       ? buildHelpHighlightPattern(normalizedQuery)
       : null;
@@ -24605,7 +24675,7 @@ if (helpButton && helpDialog) {
             el.removeAttribute('open');
           }
         }
-        anyVisible = true;
+        visibleCount += 1;
       } else {
         // Hide entries that do not match and collapse FAQ answers while they
         // are filtered out so reopening the dialog starts from a clean state.
@@ -24615,9 +24685,17 @@ if (helpButton && helpDialog) {
         }
       }
     });
+    if (typeof updateHelpResultsSummaryText === 'function') {
+      updateHelpResultsSummaryText({
+        totalCount,
+        visibleCount,
+        hasQuery,
+        queryText: rawQuery || normalizedQuery
+      });
+    }
     if (helpNoResults) {
       // Show or hide the "no results" indicator
-      if (anyVisible) {
+      if (visibleCount > 0) {
         helpNoResults.setAttribute('hidden', '');
       } else {
         helpNoResults.removeAttribute('hidden');
