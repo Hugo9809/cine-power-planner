@@ -784,7 +784,7 @@ describe('export/import all data', () => {
     sessionStorage.clear();
   });
 
-    test('exportAllData collects all planner data', () => {
+  test('exportAllData collects all planner data', () => {
       saveDeviceData(validDeviceData);
       saveSetups({ A: { foo: 1 } });
       saveSessionState({ camera: 'CamA' });
@@ -857,6 +857,45 @@ describe('export/import all data', () => {
         ],
       });
     });
+
+  test('exportAllData filters invalid custom font entries', () => {
+    const invalidEntries = [
+      { id: 'font-keep', name: 'Keep', data: 'data:font/woff;base64,AAAA' },
+      { id: '', name: 'Missing id', data: 'data:font/woff;base64,BBBB' },
+      { id: 'font-missing-data', name: 'No data' },
+      null,
+      { id: 'font-empty-data', name: 'Empty', data: '' },
+    ];
+    localStorage.setItem(CUSTOM_FONT_KEY, JSON.stringify(invalidEntries));
+
+    const exported = exportAllData();
+
+    expect(exported.customFonts).toEqual([
+      { id: 'font-keep', name: 'Keep', data: 'data:font/woff;base64,AAAA' },
+    ]);
+  });
+
+  test('exportAllData reads custom fonts from backup storage when primary is missing', () => {
+    const backupFonts = [
+      { id: 'font-backup', name: 'Backup', data: 'data:font/woff;base64,CCCC' },
+    ];
+    localStorage.removeItem(CUSTOM_FONT_KEY);
+    localStorage.setItem(`${CUSTOM_FONT_KEY}${BACKUP_SUFFIX}`, JSON.stringify(backupFonts));
+
+    const exported = exportAllData();
+
+    expect(exported.customFonts).toEqual(backupFonts);
+  });
+
+  test('exportAllData reads custom logo from backup storage when primary is missing', () => {
+    const backupLogo = 'data:image/svg+xml;base64,QkFDS1VQ';
+    localStorage.removeItem(CUSTOM_LOGO_KEY);
+    localStorage.setItem(`${CUSTOM_LOGO_KEY}${BACKUP_SUFFIX}`, backupLogo);
+
+    const exported = exportAllData();
+
+    expect(exported.customLogo).toBe(backupLogo);
+  });
 
   test('importAllData restores planner data', () => {
     const data = {
