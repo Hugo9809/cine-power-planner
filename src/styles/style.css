@@ -911,6 +911,11 @@ main.legal-content {
     width: 100%;
     align-self: stretch;
   }
+  .share-import-group #applySharedLinkBtn {
+    flex: 1 1 100%;
+    width: 100%;
+    align-self: stretch;
+  }
 
   #setup-manager .share-import-row {
     flex-direction: column;
@@ -2330,6 +2335,11 @@ button {
   flex: 1 1 100%;
   width: 100%;
   align-self: stretch;
+}
+.share-import-group #applySharedLinkBtn {
+  flex: 0 0 auto;
+  width: auto;
+  align-self: center;
 }
 button:hover {
   background-color: var(--control-hover-bg);
