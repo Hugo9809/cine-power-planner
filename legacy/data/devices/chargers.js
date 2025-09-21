@@ -40,6 +40,7 @@
       totalPowerW: 165,
       dimensions_mm: [145, 225, 270],
       weight_g: 1900,
+      outputs: ["XLR-4 DC 16.5V / 10A"],
       notes: "Supports bebob/IDX/Sony Li-Ion batteries; Powerbase function"
     },
     "SWIT SC-304S": {
@@ -88,14 +89,15 @@
     "IDX VL-4X": {
       mount: "V-Mount",
       slots: 4,
+      inputVoltageV: "100-240",
       chargeModes: ["Sequential", "Mixed"],
       perBayCurrentA: 2.7,
       chargingSpeedAmps: 2.7,
-      totalPowerW: 220,
+      totalPowerW: 90,
       dimensions_mm: [249, 178, 91],
       weight_g: 1100,
-      outputs: ["16.8V DC"],
-      notes: "Fanless cooling with overvoltage protection"
+      outputs: ["DC 90W via AC adapter (XLR-4)"],
+      notes: "Fanless cooling with overvoltage protection; bundled AC adapter provides 90W XLR-4 DC output"
     },
     "Anton/Bauer Performance Dual Charger V-Mount": {
       mount: "V-Mount",
@@ -111,6 +113,8 @@
       mount: "V-Mount",
       slots: 2,
       chargeModes: ["Simultaneous"],
+      inputVoltageV: "100-240",
+      outputs: ["XLR 16.7V DC / 4.5A"],
       notes: "Compact dual-bay charger with LED indicators"
     },
     "SWIT S-3822S": {
@@ -280,6 +284,7 @@
       inputVoltageV: "90-240",
       perBayCurrentA: 3,
       chargingSpeedAmps: 3,
+      notes: "Four independent charge bays; ~2.5h for four 98Wh packs",
       provenance: [{
         quote: "Fleet Q Gold Mount four-position charger… 3A charging current, can charge four 98Wh batteries in about 2.5 hours.",
         url: "https://omegabroadcast.com/core-swx-fleet-q-gold-mount-four-position-charger/",
