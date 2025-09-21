@@ -1142,168 +1142,346 @@ const gear = {
       "fiz": {
         "LBUS to LBUS": {
           "brand": "ARRI",
-          "from": "LBUS",
-          "to": "LBUS",
+          "from": "LBUS 4-pin (LEMO)",
+          "to": "LBUS 4-pin (LEMO)",
           "connectors": [
-            "LEMO 0B 4-pin (LBUS)",
-            "LEMO 0B 4-pin (LBUS)"
+            "LBUS 4-pin (LEMO)",
+            "LBUS 4-pin (LEMO)"
           ],
           "orientation": "straight-straight",
-          "type": "LBUS interconnect",
+          "type": "LBUS data/power cable",
+          "compatibleDevices": [
+            "ARRI cforce mini",
+            "ARRI cforce mini RF",
+            "ARRI cforce plus",
+            "ARRI Master Grips",
+            "ARRI OCU-1",
+            "ARRI RIA-1"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips",
+            "ARRI Hi-5 (via RIA-1/LCUBE)"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA Mini",
+            "ARRI ALEXA Mini LF",
+            "ARRI ALEXA 35 (via RIA-1 / EF Mount LBUS)"
+          ],
+          "notes": "Generic LBUS interconnect for chaining LBUS devices.",
           "useCase": [
             "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/en/camera-systems/electronic-control-system/lens-motors-and-encoders"
+            },
+            {
+              "url": "https://www.arri.com/en/camera-systems/camera-components/lens-mounts-and-adapters/arri-ef-mount-lbus"
+            },
+            {
+              "url": "https://shop.arri.com/Products/Camera-Stabilizer-Systems/"
+            }
           ]
         },
         "LBUS to LBUS 0,2m": {
           "brand": "ARRI",
           "kNumber": "K2.0006749",
-          "from": "LBUS",
-          "to": "LBUS",
+          "from": "LBUS 4-pin (LEMO)",
+          "to": "LBUS 4-pin (LEMO)",
           "connectors": [
-            "LEMO 0B 4-pin (LBUS)",
-            "LEMO 0B 4-pin (LBUS)"
+            "LBUS 4-pin (LEMO)",
+            "LBUS 4-pin (LEMO)"
           ],
           "lengthM": 0.2,
           "orientation": "straight-straight",
-          "type": "LBUS interconnect",
+          "type": "LBUS data/power cable",
+          "compatibleDevices": [
+            "ARRI cforce mini",
+            "ARRI Master Grips",
+            "ARRI OCU-1"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips",
+            "ARRI Hi-5 (via RIA-1/LCUBE)"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA Mini",
+            "ARRI ALEXA Mini LF"
+          ],
+          "notes": "Short jumper for closely mounted LBUS devices.",
           "useCase": [
             "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
+            }
           ]
         },
         "LBUS to LBUS 0,3m": {
           "brand": "ARRI",
           "kNumber": "K2.0006750",
-          "from": "LBUS",
-          "to": "LBUS",
+          "from": "LBUS 4-pin (LEMO)",
+          "to": "LBUS 4-pin (LEMO)",
           "connectors": [
-            "LEMO 0B 4-pin (LBUS)",
-            "LEMO 0B 4-pin (LBUS)"
+            "LBUS 4-pin (LEMO)",
+            "LBUS 4-pin (LEMO)"
           ],
           "lengthM": 0.3,
           "orientation": "straight-straight",
-          "type": "LBUS interconnect",
+          "type": "LBUS data/power cable",
+          "compatibleDevices": [
+            "ARRI cforce mini",
+            "ARRI Master Grips",
+            "ARRI OCU-1"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA Mini",
+            "ARRI ALEXA Mini LF"
+          ],
           "useCase": [
             "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
+            }
           ]
         },
         "LBUS to LBUS 0,4m": {
-          "from": "LBUS",
-          "to": "LBUS",
+          "brand": "ARRI",
+          "from": "LBUS 4-pin (LEMO)",
+          "to": "LBUS 4-pin (LEMO)",
           "connectors": [
-            "LEMO 0B 4-pin (LBUS)",
-            "LEMO 0B 4-pin (LBUS)"
+            "LBUS 4-pin (LEMO)",
+            "LBUS 4-pin (LEMO)"
           ],
           "lengthM": 0.4,
           "orientation": "straight-straight",
-          "type": "LBUS interconnect",
+          "type": "LBUS data/power cable",
+          "compatibleDevices": [
+            "ARRI cforce mini",
+            "ARRI Master Grips",
+            "ARRI OCU-1"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA Mini",
+            "ARRI ALEXA Mini LF"
+          ],
+          "notes": "ARRI lists 0.2/0.3/0.5/0.8/1.5 m as standard lengths; 0.4 m variant not found on manufacturer lists.",
           "useCase": [
             "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
+            }
           ]
         },
         "LBUS to LBUS 0,5m": {
           "brand": "ARRI",
           "kNumber": "K2.0006751",
-          "from": "LBUS",
-          "to": "LBUS",
+          "from": "LBUS 4-pin (LEMO)",
+          "to": "LBUS 4-pin (LEMO)",
           "connectors": [
-            "LEMO 0B 4-pin (LBUS)",
-            "LEMO 0B 4-pin (LBUS)"
+            "LBUS 4-pin (LEMO)",
+            "LBUS 4-pin (LEMO)"
           ],
           "lengthM": 0.5,
           "orientation": "straight-straight",
-          "type": "LBUS interconnect",
+          "type": "LBUS data/power cable",
+          "compatibleDevices": [
+            "ARRI cforce mini",
+            "ARRI Master Grips",
+            "ARRI OCU-1"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA Mini",
+            "ARRI ALEXA Mini LF"
+          ],
           "useCase": [
             "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/en/camera-systems/camera-stabilizer-systems/trinity-2-and-artemis-2/trinity-2/trinity-2-cables"
+            }
           ]
         },
         "ARRI Right-Angle LBUS to LBUS 0,6m": {
           "brand": "ARRI",
           "kNumber": "K2.0013040",
           "connectors": [
-            "LEMO 0B 4-pin (LBUS) Right-Angle",
-            "LEMO 0B 4-pin (LBUS) Right-Angle"
+            "LBUS 4-pin (LEMO) right-angle",
+            "LBUS 4-pin (LEMO) right-angle"
           ],
           "lengthM": 0.6,
-          "from": "LBUS (Right-Angle)",
-          "to": "LBUS (Right-Angle)",
+          "from": "LBUS 4-pin (LEMO) right-angle",
+          "to": "LBUS 4-pin (LEMO) right-angle",
           "orientation": "right-angle to right-angle",
-          "type": "LBUS interconnect",
+          "type": "LBUS data/power cable",
+          "compatibleDevices": [
+            "ARRI Master Grips",
+            "ARRI cforce mini",
+            "ARRI OCU-1"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA family (via LBUS accessories)"
+          ],
           "useCase": [
             "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.bhphotovideo.com/c/product/1310382-REG/arri_k2_0013040_cable_lbus_angled_to.html"
+            },
+            {
+              "url": "https://www.arri.com/en/camera-systems/electronic-control-system/lens-motors-and-encoders"
+            }
           ]
         },
         "Cable UDM – SERIAL (7p) 1,5m": {
           "brand": "ARRI",
           "kNumber": "K2.65144.0",
           "connectors": [
-            "LEMO 1B 7-pin (UDM Serial)",
-            "LEMO 0B 4-pin Serial"
+            "LEMO 7-pin (UDM Serial)",
+            "LEMO 7-pin Serial"
           ],
           "from": "ARRI UDM-1",
-          "to": "ARRI UMC / LCUBE Serial",
+          "to": "ARRI UMC-4 / LCUBE Serial",
           "lengthM": 1.5,
-          "orientation": "straight to right-angle (UDM side usually RA)",
-          "type": "UDM Serial to UMC/LCUBE Serial",
+          "orientation": "straight",
+          "type": "UDM serial cable",
+          "compatibleDevices": [
+            "ARRI UDM-1",
+            "ARRI LCUBE CUB-1",
+            "ARRI UMC-4"
+          ],
+          "compatibleControllers": [
+            "ARRI UMC-4",
+            "ARRI LCUBE CUB-1"
+          ],
+          "notes": "Connects UDM-1 to UMC-4 or LCUBE CUB-1 serial.",
           "useCase": [
             "Connect ARRI UDM-1 to ARRI UMC / LCUBE CUB-1"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/en/camera-systems/electronic-control-system/lcubes"
+            },
+            {
+              "url": "https://www.filmtools.com/arri-cable-udm-serial-7p-1-5m-5ft.html"
+            }
           ]
         },
         "Cable UDM – SERIAL (4p) 0,5m": {
           "brand": "ARRI",
           "kNumber": "K2.0025324",
           "connectors": [
-            "LEMO 0B 4-pin (Serial)",
-            "LEMO 0B 4-pin (Serial)"
+            "LEMO 4-pin Serial",
+            "LEMO 4-pin Serial"
           ],
-          "from": "ARRI UDM-1 Serial",
-          "to": "RIA-1 / ALEXA 35 Serial",
+          "from": "ARRI UDM-1 Serial (LEMO 4-pin)",
+          "to": "ARRI RIA-1 / ALEXA 35 Serial",
           "lengthM": 0.5,
-          "orientation": "straight-straight",
-          "type": "UDM Serial to RIA/ALEXA 35 Serial",
+          "orientation": "straight",
+          "type": "UDM serial cable",
+          "compatibleDevices": [
+            "ARRI UDM-1"
+          ],
+          "compatibleControllers": [
+            "ARRI RIA-1"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA 35 (front SERIAL port)"
+          ],
+          "notes": "Connects UDM-1 to SERIAL on RIA-1 or ALEXA 35.",
           "useCase": [
             "Connect ARRI UDM-1 to SERIAL port on RIA-1 / ALEXA 35"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.bhphotovideo.com/c/product/1665189-REG/arri_k2_0025324_udm_serial_cable.html"
+            },
+            {
+              "url": "https://www.videocineimport.com/wp-content/uploads/2025/02/4.1.3-RIA-1-Cable-Guide.pdf"
+            }
           ]
         },
         "Cable CAM (7-pin) – LBUS 0,3m": {
           "brand": "ARRI",
-          "kNumber": "K2.0025027",
-          "from": "CAM (7-pin)",
-          "to": "LBUS (LEMO 4-pin)",
+          "from": "CAM (LEMO 7-pin)",
+          "to": "LBUS 4-pin (LEMO)",
+          "connectors": [
+            "CAM 7-pin (LEMO)",
+            "LBUS 4-pin (LEMO)"
+          ],
           "lengthM": 0.3,
           "orientation": "straight",
+          "type": "CAM-to-LBUS interface cable",
+          "compatibleDevices": [
+            "ARRI cforce RF motor",
+            "cmotion cPRO motor",
+            "cmotion cPRO camin"
+          ],
+          "notes": "Short length variant not listed with ARRI part number; 0.5 m version is K2.0015760.",
           "useCase": [
-            "Run/Stop",
-            "Power",
-            "Control"
+            "LBUS data and power bridge"
           ],
-          "compatibleControllers": [
-            "Arri RIA-1",
-            "Arri cforce mini RF"
-          ],
-          "compatibleCameras": [
-            "Arri Alexa 35",
-            "Arri Alexa Mini LF"
+          "provenance": [
+            {
+              "url": "https://hotrodcameras.com/products/arri-cable-cam-7p-lbus-1-6"
+            },
+            {
+              "url": "https://www.bhphotovideo.com/c/product/1405163-REG/arri_k2_0015760_cable_cam_7p_lbus.html"
+            }
           ]
         },
         "Cable CAM (7-pin) – LBUS 0,5m": {
           "brand": "ARRI",
           "kNumber": "K2.0015760",
-          "from": "CAM (7-pin)",
-          "to": "LBUS (LEMO 4-pin)",
+          "from": "CAM (LEMO 7-pin)",
+          "to": "LBUS 4-pin (LEMO)",
+          "connectors": [
+            "CAM 7-pin (LEMO)",
+            "LBUS 4-pin (LEMO)"
+          ],
           "lengthM": 0.5,
           "orientation": "straight",
+          "type": "CAM-to-LBUS interface cable",
+          "compatibleDevices": [
+            "ARRI cforce RF motor",
+            "cmotion cPRO motor",
+            "cmotion cPRO camin"
+          ],
           "useCase": [
-            "Run/Stop",
-            "Power",
-            "Control"
+            "LBUS data and power bridge"
           ],
-          "compatibleControllers": [
-            "Arri RIA-1",
-            "Arri cforce mini RF"
-          ],
-          "compatibleCameras": [
-            "Arri Alexa 35",
-            "Arri Alexa Mini LF"
+          "provenance": [
+            {
+              "url": "https://www.bhphotovideo.com/c/product/1405163-REG/arri_k2_0015760_cable_cam_7p_lbus.html"
+            },
+            {
+              "url": "https://hotrodcameras.com/products/arri-cable-cam-7p-lbus-1-6"
+            }
           ]
         },
         "Cable CAM (7-pin) – EXT (16-pin) 0,8m": {
@@ -1594,43 +1772,133 @@ const gear = {
           "kNumber": "K2.0044396",
           "from": "SERIAL (LEMO 4-pin)",
           "to": "Serial",
-          "lengthM": 0.8
+          "connectors": [
+            "LEMO 4-pin Serial",
+            "LEMO 4-pin Serial"
+          ],
+          "lengthM": 0.8,
+          "orientation": "straight",
+          "type": "Serial distance cable",
+          "compatibleDevices": [
+            "CineTape (Monitored by ARRI LCS)"
+          ],
+          "compatibleControllers": [
+            "ARRI RIA-1",
+            "ARRI UMC-4 (via LCUBE)"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA 35 (front SERIAL port)"
+          ],
+          "notes": "Generic spec based on ARRI serial ecosystem; specific ARRI part number for CineTape cable not found.",
+          "useCase": [
+            "Serial distance data"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/resource/blob/245986/fe6f9d9dbad1a92fc2440a4eff558b6b/4-1-8-hi-5-and-ria-1-sample-configurations-3rd-party-data.pdf"
+            }
+          ]
         },
         "Cine RT to ARRI RIA-1 / ALEXA 35": {
           "brand": "Focusbug",
+          "kNumber": "CRT-YSP-RIA (family)",
           "connectors": [
-            "LEMO 6-pin (RA, Cine RT serial) + LEMO 2-pin power (RA)",
-            "LEMO 0B 4-pin (straight, Serial)"
+            "LEMO 6-pin right-angle + LEMO 2-pin right-angle",
+            "LEMO 4-pin (straight, Serial)"
           ],
           "from": "Cine RT Base (serial + power RA)",
           "to": "ARRI RIA-1 / ALEXA 35 SERIAL",
           "lengthM": 0.6,
-          "orientation": "RA (Cine RT side) to straight (RIA/ALEXA35)",
-          "type": "Serial + power Y-cable",
+          "orientation": "Right-angle on Cine RT side; straight on camera/RIA-1 side",
+          "type": "Serial Y cable (with power)",
+          "compatibleDevices": [
+            "Focusbug Cine RT Base Sensor"
+          ],
+          "compatibleControllers": [
+            "ARRI RIA-1"
+          ],
+          "compatibleCameras": [
+            "ARRI ALEXA 35 (front SERIAL)"
+          ],
+          "notes": "Provides serial data and filtered power from RIA-1/ALEXA 35 to Cine RT.",
           "useCase": [
             "Connect Cine RT Base to ARRI RIA-1 or ALEXA 35 SERIAL with power injection"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.focusbug.com/order/system-accessories-cables-order/"
+            },
+            {
+              "url": "https://cvp.com/product/focusbug-y-cable-cine-rt-lemo-cable-crt-ysp-ria-r2"
+            },
+            {
+              "url": "https://www.videocineimport.com/wp-content/uploads/2025/02/4.1.3-RIA-1-Cable-Guide.pdf"
+            }
           ]
         },
         "D-Tap to Lemo-2-pin Cable 0,3m": {
-          "lengthM": 0.3,
+          "brand": "ARRI",
+          "kNumber": "K2.0006758",
+          "from": "D-Tap (Anton/Bauer 2-pin)",
+          "to": "LBUS 4-pin (LEMO)",
           "connectors": [
-            "D-Tap",
-            "LEMO 2-pin"
+            "D-Tap (Anton/Bauer 2-pin)",
+            "LBUS 4-pin (LEMO)"
           ],
+          "lengthM": 0.3,
           "orientation": "straight",
+          "type": "LBUS power cable",
+          "compatibleDevices": [
+            "ARRI Master Grips",
+            "ARRI OCU-1",
+            "ARRI cforce motors (LBUS power)"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips"
+          ],
+          "notes": "Standard ARRI length is 0.8 m; 0.3 m variant not listed by ARRI—treated as short custom lead.",
           "useCase": [
             "Power"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/resource/blob/296408/479a0d9b446577b2544678c534526107/master-grips-sup-2-0-2-release-notes-data.pdf"
+            },
+            {
+              "url": "https://www.arri.com/en/camera-systems/electronic-control-system/lcubes"
+            }
           ]
         },
         "D-Tap to Lemo-2-pin Cable 0,5m": {
-          "lengthM": 0.5,
+          "brand": "ARRI",
+          "kNumber": "K2.0006758",
+          "from": "D-Tap (Anton/Bauer 2-pin)",
+          "to": "LBUS 4-pin (LEMO)",
           "connectors": [
-            "D-Tap",
-            "LEMO 2-pin"
+            "D-Tap (Anton/Bauer 2-pin)",
+            "LBUS 4-pin (LEMO)"
           ],
+          "lengthM": 0.5,
           "orientation": "straight",
+          "type": "LBUS power cable",
+          "compatibleDevices": [
+            "ARRI Master Grips",
+            "ARRI OCU-1",
+            "ARRI cforce motors (LBUS power)"
+          ],
+          "compatibleControllers": [
+            "ARRI OCU-1",
+            "ARRI Master Grips"
+          ],
+          "notes": "Standard ARRI length is 0.8 m; 0.5 m variant not listed by ARRI—treated as short custom lead.",
           "useCase": [
             "Power"
+          ],
+          "provenance": [
+            {
+              "url": "https://www.arri.com/resource/blob/296408/479a0d9b446577b2544678c534526107/master-grips-sup-2-0-2-release-notes-data.pdf"
+            }
           ]
         },
         "ultra slim 3G-SDI BNC cable 0,3m": {
@@ -1998,18 +2266,28 @@ const gear = {
         },
         "Monitor Power 12 V (Lemo 0B 2-pin to XLR 4-pin)": {
           "brand": "ARRI",
-          "kNumber": "K2.0010546",
-          "lengthM": null,
+          "kNumber": "K2.0006760",
+          "from": "LBUS 4-pin (LEMO 0B)",
+          "to": "XLR 4-pin",
           "connectors": [
-            "LEMO 0B 2-pin",
+            "LBUS 4-pin (LEMO 0B)",
             "XLR 4-pin"
           ],
+          "lengthM": 0.8,
           "orientation": "straight",
+          "type": "LBUS power breakout",
+          "compatibleDevices": [
+            "Monitors with XLR-4 12V input",
+            "ARRI LBUS-powered accessories (as source)"
+          ],
+          "notes": "LBUS power to XLR-4 (12 V) per ARRI LCUBE/UMC ecosystem cable list.",
           "useCase": [
             "Power"
           ],
-          "compatibleDevices": [
-            "ARTEMIS/TRINITY"
+          "provenance": [
+            {
+              "url": "https://www.arri.com/en/camera-systems/electronic-control-system/lcubes"
+            }
           ]
         },
         "Monitor Power 12 V (Lemo 0B 2-pin to Lemo 0B 2-pin Short)": {
