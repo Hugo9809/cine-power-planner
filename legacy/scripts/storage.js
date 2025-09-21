@@ -2678,9 +2678,239 @@ function normalizeImportedPresetId(value) {
   }
   return "";
 }
+function getSnapshotKeyVariants(key) {
+  var variants = [key];
+  if (typeof key === 'string') {
+    if (key.indexOf('cameraPowerPlanner_') === 0) {
+      variants.push("cinePowerPlanner_".concat(key.slice('cameraPowerPlanner_'.length)));
+    } else if (key.indexOf('cinePowerPlanner_') === 0) {
+      variants.push("cameraPowerPlanner_".concat(key.slice('cinePowerPlanner_'.length)));
+    }
+  }
+  return variants;
+}
+function readSnapshotEntry(snapshot, key) {
+  if (!isPlainObject(snapshot)) {
+    return null;
+  }
+  var variants = getSnapshotKeyVariants(key);
+  for (var i = 0; i < variants.length; i += 1) {
+    var candidate = variants[i];
+    if (Object.prototype.hasOwnProperty.call(snapshot, candidate)) {
+      return { key: candidate, value: snapshot[candidate], type: 'primary' };
+    }
+  }
+  for (var _i = 0; _i < variants.length; _i += 1) {
+    var backupCandidate = "".concat(variants[_i]).concat(STORAGE_BACKUP_SUFFIX);
+    if (Object.prototype.hasOwnProperty.call(snapshot, backupCandidate)) {
+      return { key: backupCandidate, value: snapshot[backupCandidate], type: 'backup' };
+    }
+  }
+  for (var _i2 = 0; _i2 < variants.length; _i2 += 1) {
+    var migrationCandidate = "".concat(variants[_i2]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+    if (Object.prototype.hasOwnProperty.call(snapshot, migrationCandidate)) {
+      return { key: migrationCandidate, value: snapshot[migrationCandidate], type: 'migration-backup' };
+    }
+  }
+  return null;
+}
+function extractSnapshotStoredValue(entry) {
+  if (!entry) {
+    return undefined;
+  }
+  var raw = entry.value;
+  if (entry.type === 'migration-backup') {
+    try {
+      var parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (parsed && _typeof(parsed) === 'object' && Object.prototype.hasOwnProperty.call(parsed, 'data')) {
+        raw = parsed.data;
+      } else {
+        raw = null;
+      }
+    } catch (error) {
+      console.warn('Unable to parse migration backup entry during import', entry.key, error);
+      raw = null;
+    }
+  }
+  return raw;
+}
+function parseSnapshotJSONValue(entry) {
+  var raw = extractSnapshotStoredValue(entry);
+  if (raw === undefined) {
+    return undefined;
+  }
+  if (raw === null) {
+    return null;
+  }
+  if (typeof raw === 'string') {
+    var trimmed = raw.trim();
+    if (!trimmed) {
+      return '';
+    }
+    try {
+      return JSON.parse(trimmed);
+    } catch (error) {
+      return raw;
+    }
+  }
+  return raw;
+}
+function parseSnapshotStringValue(entry) {
+  var raw = extractSnapshotStoredValue(entry);
+  if (raw === undefined) {
+    return undefined;
+  }
+  if (raw === null) {
+    return null;
+  }
+  if (typeof raw === 'string') {
+    return raw;
+  }
+  if (typeof raw === 'number' || typeof raw === 'boolean') {
+    return String(raw);
+  }
+  if (Array.isArray(raw) || raw && _typeof(raw) === 'object') {
+    try {
+      return JSON.stringify(raw);
+    } catch (serializationError) {
+      console.warn('Unable to serialize snapshot entry during import', entry && entry.key, serializationError);
+      return null;
+    }
+  }
+  return null;
+}
+function convertStorageSnapshotToData(snapshot) {
+  if (!isPlainObject(snapshot)) {
+    return null;
+  }
+  var data = {};
+  var hasAssignments = false;
+  var hasSnapshotKeys = false;
+  var markSnapshotEntry = function markSnapshotEntry(entry) {
+    if (!entry || typeof entry.key !== 'string') {
+      return;
+    }
+    if (entry.key.indexOf('cameraPowerPlanner_') === 0 || entry.key.indexOf('cinePowerPlanner_') === 0 || entry.key.endsWith(STORAGE_BACKUP_SUFFIX) || entry.key.endsWith(STORAGE_MIGRATION_BACKUP_SUFFIX)) {
+      hasSnapshotKeys = true;
+    }
+  };
+  var assignJSONValue = function assignJSONValue(storageKey, targetKey) {
+    var entry = readSnapshotEntry(snapshot, storageKey);
+    if (!entry) {
+      return;
+    }
+    markSnapshotEntry(entry);
+    var value = parseSnapshotJSONValue(entry);
+    if (value === undefined) {
+      return;
+    }
+    data[targetKey] = value;
+    hasAssignments = true;
+  };
+  assignJSONValue(DEVICE_STORAGE_KEY, 'devices');
+  assignJSONValue(SETUP_STORAGE_KEY, 'setups');
+  assignJSONValue(SESSION_STATE_KEY, 'session');
+  assignJSONValue(FEEDBACK_STORAGE_KEY, 'feedback');
+  assignJSONValue(PROJECT_STORAGE_KEY, 'project');
+  assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
+  assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
+  assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
+  assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
+  var schemaEntry = readSnapshotEntry(snapshot, DEVICE_SCHEMA_CACHE_KEY);
+  if (schemaEntry) {
+    markSnapshotEntry(schemaEntry);
+    var cacheValue = parseSnapshotStringValue(schemaEntry);
+    if (cacheValue !== undefined) {
+      data.schemaCache = cacheValue;
+      hasAssignments = true;
+    }
+  }
+  var customFontsEntry = readSnapshotEntry(snapshot, getCustomFontStorageKeyName());
+  if (customFontsEntry) {
+    markSnapshotEntry(customFontsEntry);
+    var fontsValue = parseSnapshotJSONValue(customFontsEntry);
+    if (fontsValue !== undefined) {
+      data.customFonts = fontsValue;
+      hasAssignments = true;
+    }
+  }
+  var customLogoEntry = readSnapshotEntry(snapshot, CUSTOM_LOGO_STORAGE_KEY);
+  if (customLogoEntry) {
+    markSnapshotEntry(customLogoEntry);
+    var logoValue = parseSnapshotStringValue(customLogoEntry);
+    if (logoValue !== undefined) {
+      data.customLogo = logoValue;
+      hasAssignments = true;
+    }
+  }
+  var seedEntry = readSnapshotEntry(snapshot, AUTO_GEAR_SEEDED_STORAGE_KEY);
+  if (seedEntry) {
+    markSnapshotEntry(seedEntry);
+    data.autoGearSeeded = extractSnapshotStoredValue(seedEntry);
+    hasAssignments = true;
+  }
+  var activePresetEntry = readSnapshotEntry(snapshot, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+  if (activePresetEntry) {
+    markSnapshotEntry(activePresetEntry);
+    data.autoGearActivePresetId = parseSnapshotStringValue(activePresetEntry);
+    hasAssignments = true;
+  }
+  var autoPresetEntry = readSnapshotEntry(snapshot, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+  if (autoPresetEntry) {
+    markSnapshotEntry(autoPresetEntry);
+    data.autoGearAutoPresetId = parseSnapshotStringValue(autoPresetEntry);
+    hasAssignments = true;
+  }
+  var backupsVisibilityEntry = readSnapshotEntry(snapshot, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY);
+  if (backupsVisibilityEntry) {
+    markSnapshotEntry(backupsVisibilityEntry);
+    data.autoGearShowBackups = extractSnapshotStoredValue(backupsVisibilityEntry);
+    hasAssignments = true;
+  }
+  var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+  var booleanPreferenceKeys = new Set(['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'iosPwaHelpShown']);
+  var preferences = {};
+  preferenceKeys.forEach(function (prefKey) {
+    var entry = readSnapshotEntry(snapshot, prefKey);
+    if (!entry) {
+      return;
+    }
+    markSnapshotEntry(entry);
+    var raw = extractSnapshotStoredValue(entry);
+    if (booleanPreferenceKeys.has(prefKey)) {
+      var normalized = normalizeImportedBoolean(raw);
+      if (normalized !== null) {
+        preferences[prefKey] = normalized;
+        hasAssignments = true;
+        return;
+      }
+    }
+    var stringValue = parseSnapshotStringValue(entry);
+    if (stringValue !== undefined) {
+      preferences[prefKey] = stringValue;
+      hasAssignments = true;
+    }
+  });
+  if (Object.keys(preferences).length > 0) {
+    data.preferences = preferences;
+  }
+  if (!hasAssignments || !hasSnapshotKeys) {
+    return null;
+  }
+  return data;
+}
 function importAllData(allData) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   if (!isPlainObject(allData)) {
     return;
+  }
+  var skipSnapshotConversion = Boolean(options && options.skipSnapshotConversion);
+  if (!skipSnapshotConversion) {
+    var converted = convertStorageSnapshotToData(allData);
+    if (converted) {
+      importAllData(converted, { skipSnapshotConversion: true });
+      return;
+    }
   }
   var hasOwn = function hasOwn(key) {
     return Object.prototype.hasOwnProperty.call(allData, key);
@@ -2702,7 +2932,7 @@ function importAllData(allData) {
   }
   if (isPlainObject(allData.preferences)) {
     var prefs = allData.preferences;
-    var booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups'];
+    var booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'iosPwaHelpShown'];
     booleanPrefs.forEach(function (key) {
       if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
         safeSetLocalStorage(key, prefs[key]);
@@ -2736,6 +2966,18 @@ function importAllData(allData) {
       }
     } else {
       safeSetLocalStorage(getCustomFontStorageKeyName(), null);
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'schemaCache')) {
+    var cache = allData.schemaCache;
+    if (typeof cache === 'string' || cache === null) {
+      safeSetLocalStorage(DEVICE_SCHEMA_CACHE_KEY, cache);
+    } else if (cache && _typeof(cache) === 'object') {
+      try {
+        safeSetLocalStorage(DEVICE_SCHEMA_CACHE_KEY, JSON.stringify(cache));
+      } catch (schemaError) {
+        console.warn('Unable to store imported schema cache', schemaError);
+      }
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {

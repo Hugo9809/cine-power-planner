@@ -856,8 +856,8 @@ describe('export/import all data', () => {
       });
     });
 
-    test('importAllData restores planner data', () => {
-      const data = {
+  test('importAllData restores planner data', () => {
+    const data = {
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
@@ -918,6 +918,88 @@ describe('export/import all data', () => {
     expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
       { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
     ]);
+  });
+
+  test('importAllData converts legacy storage snapshots with prefixed keys', () => {
+    localStorage.clear();
+    sessionStorage.clear();
+
+    const snapshot = {
+      [DEVICE_KEY]: JSON.stringify(validDeviceData),
+      [`${SETUP_KEY}${BACKUP_SUFFIX}`]: JSON.stringify({ SnapshotSetup: { foo: 'bar' } }),
+      cinePowerPlanner_session: JSON.stringify({
+        setupName: '  Snapshot Setup  ',
+        motor: ['Lens'],
+        controller: ['Focus'],
+      }),
+      [FEEDBACK_KEY]: JSON.stringify({ message: 'snapshot' }),
+      [FAVORITES_KEY]: JSON.stringify({ camera: ['Mini'] }),
+      [`${PROJECT_KEY}__legacyMigrationBackup`]: JSON.stringify({
+        createdAt: '2024-01-01T00:00:00.000Z',
+        data: JSON.stringify({ Snapshot: { gearList: '<p>Snapshot</p>' } }),
+      }),
+      cinePowerPlanner_autoGearRules: JSON.stringify([
+        { id: 'snap-rule', label: 'Snap', scenarios: [], add: [], remove: [] },
+      ]),
+      [AUTO_GEAR_BACKUPS_KEY]: JSON.stringify([
+        { id: 'snap-backup', label: 'Snapshot backup', createdAt: 123, rules: [] },
+      ]),
+      [`${AUTO_GEAR_SEEDED_KEY}${BACKUP_SUFFIX}`]: '0',
+      [AUTO_GEAR_PRESETS_KEY]: JSON.stringify([
+        { id: 'snap-preset', label: 'Snapshot Preset', rules: [] },
+      ]),
+      [`${AUTO_GEAR_ACTIVE_PRESET_KEY}${BACKUP_SUFFIX}`]: 'snap-preset',
+      cinePowerPlanner_autoGearAutoPreset: 'snap-preset',
+      [AUTO_GEAR_BACKUP_VISIBILITY_KEY]: 'true',
+      [SCHEMA_CACHE_KEY]: '{"version":1}',
+      [`${CUSTOM_LOGO_KEY}${BACKUP_SUFFIX}`]: 'data:image/png;base64,snapshot',
+      cinePowerPlanner_customFonts: JSON.stringify([
+        { id: 'snap-font', name: 'Snapshot Font', data: 'data:font/woff;base64,AAAA' },
+      ]),
+      [`darkMode${BACKUP_SUFFIX}`]: 'true',
+      highContrast: 'false',
+      language: 'es',
+      iosPwaHelpShown: '1',
+    };
+
+    importAllData(snapshot);
+
+    expect(loadDeviceData()).toEqual(validDeviceData);
+    expect(loadSetups()).toEqual({ SnapshotSetup: { foo: 'bar' } });
+
+    const session = loadSessionState();
+    expect(session).toBeTruthy();
+    expect(session.setupName).toBe('Snapshot Setup');
+    expect(session.motors).toEqual(['Lens']);
+    expect(session.controllers).toEqual(['Focus']);
+
+    expect(loadFeedback()).toEqual({ message: 'snapshot' });
+    expect(loadFavorites()).toEqual({ camera: ['Mini'] });
+    expect(loadProject('Snapshot')).toEqual({ gearList: '<p>Snapshot</p>', projectInfo: null });
+
+    expect(loadAutoGearRules()).toEqual([
+      { id: 'snap-rule', label: 'Snap', scenarios: [], add: [], remove: [] },
+    ]);
+    expect(loadAutoGearBackups()).toEqual([
+      { id: 'snap-backup', label: 'Snapshot backup', createdAt: 123, rules: [] },
+    ]);
+    expect(loadAutoGearSeedFlag()).toBe(false);
+    expect(loadAutoGearPresets()).toEqual([
+      { id: 'snap-preset', label: 'Snapshot Preset', rules: [] },
+    ]);
+    expect(loadAutoGearActivePresetId()).toBe('snap-preset');
+    expect(loadAutoGearAutoPresetId()).toBe('snap-preset');
+    expect(loadAutoGearBackupVisibility()).toBe(true);
+
+    expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBe('{"version":1}');
+    expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBe('data:image/png;base64,snapshot');
+    expect(JSON.parse(localStorage.getItem(CUSTOM_FONT_KEY))).toEqual([
+      { id: 'snap-font', name: 'Snapshot Font', data: 'data:font/woff;base64,AAAA' },
+    ]);
+    expect(localStorage.getItem('darkMode')).toBe('true');
+    expect(localStorage.getItem('highContrast')).toBe('false');
+    expect(localStorage.getItem('language')).toBe('es');
+    expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
   });
 
   test('importAllData clears stored device overrides when payload sets devices to null', () => {

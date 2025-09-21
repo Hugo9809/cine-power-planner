@@ -3084,9 +3084,289 @@ function normalizeImportedPresetId(value) {
   return "";
 }
 
-function importAllData(allData) {
+function getSnapshotKeyVariants(key) {
+  const variants = [key];
+  if (typeof key === 'string') {
+    if (key.startsWith('cameraPowerPlanner_')) {
+      variants.push(`cinePowerPlanner_${key.slice('cameraPowerPlanner_'.length)}`);
+    } else if (key.startsWith('cinePowerPlanner_')) {
+      variants.push(`cameraPowerPlanner_${key.slice('cinePowerPlanner_'.length)}`);
+    }
+  }
+  return variants;
+}
+
+function readSnapshotEntry(snapshot, key) {
+  if (!isPlainObject(snapshot)) {
+    return null;
+  }
+
+  const variants = getSnapshotKeyVariants(key);
+  for (let i = 0; i < variants.length; i += 1) {
+    const candidate = variants[i];
+    if (Object.prototype.hasOwnProperty.call(snapshot, candidate)) {
+      return { key: candidate, value: snapshot[candidate], type: 'primary' };
+    }
+  }
+
+  for (let i = 0; i < variants.length; i += 1) {
+    const candidate = `${variants[i]}${STORAGE_BACKUP_SUFFIX}`;
+    if (Object.prototype.hasOwnProperty.call(snapshot, candidate)) {
+      return { key: candidate, value: snapshot[candidate], type: 'backup' };
+    }
+  }
+
+  for (let i = 0; i < variants.length; i += 1) {
+    const candidate = `${variants[i]}${STORAGE_MIGRATION_BACKUP_SUFFIX}`;
+    if (Object.prototype.hasOwnProperty.call(snapshot, candidate)) {
+      return { key: candidate, value: snapshot[candidate], type: 'migration-backup' };
+    }
+  }
+
+  return null;
+}
+
+function extractSnapshotStoredValue(entry) {
+  if (!entry) {
+    return undefined;
+  }
+
+  let raw = entry.value;
+  if (entry.type === 'migration-backup') {
+    try {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (parsed && typeof parsed === 'object' && Object.prototype.hasOwnProperty.call(parsed, 'data')) {
+        raw = parsed.data;
+      } else {
+        raw = null;
+      }
+    } catch (error) {
+      console.warn('Unable to parse migration backup entry during import', entry.key, error);
+      raw = null;
+    }
+  }
+
+  return raw;
+}
+
+function parseSnapshotJSONValue(entry) {
+  const raw = extractSnapshotStoredValue(entry);
+  if (raw === undefined) {
+    return undefined;
+  }
+  if (raw === null) {
+    return null;
+  }
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!trimmed) {
+      return '';
+    }
+    try {
+      return JSON.parse(trimmed);
+    } catch (error) {
+      return raw;
+    }
+  }
+  return raw;
+}
+
+function parseSnapshotStringValue(entry) {
+  const raw = extractSnapshotStoredValue(entry);
+  if (raw === undefined) {
+    return undefined;
+  }
+  if (raw === null) {
+    return null;
+  }
+  if (typeof raw === 'string') {
+    return raw;
+  }
+  if (typeof raw === 'number' || typeof raw === 'boolean') {
+    return String(raw);
+  }
+  if (Array.isArray(raw) || (raw && typeof raw === 'object')) {
+    try {
+      return JSON.stringify(raw);
+    } catch (serializationError) {
+      console.warn('Unable to serialize snapshot entry during import', entry && entry.key, serializationError);
+      return null;
+    }
+  }
+  return null;
+}
+
+function convertStorageSnapshotToData(snapshot) {
+  if (!isPlainObject(snapshot)) {
+    return null;
+  }
+
+  const data = {};
+  let hasAssignments = false;
+  let hasSnapshotKeys = false;
+
+  const markSnapshotEntry = (entry) => {
+    if (!entry || typeof entry.key !== 'string') {
+      return;
+    }
+    if (
+      entry.key.startsWith('cameraPowerPlanner_') ||
+      entry.key.startsWith('cinePowerPlanner_') ||
+      entry.key.endsWith(STORAGE_BACKUP_SUFFIX) ||
+      entry.key.endsWith(STORAGE_MIGRATION_BACKUP_SUFFIX)
+    ) {
+      hasSnapshotKeys = true;
+    }
+  };
+
+  const assignJSONValue = (storageKey, targetKey) => {
+    const entry = readSnapshotEntry(snapshot, storageKey);
+    if (!entry) {
+      return;
+    }
+    markSnapshotEntry(entry);
+    const value = parseSnapshotJSONValue(entry);
+    if (value === undefined) {
+      return;
+    }
+    data[targetKey] = value;
+    hasAssignments = true;
+  };
+
+  assignJSONValue(DEVICE_STORAGE_KEY, 'devices');
+  assignJSONValue(SETUP_STORAGE_KEY, 'setups');
+  assignJSONValue(SESSION_STATE_KEY, 'session');
+  assignJSONValue(FEEDBACK_STORAGE_KEY, 'feedback');
+  assignJSONValue(PROJECT_STORAGE_KEY, 'project');
+  assignJSONValue(FAVORITES_STORAGE_KEY, 'favorites');
+  assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
+  assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
+  assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
+
+  const schemaEntry = readSnapshotEntry(snapshot, DEVICE_SCHEMA_CACHE_KEY);
+  if (schemaEntry) {
+    markSnapshotEntry(schemaEntry);
+    const cacheValue = parseSnapshotStringValue(schemaEntry);
+    if (cacheValue !== undefined) {
+      data.schemaCache = cacheValue;
+      hasAssignments = true;
+    }
+  }
+
+  const customFontsEntry = readSnapshotEntry(snapshot, getCustomFontStorageKeyName());
+  if (customFontsEntry) {
+    markSnapshotEntry(customFontsEntry);
+    const fontsValue = parseSnapshotJSONValue(customFontsEntry);
+    if (fontsValue !== undefined) {
+      data.customFonts = fontsValue;
+      hasAssignments = true;
+    }
+  }
+
+  const customLogoEntry = readSnapshotEntry(snapshot, CUSTOM_LOGO_STORAGE_KEY);
+  if (customLogoEntry) {
+    markSnapshotEntry(customLogoEntry);
+    const logoValue = parseSnapshotStringValue(customLogoEntry);
+    if (logoValue !== undefined) {
+      data.customLogo = logoValue;
+      hasAssignments = true;
+    }
+  }
+
+  const seedEntry = readSnapshotEntry(snapshot, AUTO_GEAR_SEEDED_STORAGE_KEY);
+  if (seedEntry) {
+    markSnapshotEntry(seedEntry);
+    data.autoGearSeeded = extractSnapshotStoredValue(seedEntry);
+    hasAssignments = true;
+  }
+
+  const activePresetEntry = readSnapshotEntry(snapshot, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY);
+  if (activePresetEntry) {
+    markSnapshotEntry(activePresetEntry);
+    data.autoGearActivePresetId = parseSnapshotStringValue(activePresetEntry);
+    hasAssignments = true;
+  }
+
+  const autoPresetEntry = readSnapshotEntry(snapshot, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+  if (autoPresetEntry) {
+    markSnapshotEntry(autoPresetEntry);
+    data.autoGearAutoPresetId = parseSnapshotStringValue(autoPresetEntry);
+    hasAssignments = true;
+  }
+
+  const backupsVisibilityEntry = readSnapshotEntry(snapshot, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY);
+  if (backupsVisibilityEntry) {
+    markSnapshotEntry(backupsVisibilityEntry);
+    data.autoGearShowBackups = extractSnapshotStoredValue(backupsVisibilityEntry);
+    hasAssignments = true;
+  }
+
+  const preferenceKeys = [
+    'darkMode',
+    'pinkMode',
+    'highContrast',
+    'showAutoBackups',
+    'accentColor',
+    'fontSize',
+    'fontFamily',
+    'language',
+    'iosPwaHelpShown',
+  ];
+  const booleanPreferenceKeys = new Set([
+    'darkMode',
+    'pinkMode',
+    'highContrast',
+    'showAutoBackups',
+    'iosPwaHelpShown',
+  ]);
+  const preferences = {};
+
+  preferenceKeys.forEach((key) => {
+    const entry = readSnapshotEntry(snapshot, key);
+    if (!entry) {
+      return;
+    }
+    markSnapshotEntry(entry);
+    const raw = extractSnapshotStoredValue(entry);
+    if (booleanPreferenceKeys.has(key)) {
+      const normalized = normalizeImportedBoolean(raw);
+      if (normalized !== null) {
+        preferences[key] = normalized;
+        hasAssignments = true;
+        return;
+      }
+    }
+    const stringValue = parseSnapshotStringValue(entry);
+    if (stringValue !== undefined) {
+      preferences[key] = stringValue;
+      hasAssignments = true;
+    }
+  });
+
+  if (Object.keys(preferences).length > 0) {
+    data.preferences = preferences;
+  }
+
+  if (!hasAssignments || !hasSnapshotKeys) {
+    return null;
+  }
+
+  return data;
+}
+
+function importAllData(allData, options = {}) {
   if (!isPlainObject(allData)) {
     return;
+  }
+
+  const { skipSnapshotConversion = false } = options || {};
+
+  if (!skipSnapshotConversion) {
+    const converted = convertStorageSnapshotToData(allData);
+    if (converted) {
+      importAllData(converted, { skipSnapshotConversion: true });
+      return;
+    }
   }
 
   const hasOwn = (key) => Object.prototype.hasOwnProperty.call(allData, key);
@@ -3108,7 +3388,7 @@ function importAllData(allData) {
   }
   if (isPlainObject(allData.preferences)) {
     const prefs = allData.preferences;
-    const booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups'];
+    const booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'iosPwaHelpShown'];
     booleanPrefs.forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
         safeSetLocalStorage(key, prefs[key]);
@@ -3145,6 +3425,18 @@ function importAllData(allData) {
       }
     } else {
       safeSetLocalStorage(getCustomFontStorageKeyName(), null);
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(allData, 'schemaCache')) {
+    const cache = allData.schemaCache;
+    if (typeof cache === 'string' || cache === null) {
+      safeSetLocalStorage(DEVICE_SCHEMA_CACHE_KEY, cache);
+    } else if (cache && typeof cache === 'object') {
+      try {
+        safeSetLocalStorage(DEVICE_SCHEMA_CACHE_KEY, JSON.stringify(cache));
+      } catch (schemaError) {
+        console.warn('Unable to store imported schema cache', schemaError);
+      }
     }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearRules')) {
