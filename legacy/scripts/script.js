@@ -10423,7 +10423,7 @@ function normalizeFontResults(_x8) {
 }
 function _normalizeFontResults() {
   _normalizeFontResults = _asyncToGenerator(_regenerator().m(function _callee1(result) {
-    var fonts, _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _iterator, _step, font, _t0;
+    var hasSymbol, asyncIteratorSymbol, fonts, _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _iterator, _step, font, iteratorSymbol, _t0;
     return _regenerator().w(function (_context1) {
       while (1) switch (_context1.p = _context1.n) {
         case 0:
@@ -10439,7 +10439,9 @@ function _normalizeFontResults() {
           }
           return _context1.a(2, result);
         case 2:
-          if (!(typeof result[Symbol.asyncIterator] === 'function')) {
+          hasSymbol = typeof Symbol === 'function';
+          asyncIteratorSymbol = hasSymbol && Symbol.asyncIterator;
+          if (!(asyncIteratorSymbol && typeof result[asyncIteratorSymbol] === 'function')) {
             _context1.n = 15;
             break;
           }
@@ -10493,7 +10495,8 @@ function _normalizeFontResults() {
         case 14:
           return _context1.a(2, fonts);
         case 15:
-          if (!(typeof result[Symbol.iterator] === 'function')) {
+          iteratorSymbol = hasSymbol && Symbol.iterator;
+          if (!(iteratorSymbol && typeof result[iteratorSymbol] === 'function')) {
             _context1.n = 16;
             break;
           }
