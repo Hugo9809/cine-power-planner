@@ -1431,6 +1431,24 @@ const texts = {
       "Applica la regola quando sono selezionate queste preferenze di distribuzione video.",
     autoGearVideoDistributionPlaceholder: "Seleziona opzioni di distribuzione video",
     autoGearVideoDistributionNone: "Nessuna distribuzione video selezionata",
+    autoGearCameraLabel: "Selezione telecamera",
+    autoGearCameraHelp:
+      "Applica la regola quando sono selezionati questi corpi macchina.",
+    autoGearMonitorLabel: "Monitor onboard",
+    autoGearMonitorHelp:
+      "Applica la regola quando sono selezionati questi monitor onboard.",
+    autoGearWirelessLabel: "Trasmettitori wireless",
+    autoGearWirelessHelp:
+      "Applica la regola quando sono selezionati questi trasmettitori wireless.",
+    autoGearMotorsLabel: "Motori FIZ",
+    autoGearMotorsHelp:
+      "Applica la regola quando sono selezionati questi motori FIZ.",
+    autoGearControllersLabel: "Controller FIZ",
+    autoGearControllersHelp:
+      "Applica la regola quando sono selezionati questi controller FIZ.",
+    autoGearDistanceLabel: "Dispositivi distanza FIZ",
+    autoGearDistanceHelp:
+      "Applica la regola quando sono selezionati questi dispositivi di distanza.",
     autoGearRuleConditionRequired:
       "Seleziona almeno uno scenario, un'opzione di matte box, una maniglia camera, una prolunga mirino o una distribuzione video prima di salvare.",
     autoGearAddItemsHeading: "Aggiungi questi elementi",
@@ -2257,6 +2275,24 @@ const texts = {
       "Aplica la regla cuando se eligen estas preferencias de distribución de vídeo.",
     autoGearVideoDistributionPlaceholder: "Selecciona opciones de distribución de vídeo",
     autoGearVideoDistributionNone: "Sin distribución de vídeo seleccionada",
+    autoGearCameraLabel: "Selección de cámara",
+    autoGearCameraHelp:
+      "Aplica la regla cuando se seleccionan estos cuerpos de cámara.",
+    autoGearMonitorLabel: "Monitores a bordo",
+    autoGearMonitorHelp:
+      "Aplica la regla cuando se seleccionan estos monitores a bordo.",
+    autoGearWirelessLabel: "Transmisores inalámbricos",
+    autoGearWirelessHelp:
+      "Aplica la regla cuando se seleccionan estos transmisores inalámbricos.",
+    autoGearMotorsLabel: "Motores FIZ",
+    autoGearMotorsHelp:
+      "Aplica la regla cuando se seleccionan estos motores FIZ.",
+    autoGearControllersLabel: "Controladores FIZ",
+    autoGearControllersHelp:
+      "Aplica la regla cuando se seleccionan estos controladores FIZ.",
+    autoGearDistanceLabel: "Dispositivos de distancia FIZ",
+    autoGearDistanceHelp:
+      "Aplica la regla cuando se seleccionan estos dispositivos de distancia.",
     autoGearRuleConditionRequired:
       "Selecciona al menos un escenario, una opción de matte box, una empuñadura de cámara, una extensión de visor o una distribución de vídeo antes de guardar.",
     autoGearAddItemsHeading: "Agregar estos elementos",
@@ -3086,6 +3122,24 @@ const texts = {
       "Appliquer la règle lorsque ces préférences de distribution vidéo sont sélectionnées.",
     autoGearVideoDistributionPlaceholder: "Sélectionnez des options de distribution vidéo",
     autoGearVideoDistributionNone: "Aucune distribution vidéo sélectionnée",
+    autoGearCameraLabel: "Sélection de caméra",
+    autoGearCameraHelp:
+      "Appliquez la règle lorsque ces boîtiers caméra sont sélectionnés.",
+    autoGearMonitorLabel: "Moniteurs embarqués",
+    autoGearMonitorHelp:
+      "Appliquez la règle lorsque ces moniteurs embarqués sont sélectionnés.",
+    autoGearWirelessLabel: "Émetteurs sans fil",
+    autoGearWirelessHelp:
+      "Appliquez la règle lorsque ces émetteurs sans fil sont sélectionnés.",
+    autoGearMotorsLabel: "Moteurs FIZ",
+    autoGearMotorsHelp:
+      "Appliquez la règle lorsque ces moteurs FIZ sont sélectionnés.",
+    autoGearControllersLabel: "Contrôleurs FIZ",
+    autoGearControllersHelp:
+      "Appliquez la règle lorsque ces contrôleurs FIZ sont sélectionnés.",
+    autoGearDistanceLabel: "Capteurs de distance FIZ",
+    autoGearDistanceHelp:
+      "Appliquez la règle lorsque ces capteurs de distance sont sélectionnés.",
     autoGearRuleConditionRequired:
       "Sélectionnez au moins un scénario, une option de matte box, une poignée caméra, une extension de viseur ou une distribution vidéo avant d’enregistrer.",
     autoGearAddItemsHeading: "Ajouter ces éléments",
@@ -3918,6 +3972,24 @@ const texts = {
       "Regel anwenden, wenn diese Videoverteilungsoptionen ausgewählt sind.",
     autoGearVideoDistributionPlaceholder: "Videoverteilungsoptionen auswählen",
     autoGearVideoDistributionNone: "Keine Videoverteilung ausgewählt",
+    autoGearCameraLabel: "Kameraauswahl",
+    autoGearCameraHelp:
+      "Wende die Regel an, wenn diese Kamerabodys ausgewählt sind.",
+    autoGearMonitorLabel: "Onboard-Monitore",
+    autoGearMonitorHelp:
+      "Wende die Regel an, wenn diese Onboard-Monitore ausgewählt sind.",
+    autoGearWirelessLabel: "Funk-Sender",
+    autoGearWirelessHelp:
+      "Wende die Regel an, wenn diese Funk-Sender ausgewählt sind.",
+    autoGearMotorsLabel: "FIZ Motoren",
+    autoGearMotorsHelp:
+      "Wende die Regel an, wenn diese FIZ Motoren ausgewählt sind.",
+    autoGearControllersLabel: "FIZ Controller",
+    autoGearControllersHelp:
+      "Wende die Regel an, wenn diese FIZ Controller ausgewählt sind.",
+    autoGearDistanceLabel: "FIZ Distanzgeräte",
+    autoGearDistanceHelp:
+      "Wende die Regel an, wenn diese Distanzgeräte ausgewählt sind.",
     autoGearRuleConditionRequired:
       "Wähle mindestens ein Szenario, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung oder eine Videoverteilung, bevor du speicherst.",
     autoGearAddItemsHeading: "Diese Geräte hinzufügen",
