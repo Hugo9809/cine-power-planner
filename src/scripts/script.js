@@ -888,6 +888,8 @@ let autoGearPresets = readAutoGearPresetsFromStorage();
 let activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
 let autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
 let autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
+let factoryAutoGearRulesSnapshot = null;
+let factoryAutoGearSeedContext = null;
 const initialAutoGearRulesSignature = stableStringify(autoGearRules);
 let autoGearRulesLastBackupSignature = autoGearBackups.length
   ? stableStringify(autoGearBackups[0].rules || [])
@@ -1141,6 +1143,66 @@ function cloneAutoGearItems(items) {
     .filter(Boolean);
 }
 
+function cloneAutoGearRuleItem(item) {
+  if (!item || typeof item !== 'object') {
+    return {
+      id: '',
+      name: '',
+      category: '',
+      quantity: 0,
+      screenSize: '',
+      selectorType: 'none',
+      selectorDefault: '',
+      selectorEnabled: false,
+      notes: '',
+    };
+  }
+  return {
+    id: typeof item.id === 'string' ? item.id : '',
+    name: typeof item.name === 'string' ? item.name : '',
+    category: typeof item.category === 'string' ? item.category : '',
+    quantity: normalizeAutoGearQuantity(item.quantity),
+    screenSize: typeof item.screenSize === 'string' ? item.screenSize : '',
+    selectorType: typeof item.selectorType === 'string' ? item.selectorType : 'none',
+    selectorDefault: typeof item.selectorDefault === 'string' ? item.selectorDefault : '',
+    selectorEnabled: !!item.selectorEnabled,
+    notes: typeof item.notes === 'string' ? item.notes : '',
+  };
+}
+
+function cloneAutoGearRule(rule) {
+  if (!rule || typeof rule !== 'object') return null;
+  return {
+    id: typeof rule.id === 'string' ? rule.id : '',
+    label: typeof rule.label === 'string' ? rule.label : '',
+    scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
+    mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
+    cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
+    viewfinderExtension: Array.isArray(rule.viewfinderExtension)
+      ? rule.viewfinderExtension.slice()
+      : [],
+    videoDistribution: Array.isArray(rule.videoDistribution)
+      ? rule.videoDistribution.slice()
+      : [],
+    add: Array.isArray(rule.add) ? rule.add.map(cloneAutoGearRuleItem) : [],
+    remove: Array.isArray(rule.remove) ? rule.remove.map(cloneAutoGearRuleItem) : [],
+  };
+}
+
+function cloneAutoGearRules(rules) {
+  return Array.isArray(rules)
+    ? rules.map(cloneAutoGearRule).filter(Boolean)
+    : [];
+}
+
+function setFactoryAutoGearRulesSnapshot(rules) {
+  if (!Array.isArray(rules)) {
+    factoryAutoGearRulesSnapshot = null;
+    return;
+  }
+  factoryAutoGearRulesSnapshot = cloneAutoGearRules(rules);
+}
+
 function subtractScenarioContributions(diff, scenarioKeys, scenarioDiffMap) {
   const adjust = (items, type) => items
     .map(item => {
@@ -1241,87 +1303,247 @@ function ensureDefaultMatteboxAutoGearRules() {
   return true;
 }
 
-function seedAutoGearRulesFromCurrentProject() {
-  if (autoGearRules.length) {
-    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
-    if (addedDefaults && !hasSeededAutoGearDefaults()) {
-      markAutoGearDefaultsSeeded();
-    }
-    return;
-  }
-  if (hasSeededAutoGearDefaults()) {
-    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
-    if (addedDefaults) markAutoGearDefaultsSeeded();
-    return;
-  }
+function captureSetupSelectValues() {
+  const captureList = list => list.map(sel => (sel && typeof sel.value === 'string') ? sel.value : '');
+  return {
+    camera: cameraSelect && typeof cameraSelect.value === 'string' ? cameraSelect.value : '',
+    monitor: monitorSelect && typeof monitorSelect.value === 'string' ? monitorSelect.value : '',
+    video: videoSelect && typeof videoSelect.value === 'string' ? videoSelect.value : '',
+    cage: cageSelect && typeof cageSelect.value === 'string' ? cageSelect.value : '',
+    distance: distanceSelect && typeof distanceSelect.value === 'string' ? distanceSelect.value : '',
+    battery: batterySelect && typeof batterySelect.value === 'string' ? batterySelect.value : '',
+    batteryPlate: batteryPlateSelect && typeof batteryPlateSelect.value === 'string'
+      ? batteryPlateSelect.value
+      : '',
+    hotswap: hotswapSelect && typeof hotswapSelect.value === 'string' ? hotswapSelect.value : '',
+    motors: captureList(motorSelects),
+    controllers: captureList(controllerSelects),
+    sliderBowl: typeof getSliderBowlValue === 'function' ? getSliderBowlValue() : '',
+    easyrig: typeof getEasyrigValue === 'function' ? getEasyrigValue() : '',
+  };
+}
 
+function applySetupSelectValues(values) {
+  if (!values || typeof values !== 'object') return;
+  if (cameraSelect) {
+    setSelectValue(cameraSelect, values.camera);
+    if (typeof updateBatteryPlateVisibility === 'function') {
+      updateBatteryPlateVisibility();
+    }
+    if (typeof updateBatteryOptions === 'function') {
+      updateBatteryOptions();
+    }
+  }
+  if (batteryPlateSelect) setSelectValue(batteryPlateSelect, values.batteryPlate);
+  if (monitorSelect) setSelectValue(monitorSelect, values.monitor);
+  if (videoSelect) setSelectValue(videoSelect, values.video);
+  if (cageSelect) setSelectValue(cageSelect, values.cage);
+  if (distanceSelect) setSelectValue(distanceSelect, values.distance);
+  if (Array.isArray(values.motors)) {
+    values.motors.forEach((val, index) => {
+      if (motorSelects[index]) setSelectValue(motorSelects[index], val);
+    });
+  }
+  if (Array.isArray(values.controllers)) {
+    values.controllers.forEach((val, index) => {
+      if (controllerSelects[index]) setSelectValue(controllerSelects[index], val);
+    });
+  }
+  if (batterySelect) setSelectValue(batterySelect, values.battery);
+  if (hotswapSelect) setSelectValue(hotswapSelect, values.hotswap);
+  if (typeof setSliderBowlValue === 'function') setSliderBowlValue(values.sliderBowl);
+  if (typeof setEasyrigValue === 'function') setEasyrigValue(values.easyrig);
+}
+
+function captureAutoGearSeedContext() {
+  if (factoryAutoGearSeedContext) return;
+  if (typeof collectProjectFormData !== 'function') return;
+  const baseInfo = collectProjectFormData() || {};
+  let projectDataClone;
+  try {
+    projectDataClone = JSON.parse(JSON.stringify(baseInfo));
+  } catch (cloneError) {
+    void cloneError;
+    projectDataClone = { ...baseInfo };
+  }
+  const scenarioValues = requiredScenariosSelect
+    ? Array.from(requiredScenariosSelect.options || [])
+        .map(opt => opt && typeof opt.value === 'string' ? opt.value : '')
+        .filter(value => value)
+    : [];
+  factoryAutoGearSeedContext = {
+    projectFormData: projectDataClone,
+    scenarioValues,
+    setupValues: captureSetupSelectValues(),
+  };
+}
+
+function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
   const rules = [];
   const canGenerateRules = typeof generateGearListHtml === 'function'
-    && typeof collectProjectFormData === 'function';
+    && typeof parseGearTableForAutoRules === 'function';
+  const scenarios = Array.isArray(scenarioValues)
+    ? scenarioValues.filter(value => typeof value === 'string' && value)
+    : [];
 
-  if (canGenerateRules && requiredScenariosSelect) {
-    const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
-    if (baseInfo && typeof baseInfo === 'object') {
-      const scenarioValues = Array.from(requiredScenariosSelect.options || [])
-        .map(opt => opt.value)
-        .filter(Boolean);
+  if (canGenerateRules && scenarios.length) {
+    const baselineHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: '' });
+    const baselineMap = parseGearTableForAutoRules(baselineHtml);
+    if (baselineMap) {
+      const scenarioDiffMap = new Map();
+      scenarios.forEach(value => {
+        const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: value });
+        const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+        if (!scenarioMap) return;
+        const diff = diffGearTableMaps(baselineMap, scenarioMap);
+        const add = cloneAutoGearItems(diff.add);
+        const remove = cloneAutoGearItems(diff.remove);
+        if (!add.length && !remove.length) return;
+        scenarioDiffMap.set(value, { add, remove });
+        rules.push({
+          id: generateAutoGearId('rule'),
+          label: value,
+          scenarios: [value],
+          add,
+          remove,
+        });
+      });
 
-      if (scenarioValues.length) {
-        const baselineHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: '' });
-        const baselineMap = parseGearTableForAutoRules(baselineHtml);
+      const comboCandidates = [
+        ['Handheld', 'Easyrig'],
+        ['Slider', 'Undersling mode']
+      ].filter(combo => combo.every(value => scenarios.includes(value)));
 
-        if (baselineMap) {
-          const scenarioDiffMap = new Map();
-
-          scenarioValues.forEach(value => {
-            const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: value });
-            const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
-            if (!scenarioMap) return;
-            const diff = diffGearTableMaps(baselineMap, scenarioMap);
-            const add = cloneAutoGearItems(diff.add);
-            const remove = cloneAutoGearItems(diff.remove);
-            if (!add.length && !remove.length) return;
-            scenarioDiffMap.set(value, { add, remove });
-            rules.push({ id: generateAutoGearId('rule'), label: value, scenarios: [value], add, remove });
-          });
-
-          const comboCandidates = [
-            ['Handheld', 'Easyrig'],
-            ['Slider', 'Undersling mode']
-          ].filter(combo => combo.every(value => scenarioValues.includes(value)));
-
-          comboCandidates.forEach(combo => {
-            const combinedLabel = combo.join(' + ');
-            const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: combo.join(', ') });
-            const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
-            if (!scenarioMap) return;
-            const diff = diffGearTableMaps(baselineMap, scenarioMap);
-            const adjusted = subtractScenarioContributions({
-              add: cloneAutoGearItems(diff.add),
-              remove: cloneAutoGearItems(diff.remove)
-            }, combo, scenarioDiffMap);
-            if (!adjusted.add.length && !adjusted.remove.length) return;
-            rules.push({
-              id: generateAutoGearId('rule'),
-              label: combinedLabel,
-              scenarios: combo.slice(),
-              add: adjusted.add,
-              remove: adjusted.remove
-            });
-          });
-        }
-      }
+      comboCandidates.forEach(combo => {
+        const combinedLabel = combo.join(' + ');
+        const scenarioHtml = generateGearListHtml({
+          ...baseInfo,
+          requiredScenarios: combo.join(', ')
+        });
+        const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
+        if (!scenarioMap) return;
+        const diff = diffGearTableMaps(baselineMap, scenarioMap);
+        const adjusted = subtractScenarioContributions({
+          add: cloneAutoGearItems(diff.add),
+          remove: cloneAutoGearItems(diff.remove)
+        }, combo, scenarioDiffMap);
+        if (!adjusted.add.length && !adjusted.remove.length) return;
+        rules.push({
+          id: generateAutoGearId('rule'),
+          label: combinedLabel,
+          scenarios: combo.slice(),
+          add: adjusted.add,
+          remove: adjusted.remove,
+        });
+      });
     }
   }
 
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
+  return rules;
+}
+
+function computeFactoryAutoGearRules() {
+  captureAutoGearSeedContext();
+  const context = factoryAutoGearSeedContext;
+  if (!context) return null;
+
+  const previousSelectValues = captureSetupSelectValues();
+  const seededBeforeCompute = hasSeededAutoGearDefaults();
+  const savedAutoGearRules = autoGearRules.slice();
+  const savedBaseAutoGearRules = baseAutoGearRules.slice();
+  const savedProjectScopedRules = projectScopedAutoGearRules
+    ? projectScopedAutoGearRules.slice()
+    : null;
+  const savedBackupSignature = autoGearRulesLastBackupSignature;
+  const savedPersistedSignature = autoGearRulesLastPersistedSignature;
+  const savedDirtyFlag = autoGearRulesDirtySinceBackup;
+  try {
+    if (seededBeforeCompute) {
+      clearAutoGearDefaultsSeeded();
+    }
+    assignAutoGearRules([]);
+    baseAutoGearRules = [];
+    projectScopedAutoGearRules = null;
+    autoGearRulesLastBackupSignature = savedBackupSignature;
+    autoGearRulesLastPersistedSignature = savedPersistedSignature;
+    autoGearRulesDirtySinceBackup = savedDirtyFlag;
+    applySetupSelectValues(context.setupValues);
+    const baseInfoSource = context.projectFormData || {};
+    let baseInfo;
+    try {
+      baseInfo = JSON.parse(JSON.stringify(baseInfoSource));
+    } catch (cloneErr) {
+      void cloneErr;
+      baseInfo = { ...baseInfoSource };
+    }
+    const rules = buildAutoGearRulesFromBaseInfo(baseInfo, context.scenarioValues || []);
+    if (rules.length) {
+      setFactoryAutoGearRulesSnapshot(rules);
+    }
+    return rules;
+  } finally {
+    applySetupSelectValues(previousSelectValues);
+    assignAutoGearRules(savedAutoGearRules);
+    baseAutoGearRules = savedBaseAutoGearRules.slice();
+    projectScopedAutoGearRules = savedProjectScopedRules
+      ? savedProjectScopedRules.slice()
+      : null;
+    autoGearRulesLastBackupSignature = savedBackupSignature;
+    autoGearRulesLastPersistedSignature = savedPersistedSignature;
+    autoGearRulesDirtySinceBackup = savedDirtyFlag;
+    if (seededBeforeCompute) {
+      markAutoGearDefaultsSeeded();
+    }
+  }
+}
+
+function seedAutoGearRulesFromCurrentProject() {
+  captureAutoGearSeedContext();
+  const seededBefore = hasSeededAutoGearDefaults();
+
+  if (autoGearRules.length) {
+    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (addedDefaults && !seededBefore) {
+      markAutoGearDefaultsSeeded();
+      setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+    } else if (!factoryAutoGearRulesSnapshot) {
+      setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+    }
+    return;
+  }
+
+  if (seededBefore) {
+    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (addedDefaults && !factoryAutoGearRulesSnapshot) {
+      setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+    }
+    return;
+  }
+
+  const baseInfo = factoryAutoGearSeedContext && factoryAutoGearSeedContext.projectFormData
+    ? { ...factoryAutoGearSeedContext.projectFormData }
+    : (collectProjectFormData ? collectProjectFormData() : {});
+  const scenarioValues = factoryAutoGearSeedContext && Array.isArray(factoryAutoGearSeedContext.scenarioValues)
+    ? factoryAutoGearSeedContext.scenarioValues
+    : (requiredScenariosSelect
+        ? Array.from(requiredScenariosSelect.options || [])
+            .map(opt => opt && opt.value)
+            .filter(Boolean)
+        : []);
+
+  const rules = buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues);
   if (!rules.length) {
     const addedDefaults = ensureDefaultMatteboxAutoGearRules();
-    if (addedDefaults) markAutoGearDefaultsSeeded();
+    if (addedDefaults) {
+      markAutoGearDefaultsSeeded();
+      setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+    }
     return;
   }
   setAutoGearRules(rules);
   markAutoGearDefaultsSeeded();
+  setFactoryAutoGearRulesSnapshot(rules);
 }
 
 function resetAutoGearRulesToFactoryAdditions() {
@@ -1339,11 +1561,20 @@ function resetAutoGearRulesToFactoryAdditions() {
   }
 
   try {
-    setAutoGearRules([]);
-    clearAutoGearDefaultsSeeded();
+    const factoryRules = computeFactoryAutoGearRules();
+    let appliedRules = [];
+    if (Array.isArray(factoryRules) && factoryRules.length) {
+      setAutoGearRules(factoryRules);
+      markAutoGearDefaultsSeeded();
+      appliedRules = getAutoGearRules();
+      setFactoryAutoGearRulesSnapshot(appliedRules);
+    } else {
+      setAutoGearRules([]);
+      clearAutoGearDefaultsSeeded();
+      setFactoryAutoGearRulesSnapshot([]);
+    }
     closeAutoGearEditor();
-    seedAutoGearRulesFromCurrentProject();
-    const updatedRules = getAutoGearRules();
+    const updatedRules = appliedRules.length ? appliedRules : getAutoGearRules();
     renderAutoGearRulesList();
     renderAutoGearDraftLists();
     updateAutoGearCatalogOptions();
