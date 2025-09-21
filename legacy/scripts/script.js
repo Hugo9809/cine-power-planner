@@ -1,3 +1,5 @@
+var APP_VERSION = "1.0.4";
+
   if (settingsTablist) {
     var sectionsLabel =
       texts[lang].settingsSectionsLabel ||

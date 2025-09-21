@@ -512,6 +512,17 @@ function autoGearRuleMatteboxKey(rule) {
     .join('|');
 }
 
+function autoGearRuleVideoDistributionKey(rule) {
+  if (!rule || typeof rule !== 'object') return '';
+  const videoList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution : [];
+  if (!videoList.length) return '';
+  return videoList
+    .map(normalizeVideoDistributionOptionValue)
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b))
+    .join('|');
+}
+
 function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
@@ -605,6 +616,10 @@ function autoGearRuleSortKey(rule) {
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
   return `${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${videoDistributionKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+}
+
+function autoGearHasVideoDistributionRules() {
+  return autoGearRules.some(rule => Boolean(autoGearRuleVideoDistributionKey(rule)));
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -1225,6 +1240,72 @@ function subtractScenarioContributions(diff, scenarioKeys, scenarioDiffMap) {
   return { add: adjust(diff.add, 'add'), remove: adjust(diff.remove, 'remove') };
 }
 
+const VIDEO_DISTRIBUTION_HANDHELD_RULES = [
+  { value: 'Director Monitor 7" handheld', role: 'Director' },
+  { value: 'Gaffer Monitor 7" handheld', role: 'Gaffer' },
+  { value: 'DoP Monitor 7" handheld', role: 'DoP' }
+];
+
+const VIDEO_DISTRIBUTION_STAND_RULES = [
+  { value: 'Director Monitor 15-21"', role: 'Director' },
+  { value: 'Combo Monitor 15-21"', role: 'Combo' },
+  { value: 'DoP Monitor 15-21"', role: 'DoP' }
+];
+
+function buildHandheldVideoDistributionRule(template) {
+  const label = `${template.role} handheld`;
+  return {
+    id: generateAutoGearId('rule'),
+    label: template.value,
+    videoDistribution: [template.value],
+    add: [
+      { name: `Bebob V98micro (${label})`, category: 'Monitoring Batteries', quantity: 3 },
+      { name: `D-Tap to Lemo-2-pin Cable 0,3m (${label})`, category: 'Monitoring support', quantity: 2 },
+      { name: `Ultraslim BNC Cable 0.3 m (${label})`, category: 'Monitoring support', quantity: 2 },
+      { name: `Avenger C-Stand Sliding Leg 20" (${label})`, category: 'Grip', quantity: 1 },
+      { name: `Steelfingers Wheel C-Stand 3er Set (${label})`, category: 'Grip', quantity: 1 },
+      { name: `Lite-Tite Swivel Aluminium Umbrella Adapter (${label})`, category: 'Grip', quantity: 1 },
+      { name: `Spigot with male 3/8" and 1/4" (${label})`, category: 'Rigging', quantity: 1 }
+    ],
+    remove: []
+  };
+}
+
+function buildStandVideoDistributionRule(template) {
+  const label = `${template.role} 15-21"`;
+  return {
+    id: generateAutoGearId('rule'),
+    label: template.value,
+    videoDistribution: [template.value],
+    add: [
+      { name: `Bebob V290RM-Cine (${label})`, category: 'Monitoring Batteries', quantity: 2 },
+      { name: `D-Tap to Lemo-2-pin Cable 0,5m (${label})`, category: 'Monitoring support', quantity: 2 },
+      { name: `Ultraslim BNC Cable 0.5 m (${label})`, category: 'Monitoring support', quantity: 2 },
+      { name: `Matthews Monitor Stand II (249562) (${label})`, category: 'Grip', quantity: 1 },
+      { name: `Avenger C590 Conka Bonka Stativ-Verlängerungen Set (${label})`, category: 'Grip', quantity: 1 },
+      { name: `Impact Baby to Junior Receiver Adapter (${label})`, category: 'Grip', quantity: 1 },
+      { name: `Matthews BIG F'ING Monitor Wheel Set (3 pieces) (${label})`, category: 'Grip', quantity: 1 },
+      { name: `Manfrotto 635 Quick-Action Super Clamp (${label})`, category: 'Grip', quantity: 1 },
+      { name: `ULCS Bracket with 1/4" to 1/4" (${label})`, category: 'Rigging', quantity: 1 },
+      { name: `Spigot with male 3/8" and 1/4" (${label})`, category: 'Rigging', quantity: 1 },
+      { name: `Cine Quick Release (${label})`, category: 'Rigging', quantity: 1 },
+      { name: `D-Tap Splitter (${label})`, category: 'Rigging', quantity: 2 }
+    ],
+    remove: []
+  };
+}
+
+function buildDefaultVideoDistributionAutoGearRules() {
+  const rules = [];
+  VIDEO_DISTRIBUTION_HANDHELD_RULES.forEach(template => {
+    rules.push(buildHandheldVideoDistributionRule(template));
+  });
+  VIDEO_DISTRIBUTION_STAND_RULES.forEach(template => {
+    rules.push(buildStandVideoDistributionRule(template));
+  });
+  return rules;
+}
+
 function buildDefaultMatteboxAutoGearRules() {
   const category = 'Matte box + filter';
   const createItems = names => names.map(name => ({
@@ -1301,6 +1382,32 @@ function ensureDefaultMatteboxAutoGearRules() {
   if (!additions.length) return false;
   setAutoGearRules(autoGearRules.concat(additions));
   return true;
+}
+
+function ensureDefaultVideoDistributionAutoGearRules() {
+  const defaults = buildDefaultVideoDistributionAutoGearRules();
+  if (!defaults.length) return false;
+  const existingKeys = new Set(
+    autoGearRules
+      .map(autoGearRuleVideoDistributionKey)
+      .filter(Boolean)
+  );
+  const additions = defaults.filter(rule => {
+    const key = autoGearRuleVideoDistributionKey(rule);
+    if (!key) return false;
+    if (existingKeys.has(key)) return false;
+    existingKeys.add(key);
+    return true;
+  });
+  if (!additions.length) return false;
+  setAutoGearRules(autoGearRules.concat(additions));
+  return true;
+}
+
+function ensureDefaultAutoGearRules() {
+  const addedMattebox = ensureDefaultMatteboxAutoGearRules();
+  const addedVideoDistribution = ensureDefaultVideoDistributionAutoGearRules();
+  return addedMattebox || addedVideoDistribution;
 }
 
 function captureSetupSelectValues() {
@@ -1440,6 +1547,7 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
   }
 
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
+  buildDefaultVideoDistributionAutoGearRules().forEach(rule => rules.push(rule));
   return rules;
 }
 
@@ -1503,7 +1611,7 @@ function seedAutoGearRulesFromCurrentProject() {
   const seededBefore = hasSeededAutoGearDefaults();
 
   if (autoGearRules.length) {
-    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    const addedDefaults = ensureDefaultAutoGearRules();
     if (addedDefaults && !seededBefore) {
       markAutoGearDefaultsSeeded();
       setFactoryAutoGearRulesSnapshot(getAutoGearRules());
@@ -1514,7 +1622,7 @@ function seedAutoGearRulesFromCurrentProject() {
   }
 
   if (seededBefore) {
-    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    const addedDefaults = ensureDefaultAutoGearRules();
     if (addedDefaults && !factoryAutoGearRulesSnapshot) {
       setFactoryAutoGearRulesSnapshot(getAutoGearRules());
     }
@@ -1534,7 +1642,7 @@ function seedAutoGearRulesFromCurrentProject() {
 
   const rules = buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues);
   if (!rules.length) {
-    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    const addedDefaults = ensureDefaultAutoGearRules();
     if (addedDefaults) {
       markAutoGearDefaultsSeeded();
       setFactoryAutoGearRulesSnapshot(getAutoGearRules());
@@ -20131,6 +20239,7 @@ function generateGearListHtml(info = {}) {
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
     };
     const hasMotor = selectedNames.motors.length > 0;
+    const videoDistributionRulesActive = autoGearHasVideoDistributionRules();
     const videoDistPrefs = info.videoDistribution
         ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -20289,7 +20398,9 @@ function generateGearListHtml(info = {}) {
             `Ultraslim BNC Cable 0.3 m (${label})`
         );
     };
-    handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
+    if (!videoDistributionRulesActive) {
+        handheldPrefs.forEach(p => addMonitorCables(`${p.role} handheld`));
+    }
     const addLargeMonitorCables = label => {
         monitoringSupportAcc.push(
             `D-Tap to Lemo-2-pin Cable 0,5m (${label})`,
@@ -20298,7 +20409,9 @@ function generateGearListHtml(info = {}) {
             `Ultraslim BNC Cable 0.5 m (${label})`
         );
     };
-    largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
+    if (!videoDistributionRulesActive) {
+        largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
+    }
     if (hasMotor) {
         monitoringSupportAcc.push(
             'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
@@ -20727,17 +20840,21 @@ function generateGearListHtml(info = {}) {
     }
     let monitoringBatteryItems = [];
     const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
-    handheldPrefs.forEach(p => {
-        for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob98} (${p.role} handheld)`);
-    });
+    if (!videoDistributionRulesActive) {
+        handheldPrefs.forEach(p => {
+            for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob98} (${p.role} handheld)`);
+        });
+    }
     if (hasMotor) {
         const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
         for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob150} (Focus)`);
     }
     const bebob290 = Object.keys(devices.batteries || {}).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
-    largeMonitorPrefs.forEach(p => {
-        monitoringBatteryItems.push(`${bebob290} (${p.role} 15-21")`, `${bebob290} (${p.role} 15-21")`);
-    });
+    if (!videoDistributionRulesActive) {
+        largeMonitorPrefs.forEach(p => {
+            monitoringBatteryItems.push(`${bebob290} (${p.role} 15-21")`, `${bebob290} (${p.role} 15-21")`);
+        });
+    }
     addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
     addRow('Chargers', formatItems(chargersAcc));
     addRow('Monitoring', monitoringItems);
@@ -20756,24 +20873,26 @@ function generateGearListHtml(info = {}) {
     let needsStandardTripod = false;
     let sliderSelectHtml = '';
     let easyrigSelectHtml = '';
-    handheldPrefs.forEach(p => {
-        gripItems.push(`Avenger C-Stand Sliding Leg 20" (${p.role} handheld)`);
-        gripItems.push(`Steelfingers Wheel C-Stand 3er Set (${p.role} handheld)`);
-        gripItems.push(`Lite-Tite Swivel Aluminium Umbrella Adapter (${p.role} handheld)`);
-        riggingAcc.push(`Spigot with male 3/8" and 1/4" (${p.role} handheld)`);
-    });
-    largeMonitorPrefs.forEach(p => {
-        gripItems.push(`Matthews Monitor Stand II (249562) (${p.role} 15-21")`);
-        gripItems.push(`Avenger C590 Conka Bonka Stativ-Verlängerungen Set (${p.role} 15-21")`);
-        gripItems.push(`Impact Baby to Junior Receiver Adapter (${p.role} 15-21")`);
-        gripItems.push(`Matthews BIG F'ING Monitor Wheel Set (3 pieces) (${p.role} 15-21")`);
-        riggingAcc.push(`ULCS Bracket with 1/4" to 1/4" (${p.role} 15-21")`);
-        gripItems.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
-        riggingAcc.push(`Spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
-        riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
-        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
-        riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
-    });
+    if (!videoDistributionRulesActive) {
+        handheldPrefs.forEach(p => {
+            gripItems.push(`Avenger C-Stand Sliding Leg 20" (${p.role} handheld)`);
+            gripItems.push(`Steelfingers Wheel C-Stand 3er Set (${p.role} handheld)`);
+            gripItems.push(`Lite-Tite Swivel Aluminium Umbrella Adapter (${p.role} handheld)`);
+            riggingAcc.push(`Spigot with male 3/8" and 1/4" (${p.role} handheld)`);
+        });
+        largeMonitorPrefs.forEach(p => {
+            gripItems.push(`Matthews Monitor Stand II (249562) (${p.role} 15-21")`);
+            gripItems.push(`Avenger C590 Conka Bonka Stativ-Verlängerungen Set (${p.role} 15-21")`);
+            gripItems.push(`Impact Baby to Junior Receiver Adapter (${p.role} 15-21")`);
+            gripItems.push(`Matthews BIG F'ING Monitor Wheel Set (3 pieces) (${p.role} 15-21")`);
+            riggingAcc.push(`ULCS Bracket with 1/4" to 1/4" (${p.role} 15-21")`);
+            gripItems.push(`Manfrotto 635 Quick-Action Super Clamp (${p.role} 15-21")`);
+            riggingAcc.push(`Spigot with male 3/8" and 1/4" (${p.role} 15-21")`);
+            riggingAcc.push(`Cine Quick Release (${p.role} 15-21")`);
+            riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
+            riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
+        });
+    }
     if (hasMotor) {
         gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
         gripItems.push('Steelfingers Wheel C-Stand 3er Set (Focus)');
