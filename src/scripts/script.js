@@ -8064,6 +8064,78 @@ const autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
 const autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
 const autoGearMonitorCatalog = document.getElementById('autoGearMonitorCatalog');
 
+function enableAutoGearMultiSelectToggle(select) {
+  if (!select || !select.multiple) return;
+
+  const handlePointerToggle = event => {
+    if (!select.multiple || event.defaultPrevented) return;
+
+    const isPointerEvent = typeof PointerEvent !== 'undefined' && event instanceof PointerEvent;
+    if (isPointerEvent && event.pointerType && event.pointerType !== 'mouse') {
+      return;
+    }
+
+    if (typeof event.button === 'number' && event.button !== 0) {
+      return;
+    }
+
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    const option = event.target instanceof HTMLOptionElement ? event.target : null;
+    if (!option || option.disabled) {
+      return;
+    }
+
+    event.preventDefault();
+
+    option.selected = !option.selected;
+
+    const dispatchEvent = type => {
+      try {
+        const evt = new Event(type, { bubbles: true });
+        select.dispatchEvent(evt);
+      } catch {
+        const evt = document.createEvent('Event');
+        evt.initEvent(type, true, true);
+        select.dispatchEvent(evt);
+      }
+    };
+
+    dispatchEvent('input');
+    dispatchEvent('change');
+
+    if (typeof select.focus === 'function') {
+      try {
+        select.focus({ preventScroll: true });
+      } catch {
+        select.focus();
+      }
+    }
+  };
+
+  if (typeof window !== 'undefined' && typeof window.PointerEvent !== 'undefined') {
+    select.addEventListener('pointerdown', handlePointerToggle);
+  } else {
+    select.addEventListener('mousedown', handlePointerToggle);
+  }
+}
+
+[
+  autoGearScenariosSelect,
+  autoGearMatteboxSelect,
+  autoGearCameraHandleSelect,
+  autoGearViewfinderExtensionSelect,
+  autoGearVideoDistributionSelect,
+  autoGearCameraSelect,
+  autoGearMonitorSelect,
+  autoGearWirelessSelect,
+  autoGearMotorsSelect,
+  autoGearControllersSelect,
+  autoGearDistanceSelect,
+].forEach(enableAutoGearMultiSelectToggle);
+
 const autoGearAddScreenSizeField = autoGearAddScreenSizeInput?.closest('.auto-gear-field')
   || autoGearAddScreenSizeLabel?.closest('.auto-gear-field')
   || null;
