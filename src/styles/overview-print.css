@@ -118,6 +118,10 @@ body.dark-mode {
 #overviewDialogContent #setupDiagram .node-icon[data-icon-font='essential'] {
   font-family: 'EssentialIconsV2', system-ui, sans-serif;
 }
+#overviewDialogContent #setupDiagram .node-icon[data-icon-font='text'] {
+  font-family: 'Ubuntu', system-ui, sans-serif;
+  font-weight: var(--font-weight-medium);
+}
 #overviewDialogContent #setupDiagram line,
 #overviewDialogContent #setupDiagram path.edge-path {
   stroke: var(--control-text);
