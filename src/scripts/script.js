@@ -5221,7 +5221,7 @@ const ICON_GLYPHS = Object.freeze({
   share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
   paperPlane: iconGlyph('\uED67', ICON_FONT_KEYS.UICONS),
   magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
-  codec: iconGlyph('\uF373', ICON_FONT_KEYS.UICONS),
+  codec: iconGlyph('\uE4CD', ICON_FONT_KEYS.UICONS),
   timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
   audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
   audioOut: iconGlyph('\uF22F', ICON_FONT_KEYS.ESSENTIAL),
