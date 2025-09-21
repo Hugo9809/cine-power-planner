@@ -6,19 +6,24 @@ Cine Power Planner is a standalone web app for building, auditing and sharing
 professional camera power plans that never leave your machine. Plan V‑Mount,
 B‑Mount or Gold‑Mount rigs, model runtime expectations, capture project
 requirements and export shareable bundles—entirely inside your browser, even
-when you are offline.
+when you are offline. Every dependency lives in this repository so the same
+experience runs on a stage workstation, a field laptop or an air-gapped archive
+drive without phoning home.
 
 ## At a Glance
 
 - **Plan offline-first.** Build V‑Mount, B‑Mount or Gold‑Mount setups directly
   in your browser. Every icon, font and helper script ships with the
-  repository so nothing relies on external CDNs or network access.
+  repository so nothing relies on external CDNs or network access. Clone the
+  repo, unplug the network cable and the interface keeps working exactly as it
+  did online.
 - **Keep data on-device.** Projects, runtime feedback, favorites, custom
   devices, gear lists and settings stay local. Backups and shareable bundles are
   human-readable JSON files you control.
 - **Verify safety nets quickly.** Manual saves, background auto-saves and
   timestamped auto-backups layer together so you can rehearse recovery before
-  leaving for set.
+  leaving for set. Practicing the save → backup → bundle → restore loop is part
+  of the recommended first-run routine so crews confirm every safeguard.
 - **Approve updates intentionally.** The service worker waits for you to
   confirm a refresh, keeping teams on a known-good revision during travel or
   low-connectivity shoots.
@@ -41,6 +46,16 @@ worker keeps the whole app available offline, remembers every preference and
 only updates when you approve a refresh. Saving, sharing, import, backup and
 restore tools are always available and always run locally so user data stays
 safe.
+
+### Why offline-first matters
+
+Film sets rarely have guaranteed connectivity, and studios frequently require
+air-gapped planning tools. Cine Power Planner delivers the exact same
+capabilities regardless of connection status: every asset is bundled, every
+workflow runs locally and every save creates artifacts you can archive on
+redundant media. Validating those workflows before a shoot becomes a standard
+checklist item so nothing relies on an external service in the middle of a
+production day.
 
 ### Feature pillars
 
@@ -158,6 +173,10 @@ See the language-specific README files for release details in other locales.
 
 ## Quick Start
 
+Run this checklist the first time you install or update the planner. It proves
+that every save, share, import, backup and restore workflow works exactly the
+same online or offline.
+
 1. Download or clone this repository.
 2. Open `index.html` in any modern browser.
 3. (Optional) Serve the folder over HTTP(S) to install the service worker and
@@ -179,14 +198,17 @@ See the language-specific README files for release details in other locales.
    auto-backup that appears after a few minutes.
 6. Export **Settings → Backup & Restore → Backup** and import the resulting
    `planner-backup.json` file into a private browser profile. Verifying the
-   restore path early proves that no saves are stranded on a single machine.
+   restore path early proves that no saves are stranded on a single machine and
+   demonstrates the forced pre-restore backup safeguard.
 7. Practice exporting a project bundle (the download defaults to
    `project-name.json`) and re-importing it on a secondary machine or profile.
    Rehearsing the full save → share → import loop keeps crews confident that
-   offline workflows are airtight.
+   offline workflows are airtight and that locally stored Uicons, fonts and
+   helper scripts follow the project.
 8. Archive the verified backup and project bundle alongside the repository copy
    you opened. This keeps save, share, import, backup and restore workflows
-   provably in sync from the first session.
+   provably in sync from the first session and gives you redundant recovery
+   media for travel days.
 
 ## System Requirements & Browser Support
 
