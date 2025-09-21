@@ -1231,14 +1231,58 @@ main.legal-content {
   gap: 20px;
 }
 
+.settings-tabs-container {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  padding: 8px 8px 12px;
+  margin-bottom: 8px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  border-radius: calc(var(--border-radius) * 0.9);
+  background: color-mix(in srgb, var(--surface-color) 82%, var(--panel-bg));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--panel-border) 12%, transparent);
+}
+
+.settings-tabs-container::before,
+.settings-tabs-container::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 16px;
+  width: 28px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+.settings-tabs-container::before {
+  left: 8px;
+  background: linear-gradient(to right, var(--surface-color) 5%, transparent 90%);
+}
+
+.settings-tabs-container::after {
+  right: 8px;
+  background: linear-gradient(to left, var(--surface-color) 5%, transparent 90%);
+}
+
+.settings-tabs-container.is-scrollable:not(.is-at-start)::before {
+  opacity: 1;
+}
+
+.settings-tabs-container.is-scrollable:not(.is-at-end)::after {
+  opacity: 1;
+}
+
 .settings-tabs {
   display: flex;
   flex-wrap: nowrap;
   gap: 8px;
   align-items: center;
-  padding: 4px 0 8px;
-  border-bottom: 1px solid var(--panel-border);
-  margin-bottom: 4px;
+  padding: 4px 0;
+  margin: 0;
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
@@ -1246,6 +1290,71 @@ main.legal-content {
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scroll-snap-type: x proximity;
+}
+
+.settings-tabs-scroll {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-color) 75%, var(--panel-bg));
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--shadow-color, rgba(0, 0, 0, 0.24)) 15%, transparent);
+  color: inherit;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  z-index: 2;
+}
+
+.settings-tabs-scroll[hidden] {
+  display: none;
+}
+
+.settings-tabs-scroll:hover,
+.settings-tabs-scroll:focus-visible {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 20%, var(--panel-bg));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.settings-tabs-scroll:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 25%, transparent);
+}
+
+.settings-tabs-scroll:disabled,
+.settings-tabs-scroll[disabled] {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
+  color: color-mix(in srgb, var(--muted-text-color) 80%, currentColor);
+}
+
+.settings-tabs-scroll:disabled:hover,
+.settings-tabs-scroll:disabled:focus-visible,
+.settings-tabs-scroll[disabled]:hover,
+.settings-tabs-scroll[disabled]:focus-visible {
+  border-color: color-mix(in srgb, var(--panel-border) 70%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 75%, var(--panel-bg));
+  box-shadow: none;
+  outline: none;
+}
+
+body.high-contrast .settings-tabs-container {
+  background: var(--surface-color);
+  box-shadow: none;
+  border: 1px solid var(--panel-border);
+}
+
+body.high-contrast .settings-tabs-container::before,
+body.high-contrast .settings-tabs-container::after {
+  display: none;
 }
 
 .settings-tab {
@@ -1256,12 +1365,15 @@ main.legal-content {
   color: inherit;
   font: inherit;
   font-weight: 600;
-  padding: 8px 14px;
+  padding: 10px 18px;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
   white-space: nowrap;
   flex: 0 0 auto;
   scroll-snap-align: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .settings-tab:hover,
@@ -1274,7 +1386,11 @@ main.legal-content {
   background-color: color-mix(in srgb, var(--accent-color) 18%, var(--panel-bg));
   border-color: var(--accent-color);
   color: var(--accent-color);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-color) 30%, transparent);
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent-color) 18%, transparent);
+}
+
+.settings-tab.active {
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent-color) 18%, transparent);
 }
 
 .settings-panel[hidden] {
