@@ -4508,6 +4508,18 @@ body.dark-mode.pink-mode #gearListOutput h2,
     display: none !important;
   }
 
+  html,
+  body,
+  #overviewDialogContent {
+    --status-warning-text-color: #000 !important;
+    --status-error-text-color: #000 !important;
+  }
+
+  .status-message--warning,
+  .status-message--danger {
+    color: #000 !important;
+  }
+
   #overviewDialog {
     display: block;
     position: static;
