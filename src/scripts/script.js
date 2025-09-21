@@ -26034,10 +26034,59 @@ if (helpButton && helpDialog) {
   const positionHoverHelpTooltip = target => {
     if (!hoverHelpTooltip || !target) return;
     const rect = target.getBoundingClientRect();
-    const topBase = Number.isFinite(rect.bottom) && rect.bottom ? rect.bottom : rect.top;
-    const leftBase = Number.isFinite(rect.left) ? rect.left : 0;
-    const top = (Number.isFinite(topBase) ? topBase : 0) + window.scrollY + 10;
-    const left = leftBase + window.scrollX;
+    const docEl = document.documentElement;
+    const viewportWidth = Math.max(docEl?.clientWidth || 0, window.innerWidth || 0);
+    const viewportHeight = Math.max(docEl?.clientHeight || 0, window.innerHeight || 0);
+    const scrollX = window.scrollX || window.pageXOffset || 0;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const horizontalOffset = 12;
+    const verticalOffset = 10;
+    const viewportPadding = 8;
+
+    const safeLeft = Number.isFinite(rect.left) ? rect.left : 0;
+    const safeRight = Number.isFinite(rect.right) ? rect.right : safeLeft + (rect.width || 0);
+    const safeTop = Number.isFinite(rect.top) ? rect.top : 0;
+    const safeBottom = Number.isFinite(rect.bottom) ? rect.bottom : safeTop;
+
+    const tooltipRect = hoverHelpTooltip.getBoundingClientRect();
+    const tooltipWidth = tooltipRect.width || hoverHelpTooltip.offsetWidth || 0;
+    const tooltipHeight = tooltipRect.height || hoverHelpTooltip.offsetHeight || 0;
+
+    let top = safeBottom + scrollY + verticalOffset;
+    let left = safeLeft + scrollX;
+
+    if (tooltipWidth) {
+      const viewportRightLimit = scrollX + viewportWidth - viewportPadding;
+      const defaultRight = left + tooltipWidth;
+      if (defaultRight > viewportRightLimit) {
+        left = safeRight + scrollX - tooltipWidth - horizontalOffset;
+      }
+
+      const minLeft = scrollX + viewportPadding;
+      const maxLeft =
+        scrollX + Math.max(viewportWidth - tooltipWidth - viewportPadding, viewportPadding);
+      if (left < minLeft) {
+        left = minLeft;
+      } else if (left > maxLeft) {
+        left = maxLeft;
+      }
+    }
+
+    if (tooltipHeight) {
+      const minTop = scrollY + viewportPadding;
+      const maxTop = scrollY + Math.max(viewportHeight - tooltipHeight - viewportPadding, viewportPadding);
+      if (top > maxTop) {
+        const aboveTop = safeTop + scrollY - tooltipHeight - verticalOffset;
+        if (aboveTop >= minTop) {
+          top = aboveTop;
+        } else {
+          top = Math.min(Math.max(top, minTop), maxTop);
+        }
+      } else if (top < minTop) {
+        top = minTop;
+      }
+    }
+
     hoverHelpTooltip.style.top = `${top}px`;
     hoverHelpTooltip.style.left = `${left}px`;
   };
@@ -26045,6 +26094,7 @@ if (helpButton && helpDialog) {
   const hideHoverHelpTooltip = () => {
     if (!hoverHelpTooltip) return;
     hoverHelpTooltip.setAttribute('hidden', '');
+    hoverHelpTooltip.style.removeProperty('visibility');
   };
 
   const updateHoverHelpTooltip = target => {
@@ -26059,7 +26109,15 @@ if (helpButton && helpDialog) {
       return;
     }
     hoverHelpTooltip.textContent = textParts.join(' ');
+    const wasHidden = hoverHelpTooltip.hasAttribute('hidden');
+    if (wasHidden) {
+      hoverHelpTooltip.style.visibility = 'hidden';
+      hoverHelpTooltip.removeAttribute('hidden');
+    }
     positionHoverHelpTooltip(target);
+    if (wasHidden) {
+      hoverHelpTooltip.style.removeProperty('visibility');
+    }
     hoverHelpTooltip.removeAttribute('hidden');
   };
 
