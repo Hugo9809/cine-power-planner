@@ -24178,9 +24178,18 @@ if (helpButton && helpDialog) {
       if (!parts.includes(trimmed)) parts.push(trimmed);
     };
 
-    addText(el.getAttribute('data-help'));
-    addText(el.getAttribute('aria-label'));
-    addText(el.getAttribute('title'));
+    const addTextFromElement = (element, { includeTextContent = false } = {}) => {
+      if (!element) return;
+      addText(element.getAttribute('data-help'));
+      addText(element.getAttribute('aria-label'));
+      addText(element.getAttribute('aria-description'));
+      addText(element.getAttribute('title'));
+      if (includeTextContent) {
+        addText(element.textContent);
+      }
+    };
+
+    addTextFromElement(el);
 
     const applyFromIds = ids => {
       if (!ids) return;
@@ -24190,16 +24199,21 @@ if (helpButton && helpDialog) {
         .forEach(id => {
           const ref = document.getElementById(id);
           if (!ref) return;
-          addText(ref.getAttribute('data-help'));
-          addText(ref.getAttribute('aria-label'));
-          addText(ref.getAttribute('title'));
-          addText(ref.textContent);
+          addTextFromElement(ref, { includeTextContent: true });
         });
     };
 
     applyFromIds(el.getAttribute('aria-labelledby'));
     addText(el.getAttribute('alt'));
     applyFromIds(el.getAttribute('aria-describedby'));
+
+    findAssociatedLabelElements(el).forEach(labelEl => {
+      addTextFromElement(labelEl, { includeTextContent: true });
+    });
+
+    if (!parts.length) {
+      addText(el.textContent);
+    }
 
     return parts;
   };
