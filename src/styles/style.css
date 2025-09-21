@@ -4045,7 +4045,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   color: var(--accent-color);
   break-after: avoid;
   page-break-after: avoid;
