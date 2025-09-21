@@ -84,6 +84,7 @@ safe.
 - [Everyday Workflow](#everyday-workflow)
 - [Saving & Project Management](#saving--project-management)
 - [Sharing & Imports](#sharing--imports)
+- [Project & Backup File Formats](#project--backup-file-formats)
 - [Interface Tour](#interface-tour)
 - [Customization & Accessibility](#customization--accessibility)
 - [Data Safety & Offline Operation](#data-safety--offline-operation)
@@ -174,9 +175,10 @@ See the language-specific README files for release details in other locales.
 6. Export **Settings → Backup & Restore → Backup** and import the resulting
    `planner-backup.json` file into a private browser profile. Verifying the
    restore path early proves that no saves are stranded on a single machine.
-7. Practice exporting a `.cpproject` bundle and re-importing it on a secondary
-   machine or profile. Rehearsing the full save → share → import loop keeps
-   crews confident that offline workflows are airtight.
+7. Practice exporting a project bundle (the download defaults to
+   `project-name.json`) and re-importing it on a secondary machine or profile.
+   Rehearsing the full save → share → import loop keeps crews confident that
+   offline workflows are airtight.
 
 ## Everyday Workflow
 
@@ -232,15 +234,16 @@ Use Cine Power Planner end-to-end with the following routine:
 ## Sharing & Imports
 
 - **Project bundles travel light.** Click **Export Project** to download a
-  `.cpproject` file containing the active project, favorites and any referenced
-  custom devices. Send it via your preferred secure channel; recipients can
-  import without needing internet access.
+  `project-name.json` file containing the active project, favorites and any
+  referenced custom devices. Rename the file if your archiving standards call
+  for a `.cpproject` extension, then send it via your preferred secure channel;
+  recipients can import without needing internet access.
 - **Automatic gear rules travel with bundles.** Decide whether to include your
   rules during export; teammates who import the bundle can ignore them, apply
   them only to the imported project or merge them into their global ruleset.
 - **Restores are double-buffered.** Importing a bundle prompts you to save a
   backup of your current environment first. After choosing the bundle file, the
-  planner validates its schema, merges new devices and places the restored
+  planner validates its JSON schema, merges new devices and places the restored
   project at the top of the selector.
 - **Cross-device workflows stay offline.** To move a plan to a workstation with
   no connectivity, copy `index.html`, `script.js`, `devices/` and your backup or
@@ -248,13 +251,30 @@ Use Cine Power Planner end-to-end with the following routine:
   continue planning without touching external networks.
 - **Export responsibly.** Review the exported JSON before distributing it to
   make sure no extra projects or notes are included. The structure is human
-  readable so you can redact or duplicate entries as needed.
+  readable so you can redact or duplicate entries as needed, and the file stays
+  portable even when renamed to `.cpproject` for filing.
 - **Synchronize with checklists.** When a teammate sends you an updated bundle,
   import it, review the `Updated at` timestamps in the sidebar and archive the
-  previous bundle in your storage system to maintain a clear history.
+  previous JSON (or `.cpproject`) bundle in your storage system to maintain a
+  clear history.
 - **Share without losing context.** Bundles remember language, theme, custom
   logo and other personalization choices so the recipient opens the project in a
   familiar state even if they stay offline.
+
+## Project & Backup File Formats
+
+- **`project-name.json` (project bundle).** Exported from **Export Project**,
+  this JSON bundle stores one project, favorites and any referenced custom
+  devices. Rename it to `.cpproject` if your workflow expects that extension;
+  the planner treats both identically during import.
+- **`planner-backup.json` (full backup).** Created via **Settings → Backup &
+  Restore → Backup**, this archive captures every project, auto-backup,
+  favorite, runtime submission, automatic gear rule, UI preference, custom
+  font and branding asset so a restore never loses context.
+- **`auto-gear-rules-*.json` (rule exports).** Optional downloads from
+  **Automatic Gear Rules** provide timestamped copies of your automation setup.
+  Store them alongside full backups so custom presets never disappear during
+  cross-team handoffs.
 
 ## Interface Tour
 
@@ -384,8 +404,8 @@ the latest save or export is trustworthy. Pair the backup options above with a
 repeatable verification loop:
 
 - **Pre-flight validation (daily or before major edits).** Create a manual save,
-  export both a planner backup and a `.cpproject` bundle, then import each file
-  into a private browser profile. Confirm projects, automatic gear rules,
+  export both a planner backup and a `project-name.json` bundle, then import each
+  file into a private browser profile. Confirm projects, automatic gear rules,
   favorites and runtime dashboards match the source machine before deleting the
   verification profile. This proves the full save → share → import chain is
   intact.
@@ -400,8 +420,9 @@ repeatable verification loop:
   changelog entry so future crews know which revisions were certified for
   offline work.
 - **Redundancy rotation (monthly or before archiving).** Store the most recent
-  planner backup, a verified `.cpproject` bundle and a ZIP of the repository on
-  at least two physical media. Rotate which copy you open for spot-checks so you
+  planner backup, a verified `project-name.json` bundle (rename to `.cpproject`
+  if your asset tracker expects it) and a ZIP of the repository on at least two
+  physical media. Rotate which copy you open for spot-checks so you
   catch media degradation before it causes data loss.
 
 ## Operational Checklists
@@ -426,9 +447,9 @@ reference.
    `Ctrl+S`/`⌘S` to save, then export a `planner-backup.json` file. Restore that
    backup into a private browsing window or secondary profile and confirm the
    project selector matches the source machine.
-4. **Test sharing flows.** Export a `.cpproject` bundle, import it into the
-   verification profile and ensure automatic gear rules, custom devices and the
-   offline indicator load as expected. Delete the profile afterwards.
+4. **Test sharing flows.** Export a `project-name.json` bundle, import it into
+   the verification profile and ensure automatic gear rules, custom devices and
+   the offline indicator load as expected. Delete the profile afterwards.
 5. **Simulate no-connectivity operation.** Disconnect from the network or toggle
    Airplane Mode, refresh the planner and confirm the offline badge appears,
    icons stay crisp and previously verified projects remain accessible.
@@ -439,8 +460,9 @@ reference.
 ### Wrap-day handoff
 
 1. **Capture a final manual backup.** With the project still open, export a
-   `planner-backup.json` file plus the latest `.cpproject` bundle and label them
-   with the date, location and shoot day.
+   `planner-backup.json` file plus the latest `project-name.json` bundle (rename
+   to `.cpproject` if needed) and label them with the date, location and shoot
+   day.
 2. **Validate imports.** Restore both files on a verification machine to ensure
    no corruption occurred during export. Keep the verification instance offline
    to mimic field conditions.
