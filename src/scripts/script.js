@@ -4767,7 +4767,8 @@ const ICON_FONT_KEYS = Object.freeze({
   ESSENTIAL: 'essential',
   FILM: 'film',
   GADGET: 'gadget',
-  UICONS: 'uicons'
+  UICONS: 'uicons',
+  TEXT: 'text'
 });
 
 const VALID_ICON_FONTS = new Set(Object.values(ICON_FONT_KEYS));
@@ -4912,8 +4913,8 @@ const ICON_GLYPHS = Object.freeze({
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
   load: iconGlyph('\uE0E0', ICON_FONT_KEYS.UICONS),
-  add: iconGlyph('\uE02E', ICON_FONT_KEYS.UICONS),
-  minus: iconGlyph('\uE9E0', ICON_FONT_KEYS.UICONS),
+  add: Object.freeze({ char: '+', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
+  minus: Object.freeze({ char: '−', font: ICON_FONT_KEYS.TEXT, className: 'icon-text' }),
   check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
   fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
   fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),

@@ -1917,9 +1917,14 @@ body.dark-mode .help-callout {
   font-family: 'GadgetIconsV2';
 }
 
+.icon-glyph[data-icon-font='text'] {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: var(--font-weight-medium);
+}
+
 .icon-glyph.icon-text {
   font-family: 'Ubuntu', sans-serif;
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-medium);
 }
 
 .icon-glyph.icon-svg {
@@ -3159,6 +3164,10 @@ body.pink-mode #topBar #logo .logo-center {
 }
 #setupDiagram .node-icon[data-icon-font='essential'] {
   font-family: 'EssentialIconsV2', system-ui, sans-serif;
+}
+#setupDiagram .node-icon[data-icon-font='text'] {
+  font-family: 'Ubuntu', system-ui, sans-serif;
+  font-weight: var(--font-weight-medium);
 }
 #setupDiagram .conn {
   stroke: none;
