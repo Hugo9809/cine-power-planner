@@ -27085,7 +27085,17 @@ function renderGearListFilterDetails(details) {
     row.className = 'filter-detail';
     const heading = document.createElement('div');
     heading.className = 'filter-detail-label';
-    heading.textContent = label;
+    const displaySize = size && label && label.includes(size) ? '' : size;
+    const displayValues = Array.isArray(values) ? values : undefined;
+    if (label) {
+      heading.textContent = formatFilterEntryText({
+        label,
+        size: displaySize,
+        values: displayValues
+      });
+    } else {
+      heading.textContent = '';
+    }
     row.appendChild(heading);
     const controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
