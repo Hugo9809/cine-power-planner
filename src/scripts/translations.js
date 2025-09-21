@@ -363,6 +363,7 @@ const texts = {
     shareSetupBtn: "Export Project",
     shareSetupPrompt: "Project file ready to export.",
     shareLinkCopied: "Project file downloaded.",
+    shareExportFailed: "Project export failed.",
     shareLinkTooLong: "Project data is too large to export.",
     shareFilenamePrompt:
       "Enter a name for the exported project file (default: {defaultName}).",
@@ -918,6 +919,7 @@ const texts = {
     shareSetupBtn: "Esporta progetto",
     shareSetupPrompt: "File di progetto pronto per l'esportazione.",
     shareLinkCopied: "File di progetto scaricato.",
+    shareExportFailed: "Esportazione del progetto non riuscita.",
     shareLinkTooLong: "I dati del progetto sono troppo grandi per essere esportati.",
     shareFilenamePrompt:
       "Scegli un nome per il file di progetto esportato (predefinito: {defaultName}).",
@@ -1711,6 +1713,7 @@ const texts = {
     shareSetupBtn: "Exportar proyecto",
     shareSetupPrompt: "Archivo de proyecto listo para descargar.",
     shareLinkCopied: "Archivo de proyecto descargado.",
+    shareExportFailed: "Error al exportar el proyecto.",
     shareLinkTooLong: "Los datos del proyecto son demasiado grandes para exportarlos.",
     shareFilenamePrompt:
       "Elige un nombre para el archivo de proyecto exportado (predeterminado: {defaultName}).",
@@ -2518,6 +2521,7 @@ const texts = {
     shareSetupBtn: "Exporter le projet",
     shareSetupPrompt: "Fichier projet prêt à être téléchargé.",
     shareLinkCopied: "Fichier projet téléchargé.",
+    shareExportFailed: "L’export du projet a échoué.",
     shareLinkTooLong: "Les données du projet sont trop volumineuses pour être exportées.",
     shareFilenamePrompt:
       "Choisissez un nom pour le fichier projet exporté (par défaut : {defaultName}).",
@@ -3328,6 +3332,7 @@ const texts = {
     shareSetupBtn: "Projekt exportieren",
     shareSetupPrompt: "Projektdatei bereit zum Export.",
     shareLinkCopied: "Projektdatei heruntergeladen.",
+    shareExportFailed: "Projekt-Export fehlgeschlagen.",
     shareLinkTooLong: "Projektdaten sind zu groß zum Exportieren.",
     shareFilenamePrompt:
       "Wähle einen Namen für die exportierte Projektdatei (Standard: {defaultName}).",
