@@ -377,7 +377,8 @@
     'src/vendor/lz-string.min.js',
     'src/vendor/lottie-light.min.js',
     'src/scripts/script.js',
-    'src/scripts/overview.js'
+    'src/scripts/overview.js',
+    'src/scripts/autosave-overlay.js'
   ];
 
   var legacyScripts = [
@@ -400,7 +401,8 @@
     'src/vendor/lz-string.min.js',
     'src/vendor/lottie-light.min.js',
     'legacy/scripts/script.js',
-    'legacy/scripts/overview.js'
+    'legacy/scripts/overview.js',
+    'src/scripts/autosave-overlay.js'
   ];
 
   function startLoading() {

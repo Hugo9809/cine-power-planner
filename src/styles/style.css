@@ -4729,6 +4729,39 @@ body.dark-mode.pink-mode #gearListOutput h2,
   color: var(--muted-text-color);
 }
 
+.gear-list-autosave-note--overlay {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(1rem, 3vw, 2.5rem));
+  transform: translate(-50%, 1rem);
+  max-width: min(90vw, 40rem);
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--panel-border);
+  background: var(--surface-color);
+  color: var(--text-color);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  line-height: 1.4;
+  pointer-events: none;
+  z-index: 240;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.gear-list-autosave-note--overlay.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 600px) {
+  .gear-list-autosave-note--overlay {
+    padding: 0.75rem;
+    font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  }
+}
+
 @media (max-width: 600px) {
   #gearListOutput,
   #projectRequirementsOutput {
