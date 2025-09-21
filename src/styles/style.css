@@ -2992,7 +2992,7 @@ body.pink-mode #topBar #logo .logo-center {
   top: -1.2em;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--surface-color);
+  background: none;
   color: var(--danger-color);
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
   padding: 0 2px;
