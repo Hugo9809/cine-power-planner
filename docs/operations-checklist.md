@@ -61,6 +61,29 @@ update the repository or hand off a project at the end of the day.
    and reopen the help dialog and legal pages to prime caches for the next
    session before disconnecting again.
 
+## 5. Incident response quick actions
+
+If a project looks incomplete, a gear list is missing or an unexpected warning
+appears, stabilize the environment before attempting to fix it:
+
+1. **Hold the current session.** Leave the tab open, disconnect from networks if
+   possible and note the timestamp plus the offline indicator state. Avoid
+   reloading until you record what happened.
+2. **Capture available data.** Run **Settings → Backup & Restore → Backup** to
+   download `planner-backup.json`. The export includes auto backups, favorites,
+   runtime feedback and automatic gear rules even if the selector looks wrong.
+3. **Promote safety copies.** Reveal `auto-backup-…` entries and duplicate the
+   most recent ones into manual saves labeled with an incident ID so they are not
+   purged automatically.
+4. **Verify in isolation.** Import the latest trusted `project-name.json`
+   (rename to `.cpproject` if that matches your archive) into a private browser
+   profile that stays offline. Confirm the project contents there before touching
+   the production environment.
+5. **Restore with confidence.** Once the isolated import checks out, restore the
+   freshly captured backup on the main machine. Compare the automatic pre-restore
+   snapshot against the restored data and document what happened, where exports
+   are stored and which workstation verified the recovery.
+
 Following this routine ensures no user data is lost, offline capabilities remain
 healthy and every team member who launches Cine Power Planner inherits a verified
 environment.
