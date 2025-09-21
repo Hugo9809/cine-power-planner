@@ -4241,6 +4241,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   text-align: center;
   padding: 10px;
   box-shadow: var(--panel-shadow);
+  --requirement-accent-color: var(--text-color);
 }
 .requirement-box .req-icon {
   --req-icon-size: calc(var(--font-size-relative-base) * var(--font-scale-xxxl));
@@ -4258,6 +4259,8 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   margin: 0 auto 5px;
   line-height: 1;
   flex-shrink: 0;
+  color: var(--requirement-accent-color);
+  --icon-color: var(--requirement-accent-color);
 }
 
 .requirement-box .req-icon svg {
@@ -4270,10 +4273,17 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 .requirement-box .req-label {
   font-weight: var(--font-weight-bold);
   display: block;
+  color: var(--requirement-accent-color);
 }
 .requirement-box .req-value {
   display: block;
   margin-top: 4px;
+}
+
+body:not(.dark-mode) .requirement-box,
+#overviewDialogContent:not(.dark-mode) .requirement-box,
+#projectRequirementsOutput:not(.dark-mode) .requirement-box {
+  --requirement-accent-color: var(--accent-color);
 }
 
 /* Let project scenarios span the full row for clarity */
