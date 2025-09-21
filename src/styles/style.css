@@ -547,9 +547,9 @@ main.legal-content {
   flex: 0 1 320px;
   width: min(100%, 320px);
   max-width: 100%;
-  overflow-y: auto;
-  min-height: 12rem;
-  height: clamp(14rem, 45vh, 20rem);
+  overflow-y: visible;
+  min-height: auto;
+  height: auto;
 }
 
 #crewContainer {
