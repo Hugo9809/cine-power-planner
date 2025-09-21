@@ -75,6 +75,7 @@ const MAX_DELETION_BACKUPS = 20;
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const MAX_SAVE_ATTEMPTS = 3;
+const MAX_QUOTA_RECOVERY_STEPS = 100;
 const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
@@ -1203,6 +1204,18 @@ function saveJSONToStorage(
   let preservedBackupValue;
   let hasPreservedBackup = false;
   let removedBackupDuringRetry = false;
+  let quotaRecoverySteps = 0;
+  let quotaRecoveryFailed = false;
+
+  const registerQuotaRecoveryStep = () => {
+    quotaRecoverySteps += 1;
+    if (quotaRecoverySteps > MAX_QUOTA_RECOVERY_STEPS) {
+      quotaRecoveryFailed = true;
+      console.warn(`Exceeded maximum storage recovery attempts while saving ${key}.`);
+      return false;
+    }
+    return true;
+  };
 
   const attemptHandleQuota = (error, context = {}) => {
     if (!isQuotaExceededError(error) || typeof onQuotaExceeded !== 'function') {
@@ -1273,6 +1286,12 @@ function saveJSONToStorage(
         storage.setItem(key, serialized);
       } catch (error) {
         if (attemptHandleQuota(error)) {
+          if (!registerQuotaRecoveryStep()) {
+            break;
+          }
+          if (attempts > 0) {
+            attempts -= 1;
+          }
           continue;
         }
         console.error(errorMessage, error);
@@ -1320,6 +1339,9 @@ function saveJSONToStorage(
             backupKey: fallbackKey,
             isBackup: true,
           })) {
+            if (!registerQuotaRecoveryStep()) {
+              return 'failure';
+            }
             return 'retry';
           }
         }
@@ -1346,7 +1368,14 @@ function saveJSONToStorage(
     }
 
     if (backupResult === 'retry') {
+      if (attempts > 0) {
+        attempts -= 1;
+      }
       continue;
+    }
+
+    if (quotaRecoveryFailed) {
+      break;
     }
 
     return;
@@ -3164,7 +3193,7 @@ function parseSnapshotJSONValue(entry) {
     }
     try {
       return JSON.parse(trimmed);
-    } catch (error) {
+    } catch {
       return raw;
     }
   }

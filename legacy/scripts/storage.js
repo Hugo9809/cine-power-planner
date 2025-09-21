@@ -65,6 +65,7 @@ var MAX_AUTO_BACKUPS = 50;
 var MAX_DELETION_BACKUPS = 20;
 var STORAGE_BACKUP_SUFFIX = '__backup';
 var MAX_SAVE_ATTEMPTS = 3;
+var MAX_QUOTA_RECOVERY_STEPS = 100;
 var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY]);
 function createStorageMigrationBackup(storage, key, originalValue) {
@@ -1054,6 +1055,17 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
   var preservedBackupValue;
   var hasPreservedBackup = false;
   var removedBackupDuringRetry = false;
+  var quotaRecoverySteps = 0;
+  var quotaRecoveryFailed = false;
+  var registerQuotaRecoveryStep = function registerQuotaRecoveryStep() {
+    quotaRecoverySteps += 1;
+    if (quotaRecoverySteps > MAX_QUOTA_RECOVERY_STEPS) {
+      quotaRecoveryFailed = true;
+      console.warn("Exceeded maximum storage recovery attempts while saving ".concat(key, "."));
+      return false;
+    }
+    return true;
+  };
   var attemptHandleQuota = function attemptHandleQuota(error) {
     var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!isQuotaExceededError(error) || typeof onQuotaExceeded !== 'function') {
@@ -1116,6 +1128,14 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
           storage.setItem(key, serialized);
         } catch (error) {
           if (attemptHandleQuota(error)) {
+            if (!registerQuotaRecoveryStep()) {
+              return {
+                b: true
+              };
+            }
+            if (attempts > 0) {
+              attempts -= 1;
+            }
             return 0;
           }
           console.error(errorMessage, error);
@@ -1162,6 +1182,9 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
               backupKey: fallbackKey,
               isBackup: true
             })) {
+              if (!registerQuotaRecoveryStep()) {
+                return 'failure';
+              }
               return 'retry';
             }
           }
@@ -1186,16 +1209,25 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
         };
       }
       if (backupResult === 'retry') {
+        if (attempts > 0) {
+          attempts -= 1;
+        }
         return 0;
+      }
+      if (quotaRecoveryFailed) {
+        return {
+          b: true
+        };
       }
       return {
         v: void 0
       };
     },
     _ret;
-  while (attempts < MAX_SAVE_ATTEMPTS) {
+  while (attempts < MAX_SAVE_ATTEMPTS && !quotaRecoveryFailed) {
     _ret = _loop();
     if (_ret === 0) continue;
+    if (_ret && _ret.b) break;
     if (_ret) return _ret.v;
   }
   if (hasPreservedBackup && removedBackupDuringRetry && typeof preservedBackupValue === 'string') {
