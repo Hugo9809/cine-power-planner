@@ -22072,9 +22072,80 @@ function applySharedSetup(shared, options = {}) {
   }
 }
 
+let manualQueryParamWarningShown = false;
+
+function getQueryParam(search, key) {
+  if (!key) {
+    return null;
+  }
+
+  if (typeof URLSearchParams === 'function') {
+    try {
+      return new URLSearchParams(search).get(key);
+    } catch (error) {
+      if (!manualQueryParamWarningShown && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Falling back to manual query parameter parsing.', error);
+      }
+      manualQueryParamWarningShown = true;
+    }
+  }
+
+  if (typeof search !== 'string' || search.length === 0) {
+    return null;
+  }
+
+  const query = search.charAt(0) === '?' ? search.slice(1) : search;
+  if (!query) {
+    return null;
+  }
+
+  const pairs = query.split('&');
+  for (let i = 0; i < pairs.length; i += 1) {
+    if (!pairs[i]) {
+      continue;
+    }
+
+    const [rawName, rawValue = ''] = pairs[i].split('=');
+    if (!rawName) {
+      continue;
+    }
+
+    let decodedName;
+    try {
+      decodedName = decodeURIComponent(rawName.replace(/\+/g, ' '));
+    } catch (error) {
+      if (!manualQueryParamWarningShown && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to decode query parameter name', rawName, error);
+      }
+      manualQueryParamWarningShown = true;
+      continue;
+    }
+
+    if (decodedName !== key) {
+      continue;
+    }
+
+    try {
+      return decodeURIComponent(rawValue.replace(/\+/g, ' '));
+    } catch (error) {
+      if (!manualQueryParamWarningShown && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to decode query parameter value', rawValue, error);
+      }
+      manualQueryParamWarningShown = true;
+      return rawValue;
+    }
+  }
+
+  return null;
+}
+
 function applySharedSetupFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const shared = params.get('shared');
+  const hasSearch =
+    typeof window !== 'undefined'
+    && window.location
+    && typeof window.location.search === 'string';
+  const search = hasSearch ? window.location.search : '';
+  const shared = getQueryParam(search, 'shared');
   if (!shared) return;
   try {
     const data = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
