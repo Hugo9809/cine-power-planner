@@ -353,6 +353,42 @@ function getAutoGearSelectorLabel(type) {
     || 'No selector';
 }
 
+function isAutoGearMonitoringCategory(value) {
+  if (typeof value !== 'string') return false;
+  return value.trim().toLowerCase() === 'monitoring';
+}
+
+function updateAutoGearMonitorFieldGroup(group) {
+  if (!group || !group.select) return;
+  const {
+    select,
+    screenSizeField,
+    screenSizeInput,
+    selectorTypeField,
+    selectorTypeSelect,
+    selectorDefaultField,
+    selectorDefaultInput,
+    selectorIncludeField,
+    selectorIncludeCheckbox,
+  } = group;
+  const isMonitoring = isAutoGearMonitoringCategory(select.value || '');
+  const managedFields = [screenSizeField, selectorTypeField, selectorDefaultField, selectorIncludeField];
+  managedFields.forEach(field => {
+    if (!field) return;
+    if (isMonitoring) {
+      field.removeAttribute('hidden');
+    } else {
+      field.setAttribute('hidden', '');
+    }
+  });
+  if (!isMonitoring) {
+    if (screenSizeInput) screenSizeInput.value = '';
+    if (selectorTypeSelect) selectorTypeSelect.value = 'none';
+    if (selectorDefaultInput) selectorDefaultInput.value = '';
+    if (selectorIncludeCheckbox) selectorIncludeCheckbox.checked = false;
+  }
+}
+
 function normalizeAutoGearItem(entry) {
   if (!entry || typeof entry !== 'object') return null;
   const name = normalizeAutoGearText(entry.name);
@@ -3753,6 +3789,7 @@ function setLanguage(lang) {
   if (autoGearRemoveCategorySelect) {
     populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearRemoveCategorySelect.value);
   }
+  syncAutoGearMonitorFieldVisibility();
   if (autoGearScenariosSelect) {
     refreshAutoGearScenarioOptions(autoGearEditorDraft?.scenarios);
   }
@@ -6832,6 +6869,60 @@ const autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
 const autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
 const autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
 const autoGearMonitorCatalog = document.getElementById('autoGearMonitorCatalog');
+
+const autoGearAddScreenSizeField = autoGearAddScreenSizeInput?.closest('.auto-gear-field')
+  || autoGearAddScreenSizeLabel?.closest('.auto-gear-field')
+  || null;
+const autoGearAddSelectorTypeField = autoGearAddSelectorTypeSelect?.closest('.auto-gear-field')
+  || autoGearAddSelectorTypeLabel?.closest('.auto-gear-field')
+  || null;
+const autoGearAddSelectorDefaultField = autoGearAddSelectorDefaultInput?.closest('.auto-gear-field')
+  || autoGearAddSelectorDefaultLabel?.closest('.auto-gear-field')
+  || null;
+const autoGearAddSelectorIncludeField = autoGearAddSelectorIncludeCheckbox?.closest('.auto-gear-field')
+  || autoGearAddSelectorIncludeLabel?.closest('.auto-gear-field')
+  || null;
+const autoGearRemoveScreenSizeField = autoGearRemoveScreenSizeInput?.closest('.auto-gear-field')
+  || autoGearRemoveScreenSizeLabel?.closest('.auto-gear-field')
+  || null;
+const autoGearRemoveSelectorTypeField = autoGearRemoveSelectorTypeSelect?.closest('.auto-gear-field')
+  || autoGearRemoveSelectorTypeLabel?.closest('.auto-gear-field')
+  || null;
+const autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.closest('.auto-gear-field')
+  || autoGearRemoveSelectorDefaultLabel?.closest('.auto-gear-field')
+  || null;
+const autoGearRemoveSelectorIncludeField = autoGearRemoveSelectorIncludeCheckbox?.closest('.auto-gear-field')
+  || autoGearRemoveSelectorIncludeLabel?.closest('.auto-gear-field')
+  || null;
+
+const autoGearAddMonitorFieldGroup = {
+  select: autoGearAddCategorySelect,
+  screenSizeField: autoGearAddScreenSizeField,
+  screenSizeInput: autoGearAddScreenSizeInput,
+  selectorTypeField: autoGearAddSelectorTypeField,
+  selectorTypeSelect: autoGearAddSelectorTypeSelect,
+  selectorDefaultField: autoGearAddSelectorDefaultField,
+  selectorDefaultInput: autoGearAddSelectorDefaultInput,
+  selectorIncludeField: autoGearAddSelectorIncludeField,
+  selectorIncludeCheckbox: autoGearAddSelectorIncludeCheckbox,
+};
+
+const autoGearRemoveMonitorFieldGroup = {
+  select: autoGearRemoveCategorySelect,
+  screenSizeField: autoGearRemoveScreenSizeField,
+  screenSizeInput: autoGearRemoveScreenSizeInput,
+  selectorTypeField: autoGearRemoveSelectorTypeField,
+  selectorTypeSelect: autoGearRemoveSelectorTypeSelect,
+  selectorDefaultField: autoGearRemoveSelectorDefaultField,
+  selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
+  selectorIncludeField: autoGearRemoveSelectorIncludeField,
+  selectorIncludeCheckbox: autoGearRemoveSelectorIncludeCheckbox,
+};
+
+function syncAutoGearMonitorFieldVisibility() {
+  updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
+  updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
+}
 const autoGearExportButton = document.getElementById('autoGearExport');
 const autoGearImportButton = document.getElementById('autoGearImport');
 const autoGearImportInput = document.getElementById('autoGearImportInput');
@@ -8045,6 +8136,7 @@ function openAutoGearEditor(ruleId) {
   refreshAutoGearVideoDistributionOptions(autoGearEditorDraft.videoDistribution);
   populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearEditorDraft.add[0]?.category || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearEditorDraft.remove[0]?.category || '');
+  syncAutoGearMonitorFieldVisibility();
   if (autoGearAddNameInput) autoGearAddNameInput.value = '';
   if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
   if (autoGearAddScreenSizeInput) autoGearAddScreenSizeInput.value = '';
@@ -8087,6 +8179,7 @@ function closeAutoGearEditor() {
   if (autoGearRemoveSelectorDefaultInput) autoGearRemoveSelectorDefaultInput.value = '';
   if (autoGearRemoveSelectorIncludeCheckbox) autoGearRemoveSelectorIncludeCheckbox.checked = false;
   if (autoGearRemoveNotesInput) autoGearRemoveNotesInput.value = '';
+  syncAutoGearMonitorFieldVisibility();
 }
 
 function addAutoGearDraftItem(type) {
@@ -8118,6 +8211,12 @@ function addAutoGearDraftItem(type) {
     selectorEnabled: selectorIncludeCheckbox ? !!selectorIncludeCheckbox.checked : false,
     notes: notesInput ? notesInput.value : '',
   };
+  if (!isAutoGearMonitoringCategory(baseValues.category)) {
+    baseValues.screenSize = '';
+    baseValues.selectorType = 'none';
+    baseValues.selectorDefault = '';
+    baseValues.selectorEnabled = false;
+  }
   parsedNames.forEach(entry => {
     const quantity = Object.prototype.hasOwnProperty.call(entry, 'quantity')
       ? normalizeAutoGearQuantity(entry.quantity)
@@ -21460,6 +21559,12 @@ if (autoGearAddItemButton) {
       }
     });
   }
+  if (autoGearAddCategorySelect) {
+    autoGearAddCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
+  }
+  if (autoGearRemoveCategorySelect) {
+    autoGearRemoveCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
+  }
   if (autoGearEditor) {
     autoGearEditor.addEventListener('click', event => {
       const target = event.target;
@@ -21476,6 +21581,8 @@ if (autoGearAddItemButton) {
     });
   }
 }
+
+syncAutoGearMonitorFieldVisibility();
 
 function parseRgbComponent(value) {
   const trimmed = value.trim();
