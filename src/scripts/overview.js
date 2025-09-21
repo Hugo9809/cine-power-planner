@@ -100,8 +100,38 @@ function generatePrintableOverview() {
 
     const breakdownHtml = breakdownListElem.innerHTML;
     const batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
+    const powerDiagramElem = typeof document !== 'undefined'
+        ? document.getElementById('powerDiagram')
+        : null;
+    let powerDiagramHtml = '';
+    if (
+        powerDiagramElem &&
+        !powerDiagramElem.classList.contains('hidden') &&
+        powerDiagramElem.innerHTML.trim().length > 0
+    ) {
+        const clone = powerDiagramElem.cloneNode(true);
+        clone.id = 'powerDiagramOverview';
+        clone.classList.remove('hidden');
+        clone.classList.add('power-diagram');
+        const bar = clone.querySelector('#powerDiagramBar');
+        if (bar) {
+            bar.id = 'powerDiagramBarOverview';
+        }
+        const legend = clone.querySelector('#powerDiagramLegend');
+        if (legend) {
+            legend.id = 'powerDiagramLegendOverview';
+            legend.classList.add('power-diagram-legend');
+        }
+        const maxPowerText = clone.querySelector('#maxPowerText');
+        if (maxPowerText) {
+            maxPowerText.id = 'maxPowerTextOverview';
+            maxPowerText.classList.add('power-diagram-note');
+        }
+        powerDiagramHtml = clone.outerHTML;
+    }
     const resultsHtml = `
         <ul id="breakdownList">${breakdownHtml}</ul>
+        ${powerDiagramHtml}
         <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent} W</p>
         <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent} A</p>
         <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent} A</p>
@@ -178,7 +208,7 @@ function generatePrintableOverview() {
     if (isSectionRenderable(batteryComparisonSection)) {
         const clone = batteryComparisonSection.cloneNode(true);
         clone.id = 'batteryComparisonOverview';
-        clone.classList.add('print-section');
+        clone.classList.add('print-section', 'battery-comparison-section');
         clone.removeAttribute('style');
         const heading = clone.querySelector('#batteryComparisonHeading');
         if (heading) {

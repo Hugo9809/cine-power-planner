@@ -83,7 +83,30 @@ function generatePrintableOverview() {
   deviceListHtml += '</div>';
   var breakdownHtml = breakdownListElem.innerHTML;
   var batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
-  var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(totalPowerElem.textContent, " W</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(totalCurrent144Elem.textContent, " A</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(totalCurrent12Elem.textContent, " A</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(batteryLifeElem.textContent, " ").concat(batteryLifeUnitElem ? batteryLifeUnitElem.textContent : '', "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(batteryCountElem.textContent, "</p>\n    ");
+  var powerDiagramElem = typeof document !== 'undefined' ? document.getElementById('powerDiagram') : null;
+  var powerDiagramHtml = '';
+  if (powerDiagramElem && !powerDiagramElem.classList.contains('hidden') && powerDiagramElem.innerHTML.trim().length > 0) {
+    var clone = powerDiagramElem.cloneNode(true);
+    clone.id = 'powerDiagramOverview';
+    clone.classList.remove('hidden');
+    clone.classList.add('power-diagram');
+    var bar = clone.querySelector('#powerDiagramBar');
+    if (bar) {
+      bar.id = 'powerDiagramBarOverview';
+    }
+    var legend = clone.querySelector('#powerDiagramLegend');
+    if (legend) {
+      legend.id = 'powerDiagramLegendOverview';
+      legend.classList.add('power-diagram-legend');
+    }
+    var maxPowerText = clone.querySelector('#maxPowerText');
+    if (maxPowerText) {
+      maxPowerText.id = 'maxPowerTextOverview';
+      maxPowerText.classList.add('power-diagram-note');
+    }
+    powerDiagramHtml = clone.outerHTML;
+  }
+  var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        ").concat(powerDiagramHtml, "\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(totalPowerElem.textContent, " W</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(totalCurrent144Elem.textContent, " A</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(totalCurrent12Elem.textContent, " A</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(batteryLifeElem.textContent, " ").concat(batteryLifeUnitElem ? batteryLifeUnitElem.textContent : '', "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(batteryCountElem.textContent, "</p>\n    ");
   var severityClassMap = {
     danger: 'status-message--danger',
     warning: 'status-message--warning',
@@ -142,7 +165,7 @@ function generatePrintableOverview() {
   if (isSectionRenderable(batteryComparisonSection)) {
     var clone = batteryComparisonSection.cloneNode(true);
     clone.id = 'batteryComparisonOverview';
-    clone.classList.add('print-section');
+    clone.classList.add('print-section', 'battery-comparison-section');
     clone.removeAttribute('style');
     var heading = clone.querySelector('#batteryComparisonHeading');
     if (heading) {
