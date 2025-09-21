@@ -3618,12 +3618,33 @@ function setLanguage(lang) {
       'Settings sections';
     settingsTablist.setAttribute('aria-label', sectionsLabel);
   }
+  const settingsTabIconKeys = Object.freeze({
+    'settingsTab-general': 'sliders',
+    'settingsTab-autoGear': 'gears',
+    'settingsTab-accessibility': 'brightness',
+    'settingsTab-backup': 'fileExport',
+    'settingsTab-data': 'load',
+    'settingsTab-about': 'note'
+  });
   const applySettingsTabLabel = (button, labelValue, helpValue) => {
     if (!button) return;
-    const label = labelValue || button.textContent || '';
-    button.textContent = label;
-    button.setAttribute('aria-label', label);
+    const fallbackLabel =
+      (button.querySelector('.settings-tab-label') || button).textContent || '';
+    const label = labelValue || fallbackLabel || '';
     const help = helpValue || label;
+    const iconKey = button.dataset.icon || settingsTabIconKeys[button.id] || '';
+    if (iconKey && ICON_GLYPHS && Object.prototype.hasOwnProperty.call(ICON_GLYPHS, iconKey)) {
+      const glyph = ICON_GLYPHS[iconKey];
+      const iconHtml = iconMarkup(glyph, {
+        className: 'btn-icon settings-tab-icon',
+        size: 'var(--icon-size-lg)'
+      });
+      button.innerHTML = `${iconHtml}<span class="settings-tab-label">${escapeHtml(label)}</span>`;
+      button.dataset.icon = iconKey;
+    } else {
+      button.textContent = label;
+    }
+    button.setAttribute('aria-label', label);
     button.setAttribute('data-help', help);
     button.setAttribute('title', help);
   };
