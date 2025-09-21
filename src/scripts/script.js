@@ -3798,20 +3798,79 @@ function setLanguage(lang) {
       'Settings sections';
     settingsTablist.setAttribute('aria-label', sectionsLabel);
   }
+  const getSettingsTabLabelText = button => {
+    if (!button || typeof button !== 'object') return '';
+    const labelNode = button.querySelector?.('.settings-tab-label');
+    if (labelNode && typeof labelNode.textContent === 'string') {
+      const trimmed = labelNode.textContent.trim();
+      if (trimmed) return trimmed;
+    }
+    return typeof button.textContent === 'string' ? button.textContent.trim() : '';
+  };
+  const summarizeSettingsTabHelp = helpText => {
+    if (typeof helpText !== 'string') return '';
+    const trimmed = helpText.trim();
+    if (!trimmed) return '';
+    const sentenceMatch = trimmed.match(/^[^.!?。！？]*[.!?。！？]/u);
+    if (sentenceMatch && sentenceMatch[0]) {
+      const sentence = sentenceMatch[0].trim();
+      if (sentence.length >= 24 || trimmed.length <= 90) {
+        return sentence;
+      }
+    }
+    if (trimmed.length <= 90) return trimmed;
+    const truncated = trimmed.slice(0, 90);
+    let cutIndex = truncated.length;
+    while (cutIndex > 0 && truncated[cutIndex - 1] && truncated[cutIndex - 1].trim() !== '') {
+      cutIndex -= 1;
+    }
+    const safeCut = cutIndex > 0 ? truncated.slice(0, cutIndex).trimEnd() : '';
+    return `${safeCut || truncated.trim()}…`;
+  };
   const applySettingsTabLabel = (button, labelValue, helpValue) => {
     if (!button) return;
-    const label = labelValue || button.textContent || '';
-    button.textContent = label;
-    button.setAttribute('aria-label', label);
-    const help = helpValue || label;
-    button.setAttribute('data-help', help);
-    button.setAttribute('title', help);
+    const label = (labelValue || getSettingsTabLabelText(button) || '').trim();
+    const labelElement = button.querySelector?.('.settings-tab-label');
+    if (labelElement) {
+      labelElement.textContent = label;
+    } else {
+      button.textContent = label;
+    }
+    if (label) {
+      button.setAttribute('aria-label', label);
+    } else {
+      button.removeAttribute('aria-label');
+    }
+    const help = (helpValue || label || '').trim();
+    if (help) {
+      button.setAttribute('data-help', help);
+      button.setAttribute('title', help);
+    } else {
+      button.removeAttribute('data-help');
+      button.removeAttribute('title');
+    }
+    const summary = summarizeSettingsTabHelp(help);
+    if (summary) {
+      button.setAttribute('data-summary', summary);
+    } else {
+      button.removeAttribute('data-summary');
+    }
+    const captionElement = button.querySelector?.('.settings-tab-caption');
+    if (captionElement) {
+      const captionText = summary || label;
+      captionElement.textContent = captionText;
+      if (captionText) {
+        captionElement.removeAttribute('hidden');
+      } else {
+        captionElement.setAttribute('hidden', '');
+      }
+    }
   };
   if (settingsTabGeneral) {
     const generalLabel =
       texts[lang].settingsTabGeneral ||
       texts.en?.settingsTabGeneral ||
-      settingsTabGeneral.textContent ||
+      getSettingsTabLabelText(settingsTabGeneral) ||
       'General';
     const generalHelp =
       texts[lang].settingsTabGeneralHelp ||
