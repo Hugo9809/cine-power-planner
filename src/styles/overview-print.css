@@ -436,7 +436,7 @@ body:not(.light-mode) .gear-table .category-row td {
 }
 
 #overviewDialogContent .diagram-controls button .btn-icon:only-child {
-  margin-right: 0 !important;
+  margin-inline-end: 0 !important;
 }
 
 .warning {
