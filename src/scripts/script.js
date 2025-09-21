@@ -27036,15 +27036,18 @@ function renderGearListFilterDetails(details) {
     const controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
     if (needsSize) {
-      const sizeLabel = document.createElement('label');
-      sizeLabel.className = 'filter-detail-size';
+      const sizeWrap = document.createElement('div');
+      sizeWrap.className = 'filter-detail-size';
       const sizeText = document.createElement('span');
       sizeText.className = 'filter-detail-sublabel';
       sizeText.textContent = 'Size';
       const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
       sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
-      sizeLabel.append(sizeText, sizeSelect);
-      controls.appendChild(sizeLabel);
+      const sizeSelectWrapper = document.createElement('div');
+      sizeSelectWrapper.className = 'select-wrapper';
+      sizeSelectWrapper.appendChild(sizeSelect);
+      sizeWrap.append(sizeText, sizeSelectWrapper);
+      controls.appendChild(sizeWrap);
     }
     if (needsValues) {
       const valuesWrap = document.createElement('div');
@@ -27076,6 +27079,7 @@ function renderGearListFilterDetails(details) {
     row.appendChild(controls);
     container.appendChild(row);
   });
+  adjustGearListSelectWidths(container);
 }
 
 function syncGearListFilterSize(storageId, value) {
