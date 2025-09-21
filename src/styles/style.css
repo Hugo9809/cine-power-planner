@@ -51,6 +51,8 @@
   --font-scale-display: 1.8;
   --font-scale-icon-lg: 1.25;
   --font-scale-icon-sm: 0.625;
+  --font-scale-diagram-label: 0.7;
+  --font-scale-diagram-text: 0.8;
   --icon-size-xs: calc(var(--font-size-relative-base) * var(--font-scale-xs));
   --icon-size-sm: calc(var(--font-size-relative-base) * var(--font-scale-sm));
   --icon-size-md: calc(var(--font-size-relative-base) * var(--font-scale-lg));
@@ -62,8 +64,8 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-size-diagram-icon: calc(var(--font-size-base) * var(--font-scale-icon-lg));
-  --font-size-diagram-label: calc(var(--font-size-base) * var(--font-scale-icon-sm));
-  --font-size-diagram-text: calc(var(--font-size-base) * var(--font-scale-xxs));
+  --font-size-diagram-label: calc(var(--font-size-base) * var(--font-scale-diagram-label));
+  --font-size-diagram-text: calc(var(--font-size-base) * var(--font-scale-diagram-text));
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
@@ -3162,7 +3164,7 @@ body.pink-mode #topBar #logo .logo-center {
   background: var(--surface-color);
   color: var(--text-color);
   border: 1px solid var(--panel-border);
-  font-size: var(--font-size-diagram-text);
+  font-size: var(--font-size-relative-base);
   line-height: var(--line-height-supporting);
   padding: clamp(0.5rem, 1vw, 0.75rem);
   border-radius: var(--border-radius);
