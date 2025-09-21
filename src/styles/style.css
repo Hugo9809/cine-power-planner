@@ -3072,7 +3072,8 @@ body.pink-mode #topBar #logo .logo-center {
 }
 
 /* Power diagram */
-#powerDiagram {
+#powerDiagram,
+.power-diagram {
   max-width: 300px;
   margin: 10px 0;
 }
@@ -3144,12 +3145,14 @@ body.pink-mode #topBar #logo .logo-center {
   white-space: nowrap;
 }
 
-#powerDiagram.over .power-bar {
+#powerDiagram.over .power-bar,
+.power-diagram.over .power-bar {
   border-color: var(--danger-color);
 }
 
 
-#maxPowerText {
+#maxPowerText,
+.power-diagram-note {
   margin-top: 4px;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
 }
@@ -3192,28 +3195,37 @@ body.pink-mode #topBar #logo .logo-center {
 #diagramLegend .video { background: var(--video-color); }
 #diagramLegend .fiz { background: var(--fiz-color); }
 
-#powerDiagramLegend {
+#powerDiagramLegend,
+.power-diagram-legend {
   margin-top: 0.25em;
   font-size: var(--font-size-diagram-text);
 }
-#powerDiagramLegend span {
+#powerDiagramLegend span,
+.power-diagram-legend span {
   margin: 0 6px;
   display: inline-flex;
   align-items: center;
 }
-#powerDiagramLegend .swatch {
+#powerDiagramLegend .swatch,
+.power-diagram-legend .swatch {
   width: 12px;
   height: 12px;
   border-radius: 2px;
   margin-right: 4px;
   display: inline-block;
 }
-#powerDiagramLegend .camera { background-color: var(--camera-color); }
-#powerDiagramLegend .monitor { background-color: var(--monitor-color); }
-#powerDiagramLegend .video { background-color: var(--video-segment-color); }
-#powerDiagramLegend .motors { background-color: var(--motor-color); }
-#powerDiagramLegend .controllers { background-color: var(--controller-color); }
-#powerDiagramLegend .distance { background-color: var(--distance-color); }
+#powerDiagramLegend .camera,
+.power-diagram-legend .camera { background-color: var(--camera-color); }
+#powerDiagramLegend .monitor,
+.power-diagram-legend .monitor { background-color: var(--monitor-color); }
+#powerDiagramLegend .video,
+.power-diagram-legend .video { background-color: var(--video-segment-color); }
+#powerDiagramLegend .motors,
+.power-diagram-legend .motors { background-color: var(--motor-color); }
+#powerDiagramLegend .controllers,
+.power-diagram-legend .controllers { background-color: var(--controller-color); }
+#powerDiagramLegend .distance,
+.power-diagram-legend .distance { background-color: var(--distance-color); }
 
 .diagram-controls {
   margin-top: 0.5em;
@@ -3516,7 +3528,7 @@ body:not(.light-mode) #temperatureNote td {
 }
 
 /* Battery comparison section */
-#batteryComparison {
+.battery-comparison-section {
   background: var(--panel-bg); /* Match section background */
   padding: 15px; /* Match section padding */
   margin-top: 1em; /* Match section margin */
@@ -3526,40 +3538,41 @@ body:not(.light-mode) #temperatureNote td {
   transition: transform 0.2s;
 }
 
-#batteryComparison:hover {
+.battery-comparison-section:hover {
   box-shadow: var(--panel-shadow-hover);
   transform: translateY(-2px);
 }
-#batteryTableContainer {
+.battery-table-container {
   overflow-x: auto;
 }
-#batteryComparison table {
+.battery-comparison-section table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 5px;
 }
-#batteryComparison th, #batteryComparison td {
+.battery-comparison-section th,
+.battery-comparison-section td {
   border: 1px solid var(--panel-border);
   padding: 8px;
   text-align: left;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
 }
-#batteryComparison th:nth-child(1),
-#batteryComparison td:nth-child(1) {
+.battery-comparison-section th:nth-child(1),
+.battery-comparison-section td:nth-child(1) {
   width: 30%; /* Battery Name */
 }
 
-#batteryComparison th:nth-child(2),
-#batteryComparison td:nth-child(2) {
+.battery-comparison-section th:nth-child(2),
+.battery-comparison-section td:nth-child(2) {
   width: 25%; /* Estimated Runtime */
 }
 
-#batteryComparison th:nth-child(3),
-#batteryComparison td:nth-child(3) {
+.battery-comparison-section th:nth-child(3),
+.battery-comparison-section td:nth-child(3) {
   width: 45%; /* Bar column, takes remaining space */
 }
 
-#batteryComparison th {
+.battery-comparison-section th {
   background-color: var(--surface-color);
 }
 
@@ -3786,14 +3799,14 @@ body.dark-mode.pink-mode {
 }
 .dark-mode section,
 .dark-mode .device-category,
-.dark-mode #batteryComparison {
+.dark-mode .battery-comparison-section {
   background-color: var(--panel-bg);
   border-color: var(--panel-border);
   box-shadow: var(--panel-shadow);
 }
 .dark-mode fieldset { border-color: var(--inverse-text-color); }
 .dark-mode legend { color: var(--inverse-text-color); }
-.dark-mode #batteryComparison th { background-color: var(--control-bg); }
+.dark-mode .battery-comparison-section th { background-color: var(--control-bg); }
 .dark-mode .barContainer { background-color: var(--panel-bg); }
 .dark-mode .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
 .dark-mode .connector-block,
@@ -3893,7 +3906,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   }
   body:not(.light-mode) fieldset { border-color: var(--inverse-text-color); }
   body:not(.light-mode) legend { color: var(--inverse-text-color); }
-  body:not(.light-mode) #batteryComparison th { background-color: var(--control-bg); }
+  body:not(.light-mode) .battery-comparison-section th { background-color: var(--control-bg); }
   body:not(.light-mode) .barContainer { background-color: var(--panel-bg); }
   body:not(.light-mode) .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
   body:not(.light-mode) .connector-block,
@@ -4049,8 +4062,8 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   #userFeedbackTable td,
   .port-table th,
   .port-table td,
-  #batteryComparison th,
-  #batteryComparison td {
+  .battery-comparison-section th,
+  .battery-comparison-section td {
     white-space: normal;
     overflow-wrap: anywhere;
   }

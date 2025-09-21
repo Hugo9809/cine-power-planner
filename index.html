@@ -386,10 +386,10 @@
     <ul id="breakdownList">
       <!-- Device breakdown will be inserted here by script.js -->
     </ul>
-    <div id="powerDiagram" class="hidden">
+    <div id="powerDiagram" class="hidden power-diagram">
       <div id="powerDiagramBar" class="power-bar" role="img" aria-label="Power usage diagram"></div>
-      <div id="powerDiagramLegend"></div>
-      <p id="maxPowerText" class="status-message"></p>
+      <div id="powerDiagramLegend" class="power-diagram-legend"></div>
+      <p id="maxPowerText" class="status-message power-diagram-note"></p>
     </div>
     <p><strong><span id="totalPowerLabel">Total Consumption:</span></strong> <span id="totalPower">0.0</span> W</p>
     <p><strong><span id="totalCurrent144Label">Total Current (at 14.4V):</span></strong> <span id="totalCurrent144">0.00</span> A</p>
@@ -436,9 +436,9 @@
 
   <section id="gearListOutput" class="hidden"></section>
 
-  <section id="batteryComparison" style="display: none;">
+  <section id="batteryComparison" class="battery-comparison-section" style="display: none;">
     <h2 id="batteryComparisonHeading">Battery Comparison</h2>
-    <div id="batteryTableContainer">
+    <div id="batteryTableContainer" class="battery-table-container">
       <table id="batteryTable"></table>
     </div>
   </section>
