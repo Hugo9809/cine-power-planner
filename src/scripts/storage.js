@@ -1162,29 +1162,27 @@ function saveJSONToStorage(
       return;
     }
 
-    try {
-      storage.setItem(key, serialized);
-    } catch (error) {
-      if (attemptHandleQuota(error)) {
-        continue;
+    let skipPrimaryWrite = false;
+    if (typeof storage.getItem === 'function') {
+      try {
+        const existingValue = storage.getItem(key);
+        if (existingValue === serialized) {
+          skipPrimaryWrite = true;
+        }
+      } catch (inspectError) {
+        console.warn(`Unable to inspect existing value for ${key}`, inspectError);
       }
-      console.error(errorMessage, error);
-      alertStorageError();
-      return;
-    }
-
-    if (!useBackup) {
-      logSuccess();
-      return;
     }
 
     let existingBackupValue;
     let hasExistingBackup = false;
-    try {
-      existingBackupValue = storage.getItem(fallbackKey);
-      hasExistingBackup = typeof existingBackupValue === 'string';
-    } catch (inspectError) {
-      console.warn(`Unable to inspect existing backup for ${key}`, inspectError);
+    if (useBackup && typeof storage.getItem === 'function') {
+      try {
+        existingBackupValue = storage.getItem(fallbackKey);
+        hasExistingBackup = typeof existingBackupValue === 'string';
+      } catch (inspectError) {
+        console.warn(`Unable to inspect existing backup for ${key}`, inspectError);
+      }
     }
 
     if (!hasPreservedBackup && hasExistingBackup && typeof existingBackupValue === 'string') {
@@ -1192,7 +1190,28 @@ function saveJSONToStorage(
       hasPreservedBackup = true;
     }
 
-    if (hasExistingBackup && existingBackupValue === serialized) {
+    if (
+      skipPrimaryWrite
+      && (!useBackup || (hasExistingBackup && existingBackupValue === serialized))
+    ) {
+      logSuccess();
+      return;
+    }
+
+    if (!skipPrimaryWrite) {
+      try {
+        storage.setItem(key, serialized);
+      } catch (error) {
+        if (attemptHandleQuota(error)) {
+          continue;
+        }
+        console.error(errorMessage, error);
+        alertStorageError();
+        return;
+      }
+    }
+
+    if (!useBackup) {
       logSuccess();
       return;
     }
