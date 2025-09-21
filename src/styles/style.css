@@ -1911,6 +1911,10 @@ body.pink-mode .auto-gear-rule-title,
   --icon-size: var(--button-icon-size);
 }
 
+#setup-manager button .btn-icon {
+  margin-right: 0.5em;
+}
+
 .help-icon,
 .btn-icon,
 .legend-icon,
