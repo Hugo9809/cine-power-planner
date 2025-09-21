@@ -762,6 +762,8 @@ const texts = {
     helpTitle: "How to use",
     helpSearchPlaceholder: "Search help topics...",
     helpSearchLabel: "Search help topics",
+    helpResultsSummaryAll: "All %s help topics are shown.",
+    helpResultsSummaryFiltered: "Showing %1$s of %2$s help topics for “%3$s”.",
     helpNoResults: "No results found. Try shorter keywords or clear the search to browse all topics.",
     helpSearchClear: "Clear search",
     helpSearchHelp:
@@ -1564,6 +1566,8 @@ const texts = {
     helpTitle: "Come usare",
     helpSearchPlaceholder: "Cerca negli argomenti dell'aiuto...",
     helpSearchLabel: "Cerca negli argomenti dell'aiuto",
+    helpResultsSummaryAll: "Sono visualizzati tutti i %s argomenti dell'aiuto.",
+    helpResultsSummaryFiltered: "Visualizzati %1$s argomenti dell'aiuto su %2$s per “%3$s”.",
     helpNoResults: "Nessun risultato trovato. Prova con parole chiave più brevi oppure cancella la ricerca per vedere tutti gli argomenti.",
     helpSearchClear: "Cancella ricerca",
     helpSearchHelp:
@@ -2373,6 +2377,8 @@ const texts = {
     helpTitle: "Cómo usar",
     helpSearchPlaceholder: "Buscar temas de ayuda...",
     helpSearchLabel: "Buscar temas de ayuda",
+    helpResultsSummaryAll: "Se muestran los %s temas de ayuda.",
+    helpResultsSummaryFiltered: "Mostrando %1$s de %2$s temas de ayuda para “%3$s”.",
     helpNoResults: "No se encontraron resultados. Prueba con palabras clave más cortas o borra la búsqueda para ver todos los temas.",
     helpSearchClear: "Borrar búsqueda",
     helpSearchHelp:
@@ -3184,6 +3190,8 @@ const texts = {
     helpTitle: "Comment utiliser",
     helpSearchPlaceholder: "Rechercher des sujets d'aide...",
     helpSearchLabel: "Rechercher des sujets d'aide",
+    helpResultsSummaryAll: "Tous les %s sujets d’aide sont affichés.",
+    helpResultsSummaryFiltered: "Affichage de %1$s sujet(s) d’aide sur %2$s pour « %3$s ».",
     helpNoResults: "Aucun résultat trouvé. Essayez avec des mots-clés plus courts ou effacez la recherche pour afficher tous les sujets.",
     helpSearchClear: "Effacer la recherche",
     helpSearchHelp:
@@ -3997,6 +4005,8 @@ const texts = {
     helpTitle: "Bedienung",
     helpSearchPlaceholder: "Hilfe-Themen durchsuchen...",
     helpSearchLabel: "Hilfe-Themen durchsuchen",
+    helpResultsSummaryAll: "Alle %s Hilfethemen werden angezeigt.",
+    helpResultsSummaryFiltered: "Es werden %1$s von %2$s Hilfethemen für „%3$s“ angezeigt.",
     helpNoResults: "Keine Ergebnisse gefunden. Verwende kürzere Suchbegriffe oder lösche die Suche, um alle Themen anzuzeigen.",
     helpSearchClear: "Suche löschen",
     helpSearchHelp:
