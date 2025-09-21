@@ -700,6 +700,19 @@ main.legal-content {
   white-space: nowrap;
 }
 
+#setup-manager .form-row.form-row-actions .form-actions > .share-import-group:only-child,
+#setup-manager .form-row.form-row-actions .form-actions > button.hidden + .share-import-group,
+#setup-manager .form-row.form-row-actions .form-actions > button[hidden] + .share-import-group {
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+#setup-manager .form-row.form-row-actions .form-actions > .share-import-group:only-child button,
+#setup-manager .form-row.form-row-actions .form-actions > button.hidden + .share-import-group button,
+#setup-manager .form-row.form-row-actions .form-actions > button[hidden] + .share-import-group button {
+  width: 100%;
+}
+
 
 .share-option {
   display: inline-flex;
@@ -2334,7 +2347,7 @@ button {
   margin: 0;
   flex: 1 1 100%;
   width: 100%;
-  align-self: stretch;
+  align-self: center;
 }
 .share-import-group #applySharedLinkBtn {
   flex: 0 0 auto;
