@@ -3021,6 +3021,31 @@ function setStatusLevel(element, level) {
   }
 }
 
+function formatStatusMessage(message) {
+  if (typeof message !== 'string' || message.length === 0) {
+    return '';
+  }
+
+  const match = message.match(/^([A-ZÀ-ÖØ-Ý]+(?:[\s\u00A0-][A-ZÀ-ÖØ-Ý]+)*)([\s\u00A0]*:)([\s\u00A0]*)/u);
+  if (match) {
+    const [, label, colonPart, trailingSpace] = match;
+    const rest = message.slice(match[0].length);
+    return `<strong>${escapeHtml(label)}${escapeHtml(colonPart)}</strong>${escapeHtml(trailingSpace)}${escapeHtml(rest)}`;
+  }
+
+  return escapeHtml(message);
+}
+
+function setStatusMessage(element, message) {
+  if (!element) return;
+  if (!message) {
+    element.textContent = '';
+    return;
+  }
+
+  element.innerHTML = formatStatusMessage(message);
+}
+
 function checkFizCompatibility() {
   const brands = new Set();
   motorSelects.forEach(sel => { const b = detectBrand(sel.value); if (b) brands.add(b); });
@@ -3049,10 +3074,10 @@ function checkFizCompatibility() {
   }
 
   if (incompatible) {
-    compatElem.textContent = texts[currentLang].incompatibleFIZWarning;
+    setStatusMessage(compatElem, texts[currentLang].incompatibleFIZWarning);
     setStatusLevel(compatElem, 'danger');
   } else {
-    compatElem.textContent = '';
+    setStatusMessage(compatElem, '');
     setStatusLevel(compatElem, null);
   }
 }
@@ -3075,7 +3100,7 @@ function checkFizController() {
   });
   const hasRemoteController = controllers.some(n => /ria-1|umc-4|cforce.*rf/i.test(n)) || motors.some(n => /cforce.*rf/i.test(n));
   if (isAmira && onlyCforceMiniPlus && !hasRemoteController) {
-    compatElem.textContent = texts[currentLang].amiraCforceRemoteWarning;
+    setStatusMessage(compatElem, texts[currentLang].amiraCforceRemoteWarning);
     setStatusLevel(compatElem, 'danger');
     return;
   }
@@ -3103,7 +3128,7 @@ function checkFizController() {
   });
 
   if (needController && !hasController) {
-    compatElem.textContent = texts[currentLang].missingFIZControllerWarning;
+    setStatusMessage(compatElem, texts[currentLang].missingFIZControllerWarning);
     setStatusLevel(compatElem, 'danger');
   }
 }
@@ -3160,7 +3185,7 @@ function checkArriCompatibility() {
   }
 
   if (msg) {
-    compatElem.textContent = msg;
+    setStatusMessage(compatElem, msg);
     if (msg === texts[currentLang].arriUMC4Warning) {
       setStatusLevel(compatElem, 'warning');
     } else {
@@ -16085,12 +16110,12 @@ let hours = null;
 if (!battery || battery === "None" || !devices.batteries[battery]) {
   batteryLifeElem.textContent = "–";
   batteryCountElem.textContent = "–";
-  pinWarnElem.textContent = "";
+  setStatusMessage(pinWarnElem, '');
   setStatusLevel(pinWarnElem, null);
-  dtapWarnElem.textContent = "";
+  setStatusMessage(dtapWarnElem, '');
   setStatusLevel(dtapWarnElem, null);
   if (hotswapWarnElem) {
-    hotswapWarnElem.textContent = "";
+    setStatusMessage(hotswapWarnElem, '');
     setStatusLevel(hotswapWarnElem, null);
   }
   lastRuntimeHours = null;
@@ -16104,21 +16129,24 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     const maxDtapA = battData.dtapA;
     if (hsData && typeof hsData.pinA === 'number') {
       if (hsData.pinA < maxPinA) {
-        hotswapWarnElem.textContent = texts[currentLang].warnHotswapLower
-          .replace("{max}", hsData.pinA)
-          .replace("{batt}", battData.pinA);
+        setStatusMessage(
+          hotswapWarnElem,
+          texts[currentLang].warnHotswapLower
+            .replace("{max}", hsData.pinA)
+            .replace("{batt}", battData.pinA)
+        );
         setStatusLevel(hotswapWarnElem, 'warning');
         maxPinA = hsData.pinA;
       } else {
-        hotswapWarnElem.textContent = "";
+        setStatusMessage(hotswapWarnElem, '');
         setStatusLevel(hotswapWarnElem, null);
       }
     } else {
       if (hotswapWarnElem) {
-      hotswapWarnElem.textContent = "";
-      setStatusLevel(hotswapWarnElem, null);
+        setStatusMessage(hotswapWarnElem, '');
+        setStatusLevel(hotswapWarnElem, null);
+      }
     }
-  }
     const availableWatt = maxPinA * lowV;
     drawPowerDiagram(availableWatt, segments, maxPinA);
     totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
@@ -16135,52 +16163,70 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     const batteriesNeeded = Math.ceil(10 / hours + 1);
     batteryCountElem.textContent = batteriesNeeded.toString();
     // Warnings about current draw vs battery limits
-    pinWarnElem.textContent = "";
-    dtapWarnElem.textContent = "";
+    setStatusMessage(pinWarnElem, '');
+    setStatusMessage(dtapWarnElem, '');
     let pinSeverity = "";
     let dtapSeverity = "";
     if (totalCurrentLow > maxPinA) {
-      pinWarnElem.textContent = texts[currentLang].warnPinExceeded
-        .replace("{current}", totalCurrentLow.toFixed(2))
-        .replace("{max}", maxPinA);
+      setStatusMessage(
+        pinWarnElem,
+        texts[currentLang].warnPinExceeded
+          .replace("{current}", totalCurrentLow.toFixed(2))
+          .replace("{max}", maxPinA)
+      );
       pinSeverity = 'danger';
     } else if (totalCurrentLow > maxPinA * 0.8) {
-      pinWarnElem.textContent = texts[currentLang].warnPinNear
-        .replace("{current}", totalCurrentLow.toFixed(2))
-        .replace("{max}", maxPinA);
+      setStatusMessage(
+        pinWarnElem,
+        texts[currentLang].warnPinNear
+          .replace("{current}", totalCurrentLow.toFixed(2))
+          .replace("{max}", maxPinA)
+      );
       pinSeverity = 'warning';
     }
     if (!bMountCam) {
       if (totalCurrentLow > maxDtapA) {
-        dtapWarnElem.textContent = texts[currentLang].warnDTapExceeded
-          .replace("{current}", totalCurrentLow.toFixed(2))
-          .replace("{max}", maxDtapA);
+        setStatusMessage(
+          dtapWarnElem,
+          texts[currentLang].warnDTapExceeded
+            .replace("{current}", totalCurrentLow.toFixed(2))
+            .replace("{max}", maxDtapA)
+        );
         dtapSeverity = 'danger';
       } else if (totalCurrentLow > maxDtapA * 0.8) {
-        dtapWarnElem.textContent = texts[currentLang].warnDTapNear
-          .replace("{current}", totalCurrentLow.toFixed(2))
-          .replace("{max}", maxDtapA);
+        setStatusMessage(
+          dtapWarnElem,
+          texts[currentLang].warnDTapNear
+            .replace("{current}", totalCurrentLow.toFixed(2))
+            .replace("{max}", maxDtapA)
+        );
         dtapSeverity = 'warning';
       }
     }
     // Show max current capability and status (OK/Warning) for Pin and D-Tap
     if (pinWarnElem.textContent === "") {
-      pinWarnElem.textContent = texts[currentLang].pinOk
-        .replace("{max}", maxPinA);
+      setStatusMessage(
+        pinWarnElem,
+        texts[currentLang].pinOk
+          .replace("{max}", maxPinA)
+      );
       setStatusLevel(pinWarnElem, 'success');
     } else {
       setStatusLevel(pinWarnElem, pinSeverity || 'warning');
     }
     if (!bMountCam) {
       if (dtapWarnElem.textContent === "") {
-        dtapWarnElem.textContent = texts[currentLang].dtapOk
-          .replace("{max}", maxDtapA);
+        setStatusMessage(
+          dtapWarnElem,
+          texts[currentLang].dtapOk
+            .replace("{max}", maxDtapA)
+        );
         setStatusLevel(dtapWarnElem, 'success');
       } else {
         setStatusLevel(dtapWarnElem, dtapSeverity || 'warning');
       }
     } else {
-      dtapWarnElem.textContent = "";
+      setStatusMessage(dtapWarnElem, '');
       setStatusLevel(dtapWarnElem, null);
     }
   }
