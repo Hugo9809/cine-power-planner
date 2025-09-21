@@ -49,6 +49,16 @@ const texts = {
     deviceManagerHeading: "Device Library",
     batteryComparisonHeading: "Battery Comparison",
     setupDiagramHeading: "Connection Diagram",
+    projectRequirementsNav: "Project Requirements",
+    projectRequirementsNavHelp: "Jump to the Project Requirements output once generated.",
+    gearListNav: "Gear List",
+    gearListNavHelp: "View the generated gear list with all items and categories.",
+    openSettingsNav: "Open Settings",
+    openSettingsNavHelp:
+      "Open Settings to adjust language, themes, accessibility options and backups.",
+    openHelpNav: "Open Help Center",
+    openHelpNavHelp:
+      "Open the in-app help guide with tutorials, troubleshooting tips and shortcuts.",
     setupManageHeadingHelp:
       "Manage saved projects: save, load, or clear configurations.",
     deviceSelectionHeadingHelp:
@@ -868,6 +878,18 @@ const texts = {
     deviceManagerHeading: "Libreria dispositivi",
     batteryComparisonHeading: "Confronto batterie",
     setupDiagramHeading: "Diagramma delle connessioni",
+    projectRequirementsNav: "Requisiti di progetto",
+    projectRequirementsNavHelp:
+      "Vai all'output Requisiti di progetto quando è stato generato.",
+    gearListNav: "Lista attrezzatura",
+    gearListNavHelp:
+      "Visualizza la lista attrezzatura generata con tutti gli elementi e le categorie.",
+    openSettingsNav: "Apri Impostazioni",
+    openSettingsNavHelp:
+      "Apri le Impostazioni per modificare lingua, temi, opzioni di accessibilità e backup.",
+    openHelpNav: "Apri Centro assistenza",
+    openHelpNavHelp:
+      "Apri la guida in-app con tutorial, suggerimenti per la risoluzione dei problemi e scorciatoie.",
     setupManageHeadingHelp:
       "Gestisci le configurazioni salvate: salva, carica o cancella configurazioni.",
     deviceSelectionHeadingHelp:
@@ -1663,6 +1685,18 @@ const texts = {
     deviceManagerHeading: "Biblioteca de Dispositivos",
     batteryComparisonHeading: "Comparación de Baterías",
     setupDiagramHeading: "Diagrama de Conexiones",
+    projectRequirementsNav: "Requisitos del proyecto",
+    projectRequirementsNavHelp:
+      "Ir a la salida Requisitos del proyecto cuando esté disponible.",
+    gearListNav: "Lista de equipo",
+    gearListNavHelp:
+      "Ver la lista de equipo generada con todos los artículos y categorías.",
+    openSettingsNav: "Abrir Ajustes",
+    openSettingsNavHelp:
+      "Abrir Ajustes para cambiar idioma, temas, opciones de accesibilidad y copias de seguridad.",
+    openHelpNav: "Abrir Centro de ayuda",
+    openHelpNavHelp:
+      "Abrir la guía de ayuda integrada con tutoriales, consejos de resolución de problemas y atajos.",
     setupManageHeadingHelp:
       "Administra los proyectos guardados: guárdalos, cárgalos o borra la configuración actual.",
     deviceSelectionHeadingHelp:
@@ -2472,6 +2506,18 @@ const texts = {
     deviceManagerHeading: "Bibliothèque d’appareils",
     batteryComparisonHeading: "Comparaison des batteries",
     setupDiagramHeading: "Schéma de connexion",
+    projectRequirementsNav: "Exigences du projet",
+    projectRequirementsNavHelp:
+      "Accéder à la sortie Exigences du projet une fois générée.",
+    gearListNav: "Liste du matériel",
+    gearListNavHelp:
+      "Voir la liste du matériel générée avec tous les éléments et catégories.",
+    openSettingsNav: "Ouvrir les paramètres",
+    openSettingsNavHelp:
+      "Ouvrir les paramètres pour régler la langue, les thèmes, l’accessibilité et les sauvegardes.",
+    openHelpNav: "Ouvrir l’aide",
+    openHelpNavHelp:
+      "Ouvrir l’aide intégrée avec tutoriels, conseils de dépannage et raccourcis.",
     setupManageHeadingHelp:
       "Gérez les configurations enregistrées : sauvegarder, charger ou effacer.",
     deviceSelectionHeadingHelp:
@@ -3284,6 +3330,18 @@ const texts = {
     deviceManagerHeading: "Gerätebibliothek",
     batteryComparisonHeading: "Akkuvergleich",
     setupDiagramHeading: "Verbindungsdiagramm",
+    projectRequirementsNav: "Projektanforderungen",
+    projectRequirementsNavHelp:
+      "Zur Ausgabe Projektanforderungen springen, sobald sie erstellt wurde.",
+    gearListNav: "Gear-Liste",
+    gearListNavHelp:
+      "Die erzeugte Gear-Liste mit allen Geräten und Kategorien ansehen.",
+    openSettingsNav: "Einstellungen öffnen",
+    openSettingsNavHelp:
+      "Einstellungen öffnen, um Sprache, Designs, Barrierefreiheit und Backups anzupassen.",
+    openHelpNav: "Hilfe öffnen",
+    openHelpNavHelp:
+      "Die integrierte Hilfe mit Anleitungen, Tipps zur Fehlerbehebung und Tastenkürzeln öffnen.",
     setupManageHeadingHelp:
       "Gespeicherte Projekte verwalten: Projekte speichern, laden oder löschen.",
     deviceSelectionHeadingHelp:
