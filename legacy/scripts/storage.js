@@ -1,18 +1,18 @@
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -61,7 +61,10 @@ var AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 var AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 var AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+var MAX_AUTO_BACKUPS = 50;
+var MAX_DELETION_BACKUPS = 20;
 var STORAGE_BACKUP_SUFFIX = '__backup';
+var MAX_SAVE_ATTEMPTS = 3;
 var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY]);
 function createStorageMigrationBackup(storage, key, originalValue) {
@@ -551,6 +554,187 @@ if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
 function isPlainObject(val) {
   return val !== null && _typeof(val) === 'object' && !Array.isArray(val);
 }
+function getAutoBackupTimestamp(name) {
+  if (typeof name !== 'string') {
+    return Number.NEGATIVE_INFINITY;
+  }
+  var match = null;
+  if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+    match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
+    if (!match) {
+      return Number.NEGATIVE_INFINITY;
+    }
+    var _match = match,
+      _match2 = _slicedToArray(_match, 6),
+      year = _match2[1],
+      month = _match2[2],
+      day = _match2[3],
+      hour = _match2[4],
+      minute = _match2[5];
+    var date = new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, Number.parseInt(day, 10), Number.parseInt(hour, 10), Number.parseInt(minute, 10), 0, 0);
+    var time = date.getTime();
+    return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+  }
+  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
+    match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
+    if (!match) {
+      return Number.NEGATIVE_INFINITY;
+    }
+    var _match3 = match,
+      _match4 = _slicedToArray(_match3, 7),
+      _year = _match4[1],
+      _month = _match4[2],
+      _day = _match4[3],
+      _hour = _match4[4],
+      _minute = _match4[5],
+      second = _match4[6];
+    var _date = new Date(Number.parseInt(_year, 10), Number.parseInt(_month, 10) - 1, Number.parseInt(_day, 10), Number.parseInt(_hour, 10), Number.parseInt(_minute, 10), Number.parseInt(second, 10), 0);
+    var _time = _date.getTime();
+    return Number.isNaN(_time) ? Number.NEGATIVE_INFINITY : _time;
+  }
+  return Number.NEGATIVE_INFINITY;
+}
+function collectAutoBackupEntries(container, prefix) {
+  if (!isPlainObject(container) || typeof prefix !== 'string') {
+    return [];
+  }
+  return Object.keys(container).filter(function (key) {
+    return typeof key === 'string' && key.startsWith(prefix);
+  }).map(function (key) {
+    return {
+      key: key,
+      timestamp: getAutoBackupTimestamp(key)
+    };
+  }).sort(function (a, b) {
+    if (a.timestamp !== b.timestamp) {
+      return a.timestamp - b.timestamp;
+    }
+    return a.key.localeCompare(b.key);
+  });
+}
+function createStableValueSignature(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (value === undefined) {
+    return 'undefined';
+  }
+  if (Array.isArray(value)) {
+    return "[".concat(value.map(function (item) {
+      return createStableValueSignature(item);
+    }).join(','), "]");
+  }
+  if (isPlainObject(value)) {
+    var keys = Object.keys(value).sort();
+    var entries = keys.map(function (key) {
+      return "".concat(JSON.stringify(key), ":").concat(createStableValueSignature(value[key]));
+    });
+    return "{".concat(entries.join(','), "}");
+  }
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return 'number:NaN';
+    }
+    if (!Number.isFinite(value)) {
+      return value > 0 ? 'number:Infinity' : 'number:-Infinity';
+    }
+    return "number:".concat(value);
+  }
+  if (typeof value === 'bigint') {
+    return "bigint:".concat(value.toString());
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'boolean:true' : 'boolean:false';
+  }
+  if (typeof value === 'string') {
+    return "string:".concat(value);
+  }
+  if (_typeof(value) === 'symbol') {
+    return "symbol:".concat(String(value));
+  }
+  if (typeof value === 'function') {
+    return "function:".concat(value.name || 'anonymous');
+  }
+  return "".concat(_typeof(value), ":").concat(String(value));
+}
+function removeDuplicateAutoBackupEntries(container, entries) {
+  if (!isPlainObject(container) || !Array.isArray(entries) || entries.length < 2) {
+    return [];
+  }
+  var removedKeys = [];
+  var seenSignatures = new Map();
+  for (var index = entries.length - 1; index >= 0; index -= 1) {
+    var entry = entries[index];
+    if (!entry || typeof entry.key !== 'string') {
+      continue;
+    }
+    var signature = createStableValueSignature(container[entry.key]);
+    if (seenSignatures.has(signature)) {
+      delete container[entry.key];
+      entries.splice(index, 1);
+      removedKeys.push(entry.key);
+    } else {
+      seenSignatures.set(signature, entry.key);
+    }
+  }
+  return removedKeys;
+}
+function enforceAutoBackupLimits(container) {
+  if (!isPlainObject(container)) {
+    return [];
+  }
+  var removed = [];
+  var autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  if (autoBackups.length > MAX_AUTO_BACKUPS) {
+    removed.push.apply(removed, _toConsumableArray(removeDuplicateAutoBackupEntries(container, autoBackups)));
+    while (autoBackups.length > MAX_AUTO_BACKUPS) {
+      var entry = autoBackups.shift();
+      if (!entry) {
+        break;
+      }
+      delete container[entry.key];
+      removed.push(entry.key);
+    }
+  }
+  var deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  if (deletionBackups.length > MAX_DELETION_BACKUPS) {
+    removed.push.apply(removed, _toConsumableArray(removeDuplicateAutoBackupEntries(container, deletionBackups)));
+    while (deletionBackups.length > MAX_DELETION_BACKUPS) {
+      var _entry = deletionBackups.shift();
+      if (!_entry) {
+        break;
+      }
+      delete container[_entry.key];
+      removed.push(_entry.key);
+    }
+  }
+  if (removed.length > 0) {
+    console.warn("Removed ".concat(removed.length, " older automatic backup").concat(removed.length > 1 ? 's' : '', " to stay within storage limits."), removed);
+  }
+  return removed;
+}
+function removeOldestAutoBackupEntry(container) {
+  if (!isPlainObject(container)) {
+    return null;
+  }
+  var autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  if (autoBackups.length > 0) {
+    var oldest = autoBackups.shift();
+    if (oldest) {
+      delete container[oldest.key];
+      return oldest.key;
+    }
+  }
+  var deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  if (deletionBackups.length > 0) {
+    var _oldest = deletionBackups.shift();
+    if (_oldest) {
+      delete container[_oldest.key];
+      return _oldest.key;
+    }
+  }
+  return null;
+}
 function shouldDisplayStorageAlert(reason) {
   if (!reason) {
     return true;
@@ -849,34 +1033,180 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
   var _ref4 = options || {},
     _ref4$disableBackup = _ref4.disableBackup,
     disableBackup = _ref4$disableBackup === void 0 ? false : _ref4$disableBackup,
-    backupKey = _ref4.backupKey;
+    backupKey = _ref4.backupKey,
+    onQuotaExceeded = _ref4.onQuotaExceeded;
   var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
   var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
-  var serialized;
-  try {
-    serialized = JSON.stringify(value);
-  } catch (serializationError) {
-    console.error(errorMessage, serializationError);
-    alertStorageError();
-    return;
-  }
-  try {
-    storage.setItem(key, serialized);
-    if (useBackup) {
-      try {
-        storage.setItem(fallbackKey, serialized);
-      } catch (backupError) {
-        console.warn("Unable to update backup copy for ".concat(key), backupError);
-        alertStorageError();
-      }
+  var serializeValue = function serializeValue() {
+    try {
+      return JSON.stringify(value);
+    } catch (serializationError) {
+      console.error(errorMessage, serializationError);
+      alertStorageError();
+      return null;
     }
+  };
+  var logSuccess = function logSuccess() {
     if (successMessage) {
       console.log(successMessage);
     }
-  } catch (e) {
-    console.error(errorMessage, e);
-    alertStorageError();
+  };
+  var preservedBackupValue;
+  var hasPreservedBackup = false;
+  var removedBackupDuringRetry = false;
+  var attemptHandleQuota = function attemptHandleQuota(error) {
+    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    if (!isQuotaExceededError(error) || typeof onQuotaExceeded !== 'function') {
+      return false;
+    }
+    try {
+      return onQuotaExceeded(error, _objectSpread({
+        storage: storage,
+        key: key,
+        value: value
+      }, context)) === true;
+    } catch (handlerError) {
+      var scope = context && context.isBackup ? ' (backup)' : '';
+      console.error("Error while handling quota exceed for ".concat(key).concat(scope), handlerError);
+      return false;
+    }
+  };
+  var attempts = 0;
+  var _loop = function _loop() {
+      attempts += 1;
+      var serialized = serializeValue();
+      if (serialized === null) {
+        return {
+          v: void 0
+        };
+      }
+      var skipPrimaryWrite = false;
+      if (typeof storage.getItem === 'function') {
+        try {
+          var existingValue = storage.getItem(key);
+          if (existingValue === serialized) {
+            skipPrimaryWrite = true;
+          }
+        } catch (inspectError) {
+          console.warn("Unable to inspect existing value for ".concat(key), inspectError);
+        }
+      }
+      var existingBackupValue;
+      var hasExistingBackup = false;
+      if (useBackup && typeof storage.getItem === 'function') {
+        try {
+          existingBackupValue = storage.getItem(fallbackKey);
+          hasExistingBackup = typeof existingBackupValue === 'string';
+        } catch (inspectError) {
+          console.warn("Unable to inspect existing backup for ".concat(key), inspectError);
+        }
+      }
+      if (!hasPreservedBackup && hasExistingBackup && typeof existingBackupValue === 'string') {
+        preservedBackupValue = existingBackupValue;
+        hasPreservedBackup = true;
+      }
+      if (skipPrimaryWrite && (!useBackup || hasExistingBackup && existingBackupValue === serialized)) {
+        logSuccess();
+        return {
+          v: void 0
+        };
+      }
+      if (!skipPrimaryWrite) {
+        try {
+          storage.setItem(key, serialized);
+        } catch (error) {
+          if (attemptHandleQuota(error)) {
+            return 0;
+          }
+          console.error(errorMessage, error);
+          alertStorageError();
+          return {
+            v: void 0
+          };
+        }
+      }
+      if (!useBackup) {
+        logSuccess();
+        return {
+          v: void 0
+        };
+      }
+      var attemptBackupWrite = function attemptBackupWrite() {
+        try {
+          storage.setItem(fallbackKey, serialized);
+          return 'success';
+        } catch (error) {
+          var backupError = error;
+          var backupRemovedForRetry = false;
+          if (isQuotaExceededError(backupError)) {
+            if (hasExistingBackup) {
+              try {
+                storage.removeItem(fallbackKey);
+                backupRemovedForRetry = true;
+                removedBackupDuringRetry = true;
+              } catch (removeError) {
+                console.warn("Unable to remove previous backup for ".concat(key), removeError);
+              }
+              if (backupRemovedForRetry) {
+                try {
+                  storage.setItem(fallbackKey, serialized);
+                  removedBackupDuringRetry = false;
+                  return 'success';
+                } catch (retryError) {
+                  backupError = retryError;
+                }
+              }
+            }
+            if (attemptHandleQuota(backupError, {
+              serialized: serialized,
+              backupKey: fallbackKey,
+              isBackup: true
+            })) {
+              return 'retry';
+            }
+          }
+          if (backupRemovedForRetry && hasExistingBackup && typeof existingBackupValue === 'string') {
+            try {
+              storage.setItem(fallbackKey, existingBackupValue);
+              removedBackupDuringRetry = false;
+            } catch (restoreError) {
+              console.warn("Unable to restore previous backup for ".concat(key), restoreError);
+            }
+          }
+          console.warn("Unable to update backup copy for ".concat(key), backupError);
+          alertStorageError();
+          return 'failure';
+        }
+      };
+      var backupResult = attemptBackupWrite();
+      if (backupResult === 'success') {
+        logSuccess();
+        return {
+          v: void 0
+        };
+      }
+      if (backupResult === 'retry') {
+        return 0;
+      }
+      return {
+        v: void 0
+      };
+    },
+    _ret;
+  while (attempts < MAX_SAVE_ATTEMPTS) {
+    _ret = _loop();
+    if (_ret === 0) continue;
+    if (_ret) return _ret.v;
   }
+  if (hasPreservedBackup && removedBackupDuringRetry && typeof preservedBackupValue === 'string') {
+    try {
+      storage.setItem(fallbackKey, preservedBackupValue);
+    } catch (restoreError) {
+      console.warn("Unable to restore preserved backup for ".concat(key), restoreError);
+    }
+  }
+  console.error(errorMessage, new Error('Unable to save value after multiple attempts.'));
+  alertStorageError();
 }
 function deleteFromStorage(storage, key, errorMessage) {
   var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -1264,8 +1594,18 @@ function loadSetups() {
 function saveSetups(setups) {
   var _normalizeSetups2 = normalizeSetups(setups),
     normalizedSetups = _normalizeSetups2.data;
+  enforceAutoBackupLimits(normalizedSetups);
   var safeStorage = getSafeLocalStorage();
-  saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, normalizedSetups, "Error saving setups to localStorage:", "Setups saved to localStorage.");
+  saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, normalizedSetups, "Error saving setups to localStorage:", "Setups saved to localStorage.", {
+    onQuotaExceeded: function onQuotaExceeded() {
+      var removedKey = removeOldestAutoBackupEntry(normalizedSetups);
+      if (!removedKey) {
+        return false;
+      }
+      console.warn("Removed automatic backup \"".concat(removedKey, "\" to free up storage space before saving setups."));
+      return true;
+    }
+  });
 }
 function updateSetups(callback) {
   var setups = loadSetups();
@@ -1482,7 +1822,17 @@ function readAllProjectsFromStorage() {
 }
 function persistAllProjects(projects, successMessage) {
   var safeStorage = getSafeLocalStorage();
-  saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, projects, "Error saving project to localStorage:", successMessage);
+  enforceAutoBackupLimits(projects);
+  saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, projects, "Error saving project to localStorage:", successMessage, {
+    onQuotaExceeded: function onQuotaExceeded() {
+      var removedKey = removeOldestAutoBackupEntry(projects);
+      if (!removedKey) {
+        return false;
+      }
+      console.warn("Removed automatic project backup \"".concat(removedKey, "\" to free up storage space before saving projects."));
+      return true;
+    }
+  });
 }
 function loadProject(name) {
   var _readAllProjectsFromS = readAllProjectsFromStorage(),
@@ -1976,7 +2326,7 @@ function clearAllData() {
     }
     var keys = [];
     if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-      var _loop = function _loop() {
+      var _loop2 = function _loop2() {
         var candidateKey = null;
         try {
           candidateKey = storage.key(index);
@@ -1990,7 +2340,7 @@ function clearAllData() {
         }
       };
       for (var index = 0; index < storage.length; index += 1) {
-        _loop();
+        _loop2();
       }
       return keys;
     }
