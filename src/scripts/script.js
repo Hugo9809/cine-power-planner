@@ -422,6 +422,13 @@ function getAutoGearSelectorLabel(type) {
     || 'No selector';
 }
 
+function getAutoGearSelectorScrollHint() {
+  const langTexts = texts[currentLang] || texts.en || {};
+  return langTexts.autoGearSelectorScrollHint
+    || texts.en?.autoGearSelectorScrollHint
+    || 'Scroll to see more devices.';
+}
+
 function isAutoGearMonitoringCategory(value) {
   if (typeof value !== 'string') return false;
   return value.trim().toLowerCase() === 'monitoring';
@@ -20829,8 +20836,32 @@ function addAutoGearItem(cell, item, rule) {
                 } else if (select.options.length) {
                     select.selectedIndex = 0;
                 }
+                const optionCount = select.options.length;
+                const minVisibleRows = 6;
+                const maxVisibleRows = 12;
+                let visibleRows = optionCount >= minVisibleRows
+                    ? Math.min(maxVisibleRows, optionCount)
+                    : (optionCount || minVisibleRows);
+                if (!Number.isFinite(visibleRows) || visibleRows <= 0) {
+                    visibleRows = minVisibleRows;
+                }
+                select.size = visibleRows;
+                const hintText = getAutoGearSelectorScrollHint();
+                let selectorWrapper = select;
+                if (hintText) {
+                    const wrapper = document.createElement('span');
+                    wrapper.className = 'auto-gear-selector-container';
+                    wrapper.appendChild(select);
+                    const hint = document.createElement('span');
+                    hint.id = `${selectId}_hint`;
+                    hint.className = 'auto-gear-selector-hint';
+                    hint.textContent = hintText;
+                    wrapper.appendChild(hint);
+                    select.setAttribute('aria-describedby', hint.id);
+                    selectorWrapper = wrapper;
+                }
                 span.appendChild(document.createTextNode(' - '));
-                span.appendChild(select);
+                span.appendChild(selectorWrapper);
             } else if (selectorDefault) {
                 const formattedDefault = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
                 span.appendChild(document.createTextNode(` - ${selectorLabel}: ${formattedDefault}`));
