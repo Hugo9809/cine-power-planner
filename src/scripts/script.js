@@ -7725,7 +7725,7 @@ const settingsTabButtons = settingsTablist
   ? Array.from(settingsTablist.querySelectorAll('[role="tab"]'))
   : [];
 const settingsTabsContainer = settingsTablist
-  ? settingsTablist.closest('.settings-tabs-container')
+  ? settingsTablist.closest('.settings-tabs-container') || settingsTablist
   : null;
 const settingsTabsScrollPrev = document.getElementById('settingsTabsScrollPrev');
 const settingsTabsScrollNext = document.getElementById('settingsTabsScrollNext');
