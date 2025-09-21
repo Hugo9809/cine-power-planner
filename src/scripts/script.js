@@ -22130,28 +22130,45 @@ function generateGearListHtml(info = {}) {
         return attrs.length ? `${base} (${attrs.join(', ')})` : base;
     });
     addRow('Lens', formatItems(lensDisplayNames));
+    const parseRodTypes = raw => {
+        if (!raw && raw !== 0) return [];
+        const values = Array.isArray(raw) ? raw : [raw];
+        const rodSet = new Set();
+        values.forEach(value => {
+            const text = (value ?? '').toString().toLowerCase();
+            if (!text) return;
+            if (/\b15\s*mm\b/.test(text)) rodSet.add('15mm');
+            if (/\b19\s*mm\b/.test(text)) rodSet.add('19mm');
+        });
+        const order = ['15mm', '19mm'];
+        return order.filter(type => rodSet.has(type));
+    };
     const lensSupportItems = [];
     const requiredRodTypes = new Set();
     const addedRodPairs = new Set();
     selectedLensNames.forEach(name => {
         const lens = devices.lenses && devices.lenses[name];
         if (!lens) return;
-        const rodType = lens.rodStandard || '15mm';
-        const rodLength = lens.rodLengthCm || (rodType === '19mm' ? 45 : 30);
-        const rodKey = `${rodType}-${rodLength}`;
+        const normalizedRodTypes = parseRodTypes(lens.rodStandard);
+        const rodType = normalizedRodTypes[0] || (lens.rodStandard ? lens.rodStandard : '15mm');
+        const baseRodType = normalizedRodTypes[0] || (rodType === '19mm' ? '19mm' : '15mm');
+        const rodLength = lens.rodLengthCm || (baseRodType === '19mm' ? 45 : 30);
+        const rodKey = `${baseRodType}-${rodLength}`;
         if (!addedRodPairs.has(rodKey)) {
-            lensSupportItems.push(`${rodType} rods ${rodLength}cm`);
+            lensSupportItems.push(`${baseRodType} rods ${rodLength}cm`);
             addedRodPairs.add(rodKey);
         }
-        requiredRodTypes.add(rodType);
+        const typesForRequirement = normalizedRodTypes.length ? normalizedRodTypes : [baseRodType];
+        typesForRequirement.forEach(rt => requiredRodTypes.add(rt));
         if (lens.needsLensSupport) {
-            lensSupportItems.push(`${rodType} lens support`);
+            lensSupportItems.push(`${baseRodType} lens support`);
         }
     });
     const cageRod = devices.accessories?.cages?.[selectedNames.cage]?.rodStandard;
-    const cageRodTypes = cageRod ? (Array.isArray(cageRod) ? cageRod : [cageRod]) : [];
+    const cageRodTypes = parseRodTypes(cageRod);
+    const hasCageRodInfo = Array.isArray(cageRod) ? cageRod.length > 0 : Boolean(cageRod);
     requiredRodTypes.forEach(rt => {
-        if (cageRodTypes.length && !cageRodTypes.includes(rt)) {
+        if (hasCageRodInfo && !cageRodTypes.includes(rt)) {
             lensSupportItems.push(`${glyphText(ICON_GLYPHS.warning)}\u00A0cage incompatible with ${rt} rods`);
         }
     });
