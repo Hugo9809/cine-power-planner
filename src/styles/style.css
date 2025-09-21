@@ -2623,6 +2623,22 @@ button:disabled {
   cursor: not-allowed;
 }
 
+body:not(.dark-mode) button .btn-icon.icon-glyph,
+body:not(.dark-mode) .button-link .btn-icon.icon-glyph {
+  --icon-color: var(--accent-color);
+}
+
+body:not(.dark-mode) button:hover .btn-icon.icon-glyph,
+body:not(.dark-mode) button:active .btn-icon.icon-glyph,
+body:not(.dark-mode) button:focus-visible .btn-icon.icon-glyph,
+body:not(.dark-mode) button:disabled .btn-icon.icon-glyph,
+body:not(.dark-mode) .button-link:hover .btn-icon.icon-glyph,
+body:not(.dark-mode) .button-link:active .btn-icon.icon-glyph,
+body:not(.dark-mode) .button-link:focus-visible .btn-icon.icon-glyph,
+body:not(.dark-mode) .button-link[aria-disabled='true'] .btn-icon.icon-glyph {
+  --icon-color: currentColor;
+}
+
 /* Style file input buttons to match standard buttons */
 input[type="file"]::file-selector-button,
 input[type="file"]::-webkit-file-upload-button {
