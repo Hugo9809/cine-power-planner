@@ -23313,6 +23313,7 @@ if (helpButton && helpDialog) {
   const helpQuickLinkItems = new Map();
   const helpSectionHighlightTimers = new Map();
   const appTargetHighlightTimers = new Map();
+  const featureSearchHighlightTimers = new Map();
 
   const highlightAppTarget = element => {
     if (!element) return;
@@ -23327,6 +23328,56 @@ if (helpButton && helpDialog) {
       appTargetHighlightTimers.delete(target);
     }, 2000);
     appTargetHighlightTimers.set(target, timeout);
+  };
+
+  const highlightFeatureSearchTargets = targets => {
+    if (!Array.isArray(targets) || targets.length === 0) return;
+    const seen = new Set();
+    targets.forEach(target => {
+      if (!target || typeof target.classList?.add !== 'function') return;
+      if (seen.has(target)) return;
+      seen.add(target);
+      const existing = featureSearchHighlightTimers.get(target);
+      if (existing) {
+        clearTimeout(existing);
+      }
+      target.classList.add('feature-search-focus');
+      const timeout = setTimeout(() => {
+        target.classList.remove('feature-search-focus');
+        featureSearchHighlightTimers.delete(target);
+      }, 2500);
+      featureSearchHighlightTimers.set(target, timeout);
+    });
+  };
+
+  const findAssociatedLabelElements = element => {
+    if (!element) return [];
+    const labels = new Set();
+    const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+    if (element.labels && typeof element.labels === 'object') {
+      Array.from(element.labels).forEach(label => {
+        if (label) labels.add(label);
+      });
+    }
+    if (typeof element.closest === 'function') {
+      const wrappingLabel = element.closest('label');
+      if (wrappingLabel) labels.add(wrappingLabel);
+    }
+    if (doc && typeof element.getAttribute === 'function') {
+      const collectIdRefs = attrValue => {
+        if (!attrValue) return;
+        attrValue
+          .split(/\s+/)
+          .filter(Boolean)
+          .forEach(id => {
+            const ref = doc.getElementById(id);
+            if (ref) labels.add(ref);
+          });
+      };
+      collectIdRefs(element.getAttribute('aria-labelledby'));
+      collectIdRefs(element.getAttribute('aria-describedby'));
+    }
+    return Array.from(labels);
   };
 
   const focusFeatureElement = element => {
@@ -23546,6 +23597,14 @@ if (helpButton && helpDialog) {
         }
         highlightHelpSection(section);
         focusHelpSectionHeading(section);
+        const quickLinkHeading =
+          section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') ||
+          section.querySelector('button, a');
+        if (quickLinkHeading) {
+          highlightFeatureSearchTargets([quickLinkHeading]);
+        } else {
+          highlightFeatureSearchTargets([section]);
+        }
       });
       li.appendChild(button);
       fragment.appendChild(li);
@@ -23594,6 +23653,10 @@ if (helpButton && helpDialog) {
         focusFeatureElement(focusEl);
         if (highlightEl) {
           highlightAppTarget(highlightEl);
+        }
+        const extraTargets = findAssociatedLabelElements(highlightEl || focusEl);
+        if (extraTargets.length) {
+          highlightFeatureSearchTargets(extraTargets);
         }
       };
       if (targetInsideHelp) {
@@ -24116,6 +24179,11 @@ if (helpButton && helpDialog) {
             updateFeatureSearchValue(device.label, originalNormalized);
           }
           focusFeatureElement(device.select);
+          const highlightTargets = [
+            device.select,
+            ...findAssociatedLabelElements(device.select)
+          ];
+          highlightFeatureSearchTargets(highlightTargets);
           return;
         }
       }
@@ -24128,6 +24196,11 @@ if (helpButton && helpDialog) {
             updateFeatureSearchValue(label, originalNormalized);
           }
           focusFeatureElement(featureEl);
+          const highlightTargets = [
+            featureEl,
+            ...findAssociatedLabelElements(featureEl)
+          ];
+          highlightFeatureSearchTargets(highlightTargets);
           return;
         }
       }
@@ -24152,6 +24225,14 @@ if (helpButton && helpDialog) {
           section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         highlightHelpSection(section);
+        const sectionHeading =
+          section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') ||
+          section.querySelector('button, a');
+        if (sectionHeading) {
+          highlightFeatureSearchTargets([sectionHeading]);
+        } else {
+          highlightFeatureSearchTargets([section]);
+        }
         const quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
         if (helpQuickLinksList) {
           helpQuickLinksList
@@ -24168,6 +24249,7 @@ if (helpButton && helpDialog) {
     if (helpSearch) {
       helpSearch.value = clean;
       filterHelp();
+      highlightFeatureSearchTargets([helpSearch]);
     }
   };
 
