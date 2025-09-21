@@ -1,18 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getSelectedPlate, supportsBMountCamera, supportsGoldMountCamera, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, getCssVariableValue, iconMarkup, deleteCurrentGearList */
-
-const getCssVarValue = (typeof getCssVariableValue === 'function'
-    ? getCssVariableValue
-    : (name, fallback = '') => {
-        if (typeof document === 'undefined') return fallback;
-        const root = document.documentElement;
-        if (!root) return fallback;
-        const computed = typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
-            ? window.getComputedStyle(root).getPropertyValue(name).trim()
-            : '';
-        if (computed) return computed;
-        const inline = root.style.getPropertyValue(name).trim();
-        return inline || fallback;
-    });
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, deleteCurrentGearList */
 
 function generatePrintableOverview() {
     const escapeHtmlSafe = (value) => (typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? ''));
@@ -144,98 +130,43 @@ function generatePrintableOverview() {
         </section>
     `;
 
-    // REGENERATE BATTERY TABLE HTML WITH BARS FOR OVERVIEW
-    let batteryTableHtml = '';
-    const totalWatt = parseFloat(totalPowerElem.textContent);
-    if (totalWatt > 0) {
-        const totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
-        const selectedBatteryName = batterySelect.value;
-        const camName = cameraSelect.value;
-        const plateFilter = getSelectedPlate();
-        const supportsB = supportsBMountCamera(camName);
-        const supportsGold = supportsGoldMountCamera(camName);
-        const bMountCam = plateFilter === 'B-Mount';
-        let selectedCandidate = null;
-        if (selectedBatteryName && selectedBatteryName !== 'None' && devices.batteries[selectedBatteryName]) {
-            const selData = devices.batteries[selectedBatteryName];
-            if (
-                (!plateFilter || selData.mount_type === plateFilter) &&
-                (supportsB || selData.mount_type !== 'B-Mount') &&
-                (supportsGold || selData.mount_type !== 'Gold-Mount')
-            ) {
-                const pinOK_sel = totalCurrentLow <= selData.pinA;
-                const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
-                if (pinOK_sel || dtapOK_sel) {
-                    const selHours = selData.capacity / totalWatt;
-                    let selMethod;
-                    if (pinOK_sel && dtapOK_sel) selMethod = 'both pins and D-Tap';
-                    else if (pinOK_sel) selMethod = 'pins';
-                    else selMethod = 'dtap';
-                    selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
-                }
+    const batteryComparisonSection = typeof document !== 'undefined'
+        ? document.getElementById('batteryComparison')
+        : null;
+    const isSectionRenderable = section => {
+        if (!section) return false;
+        if (section.hasAttribute('hidden')) return false;
+        if (section.classList && section.classList.contains('hidden')) return false;
+        if (section.style && section.style.display === 'none') return false;
+        if (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+            const computed = window.getComputedStyle(section);
+            if (computed.display === 'none' || computed.visibility === 'hidden') {
+                return false;
             }
         }
+        const table = section.querySelector('table');
+        return table ? table.innerHTML.trim().length > 0 : false;
+    };
 
-        const pinsCandidates = [];
-        const dtapCandidates = [];
-        for (let battName in devices.batteries) {
-            if (battName === 'None') continue;
-            if (selectedCandidate && battName === selectedCandidate.name) continue;
-            const battInfo = devices.batteries[battName];
-            if (plateFilter && battInfo.mount_type !== plateFilter) continue;
-            if (!plateFilter && !supportsB && battInfo.mount_type === 'B-Mount') continue;
-            if (!plateFilter && !supportsGold && battInfo.mount_type === 'Gold-Mount') continue;
-            const canPin = totalCurrentLow <= battInfo.pinA;
-            const canDTap = !bMountCam && totalCurrentLow <= battInfo.dtapA;
-            if (!canPin && !canDTap) continue;
-            const hours = battInfo.capacity / totalWatt;
-            const method = canPin && canDTap ? 'both pins and D-Tap' : canPin ? 'pins' : 'dtap';
-            if (canPin) pinsCandidates.push({ name: battName, hours, method });
-            else dtapCandidates.push({ name: battName, hours, method });
+    let batteryComparisonHtml = '';
+    if (isSectionRenderable(batteryComparisonSection)) {
+        const clone = batteryComparisonSection.cloneNode(true);
+        clone.id = 'batteryComparisonOverview';
+        clone.classList.add('print-section');
+        clone.removeAttribute('style');
+        const heading = clone.querySelector('#batteryComparisonHeading');
+        if (heading) {
+            heading.id = 'batteryComparisonOverviewHeading';
         }
-        const getMethodLabel = method => {
-            const colorMap = {
-                pins: { var: '--warning-color', fallback: '#FF9800', text: t.methodPinsOnly },
-                'both pins and D-Tap': { var: '--success-color', fallback: '#4CAF50', text: t.methodPinsAndDTap },
-                infinite: { var: '--info-color', fallback: '#007bff', text: t.methodInfinite }
-            };
-            const entry = colorMap[method];
-            if (entry) {
-                const color = getCssVarValue(entry.var, entry.fallback);
-                return `<span style="color:${color};">${entry.text}</span>`;
-            }
-            return method === 'dtap' ? 'D-Tap' : method;
-        };
-        const getBarClass = method => {
-            return method === 'pins' ? 'bar bar-pins-only' : 'bar';
-        };
-        pinsCandidates.sort((a, b) => b.hours - a.hours);
-        dtapCandidates.sort((a, b) => b.hours - a.hours);
-        const runtimeHeading = t.batteryLifeHeading || t.batteryComparisonHeading || 'Runtime comparison';
-        let tableHtml = `<h2>${runtimeHeading}</h2><table class="battery-table"><tr><th>${t.batteryLabel}</th><th>${t.batteryLifeLabel}</th><th>${runtimeHeading}</th></tr>`;
-        const maxHours = Math.max(
-            selectedCandidate ? selectedCandidate.hours : 0,
-            pinsCandidates[0] ? pinsCandidates[0].hours : 0,
-            dtapCandidates[0] ? dtapCandidates[0].hours : 0
-        );
-        if (selectedCandidate) {
-            tableHtml += `<tr class="selectedBatteryRow"><td>${escapeHtmlSafe(selectedCandidate.name)}</td><td>${selectedCandidate.hours.toFixed(2)}h (${getMethodLabel(selectedCandidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(selectedCandidate.method)}" style="width: ${(selectedCandidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
+        const container = clone.querySelector('#batteryTableContainer');
+        if (container) {
+            container.id = 'batteryTableOverviewContainer';
         }
-        pinsCandidates.forEach(candidate => {
-            if (selectedCandidate && candidate.name === selectedCandidate.name) return;
-            tableHtml += `<tr><td>${escapeHtmlSafe(candidate.name)}</td><td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
-        });
-        dtapCandidates.forEach(candidate => {
-            if (selectedCandidate && candidate.name === selectedCandidate.name) return;
-            const alreadyInPins = pinsCandidates.some(p => p.name === candidate.name);
-            if (!alreadyInPins) {
-                tableHtml += `<tr><td>${escapeHtmlSafe(candidate.name)}</td><td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td><td><div class="barContainer"><div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div></div></td></tr>`;
-            }
-        });
-        tableHtml += `</table>`;
-        batteryTableHtml = tableHtml;
-    } else {
-        batteryTableHtml = '';
+        const table = clone.querySelector('#batteryTable');
+        if (table) {
+            table.removeAttribute('id');
+        }
+        batteryComparisonHtml = `<div class="page-break"></div>${clone.outerHTML}`;
     }
 
     const safeSetupName = escapeHtmlSafe(setupName);
@@ -258,8 +189,6 @@ function generatePrintableOverview() {
     const diagramSectionHtml = diagramAreaHtml
         ? `<section id="setupDiagram" class="diagram-section print-section"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramHintHtml}</section>`
         : '';
-    const batteryTableHtmlWithBreak = batteryTableHtml ? `<div class="page-break"></div>${batteryTableHtml}` : '';
-
     // Only surface the gear list in the overview when the generator has
     // produced visible output in the main interface.
     const hasGeneratedGearList = (() => {
@@ -328,7 +257,7 @@ function generatePrintableOverview() {
 
             ${gearListHtmlCombined}
             ${gearListActionsHtml}
-            ${batteryTableHtmlWithBreak}
+            ${batteryComparisonHtml}
         </div>
     `;
 
