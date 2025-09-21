@@ -3724,11 +3724,13 @@ function setLanguage(lang) {
   document.getElementById("monitorDetailsHeading").textContent = texts[lang].monitorDetailsHeading;
   document.getElementById("monitorPowerHeading").textContent = texts[lang].monitorPowerHeading;
   // Determine text for Add/Update button
+  const addDeviceLabel = texts[lang].addDeviceBtn;
+  const updateDeviceLabel = texts[lang].updateDeviceBtn;
   if (addDeviceBtn.dataset.mode === "edit") {
-    addDeviceBtn.textContent = texts[lang].updateDeviceBtn;
+    setButtonLabelWithIcon(addDeviceBtn, updateDeviceLabel, ICON_GLYPHS.save);
     addDeviceBtn.setAttribute('data-help', texts[lang].updateDeviceBtnHelp);
   } else {
-    addDeviceBtn.textContent = texts[lang].addDeviceBtn;
+    setButtonLabelWithIcon(addDeviceBtn, addDeviceLabel, ICON_GLYPHS.add);
     addDeviceBtn.setAttribute('data-help', texts[lang].addDeviceBtnHelp);
   }
   setButtonLabelWithIcon(cancelEditBtn, texts[lang].cancelEditBtn, ICON_GLYPHS.circleX);
@@ -18285,7 +18287,7 @@ function showDeviceManagerSection() {
   if (!deviceManagerSection || !toggleDeviceBtn) return;
   if (!deviceManagerSection.classList.contains('hidden')) return;
   deviceManagerSection.classList.remove('hidden');
-  toggleDeviceBtn.textContent = texts[currentLang].hideDeviceManager;
+  setButtonLabelWithIcon(toggleDeviceBtn, texts[currentLang].hideDeviceManager, ICON_GLYPHS.minus);
   toggleDeviceBtn.setAttribute('title', texts[currentLang].hideDeviceManager);
   toggleDeviceBtn.setAttribute('data-help', texts[currentLang].hideDeviceManagerHelp);
   toggleDeviceBtn.setAttribute('aria-expanded', 'true');
@@ -18297,7 +18299,7 @@ function hideDeviceManagerSection() {
   if (!deviceManagerSection || !toggleDeviceBtn) return;
   if (deviceManagerSection.classList.contains('hidden')) return;
   deviceManagerSection.classList.add('hidden');
-  toggleDeviceBtn.textContent = texts[currentLang].toggleDeviceManager;
+  setButtonLabelWithIcon(toggleDeviceBtn, texts[currentLang].toggleDeviceManager, ICON_GLYPHS.gears);
   toggleDeviceBtn.setAttribute('title', texts[currentLang].toggleDeviceManager);
   toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
   toggleDeviceBtn.setAttribute('aria-expanded', 'false');
@@ -18519,7 +18521,7 @@ deviceManagerSection.addEventListener("click", (event) => {
 
     populateDeviceForm(categoryKey, deviceData, subcategory);
     // Change button to "Update"
-    addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
+    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     addDeviceBtn.dataset.mode = "edit";
     setButtonLabelWithIcon(cancelEditBtn, texts[currentLang].cancelEditBtn, ICON_GLYPHS.circleX);
@@ -18701,13 +18703,13 @@ newCategorySelect.addEventListener("change", () => {
   }
   const cancelLabel = texts[currentLang].cancelEditBtn;
   if (wasEditing) {
-    addDeviceBtn.textContent = texts[currentLang].updateDeviceBtn;
+    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].updateDeviceBtn, ICON_GLYPHS.save);
     addDeviceBtn.setAttribute('data-help', texts[currentLang].updateDeviceBtnHelp);
     setButtonLabelWithIcon(cancelEditBtn, cancelLabel, ICON_GLYPHS.circleX);
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     showFormSection(cancelEditBtn);
   } else {
-    addDeviceBtn.textContent = texts[currentLang].addDeviceBtn;
+    setButtonLabelWithIcon(addDeviceBtn, texts[currentLang].addDeviceBtn, ICON_GLYPHS.add);
     addDeviceBtn.setAttribute('data-help', texts[currentLang].addDeviceBtnHelp);
     addDeviceBtn.dataset.mode = "add";
     delete addDeviceBtn.dataset.originalName;
