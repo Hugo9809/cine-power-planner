@@ -1744,6 +1744,40 @@ body.pink-mode .auto-gear-rule-title,
   outline-offset: 2px;
 }
 
+.help-callout {
+  margin: 1.25rem 0;
+  padding: 1rem 1.25rem;
+  border-radius: calc(var(--border-radius) * 1.2);
+  border: 1px solid var(--panel-border);
+  background-color: var(--panel-bg);
+  box-shadow: inset 4px 0 0 0 var(--accent-color);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.help-callout h4 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
+  font-weight: var(--font-weight-semibold);
+}
+
+.help-callout ol,
+.help-callout ul {
+  margin: 0;
+  padding-left: 1.25em;
+}
+
+.help-callout-note {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  color: var(--muted-text-color);
+}
+
+body.dark-mode .help-callout {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
 .help-target-focus,
 .feature-search-focus {
   outline: 3px solid var(--accent-color);
