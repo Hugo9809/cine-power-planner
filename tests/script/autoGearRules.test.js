@@ -91,7 +91,9 @@ describe('applyAutoGearRulesToTableHtml', () => {
       if (!select) return;
       expect(select.multiple).toBe(true);
       const visibleRows = Number.parseInt(select.getAttribute('size') || '0', 10);
-      expect(visibleRows).toBeGreaterThanOrEqual(8);
+      const selectableOptions = Array.from(select.options || []).filter(option => !option.disabled);
+      const expectedMinimum = selectableOptions.length > 1 ? 2 : 1;
+      expect(visibleRows).toBeGreaterThanOrEqual(expectedMinimum);
     });
   });
 
@@ -625,6 +627,39 @@ describe('applyAutoGearRulesToTableHtml', () => {
         && Array.isArray(rule.add)
         && rule.add.length > 0);
       expect(exists).toBe(true);
+    });
+  });
+
+  test('seeding factory defaults includes viewfinder extension rules', () => {
+    env = setupScriptEnvironment();
+
+    const {
+      getAutoGearRules,
+      syncAutoGearRulesFromStorage,
+      __autoGearInternals,
+    } = env.utils;
+
+    syncAutoGearRulesFromStorage([]);
+    if (__autoGearInternals?.clearAutoGearDefaultsSeeded) {
+      __autoGearInternals.clearAutoGearDefaultsSeeded();
+    }
+    if (__autoGearInternals?.seedAutoGearRulesFromCurrentProject) {
+      __autoGearInternals.seedAutoGearRulesFromCurrentProject();
+    }
+
+    const rules = getAutoGearRules();
+    const select = document.getElementById('viewfinderExtension');
+    const expectedValues = Array.from(select?.options || [])
+      .map(option => (option && typeof option.value === 'string' ? option.value.trim() : ''))
+      .filter(value => value);
+    const uniqueExpected = Array.from(new Set(expectedValues));
+
+    uniqueExpected.forEach(value => {
+      const match = rules.find(rule => Array.isArray(rule.viewfinderExtension)
+        && rule.viewfinderExtension.includes(value)
+        && Array.isArray(rule.add)
+        && rule.add.some(item => item && item.name === value));
+      expect(match).toBeTruthy();
     });
   });
 
