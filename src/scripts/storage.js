@@ -74,6 +74,7 @@ const MAX_AUTO_BACKUPS = 50;
 const MAX_DELETION_BACKUPS = 20;
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
+const MAX_SAVE_ATTEMPTS = 3;
 const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
@@ -1123,67 +1124,155 @@ function saveJSONToStorage(
     }
   };
 
-  const writeSerialized = (payload) => {
-    storage.setItem(key, payload);
-    if (useBackup) {
-      try {
-        storage.setItem(fallbackKey, payload);
-      } catch (backupError) {
-        console.warn(`Unable to update backup copy for ${key}`, backupError);
-        alertStorageError();
-      }
-    }
-  };
-
   const logSuccess = () => {
     if (successMessage) {
       console.log(successMessage);
     }
   };
 
-  let serialized = serializeValue();
-  if (serialized === null) {
-    return;
-  }
+  let preservedBackupValue;
+  let hasPreservedBackup = false;
+  let removedBackupDuringRetry = false;
 
-  try {
-    writeSerialized(serialized);
-    logSuccess();
-    return;
-  } catch (error) {
-    if (isQuotaExceededError(error) && typeof onQuotaExceeded === 'function') {
-      let handled = false;
-      try {
-        handled = onQuotaExceeded(error, {
-          storage,
-          key,
-          value,
-          serialized,
-        }) === true;
-      } catch (handlerError) {
-        console.error(`Error while handling quota exceed for ${key}`, handlerError);
-      }
-
-      if (handled) {
-        serialized = serializeValue();
-        if (serialized === null) {
-          return;
-        }
-        try {
-          writeSerialized(serialized);
-          logSuccess();
-          return;
-        } catch (retryError) {
-          console.error(errorMessage, retryError);
-          alertStorageError();
-          return;
-        }
-      }
+  const attemptHandleQuota = (error, context = {}) => {
+    if (!isQuotaExceededError(error) || typeof onQuotaExceeded !== 'function') {
+      return false;
     }
 
-    console.error(errorMessage, error);
-    alertStorageError();
+    try {
+      return onQuotaExceeded(error, {
+        storage,
+        key,
+        value,
+        ...context,
+      }) === true;
+    } catch (handlerError) {
+      const scope = context && context.isBackup ? ' (backup)' : '';
+      console.error(`Error while handling quota exceed for ${key}${scope}`, handlerError);
+      return false;
+    }
+  };
+
+  let attempts = 0;
+  while (attempts < MAX_SAVE_ATTEMPTS) {
+    attempts += 1;
+
+    const serialized = serializeValue();
+    if (serialized === null) {
+      return;
+    }
+
+    try {
+      storage.setItem(key, serialized);
+    } catch (error) {
+      if (attemptHandleQuota(error)) {
+        continue;
+      }
+      console.error(errorMessage, error);
+      alertStorageError();
+      return;
+    }
+
+    if (!useBackup) {
+      logSuccess();
+      return;
+    }
+
+    let existingBackupValue;
+    let hasExistingBackup = false;
+    try {
+      existingBackupValue = storage.getItem(fallbackKey);
+      hasExistingBackup = typeof existingBackupValue === 'string';
+    } catch (inspectError) {
+      console.warn(`Unable to inspect existing backup for ${key}`, inspectError);
+    }
+
+    if (!hasPreservedBackup && hasExistingBackup && typeof existingBackupValue === 'string') {
+      preservedBackupValue = existingBackupValue;
+      hasPreservedBackup = true;
+    }
+
+    if (hasExistingBackup && existingBackupValue === serialized) {
+      logSuccess();
+      return;
+    }
+
+    const attemptBackupWrite = () => {
+      try {
+        storage.setItem(fallbackKey, serialized);
+        return 'success';
+      } catch (error) {
+        let backupError = error;
+        let backupRemovedForRetry = false;
+
+        if (isQuotaExceededError(backupError)) {
+          if (hasExistingBackup) {
+            try {
+              storage.removeItem(fallbackKey);
+              backupRemovedForRetry = true;
+              removedBackupDuringRetry = true;
+            } catch (removeError) {
+              console.warn(`Unable to remove previous backup for ${key}`, removeError);
+            }
+
+            if (backupRemovedForRetry) {
+              try {
+                storage.setItem(fallbackKey, serialized);
+                removedBackupDuringRetry = false;
+                return 'success';
+              } catch (retryError) {
+                backupError = retryError;
+              }
+            }
+          }
+
+          if (attemptHandleQuota(backupError, {
+            serialized,
+            backupKey: fallbackKey,
+            isBackup: true,
+          })) {
+            return 'retry';
+          }
+        }
+
+        if (backupRemovedForRetry && hasExistingBackup && typeof existingBackupValue === 'string') {
+          try {
+            storage.setItem(fallbackKey, existingBackupValue);
+            removedBackupDuringRetry = false;
+          } catch (restoreError) {
+            console.warn(`Unable to restore previous backup for ${key}`, restoreError);
+          }
+        }
+
+        console.warn(`Unable to update backup copy for ${key}`, backupError);
+        alertStorageError();
+        return 'failure';
+      }
+    };
+
+    const backupResult = attemptBackupWrite();
+    if (backupResult === 'success') {
+      logSuccess();
+      return;
+    }
+
+    if (backupResult === 'retry') {
+      continue;
+    }
+
+    return;
   }
+
+  if (hasPreservedBackup && removedBackupDuringRetry && typeof preservedBackupValue === 'string') {
+    try {
+      storage.setItem(fallbackKey, preservedBackupValue);
+    } catch (restoreError) {
+      console.warn(`Unable to restore preserved backup for ${key}`, restoreError);
+    }
+  }
+
+  console.error(errorMessage, new Error('Unable to save value after multiple attempts.'));
+  alertStorageError();
 }
 
 // Generic helper to delete a key from storage with consistent error handling
