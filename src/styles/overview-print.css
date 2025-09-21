@@ -66,6 +66,7 @@ body.dark-mode {
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ffe066;
   --status-warning-text-color: #000;
+  --status-error-text-color: #000;
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-light);
   font-size: var(--font-size-base);
@@ -89,6 +90,7 @@ body.dark-mode {
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ffe066;
   --status-warning-text-color: #000;
+  --status-error-text-color: #000;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
   --video-color: #369;
