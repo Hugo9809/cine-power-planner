@@ -13256,12 +13256,25 @@ function ensureEditProjectButton() {
   if (!btn) {
     btn = document.createElement('button');
     btn.id = 'editProjectBtn';
+  }
+
+  const legacyButtonParent = btn.parentElement;
+  if (legacyButtonParent && legacyButtonParent !== container && legacyButtonParent.id !== 'editProjectBtn') {
+    legacyButtonParent.removeChild(btn);
+  }
+
+  if (!btn.dataset.editProjectBound) {
+    btn.type = 'button';
     btn.addEventListener('click', () => {
-      populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
-      populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
-      populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
+      const infoForDialog = currentProjectInfo
+        ? { ...currentProjectInfo }
+        : (projectForm ? collectProjectFormData() : {});
+      if (projectForm) {
+        populateProjectForm(infoForDialog || {});
+      }
       openDialog(projectDialog);
     });
+    btn.dataset.editProjectBound = 'true';
   }
   const title = container.querySelector('h2');
   if (title && btn.parentElement !== container) {
@@ -13269,6 +13282,7 @@ function ensureEditProjectButton() {
   } else if (!title && btn.parentElement !== container) {
     container.prepend(btn);
   }
+  btn.type = 'button';
   setEditProjectBtnText();
 }
 
