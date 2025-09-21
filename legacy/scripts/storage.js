@@ -1129,14 +1129,12 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
         } catch (error) {
           if (attemptHandleQuota(error)) {
             if (!registerQuotaRecoveryStep()) {
-              return {
-                b: true
-              };
+              return 0;
             }
             if (attempts > 0) {
               attempts -= 1;
             }
-            return 0;
+            return 1;
           }
           console.error(errorMessage, error);
           alertStorageError();
@@ -1212,22 +1210,20 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
         if (attempts > 0) {
           attempts -= 1;
         }
-        return 0;
+        return 1;
       }
       if (quotaRecoveryFailed) {
-        return {
-          b: true
-        };
+        return 0;
       }
       return {
         v: void 0
       };
     },
     _ret;
-  while (attempts < MAX_SAVE_ATTEMPTS && !quotaRecoveryFailed) {
+  while (attempts < MAX_SAVE_ATTEMPTS) {
     _ret = _loop();
-    if (_ret === 0) continue;
-    if (_ret && _ret.b) break;
+    if (_ret === 0) break;
+    if (_ret === 1) continue;
     if (_ret) return _ret.v;
   }
   if (hasPreservedBackup && removedBackupDuringRetry && typeof preservedBackupValue === 'string') {
@@ -2492,6 +2488,10 @@ function collectPreferenceSnapshot() {
   if (language) {
     preferences.language = language;
   }
+  var iosPwaHelpShown = parseStoredBoolean(readLocalStorageValue('iosPwaHelpShown'));
+  if (iosPwaHelpShown !== null) {
+    preferences.iosPwaHelpShown = iosPwaHelpShown;
+  }
   return preferences;
 }
 function normalizeCustomFontEntries(entries) {
@@ -2713,9 +2713,9 @@ function normalizeImportedPresetId(value) {
 function getSnapshotKeyVariants(key) {
   var variants = [key];
   if (typeof key === 'string') {
-    if (key.indexOf('cameraPowerPlanner_') === 0) {
+    if (key.startsWith('cameraPowerPlanner_')) {
       variants.push("cinePowerPlanner_".concat(key.slice('cameraPowerPlanner_'.length)));
-    } else if (key.indexOf('cinePowerPlanner_') === 0) {
+    } else if (key.startsWith('cinePowerPlanner_')) {
       variants.push("cameraPowerPlanner_".concat(key.slice('cinePowerPlanner_'.length)));
     }
   }
@@ -2729,19 +2729,31 @@ function readSnapshotEntry(snapshot, key) {
   for (var i = 0; i < variants.length; i += 1) {
     var candidate = variants[i];
     if (Object.prototype.hasOwnProperty.call(snapshot, candidate)) {
-      return { key: candidate, value: snapshot[candidate], type: 'primary' };
-    }
-  }
-  for (var _i = 0; _i < variants.length; _i += 1) {
-    var backupCandidate = "".concat(variants[_i]).concat(STORAGE_BACKUP_SUFFIX);
-    if (Object.prototype.hasOwnProperty.call(snapshot, backupCandidate)) {
-      return { key: backupCandidate, value: snapshot[backupCandidate], type: 'backup' };
+      return {
+        key: candidate,
+        value: snapshot[candidate],
+        type: 'primary'
+      };
     }
   }
   for (var _i2 = 0; _i2 < variants.length; _i2 += 1) {
-    var migrationCandidate = "".concat(variants[_i2]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
-    if (Object.prototype.hasOwnProperty.call(snapshot, migrationCandidate)) {
-      return { key: migrationCandidate, value: snapshot[migrationCandidate], type: 'migration-backup' };
+    var _candidate = "".concat(variants[_i2]).concat(STORAGE_BACKUP_SUFFIX);
+    if (Object.prototype.hasOwnProperty.call(snapshot, _candidate)) {
+      return {
+        key: _candidate,
+        value: snapshot[_candidate],
+        type: 'backup'
+      };
+    }
+  }
+  for (var _i3 = 0; _i3 < variants.length; _i3 += 1) {
+    var _candidate2 = "".concat(variants[_i3]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+    if (Object.prototype.hasOwnProperty.call(snapshot, _candidate2)) {
+      return {
+        key: _candidate2,
+        value: snapshot[_candidate2],
+        type: 'migration-backup'
+      };
     }
   }
   return null;
@@ -2781,7 +2793,7 @@ function parseSnapshotJSONValue(entry) {
     }
     try {
       return JSON.parse(trimmed);
-    } catch (error) {
+    } catch (_unused2) {
       return raw;
     }
   }
@@ -2822,7 +2834,7 @@ function convertStorageSnapshotToData(snapshot) {
     if (!entry || typeof entry.key !== 'string') {
       return;
     }
-    if (entry.key.indexOf('cameraPowerPlanner_') === 0 || entry.key.indexOf('cinePowerPlanner_') === 0 || entry.key.endsWith(STORAGE_BACKUP_SUFFIX) || entry.key.endsWith(STORAGE_MIGRATION_BACKUP_SUFFIX)) {
+    if (entry.key.startsWith('cameraPowerPlanner_') || entry.key.startsWith('cinePowerPlanner_') || entry.key.endsWith(STORAGE_BACKUP_SUFFIX) || entry.key.endsWith(STORAGE_MIGRATION_BACKUP_SUFFIX)) {
       hasSnapshotKeys = true;
     }
   };
@@ -2902,24 +2914,24 @@ function convertStorageSnapshotToData(snapshot) {
   var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
   var booleanPreferenceKeys = new Set(['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'iosPwaHelpShown']);
   var preferences = {};
-  preferenceKeys.forEach(function (prefKey) {
-    var entry = readSnapshotEntry(snapshot, prefKey);
+  preferenceKeys.forEach(function (key) {
+    var entry = readSnapshotEntry(snapshot, key);
     if (!entry) {
       return;
     }
     markSnapshotEntry(entry);
     var raw = extractSnapshotStoredValue(entry);
-    if (booleanPreferenceKeys.has(prefKey)) {
+    if (booleanPreferenceKeys.has(key)) {
       var normalized = normalizeImportedBoolean(raw);
       if (normalized !== null) {
-        preferences[prefKey] = normalized;
+        preferences[key] = normalized;
         hasAssignments = true;
         return;
       }
     }
     var stringValue = parseSnapshotStringValue(entry);
     if (stringValue !== undefined) {
-      preferences[prefKey] = stringValue;
+      preferences[key] = stringValue;
       hasAssignments = true;
     }
   });
@@ -2936,11 +2948,15 @@ function importAllData(allData) {
   if (!isPlainObject(allData)) {
     return;
   }
-  var skipSnapshotConversion = Boolean(options && options.skipSnapshotConversion);
+  var _ref9 = options || {},
+    _ref9$skipSnapshotCon = _ref9.skipSnapshotConversion,
+    skipSnapshotConversion = _ref9$skipSnapshotCon === void 0 ? false : _ref9$skipSnapshotCon;
   if (!skipSnapshotConversion) {
     var converted = convertStorageSnapshotToData(allData);
     if (converted) {
-      importAllData(converted, { skipSnapshotConversion: true });
+      importAllData(converted, {
+        skipSnapshotConversion: true
+      });
       return;
     }
   }

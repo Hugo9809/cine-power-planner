@@ -5,16 +5,6 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-var getCssVarValue = typeof getCssVariableValue === 'function' ? getCssVariableValue : function (name) {
-  var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-  if (typeof document === 'undefined') return fallback;
-  var root = document.documentElement;
-  if (!root) return fallback;
-  var computed = typeof window !== 'undefined' && typeof window.getComputedStyle === 'function' ? window.getComputedStyle(root).getPropertyValue(name).trim() : '';
-  if (computed) return computed;
-  var inline = root.style.getPropertyValue(name).trim();
-  return inline || fallback;
-};
 function generatePrintableOverview() {
   var escapeHtmlSafe = function escapeHtmlSafe(value) {
     return typeof escapeHtml === 'function' ? escapeHtml(value) : String(value !== null && value !== void 0 ? value : '');
@@ -132,115 +122,40 @@ function generatePrintableOverview() {
   };
   var warningHtml = buildStatusMarkup(pinWarnElem) + buildStatusMarkup(dtapWarnElem);
   var resultsSectionHtml = "\n        <section id=\"resultsSection\" class=\"results-section print-section\">\n            <h2>".concat(t.resultsHeading, "</h2>\n            <div class=\"results-body\">\n                ").concat(resultsHtml, "\n                ").concat(warningHtml ? "<div class=\"results-warnings\">".concat(warningHtml, "</div>") : '', "\n            </div>\n        </section>\n    ");
-  var batteryTableHtml = '';
-  var totalWatt = parseFloat(totalPowerElem.textContent);
-  if (totalWatt > 0) {
-    var totalCurrentLow = parseFloat(totalCurrent12Elem.textContent);
-    var selectedBatteryName = batterySelect.value;
-    var camName = cameraSelect.value;
-    var plateFilter = getSelectedPlate();
-    var supportsB = supportsBMountCamera(camName);
-    var supportsGold = supportsGoldMountCamera(camName);
-    var bMountCam = plateFilter === 'B-Mount';
-    var selectedCandidate = null;
-    if (selectedBatteryName && selectedBatteryName !== 'None' && devices.batteries[selectedBatteryName]) {
-      var selData = devices.batteries[selectedBatteryName];
-      if ((!plateFilter || selData.mount_type === plateFilter) && (supportsB || selData.mount_type !== 'B-Mount') && (supportsGold || selData.mount_type !== 'Gold-Mount')) {
-        var pinOK_sel = totalCurrentLow <= selData.pinA;
-        var dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
-        if (pinOK_sel || dtapOK_sel) {
-          var selHours = selData.capacity / totalWatt;
-          var selMethod;
-          if (pinOK_sel && dtapOK_sel) selMethod = 'both pins and D-Tap';else if (pinOK_sel) selMethod = 'pins';else selMethod = 'dtap';
-          selectedCandidate = {
-            name: selectedBatteryName,
-            hours: selHours,
-            method: selMethod
-          };
-        }
+  var batteryComparisonSection = typeof document !== 'undefined' ? document.getElementById('batteryComparison') : null;
+  var isSectionRenderable = function isSectionRenderable(section) {
+    if (!section) return false;
+    if (section.hasAttribute('hidden')) return false;
+    if (section.classList && section.classList.contains('hidden')) return false;
+    if (section.style && section.style.display === 'none') return false;
+    if (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+      var computed = window.getComputedStyle(section);
+      if (computed.display === 'none' || computed.visibility === 'hidden') {
+        return false;
       }
     }
-    var pinsCandidates = [];
-    var dtapCandidates = [];
-    for (var battName in devices.batteries) {
-      if (battName === 'None') continue;
-      if (selectedCandidate && battName === selectedCandidate.name) continue;
-      var battInfo = devices.batteries[battName];
-      if (plateFilter && battInfo.mount_type !== plateFilter) continue;
-      if (!plateFilter && !supportsB && battInfo.mount_type === 'B-Mount') continue;
-      if (!plateFilter && !supportsGold && battInfo.mount_type === 'Gold-Mount') continue;
-      var canPin = totalCurrentLow <= battInfo.pinA;
-      var canDTap = !bMountCam && totalCurrentLow <= battInfo.dtapA;
-      if (!canPin && !canDTap) continue;
-      var hours = battInfo.capacity / totalWatt;
-      var method = canPin && canDTap ? 'both pins and D-Tap' : canPin ? 'pins' : 'dtap';
-      if (canPin) pinsCandidates.push({
-        name: battName,
-        hours: hours,
-        method: method
-      });else dtapCandidates.push({
-        name: battName,
-        hours: hours,
-        method: method
-      });
+    var table = section.querySelector('table');
+    return table ? table.innerHTML.trim().length > 0 : false;
+  };
+  var batteryComparisonHtml = '';
+  if (isSectionRenderable(batteryComparisonSection)) {
+    var clone = batteryComparisonSection.cloneNode(true);
+    clone.id = 'batteryComparisonOverview';
+    clone.classList.add('print-section');
+    clone.removeAttribute('style');
+    var heading = clone.querySelector('#batteryComparisonHeading');
+    if (heading) {
+      heading.id = 'batteryComparisonOverviewHeading';
     }
-    var getMethodLabel = function getMethodLabel(method) {
-      var colorMap = {
-        pins: {
-          var: '--warning-color',
-          fallback: '#FF9800',
-          text: t.methodPinsOnly
-        },
-        'both pins and D-Tap': {
-          var: '--success-color',
-          fallback: '#4CAF50',
-          text: t.methodPinsAndDTap
-        },
-        infinite: {
-          var: '--info-color',
-          fallback: '#007bff',
-          text: t.methodInfinite
-        }
-      };
-      var entry = colorMap[method];
-      if (entry) {
-        var color = getCssVarValue(entry.var, entry.fallback);
-        return "<span style=\"color:".concat(color, ";\">").concat(entry.text, "</span>");
-      }
-      return method === 'dtap' ? 'D-Tap' : method;
-    };
-    var getBarClass = function getBarClass(method) {
-      return method === 'pins' ? 'bar bar-pins-only' : 'bar';
-    };
-    pinsCandidates.sort(function (a, b) {
-      return b.hours - a.hours;
-    });
-    dtapCandidates.sort(function (a, b) {
-      return b.hours - a.hours;
-    });
-    var runtimeHeading = t.batteryLifeHeading || t.batteryComparisonHeading || 'Runtime comparison';
-    var tableHtml = "<h2>".concat(runtimeHeading, "</h2><table class=\"battery-table\"><tr><th>").concat(t.batteryLabel, "</th><th>").concat(t.batteryLifeLabel, "</th><th>").concat(runtimeHeading, "</th></tr>");
-    var maxHours = Math.max(selectedCandidate ? selectedCandidate.hours : 0, pinsCandidates[0] ? pinsCandidates[0].hours : 0, dtapCandidates[0] ? dtapCandidates[0].hours : 0);
-    if (selectedCandidate) {
-      tableHtml += "<tr class=\"selectedBatteryRow\"><td>".concat(escapeHtmlSafe(selectedCandidate.name), "</td><td>").concat(selectedCandidate.hours.toFixed(2), "h (").concat(getMethodLabel(selectedCandidate.method), ")</td><td><div class=\"barContainer\"><div class=\"").concat(getBarClass(selectedCandidate.method), "\" style=\"width: ").concat(selectedCandidate.hours / maxHours * 100, "%;\"></div></div></td></tr>");
+    var container = clone.querySelector('#batteryTableContainer');
+    if (container) {
+      container.id = 'batteryTableOverviewContainer';
     }
-    pinsCandidates.forEach(function (candidate) {
-      if (selectedCandidate && candidate.name === selectedCandidate.name) return;
-      tableHtml += "<tr><td>".concat(escapeHtmlSafe(candidate.name), "</td><td>").concat(candidate.hours.toFixed(2), "h (").concat(getMethodLabel(candidate.method), ")</td><td><div class=\"barContainer\"><div class=\"").concat(getBarClass(candidate.method), "\" style=\"width: ").concat(candidate.hours / maxHours * 100, "%;\"></div></div></td></tr>");
-    });
-    dtapCandidates.forEach(function (candidate) {
-      if (selectedCandidate && candidate.name === selectedCandidate.name) return;
-      var alreadyInPins = pinsCandidates.some(function (p) {
-        return p.name === candidate.name;
-      });
-      if (!alreadyInPins) {
-        tableHtml += "<tr><td>".concat(escapeHtmlSafe(candidate.name), "</td><td>").concat(candidate.hours.toFixed(2), "h (").concat(getMethodLabel(candidate.method), ")</td><td><div class=\"barContainer\"><div class=\"").concat(getBarClass(candidate.method), "\" style=\"width: ").concat(candidate.hours / maxHours * 100, "%;\"></div></div></td></tr>");
-      }
-    });
-    tableHtml += "</table>";
-    batteryTableHtml = tableHtml;
-  } else {
-    batteryTableHtml = '';
+    var table = clone.querySelector('#batteryTable');
+    if (table) {
+      table.removeAttribute('id');
+    }
+    batteryComparisonHtml = "<div class=\"page-break\"></div>".concat(clone.outerHTML);
   }
   var safeSetupName = escapeHtmlSafe(setupName);
   var diagramCss = getDiagramCss(false);
@@ -259,7 +174,6 @@ function generatePrintableOverview() {
   var diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
   var diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
   var diagramSectionHtml = diagramAreaHtml ? "<section id=\"setupDiagram\" class=\"diagram-section print-section\"><h2>".concat(t.setupDiagramHeading, "</h2>").concat(diagramDescHtml).concat(diagramAreaHtml).concat(diagramLegendHtml).concat(diagramHintHtml, "</section>") : '';
-  var batteryTableHtmlWithBreak = batteryTableHtml ? "<div class=\"page-break\"></div>".concat(batteryTableHtml) : '';
   var hasGeneratedGearList = function () {
     if (typeof document === 'undefined') return false;
     var container = document.getElementById('gearListOutput');
@@ -270,8 +184,8 @@ function generatePrintableOverview() {
     var trimmed = typeof container.innerHTML === 'string' ? container.innerHTML.trim() : '';
     if (!trimmed) return false;
     if (typeof container.querySelector === 'function') {
-      var table = container.querySelector('.gear-table');
-      if (table) return true;
+      var _table = container.querySelector('.gear-table');
+      if (_table) return true;
     }
     return true;
   }();
@@ -299,7 +213,7 @@ function generatePrintableOverview() {
   var gearListActionsHtml = gearListHtmlCombined ? "<div class=\"overview-gear-actions\"><button id=\"overviewDeleteGearListBtn\" class=\"overview-delete-gear-btn\" title=\"".concat(escapeHtmlSafe(deleteGearListHelp), "\" data-help=\"").concat(escapeHtmlSafe(deleteGearListHelp), "\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF254;</span>").concat(escapeHtmlSafe(deleteGearListLabel), "</button></div>") : '';
   var logoHtml = customLogo ? "<img id=\"printLogo\" src=\"".concat(customLogo, "\" alt=\"Logo\" />") : '';
   var contentClass = customLogo ? 'logo-present' : '';
-  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF131;</span>").concat(escapeHtmlSafe(t.backToAppBtn), "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"uicons\">&#xE7AB;</span>").concat(escapeHtmlSafe(t.printBtn), "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>Generated on: ").concat(dateTimeString, "</em></p>\n\n            <h2>").concat(t.overviewDeviceSelectionHeading || t.deviceSelectionHeading, "</h2>\n            ").concat(deviceListHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtmlCombined, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryTableHtmlWithBreak, "\n        </div>\n    ");
+  var overviewHtml = "\n        <div id=\"overviewDialogContent\" class=\"".concat(contentClass, "\">\n            <div class=\"overview-actions\">\n                <button id=\"closeOverviewBtn\" class=\"back-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"essential\">&#xF131;</span>").concat(escapeHtmlSafe(t.backToAppBtn), "</button>\n                <button id=\"printOverviewBtn\" class=\"print-btn\"><span class=\"btn-icon icon-glyph\" aria-hidden=\"true\" data-icon-font=\"uicons\">&#xE7AB;</span>").concat(escapeHtmlSafe(t.printBtn), "</button>\n            </div>\n            ").concat(logoHtml, "\n            <h1>").concat(t.overviewTitle, "</h1>\n            <p><strong>").concat(t.setupNameLabel, "</strong> ").concat(safeSetupName, "</p>\n            <p><em>Generated on: ").concat(dateTimeString, "</em></p>\n\n            <h2>").concat(t.overviewDeviceSelectionHeading || t.deviceSelectionHeading, "</h2>\n            ").concat(deviceListHtml, "\n\n            ").concat(resultsSectionHtml, "\n\n            ").concat(diagramSectionHtml, "\n\n            ").concat(gearListHtmlCombined, "\n            ").concat(gearListActionsHtml, "\n            ").concat(batteryComparisonHtml, "\n        </div>\n    ");
   var overviewDialog = document.getElementById('overviewDialog');
   overviewDialog.innerHTML = overviewHtml;
   var content = overviewDialog.querySelector('#overviewDialogContent');

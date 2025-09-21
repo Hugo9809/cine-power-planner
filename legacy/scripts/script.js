@@ -125,7 +125,7 @@ function loadDeviceSchemaFromCacheStorage() {
 }
 function _loadDeviceSchemaFromCacheStorage() {
   _loadDeviceSchemaFromCacheStorage = _asyncToGenerator(_regenerator().m(function _callee3() {
-    var candidates, _iterator26, _step26, url, response, _t3, _t4;
+    var candidates, _iterator28, _step28, url, response, _t3, _t4;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.p = _context3.n) {
         case 0:
@@ -146,15 +146,15 @@ function _loadDeviceSchemaFromCacheStorage() {
               console.warn('Failed to resolve schema.json cache URL', error);
             }
           }
-          _iterator26 = _createForOfIteratorHelper(candidates);
+          _iterator28 = _createForOfIteratorHelper(candidates);
           _context3.p = 2;
-          _iterator26.s();
+          _iterator28.s();
         case 3:
-          if ((_step26 = _iterator26.n()).done) {
+          if ((_step28 = _iterator28.n()).done) {
             _context3.n = 10;
             break;
           }
-          url = _step26.value;
+          url = _step28.value;
           _context3.p = 4;
           _context3.n = 5;
           return caches.match(url, {
@@ -186,10 +186,10 @@ function _loadDeviceSchemaFromCacheStorage() {
         case 11:
           _context3.p = 11;
           _t4 = _context3.v;
-          _iterator26.e(_t4);
+          _iterator28.e(_t4);
         case 12:
           _context3.p = 12;
-          _iterator26.f();
+          _iterator28.f();
           return _context3.f(12);
         case 13:
           return _context3.a(2, null);
@@ -2404,11 +2404,13 @@ function updateBatteryOptions() {
   })) {
     batterySelect.value = current;
   }
+  updateFavoriteButton(batterySelect);
   if (Array.from(hotswapSelect.options).some(function (o) {
     return o.value === currentSwap;
   })) {
     hotswapSelect.value = currentSwap;
   }
+  updateFavoriteButton(hotswapSelect);
   updateBatteryLabel();
 }
 var BRAND_KEYWORDS = {
@@ -4223,7 +4225,7 @@ var ICON_GLYPHS = Object.freeze({
   gears: iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS),
   controller: iconGlyph("\uF117", ICON_FONT_KEYS.GADGET),
   distance: iconGlyph("\uEFB9", ICON_FONT_KEYS.UICONS),
-  sensor: iconGlyph("\uF034", ICON_FONT_KEYS.UICONS),
+  sensor: iconGlyph("\uEC2B", ICON_FONT_KEYS.UICONS),
   viewfinder: iconGlyph("\uF114", ICON_FONT_KEYS.FILM),
   camera: iconGlyph("\uE333", ICON_FONT_KEYS.UICONS),
   trash: iconGlyph("\uF254", ICON_FONT_KEYS.ESSENTIAL),
@@ -4236,6 +4238,7 @@ var ICON_GLYPHS = Object.freeze({
   fileImport: iconGlyph("\uE7C7", ICON_FONT_KEYS.UICONS),
   save: iconGlyph("\uF207", ICON_FONT_KEYS.ESSENTIAL),
   share: iconGlyph("\uF219", ICON_FONT_KEYS.ESSENTIAL),
+  paperPlane: iconGlyph("\uED67", ICON_FONT_KEYS.UICONS),
   magnet: iconGlyph("\uF1B5", ICON_FONT_KEYS.ESSENTIAL),
   timecode: iconGlyph("\uF10E", ICON_FONT_KEYS.FILM),
   audioIn: iconGlyph("\uF1C3", ICON_FONT_KEYS.ESSENTIAL),
@@ -4711,9 +4714,40 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   if (!layer) {
     return false;
   }
-  var availableTemplates = templates;
-  if (templates.length > 1 && pinkModeAnimatedIconLastTemplateName) {
-    var filteredTemplates = templates.filter(function (template) {
+  var sanitizedTemplates = templates.filter(Boolean);
+  if (!sanitizedTemplates.length) {
+    return false;
+  }
+  var activeTemplateNames = new Set();
+  var _iterator9 = _createForOfIteratorHelper(pinkModeAnimatedIconInstances),
+    _step9;
+  try {
+    for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+      var _instance = _step9.value;
+      if (!_instance) {
+        continue;
+      }
+      var templateName = typeof _instance.templateName === 'string' && _instance.templateName ? _instance.templateName : null;
+      if (templateName) {
+        activeTemplateNames.add(templateName);
+      }
+    }
+  } catch (err) {
+    _iterator9.e(err);
+  } finally {
+    _iterator9.f();
+  }
+  var availableTemplates = sanitizedTemplates.filter(function (template) {
+    if (!template || typeof template.name !== 'string') {
+      return true;
+    }
+    return !activeTemplateNames.has(template.name);
+  });
+  if (!availableTemplates.length) {
+    return false;
+  }
+  if (availableTemplates.length > 1 && pinkModeAnimatedIconLastTemplateName) {
+    var filteredTemplates = availableTemplates.filter(function (template) {
       return template && template.name !== pinkModeAnimatedIconLastTemplateName;
     });
     if (filteredTemplates.length) {
@@ -4806,7 +4840,8 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   var instance = {
     container: container,
     animation: animationInstance,
-    destroyed: false
+    destroyed: false,
+    templateName: typeof template.name === 'string' ? template.name : null
   };
   container.addEventListener('animationend', function () {
     destroyPinkModeAnimatedIconInstance(instance);
@@ -4933,6 +4968,72 @@ function setButtonLabelWithIcon(button, label) {
   var safeLabel = typeof label === 'string' ? escapeHtml(label) : '';
   var iconHtml = iconMarkup(glyph, 'btn-icon');
   button.innerHTML = "".concat(iconHtml).concat(safeLabel);
+}
+function getLocalizedPathText(path) {
+  var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  if (!path) return fallback;
+  var keys = Array.isArray(path) ? path : typeof path === 'string' ? [path] : [];
+  if (!keys.length) return fallback;
+  var langTexts = texts && texts[currentLang] || {};
+  var fallbackTexts = texts && texts.en || {};
+  var resolve = function resolve(source) {
+    return keys.reduce(function (acc, key) {
+      if (acc && Object.prototype.hasOwnProperty.call(acc, key)) {
+        return acc[key];
+      }
+      return undefined;
+    }, source);
+  };
+  var localized = resolve(langTexts);
+  if (localized !== undefined && localized !== null && localized !== '') {
+    return String(localized);
+  }
+  var fallbackValue = resolve(fallbackTexts);
+  if (fallbackValue !== undefined && fallbackValue !== null && fallbackValue !== '') {
+    return String(fallbackValue);
+  }
+  return fallback;
+}
+function configureIconOnlyButton(button, glyph) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  if (!button) return;
+  var _ref20 = options || {},
+    _ref20$contextPaths = _ref20.contextPaths,
+    contextPaths = _ref20$contextPaths === void 0 ? [] : _ref20$contextPaths,
+    _ref20$fallbackContex = _ref20.fallbackContext,
+    fallbackContext = _ref20$fallbackContex === void 0 ? '' : _ref20$fallbackContex,
+    _ref20$actionKey = _ref20.actionKey,
+    actionKey = _ref20$actionKey === void 0 ? 'addEntry' : _ref20$actionKey;
+  setButtonLabelWithIcon(button, '', glyph || ICON_GLYPHS.add);
+  var actionLabel = getLocalizedPathText(['projectForm', actionKey], actionKey === 'removeEntry' ? 'Remove' : 'Add');
+  var paths = Array.isArray(contextPaths) ? contextPaths : [contextPaths];
+  var contextLabel = '';
+  var _iterator0 = _createForOfIteratorHelper(paths),
+    _step0;
+  try {
+    for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+      var path = _step0.value;
+      if (!path) continue;
+      var resolved = getLocalizedPathText(path, '');
+      if (resolved) {
+        contextLabel = resolved;
+        break;
+      }
+    }
+  } catch (err) {
+    _iterator0.e(err);
+  } finally {
+    _iterator0.f();
+  }
+  if (!contextLabel && typeof fallbackContext === 'string') {
+    contextLabel = fallbackContext;
+  }
+  var normalizedContext = contextLabel ? contextLabel.replace(/[:：]\s*$/, '').trim() : '';
+  var combinedLabel = [actionLabel, normalizedContext].filter(Boolean).join(' ').trim();
+  if (combinedLabel) {
+    button.setAttribute('aria-label', combinedLabel);
+    button.setAttribute('title', combinedLabel);
+  }
 }
 function createCrewRow() {
   var _texts$en92, _texts$currentLang2, _texts$currentLang3, _texts$en93, _texts$currentLang4, _texts$en94;
@@ -5577,10 +5678,10 @@ function collectDeviceManagerCategories() {
     if (Array.isArray(node.attributes)) {
       addCategory(path.join('.'));
     }
-    Object.entries(node).forEach(function (_ref20) {
-      var _ref21 = _slicedToArray(_ref20, 2),
-        childKey = _ref21[0],
-        value = _ref21[1];
+    Object.entries(node).forEach(function (_ref21) {
+      var _ref22 = _slicedToArray(_ref21, 2),
+        childKey = _ref22[0],
+        value = _ref22[1];
       if (childKey === 'attributes') return;
       if (value && _typeof(value) === 'object') {
         _traverseSchema(value, path.concat(childKey));
@@ -5592,16 +5693,16 @@ function collectDeviceManagerCategories() {
   }
   var addFromData = function addFromData(data) {
     if (!data || _typeof(data) !== 'object' || Array.isArray(data)) return;
-    Object.entries(data).forEach(function (_ref22) {
-      var _ref23 = _slicedToArray(_ref22, 2),
-        key = _ref23[0],
-        value = _ref23[1];
+    Object.entries(data).forEach(function (_ref23) {
+      var _ref24 = _slicedToArray(_ref23, 2),
+        key = _ref24[0],
+        value = _ref24[1];
       if (key === 'accessories') {
         if (value && _typeof(value) === 'object') {
-          Object.entries(value).forEach(function (_ref24) {
-            var _ref25 = _slicedToArray(_ref24, 2),
-              subKey = _ref25[0],
-              subValue = _ref25[1];
+          Object.entries(value).forEach(function (_ref25) {
+            var _ref26 = _slicedToArray(_ref25, 2),
+              subKey = _ref26[0],
+              subValue = _ref26[1];
             if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
               addCategory("accessories.".concat(subKey));
             }
@@ -5609,10 +5710,10 @@ function collectDeviceManagerCategories() {
         }
       } else if (key === 'fiz') {
         if (value && _typeof(value) === 'object') {
-          Object.entries(value).forEach(function (_ref26) {
-            var _ref27 = _slicedToArray(_ref26, 2),
-              subKey = _ref27[0],
-              subValue = _ref27[1];
+          Object.entries(value).forEach(function (_ref27) {
+            var _ref28 = _slicedToArray(_ref27, 2),
+              subKey = _ref28[0],
+              subValue = _ref28[1];
             if (subValue && _typeof(subValue) === 'object' && !Array.isArray(subValue)) {
               addCategory("fiz.".concat(subKey));
             }
@@ -5843,9 +5944,9 @@ function populateCategoryOptions() {
 }
 populateCategoryOptions();
 function getCategoryContainer(categoryKey, subcategory) {
-  var _ref28 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-    _ref28$create = _ref28.create,
-    create = _ref28$create === void 0 ? false : _ref28$create;
+  var _ref29 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+    _ref29$create = _ref29.create,
+    create = _ref29$create === void 0 ? false : _ref29$create;
   if (!categoryKey) {
     return null;
   }
@@ -6317,18 +6418,18 @@ function getSchemaAttributesForCategory(category) {
   if (!deviceSchema) return [];
   var parts = category.split('.');
   var node = deviceSchema;
-  var _iterator9 = _createForOfIteratorHelper(parts),
-    _step9;
+  var _iterator1 = _createForOfIteratorHelper(parts),
+    _step1;
   try {
-    for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-      var p = _step9.value;
+    for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+      var p = _step1.value;
       node = node && node[p];
       if (!node) return [];
     }
   } catch (err) {
-    _iterator9.e(err);
+    _iterator1.e(err);
   } finally {
-    _iterator9.f();
+    _iterator1.f();
   }
   return Array.isArray(node.attributes) ? node.attributes : [];
 }
@@ -6340,19 +6441,19 @@ function getCombinedCategoryAttributes(category) {
   var skip = function skip(attr) {
     return !attr || exclude.includes(attr) || seen.has(attr);
   };
-  var _iterator0 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
-    _step0;
+  var _iterator10 = _createForOfIteratorHelper(getSchemaAttributesForCategory(category)),
+    _step10;
   try {
-    for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-      var attr = _step0.value;
+    for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+      var attr = _step10.value;
       if (skip(attr)) continue;
       seen.add(attr);
       attrs.push(attr);
     }
   } catch (err) {
-    _iterator0.e(err);
+    _iterator10.e(err);
   } finally {
-    _iterator0.f();
+    _iterator10.f();
   }
   if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
     for (var _i10 = 0, _Object$keys3 = Object.keys(data); _i10 < _Object$keys3.length; _i10++) {
@@ -6391,18 +6492,18 @@ function buildDynamicFields(category) {
   }
   var list = document.createElement('div');
   list.className = 'schema-attribute-list';
-  var _iterator1 = _createForOfIteratorHelper(attrs),
-    _step1;
+  var _iterator11 = _createForOfIteratorHelper(attrs),
+    _step11;
   try {
-    for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
-      var attr = _step1.value;
+    for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+      var attr = _step11.value;
       var _value3 = data && data[attr] !== undefined ? data[attr] : undefined;
       list.appendChild(createSchemaField(category, attr, _value3));
     }
   } catch (err) {
-    _iterator1.e(err);
+    _iterator11.e(err);
   } finally {
-    _iterator1.f();
+    _iterator11.f();
   }
   dynamicFieldsDiv.appendChild(list);
 }
@@ -6423,11 +6524,11 @@ function collectDynamicFieldValues(category) {
     attrs = getCombinedCategoryAttributes(category, {}, exclude);
   }
   var result = {};
-  var _iterator10 = _createForOfIteratorHelper(attrs),
-    _step10;
+  var _iterator12 = _createForOfIteratorHelper(attrs),
+    _step12;
   try {
-    for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-      var attr = _step10.value;
+    for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+      var attr = _step12.value;
       if (exclude.includes(attr)) continue;
       var el = document.getElementById("attr-".concat(attr));
       if (el) {
@@ -6469,9 +6570,9 @@ function collectDynamicFieldValues(category) {
       }
     }
   } catch (err) {
-    _iterator10.e(err);
+    _iterator12.e(err);
   } finally {
-    _iterator10.f();
+    _iterator12.f();
   }
   return result;
 }
@@ -8442,19 +8543,19 @@ function looksLikeDeviceDatabase(candidate) {
     return false;
   }
   var matched = 0;
-  var _iterator11 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
-    _step11;
+  var _iterator13 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+    _step13;
   try {
-    for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-      var _key6 = _step11.value;
+    for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+      var _key6 = _step13.value;
       if (Object.prototype.hasOwnProperty.call(candidate, _key6)) {
         matched += 1;
       }
     }
   } catch (err) {
-    _iterator11.e(err);
+    _iterator13.e(err);
   } finally {
-    _iterator11.f();
+    _iterator13.f();
   }
   return matched >= 3;
 }
@@ -8487,11 +8588,11 @@ function validateDeviceDatabaseStructure(candidate) {
   }
   var errors = [];
   var missing = [];
-  var _iterator12 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
-    _step12;
+  var _iterator14 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+    _step14;
   try {
-    for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-      var category = _step12.value;
+    for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+      var category = _step14.value;
       if (category === 'fiz') {
         if (!isPlainObjectValue(candidate.fiz)) {
           missing.push('fiz');
@@ -8525,9 +8626,9 @@ function validateDeviceDatabaseStructure(candidate) {
       }
     }
   } catch (err) {
-    _iterator12.e(err);
+    _iterator14.e(err);
   } finally {
-    _iterator12.f();
+    _iterator14.f();
   }
   if (missing.length) {
     errors.push("Missing categories: ".concat(missing.join(', ')));
@@ -8801,16 +8902,16 @@ function summarizeCustomDevices() {
   }
   var categories = [];
   var total = 0;
-  Object.entries(diff).forEach(function (_ref29) {
-    var _ref30 = _slicedToArray(_ref29, 2),
-      cat = _ref30[0],
-      entries = _ref30[1];
+  Object.entries(diff).forEach(function (_ref30) {
+    var _ref31 = _slicedToArray(_ref30, 2),
+      cat = _ref31[0],
+      entries = _ref31[1];
     if (!isPlainObjectValue(entries)) return;
     if (cat === 'fiz') {
-      Object.entries(entries).forEach(function (_ref31) {
-        var _ref32 = _slicedToArray(_ref31, 2),
-          sub = _ref32[0],
-          subEntries = _ref32[1];
+      Object.entries(entries).forEach(function (_ref32) {
+        var _ref33 = _slicedToArray(_ref32, 2),
+          sub = _ref33[0],
+          subEntries = _ref33[1];
         if (!isPlainObjectValue(subEntries)) return;
         var keys = Object.keys(subEntries);
         if (!keys.length) return;
@@ -8880,20 +8981,20 @@ function computeGearListCount(projectData, setupsData) {
       addCount(key, entry);
     });
   } else if (isPlainObjectValue(projectData)) {
-    Object.entries(projectData).forEach(function (_ref33) {
-      var _ref34 = _slicedToArray(_ref33, 2),
-        name = _ref34[0],
-        entry = _ref34[1];
+    Object.entries(projectData).forEach(function (_ref34) {
+      var _ref35 = _slicedToArray(_ref34, 2),
+        name = _ref35[0],
+        entry = _ref35[1];
       addCount(name, entry);
     });
   } else {
     addCount('', projectData);
   }
   if (isPlainObjectValue(setupsData)) {
-    Object.entries(setupsData).forEach(function (_ref35) {
-      var _ref36 = _slicedToArray(_ref35, 2),
-        name = _ref36[0],
-        setup = _ref36[1];
+    Object.entries(setupsData).forEach(function (_ref36) {
+      var _ref37 = _slicedToArray(_ref36, 2),
+        name = _ref37[0],
+        setup = _ref37[1];
       addCount(name, setup);
     });
   }
@@ -8983,9 +9084,9 @@ function formatDeviceCategories(lang, categories) {
   var lookup = typeof categoryNames !== 'undefined' && categoryNames || {};
   var localized = lookup[resolved] || lookup.en || {};
   var fallback = lookup.en || {};
-  var items = categories.map(function (_ref37) {
-    var key = _ref37.key,
-      count = _ref37.count;
+  var items = categories.map(function (_ref38) {
+    var key = _ref38.key,
+      count = _ref38.count;
     var label = localized[key] || fallback[key] || key;
     var formattedCount = formatNumberForLang(resolved, count, {
       maximumFractionDigits: 0
@@ -9173,20 +9274,20 @@ var featureSearchDefaultOptions = [];
 var renderFeatureListOptions = function renderFeatureListOptions(values) {
   if (!featureList || !Array.isArray(values)) return;
   var fragment = document.createDocumentFragment();
-  var _iterator13 = _createForOfIteratorHelper(values),
-    _step13;
+  var _iterator15 = _createForOfIteratorHelper(values),
+    _step15;
   try {
-    for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-      var _value7 = _step13.value;
+    for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+      var _value7 = _step15.value;
       if (!_value7) continue;
       var option = document.createElement('option');
       option.value = _value7;
       fragment.appendChild(option);
     }
   } catch (err) {
-    _iterator13.e(err);
+    _iterator15.e(err);
   } finally {
-    _iterator13.f();
+    _iterator15.f();
   }
   featureList.innerHTML = '';
   featureList.appendChild(fragment);
@@ -9284,20 +9385,20 @@ function updateFeatureSearchSuggestions(query) {
   });
   var values = [];
   var seen = new Set();
-  var _iterator14 = _createForOfIteratorHelper(candidates.slice(0, 25)),
-    _step14;
+  var _iterator16 = _createForOfIteratorHelper(candidates.slice(0, 25)),
+    _step16;
   try {
-    for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-      var item = _step14.value;
+    for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+      var item = _step16.value;
       var _value8 = item.entry.display;
       if (!_value8 || seen.has(_value8)) continue;
       seen.add(_value8);
       values.push(_value8);
     }
   } catch (err) {
-    _iterator14.e(err);
+    _iterator16.e(err);
   } finally {
-    _iterator14.f();
+    _iterator16.f();
   }
   if (values.length === 0) {
     restoreFeatureSearchDefaults();
@@ -9523,10 +9624,10 @@ var collectFeatureContexts = function collectFeatureContexts(element, baseLabelL
   }
   return contexts.reverse();
 };
-var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref38) {
-  var label = _ref38.label,
-    _ref38$keywords = _ref38.keywords,
-    keywords = _ref38$keywords === void 0 ? '' : _ref38$keywords;
+var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref39) {
+  var label = _ref39.label,
+    _ref39$keywords = _ref39.keywords,
+    keywords = _ref39$keywords === void 0 ? '' : _ref39$keywords;
   if (!element || !label) return null;
   var baseLabel = label.trim();
   if (!baseLabel) return null;
@@ -9581,17 +9682,17 @@ var computeTokenMatchDetails = function computeTokenMatchDetails() {
   }
   var total = 0;
   var matched = 0;
-  var _iterator15 = _createForOfIteratorHelper(validQueryTokens),
-    _step15;
+  var _iterator17 = _createForOfIteratorHelper(validQueryTokens),
+    _step17;
   try {
-    for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-      var token = _step15.value;
+    for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+      var token = _step17.value;
       var best = 0;
-      var _iterator16 = _createForOfIteratorHelper(entryTokens),
-        _step16;
+      var _iterator18 = _createForOfIteratorHelper(entryTokens),
+        _step18;
       try {
-        for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-          var entryToken = _step16.value;
+        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+          var entryToken = _step18.value;
           if (!entryToken) continue;
           if (entryToken === token) {
             best = 3;
@@ -9604,9 +9705,9 @@ var computeTokenMatchDetails = function computeTokenMatchDetails() {
           }
         }
       } catch (err) {
-        _iterator16.e(err);
+        _iterator18.e(err);
       } finally {
-        _iterator16.f();
+        _iterator18.f();
       }
       if (best > 0) {
         matched += 1;
@@ -9614,9 +9715,9 @@ var computeTokenMatchDetails = function computeTokenMatchDetails() {
       }
     }
   } catch (err) {
-    _iterator15.e(err);
+    _iterator17.e(err);
   } finally {
-    _iterator15.f();
+    _iterator17.f();
   }
   if (matched === 0) {
     return {
@@ -9646,40 +9747,40 @@ function findBestSearchMatch(map, key) {
     };
   };
   var flattened = [];
-  var _iterator17 = _createForOfIteratorHelper(map.entries()),
-    _step17;
+  var _iterator19 = _createForOfIteratorHelper(map.entries()),
+    _step19;
   try {
-    for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-      var _step17$value = _slicedToArray(_step17.value, 2),
-        _entryKey = _step17$value[0],
-        _entryValue2 = _step17$value[1];
+    for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+      var _step19$value = _slicedToArray(_step19.value, 2),
+        _entryKey = _step19$value[0],
+        _entryValue2 = _step19$value[1];
       if (!_entryValue2) continue;
       if (Array.isArray(_entryValue2)) {
-        var _iterator19 = _createForOfIteratorHelper(_entryValue2),
-          _step19;
+        var _iterator21 = _createForOfIteratorHelper(_entryValue2),
+          _step21;
         try {
-          for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-            var _value9 = _step19.value;
+          for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+            var _value9 = _step21.value;
             if (_value9) flattened.push([_entryKey, _value9]);
           }
         } catch (err) {
-          _iterator19.e(err);
+          _iterator21.e(err);
         } finally {
-          _iterator19.f();
+          _iterator21.f();
         }
       } else {
         flattened.push([_entryKey, _entryValue2]);
       }
     }
   } catch (err) {
-    _iterator17.e(err);
+    _iterator19.e(err);
   } finally {
-    _iterator17.f();
+    _iterator19.f();
   }
   if (hasKey) {
-    var exactCandidates = flattened.filter(function (_ref39) {
-      var _ref40 = _slicedToArray(_ref39, 1),
-        entryKey = _ref40[0];
+    var exactCandidates = flattened.filter(function (_ref40) {
+      var _ref41 = _slicedToArray(_ref40, 1),
+        entryKey = _ref41[0];
       return entryKey === key;
     });
     if (exactCandidates.length) {
@@ -9689,12 +9790,12 @@ function findBestSearchMatch(map, key) {
         score: Number.POSITIVE_INFINITY,
         matched: queryTokens.length
       };
-      var _iterator18 = _createForOfIteratorHelper(exactCandidates.slice(1)),
-        _step18;
+      var _iterator20 = _createForOfIteratorHelper(exactCandidates.slice(1)),
+        _step20;
       try {
-        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-          var _step18$value = _slicedToArray(_step18.value, 2),
-            entryValue = _step18$value[1];
+        for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+          var _step20$value = _slicedToArray(_step20.value, 2),
+            entryValue = _step20$value[1];
           if (!queryTokens.length) break;
           var details = computeTokenMatchDetails((entryValue === null || entryValue === void 0 ? void 0 : entryValue.tokens) || [], queryTokens);
           if (details.score > bestDetails.score || details.score === bestDetails.score && details.matched > bestDetails.matched) {
@@ -9703,9 +9804,9 @@ function findBestSearchMatch(map, key) {
           }
         }
       } catch (err) {
-        _iterator18.e(err);
+        _iterator20.e(err);
       } finally {
-        _iterator18.f();
+        _iterator20.f();
       }
       return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
     }
@@ -9847,9 +9948,9 @@ var PINK_REFERENCE_LUMINANCE = function () {
   return computeRelativeLuminance(pinkRgb);
 }();
 function shouldEnableDarkModeAccentBoost() {
-  var _ref41 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    color = _ref41.color,
-    highContrast = _ref41.highContrast;
+  var _ref42 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+    color = _ref42.color,
+    highContrast = _ref42.highContrast;
   if (typeof document === 'undefined') return false;
   if (!document.body || !document.body.classList.contains('dark-mode')) return false;
   if (document.body.classList.contains('pink-mode')) return false;
@@ -9960,20 +10061,20 @@ if (uiScaleRoot) {
     if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
       baseFontSize = computedFontSize;
     }
-    var _iterator20 = _createForOfIteratorHelper(uiScaleProperties),
-      _step20;
+    var _iterator22 = _createForOfIteratorHelper(uiScaleProperties),
+      _step22;
     try {
-      for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-        var prop = _step20.value;
+      for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
+        var prop = _step22.value;
         var _value0 = parseFloat(computedStyle.getPropertyValue(prop));
         if (Number.isFinite(_value0) && _value0 > 0) {
           baseUIScaleValues[prop] = _value0;
         }
       }
     } catch (err) {
-      _iterator20.e(err);
+      _iterator22.e(err);
     } finally {
-      _iterator20.f();
+      _iterator22.f();
     }
   } catch (error) {
     console.warn('Unable to read computed styles for UI scaling', error);
@@ -10158,7 +10259,7 @@ function loadStoredCustomFonts() {
 }
 function _loadStoredCustomFonts() {
   _loadStoredCustomFonts = _asyncToGenerator(_regenerator().m(function _callee8() {
-    var stored, _iterator27, _step27, entry, normalized, _t7, _t8;
+    var stored, _iterator29, _step29, entry, normalized, _t7, _t8;
     return _regenerator().w(function (_context8) {
       while (1) switch (_context8.p = _context8.n) {
         case 0:
@@ -10169,15 +10270,15 @@ function _loadStoredCustomFonts() {
           }
           return _context8.a(2);
         case 1:
-          _iterator27 = _createForOfIteratorHelper(stored);
+          _iterator29 = _createForOfIteratorHelper(stored);
           _context8.p = 2;
-          _iterator27.s();
+          _iterator29.s();
         case 3:
-          if ((_step27 = _iterator27.n()).done) {
+          if ((_step29 = _iterator29.n()).done) {
             _context8.n = 8;
             break;
           }
-          entry = _step27.value;
+          entry = _step29.value;
           normalized = {
             id: entry.id,
             name: sanitizeCustomFontName(entry.name),
@@ -10203,10 +10304,10 @@ function _loadStoredCustomFonts() {
         case 9:
           _context8.p = 9;
           _t8 = _context8.v;
-          _iterator27.e(_t8);
+          _iterator29.e(_t8);
         case 10:
           _context8.p = 10;
-          _iterator27.f();
+          _iterator29.f();
           return _context8.f(10);
         case 11:
           return _context8.a(2);
@@ -10214,6 +10315,56 @@ function _loadStoredCustomFonts() {
     }, _callee8, null, [[4, 6], [2, 9, 10, 11]]);
   }));
   return _loadStoredCustomFonts.apply(this, arguments);
+}
+function resetCustomFontsForFactoryReset() {
+  var hadEntries = customFontEntries && typeof customFontEntries.size === 'number' ? customFontEntries.size > 0 : false;
+  if (customFontEntries && typeof customFontEntries.clear === 'function') {
+    customFontEntries.clear();
+  }
+  var removedUploadedOption = false;
+  if (settingsFontFamily && settingsFontFamily.options) {
+    var options = Array.from(settingsFontFamily.options || []);
+    options.forEach(function (option) {
+      if (!option || !option.dataset || option.dataset.source !== 'uploaded') {
+        return;
+      }
+      removedUploadedOption = true;
+      var fontId = option.dataset.fontId || '';
+      if (option.parentNode && typeof option.parentNode.removeChild === 'function') {
+        option.parentNode.removeChild(option);
+      } else if (typeof settingsFontFamily.removeChild === 'function') {
+        settingsFontFamily.removeChild(option);
+      }
+      if (fontId && typeof document !== 'undefined') {
+        var styleId = "customFontStyle-".concat(fontId);
+        var styleNode = document.getElementById(styleId);
+        if (styleNode && styleNode.parentNode) {
+          styleNode.parentNode.removeChild(styleNode);
+        }
+      }
+    });
+    var hasCurrentSelection = options.some(function (option) {
+      return option && option.value === settingsFontFamily.value;
+    });
+    if (!hasCurrentSelection) {
+      if (settingsFontFamily.options.length) {
+        settingsFontFamily.selectedIndex = 0;
+      } else {
+        settingsFontFamily.value = '';
+      }
+    }
+  }
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    var inlineStyles = document.querySelectorAll('style[id^="customFontStyle-"]');
+    inlineStyles.forEach(function (styleNode) {
+      if (styleNode && styleNode.parentNode) {
+        styleNode.parentNode.removeChild(styleNode);
+      }
+    });
+  }
+  if (typeof setLocalFontsStatus === 'function' && (hadEntries || removedUploadedOption)) {
+    setLocalFontsStatus(null);
+  }
 }
 function isSupportedFontFile(file) {
   if (!file) return false;
@@ -10251,8 +10402,8 @@ function addCustomFontFromData(_x5, _x6) {
 }
 function _addCustomFontFromData() {
   _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee9(name, dataUrl) {
-    var _ref139,
-      _ref139$persist,
+    var _ref141,
+      _ref141$persist,
       persist,
       uniqueName,
       value,
@@ -10265,7 +10416,7 @@ function _addCustomFontFromData() {
     return _regenerator().w(function (_context9) {
       while (1) switch (_context9.n) {
         case 0:
-          _ref139 = _args9.length > 2 && _args9[2] !== undefined ? _args9[2] : {}, _ref139$persist = _ref139.persist, persist = _ref139$persist === void 0 ? true : _ref139$persist;
+          _ref141 = _args9.length > 2 && _args9[2] !== undefined ? _args9[2] : {}, _ref141$persist = _ref141.persist, persist = _ref141$persist === void 0 ? true : _ref141$persist;
           uniqueName = ensureUniqueCustomFontName(name);
           value = buildFontFamilyValue(uniqueName);
           _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
@@ -10312,7 +10463,7 @@ function handleLocalFontFiles(_x7) {
 }
 function _handleLocalFontFiles() {
   _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee0(fileList) {
-    var added, unsupported, failed, persistFailure, _i59, _Array$from, file, dataUrl, result, message, _message5, _message6, _t9;
+    var added, unsupported, failed, persistFailure, _i58, _Array$from, file, dataUrl, result, message, _message5, _message6, _t9;
     return _regenerator().w(function (_context0) {
       while (1) switch (_context0.p = _context0.n) {
         case 0:
@@ -10330,13 +10481,13 @@ function _handleLocalFontFiles() {
           unsupported = [];
           failed = [];
           persistFailure = false;
-          _i59 = 0, _Array$from = Array.from(fileList);
+          _i58 = 0, _Array$from = Array.from(fileList);
         case 2:
-          if (!(_i59 < _Array$from.length)) {
+          if (!(_i58 < _Array$from.length)) {
             _context0.n = 9;
             break;
           }
-          file = _Array$from[_i59];
+          file = _Array$from[_i58];
           if (isSupportedFontFile(file)) {
             _context0.n = 3;
             break;
@@ -10372,7 +10523,7 @@ function _handleLocalFontFiles() {
           console.warn('Failed to import custom font', _t9);
           failed.push(file && typeof file.name === 'string' ? file.name : '');
         case 8:
-          _i59++;
+          _i58++;
           _context0.n = 2;
           break;
         case 9:
@@ -10512,7 +10663,7 @@ var queryAvailableLocalFonts = function () {
   if (typeof window === 'undefined') return null;
   if (typeof window.queryLocalFonts === 'function') {
     return function () {
-      var _ref42 = _asyncToGenerator(_regenerator().m(function _callee(options) {
+      var _ref43 = _asyncToGenerator(_regenerator().m(function _callee(options) {
         var _t;
         return _regenerator().w(function (_context) {
           while (1) switch (_context.n) {
@@ -10526,7 +10677,7 @@ var queryAvailableLocalFonts = function () {
         }, _callee);
       }));
       return function (_x9) {
-        return _ref42.apply(this, arguments);
+        return _ref43.apply(this, arguments);
       };
     }();
   }
@@ -10534,7 +10685,7 @@ var queryAvailableLocalFonts = function () {
     var _navigator = navigator,
       fonts = _navigator.fonts;
     return function () {
-      var _ref43 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
+      var _ref44 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
         var _t2;
         return _regenerator().w(function (_context2) {
           while (1) switch (_context2.n) {
@@ -10548,7 +10699,7 @@ var queryAvailableLocalFonts = function () {
         }, _callee2);
       }));
       return function (_x0) {
-        return _ref43.apply(this, arguments);
+        return _ref44.apply(this, arguments);
       };
     }();
   }
@@ -10664,7 +10815,7 @@ function requestLocalFonts() {
 }
 function _requestLocalFonts() {
   _requestLocalFonts = _asyncToGenerator(_regenerator().m(function _callee10() {
-    var fonts, added, duplicates, seenValues, _iterator28, _step28, font, rawName, name, _value10, _ensureFontFamilyOpti3, option, created, _t1, _t10;
+    var fonts, added, duplicates, seenValues, _iterator30, _step30, font, rawName, name, _value11, _ensureFontFamilyOpti3, option, created, _t1, _t10;
     return _regenerator().w(function (_context10) {
       while (1) switch (_context10.p = _context10.n) {
         case 0:
@@ -10690,15 +10841,15 @@ function _requestLocalFonts() {
           added = [];
           duplicates = [];
           seenValues = new Set();
-          _iterator28 = _createForOfIteratorHelper(fonts);
+          _iterator30 = _createForOfIteratorHelper(fonts);
           _context10.p = 5;
-          _iterator28.s();
+          _iterator30.s();
         case 6:
-          if ((_step28 = _iterator28.n()).done) {
+          if ((_step30 = _iterator30.n()).done) {
             _context10.n = 11;
             break;
           }
-          font = _step28.value;
+          font = _step30.value;
           rawName = font && (font.family || font.fullName || font.postscriptName);
           name = rawName ? String(rawName).trim() : '';
           if (name) {
@@ -10707,15 +10858,15 @@ function _requestLocalFonts() {
           }
           return _context10.a(3, 10);
         case 7:
-          _value10 = buildFontFamilyValue(name);
-          if (!seenValues.has(_value10)) {
+          _value11 = buildFontFamilyValue(name);
+          if (!seenValues.has(_value11)) {
             _context10.n = 8;
             break;
           }
           duplicates.push(name);
           return _context10.a(3, 10);
         case 8:
-          _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value10, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
+          _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value11, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
           if (option) {
             _context10.n = 9;
             break;
@@ -10740,10 +10891,10 @@ function _requestLocalFonts() {
         case 12:
           _context10.p = 12;
           _t1 = _context10.v;
-          _iterator28.e(_t1);
+          _iterator30.e(_t1);
         case 13:
           _context10.p = 13;
-          _iterator28.f();
+          _iterator30.f();
           return _context10.f(13);
         case 14:
           if (added.length > 0) {
@@ -10822,19 +10973,19 @@ function applyFontSize(size) {
     return;
   }
   var scale = numericSize / baseFontSize;
-  var _iterator21 = _createForOfIteratorHelper(uiScaleProperties),
-    _step21;
+  var _iterator23 = _createForOfIteratorHelper(uiScaleProperties),
+    _step23;
   try {
-    for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
-      var _prop = _step21.value;
+    for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
+      var _prop = _step23.value;
       var baseValue = baseUIScaleValues[_prop];
       if (!Number.isFinite(baseValue) || baseValue <= 0) continue;
       document.documentElement.style.setProperty(_prop, "".concat(baseValue * scale, "px"));
     }
   } catch (err) {
-    _iterator21.e(err);
+    _iterator23.e(err);
   } finally {
-    _iterator21.f();
+    _iterator23.f();
   }
   document.documentElement.style.setProperty('--ui-scale', String(scale));
 }
@@ -11196,6 +11347,107 @@ function describeRequirement(field, value) {
   }
   return parts.join(' ');
 }
+var GEAR_TABLE_CATEGORY_META = Object.freeze({
+  Camera: {
+    summary: 'Primary camera body chosen for the current setup.',
+    logic: 'Always included so the crew preps the selected camera package.'
+  },
+  'Camera Support': {
+    summary: 'Baseplates, cages and handle accessories for mounting the camera.',
+    logic: 'Matched to your camera body, selected handles and any scenario add-ons.'
+  },
+  Media: {
+    summary: 'Recording media that works with the selected camera.',
+    logic: 'Picks capacities that cover the camera codecs without running out of space.'
+  },
+  Lens: {
+    summary: 'Optics selected in the project requirements.',
+    logic: 'Pulled directly from your lens choices so they travel with the kit.'
+  },
+  'Lens Support': {
+    summary: 'Lens support brackets, rails and rings sized for your glass.',
+    logic: 'Added automatically when lenses or matte box setups require additional support.'
+  },
+  'Matte box + filter': {
+    summary: 'Matte boxes, trays and filter packs.',
+    logic: 'Generated from your matte box preference and filter selections, including required adapters.'
+  },
+  'LDS (FIZ)': {
+    summary: 'Focus, iris and zoom control hardware.',
+    logic: 'Reflects the motors and controllers picked in the wireless FIZ section.'
+  },
+  'Camera Batteries': {
+    summary: 'Batteries dedicated to powering the camera body.',
+    logic: 'Sized from the camera power draw, runtime targets and hot-swap rules.'
+  },
+  'Monitoring Batteries': {
+    summary: 'Power for handheld and field monitors.',
+    logic: 'Ensures each monitor package includes enough charged batteries for the day.'
+  },
+  Chargers: {
+    summary: 'Charging stations for included battery systems.',
+    logic: 'Adds compatible chargers so battery rotations stay balanced during the shoot.'
+  },
+  Monitoring: {
+    summary: 'On-set monitoring packages for the crew.',
+    logic: 'Derived from monitoring configuration and distribution preferences in project details.'
+  },
+  'Monitoring support': {
+    summary: 'Stands, brackets, straps and cages supporting monitors.',
+    logic: 'Auto-matched to monitor sizes and usage (handheld, stand or cart setups).'
+  },
+  Rigging: {
+    summary: 'Arms, clamps and mounting hardware for accessories.',
+    logic: 'Includes core rigging plus extras triggered by scenarios like Steadicam or gimbal use.'
+  },
+  Power: {
+    summary: 'Power distribution cables and adapters.',
+    logic: 'Covers how accessories receive power from the main battery ecosystem.'
+  },
+  Grip: {
+    summary: 'Support gear like sliders, stabilisers and Easyrig options.',
+    logic: 'Reflects stabilisation preferences and active shooting scenarios.'
+  },
+  'Carts and Transportation': {
+    summary: 'Carts, cases and transport aids for the camera department.',
+    logic: 'Included so the crew can move, stage and secure the package efficiently.'
+  },
+  Miscellaneous: {
+    summary: 'Utility items that keep the crew efficient and comfortable.',
+    logic: 'Adds weather protection and helpful tools based on scenarios and best practices.'
+  },
+  Consumables: {
+    summary: 'Expendables such as tapes, wipes and covers.',
+    logic: 'Scaled to shoot length and weather needs so consumables never run short.'
+  }
+});
+var DEFAULT_GEAR_TABLE_CATEGORY_META = Object.freeze({
+  summary: 'Automatically generated grouping of related equipment.',
+  logic: 'Filled using your project requirements, selections and saved auto gear rules.'
+});
+var getGearTableCategoryMeta = function getGearTableCategoryMeta(category) {
+  if (!category) return DEFAULT_GEAR_TABLE_CATEGORY_META;
+  return GEAR_TABLE_CATEGORY_META[category] || DEFAULT_GEAR_TABLE_CATEGORY_META;
+};
+var buildGearTableCategoryHelp = function buildGearTableCategoryHelp(category) {
+  var meta = getGearTableCategoryMeta(category);
+  var parts = [];
+  if (category) parts.push("".concat(category, " \u2013 ").concat(meta.summary));else parts.push(meta.summary);
+  if (meta.logic) parts.push("Logic: ".concat(meta.logic));
+  return parts.join(' ');
+};
+var formatDeviceCategoryLabel = function formatDeviceCategoryLabel(category) {
+  if (typeof category !== 'string' || !category.trim()) return '';
+  return category.replace(/[_-]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').split(/\s+/).filter(Boolean).map(function (word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(' ');
+};
+var formatDeviceCategoryPath = function formatDeviceCategoryPath(path) {
+  if (!Array.isArray(path) || !path.length) return '';
+  return path.map(function (part) {
+    return formatDeviceCategoryLabel(part);
+  }).filter(Boolean).join(' › ');
+};
 function displayGearAndRequirements(html) {
   var _splitGearListHtml = splitGearListHtml(html),
     projectHtml = _splitGearListHtml.projectHtml,
@@ -11232,46 +11484,101 @@ function displayGearAndRequirements(html) {
       applyFilterSelectionsToGearList();
       renderFilterDetails();
       var findDevice = function findDevice(name) {
-        for (var _i18 = 0, _Object$entries13 = Object.entries(devices); _i18 < _Object$entries13.length; _i18++) {
-          var _Object$entries13$_i = _slicedToArray(_Object$entries13[_i18], 2),
-            catName = _Object$entries13$_i[0],
-            cat = _Object$entries13$_i[1];
-          if (cat && _typeof(cat) === 'object') {
-            if (cat[name]) return {
-              info: cat[name],
-              category: catName
+        if (typeof name !== 'string' || !name.trim()) {
+          return {
+            info: null,
+            category: '',
+            categoryPath: []
+          };
+        }
+        var visited = new Set();
+        var _search = function search(node, path) {
+          if (!isPlainObjectValue(node) || visited.has(node)) return null;
+          visited.add(node);
+          if (Object.prototype.hasOwnProperty.call(node, name) && isPlainObjectValue(node[name])) {
+            return {
+              info: node[name],
+              categoryPath: path
             };
-            for (var _i19 = 0, _Object$values = Object.values(cat); _i19 < _Object$values.length; _i19++) {
-              var _sub5 = _Object$values[_i19];
-              if (_sub5 && _sub5[name]) return {
-                info: _sub5[name],
-                category: catName
-              };
-            }
           }
+          for (var _i18 = 0, _Object$entries13 = Object.entries(node); _i18 < _Object$entries13.length; _i18++) {
+            var _Object$entries13$_i = _slicedToArray(_Object$entries13[_i18], 2),
+              _key9 = _Object$entries13$_i[0],
+              _value1 = _Object$entries13$_i[1];
+            if (!isPlainObjectValue(_value1)) continue;
+            var _result = _search(_value1, path.concat(_key9));
+            if (_result) return _result;
+          }
+          return null;
+        };
+        var result = _search(devices, []);
+        if (result) {
+          return {
+            info: result.info,
+            category: formatDeviceCategoryPath(result.categoryPath),
+            categoryPath: result.categoryPath
+          };
         }
         return {
           info: null,
-          category: ''
+          category: '',
+          categoryPath: []
         };
       };
+      var buildGearItemHelp = function buildGearItemHelp(_ref45) {
+        var name = _ref45.name,
+          countText = _ref45.countText,
+          deviceInfo = _ref45.deviceInfo,
+          libraryCategory = _ref45.libraryCategory,
+          tableCategory = _ref45.tableCategory;
+        var parts = [];
+        var label = "".concat(countText || '').concat(name).trim();
+        if (label) parts.push(label);
+        var meta = getGearTableCategoryMeta(tableCategory);
+        var categoryParts = [];
+        if (tableCategory) categoryParts.push("Gear list section: ".concat(tableCategory));
+        if (meta.summary) categoryParts.push(meta.summary);
+        if (meta.logic) categoryParts.push("Logic: ".concat(meta.logic));
+        if (!tableCategory && !categoryParts.length) {
+          var fallback = getGearTableCategoryMeta('');
+          if (fallback.summary) categoryParts.push(fallback.summary);
+          if (fallback.logic) categoryParts.push("Logic: ".concat(fallback.logic));
+        }
+        if (categoryParts.length) parts.push(categoryParts.join(' – '));
+        if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
+        if (deviceInfo) {
+          var summary = generateConnectorSummary(deviceInfo);
+          summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+          if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
+          if (summary) parts.push(summary);
+        }
+        return parts.join(' – ');
+      };
+      gearListOutput.querySelectorAll('tbody.category-group').forEach(function (group) {
+        var headingCell = group.querySelector('.category-row td');
+        if (!headingCell) return;
+        var tableCategory = headingCell.textContent.trim();
+        group.setAttribute('data-gear-table-category', tableCategory);
+        var helpText = buildGearTableCategoryHelp(tableCategory);
+        headingCell.setAttribute('title', helpText);
+        headingCell.setAttribute('data-help', helpText);
+      });
       gearListOutput.querySelectorAll('.gear-item').forEach(function (span) {
-        var name = span.getAttribute('data-gear-name');
+        var _span$closest;
+        var name = span.getAttribute('data-gear-name') || span.textContent.trim();
         var _findDevice = findDevice(name),
           info = _findDevice.info,
           category = _findDevice.category;
         var countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
         var count = countMatch ? "".concat(countMatch[1], "x ") : '';
-        var parts = [];
-        parts.push("".concat(count).concat(name).trim());
-        if (category) parts.push("Category: ".concat(category));
-        if (info) {
-          var summary = generateConnectorSummary(info);
-          summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
-          if (info.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(info.notes) : info.notes;
-          if (summary) parts.push(summary);
-        }
-        var desc = parts.join(' – ');
+        var tableCategory = (_span$closest = span.closest('tbody.category-group')) === null || _span$closest === void 0 ? void 0 : _span$closest.getAttribute('data-gear-table-category');
+        var desc = buildGearItemHelp({
+          name: name,
+          countText: count,
+          deviceInfo: info,
+          libraryCategory: category,
+          tableCategory: tableCategory || ''
+        });
         span.setAttribute('title', desc);
         span.setAttribute('data-help', desc);
         span.querySelectorAll('select').forEach(function (sel) {
@@ -11281,22 +11588,21 @@ function displayGearAndRequirements(html) {
         });
       });
       gearListOutput.querySelectorAll('select').forEach(function (sel) {
+        var _sel$closest;
         if (sel.getAttribute('data-help')) return;
         var selected = sel.selectedOptions && sel.selectedOptions[0];
         var name = selected ? selected.textContent.trim() : sel.value;
         var _findDevice2 = findDevice(name),
           info = _findDevice2.info,
           category = _findDevice2.category;
-        var parts = [];
-        parts.push("1x ".concat(name).trim());
-        if (category) parts.push("Category: ".concat(category));
-        if (info) {
-          var summary = generateConnectorSummary(info);
-          summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
-          if (info.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(info.notes) : info.notes;
-          if (summary) parts.push(summary);
-        }
-        var desc = parts.join(' – ');
+        var tableCategory = (_sel$closest = sel.closest('tbody.category-group')) === null || _sel$closest === void 0 ? void 0 : _sel$closest.getAttribute('data-gear-table-category');
+        var desc = buildGearItemHelp({
+          name: name,
+          countText: '1x ',
+          deviceInfo: info,
+          libraryCategory: category,
+          tableCategory: tableCategory || ''
+        });
         sel.setAttribute('title', desc);
         sel.setAttribute('data-help', desc);
         initFavoritableSelect(sel);
@@ -11382,10 +11688,10 @@ function sanitizeProjectInfoValue(value) {
 function sanitizeProjectInfo(info) {
   if (!info || _typeof(info) !== 'object') return null;
   var result = {};
-  Object.entries(info).forEach(function (_ref44) {
-    var _ref45 = _slicedToArray(_ref44, 2),
-      key = _ref45[0],
-      value = _ref45[1];
+  Object.entries(info).forEach(function (_ref46) {
+    var _ref47 = _slicedToArray(_ref46, 2),
+      key = _ref47[0],
+      value = _ref47[1];
     var sanitized = sanitizeProjectInfoValue(value);
     if (sanitized !== undefined) {
       result[key] = sanitized;
@@ -11569,7 +11875,7 @@ if (feedbackUseLocationBtn) {
 if (feedbackSubmitBtn) {
   var _feedbackSubmitBtn$te, _texts$currentLang57, _texts$en169;
   var submitLabel = ((_feedbackSubmitBtn$te = feedbackSubmitBtn.textContent) === null || _feedbackSubmitBtn$te === void 0 ? void 0 : _feedbackSubmitBtn$te.trim()) || ((_texts$currentLang57 = texts[currentLang]) === null || _texts$currentLang57 === void 0 ? void 0 : _texts$currentLang57.feedbackSubmit) || ((_texts$en169 = texts.en) === null || _texts$en169 === void 0 ? void 0 : _texts$en169.feedbackSubmit) || 'Save & Submit';
-  setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.save);
+  setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.paperPlane);
 }
 var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : function () {
   return {};
@@ -11950,14 +12256,22 @@ function createVideoOutputRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createVideoOutputRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (videoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12006,14 +12320,22 @@ function createMonitorVideoInputRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createMonitorVideoInputRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (monitorVideoInputsContainer.children.length > 1) row.remove();
   });
@@ -12062,14 +12384,22 @@ function createMonitorVideoOutputRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createMonitorVideoOutputRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (monitorVideoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12118,14 +12448,22 @@ function createViewfinderVideoInputRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createViewfinderVideoInputRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (viewfinderVideoInputsContainer && viewfinderVideoInputsContainer.children.length > 1) row.remove();
   });
@@ -12176,14 +12514,22 @@ function createViewfinderVideoOutputRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createViewfinderVideoOutputRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (viewfinderVideoOutputsContainer && viewfinderVideoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12236,14 +12582,22 @@ function createVideoInputRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createVideoInputRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (videoVideoInputsContainer.children.length > 1) row.remove();
   });
@@ -12292,14 +12646,22 @@ function createVideoIOOutputRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createVideoIOOutputRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (videoVideoOutputsContainer.children.length > 1) row.remove();
   });
@@ -12348,14 +12710,22 @@ function createFizConnectorRow() {
   row.appendChild(createFieldWithLabel(select, 'Type'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
+    fallbackContext: 'FIZ Connector',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createFizConnectorRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
+    fallbackContext: 'FIZ Connector',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (fizConnectorContainer.children.length > 1) row.remove();
   });
@@ -12446,14 +12816,22 @@ function createRecordingMediaRow() {
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['mediaHeading', ['cameraMediaLabel']],
+    fallbackContext: 'Recording Media',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createRecordingMediaRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['mediaHeading', ['cameraMediaLabel']],
+    fallbackContext: 'Recording Media',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (cameraMediaContainer.children.length > 1) row.remove();
   });
@@ -12465,11 +12843,11 @@ function setRecordingMedia(list) {
   var filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(function (item) {
-      var _ref46 = item || {},
-        _ref46$type = _ref46.type,
-        type = _ref46$type === void 0 ? '' : _ref46$type,
-        _ref46$notes = _ref46.notes,
-        notes = _ref46$notes === void 0 ? '' : _ref46$notes;
+      var _ref48 = item || {},
+        _ref48$type = _ref48.type,
+        type = _ref48$type === void 0 ? '' : _ref48$type,
+        _ref48$notes = _ref48.notes,
+        notes = _ref48$notes === void 0 ? '' : _ref48$notes;
       cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
     });
   } else {
@@ -12661,14 +13039,22 @@ function createBatteryPlateRow() {
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
+    fallbackContext: 'Battery Plates',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createBatteryPlateRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
+    fallbackContext: 'Battery Plates',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (batteryPlatesContainer.children.length > 1) row.remove();
   });
@@ -12680,13 +13066,13 @@ function setBatteryPlates(list) {
   var filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(function (item) {
-      var _ref47 = item || {},
-        _ref47$type = _ref47.type,
-        type = _ref47$type === void 0 ? '' : _ref47$type,
-        _ref47$mount = _ref47.mount,
-        mount = _ref47$mount === void 0 ? 'native' : _ref47$mount,
-        _ref47$notes = _ref47.notes,
-        notes = _ref47$notes === void 0 ? '' : _ref47$notes;
+      var _ref49 = item || {},
+        _ref49$type = _ref49.type,
+        type = _ref49$type === void 0 ? '' : _ref49$type,
+        _ref49$mount = _ref49.mount,
+        mount = _ref49$mount === void 0 ? 'native' : _ref49$mount,
+        _ref49$notes = _ref49.notes,
+        notes = _ref49$notes === void 0 ? '' : _ref49$notes;
       batteryPlatesContainer.appendChild(createBatteryPlateRow(type, mount, notes));
     });
   } else {
@@ -12795,14 +13181,22 @@ function createViewfinderRow() {
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+    fallbackContext: 'Viewfinder',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createViewfinderRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+    fallbackContext: 'Viewfinder',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (viewfinderContainer.children.length > 1) row.remove();
   });
@@ -12814,15 +13208,15 @@ function setViewfinders(list) {
   var filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(function (item) {
-      var _ref48 = item || {},
-        _ref48$type = _ref48.type,
-        type = _ref48$type === void 0 ? '' : _ref48$type,
-        _ref48$resolution = _ref48.resolution,
-        resolution = _ref48$resolution === void 0 ? '' : _ref48$resolution,
-        _ref48$connector = _ref48.connector,
-        connector = _ref48$connector === void 0 ? '' : _ref48$connector,
-        _ref48$notes = _ref48.notes,
-        notes = _ref48$notes === void 0 ? '' : _ref48$notes;
+      var _ref50 = item || {},
+        _ref50$type = _ref50.type,
+        type = _ref50$type === void 0 ? '' : _ref50$type,
+        _ref50$resolution = _ref50.resolution,
+        resolution = _ref50$resolution === void 0 ? '' : _ref50$resolution,
+        _ref50$connector = _ref50.connector,
+        connector = _ref50$connector === void 0 ? '' : _ref50$connector,
+        _ref50$notes = _ref50.notes,
+        notes = _ref50$notes === void 0 ? '' : _ref50$notes;
       viewfinderContainer.appendChild(createViewfinderRow(type, resolution, connector, notes));
     });
   } else {
@@ -12913,14 +13307,22 @@ function createLensMountRow() {
   row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
+    fallbackContext: 'Lens Mount',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createLensMountRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
+    fallbackContext: 'Lens Mount',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (lensMountContainer.children.length > 1) row.remove();
   });
@@ -12932,11 +13334,11 @@ function setLensMounts(list) {
   var filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(function (item) {
-      var _ref49 = item || {},
-        _ref49$type = _ref49.type,
-        type = _ref49$type === void 0 ? '' : _ref49$type,
-        _ref49$mount = _ref49.mount,
-        mount = _ref49$mount === void 0 ? 'native' : _ref49$mount;
+      var _ref51 = item || {},
+        _ref51$type = _ref51.type,
+        type = _ref51$type === void 0 ? '' : _ref51$type,
+        _ref51$mount = _ref51.mount,
+        mount = _ref51$mount === void 0 ? 'native' : _ref51$mount;
       lensMountContainer.appendChild(createLensMountRow(type, mount));
     });
   } else {
@@ -13128,14 +13530,22 @@ function createPowerDistRow() {
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
+    fallbackContext: 'Power Distribution',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createPowerDistRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
+    fallbackContext: 'Power Distribution',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (powerDistContainer.children.length > 1) row.remove();
   });
@@ -13147,17 +13557,17 @@ function setPowerDistribution(list) {
   var filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(function (item) {
-      var _ref50 = item || {},
-        _ref50$type = _ref50.type,
-        type = _ref50$type === void 0 ? '' : _ref50$type,
-        _ref50$voltage = _ref50.voltage,
-        voltage = _ref50$voltage === void 0 ? '' : _ref50$voltage,
-        _ref50$current = _ref50.current,
-        current = _ref50$current === void 0 ? '' : _ref50$current,
-        _ref50$wattage = _ref50.wattage,
-        wattage = _ref50$wattage === void 0 ? '' : _ref50$wattage,
-        _ref50$notes = _ref50.notes,
-        notes = _ref50$notes === void 0 ? '' : _ref50$notes;
+      var _ref52 = item || {},
+        _ref52$type = _ref52.type,
+        type = _ref52$type === void 0 ? '' : _ref52$type,
+        _ref52$voltage = _ref52.voltage,
+        voltage = _ref52$voltage === void 0 ? '' : _ref52$voltage,
+        _ref52$current = _ref52.current,
+        current = _ref52$current === void 0 ? '' : _ref52$current,
+        _ref52$wattage = _ref52.wattage,
+        wattage = _ref52$wattage === void 0 ? '' : _ref52$wattage,
+        _ref52$notes = _ref52.notes,
+        notes = _ref52$notes === void 0 ? '' : _ref52$notes;
       powerDistContainer.appendChild(createPowerDistRow(type, voltage, current, wattage, notes));
     });
   } else {
@@ -13246,14 +13656,22 @@ function createTimecodeRow() {
   row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
   var addBtn = document.createElement('button');
   addBtn.type = 'button';
-  addBtn.textContent = '+';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
+    fallbackContext: 'Timecode',
+    actionKey: 'addEntry'
+  });
   addBtn.addEventListener('click', function () {
     row.after(createTimecodeRow());
   });
   row.appendChild(addBtn);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
-  removeBtn.textContent = '−';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
+    fallbackContext: 'Timecode',
+    actionKey: 'removeEntry'
+  });
   removeBtn.addEventListener('click', function () {
     if (timecodeContainer.children.length > 1) row.remove();
   });
@@ -13265,11 +13683,11 @@ function setTimecodes(list) {
   var filtered = filterNoneEntries(list);
   if (filtered.length) {
     filtered.forEach(function (item) {
-      var _ref51 = item || {},
-        _ref51$type = _ref51.type,
-        type = _ref51$type === void 0 ? '' : _ref51$type,
-        _ref51$notes = _ref51.notes,
-        notes = _ref51$notes === void 0 ? '' : _ref51$notes;
+      var _ref53 = item || {},
+        _ref53$type = _ref53.type,
+        type = _ref53$type === void 0 ? '' : _ref53$type,
+        _ref53$notes = _ref53.notes,
+        notes = _ref53$notes === void 0 ? '' : _ref53$notes;
       timecodeContainer.appendChild(createTimecodeRow(type, notes));
     });
   } else {
@@ -13500,9 +13918,9 @@ function populateSelect(selectElem) {
   initFavoritableSelect(selectElem);
 }
 function populateMonitorSelect() {
-  var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref52) {
-    var _ref53 = _slicedToArray(_ref52, 2),
-      data = _ref53[1];
+  var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref54) {
+    var _ref55 = _slicedToArray(_ref54, 2),
+      data = _ref55[1];
     return !(data.wirelessRX && !data.wirelessTx);
   }));
   populateSelect(monitorSelect, filtered, true);
@@ -13597,9 +14015,9 @@ function addInputClearButton(inputElem, callback) {
   toggle();
 }
 function applyFilters() {
-  deviceManagerLists.forEach(function (_ref54) {
-    var list = _ref54.list,
-      filterInput = _ref54.filterInput;
+  deviceManagerLists.forEach(function (_ref56) {
+    var list = _ref56.list,
+      filterInput = _ref56.filterInput;
     if (!list) return;
     var value = filterInput ? filterInput.value : '';
     filterDeviceList(list, value);
@@ -14619,10 +15037,10 @@ function renderSetupDiagram() {
   Object.keys(manualPositions).forEach(function (id) {
     if (!pos[id]) delete manualPositions[id];
   });
-  Object.entries(pos).forEach(function (_ref55) {
-    var _ref56 = _slicedToArray(_ref55, 2),
-      id = _ref56[0],
-      p = _ref56[1];
+  Object.entries(pos).forEach(function (_ref57) {
+    var _ref58 = _slicedToArray(_ref57, 2),
+      id = _ref58[0],
+      p = _ref58[1];
     if (manualPositions[id]) {
       p.x = manualPositions[id].x;
       p.y = manualPositions[id].y;
@@ -15317,11 +15735,12 @@ function enableDiagramInteractions() {
   var root = svg.querySelector('#diagramRoot') || svg;
   var isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
   var MAX_SCALE = isTouchDevice ? Infinity : 3;
+  var INITIAL_SCALE = 0.9;
   var pan = {
     x: 0,
     y: 0
   };
-  var scale = 1;
+  var scale = INITIAL_SCALE;
   var panning = false;
   var panStart = {
     x: 0,
@@ -15363,7 +15782,7 @@ function enableDiagramInteractions() {
         x: 0,
         y: 0
       };
-      scale = 1;
+      scale = INITIAL_SCALE;
       apply();
       manualPositions = {};
       renderSetupDiagram();
@@ -15483,6 +15902,7 @@ function enableDiagramInteractions() {
     window.removeEventListener('mouseup', onDragEnd);
     window.removeEventListener('touchend', onDragEnd);
   };
+  apply();
 }
 function updateDiagramLegend() {
   if (!diagramLegend) return;
@@ -15496,9 +15916,9 @@ function updateDiagramLegend() {
     cls: 'fiz',
     text: texts[currentLang].diagramLegendFIZ
   }];
-  diagramLegend.innerHTML = legendItems.map(function (_ref57) {
-    var cls = _ref57.cls,
-      text = _ref57.text;
+  diagramLegend.innerHTML = legendItems.map(function (_ref59) {
+    var cls = _ref59.cls,
+      text = _ref59.text;
     return "<span><span class=\"swatch ".concat(cls, "\"></span>").concat(text, "</span>");
   }).join('');
 }
@@ -15645,8 +16065,8 @@ function renderDeviceList(categoryKey, ulElement) {
     ulElement.appendChild(li);
   };
   if (categoryKey === "accessories.cables") {
-    for (var _i20 = 0, _Object$entries14 = Object.entries(categoryDevices); _i20 < _Object$entries14.length; _i20++) {
-      var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i20], 2),
+    for (var _i19 = 0, _Object$entries14 = Object.entries(categoryDevices); _i19 < _Object$entries14.length; _i19++) {
+      var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i19], 2),
         subcat = _Object$entries14$_i[0],
         devs = _Object$entries14$_i[1];
       for (var name in devs) {
@@ -15661,9 +16081,9 @@ function renderDeviceList(categoryKey, ulElement) {
 }
 function refreshDeviceLists() {
   syncDeviceManagerCategories();
-  deviceManagerLists.forEach(function (_ref58, categoryKey) {
-    var list = _ref58.list,
-      filterInput = _ref58.filterInput;
+  deviceManagerLists.forEach(function (_ref60, categoryKey) {
+    var list = _ref60.list,
+      filterInput = _ref60.filterInput;
     if (!list) return;
     renderDeviceList(categoryKey, list);
     var filterValue = filterInput ? filterInput.value : '';
@@ -15975,20 +16395,20 @@ function populateSetupSelect() {
     if (autoA !== autoB) return autoA ? 1 : -1;
     return localeSort(a, b);
   });
-  var _iterator22 = _createForOfIteratorHelper(names),
-    _step22;
+  var _iterator24 = _createForOfIteratorHelper(names),
+    _step24;
   try {
-    for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
-      var name = _step22.value;
+    for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
+      var name = _step24.value;
       var opt = document.createElement("option");
       opt.value = name;
       opt.textContent = name;
       setupSelect.appendChild(opt);
     }
   } catch (err) {
-    _iterator22.e(err);
+    _iterator24.e(err);
   } finally {
-    _iterator22.f();
+    _iterator24.f();
   }
 }
 populateSetupSelect();
@@ -16266,8 +16686,8 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     subcategoryFieldDiv.hidden = false;
     var subcats = Object.keys(((_devices$accessories3 = devices.accessories) === null || _devices$accessories3 === void 0 ? void 0 : _devices$accessories3.cables) || {});
     newSubcategorySelect.innerHTML = '';
-    for (var _i21 = 0, _subcats = subcats; _i21 < _subcats.length; _i21++) {
-      var sc = _subcats[_i21];
+    for (var _i20 = 0, _subcats = subcats; _i20 < _subcats.length; _i20++) {
+      var sc = _subcats[_i20];
       var opt = document.createElement('option');
       opt.value = sc;
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
@@ -16432,8 +16852,8 @@ newCategorySelect.addEventListener("change", function () {
     if (wattFieldDiv) wattFieldDiv.style.display = "none";
     subcategoryFieldDiv.hidden = false;
     var subcats = Object.keys(((_devices$accessories4 = devices.accessories) === null || _devices$accessories4 === void 0 ? void 0 : _devices$accessories4.cables) || {});
-    for (var _i22 = 0, _subcats2 = subcats; _i22 < _subcats2.length; _i22++) {
-      var sc = _subcats2[_i22];
+    for (var _i21 = 0, _subcats2 = subcats; _i21 < _subcats2.length; _i21++) {
+      var sc = _subcats2[_i21];
       var opt = document.createElement('option');
       opt.value = sc;
       opt.textContent = sc.charAt(0).toUpperCase() + sc.slice(1);
@@ -17074,7 +17494,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   if (includeAutoGear && hasAutoGearRules) {
     currentSetup.autoGearRules = rulesForShare;
   }
-  function notifyShareFailure(error) {
+  var notifyShareFailure = function notifyShareFailure(error) {
     if (error) {
       console.warn('Project export failed', error);
     } else {
@@ -17087,13 +17507,13 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       shareLinkMessage.classList.remove('hidden');
       if (typeof setTimeout === 'function') {
         setTimeout(function () {
-          shareLinkMessage.classList.add('hidden');
+          return shareLinkMessage.classList.add('hidden');
         }, 6000);
       }
     } else if (typeof alert === 'function') {
       alert(failureMessage);
     }
-  }
+  };
   var json;
   try {
     json = JSON.stringify(currentSetup, null, 2);
@@ -17116,7 +17536,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     shareLinkMessage.classList.remove('hidden');
     if (typeof setTimeout === 'function') {
       setTimeout(function () {
-        shareLinkMessage.classList.add('hidden');
+        return shareLinkMessage.classList.add('hidden');
       }, 4000);
     }
   }
@@ -17358,10 +17778,10 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     feedback[key].push(entry);
     saveFeedbackSafe(feedback);
     var lines = [];
-    Object.entries(entry).forEach(function (_ref59) {
-      var _ref60 = _slicedToArray(_ref59, 2),
-        k = _ref60[0],
-        v = _ref60[1];
+    Object.entries(entry).forEach(function (_ref61) {
+      var _ref62 = _slicedToArray(_ref61, 2),
+        k = _ref62[0],
+        v = _ref62[1];
       lines.push("".concat(k, ": ").concat(v));
     });
     var subject = encodeURIComponent('Cine Power Planner Runtime Feedback');
@@ -17449,10 +17869,10 @@ function connectorBlocks(items, icon) {
   var dir = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
   if (!Array.isArray(items) || items.length === 0) return '';
   var counts = summarizeByType(items);
-  var entries = Object.entries(counts).map(function (_ref61) {
-    var _ref62 = _slicedToArray(_ref61, 2),
-      type = _ref62[0],
-      count = _ref62[1];
+  var entries = Object.entries(counts).map(function (_ref63) {
+    var _ref64 = _slicedToArray(_ref63, 2),
+      type = _ref64[0],
+      count = _ref64[1];
     return "".concat(escapeHtml(type)).concat(count > 1 ? " \xD7".concat(count) : '');
   });
   if (!entries.length) return '';
@@ -17527,8 +17947,8 @@ function generateConnectorSummary(device) {
     label: 'Audio',
     dir: 'I/O'
   }];
-  for (var _i23 = 0, _connectors = connectors; _i23 < _connectors.length; _i23++) {
-    var _connectors$_i = _connectors[_i23],
+  for (var _i22 = 0, _connectors = connectors; _i22 < _connectors.length; _i22++) {
+    var _connectors$_i = _connectors[_i22],
       items = _connectors$_i.items,
       icon = _connectors$_i.icon,
       cls = _connectors$_i.cls,
@@ -17542,6 +17962,10 @@ function generateConnectorSummary(device) {
   }
   if ((_device$power2 = device.power) !== null && _device$power2 !== void 0 && (_device$power2 = _device$power2.input) !== null && _device$power2 !== void 0 && _device$power2.voltageRange) {
     specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryBolt), "Voltage: ").concat(escapeHtml(String(device.power.input.voltageRange)), "V</span>");
+  }
+  if (typeof device.weight_g === 'number') {
+    var weightLabel = "".concat(device.weight_g, " g");
+    specHtml += "<span class=\"info-box neutral-conn\">".concat(iconMarkup(ICON_GLYPHS.gears), "Weight: ").concat(escapeHtml(weightLabel), "</span>");
   }
   if (typeof device.capacity === 'number') {
     specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryFull), "Capacity: ").concat(device.capacity, " Wh</span>");
@@ -17573,6 +17997,40 @@ function generateConnectorSummary(device) {
   if (device.powerSource) {
     specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(diagramConnectorIcons.powerSource), "Power Source: ").concat(escapeHtml(String(device.powerSource)), "</span>");
   }
+  var uniqueList = function uniqueList(list) {
+    if (!Array.isArray(list)) return [];
+    var seen = new Set();
+    var values = [];
+    list.forEach(function (entry) {
+      var str = entry != null ? String(entry).trim() : '';
+      if (!str || seen.has(str)) return;
+      seen.add(str);
+      values.push(escapeHtml(str));
+    });
+    return values;
+  };
+  var appendListBox = function appendListBox(html, values, label, cls, icon) {
+    var formatted = uniqueList(values);
+    if (!formatted.length) return html;
+    var iconHtml = iconMarkup(icon);
+    return "".concat(html, "<span class=\"info-box ").concat(cls, "\">").concat(iconHtml).concat(label, ": ").concat(formatted.join(', '), "</span>");
+  };
+  var recordingHtml = '';
+  if (Array.isArray(device.sensorModes)) {
+    recordingHtml = appendListBox(recordingHtml, device.sensorModes, 'Sensor Modes', 'video-conn', ICON_GLYPHS.sensor);
+  }
+  if (Array.isArray(device.resolutions)) {
+    recordingHtml = appendListBox(recordingHtml, device.resolutions, 'Resolutions', 'video-conn', ICON_GLYPHS.screen);
+  }
+  if (Array.isArray(device.recordingCodecs)) {
+    recordingHtml = appendListBox(recordingHtml, device.recordingCodecs, 'Codecs', 'video-conn', ICON_GLYPHS.camera);
+  }
+  if (Array.isArray(device.recordingMedia)) {
+    var mediaTypes = device.recordingMedia.map(function (item) {
+      return item && item.type ? item.type : '';
+    });
+    recordingHtml = appendListBox(recordingHtml, mediaTypes, 'Media', 'video-conn', ICON_GLYPHS.save);
+  }
   var extraHtml = '';
   if (Array.isArray((_device$power3 = device.power) === null || _device$power3 === void 0 ? void 0 : _device$power3.batteryPlateSupport) && device.power.batteryPlateSupport.length) {
     var types = device.power.batteryPlateSupport.map(function (p) {
@@ -17581,23 +18039,17 @@ function generateConnectorSummary(device) {
     });
     extraHtml += "<span class=\"info-box power-conn\">Battery Plate: ".concat(types.join(', '), "</span>");
   }
-  if (Array.isArray(device.recordingMedia) && device.recordingMedia.length) {
-    var _types = device.recordingMedia.map(function (m) {
-      return escapeHtml(m.type);
-    });
-    extraHtml += "<span class=\"info-box video-conn\">Media: ".concat(_types.join(', '), "</span>");
-  }
   if (Array.isArray(device.viewfinder) && device.viewfinder.length) {
-    var _types2 = device.viewfinder.map(function (v) {
+    var _types = device.viewfinder.map(function (v) {
       return escapeHtml(v.type);
     });
-    extraHtml += "<span class=\"info-box video-conn\">Viewfinder: ".concat(_types2.join(', '), "</span>");
+    extraHtml += "<span class=\"info-box video-conn\">Viewfinder: ".concat(_types.join(', '), "</span>");
   }
   if (Array.isArray(device.gearTypes) && device.gearTypes.length) {
-    var _types3 = device.gearTypes.map(function (g) {
+    var _types2 = device.gearTypes.map(function (g) {
       return escapeHtml(g);
     });
-    extraHtml += "<span class=\"info-box fiz-conn\">Gear: ".concat(_types3.join(', '), "</span>");
+    extraHtml += "<span class=\"info-box fiz-conn\">Gear: ".concat(_types2.join(', '), "</span>");
   }
   if (device.connectivity) {
     extraHtml += "<span class=\"info-box video-conn\">Connectivity: ".concat(escapeHtml(String(device.connectivity)), "</span>");
@@ -17620,6 +18072,7 @@ function generateConnectorSummary(device) {
   };
   html += section('Ports', portHtml);
   html += section('Specs', specHtml);
+  html += section('Recording', recordingHtml);
   html += section('Extras', extraHtml);
   if (lensHtml) html += "<div class=\"info-label\">Lens Mount</div>".concat(lensHtml);
   return html ? "<div class=\"connector-summary\">".concat(html, "</div>") : '';
@@ -17644,8 +18097,8 @@ function addArriKNumber(name) {
   if (!name) return name;
   var d = typeof devices !== 'undefined' ? devices : {};
   var collections = [d.viewfinders, d.directorMonitors, d.iosVideo, d.videoAssist, d.media, d.lenses];
-  for (var _i24 = 0, _collections = collections; _i24 < _collections.length; _i24++) {
-    var col = _collections[_i24];
+  for (var _i23 = 0, _collections = collections; _i23 < _collections.length; _i23++) {
+    var col = _collections[_i23];
     if (col && col[name]) {
       var item = col[name];
       if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
@@ -17658,8 +18111,8 @@ function addArriKNumber(name) {
     var _findItem = function findItem(obj) {
       if (!obj) return null;
       if (obj[name]) return obj[name];
-      for (var _i25 = 0, _Object$values2 = Object.values(obj); _i25 < _Object$values2.length; _i25++) {
-        var val = _Object$values2[_i25];
+      for (var _i24 = 0, _Object$values = Object.values(obj); _i24 < _Object$values.length; _i24++) {
+        var val = _Object$values[_i24];
         if (val && _typeof(val) === 'object') {
           var found = _findItem(val);
           if (found) return found;
@@ -17667,8 +18120,8 @@ function addArriKNumber(name) {
       }
       return null;
     };
-    for (var _i26 = 0, _Object$values3 = Object.values(d.accessories); _i26 < _Object$values3.length; _i26++) {
-      var _col = _Object$values3[_i26];
+    for (var _i25 = 0, _Object$values2 = Object.values(d.accessories); _i25 < _Object$values2.length; _i25++) {
+      var _col = _Object$values2[_i25];
       var _item = _findItem(_col);
       if (_item) {
         if (_item.brand && _item.brand.toUpperCase().includes('ARRI') && _item.kNumber && !name.includes(_item.kNumber)) {
@@ -17749,9 +18202,9 @@ function suggestArriFizCables() {
     var _devices$accessories5;
     var cablesData = ((_devices$accessories5 = devices.accessories) === null || _devices$accessories5 === void 0 ? void 0 : _devices$accessories5.cables) || {};
     var chosen = null;
-    for (var _i27 = 0, _Object$entries15 = Object.entries(cablesData); _i27 < _Object$entries15.length; _i27++) {
+    for (var _i26 = 0, _Object$entries15 = Object.entries(cablesData); _i26 < _Object$entries15.length; _i26++) {
       var _data$lengthM, _cablesData$chosen$le;
-      var _Object$entries15$_i = _slicedToArray(_Object$entries15[_i27], 2),
+      var _Object$entries15$_i = _slicedToArray(_Object$entries15[_i26], 2),
         name = _Object$entries15$_i[0],
         data = _Object$entries15$_i[1];
       var connectors = [];
@@ -17807,11 +18260,11 @@ function suggestArriFizCables() {
 }
 function collectAccessories() {
   var _acc$cables, _acc$cables2;
-  var _ref63 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    _ref63$hasMotor = _ref63.hasMotor,
-    hasMotor = _ref63$hasMotor === void 0 ? false : _ref63$hasMotor,
-    _ref63$videoDistPrefs = _ref63.videoDistPrefs,
-    videoDistPrefs = _ref63$videoDistPrefs === void 0 ? [] : _ref63$videoDistPrefs;
+  var _ref65 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+    _ref65$hasMotor = _ref65.hasMotor,
+    hasMotor = _ref65$hasMotor === void 0 ? false : _ref65$hasMotor,
+    _ref65$videoDistPrefs = _ref65.videoDistPrefs,
+    videoDistPrefs = _ref65$videoDistPrefs === void 0 ? [] : _ref65$videoDistPrefs;
   var cameraSupport = [];
   var misc = [];
   var monitoringSupport = ['BNC Cable 0.5 m', 'BNC Cable 1 m', 'BNC Cable 5 m', 'BNC Cable 10 m', 'BNC Drum 25 m'];
@@ -17824,8 +18277,8 @@ function collectAccessories() {
     var _devices$batteries$ba3;
     var mount = (_devices$batteries$ba3 = devices.batteries[batterySelect.value]) === null || _devices$batteries$ba3 === void 0 ? void 0 : _devices$batteries$ba3.mount_type;
     if (acc.powerPlates) {
-      for (var _i28 = 0, _Object$entries16 = Object.entries(acc.powerPlates); _i28 < _Object$entries16.length; _i28++) {
-        var _Object$entries16$_i = _slicedToArray(_Object$entries16[_i28], 2),
+      for (var _i27 = 0, _Object$entries16 = Object.entries(acc.powerPlates); _i27 < _Object$entries16.length; _i27++) {
+        var _Object$entries16$_i = _slicedToArray(_Object$entries16[_i27], 2),
           name = _Object$entries16$_i[0],
           plate = _Object$entries16$_i[1];
         if ((!plate.mount || plate.mount === mount) && (!plate.compatible || plate.compatible.includes(cameraSelect.value))) {
@@ -17853,8 +18306,8 @@ function collectAccessories() {
       if (total > 0) {
         var counts = suggestChargerCounts(total);
         var findName = function findName(slots) {
-          for (var _i29 = 0, _Object$entries17 = Object.entries(acc.chargers); _i29 < _Object$entries17.length; _i29++) {
-            var _Object$entries17$_i = _slicedToArray(_Object$entries17[_i29], 2),
+          for (var _i28 = 0, _Object$entries17 = Object.entries(acc.chargers); _i28 < _Object$entries17.length; _i28++) {
+            var _Object$entries17$_i = _slicedToArray(_Object$entries17[_i28], 2),
               _name4 = _Object$entries17$_i[0],
               charger = _Object$entries17$_i[1];
             if (charger.mount === mount && charger.slots === slots) return _name4;
@@ -17874,8 +18327,8 @@ function collectAccessories() {
   }
   if (cameraSelect.value && acc.cages) {
     if (!cageSelect.value || cageSelect.value === 'None') {
-      for (var _i30 = 0, _Object$entries18 = Object.entries(acc.cages); _i30 < _Object$entries18.length; _i30++) {
-        var _Object$entries18$_i = _slicedToArray(_Object$entries18[_i30], 2),
+      for (var _i29 = 0, _Object$entries18 = Object.entries(acc.cages); _i29 < _Object$entries18.length; _i29++) {
+        var _Object$entries18$_i = _slicedToArray(_Object$entries18[_i29], 2),
           _name5 = _Object$entries18$_i[0],
           cage = _Object$entries18$_i[1];
         if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) cameraSupport.push(_name5);
@@ -17890,8 +18343,8 @@ function collectAccessories() {
     var input = data === null || data === void 0 || (_data$power2 = data.power) === null || _data$power2 === void 0 || (_data$power2 = _data$power2.input) === null || _data$power2 === void 0 ? void 0 : _data$power2.type;
     var types = Array.isArray(input) ? input : input ? [input] : [];
     types.forEach(function (t) {
-      for (var _i31 = 0, _Object$entries19 = Object.entries(powerCableDb); _i31 < _Object$entries19.length; _i31++) {
-        var _Object$entries19$_i = _slicedToArray(_Object$entries19[_i31], 2),
+      for (var _i30 = 0, _Object$entries19 = Object.entries(powerCableDb); _i30 < _Object$entries19.length; _i30++) {
+        var _Object$entries19$_i = _slicedToArray(_Object$entries19[_i30], 2),
           _name6 = _Object$entries19$_i[0],
           cable = _Object$entries19$_i[1];
         var isExcluded = excludedCables.has(_name6);
@@ -18016,8 +18469,8 @@ function collectAccessories() {
       motorConns.forEach(function (mConn) {
         controllerConns.forEach(function (cConn) {
           if (mConn !== cConn) return;
-          for (var _i32 = 0, _Object$entries20 = Object.entries(fizCableDb); _i32 < _Object$entries20.length; _i32++) {
-            var _Object$entries20$_i = _slicedToArray(_Object$entries20[_i32], 2),
+          for (var _i31 = 0, _Object$entries20 = Object.entries(fizCableDb); _i31 < _Object$entries20.length; _i31++) {
+            var _Object$entries20$_i = _slicedToArray(_Object$entries20[_i31], 2),
               _name7 = _Object$entries20$_i[0],
               cable = _Object$entries20$_i[1];
             if (matchesCable(cable, mConn, cConn)) {
@@ -18262,10 +18715,10 @@ function populateProjectForm() {
     return t.type;
   }));
   renderFilterDetails();
-  filterTokens.forEach(function (_ref64) {
-    var type = _ref64.type,
-      size = _ref64.size,
-      values = _ref64.values;
+  filterTokens.forEach(function (_ref66) {
+    var type = _ref66.type,
+      size = _ref66.size,
+      values = _ref66.values;
     var sizeSel = document.getElementById("filter-size-".concat(filterId(type)));
     if (sizeSel) sizeSel.value = size;
     var valSel = document.getElementById("filter-values-".concat(filterId(type)));
@@ -18432,22 +18885,22 @@ function analyzeAutoGearSegment(nodes) {
 function updateRawSegmentCount(nodes, info, newCount) {
   if (!nodes.length) return;
   var updated = false;
-  var _iterator23 = _createForOfIteratorHelper(nodes),
-    _step23;
+  var _iterator25 = _createForOfIteratorHelper(nodes),
+    _step25;
   try {
-    for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
-      var node = _step23.value;
+    for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
+      var node = _step25.value;
       if (node.nodeType === Node.TEXT_NODE) {
-        var _value1 = node.textContent || '';
-        if (/\d+x\s+/i.test(_value1)) {
-          node.textContent = _value1.replace(/^(\s*)(\d+)x\s+/, function (match, spaces) {
+        var _value10 = node.textContent || '';
+        if (/\d+x\s+/i.test(_value10)) {
+          node.textContent = _value10.replace(/^(\s*)(\d+)x\s+/, function (match, spaces) {
             return "".concat(spaces).concat(newCount, "x ");
           });
           updated = true;
           break;
         }
-        if (_value1.trim()) {
-          node.textContent = "".concat(newCount, "x ").concat(_value1.trim().replace(/^(\d+)x\s+/, ''));
+        if (_value10.trim()) {
+          node.textContent = "".concat(newCount, "x ").concat(_value10.trim().replace(/^(\d+)x\s+/, ''));
           updated = true;
           break;
         }
@@ -18463,9 +18916,9 @@ function updateRawSegmentCount(nodes, info, newCount) {
       }
     }
   } catch (err) {
-    _iterator23.e(err);
+    _iterator25.e(err);
   } finally {
-    _iterator23.f();
+    _iterator25.f();
   }
   if (!updated) {
     var first = nodes[0];
@@ -18572,8 +19025,8 @@ function addAutoGearItem(cell, item, rule) {
   var name = normalizedItem.name ? normalizedItem.name.trim() : '';
   if (!name) return;
   var spans = Array.from(cell.querySelectorAll('.gear-item'));
-  for (var _i33 = 0, _spans = spans; _i33 < _spans.length; _i33++) {
-    var _span = _spans[_i33];
+  for (var _i32 = 0, _spans = spans; _i32 < _spans.length; _i32++) {
+    var _span = _spans[_i32];
     var spanName = _span.getAttribute('data-gear-name') || (_span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
     if (matchesAutoGearItem(name, spanName)) {
       var newCount = getSpanCount(_span) + quantity;
@@ -18700,8 +19153,8 @@ function findAutoGearCategoryCell(table, category) {
   var rawCategory = category && category.trim() ? category.trim() : '';
   var label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
   var bodies = Array.from(table.querySelectorAll('tbody.category-group'));
-  for (var _i34 = 0, _bodies = bodies; _i34 < _bodies.length; _i34++) {
-    var body = _bodies[_i34];
+  for (var _i33 = 0, _bodies = bodies; _i33 < _bodies.length; _i33++) {
+    var body = _bodies[_i33];
     if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
       if (body.dataset.autoCategory === rawCategory) {
         var cell = body.querySelector('tr:not(.category-row) td');
@@ -18832,8 +19285,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       }
       if (remaining > 0) {
         var gearCells = Array.from(table.querySelectorAll('tbody.category-group tr:not(.category-row) td'));
-        for (var _i35 = 0, _gearCells = gearCells; _i35 < _gearCells.length; _i35++) {
-          var cell = _gearCells[_i35];
+        for (var _i34 = 0, _gearCells = gearCells; _i34 < _gearCells.length; _i34++) {
+          var cell = _gearCells[_i34];
           if (cell === primaryCell) continue;
           remaining = removeAutoGearItem(cell, item, remaining);
           if (remaining <= 0) break;
@@ -18900,19 +19353,19 @@ function generateGearListHtml() {
     monitoringSupportAcc = _collectAccessories.monitoringSupport,
     riggingAcc = _collectAccessories.rigging;
   for (var i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4" to 1/4"');
-  for (var _i36 = 0; _i36 < 2; _i36++) riggingAcc.push('ULCS Bracket with 3/8" to 1/4"');
-  for (var _i37 = 0; _i37 < 2; _i37++) riggingAcc.push('Noga Arm');
-  for (var _i38 = 0; _i38 < 2; _i38++) riggingAcc.push('Mini Magic Arm');
-  for (var _i39 = 0; _i39 < 4; _i39++) riggingAcc.push('Cine Quick Release');
+  for (var _i35 = 0; _i35 < 2; _i35++) riggingAcc.push('ULCS Bracket with 3/8" to 1/4"');
+  for (var _i36 = 0; _i36 < 2; _i36++) riggingAcc.push('Noga Arm');
+  for (var _i37 = 0; _i37 < 2; _i37++) riggingAcc.push('Mini Magic Arm');
+  for (var _i38 = 0; _i38 < 4; _i38++) riggingAcc.push('Cine Quick Release');
   riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
-  for (var _i40 = 0; _i40 < 3; _i40++) riggingAcc.push('Spigot with male 3/8" and 1/4"');
-  for (var _i41 = 0; _i41 < 2; _i41++) riggingAcc.push('Clapper Stick');
-  for (var _i42 = 0; _i42 < 2; _i42++) riggingAcc.push('D-Tap Splitter');
+  for (var _i39 = 0; _i39 < 3; _i39++) riggingAcc.push('Spigot with male 3/8" and 1/4"');
+  for (var _i40 = 0; _i40 < 2; _i40++) riggingAcc.push('Clapper Stick');
+  for (var _i41 = 0; _i41 < 2; _i41++) riggingAcc.push('D-Tap Splitter');
   var cagesDb = ((_devices$accessories6 = devices.accessories) === null || _devices$accessories6 === void 0 ? void 0 : _devices$accessories6.cages) || {};
   var compatibleCages = [];
   if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
-    for (var _i43 = 0, _Object$entries21 = Object.entries(cagesDb); _i43 < _Object$entries21.length; _i43++) {
-      var _Object$entries21$_i = _slicedToArray(_Object$entries21[_i43], 2),
+    for (var _i42 = 0, _Object$entries21 = Object.entries(cagesDb); _i42 < _Object$entries21.length; _i42++) {
+      var _Object$entries21$_i = _slicedToArray(_Object$entries21[_i42], 2),
         name = _Object$entries21$_i[0],
         cage = _Object$entries21$_i[1];
       if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) {
@@ -18938,11 +19391,11 @@ function generateGearListHtml() {
   };
   var hasGimbal = isScenarioActive('Gimbal');
   if (isAnyScenarioActive(['Trinity', 'Steadicam'])) {
-    for (var _i44 = 0; _i44 < 2; _i44++) {
+    for (var _i43 = 0; _i43 < 2; _i43++) {
       riggingAcc.push('D-Tap Splitter');
       riggingAcc.push('D-Tap Extension 50 cm (Steadicam/Trinity)');
     }
-    for (var _i45 = 0; _i45 < 2; _i45++) {
+    for (var _i44 = 0; _i44 < 2; _i44++) {
       riggingAcc.push('D-Tap Extension 50 cm (Spare)');
     }
   }
@@ -19051,7 +19504,7 @@ function generateGearListHtml() {
     var rxName = selectedNames.video.replace(/ TX\b/, ' RX');
     if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
       var receivers = receiverCount || 1;
-      for (var _i46 = 0; _i46 < receivers; _i46++) {
+      for (var _i45 = 0; _i45 < receivers; _i45++) {
         monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
       }
     }
@@ -19122,16 +19575,16 @@ function generateGearListHtml() {
   var projectLabels = ((_texts$currentLang61 = texts[currentLang]) === null || _texts$currentLang61 === void 0 ? void 0 : _texts$currentLang61.projectFields) || ((_texts$en175 = texts.en) === null || _texts$en175 === void 0 ? void 0 : _texts$en175.projectFields) || {};
   var projectFormTexts = ((_texts$currentLang62 = texts[currentLang]) === null || _texts$currentLang62 === void 0 ? void 0 : _texts$currentLang62.projectForm) || ((_texts$en176 = texts.en) === null || _texts$en176 === void 0 ? void 0 : _texts$en176.projectForm) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2']);
-  var infoEntries = Object.entries(projectInfo).filter(function (_ref65) {
-    var _ref66 = _slicedToArray(_ref65, 2),
-      k = _ref66[0],
-      v = _ref66[1];
-    return v && k !== 'projectName' && !excludedFields.has(k);
-  });
-  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref67) {
+  var infoEntries = Object.entries(projectInfo).filter(function (_ref67) {
     var _ref68 = _slicedToArray(_ref67, 2),
       k = _ref68[0],
       v = _ref68[1];
+    return v && k !== 'projectName' && !excludedFields.has(k);
+  });
+  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref69) {
+    var _ref70 = _slicedToArray(_ref69, 2),
+      k = _ref70[0],
+      v = _ref70[1];
     var value = escapeHtml(v).replace(/\n/g, '<br>');
     var label = projectLabels[k] || k;
     var iconHtml = iconMarkup(projectFieldIcons[k], {
@@ -19157,21 +19610,21 @@ function generateGearListHtml() {
       counts[base].total++;
       counts[base].ctxCounts[ctx] = (counts[base].ctxCounts[ctx] || 0) + 1;
     });
-    return Object.entries(counts).sort(function (_ref69, _ref70) {
-      var _ref71 = _slicedToArray(_ref69, 1),
-        a = _ref71[0];
-      var _ref72 = _slicedToArray(_ref70, 1),
-        b = _ref72[0];
+    return Object.entries(counts).sort(function (_ref71, _ref72) {
+      var _ref73 = _slicedToArray(_ref71, 1),
+        a = _ref73[0];
+      var _ref74 = _slicedToArray(_ref72, 1),
+        b = _ref74[0];
       return a.localeCompare(b, undefined, {
         sensitivity: 'base'
       });
-    }).map(function (_ref73) {
+    }).map(function (_ref75) {
       var _gearItemTranslations;
-      var _ref74 = _slicedToArray(_ref73, 2),
-        base = _ref74[0],
-        _ref74$ = _ref74[1],
-        total = _ref74$.total,
-        ctxCounts = _ref74$.ctxCounts;
+      var _ref76 = _slicedToArray(_ref75, 2),
+        base = _ref76[0],
+        _ref76$ = _ref76[1],
+        total = _ref76$.total,
+        ctxCounts = _ref76$.ctxCounts;
       var ctxKeys = Object.keys(ctxCounts);
       var hasContext = ctxKeys.some(function (c) {
         return c;
@@ -19179,94 +19632,94 @@ function generateGearListHtml() {
       var ctxParts = [];
       if (hasContext) {
         if (base === 'sand bag') {
-          var realEntries = Object.entries(ctxCounts).filter(function (_ref75) {
-            var _ref76 = _slicedToArray(_ref75, 1),
-              c = _ref76[0];
+          var realEntries = Object.entries(ctxCounts).filter(function (_ref77) {
+            var _ref78 = _slicedToArray(_ref77, 1),
+              c = _ref78[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref77, _ref78) {
-            var _ref79 = _slicedToArray(_ref77, 1),
-              a = _ref79[0];
-            var _ref80 = _slicedToArray(_ref78, 1),
-              b = _ref80[0];
+          }).sort(function (_ref79, _ref80) {
+            var _ref81 = _slicedToArray(_ref79, 1),
+              a = _ref81[0];
+            var _ref82 = _slicedToArray(_ref80, 1),
+              b = _ref82[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var usedCount = realEntries.reduce(function (sum, _ref81) {
-            var _ref82 = _slicedToArray(_ref81, 2),
-              count = _ref82[1];
+          var usedCount = realEntries.reduce(function (sum, _ref83) {
+            var _ref84 = _slicedToArray(_ref83, 2),
+              count = _ref84[1];
             return sum + count;
           }, 0);
           var spareCount = total - usedCount;
-          ctxParts = realEntries.map(function (_ref83) {
-            var _ref84 = _slicedToArray(_ref83, 2),
-              c = _ref84[0],
-              count = _ref84[1];
+          ctxParts = realEntries.map(function (_ref85) {
+            var _ref86 = _slicedToArray(_ref85, 2),
+              c = _ref86[0],
+              count = _ref86[1];
             return "".concat(count, "x ").concat(c);
           });
           if (spareCount > 0) ctxParts.push("".concat(spareCount, "x Spare"));
         } else if (base.startsWith('Bebob ')) {
-          var _realEntries = Object.entries(ctxCounts).filter(function (_ref85) {
-            var _ref86 = _slicedToArray(_ref85, 1),
-              c = _ref86[0];
+          var _realEntries = Object.entries(ctxCounts).filter(function (_ref87) {
+            var _ref88 = _slicedToArray(_ref87, 1),
+              c = _ref88[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref87, _ref88) {
-            var _ref89 = _slicedToArray(_ref87, 1),
-              a = _ref89[0];
-            var _ref90 = _slicedToArray(_ref88, 1),
-              b = _ref90[0];
+          }).sort(function (_ref89, _ref90) {
+            var _ref91 = _slicedToArray(_ref89, 1),
+              a = _ref91[0];
+            var _ref92 = _slicedToArray(_ref90, 1),
+              b = _ref92[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var _usedCount = _realEntries.reduce(function (sum, _ref91) {
-            var _ref92 = _slicedToArray(_ref91, 2),
-              count = _ref92[1];
+          var _usedCount = _realEntries.reduce(function (sum, _ref93) {
+            var _ref94 = _slicedToArray(_ref93, 2),
+              count = _ref94[1];
             return sum + count;
           }, 0);
           var _spareCount = total - _usedCount;
-          ctxParts = _realEntries.map(function (_ref93) {
-            var _ref94 = _slicedToArray(_ref93, 2),
-              c = _ref94[0],
-              count = _ref94[1];
+          ctxParts = _realEntries.map(function (_ref95) {
+            var _ref96 = _slicedToArray(_ref95, 2),
+              c = _ref96[0],
+              count = _ref96[1];
             return "".concat(count, "x ").concat(c);
           });
           if (_spareCount > 0) ctxParts.push("".concat(_spareCount, "x Spare"));
         } else {
-          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref95) {
-            var _ref96 = _slicedToArray(_ref95, 1),
-              c = _ref96[0];
+          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref97) {
+            var _ref98 = _slicedToArray(_ref97, 1),
+              c = _ref98[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref97, _ref98) {
-            var _ref99 = _slicedToArray(_ref97, 1),
-              a = _ref99[0];
-            var _ref100 = _slicedToArray(_ref98, 1),
-              b = _ref100[0];
+          }).sort(function (_ref99, _ref100) {
+            var _ref101 = _slicedToArray(_ref99, 1),
+              a = _ref101[0];
+            var _ref102 = _slicedToArray(_ref100, 1),
+              b = _ref102[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          ctxParts = _realEntries2.map(function (_ref101) {
-            var _ref102 = _slicedToArray(_ref101, 2),
-              c = _ref102[0],
-              count = _ref102[1];
+          ctxParts = _realEntries2.map(function (_ref103) {
+            var _ref104 = _slicedToArray(_ref103, 2),
+              c = _ref104[0],
+              count = _ref104[1];
             return "".concat(count, "x ").concat(c);
           });
-          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref103) {
-            var _ref104 = _slicedToArray(_ref103, 1),
-              c = _ref104[0];
+          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref105) {
+            var _ref106 = _slicedToArray(_ref105, 1),
+              c = _ref106[0];
             return c && c.toLowerCase() === 'spare';
-          }).reduce(function (sum, _ref105) {
-            var _ref106 = _slicedToArray(_ref105, 2),
-              count = _ref106[1];
+          }).reduce(function (sum, _ref107) {
+            var _ref108 = _slicedToArray(_ref107, 2),
+              count = _ref108[1];
             return sum + count;
           }, 0);
           if (_spareCount2 > 0) {
             ctxParts.push("".concat(_spareCount2, "x Spare"));
           } else if (base === 'D-Tap Extension 50 cm') {
-            var _usedCount2 = _realEntries2.reduce(function (sum, _ref107) {
-              var _ref108 = _slicedToArray(_ref107, 2),
-                count = _ref108[1];
+            var _usedCount2 = _realEntries2.reduce(function (sum, _ref109) {
+              var _ref110 = _slicedToArray(_ref109, 2),
+                count = _ref110[1];
               return sum + count;
             }, 0);
             var remaining = total - _usedCount2;
@@ -19342,7 +19795,7 @@ function generateGearListHtml() {
   }
   addRow('Media', mediaItems);
   var lensDisplayNames = selectedLensNames.map(function (name) {
-    var _ref109, _lens$minFocusMeters;
+    var _ref111, _lens$minFocusMeters;
     var lens = devices.lenses && devices.lenses[name];
     var base = addArriKNumber(name);
     if (!lens) return base;
@@ -19353,7 +19806,7 @@ function generateGearListHtml() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref109 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref109 !== void 0 ? _ref109 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref111 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref111 !== void 0 ? _ref111 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     return attrs.length ? "".concat(base, " (").concat(attrs.join(', '), ")") : base;
   });
@@ -19464,9 +19917,9 @@ function generateGearListHtml() {
     var sizeHtml = size ? "".concat(size, "&quot; - ") : '';
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>Onboard Monitor</strong> - ".concat(sizeHtml).concat(escapeHtml(addArriKNumber(selectedNames.monitor)), " - incl. Sunhood");
   }
-  handheldPrefs.forEach(function (_ref110) {
-    var role = _ref110.role,
-      size = _ref110.size;
+  handheldPrefs.forEach(function (_ref112) {
+    var role = _ref112.role,
+      size = _ref112.size;
     var monitorsDb = devices && devices.monitors ? devices.monitors : {};
     var names = Object.keys(monitorsDb).filter(function (n) {
       return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
@@ -19492,9 +19945,9 @@ function generateGearListHtml() {
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>".concat(labelRole, " Handheld Monitor</strong> - <span id=\"monitorSize").concat(idSuffix, "\">").concat(selectedSize, "&quot;</span> - <select id=\"gearList").concat(idSuffix, "Monitor\">").concat(opts, "</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks");
     monitorSizes.push(selectedSize);
   });
-  largeMonitorPrefs.forEach(function (_ref111) {
+  largeMonitorPrefs.forEach(function (_ref113) {
     var _dirDb$defaultName;
-    var role = _ref111.role;
+    var role = _ref113.role;
     var dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
     var names = Object.keys(dirDb).filter(function (n) {
       return n !== 'None';
@@ -19543,13 +19996,13 @@ function generateGearListHtml() {
     return /V98micro/i.test(n);
   }) || 'Bebob V98micro';
   handheldPrefs.forEach(function (p) {
-    for (var _i47 = 0; _i47 < 3; _i47++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
+    for (var _i46 = 0; _i46 < 3; _i46++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
   });
   if (hasMotor) {
     var bebob150 = Object.keys(devices.batteries || {}).find(function (n) {
       return /V150micro/i.test(n);
     }) || 'Bebob V150micro';
-    for (var _i48 = 0; _i48 < 3; _i48++) monitoringBatteryItems.push("".concat(bebob150, " (Focus)"));
+    for (var _i47 = 0; _i47 < 3; _i47++) monitoringBatteryItems.push("".concat(bebob150, " (Focus)"));
   }
   var bebob290 = Object.keys(devices.batteries || {}).find(function (n) {
     return /V290RM-Cine/i.test(n);
@@ -19776,15 +20229,15 @@ function generateGearListHtml() {
     multiplier = 2;
   }
   var klappenMultiplier = multiplier % 2 === 0 ? multiplier : Math.max(1, multiplier - 1);
-  for (var _i49 = 0, _baseConsumables = baseConsumables; _i49 < _baseConsumables.length; _i49++) {
-    var item = _baseConsumables[_i49];
+  for (var _i48 = 0, _baseConsumables = baseConsumables; _i48 < _baseConsumables.length; _i48++) {
+    var item = _baseConsumables[_i48];
     var _count2 = item.count;
     if (item.noScale) {} else if (item.klappen) {
       _count2 *= klappenMultiplier;
     } else {
       _count2 *= multiplier;
     }
-    for (var _i50 = 0; _i50 < _count2; _i50++) consumables.push(item.name);
+    for (var _i49 = 0; _i49 < _count2; _i49++) consumables.push(item.name);
   }
   if (eyeLeatherCount) eyeLeatherCount *= multiplier;
   var needsRainProtection = isAnyScenarioActive(['Outdoor', 'Extreme rain', 'Rain Machine']);
@@ -19808,10 +20261,10 @@ function generateGearListHtml() {
     var monitorsUnder10 = _monitorSizes.filter(function (s) {
       return s <= 10;
     }).length;
-    for (var _i51 = 0; _i51 < monitorsAbove10 + 2; _i51++) consumables.push('CapIt Large');
-    for (var _i52 = 0; _i52 < monitorsUnder10 + 3; _i52++) consumables.push('CapIt Medium');
-    for (var _i53 = 0; _i53 < 3; _i53++) consumables.push('CapIt Small');
-    for (var _i54 = 0; _i54 < 10; _i54++) consumables.push('Duschhaube');
+    for (var _i50 = 0; _i50 < monitorsAbove10 + 2; _i50++) consumables.push('CapIt Large');
+    for (var _i51 = 0; _i51 < monitorsUnder10 + 3; _i51++) consumables.push('CapIt Medium');
+    for (var _i52 = 0; _i52 < 3; _i52++) consumables.push('CapIt Small');
+    for (var _i53 = 0; _i53 < 10; _i53++) consumables.push('Duschhaube');
     consumables.push('Magliner Rain Cover Transparent');
   }
   var needsHairDryer = isWinterShoot && isScenarioActive('Outdoor') || isScenarioActive('Extreme cold (snow)');
@@ -19826,20 +20279,20 @@ function generateGearListHtml() {
   }
   if (needsHandAndFeetWarmers) {
     var warmersCount = Math.max(shootDays, 1) * 2;
-    for (var _i55 = 0; _i55 < warmersCount; _i55++) miscItems.push('Hand Warmers');
-    for (var _i56 = 0; _i56 < warmersCount; _i56++) miscItems.push('Feet Warmers');
+    for (var _i54 = 0; _i54 < warmersCount; _i54++) miscItems.push('Hand Warmers');
+    for (var _i55 = 0; _i55 < warmersCount; _i55++) miscItems.push('Feet Warmers');
   }
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
   var proGaffCount = multiplier;
-  var proGaffHtml = gaffTapeSelections.map(function (_ref112) {
-    var id = _ref112.id,
-      color = _ref112.color,
-      width = _ref112.width;
-    var colorOpts = gaffColors.map(function (_ref113) {
-      var _ref114 = _slicedToArray(_ref113, 2),
-        val = _ref114[0],
-        label = _ref114[1];
+  var proGaffHtml = gaffTapeSelections.map(function (_ref114) {
+    var id = _ref114.id,
+      color = _ref114.color,
+      width = _ref114.width;
+    var colorOpts = gaffColors.map(function (_ref115) {
+      var _ref116 = _slicedToArray(_ref115, 2),
+        val = _ref116[0],
+        label = _ref116[1];
       return "<option value=\"".concat(val, "\"").concat(val === color ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var widthOpts = gaffWidths.map(function (val) {
@@ -19850,10 +20303,10 @@ function generateGearListHtml() {
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
-    var _options3 = colors.map(function (_ref115) {
-      var _ref116 = _slicedToArray(_ref115, 2),
-        val = _ref116[0],
-        label = _ref116[1];
+    var _options3 = colors.map(function (_ref117) {
+      var _ref118 = _slicedToArray(_ref117, 2),
+        val = _ref118[0],
+        label = _ref118[1];
       return "<option value=\"".concat(val, "\"").concat(val === eyeLeatherColor ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     eyeLeatherHtml = "<span class=\"gear-item\" data-gear-name=\"Bluestar eye leather made of microfiber oval, large\">".concat(eyeLeatherCount, "x Bluestar eye leather made of microfiber oval, large <select id=\"gearListEyeLeatherColor\">").concat(_options3, "</select></span>");
@@ -20014,10 +20467,10 @@ function getGearListSelectors() {
 }
 function applyGearListSelectors(selectors) {
   if (!gearListOutput || !selectors) return;
-  Object.entries(selectors).forEach(function (_ref117) {
-    var _ref118 = _slicedToArray(_ref117, 2),
-      id = _ref118[0],
-      value = _ref118[1];
+  Object.entries(selectors).forEach(function (_ref119) {
+    var _ref120 = _slicedToArray(_ref119, 2),
+      id = _ref120[0],
+      value = _ref120[1];
     var sel = gearListOutput.querySelector("#".concat(id));
     if (sel) {
       if (sel.multiple) {
@@ -20669,8 +21122,8 @@ function restoreSessionState() {
       }
     }
     var storedProject = null;
-    for (var _i57 = 0, _candidateNames = candidateNames; _i57 < _candidateNames.length; _i57++) {
-      var name = _candidateNames[_i57];
+    for (var _i56 = 0, _candidateNames = candidateNames; _i56 < _candidateNames.length; _i56++) {
+      var name = _candidateNames[_i56];
       storedProject = fetchStoredProject(name);
       if (hasProjectPayload(storedProject)) {
         break;
@@ -20813,9 +21266,9 @@ function applySharedSetup(shared) {
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
     saveCurrentSession();
     if (Array.isArray(decoded.feedback) && decoded.feedback.length) {
-      var _key9 = getCurrentSetupKey();
+      var _key0 = getCurrentSetupKey();
       var fb = loadFeedbackSafe();
-      fb[_key9] = (fb[_key9] || []).concat(decoded.feedback);
+      fb[_key0] = (fb[_key0] || []).concat(decoded.feedback);
       saveFeedbackSafe(fb);
     }
     currentProjectInfo = decoded.projectInfo || null;
@@ -21135,9 +21588,9 @@ function triggerPinkModeIconAnimation() {
   });
 }
 function applyPinkModeIcon(iconConfig) {
-  var _ref119 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    _ref119$animate = _ref119.animate,
-    animate = _ref119$animate === void 0 ? false : _ref119$animate;
+  var _ref121 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    _ref121$animate = _ref121.animate,
+    animate = _ref121$animate === void 0 ? false : _ref121$animate;
   if (!iconConfig) return;
   if (pinkModeToggle) {
     setToggleIcon(pinkModeToggle, iconConfig);
@@ -21689,9 +22142,9 @@ function captureStorageSnapshot(storage) {
     if (typeof storage.key === 'function' && typeof storage.length === 'number') {
       var length = storage.length;
       for (var i = 0; i < length; i++) {
-        var _key0 = storage.key(i);
-        if (typeof _key0 !== 'string') continue;
-        snapshot[_key0] = storage.getItem(_key0);
+        var _key1 = storage.key(i);
+        if (typeof _key1 !== 'string') continue;
+        snapshot[_key1] = storage.getItem(_key1);
       }
     } else if (typeof storage.keys === 'function') {
       var keys = storage.keys();
@@ -21751,13 +22204,13 @@ function convertEntriesToSnapshot(section) {
       }
       if (_typeof(entry) === 'object') {
         if (typeof entry.key === 'string') {
-          var _ref120, _ref121, _ref122, _entry$value;
-          assignEntry(entry.key, (_ref120 = (_ref121 = (_ref122 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref122 !== void 0 ? _ref122 : entry.data) !== null && _ref121 !== void 0 ? _ref121 : entry.content) !== null && _ref120 !== void 0 ? _ref120 : entry.string);
+          var _ref122, _ref123, _ref124, _entry$value;
+          assignEntry(entry.key, (_ref122 = (_ref123 = (_ref124 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref124 !== void 0 ? _ref124 : entry.data) !== null && _ref123 !== void 0 ? _ref123 : entry.content) !== null && _ref122 !== void 0 ? _ref122 : entry.string);
           return;
         }
         if (typeof entry.name === 'string') {
-          var _ref123, _ref124, _ref125, _entry$value2;
-          assignEntry(entry.name, (_ref123 = (_ref124 = (_ref125 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref125 !== void 0 ? _ref125 : entry.data) !== null && _ref124 !== void 0 ? _ref124 : entry.content) !== null && _ref123 !== void 0 ? _ref123 : entry.string);
+          var _ref125, _ref126, _ref127, _entry$value2;
+          assignEntry(entry.name, (_ref125 = (_ref126 = (_ref127 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref127 !== void 0 ? _ref127 : entry.data) !== null && _ref126 !== void 0 ? _ref126 : entry.content) !== null && _ref125 !== void 0 ? _ref125 : entry.string);
           return;
         }
         if (Array.isArray(entry.entry)) {
@@ -21766,10 +22219,10 @@ function convertEntriesToSnapshot(section) {
       }
     });
   } else if (isPlainObject(section)) {
-    Object.entries(section).forEach(function (_ref126) {
-      var _ref127 = _slicedToArray(_ref126, 2),
-        key = _ref127[0],
-        value = _ref127[1];
+    Object.entries(section).forEach(function (_ref128) {
+      var _ref129 = _slicedToArray(_ref128, 2),
+        key = _ref129[0],
+        value = _ref129[1];
       assignEntry(key, value);
     });
   } else {
@@ -21782,24 +22235,24 @@ function extractFirstMatchingSnapshot(source, keys) {
     snapshot: null,
     keyUsed: null
   };
-  var _iterator24 = _createForOfIteratorHelper(keys),
-    _step24;
+  var _iterator26 = _createForOfIteratorHelper(keys),
+    _step26;
   try {
-    for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
-      var _key1 = _step24.value;
-      if (!Object.prototype.hasOwnProperty.call(source, _key1)) continue;
-      var snapshot = convertEntriesToSnapshot(source[_key1]);
+    for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
+      var _key10 = _step26.value;
+      if (!Object.prototype.hasOwnProperty.call(source, _key10)) continue;
+      var snapshot = convertEntriesToSnapshot(source[_key10]);
       if (snapshot) {
         return {
           snapshot: snapshot,
-          keyUsed: _key1
+          keyUsed: _key10
         };
       }
     }
   } catch (err) {
-    _iterator24.e(err);
+    _iterator26.e(err);
   } finally {
-    _iterator24.f();
+    _iterator26.f();
   }
   return {
     snapshot: null,
@@ -21817,10 +22270,10 @@ function looksLikeStoredSettingKey(key) {
 function buildLegacyStorageFromRoot(source, metadataKeys) {
   if (!isPlainObject(source)) return null;
   var snapshot = Object.create(null);
-  Object.entries(source).forEach(function (_ref128) {
-    var _ref129 = _slicedToArray(_ref128, 2),
-      key = _ref129[0],
-      value = _ref129[1];
+  Object.entries(source).forEach(function (_ref130) {
+    var _ref131 = _slicedToArray(_ref130, 2),
+      key = _ref131[0],
+      value = _ref131[1];
     if (metadataKeys.has(key)) return;
     if (!looksLikeStoredSettingKey(key)) return;
     snapshot[key] = normalizeStoredValue(value);
@@ -21838,10 +22291,10 @@ function extractBackupSections(raw) {
   var settingsSnapshot = settingsResult.snapshot || buildLegacyStorageFromRoot(parsed, metadataKeys);
   var sessionSnapshot = sessionResult.snapshot;
   var dataSection = null;
-  for (var _i58 = 0, _arr = ['data', 'payload', 'plannerData', 'allData']; _i58 < _arr.length; _i58++) {
-    var _key10 = _arr[_i58];
-    if (isPlainObject(parsed[_key10])) {
-      dataSection = parsed[_key10];
+  for (var _i57 = 0, _arr = ['data', 'payload', 'plannerData', 'allData']; _i57 < _arr.length; _i57++) {
+    var _key11 = _arr[_i57];
+    if (isPlainObject(parsed[_key11])) {
+      dataSection = parsed[_key11];
       break;
     }
   }
@@ -22033,6 +22486,7 @@ if (restoreSettings && restoreSettingsInput) {
     if (!file) return;
     var langTexts = texts[currentLang] || {};
     var fallbackTexts = texts.en || {};
+    var restoreFailureMessage = langTexts.restoreFailed || fallbackTexts.restoreFailed || 'Restore failed. Check the backup file and try again.';
     var backupFileName = null;
     try {
       backupFileName = createSettingsBackup(false, new Date());
@@ -22063,16 +22517,22 @@ if (restoreSettings && restoreSettingsInput) {
           restoredSession = _extractBackupSection.sessionStorage,
           data = _extractBackupSection.data,
           fileVersion = _extractBackupSection.fileVersion;
+        var hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
+        var hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
+        var hasDataEntries = data && Object.keys(data).length > 0;
+        if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
+          throw new Error('Backup missing recognized sections');
+        }
         if (fileVersion !== APP_VERSION) {
           alert("".concat(texts[currentLang].restoreVersionWarning, " (").concat(fileVersion || 'unknown', " \u2192 ").concat(APP_VERSION, ")"));
         }
         if (restoredSettings && _typeof(restoredSettings) === 'object') {
           var _safeStorage = resolveSafeLocalStorage();
           if (_safeStorage && typeof _safeStorage.setItem === 'function') {
-            Object.entries(restoredSettings).forEach(function (_ref130) {
-              var _ref131 = _slicedToArray(_ref130, 2),
-                k = _ref131[0],
-                v = _ref131[1];
+            Object.entries(restoredSettings).forEach(function (_ref132) {
+              var _ref133 = _slicedToArray(_ref132, 2),
+                k = _ref133[0],
+                v = _ref133[1];
               if (typeof k !== 'string') return;
               try {
                 if (v === null || v === undefined) {
@@ -22089,10 +22549,10 @@ if (restoreSettings && restoreSettingsInput) {
           }
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
-          Object.entries(restoredSession).forEach(function (_ref132) {
-            var _ref133 = _slicedToArray(_ref132, 2),
-              key = _ref133[0],
-              value = _ref133[1];
+          Object.entries(restoredSession).forEach(function (_ref134) {
+            var _ref135 = _slicedToArray(_ref134, 2),
+              key = _ref135[0],
+              value = _ref135[1];
             try {
               sessionStorage.setItem(key, value);
             } catch (sessionError) {
@@ -22147,11 +22607,15 @@ if (restoreSettings && restoreSettingsInput) {
         alert(texts[currentLang].restoreSuccess);
       } catch (err) {
         console.warn('Restore failed', err);
+        showNotification('error', restoreFailureMessage);
+        alert(restoreFailureMessage);
       }
       resetInput();
     };
     reader.onerror = function (err) {
       console.warn('Failed to read restore file', err);
+      showNotification('error', restoreFailureMessage);
+      alert(restoreFailureMessage);
       resetInput();
     };
     reader.readAsText(file);
@@ -22284,6 +22748,11 @@ function resetPlannerStateAfterFactoryReset() {
     }
   } catch (error) {
     console.warn('Failed to reset custom logo preview during factory reset', error);
+  }
+  try {
+    resetCustomFontsForFactoryReset();
+  } catch (error) {
+    console.warn('Failed to reset custom fonts during factory reset', error);
   }
   try {
     updateStorageSummary();
@@ -22727,6 +23196,7 @@ if (helpButton && helpDialog) {
   var helpQuickLinkItems = new Map();
   var helpSectionHighlightTimers = new Map();
   var appTargetHighlightTimers = new Map();
+  var featureSearchHighlightTimers = new Map();
   var highlightAppTarget = function highlightAppTarget(element) {
     if (!element) return;
     var target = element;
@@ -22740,6 +23210,52 @@ if (helpButton && helpDialog) {
       appTargetHighlightTimers.delete(target);
     }, 2000);
     appTargetHighlightTimers.set(target, timeout);
+  };
+  var highlightFeatureSearchTargets = function highlightFeatureSearchTargets(targets) {
+    if (!Array.isArray(targets) || targets.length === 0) return;
+    var seen = new Set();
+    targets.forEach(function (target) {
+      var _target$classList;
+      if (!target || typeof ((_target$classList = target.classList) === null || _target$classList === void 0 ? void 0 : _target$classList.add) !== 'function') return;
+      if (seen.has(target)) return;
+      seen.add(target);
+      var existing = featureSearchHighlightTimers.get(target);
+      if (existing) {
+        clearTimeout(existing);
+      }
+      target.classList.add('feature-search-focus');
+      var timeout = setTimeout(function () {
+        target.classList.remove('feature-search-focus');
+        featureSearchHighlightTimers.delete(target);
+      }, 2500);
+      featureSearchHighlightTimers.set(target, timeout);
+    });
+  };
+  var findAssociatedLabelElements = function findAssociatedLabelElements(element) {
+    if (!element) return [];
+    var labels = new Set();
+    var doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+    if (element.labels && _typeof(element.labels) === 'object') {
+      Array.from(element.labels).forEach(function (label) {
+        if (label) labels.add(label);
+      });
+    }
+    if (typeof element.closest === 'function') {
+      var wrappingLabel = element.closest('label');
+      if (wrappingLabel) labels.add(wrappingLabel);
+    }
+    if (doc && typeof element.getAttribute === 'function') {
+      var collectIdRefs = function collectIdRefs(attrValue) {
+        if (!attrValue) return;
+        attrValue.split(/\s+/).filter(Boolean).forEach(function (id) {
+          var ref = doc.getElementById(id);
+          if (ref) labels.add(ref);
+        });
+      };
+      collectIdRefs(element.getAttribute('aria-labelledby'));
+      collectIdRefs(element.getAttribute('aria-describedby'));
+    }
+    return Array.from(labels);
   };
   var focusFeatureElement = function focusFeatureElement(element) {
     if (!element) return;
@@ -22839,10 +23355,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref134) {
-      var section = _ref134.section,
-        listItem = _ref134.listItem,
-        button = _ref134.button;
+    helpQuickLinkItems.forEach(function (_ref136) {
+      var section = _ref136.section,
+        listItem = _ref136.listItem,
+        button = _ref136.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -22874,9 +23390,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref135) {
-      var button = _ref135.button,
-        label = _ref135.label;
+    helpQuickLinkItems.forEach(function (_ref137) {
+      var button = _ref137.button,
+        label = _ref137.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -22949,6 +23465,12 @@ if (helpButton && helpDialog) {
         }
         highlightHelpSection(section);
         focusHelpSectionHeading(section);
+        var quickLinkHeading = section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') || section.querySelector('button, a');
+        if (quickLinkHeading) {
+          highlightFeatureSearchTargets([quickLinkHeading]);
+        } else {
+          highlightFeatureSearchTargets([section]);
+        }
       });
       li.appendChild(button);
       fragment.appendChild(li);
@@ -22999,6 +23521,10 @@ if (helpButton && helpDialog) {
         if (highlightEl) {
           highlightAppTarget(highlightEl);
         }
+        var extraTargets = findAssociatedLabelElements(highlightEl || focusEl);
+        if (extraTargets.length) {
+          highlightFeatureSearchTargets(extraTargets);
+        }
       };
       if (targetInsideHelp) {
         runFocus();
@@ -23032,19 +23558,19 @@ if (helpButton && helpDialog) {
       var variants = HELP_SEARCH_ACCENT_VARIANTS.get(char) || '';
       var chars = new Set();
       var all = "".concat(char).concat(variants);
-      var _iterator25 = _createForOfIteratorHelper(all),
-        _step25;
+      var _iterator27 = _createForOfIteratorHelper(all),
+        _step27;
       try {
-        for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
-          var ch = _step25.value;
+        for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
+          var ch = _step27.value;
           chars.add(ch);
           var upper = ch.toUpperCase();
           if (upper) chars.add(upper);
         }
       } catch (err) {
-        _iterator25.e(err);
+        _iterator27.e(err);
       } finally {
-        _iterator25.f();
+        _iterator27.f();
       }
       var escaped = Array.from(chars).map(escapeRegExp).join('');
       return "[".concat(escaped, "]");
@@ -23406,6 +23932,8 @@ if (helpButton && helpDialog) {
             updateFeatureSearchValue(device.label, originalNormalized);
           }
           focusFeatureElement(device.select);
+          var highlightTargets = [device.select].concat(_toConsumableArray(findAssociatedLabelElements(device.select)));
+          highlightFeatureSearchTargets(highlightTargets);
           return;
         }
       }
@@ -23419,6 +23947,8 @@ if (helpButton && helpDialog) {
             updateFeatureSearchValue(label, originalNormalized);
           }
           focusFeatureElement(featureEl);
+          var _highlightTargets = [featureEl].concat(_toConsumableArray(findAssociatedLabelElements(featureEl)));
+          highlightFeatureSearchTargets(_highlightTargets);
           return;
         }
       }
@@ -23446,6 +23976,12 @@ if (helpButton && helpDialog) {
           });
         }
         highlightHelpSection(section);
+        var sectionHeading = section.querySelector('h3, summary, h4, h5, h6, [role="heading"]') || section.querySelector('button, a');
+        if (sectionHeading) {
+          highlightFeatureSearchTargets([sectionHeading]);
+        } else {
+          highlightFeatureSearchTargets([section]);
+        }
         var quickLink = section.id ? helpQuickLinkItems.get(section.id) : null;
         if (helpQuickLinksList) {
           helpQuickLinksList.querySelectorAll('.help-quick-link.active').forEach(function (btn) {
@@ -23462,6 +23998,7 @@ if (helpButton && helpDialog) {
     if (helpSearch) {
       helpSearch.value = clean;
       filterHelp();
+      highlightFeatureSearchTargets([helpSearch]);
     }
   };
   if (featureSearch) {
@@ -23754,7 +24291,7 @@ function populateLensDropdown() {
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref136, _lens$minFocusMeters2;
+    var _ref138, _lens$minFocusMeters2;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -23765,7 +24302,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref136 = (_lens$minFocusMeters2 = lens.minFocusMeters) !== null && _lens$minFocusMeters2 !== void 0 ? _lens$minFocusMeters2 : lens.minFocus) !== null && _ref136 !== void 0 ? _ref136 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref138 = (_lens$minFocusMeters2 = lens.minFocusMeters) !== null && _lens$minFocusMeters2 !== void 0 ? _lens$minFocusMeters2 : lens.minFocus) !== null && _ref138 !== void 0 ? _ref138 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     lensSelect.appendChild(opt);
@@ -24005,11 +24542,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref137) {
-    var type = _ref137.type,
-      _ref137$size = _ref137.size,
-      size = _ref137$size === void 0 ? DEFAULT_FILTER_SIZE : _ref137$size,
-      values = _ref137.values;
+  filters.forEach(function (_ref139) {
+    var type = _ref139.type,
+      _ref139$size = _ref139.size,
+      size = _ref139$size === void 0 ? DEFAULT_FILTER_SIZE : _ref139$size,
+      values = _ref139.values;
     if (!type) return;
     var sizeValue = size || DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -24447,8 +24984,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref138) {
-    var type = _ref138.type;
+  filters.forEach(function (_ref140) {
+    var type = _ref140.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
@@ -24571,6 +25108,14 @@ if (typeof module !== "undefined" && module.exports) {
       featureListElement: featureList,
       restoreFeatureSearchDefaults: restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions: updateFeatureSearchSuggestions
+    },
+    __customFontInternals: {
+      addFromData: function addFromData(name, dataUrl, options) {
+        return addCustomFontFromData(name, dataUrl, options);
+      },
+      getEntries: function getEntries() {
+        return Array.from(customFontEntries.values());
+      }
     },
     collectAutoGearCatalogNames: collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml: applyAutoGearRulesToTableHtml,
