@@ -4544,7 +4544,7 @@ const ICON_GLYPHS = Object.freeze({
   gears: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
   controller: iconGlyph('\uF117', ICON_FONT_KEYS.GADGET),
   distance: iconGlyph('\uEFB9', ICON_FONT_KEYS.UICONS),
-  sensor: iconGlyph('\uF034', ICON_FONT_KEYS.UICONS),
+  sensor: iconGlyph('\uEC2B', ICON_FONT_KEYS.UICONS),
   viewfinder: iconGlyph('\uF114', ICON_FONT_KEYS.FILM),
   camera: iconGlyph('\uE333', ICON_FONT_KEYS.UICONS),
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
