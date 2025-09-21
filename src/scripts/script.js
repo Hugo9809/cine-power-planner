@@ -4453,6 +4453,8 @@ const RESET_VIEW_ICON_SVG = `
   </svg>
 `.trim();
 
+const SENSOR_MODE_ICON = iconGlyph('\uF034', ICON_FONT_KEYS.UICONS);
+
 const PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
 const RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
 const ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
@@ -5269,7 +5271,7 @@ const projectFieldIcons = {
   aspectRatio: ASPECT_RATIO_ICON,
   codec: iconGlyph('\uE7A6', ICON_FONT_KEYS.UICONS),
   baseFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
-  sensorMode: iconGlyph('\uF037', ICON_FONT_KEYS.UICONS),
+  sensorMode: SENSOR_MODE_ICON,
   requiredScenarios: REQUIRED_SCENARIOS_ICON,
   lenses: iconGlyph('\uE0A3', ICON_FONT_KEYS.UICONS),
   cameraHandle: iconGlyph('\uF2DC', ICON_FONT_KEYS.UICONS),

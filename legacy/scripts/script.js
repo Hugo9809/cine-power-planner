@@ -3909,6 +3909,7 @@ function glyphText(glyph) {
 var FEEDBACK_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M5 4.5H19Q21.5 4.5 21.5 7V13Q21.5 15.5 19 15.5H15.5L12 19 8.5 15.5H5Q2.5 15.5 2.5 13V7Q2.5 4.5 5 4.5Z\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <path\n      d=\"M8.5 10.5 10.5 12.5 14.5 8.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
 var LOAD_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M12 3v9.75\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <polyline\n      points=\"8.75 9.75 12 12.75 15.25 9.75\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <path\n      d=\"M4.75 11.5H8.6L10.4 9h8.85L21 11.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <rect\n      x=\"4.75\"\n      y=\"12.5\"\n      width=\"14.5\"\n      height=\"7.25\"\n      rx=\"1.75\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
 var RESET_VIEW_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <g\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    >\n      <line x1=\"12\" y1=\"4.75\" x2=\"12\" y2=\"9.75\" />\n      <polyline points=\"10.75 8.5 12 9.75 13.25 8.5\" />\n      <line x1=\"12\" y1=\"19.25\" x2=\"12\" y2=\"14.25\" />\n      <polyline points=\"10.75 15.5 12 14.25 13.25 15.5\" />\n      <line x1=\"4.75\" y1=\"12\" x2=\"9.75\" y2=\"12\" />\n      <polyline points=\"8.5 10.75 9.75 12 8.5 13.25\" />\n      <line x1=\"19.25\" y1=\"12\" x2=\"14.25\" y2=\"12\" />\n      <polyline points=\"15.5 10.75 14.25 12 15.5 13.25\" />\n    </g>\n    <circle cx=\"12\" cy=\"12\" r=\"1.35\" fill=\"currentColor\" />\n  </svg>\n".trim();
+var SENSOR_MODE_ICON = iconGlyph("\uF034", ICON_FONT_KEYS.UICONS);
 var PRODUCTION_COMPANY_ICON = iconGlyph("\uE2D5", ICON_FONT_KEYS.UICONS);
 var RENTAL_HOUSE_ICON = iconGlyph("\uEA09", ICON_FONT_KEYS.UICONS);
 var ASPECT_RATIO_ICON = iconGlyph("\uE86E", ICON_FONT_KEYS.UICONS);
@@ -4621,7 +4622,7 @@ var projectFieldIcons = {
   aspectRatio: ASPECT_RATIO_ICON,
   codec: iconGlyph("\uE7A6", ICON_FONT_KEYS.UICONS),
   baseFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),
-  sensorMode: iconGlyph("\uF037", ICON_FONT_KEYS.UICONS),
+  sensorMode: SENSOR_MODE_ICON,
   requiredScenarios: REQUIRED_SCENARIOS_ICON,
   lenses: iconGlyph("\uE0A3", ICON_FONT_KEYS.UICONS),
   cameraHandle: iconGlyph("\uF2DC", ICON_FONT_KEYS.UICONS),
