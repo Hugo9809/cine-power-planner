@@ -3154,8 +3154,26 @@ body.pink-mode #topBar #logo .logo-center {
 }
 
 #diagramArea {
-  margin-top: 0.5em;
+  margin: 0.5em auto 0;
   position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: left;
+}
+
+#diagramArea > * {
+  flex: 0 0 auto;
+}
+
+#diagramArea > svg,
+#diagramArea > canvas {
+  margin-inline: auto;
+}
+
+#diagramArea .diagram-placeholder {
+  text-align: center;
+  width: 100%;
 }
 
 #diagramArea.grid-snap {
