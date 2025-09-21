@@ -2495,9 +2495,11 @@ function updateBatteryOptions() {
   if (Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
   }
+  updateFavoriteButton(batterySelect);
   if (Array.from(hotswapSelect.options).some(o => o.value === currentSwap)) {
     hotswapSelect.value = currentSwap;
   }
+  updateFavoriteButton(hotswapSelect);
   updateBatteryLabel();
 }
 
