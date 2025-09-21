@@ -4205,10 +4205,6 @@ function glyphText(glyph) {
   return resolved.char || '';
 }
 var FEEDBACK_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M5 4.5H19Q21.5 4.5 21.5 7V13Q21.5 15.5 19 15.5H15.5L12 19 8.5 15.5H5Q2.5 15.5 2.5 13V7Q2.5 4.5 5 4.5Z\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <path\n      d=\"M8.5 10.5 10.5 12.5 14.5 8.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
-var LOAD_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M12 3v9.75\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <polyline\n      points=\"8.75 9.75 12 12.75 15.25 9.75\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <path\n      d=\"M4.75 11.5H8.6L10.4 9h8.85L21 11.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <rect\n      x=\"4.75\"\n      y=\"12.5\"\n      width=\"14.5\"\n      height=\"7.25\"\n      rx=\"1.75\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
-var PLUS_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M12 5v14\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <path\n      d=\"M5 12h14\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
-var MINUS_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M5 12h14\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
-var CHECK_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M5 12.5 9.5 17 19 7.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
 var PRODUCTION_COMPANY_ICON = iconGlyph("\uE2D5", ICON_FONT_KEYS.UICONS);
 var RENTAL_HOUSE_ICON = iconGlyph("\uEA09", ICON_FONT_KEYS.UICONS);
 var ASPECT_RATIO_ICON = iconGlyph("\uE86E", ICON_FONT_KEYS.UICONS);
@@ -4232,22 +4228,10 @@ var ICON_GLYPHS = Object.freeze({
   camera: iconGlyph("\uE333", ICON_FONT_KEYS.UICONS),
   trash: iconGlyph("\uF254", ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph("\uF202", ICON_FONT_KEYS.ESSENTIAL),
-  load: Object.freeze({
-    markup: LOAD_ICON_SVG,
-    className: 'icon-svg'
-  }),
-  add: Object.freeze({
-    markup: PLUS_ICON_SVG,
-    className: 'icon-svg'
-  }),
-  minus: Object.freeze({
-    markup: MINUS_ICON_SVG,
-    className: 'icon-svg'
-  }),
-  check: Object.freeze({
-    markup: CHECK_ICON_SVG,
-    className: 'icon-svg'
-  }),
+  load: iconGlyph("\uE0E0", ICON_FONT_KEYS.UICONS),
+  add: iconGlyph("\uE02E", ICON_FONT_KEYS.UICONS),
+  minus: iconGlyph("\uE9E0", ICON_FONT_KEYS.UICONS),
+  check: iconGlyph("\uE3D8", ICON_FONT_KEYS.UICONS),
   fileExport: iconGlyph("\uE7AB", ICON_FONT_KEYS.UICONS),
   fileImport: iconGlyph("\uE7C7", ICON_FONT_KEYS.UICONS),
   save: iconGlyph("\uF207", ICON_FONT_KEYS.ESSENTIAL),
