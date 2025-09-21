@@ -68,6 +68,8 @@ const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackupHistory';
+const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
@@ -142,6 +144,7 @@ const PRIMARY_STORAGE_KEYS = [
   AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
   AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
   AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+  FULL_BACKUP_HISTORY_STORAGE_KEY,
 ];
 
 const SIMPLE_STORAGE_KEYS = [
@@ -2662,6 +2665,104 @@ function saveAutoGearBackupVisibility(flag) {
   );
 }
 
+// --- Full Backup History Storage ---
+function normalizeFullBackupHistoryEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const normalized = {};
+
+  const generatedAt = typeof entry.generatedAt === 'string'
+    ? entry.generatedAt.trim()
+    : typeof entry.createdAt === 'string'
+      ? entry.createdAt.trim()
+      : '';
+  if (generatedAt) {
+    normalized.generatedAt = generatedAt;
+  }
+
+  const fileName = typeof entry.fileName === 'string' ? entry.fileName.trim() : '';
+  if (fileName) {
+    normalized.fileName = fileName;
+  }
+
+  const source = typeof entry.source === 'string' ? entry.source.trim() : '';
+  if (source) {
+    normalized.source = source;
+  }
+
+  if (!normalized.generatedAt && !normalized.fileName && !normalized.source) {
+    return null;
+  }
+
+  return normalized;
+}
+
+function normalizeFullBackupHistory(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  const normalized = entries
+    .map(normalizeFullBackupHistoryEntry)
+    .filter(Boolean);
+
+  if (normalized.length > MAX_FULL_BACKUP_HISTORY_ENTRIES) {
+    return normalized.slice(-MAX_FULL_BACKUP_HISTORY_ENTRIES);
+  }
+
+  return normalized;
+}
+
+function loadFullBackupHistory() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const history = loadJSONFromStorage(
+    safeStorage,
+    FULL_BACKUP_HISTORY_STORAGE_KEY,
+    "Error loading full backup history from localStorage:",
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  return normalizeFullBackupHistory(history);
+}
+
+function saveFullBackupHistory(entries) {
+  const history = normalizeFullBackupHistory(entries);
+  const safeStorage = getSafeLocalStorage();
+  if (!safeStorage) {
+    return;
+  }
+
+  if (!history.length) {
+    deleteFromStorage(
+      safeStorage,
+      FULL_BACKUP_HISTORY_STORAGE_KEY,
+      "Error deleting full backup history from localStorage:",
+    );
+    return;
+  }
+
+  saveJSONToStorage(
+    safeStorage,
+    FULL_BACKUP_HISTORY_STORAGE_KEY,
+    history,
+    "Error saving full backup history to localStorage:",
+  );
+}
+
+function recordFullBackupHistoryEntry(entry) {
+  const normalized = normalizeFullBackupHistoryEntry(entry);
+  if (!normalized) {
+    return;
+  }
+
+  const history = loadFullBackupHistory();
+  history.push(normalized);
+  saveFullBackupHistory(history);
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
@@ -2680,6 +2781,7 @@ function clearAllData() {
   deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
   deleteFromStorage(
     safeStorage,
     getCustomFontStorageKeyName(),
@@ -2925,6 +3027,11 @@ function clearAllData() {
       autoGearShowBackups: loadAutoGearBackupVisibility(),
     };
 
+    const fullBackupHistory = loadFullBackupHistory();
+    if (fullBackupHistory.length) {
+      payload.fullBackupHistory = fullBackupHistory;
+    }
+
     const preferences = collectPreferenceSnapshot();
     if (Object.keys(preferences).length) {
       payload.preferences = preferences;
@@ -3118,6 +3225,22 @@ function normalizeImportedPresetId(value) {
   return "";
 }
 
+function normalizeImportedFullBackupHistory(value) {
+  if (Array.isArray(value)) {
+    return normalizeFullBackupHistory(value);
+  }
+  if (value && typeof value === 'object') {
+    const candidates = ['history', 'entries', 'items', 'list', 'values', 'data'];
+    for (let i = 0; i < candidates.length; i += 1) {
+      const key = candidates[i];
+      if (Array.isArray(value[key])) {
+        return normalizeFullBackupHistory(value[key]);
+      }
+    }
+  }
+  return [];
+}
+
 function getSnapshotKeyVariants(key) {
   const variants = [key];
   if (typeof key === 'string') {
@@ -3276,6 +3399,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
+  assignJSONValue(FULL_BACKUP_HISTORY_STORAGE_KEY, 'fullBackupHistory');
 
   const schemaEntry = readSnapshotEntry(snapshot, DEVICE_SCHEMA_CACHE_KEY);
   if (schemaEntry) {
@@ -3510,6 +3634,10 @@ function importAllData(allData, options = {}) {
       saveAutoGearBackupVisibility(visibility);
     }
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'fullBackupHistory')) {
+    const history = normalizeImportedFullBackupHistory(allData.fullBackupHistory);
+    saveFullBackupHistory(history);
+  }
 
   let importProjectEntry = null;
   const ensureProjectImporter = () => {
@@ -3567,6 +3695,9 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearAutoPresetId,
     loadAutoGearBackupVisibility,
     saveAutoGearBackupVisibility,
+    loadFullBackupHistory,
+    saveFullBackupHistory,
+    recordFullBackupHistoryEntry,
     requestPersistentStorage,
   };
 }
