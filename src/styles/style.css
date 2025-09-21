@@ -4023,6 +4023,12 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 #overviewDialogContent h3 {
   font-family: var(--font-family);
   font-weight: var(--font-weight-regular);
+  color: var(--text-color);
+}
+
+#overviewDialogContent:not(.dark-mode) h1,
+#overviewDialogContent:not(.dark-mode) h2,
+#overviewDialogContent:not(.dark-mode) h3 {
   color: var(--accent-color);
 }
 #overviewDialogContent h1 {
@@ -4036,8 +4042,12 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 #overviewDialogContent h2 {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   margin-top: 1.3em;
-  border-bottom: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--divider-color);
   padding-bottom: 5px;
+}
+
+#overviewDialogContent:not(.dark-mode) h2 {
+  border-bottom: 1px solid var(--accent-color);
 }
 #overviewDialogContent h3 {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
@@ -4134,10 +4144,10 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 #overviewDialogContent.dark-mode h1,
 #overviewDialogContent.dark-mode h2,
 #overviewDialogContent.dark-mode h3 {
-  color: var(--accent-color);
+  color: var(--text-color);
 }
 #overviewDialogContent.dark-mode h2 {
-  border-bottom: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--divider-color);
 }
 #overviewDialogContent.dark-mode th {
   background-color: var(--control-bg);
