@@ -10,6 +10,31 @@ function generatePrintableOverview() {
     const lang = typeof currentLang === 'string' ? currentLang : 'en';
     const locale = localeMap[lang] || 'en-US';
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
+    const fallbackProjectName = currentProjectInfo && typeof currentProjectInfo.projectName === 'string'
+        ? currentProjectInfo.projectName.trim()
+        : '';
+    const projectNameForTitle = setupName || fallbackProjectName;
+    const sanitizeTitleSegment = (value) => {
+        if (!value) return '';
+        return String(value)
+            .trim()
+            .replace(/[\\/:*?"<>|]+/g, '')
+            .replace(/\s+/g, ' ')
+            .replace(/^\.+/, '')
+            .replace(/\.+$/, '')
+            .trim();
+    };
+    const padTwo = (value) => String(value).padStart(2, '0');
+    const formattedDate = `${now.getFullYear()}-${padTwo(now.getMonth() + 1)}-${padTwo(now.getDate())}`;
+    const formattedTime = `${padTwo(now.getHours())}-${padTwo(now.getMinutes())}-${padTwo(now.getSeconds())}`;
+    const timestampLabel = `${formattedDate} ${formattedTime}`.trim();
+    const projectTitleSegment = sanitizeTitleSegment(projectNameForTitle) || 'Project';
+    const printDocumentTitle = [timestampLabel, projectTitleSegment, '- -', 'Project Overview and Gear List']
+        .filter(Boolean)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const originalDocumentTitle = typeof document !== 'undefined' ? document.title : '';
     const t = (typeof texts === 'object' && texts) ? (texts[lang] || texts.en || {}) : {};
     const customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;
 
@@ -348,6 +373,9 @@ function generatePrintableOverview() {
             window.removeEventListener('afterprint', closeAfterPrint);
             afterPrintRegistered = false;
         }
+        if (typeof document !== 'undefined' && document.title !== originalDocumentTitle) {
+            document.title = originalDocumentTitle;
+        }
         closeDialog(overviewDialog);
     };
 
@@ -370,8 +398,6 @@ function generatePrintableOverview() {
         const bodyElement = typeof document !== 'undefined' ? document.body : null;
         const bodyClassName = bodyElement ? bodyElement.className : '';
         const bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
-        const overviewTitle = t.overviewTitle || 'Overview';
-
         doc.open();
         doc.write(`<!DOCTYPE html>
 <html>
@@ -388,7 +414,7 @@ function generatePrintableOverview() {
 </html>`);
         doc.close();
 
-        doc.title = overviewTitle;
+        doc.title = printDocumentTitle;
 
         const fallbackHtml = doc.documentElement;
         if (fallbackHtml) {
@@ -455,6 +481,9 @@ function generatePrintableOverview() {
             }
 
             try {
+                if (typeof document !== 'undefined') {
+                    document.title = printDocumentTitle;
+                }
                 const result = window.print();
                 if (result && typeof result.then === 'function') {
                     result.catch(handlePrintError);
