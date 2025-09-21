@@ -1225,6 +1225,104 @@ function subtractScenarioContributions(diff, scenarioKeys, scenarioDiffMap) {
   return { add: adjust(diff.add, 'add'), remove: adjust(diff.remove, 'remove') };
 }
 
+function extractAutoGearSelections(value) {
+  if (typeof value !== 'string') return [];
+  return value
+    .split(',')
+    .map(part => part.trim())
+    .filter(Boolean);
+}
+
+function buildViewfinderExtensionAutoRules(baseInfo, baselineMap) {
+  if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+    return [];
+  }
+
+  const selections = extractAutoGearSelections(baseInfo && baseInfo.viewfinderExtension);
+  if (!selections.length) return [];
+
+  const uniqueSelections = Array.from(new Set(selections));
+  const rules = [];
+
+  uniqueSelections.forEach(selection => {
+    const trimmed = selection.trim();
+    if (!trimmed) return;
+
+    const remainingSelections = selections.filter(value => value !== trimmed);
+    const variantInfo = { ...baseInfo, viewfinderExtension: remainingSelections.join(', ') };
+    const variantHtml = generateGearListHtml({ ...variantInfo, requiredScenarios: '' });
+    const variantMap = parseGearTableForAutoRules(variantHtml);
+    if (!variantMap) return;
+
+    const diff = diffGearTableMaps(variantMap, baselineMap);
+    if (!diff.add.length && !diff.remove.length) return;
+
+    const additions = cloneAutoGearItems(diff.add);
+    if (!additions.length) return;
+    const removals = cloneAutoGearItems(diff.add);
+
+    rules.push({
+      id: generateAutoGearId('rule'),
+      label: getViewfinderFallbackLabel(trimmed),
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [trimmed],
+      videoDistribution: [],
+      add: additions,
+      remove: removals,
+    });
+  });
+
+  return rules;
+}
+
+function buildVideoDistributionAutoRules(baseInfo, baselineMap) {
+  if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+    return [];
+  }
+
+  const selections = extractAutoGearSelections(baseInfo && baseInfo.videoDistribution);
+  if (!selections.length) return [];
+
+  const uniqueSelections = Array.from(new Set(selections));
+  const rules = [];
+
+  uniqueSelections.forEach(selection => {
+    const trimmed = selection.trim();
+    if (!trimmed) return;
+    const lower = trimmed.toLowerCase();
+    if (lower === '__none__' || lower === 'none') return;
+
+    const remainingSelections = selections.filter(value => value !== trimmed);
+    const variantInfo = { ...baseInfo, videoDistribution: remainingSelections.join(', ') };
+    const variantHtml = generateGearListHtml({ ...variantInfo, requiredScenarios: '' });
+    const variantMap = parseGearTableForAutoRules(variantHtml);
+    if (!variantMap) return;
+
+    const diff = diffGearTableMaps(variantMap, baselineMap);
+    if (!diff.add.length && !diff.remove.length) return;
+
+    const additions = cloneAutoGearItems(diff.add);
+    if (!additions.length) return;
+    const removals = cloneAutoGearItems(diff.add);
+
+    rules.push({
+      id: generateAutoGearId('rule'),
+      label: getVideoDistributionFallbackLabel(trimmed),
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      videoDistribution: [trimmed],
+      add: additions,
+      remove: removals,
+    });
+  });
+
+  return rules;
+}
+
 function buildDefaultMatteboxAutoGearRules() {
   const category = 'Matte box + filter';
   const createItems = names => names.map(name => ({
@@ -1386,10 +1484,12 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
     ? scenarioValues.filter(value => typeof value === 'string' && value)
     : [];
 
-  if (canGenerateRules && scenarios.length) {
+  let baselineMap = null;
+  if (canGenerateRules) {
     const baselineHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: '' });
-    const baselineMap = parseGearTableForAutoRules(baselineHtml);
-    if (baselineMap) {
+    baselineMap = parseGearTableForAutoRules(baselineHtml);
+
+    if (baselineMap && scenarios.length) {
       const scenarioDiffMap = new Map();
       scenarios.forEach(value => {
         const scenarioHtml = generateGearListHtml({ ...baseInfo, requiredScenarios: value });
@@ -1437,6 +1537,11 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
         });
       });
     }
+  }
+
+  if (baselineMap) {
+    buildViewfinderExtensionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
+    buildVideoDistributionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
   }
 
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
