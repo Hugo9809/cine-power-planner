@@ -2512,6 +2512,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 #topBar h1 {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   margin: 0;
+  font-weight: var(--font-weight-light);
 }
 
 #topBar .branding {
