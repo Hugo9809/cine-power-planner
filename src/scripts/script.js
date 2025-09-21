@@ -20382,6 +20382,47 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     return container.innerHTML;
 }
 
+function formatPhoneHref(phone) {
+  if (typeof phone !== 'string') return '';
+  const trimmed = phone.trim();
+  if (!trimmed) return '';
+  const sanitized = trimmed.replace(/[^0-9+*#;,]/g, '');
+  return sanitized ? sanitized : '';
+}
+
+function formatEmailHref(email) {
+  if (typeof email !== 'string') return '';
+  const trimmed = email.trim();
+  if (!trimmed || !trimmed.includes('@')) return '';
+  const normalized = trimmed.replace(/\s+/g, '');
+  if (!normalized || !normalized.includes('@')) return '';
+  const encoded = encodeURIComponent(normalized);
+  return encoded ? encoded.replace(/%40/g, '@') : '';
+}
+
+function formatRequirementValue(rawValue) {
+  if (rawValue && typeof rawValue === 'object') {
+    if (typeof rawValue.__html === 'string' && rawValue.__html) {
+      return rawValue.__html;
+    }
+    if (Array.isArray(rawValue) && rawValue.length) {
+      const html = rawValue
+        .map(item => (typeof item === 'string' ? escapeHtml(item) : escapeHtml(String(item || ''))))
+        .join('<br>');
+      if (html) return html;
+    }
+    if (typeof rawValue.text === 'string' && rawValue.text) {
+      return escapeHtml(rawValue.text).replace(/\n/g, '<br>');
+    }
+  }
+  const value = typeof rawValue === 'string'
+    ? rawValue
+    : rawValue == null
+      ? ''
+      : String(rawValue);
+  return escapeHtml(value).replace(/\n/g, '<br>');
+}
+
 function generateGearListHtml(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
@@ -20598,15 +20639,52 @@ function generateGearListHtml(info = {}) {
     const projectInfo = { ...info };
     const crewRoleLabels = texts[currentLang]?.crewRoles || texts.en?.crewRoles || {};
     if (Array.isArray(info.people)) {
-        const crewEntries = info.people
+        const crewEntriesHtml = [];
+        const crewEntriesText = [];
+        info.people
             .filter(p => p.role && p.name)
-            .map(p => {
-                const details = [p.phone, p.email].filter(Boolean).join(', ');
-                const roleLabel = crewRoleLabels[p.role] || p.role;
-                return details ? `${roleLabel}: ${p.name} (${details})` : `${roleLabel}: ${p.name}`;
+            .forEach(p => {
+                const roleLabel = crewRoleLabels[p.role] || p.role || '';
+                const safeRole = escapeHtml(roleLabel);
+                const nameValue = typeof p.name === 'string' ? p.name.trim() : (p.name ? String(p.name).trim() : '');
+                if (!nameValue) {
+                    return;
+                }
+                const safeName = escapeHtml(nameValue);
+                const detailLinks = [];
+                const detailText = [];
+                const phoneValue = typeof p.phone === 'string' ? p.phone.trim() : (p.phone ? String(p.phone).trim() : '');
+                if (phoneValue) {
+                    const phoneHref = formatPhoneHref(phoneValue);
+                    const safePhone = escapeHtml(phoneValue);
+                    detailText.push(phoneValue);
+                    if (phoneHref) {
+                        detailLinks.push(`<a href="tel:${phoneHref}" class="req-contact-link">${safePhone}</a>`);
+                    } else {
+                        detailLinks.push(safePhone);
+                    }
+                }
+                const emailValue = typeof p.email === 'string' ? p.email.trim() : (p.email ? String(p.email).trim() : '');
+                if (emailValue) {
+                    const emailHref = formatEmailHref(emailValue);
+                    const safeEmail = escapeHtml(emailValue);
+                    detailText.push(emailValue);
+                    if (emailHref) {
+                        detailLinks.push(`<a href="mailto:${emailHref}" class="req-contact-link">${safeEmail}</a>`);
+                    } else {
+                        detailLinks.push(safeEmail);
+                    }
+                }
+                const linkDetails = detailLinks.length ? ` (${detailLinks.join(', ')})` : '';
+                const plainDetails = detailText.length ? ` (${detailText.join(', ')})` : '';
+                crewEntriesHtml.push(`<span class="crew-entry">${safeRole}: ${safeName}${linkDetails}</span>`);
+                crewEntriesText.push(`${roleLabel}: ${nameValue}${plainDetails}`);
             });
-        if (crewEntries.length) {
-            projectInfo.crew = crewEntries.join('\n');
+        if (crewEntriesHtml.length) {
+            projectInfo.crew = {
+                __html: crewEntriesHtml.join('<br>'),
+                text: crewEntriesText.join('\n')
+            };
         }
     }
     delete projectInfo.people;
@@ -20661,7 +20739,7 @@ function generateGearListHtml(info = {}) {
         .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => {
-            const value = escapeHtml(v).replace(/\n/g, '<br>');
+            const value = formatRequirementValue(v);
             const label = projectLabels[k] || k;
             const iconHtml = iconMarkup(projectFieldIcons[k], {
                 className: 'req-icon',
