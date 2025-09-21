@@ -27682,6 +27682,11 @@ function renderGearListFilterDetails(details) {
       sizeWrapper.className = 'select-wrapper';
       const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
       sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
+      sizeSelect.addEventListener('change', () => {
+        const storageId = sizeSelect.getAttribute('data-storage-id');
+        if (!storageId) return;
+        syncGearListFilterSize(storageId, sizeSelect.value);
+      });
       sizeWrapper.appendChild(sizeSelect);
       sizeLabel.append(sizeText, sizeWrapper);
       controls.appendChild(sizeLabel);
@@ -27695,6 +27700,7 @@ function renderGearListFilterDetails(details) {
       const optionsWrap = document.createElement('span');
       optionsWrap.className = 'filter-values-container';
       optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
+      const storageValuesId = optionsWrap.getAttribute('data-storage-values');
       const { opts, defaults = [] } = getFilterValueConfig(type);
       const currentValues = values == null ? defaults : (Array.isArray(values) ? values : []);
       opts.forEach(value => {
@@ -27707,6 +27713,10 @@ function renderGearListFilterDetails(details) {
           cb.checked = true;
           cb.setAttribute('checked', '');
         }
+        cb.addEventListener('change', () => {
+          if (!storageValuesId) return;
+          syncGearListFilterValue(storageValuesId, value, cb.checked);
+        });
         lbl.append(cb, document.createTextNode(value));
         optionsWrap.appendChild(lbl);
       });
