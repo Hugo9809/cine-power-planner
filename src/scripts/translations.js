@@ -124,6 +124,11 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Length unit",
+    lengthUnitSettingHelp:
+      "Choose whether cable lengths are shown in meters or in feet and inches.",
+    lengthUnitMetric: "Meters (m)",
+    lengthUnitImperial: "Feet & inches (ft/in)",
     fontSizeSetting: "Font size",
     fontSizeSettingHelp:
       "Set the base interface font size to improve readability or fit more information on screen.",
@@ -1375,6 +1380,11 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Unità di lunghezza",
+    lengthUnitSettingHelp:
+      "Scegli se mostrare le lunghezze dei cavi in metri oppure in piedi e pollici.",
+    lengthUnitMetric: "Metri (m)",
+    lengthUnitImperial: "Piedi e pollici (ft/in)",
     fontSizeSetting: "Dimensione carattere",
     fontSizeSettingHelp:
       "Imposta la dimensione base del carattere per migliorare la leggibilità o avere più spazio sullo schermo.",
@@ -2227,6 +2237,11 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Unidad de longitud",
+    lengthUnitSettingHelp:
+      "Elige si las longitudes de los cables se muestran en metros o en pies y pulgadas.",
+    lengthUnitMetric: "Metros (m)",
+    lengthUnitImperial: "Pies y pulgadas (ft/in)",
     fontSizeSetting: "Tamaño de fuente",
     fontSizeSettingHelp:
       "Define el tamaño base de fuente para mejorar la legibilidad o mostrar más información.",
@@ -3081,6 +3096,11 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Unité de longueur",
+    lengthUnitSettingHelp:
+      "Choisissez d'afficher les longueurs de câble en mètres ou en pieds et pouces.",
+    lengthUnitMetric: "Mètres (m)",
+    lengthUnitImperial: "Pieds et pouces (ft/in)",
     fontSizeSetting: "Taille de police",
     fontSizeSettingHelp:
       "Définissez la taille de police de base pour améliorer la lisibilité ou afficher plus d’informations.",
@@ -3939,6 +3959,11 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Längeneinheit",
+    lengthUnitSettingHelp:
+      "Lege fest, ob Kabellängen in Metern oder in Fuß und Zoll angezeigt werden.",
+    lengthUnitMetric: "Meter (m)",
+    lengthUnitImperial: "Fuß & Zoll (ft/in)",
     fontSizeSetting: "Schriftgröße",
     fontSizeSettingHelp:
       "Bestimme die Grundschriftgröße für bessere Lesbarkeit oder mehr Platz auf dem Bildschirm.",

@@ -90,6 +90,12 @@ const TEMPERATURE_SCENARIOS = [
 const FEEDBACK_TEMPERATURE_MIN = -20;
 const FEEDBACK_TEMPERATURE_MAX = 50;
 let temperatureUnit = TEMPERATURE_UNITS.celsius;
+const LENGTH_UNIT_STORAGE_KEY = 'cameraPowerPlanner_lengthUnit';
+const LENGTH_UNITS = {
+  metric: 'metric',
+  imperial: 'imperial'
+};
+let lengthUnit = LENGTH_UNITS.metric;
 const autoGearBackupDateFormatter =
   typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function'
     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -104,6 +110,17 @@ try {
   }
 } catch (error) {
   console.warn('Could not load temperature unit preference', error);
+}
+
+try {
+  if (typeof localStorage !== 'undefined') {
+    const storedLengthUnit = localStorage.getItem(LENGTH_UNIT_STORAGE_KEY);
+    if (storedLengthUnit) {
+      lengthUnit = normalizeLengthUnit(storedLengthUnit);
+    }
+  }
+} catch (error) {
+  console.warn('Could not load length unit preference', error);
 }
 
 const schemaStorage = (() => {
@@ -4061,6 +4078,27 @@ function setLanguage(lang) {
       settingsTemperatureUnit.value = temperatureUnit;
     }
   }
+  const settingsLengthUnitLabel = document.getElementById('settingsLengthUnitLabel');
+  if (settingsLengthUnitLabel) {
+    settingsLengthUnitLabel.textContent = texts[lang].lengthUnitSetting;
+    const lengthUnitHelp =
+      texts[lang].lengthUnitSettingHelp || texts[lang].lengthUnitSetting;
+    settingsLengthUnitLabel.setAttribute('data-help', lengthUnitHelp);
+    if (settingsLengthUnit) {
+      settingsLengthUnit.setAttribute('data-help', lengthUnitHelp);
+      settingsLengthUnit.setAttribute('aria-label', texts[lang].lengthUnitSetting);
+      Array.from(settingsLengthUnit.options || []).forEach(option => {
+        if (!option) return;
+        const normalized = normalizeLengthUnit(option.value);
+        const labelKey =
+          normalized === LENGTH_UNITS.imperial ? 'lengthUnitImperial' : 'lengthUnitMetric';
+        if (texts[lang][labelKey]) {
+          option.textContent = texts[lang][labelKey];
+        }
+      });
+      settingsLengthUnit.value = lengthUnit;
+    }
+  }
   const fontSizeLabel = document.getElementById("settingsFontSizeLabel");
   if (fontSizeLabel) {
     fontSizeLabel.textContent = texts[lang].fontSizeSetting;
@@ -7925,6 +7963,7 @@ const settingsDarkMode = document.getElementById("settingsDarkMode");
 const settingsPinkMode = document.getElementById("settingsPinkMode");
 const accentColorInput = document.getElementById("accentColorInput");
 const settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
+const settingsLengthUnit = document.getElementById('settingsLengthUnit');
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
 const localFontsButton = document.getElementById("localFontsButton");
@@ -10998,6 +11037,51 @@ function normalizeTemperatureUnit(unit) {
     return TEMPERATURE_UNITS.fahrenheit;
   }
   return TEMPERATURE_UNITS.celsius;
+}
+
+function normalizeLengthUnit(unit) {
+  if (typeof unit === 'string') {
+    const normalized = unit.trim().toLowerCase();
+    if (normalized === LENGTH_UNITS.imperial) {
+      return LENGTH_UNITS.imperial;
+    }
+    if (normalized === LENGTH_UNITS.metric) {
+      return LENGTH_UNITS.metric;
+    }
+  }
+  if (unit === LENGTH_UNITS.imperial) {
+    return LENGTH_UNITS.imperial;
+  }
+  return LENGTH_UNITS.metric;
+}
+
+function formatMetersAsImperial(meters) {
+  if (!Number.isFinite(meters)) return '';
+  const totalInchesRaw = meters * 39.37007874015748;
+  let totalInches = Math.round(totalInchesRaw);
+  if (totalInches === 0 && meters > 0) {
+    totalInches = 1;
+  }
+  const feet = Math.floor(totalInches / 12);
+  const inches = totalInches - feet * 12;
+  const parts = [];
+  if (feet > 0) parts.push(`${feet} ft`);
+  if (inches > 0 || feet === 0) parts.push(`${inches} in`);
+  if (parts.length === 0) return '0 in';
+  return parts.join(' ');
+}
+
+function applyLengthUnitToText(text, unit = lengthUnit) {
+  if (typeof text !== 'string' || !text) return text;
+  if (normalizeLengthUnit(unit) !== LENGTH_UNITS.imperial) {
+    return text;
+  }
+  return text.replace(/(\d+(?:[.,]\d+)?)\s*m\b/g, (match, value) => {
+    const meters = parseFloat(String(value).replace(',', '.'));
+    if (!Number.isFinite(meters)) return match;
+    const imperial = formatMetersAsImperial(meters);
+    return imperial || match;
+  });
 }
 
 function convertCelsiusToUnit(value, unit = temperatureUnit) {
@@ -15984,13 +16068,15 @@ function getTimecodes() {
       noneOpt.textContent = noneMap[currentLang] || "None";
       selectElem.appendChild(noneOpt);
     }
+    selectElem.dataset.lengthUnitAware = 'true';
     Object.keys(opts)
       .filter(name => name !== "None")
       .sort(localeSort)
       .forEach(name => {
         const opt = document.createElement("option");
         opt.value = name;
-        opt.textContent = name;
+        opt.dataset.lengthUnitSource = name;
+        opt.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
         selectElem.appendChild(opt);
       });
     initFavoritableSelect(selectElem);
@@ -16286,6 +16372,44 @@ function applyTemperatureUnitPreference(unit, options = {}) {
     updateFeedbackTemperatureLabel();
     updateFeedbackTemperatureOptions();
     renderTemperatureNote(lastRuntimeHours);
+  }
+}
+
+function applyLengthUnitPreference(unit, options = {}) {
+  const normalized = normalizeLengthUnit(unit);
+  const { persist = true, reRender = true, forceUpdate = false } = options || {};
+  if (!forceUpdate && lengthUnit === normalized) {
+    return;
+  }
+  lengthUnit = normalized;
+  if (persist && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(LENGTH_UNIT_STORAGE_KEY, lengthUnit);
+    } catch (error) {
+      console.warn('Could not save length unit preference', error);
+    }
+  }
+  if (settingsLengthUnit) {
+    settingsLengthUnit.value = lengthUnit;
+  }
+  if (reRender) {
+    if (typeof refreshDeviceLists === 'function') {
+      refreshDeviceLists();
+    }
+    document.querySelectorAll('select[data-length-unit-aware="true"]').forEach(select => {
+      Array.from(select?.options || []).forEach(option => {
+        if (!option || option.value === 'None') return;
+        const labelSource = option.dataset.lengthUnitSource || option.value || option.textContent || '';
+        if (!labelSource) return;
+        if (typeof addArriKNumber === 'function') {
+          option.textContent = addArriKNumber(labelSource);
+        } else {
+          option.textContent = applyLengthUnitToText(labelSource);
+        }
+      });
+    });
+    refreshGearListIfVisible();
+    populateFeatureSearch();
   }
 }
 
@@ -18062,7 +18186,7 @@ function renderDeviceList(categoryKey, ulElement) {
     header.className = "device-summary";
 
     const nameSpan = document.createElement("span");
-    nameSpan.textContent = name;
+    nameSpan.textContent = applyLengthUnitToText(name);
     let summary = generateConnectorSummary(deviceData);
     summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
     if (deviceData.notes) {
@@ -20220,10 +20344,11 @@ function addArriKNumber(name) {
     for (const col of collections) {
         if (col && col[name]) {
             const item = col[name];
+            let result = name;
             if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
-                return name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `);
+                result = name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `);
             }
-            return name;
+            return applyLengthUnitToText(result);
         }
     }
     if (d.accessories) {
@@ -20241,14 +20366,17 @@ function addArriKNumber(name) {
         for (const col of Object.values(d.accessories)) {
             const item = findItem(col);
             if (item) {
+                let result = name;
                 if (item.brand && item.brand.toUpperCase().includes('ARRI') && item.kNumber && !name.includes(item.kNumber)) {
-                    return /^ARRI\s*/i.test(name) ? name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `) : `ARRI ${item.kNumber} ${name}`;
+                    result = /^ARRI\s*/i.test(name)
+                        ? name.replace(/^ARRI\s*/i, `ARRI ${item.kNumber} `)
+                        : `ARRI ${item.kNumber} ${name}`;
                 }
-                return name;
+                return applyLengthUnitToText(result);
             }
         }
     }
-    return name;
+    return applyLengthUnitToText(name);
 }
 
 const sanitizeFizContext = context => (context || '')
@@ -21545,7 +21673,7 @@ function formatRequirementValue(rawValue) {
     : rawValue == null
       ? ''
       : String(rawValue);
-  return escapeHtml(value).replace(/\n/g, '<br>');
+  return escapeHtml(applyLengthUnitToText(value)).replace(/\n/g, '<br>');
 }
 
 function generateGearListHtml(info = {}) {
@@ -24015,6 +24143,7 @@ if (settingsButton && settingsDialog) {
       accentColorInput.value = stored || accentColor;
     }
     if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
+    if (settingsLengthUnit) settingsLengthUnit.value = lengthUnit;
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
@@ -24134,6 +24263,9 @@ if (settingsButton && settingsDialog) {
       }
       if (settingsTemperatureUnit) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
+      }
+      if (settingsLengthUnit) {
+        applyLengthUnitPreference(settingsLengthUnit.value);
       }
       if (settingsFontSize) {
         const size = settingsFontSize.value;
@@ -25013,6 +25145,12 @@ if (restoreSettings && restoreSettingsInput) {
         const restoredTemperatureUnit = safeGetItem(TEMPERATURE_UNIT_STORAGE_KEY);
         if (restoredTemperatureUnit) {
           applyTemperatureUnitPreference(restoredTemperatureUnit, {
+            persist: false,
+          });
+        }
+        const restoredLengthUnit = safeGetItem(LENGTH_UNIT_STORAGE_KEY);
+        if (restoredLengthUnit) {
+          applyLengthUnitPreference(restoredLengthUnit, {
             persist: false,
           });
         }
