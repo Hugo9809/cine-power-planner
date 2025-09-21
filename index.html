@@ -1379,7 +1379,7 @@
         <section
           data-help-section
           id="savingAndSharing"
-          data-help-keywords="save saving project projects share sharing export import backup restore safety offline data management json download recover undo history"
+          data-help-keywords="save saving project projects share sharing export import backup restore safety offline data management json download recover undo history verify verification checklist data safety integrity redundancy"
         >
           <h3>
             <span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Saving, Sharing &amp; Restoring Projects
@@ -1411,7 +1411,50 @@
               a backup so every project, device edit and auto-gear preset remains recoverable. Hourly background backups and the
               10‑minute auto snapshots below add extra insurance without disrupting your workflow.
             </li>
+            <li>
+              After each major milestone, run through the
+              <a
+                class="help-link"
+                href="#projectDataSafetyChecklist"
+                data-help-target="#projectDataSafetyChecklist"
+                data-help-highlight="#projectDataSafetyChecklist"
+              >Project data safety checklist</a>
+              to confirm your share, import, backup and restore workflows are ready before you leave the browser.
+            </li>
           </ul>
+          <div
+            id="projectDataSafetyChecklist"
+            class="help-callout"
+            role="note"
+            aria-label="Project data safety checklist"
+          >
+            <h4>Project data safety checklist</h4>
+            <ol>
+              <li>
+                Save the active setup under a new name before experimenting so earlier versions stay available for comparison.
+              </li>
+              <li>
+                Download both a full-app <strong>Backup</strong> and the current project JSON immediately after important updates
+                so you have self-contained copies you can move offline.
+              </li>
+              <li>
+                Store at least two copies of every file (for example, on your laptop and an external SSD) to guard against device
+                loss when you are travelling or on set.
+              </li>
+              <li>
+                Open each project JSON through <strong>Import project</strong> to confirm it loads correctly; close the dialog or
+                skip saving if you are only testing the archive.
+              </li>
+              <li>
+                Periodically test full-app backups by running <strong>Restore</strong>. The planner automatically creates a fresh
+                safety snapshot before applying the file, letting you revert instantly if anything looks unexpected.
+              </li>
+            </ol>
+            <p class="help-callout-note">
+              Tip: Rename archived files with the project name and date (for example, “2024-06-15 camera-rig backup.json”) so the
+              newest verified copy is obvious when you need to recover or share offline.
+            </p>
+          </div>
           <div class="help-link-group" aria-label="Saving and sharing shortcuts">
             <a
               class="help-link button-link"
@@ -1441,6 +1484,12 @@
               href="#settingsDialog"
               data-help-target="#restoreSettings"
             >Open Restore</a>
+            <a
+              class="help-link button-link"
+              href="#projectDataSafetyChecklist"
+              data-help-target="#projectDataSafetyChecklist"
+              data-help-highlight="#projectDataSafetyChecklist"
+            >Data safety checklist</a>
           </div>
         </section>
         <section
@@ -1510,7 +1559,7 @@
         <section
           data-help-section
           id="autoBackupsHelp"
-          data-help-keywords="auto backup automatic snapshot restore recovery safety hourly download full app backup notification show saved projects setting"
+          data-help-keywords="auto backup automatic snapshot restore recovery safety hourly download full app backup notification show saved projects setting verification checklist redundancy"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE825;</span>Automatic Backups</h3>
           <ul>
@@ -1518,6 +1567,7 @@
             <li>Enable <strong>Show auto backups in project list</strong> in Settings → Backup &amp; Restore to temporarily reveal those snapshots in the <em>Saved Projects</em> dropdown.</li>
             <li>Select an auto backup to review it. Press <strong>Save</strong> to keep it as a regular project or return to your current setup without overwriting anything.</li>
             <li>A full JSON export downloads automatically every hour with a name like “2024-05-12T14-00-00 full app backup.json” so you always have an offline safety copy.</li>
+            <li>Move hourly downloads and snapshots into your archive and follow the <a class="help-link" href="#projectDataSafetyChecklist" data-help-target="#projectDataSafetyChecklist" data-help-highlight="#projectDataSafetyChecklist">Project data safety checklist</a> so each file is verified, labelled and stored on redundant media.</li>
           </ul>
           <div class="help-link-group" aria-label="Automatic backup controls">
             <a class="help-link button-link" href="#settingsDialog" data-help-target="#settingsShowAutoBackups">Show auto backups setting</a>
@@ -1994,7 +2044,7 @@
         <section
           data-help-section
           id="troubleshootingHelp"
-          data-help-keywords="troubleshooting recovery issue problem stuck blank update reload cache backup restore revert factory reset missing gear lost data"
+          data-help-keywords="troubleshooting recovery issue problem stuck blank update reload cache backup restore revert factory reset missing gear lost data verification safety checklist"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF2DF;</span>Troubleshooting &amp; Recovery</h3>
           <ul>
@@ -2023,6 +2073,11 @@
                 data-help-highlight="#setup-manager"
               ><em>Export Project</em></a>
               so you can re-import them later.
+            </li>
+            <li>
+              When you run <a class="help-link" href="#settingsDialog" data-help-target="#restoreSettings"><em>Restore</em></a>
+              the planner downloads a fresh safety backup first. Keep that file until you have confirmed the restored data so you
+              can revert instantly if anything looks off.
             </li>
             <li>
               To wipe everything clean, use
