@@ -22345,6 +22345,10 @@ if (restoreSettings && restoreSettingsInput) {
 
     const langTexts = texts[currentLang] || {};
     const fallbackTexts = texts.en || {};
+    const restoreFailureMessage =
+      langTexts.restoreFailed
+      || fallbackTexts.restoreFailed
+      || 'Restore failed. Check the backup file and try again.';
 
     let backupFileName = null;
     try {
@@ -22382,6 +22386,13 @@ if (restoreSettings && restoreSettingsInput) {
           data,
           fileVersion,
         } = extractBackupSections(parsed);
+
+        const hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
+        const hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
+        const hasDataEntries = data && Object.keys(data).length > 0;
+        if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
+          throw new Error('Backup missing recognized sections');
+        }
         if (fileVersion !== APP_VERSION) {
           alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
         }
@@ -22460,11 +22471,15 @@ if (restoreSettings && restoreSettingsInput) {
         alert(texts[currentLang].restoreSuccess);
       } catch (err) {
         console.warn('Restore failed', err);
+        showNotification('error', restoreFailureMessage);
+        alert(restoreFailureMessage);
       }
       resetInput();
     };
     reader.onerror = err => {
       console.warn('Failed to read restore file', err);
+      showNotification('error', restoreFailureMessage);
+      alert(restoreFailureMessage);
       resetInput();
     };
     reader.readAsText(file);

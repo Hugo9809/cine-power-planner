@@ -331,4 +331,112 @@ describe('automated backups', () => {
     document.createElement.mockRestore();
     URL.createObjectURL = originalCreateObjectURL;
   });
+
+  test('restore surfaces errors when the backup payload cannot be parsed', () => {
+    loadApp();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    expect(restoreInput).not.toBeNull();
+
+    const fakeFile = { name: 'invalid-backup.json' };
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    const originalAlert = window.alert;
+    window.alert = jest.fn();
+
+    const originalFileReader = window.FileReader;
+    const readerInstance = {
+      onload: null,
+      onerror: null,
+      readAsText: jest.fn(function readAsText() {
+        if (typeof this.onload === 'function') {
+          this.onload({ target: { result: '{invalid json' } });
+        }
+      }),
+    };
+    window.FileReader = jest.fn(() => readerInstance);
+
+    const originalCreateElement = document.createElement.bind(document);
+    jest.spyOn(document, 'createElement').mockImplementation(tagName => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = jest.fn();
+      }
+      return element;
+    });
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      const textsByLang = window.texts || {};
+      const expectedMessage =
+        (textsByLang.en && textsByLang.en.restoreFailed)
+        || 'Restore failed. Check the backup file and try again.';
+
+      expect(window.alert).toHaveBeenCalledWith(expectedMessage);
+      expect(restoreInput.value).toBe('');
+    } finally {
+      window.alert = originalAlert;
+      window.FileReader = originalFileReader;
+      document.createElement.mockRestore();
+      delete restoreInput.files;
+    }
+  });
+
+  test('restore rejects backups without recognized sections', () => {
+    loadApp();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    expect(restoreInput).not.toBeNull();
+
+    const fakeFile = { name: 'empty-backup.json' };
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    const originalAlert = window.alert;
+    window.alert = jest.fn();
+
+    const originalFileReader = window.FileReader;
+    const readerInstance = {
+      onload: null,
+      onerror: null,
+      readAsText: jest.fn(function readAsText() {
+        if (typeof this.onload === 'function') {
+          this.onload({ target: { result: '{}' } });
+        }
+      }),
+    };
+    window.FileReader = jest.fn(() => readerInstance);
+
+    const originalCreateElement = document.createElement.bind(document);
+    jest.spyOn(document, 'createElement').mockImplementation(tagName => {
+      const element = originalCreateElement(tagName);
+      if (tagName === 'a') {
+        element.click = jest.fn();
+      }
+      return element;
+    });
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      const textsByLang = window.texts || {};
+      const expectedMessage =
+        (textsByLang.en && textsByLang.en.restoreFailed)
+        || 'Restore failed. Check the backup file and try again.';
+
+      expect(window.alert).toHaveBeenCalledWith(expectedMessage);
+      expect(restoreInput.value).toBe('');
+    } finally {
+      window.alert = originalAlert;
+      window.FileReader = originalFileReader;
+      document.createElement.mockRestore();
+      delete restoreInput.files;
+    }
+  });
 });
