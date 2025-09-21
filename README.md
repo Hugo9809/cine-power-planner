@@ -81,6 +81,8 @@ safe.
 - [Translations](#translations)
 - [What’s New](#whats-new)
 - [Quick Start](#quick-start)
+- [System Requirements & Browser Support](#system-requirements--browser-support)
+- [Save, Share & Import Drill](#save-share--import-drill)
 - [Everyday Workflow](#everyday-workflow)
 - [Saving & Project Management](#saving--project-management)
 - [Sharing & Imports](#sharing--imports)
@@ -168,7 +170,8 @@ See the language-specific README files for release details in other locales.
 4. Load the planner once, close the tab, disconnect from the network (or toggle
    Airplane Mode) and reopen `index.html`. The offline indicator in the header
    should flash briefly while cached files load. Confirm the interface mirrors
-   the last session exactly.
+   the last session exactly, including any locally stored Uicons or helper
+   assets.
 5. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after a few minutes.
@@ -179,6 +182,53 @@ See the language-specific README files for release details in other locales.
    `project-name.json`) and re-importing it on a secondary machine or profile.
    Rehearsing the full save → share → import loop keeps crews confident that
    offline workflows are airtight.
+8. Archive the verified backup and project bundle alongside the repository copy
+   you opened. This keeps save, share, import, backup and restore workflows
+   provably in sync from the first session.
+
+## System Requirements & Browser Support
+
+- **Modern evergreen browsers.** The planner is validated on the latest
+  releases of Chromium, Firefox and Safari on desktop and mobile. Enable
+  service workers, IndexedDB and persistent storage to unlock the full offline
+  workflow.
+- **Offline-friendly devices.** Laptops and tablets must allow persistent
+  storage so backups and auto-saves stay available. When running from removable
+  media or a field workstation, launch the planner once while online so the
+  service worker can cache every asset, then rehearse the offline reload
+  routine before travel.
+- **Sufficient local storage.** Large productions can accumulate many projects,
+  backups and gear lists. Monitor available disk space in your browser profile
+  and export archives regularly to redundant media to avoid storage eviction.
+- **No external dependencies.** All icons, fonts and helper scripts ship with
+  the repository. Keep the folder intact (including `animated icons 3/` and
+  locally stored Uicons) when copying it between machines so visuals and
+  scripts match exactly.
+
+## Save, Share & Import Drill
+
+Run this short rehearsal whenever a new crew member joins, a workstation is
+provisioned or a significant update ships. The routine proves that saving,
+sharing, importing, backup and restore all behave as expected without network
+access.
+
+1. **Baseline save.** Open the current project, trigger a manual save and note
+   the timestamp that appears in the selector. Confirm an auto-backup joins the
+   list within ten minutes while you continue editing.
+2. **Export redundancy.** Create a planner backup and a project bundle. Rename
+   the bundle if you follow a `.cpproject` convention, then store both files on
+   separate physical media.
+3. **Restore dress rehearsal.** Switch to a private browser profile (or a
+   second machine), import the planner backup, then import the project bundle.
+   Inspect gear lists, runtime dashboards, automatic gear rules and favorites
+   to confirm they survived the round-trip.
+4. **Offline verification.** While still in the rehearsal profile, disconnect
+   from the network and reload `index.html`. Ensure the offline indicator shows,
+   the interface matches the source machine and locally stored Uicons plus
+   helper scripts load without flicker.
+5. **Archive with confidence.** Delete the rehearsal profile after confirming
+   everything restored cleanly, then label and file the verified exports with
+   your production’s archival checklist.
 
 ## Everyday Workflow
 
