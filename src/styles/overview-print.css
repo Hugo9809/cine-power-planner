@@ -358,10 +358,18 @@ body:not(.light-mode) .gear-table .auto-gear-item {
 body:not(.light-mode) .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: var(--font-weight-medium);
   color: var(--accent-color);
   break-after: avoid;
   page-break-after: avoid;
+}
+
+#overviewDialogContent .gear-table .category-row td {
+  font-weight: var(--font-weight-regular);
+}
+
+#overviewDialogContent.dark-mode .gear-table .category-row td,
+body:not(.light-mode) .gear-table .category-row td {
+  font-weight: var(--font-weight-medium);
 }
 
 

@@ -40,4 +40,19 @@ describe('splitGearListHtml legacy compatibility', () => {
       cleanup();
     }
   });
+
+  test('derives project name from overview heading with embedded quotes', () => {
+    const { cleanup } = setupScriptEnvironment({ readyState: 'loading' });
+    try {
+      const legacyHtml = `
+        <h2>Project Overview for “Mini LF New old”</h2>
+        <h3>Gear List</h3>
+        <table class="gear-table"><tr><td>Legacy Item</td></tr></table>
+      `;
+      const { gearHtml } = global.splitGearListHtml(legacyHtml);
+      expect(gearHtml).toContain('Gear List: “Mini LF New old”');
+    } finally {
+      cleanup();
+    }
+  });
 });
