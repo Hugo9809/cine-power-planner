@@ -150,6 +150,8 @@ const SIMPLE_STORAGE_KEYS = [
   'darkMode',
   'pinkMode',
   'highContrast',
+  'reduceMotion',
+  'relaxedSpacing',
   'showAutoBackups',
   'accentColor',
   'fontSize',
@@ -2695,6 +2697,8 @@ function clearAllData() {
     'darkMode',
     'pinkMode',
     'highContrast',
+    'reduceMotion',
+    'relaxedSpacing',
     'showAutoBackups',
     'accentColor',
     'fontSize',
@@ -2845,6 +2849,16 @@ function clearAllData() {
     const highContrast = parseStoredBoolean(readLocalStorageValue('highContrast'));
     if (highContrast !== null) {
       preferences.highContrast = highContrast;
+    }
+
+    const reduceMotion = parseStoredBoolean(readLocalStorageValue('reduceMotion'));
+    if (reduceMotion !== null) {
+      preferences.reduceMotion = reduceMotion;
+    }
+
+    const relaxedSpacing = parseStoredBoolean(readLocalStorageValue('relaxedSpacing'));
+    if (relaxedSpacing !== null) {
+      preferences.relaxedSpacing = relaxedSpacing;
     }
 
     const showAutoBackups = parseStoredBoolean(readLocalStorageValue('showAutoBackups'));
@@ -3339,6 +3353,8 @@ function convertStorageSnapshotToData(snapshot) {
     'darkMode',
     'pinkMode',
     'highContrast',
+    'reduceMotion',
+    'relaxedSpacing',
     'showAutoBackups',
     'accentColor',
     'fontSize',
@@ -3350,6 +3366,8 @@ function convertStorageSnapshotToData(snapshot) {
     'darkMode',
     'pinkMode',
     'highContrast',
+    'reduceMotion',
+    'relaxedSpacing',
     'showAutoBackups',
     'iosPwaHelpShown',
   ]);
@@ -3422,7 +3440,15 @@ function importAllData(allData, options = {}) {
   }
   if (isPlainObject(allData.preferences)) {
     const prefs = allData.preferences;
-    const booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'iosPwaHelpShown'];
+    const booleanPrefs = [
+      'darkMode',
+      'pinkMode',
+      'highContrast',
+      'reduceMotion',
+      'relaxedSpacing',
+      'showAutoBackups',
+      'iosPwaHelpShown',
+    ];
     booleanPrefs.forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
         safeSetLocalStorage(key, prefs[key]);

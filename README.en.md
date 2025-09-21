@@ -75,7 +75,7 @@ The app automatically uses your browser language on first load, and you can swit
 - Upload a custom logo for printed overviews and backups.
 - Backups include favorites and create an automatic backup before restore.
 - Crew list entries now feature an email field.
-- High contrast theme option for improved readability.
+- High contrast, reduced motion, and relaxed spacing accessibility options for improved readability and comfort.
 - Device forms populate category fields dynamically based on schema attributes.
 - Revamped interface design with improved contrast and spacing for a cleaner experience on any device.
 - Simplified project sharing – download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices, then load it to restore the full setup.

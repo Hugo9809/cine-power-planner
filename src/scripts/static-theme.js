@@ -60,6 +60,14 @@
     root.classList.toggle('high-contrast', highContrastEnabled);
     body.classList.toggle('high-contrast', highContrastEnabled);
 
+    var reduceMotionEnabled = safeGet('reduceMotion') === 'true';
+    root.classList.toggle('reduce-motion', reduceMotionEnabled);
+    body.classList.toggle('reduce-motion', reduceMotionEnabled);
+
+    var relaxedSpacingEnabled = safeGet('relaxedSpacing') === 'true';
+    root.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
+    body.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
+
     var pinkModeEnabled = safeGet('pinkMode') === 'true';
     body.classList.toggle('pink-mode', pinkModeEnabled);
 
