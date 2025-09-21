@@ -20812,6 +20812,27 @@ function findAutoGearCategoryCell(table, category) {
     return null;
 }
 
+function createNormalizedSelectionSet(values, options = {}) {
+    const { normalizer = normalizeAutoGearTriggerValue, allowNone = false } = options;
+    if (!Array.isArray(values)) return new Set();
+    const normalized = values
+        .map(value => normalizer(value))
+        .filter(value => (allowNone ? value || value === '__none__' : Boolean(value)));
+    return new Set(normalized);
+}
+
+function matchesExactNormalizedSelection(actualSet, values, options = {}) {
+    if (!actualSet || typeof actualSet.has !== 'function') return false;
+    if (!Array.isArray(values) || !values.length) return false;
+    const targetSet = createNormalizedSelectionSet(values, options);
+    if (!targetSet.size) return false;
+    if (actualSet.size !== targetSet.size) return false;
+    for (const value of targetSet) {
+        if (!actualSet.has(value)) return false;
+    }
+    return true;
+}
+
 function applyAutoGearRulesToTableHtml(tableHtml, info) {
     if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
   const scenarios = info && info.requiredScenarios
@@ -20899,6 +20920,23 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       ? info.distanceSelection.trim()
       : '';
   const normalizedDistanceSelection = normalizeAutoGearTriggerValue(rawDistanceSelection);
+  const normalizedScenarioSet = createNormalizedSelectionSet(scenarios);
+  const matteboxSelectionSet = normalizedMattebox
+      ? new Set([normalizedMattebox])
+      : new Set();
+  const cameraSelectionSet = normalizedCameraSelection
+      ? new Set([normalizedCameraSelection])
+      : new Set();
+  const monitorSelectionSet = normalizedMonitorSelection
+      ? new Set([normalizedMonitorSelection])
+      : new Set();
+  const wirelessSelectionSet = normalizedWirelessSelection
+      ? new Set([normalizedWirelessSelection])
+      : new Set();
+  const distanceSelectionSet = normalizedDistanceSelection
+      ? new Set([normalizedDistanceSelection])
+      : new Set();
+  const viewfinderSelectionSet = new Set([normalizedViewfinderExtension]);
   if (!scenarios.length) {
     const hasRuleWithoutScenario = autoGearRules.some(rule => {
       const scenarioList = Array.isArray(rule.scenarios)
@@ -20922,93 +20960,60 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
 
     let triggered = autoGearRules.filter(rule => {
         const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
-        if (scenarioList.length && !scenarioList.every(s => scenarios.includes(s))) {
+        if (scenarioList.length && !matchesExactNormalizedSelection(normalizedScenarioSet, scenarioList)) {
             return false;
         }
         const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
-        if (matteboxList.length) {
-          const normalizedTargets = matteboxList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedMattebox) return false;
-          if (!normalizedTargets.includes(normalizedMattebox)) return false;
+        if (matteboxList.length && !matchesExactNormalizedSelection(matteboxSelectionSet, matteboxList)) {
+            return false;
         }
         const cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
-        if (cameraList.length) {
-          const normalizedTargets = cameraList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedCameraSelection) return false;
-          if (!normalizedTargets.includes(normalizedCameraSelection)) return false;
+        if (cameraList.length && !matchesExactNormalizedSelection(cameraSelectionSet, cameraList)) {
+            return false;
         }
         const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
-        if (monitorList.length) {
-          const normalizedTargets = monitorList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedMonitorSelection) return false;
-          if (!normalizedTargets.includes(normalizedMonitorSelection)) return false;
+        if (monitorList.length && !matchesExactNormalizedSelection(monitorSelectionSet, monitorList)) {
+            return false;
         }
         const wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
-        if (wirelessList.length) {
-          const normalizedTargets = wirelessList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedWirelessSelection) return false;
-          if (!normalizedTargets.includes(normalizedWirelessSelection)) return false;
+        if (wirelessList.length && !matchesExactNormalizedSelection(wirelessSelectionSet, wirelessList)) {
+            return false;
         }
         const motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
-        if (motorsList.length) {
-          const normalizedTargets = motorsList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTargets.every(target => normalizedMotorSet.has(target))) return false;
+        if (motorsList.length && !matchesExactNormalizedSelection(normalizedMotorSet, motorsList)) {
+            return false;
         }
         const controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
-        if (controllersList.length) {
-          const normalizedTargets = controllersList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTargets.every(target => normalizedControllerSet.has(target))) return false;
+        if (controllersList.length && !matchesExactNormalizedSelection(normalizedControllerSet, controllersList)) {
+            return false;
         }
         const distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
-        if (distanceList.length) {
-          const normalizedTargets = distanceList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedDistanceSelection) return false;
-          if (!normalizedTargets.includes(normalizedDistanceSelection)) return false;
+        if (distanceList.length && !matchesExactNormalizedSelection(distanceSelectionSet, distanceList)) {
+            return false;
         }
         const cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
-        if (cameraHandleList.length) {
-          const normalizedTargets = cameraHandleList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-            if (!normalizedTargets.length) return false;
-            if (!normalizedTargets.every(target => cameraHandleSet.has(target))) return false;
+        if (cameraHandleList.length && !matchesExactNormalizedSelection(cameraHandleSet, cameraHandleList)) {
+            return false;
         }
         const viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
         if (viewfinderList.length) {
-            const normalizedTargets = viewfinderList
-                .map(value => (value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value)))
-                .filter(value => value || value === '__none__');
-            if (!normalizedTargets.length) return false;
-            if (!normalizedTargets.includes(normalizedViewfinderExtension)) return false;
+            const viewfinderOptions = {
+                normalizer: value => (value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value)),
+                allowNone: true,
+            };
+            if (!matchesExactNormalizedSelection(viewfinderSelectionSet, viewfinderList, viewfinderOptions)) {
+                return false;
+            }
         }
         const videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
         if (videoDistList.length) {
-            const normalizedTargets = videoDistList
-                .map(normalizeAutoGearTriggerValue)
-                .filter(Boolean);
-            if (!normalizedTargets.length) return false;
-            if (!normalizedTargets.every(target => videoDistributionSet.has(target))) return false;
+            const videoDistributionOptions = {
+                normalizer: value => (value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value)),
+                allowNone: true,
+            };
+            if (!matchesExactNormalizedSelection(videoDistributionSet, videoDistList, videoDistributionOptions)) {
+                return false;
+            }
         }
         return true;
     });
