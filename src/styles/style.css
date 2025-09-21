@@ -340,6 +340,10 @@ h2 {
   border-bottom: 1px solid var(--accent-color);
 }
 
+section > h2 {
+  font-weight: var(--font-weight-light);
+}
+
 body.pink-mode:not(.dark-mode) h1,
 body.pink-mode:not(.dark-mode) h2,
 body.pink-mode:not(.dark-mode) h3 {
