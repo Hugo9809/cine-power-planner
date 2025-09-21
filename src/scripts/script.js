@@ -26474,7 +26474,10 @@ function buildFilterSelectHtml(filters = [], precomputedEntries) {
   const detailsContainer = entries.length
     ? '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>'
     : '';
-  return [summaryHtml, detailsContainer].filter(Boolean).join('<br>');
+  const summaryContainer = summaryHtml
+    ? `<div class="gear-list-filter-summary">${summaryHtml}</div>`
+    : '';
+  return [detailsContainer, summaryContainer].filter(Boolean).join('');
 }
 
 function collectFilterAccessories(filters = []) {

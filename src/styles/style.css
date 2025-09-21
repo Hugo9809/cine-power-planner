@@ -4578,6 +4578,11 @@ body.dark-mode.pink-mode #gearListOutput h2,
   background-color: var(--panel-bg);
 }
 
+.gear-list-filter-summary {
+  margin-top: 0.5rem;
+  line-height: var(--line-height-relaxed);
+}
+
 @supports (color: color-mix(in srgb, #000 50%, white)) {
   #gearListFilterDetails .filter-detail-size:focus-within {
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent);
