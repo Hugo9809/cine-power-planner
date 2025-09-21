@@ -91,9 +91,11 @@ safe.
 - [Customization & Accessibility](#customization--accessibility)
 - [Data Safety & Offline Operation](#data-safety--offline-operation)
 - [Data & Storage Overview](#data--storage-overview)
+- [Storage Quota & Maintenance](#storage-quota--maintenance)
 - [Backup & Recovery](#backup--recovery)
 - [Data Integrity Drills](#data-integrity-drills)
 - [Operational Checklists](#operational-checklists)
+- [Emergency Recovery Playbook](#emergency-recovery-playbook)
 - [Gear Lists & Reporting](#gear-lists--reporting)
 - [Automatic Gear Rules](#automatic-gear-rules)
 - [Runtime Intelligence](#runtime-intelligence)
@@ -420,6 +422,29 @@ Use Cine Power Planner end-to-end with the following routine:
 - The summary also estimates backup size using the most recent export, giving you
   a quick check that archives will fit on the storage you bring to set.
 
+## Storage Quota & Maintenance
+
+- **Confirm persistent storage access.** Visit **Settings → Data & Storage** on
+  every workstation you provision. The panel reports whether the browser granted
+  persistent storage; if it did not, request access from the settings dialog or
+  manually via developer tools before loading large projects. Browsers that
+  reject the request should trigger a contingency plan—schedule more frequent
+  manual exports so nothing depends on eviction-prone storage.
+- **Watch quota headroom.** Use the same dashboard (or your browser’s storage
+  inspector) to review how much space projects, backups and cached assets
+  consume. If available space drops below your comfort margin, archive older
+  backups to encrypted external media, delete redundant `auto-backup-…` entries
+  from the project selector and confirm fresh exports still complete without
+  warnings.
+- **Prime caches after updates.** Any time you click **Force reload**, reopen the
+  help dialog, legal pages and high-traffic screens such as the device catalog so
+  locally bundled Uicons, OpenMoji artwork and typography files repopulate the
+  cache. Confirm the offline indicator flickers only briefly on the next load.
+- **Document storage health.** Add storage checks to your prep and wrap logs. A
+  quick note about granted persistent storage status, remaining quota and where
+  the latest backups live makes audits easier and guards against accidental data
+  loss when the project transitions to another crew.
+
 ## Backup & Recovery
 
 - **Saved project snapshots** – the selector keeps every plan you save and
@@ -527,6 +552,38 @@ reference.
 5. **Hand off redundant media.** Deliver encrypted copies of the backups,
    bundles and repository snapshot to the production’s storage team and retain a
    second copy per your organization’s data retention policy.
+
+## Emergency Recovery Playbook
+
+Follow these steps immediately if something feels wrong—missing gear lists,
+unexpected validation warnings or a suspected storage issue. The goal is to
+stabilize the environment, capture evidence and restore service without losing
+data.
+
+1. **Pause and preserve the current state.** Keep the tab open, disconnect from
+   the network (if possible) and note the time plus the offline indicator state.
+   Avoid reloading until you record what happened.
+2. **Export what still exists.** Trigger **Settings → Backup & Restore → Backup**
+   and download the resulting `planner-backup.json`. Even if the project list
+   looks wrong, the export captures auto backups, favorites, runtime feedback and
+   automatic gear rules for forensic review.
+3. **Duplicate auto backups.** In the project selector, reveal `auto-backup-…`
+   entries (if hidden) and promote the most recent snapshots to manual saves so
+   they cannot be pruned automatically. Rename each copy with an incident ID or
+   timestamp.
+4. **Inspect the verification bundle.** Import the latest known-good
+   `project-name.json` (or `.cpproject`) bundle into a private browser profile or
+   secondary machine that stays offline. Confirm projects, gear lists and
+   settings appear as expected there before touching the production environment.
+5. **Restore carefully.** Once the verification import passes, restore the fresh
+   backup on the primary machine. The workflow saves a safety copy first, letting
+   you compare the incident snapshot against the restored state with a JSON diff
+   tool if needed.
+6. **Recache and document.** After recovery, click **Force reload**, reopen the
+   help dialog and legal pages to rehydrate caches, then log the incident: what
+   happened, which files were exported, where redundant copies were stored and
+   which workstation verified the fix. Store the incident log alongside the
+   backup so future crews can audit the resolution.
 
 ## Gear Lists & Reporting
 
