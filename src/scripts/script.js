@@ -13751,7 +13751,7 @@ const diagramCssLight = `
 .conn.blue{fill:#369;}
 .conn.green{fill:#090;}
 text{font-family:system-ui,sans-serif;}
-.edge-label{font-size:var(--font-size-diagram-label, 10px);}
+.edge-label{font-size:var(--font-size-diagram-label, 11px);}
 line{stroke:#333;stroke-width:2px;}
 path.edge-path{stroke:#333;stroke-width:2px;fill:none;}
 path.power{stroke:#d33;}
@@ -13766,6 +13766,7 @@ const diagramCssDark = `
 .node-icon{font-size:var(--font-size-diagram-icon, 20px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}
 .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}
 text{fill:#fff;font-family:system-ui,sans-serif;}
+.edge-label{font-size:var(--font-size-diagram-label, 11px);}
 line{stroke:#fff;}
 path.edge-path{stroke:#fff;}
 path.power{stroke:#ff6666;}
@@ -16909,9 +16910,9 @@ function renderSetupDiagram() {
   const DEFAULT_NODE_W = 120;
   const nodeHeights = {};
   const nodeWidths = {};
-  const diagramLabelFontSize = 'var(--font-size-diagram-label, 10px)';
-  const diagramTextFontSize = 'var(--font-size-diagram-text, 12px)';
-  const DIAGRAM_LABEL_LINE_HEIGHT = 12;
+  const diagramLabelFontSize = 'var(--font-size-diagram-label, 11px)';
+  const diagramTextFontSize = 'var(--font-size-diagram-text, 13px)';
+  const DIAGRAM_LABEL_LINE_HEIGHT = 13;
   const DIAGRAM_ICON_TEXT_GAP = 8;
   const DEFAULT_DIAGRAM_ICON_SIZE = 24;
 
@@ -16922,7 +16923,7 @@ function renderSetupDiagram() {
     const hasIcon = diagramIcons[id] || id.startsWith('controller') || id.startsWith('motor');
     nodeHeights[id] = Math.max(
       DEFAULT_NODE_H,
-      lines.length * 12 + (hasIcon ? 30 : 20)
+      lines.length * DIAGRAM_LABEL_LINE_HEIGHT + (hasIcon ? 30 : 20)
     );
     const longest = lines.reduce((m, l) => Math.max(m, l.length), 0);
     nodeWidths[id] = Math.max(DEFAULT_NODE_W, longest * 9 + 20);
@@ -17384,8 +17385,22 @@ function renderSetupDiagram() {
     svgEl.style.width = '100%';
     if (!isTouchDevice) {
       const bodyFontSize = parseFloat(getComputedStyle(document.body).fontSize) || 16;
-      const MAX_NODE_FONT = 12; // largest base font size used in diagram text
-      const maxAutoScale = bodyFontSize / MAX_NODE_FONT;
+      let diagramFontSizePx = Number.NaN;
+      if (document.body) {
+        const measureEl = document.createElement('span');
+        measureEl.style.position = 'absolute';
+        measureEl.style.visibility = 'hidden';
+        measureEl.style.fontSize = 'var(--font-size-diagram-text)';
+        measureEl.textContent = 'M';
+        document.body.appendChild(measureEl);
+        diagramFontSizePx = parseFloat(getComputedStyle(measureEl).fontSize);
+        measureEl.remove();
+      }
+      const DEFAULT_MAX_NODE_FONT = 13; // fallback when diagram font size cannot be measured
+      const referenceFontSize = Number.isFinite(diagramFontSizePx) && diagramFontSizePx > 0
+        ? diagramFontSizePx
+        : DEFAULT_MAX_NODE_FONT;
+      const maxAutoScale = bodyFontSize / referenceFontSize;
       svgEl.style.maxWidth = `${viewWidth * maxAutoScale}px`;
     }
   }
