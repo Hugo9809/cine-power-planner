@@ -13340,6 +13340,82 @@ function ensureGearTableCategoryGrouping(table) {
   });
 }
 
+let overviewTitleCandidatesCache = null;
+
+function getOverviewTitleCandidates() {
+  if (overviewTitleCandidatesCache && overviewTitleCandidatesCache.length) {
+    return overviewTitleCandidatesCache;
+  }
+  const variants = new Set();
+  if (typeof texts === 'object' && texts !== null) {
+    Object.values(texts).forEach(lang => {
+      const label = lang && typeof lang.overviewTitle === 'string'
+        ? lang.overviewTitle.trim()
+        : '';
+      if (label) variants.add(label);
+    });
+  }
+  variants.add('Project Overview and Gear List');
+  variants.add('Project Overview');
+  overviewTitleCandidatesCache = Array.from(variants)
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length);
+  return overviewTitleCandidatesCache;
+}
+
+function extractProjectNameFromHeading(titleElement) {
+  if (!titleElement) return '';
+  if (typeof titleElement.getAttribute === 'function') {
+    const attrName = titleElement.getAttribute('data-project-name');
+    if (typeof attrName === 'string') {
+      const trimmed = attrName.trim();
+      if (trimmed) return trimmed;
+    }
+  }
+  const textValue = typeof titleElement.textContent === 'string'
+    ? titleElement.textContent.replace(/\s+/g, ' ').trim()
+    : '';
+  if (!textValue) return '';
+
+  const quoteMatch = textValue.match(/[“"']([^“”"']+)[”"']/);
+  if (quoteMatch && quoteMatch[1] && quoteMatch[1].trim()) {
+    return quoteMatch[1].trim();
+  }
+  const guillemetMatch = textValue.match(/[«‹]([^»›]+)[»›]/);
+  if (guillemetMatch && guillemetMatch[1] && guillemetMatch[1].trim()) {
+    return guillemetMatch[1].trim();
+  }
+
+  const overviewCandidates = getOverviewTitleCandidates();
+  const lowerText = textValue.toLowerCase();
+  for (const label of overviewCandidates) {
+    const normalizedLabel = label.trim();
+    if (!normalizedLabel) continue;
+    const lowerLabel = normalizedLabel.toLowerCase();
+    if (lowerText.startsWith(lowerLabel)) {
+      let remainder = textValue.slice(normalizedLabel.length).trim();
+      if (!remainder) return '';
+      remainder = remainder.replace(/^(?:for|pour|für|per|para)\b\s*/i, '').trim();
+      remainder = remainder.replace(/^(?:the|le|la|les|den|die|das|el|los|las)\b\s*/i, '').trim();
+      remainder = remainder.replace(/^[–—:\-]+/, '').trim();
+      remainder = remainder.replace(/^["'“”«»‹›]+/, '').replace(/["'“”«»‹›]+$/, '').trim();
+      if (remainder) return remainder;
+      return '';
+    }
+  }
+
+  if (overviewCandidates.some(label => lowerText === label.toLowerCase())) {
+    return '';
+  }
+
+  const stripped = textValue.replace(/^["'“”«»‹›]+/, '').replace(/["'“”«»‹›]+$/, '').trim();
+  if (stripped && stripped !== textValue) {
+    return stripped;
+  }
+
+  return textValue;
+}
+
 function splitGearListHtml(html) {
   if (!html) return { projectHtml: '', gearHtml: '' };
   // Support legacy storage formats where the gear list and project
@@ -13360,7 +13436,7 @@ function splitGearListHtml(html) {
   const reqGrid = doc.querySelector('.requirements-grid');
   const titleHtml = title ? title.outerHTML : '';
   const projectHtml = reqHeading && reqGrid ? titleHtml + reqHeading.outerHTML + reqGrid.outerHTML : '';
-  const projectName = title ? title.textContent : '';
+  const projectName = extractProjectNameFromHeading(title);
   let table = doc.querySelector('.gear-table');
   if (!table) {
     const tables = Array.from(doc.querySelectorAll('table'));
@@ -13374,7 +13450,7 @@ function splitGearListHtml(html) {
       table = tableAfterGearHeading || tables[0];
     }
   }
-  const gearHeadingHtml = projectName ? `<h2>Gear List: “${projectName}”</h2>` : '';
+  const gearHeadingHtml = projectName ? `<h2>Gear List: “${escapeHtml(projectName)}”</h2>` : '';
   let gearHtml = '';
   if (table) {
     ensureGearTableCategoryGrouping(table);

@@ -3812,6 +3812,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
     border-top: 1px solid var(--inverse-text-color);
     border-bottom: 1px solid var(--inverse-text-color);
     color: var(--inverse-text-color);
+    font-weight: var(--font-weight-medium);
   }
   body:not(.light-mode).pink-mode .gear-table td,
   body:not(.light-mode).dark-accent-boost:not(.pink-mode) .gear-table td {
@@ -3823,6 +3824,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
     border-top: 1px solid var(--accent-color);
     border-bottom: 1px solid var(--accent-color);
     color: var(--accent-color);
+    font-weight: var(--font-weight-medium);
   }
   body:not(.light-mode).pink-mode .help-content,
   body:not(.light-mode).pink-mode .settings-content.modal-surface,
@@ -4409,7 +4411,7 @@ body:not(.dark-mode) .requirement-box,
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-regular);
   color: var(--accent-color);
   break-after: avoid;
   page-break-after: avoid;
@@ -4424,6 +4426,7 @@ body:not(.dark-mode) .requirement-box,
   border-top: 1px solid var(--inverse-text-color);
   border-bottom: 1px solid var(--inverse-text-color);
   color: var(--inverse-text-color);
+  font-weight: var(--font-weight-medium);
 }
 
 .dark-mode.pink-mode .gear-table td,
@@ -4437,6 +4440,7 @@ body:not(.dark-mode) .requirement-box,
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
   color: var(--accent-color);
+  font-weight: var(--font-weight-medium);
 }
 
 #overviewDialogContent .gear-table td {

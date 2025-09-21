@@ -87,10 +87,14 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-regular);
   color: var(--accent-color);
   break-after: avoid;
   page-break-after: avoid;
+}
+
+.dark-mode .gear-table .category-row td {
+  font-weight: var(--font-weight-medium);
 }
 .print-btn,
 .back-btn {
