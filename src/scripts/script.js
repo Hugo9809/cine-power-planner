@@ -1730,7 +1730,21 @@ function collectAutoGearCatalogNames() {
   return Array.from(names).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 }
 
-function collectAutoGearMonitorNames() {
+function normalizeAutoGearMonitorCatalogMode(value) {
+  const normalized = normalizeAutoGearSelectorType(value);
+  return normalized === 'directorMonitor' ? 'directorMonitor' : 'monitor';
+}
+
+let autoGearMonitorCatalogMode = 'monitor';
+
+function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
+  const mode = normalizeAutoGearMonitorCatalogMode(type);
+  const includeMonitor = mode === 'monitor';
+  const includeDirectorMonitor = mode === 'directorMonitor';
+  const acceptedTypes = new Set();
+  if (includeMonitor) acceptedTypes.add('monitor');
+  if (includeDirectorMonitor) acceptedTypes.add('directorMonitor');
+
   const names = new Set();
   const addName = name => {
     if (typeof name === 'string') {
@@ -1738,29 +1752,38 @@ function collectAutoGearMonitorNames() {
       if (trimmed) names.add(trimmed);
     }
   };
-  const monitorDb = devices && devices.monitors ? devices.monitors : null;
-  if (monitorDb && typeof monitorDb === 'object') {
-    Object.keys(monitorDb).forEach(addName);
+  if (includeMonitor) {
+    const monitorDb = devices && devices.monitors ? devices.monitors : null;
+    if (monitorDb && typeof monitorDb === 'object') {
+      Object.keys(monitorDb).forEach(addName);
+    }
   }
-  const directorDb = devices && devices.directorMonitors ? devices.directorMonitors : null;
-  if (directorDb && typeof directorDb === 'object') {
-    Object.keys(directorDb)
-      .filter(name => name && name !== 'None')
-      .forEach(addName);
+  if (includeDirectorMonitor) {
+    const directorDb = devices && devices.directorMonitors ? devices.directorMonitors : null;
+    if (directorDb && typeof directorDb === 'object') {
+      Object.keys(directorDb)
+        .filter(name => name && name !== 'None')
+        .forEach(addName);
+    }
   }
   autoGearRules.forEach(rule => {
-    [...(rule.add || []), ...(rule.remove || [])].forEach(item => {
-      if (item && typeof item === 'object' && item.selectorDefault) {
-        addName(item.selectorDefault);
-      }
-    });
+    const processItem = item => {
+      if (!item || typeof item !== 'object') return;
+      const selectorDefault = item.selectorDefault;
+      if (!selectorDefault) return;
+      const selectorType = normalizeAutoGearSelectorType(item.selectorType);
+      if (acceptedTypes.has(selectorType)) addName(selectorDefault);
+    };
+    (rule.add || []).forEach(processItem);
+    (rule.remove || []).forEach(processItem);
   });
   return Array.from(names).sort(localeSort);
 }
 
-function updateAutoGearMonitorCatalogOptions() {
+function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode) {
   if (!autoGearMonitorCatalog) return;
-  const names = collectAutoGearMonitorNames();
+  autoGearMonitorCatalogMode = normalizeAutoGearMonitorCatalogMode(type);
+  const names = collectAutoGearMonitorNames(autoGearMonitorCatalogMode);
   autoGearMonitorCatalog.innerHTML = '';
   names.forEach(name => {
     const option = document.createElement('option');
@@ -22899,6 +22922,18 @@ if (autoGearAddItemButton) {
   if (autoGearRemoveCategorySelect) {
     autoGearRemoveCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
   }
+  const bindAutoGearSelectorCatalogSync = (typeSelect, defaultInput) => {
+    if (!typeSelect) return;
+    const refreshCatalog = () => {
+      updateAutoGearMonitorCatalogOptions(typeSelect.value);
+    };
+    typeSelect.addEventListener('change', refreshCatalog);
+    if (defaultInput) {
+      defaultInput.addEventListener('focus', refreshCatalog);
+    }
+  };
+  bindAutoGearSelectorCatalogSync(autoGearAddSelectorTypeSelect, autoGearAddSelectorDefaultInput);
+  bindAutoGearSelectorCatalogSync(autoGearRemoveSelectorTypeSelect, autoGearRemoveSelectorDefaultInput);
   if (autoGearEditor) {
     autoGearEditor.addEventListener('click', event => {
       const target = event.target;
