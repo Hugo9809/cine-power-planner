@@ -22471,6 +22471,34 @@ function captureStorageSnapshot(storage) {
   return snapshot;
 }
 
+function sanitizeBackupPayload(raw) {
+  if (raw === null || raw === undefined) {
+    return '';
+  }
+
+  let text;
+  if (typeof raw === 'string') {
+    text = raw;
+  } else {
+    try {
+      text = String(raw);
+    } catch (error) {
+      console.warn('Failed to stringify backup payload', error);
+      text = '';
+    }
+  }
+
+  if (typeof text !== 'string') {
+    return '';
+  }
+
+  if (text.startsWith('\uFEFF')) {
+    return text.replace(/^\uFEFF/, '');
+  }
+
+  return text;
+}
+
 const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_'];
 const BACKUP_STORAGE_KNOWN_KEYS = new Set([
   'darkMode',
@@ -22883,17 +22911,28 @@ if (restoreSettings && restoreSettingsInput) {
 
     showNotification('success', 'Full app backup downloaded');
 
-    const reader = new FileReader();
-    const resetInput = () => {
+    const finalizeRestore = () => {
       try {
         restoreSettingsInput.value = '';
       } catch (resetError) {
         void resetError;
       }
     };
-    reader.onload = e => {
+
+    const handleRestoreError = (error) => {
+      console.warn('Restore failed', error);
+      showNotification('error', restoreFailureMessage);
+      alert(restoreFailureMessage);
+      finalizeRestore();
+    };
+
+    const processBackupPayload = (rawPayload) => {
       try {
-        const parsed = JSON.parse(e.target.result);
+        const sanitizedPayload = sanitizeBackupPayload(rawPayload);
+        if (!sanitizedPayload || !sanitizedPayload.trim()) {
+          throw new Error('Backup payload empty');
+        }
+        const parsed = JSON.parse(sanitizedPayload);
         const {
           settings: restoredSettings,
           sessionStorage: restoredSession,
@@ -22983,20 +23022,65 @@ if (restoreSettings && restoreSettingsInput) {
         const lang = safeGetItem('language');
         if (lang) setLanguage(lang);
         alert(texts[currentLang].restoreSuccess);
+        finalizeRestore();
       } catch (err) {
-        console.warn('Restore failed', err);
-        showNotification('error', restoreFailureMessage);
-        alert(restoreFailureMessage);
+        handleRestoreError(err);
       }
-      resetInput();
     };
-    reader.onerror = err => {
-      console.warn('Failed to read restore file', err);
-      showNotification('error', restoreFailureMessage);
-      alert(restoreFailureMessage);
-      resetInput();
+
+    const attemptTextFallback = (reason) => {
+      if (!file || typeof file.text !== 'function') {
+        return false;
+      }
+      if (reason) {
+        console.warn('FileReader unavailable for restore, using file.text()', reason);
+      } else {
+        console.warn('FileReader unavailable for restore, using file.text()');
+      }
+      Promise.resolve()
+        .then(() => file.text())
+        .then(processBackupPayload)
+        .catch(handleRestoreError);
+      return true;
     };
-    reader.readAsText(file);
+
+    let reader = null;
+    if (typeof FileReader === 'function') {
+      try {
+        reader = new FileReader();
+      } catch (readerError) {
+        console.warn('Failed to create FileReader for restore', readerError);
+        reader = null;
+      }
+    }
+
+    if (reader && typeof reader.readAsText === 'function') {
+      reader.onload = event => {
+        const result = event && event.target ? event.target.result : '';
+        processBackupPayload(result);
+      };
+      reader.onerror = () => {
+        const error = reader.error || new Error('Failed to read backup file');
+        console.warn('FileReader failed while reading restore file', error);
+        if (!attemptTextFallback(error)) {
+          handleRestoreError(error);
+        }
+      };
+      try {
+        reader.readAsText(file);
+        return;
+      } catch (readError) {
+        console.warn('Failed to read restore file', readError);
+        if (!attemptTextFallback(readError)) {
+          handleRestoreError(readError);
+        }
+        return;
+      }
+    }
+
+    if (!attemptTextFallback()) {
+      handleRestoreError(new Error('No supported file reader available'));
+    }
   });
 }
 
@@ -25643,6 +25727,7 @@ if (typeof module !== "undefined" && module.exports) {
     autoBackup,
     createSettingsBackup,
     captureStorageSnapshot,
+    sanitizeBackupPayload,
     extractBackupSections,
     searchKey,
     searchTokens,
