@@ -1375,6 +1375,106 @@ function buildVideoDistributionAutoRules(baseInfo, baselineMap) {
   return rules;
 }
 
+function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
+  if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+    return [];
+  }
+
+  const select = document.getElementById('videoDistribution');
+  if (!select) return [];
+
+  const optionValues = [];
+  const seen = new Set();
+  Array.from(select.options || []).forEach(option => {
+    if (!option) return;
+    const rawValue = typeof option.value === 'string' ? option.value.trim() : '';
+    const normalized = normalizeVideoDistributionOptionValue(rawValue);
+    if (!normalized || normalized === '__none__') return;
+    if (seen.has(normalized)) return;
+    seen.add(normalized);
+    optionValues.push(rawValue);
+  });
+
+  if (!optionValues.length) return [];
+
+  const info = { ...(baseInfo || {}), videoDistribution: optionValues.join(', ') };
+  const baselineHtml = generateGearListHtml({ ...info, requiredScenarios: '' });
+  const baselineMap = parseGearTableForAutoRules(baselineHtml);
+  if (!baselineMap) return [];
+  const generatedRules = buildVideoDistributionAutoRules(info, baselineMap);
+
+  const hasIosOption = optionValues.some(value => value && value.toLowerCase() === 'ios video');
+  if (hasIosOption) {
+    const iosLabel = optionValues.find(value => value && value.toLowerCase() === 'ios video') || 'IOS Video';
+    const normalizedIos = normalizeAutoGearTriggerValue(iosLabel);
+    const hasGeneratedIosRule = generatedRules.some(rule =>
+      Array.isArray(rule.videoDistribution)
+        && rule.videoDistribution.some(value => normalizeAutoGearTriggerValue(value) === normalizedIos)
+    );
+    if (!hasGeneratedIosRule) {
+      const createdNames = new Set();
+      const createItem = (name, category, quantity = 1) => {
+        if (!name || !category || quantity <= 0) return null;
+        const key = `${name}|${category}`;
+        if (createdNames.has(key)) return null;
+        createdNames.add(key);
+        return {
+          id: generateAutoGearId('item'),
+          name,
+          category,
+          quantity,
+          screenSize: '',
+          selectorType: 'none',
+          selectorDefault: '',
+          selectorEnabled: false,
+          notes: '',
+        };
+      };
+
+      const additions = [];
+      const iosDevices = devices && typeof devices === 'object' ? devices.iosVideo : null;
+      if (iosDevices && typeof iosDevices === 'object') {
+        Object.keys(iosDevices).forEach(deviceName => {
+          const item = createItem(deviceName, 'Monitoring');
+          if (item) additions.push(item);
+        });
+      }
+
+      if (!additions.length) {
+        const fallback = createItem('Teradek Serv + Link', 'Monitoring');
+        if (fallback) additions.push(fallback);
+      }
+
+      const pushSupport = (name, category, quantity = 1) => {
+        const item = createItem(name, category, quantity);
+        if (item) additions.push(item);
+      };
+
+      pushSupport('iPad receiver (Director)', 'Monitoring');
+      pushSupport('iPad receiver (DoP)', 'Monitoring');
+      pushSupport('iPad receiver (Gaffer)', 'Monitoring');
+      pushSupport('USB-C Charger (iOS Video)', 'Monitoring support', 2);
+      pushSupport('Wi-Fi Router (iOS Video Village)', 'Monitoring support');
+
+      if (additions.length) {
+        generatedRules.push({
+          id: generateAutoGearId('rule'),
+          label: getVideoDistributionFallbackLabel(iosLabel),
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: [iosLabel],
+          add: additions,
+          remove: [],
+        });
+      }
+    }
+  }
+
+  return generatedRules;
+}
+
 function buildDefaultMatteboxAutoGearRules() {
   const category = 'Matte box + filter';
   const createItems = names => names.map(name => ({
@@ -1594,6 +1694,21 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
   if (baselineMap) {
     buildViewfinderExtensionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
     buildVideoDistributionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
+
+    const defaultVideoDistributionRules = buildDefaultVideoDistributionAutoGearRules(baseInfo);
+    if (defaultVideoDistributionRules.length) {
+      const existingSignatures = new Set(
+        rules
+          .map(autoGearRuleSignature)
+          .filter(signature => typeof signature === 'string' && signature)
+      );
+      defaultVideoDistributionRules.forEach(rule => {
+        const signature = autoGearRuleSignature(rule);
+        if (!signature || existingSignatures.has(signature)) return;
+        rules.push(rule);
+        existingSignatures.add(signature);
+      });
+    }
   }
 
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
@@ -27421,6 +27536,7 @@ if (typeof module !== "undefined" && module.exports) {
       },
     },
     collectAutoGearCatalogNames,
+    buildDefaultVideoDistributionAutoGearRules,
     applyAutoGearRulesToTableHtml,
     exportAutoGearRules,
     importAutoGearRulesFromData,
@@ -27439,5 +27555,12 @@ if (typeof module !== "undefined" && module.exports) {
     configureSharedImportOptions,
     resolveSharedImportMode,
     resetPlannerStateAfterFactoryReset,
+    __autoGearInternals: {
+      buildDefaultVideoDistributionAutoGearRules,
+      buildVideoDistributionAutoRules,
+      buildAutoGearRulesFromBaseInfo,
+      seedAutoGearRulesFromCurrentProject,
+      clearAutoGearDefaultsSeeded,
+    },
   };
 }
