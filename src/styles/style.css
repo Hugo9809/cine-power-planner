@@ -4520,12 +4520,21 @@ body.dark-mode.pink-mode #gearListOutput h2,
   border-bottom: 1px solid var(--accent-color);
 }
 
-#sideMenu li {
+#sideMenu li { 
   margin: 0;
 }
 
 #sideMenu li + li {
   border-top: 1px solid var(--accent-color);
+}
+
+#sideMenu li.sidebar-divider {
+  padding: 8px 0;
+  margin: 12px 0;
+}
+
+#sideMenu li.sidebar-divider + li {
+  border-top: none;
 }
 
 #sideMenu a {
@@ -4534,6 +4543,27 @@ body.dark-mode.pink-mode #gearListOutput h2,
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
   display: block;
   padding: 10px 0;
+}
+
+#sideMenu button[data-sidebar-action] {
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg));
+  text-align: left;
+  cursor: pointer;
+}
+
+#sideMenu button[data-sidebar-action]:hover {
+  color: var(--accent-color);
+}
+
+#sideMenu button[data-sidebar-action]:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .dark-mode #sideMenu ul {

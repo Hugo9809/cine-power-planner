@@ -1558,6 +1558,23 @@ function setupSideMenu() {
       closeSideMenu();
     });
   });
+
+  const triggerSidebarAction = action => {
+    if (!action) return;
+    if (action === 'open-settings') {
+      document.getElementById('settingsButton')?.click();
+    } else if (action === 'open-help') {
+      document.getElementById('helpButton')?.click();
+    }
+  };
+
+  menu.querySelectorAll('[data-sidebar-action]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      triggerSidebarAction(button.dataset.sidebarAction);
+      closeSideMenu();
+    });
+  });
 }
 
 function setupResponsiveControls() {
