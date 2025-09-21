@@ -4687,36 +4687,25 @@ body.dark-mode.pink-mode #gearListOutput h2,
   align-items: center;
   gap: 0.375rem;
   font-weight: var(--font-weight-regular);
-  padding: 0.125rem 0.375rem;
-  border-radius: var(--border-radius);
-  background-color: transparent;
-  border: 1px solid transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-}
-
-#gearListFilterDetails .filter-detail-size select {
-  border: none;
-  background: transparent;
-  color: inherit;
   padding: 0;
-  margin: 0;
+  border: none;
+  background: none;
+}
+
+#gearListFilterDetails .filter-detail-size .select-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+#gearListFilterDetails .filter-detail-size .select-wrapper select {
   min-width: 3.5rem;
-  font: inherit;
+  margin: 0;
 }
 
-#gearListFilterDetails .filter-detail-size select:focus-visible {
-  outline: none;
-}
-
-#gearListFilterDetails .filter-detail-size:hover {
-  border-color: var(--accent-color);
-  background-color: var(--panel-bg);
-}
-
-#gearListFilterDetails .filter-detail-size:focus-within {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 1px var(--accent-color);
-  background-color: var(--panel-bg);
+#gearListFilterDetails .filter-detail-size .select-wrapper select:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 #gearListFilterDetails .filter-detail-values {
