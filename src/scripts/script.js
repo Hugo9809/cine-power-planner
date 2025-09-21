@@ -11036,16 +11036,22 @@ async function handleLocalFontFiles(fileList) {
 async function normalizeFontResults(result) {
   if (!result) return [];
   if (Array.isArray(result)) return result;
-  if (typeof result[Symbol.asyncIterator] === 'function') {
+
+  const hasSymbol = typeof Symbol === 'function';
+  const asyncIteratorSymbol = hasSymbol && Symbol.asyncIterator;
+  if (asyncIteratorSymbol && typeof result[asyncIteratorSymbol] === 'function') {
     const fonts = [];
     for await (const font of result) {
       fonts.push(font);
     }
     return fonts;
   }
-  if (typeof result[Symbol.iterator] === 'function') {
+
+  const iteratorSymbol = hasSymbol && Symbol.iterator;
+  if (iteratorSymbol && typeof result[iteratorSymbol] === 'function') {
     return Array.from(result);
   }
+
   return [];
 }
 
