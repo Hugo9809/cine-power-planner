@@ -7343,6 +7343,140 @@ const settingsTablist = document.getElementById('settingsTablist');
 const settingsTabButtons = settingsTablist
   ? Array.from(settingsTablist.querySelectorAll('[role="tab"]'))
   : [];
+const settingsTabsContainer = settingsTablist
+  ? settingsTablist.closest('.settings-tabs-container')
+  : null;
+const settingsTabsScrollPrev = document.getElementById('settingsTabsScrollPrev');
+const settingsTabsScrollNext = document.getElementById('settingsTabsScrollNext');
+let settingsTabsOverflowFrame = 0;
+
+function updateSettingsTabsOverflowIndicators() {
+  if (!settingsTablist || !settingsTabsContainer) {
+    if (settingsTabsScrollPrev) {
+      settingsTabsScrollPrev.hidden = true;
+    }
+    if (settingsTabsScrollNext) {
+      settingsTabsScrollNext.hidden = true;
+    }
+    return;
+  }
+
+  const scrollWidth = typeof settingsTablist.scrollWidth === 'number'
+    ? settingsTablist.scrollWidth
+    : 0;
+  const clientWidth = typeof settingsTablist.clientWidth === 'number'
+    ? settingsTablist.clientWidth
+    : 0;
+  const rawScrollLeft = typeof settingsTablist.scrollLeft === 'number'
+    ? settingsTablist.scrollLeft
+    : Number(settingsTablist.scrollLeft) || 0;
+  const maxScrollLeft = Math.max(0, scrollWidth - clientWidth);
+  const scrollLeft = Math.min(maxScrollLeft, Math.max(0, rawScrollLeft));
+  const canScroll = scrollWidth > clientWidth + 4;
+  const atStart = !canScroll || scrollLeft <= 1;
+  const atEnd = !canScroll || Math.abs(scrollWidth - clientWidth - scrollLeft) <= 1;
+
+  settingsTabsContainer.classList.toggle('is-scrollable', canScroll);
+  settingsTabsContainer.classList.toggle('is-at-start', atStart);
+  settingsTabsContainer.classList.toggle('is-at-end', atEnd);
+
+  if (settingsTabsScrollPrev) {
+    settingsTabsScrollPrev.hidden = !canScroll;
+    settingsTabsScrollPrev.disabled = atStart;
+  }
+
+  if (settingsTabsScrollNext) {
+    settingsTabsScrollNext.hidden = !canScroll;
+    settingsTabsScrollNext.disabled = atEnd;
+  }
+}
+
+function scheduleSettingsTabsOverflowUpdate() {
+  if (!settingsTablist) return;
+
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.requestAnimationFrame === 'function'
+  ) {
+    if (settingsTabsOverflowFrame) {
+      if (typeof window.cancelAnimationFrame === 'function') {
+        window.cancelAnimationFrame(settingsTabsOverflowFrame);
+      }
+      settingsTabsOverflowFrame = 0;
+    }
+
+    settingsTabsOverflowFrame = window.requestAnimationFrame(() => {
+      settingsTabsOverflowFrame = 0;
+      updateSettingsTabsOverflowIndicators();
+    });
+  } else {
+    updateSettingsTabsOverflowIndicators();
+  }
+}
+
+function scrollSettingsTabs(direction) {
+  if (!settingsTablist) return;
+
+  const distance = settingsTablist.clientWidth
+    ? settingsTablist.clientWidth * 0.75
+    : 200;
+  const amount = direction * distance;
+
+  if (typeof settingsTablist.scrollBy === 'function') {
+    try {
+      settingsTablist.scrollBy({ left: amount, behavior: 'smooth' });
+    } catch {
+      settingsTablist.scrollLeft += amount;
+    }
+  } else {
+    settingsTablist.scrollLeft += amount;
+  }
+
+  scheduleSettingsTabsOverflowUpdate();
+}
+
+if (settingsTabsScrollPrev) {
+  settingsTabsScrollPrev.addEventListener('click', () => {
+    scrollSettingsTabs(-1);
+  });
+}
+
+if (settingsTabsScrollNext) {
+  settingsTabsScrollNext.addEventListener('click', () => {
+    scrollSettingsTabs(1);
+  });
+}
+
+if (settingsTablist) {
+  let settingsTabsPassiveOptions = false;
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    try {
+      const passiveTestHandler = () => {};
+      const passiveTestOptions = Object.defineProperty({}, 'passive', {
+        get() {
+          settingsTabsPassiveOptions = { passive: true };
+          return false;
+        },
+      });
+      window.addEventListener('testPassive', passiveTestHandler, passiveTestOptions);
+      window.removeEventListener('testPassive', passiveTestHandler, passiveTestOptions);
+    } catch {
+      settingsTabsPassiveOptions = false;
+    }
+  }
+
+  settingsTablist.addEventListener(
+    'scroll',
+    () => {
+      scheduleSettingsTabsOverflowUpdate();
+    },
+    settingsTabsPassiveOptions
+  );
+
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('resize', scheduleSettingsTabsOverflowUpdate, settingsTabsPassiveOptions);
+  }
+}
 const settingsTabPanels = settingsDialog
   ? Array.from(settingsDialog.querySelectorAll('.settings-panel'))
   : [];
@@ -7427,6 +7561,8 @@ function activateSettingsTab(tabId, options = {}) {
       target.scrollIntoView();
     }
   }
+
+  scheduleSettingsTabsOverflowUpdate();
 
   activeSettingsTabId = target.id;
   try {
@@ -22490,6 +22626,7 @@ if (settingsButton && settingsDialog) {
     }
     settingsDialog.removeAttribute('hidden');
     openDialog(settingsDialog);
+    scheduleSettingsTabsOverflowUpdate();
     // Focus the first control except the language selector to avoid opening it automatically
     const activePanel = settingsDialog.querySelector('.settings-panel:not([hidden])');
     const first = activePanel?.querySelector('input:not([type="hidden"]), select:not(#settingsLanguage), textarea');

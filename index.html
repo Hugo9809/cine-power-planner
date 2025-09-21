@@ -775,18 +775,38 @@
   <dialog id="settingsDialog" class="app-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
     <div class="modal-surface modal-surface-scrollable settings-content">
       <h2 id="settingsTitle">Settings</h2>
-      <div
-        id="settingsTablist"
-        class="settings-tabs"
-        role="tablist"
-        aria-label="Settings sections"
-        aria-orientation="horizontal"
-      >
+      <div class="settings-tabs-container">
         <button
           type="button"
-          class="settings-tab"
-          id="settingsTab-general"
-          role="tab"
+          class="settings-tabs-scroll"
+          id="settingsTabsScrollPrev"
+          aria-label="Scroll settings tabs left"
+          hidden
+        >
+          <span class="icon-glyph icon-svg" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M14.25 5.75 8.75 12l5.5 6.25"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+        </button>
+        <div
+          id="settingsTablist"
+          class="settings-tabs"
+          role="tablist"
+          aria-label="Settings sections"
+          aria-orientation="horizontal"
+        >
+          <button
+            type="button"
+            class="settings-tab"
+            id="settingsTab-general"
+            role="tab"
           aria-controls="settingsPanel-general"
           aria-selected="true"
         >
@@ -846,6 +866,26 @@
           tabindex="-1"
         >
           About &amp; Support
+        </button>
+        </div>
+        <button
+          type="button"
+          class="settings-tabs-scroll"
+          id="settingsTabsScrollNext"
+          aria-label="Scroll settings tabs right"
+          hidden
+        >
+          <span class="icon-glyph icon-svg" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M9.75 5.75 15.25 12l-5.5 6.25"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
         </button>
       </div>
       <section
