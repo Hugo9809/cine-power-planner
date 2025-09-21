@@ -1744,17 +1744,45 @@ body.pink-mode .auto-gear-rule-title,
   outline-offset: 2px;
 }
 
-.help-target-focus {
+.help-target-focus,
+.feature-search-focus {
   outline: 3px solid var(--accent-color);
   outline-offset: 4px;
   border-radius: var(--border-radius);
-  transition: outline-color 0.2s ease-in-out;
+  transition:
+    outline-color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
 }
 
 .help-target-focus:focus,
-.help-target-focus:focus-visible {
+.help-target-focus:focus-visible,
+.feature-search-focus:focus,
+.feature-search-focus:focus-visible {
   outline: 3px solid var(--accent-color);
   outline-offset: 4px;
+}
+
+.feature-search-focus {
+  background-color: rgba(0, 0, 0, 0.04);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.02);
+}
+
+.dark-mode .feature-search-focus {
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
+}
+
+@supports (background-color: color-mix(in srgb, red 10%, transparent)) {
+  .feature-search-focus {
+    background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 24%, transparent);
+  }
+
+  .dark-mode .feature-search-focus {
+    background-color: color-mix(in srgb, var(--accent-color) 26%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 32%, transparent);
+  }
 }
 
 .icon-glyph {
