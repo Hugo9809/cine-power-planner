@@ -4645,6 +4645,7 @@ const ICON_GLYPHS = Object.freeze({
   fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
   save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
   share: iconGlyph('\uF219', ICON_FONT_KEYS.ESSENTIAL),
+  paperPlane: iconGlyph('\uED67', ICON_FONT_KEYS.UICONS),
   magnet: iconGlyph('\uF1B5', ICON_FONT_KEYS.ESSENTIAL),
   timecode: iconGlyph('\uF10E', ICON_FONT_KEYS.FILM),
   audioIn: iconGlyph('\uF1C3', ICON_FONT_KEYS.ESSENTIAL),
@@ -12005,7 +12006,7 @@ if (feedbackSubmitBtn) {
     texts[currentLang]?.feedbackSubmit ||
     texts.en?.feedbackSubmit ||
     'Save & Submit';
-  setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.save);
+  setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.paperPlane);
 }
 const loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
 const saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
