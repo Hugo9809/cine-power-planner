@@ -2246,6 +2246,46 @@ function saveAutoGearPresets(presets) {
   var safeStorage = getSafeLocalStorage();
   saveJSONToStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, safePresets, "Error saving automatic gear presets to localStorage:");
 }
+function removeAutoGearPresetFromStorage(presetId, storage) {
+  if (!presetId) {
+    return;
+  }
+  var safeStorage = storage || getSafeLocalStorage();
+  if (!safeStorage) {
+    return;
+  }
+  var rawPresets;
+  try {
+    rawPresets = safeStorage.getItem(AUTO_GEAR_PRESETS_STORAGE_KEY);
+  } catch (error) {
+    console.error('Error loading automatic gear presets while removing autosaved preset from localStorage:', error);
+    alertStorageError();
+    return;
+  }
+  if (rawPresets === null || typeof rawPresets === 'undefined') {
+    return;
+  }
+  var parsedPresets;
+  try {
+    parsedPresets = JSON.parse(rawPresets);
+  } catch (parseError) {
+    console.error('Error parsing automatic gear presets while removing autosaved preset from localStorage:', parseError);
+    return;
+  }
+  if (!Array.isArray(parsedPresets)) {
+    return;
+  }
+  var filteredPresets = parsedPresets.filter(function (preset) {
+    if (!preset || typeof preset !== 'object') {
+      return true;
+    }
+    return preset.id !== presetId;
+  });
+  if (filteredPresets.length === parsedPresets.length) {
+    return;
+  }
+  saveJSONToStorage(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY, filteredPresets, "Error saving automatic gear presets to localStorage:");
+}
 function loadAutoGearActivePresetId() {
   applyLegacyStorageMigrations();
   var safeStorage = getSafeLocalStorage();
@@ -2297,11 +2337,26 @@ function saveAutoGearAutoPresetId(presetId) {
   if (!safeStorage) {
     return;
   }
+  var previousPresetId = '';
+  try {
+    var existingId = safeStorage.getItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+    if (typeof existingId === 'string' && existingId) {
+      previousPresetId = existingId;
+    }
+  } catch (inspectionError) {
+    console.error('Error inspecting automatic gear auto preset in localStorage:', inspectionError);
+  }
   try {
     if (presetId) {
       safeStorage.setItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, presetId);
+      if (previousPresetId && previousPresetId !== presetId) {
+        removeAutoGearPresetFromStorage(previousPresetId, safeStorage);
+      }
     } else {
       safeStorage.removeItem(AUTO_GEAR_AUTO_PRESET_STORAGE_KEY);
+      if (previousPresetId) {
+        removeAutoGearPresetFromStorage(previousPresetId, safeStorage);
+      }
     }
   } catch (error) {
     console.error('Error saving automatic gear auto preset to localStorage:', error);

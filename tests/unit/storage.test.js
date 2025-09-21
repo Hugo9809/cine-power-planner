@@ -695,6 +695,44 @@ describe('automatic gear storage', () => {
     expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBe('legacy-auto');
     expect(localStorage.getItem('cinePowerPlanner_autoGearAutoPreset')).toBeNull();
   });
+
+  test('clearing the auto preset removes the autosaved entry from presets', () => {
+    const presets = [
+      { id: 'manual-1', label: 'Manual preset', rules: [] },
+      { id: 'auto-123', label: 'Autosaved rules', rules: [] },
+    ];
+
+    saveAutoGearPresets(presets);
+    saveAutoGearAutoPresetId('auto-123');
+
+    saveAutoGearAutoPresetId('');
+
+    const stored = JSON.parse(localStorage.getItem(AUTO_GEAR_PRESETS_KEY));
+    expect(stored).toEqual([
+      { id: 'manual-1', label: 'Manual preset', rules: [] },
+    ]);
+    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
+  });
+
+  test('replacing the auto preset id removes the previous autosaved entry', () => {
+    saveAutoGearPresets([
+      { id: 'auto-old', label: 'Autosaved rules', rules: [{ id: 'rule-1' }] },
+      { id: 'manual-1', label: 'Manual preset', rules: [] },
+    ]);
+    saveAutoGearAutoPresetId('auto-old');
+
+    saveAutoGearPresets([
+      { id: 'auto-new', label: 'Autosaved rules', rules: [{ id: 'rule-2' }] },
+      { id: 'manual-1', label: 'Manual preset', rules: [] },
+    ]);
+    saveAutoGearAutoPresetId('auto-new');
+
+    const stored = JSON.parse(localStorage.getItem(AUTO_GEAR_PRESETS_KEY));
+    expect(stored).toEqual([
+      { id: 'auto-new', label: 'Autosaved rules', rules: [{ id: 'rule-2' }] },
+      { id: 'manual-1', label: 'Manual preset', rules: [] },
+    ]);
+  });
 });
 
 describe('clearAllData', () => {
