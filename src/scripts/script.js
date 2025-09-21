@@ -27211,9 +27211,12 @@ function renderGearListFilterDetails(details) {
       const sizeText = document.createElement('span');
       sizeText.className = 'filter-detail-sublabel';
       sizeText.textContent = 'Size';
+      const sizeWrapper = document.createElement('span');
+      sizeWrapper.className = 'select-wrapper';
       const sizeSelect = createFilterSizeSelect(type, size, { includeId: false });
       sizeSelect.setAttribute('data-storage-id', `filter-size-${filterId(type)}`);
-      sizeLabel.append(sizeText, sizeSelect);
+      sizeWrapper.appendChild(sizeSelect);
+      sizeLabel.append(sizeText, sizeWrapper);
       controls.appendChild(sizeLabel);
     }
     if (needsValues) {
@@ -27246,6 +27249,7 @@ function renderGearListFilterDetails(details) {
     row.appendChild(controls);
     container.appendChild(row);
   });
+  adjustGearListSelectWidths(container);
 }
 
 function syncGearListFilterSize(storageId, value) {
