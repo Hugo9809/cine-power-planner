@@ -119,6 +119,33 @@ describe('global feature search helpers', () => {
     expect(result?.value.label).toBe('B-Mount Battery Plate');
   });
 
+  test('searchTokens expose numeric variants for roman numerals', () => {
+    const tokens = searchTokens('Type IV Expansion Module');
+    expect(tokens).toEqual(expect.arrayContaining(['iv', '4']));
+
+    const singleTokens = searchTokens('Type I Expansion Module');
+    expect(singleTokens).toEqual(expect.arrayContaining(['i', '1']));
+  });
+
+  test('findBestSearchMatch pairs roman numeral queries with numeric tokens', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('Aux Type II Input'),
+      {
+        label: 'Aux Type II Input',
+        tokens: searchTokens('Aux Type II Input')
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('aux type 2 input'),
+      searchTokens('aux type 2 input')
+    );
+
+    expect(result?.value.label).toBe('Aux Type II Input');
+  });
+
   test('findBestSearchMatch tolerates unmatched query tokens', () => {
     const entries = new Map();
     entries.set(
