@@ -2548,7 +2548,7 @@ const texts = {
     sideMenuHelp:
       "Navigation latérale listant les sections du planificateur. Choisissez une section pour y faire défiler la page et fermer automatiquement le menu.",
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
-    featureSearchLabel: "Rechercher des fonctionnalités, des appareils et d’aide",
+    featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l’aide",
     featureSearchHelp:
       "Tapez pour accéder aux fonctionnalités, appareils ou sujets d’aide associés. Appuyez sur Entrée pour naviguer, sur / ou Ctrl+K (Cmd+K sur Mac) pour placer le focus sur la recherche où que vous soyez, puis sur Échap ou × pour effacer la requête.",
     featureSearchClear: "Effacer la recherche",
